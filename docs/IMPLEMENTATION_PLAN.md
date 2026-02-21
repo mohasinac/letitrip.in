@@ -33,23 +33,23 @@
 
 > Update this table as work proceeds. One phase at a time — mark **In Progress** before starting, **Done** when every file change and test in that phase is complete and `npx tsc --noEmit` passes.
 
-| Phase  | Status         | Started    | Completed  | Notes                                                                                             |
-| ------ | -------------- | ---------- | ---------- | ------------------------------------------------------------------------------------------------- |
-| **1**  | ✅ Done        | 2026-02-21 | 2026-02-21 |                                                                                                   |
-| **2**  | ✅ Done        | 2026-02-21 | 2026-02-21 | 48 tests · 9 components/hooks · 0 TS errors                                                       |
-| **3**  | ✅ Done        | 2026-02-21 | 2026-02-21 | 12 tests · externalPagination · SearchResultsSection Pagination                                   |
-| **4**  | ✅ Done        | 2026-02-21 | 2026-02-21 | 7 admin pages · useUrlTable · server pagination · filter bars · FAQs data bug fixed · 0 TS errors |
-| **5**  | ⬜ Not started | —          | —          |                                                                                                   |
-| **6**  | ⬜ Not started | —          | —          |                                                                                                   |
-| **7**  | ⬜ Not started | —          | —          |                                                                                                   |
-| **8**  | ⬜ Not started | —          | —          |                                                                                                   |
-| **9**  | ⬜ Not started | —          | —          |                                                                                                   |
-| **10** | ⬜ Not started | —          | —          |                                                                                                   |
-| **11** | ⬜ Not started | —          | —          |                                                                                                   |
-| **12** | ⬜ Not started | —          | —          |                                                                                                   |
-| **13** | ⬜ Not started | —          | —          |                                                                                                   |
-| **14** | ⬜ Not started | —          | —          |                                                                                                   |
-| **15** | ⬜ Not started | —          | —          |                                                                                                   |
+| Phase  | Status         | Started    | Completed  | Notes                                                                                                                                 |
+| ------ | -------------- | ---------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **1**  | ✅ Done        | 2026-02-21 | 2026-02-21 |                                                                                                                                       |
+| **2**  | ✅ Done        | 2026-02-21 | 2026-02-21 | 48 tests · 9 components/hooks · 0 TS errors                                                                                           |
+| **3**  | ✅ Done        | 2026-02-21 | 2026-02-21 | 12 tests · externalPagination · SearchResultsSection Pagination                                                                       |
+| **4**  | ✅ Done        | 2026-02-21 | 2026-02-21 | 7 admin pages · useUrlTable · server pagination · filter bars · FAQs data bug fixed · 0 TS errors                                     |
+| **5**  | ✅ Done        | 2026-02-21 | 2026-02-21 | products · search · auctions · blog · categories/[slug] · FilterDrawer · ActiveFilterChips                                            |
+| **6**  | ✅ Done        | 2026-02-21 | 2026-02-21 | seller/products drawer · seller/orders · user/orders · CRUD drawers verified                                                          |
+| **7**  | ✅ Done        | 2026-02-21 | 2026-02-21 | FAQ dynamic route · category tabs · FAQCategorySidebar URL update                                                                     |
+| **8**  | ✅ Done        | 2026-02-21 | 2026-02-21 | Footer 5-col rewrite · EnhancedFooter deleted · lucide-react nav icons · Sidebar polish                                               |
+| **9**  | ✅ Done        | 2026-02-21 | 2026-02-21 | CategorySelectorCreate · AddressSelectorCreate · ProductForm wired                                                                    |
+| **10** | ✅ Done        | 2026-02-21 | 2026-02-21 | useLongPress · usePullToRefresh · SideDrawer focus trap · Tabs keyboard · HeroCarousel ARIA                                           |
+| **11** | ✅ Done        | 2026-02-21 | 2026-02-21 | TrustFeaturesSection (merged) · HomepageSkeleton · mobile snap-scroll carousels · lucide icons · useSwipe · useApiMutation newsletter |
+| **12** | 🔵 In progress | 2026-02-21 | —          |                                                                                                                                       |
+| **13** | ⬜ Not started | —          | —          |                                                                                                                                       |
+| **14** | ⬜ Not started | —          | —          |                                                                                                                                       |
+| **15** | ⬜ Not started | —          | —          |                                                                                                                                       |
 
 **Status legend:** ⬜ Not started · 🔵 In progress · ✅ Done · ⏸ Blocked
 

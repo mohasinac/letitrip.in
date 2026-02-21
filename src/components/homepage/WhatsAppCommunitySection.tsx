@@ -1,5 +1,6 @@
 "use client";
 
+import { MessageCircle } from "lucide-react";
 import { useApiQuery } from "@/hooks";
 import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
@@ -68,7 +69,9 @@ export function WhatsAppCommunitySection() {
 
           <div className="relative z-10 text-center">
             {/* WhatsApp Icon */}
-            <div className="text-7xl mb-6">💬</div>
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm mb-6 mx-auto">
+              <MessageCircle className="w-10 h-10 text-white" />
+            </div>
 
             {/* Heading */}
             <h2 className={`${THEME_CONSTANTS.typography.h2} mb-3`}>
@@ -110,6 +113,7 @@ export function WhatsAppCommunitySection() {
             <Button
               variant="primary"
               size="lg"
+              aria-label="Join WhatsApp community"
               onClick={() => window.open(config.groupLink, "_blank")}
               className="bg-white text-green-600 hover:bg-gray-100 shadow-xl hover:shadow-2xl"
             >

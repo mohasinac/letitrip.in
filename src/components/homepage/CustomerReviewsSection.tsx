@@ -1,39 +1,36 @@
-"use client";
+﻿"use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
-import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import Link from "next/link";
+import { Star } from "lucide-react";
+import { useApiQuery, useSwipe } from "@/hooks";
+import { API_ENDPOINTS, THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
 import { apiClient } from "@/lib/api-client";
 import type { ReviewDocument } from "@/db/schema";
 
 export function CustomerReviewsSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
 
   const { data, isLoading } = useApiQuery<ReviewDocument[]>({
     queryKey: ["reviews", "featured"],
     queryFn: () =>
       apiClient.get(
-        `${API_ENDPOINTS.REVIEWS.LIST}?featured=true&status=approved&limit=18`,
+        `${API_ENDPOINTS.REVIEWS.LIST}?featured=true&status=approved&limit=6`,
       ),
   });
 
   const reviews = data || [];
+  const totalGroups = Math.ceil(reviews.length / 3);
 
-  // Auto-scroll every 4 seconds
-  useEffect(() => {
-    if (!isAutoScrolling || reviews.length <= 3) return;
+  const sectionRef = useRef<HTMLElement>(null);
 
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => {
-        const maxIndex = Math.max(0, reviews.length - 3);
-        return prev >= maxIndex ? 0 : prev + 1;
-      });
-    }, 4000);
+  const goNext = () =>
+    setCurrentIndex((p) => (p + 3 >= reviews.length ? 0 : p + 3));
+  const goPrev = () =>
+    setCurrentIndex((p) => (p === 0 ? Math.max(0, reviews.length - 3) : p - 3));
 
-    return () => clearInterval(interval);
-  }, [isAutoScrolling, reviews.length]);
+  useSwipe(sectionRef, { onSwipeLeft: goNext, onSwipeRight: goPrev });
 
   if (isLoading) {
     return (
@@ -41,12 +38,14 @@ export function CustomerReviewsSection() {
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
       >
         <div className="w-full">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg mb-8 max-w-xs animate-pulse" />
+          <div
+            className={`h-8 ${THEME_CONSTANTS.skeleton.base} mb-8 max-w-xs mx-auto`}
+          />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="bg-gray-200 dark:bg-gray-700 rounded-xl h-48 animate-pulse"
+                className={`${THEME_CONSTANTS.skeleton.card} h-48`}
               />
             ))}
           </div>
@@ -63,9 +62,8 @@ export function CustomerReviewsSection() {
 
   return (
     <section
+      ref={sectionRef}
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
-      onMouseEnter={() => setIsAutoScrolling(false)}
-      onMouseLeave={() => setIsAutoScrolling(true)}
     >
       <div className="w-full">
         {/* Section Header */}
@@ -82,24 +80,27 @@ export function CustomerReviewsSection() {
           </p>
         </div>
 
-        {/* Reviews Grid */}
+        {/* Reviews Grid â€” 3-col on desktop */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {visibleReviews.map((review) => (
             <div
               key={review.id}
               className={`${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} ${THEME_CONSTANTS.spacing.padding.lg}`}
             >
-              {/* Star Rating */}
-              <div className="flex gap-1 mb-4">
+              {/* Star Rating using lucide-react */}
+              <div
+                className="flex gap-1 mb-4"
+                aria-label={`${review.rating} out of 5 stars`}
+              >
                 {[...Array(5)].map((_, i) => (
-                  <svg
+                  <Star
                     key={i}
-                    className={`w-5 h-5 ${i < review.rating ? "text-yellow-500" : "text-gray-300 dark:text-gray-600"}`}
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
+                    className={`w-5 h-5 ${
+                      i < review.rating
+                        ? "text-yellow-500 fill-yellow-500"
+                        : "text-gray-300 dark:text-gray-600"
+                    }`}
+                  />
                 ))}
               </div>
 
@@ -107,7 +108,7 @@ export function CustomerReviewsSection() {
               <p
                 className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} mb-4 line-clamp-4`}
               >
-                "{review.comment}"
+                &ldquo;{review.comment}&rdquo;
               </p>
 
               {/* User Info */}
@@ -144,15 +145,15 @@ export function CustomerReviewsSection() {
         </div>
 
         {/* Navigation Dots */}
-        {reviews.length > 3 && (
-          <div className="flex justify-center gap-2">
-            {[...Array(Math.ceil(reviews.length / 3))].map((_, i) => (
+        {totalGroups > 1 && (
+          <div className="flex justify-center gap-2 mb-6">
+            {[...Array(totalGroups)].map((_, i) => (
               <button
                 key={i}
-                className={`w-2 h-2 rounded-full transition-all ${
+                className={`h-2 rounded-full transition-all ${
                   Math.floor(currentIndex / 3) === i
                     ? "bg-blue-600 w-8"
-                    : "bg-gray-300 dark:bg-gray-600"
+                    : "bg-gray-300 dark:bg-gray-600 w-2"
                 }`}
                 onClick={() => setCurrentIndex(i * 3)}
                 aria-label={`Go to review group ${i + 1}`}
@@ -160,6 +161,16 @@ export function CustomerReviewsSection() {
             ))}
           </div>
         )}
+
+        {/* See all reviews link */}
+        <div className="text-center">
+          <Link
+            href={ROUTES.PUBLIC.PRODUCTS}
+            className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+          >
+            {UI_LABELS.HOMEPAGE.REVIEWS.SEE_ALL}
+          </Link>
+        </div>
       </div>
     </section>
   );

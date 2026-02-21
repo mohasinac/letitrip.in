@@ -9,6 +9,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 11 — Homepage Sections
+
+**Goal:** All homepage section components use mobile-friendly carousels, lucide-react icons, merged trust/features card grid, and properly wired newsletter mutation.
+
+#### Added
+
+- `src/components/homepage/TrustFeaturesSection.tsx` — new component merging `TrustIndicatorsSection` + `SiteFeaturesSection` into a single 2-col/4-col grid; uses lucide-react icons (ShieldCheck, Truck, RotateCcw, Headphones); IntersectionObserver fade-in + slide-up stagger animation.
+- `src/components/homepage/HomepageSkeleton.tsx` — full-page skeleton shown while homepage loads; uses `THEME_CONSTANTS.skeleton.*` tokens; hero + trust (4 cards) + categories (6) + products (5) + auctions (5) + newsletter sections.
+- `THEME_CONSTANTS.skeleton` — new token group: `base`, `text`, `heading`, `image`, `card` (all `animate-pulse` variants).
+- `THEME_CONSTANTS.touch` — new token group: `target` (`min-h-[44px]`), `targetSm` (`min-h-[36px]`).
+- `UI_LABELS.HOMEPAGE.REVIEWS.SEE_ALL` — `"See all reviews →"`.
+- `TRUST_FEATURES` constant + `TrustFeatureItem` interface in `homepage-data.ts` (4 items with lucide icon names).
+- `src/components/homepage/__tests__/TrustFeaturesSection.test.tsx` — rendering, icons, accessibility, IntersectionObserver.
+- `src/components/homepage/__tests__/HomepageSkeleton.test.tsx` — renders, animate-pulse blocks, aria-hidden decorative elements.
+- `src/components/homepage/__tests__/NewsletterSection.test.tsx` — Mail icon, form validation, useApiMutation called, loading state.
+
+#### Changed
+
+- `src/components/homepage/FeaturedProductsSection.tsx` — replaced `useRouter`+`Button` with `Link`; added mobile snap-scroll carousel (`overflow-x-auto snap-x snap-mandatory`); desktop `grid-cols-3 lg:grid-cols-5`; skeleton uses `THEME_CONSTANTS.skeleton.*`; "View all →" uses `UI_LABELS.ACTIONS.VIEW_ALL_ARROW`.
+- `src/components/homepage/FeaturedAuctionsSection.tsx` — same carousel + Link + skeleton treatment as FeaturedProducts; countdown chip retained.
+- `src/components/homepage/TopCategoriesSection.tsx` — replaced manual auto-scroll with CSS responsive grid (`grid-cols-2 sm:grid-cols-4 2xl:grid-cols-6`); lucide icon per category slug; `hover:scale-105`; product count badge; shows up to 12 categories.
+- `src/components/homepage/CustomerReviewsSection.tsx` — `useSwipe(ref, opts)` for touch navigation; lucide `Star` with `fill-yellow-500`; API limit 6; "See all reviews →" `Link`.
+- `src/components/homepage/NewsletterSection.tsx` — replaced emoji `📬` with lucide `Mail` icon; replaced manual `apiClient.post` + status state with `useApiMutation` + `useMessage`; replaced `router.push` with `<Link>` for privacy policy.
+- `src/components/homepage/WhatsAppCommunitySection.tsx` — replaced emoji `💬` with lucide `MessageCircle`; added `aria-label="Join WhatsApp community"` to CTA Button.
+- `src/components/homepage/index.ts` — exported `TrustFeaturesSection`, `HomepageSkeleton`; kept `TrustIndicatorsSection`/`SiteFeaturesSection` for backward compat.
+- `src/app/page.tsx` — swapped `TrustIndicatorsSection`+`SiteFeaturesSection` for `TrustFeaturesSection`; removed `SiteFeaturesSection` dynamic import.
+- `src/components/homepage/__tests__/CustomerReviewsSection.test.tsx` — added `useSwipe` to `@/hooks` mock.
+- `docs/IMPLEMENTATION_PLAN.md` — Phase 11 marked ✅ Done; Phase 12 marked 🔵 In progress.
+
+---
+
 ### Phase 10 — Gestures + Accessibility
 
 **Goal:** Every interactive component works correctly with touch gestures, keyboard navigation, and screen readers.

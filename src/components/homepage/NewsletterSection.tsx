@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Mail } from "lucide-react";
 import {
   THEME_CONSTANTS,
   API_ENDPOINTS,
@@ -12,36 +13,34 @@ import {
   SUCCESS_MESSAGES,
 } from "@/constants";
 import { Button, Input } from "@/components";
+import { useApiMutation, useMessage } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 
 export function NewsletterSection() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
-  const [message, setMessage] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+  const { message, showSuccess, showError } = useMessage();
+
+  const { mutate, isLoading } = useApiMutation<unknown, { email: string }>({
+    mutationFn: (vars) =>
+      apiClient.post(API_ENDPOINTS.NEWSLETTER.SUBSCRIBE, vars),
+    onSuccess: () => {
+      setSubscribed(true);
+      setEmail("");
+      showSuccess(SUCCESS_MESSAGES.NEWSLETTER.SUBSCRIBED);
+    },
+    onError: (err) => {
+      showError(err.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR);
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!email || !email.includes("@")) {
-      setStatus("error");
-      setMessage(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL);
+      showError(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL);
       return;
     }
-
-    setStatus("loading");
-
-    try {
-      await apiClient.post(API_ENDPOINTS.NEWSLETTER.SUBSCRIBE, { email });
-      setStatus("success");
-      setMessage(SUCCESS_MESSAGES.NEWSLETTER.SUBSCRIBED);
-      setEmail("");
-    } catch (error: any) {
-      setStatus("error");
-      setMessage(error.message || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR);
-    }
+    await mutate({ email });
   };
 
   return (
@@ -52,8 +51,10 @@ export function NewsletterSection() {
         <div
           className={`${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius["2xl"]} ${THEME_CONSTANTS.spacing.padding.xl} text-center`}
         >
-          {/* Icon */}
-          <div className="text-6xl mb-6">📬</div>
+          {/* Mail icon from lucide-react */}
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-50 dark:bg-indigo-900/30 mb-6 mx-auto">
+            <Mail className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+          </div>
 
           {/* Heading */}
           <h2
@@ -67,58 +68,60 @@ export function NewsletterSection() {
             {UI_LABELS.HOMEPAGE.NEWSLETTER.SUBTITLE}
           </p>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={UI_PLACEHOLDERS.EMAIL}
-                className="flex-1"
-                disabled={status === "loading" || status === "success"}
-              />
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={status === "loading" || status === "success"}
+          {/* Success State */}
+          {subscribed ? (
+            <div className="max-w-md mx-auto">
+              <p
+                className={`${THEME_CONSTANTS.typography.body} text-green-600 dark:text-green-400 font-medium`}
               >
-                {status === "loading"
-                  ? UI_LABELS.LOADING.DEFAULT
-                  : status === "success"
-                    ? UI_LABELS.STATUS.SUBSCRIBED
-                    : UI_LABELS.ACTIONS.SUBSCRIBE}
-              </Button>
+                {SUCCESS_MESSAGES.NEWSLETTER.SUBSCRIBED}
+              </p>
             </div>
+          ) : (
+            /* Form */
+            <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={UI_PLACEHOLDERS.EMAIL}
+                  className="flex-1"
+                  disabled={isLoading}
+                />
+                <Button type="submit" variant="primary" disabled={isLoading}>
+                  {isLoading
+                    ? UI_LABELS.LOADING.DEFAULT
+                    : UI_LABELS.ACTIONS.SUBSCRIBE}
+                </Button>
+              </div>
 
-            {/* Status Messages */}
-            {status === "success" && (
-              <p
-                className={`${THEME_CONSTANTS.typography.small} text-green-600 dark:text-green-400 mt-3`}
-              >
-                {message}
-              </p>
-            )}
-            {status === "error" && (
-              <p
-                className={`${THEME_CONSTANTS.typography.small} text-red-600 dark:text-red-400 mt-3`}
-              >
-                {message}
-              </p>
-            )}
-          </form>
+              {/* Inline message */}
+              {message && (
+                <p
+                  className={`${THEME_CONSTANTS.typography.small} mt-3 ${
+                    message.type === "success"
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-red-600 dark:text-red-400"
+                  }`}
+                >
+                  {message.text}
+                </p>
+              )}
+            </form>
+          )}
 
           {/* Privacy Note */}
           <p
             className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mt-6`}
           >
             {UI_LABELS.HOMEPAGE.NEWSLETTER.PRIVACY_NOTE}{" "}
-            <button
+            <Link
+              href={ROUTES.PUBLIC.PRIVACY}
               className="text-blue-600 dark:text-blue-400 hover:underline"
-              onClick={() => router.push(ROUTES.PUBLIC.PRIVACY)}
             >
               {UI_LABELS.FOOTER.PRIVACY_POLICY}
-            </button>
+            </Link>
           </p>
         </div>
       </div>

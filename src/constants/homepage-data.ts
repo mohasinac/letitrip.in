@@ -11,6 +11,14 @@ export interface TrustIndicator {
   description: string;
 }
 
+/** Trust/feature item with a lucide-react icon name for component-side rendering */
+export interface TrustFeatureItem {
+  /** lucide-react icon name — resolved in TrustFeaturesSection */
+  iconName: "ShieldCheck" | "Truck" | "RotateCcw" | "Headphones";
+  title: string;
+  description: string;
+}
+
 export interface SiteFeature {
   id: string;
   icon: string;
@@ -55,6 +63,33 @@ export const TRUST_INDICATORS: TrustIndicator[] = [
     icon: "👥",
     title: "50,000+ Customers",
     description: "Trusted by Thousands Nationwide",
+  },
+];
+
+/**
+ * Merged trust + features section — 4 items with lucide-react iconNames.
+ * Used by TrustFeaturesSection (replaces both TrustIndicatorsSection and SiteFeaturesSection).
+ */
+export const TRUST_FEATURES: TrustFeatureItem[] = [
+  {
+    iconName: "ShieldCheck",
+    title: "Secure Payments",
+    description: "Multiple payment options with bank-grade encryption",
+  },
+  {
+    iconName: "Truck",
+    title: "Fast Delivery",
+    description: "Delivery in 2–5 business days across India",
+  },
+  {
+    iconName: "RotateCcw",
+    title: "Easy Returns",
+    description: "7-day hassle-free return policy on all products",
+  },
+  {
+    iconName: "Headphones",
+    title: "24/7 Support",
+    description: "Round-the-clock customer service via chat and phone",
   },
 ];
 

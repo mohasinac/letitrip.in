@@ -1,16 +1,14 @@
-"use client";
+﻿"use client";
 
+import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useApiQuery } from "@/hooks";
 import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
 import { formatCurrency } from "@/utils";
-import { Button } from "@/components";
 import { apiClient } from "@/lib/api-client";
 import type { ProductDocument } from "@/db/schema";
 
 export function FeaturedProductsSection() {
-  const router = useRouter();
   const { data, isLoading } = useApiQuery<ProductDocument[]>({
     queryKey: ["products", "featured"],
     queryFn: () =>
@@ -26,20 +24,29 @@ export function FeaturedProductsSection() {
       >
         <div className="w-full">
           <div
-            className={`h-8 ${THEME_CONSTANTS.themed.bgTertiary} rounded-lg mb-8 max-w-xs animate-pulse`}
+            className={`h-8 ${THEME_CONSTANTS.skeleton.base} mb-8 max-w-xs`}
           />
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
-            {[...Array(18)].map((_, i) => (
-              <div key={i} className="space-y-3">
+          {/* Mobile: horizontal scroll skeleton */}
+          <div className="flex gap-3 overflow-hidden md:hidden">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex-none w-40 space-y-2">
                 <div
-                  className={`aspect-square ${THEME_CONSTANTS.themed.bgTertiary} rounded-xl animate-pulse`}
+                  className={`aspect-square ${THEME_CONSTANTS.skeleton.image}`}
                 />
+                <div className={`${THEME_CONSTANTS.skeleton.text} w-3/4`} />
+                <div className={`${THEME_CONSTANTS.skeleton.text} w-1/2`} />
+              </div>
+            ))}
+          </div>
+          {/* Desktop: grid skeleton */}
+          <div className="hidden md:grid grid-cols-3 lg:grid-cols-5 gap-4">
+            {[...Array(10)].map((_, i) => (
+              <div key={i} className="space-y-2">
                 <div
-                  className={`h-4 ${THEME_CONSTANTS.themed.bgTertiary} rounded animate-pulse`}
+                  className={`aspect-square ${THEME_CONSTANTS.skeleton.image}`}
                 />
-                <div
-                  className={`h-6 ${THEME_CONSTANTS.themed.bgTertiary} rounded animate-pulse w-20`}
-                />
+                <div className={`${THEME_CONSTANTS.skeleton.text} w-3/4`} />
+                <div className={`${THEME_CONSTANTS.skeleton.text} w-1/2`} />
               </div>
             ))}
           </div>
@@ -60,10 +67,10 @@ export function FeaturedProductsSection() {
     >
       <div className="w-full">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h2
-              className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+              className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-1`}
             >
               {UI_LABELS.HOMEPAGE.FEATURED_PRODUCTS.TITLE}
             </h2>
@@ -73,65 +80,99 @@ export function FeaturedProductsSection() {
               {UI_LABELS.HOMEPAGE.FEATURED_PRODUCTS.SUBTITLE}
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
+          <Link
+            href={ROUTES.PUBLIC.PRODUCTS}
+            className={`text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hidden sm:block`}
           >
-            {UI_LABELS.ACTIONS.VIEW_ALL}
-          </Button>
+            {UI_LABELS.ACTIONS.VIEW_ALL_ARROW}
+          </Link>
         </div>
 
-        {/* Products Grid - 2 rows of 9 products each on desktop */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 md:gap-4">
+        {/* Mobile: horizontal snap-scroll carousel */}
+        <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 md:hidden scrollbar-none">
           {products.slice(0, 18).map((product) => (
-            <button
+            <Link
               key={product.id}
-              className={`group ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
-              onClick={() => router.push(`/products/${product.id}`)}
+              href={`/products/${product.id}`}
+              className={`group flex-none w-40 snap-start ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
             >
-              {/* Product Image */}
-              <div className="relative aspect-square overflow-hidden">
-                <Image
-                  src={product.mainImage}
-                  alt={product.title}
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-300"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 11vw"
-                />
-                {product.isPromoted && (
-                  <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
-                    Featured
-                  </div>
-                )}
-              </div>
-
-              {/* Product Info */}
-              <div
-                className={`${THEME_CONSTANTS.spacing.padding.sm} text-left`}
-              >
-                {product.brand && (
-                  <p
-                    className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
-                  >
-                    {product.brand}
-                  </p>
-                )}
-                <h3
-                  className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-medium mb-2 line-clamp-2 min-h-[2.5rem]`}
-                >
-                  {product.title}
-                </h3>
-                <p
-                  className={`${THEME_CONSTANTS.typography.h4} ${THEME_CONSTANTS.themed.textPrimary} font-bold`}
-                >
-                  {formatCurrency(product.price, product.currency)}
-                </p>
-              </div>
-            </button>
+              <ProductCardContent product={product} sizes="160px" />
+            </Link>
           ))}
+        </div>
+
+        {/* Desktop: 2-row grid */}
+        <div className="hidden md:grid grid-cols-3 lg:grid-cols-5 gap-3 lg:gap-4">
+          {products.slice(0, 10).map((product) => (
+            <Link
+              key={product.id}
+              href={`/products/${product.id}`}
+              className={`group ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
+            >
+              <ProductCardContent
+                product={product}
+                sizes="(max-width: 1024px) 33vw, 20vw"
+              />
+            </Link>
+          ))}
+        </div>
+
+        {/* Mobile "View all" link */}
+        <div className="mt-4 text-center sm:hidden">
+          <Link
+            href={ROUTES.PUBLIC.PRODUCTS}
+            className="text-sm font-medium text-indigo-600 dark:text-indigo-400"
+          >
+            {UI_LABELS.ACTIONS.VIEW_ALL_ARROW}
+          </Link>
         </div>
       </div>
     </section>
+  );
+}
+
+function ProductCardContent({
+  product,
+  sizes,
+}: {
+  product: ProductDocument;
+  sizes: string;
+}) {
+  return (
+    <>
+      <div className="relative aspect-square overflow-hidden">
+        <Image
+          src={product.mainImage}
+          alt={product.title}
+          fill
+          className="object-cover group-hover:scale-110 transition-transform duration-300"
+          sizes={sizes}
+        />
+        {product.isPromoted && (
+          <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
+            Featured
+          </div>
+        )}
+      </div>
+      <div className={`${THEME_CONSTANTS.spacing.padding.sm} text-left`}>
+        {product.brand && (
+          <p
+            className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
+          >
+            {product.brand}
+          </p>
+        )}
+        <h3
+          className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-medium mb-2 line-clamp-2 min-h-[2.5rem]`}
+        >
+          {product.title}
+        </h3>
+        <p
+          className={`${THEME_CONSTANTS.typography.h4} ${THEME_CONSTANTS.themed.textPrimary} font-bold`}
+        >
+          {formatCurrency(product.price, product.currency)}
+        </p>
+      </div>
+    </>
   );
 }

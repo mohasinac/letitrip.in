@@ -770,6 +770,26 @@ export const THEME_CONSTANTS = {
     danger: "text-red-500 dark:text-red-400",
     warning: "text-yellow-500 dark:text-yellow-400",
   },
+
+  /**
+   * Skeleton loading states
+   * Use these classes for skeleton placeholder elements.
+   */
+  skeleton: {
+    base: "animate-pulse rounded bg-gray-200 dark:bg-gray-700",
+    text: "animate-pulse rounded bg-gray-200 dark:bg-gray-700 h-4",
+    heading: "animate-pulse rounded bg-gray-200 dark:bg-gray-700 h-7",
+    image: "animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700",
+    card: "animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700",
+  },
+
+  /**
+   * Touch target sizes — WCAG 2.5.5
+   */
+  touch: {
+    target: "min-h-[44px]",
+    targetSm: "min-h-[36px]",
+  },
 } as const;
 
 export type ThemeMode = "light" | "dark";

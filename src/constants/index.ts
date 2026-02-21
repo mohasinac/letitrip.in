@@ -56,10 +56,16 @@ export type { NavItem as NavigationItem } from "./navigation";
 // Homepage data constants (trust indicators, features, blog articles)
 export {
   TRUST_INDICATORS,
+  TRUST_FEATURES,
   SITE_FEATURES,
   MOCK_BLOG_ARTICLES,
 } from "./homepage-data";
-export type { TrustIndicator, SiteFeature, BlogArticle } from "./homepage-data";
+export type {
+  TrustIndicator,
+  TrustFeatureItem,
+  SiteFeature,
+  BlogArticle,
+} from "./homepage-data";
 
 // FAQ category constants
 export { FAQ_CATEGORIES } from "./faq";

@@ -1,10 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { CustomerReviewsSection } from "../CustomerReviewsSection";
 
-// Mock useApiQuery
+// Mock useApiQuery and useSwipe
 const mockUseApiQuery = jest.fn();
 jest.mock("@/hooks", () => ({
   useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
+  useSwipe: () => ({ onTouchStart: jest.fn(), onTouchEnd: jest.fn() }),
 }));
 
 const mockReviews = [

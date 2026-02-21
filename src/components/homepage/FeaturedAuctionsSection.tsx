@@ -1,17 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useApiQuery } from "@/hooks";
 import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
 import { formatCurrency } from "@/utils";
-import { Button } from "@/components";
 import { apiClient } from "@/lib/api-client";
 import type { ProductDocument } from "@/db/schema";
 
 export function FeaturedAuctionsSection() {
-  const router = useRouter();
   const { data, isLoading } = useApiQuery<ProductDocument[]>({
     queryKey: ["auctions", "featured"],
     queryFn: () =>
@@ -27,20 +25,29 @@ export function FeaturedAuctionsSection() {
       >
         <div className="w-full">
           <div
-            className={`h-8 ${THEME_CONSTANTS.themed.bgTertiary} rounded-lg mb-8 max-w-xs animate-pulse`}
+            className={`h-8 ${THEME_CONSTANTS.skeleton.base} mb-8 max-w-xs`}
           />
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
-            {[...Array(18)].map((_, i) => (
-              <div key={i} className="space-y-3">
+          {/* Mobile: horizontal scroll skeleton */}
+          <div className="flex gap-3 overflow-hidden md:hidden">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex-none w-40 space-y-2">
                 <div
-                  className={`aspect-square ${THEME_CONSTANTS.themed.bgTertiary} rounded-xl animate-pulse`}
+                  className={`aspect-square ${THEME_CONSTANTS.skeleton.image}`}
                 />
+                <div className={`${THEME_CONSTANTS.skeleton.text} w-3/4`} />
+                <div className={`${THEME_CONSTANTS.skeleton.text} w-1/2`} />
+              </div>
+            ))}
+          </div>
+          {/* Desktop: grid skeleton */}
+          <div className="hidden md:grid grid-cols-3 lg:grid-cols-5 gap-4">
+            {[...Array(10)].map((_, i) => (
+              <div key={i} className="space-y-2">
                 <div
-                  className={`h-4 ${THEME_CONSTANTS.themed.bgTertiary} rounded animate-pulse`}
+                  className={`aspect-square ${THEME_CONSTANTS.skeleton.image}`}
                 />
-                <div
-                  className={`h-6 ${THEME_CONSTANTS.themed.bgTertiary} rounded animate-pulse w-20`}
-                />
+                <div className={`${THEME_CONSTANTS.skeleton.text} w-3/4`} />
+                <div className={`${THEME_CONSTANTS.skeleton.text} w-1/2`} />
               </div>
             ))}
           </div>
@@ -61,10 +68,10 @@ export function FeaturedAuctionsSection() {
     >
       <div className="w-full">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <div>
             <h2
-              className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+              className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-1`}
             >
               {UI_LABELS.HOMEPAGE.AUCTIONS.TITLE}
             </h2>
@@ -74,28 +81,64 @@ export function FeaturedAuctionsSection() {
               {UI_LABELS.HOMEPAGE.AUCTIONS.SUBTITLE}
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push(ROUTES.PUBLIC.AUCTIONS)}
+          <Link
+            href={ROUTES.PUBLIC.AUCTIONS}
+            className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hidden sm:block"
           >
-            {UI_LABELS.ACTIONS.VIEW_ALL}
-          </Button>
+            {UI_LABELS.ACTIONS.VIEW_ALL_ARROW}
+          </Link>
         </div>
 
-        {/* Auctions Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 md:gap-4">
+        {/* Mobile: horizontal snap-scroll carousel */}
+        <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 md:hidden scrollbar-none">
           {auctions.slice(0, 18).map((auction) => (
-            <AuctionCard key={auction.id} auction={auction} />
+            <Link
+              key={auction.id}
+              href={`/auctions/${auction.id}`}
+              className={`group flex-none w-40 snap-start ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
+            >
+              <AuctionCardContent auction={auction} sizes="160px" />
+            </Link>
           ))}
+        </div>
+
+        {/* Desktop: grid */}
+        <div className="hidden md:grid grid-cols-3 lg:grid-cols-5 gap-3 lg:gap-4">
+          {auctions.slice(0, 10).map((auction) => (
+            <Link
+              key={auction.id}
+              href={`/auctions/${auction.id}`}
+              className={`group ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
+            >
+              <AuctionCardContent
+                auction={auction}
+                sizes="(max-width: 1024px) 33vw, 20vw"
+              />
+            </Link>
+          ))}
+        </div>
+
+        {/* Mobile "View all" link */}
+        <div className="mt-4 text-center sm:hidden">
+          <Link
+            href={ROUTES.PUBLIC.AUCTIONS}
+            className="text-sm font-medium text-indigo-600 dark:text-indigo-400"
+          >
+            {UI_LABELS.ACTIONS.VIEW_ALL_ARROW}
+          </Link>
         </div>
       </div>
     </section>
   );
 }
 
-function AuctionCard({ auction }: { auction: ProductDocument }) {
-  const router = useRouter();
+function AuctionCardContent({
+  auction,
+  sizes,
+}: {
+  auction: ProductDocument;
+  sizes: string;
+}) {
   const [timeLeft, setTimeLeft] = useState("");
 
   useEffect(() => {
@@ -140,10 +183,7 @@ function AuctionCard({ auction }: { auction: ProductDocument }) {
   }, [auction.auctionEndDate]);
 
   return (
-    <button
-      className={`group ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
-      onClick={() => router.push(`/auctions/${auction.id}`)}
-    >
+    <>
       {/* Auction Image */}
       <div className="relative aspect-square overflow-hidden">
         <Image
@@ -151,9 +191,9 @@ function AuctionCard({ auction }: { auction: ProductDocument }) {
           alt={auction.title}
           fill
           className="object-cover group-hover:scale-110 transition-transform duration-300"
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+          sizes={sizes}
         />
-        {/* Auction Badge */}
+        {/* Countdown chip */}
         <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded flex items-center gap-1">
           <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
             <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" />
@@ -174,7 +214,7 @@ function AuctionCard({ auction }: { auction: ProductDocument }) {
             <span
               className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary}`}
             >
-              Current Bid
+              {UI_LABELS.HOMEPAGE.AUCTIONS.CURRENT_BID}
             </span>
             <span
               className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-bold`}
@@ -189,6 +229,6 @@ function AuctionCard({ auction }: { auction: ProductDocument }) {
           </p>
         </div>
       </div>
-    </button>
+    </>
   );
 }

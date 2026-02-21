@@ -1045,6 +1045,7 @@ export const UI_LABELS = {
       TITLE: "What Our Customers Say",
       SUBTITLE: "Read reviews from satisfied customers",
       VIEW_ALL: "View All Reviews",
+      SEE_ALL: "See all reviews →",
       NO_REVIEWS: "No reviews yet",
     },
     AUCTIONS: {

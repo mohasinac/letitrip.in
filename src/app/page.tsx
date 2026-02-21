@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import {
   HeroCarousel,
   WelcomeSection,
-  TrustIndicatorsSection,
+  TrustFeaturesSection,
 } from "@/components/homepage";
 
 // Below-fold sections — dynamically imported to reduce initial JS bundle
@@ -31,13 +31,6 @@ const AdvertisementBanner = dynamic(
   () =>
     import("@/components/homepage").then((m) => ({
       default: m.AdvertisementBanner,
-    })),
-  { ssr: true },
-);
-const SiteFeaturesSection = dynamic(
-  () =>
-    import("@/components/homepage").then((m) => ({
-      default: m.SiteFeaturesSection,
     })),
   { ssr: true },
 );
@@ -81,12 +74,11 @@ export default function Page() {
       {/* Homepage Sections - Rendered in Order */}
       <HeroCarousel />
       <WelcomeSection />
-      <TrustIndicatorsSection />
+      <TrustFeaturesSection />
       <TopCategoriesSection />
       <FeaturedProductsSection />
       <FeaturedAuctionsSection />
       <AdvertisementBanner />
-      <SiteFeaturesSection />
       <CustomerReviewsSection />
       <WhatsAppCommunitySection />
       <FAQSection />
