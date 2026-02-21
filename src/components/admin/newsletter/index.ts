@@ -1,0 +1,1 @@
+export { getNewsletterTableColumns } from "./NewsletterTableColumns";

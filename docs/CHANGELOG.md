@@ -9,6 +9,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 16 — Newsletter Admin Management
+
+**Goal:** Full admin UI for managing newsletter subscribers — list, filter, unsubscribe, resubscribe, delete, and stats.
+
+#### Added
+
+- `src/app/admin/newsletter/page.tsx` — admin newsletter management page; status filter tabs (All/Active/Unsubscribed); stats cards (total, active, unsubscribed); source breakdown panel; `DataTable` with per-row toggle status and delete actions; `ConfirmDeleteModal` for hard deletes.
+- `src/app/api/admin/newsletter/route.ts` — `GET /api/admin/newsletter`; admin-only; returns paginated Sieve-filtered subscriber list + aggregate stats (`total`, `active`, `unsubscribed`, `sources`) in a single request.
+- `src/app/api/admin/newsletter/[id]/route.ts` — `PATCH` (update status to `active` or `unsubscribed`) and `DELETE` (hard delete) for individual subscriber records.
+- `src/components/admin/newsletter/NewsletterTableColumns.tsx` — `getNewsletterTableColumns()` column factory; renders email, status badge, source badge, subscribed date, unsubscribed date, and action buttons.
+- `src/components/admin/newsletter/index.ts` — barrel export.
+- `newsletterRepository.list(model)` — Sieve-powered paginated query with defined `SIEVE_FIELDS` (email, status, source, createdAt, unsubscribedAt).
+- `newsletterRepository.unsubscribeById(id)` — admin action to unsubscribe by Firestore document ID.
+- `newsletterRepository.resubscribeById(id)` — admin action to reactivate a subscriber.
+- `newsletterRepository.getStats()` — returns `{ total, active, unsubscribed, sources }` from a full collection scan.
+- `ROUTES.ADMIN.NEWSLETTER = "/admin/newsletter"` added to routes constants.
+- `API_ENDPOINTS.ADMIN.NEWSLETTER` and `API_ENDPOINTS.ADMIN.NEWSLETTER_BY_ID(id)` added to API endpoints constants.
+- `UI_LABELS.ADMIN.NEWSLETTER.*` — full set of labels (title, subtitle, column headers, filter labels, action labels, empty states).
+- `UI_LABELS.NAV.NEWSLETTER_ADMIN = "Newsletter"` added to navigation labels.
+- `SUCCESS_MESSAGES.NEWSLETTER.UNSUBSCRIBED / RESUBSCRIBED / DELETED` added.
+- `ERROR_MESSAGES.NEWSLETTER.FETCH_FAILED / UPDATE_FAILED / DELETE_FAILED / NOT_FOUND` added.
+- Newsletter entry added to `ADMIN_TAB_ITEMS` in `src/constants/navigation.tsx`.
+- Phase 16 export added to `src/components/admin/index.ts`.
+
+---
+
 ### Phase 15 — SEO: Full-Stack Coverage
 
 **Goal:** Complete SEO coverage — sitemap, robots, JSON-LD structured data, product slug URLs, per-page metadata, and noIndex for private routes.

@@ -257,6 +257,7 @@ export const UI_LABELS = {
     BIDS_ADMIN: "Bids",
     BLOG_ADMIN: "Blog",
     PAYOUTS_ADMIN: "Payouts",
+    NEWSLETTER_ADMIN: "Newsletter",
   },
 
   // Profile section
@@ -843,6 +844,33 @@ export const UI_LABELS = {
       CONFIRM_REVOKE_ALL: "Revoke All Sessions",
       CONFIRM_REVOKE_ALL_MESSAGE:
         "Are you sure you want to revoke all sessions? All users will be logged out.",
+    },
+    NEWSLETTER: {
+      TITLE: "Newsletter Subscribers",
+      SUBTITLE: "Manage email newsletter subscriptions",
+      ICON: "📧",
+      TOTAL_SUBSCRIBERS: "Total Subscribers",
+      ACTIVE_SUBSCRIBERS: "Active Subscribers",
+      UNSUBSCRIBED: "Unsubscribed",
+      SOURCE_BREAKDOWN: "Source Breakdown",
+      FILTER_ALL: "All Subscribers",
+      FILTER_ACTIVE: "Active",
+      FILTER_UNSUBSCRIBED: "Unsubscribed",
+      UNSUBSCRIBE_ACTION: "Unsubscribe",
+      RESUBSCRIBE_ACTION: "Resubscribe",
+      DELETE_ACTION: "Delete",
+      CONFIRM_UNSUBSCRIBE: "Mark this subscriber as unsubscribed?",
+      CONFIRM_DELETE:
+        "Permanently delete this subscriber record? This cannot be undone.",
+      EMPTY: "No subscribers found",
+      EMPTY_SUBTITLE: "Newsletter subscribers will appear here.",
+      COLUMN_EMAIL: "Email",
+      COLUMN_STATUS: "Status",
+      COLUMN_SOURCE: "Source",
+      COLUMN_SUBSCRIBED: "Subscribed",
+      COLUMN_UNSUBSCRIBED_AT: "Unsubscribed",
+      COLUMN_ACTIONS: "Actions",
+      SEARCH_PLACEHOLDER: "Search by email...",
     },
     CONTENT: {
       TITLE: "Content Management",

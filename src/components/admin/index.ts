@@ -87,3 +87,6 @@ export type { CouponFormState } from "./coupons";
 // Phase 6.1: Admin Payouts
 export { getPayoutTableColumns, PayoutStatusForm } from "./payouts";
 export type { PayoutStatusFormState } from "./payouts";
+
+// Phase 16: Admin Newsletter
+export { getNewsletterTableColumns } from "./newsletter";

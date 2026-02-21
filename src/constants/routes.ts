@@ -95,6 +95,7 @@ export const ROUTES = {
     BLOG: "/admin/blog",
     ANALYTICS: "/admin/analytics",
     PAYOUTS: "/admin/payouts",
+    NEWSLETTER: "/admin/newsletter",
   },
 
   // Demo Routes (dev-only)

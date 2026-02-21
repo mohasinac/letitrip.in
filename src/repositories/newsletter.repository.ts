@@ -13,6 +13,10 @@ import type {
 import { NEWSLETTER_COLLECTION, NEWSLETTER_FIELDS } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";
 import { DatabaseError } from "@/lib/errors";
+import type {
+  SieveModel,
+  FirebaseSieveFields,
+} from "@/lib/query/firebase-sieve";
 
 class NewsletterRepository extends BaseRepository<NewsletterSubscriberDocument> {
   constructor() {
@@ -148,6 +152,108 @@ class NewsletterRepository extends BaseRepository<NewsletterSubscriberDocument> 
     } catch (error) {
       throw new DatabaseError(
         "Failed to count active newsletter subscribers",
+        error,
+      );
+    }
+  }
+
+  // ── Sieve fields for admin list queries ─────────────────────────────────
+
+  static readonly SIEVE_FIELDS: FirebaseSieveFields = {
+    email: { canFilter: true, canSort: true },
+    status: { canFilter: true, canSort: false },
+    source: { canFilter: true, canSort: false },
+    createdAt: { canFilter: true, canSort: true },
+    unsubscribedAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Paginated list of newsletter subscribers for admin.
+   * Supports Sieve filters/sorts/pagination.
+   */
+  async list(model: SieveModel) {
+    return this.sieveQuery<NewsletterSubscriberDocument>(
+      model,
+      NewsletterRepository.SIEVE_FIELDS,
+    );
+  }
+
+  /**
+   * Unsubscribe a subscriber by document ID (admin action).
+   */
+  async unsubscribeById(id: string): Promise<boolean> {
+    try {
+      await this.getCollection()
+        .doc(id)
+        .update({
+          [NEWSLETTER_FIELDS.STATUS]:
+            NEWSLETTER_FIELDS.STATUS_VALUES.UNSUBSCRIBED,
+          [NEWSLETTER_FIELDS.UNSUBSCRIBED_AT]: new Date(),
+          [NEWSLETTER_FIELDS.UPDATED_AT]: new Date(),
+        });
+      serverLogger.info("Admin unsubscribed newsletter subscriber", { id });
+      return true;
+    } catch (error) {
+      throw new DatabaseError(
+        `Failed to unsubscribe newsletter subscriber: ${id}`,
+        error,
+      );
+    }
+  }
+
+  /**
+   * Resubscribe a subscriber by document ID (admin action).
+   */
+  async resubscribeById(id: string): Promise<boolean> {
+    try {
+      await this.getCollection()
+        .doc(id)
+        .update({
+          [NEWSLETTER_FIELDS.STATUS]: NEWSLETTER_FIELDS.STATUS_VALUES.ACTIVE,
+          [NEWSLETTER_FIELDS.UPDATED_AT]: new Date(),
+        });
+      serverLogger.info("Admin resubscribed newsletter subscriber", { id });
+      return true;
+    } catch (error) {
+      throw new DatabaseError(
+        `Failed to resubscribe newsletter subscriber: ${id}`,
+        error,
+      );
+    }
+  }
+
+  /**
+   * Get subscriber stats: totals by status and source breakdown.
+   */
+  async getStats(): Promise<{
+    total: number;
+    active: number;
+    unsubscribed: number;
+    sources: Record<string, number>;
+  }> {
+    try {
+      const snapshot = await this.getCollection().get();
+      const docs = snapshot.docs.map((d) => ({
+        ...(d.data() as NewsletterSubscriberDocument),
+        id: d.id,
+      }));
+
+      const total = docs.length;
+      const active = docs.filter(
+        (d) => d.status === NEWSLETTER_FIELDS.STATUS_VALUES.ACTIVE,
+      ).length;
+      const unsubscribed = total - active;
+
+      const sources: Record<string, number> = {};
+      for (const doc of docs) {
+        const src = doc.source ?? "unknown";
+        sources[src] = (sources[src] ?? 0) + 1;
+      }
+
+      return { total, active, unsubscribed, sources };
+    } catch (error) {
+      throw new DatabaseError(
+        "Failed to fetch newsletter subscriber stats",
         error,
       );
     }

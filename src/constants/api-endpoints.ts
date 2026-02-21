@@ -113,6 +113,9 @@ export const API_ENDPOINTS = {
     /** ✅ Admin reviews — GET all reviews across all products (admin-only) */
     REVIEWS: "/api/admin/reviews", // GET - List all reviews with Sieve filters
     REVIEW_BY_ID: (id: string) => `/api/reviews/${id}`, // PATCH/DELETE
+    /** ✅ Admin newsletter — manage subscribers */
+    NEWSLETTER: "/api/admin/newsletter", // GET - List subscribers with stats
+    NEWSLETTER_BY_ID: (id: string) => `/api/admin/newsletter/${id}`, // PATCH/DELETE
   },
 
   // Product endpoints ✅ All routes exist

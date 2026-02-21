@@ -333,6 +333,10 @@ export const ERROR_MESSAGES = {
   NEWSLETTER: {
     SUBSCRIBE_FAILED: "Failed to subscribe to newsletter",
     INVALID_EMAIL: "Please enter a valid email address to subscribe",
+    FETCH_FAILED: "Failed to load newsletter subscribers",
+    UPDATE_FAILED: "Failed to update subscriber",
+    DELETE_FAILED: "Failed to delete subscriber",
+    NOT_FOUND: "Subscriber not found",
   },
 
   // Wishlist Errors
@@ -612,6 +616,9 @@ export const SUCCESS_MESSAGES = {
   // Newsletter Success
   NEWSLETTER: {
     SUBSCRIBED: "Thank you for subscribing! Check your email for confirmation.",
+    UNSUBSCRIBED: "Subscriber unsubscribed successfully",
+    RESUBSCRIBED: "Subscriber resubscribed successfully",
+    DELETED: "Subscriber deleted successfully",
   },
 
   // Wishlist Success

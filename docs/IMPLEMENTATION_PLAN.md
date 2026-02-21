@@ -26,6 +26,7 @@
 | **13** | Non-tech friendly UX                           | K                      | 🟠 User-facing, site-wide         | ~28                       |
 | **14** | Code deduplication                             | L                      | 🟡 Minor breaking (route renames) | ~12                       |
 | **15** | SEO — full-stack coverage                      | M                      | 🟢 Additive + schema change       | ~30                       |
+| **16** | Newsletter admin management                    | N                      | 🟢 Additive                       | ~8                        |
 
 ---
 
@@ -50,6 +51,7 @@
 | **13** | ✅ Done | 2026-02-21 | 2026-02-21 | Button isLoading+touch targets · EmptyState actionHref · SORT/HELP_TEXT/ACTIONS constants · messages human-friendly · search EmptyState+lucide · products empty state · seller onboarding       |
 | **14** | ✅ Done | 2026-02-21 | 2026-02-21 | AutoBreadcrumbs extracted · validation schemas merged · profile PATCH on USER.PROFILE · 4 files deleted · 0 TS errors                                                                           |
 | **15** | ✅ Done | 2026-02-21 | 2026-02-21 | sitemap · robots · OG image · JSON-LD helpers · product slug URLs · per-page metadata · noIndex for auth/admin/seller/user/checkout/cart                                                        |
+| **16** | ✅ Done | 2026-02-22 | 2026-02-22 | newsletter subscriber list · stats · unsubscribe/resubscribe/delete · Sieve-powered API · admin nav entry                                                                                       |
 
 **Status legend:** ⬜ Not started · 🔵 In progress · ✅ Done · ⏸ Blocked
 
