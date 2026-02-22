@@ -1,4 +1,4 @@
-﻿# Frontend Implementation Plan
+# Frontend Implementation Plan
 
 > **Source:** Derived from `FRONTEND_REFACTOR_PLAN.md` audit (Feb 20, 2026)  
 > **Principle:** Each phase is independently shippable. Later phases depend on earlier ones. Tests are last.
@@ -11,53 +11,53 @@
 
 | Phase  | Name                                           | Sections               | Risk                              | Est. files (impl + tests) |
 | ------ | ---------------------------------------------- | ---------------------- | --------------------------------- | ------------------------- |
-| **1**  | Foundation — deps, constants, schema + cleanup | F1, G, C4, G-remaining | 🟢 Zero breaking                  | ~12                       |
-| **2**  | Shared UI primitives                           | B1–B5, A1–A3           | 🟢 Additive only                  | ~18                       |
-| **3**  | Infrastructure wiring                          | A4–A5, barrel exports  | 🟡 Minor API change               | ~8                        |
-| **4**  | Admin pages                                    | A (admin)              | 🟡 Admin-only impact              | ~14                       |
-| **5**  | Public list pages                              | A+B (public)           | 🟡 User-facing                    | ~10                       |
-| **6**  | Seller & user pages + CRUD drawers             | A+B+D (seller/user)    | 🟡 Seller-facing                  | ~10                       |
-| **7**  | FAQ routes + homepage tabs                     | E                      | 🟡 New routes                     | ~8                        |
-| **8**  | Footer & navigation rewrite                    | F2–F5                  | 🟠 Visual, site-wide              | ~8                        |
-| **9**  | Inline create drawers                          | C1–C3                  | 🟠 Schema change                  | ~10                       |
-| **10** | Gestures + accessibility                       | H                      | 🟠 Cross-cutting                  | ~22                       |
-| **11** | Homepage sections                              | I                      | 🟡 Public-facing                  | ~20                       |
-| **12** | Dashboard page styling                         | J                      | 🟡 Internal-facing                | ~16                       |
-| **13** | Non-tech friendly UX                           | K                      | 🟠 User-facing, site-wide         | ~28                       |
-| **14** | Code deduplication                             | L                      | 🟡 Minor breaking (route renames) | ~12                       |
-| **15** | SEO — full-stack coverage                      | M                      | 🟢 Additive + schema change       | ~30                       |
-| **16** | Newsletter admin management                    | N                      | 🟢 Additive                       | ~8                        |
-| **17** | Next.js 16 compatibility — async params        | Maintenance            | 🟢 Zero breaking                  | ~5                        |
-| **18** | Dedicated test phase                           | All phases 1–17        | 🟢 Non-breaking (tests only)      | ~90 test files            |
+| **1**  | Foundation � deps, constants, schema + cleanup | F1, G, C4, G-remaining | ?? Zero breaking                  | ~12                       |
+| **2**  | Shared UI primitives                           | B1�B5, A1�A3           | ?? Additive only                  | ~18                       |
+| **3**  | Infrastructure wiring                          | A4�A5, barrel exports  | ?? Minor API change               | ~8                        |
+| **4**  | Admin pages                                    | A (admin)              | ?? Admin-only impact              | ~14                       |
+| **5**  | Public list pages                              | A+B (public)           | ?? User-facing                    | ~10                       |
+| **6**  | Seller & user pages + CRUD drawers             | A+B+D (seller/user)    | ?? Seller-facing                  | ~10                       |
+| **7**  | FAQ routes + homepage tabs                     | E                      | ?? New routes                     | ~8                        |
+| **8**  | Footer & navigation rewrite                    | F2�F5                  | ?? Visual, site-wide              | ~8                        |
+| **9**  | Inline create drawers                          | C1�C3                  | ?? Schema change                  | ~10                       |
+| **10** | Gestures + accessibility                       | H                      | ?? Cross-cutting                  | ~22                       |
+| **11** | Homepage sections                              | I                      | ?? Public-facing                  | ~20                       |
+| **12** | Dashboard page styling                         | J                      | ?? Internal-facing                | ~16                       |
+| **13** | Non-tech friendly UX                           | K                      | ?? User-facing, site-wide         | ~28                       |
+| **14** | Code deduplication                             | L                      | ?? Minor breaking (route renames) | ~12                       |
+| **15** | SEO � full-stack coverage                      | M                      | ?? Additive + schema change       | ~30                       |
+| **16** | Newsletter admin management                    | N                      | ?? Additive                       | ~8                        |
+| **17** | Next.js 16 compatibility � async params        | Maintenance            | ?? Zero breaking                  | ~5                        |
+| **18** | Dedicated test phase                           | All phases 1�17        | ?? Non-breaking (tests only)      | ~90 test files            |
 
 ---
 
 ## Progress Tracker
 
-> Update this table as work proceeds. One phase at a time — mark **In Progress** before starting, **Done** when every file change and test in that phase is complete and `npx tsc --noEmit` passes.
+> Update this table as work proceeds. One phase at a time � mark **In Progress** before starting, **Done** when every file change and test in that phase is complete and `npx tsc --noEmit` passes.
 
-| Phase  | Status         | Started    | Completed  | Notes                                                                                                                                                                                           |
-| ------ | -------------- | ---------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1**  | ✅ Done        | 2026-02-21 | 2026-02-21 |                                                                                                                                                                                                 |
-| **2**  | ✅ Done        | 2026-02-21 | 2026-02-21 | 48 tests · 9 components/hooks · 0 TS errors                                                                                                                                                     |
-| **3**  | ✅ Done        | 2026-02-21 | 2026-02-21 | 12 tests · externalPagination · SearchResultsSection Pagination                                                                                                                                 |
-| **4**  | ✅ Done        | 2026-02-21 | 2026-02-21 | 7 admin pages · useUrlTable · server pagination · filter bars · FAQs data bug fixed · 0 TS errors · **gap fix: admin FAQs TablePagination + paginated response type**                           |
-| **5**  | ✅ Done        | 2026-02-21 | 2026-02-21 | products · search · auctions · blog · categories/[slug] · FilterDrawer · ActiveFilterChips · **gap fix: search/auctions/categories FilterDrawer+ActiveFilterChips wired**                       |
-| **6**  | ✅ Done        | 2026-02-21 | 2026-02-21 | seller/products drawer · seller/orders · user/orders · CRUD drawers verified · **gap fix: seller/products FilterDrawer+ActiveFilterChips · user/orders TablePagination**                        |
-| **7**  | ✅ Done        | 2026-02-21 | 2026-02-21 | FAQ dynamic route · category tabs · FAQCategorySidebar URL update · **gap fix: FAQCategorySidebar `<Link>` with ROUTES.PUBLIC.FAQ_CATEGORY**                                                    |
-| **8**  | ✅ Done        | 2026-02-21 | 2026-02-21 | Footer 5-col rewrite · EnhancedFooter deleted · lucide-react nav icons · Sidebar polish                                                                                                         |
-| **9**  | ✅ Done        | 2026-02-21 | 2026-02-21 | CategorySelectorCreate · AddressSelectorCreate · ProductForm wired                                                                                                                              |
-| **10** | ✅ Done        | 2026-02-21 | 2026-02-21 | useLongPress · usePullToRefresh · SideDrawer focus trap · Tabs keyboard · HeroCarousel ARIA                                                                                                     |
-| **11** | ✅ Done        | 2026-02-21 | 2026-02-21 | TrustFeaturesSection (merged) · HomepageSkeleton · mobile snap-scroll carousels · lucide icons · useSwipe · useApiMutation newsletter                                                           |
-| **12** | ✅ Done        | 2026-02-21 | 2026-02-21 | AdminStatsCards lucide+stat tokens · AdminDashboardSkeleton · SellerStatCard ReactNode icon · RecentActivityCard lucide · AdminPageHeader description+breadcrumb · user/profile hooks order fix |
-| **13** | ✅ Done        | 2026-02-21 | 2026-02-21 | Button isLoading+touch targets · EmptyState actionHref · SORT/HELP_TEXT/ACTIONS constants · messages human-friendly · search EmptyState+lucide · products empty state · seller onboarding       |
-| **14** | ✅ Done        | 2026-02-21 | 2026-02-21 | AutoBreadcrumbs extracted · validation schemas merged · profile PATCH on USER.PROFILE · 4 files deleted · 0 TS errors                                                                           |
-| **15** | ✅ Done        | 2026-02-21 | 2026-02-21 | sitemap · robots · OG image · JSON-LD helpers · product slug URLs · per-page metadata · noIndex for auth/admin/seller/user/checkout/cart                                                        |
-| **16** | ✅ Done        | 2026-02-22 | 2026-02-22 | newsletter subscriber list · stats · unsubscribe/resubscribe/delete · Sieve-powered API · admin nav entry                                                                                       |
-| **17** | ✅ Done        | 2026-02-21 | 2026-02-21 | Next.js 16 async params migration: 4 route handlers + faqs page · .next cache cleared · 0 TS errors                                                                                             |
-| **18** | ⬜ Not started | —          | —          | Dedicated test phase — all sub-phases below                                                                                                                                                     |
+| Phase  | Status | Started    | Completed  | Notes                                                                                                                                                                                           |
+| ------ | ------ | ---------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1**  | ? Done | 2026-02-21 | 2026-02-21 |                                                                                                                                                                                                 |
+| **2**  | ? Done | 2026-02-21 | 2026-02-21 | 48 tests � 9 components/hooks � 0 TS errors                                                                                                                                                     |
+| **3**  | ? Done | 2026-02-21 | 2026-02-21 | 12 tests � externalPagination � SearchResultsSection Pagination                                                                                                                                 |
+| **4**  | ? Done | 2026-02-21 | 2026-02-21 | 7 admin pages � useUrlTable � server pagination � filter bars � FAQs data bug fixed � 0 TS errors � **gap fix: admin FAQs TablePagination + paginated response type**                           |
+| **5**  | ? Done | 2026-02-21 | 2026-02-21 | products � search � auctions � blog � categories/[slug] � FilterDrawer � ActiveFilterChips � **gap fix: search/auctions/categories FilterDrawer+ActiveFilterChips wired**                       |
+| **6**  | ? Done | 2026-02-21 | 2026-02-21 | seller/products drawer � seller/orders � user/orders � CRUD drawers verified � **gap fix: seller/products FilterDrawer+ActiveFilterChips � user/orders TablePagination**                        |
+| **7**  | ? Done | 2026-02-21 | 2026-02-21 | FAQ dynamic route � category tabs � FAQCategorySidebar URL update � **gap fix: FAQCategorySidebar `<Link>` with ROUTES.PUBLIC.FAQ_CATEGORY**                                                    |
+| **8**  | ? Done | 2026-02-21 | 2026-02-21 | Footer 5-col rewrite � EnhancedFooter deleted � lucide-react nav icons � Sidebar polish                                                                                                         |
+| **9**  | ? Done | 2026-02-21 | 2026-02-21 | CategorySelectorCreate � AddressSelectorCreate � ProductForm wired                                                                                                                              |
+| **10** | ? Done | 2026-02-21 | 2026-02-21 | useLongPress � usePullToRefresh � SideDrawer focus trap � Tabs keyboard � HeroCarousel ARIA                                                                                                     |
+| **11** | ? Done | 2026-02-21 | 2026-02-21 | TrustFeaturesSection (merged) � HomepageSkeleton � mobile snap-scroll carousels � lucide icons � useSwipe � useApiMutation newsletter                                                           |
+| **12** | ? Done | 2026-02-21 | 2026-02-21 | AdminStatsCards lucide+stat tokens � AdminDashboardSkeleton � SellerStatCard ReactNode icon � RecentActivityCard lucide � AdminPageHeader description+breadcrumb � user/profile hooks order fix |
+| **13** | ? Done | 2026-02-21 | 2026-02-21 | Button isLoading+touch targets � EmptyState actionHref � SORT/HELP_TEXT/ACTIONS constants � messages human-friendly � search EmptyState+lucide � products empty state � seller onboarding       |
+| **14** | ? Done | 2026-02-21 | 2026-02-21 | AutoBreadcrumbs extracted � validation schemas merged � profile PATCH on USER.PROFILE � 4 files deleted � 0 TS errors                                                                           |
+| **15** | ? Done | 2026-02-21 | 2026-02-21 | sitemap � robots � OG image � JSON-LD helpers � product slug URLs � per-page metadata � noIndex for auth/admin/seller/user/checkout/cart                                                        |
+| **16** | ? Done | 2026-02-22 | 2026-02-22 | newsletter subscriber list � stats � unsubscribe/resubscribe/delete � Sieve-powered API � admin nav entry                                                                                       |
+| **17** | ? Done | 2026-02-21 | 2026-02-21 | Next.js 16 async params migration: 4 route handlers + faqs page � .next cache cleared � 0 TS errors                                                                                             |
+| **18** | Done   | 2026-02-21 | 2026-02-21 | 9 new test suites FilterDrawer admin orders/bids/products/coupons/newsletter faqs/[category] seller/orders/products 227 suites 2789 tests 0 failures                                            |
 
-**Status legend:** ⬜ Not started · 🔵 In progress · ✅ Done · ⏸ Blocked
+**Status legend:** ? Not started � ?? In progress � ? Done � ? Blocked
 
 ---
 
@@ -68,8 +68,8 @@ Every component and page **must look and work correctly at all three viewport cl
 | Class          | Breakpoint       | Tailwind prefix               | Typical device                           | Key layout rules                                                                                                               |
 | -------------- | ---------------- | ----------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | **Mobile**     | < 640 px         | _(default)_                   | Phone portrait/landscape                 | Single column; drawers full-screen (`w-full`); bottom nav or hamburger; no visible sidebars                                    |
-| **Desktop**    | 640 px – 1535 px | `sm:` · `md:` · `lg:` · `xl:` | Tablet portrait → standard 1080p monitor | Two-column layouts appear at `lg`; drawers partial-width (`md:w-3/5`); sidebars visible at `lg+`                               |
-| **Widescreen** | ≥ 1536 px        | `2xl:`                        | 1440p / 4K / ultrawide                   | Max-width containers cap at `max-w-screen-2xl`; admin sidebar + main + detail panel can coexist; DataTable gains extra columns |
+| **Desktop**    | 640 px � 1535 px | `sm:` � `md:` � `lg:` � `xl:` | Tablet portrait ? standard 1080p monitor | Two-column layouts appear at `lg`; drawers partial-width (`md:w-3/5`); sidebars visible at `lg+`                               |
+| **Widescreen** | = 1536 px        | `2xl:`                        | 1440p / 4K / ultrawide                   | Max-width containers cap at `max-w-screen-2xl`; admin sidebar + main + detail panel can coexist; DataTable gains extra columns |
 
 ### Per-feature breakpoint rules
 
@@ -83,11 +83,11 @@ Every component and page **must look and work correctly at all three viewport cl
 | **FAQ sidebar**  | `<FilterDrawer side="left">` triggered by button           | Always-visible left sidebar                    | Same as desktop                                   |
 | **Pagination**   | Compact `<Pagination>` (prev/next + current page)          | Full page-number strip                         | Same as desktop                                   |
 
-> **Widescreen rule:** Never let content stretch edge-to-edge on ≥ 1536 px. All page wrappers use `max-w-screen-2xl mx-auto px-4 lg:px-8 2xl:px-12`. If a component currently uses a narrower max-width, preserve it — do not widen just because more space is available.
+> **Widescreen rule:** Never let content stretch edge-to-edge on = 1536 px. All page wrappers use `max-w-screen-2xl mx-auto px-4 lg:px-8 2xl:px-12`. If a component currently uses a narrower max-width, preserve it � do not widen just because more space is available.
 
 ---
 
-## Phase 1 — Foundation
+## Phase 1 � Foundation
 
 **Goal:** All prerequisites in place. Nothing breaks. No UI changes.
 
@@ -99,7 +99,7 @@ npm install lucide-react
 
 ### 1.2 Add missing constants
 
-**`src/constants/ui.ts`** — add these keys:
+**`src/constants/ui.ts`** � add these keys:
 
 ```typescript
 // Roles
@@ -114,7 +114,7 @@ UI_LABELS.ROLES = {
 // Actions
 UI_LABELS.ACTIONS.ADD_ADDRESS = "Add new address";
 UI_LABELS.ACTIONS.ADD_CATEGORY = "New category";
-UI_LABELS.ACTIONS.VIEW_ALL_ARROW = "View all →";
+UI_LABELS.ACTIONS.VIEW_ALL_ARROW = "View all ?";
 UI_LABELS.ACTIONS.LOAD_MORE = "Load more";
 UI_LABELS.ACTIONS.CLEAR_ALL = "Clear all";
 UI_LABELS.ACTIONS.APPLY_FILTERS = "Apply filters";
@@ -161,14 +161,14 @@ UI_PLACEHOLDERS.SELECT_ADDRESS = "Select a pickup address...";
 UI_PLACEHOLDERS.SELECT_CATEGORY = "Select a category...";
 ```
 
-**`src/constants/messages.ts`** — add:
+**`src/constants/messages.ts`** � add:
 
 ```typescript
 SUCCESS_MESSAGES.CATEGORY.CREATED = "Category created successfully";
 SUCCESS_MESSAGES.ADDRESS.CREATED = "Address saved successfully";
 ```
 
-**`src/constants/routes.ts`** — add:
+**`src/constants/routes.ts`** � add:
 
 ```typescript
 // Inside PUBLIC block:
@@ -195,16 +195,16 @@ PROMOTIONS: '/promotions',
 
 ```
 package.json                        + lucide-react dependency
-src/constants/ui.ts                 + ~30 new label/placeholder keys; + ROLE_OPTIONS → UI_LABELS.ROLES.*
+src/constants/ui.ts                 + ~30 new label/placeholder keys; + ROLE_OPTIONS ? UI_LABELS.ROLES.*
 src/constants/messages.ts           + 2 new success messages
 src/constants/routes.ts             + FAQ_CATEGORY helper + 6 new routes
 src/db/schema/product.schema.ts     + pickupAddressId field
-src/components/admin/users/UserFilters.tsx    replace ROLE_OPTIONS strings → UI_LABELS.ROLES.*
-src/components/faq/FAQCategorySidebar.tsx     move FAQ_CATEGORY_OPTIONS → @/constants
-src/components/search/SearchFiltersRow.tsx   replace inline input class → THEME_CONSTANTS.input.base
+src/components/admin/users/UserFilters.tsx    replace ROLE_OPTIONS strings ? UI_LABELS.ROLES.*
+src/components/faq/FAQCategorySidebar.tsx     move FAQ_CATEGORY_OPTIONS ? @/constants
+src/components/search/SearchFiltersRow.tsx   replace inline input class ? THEME_CONSTANTS.input.base
 ```
 
-### 1.4 Tests — Phase 1
+### 1.4 Tests � Phase 1
 
 **`src/constants/__tests__/seo.test.ts`** _(verify existing or create)_:
 
@@ -218,19 +218,19 @@ src/components/search/SearchFiltersRow.tsx   replace inline input class → THEM
 
 **`src/components/admin/users/__tests__/UserFilters.test.tsx`** _(update)_:
 
-- Role dropdown option labels match `UI_LABELS.ROLES.*` — no hardcoded string literals in render output
+- Role dropdown option labels match `UI_LABELS.ROLES.*` � no hardcoded string literals in render output
 
 ---
 
-## Phase 2 — Shared UI Primitives
+## Phase 2 � Shared UI Primitives
 
 **Goal:** All new reusable components created and barrel-exported. No page uses them yet.
 
-### 2.1 `SideDrawer` — Add `side` prop
+### 2.1 `SideDrawer` � Add `side` prop
 
 **`src/components/ui/SideDrawer.tsx`:**
 
-Add `side: 'left' | 'right'` to `SideDrawerProps`. All existing call sites use `side="right"` — update them directly. Delete the hardcoded `right-0` class.
+Add `side: 'left' | 'right'` to `SideDrawerProps`. All existing call sites use `side="right"` � update them directly. Delete the hardcoded `right-0` class.
 
 ```tsx
 // Position classes based on side
@@ -242,9 +242,9 @@ const positionClass =
 
 **After adding the prop:** grep all `<SideDrawer` usages and add `side="right"` to each existing call site, then remove the hardcoded fallback.
 
-### 2.2 `FilterFacetSection` — `src/components/ui/FilterFacetSection.tsx`
+### 2.2 `FilterFacetSection` � `src/components/ui/FilterFacetSection.tsx`
 
-**Tier 1 — Shared primitive. Not admin-specific.** Used on public pages (products, search, categories/[slug], auctions), seller pages (seller/products), and any admin list page that adopts the drawer pattern.
+**Tier 1 � Shared primitive. Not admin-specific.** Used on public pages (products, search, categories/[slug], auctions), seller pages (seller/products), and any admin list page that adopts the drawer pattern.
 
 ```tsx
 "use client";
@@ -253,7 +253,7 @@ const positionClass =
 // - Internal useState for searchQuery + visibleCount (starts at pageSize)
 // - Filters options by searchQuery (client-side)
 // - Shows visibleCount items, "Load 10 more" increments visibleCount
-// - Selected chips rendered above list with × dismiss
+// - Selected chips rendered above list with � dismiss
 // - Collapses via <Accordion> or local isCollapsed state
 ```
 
@@ -264,9 +264,9 @@ const positionClass =
 - Use `THEME_CONSTANTS.input.base` for search input styling
 - Chips use `THEME_CONSTANTS.badge.*` tokens
 
-### 2.3 `FilterDrawer` — `src/components/ui/FilterDrawer.tsx`
+### 2.3 `FilterDrawer` � `src/components/ui/FilterDrawer.tsx`
 
-**Tier 1 — Shared primitive. Not admin-specific.** Used by: `products/page.tsx` (mobile), `search/page.tsx`, `categories/[slug]/page.tsx`, `auctions/page.tsx`, `seller/products/page.tsx`. Admin list pages that need a toggleable filter panel on smaller viewports use it too.
+**Tier 1 � Shared primitive. Not admin-specific.** Used by: `products/page.tsx` (mobile), `search/page.tsx`, `categories/[slug]/page.tsx`, `auctions/page.tsx`, `seller/products/page.tsx`. Admin list pages that need a toggleable filter panel on smaller viewports use it too.
 
 ```tsx
 "use client";
@@ -276,20 +276,20 @@ const positionClass =
 // Children: one or more <FilterFacetSection /> instances
 ```
 
-### 2.4 `ActiveFilterChips` — `src/components/ui/ActiveFilterChips.tsx`
+### 2.4 `ActiveFilterChips` � `src/components/ui/ActiveFilterChips.tsx`
 
-**Tier 1 — Shared primitive. Not admin-specific.** Renders on every list page that has active filters — public, seller, and admin alike. Sits below the `FilterDrawer` trigger or inline `AdminFilterBar`.
+**Tier 1 � Shared primitive. Not admin-specific.** Renders on every list page that has active filters � public, seller, and admin alike. Sits below the `FilterDrawer` trigger or inline `AdminFilterBar`.
 
 ```tsx
 "use client";
 // Props: filters: {key, label, value}[], onRemove(key), onClearAll
 // Horizontal flex-wrap row of chips
-// Each chip: "[Label: Value ×]"
+// Each chip: "[Label: Value �]"
 // "Clear all" text button at end when filters.length > 1
 // Hidden when filters.length === 0 (returns null)
 ```
 
-### 2.5 `useUrlTable` hook — `src/hooks/useUrlTable.ts`
+### 2.5 `useUrlTable` hook � `src/hooks/useUrlTable.ts`
 
 ```typescript
 "use client";
@@ -416,29 +416,29 @@ export function useUrlTable(options?: UseUrlTableOptions) {
 }
 ```
 
-### 2.6 `SortDropdown` — `src/components/ui/SortDropdown.tsx`
+### 2.6 `SortDropdown` � `src/components/ui/SortDropdown.tsx`
 
 ```tsx
 // Props: value, onChange, options: {value, label}[], label?, className?
 // Renders: labelled <select> using THEME_CONSTANTS.input.base
 // Label defaults to UI_LABELS.TABLE.SORT_BY
 // Used by <AdminFilterBar>, <FilterBar>, and any page needing a standalone sort control
-// NOT admin-specific — lives in src/components/ui/
+// NOT admin-specific � lives in src/components/ui/
 ```
 
-### 2.7 `TablePagination` — `src/components/ui/TablePagination.tsx`
+### 2.7 `TablePagination` � `src/components/ui/TablePagination.tsx`
 
 ```tsx
 // Props: currentPage, totalPages, pageSize, total, onPageChange,
 //        onPageSizeChange?, pageSizeOptions=[10,25,50,100], isLoading?
 // Renders: result count text + <Pagination> + per-page <select>
-// Result count: "Showing {from}–{to} of {total} results"
+// Result count: "Showing {from}�{to} of {total} results"
 // Uses UI_LABELS.TABLE.SHOWING / OF / RESULTS / PER_PAGE
 // Uses THEME_CONSTANTS for all styling
-// NOT admin-specific — lives in src/components/ui/
+// NOT admin-specific � lives in src/components/ui/
 ```
 
-### 2.8 `AdminFilterBar` — Add `withCard` prop — `src/components/admin/AdminFilterBar.tsx`
+### 2.8 `AdminFilterBar` � Add `withCard` prop � `src/components/admin/AdminFilterBar.tsx`
 
 **No new file.** `AdminFilterBar` already exists and already accepts `children`, `columns`, `className`. Its only distinction from a bare `FilterBar` is the `<Card>` wrapper. Extend it in-place:
 
@@ -447,42 +447,42 @@ interface AdminFilterBarProps {
   children: ReactNode;
   columns?: 1 | 2 | 3 | 4; // unchanged
   className?: string; // unchanged
-  withCard?: boolean; // NEW — default: true (backward compat)
+  withCard?: boolean; // NEW � default: true (backward compat)
 }
 
 // Implementation: when withCard=false, render the inner grid div directly (no Card).
 // This covers every non-admin filter bar without a new file or new import path.
 // Usage on public/seller pages:
-//   <AdminFilterBar withCard={false} columns={2}>…</AdminFilterBar>
-// Usage on admin pages (unchanged — withCard defaults to true):
-//   <AdminFilterBar columns={3}>…</AdminFilterBar>
+//   <AdminFilterBar withCard={false} columns={2}>�</AdminFilterBar>
+// Usage on admin pages (unchanged � withCard defaults to true):
+//   <AdminFilterBar columns={3}>�</AdminFilterBar>
 ```
 
-> No new export needed — `AdminFilterBar` is already exported from `@/components`.
+> No new export needed � `AdminFilterBar` is already exported from `@/components`.
 
-### 2.9 `DataTable` — Grid / List / Table View Toggle — `src/components/admin/DataTable.tsx`
+### 2.9 `DataTable` � Grid / List / Table View Toggle � `src/components/admin/DataTable.tsx`
 
-**Reuses existing code.** `DataTable` already has `mobileCardRender?: (item: T) => ReactNode` — it renders cards on `< md` and the table on `≥ md` via CSS. The view toggle extends this pattern: instead of breakpoint-driven CSS hiding, the user explicitly picks the mode.
+**Reuses existing code.** `DataTable` already has `mobileCardRender?: (item: T) => ReactNode` � it renders cards on `< md` and the table on `= md` via CSS. The view toggle extends this pattern: instead of breakpoint-driven CSS hiding, the user explicitly picks the mode.
 
 ```tsx
 // EXISTING prop kept (backward compat):
-//   mobileCardRender?: (item: T) => ReactNode   — unchanged; still hides/shows via CSS if no viewMode
+//   mobileCardRender?: (item: T) => ReactNode   � unchanged; still hides/shows via CSS if no viewMode
 
 // NEW props:
-//   showViewToggle?: boolean                           — show toggle icons in toolbar; default: false
-//   viewMode?: 'table' | 'grid' | 'list'              — controlled mode
-//   defaultViewMode?: 'table' | 'grid' | 'list'       — uncontrolled default; default: 'table'
+//   showViewToggle?: boolean                           � show toggle icons in toolbar; default: false
+//   viewMode?: 'table' | 'grid' | 'list'              � controlled mode
+//   defaultViewMode?: 'table' | 'grid' | 'list'       � uncontrolled default; default: 'table'
 //   onViewModeChange?: (mode: 'table'|'grid'|'list') => void
 
 // When showViewToggle=true, mobileCardRender (or a separate renderCard alias) is used for
-// grid + list rendering. If mobileCardRender is provided it doubles as renderCard — no
+// grid + list rendering. If mobileCardRender is provided it doubles as renderCard � no
 // duplicate prop needed. If caller wants different card layouts for mobile-auto vs view-toggle,
 // they pass renderCard separately (optional second prop; falls back to mobileCardRender).
 
 // Render modes:
 // table: existing row layout unchanged
-// grid:  grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 — card per cell
-// list:  flex flex-col gap-2 — card per row (compact)
+// grid:  grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 � card per cell
+// list:  flex flex-col gap-2 � card per row (compact)
 
 // Toggle icons: inline SVGs (no external icon library required)
 // Match SideDrawer close-button style: p-2 rounded-lg ring-1 ring-gray-200 dark:ring-gray-700
@@ -490,10 +490,10 @@ interface AdminFilterBarProps {
 // Active mode: bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300
 // On xs (mobile): only grid + list offered (table columns too wide)
 
-// URL integration — parent uses useUrlTable:
+// URL integration � parent uses useUrlTable:
 //   viewMode={(table.get('view') || 'grid') as ViewMode}
 //   onViewModeChange={(mode) => table.set('view', mode)}
-// Note: 'view' param does NOT reset page → 1 (handled in useUrlTable.set guard)
+// Note: 'view' param does NOT reset page ? 1 (handled in useUrlTable.set guard)
 ```
 
 **Files changed in Phase 2:**
@@ -504,20 +504,20 @@ src/components/ui/FilterFacetSection.tsx     NEW
 src/components/ui/FilterDrawer.tsx           NEW
 src/components/ui/ActiveFilterChips.tsx      NEW
 src/hooks/useUrlTable.ts                     NEW
-src/components/ui/SortDropdown.tsx           NEW  (Tier 1 — not admin-specific)
-src/components/ui/TablePagination.tsx        NEW  (Tier 1 — wraps existing Pagination)
+src/components/ui/SortDropdown.tsx           NEW  (Tier 1 � not admin-specific)
+src/components/ui/TablePagination.tsx        NEW  (Tier 1 � wraps existing Pagination)
 src/components/admin/AdminFilterBar.tsx      + withCard?: boolean prop (existing file, no new file)
 src/components/admin/DataTable.tsx           + showViewToggle/viewMode/onViewModeChange; reuses mobileCardRender
 ```
 
-### 2.10 Tests — Phase 2
+### 2.10 Tests � Phase 2
 
 **`src/hooks/__tests__/useUrlTable.test.ts`** _(new)_:
 
 - `set(key, val)` updates the param and resets `page` to `"1"`
-- `set('page', val)` does NOT reset page — only changes page
+- `set('page', val)` does NOT reset page � only changes page
 - `set('pageSize', val)` does NOT reset page
-- `set('view', val)` does NOT reset page — view toggle is non-destructive
+- `set('view', val)` does NOT reset page � view toggle is non-destructive
 - `setMany({ a, b })` batches into a single `router.replace()` call
 - `setSort(val)` resets page to `"1"`
 - `buildSieveParams(baseFilters)` returns correct `?filters=...&sorts=...&page=...&pageSize=...`
@@ -531,7 +531,7 @@ src/components/admin/DataTable.tsx           + showViewToggle/viewMode/onViewMod
 - "Load 10 more" appends next batch without any network fetch
 - Search input filters visible list in real time (client-side)
 - Selected values render as removable chips
-- Chip `×` calls `onChange` with value removed
+- Chip `�` calls `onChange` with value removed
 - Keyboard: `Enter` selects focused option; `Escape` clears search input
 - ARIA: `role="group"` on wrapper; `aria-checked` on selected options
 
@@ -545,7 +545,7 @@ src/components/admin/DataTable.tsx           + showViewToggle/viewMode/onViewMod
 
 **`src/components/ui/__tests__/ActiveFilterChips.test.tsx`** _(new)_:
 
-- One chip per filter; chip `×` calls `onRemove(key)` with correct key
+- One chip per filter; chip `�` calls `onRemove(key)` with correct key
 - "Clear all" calls `onClearAll`; hidden when `filters` is empty
 - Chip label is accessible (`aria-label` includes field and value)
 
@@ -560,11 +560,11 @@ src/components/admin/DataTable.tsx           + showViewToggle/viewMode/onViewMod
 
 - All passed `options` rendered as `<option>` elements
 - `onChange` fires with selected value
-- `<label htmlFor>` matches `<select id>` — accessible
+- `<label htmlFor>` matches `<select id>` � accessible
 
 **`src/components/ui/__tests__/TablePagination.test.tsx`** _(new)_:
 
-- "Showing X–Y of Z results" text correct (uses `UI_LABELS.TABLE.*`)
+- "Showing X�Y of Z results" text correct (uses `UI_LABELS.TABLE.*`)
 - `onPageChange` called with correct page on navigation
 - `onPageSizeChange` called when per-page selector changes
 - `role="navigation"` on the wrapper
@@ -572,23 +572,23 @@ src/components/admin/DataTable.tsx           + showViewToggle/viewMode/onViewMod
 
 **`src/components/admin/__tests__/DataTable.viewToggle.test.tsx`** _(new)_:
 
-- `showViewToggle=false` → no toggle icons rendered (default)
-- `showViewToggle=true` → table/grid/list toggle bar visible
-- On xs viewport → only grid + list icons shown (table hidden)
-- Clicking grid icon → `onViewModeChange('grid')` called; `mobileCardRender` output rendered per item
-- Clicking list icon → `onViewModeChange('list')` called; `mobileCardRender` output rendered per item
-- Clicking table icon → `onViewModeChange('table')` called; column headers rendered
-- `defaultViewMode='grid'` → starts in grid mode without external `onViewModeChange`
-- Controlled (`viewMode` prop) → does not maintain own state; updates on prop change only
+- `showViewToggle=false` ? no toggle icons rendered (default)
+- `showViewToggle=true` ? table/grid/list toggle bar visible
+- On xs viewport ? only grid + list icons shown (table hidden)
+- Clicking grid icon ? `onViewModeChange('grid')` called; `mobileCardRender` output rendered per item
+- Clicking list icon ? `onViewModeChange('list')` called; `mobileCardRender` output rendered per item
+- Clicking table icon ? `onViewModeChange('table')` called; column headers rendered
+- `defaultViewMode='grid'` ? starts in grid mode without external `onViewModeChange`
+- Controlled (`viewMode` prop) ? does not maintain own state; updates on prop change only
 - Active toggle icon has `bg-indigo-50 text-indigo-600` highlight
 - Toggle icons are `<button>` elements with `aria-label` and `aria-pressed`
-- `mobileCardRender` without `showViewToggle` → original CSS mobile-card behaviour unchanged
+- `mobileCardRender` without `showViewToggle` ? original CSS mobile-card behaviour unchanged
 
 ---
 
-## Phase 3 — Infrastructure Wiring
+## Phase 3 � Infrastructure Wiring
 
-**Goal:** Update barrel exports, refactor `DataTable`, fix `SearchResultsSection`. Update all importers directly — no shims, no re-exports.
+**Goal:** Update barrel exports, refactor `DataTable`, fix `SearchResultsSection`. Update all importers directly � no shims, no re-exports.
 
 ### 3.1 Barrel exports
 
@@ -596,41 +596,41 @@ src/components/admin/DataTable.tsx           + showViewToggle/viewMode/onViewMod
 
 **`src/components/ui/index.ts`:** Add `FilterFacetSection`, `FilterDrawer`, `ActiveFilterChips`, `SortDropdown`, `TablePagination` exports. Remove any old filter component exports being replaced (e.g. `SearchFiltersRow` if fully deleted).
 
-**`src/components/admin/index.ts`:** No removals needed — `AdminFilterBar` already exported; `SortDropdown` and `TablePagination` were never in `admin/`. Keep `AdminPageHeader`, `AdminFilterBar`, `DrawerFormFooter`, `DataTable`. No new admin-only components added in this phase.
+**`src/components/admin/index.ts`:** No removals needed � `AdminFilterBar` already exported; `SortDropdown` and `TablePagination` were never in `admin/`. Keep `AdminPageHeader`, `AdminFilterBar`, `DrawerFormFooter`, `DataTable`. No new admin-only components added in this phase.
 
 **`src/components/index.ts`:** Add new barrel entries. Remove entries for deleted components (`EnhancedFooter`, old pagination buttons, etc.).
 
-### 3.2 `DataTable` — Remove internal pagination
+### 3.2 `DataTable` � Remove internal pagination
 
 **`src/components/admin/DataTable.tsx`:**
 
-The current `DataTable` has `showPagination` (default: `true`) and `pageSize` (default: `10`) for in-memory pagination. These props are **deprecated in this phase but not yet removed** — removing them is a breaking change requiring all call sites to be updated first.
+The current `DataTable` has `showPagination` (default: `true`) and `pageSize` (default: `10`) for in-memory pagination. These props are **deprecated in this phase but not yet removed** � removing them is a breaking change requiring all call sites to be updated first.
 
 Strategy:
 
 1. Add `externalPagination?: boolean` prop (default: `false`). When `true`, internal pagination is disabled regardless of `showPagination`.
-2. Mark `showPagination` and `pageSize` as `@deprecated` in JSDoc — they still work.
+2. Mark `showPagination` and `pageSize` as `@deprecated` in JSDoc � they still work.
 3. Each admin page migration (Phase 4) passes `externalPagination` and adds `<TablePagination>` externally.
 4. After all call sites are migrated (end of Phase 6), remove the deprecated props in a cleanup PR.
 
 ```tsx
 interface DataTableProps<T> {
-  // Deprecated — will be removed after full migration:
+  // Deprecated � will be removed after full migration:
   /** @deprecated Use externalPagination + <TablePagination> instead */
   showPagination?: boolean;
   /** @deprecated Use externalPagination + <TablePagination> instead */
   pageSize?: number;
 
-  // New — enables external pagination:
+  // New � enables external pagination:
   externalPagination?: boolean; // disables internal page state and slice when true
 }
 ```
 
 **This session's PR:** Add `externalPagination` prop only. No existing call sites break.
-**Phase 4–6 PRs:** Each page adds `externalPagination` + `<TablePagination>`.
+**Phase 4�6 PRs:** Each page adds `externalPagination` + `<TablePagination>`.
 **Cleanup PR (after Phase 6):** Remove `showPagination`, `pageSize`, internal state, and `paginatedData` slice.
 
-### 3.3 `SearchResultsSection` — Replace pagination props
+### 3.3 `SearchResultsSection` � Replace pagination props
 
 **`src/components/search/SearchResultsSection.tsx`:**
 
@@ -654,11 +654,11 @@ src/components/search/SearchResultsSection.tsx delete old props, add onPageChang
 
 > `src/components/admin/index.ts` does not change in Phase 3 \u2014 `AdminFilterBar` and `DataTable` are already exported.
 
-### 3.4 Tests — Phase 3
+### 3.4 Tests � Phase 3
 
 **`src/components/admin/__tests__/DataTable.test.tsx`** _(update pagination section)_:
 
-- When `externalPagination=true`: all passed rows rendered — no internal page slicing; no pagination footer inside DataTable
+- When `externalPagination=true`: all passed rows rendered � no internal page slicing; no pagination footer inside DataTable
 - When `externalPagination=false` (default): existing `showPagination`/`pageSize` behaviour unchanged (backward compat)
 - `aria-sort` attribute updated on sort column header click
 - Existing column-render and row-action tests remain unchanged
@@ -671,7 +671,7 @@ src/components/search/SearchResultsSection.tsx delete old props, add onPageChang
 
 ---
 
-## Phase 4 — Admin Pages
+## Phase 4 � Admin Pages
 
 **Goal:** All 7 admin list pages use `useUrlTable`, real server pagination, sort UI, filter bar. Apply changes page by page.
 
@@ -688,7 +688,7 @@ if (table.get('q')) filtersArr.push(`title@=*${table.get('q')}`);
 
 // 3. Update useApiQuery
 const { data, isLoading } = useApiQuery({
-  queryKey: ['admin', 'resource', table.params.toString()],  // ← key change
+  queryKey: ['admin', 'resource', table.params.toString()],  // ? key change
   queryFn: () => apiClient.get(
     `${API_ENDPOINTS.ADMIN.RESOURCE}${table.buildSieveParams(filtersArr.join(','))}`
   ),
@@ -699,7 +699,7 @@ const { data, isLoading } = useApiQuery({
   columns={...}
   data={data?.items ?? []}
   loading={isLoading}
-  externalPagination   // ← new prop
+  externalPagination   // ? new prop
 />
 <TablePagination
   currentPage={data?.page ?? 1}
@@ -715,13 +715,13 @@ const { data, isLoading } = useApiQuery({
 
 | Page         | Filter bar children                                  | Sieve mapping notes                                                                                      |
 | ------------ | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Users**    | Search input + Role dropdown + Status tabs           | `status=active` → `disabled==false`; `status=banned` → `disabled==true`; `status=admins` → `role==admin` |
+| **Users**    | Search input + Role dropdown + Status tabs           | `status=active` ? `disabled==false`; `status=banned` ? `disabled==true`; `status=admins` ? `role==admin` |
 | **Orders**   | Status tabs + Sort dropdown                          | `status==<value>`                                                                                        |
-| **Products** | Search input + Status dropdown + Sort dropdown       | Add these — currently absent                                                                             |
-| **Reviews**  | Search input + Status dropdown + Rating (1–5) + Sort | `rating==<value>` added                                                                                  |
+| **Products** | Search input + Status dropdown + Sort dropdown       | Add these � currently absent                                                                             |
+| **Reviews**  | Search input + Status dropdown + Rating (1�5) + Sort | `rating==<value>` added                                                                                  |
 | **Bids**     | Status tabs + Sort dropdown                          | `status==<value>`; default sort `-bidDate`                                                               |
-| **Coupons**  | Search input + Sort dropdown                         | Search → `code@=*<term>`; currently absent                                                               |
-| **FAQs**     | Search input + Sort dropdown                         | Search → `question@=*<term>`; currently absent                                                           |
+| **Coupons**  | Search input + Sort dropdown                         | Search ? `code@=*<term>`; currently absent                                                               |
+| **FAQs**     | Search input + Sort dropdown                         | Search ? `question@=*<term>`; currently absent                                                           |
 
 **Files changed in Phase 4:**
 
@@ -735,14 +735,14 @@ src/app/admin/coupons/[[...action]]/page.tsx
 src/app/admin/faqs/[[...action]]/page.tsx
 ```
 
-### 4.x Tests — Phase 4
+### 4.x Tests � Phase 4
 
 For each page add/update `src/app/admin/<name>/__tests__/page.test.tsx`:
 
 **Common assertions (every admin page):**
 
 - Filter/sort state changes update `?` URL params via `router.replace()` not `router.push()`
-- `queryKey` contains `table.params.toString()` — cache busts on filter change
+- `queryKey` contains `table.params.toString()` � cache busts on filter change
 - `<TablePagination>` rendered; clicking next page sets `?page=N+1`
 - No DataTable-internal pagination present
 
@@ -758,15 +758,15 @@ For each page add/update `src/app/admin/<name>/__tests__/page.test.tsx`:
 
 ---
 
-## Phase 5 — Public List Pages ✅ Done
+## Phase 5 � Public List Pages ? Done
 
 **Goal:** `products`, `search`, `auctions`, `blog`, `categories/[slug]` all URL-driven with `<Pagination>` and filter drawers.
 
 ### 5.1 `products/page.tsx`
 
 - Replace ~50 lines of `useState` + `useEffect` + `updateUrl()` with `useUrlTable` (defaults: `{ view: 'grid', sort: '-createdAt' }`)
-- Switch `router.push` → `router.replace` (automatic via `useUrlTable`)
-- Replace 3 copies of raw `<button>` pagination → single `<Pagination>`
+- Switch `router.push` ? `router.replace` (automatic via `useUrlTable`)
+- Replace 3 copies of raw `<button>` pagination ? single `<Pagination>`
 - Keep `<ProductFilters>` as left sidebar on `lg+`; add "Filters (n)" button on mobile that opens `<FilterDrawer>`
 - `<FilterDrawer>` contains: `<FilterFacetSection>` for Category, Price range
 - Add `<ActiveFilterChips>` above product grid
@@ -782,23 +782,23 @@ For each page add/update `src/app/admin/<name>/__tests__/page.test.tsx`:
 
 ### 5.3 `auctions/page.tsx`
 
-- Convert local `sort`/`page` state → `useUrlTable` (defaults: `{ view: 'grid' }`)
-- Replace raw `<button>` prev/next → `<Pagination>`
-- Replace `fetch()` → `apiClient.get()`
+- Convert local `sort`/`page` state ? `useUrlTable` (defaults: `{ view: 'grid' }`)
+- Replace raw `<button>` prev/next ? `<Pagination>`
+- Replace `fetch()` ? `apiClient.get()`
 - Add `<FilterDrawer>` with Price range, Sort direction
 - **View toggle:** grid + list modes; pass `mobileCardRender` with auction card component
 
 ### 5.4 `blog/page.tsx`
 
-- Convert local `activeCategory`/`page` state → `useUrlTable`
-- Replace raw `<Button>` prev/next → `<Pagination>`
+- Convert local `activeCategory`/`page` state ? `useUrlTable`
+- Replace raw `<Button>` prev/next ? `<Pagination>`
 - Add result count display
 
 ### 5.5 `categories/[slug]/page.tsx`
 
-- Convert local `sort`/`page` state → `useUrlTable` (defaults: `{ view: 'grid' }`)
-- Replace raw `<button>` prev/next → `<Pagination>`
-- **Fix disabled bug:** change `products.length < PAGE_SIZE` → `page >= totalPages`
+- Convert local `sort`/`page` state ? `useUrlTable` (defaults: `{ view: 'grid' }`)
+- Replace raw `<button>` prev/next ? `<Pagination>`
+- **Fix disabled bug:** change `products.length < PAGE_SIZE` ? `page >= totalPages`
 - Add `<FilterDrawer>` with Brand, Rating, Price facets
 - **View toggle:** grid + list modes; pass `mobileCardRender` with `<ProductCard>`
 
@@ -810,27 +810,27 @@ src/app/search/page.tsx
 src/app/auctions/page.tsx
 src/app/blog/page.tsx
 src/app/categories/[slug]/page.tsx
-src/components/products/ProductFilters.tsx    — wrap with FilterDrawer on mobile
-src/components/search/SearchFiltersRow.tsx    — replaced by FilterDrawer pattern
+src/components/products/ProductFilters.tsx    � wrap with FilterDrawer on mobile
+src/components/search/SearchFiltersRow.tsx    � replaced by FilterDrawer pattern
 ```
 
-### 5.6 Tests — Phase 5
+### 5.6 Tests � Phase 5
 
 **`src/app/products/__tests__/page.test.tsx`** _(update)_:
 
-- URL params drive the API query — no local `useState` for filters
+- URL params drive the API query � no local `useState` for filters
 - `router.replace()` used (not `push()`) on filter change
 - `<Pagination>` rendered; no raw prev/next buttons
 - `FilterDrawer` trigger button visible on mobile viewport mock
 
 **`src/app/search/__tests__/page.test.tsx`** _(update)_:
 
-- `onPageChange` wired to `table.setPage()` — verify correct page param in URL
+- `onPageChange` wired to `table.setPage()` � verify correct page param in URL
 - `buildUrl` helper deleted; URL built via `useUrlTable`
 
 **`src/app/auctions/__tests__/page.test.tsx`** _(update)_:
 
-- Uses `apiClient.get()` not raw `fetch()` — mock `apiClient`, not `fetch`
+- Uses `apiClient.get()` not raw `fetch()` � mock `apiClient`, not `fetch`
 - `sort` and `page` state in URL params; `<Pagination>` rendered
 
 **`src/app/categories/[slug]/__tests__/page.test.tsx`** _(update)_:
@@ -842,43 +842,43 @@ src/components/search/SearchFiltersRow.tsx    — replaced by FilterDrawer patte
 
 ---
 
-## Phase 6 — Seller & User Pages + CRUD Drawers ✅ Done
+## Phase 6 � Seller & User Pages + CRUD Drawers ? Done
 
 ### 6.1 `seller/products/page.tsx`
 
 - Add `useUrlTable` with `pageSize=25`, `sort=-createdAt`, `view='grid'`
 - Add search input + sort dropdown in `<AdminFilterBar withCard={false}>`
-- Add `<FilterDrawer>` with Status, Category, Price facets (mobile — `AdminFilterBar` row stays for md+)
+- Add `<FilterDrawer>` with Status, Category, Price facets (mobile � `AdminFilterBar` row stays for md+)
 - Add `<ActiveFilterChips>` above the product grid/table
-- Drop hardcoded `pageSize=100` — use real server pagination
+- Drop hardcoded `pageSize=100` � use real server pagination
 - Add `<TablePagination>` below `<DataTable externalPagination>`
 - **View toggle:** grid + table modes (seller benefits from both; `mobileCardRender` with product card)
 - Add "New product" button that opens `<SideDrawer mode="create">` with `<ProductForm>`
 - Add edit/delete buttons per row that open `<SideDrawer mode="edit">` / `<SideDrawer mode="delete">`
-- **Delete `seller/products/new/page.tsx` and `seller/products/[id]/edit/page.tsx`** — these routes no longer exist. Any external links to `/seller/products/new` should be updated to open the seller products list page where the drawer is triggered.
+- **Delete `seller/products/new/page.tsx` and `seller/products/[id]/edit/page.tsx`** � these routes no longer exist. Any external links to `/seller/products/new` should be updated to open the seller products list page where the drawer is triggered.
 
 ### 6.2 `seller/orders/page.tsx`
 
 - Add `useUrlTable` with `pageSize=25`
-- Add status filter tabs (All / Pending / Confirmed / Shipped / Delivered / Cancelled) — maps to `status==<value>` Sieve filter
+- Add status filter tabs (All / Pending / Confirmed / Shipped / Delivered / Cancelled) � maps to `status==<value>` Sieve filter
 - Send `page` param to API (currently missing)
 - Add `<TablePagination>` below table
-- **Fix revenue total:** read from `data?.meta?.totalRevenue` — remove `orders.reduce()` calculation that breaks with pagination
+- **Fix revenue total:** read from `data?.meta?.totalRevenue` � remove `orders.reduce()` calculation that breaks with pagination
 
 ### 6.3 `user/orders/page.tsx`
 
 - Add `useUrlTable` with `pageSize=10`
 - Add status filter tabs (All / Pending / Confirmed / Shipped / Delivered / Cancelled)
 - Add `<TablePagination>`
-- Fix non-standard `data?.data?.orders` nesting — use consistent `data?.items`
+- Fix non-standard `data?.data?.orders` nesting � use consistent `data?.items`
 
 ### 6.4 Admin CRUD drawers verification
 
-Read and verify these pages/components — confirm drawer vs full-page:
+Read and verify these pages/components � confirm drawer vs full-page:
 
-- `admin/products/[[...action]]` — does the `[[...action]]` already open drawers?
-- `admin/coupons/[[...action]]` — check `FaqForm` usage pattern
-- `admin/faqs/[[...action]]` — the `FaqForm` component exists, check integration
+- `admin/products/[[...action]]` � does the `[[...action]]` already open drawers?
+- `admin/coupons/[[...action]]` � check `FaqForm` usage pattern
+- `admin/faqs/[[...action]]` � the `FaqForm` component exists, check integration
 
 Apply `SideDrawer mode="edit"` for status changes on reviews/bids/orders if inline actions are confirmed.
 
@@ -892,11 +892,11 @@ src/app/seller/orders/page.tsx                 useUrlTable + revenue fix
 src/app/user/orders/page.tsx                   useUrlTable + status tabs
 ```
 
-### 6.5 Tests — Phase 6
+### 6.5 Tests � Phase 6
 
 **`src/app/seller/products/__tests__/page.test.tsx`** _(update)_:
 
-- No navigation to `/seller/products/new` — "Add product" click opens `SideDrawer`
+- No navigation to `/seller/products/new` � "Add product" click opens `SideDrawer`
 - Drawer closes and query invalidated after successful product create
 - `useUrlTable` drives filter/sort/page state in URL
 - `FilterDrawer` trigger button visible on mobile viewport mock; `AdminFilterBar` visible on md+
@@ -917,20 +917,20 @@ src/app/user/orders/page.tsx                   useUrlTable + status tabs
 
 ---
 
-## Phase 7 — FAQ Routes + Homepage Tabs ✅ Done
+## Phase 7 � FAQ Routes + Homepage Tabs ? Done
 
 ### 7.1 New dynamic route
 
-**`src/app/faqs/[category]/page.tsx`** — new file:
+**`src/app/faqs/[category]/page.tsx`** � new file:
 
 ```tsx
 // Accepts params.category (validated against FAQ_CATEGORIES keys)
 // Renders same FAQPageContent but with category pre-selected
 // generateStaticParams() returns all 7 FAQ_CATEGORIES keys
-// Invalid category → redirect to /faqs
+// Invalid category ? redirect to /faqs
 ```
 
-### 7.2 `src/app/faqs/page.tsx` — rewrite to use segment
+### 7.2 `src/app/faqs/page.tsx` � rewrite to use segment
 
 ```tsx
 // DELETE the ?category= query param handling entirely
@@ -938,23 +938,23 @@ src/app/user/orders/page.tsx                   useUrlTable + status tabs
 // Update all internal links that previously used ?category= (done in 7.4)
 ```
 
-### 7.3 `FAQSection.tsx` — add category tabs
+### 7.3 `FAQSection.tsx` � add category tabs
 
 ```tsx
 // Replace single featured=true fetch with tabbed interface
 // Default tab: 'general'
 // Use <SectionTabs> from @/components with FAQ_CATEGORIES labels
 // Per-tab fetch: GET /api/faqs?category=<key>&limit=6
-// "View all →" links to ROUTES.PUBLIC.FAQ_CATEGORY(activeCategory)
-// Remove hardcoded → arrow — use UI_LABELS.ACTIONS.VIEW_ALL_ARROW
+// "View all ?" links to ROUTES.PUBLIC.FAQ_CATEGORY(activeCategory)
+// Remove hardcoded ? arrow � use UI_LABELS.ACTIONS.VIEW_ALL_ARROW
 ```
 
-### 7.4 `FAQCategorySidebar.tsx` — update links
+### 7.4 `FAQCategorySidebar.tsx` � update links
 
 ```tsx
 // Change all href from `${ROUTES.PUBLIC.FAQS}?category=${key}`
 //                   to ROUTES.PUBLIC.FAQ_CATEGORY(key)
-// Move FAQ_CATEGORIES constant out of this file → import from @/constants
+// Move FAQ_CATEGORIES constant out of this file ? import from @/constants
 ```
 
 **Files changed in Phase 7:**
@@ -966,7 +966,7 @@ src/components/homepage/FAQSection.tsx   + category tabs
 src/components/faq/FAQCategorySidebar.tsx  + URL updates
 ```
 
-### 7.5 Tests — Phase 7
+### 7.5 Tests � Phase 7
 
 **`src/app/faqs/[category]/__tests__/page.test.tsx`** _(new)_:
 
@@ -978,19 +978,19 @@ src/components/faq/FAQCategorySidebar.tsx  + URL updates
 
 - Tabs render one per FAQ category
 - Active tab triggers fetch with `?category=<key>`
-- "View all →" link points to `ROUTES.PUBLIC.FAQ_CATEGORY(activeCategory)` — not a raw string
+- "View all ?" link points to `ROUTES.PUBLIC.FAQ_CATEGORY(activeCategory)` � not a raw string
 - Delete any single-fetch / no-tab tests
 
 **`src/components/faq/__tests__/FAQCategorySidebar.test.tsx`** _(update)_:
 
-- All `href` values use `/faqs/<category>` path — no `?category=` query-string format
+- All `href` values use `/faqs/<category>` path � no `?category=` query-string format
 - `FAQ_CATEGORY_OPTIONS` imported from `@/constants` (moved in Phase 1)
 
 ---
 
-## Phase 8 — Footer & Navigation ✅ Done
+## Phase 8 � Footer & Navigation ? Done
 
-### 8.1 Rewrite `Footer` — `src/components/layout/Footer.tsx`
+### 8.1 Rewrite `Footer` � `src/components/layout/Footer.tsx`
 
 Replace current basic 4-column footer with modern 5-column layout:
 
@@ -1016,7 +1016,7 @@ Replace current basic 4-column footer with modern 5-column layout:
 grep -r "EnhancedFooter" src/
 ```
 
-### 8.3 Update `navigation.tsx` — use `lucide-react`
+### 8.3 Update `navigation.tsx` � use `lucide-react`
 
 Replace all inline SVG `<path>` strings with `lucide-react` icon imports:
 
@@ -1044,7 +1044,7 @@ import {
 
 Each nav item's `icon` becomes e.g. `<Home className="w-5 h-5" />`.
 
-### 8.4 UI polish — application-wide
+### 8.4 UI polish � application-wide
 
 - **Header:** Add `backdrop-blur-sm` on scroll; active route underline indicator
 - **Sidebar (admin/seller):** Active icon highlight using `THEME_CONSTANTS.themed.accent`
@@ -1061,11 +1061,11 @@ src/components/layout/Sidebar.tsx             active state polish
 src/components/layout/Header.tsx (or navbar)  scroll blur + active route
 ```
 
-### 8.5 Tests — Phase 8
+### 8.5 Tests � Phase 8
 
 **`src/components/layout/__tests__/Footer.test.tsx`** _(update)_:
 
-- All link `href` values use `ROUTES.*` — no hardcoded path strings
+- All link `href` values use `ROUTES.*` � no hardcoded path strings
 - Social icon links have `aria-label` describing the platform
 - No `EnhancedFooter` import anywhere in the codebase (grep assertion in CI)
 - Delete all `EnhancedFooter.test.tsx` tests
@@ -1074,24 +1074,24 @@ src/components/layout/Header.tsx (or navbar)  scroll blur + active route
 
 - Active nav item has the accent background class from `THEME_CONSTANTS`
 - Non-active items do not have the accent class
-- All icons are `lucide-react` elements — no inline SVG `<path>` strings
+- All icons are `lucide-react` elements � no inline SVG `<path>` strings
 
 ---
 
-## Phase 9 — Inline Create Drawers ✅ Done
+## Phase 9 � Inline Create Drawers ? Done
 
-### 9.1 `CategorySelectorCreate` — `src/components/ui/CategorySelectorCreate.tsx`
+### 9.1 `CategorySelectorCreate` � `src/components/ui/CategorySelectorCreate.tsx`
 
 ```tsx
 // Internal state: [categoryDrawerOpen, setOpen]
 // Fetches categories via useApiQuery(['categories'])
-// Renders: searchable <select> or Combobox + "＋ New category" button
+// Renders: searchable <select> or Combobox + "+ New category" button
 // Button opens <SideDrawer mode="create" title="New Category">
 //   <CategoryForm onSuccess={(newId) => { onChange(newId); setOpen(false); invalidateQuery('categories') }} />
 // </SideDrawer>
 ```
 
-### 9.2 `AddressSelectorCreate` — `src/components/ui/AddressSelectorCreate.tsx`
+### 9.2 `AddressSelectorCreate` � `src/components/ui/AddressSelectorCreate.tsx`
 
 ```tsx
 // Same pattern, but fetches /api/user/addresses?userId=...
@@ -1116,7 +1116,7 @@ src/components/admin/products/ProductForm.tsx  + new fields
 src/components/index.ts                        + 2 new exports
 ```
 
-### 9.4 Tests — Phase 9
+### 9.4 Tests � Phase 9
 
 **`src/components/ui/__tests__/CategorySelectorCreate.test.tsx`** _(new)_:
 
@@ -1142,11 +1142,11 @@ src/components/index.ts                        + 2 new exports
 
 ---
 
-## Phase 10 — Gestures + Accessibility ✅ Done
+## Phase 10 � Gestures + Accessibility ? Done
 
 **Goal:** Every interactive component works correctly with touch gestures, keyboard navigation, and screen readers. Accessibility is built in, not bolted on.
 
-### 10.1 Gesture hooks — `src/hooks/useSwipe.ts` (verify/extend existing)
+### 10.1 Gesture hooks � `src/hooks/useSwipe.ts` (verify/extend existing)
 
 The existing `useSwipe` hook covers basic swipe detection. Extend it for:
 
@@ -1174,7 +1174,7 @@ interface UseSwipeOptions {
 | Product image gallery     | Swipe left/right | Next/prev image                     |
 | `DataTable` rows (mobile) | Swipe left       | Reveal action buttons (edit/delete) |
 
-### 10.2 Long-press hook — `src/hooks/useLongPress.ts`
+### 10.2 Long-press hook � `src/hooks/useLongPress.ts`
 
 ```typescript
 // New hook
@@ -1190,19 +1190,19 @@ export function useLongPress(
 };
 ```
 
-**Apply to:** DataTable row → long-press on mobile opens context menu (edit/delete/view).
+**Apply to:** DataTable row ? long-press on mobile opens context menu (edit/delete/view).
 
-### 10.3 Pull-to-refresh — `src/hooks/usePullToRefresh.ts`
+### 10.3 Pull-to-refresh � `src/hooks/usePullToRefresh.ts`
 
 ```typescript
 export function usePullToRefresh(onRefresh: () => Promise<void>): {
   containerRef: RefObject<HTMLDivElement>;
   isPulling: boolean;
-  progress: number; // 0–1
+  progress: number; // 0�1
 };
 ```
 
-**Apply to:** `user/orders`, `seller/products`, `seller/orders`, `auctions/page.tsx` — any page that lists user-owned data and benefits from a manual refresh on mobile.
+**Apply to:** `user/orders`, `seller/products`, `seller/orders`, `auctions/page.tsx` � any page that lists user-owned data and benefits from a manual refresh on mobile.
 
 ### 10.4 Keyboard navigation
 
@@ -1212,14 +1212,14 @@ Every component must be keyboard-navigable with no mouse required:
 | ------------------------------ | -------------------------------------------------------------------------------- |
 | `SideDrawer`                   | `Esc` closes; focus trapped inside while open; focus returns to trigger on close |
 | `FilterDrawer`                 | `Esc` closes; `Tab` cycles through facets                                        |
-| `FilterFacetSection`           | `Enter`/`Space` selects option; `↑`/`↓` navigates list                           |
+| `FilterFacetSection`           | `Enter`/`Space` selects option; `?`/`?` navigates list                           |
 | `Modal` / `ConfirmDeleteModal` | `Esc` dismisses; focus trapped                                                   |
-| `Tabs` / `SectionTabs`         | `←`/`→` switch tabs                                                              |
+| `Tabs` / `SectionTabs`         | `?`/`?` switch tabs                                                              |
 | `DataTable`                    | `Tab` navigates rows; `Enter` opens row action                                   |
 | `SortDropdown`                 | Standard `<select>` keyboard already works; verify                               |
-| `HeroCarousel`                 | `←`/`→` navigates slides                                                         |
+| `HeroCarousel`                 | `?`/`?` navigates slides                                                         |
 
-### 10.5 ARIA attributes — component-by-component
+### 10.5 ARIA attributes � component-by-component
 
 Every new or modified component must include these attributes:
 
@@ -1251,7 +1251,7 @@ Every new or modified component must include these attributes:
 - Add `prefers-reduced-motion` guards to all CSS transitions/animations:
 
 ```tsx
-// In tailwind.config.js — add to theme extend:
+// In tailwind.config.js � add to theme extend:
 animation: {
   'slide-in': 'slideIn 0.2s ease-out',
 },
@@ -1280,7 +1280,7 @@ tailwind.config.js                             reduced-motion
 src/app/globals.css                            prefers-reduced-motion rule
 ```
 
-### 10.x Tests — Phase 10
+### 10.x Tests � Phase 10
 
 **`src/hooks/__tests__/useLongPress.test.ts`** _(new)_:
 
@@ -1297,9 +1297,9 @@ src/app/globals.css                            prefers-reduced-motion rule
 **`src/hooks/__tests__/useSwipe.test.ts`** _(update)_:
 
 - Existing direction tests remain; add: `onSwipeLeft` / `onSwipeRight` fire on horizontal swipe
-- `minDistance` option respected — no callback on tiny movement
+- `minDistance` option respected � no callback on tiny movement
 
-**`src/components/ui/__tests__/SideDrawer.test.tsx`** _(update — add gesture assertions)_:
+**`src/components/ui/__tests__/SideDrawer.test.tsx`** _(update � add gesture assertions)_:
 
 - Swipe-right on left drawer triggers `onClose`
 - Swipe-left on right drawer triggers `onClose`
@@ -1309,17 +1309,17 @@ src/app/globals.css                            prefers-reduced-motion rule
 
 - Swipe left advances to next slide
 - Swipe right returns to previous slide
-- Arrow key `→` / `←` navigates slides
+- Arrow key `?` / `?` navigates slides
 - `aria-roledescription="carousel"` present; each slide has `aria-label`
 - Autoplay paused when carousel receives focus
 
-**`tailwind.config.js` / `globals.css` — manual check (no automated test needed):**
+**`tailwind.config.js` / `globals.css` � manual check (no automated test needed):**
 
 - Confirm `@media (prefers-reduced-motion: reduce)` rule disables transitions; add note in PR description
 
 ---
 
-## Phase 11 — Homepage Sections
+## Phase 11 � Homepage Sections
 
 **Goal:** Each homepage section is visually distinctive, tells the user what to do next, and works beautifully across mobile / desktop / widescreen.
 
@@ -1328,7 +1328,7 @@ src/app/globals.css                            prefers-reduced-motion rule
 | Component                  | File                           | Current issues                                                                                            |
 | -------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------- |
 | `HeroCarousel`             | `HeroCarousel.tsx`             | No gesture support; no reduced-motion; no autoplay pause on focus; indicator dots not keyboard-accessible |
-| `FeaturedProductsSection`  | `FeaturedProductsSection.tsx`  | Grid only — no horizontal scroll on mobile; no "View all" CTA link; static content                        |
+| `FeaturedProductsSection`  | `FeaturedProductsSection.tsx`  | Grid only � no horizontal scroll on mobile; no "View all" CTA link; static content                        |
 | `FeaturedAuctionsSection`  | `FeaturedAuctionsSection.tsx`  | Same grid issues; no live countdown visible in card; no "ends in X" urgency indicator                     |
 | `TopCategoriesSection`     | `TopCategoriesSection.tsx`     | Icon-only cards; no product count; no hover state; not swipeable on mobile                                |
 | `CustomerReviewsSection`   | `CustomerReviewsSection.tsx`   | Static; no carousel/swipe on mobile; no star rating visual; no verified badge                             |
@@ -1346,7 +1346,7 @@ src/app/globals.css                            prefers-reduced-motion rule
 
 - Add `useSwipe` for touch slide navigation
 - Pause autoplay on keyboard focus or hover (`prefers-reduced-motion` stops autoplay entirely)
-- Keyboard: `←`/`→` keys change slide; `Space` toggles pause
+- Keyboard: `?`/`?` keys change slide; `Space` toggles pause
 - ARIA carousel roles (Phase 11 spec)
 - Slide indicators: real `<button>` elements with `aria-label="Go to slide N"`
 - Replace inline SVG arrow icons with `lucide-react` `ChevronLeft` / `ChevronRight`
@@ -1355,9 +1355,9 @@ src/app/globals.css                            prefers-reduced-motion rule
 
 - **Mobile:** horizontal scroll carousel (`overflow-x-auto snap-x snap-mandatory`) with swipe via `useSwipe`
 - **Desktop/widescreen:** 4-column grid
-- "View all products / auctions →" CTA button using `ROUTES.PUBLIC.PRODUCTS` / `ROUTES.PUBLIC.AUCTIONS`
+- "View all products / auctions ?" CTA button using `ROUTES.PUBLIC.PRODUCTS` / `ROUTES.PUBLIC.AUCTIONS`
 - `FeaturedAuctionsSection`: add visible countdown chip on each card (e.g. `Ends in 2h 14m`)
-- All strings via `UI_LABELS.HOMEPAGE.*` — add new keys as needed
+- All strings via `UI_LABELS.HOMEPAGE.*` � add new keys as needed
 
 #### 11.3 `TopCategoriesSection`
 
@@ -1371,11 +1371,11 @@ src/app/globals.css                            prefers-reduced-motion rule
 - Mobile: swipeable carousel via `useSwipe`
 - Desktop: 3-column masonry-style grid
 - Each review card: star rating (filled/empty stars using `lucide-react` `Star`), verified badge, truncated text with "Read more" toggle
-- Load 6 reviews; "See all reviews →" links to reviews page
+- Load 6 reviews; "See all reviews ?" links to reviews page
 
 #### 11.5 `TrustIndicatorsSection` + `SiteFeaturesSection`
 
-- Merge into a single `TrustFeaturesSection` component (they serve the same purpose — delete one)
+- Merge into a single `TrustFeaturesSection` component (they serve the same purpose � delete one)
 - 4 icons with label + one-line description; icons from `lucide-react` (`ShieldCheck`, `Truck`, `RotateCcw`, `Headphones`)
 - Animation: fade-in + slide-up on first scroll-into-viewport using `IntersectionObserver`
 
@@ -1395,7 +1395,7 @@ src/app/globals.css                            prefers-reduced-motion rule
 
 #### 11.8 New: `HomepageSkeleton` loading state
 
-- `src/components/homepage/HomepageSkeleton.tsx` — skeleton placeholders for each section while data loads
+- `src/components/homepage/HomepageSkeleton.tsx` � skeleton placeholders for each section while data loads
 - Prevents layout shift; use `THEME_CONSTANTS.skeleton.*` tokens
 
 **Files changed in Phase 12:**
@@ -1415,7 +1415,7 @@ src/constants/ui.ts                                     + UI_LABELS.HOMEPAGE.*
 src/app/page.tsx                                        use HomepageSkeleton
 ```
 
-### 11.9 Tests — Phase 11
+### 11.9 Tests � Phase 11
 
 **`src/components/homepage/__tests__/FeaturedProductsSection.test.tsx`** _(update)_:
 
@@ -1434,20 +1434,20 @@ src/app/page.tsx                                        use HomepageSkeleton
 - Each review card renders star rating using `lucide-react Star`
 - Swipe left/right on mobile changes visible review (mock touch events)
 
-**`src/components/homepage/__tests__/TrustIndicatorsSection.test.tsx`** _(update — post-merge)_:
+**`src/components/homepage/__tests__/TrustIndicatorsSection.test.tsx`** _(update � post-merge)_:
 
 - 4 items rendered with icon + label + description
-- Icons are `lucide-react` elements — no inline SVG `<path>` strings
+- Icons are `lucide-react` elements � no inline SVG `<path>` strings
 - `SiteFeaturesSection` no longer imported anywhere (grep check)
 
 **`src/components/homepage/__tests__/HomepageSkeleton.test.tsx`** _(new)_:
 
 - Renders without crashing
-- Uses `THEME_CONSTANTS.skeleton.*` classes — no raw colour strings
+- Uses `THEME_CONSTANTS.skeleton.*` classes � no raw colour strings
 
 ---
 
-## Phase 12 — Dashboard Page Styling
+## Phase 12 � Dashboard Page Styling
 
 **Goal:** Admin, seller, and user dashboards feel polished and structured. Stats are glanceable, actions are prominent, and the layout works at all three viewport sizes.
 
@@ -1455,7 +1455,7 @@ src/app/page.tsx                                        use HomepageSkeleton
 
 **Current issues:**
 
-- Stats cards likely use raw Tailwind — standardise to `THEME_CONSTANTS.card.stat.*`
+- Stats cards likely use raw Tailwind � standardise to `THEME_CONSTANTS.card.stat.*`
 - No skeleton loading state during data fetch
 - Charts (Recharts) may not be responsive on mobile
 - Action shortcuts (quick links to users/orders/products) may be text-only
@@ -1465,7 +1465,7 @@ src/app/page.tsx                                        use HomepageSkeleton
 - Wrap all stat cards in `THEME_CONSTANTS.card.stat.<colour>` tokens (indigo, emerald, amber, red)
 - Add `AdminDashboardSkeleton` for loading state
 - Make Recharts `<ResponsiveContainer>` and add `<Tooltip>` with accessible labels
-- Add a "Quick actions" card row: New Product / Manage Orders / View Reviews — icon + label buttons
+- Add a "Quick actions" card row: New Product / Manage Orders / View Reviews � icon + label buttons
 - Mobile: single-column stack; desktop: 2-col stats + 1 chart; widescreen: 4-col stats + charts side by side
 
 ### 12.2 Seller dashboard
@@ -1473,7 +1473,7 @@ src/app/page.tsx                                        use HomepageSkeleton
 **Changes:**
 
 - Stat cards: Revenue (total + this month), Active listings, Pending orders, Average rating
-- Earnings chart: Recharts `<AreaChart>` of last 30 days revenue — responsive
+- Earnings chart: Recharts `<AreaChart>` of last 30 days revenue � responsive
 - "Needs attention" card: orders pending shipment, low-stock listings, unanswered reviews
 - All numbers formatted via `formatCurrency()` and `formatRelativeTime()` from `@/utils`
 - Mobile: single-column; desktop+: 2-col stats + chart
@@ -1504,12 +1504,12 @@ src/app/page.tsx                                        use HomepageSkeleton
 
 Every admin/seller/user page uses `<AdminPageHeader>` with:
 
-- `title` — from `UI_LABELS.*`
-- `description` — one-line plain-English explanation of what this page is for
-- `actions` slot — primary action button (e.g. "Add product")
+- `title` � from `UI_LABELS.*`
+- `description` � one-line plain-English explanation of what this page is for
+- `actions` slot � primary action button (e.g. "Add product")
 - Breadcrumb trail (where applicable)
 
-Audit all admin/seller/user pages — any that render their own `<h1>` or title block must be migrated to `<AdminPageHeader>`.
+Audit all admin/seller/user pages � any that render their own `<h1>` or title block must be migrated to `<AdminPageHeader>`.
 
 **Files changed in Phase 12:**
 
@@ -1522,7 +1522,7 @@ src/components/layout/Sidebar.tsx               active state + grouping + mobile
 src/constants/ui.ts                              + description strings for all pages
 ```
 
-### 12.6 Tests — Phase 12
+### 12.6 Tests � Phase 12
 
 **`src/components/admin/__tests__/AdminPageHeader.test.tsx`** _(update)_:
 
@@ -1543,9 +1543,9 @@ src/constants/ui.ts                              + description strings for all p
 
 ---
 
-## Phase 13 — Non-Tech Friendly UX
+## Phase 13 � Non-Tech Friendly UX
 
-**Goal:** The application should be approachable and intuitive for everyday users — shoppers, small-business sellers, first-time buyers — not just developers or power users. Plain language replaces jargon. Flows are guided. Errors are helpful. Feedback is immediate and human.
+**Goal:** The application should be approachable and intuitive for everyday users � shoppers, small-business sellers, first-time buyers � not just developers or power users. Plain language replaces jargon. Flows are guided. Errors are helpful. Feedback is immediate and human.
 
 ### 13.1 Plain language throughout
 
@@ -1557,13 +1557,13 @@ Replace all technical or ambiguous labels with plain, human phrasing:
 | `"Validation failed"`             | `"Please check the highlighted fields"`                                           |
 | `"Internal server error"`         | `"Something went wrong. Please try again."`                                       |
 | `"Unauthenticated"`               | `"Please sign in to continue"`                                                    |
-| `"pageSize"` visible in UI        | Remove — never expose API param names to users                                    |
-| `"status==active"` visible in UI  | Remove — never expose Sieve DSL to users                                          |
+| `"pageSize"` visible in UI        | Remove � never expose API param names to users                                    |
+| `"status==active"` visible in UI  | Remove � never expose Sieve DSL to users                                          |
 | Filter label `"Sort"`             | `"Sort by"` with plain option names like `"Newest first"`, `"Price: low to high"` |
 | `"createdAt"` in any visible text | `"Date added"` / `"Joined"`                                                       |
 | `"updatedAt"`                     | `"Last updated"`                                                                  |
 
-Add these to `UI_LABELS` — context-specific action labels override generic ones:
+Add these to `UI_LABELS` � context-specific action labels override generic ones:
 
 ```typescript
 UI_LABELS.ACTIONS.PLACE_ORDER = "Place order";
@@ -1589,20 +1589,20 @@ Every list or data section that can be empty must show an `<EmptyState>` with:
 
 | Page / section                  | Empty state message                                                        | CTA                      |
 | ------------------------------- | -------------------------------------------------------------------------- | ------------------------ |
-| `user/orders` — no orders       | "You haven't placed any orders yet"                                        | "Start shopping →"       |
-| `seller/products` — no listings | "You don't have any products listed yet"                                   | "Add your first product" |
-| `seller/orders` — no sales      | "No orders yet — your orders will appear here once customers start buying" | "View my listings"       |
-| `admin/reviews` — no reviews    | "No reviews match your filters"                                            | "Clear filters"          |
-| Search results — 0 hits         | "No results for '[query]'" + suggestion to try different terms             | "Clear search"           |
-| Wishlist / saved items — empty  | "Nothing saved yet"                                                        | "Browse products"        |
+| `user/orders` � no orders       | "You haven't placed any orders yet"                                        | "Start shopping ?"       |
+| `seller/products` � no listings | "You don't have any products listed yet"                                   | "Add your first product" |
+| `seller/orders` � no sales      | "No orders yet � your orders will appear here once customers start buying" | "View my listings"       |
+| `admin/reviews` � no reviews    | "No reviews match your filters"                                            | "Clear filters"          |
+| Search results � 0 hits         | "No results for '[query]'" + suggestion to try different terms             | "Clear search"           |
+| Wishlist / saved items � empty  | "Nothing saved yet"                                                        | "Browse products"        |
 
 ### 13.3 Guided onboarding flows
 
 First-visit experiences for new users:
 
-- **New buyer:** After first sign-up → brief 3-step tooltip tour: "Browse products", "Add to cart", "Checkout"
-- **New seller:** After seller role granted → checklist card on seller dashboard: "Add a profile photo", "List your first product", "Set up payment details" — each item becomes a `✓` when completed
-- **Empty product form:** Inline helper text explains each field in plain language (e.g. "A clear title helps buyers find your item — be specific, e.g. 'Blue cotton kurta, size M'")
+- **New buyer:** After first sign-up ? brief 3-step tooltip tour: "Browse products", "Add to cart", "Checkout"
+- **New seller:** After seller role granted ? checklist card on seller dashboard: "Add a profile photo", "List your first product", "Set up payment details" � each item becomes a `?` when completed
+- **Empty product form:** Inline helper text explains each field in plain language (e.g. "A clear title helps buyers find your item � be specific, e.g. 'Blue cotton kurta, size M'")
 
 ### 13.4 Inline help text for all form fields
 
@@ -1610,11 +1610,11 @@ Every form field should have a `helperText` prop with a plain-English one-liner:
 
 | Field               | Helper text                                                       |
 | ------------------- | ----------------------------------------------------------------- |
-| Product title       | "Be specific — e.g. 'Handmade leather wallet, brown'"             |
+| Product title       | "Be specific � e.g. 'Handmade leather wallet, brown'"             |
 | Product price       | "Set a fair price. You can change it anytime."                    |
 | Auction start price | "This is the lowest bid you'll accept"                            |
 | Auction end date    | "When should bidding close?"                                      |
-| Category            | "Pick the best fit — buyers search by category"                   |
+| Category            | "Pick the best fit � buyers search by category"                   |
 | Pickup address      | "Where should the buyer collect from, or where do you ship from?" |
 | Coupon code         | "Letters and numbers only, no spaces"                             |
 
@@ -1624,12 +1624,12 @@ Store all helper text in `UI_HELP_TEXT.*` in `src/constants/ui.ts`.
 
 Errors must be:
 
-1. **Specific** — tell the user exactly what went wrong
-2. **Actionable** — tell them how to fix it
-3. **Human** — no codes, no stack traces, no HTTP status numbers visible
+1. **Specific** � tell the user exactly what went wrong
+2. **Actionable** � tell them how to fix it
+3. **Human** � no codes, no stack traces, no HTTP status numbers visible
 
 ```typescript
-// src/constants/messages.ts — replace generic messages
+// src/constants/messages.ts � replace generic messages
 ERROR_MESSAGES.VALIDATION.REQUIRED = "This field is required";
 ERROR_MESSAGES.VALIDATION.INVALID_EMAIL =
   "Enter a valid email address, e.g. name@example.com";
@@ -1649,11 +1649,11 @@ ERROR_MESSAGES.NETWORK.OFFLINE =
 
 No action should leave the user wondering if something is happening:
 
-- Every `<Button>` that triggers an async action accepts `isLoading` prop — show spinner + disable during mutation
+- Every `<Button>` that triggers an async action accepts `isLoading` prop � show spinner + disable during mutation
 - `useApiMutation` should surface `isPending` to the calling component automatically
 - Long page loads (> 500ms): show skeleton screens (Phase 12/13) not blank white pages
 - File uploads: show `<Progress>` bar with percentage
-- Form saves: replace button text with "Saving..." then "Saved ✓" for 2 seconds on success
+- Form saves: replace button text with "Saving..." then "Saved ?" for 2 seconds on success
 
 ### 13.7 Conversational toast messages
 
@@ -1662,18 +1662,18 @@ Replace all generic toast messages with friendly, specific ones:
 | Action             | Toast message                                              |
 | ------------------ | ---------------------------------------------------------- |
 | Order placed       | "Your order is confirmed! We'll notify you when it ships." |
-| Product listed     | "Your product is live — shoppers can find it now."         |
+| Product listed     | "Your product is live � shoppers can find it now."         |
 | Review submitted   | "Thanks for your review! It helps other shoppers."         |
 | Profile updated    | "Your profile has been updated."                           |
 | Password changed   | "Password changed. You're all set."                        |
 | Bid placed         | "Bid placed! You'll be notified if someone outbids you."   |
 | Item added to cart | "'[Product name]' added to your cart."                     |
 
-Store all in `SUCCESS_MESSAGES.*` — add new keys as needed.
+Store all in `SUCCESS_MESSAGES.*` � add new keys as needed.
 
 ### 13.8 Mobile-first touch targets
 
-All interactive elements on mobile must meet minimum 44×44 px touch target size (WCAG 2.5.5):
+All interactive elements on mobile must meet minimum 44�44 px touch target size (WCAG 2.5.5):
 
 - All `<Button>` sizes: ensure `min-h-[44px]` on mobile
 - Filter chips: `min-h-[36px]` with adequate horizontal padding
@@ -1705,7 +1705,7 @@ src/app/admin/reviews/[[...action]]/page.tsx  no-results empty state
 src/app/products/page.tsx                  no-results empty state
 ```
 
-### 13.9 Tests — Phase 13
+### 13.9 Tests � Phase 13
 
 **`src/components/ui/__tests__/Button.test.tsx`** _(update)_:
 
@@ -1734,10 +1734,10 @@ src/app/products/page.tsx                  no-results empty state
 
 ---
 
-## Phase 14 — Code Deduplication ✅ Done
+## Phase 14 � Code Deduplication ? Done
 
 > **Sections:** L  
-> **Risk:** 🟡 Minor breaking — two API route renames; one lib file merge; one component delete  
+> **Risk:** ?? Minor breaking � two API route renames; one lib file merge; one component delete  
 > **Principle:** Never introduce a new file when an existing one can be extended. Every deletion requires a grep sweep.
 
 ### 14.1 Duplicate Components
@@ -1760,8 +1760,8 @@ src/app/products/page.tsx                  no-results empty state
 
 | Delete                                         | Migrate callers to               | Change                                                                                                                         |
 | ---------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `src/app/api/profile/update/route.ts`          | `PUT /api/user/profile`          | Update `API_ENDPOINTS.PROFILE.UPDATE` constant → `API_ENDPOINTS.USER.PROFILE`; update all hooks/pages calling the old endpoint |
-| `src/app/api/profile/update-password/route.ts` | `POST /api/user/change-password` | Update `API_ENDPOINTS.PROFILE.UPDATE_PASSWORD` → `API_ENDPOINTS.USER.CHANGE_PASSWORD`; update all callers                      |
+| `src/app/api/profile/update/route.ts`          | `PUT /api/user/profile`          | Update `API_ENDPOINTS.PROFILE.UPDATE` constant ? `API_ENDPOINTS.USER.PROFILE`; update all hooks/pages calling the old endpoint |
+| `src/app/api/profile/update-password/route.ts` | `POST /api/user/change-password` | Update `API_ENDPOINTS.PROFILE.UPDATE_PASSWORD` ? `API_ENDPOINTS.USER.CHANGE_PASSWORD`; update all callers                      |
 
 **Before deleting:** ensure `PUT /api/user/profile` handles all fields previously handled by `/api/profile/update`.
 
@@ -1771,7 +1771,7 @@ Add to PR checklist:
 
 - [ ] Searched `src/components`, `src/hooks`, `src/utils` for similar existing code before creating a new file
 - [ ] If an existing component was extended, named the new prop descriptively (not a boolean flag)
-- [ ] Ran grep for any deleted file paths — zero remaining imports
+- [ ] Ran grep for any deleted file paths � zero remaining imports
 
 ### Files Changed in Phase 14
 
@@ -1783,19 +1783,19 @@ src/app/api/profile/update/route.ts
 src/app/api/profile/update-password/route.ts
 
 # Modified (import updates only)
-src/constants/api-endpoints.ts                            — PROFILE.UPDATE → USER.PROFILE; PROFILE.UPDATE_PASSWORD → USER.CHANGE_PASSWORD
-src/lib/validation/schemas.ts                             — merge content from api/validation-schemas.ts
+src/constants/api-endpoints.ts                            � PROFILE.UPDATE ? USER.PROFILE; PROFILE.UPDATE_PASSWORD ? USER.CHANGE_PASSWORD
+src/lib/validation/schemas.ts                             � merge content from api/validation-schemas.ts
 All files importing utility/Breadcrumbs or api/validation-schemas
 ```
 
-### 14.5 Tests — Phase 14
+### 14.5 Tests � Phase 14
 
 **Grep assertions (run as CI checks on this PR):**
 
-- `grep -r "utility/Breadcrumbs" src/` → 0 matches
-- `grep -r "api/validation-schemas" src/` → 0 matches
-- `grep -r "/api/profile/update" src/` → 0 matches (except history)
-- `grep -r "EnhancedFooter" src/` → 0 matches
+- `grep -r "utility/Breadcrumbs" src/` ? 0 matches
+- `grep -r "api/validation-schemas" src/` ? 0 matches
+- `grep -r "/api/profile/update" src/` ? 0 matches (except history)
+- `grep -r "EnhancedFooter" src/` ? 0 matches
 
 **`src/lib/validation/__tests__/schemas.test.ts`** _(update)_:
 
@@ -1804,11 +1804,11 @@ All files importing utility/Breadcrumbs or api/validation-schemas
 
 ---
 
-## Phase 15 — SEO: Full-Stack Coverage
+## Phase 15 � SEO: Full-Stack Coverage
 
 > **Sections:** M  
-> **Risk:** 🟢 Additive (new files + metadata exports + schema fields) with one breaking URL change (`/products/[id]` → `/products/[slug]`)  
-> **Important order:** schema fields first → slug generation → URL rename → JSON-LD helpers → page metadata → sitemap/robots last
+> **Risk:** ?? Additive (new files + metadata exports + schema fields) with one breaking URL change (`/products/[id]` ? `/products/[slug]`)  
+> **Important order:** schema fields first ? slug generation ? URL rename ? JSON-LD helpers ? page metadata ? sitemap/robots last
 
 ### 15.1 Extend `src/constants/seo.ts`
 
@@ -1833,7 +1833,7 @@ Also add to `SEO_CONFIG.pages`:
 
 - `blog`, `faqs`, `about`, `contact`, `sellers` page defaults
 
-### 15.2 JSON-LD Helpers — `src/lib/seo/json-ld.ts` (NEW)
+### 15.2 JSON-LD Helpers � `src/lib/seo/json-ld.ts` (NEW)
 
 ```typescript
 export function productJsonLd(
@@ -1894,7 +1894,7 @@ export default function ProductPage({ product }) {
 
 ### 15.3 Schema Field Additions
 
-**`src/db/schema/products.ts`** — add to `ProductDocument` interface:
+**`src/db/schema/products.ts`** � add to `ProductDocument` interface:
 
 ```typescript
 slug: string;               // required; auto-generated from title at create time; unique
@@ -1905,13 +1905,13 @@ seoKeywords?: string[];     // user override; max 10 tags
 images: Array<{ url: string; altText: string; }>;
 ```
 
-**`src/db/schema/blog-posts.ts`** — verify `slug` exists; add `seoTitle?`, `seoDescription?`, `seoKeywords?`
+**`src/db/schema/blog-posts.ts`** � verify `slug` exists; add `seoTitle?`, `seoDescription?`, `seoKeywords?`
 
-**`src/db/schema/categories.ts`** — verify `slug` exists; add `seoTitle?`, `seoDescription?`
+**`src/db/schema/categories.ts`** � verify `slug` exists; add `seoTitle?`, `seoDescription?`
 
 Add `PRODUCT_SEO_FIELDS` constant object (see Section M for spec).
 
-### 15.4 Product URL Migration: `[id]` → `[slug]`
+### 15.4 Product URL Migration: `[id]` ? `[slug]`
 
 | File                                                         | Change                                                                                                                        |
 | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
@@ -1926,30 +1926,30 @@ Add `PRODUCT_SEO_FIELDS` constant object (see Section M for spec).
 
 ### 15.5 SEO Fields in Admin/Seller Forms
 
-**`ProductForm`** — add "SEO" tab/accordion (collapsible, below main fields):
+**`ProductForm`** � add "SEO" tab/accordion (collapsible, below main fields):
 
 ```
-│ SEO (optional — leave blank for auto-generated)           │
-├─────────────────────────────────────────────────────────────┤
-│ SEO Title (max 60 chars)       [___________________________] │
-│ SEO Description (max 160)      [___________________________] │
-│ Keywords (comma-separated)     [___________________________] │
-│ Image Alt Text (each image)    shown per-image in upload UI  │
+� SEO (optional � leave blank for auto-generated)           �
++-------------------------------------------------------------�
+� SEO Title (max 60 chars)       [___________________________] �
+� SEO Description (max 160)      [___________________________] �
+� Keywords (comma-separated)     [___________________________] �
+� Image Alt Text (each image)    shown per-image in upload UI  �
 ```
 
-**`BlogForm`** — same SEO tab pattern.
+**`BlogForm`** � same SEO tab pattern.
 
 ### 15.6 Sitemap + Robots + OG Image
 
-**`src/app/sitemap.ts`** — fetches from repositories server-side; generates `MetadataRoute.Sitemap`; called at build/request time by Next.js.
+**`src/app/sitemap.ts`** � fetches from repositories server-side; generates `MetadataRoute.Sitemap`; called at build/request time by Next.js.
 
-**`src/app/robots.ts`** — static; disallows admin/api/seller/user/auth/checkout segments; exposes `sitemap` URL.
+**`src/app/robots.ts`** � static; disallows admin/api/seller/user/auth/checkout segments; exposes `sitemap` URL.
 
-**`src/app/opengraph-image.tsx`** — uses `ImageResponse` (Next.js built-in); renders LetItRip branding for social shares where a page-specific OG image isn’t available.
+**`src/app/opengraph-image.tsx`** � uses `ImageResponse` (Next.js built-in); renders LetItRip branding for social shares where a page-specific OG image isn�t available.
 
 ### 15.7 Media Upload: SEO-Friendly Filenames
 
-**`src/app/api/media/upload/route.ts`** — when saving files to Firebase Storage, use:
+**`src/app/api/media/upload/route.ts`** � when saving files to Firebase Storage, use:
 
 ```
 product images: products/{productSlug}/{productSlug}-{index}.{ext}
@@ -1975,24 +1975,24 @@ src/app/robots.ts
 src/app/opengraph-image.tsx
 
 # Modified
-src/constants/seo.ts                                      — +5 generateXMetadata functions; +page defaults
-src/db/schema/products.ts                                 — slug field; SEO fields; image altText
-src/db/schema/blog-posts.ts                               — SEO fields
-src/db/schema/categories.ts                               — SEO fields
-src/repositories/product.repository.ts                   — findBySlug(); findByIdOrSlug()
-src/app/api/products/route.ts                             — slugify on create
-src/app/api/media/upload/route.ts                         — SEO-friendly filename
-src/app/products/[slug]/page.tsx                          — renamed from [id]; generateProductMetadata
-src/app/products/[id]/page.tsx                            — permanentRedirect to [slug] version
-src/components/admin/ProductForm.tsx (or seller equiv)    — SEO tab
-src/components/admin/BlogForm.tsx                         — SEO tab
-src/constants/routes.ts                                   — ROUTES.PRODUCT.DETAIL uses slug
-All public page files (see Section M per-page table)      — add metadata export
+src/constants/seo.ts                                      � +5 generateXMetadata functions; +page defaults
+src/db/schema/products.ts                                 � slug field; SEO fields; image altText
+src/db/schema/blog-posts.ts                               � SEO fields
+src/db/schema/categories.ts                               � SEO fields
+src/repositories/product.repository.ts                   � findBySlug(); findByIdOrSlug()
+src/app/api/products/route.ts                             � slugify on create
+src/app/api/media/upload/route.ts                         � SEO-friendly filename
+src/app/products/[slug]/page.tsx                          � renamed from [id]; generateProductMetadata
+src/app/products/[id]/page.tsx                            � permanentRedirect to [slug] version
+src/components/admin/ProductForm.tsx (or seller equiv)    � SEO tab
+src/components/admin/BlogForm.tsx                         � SEO tab
+src/constants/routes.ts                                   � ROUTES.PRODUCT.DETAIL uses slug
+All public page files (see Section M per-page table)      � add metadata export
 ```
 
-### 15.9 Tests — Phase 15
+### 15.9 Tests � Phase 15
 
-**`src/constants/__tests__/seo.test.ts`** _(update — full coverage)_:
+**`src/constants/__tests__/seo.test.ts`** _(update � full coverage)_:
 
 - `generateProductMetadata(product)` prefers `seoTitle`/`seoDescription` over auto-generated values
 - Canonical URL includes product slug, not database ID
@@ -2025,20 +2025,20 @@ All public page files (see Section M per-page table)      — add metadata expor
 
 ```
 Phase 1 (constants, schema, lucide-react)
-  └── Phase 2 (new UI components + hook — consume Phase 1 constants)
-        └── Phase 3 (barrel exports + DataTable/SearchResultsSection wiring)
-              ├── Phase 4 (admin pages — consume Phase 2+3)
-              ├── Phase 5 (public pages — consume Phase 2+3)
-              └── Phase 6 (seller/user pages — consume Phase 2+3)
-                    └── Phase 7 (FAQ routes — can run in parallel with 4–6)
-Phase 8 (footer/nav — depends only on Phase 1)
-Phase 9 (inline create — depends on Phase 2 for SideDrawer side prop)
-Phase 10 (gestures + a11y — depends on Phase 2 for all new components)
-Phase 11 (homepage sections — depends on Phase 1 + Phase 10 for gestures/a11y)
-Phase 12 (dashboard styling — depends on Phase 1 for lucide + constants)
-Phase 13 (non-tech UX — depends on Phase 1 for constants; touches pages from 4–6)
-Phase 14 (code deduplication — depends on Phase 1 for API_ENDPOINTS constants; can run independently)
-Phase 15 (SEO — depends on Phase 1 for slug utils; Phase 9 for ProductForm extension; touches public pages from 5)
+  +-- Phase 2 (new UI components + hook � consume Phase 1 constants)
+        +-- Phase 3 (barrel exports + DataTable/SearchResultsSection wiring)
+              +-- Phase 4 (admin pages � consume Phase 2+3)
+              +-- Phase 5 (public pages � consume Phase 2+3)
+              +-- Phase 6 (seller/user pages � consume Phase 2+3)
+                    +-- Phase 7 (FAQ routes � can run in parallel with 4�6)
+Phase 8 (footer/nav � depends only on Phase 1)
+Phase 9 (inline create � depends on Phase 2 for SideDrawer side prop)
+Phase 10 (gestures + a11y � depends on Phase 2 for all new components)
+Phase 11 (homepage sections � depends on Phase 1 + Phase 10 for gestures/a11y)
+Phase 12 (dashboard styling � depends on Phase 1 for lucide + constants)
+Phase 13 (non-tech UX � depends on Phase 1 for constants; touches pages from 4�6)
+Phase 14 (code deduplication � depends on Phase 1 for API_ENDPOINTS constants; can run independently)
+Phase 15 (SEO � depends on Phase 1 for slug utils; Phase 9 for ProductForm extension; touches public pages from 5)
 ```
 
 **Parallelizable work:**
@@ -2046,7 +2046,7 @@ Phase 15 (SEO — depends on Phase 1 for slug utils; Phase 9 for ProductForm ext
 - Phases 4, 5, 6, 7 can all proceed in parallel once Phase 3 is done
 - Phase 8 can proceed as soon as Phase 1 is done
 - Phase 10, 11, 12 can proceed in parallel once Phase 2 is done
-- Phase 13 can be tackled incrementally alongside phases 4–12
+- Phase 13 can be tackled incrementally alongside phases 4�12
 - **Phase 14 (dedup)** can proceed independently at any time; route deletes must happen after callers are updated
 - **Phase 15 (SEO)** schema fields can be added early (Phase 1/9); metadata exports added anytime after Phase 5; sitemap/robots last
 
@@ -2059,47 +2059,47 @@ When a file is deleted or a component is moved, immediately grep the entire code
 
 Before merging any phase:
 
-- [ ] `npx tsc --noEmit` on all changed files — zero errors
-- [ ] All imports updated to new locations — no dead imports left behind
-- [ ] All deleted components/files: grep for any remaining import of the deleted path — zero matches
-- [ ] All new components import from `@/components`, `@/hooks`, `@/utils`, `@/constants` — never from deep paths
-- [ ] No raw UI text — all strings from `UI_LABELS`, `UI_PLACEHOLDERS`, `ERROR_MESSAGES`, `SUCCESS_MESSAGES`
-- [ ] No raw repeated Tailwind strings — all from `THEME_CONSTANTS`
-- [ ] No `console.log` — use `logger` (client) / `serverLogger` (API)
-- [ ] No `router.push()` for filter/sort changes — only `router.replace()`
+- [ ] `npx tsc --noEmit` on all changed files � zero errors
+- [ ] All imports updated to new locations � no dead imports left behind
+- [ ] All deleted components/files: grep for any remaining import of the deleted path � zero matches
+- [ ] All new components import from `@/components`, `@/hooks`, `@/utils`, `@/constants` � never from deep paths
+- [ ] No raw UI text � all strings from `UI_LABELS`, `UI_PLACEHOLDERS`, `ERROR_MESSAGES`, `SUCCESS_MESSAGES`
+- [ ] No raw repeated Tailwind strings � all from `THEME_CONSTANTS`
+- [ ] No `console.log` � use `logger` (client) / `serverLogger` (API)
+- [ ] No `router.push()` for filter/sort changes � only `router.replace()`
 - [ ] Page files stay under 150 lines of JSX
 - [ ] `npm run lint` passes
 - [ ] All interactive elements have `aria-label` or visible label wired via `htmlFor`
 - [ ] All new `<button>` elements work with keyboard (`Enter`/`Space`)
 - [ ] All modals/drawers trap focus and return it on close
 - [ ] No user-visible text contains API jargon (`pageSize`, `createdAt`, Sieve DSL, HTTP status codes)
-- [ ] Touch targets on mobile: all interactive elements ≥ 44×44 px (`THEME_CONSTANTS.touch.target`)
+- [ ] Touch targets on mobile: all interactive elements = 44�44 px (`THEME_CONSTANTS.touch.target`)
 - [ ] `prefers-reduced-motion` respected for all animations/transitions
 - [ ] Tested at mobile (375 px), desktop (1280 px), and widescreen (1536 px+) viewport widths
 - [ ] Searched for existing similar component/hook/util before creating a new file (Phase 14 rule)
-- [ ] No `alt=""` on meaningful images — all product/category/blog images have descriptive alt text
+- [ ] No `alt=""` on meaningful images � all product/category/blog images have descriptive alt text
 - [ ] All new/modified public pages export `metadata` or `generateMetadata()` (Phase 15 rule)
 - [ ] Deleted API route paths are updated in `API_ENDPOINTS` constants and all callers
 
 ---
 
-## Phase 17 — Next.js 16 Compatibility: Async Params
+## Phase 17 � Next.js 16 Compatibility: Async Params
 
-> **Audit source:** `npx tsc --noEmit` — 8 errors in `.next/dev/types/validator.ts` (Feb 21, 2026)  
+> **Audit source:** `npx tsc --noEmit` � 8 errors in `.next/dev/types/validator.ts` (Feb 21, 2026)  
 > **Root cause:** Next.js 15+ made `params` in route handlers and page components a `Promise`. Four API routes and one page file still use the old synchronous `params: { id: string }` interface, causing type-checker failures.
 
 ### Background
 
-In Next.js 15 / 16 the `context.params` object passed to route handlers and page components is a `Promise`. The `.next/dev/types/validator.ts` auto-generated validator enforces this — a `RouteContext` whose `params` is **not** a `Promise` will fail the constraint check.
+In Next.js 15 / 16 the `context.params` object passed to route handlers and page components is a `Promise`. The `.next/dev/types/validator.ts` auto-generated validator enforces this � a `RouteContext` whose `params` is **not** a `Promise` will fail the constraint check.
 
-**Pattern before (Next.js 13/14 — broken in 15/16):**
+**Pattern before (Next.js 13/14 � broken in 15/16):**
 
 ```typescript
 interface RouteContext {
   params: { id: string };
 }
 export async function GET(_req: NextRequest, { params }: RouteContext) {
-  const { id } = params; // ❌ sync access
+  const { id } = params; // ? sync access
 }
 ```
 
@@ -2110,7 +2110,7 @@ interface RouteContext {
   params: Promise<{ id: string }>;
 }
 export async function GET(_req: NextRequest, { params }: RouteContext) {
-  const { id } = await params; // ✅ async access
+  const { id } = await params; // ? async access
 }
 ```
 
@@ -2118,29 +2118,29 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
 
 | File                                                   | Param key                   |
 | ------------------------------------------------------ | --------------------------- |
-| `src/app/api/user/addresses/[id]/route.ts`             | `id` (GET · PATCH · DELETE) |
+| `src/app/api/user/addresses/[id]/route.ts`             | `id` (GET � PATCH � DELETE) |
 | `src/app/api/user/addresses/[id]/set-default/route.ts` | `id` (POST)                 |
 | `src/app/api/user/orders/[id]/route.ts`                | `id` (GET)                  |
 | `src/app/api/user/orders/[id]/cancel/route.ts`         | `id` (POST)                 |
 
 For each:
 
-1. Change `params: { id: string }` → `params: Promise<{ id: string }>` in `RouteContext`
-2. Change `const { id } = params` → `const { id } = await params` in every handler
+1. Change `params: { id: string }` ? `params: Promise<{ id: string }>` in `RouteContext`
+2. Change `const { id } = params` ? `const { id } = await params` in every handler
 
 ### 17.2 Page file to migrate (1 file)
 
-**`src/app/faqs/[category]/page.tsx`** — server component, not an async function, uses `params` prop:
+**`src/app/faqs/[category]/page.tsx`** � server component, not an async function, uses `params` prop:
 
 ```tsx
-// BEFORE (sync — incompatible with Next.js 15/16)
+// BEFORE (sync � incompatible with Next.js 15/16)
 interface Props { params: { category: string }; }
 export default function FAQCategoryPage({ params }: Props) {
   const { category } = params;
   ...
 }
 
-// AFTER — make component async and await params
+// AFTER � make component async and await params
 interface Props { params: Promise<{ category: string }>; }
 export default async function FAQCategoryPage({ params }: Props) {
   const { category } = await params;
@@ -2154,7 +2154,7 @@ The following files were deleted in previous phases but remain referenced in `.n
 
 | Stale reference                                | Deleted in                    |
 | ---------------------------------------------- | ----------------------------- |
-| `src/app/products/[id]/page.js`                | Phase 15 (renamed → `[slug]`) |
+| `src/app/products/[id]/page.js`                | Phase 15 (renamed ? `[slug]`) |
 | `src/app/seller/products/new/page.js`          | Phase 6                       |
 | `src/app/api/profile/update-password/route.js` | Phase 14                      |
 | `src/app/api/profile/update/route.js`          | Phase 14                      |
@@ -2175,11 +2175,11 @@ src/app/api/user/orders/[id]/cancel/route.ts              RouteContext async par
 src/app/faqs/[category]/page.tsx                          async component + await params
 ```
 
-### 17.5 Tests — Phase 17
+### 17.5 Tests � Phase 17
 
 Update any test files that mock `params` as a plain object to use `Promise.resolve(...)`:
 
-**`src/app/api/__tests__/` affected tests** — search for mock params patterns and update:
+**`src/app/api/__tests__/` affected tests** � search for mock params patterns and update:
 
 ```typescript
 // BEFORE
@@ -2230,23 +2230,23 @@ const mockContext = { params: Promise.resolve({ id: "abc" }) };
 
 | Sub   | Status      | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ----- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 18.1  | ✅ Done     | 190/190 suites green; 2506/2510 tests passing (4 pre-existing skips). Fixed: duplicate `const faqs` in admin/faqs page; `</button>` → `</Link>` in FAQCategorySidebar; `findByIdOrSlug` mock in products-id test; `getNumber`/`setPageSize` missing from 4 useUrlTable mocks; `TablePagination`/`Modal`/`AdminFilterBar`/`FormField` missing from 3 admin page mocks; stale `buttons.length===4` in FAQSection; multiple `view all` in FeaturedAuctions; `quick links` → `getAllByText(/shop/i)` in Footer; jsdom email constraint bypassed with `fireEvent.submit` in Newsletter; IntersectionObserver mock passes instance as second arg in TrustFeatures; FAQCategorySidebar Link mock passes `onClick`+`className`; button→link role updates in sidebar accessibility tests. |
-| 18.2  | ✅ Done     | 4 new test files: `useApiQuery.test.ts` (11 tests), `useApiMutation.test.ts` (11 tests), `useForm.test.ts` (11 tests), `useMessage.test.ts` (9 tests) = 42 new tests. Adapted to actual hook APIs (useForm has no isDirty/setFieldError; useMessage has no showWarning/dismiss; relative call counts used in useApiQuery to handle React 18 Strict Mode double-invoke). 194/194 suites green.                                                                                                                                                                                                                                                                                                                                                                                    |
-| 18.3  | ✅ Done     | 2 new test files: `useRBAC.test.ts` (26 tests across useHasRole, useIsAdmin, useIsModerator, useIsSeller, useCanAccess, useRoleChecks, useIsOwner), `useUnsavedChanges.test.ts` (11 tests). Key fixes: `jest.mock` factory must be self-contained (literal string, not external const) due to hoisting; `useCanAccess` tests must use actual routes from `RBAC_CONFIG` (e.g. `/admin/dashboard`, `/user/profile`) since paths without a config entry return `allowed:true` by default. 196/196 suites green; 2589/2593 tests passing.                                                                                                                                                                                                                                            |
-| 18.4  | ✅ Done     | 3 new test files: `useAddresses.test.ts` (12 tests), `useAddressForm.test.ts` (11 tests), `useProfile.test.ts` (10 tests). Key fixes: spread `jest.requireActual('@/lib/api-client')` to preserve `ApiClientError`; `cacheManager.clear()` in `beforeEach` prevents query cache leaking between tests; mutation error tests need try/catch since `mutate` re-throws; `onSuccess(result, variables)` takes 2 args — use `toHaveBeenCalledWith(data, expect.anything())`; `isLoading=true` when `enabled=false` and no cache — don't assert isLoading for disabled queries. 199/199 suites green; 2622/2626 tests passing.                                                                                                                                                         |
-| 18.5  | ✅ Done     | 8 new test files: `useMediaQuery.test.ts` (6), `useBreakpoint.test.ts` (5), `useClickOutside.test.tsx` (6), `useKeyPress.test.ts` (7), `useSwipe.test.tsx` (6), `useGesture.test.tsx` (5), `useRealtimeBids.test.ts` (7), `useRazorpay.test.ts` (6) = 48 new tests. Key patterns: mock `window.matchMedia` with `addEventListener`/`removeEventListener` fns; render React component to get real DOM ref for click-outside and swipe hooks; `document.dispatchEvent(new KeyboardEvent(...))` for key-press; capture `onValue` callback via closure to simulate RTDB snapshots; `window.Razorpay` presence controls `isLoading` initial state. 207/207 suites green; 2670/2674 tests passing.                                                                                     |
-| 18.6  | ✅ Done     | 6 new test files: `auth-forgot-password.test.ts` (6 tests), `auth-reset-password.test.ts` (4 tests), `auth-verify-email.test.ts` (3 tests), `auth-send-verification.test.ts` (4 tests), `auth-logout.test.ts` (4 tests), `auth-session.test.ts` (4 tests). Key pattern: stub `@/lib/firebase/admin` via `getAdminAuth()` (not `firebase-admin/auth`) for routes using Admin SDK; `auth/send-verification` uniquely uses `getAdminAuth` not `getAuth`; session route uses dynamic `import()` internals requiring both `firebase-admin/auth` and `firebase-admin/firestore` mocks. 218/218 suites green.                                                                                                                                                                           |
-| 18.7  | ✅ Done     | 7 test file changes: `user-addresses.test.ts` (9 tests, NEW), `user-sessions.test.ts` (4 tests, NEW), `user-password.test.ts` (6 tests, NEW), `user-orders.test.ts` (6 tests, NEW), `user-wishlist.test.ts` (9 tests, NEW), `profile.test.ts` (4 GET tests added, UPDATE). Key pattern: `requireAuth()` must be mocked as `jest.fn()` on `@/lib/firebase/auth-server`; route throws `AuthenticationError` (401) on null user, not `NotFoundError` (404); `successResponse` mock needs optional 3rd `status` param for 201 responses. 218/218 suites green; 2733/2737 tests passing (4 pre-existing skips).                                                                                                                                                                       |
-| 18.8  | Not started |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| 18.9  | Not started |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| 18.10 | Not started |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| 18.11 | Not started |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| 18.12 | Not started |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| 18.13 | Not started |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| 18.14 | Not started |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| 18.15 | Not started |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| 18.16 | Not started |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| 18.17 | Not started |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 18.1  | ? Done      | 190/190 suites green; 2506/2510 tests passing (4 pre-existing skips). Fixed: duplicate `const faqs` in admin/faqs page; `</button>` ? `</Link>` in FAQCategorySidebar; `findByIdOrSlug` mock in products-id test; `getNumber`/`setPageSize` missing from 4 useUrlTable mocks; `TablePagination`/`Modal`/`AdminFilterBar`/`FormField` missing from 3 admin page mocks; stale `buttons.length===4` in FAQSection; multiple `view all` in FeaturedAuctions; `quick links` ? `getAllByText(/shop/i)` in Footer; jsdom email constraint bypassed with `fireEvent.submit` in Newsletter; IntersectionObserver mock passes instance as second arg in TrustFeatures; FAQCategorySidebar Link mock passes `onClick`+`className`; button?link role updates in sidebar accessibility tests. |
+| 18.2  | ? Done      | 4 new test files: `useApiQuery.test.ts` (11 tests), `useApiMutation.test.ts` (11 tests), `useForm.test.ts` (11 tests), `useMessage.test.ts` (9 tests) = 42 new tests. Adapted to actual hook APIs (useForm has no isDirty/setFieldError; useMessage has no showWarning/dismiss; relative call counts used in useApiQuery to handle React 18 Strict Mode double-invoke). 194/194 suites green.                                                                                                                                                                                                                                                                                                                                                                                    |
+| 18.3  | ? Done      | 2 new test files: `useRBAC.test.ts` (26 tests across useHasRole, useIsAdmin, useIsModerator, useIsSeller, useCanAccess, useRoleChecks, useIsOwner), `useUnsavedChanges.test.ts` (11 tests). Key fixes: `jest.mock` factory must be self-contained (literal string, not external const) due to hoisting; `useCanAccess` tests must use actual routes from `RBAC_CONFIG` (e.g. `/admin/dashboard`, `/user/profile`) since paths without a config entry return `allowed:true` by default. 196/196 suites green; 2589/2593 tests passing.                                                                                                                                                                                                                                            |
+| 18.4  | ? Done      | 3 new test files: `useAddresses.test.ts` (12 tests), `useAddressForm.test.ts` (11 tests), `useProfile.test.ts` (10 tests). Key fixes: spread `jest.requireActual('@/lib/api-client')` to preserve `ApiClientError`; `cacheManager.clear()` in `beforeEach` prevents query cache leaking between tests; mutation error tests need try/catch since `mutate` re-throws; `onSuccess(result, variables)` takes 2 args � use `toHaveBeenCalledWith(data, expect.anything())`; `isLoading=true` when `enabled=false` and no cache � don't assert isLoading for disabled queries. 199/199 suites green; 2622/2626 tests passing.                                                                                                                                                         |
+| 18.5  | ? Done      | 8 new test files: `useMediaQuery.test.ts` (6), `useBreakpoint.test.ts` (5), `useClickOutside.test.tsx` (6), `useKeyPress.test.ts` (7), `useSwipe.test.tsx` (6), `useGesture.test.tsx` (5), `useRealtimeBids.test.ts` (7), `useRazorpay.test.ts` (6) = 48 new tests. Key patterns: mock `window.matchMedia` with `addEventListener`/`removeEventListener` fns; render React component to get real DOM ref for click-outside and swipe hooks; `document.dispatchEvent(new KeyboardEvent(...))` for key-press; capture `onValue` callback via closure to simulate RTDB snapshots; `window.Razorpay` presence controls `isLoading` initial state. 207/207 suites green; 2670/2674 tests passing.                                                                                     |
+| 18.6  | ? Done      | 6 new test files: `auth-forgot-password.test.ts` (6 tests), `auth-reset-password.test.ts` (4 tests), `auth-verify-email.test.ts` (3 tests), `auth-send-verification.test.ts` (4 tests), `auth-logout.test.ts` (4 tests), `auth-session.test.ts` (4 tests). Key pattern: stub `@/lib/firebase/admin` via `getAdminAuth()` (not `firebase-admin/auth`) for routes using Admin SDK; `auth/send-verification` uniquely uses `getAdminAuth` not `getAuth`; session route uses dynamic `import()` internals requiring both `firebase-admin/auth` and `firebase-admin/firestore` mocks. 218/218 suites green.                                                                                                                                                                           |
+| 18.7  | ? Done      | 7 test file changes: `user-addresses.test.ts` (9 tests, NEW), `user-sessions.test.ts` (4 tests, NEW), `user-password.test.ts` (6 tests, NEW), `user-orders.test.ts` (6 tests, NEW), `user-wishlist.test.ts` (9 tests, NEW), `profile.test.ts` (4 GET tests added, UPDATE). Key pattern: `requireAuth()` must be mocked as `jest.fn()` on `@/lib/firebase/auth-server`; route throws `AuthenticationError` (401) on null user, not `NotFoundError` (404); `successResponse` mock needs optional 3rd `status` param for 201 responses. 218/218 suites green; 2733/2737 tests passing (4 pre-existing skips).                                                                                                                                                                       |
+| 18.8  | Done        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 18.9  | Done        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 18.10 | Done        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 18.11 | Done        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 18.12 | Done        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 18.13 | Done        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 18.14 | Done        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 18.15 | Done        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 18.16 | Done        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 18.17 | Done        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | 18.18 | Not started |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | 18.19 | Not started |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
