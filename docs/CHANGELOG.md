@@ -9,6 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 18.13–18.16 — Page Component Test Suite (2026-02-23)
+
+#### Added
+
+- **`src/app/products/__tests__/page.test.tsx`** _(NEW)_ — 8 tests for ProductsPage (loading skeleton, product grid, EmptyState, desktop filter bar, mobile FilterDrawer, ActiveFilterChips, sort change, pagination). Fix: ProductFilters renders in both aside+FilterDrawer → use `getAllByTestId`.
+- **`src/app/products/[slug]/__tests__/page.test.tsx`** _(NEW)_ — 5 tests for ProductDetailPage (title+price, Add to Cart, product image, NotFound, loading). Fix: ProductInfo mock uses individual props (`title`, `price`) not a `product` object.
+- **`src/app/auctions/__tests__/page.test.tsx`** _(NEW)_ — 5 tests for AuctionsPage (loading, auction cards, EmptyState, sort dropdown, pagination).
+- **`src/app/auctions/[id]/__tests__/page.test.tsx`** _(NEW)_ — 6 tests for AuctionDetailPage. Key fixes: title appears in breadcrumb+h1 → `getByRole("heading")`; PlaceBidForm receives `isEnded` not `disabled`; useRealtimeBids returns `{currentBid, bidCount, lastBid, connected}`.
+- **`src/app/blog/__tests__/page.test.tsx`** _(NEW)_ — 6 tests for BlogPage (loading, cards, EmptyState, category tab change calls `table.setMany`, pagination, search).
+- **`src/app/blog/[slug]/__tests__/page.test.tsx`** _(NEW)_ — 5 tests for BlogPostPage. Fix: page uses `post.authorName` not `post.author`.
+- **`src/app/categories/__tests__/page.test.tsx`** _(NEW)_ — 5 tests for CategoriesPage (loading, category grid, search filter, EmptyState).
+- **`src/app/categories/[slug]/__tests__/page.test.tsx`** _(NEW)_ — 6 tests for CategoryProductsPage. Fix: category name in heading + EmptyState text → use `getAllByText()[0]`.
+- **`src/app/search/__tests__/page.test.tsx`** _(NEW)_ — 7 tests for SearchPage. Key fixes: `<input type="search">` has ARIA role `searchbox` not `textbox`; `SearchResultsSection` only renders when `hasAnyFilter` is truthy → tests that need it must set `mockGet` to return a non-empty `q`.
+- **`src/app/about/__tests__/page.test.tsx`** _(NEW)_ — 4 tests for About static page. Fix: page has no TEAM section → test VALUES section instead; HOW_BIDDERS_TITLE/VALUES_TITLE added to mock.
+- **`src/app/contact/__tests__/page.test.tsx`** _(NEW)_ — 4 tests for Contact page (renders without crash, ContactForm, ContactInfoSidebar, heading).
+- **`src/app/help/__tests__/page.test.tsx`** _(NEW)_ — 4 tests for Help static page.
+- **`src/app/privacy/__tests__/page.test.tsx`** _(NEW)_ — 3 tests for Privacy Policy page. Fix: page uses `UI_LABELS.FOOTER.TERMS_OF_SERVICE` + `UI_LABELS.FOOTER.CONTACT` → add FOOTER to constants mock.
+- **`src/app/terms/__tests__/page.test.tsx`** _(NEW)_ — 3 tests for Terms page. Fix: page uses `UI_LABELS.FOOTER.PRIVACY_POLICY` → add FOOTER to constants mock.
+- **`src/app/promotions/__tests__/page.test.tsx`** _(NEW)_ — 3 tests for PromotionsPage. Fix: page uses `LABELS.EMPTY_DEALS`/`LABELS.CHECK_BACK`, not `EMPTY_TITLE`/`EMPTY_SUBTITLE`.
+- **`src/app/seller/__tests__/page.test.tsx`** _(NEW)_ — 5 tests for SellerDashboardPage (redirect to login, spinner on auth loading, stat cards, EmptyState when no products, quick actions + recent listings). Note: `Heading`+`Text` imported from `@/components/typography` → mock that path separately.
+- **`src/app/seller/analytics/__tests__/page.test.tsx`** _(NEW)_ — 5 tests for SellerAnalyticsPage (spinner, loading text, analytics stats, revenue chart, no-data message).
+- **`src/app/seller/payouts/__tests__/page.test.tsx`** _(NEW)_ — 4 tests for SellerPayoutsPage (loading state, payout stats, payout request form, payout history table).
+
+#### Test Status
+
+- **263 suites** / **3015 tests** (3011 passed, 4 pre-existing skips) — 0 failures.
+- Phases 18.13, 18.14, 18.15, 18.16 complete.
+
+---
+
 ### Phase 18.8–18.12 — API Route Test Suite (2026-02-22)
 
 #### Added
