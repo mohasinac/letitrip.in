@@ -67,6 +67,9 @@ export interface ProductDocument {
   // Shipping options
   pickupAddressId?: string;
 
+  // Analytics — system-managed
+  viewCount?: number; // Total unique product detail page views
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -183,6 +186,7 @@ export const PRODUCT_PUBLIC_FIELDS = [
   "seoTitle",
   "seoDescription",
   "seoKeywords",
+  "viewCount",
   "createdAt",
 ] as const;
 

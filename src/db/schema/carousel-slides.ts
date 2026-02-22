@@ -56,6 +56,11 @@ export interface CarouselSlideDocument {
     alt: string;
   };
   cards: GridCard[];
+  /** Analytics counters — system-managed, not admin-settable */
+  stats?: {
+    views: number; // Total times this slide was served in the public carousel
+    lastViewed?: Date; // Timestamp of the most recent public serve
+  };
   createdAt: Date;
   updatedAt: Date;
   createdBy: string; // Admin user ID
@@ -132,6 +137,7 @@ export const CAROUSEL_SLIDES_PUBLIC_FIELDS = [
   "link",
   "mobileMedia",
   "cards",
+  "stats",
 ] as const;
 
 /**

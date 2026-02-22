@@ -4,13 +4,13 @@
  * Handles individual product operations (get, update, delete)
  *
  * TODO (Future) - Phase 2:
- * - Implement view counting/analytics
  * - Add related products recommendations
  * - Add caching with Redis/CloudFlare
  * - Implement optimistic locking for concurrent updates
  * - Add audit logging for all changes
- * - Add soft delete with restore capability
  * - Implement webhook notifications for status changes
+ * Done: view count increment (fire-and-forget) in GET — Phase 7 tech debt
+ * Done: soft delete (set status to 'discontinued') in DELETE
  */
 
 import { NextRequest } from "next/server";
@@ -42,8 +42,8 @@ import { serverLogger } from "@/lib/server-logger";
  * Get single product by ID
  *
  * Features:
- * - Fetch product by ID
- * - Increment view count asynchronously
+ * - Fetch product by ID or slug (supports both ID-based and slug-based lookup)
+ * - Increment view count asynchronously (fire-and-forget — ✅ Done)
  * - Return 404 if not found
  * - Public access (no authentication required)
  *
@@ -64,6 +64,12 @@ export async function GET(
     if (!product) {
       throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
     }
+
+    // Track view asynchronously (fire-and-forget) — analytics must not block the response.
+    // Use product.id (resolved doc ID) in case the lookup was by slug.
+    productRepository.incrementViewCount(product.id).catch(() => {
+      // Intentionally swallowed — analytics failures must not affect availability
+    });
 
     // Return product data
     return successResponse(product);

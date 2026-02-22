@@ -6,6 +6,7 @@
 
 import { BaseRepository } from "./base.repository";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { FieldValue } from "firebase-admin/firestore";
 import type {
   ProductDocument,
   ProductCreateInput,
@@ -321,6 +322,26 @@ class ProductRepository extends BaseRepository<ProductDocument> {
         maxPageSize: 100,
       },
     );
+  }
+
+  /**
+   * Increment product view count (fire-and-forget analytics).
+   * Called asynchronously from GET /api/products/[id].
+   * Updates viewCount (+1).
+   *
+   * @param productId - Product ID or slug to record a view for
+   */
+  async incrementViewCount(productId: string): Promise<void> {
+    try {
+      await this.db
+        .collection(this.collection)
+        .doc(productId)
+        .update({
+          [PRODUCT_FIELDS.VIEW_COUNT]: FieldValue.increment(1),
+        });
+    } catch (error) {
+      // Swallow errors — analytics failures must not break the product response
+    }
   }
 }
 

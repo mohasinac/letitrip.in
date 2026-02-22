@@ -5,6 +5,7 @@
  */
 
 import { BaseRepository } from "./base.repository";
+import { FieldValue } from "firebase-admin/firestore";
 import {
   CAROUSEL_SLIDES_COLLECTION,
   CarouselSlideDocument,
@@ -263,6 +264,27 @@ class CarouselRepository extends BaseRepository<CarouselSlideDocument> {
   async canActivateMore(): Promise<boolean> {
     const activeCount = await this.getActiveCount();
     return canActivateSlide(activeCount);
+  }
+
+  /**
+   * Increment view count for a carousel slide (fire-and-forget analytics).
+   * Called asynchronously from the public GET /api/carousel route.
+   * Updates stats.views (+1) and stats.lastViewed (now).
+   *
+   * @param slideId - Slide ID to record a view for
+   */
+  async incrementViews(slideId: string): Promise<void> {
+    try {
+      await this.db
+        .collection(this.collection)
+        .doc(slideId)
+        .update({
+          "stats.views": FieldValue.increment(1),
+          "stats.lastViewed": new Date(),
+        });
+    } catch (error) {
+      // Swallow errors — analytics failures must not break the carousel response
+    }
   }
 }
 

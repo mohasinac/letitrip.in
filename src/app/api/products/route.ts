@@ -19,6 +19,7 @@ import {
   getNumberParam,
   getSearchParams,
   getStringParam,
+  getBooleanParam,
 } from "@/lib/api/request-helpers";
 import {
   requireRoleFromRequest,
@@ -65,9 +66,47 @@ export async function GET(request: NextRequest) {
     const filters = getStringParam(searchParams, "filters");
     const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
 
+    // --- Compound filter assembly ---
+    // Named params (category, brand, q, etc.) are each converted into Sieve filter clauses
+    // and merged with any explicit raw `filters` Sieve DSL string from the caller.
+    // This allows both conventions: ?category=X&minPrice=100&maxPrice=500 (named)
+    // and ?filters=category==X,price>=100,price<=500 (Sieve DSL) and combinations of both.
+    const q = getStringParam(searchParams, "q");
+    const category = getStringParam(searchParams, "category");
+    const brand = getStringParam(searchParams, "brand");
+    const condition = getStringParam(searchParams, "condition");
+    const sellerId = getStringParam(searchParams, "sellerId");
+    const minPriceRaw = searchParams.get("minPrice");
+    const maxPriceRaw = searchParams.get("maxPrice");
+    const minPrice = minPriceRaw !== null ? Number(minPriceRaw) : undefined;
+    const maxPrice = maxPriceRaw !== null ? Number(maxPriceRaw) : undefined;
+    const inStock = getBooleanParam(searchParams, "inStock");
+    const isAuction = getBooleanParam(searchParams, "isAuction");
+    const featured = getBooleanParam(searchParams, "featured");
+
+    const compoundFilters: string[] = [];
+    if (q) compoundFilters.push(`title@=*${q}`);
+    if (category) compoundFilters.push(`category==${category}`);
+    if (brand) compoundFilters.push(`brand==${brand}`);
+    if (condition) compoundFilters.push(`condition==${condition}`);
+    if (sellerId) compoundFilters.push(`sellerId==${sellerId}`);
+    if (minPrice !== undefined && !Number.isNaN(minPrice))
+      compoundFilters.push(`price>=${minPrice}`);
+    if (maxPrice !== undefined && !Number.isNaN(maxPrice))
+      compoundFilters.push(`price<=${maxPrice}`);
+    if (inStock === true) compoundFilters.push("stockQuantity>0");
+    if (isAuction !== undefined)
+      compoundFilters.push(`isAuction==${isAuction}`);
+    if (featured === true) compoundFilters.push("featured==true");
+
+    // Explicit Sieve `filters` DSL string appended last (highest precedence)
+    if (filters) compoundFilters.push(filters);
+    const mergedFilters =
+      compoundFilters.length > 0 ? compoundFilters.join(",") : undefined;
+
     // Firestore-native query — no full collection scan
     const sieveResult = await productRepository.list({
-      filters,
+      filters: mergedFilters,
       sorts,
       page,
       pageSize,

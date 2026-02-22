@@ -1,8 +1,8 @@
 # LetItRip — Technical Debt & Future Work Tracker
 
-**Last Updated**: February 2026  
-**Status**: All TODOs are intentional `TODO (Future)` roadmap notes — no blocking bugs.  
-**Total markers**: ~45 across 12 files (Phase 7.9 cleared ~15 items)
+**Last Updated**: February 2026 (updated Feb 22 — 4 additional items resolved)
+**Status**: All TODOs are intentional `TODO (Future)` roadmap notes — no blocking bugs.
+**Total markers**: ~41 across 12 files (Phase 7.10 cleared 4 more items)
 
 ---
 
@@ -27,24 +27,24 @@ This document organises them by file and category so future phases can pick them
 
 ### `src/lib/validation/schemas.ts` — 18 items
 
-| Line | Category            | Description                                                                                       |
-| ---- | ------------------- | ------------------------------------------------------------------------------------------------- |
-| 6    | Phase 2 header      | Future validation additions                                                                       |
-| 43   | Security            | ~~Domain whitelist for image URLs~~ ✅ Done — Phase 7.9 (`mediaUrlSchema`)                        |
-| 170  | Media               | ~~Video format validation (mp4/webm/ogg whitelist)~~ ✅ Done — Phase 7.9                          |
-| 171  | Media               | Resolution validation (min width/height requirements)                                             |
-| 191  | Search              | Compound filter support (price range + category combined)                                         |
-| 253  | Content Policy      | ~~Prohibited words/content filter for titles and descriptions~~ ✅ Done — Phase 7.9               |
-| 254  | Seller Verification | ~~Require seller email verification before listing products~~ ✅ Done — Phase 7.4                 |
-| 269  | Status Flow         | ~~Status transition validation (draft→published, not sold→draft)~~ ✅ Done — Phase 7.5            |
-| 335  | Categories          | Name uniqueness validation per parent (requires DB lookup)                                        |
-| 423  | Site Settings       | Deep nested validation for featuresEnabled, emailSettings, socialLinks                            |
-| 452  | Carousel            | ~~Cross-card overlap detection for 9×9 grid~~ ✅ Done — Phase 7.9                                 |
-| 564  | Sections            | ~~Type-specific config validation per section type~~ ✅ Done — Phase 7.9                          |
-| 611  | Email Templates     | Variable syntax validation — verify `{{variableName}}` placeholders                               |
-| 719  | Media               | ~~Aspect ratio enforcement — verify width/height match declared aspectRatio~~ ✅ Done — Phase 7.9 |
-| 797  | i18n                | i18n support for Zod error messages                                                               |
-| 812  | i18n                | Map field paths to localised error messages                                                       |
+| Line | Category            | Description                                                                                                                                |
+| ---- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 6    | Phase 2 header      | Future validation additions                                                                                                                |
+| 43   | Security            | ~~Domain whitelist for image URLs~~ ✅ Done — Phase 7.9 (`mediaUrlSchema`)                                                                 |
+| 170  | Media               | ~~Video format validation (mp4/webm/ogg whitelist)~~ ✅ Done — Phase 7.9                                                                   |
+| 171  | Media               | ~~Resolution validation (min width/height requirements)~~ ✅ Done — Phase 7.10 (`cropDataSchema` `minWidth`/`minHeight` params + refines)  |
+| 191  | Search              | ~~Compound filter support (price range + category combined)~~ ✅ Done — Phase 7.10 (compound Sieve filter assembly in `GET /api/products`) |
+| 253  | Content Policy      | ~~Prohibited words/content filter for titles and descriptions~~ ✅ Done — Phase 7.9                                                        |
+| 254  | Seller Verification | ~~Require seller email verification before listing products~~ ✅ Done — Phase 7.4                                                          |
+| 269  | Status Flow         | ~~Status transition validation (draft→published, not sold→draft)~~ ✅ Done — Phase 7.5                                                     |
+| 335  | Categories          | Name uniqueness validation per parent (requires DB lookup)                                                                                 |
+| 423  | Site Settings       | Deep nested validation for featuresEnabled, emailSettings, socialLinks                                                                     |
+| 452  | Carousel            | ~~Cross-card overlap detection for 9×9 grid~~ ✅ Done — Phase 7.9                                                                          |
+| 564  | Sections            | ~~Type-specific config validation per section type~~ ✅ Done — Phase 7.9                                                                   |
+| 611  | Email Templates     | Variable syntax validation — verify `{{variableName}}` placeholders                                                                        |
+| 719  | Media               | ~~Aspect ratio enforcement — verify width/height match declared aspectRatio~~ ✅ Done — Phase 7.9                                          |
+| 797  | i18n                | i18n support for Zod error messages                                                                                                        |
+| 812  | i18n                | Map field paths to localised error messages                                                                                                |
 
 ---
 
@@ -178,19 +178,19 @@ This document organises them by file and category so future phases can pick them
 
 ### Low Impact / Nice-to-Have
 
-| Item                                  | Files                      | Description          |
-| ------------------------------------- | -------------------------- | -------------------- |
-| SEO slugs for products & FAQs         | `api/products`, `api/faqs` | ✅ Done — Phase 7.8  |
-| ~~Domain whitelist (mediaUrlSchema)~~ | `schemas.ts:43`            | ✅ Done — Phase 7.9  |
-| ~~Video format validation~~           | `schemas.ts:170`           | ✅ Done — Phase 7.9  |
-| ~~Prohibited words filter~~           | `schemas.ts:253`           | ✅ Done — Phase 7.9  |
-| ~~Carousel grid overlap~~             | `schemas.ts:452`           | ✅ Done — Phase 7.9  |
-| ~~Section type-specific config~~      | `schemas.ts:564`           | ✅ Done — Phase 7.9  |
-| ~~Aspect ratio enforcement~~          | `schemas.ts:719`           | ✅ Done — Phase 7.9  |
-| ~~LayoutClient background fetch~~     | `LayoutClient.tsx:42`      | ✅ Done — Phase 7.9  |
-| Crashlytics integration               | `lib/monitoring`           | Crash tracking       |
-| Carousel slide analytics              | `api/carousel/route.ts:46` | Analytics            |
-| i18n for Zod error messages           | `schemas.ts:797,812`       | Internationalisation |
+| Item                                  | Files                      | Description                                                                                                            |
+| ------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| SEO slugs for products & FAQs         | `api/products`, `api/faqs` | ✅ Done — Phase 7.8                                                                                                    |
+| ~~Domain whitelist (mediaUrlSchema)~~ | `schemas.ts:43`            | ✅ Done — Phase 7.9                                                                                                    |
+| ~~Video format validation~~           | `schemas.ts:170`           | ✅ Done — Phase 7.9                                                                                                    |
+| ~~Prohibited words filter~~           | `schemas.ts:253`           | ✅ Done — Phase 7.9                                                                                                    |
+| ~~Carousel grid overlap~~             | `schemas.ts:452`           | ✅ Done — Phase 7.9                                                                                                    |
+| ~~Section type-specific config~~      | `schemas.ts:564`           | ✅ Done — Phase 7.9                                                                                                    |
+| ~~Aspect ratio enforcement~~          | `schemas.ts:719`           | ✅ Done — Phase 7.9                                                                                                    |
+| ~~LayoutClient background fetch~~     | `LayoutClient.tsx:42`      | ✅ Done — Phase 7.9                                                                                                    |
+| Crashlytics integration               | `lib/monitoring`           | Crash tracking                                                                                                         |
+| Carousel slide analytics              | `api/carousel/route.ts:46` | ~~Analytics~~ ✅ Done — Phase 7.10 (`incrementViews` fire-and-forget + `stats.views` field on `CarouselSlideDocument`) |
+| i18n for Zod error messages           | `schemas.ts:797,812`       | Internationalisation                                                                                                   |
 
 ---
 

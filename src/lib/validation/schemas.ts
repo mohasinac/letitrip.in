@@ -223,7 +223,9 @@ const videoSchema = z
 
 /**
  * Product list query validation
- * TODO (Future): Add compound filter support (e.g. price range + category combined)
+ * Supports both named params (category, brand, minPrice, maxPrice, inStock, q, etc.) and
+ * raw Sieve DSL via the `filters` param. Named params are merged into a compound Sieve filter
+ * string in the GET /api/products route handler — see compound filter assembly logic there.
  */
 export const productListQuerySchema = paginationQuerySchema
   .extend({
@@ -812,6 +814,7 @@ export const bidSchema = z
  * Image crop data validation.
  * aspectRatio format is validated (e.g. "16:9", "1:1").
  * Aspect ratio enforcement: when aspectRatio is provided the width/height must match within 2% tolerance.
+ * Resolution enforcement: when minWidth/minHeight are provided the crop dimensions must meet the minimums.
  */
 export const cropDataSchema = z
   .object({
@@ -828,6 +831,8 @@ export const cropDataSchema = z
     outputFolder: z.string().optional(),
     outputFormat: z.enum(["jpeg", "png", "webp"]).optional(),
     quality: z.number().min(1).max(100).optional(),
+    minWidth: z.number().int().positive().optional(), // Minimum required output width in pixels
+    minHeight: z.number().int().positive().optional(), // Minimum required output height in pixels
   })
   .refine(
     (data) => {
@@ -839,7 +844,13 @@ export const cropDataSchema = z
       return Math.abs(actualRatio - expectedRatio) / expectedRatio < 0.02; // 2% tolerance
     },
     { message: "Crop dimensions do not match the declared aspect ratio" },
-  );
+  )
+  .refine((data) => !data.minWidth || data.width >= data.minWidth, {
+    message: "Crop width does not meet the minimum width requirement",
+  })
+  .refine((data) => !data.minHeight || data.height >= data.minHeight, {
+    message: "Crop height does not meet the minimum height requirement",
+  });
 
 /**
  * Video trim data validation

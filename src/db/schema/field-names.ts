@@ -136,6 +136,7 @@ export const PRODUCT_FIELDS = {
   SEO_TITLE: "seoTitle",
   SEO_DESCRIPTION: "seoDescription",
   SEO_KEYWORDS: "seoKeywords",
+  VIEW_COUNT: "viewCount",
   CREATED_AT: "createdAt",
   UPDATED_AT: "updatedAt",
 
@@ -330,6 +331,11 @@ export const CAROUSEL_FIELDS = {
   LINK: "link",
   MOBILE_MEDIA: "mobileMedia",
   CARDS: "cards",
+  STATS: "stats",
+  STAT: {
+    VIEWS: "stats.views",
+    LAST_VIEWED: "stats.lastViewed",
+  },
   CREATED_AT: "createdAt",
   UPDATED_AT: "updatedAt",
   CREATED_BY: "createdBy",

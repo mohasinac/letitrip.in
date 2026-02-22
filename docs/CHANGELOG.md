@@ -9,6 +9,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 7.10 — Tech Debt: Analytics, Compound Filters & Resolution Validation (2026-02-22)
+
+**Goal:** Close 4 outstanding tech debt items from TECH_DEBT.md. All changes are additive and backward-compatible.
+
+#### Added
+
+- **`src/lib/validation/schemas.ts`** — `cropDataSchema` now accepts optional `minWidth: number` and `minHeight: number` parameters. Two new `.refine()` validators enforce that crop dimensions meet the minimums when provided. Resolves TECH_DEBT line 171 ("Resolution validation — min width/height requirements").
+
+- **`src/app/api/products/route.ts`** — `GET /api/products` now supports compound/named query params alongside raw Sieve DSL. New params: `q` (title `@=*` full-text), `category`, `brand`, `condition`, `sellerId`, `minPrice`, `maxPrice`, `inStock`, `isAuction`, `featured`. All named params are assembled into a compound Sieve filter string merged with any explicit `filters=` DSL. Resolves TECH_DEBT line 191 ("Compound filter support").
+
+- **`src/db/schema/carousel-slides.ts`** — `CarouselSlideDocument` gains optional `stats?: { views: number; lastViewed?: Date }` (system-managed). `CAROUSEL_SLIDES_PUBLIC_FIELDS` updated.
+
+- **`src/db/schema/field-names.ts`** — `CAROUSEL_FIELDS` extended: `STATS`, `STAT.VIEWS`, `STAT.LAST_VIEWED`. `PRODUCT_FIELDS` extended: `VIEW_COUNT`.
+
+- **`src/db/schema/products.ts`** — `ProductDocument` gains `viewCount?: number`. `PRODUCT_PUBLIC_FIELDS` updated.
+
+- **`src/repositories/carousel.repository.ts`** — `incrementViews(slideId)` method: Firestore `FieldValue.increment(1)` on `stats.views` + timestamps `stats.lastViewed`. Errors swallowed (analytics must not break availability).
+
+- **`src/repositories/product.repository.ts`** — `incrementViewCount(productId)` method: Firestore `FieldValue.increment(1)` on `viewCount`. Errors swallowed.
+
+- **`src/app/api/carousel/route.ts`** — Public `GET /api/carousel` fire-and-forgets `incrementViews` for each returned slide. Resolves TECH_DEBT carousel analytics item.
+
+- **`src/app/api/products/[id]/route.ts`** — `GET /api/products/[id]` fire-and-forgets `incrementViewCount(product.id)` (uses resolved ID to handle slug lookups).
+
+---
+
 ### Phase 18.7 — User API Route Tests (2026-02-21)
 
 **Goal:** Write comprehensive tests for all user-facing API routes. Result: 5 new test files + 1 updated, 34 new tests, 218/218 suites green, 2733/2737 tests passing (4 pre-existing skips).

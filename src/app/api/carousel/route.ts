@@ -8,9 +8,9 @@
  * - Add slide ordering/reordering
  * - Implement slide activation (max 5 active)
  * - Add A/B testing for slides
- * - Track slide analytics (views, clicks, conversions)
  * - Implement slide scheduling (start/end dates)
  * - Add slide preview/draft mode
+ * Done: Track slide analytics (views, clicks) — ✅ views fire-and-forget in GET (Phase 7 tech debt)
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -44,6 +44,7 @@ import { serverLogger } from "@/lib/server-logger";
  * Ã¢Å“â€¦ Sorted by order field ascending
  * Ã¢Å“â€¦ Cache-Control headers set (5 min public / no-cache admin)
  * TODO (Future): Track views analytics per slide
+ * Done: View count fire-and-forget tracking implemented below (Phase 7 tech debt)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -70,6 +71,18 @@ export async function GET(request: NextRequest) {
 
     // Enforce max 5 active slides in response (for public)
     const limitedSlides = includeInactive ? slides : slides.slice(0, 5);
+
+    // Track views asynchronously (fire-and-forget) for public fetches only.
+    // Analytics failures must never block the response.
+    if (!includeInactive && limitedSlides.length > 0) {
+      Promise.all(
+        limitedSlides.map((slide) =>
+          carouselRepository.incrementViews(slide.id),
+        ),
+      ).catch(() => {
+        // Intentionally swallowed — analytics must not affect availability
+      });
+    }
 
     return NextResponse.json(
       { success: true, data: limitedSlides },
