@@ -20,14 +20,12 @@ import {
   AdminPageHeader,
   ConfirmDeleteModal,
   TablePagination,
-} from "@/components";
-import { useToast } from "@/components";
-import {
+  useToast,
   UserFilters,
   getUserTableColumns,
   UserDetailDrawer,
-} from "@/components/admin/users";
-import type { AdminUser, UserTab } from "@/components/admin/users";
+} from "@/components";
+import type { AdminUser, UserTab } from "@/components";
 
 interface PageProps {
   params: Promise<{ action?: string[] }>;

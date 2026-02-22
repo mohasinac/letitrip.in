@@ -14,11 +14,7 @@
 import { createApiHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
 import { orderRepository, productRepository } from "@/repositories";
-
-/** Month label in "Mon YYYY" format */
-function getMonthLabel(date: Date): string {
-  return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
-}
+import { formatMonthYear } from "@/utils";
 
 function normalizeDate(raw: Date | string | number): Date {
   if (raw instanceof Date) return raw;
@@ -61,7 +57,7 @@ export const GET = createApiHandler({
 
     for (let i = 11; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const label = getMonthLabel(d);
+      const label = formatMonthYear(d);
       const sortKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       monthMap.set(sortKey, { month: label, orders: 0, revenue: 0, sortKey });
     }

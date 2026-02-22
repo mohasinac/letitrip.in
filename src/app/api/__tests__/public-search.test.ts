@@ -24,7 +24,7 @@ jest.mock("@/repositories", () => ({
 }));
 
 const mockApplySieveToArray = jest.fn();
-jest.mock("@/helpers", () => ({
+jest.mock("@/helpers/data/sieve.helper", () => ({
   applySieveToArray: (...args: unknown[]) => mockApplySieveToArray(...args),
 }));
 

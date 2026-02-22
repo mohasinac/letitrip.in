@@ -1,6 +1,6 @@
 "use client";
 
-import { THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
+import { THEME_CONSTANTS, SITE_CONFIG, ROUTES } from "@/constants";
 import Link from "next/link";
 
 export function ContactCTA() {
@@ -108,7 +108,7 @@ export function ContactCTA() {
 
         {/* Contact Form */}
         <Link
-          href="/contact"
+          href={ROUTES.PUBLIC.CONTACT}
           className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgTertiary} ${THEME_CONSTANTS.borderRadius.xl} hover:${THEME_CONSTANTS.themed.bgPrimary} transition-colors group`}
         >
           <svg
@@ -139,7 +139,7 @@ export function ContactCTA() {
 
       {/* Primary CTA Button */}
       <Link
-        href="/contact"
+        href={ROUTES.PUBLIC.CONTACT}
         className={`inline-flex items-center gap-2 ${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.borderRadius.xl} bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors`}
       >
         <span>Contact Support Team</span>

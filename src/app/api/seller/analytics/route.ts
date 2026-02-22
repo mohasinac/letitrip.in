@@ -16,15 +16,12 @@ import { orderRepository, productRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
+import { formatMonthYear } from "@/utils";
 import type { OrderDocument } from "@/db/schema";
 
 function normalizeDate(raw: Date | string | number): Date {
   if (raw instanceof Date) return raw;
   return new Date(raw as string | number);
-}
-
-function getMonthLabel(date: Date): string {
-  return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
 
 export async function GET(_request: NextRequest) {
@@ -67,7 +64,7 @@ export async function GET(_request: NextRequest) {
 
     for (let i = 5; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const label = getMonthLabel(d);
+      const label = formatMonthYear(d);
       const sortKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       monthMap.set(sortKey, { month: label, orders: 0, revenue: 0, sortKey });
     }

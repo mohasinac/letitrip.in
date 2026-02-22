@@ -39,6 +39,8 @@ jest.mock("@/components", () => ({
   SellerRecentListings: ({ products }: { products: any[] }) => (
     <div data-testid="recent-listings">{products.length} products</div>
   ),
+  Heading: ({ children }: { children: React.ReactNode }) => <h2>{children}</h2>,
+  Text: ({ children }: { children: React.ReactNode }) => <p>{children}</p>,
 }));
 
 jest.mock("@/components/typography", () => ({

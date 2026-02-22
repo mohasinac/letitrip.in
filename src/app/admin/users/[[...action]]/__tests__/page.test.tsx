@@ -57,6 +57,9 @@ jest.mock("@/components", () => ({
   ConfirmDeleteModal: () => <div data-testid="confirm-delete" />,
   TablePagination: () => <div data-testid="table-pagination" />,
   useToast: () => ({ showToast: jest.fn() }),
+  UserFilters: () => <div data-testid="user-filters" />,
+  getUserTableColumns: () => ({ columns: [], actions: [] }),
+  UserDetailDrawer: () => <div data-testid="user-drawer" />,
 }));
 
 jest.mock("@/components/admin/users", () => ({

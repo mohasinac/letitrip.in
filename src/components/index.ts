@@ -113,3 +113,9 @@ export * from "./contact";
 
 // ==================== SEARCH ====================
 export * from "./search";
+
+// ==================== FAQ ====================
+export * from "./faq";
+
+// ==================== HOMEPAGE ====================
+export * from "./homepage";

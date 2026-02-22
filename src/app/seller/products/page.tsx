@@ -119,15 +119,19 @@ function SellerProductsPageContent() {
   }, [user?.uid, searchParam, page, sortParam, statusParam]);
 
   const { data, isLoading, refetch } = useApiQuery<{
-    data: AdminProduct[];
-    meta: { total: number; page: number; limit: number; totalPages: number };
+    items: AdminProduct[];
+    total: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+    hasMore: boolean;
   }>({
     queryKey: [
       "seller-products-list",
       table.params.toString(),
       user?.uid ?? "",
     ],
-    queryFn: () => fetch(productsUrl!).then((r) => r.json()),
+    queryFn: () => apiClient.get(productsUrl!),
     enabled: !!productsUrl,
   });
 
@@ -207,8 +211,9 @@ function SellerProductsPageContent() {
 
   if (!user) return null;
 
-  const products = data?.data ?? [];
-  const meta = data?.meta;
+  const products = data?.items ?? [];
+  const totalPages = data?.totalPages ?? 1;
+  const totalItems = data?.total ?? 0;
 
   return (
     <div className="space-y-6">
@@ -360,12 +365,12 @@ function SellerProductsPageContent() {
         />
       )}
 
-      {(meta?.totalPages ?? 1) > 1 && (
+      {(totalPages ?? 1) > 1 && (
         <TablePagination
           currentPage={page}
-          totalPages={meta?.totalPages ?? 1}
+          totalPages={totalPages ?? 1}
           pageSize={PAGE_SIZE}
-          total={meta?.total ?? 0}
+          total={totalItems ?? 0}
           onPageChange={table.setPage}
           isLoading={isLoading}
         />

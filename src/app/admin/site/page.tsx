@@ -23,7 +23,7 @@ import {
   SiteBasicInfoForm,
   SiteContactForm,
   SiteSocialLinksForm,
-} from "@/components/admin/site";
+} from "@/components";
 import type { SiteSettingsDocument } from "@/db/schema";
 
 export default function AdminSiteSettings() {

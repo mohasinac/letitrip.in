@@ -9,26 +9,30 @@
 
 > **Testing strategy:** Every sub-step in every phase includes tests written immediately after the implementation code. There is no separate test phase. Tests ship in the same PR as the code they cover.
 
-| Phase  | Name                                           | Sections               | Risk                              | Est. files (impl + tests) |
-| ------ | ---------------------------------------------- | ---------------------- | --------------------------------- | ------------------------- |
-| **1**  | Foundation � deps, constants, schema + cleanup | F1, G, C4, G-remaining | ?? Zero breaking                  | ~12                       |
-| **2**  | Shared UI primitives                           | B1�B5, A1�A3           | ?? Additive only                  | ~18                       |
-| **3**  | Infrastructure wiring                          | A4�A5, barrel exports  | ?? Minor API change               | ~8                        |
-| **4**  | Admin pages                                    | A (admin)              | ?? Admin-only impact              | ~14                       |
-| **5**  | Public list pages                              | A+B (public)           | ?? User-facing                    | ~10                       |
-| **6**  | Seller & user pages + CRUD drawers             | A+B+D (seller/user)    | ?? Seller-facing                  | ~10                       |
-| **7**  | FAQ routes + homepage tabs                     | E                      | ?? New routes                     | ~8                        |
-| **8**  | Footer & navigation rewrite                    | F2�F5                  | ?? Visual, site-wide              | ~8                        |
-| **9**  | Inline create drawers                          | C1�C3                  | ?? Schema change                  | ~10                       |
-| **10** | Gestures + accessibility                       | H                      | ?? Cross-cutting                  | ~22                       |
-| **11** | Homepage sections                              | I                      | ?? Public-facing                  | ~20                       |
-| **12** | Dashboard page styling                         | J                      | ?? Internal-facing                | ~16                       |
-| **13** | Non-tech friendly UX                           | K                      | ?? User-facing, site-wide         | ~28                       |
-| **14** | Code deduplication                             | L                      | ?? Minor breaking (route renames) | ~12                       |
-| **15** | SEO � full-stack coverage                      | M                      | ?? Additive + schema change       | ~30                       |
-| **16** | Newsletter admin management                    | N                      | ?? Additive                       | ~8                        |
-| **17** | Next.js 16 compatibility � async params        | Maintenance            | ?? Zero breaking                  | ~5                        |
-| **18** | Dedicated test phase                           | All phases 1�17        | ?? Non-breaking (tests only)      | ~90 test files            |
+| Phase  | Name                                           | Sections                         | Risk                              | Est. files (impl + tests) |
+| ------ | ---------------------------------------------- | -------------------------------- | --------------------------------- | ------------------------- |
+| **1**  | Foundation � deps, constants, schema + cleanup | F1, G, C4, G-remaining           | ?? Zero breaking                  | ~12                       |
+| **2**  | Shared UI primitives                           | B1�B5, A1�A3                     | ?? Additive only                  | ~18                       |
+| **3**  | Infrastructure wiring                          | A4�A5, barrel exports            | ?? Minor API change               | ~8                        |
+| **4**  | Admin pages                                    | A (admin)                        | ?? Admin-only impact              | ~14                       |
+| **5**  | Public list pages                              | A+B (public)                     | ?? User-facing                    | ~10                       |
+| **6**  | Seller & user pages + CRUD drawers             | A+B+D (seller/user)              | ?? Seller-facing                  | ~10                       |
+| **7**  | FAQ routes + homepage tabs                     | E                                | ?? New routes                     | ~8                        |
+| **8**  | Footer & navigation rewrite                    | F2�F5                            | ?? Visual, site-wide              | ~8                        |
+| **9**  | Inline create drawers                          | C1�C3                            | ?? Schema change                  | ~10                       |
+| **10** | Gestures + accessibility                       | H                                | ?? Cross-cutting                  | ~22                       |
+| **11** | Homepage sections                              | I                                | ?? Public-facing                  | ~20                       |
+| **12** | Dashboard page styling                         | J                                | ?? Internal-facing                | ~16                       |
+| **13** | Non-tech friendly UX                           | K                                | ?? User-facing, site-wide         | ~28                       |
+| **14** | Code deduplication                             | L                                | ?? Minor breaking (route renames) | ~12                       |
+| **15** | SEO � full-stack coverage                      | M                                | ?? Additive + schema change       | ~30                       |
+| **16** | Newsletter admin management                    | N                                | ?? Additive                       | ~8                        |
+| **17** | Next.js 16 compatibility � async params        | Maintenance                      | ?? Zero breaking                  | ~5                        |
+| **18** | Dedicated test phase                           | All phases 1�17                  | ?? Non-breaking (tests only)      | ~90 test files            |
+| **19** | _(reserved)_                                   | TBD                              | TBD                               | TBD                       |
+| **20** | Standards gap-fix sweep                        | All phases 1-18                  | âš ï¸ Cross-cutting               | ~45                       |
+| **21** | Code-reuse & fetch() violation sweep           | All phases 1-18                  | âš ï¸ Cross-cutting               | ~40                       |
+| **22** | Event management system                        | Schema, API, Admin UI, Public UI | ?? New vertical feature           | ~65                       |
 
 ---
 
@@ -36,26 +40,30 @@
 
 > Update this table as work proceeds. One phase at a time � mark **In Progress** before starting, **Done** when every file change and test in that phase is complete and `npx tsc --noEmit` passes.
 
-| Phase  | Status  | Started    | Completed  | Notes                                                                                                                                                                                                                                                                                            |
-| ------ | ------- | ---------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **1**  | ? Done  | 2026-02-21 | 2026-02-21 |                                                                                                                                                                                                                                                                                                  |
-| **2**  | ? Done  | 2026-02-21 | 2026-02-21 | 48 tests � 9 components/hooks � 0 TS errors                                                                                                                                                                                                                                                      |
-| **3**  | ? Done  | 2026-02-21 | 2026-02-21 | 12 tests � externalPagination � SearchResultsSection Pagination                                                                                                                                                                                                                                  |
-| **4**  | ? Done  | 2026-02-21 | 2026-02-21 | 7 admin pages � useUrlTable � server pagination � filter bars � FAQs data bug fixed � 0 TS errors � **gap fix: admin FAQs TablePagination + paginated response type**                                                                                                                            |
-| **5**  | ? Done  | 2026-02-21 | 2026-02-21 | products � search � auctions � blog � categories/[slug] � FilterDrawer � ActiveFilterChips � **gap fix: search/auctions/categories FilterDrawer+ActiveFilterChips wired**                                                                                                                        |
-| **6**  | ? Done  | 2026-02-21 | 2026-02-21 | seller/products drawer � seller/orders � user/orders � CRUD drawers verified � **gap fix: seller/products FilterDrawer+ActiveFilterChips � user/orders TablePagination**                                                                                                                         |
-| **7**  | ? Done  | 2026-02-21 | 2026-02-21 | FAQ dynamic route � category tabs � FAQCategorySidebar URL update � **gap fix: FAQCategorySidebar `<Link>` with ROUTES.PUBLIC.FAQ_CATEGORY**                                                                                                                                                     |
-| **8**  | ? Done  | 2026-02-21 | 2026-02-21 | Footer 5-col rewrite � EnhancedFooter deleted � lucide-react nav icons � Sidebar polish                                                                                                                                                                                                          |
-| **9**  | ? Done  | 2026-02-21 | 2026-02-21 | CategorySelectorCreate � AddressSelectorCreate � ProductForm wired                                                                                                                                                                                                                               |
-| **10** | ? Done  | 2026-02-21 | 2026-02-21 | useLongPress � usePullToRefresh � SideDrawer focus trap � Tabs keyboard � HeroCarousel ARIA                                                                                                                                                                                                      |
-| **11** | ? Done  | 2026-02-21 | 2026-02-21 | TrustFeaturesSection (merged) � HomepageSkeleton � mobile snap-scroll carousels � lucide icons � useSwipe � useApiMutation newsletter                                                                                                                                                            |
-| **12** | ? Done  | 2026-02-21 | 2026-02-21 | AdminStatsCards lucide+stat tokens � AdminDashboardSkeleton � SellerStatCard ReactNode icon � RecentActivityCard lucide � AdminPageHeader description+breadcrumb � user/profile hooks order fix                                                                                                  |
-| **13** | ? Done  | 2026-02-21 | 2026-02-21 | Button isLoading+touch targets � EmptyState actionHref � SORT/HELP_TEXT/ACTIONS constants � messages human-friendly � search EmptyState+lucide � products empty state � seller onboarding                                                                                                        |
-| **14** | ? Done  | 2026-02-21 | 2026-02-21 | AutoBreadcrumbs extracted � validation schemas merged � profile PATCH on USER.PROFILE � 4 files deleted � 0 TS errors                                                                                                                                                                            |
-| **15** | ? Done  | 2026-02-21 | 2026-02-21 | sitemap � robots � OG image � JSON-LD helpers � product slug URLs � per-page metadata � noIndex for auth/admin/seller/user/checkout/cart                                                                                                                                                         |
-| **16** | ? Done  | 2026-02-22 | 2026-02-22 | newsletter subscriber list � stats � unsubscribe/resubscribe/delete � Sieve-powered API � admin nav entry                                                                                                                                                                                        |
-| **17** | ? Done  | 2026-02-21 | 2026-02-21 | Next.js 16 async params migration: 4 route handlers + faqs page � .next cache cleared � 0 TS errors                                                                                                                                                                                              |
-| **18** | ✅ Done | 2026-02-21 | 2026-02-24 | 274/274 suites green — 3070 tests (3066 passed + 4 skipped) — 0 failures. 11 new test files added across 3 batches: FilterDrawer/admin list pages, API routes (admin-users, admin-sessions), cart/checkout/checkout-success/sellers/sellers-[id] pages. All 18 sub-phases (18.1–18.19) complete. |
+| Phase  | Status          | Started    | Completed  | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------ | --------------- | ---------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1**  | ? Done          | 2026-02-21 | 2026-02-21 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **2**  | ? Done          | 2026-02-21 | 2026-02-21 | 48 tests � 9 components/hooks � 0 TS errors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **3**  | ? Done          | 2026-02-21 | 2026-02-21 | 12 tests � externalPagination � SearchResultsSection Pagination                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **4**  | ? Done          | 2026-02-21 | 2026-02-21 | 7 admin pages � useUrlTable � server pagination � filter bars � FAQs data bug fixed � 0 TS errors � **gap fix: admin FAQs TablePagination + paginated response type**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **5**  | ? Done          | 2026-02-21 | 2026-02-21 | products � search � auctions � blog � categories/[slug] � FilterDrawer � ActiveFilterChips � **gap fix: search/auctions/categories FilterDrawer+ActiveFilterChips wired** âš ï¸ raw fetch() violations â†’ Phase 21; barrel import violations â†’ Phase 20                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **6**  | ? Done          | 2026-02-21 | 2026-02-21 | seller/products drawer � seller/orders � user/orders � CRUD drawers verified � **gap fix: seller/products FilterDrawer+ActiveFilterChips � user/orders TablePagination** âš ï¸ raw fetch() in addresses/notifications/settings/wishlist/sellers pages â†’ Phase 21                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **7**  | ? Done          | 2026-02-21 | 2026-02-21 | FAQ dynamic route � category tabs � FAQCategorySidebar URL update � **gap fix: FAQCategorySidebar `<Link>` with ROUTES.PUBLIC.FAQ_CATEGORY**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **8**  | ? Done          | 2026-02-21 | 2026-02-21 | Footer 5-col rewrite � EnhancedFooter deleted � lucide-react nav icons � Sidebar polish                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **9**  | ? Done          | 2026-02-21 | 2026-02-21 | CategorySelectorCreate � AddressSelectorCreate � ProductForm wired                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **10** | ? Done          | 2026-02-21 | 2026-02-21 | useLongPress � usePullToRefresh � SideDrawer focus trap � Tabs keyboard � HeroCarousel ARIA                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **11** | ? Done          | 2026-02-21 | 2026-02-21 | TrustFeaturesSection (merged) � HomepageSkeleton � mobile snap-scroll carousels � lucide icons � useSwipe � useApiMutation newsletter                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **12** | ? Done          | 2026-02-21 | 2026-02-21 | AdminStatsCards lucide+stat tokens � AdminDashboardSkeleton � SellerStatCard ReactNode icon � RecentActivityCard lucide � AdminPageHeader description+breadcrumb � user/profile hooks order fix                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **13** | ? Done          | 2026-02-21 | 2026-02-21 | Button isLoading+touch targets � EmptyState actionHref � SORT/HELP_TEXT/ACTIONS constants � messages human-friendly � search EmptyState+lucide � products empty state � seller onboarding                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **14** | ? Done          | 2026-02-21 | 2026-02-21 | AutoBreadcrumbs extracted � validation schemas merged � profile PATCH on USER.PROFILE � 4 files deleted � 0 TS errors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **15** | ? Done          | 2026-02-21 | 2026-02-21 | sitemap � robots � OG image � JSON-LD helpers � product slug URLs � per-page metadata � noIndex for auth/admin/seller/user/checkout/cart                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **16** | ? Done          | 2026-02-22 | 2026-02-22 | newsletter subscriber list � stats � unsubscribe/resubscribe/delete � Sieve-powered API � admin nav entry                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **17** | ? Done          | 2026-02-21 | 2026-02-21 | Next.js 16 async params migration: 4 route handlers + faqs page � .next cache cleared � 0 TS errors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **18** | ✅ Done         | 2026-02-21 | 2026-02-24 | 274/274 suites green — 3070 tests (3066 passed + 4 skipped) — 0 failures. 11 new test files added across 3 batches: FilterDrawer/admin list pages, API routes (admin-users, admin-sessions), cart/checkout/checkout-success/sellers/sellers-[id] pages. All 18 sub-phases (18.1–18.19) complete.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **19** | ? Not started   | --         | --         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **20** | ✅ Done         | 2026-02-23 | 2026-02-23 | Gap-fix sweep complete — 274/274 suites green (3072 tests, +2 new). Barrel imports: 7 pages fixed; exceptions: `opengraph-image.tsx` keeps `@/constants/seo` (edge runtime), `api/search` + `api/faqs` keep `@/helpers/data/sieve.helper` (intentionally not in barrel). Hardcoded routes: 3 files fixed. `console.warn → logger.warn` in `useRealtimeBids`. Products API response shape: `successResponse({items,...})` (was `{data,meta}`); consuming pages updated. `formatMonthYear`/`formatFileSize` replace inline logic in 3 API routes. Tests: all 6 Phase 20 suites updated/extended. Pre-existing flaky test in `token.helper.test.ts` (timing-sensitive, passes in isolation) noted and unchanged. |
+| **21** | â¬œ Not started | --         | --         | Code-reuse sweep: replace raw fetch() with apiClient in 15+ pages, sieveQuery() for findAll()+filter routes (search, faqs, payouts, blog), tests for all replacements                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **22** | ? Not started   | --         | --         | Event management system (sales, offers, polls, surveys, feedback)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 **Status legend:** ? Not started � ?? In progress � ? Done � ? Blocked
 
@@ -3449,3 +3457,1849 @@ npm run build 2>&1 | Tee-Object build-check.txt
 If any layer falls below target, identify the highest-risk uncovered branches (auth guards, payment paths, CRUD error paths) and add targeted tests before closing Phase 18.
 
 **Acceptance criteria:** All four commands exit with code 0. Coverage report written to `coverage/` -- no critical path (auth, payment, CRUD) has uncovered error branches.
+
+---
+
+---
+
+## Phase 20 -- Standards Gap-Fix Sweep
+
+**Goal:** Eliminate all rule violations discovered during the post-Phase-18 audit. Every sub-task in this phase ships with tests. After Phase 20 all phases 1-18 are considered fully code-compliant.
+
+> **Depends on:** Phases 1-18 complete.
+
+> **Must complete before:** Phase 21 begins (Phase 21 depends on barrel changes made here).
+
+---
+
+### 20.1 -- Barrel Import Violations (RULE 1)
+
+Replace every import from a sub-path with the correct barrel import. Do NOT change logic -- pure import path changes.
+
+| File | Bad Import | Correct Import |
+
+|------|-----------|----------------|
+
+| `src/app/seller/page.tsx` | `@/components/typography` | `@/components` |
+
+| `src/app/page.tsx` | `@/components/homepage` | `@/components` |
+
+| `src/app/opengraph-image.tsx` | `@/constants/seo` | `@/constants` |
+
+| `src/app/faqs/page.tsx` | `@/components/faq` | `@/components` |
+
+| `src/app/faqs/[category]/page.tsx` | `@/components/faq` | `@/components` |
+
+| `src/app/admin/users/[[...action]]/page.tsx` | `@/components/admin/users` | `@/components` |
+
+| `src/app/admin/site/page.tsx` | `@/components/admin/site` | `@/components` |
+
+| `src/app/admin/dashboard/page.tsx` | `@/components/admin/dashboard` | `@/components` |
+
+| `src/app/api/search/route.ts` | `@/helpers/data/sieve.helper` | `@/helpers` |
+
+| `src/app/api/faqs/route.ts` | `@/helpers/data/sieve.helper` | `@/helpers` |
+
+| `src/components/faq/FAQPageContent.tsx` | `@/components/faq` | `@/components` |
+
+**Verify after each change:** `npx tsc --noEmit <file>`.
+
+**Affected barrel files to update if any named export is missing:** `src/components/index.ts`, `src/helpers/index.ts`, `src/constants/index.ts`.
+
+---
+
+### 20.2 -- Hardcoded Route Strings (RULE 14)
+
+Replace literal path strings in JSX and component code with `ROUTES.*` constants.
+
+| File | Line | Bad Value | Correct Constant |
+
+|------|------|-----------|-----------------|
+
+| `src/app/profile/[userId]/page.tsx` | 138 | `href="/"` | `href={ROUTES.HOME}` |
+
+| `src/components/faq/FAQCategorySidebar.tsx` | 111 | `href="/contact"` | `href={ROUTES.PUBLIC.CONTACT}` |
+
+| `src/components/faq/ContactCTA.tsx` | 111, 142 | `href="/contact"` | `href={ROUTES.PUBLIC.CONTACT}` |
+
+---
+
+### 20.3 -- `console.warn` in Production Hook (RULE 18)
+
+**`src/hooks/useRealtimeBids.ts`** line 81:
+
+```typescript
+// WRONG
+
+console.warn("[useRealtimeBids] RTDB subscription error:", error.message);
+
+// RIGHT
+
+import { logger } from "@/classes";
+
+logger.warn("[useRealtimeBids] RTDB subscription error:", {
+  error: error.message,
+});
+```
+
+---
+
+### 20.4 -- Products API Response Shape (Consistency Gap)
+
+**Problem:** `GET /api/products` (and seller's productList query) manually constructs `{ success: true, data: items, meta: {...} }` where `meta` lives at the wrapper level alongside `data`. `apiClient.get()` only returns `response.data`, so calling pages see `items[]` but lose `meta`. This forces pages to fall back to raw `fetch()` (confirmed with code comment in `src/app/products/page.tsx` line 78).
+
+**Fix -- `src/app/api/products/route.ts` (GET handler only):**
+
+```typescript
+// WRONG -- meta at wrapper level, lost by apiClient
+
+return NextResponse.json({
+  success: true,
+
+  data: sieveResult.items,
+
+  meta: { page, limit, total, totalPages, hasMore },
+});
+
+// RIGHT -- use successResponse with all fields inside data
+
+return successResponse({
+  items: sieveResult.items,
+
+  total: sieveResult.total,
+
+  page: sieveResult.page,
+
+  pageSize: sieveResult.pageSize,
+
+  totalPages: sieveResult.totalPages,
+
+  hasMore: sieveResult.hasMore,
+});
+```
+
+**Update consuming types:**
+
+```typescript
+// src/app/products/page.tsx -- update ProductsResponse type
+
+interface ProductsResponse {
+  items: ProductItem[]; // was: data
+
+  total: number;
+
+  page: number;
+
+  pageSize: number;
+
+  totalPages: number;
+
+  hasMore: boolean;
+}
+
+// Update all references: products = data?.data â†’ products = data?.items
+
+// meta.total â†’ data?.total, meta.totalPages â†’ data?.totalPages, etc.
+
+// Now use apiClient.get<ProductsResponse>(apiUrl) -- remove raw fetch()
+```
+
+**Same shape fix for seller products query** (`src/app/seller/products/page.tsx`) -- the response type it expects has `{ data: AdminProduct[], meta: { total, limit, page, totalPages } }`. After the products route.ts fix, update the type here too.
+
+---
+
+### 20.5 -- Formatters Not Used in API Routes (RULE 4)
+
+Replace manual date/size formatting in server-side routes with shared utilities from `@/utils`.
+
+| File | Bad Pattern | Correct Replacement |
+
+|------|------------|---------------------|
+
+| `src/app/api/seller/analytics/route.ts` | `date.toLocaleDateString("en-US", { month: "short", year: "numeric" })` | `formatDate(date)` or a named formatter exported from `@/utils` |
+
+| `src/app/api/admin/analytics/route.ts` | `date.toLocaleDateString("en-US", { month: "short", year: "numeric" })` | `formatDate(date)` |
+
+| `src/app/api/media/upload/route.ts` | `(file.size / (1024 * 1024)).toFixed(2)MB` | `formatFileSize(file.size)` from `@/utils` |
+
+> Note: `src/app/api/seller/payouts/route.ts` uses `.toFixed(2)` for internal arithmetic precision (not display). This is acceptable; `formatCurrency` is for display only.
+
+If `formatDate` doesn't produce the exact `"Mon 2026"` shape needed for analytics charts, add a `formatMonthYear(date: Date): string` to `src/utils/formatters/date.formatter.ts` and export via `src/utils/index.ts`.
+
+---
+
+### 20.6 -- Tests for 20.1--20.5
+
+For each changed file, verify or add tests:
+
+**`src/hooks/__tests__/useRealtimeBids.test.ts`** _(NEW or UPDATE)_
+
+- `it('calls logger.warn on RTDB subscription error')`
+
+- `it('sets connected to false on RTDB error')`
+
+**`src/app/api/__tests__/products.test.ts`** _(UPDATE)_
+
+- `it('GET returns items array inside data, not at top level')`
+
+- `it('GET returns total, page, pageSize, totalPages, hasMore inside data')`
+
+- `it('GET response shape is compatible with successResponse wrapper')`
+
+**`src/app/products/__tests__/page.test.tsx`** _(UPDATE)_
+
+- `it('uses items field from response, not data field')`
+
+**`src/app/api/__tests__/media-upload.test.ts`** _(UPDATE)_
+
+- `it('fileSize in response uses formatFileSize format, not raw toFixed(2)')`
+
+**`src/components/faq/__tests__/ContactCTA.test.tsx`** _(NEW or UPDATE)_
+
+- `it('contact link uses ROUTES.PUBLIC.CONTACT, not hardcoded /contact')`
+
+**`src/components/faq/__tests__/FAQCategorySidebar.test.tsx`** _(UPDATE)_
+
+- `it('contact link uses ROUTES.PUBLIC.CONTACT, not hardcoded /contact')`
+
+**Files changed in Phase 20:**
+
+```
+
+src/app/seller/page.tsx                            barrel import fix
+
+src/app/page.tsx                                   barrel import fix
+
+src/app/opengraph-image.tsx                        barrel import fix
+
+src/app/faqs/page.tsx                              barrel import fix
+
+src/app/faqs/[category]/page.tsx                   barrel import fix
+
+src/app/admin/users/[[...action]]/page.tsx         barrel import fix
+
+src/app/admin/site/page.tsx                        barrel import fix
+
+src/app/admin/dashboard/page.tsx                   barrel import fix
+
+src/app/api/search/route.ts                        barrel import fix
+
+src/app/api/faqs/route.ts                          barrel import fix
+
+src/components/faq/FAQPageContent.tsx              barrel import fix
+
+src/app/profile/[userId]/page.tsx                  hardcoded route fix
+
+src/components/faq/FAQCategorySidebar.tsx          hardcoded route fix
+
+src/components/faq/ContactCTA.tsx                  hardcoded route fix
+
+src/hooks/useRealtimeBids.ts                       console.warn â†’ logger
+
+src/app/api/products/route.ts                      response shape fix
+
+src/app/products/page.tsx                          type + apiClient fix
+
+src/app/seller/products/page.tsx                   type fix (meta shape)
+
+src/app/api/seller/analytics/route.ts              formatDate() from @/utils
+
+src/app/api/admin/analytics/route.ts               formatDate() from @/utils
+
+src/app/api/media/upload/route.ts                  formatFileSize() from @/utils
+
+src/utils/formatters/date.formatter.ts             + formatMonthYear() (if needed)
+
+src/utils/index.ts                                 + formatMonthYear export (if added)
+
+src/hooks/__tests__/useRealtimeBids.test.ts        NEW/UPDATE tests
+
+src/app/api/__tests__/products.test.ts             UPDATE tests
+
+src/app/products/__tests__/page.test.tsx           UPDATE tests
+
+src/components/faq/__tests__/ContactCTA.test.tsx   NEW tests
+
+src/components/faq/__tests__/FAQCategorySidebar.test.tsx  UPDATE tests
+
+```
+
+---
+
+## Phase 21 -- Code-Reuse & `fetch()` Violation Sweep
+
+**Goal:** Every client-side API call goes through `apiClient` (not raw `fetch()`). Every repeated-in-memory list query is replaced by `sieveQuery()`. No new code repeats logic that already exists in `@/utils`, `@/helpers`, `@/hooks`, or `@/classes`.
+
+> **Depends on:** Phase 20 complete (products API response shape fixed before queryFn migration).
+
+> **Must complete before:** Phase 22 begins.
+
+---
+
+### 21.1 -- Replace Raw `fetch()` with `apiClient` in Client Pages
+
+#### Why this matters
+
+`apiClient` provides:
+
+- Automatic `credentials: "include"` (cookie forwarding for auth)
+
+- Consistent timeout (30 s) and abort handling
+
+- Uniform error unwrapping â€” throws `ApiClientError` (caught by `useApiMutation` / `useApiQuery`)
+
+- Single place to add retries, auth refresh, request logging
+
+Raw `fetch()` inside `queryFn` or event handlers bypasses all of this and silently fails on non-OK responses unless the caller checks `res.ok`.
+
+#### Import pattern
+
+```typescript
+
+import { apiClient } from "@/lib/api-client";
+
+
+
+// GET -- simple
+
+const { data } = useApiQuery({
+
+  queryKey: ["key"],
+
+  queryFn: () => apiClient.get<ResponseType>(url),
+
+});
+
+
+
+// POST -- mutation
+
+const { mutate } = useApiMutation({
+
+  mutationFn: (body) => apiClient.post<ResponseType>(endpoint, body),
+
+});
+
+
+
+// PATCH
+
+mutationFn: (body) => apiClient.patch<ResponseType>(endpoint, body),
+
+
+
+// DELETE
+
+mutationFn: (id) => apiClient.delete<void>(API_ENDPOINTS.FOO.DELETE(id)),
+
+
+
+// File upload
+
+mutationFn: (formData) => apiClient.upload<UploadResult>(API_ENDPOINTS.MEDIA.UPLOAD, formData),
+
+```
+
+#### Files to migrate
+
+**`src/app/user/notifications/page.tsx`**
+
+| Line(s) | Current | Target |
+
+|---------|---------|--------|
+
+| 54-59 (queryFn) | `fetch(API_ENDPOINTS.NOTIFICATIONS.LIST + "?limit=50")` | `apiClient.get(API_ENDPOINTS.NOTIFICATIONS.LIST + "?limit=50")` |
+
+| 65-68 (markRead mutationFn) | `fetch(URL, { method: "PATCH" })` | `apiClient.patch(URL, {})` |
+
+| 75-78 (deleteOne mutationFn) | `fetch(URL, { method: "DELETE" })` | `apiClient.delete(URL)` |
+
+| 88-91 (readAll mutationFn) | `fetch(URL, { method: "PATCH" })` | `apiClient.patch(URL, {})` |
+
+**`src/app/user/settings/page.tsx`**
+
+| Line(s) | Current | Target |
+
+|---------|---------|--------|
+
+| 81 GET profile | `fetch(API_ENDPOINTS.USER.PROFILE, {...})` | `apiClient.get(API_ENDPOINTS.USER.PROFILE)` |
+
+| 117 PATCH profile | `fetch(API_ENDPOINTS.USER.PROFILE, { method: "PATCH", body })` | `apiClient.patch(API_ENDPOINTS.USER.PROFILE, data)` |
+
+**`src/app/user/addresses/add/page.tsx`**
+
+```typescript
+
+// WRONG
+
+const response = await fetch(API_ENDPOINTS.ADDRESSES.CREATE, {
+
+  method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data),
+
+});
+
+if (!response.ok) { ... }
+
+
+
+// RIGHT â€” use useApiMutation or direct apiClient.post()
+
+const createAddress = useApiMutation({
+
+  mutationFn: (data: AddressFormData) => apiClient.post(API_ENDPOINTS.ADDRESSES.CREATE, data),
+
+});
+
+// handleSubmit becomes: await createAddress.mutateAsync(data)
+
+```
+
+**`src/app/user/addresses/edit/[id]/page.tsx`**
+
+| Line(s) | Current | Target |
+
+|---------|---------|--------|
+
+| 50 GET address | `fetch(API_ENDPOINTS.ADDRESSES.GET(id))` | `apiClient.get(API_ENDPOINTS.ADDRESSES.GET(id))` â†’ wrap in `useApiQuery` |
+
+| 82 PUT address | `fetch(URL, { method: "PUT", body })` | `apiClient.put(URL, data)` |
+
+| 116 DELETE address | `fetch(URL, { method: "DELETE" })` | `apiClient.delete(URL)` |
+
+**`src/app/user/wishlist/page.tsx`**
+
+| Line(s) | Current | Target |
+
+|---------|---------|--------|
+
+| 42 GET wishlist | `fetch(API_ENDPOINTS.USER.WISHLIST.LIST).then(r => r.json())` | `apiClient.get(API_ENDPOINTS.USER.WISHLIST.LIST)` in `queryFn` |
+
+**`src/app/seller/page.tsx`**
+
+| Line(s) | Current | Target |
+
+|---------|---------|--------|
+
+| 54 GET products | `fetch(productsUrl!).then(r => r.json())` (queryFn) | `apiClient.get(productsUrl!)` |
+
+**`src/app/search/page.tsx`**
+
+| Line(s) | Current | Target |
+
+|---------|---------|--------|
+
+| 96 GET categories | `fetch(API_ENDPOINTS.CATEGORIES.LIST + "?flat=true").then(r => r.json())` | `apiClient.get(API_ENDPOINTS.CATEGORIES.LIST + "?flat=true")` |
+
+| 118 GET search results | `fetch(searchUrl).then(r => r.json())` (queryFn) | `apiClient.get(searchUrl)` |
+
+**`src/app/seller/orders/page.tsx`**
+
+| Line(s) | Current | Target |
+
+|---------|---------|--------|
+
+| 83 GET orders | `fetch(ordersUrl).then(r => r.json())` (queryFn) | `apiClient.get(ordersUrl)` |
+
+**`src/app/seller/payouts/page.tsx`**
+
+| Line(s) | Current | Target |
+
+|---------|---------|--------|
+
+| 41 GET payouts | `fetch(API_ENDPOINTS.SELLER.PAYOUTS).then(r => r.json())` | `apiClient.get(API_ENDPOINTS.SELLER.PAYOUTS)` |
+
+| 51 POST request payout | `fetch(API_ENDPOINTS.SELLER.PAYOUTS, { method: "POST", body })` | `apiClient.post(API_ENDPOINTS.SELLER.PAYOUTS, body)` |
+
+**`src/app/seller/analytics/page.tsx`**
+
+| Line(s) | Current | Target |
+
+|---------|---------|--------|
+
+| 52 GET analytics | `fetch(API_ENDPOINTS.SELLER.ANALYTICS).then(r => r.json())` | `apiClient.get(API_ENDPOINTS.SELLER.ANALYTICS)` |
+
+**`src/app/sellers/[id]/page.tsx`**
+
+| Line(s) | Current | Target |
+
+|---------|---------|--------|
+
+| 64, 104, 120 | 3 raw `fetch()` calls in `useEffect` | Lift to `useApiQuery` calls + `apiClient.get()` |
+
+**`src/app/profile/[userId]/page.tsx`**
+
+| Line(s) | Current | Target |
+
+|---------|---------|--------|
+
+| 62, 79, 93 | 3 raw `fetch()` calls in `useEffect` | Lift to `useApiQuery` calls + `apiClient.get()` |
+
+**`src/components/ui/NotificationBell.tsx`**
+
+| Line(s) | Current | Target |
+
+|---------|---------|--------|
+
+| 57 | `fetch(API_ENDPOINTS.NOTIFICATIONS.LIST + "?limit=10")` | `apiClient.get(...)` |
+
+| 67 | `fetch(MARK_READ(id), { method: "PATCH" })` | `apiClient.patch(URL, {})` |
+
+| 80 | `fetch(READ_ALL, { method: "PATCH" })` | `apiClient.patch(URL, {})` |
+
+**`src/components/faq/FAQPageContent.tsx`**
+
+| Line(s) | Current | Target |
+
+|---------|---------|--------|
+
+| 46 | `fetch(API_ENDPOINTS.FAQS.LIST + "?isActive=true")` | `useApiQuery` + `apiClient.get(...)` |
+
+**`src/components/admin/ImageUpload.tsx`**
+
+| Line(s) | Current | Target |
+
+|---------|---------|--------|
+
+| 78 | `fetch(API_ENDPOINTS.MEDIA.UPLOAD, { method: "POST", body: formData })` | `apiClient.upload(API_ENDPOINTS.MEDIA.UPLOAD, formData)` |
+
+**EXEMPT** (intentional raw `fetch()` -- do not change):
+
+- `src/contexts/SessionContext.tsx` â€” auth bootstrap; must run before `apiClient` is settled; session cookie management
+
+- `src/lib/firebase/auth-helpers.ts` â€” low-level session API below `apiClient`
+
+---
+
+### 21.2 -- Replace `findAll()` + In-Memory Filter with `sieveQuery()` (RULE 8)
+
+#### `src/app/api/search/route.ts`
+
+```typescript
+// WRONG (full collection scan -- O(N) reads for every search)
+
+const allProducts = await productRepository.findAll();
+
+const sieveResult = await applySieveToArray({ items: allProducts, model });
+
+// RIGHT (Firestore-native)
+
+// The search route uses a compound filter string; pass it as a SieveModel
+
+const model: SieveModel = {
+  filters: compoundSieveString, // assemble same filter DSL
+
+  sorts: sorts,
+
+  page: String(page),
+
+  pageSize: String(pageSize),
+};
+
+const sieveResult = await productRepository.list(model);
+```
+
+Remove `applySieveToArray` import from `@/helpers/data/sieve.helper`. Remove `productRepository.findAll()` call. Update import to use `@/helpers` barrel.
+
+#### `src/app/api/faqs/route.ts`
+
+```typescript
+
+// WRONG (GET /api/faqs -- L85 + L127)
+
+let faqs = await faqsRepository.findAll();  // L85: full scan then in-memory filter
+
+const sieveResult = await applySieveToArray({ ... });  // L127
+
+
+
+// RIGHT
+
+// Add SIEVE_FIELDS and list(model) to FAQRepository if not present
+
+// Then:
+
+const model: SieveModel = {
+
+  filters: isActive ? "isActive==true" : undefined,
+
+  sorts: sorts || "-createdAt",
+
+  page: String(page),
+
+  pageSize: String(pageSize),
+
+};
+
+const sieveResult = await faqsRepository.list(model);
+
+```
+
+**Add `SIEVE_FIELDS` and `list(model)` to `src/repositories/faq.repository.ts`:**
+
+```typescript
+
+static readonly SIEVE_FIELDS: FirebaseSieveFields = {
+
+  question: { canFilter: true, canSort: true },
+
+  category: { canFilter: true, canSort: false },
+
+  isActive: { canFilter: true, canSort: false },
+
+  helpful:  { canFilter: false, canSort: true },
+
+  createdAt: { canFilter: true, canSort: true },
+
+};
+
+
+
+async list(model: SieveModel) {
+
+  return this.sieveQuery<FAQDocument>(model, FAQRepository.SIEVE_FIELDS);
+
+}
+
+```
+
+#### `src/app/api/admin/payouts/route.ts`
+
+```typescript
+// WRONG
+
+const allPayouts = await payoutRepository.findAll();
+
+// RIGHT -- add SIEVE_FIELDS + list() to payoutRepository, then:
+
+const result = await payoutRepository.list(model);
+```
+
+#### `src/app/api/admin/blog/route.ts`
+
+```typescript
+
+// WRONG
+
+const allPosts = await blogRepository.findAll();
+
+
+
+// RIGHT -- blogRepository already has findAll() override but needs list()
+
+// Add SIEVE_FIELDS + list() to BlogRepository:
+
+static readonly SIEVE_FIELDS: FirebaseSieveFields = {
+
+  title:     { canFilter: true, canSort: true },
+
+  status:    { canFilter: true, canSort: false },
+
+  category:  { canFilter: true, canSort: false },
+
+  authorId:  { canFilter: true, canSort: false },
+
+  createdAt: { canFilter: true, canSort: true },
+
+  publishedAt: { canFilter: true, canSort: true },
+
+};
+
+async list(model: SieveModel) {
+
+  return this.sieveQuery<BlogPostDocument>(model, BlogRepository.SIEVE_FIELDS);
+
+}
+
+// Then update admin/blog/route.ts to use list(model)
+
+```
+
+**ACCEPTABLE** `findAll()` uses (do NOT change):
+
+- `src/app/api/admin/algolia/sync/route.ts` â€” full collection scan is required for Algolia index rebuild
+
+- `src/app/api/homepage-sections/route.ts` â€” fetches all â‰¤ 10 homepage sections, not a performance concern
+
+- `src/app/api/carousel/route.ts` â€” fetches all â‰¤ 20 carousel slides, not a performance concern
+
+- `src/app/api/categories/route.ts` â€” tree-building requires all categories
+
+---
+
+### 21.3 -- Add Firestore Indexes for New `sieveQuery()` Calls
+
+Add to `firestore.indexes.json`:
+
+```json
+
+// faqs: isActive + createdAt
+
+{ "collectionGroup": "faqs", "queryScope": "COLLECTION",
+
+  "fields": [{"fieldPath": "isActive", "order": "ASCENDING"}, {"fieldPath": "createdAt", "order": "DESCENDING"}] }
+
+
+
+// faqs: category + isActive
+
+{ "collectionGroup": "faqs", "queryScope": "COLLECTION",
+
+  "fields": [{"fieldPath": "category", "order": "ASCENDING"}, {"fieldPath": "isActive", "order": "ASCENDING"}] }
+
+
+
+// payouts: sellerId + status + createdAt (if payout repo scope-filters by seller)
+
+{ "collectionGroup": "payouts", "queryScope": "COLLECTION",
+
+  "fields": [{"fieldPath": "sellerId", "order": "ASCENDING"}, {"fieldPath": "status", "order": "ASCENDING"}, {"fieldPath": "createdAt", "order": "DESCENDING"}] }
+
+
+
+// blog: status + publishedAt
+
+{ "collectionGroup": "blog", "queryScope": "COLLECTION",
+
+  "fields": [{"fieldPath": "status", "order": "ASCENDING"}, {"fieldPath": "publishedAt", "order": "DESCENDING"}] }
+
+```
+
+Deploy with: `firebase deploy --only firestore:indexes`
+
+---
+
+### 21.4 -- Tests for Phase 21
+
+**Pages migrated to `apiClient`** -- update existing tests to mock `apiClient` instead of global `fetch`:
+
+```typescript
+
+// Before (in tests)
+
+global.fetch = jest.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({...}) });
+
+
+
+// After
+
+jest.mock("@/lib/api-client", () => ({
+
+  apiClient: {
+
+    get:    jest.fn().mockResolvedValue({ items: [], total: 0 }),
+
+    post:   jest.fn().mockResolvedValue({ id: "new-id" }),
+
+    patch:  jest.fn().mockResolvedValue({}),
+
+    delete: jest.fn().mockResolvedValue({}),
+
+    upload: jest.fn().mockResolvedValue({ url: "https://cdn.example.com/img.jpg" }),
+
+  },
+
+}));
+
+```
+
+**New test assertions for each migrated file:**
+
+**`src/app/user/notifications/__tests__/page.test.tsx`** _(UPDATE)_
+
+- `it('marks notification as read via apiClient.patch, not fetch')`
+
+- `it('deletes notification via apiClient.delete, not fetch')`
+
+- `it('marks all read via apiClient.patch, not fetch')`
+
+**`src/app/user/addresses/add/__tests__/page.test.tsx`** _(UPDATE)_
+
+- `it('submits address via apiClient.post')`
+
+- `it('shows error message when apiClient.post throws ApiClientError')`
+
+**`src/app/user/settings/__tests__/page.test.tsx`** _(UPDATE)_
+
+- `it('loads profile via apiClient.get')`
+
+- `it('saves settings via apiClient.patch')`
+
+**`src/app/seller/__tests__/page.test.tsx`** _(UPDATE)_
+
+- `it('fetches seller products via apiClient.get inside useApiQuery')`
+
+**`src/components/ui/__tests__/NotificationBell.test.tsx`** _(NEW or UPDATE)_
+
+- `it('loads notifications via apiClient.get on open')`
+
+- `it('marks notification read via apiClient.patch')`
+
+**`src/components/admin/__tests__/ImageUpload.test.tsx`** _(NEW or UPDATE)_
+
+- `it('uploads file via apiClient.upload')`
+
+- `it('shows error when apiClient.upload throws')`
+
+**`src/app/api/search/__tests__/route.test.ts`** _(UPDATE)_
+
+- `it('calls productRepository.list(sieveModel) instead of findAll()')`
+
+- `it('does NOT call productRepository.findAll()')`
+
+**`src/app/api/faqs/__tests__/faq-list.test.ts`** _(UPDATE)_
+
+- `it('calls faqsRepository.list(model) instead of findAll()')`
+
+**Repository tests:**
+
+**`src/repositories/__tests__/faq.repository.test.ts`** _(UPDATE)_
+
+- `it('list() calls sieveQuery not findAll')`
+
+- `it('list() passes SIEVE_FIELDS correctly')`
+
+**`src/repositories/__tests__/blog.repository.test.ts`** _(UPDATE)_
+
+- `it('list() calls sieveQuery not findAll')`
+
+**Files changed in Phase 21:**
+
+```
+
+src/app/user/notifications/page.tsx                 raw fetch â†’ apiClient
+
+src/app/user/settings/page.tsx                      raw fetch â†’ apiClient
+
+src/app/user/addresses/add/page.tsx                 raw fetch â†’ apiClient
+
+src/app/user/addresses/edit/[id]/page.tsx           raw fetch â†’ apiClient
+
+src/app/user/wishlist/page.tsx                      raw fetch â†’ apiClient
+
+src/app/seller/page.tsx                             raw fetch â†’ apiClient
+
+src/app/search/page.tsx                             raw fetch â†’ apiClient
+
+src/app/seller/orders/page.tsx                      raw fetch â†’ apiClient
+
+src/app/seller/payouts/page.tsx                     raw fetch â†’ apiClient
+
+src/app/seller/analytics/page.tsx                   raw fetch â†’ apiClient
+
+src/app/sellers/[id]/page.tsx                       raw fetch â†’ apiClient/useApiQuery
+
+src/app/profile/[userId]/page.tsx                   raw fetch â†’ apiClient/useApiQuery
+
+src/components/ui/NotificationBell.tsx              raw fetch â†’ apiClient
+
+src/components/faq/FAQPageContent.tsx               raw fetch â†’ apiClient
+
+src/components/admin/ImageUpload.tsx                raw fetch â†’ apiClient.upload()
+
+src/app/api/search/route.ts                         findAll() â†’ list()
+
+src/app/api/faqs/route.ts                           findAll() â†’ list()
+
+src/app/api/admin/payouts/route.ts                  findAll() â†’ list()
+
+src/app/api/admin/blog/route.ts                     findAll() â†’ list()
+
+src/repositories/faq.repository.ts                  + SIEVE_FIELDS + list()
+
+src/repositories/blog.repository.ts                 + list() (SIEVE_FIELDS exists)
+
+src/repositories/payout.repository.ts               + SIEVE_FIELDS + list() (if missing)
+
+firestore.indexes.json                              + 4 new composite indexes
+
+Various __tests__/ files                            mock apiClient; update assertions
+
+```
+
+---
+
+### Phase 20 & 21 -- Cross-Phase Notes
+
+**Progress tracker rule:** Phases 1-18 retain their âœ… Done status. Phases 20 and 21 must each be marked âœ… Done before Phase 22 begins. The violations found do not retroactively un-complete earlier phases â€” they represent accumulated debt being paid off in 20 & 21.
+
+**Phases with outstanding violations (annotated in tracker above):**
+
+- Phase 5 (`products`, `search`, public pages) â†’ raw `fetch()` fixes in Phase 21
+
+- Phase 6 (seller/user pages, addresses, notifications, settings) â†’ raw `fetch()` fixes in Phase 21
+
+- Phases 4, 7 (admin pages, FAQ) â†’ barrel import + hardcoded route fixes in Phase 20
+
+- Phase 11 (homepage) â†’ `src/app/page.tsx` barrel import fix in Phase 20
+
+**Type-check after every sub-phase step:**
+
+```bash
+
+npx tsc --noEmit
+
+```
+
+## Phase 22 -- Event Management System
+
+**Goal:** A first-class event engine that lets admins run sales, offer campaigns, polls, giveaway surveys, and feedback forms -- with full participant management, entry moderation, leaderboard, and public-facing pages.
+
+> **Dependency:** Phases 1-18 must be complete. Uses: `useApiQuery`, `useApiMutation`, `useUrlTable`, `DataTable`, `SideDrawer`, `AdminPageHeader`, `AdminFilterBar`, `ConfirmDeleteModal`, `FormField`, `Modal`, `RichTextEditor`, `StatusBadge`, `EmptyState`, `useMessage`, all relevant `ROUTES`, `API_ENDPOINTS`, `UI_LABELS`, `ERROR_MESSAGES`, `SUCCESS_MESSAGES`, `THEME_CONSTANTS`.
+
+---
+
+### 22a -- Schema, Constants & Repositories
+
+#### 22a.1 -- Event schema (`src/db/schema/event.schema.ts`)
+
+```typescript
+export const EVENTS_COLLECTION = "events";
+export const EVENT_ENTRIES_COLLECTION = "eventEntries";
+
+export type EventType = "sale" | "offer" | "poll" | "survey" | "feedback";
+export type EventStatus = "draft" | "active" | "paused" | "ended";
+export type EntryReviewStatus = "pending" | "approved" | "flagged";
+export type FormFieldType =
+  | "text"
+  | "textarea"
+  | "email"
+  | "phone"
+  | "number"
+  | "select"
+  | "multiselect"
+  | "checkbox"
+  | "radio"
+  | "date"
+  | "rating"
+  | "file";
+export type PollResultsVisibility = "always" | "after_vote" | "after_end";
+
+// Dynamic form field used in survey + feedback events
+export interface SurveyFormField {
+  id: string; // nanoid()
+  type: FormFieldType;
+  label: string;
+  placeholder?: string;
+  required: boolean;
+  options?: string[]; // for select / multiselect / checkbox / radio
+  validation?: {
+    minLength?: number;
+    maxLength?: number;
+    min?: number;
+    max?: number;
+    pattern?: string;
+  };
+  order: number; // display sort order
+}
+
+// Per-type config blocks (stored inline on the event doc for simplicity)
+export interface SaleConfig {
+  discountPercent: number; // e.g. 20 => "20% Off Everything"
+  bannerText?: string; // override display text
+  affectedCategories?: string[]; // [] (empty) = site-wide
+}
+
+export interface OfferConfig {
+  couponId: string; // FK -> coupons collection
+  displayCode: string; // visible coupon code
+  bannerText?: string;
+}
+
+export interface PollConfig {
+  allowMultiSelect: boolean;
+  allowComment: boolean;
+  options: { id: string; label: string }[];
+  resultsVisibility: PollResultsVisibility;
+}
+
+export interface SurveyConfig {
+  requireLogin: boolean;
+  maxEntriesPerUser: number; // 1 = one entry per user
+  hasLeaderboard: boolean;
+  hasPointSystem: boolean;
+  pointsLabel?: string; // e.g. "Stars"
+  entryReviewRequired: boolean; // true = mods must approve before counting
+  formFields: SurveyFormField[];
+}
+
+export interface FeedbackConfig {
+  formFields: SurveyFormField[];
+  anonymous: boolean; // allow non-logged-in submissions
+}
+
+export interface EventDocument {
+  id: string;
+  type: EventType;
+  title: string;
+  description: string; // RichText HTML
+  status: EventStatus;
+  startsAt: import("firebase-admin/firestore").Timestamp;
+  endsAt: import("firebase-admin/firestore").Timestamp;
+  coverImageUrl?: string;
+
+  // Only one of these is populated per event
+  saleConfig?: SaleConfig;
+  offerConfig?: OfferConfig;
+  pollConfig?: PollConfig;
+  surveyConfig?: SurveyConfig;
+  feedbackConfig?: FeedbackConfig;
+
+  stats: {
+    totalEntries: number;
+    approvedEntries: number;
+    flaggedEntries: number;
+  };
+
+  createdBy: string;
+  createdAt: import("firebase-admin/firestore").Timestamp;
+  updatedAt: import("firebase-admin/firestore").Timestamp;
+}
+
+export interface EventEntryDocument {
+  id: string;
+  eventId: string;
+  userId?: string; // undefined for anonymous feedback
+  userDisplayName?: string;
+  userEmail?: string;
+
+  // Poll-specific
+  pollVotes?: string[]; // selected option IDs
+  pollComment?: string;
+
+  // Survey / feedback responses: fieldId -> value
+  formResponses?: Record<string, unknown>;
+
+  // Moderation
+  reviewStatus: EntryReviewStatus;
+  reviewedBy?: string;
+  reviewedAt?: import("firebase-admin/firestore").Timestamp;
+  reviewNote?: string;
+
+  // Point system
+  points?: number;
+
+  ipAddress?: string; // for dedup / fraud detection
+  submittedAt: import("firebase-admin/firestore").Timestamp;
+}
+
+// Field name constants
+export const EVENT_FIELDS = {
+  ID: "id",
+  TYPE: "type",
+  TITLE: "title",
+  DESCRIPTION: "description",
+  STATUS: "status",
+  STARTS_AT: "startsAt",
+  ENDS_AT: "endsAt",
+  COVER_IMAGE_URL: "coverImageUrl",
+  CREATED_BY: "createdBy",
+  CREATED_AT: "createdAt",
+  UPDATED_AT: "updatedAt",
+  STATS: {
+    TOTAL_ENTRIES: "stats.totalEntries",
+    APPROVED_ENTRIES: "stats.approvedEntries",
+    FLAGGED_ENTRIES: "stats.flaggedEntries",
+  },
+  STATUS_VALUES: {
+    DRAFT: "draft" as EventStatus,
+    ACTIVE: "active" as EventStatus,
+    PAUSED: "paused" as EventStatus,
+    ENDED: "ended" as EventStatus,
+  },
+  TYPE_VALUES: {
+    SALE: "sale" as EventType,
+    OFFER: "offer" as EventType,
+    POLL: "poll" as EventType,
+    SURVEY: "survey" as EventType,
+    FEEDBACK: "feedback" as EventType,
+  },
+} as const;
+
+export const EVENT_ENTRY_FIELDS = {
+  ID: "id",
+  EVENT_ID: "eventId",
+  USER_ID: "userId",
+  REVIEW_STATUS: "reviewStatus",
+  REVIEWED_BY: "reviewedBy",
+  SUBMITTED_AT: "submittedAt",
+  POINTS: "points",
+  REVIEW_STATUS_VALUES: {
+    PENDING: "pending" as EntryReviewStatus,
+    APPROVED: "approved" as EntryReviewStatus,
+    FLAGGED: "flagged" as EntryReviewStatus,
+  },
+} as const;
+
+// Helper types for CRUD
+export type EventCreateInput = Omit<
+  EventDocument,
+  "id" | "createdAt" | "updatedAt" | "stats"
+>;
+export type EventUpdateInput = Partial<
+  Omit<EventDocument, "id" | "createdAt" | "createdBy">
+>;
+export type EventEntryCreateInput = Omit<
+  EventEntryDocument,
+  "id" | "submittedAt"
+>;
+```
+
+Export via `src/db/schema/index.ts`.
+
+#### 22a.2 -- Constants (`src/constants/`)
+
+**`src/constants/ui.ts`** -- add:
+
+```typescript
+UI_LABELS.ADMIN.EVENTS = {
+  TITLE: "Events",
+  NEW: "New Event",
+  EDIT: "Edit Event",
+  DELETE: "Delete Event",
+  ENTRIES: "Entries",
+  REVIEW_ENTRY: "Review Entry",
+  APPROVE: "Approve",
+  FLAG: "Flag",
+  LEADERBOARD: "Leaderboard",
+  ADD_FIELD: "Add field",
+  PREVIEW_FORM: "Preview Form",
+  END_EVENT: "End Event",
+  ACTIVATE: "Activate",
+  PAUSE: "Pause",
+};
+
+UI_LABELS.EVENTS = {
+  PARTICIPATE: "Participate",
+  VOTE: "Vote",
+  SUBMIT: "Submit Entry",
+  VIEW_RESULTS: "View Results",
+  LEADERBOARD: "Leaderboard",
+  ENTRIES_CLOSED: "Entries closed",
+  STARTS_IN: "Starts in",
+  ENDS_IN: "Ends in",
+  SALE_BANNER: (pct: number) => `Up to ${pct}% Off â€” Limited Time!`,
+  OFFER_BANNER: (code: string) => `Use code ${code} at checkout`,
+  YOUR_ENTRY: "Your entry",
+  ALREADY_VOTED: "You have already voted",
+  LOGIN_TO_PARTICIPATE: "Log in to participate",
+};
+
+UI_LABELS.EVENT_TYPES = {
+  SALE: "Sale",
+  OFFER: "Offer",
+  POLL: "Poll",
+  SURVEY: "Survey / Giveaway",
+  FEEDBACK: "Feedback",
+};
+
+UI_LABELS.EVENT_STATUS = {
+  DRAFT: "Draft",
+  ACTIVE: "Active",
+  PAUSED: "Paused",
+  ENDED: "Ended",
+};
+
+UI_LABELS.FORM_FIELD_TYPES = {
+  TEXT: "Short text",
+  TEXTAREA: "Long text",
+  EMAIL: "Email",
+  PHONE: "Phone",
+  NUMBER: "Number",
+  SELECT: "Dropdown",
+  MULTISELECT: "Multi-select",
+  CHECKBOX: "Checkboxes",
+  RADIO: "Radio buttons",
+  DATE: "Date",
+  RATING: "Rating (1-5)",
+  FILE: "File upload",
+};
+```
+
+**`src/constants/messages.ts`** -- add:
+
+```typescript
+ERROR_MESSAGES.EVENT = {
+  NOT_FOUND: "Event not found",
+  FETCH_FAILED: "Failed to fetch events",
+  CREATE_FAILED: "Failed to create event",
+  UPDATE_FAILED: "Failed to update event",
+  DELETE_FAILED: "Failed to delete event",
+  ALREADY_ENTERED: "You have already submitted an entry for this event",
+  ENTRIES_CLOSED: "This event is no longer accepting entries",
+  LOGIN_REQUIRED: "You must be logged in to participate",
+  INVALID_TYPE: "Unknown event type",
+  ENTRY_REVIEW_FAILED: "Failed to update entry review status",
+};
+
+SUCCESS_MESSAGES.EVENT = {
+  CREATED: "Event created successfully",
+  UPDATED: "Event updated successfully",
+  DELETED: "Event deleted successfully",
+  ENTRY_SUBMITTED: "Your entry has been submitted",
+  VOTE_SUBMITTED: "Your vote has been recorded",
+  ENTRY_APPROVED: "Entry approved",
+  ENTRY_FLAGGED: "Entry flagged",
+  STATUS_CHANGED: "Event status updated",
+};
+```
+
+**`src/constants/routes.ts`** -- add:
+
+```typescript
+ADMIN: {
+  // ... existing ...
+  EVENTS: '/admin/events',
+  EVENT_ENTRIES: (id: string) => `/admin/events/${id}/entries`,
+},
+PUBLIC: {
+  // ... existing ...
+  EVENTS: '/events',
+  EVENT_DETAIL: (id: string) => `/events/${id}`,
+  EVENT_PARTICIPATE: (id: string) => `/events/${id}/participate`,
+},
+```
+
+**`src/constants/api.ts`** -- add:
+
+```typescript
+API_ENDPOINTS.ADMIN.EVENTS = {
+  LIST: "/api/admin/events",
+  DETAIL: (id: string) => `/api/admin/events/${id}`,
+  STATUS: (id: string) => `/api/admin/events/${id}/status`,
+  ENTRIES: (id: string) => `/api/admin/events/${id}/entries`,
+  ENTRY: (id: string, entryId: string) =>
+    `/api/admin/events/${id}/entries/${entryId}`,
+  STATS: (id: string) => `/api/admin/events/${id}/stats`,
+};
+API_ENDPOINTS.EVENTS = {
+  LIST: "/api/events",
+  DETAIL: (id: string) => `/api/events/${id}`,
+  ENTER: (id: string) => `/api/events/${id}/enter`,
+  LEADERBOARD: (id: string) => `/api/events/${id}/leaderboard`,
+};
+```
+
+Export all new constants from `src/constants/index.ts`.
+
+#### 22a.3 -- Repositories
+
+**`src/repositories/event.repository.ts`**
+
+```typescript
+export class EventRepository extends BaseRepository<EventDocument> {
+  static readonly SIEVE_FIELDS: FirebaseSieveFields = {
+    type:     { canFilter: true, canSort: false },
+    status:   { canFilter: true, canSort: false },
+    title:    { canFilter: true, canSort: true },
+    startsAt: { canFilter: true, canSort: true },
+    endsAt:   { canFilter: true, canSort: true },
+    createdAt: { canFilter: true, canSort: true },
+  };
+  async list(model: SieveModel) { ... }
+  async listActive() { ... }  // status == active + endsAt >= now
+}
+```
+
+**`src/repositories/eventEntry.repository.ts`**
+
+```typescript
+export class EventEntryRepository extends BaseRepository<EventEntryDocument> {
+  static readonly SIEVE_FIELDS: FirebaseSieveFields = {
+    eventId:      { canFilter: true, canSort: false },
+    userId:       { canFilter: true, canSort: false },
+    reviewStatus: { canFilter: true, canSort: false },
+    submittedAt:  { canFilter: true, canSort: true },
+    points:       { canFilter: true, canSort: true },
+  };
+  async listForEvent(eventId: string, model: SieveModel) {
+    return this.sieveQuery<EventEntryDocument>(model, ..., {
+      baseQuery: this.getCollection().where('eventId', '==', eventId),
+    });
+  }
+  async hasUserEntered(eventId: string, userId: string): Promise<boolean> { ... }
+  async getLeaderboard(eventId: string, limit = 10): Promise<EventEntryDocument[]> { ... }
+}
+```
+
+Export both from `src/repositories/index.ts` as `eventRepository` and `eventEntryRepository`.
+
+**Files changed in Phase 22a:**
+
+```
+src/db/schema/event.schema.ts                NEW
+src/db/schema/index.ts                       + event schema exports
+src/constants/ui.ts                          + Events/admin labels
+src/constants/messages.ts                    + EVENT error/success messages
+src/constants/routes.ts                      + ADMIN.EVENTS, PUBLIC.EVENTS routes
+src/constants/api.ts                         + Events API endpoints
+src/constants/index.ts                       + re-export new constants
+src/repositories/event.repository.ts         NEW
+src/repositories/eventEntry.repository.ts    NEW
+src/repositories/index.ts                    + event repository exports
+```
+
+---
+
+### 22b -- Backend API
+
+All routes in `src/app/api/`. Every handler follows RULE 9 (auth, validate, repository, successResponse, handleApiError).
+
+#### 22b.1 -- Admin events CRUD
+
+**`src/app/api/admin/events/route.ts`**
+
+```
+GET  /api/admin/events
+  - Admin/moderator auth required
+  - Accepts: filters, sorts, page, pageSize (Sieve)
+  - Named filters: type, status
+  - Returns: { items, total, page, pageSize, totalPages, hasMore }
+
+POST /api/admin/events
+  - Admin auth required
+  - Validates: type, title, description, startsAt, endsAt, plus type-specific config
+  - Creates event with status='draft', stats zeroed
+  - Returns: created EventDocument
+```
+
+**`src/app/api/admin/events/[id]/route.ts`**
+
+```
+GET    /api/admin/events/[id]   -> full event document
+PUT    /api/admin/events/[id]   -> update title/description/dates/config
+DELETE /api/admin/events/[id]   -> soft-delete (set status='ended') or hard-delete for drafts
+```
+
+**`src/app/api/admin/events/[id]/status/route.ts`**
+
+```
+PATCH /api/admin/events/[id]/status
+  - Body: { status: 'active' | 'paused' | 'ended' | 'draft' }
+  - Admin auth required
+  - Validates allowed transitions (draft->active, active->paused, active->ended, paused->active)
+```
+
+#### 22b.2 -- Admin entry moderation
+
+**`src/app/api/admin/events/[id]/entries/route.ts`**
+
+```
+GET /api/admin/events/[id]/entries
+  - Admin/moderator auth
+  - Sieve: reviewStatus filter, sorts, pagination
+  - Returns paginated list of EventEntryDocument
+```
+
+**`src/app/api/admin/events/[id]/entries/[entryId]/route.ts`**
+
+```
+PATCH /api/admin/events/[id]/entries/[entryId]
+  - Body: { reviewStatus: 'approved' | 'flagged', reviewNote?: string }
+  - Sets reviewedBy = current user uid, reviewedAt = now
+  - Atomically updates event.stats.approvedEntries / flaggedEntries counter
+```
+
+#### 22b.3 -- Admin stats
+
+**`src/app/api/admin/events/[id]/stats/route.ts`**
+
+```
+GET /api/admin/events/[id]/stats
+  - Returns: { event, totalEntries, approvedEntries, flaggedEntries, pendingEntries,
+               pollResults: { optionId, label, count, percent }[],
+               leaderboard: top 10 entries with user info }
+```
+
+#### 22b.4 -- Public event endpoints
+
+**`src/app/api/events/route.ts`**
+
+```
+GET /api/events
+  - No auth required
+  - Returns only status='active' events with endsAt >= now
+  - Sorted by startsAt desc
+  - Strips internal fields (reviewStatus on entries, createdBy, stats details)
+```
+
+**`src/app/api/events/[id]/route.ts`**
+
+```
+GET /api/events/[id]
+  - No auth required
+  - Returns event if active or ended (not draft/paused)
+  - For poll events: includes current results if resultsVisibility='always'
+  - For survey events with hasLeaderboard: includes top 10 leaderboard (approved only)
+```
+
+**`src/app/api/events/[id]/enter/route.ts`**
+
+```
+POST /api/events/[id]/enter
+  - Auth required for type=survey (requireLogin=true) and poll
+  - Optional auth for type=feedback with anonymous=true
+  - Validates:
+    - Event is active and within startsAt/endsAt window
+    - User has not exceeded maxEntriesPerUser
+    - All required formFields present and pass field-level validation
+  - For poll: validates selected option IDs exist in pollConfig.options
+  - Creates EventEntryDocument with reviewStatus='pending' (or 'approved' if entryReviewRequired=false)
+  - Atomically increments event.stats.totalEntries
+  - Returns: { entryId, message }
+```
+
+**`src/app/api/events/[id]/leaderboard/route.ts`**
+
+```
+GET /api/events/[id]/leaderboard
+  - Returns top 50 approved entries sorted by points desc
+  - Only for events with surveyConfig.hasLeaderboard=true
+```
+
+**Files changed in Phase 22b:**
+
+```
+src/app/api/admin/events/route.ts                           NEW
+src/app/api/admin/events/[id]/route.ts                      NEW
+src/app/api/admin/events/[id]/status/route.ts               NEW
+src/app/api/admin/events/[id]/entries/route.ts              NEW
+src/app/api/admin/events/[id]/entries/[entryId]/route.ts    NEW
+src/app/api/admin/events/[id]/stats/route.ts                NEW
+src/app/api/events/route.ts                                 NEW
+src/app/api/events/[id]/route.ts                            NEW
+src/app/api/events/[id]/enter/route.ts                      NEW
+src/app/api/events/[id]/leaderboard/route.ts                NEW
+```
+
+---
+
+### 22c -- Admin UI
+
+#### 22c.1 -- Feature module scaffold
+
+```
+src/features/events/
+  components/
+    EventsTable.tsx          <- DataTable columns for events list
+    EventFormDrawer.tsx      <- Create/Edit SideDrawer (multi-step: type picker + config)
+    EventTypeConfig/
+      SaleConfigForm.tsx     <- discount %, banner text, category selector
+      OfferConfigForm.tsx    <- coupon picker, display code, banner text
+      PollConfigForm.tsx     <- option list builder, multi/single toggle, results visibility, comment toggle
+      SurveyConfigForm.tsx   <- form field builder (drag-to-reorder), login req, points, leaderboard toggles
+      FeedbackConfigForm.tsx <- form field builder, anonymous toggle
+    SurveyFieldBuilder.tsx   <- reusable dynamic form field editor (shared by survey + feedback)
+    SurveyFieldPreview.tsx   <- read-only rendered form preview
+    EventEntriesTable.tsx    <- DataTable for entries with review status badges
+    EntryReviewDrawer.tsx    <- SideDrawer showing entry detail + Approve/Flag buttons
+    EventStatsBanner.tsx     <- summary stat cards for event detail header
+    EventStatusBadge.tsx     <- StatusBadge wrapper for EventStatus
+  hooks/
+    useEvents.ts             <- useApiQuery wrapper for events list
+    useEvent.ts              <- single event fetch
+    useEventEntries.ts       <- entries list with Sieve
+    useEventStats.ts         <- stats fetch
+    useCreateEvent.ts        <- useApiMutation for POST
+    useUpdateEvent.ts        <- useApiMutation for PUT
+    useChangeEventStatus.ts  <- useApiMutation for PATCH status
+    useReviewEntry.ts        <- useApiMutation for PATCH entry
+  types/
+    index.ts                 <- re-export EventDocument, EventEntryDocument etc. from @/db/schema
+  constants/
+    EVENT_TYPE_OPTIONS.ts    <- dropdown options for event type selector
+    EVENT_STATUS_OPTIONS.ts  <- dropdown options for status filter
+    EVENT_SORT_OPTIONS.ts    <- sort options for events table
+    FORM_FIELD_TYPE_OPTIONS.ts
+  index.ts                   <- barrel export
+```
+
+#### 22c.2 -- Admin events list page
+
+**`src/app/admin/events/page.tsx`** (thin orchestration, < 80 lines)
+
+```tsx
+"use client";
+// useUrlTable for filters: type, status, sort, page, pageSize
+// AdminPageHeader: title=UI_LABELS.ADMIN.EVENTS.TITLE, action=<Button>New Event</Button>
+// AdminFilterBar: type dropdown, status dropdown, search input
+// ActiveFilterChips
+// DataTable with EventsTable columns
+// EventFormDrawer (controlled by isDrawerOpen state)
+// ConfirmDeleteModal
+```
+
+`EventsTable` columns:
+| Column | Notes |
+|--------|-------|
+| Title | truncate at 40 chars |
+| Type | `<Badge>` with type label |
+| Status | `<EventStatusBadge>` |
+| Starts | `formatDate(startsAt)` |
+| Ends | `formatDate(endsAt)` |
+| Entries | `stats.totalEntries` |
+| Actions | Edit, Entries, Delete icon buttons |
+
+#### 22c.3 -- EventFormDrawer
+
+Multi-step `SideDrawer` (`side="right"`, `lg:max-w-2xl`):
+
+**Step 1 -- Event basics**
+
+- Type selector (card grid with icons, one per EventType)
+- Title (required)
+- Description (`RichTextEditor`)
+- Start date + End date (`<FormField type="datetime-local">`)
+- Cover image upload (`AvatarUpload` or `useStorageUpload`)
+
+**Step 2 -- Type-specific config** (renders the matching `*ConfigForm`)
+
+- **SaleConfigForm**: discount percent slider (`<Slider>`), banner text override, category multi-select
+- **OfferConfigForm**: coupon picker (searches `couponsRepository`, shows display code), banner text override
+- **PollConfigForm**: option list (dynamic add/remove/reorder), multi-select toggle, comment toggle, results visibility radio
+- **SurveyConfigForm**: `<SurveyFieldBuilder>` + login required toggle, max entries per user, leaderboard toggle, points system toggle + label, entry review required toggle
+- **FeedbackConfigForm**: `<SurveyFieldBuilder>` + anonymous toggle
+
+**SurveyFieldBuilder** -- drag-to-reorder list of fields, each row:
+
+- Field type select (from `FORM_FIELD_TYPE_OPTIONS`)
+- Label input
+- Placeholder input
+- Required toggle
+- Options list (only shown for select/multiselect/checkbox/radio types)
+- Validation min/max (only for number/text/textarea)
+- Add field button â†’ appends a new blank field with `nanoid()` id
+
+Drawer footer: `DrawerFormFooter` with Back/Next (steps) and Cancel/Save buttons.
+
+#### 22c.4 -- Event entries moderation page
+
+**`src/app/admin/events/[id]/entries/page.tsx`** (thin, < 80 lines)
+
+- `AdminPageHeader` with event title + back link â†’ `ROUTES.ADMIN.EVENTS`
+- `EventStatsBanner` showing total / approved / flagged / pending counts
+- `AdminFilterBar`: reviewStatus filter (pending / approved / flagged)
+- `DataTable` with `EventEntriesTable` columns
+- `EntryReviewDrawer` for per-entry review
+
+`EventEntriesTable` columns:
+| Column | Notes |
+|--------|-------|
+| User | displayName + email |
+| Submitted | `formatRelativeTime(submittedAt)` |
+| Status | `<StatusBadge>` (pending/approved/flagged) |
+| Points | only shown for survey events with hasPointSystem |
+| Summary | first 60 chars of formResponses or pollVotes joined |
+| Actions | View/Review button |
+
+`EntryReviewDrawer` (`side="right"`, `md:w-3/5`):
+
+- Renders each form field label + submitted value (read-only)
+- Poll: shows selected options + comment
+- Approve / Flag button pair with optional note textarea
+- Uses `useReviewEntry` mutation
+
+**Files changed in Phase 22c:**
+
+```
+src/features/events/components/EventsTable.tsx              NEW
+src/features/events/components/EventFormDrawer.tsx          NEW
+src/features/events/components/EventTypeConfig/SaleConfigForm.tsx    NEW
+src/features/events/components/EventTypeConfig/OfferConfigForm.tsx   NEW
+src/features/events/components/EventTypeConfig/PollConfigForm.tsx    NEW
+src/features/events/components/EventTypeConfig/SurveyConfigForm.tsx  NEW
+src/features/events/components/EventTypeConfig/FeedbackConfigForm.tsx NEW
+src/features/events/components/SurveyFieldBuilder.tsx       NEW
+src/features/events/components/SurveyFieldPreview.tsx       NEW
+src/features/events/components/EventEntriesTable.tsx        NEW
+src/features/events/components/EntryReviewDrawer.tsx        NEW
+src/features/events/components/EventStatsBanner.tsx         NEW
+src/features/events/components/EventStatusBadge.tsx         NEW
+src/features/events/hooks/useEvents.ts                      NEW
+src/features/events/hooks/useEvent.ts                       NEW
+src/features/events/hooks/useEventEntries.ts                NEW
+src/features/events/hooks/useEventStats.ts                  NEW
+src/features/events/hooks/useCreateEvent.ts                 NEW
+src/features/events/hooks/useUpdateEvent.ts                 NEW
+src/features/events/hooks/useChangeEventStatus.ts           NEW
+src/features/events/hooks/useReviewEntry.ts                 NEW
+src/features/events/types/index.ts                          NEW
+src/features/events/constants/EVENT_TYPE_OPTIONS.ts         NEW
+src/features/events/constants/EVENT_STATUS_OPTIONS.ts       NEW
+src/features/events/constants/EVENT_SORT_OPTIONS.ts         NEW
+src/features/events/constants/FORM_FIELD_TYPE_OPTIONS.ts    NEW
+src/features/events/index.ts                                NEW
+src/app/admin/events/page.tsx                               NEW
+src/app/admin/events/[id]/entries/page.tsx                  NEW
+src/components/admin/AdminSidebar.tsx or nav constants      + Events nav entry (ADMIN.EVENTS)
+```
+
+---
+
+### 22d -- Public UI
+
+#### 22d.1 -- Feature: event-banner (Tier 1 placement -- used in layout)
+
+**`src/components/ui/EventBanner.tsx`** (Tier 1 shared primitive)
+
+```tsx
+"use client";
+// Props: event: EventDocument | null
+// Renders a dismissible top-of-page banner
+// - For 'sale': gradient banner "Up to X% Off â€” Limited Time!" with countdown timer
+// - For 'offer': "Use code CODE at checkout" with copy-to-clipboard button
+// - Dismissible via X button; stores dismissed eventId in sessionStorage
+// - Returns null when event is null or dismissed
+// - Uses UI_LABELS.EVENTS.SALE_BANNER(pct) / OFFER_BANNER(code)
+```
+
+Wire into `src/app/layout.tsx`: fetch active sale/offer events server-side, pass first one to `EventBanner`.
+
+#### 22d.2 -- Public events list page
+
+**`src/app/events/page.tsx`** (Server Component with client card grid)
+
+Layout sections:
+
+1. Hero: "Current Events" heading + short description
+2. Active events grid (`EventCard` list -- see below)
+3. Past events section (ended events, read-only)
+
+**`src/features/events/components/EventCard.tsx`** (Tier 2)
+
+```tsx
+// Props: event: PublicEventDocument (stripped of admin fields)
+// - Cover image (with fallback gradient placeholder)
+// - Type badge (UI_LABELS.EVENT_TYPES[type])
+// - Title + description excerpt
+// - Status chip + countdown "Ends in X days / hours"
+// - CTA button:
+//   - sale/offer: "Shop Now" -> ROUTES.PRODUCTS
+//   - poll: "Vote Now" -> ROUTES.PUBLIC.EVENT_DETAIL(id)
+//   - survey: "Enter Now" -> ROUTES.PUBLIC.EVENT_DETAIL(id)
+//   - feedback: "Give Feedback" -> ROUTES.PUBLIC.EVENT_DETAIL(id)
+//   - ended: "View Results" -> ROUTES.PUBLIC.EVENT_DETAIL(id)
+```
+
+#### 22d.3 -- Event detail page
+
+**`src/app/events/[id]/page.tsx`** (Server Component shell)
+
+Layout:
+
+1. Cover image header + title + type badge + status chip + dates
+2. Description (RichText HTML render)
+3. Type-specific participation section (client island):
+   - **Sale**: shows discount %, affected categories, "Start Shopping" CTA
+   - **Offer**: shows coupon code with copy button, expiry countdown
+   - **Poll**: `<PollVotingSection>` (see below)
+   - **Survey**: `<SurveyEventSection>` (see below)
+   - **Feedback**: `<FeedbackEventSection>` (see below)
+4. Leaderboard section (for survey events with `hasLeaderboard=true`)
+5. Poll results section (when `resultsVisibility` allows)
+
+**`src/features/events/components/PollVotingSection.tsx`**
+
+```tsx
+"use client";
+// Shows poll options as radio (single) or checkboxes (multi)
+// Optional comment textarea (if allowComment=true)
+// Submit button -> POST /api/events/[id]/enter
+// If user already voted: shows their selection + results (if visible)
+// If not logged in + required: shows "Log in to vote" prompt with login link
+// After vote: thank-you state + results bar chart (div-based progress bars, no charting lib)
+```
+
+**`src/features/events/components/SurveyEventSection.tsx`**
+
+```tsx
+"use client";
+// Shows event description + point system info + leaderboard preview
+// Big CTA button: "Fill out the survey" -> window.open(ROUTES.PUBLIC.EVENT_PARTICIPATE(id), '_blank')
+// If user already entered: shows "Your entry is under review" or approved/flagged state
+// If not logged in: shows LoginPrompt using useMessage() / redirect to ROUTES.AUTH.LOGIN
+```
+
+**`src/app/events/[id]/participate/page.tsx`** (Survey fill page -- opens in new tab)
+
+```tsx
+// Client Component. Requires auth (redirect to login if not).
+// Fetches event by id, verifies type=survey and status=active
+// Renders SurveyFormField[] as a dynamic form using <FormField> components
+// Each field: label, placeholder, required indicator, field-type-appropriate input
+// Validates all required fields client-side before submit
+// Submit -> POST /api/events/[id]/enter
+// On success: shows thank-you message with confetti (CSS animation, no lib) + close tab prompt
+// On error: shows Alert with error message
+```
+
+**`src/features/events/components/FeedbackEventSection.tsx`**
+
+```tsx
+"use client";
+// Inline feedback form rendered on the event detail page (does NOT open new tab)
+// Renders feedbackConfig.formFields using <FormField>
+// Submit -> POST /api/events/[id]/enter
+// anonymous=true: no auth check
+// On success: toast success + reset form
+```
+
+**`src/features/events/components/EventLeaderboard.tsx`**
+
+```tsx
+"use client";
+// Props: eventId, pointsLabel
+// Fetches GET /api/events/[id]/leaderboard
+// Renders ranked list with: rank number, avatar (AvatarDisplay), display name, points
+// Top-3 rows highlighted with gold/silver/bronze backgrounds
+// "You are #N" row highlighted if current user appears
+// Skeleton loader while fetching
+```
+
+**Files changed in Phase 22d:**
+
+```
+src/components/ui/EventBanner.tsx                           NEW
+src/app/layout.tsx                                          + EventBanner (pass active sale/offer event)
+src/app/events/page.tsx                                     NEW
+src/app/events/[id]/page.tsx                                NEW
+src/app/events/[id]/participate/page.tsx                    NEW
+src/features/events/components/EventCard.tsx                NEW
+src/features/events/components/PollVotingSection.tsx        NEW
+src/features/events/components/SurveyEventSection.tsx       NEW
+src/features/events/components/FeedbackEventSection.tsx     NEW
+src/features/events/components/EventLeaderboard.tsx         NEW
+src/features/events/index.ts                                + new component exports
+```
+
+---
+
+### 22e -- Tests
+
+For each new file, write tests immediately after implementation (same PR).
+
+**`src/db/schema/__tests__/event.schema.test.ts`** _(NEW)_
+
+- `EVENT_FIELDS.TYPE_VALUES.SALE` equals `'sale'`
+- `EVENT_FIELDS.STATUS_VALUES.ACTIVE` equals `'active'`
+- `EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.PENDING` equals `'pending'`
+- `EVENTS_COLLECTION` is a non-empty string
+- `EVENT_ENTRIES_COLLECTION` is a non-empty string
+
+**`src/app/api/admin/events/__tests__/route.test.ts`** _(NEW)_
+
+- `GET` returns 401 when no session cookie
+- `GET` returns 403 when user is not admin/moderator
+- `GET` returns paginated list for admin user
+- `GET` filters by `type` query param
+- `GET` filters by `status` query param
+- `POST` returns 401 without auth
+- `POST` returns 422 when body fails validation (missing title)
+- `POST` creates event with `status='draft'` for valid admin request
+
+**`src/app/api/admin/events/[id]/__tests__/route.test.ts`** _(NEW)_
+
+- `GET` returns 404 for unknown event id
+- `PUT` updates title and description
+- `DELETE` hard-deletes draft events
+- `DELETE` sets `status='ended'` for active events
+
+**`src/app/api/admin/events/[id]/status/__tests__/route.test.ts`** _(NEW)_
+
+- `PATCH` returns 422 for invalid status value
+- `PATCH` transitions `draft` -> `active` successfully
+- `PATCH` rejects invalid transition `ended` -> `active`
+
+**`src/app/api/admin/events/[id]/entries/__tests__/route.test.ts`** _(NEW)_
+
+- `GET` returns 403 for non-moderator/admin
+- `GET` filters by `reviewStatus`
+
+**`src/app/api/admin/events/[id]/entries/[entryId]/__tests__/route.test.ts`** _(NEW)_
+
+- `PATCH` sets `reviewStatus='approved'` and updates event stats
+- `PATCH` sets `reviewStatus='flagged'` and updates event stats
+
+**`src/app/api/events/__tests__/route.test.ts`** _(NEW)_
+
+- `GET` returns only active events
+- `GET` excludes draft and paused events
+
+**`src/app/api/events/[id]/enter/__tests__/route.test.ts`** _(NEW)_
+
+- Returns 401 when event requires login and user is not authenticated
+- Returns 409 when user has already entered (maxEntries check)
+- Returns 422 when required form fields are missing
+- Returns 200 and creates entry for valid submission
+- Increments `stats.totalEntries` on successful submission
+
+**`src/features/events/components/__tests__/EventStatusBadge.test.tsx`** _(NEW)_
+
+- Renders correct label for each status value
+- Uses `UI_LABELS.EVENT_STATUS` constants
+
+**`src/features/events/components/__tests__/PollVotingSection.test.tsx`** _(NEW)_
+
+- Renders radio buttons for `allowMultiSelect=false`
+- Renders checkboxes for `allowMultiSelect=true`
+- Comment textarea only present when `allowComment=true`
+- Shows already-voted state correctly
+- Shows login prompt when auth required and user is not logged in
+
+**`src/features/events/components/__tests__/SurveyFieldBuilder.test.tsx`** _(NEW)_
+
+- Renders "Add field" button
+- Clicking "Add field" appends a new row
+- Removing a field shrinks the list
+- Field type change shows options list only for select/multiselect/checkbox/radio types
+
+**`src/app/events/[id]/participate/__tests__/page.test.tsx`** _(NEW)_
+
+- Redirects to login when user is not authenticated
+- Renders 404 for non-survey event types
+- Renders all form fields from `surveyConfig.formFields`
+- Required field validation prevents submit
+- Shows thank-you state on successful submission
+
+**`src/components/ui/__tests__/EventBanner.test.tsx`** _(NEW)_
+
+- Renders sale banner with correct percent from `UI_LABELS.EVENTS.SALE_BANNER`
+- Renders offer banner with coupon code from `UI_LABELS.EVENTS.OFFER_BANNER`
+- Returns null when event is null
+- Dismiss button hides the banner and writes to sessionStorage
+
+---
+
+### Phase 22 -- Summary
+
+| Sub-phase | Scope                               | Est. new files |
+| --------- | ----------------------------------- | -------------- |
+| **22a**   | Schema, constants, repositories     | ~10            |
+| **22b**   | Backend API routes (10 handlers)    | ~10            |
+| **22c**   | Admin UI (feature module + 2 pages) | ~28            |
+| **22d**   | Public UI (5 pages / components)    | ~12            |
+| **22e**   | Tests                               | ~15            |
+| **Total** |                                     | **~65**        |
+
+**Admin nav entry:** Add "Events" to the admin sidebar under its own group or under "Marketing" (alongside Newsletter). Use a `CalendarDays` lucide icon.
+
+**Firestore indexes to add** (in `firestore.indexes.json`):
+
+```json
+// events: status + endsAt (for active event queries)
+{ "collectionGroup": "events", "queryScope": "COLLECTION",
+  "fields": [{"fieldPath": "status", "order": "ASCENDING"}, {"fieldPath": "endsAt", "order": "ASCENDING"}] }
+
+// events: type + status (for admin list filtering)
+{ "collectionGroup": "events", "queryScope": "COLLECTION",
+  "fields": [{"fieldPath": "type", "order": "ASCENDING"}, {"fieldPath": "status", "order": "ASCENDING"}] }
+
+// eventEntries: eventId + reviewStatus + submittedAt (entry moderation)
+{ "collectionGroup": "eventEntries", "queryScope": "COLLECTION",
+  "fields": [{"fieldPath": "eventId", "order": "ASCENDING"}, {"fieldPath": "reviewStatus", "order": "ASCENDING"}, {"fieldPath": "submittedAt", "order": "DESCENDING"}] }
+
+// eventEntries: eventId + points (leaderboard)
+{ "collectionGroup": "eventEntries", "queryScope": "COLLECTION",
+  "fields": [{"fieldPath": "eventId", "order": "ASCENDING"}, {"fieldPath": "points", "order": "DESCENDING"}] }
+```
+
+Deploy indexes before activating any event: `firebase deploy --only firestore:indexes`.

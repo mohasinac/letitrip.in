@@ -11,14 +11,12 @@ import {
 } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
 import { useApiQuery } from "@/hooks";
-import {
-  FAQCategorySidebar,
-  FAQSearchBar,
-  FAQSortDropdown,
-  FAQAccordion,
-  ContactCTA,
-} from "@/components/faq";
-import type { FAQSortOption } from "@/components/faq";
+import { FAQCategorySidebar } from "./FAQCategorySidebar";
+import { FAQSearchBar } from "./FAQSearchBar";
+import { FAQSortDropdown } from "./FAQSortDropdown";
+import { FAQAccordion } from "./FAQAccordion";
+import { ContactCTA } from "./ContactCTA";
+import type { FAQSortOption } from "./FAQSortDropdown";
 import type { FAQDocument } from "@/db/schema";
 
 interface FAQPageContentProps {

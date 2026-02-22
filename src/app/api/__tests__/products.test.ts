@@ -155,10 +155,9 @@ describe("Products API - GET /api/products", () => {
     const res = await GET(req);
     const { status, body } = await parseResponse(res);
 
-    // Note: Current implementation returns a STUB (empty array)
     expect(status).toBe(200);
     expect(body.success).toBe(true);
-    expect(body.meta).toBeDefined();
+    expect(body.data).toBeDefined();
   });
 
   it("returns 200 status", async () => {
@@ -174,14 +173,21 @@ describe("Products API - GET /api/products", () => {
     expect(body.success).toBe(true);
   });
 
-  it("returns meta with pagination fields", async () => {
+  it("returns pagination fields inside body.data", async () => {
     const req = buildRequest("/api/products");
     const res = await GET(req);
     const { body } = await parseResponse(res);
-    expect(body.meta).toHaveProperty("page");
-    expect(body.meta).toHaveProperty("limit");
-    expect(body.meta).toHaveProperty("total");
-    expect(body.meta).toHaveProperty("hasMore");
+    expect(body.data).toHaveProperty("page");
+    expect(body.data).toHaveProperty("pageSize");
+    expect(body.data).toHaveProperty("total");
+    expect(body.data).toHaveProperty("hasMore");
+  });
+
+  it("returns items array inside body.data (not at top level)", async () => {
+    const req = buildRequest("/api/products");
+    const res = await GET(req);
+    const { body } = await parseResponse(res);
+    expect(Array.isArray(body.data.items)).toBe(true);
   });
 
   it("calls list on repository", async () => {

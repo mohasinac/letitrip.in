@@ -15,6 +15,7 @@
 import { useEffect, useState } from "react";
 import { ref, onValue, off, type DatabaseReference } from "firebase/database";
 import { realtimeDb } from "@/lib/firebase/config";
+import { logger } from "@/classes";
 
 export interface RealtimeBidData {
   currentBid: number;
@@ -78,10 +79,9 @@ export function useRealtimeBids(
       },
       (error) => {
         // RTDB error — fall back to polling
-        console.warn(
-          "[useRealtimeBids] RTDB subscription error:",
-          error.message,
-        );
+        logger.warn("[useRealtimeBids] RTDB subscription error:", {
+          error: error.message,
+        });
         setConnected(false);
       },
     );

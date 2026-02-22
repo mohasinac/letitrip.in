@@ -30,6 +30,10 @@ const mockOnValue = jest.fn(
   },
 );
 
+jest.mock("@/classes", () => ({
+  logger: { warn: jest.fn(), error: jest.fn(), info: jest.fn() },
+}));
+
 jest.mock("@/lib/firebase/config", () => ({
   realtimeDb: { app: {} }, // truthy value
 }));
@@ -41,6 +45,8 @@ jest.mock("firebase/database", () => ({
 }));
 
 import { useRealtimeBids } from "../useRealtimeBids";
+
+const mockLogger = jest.requireMock("@/classes").logger;
 
 describe("useRealtimeBids", () => {
   beforeEach(() => {
@@ -129,5 +135,18 @@ describe("useRealtimeBids", () => {
   it("does not subscribe when productId is null", () => {
     renderHook(() => useRealtimeBids(null));
     expect(mockOnValue).not.toHaveBeenCalled();
+  });
+
+  it("calls logger.warn on RTDB subscription error", () => {
+    renderHook(() => useRealtimeBids("product-123"));
+
+    act(() => {
+      capturedErrorCallback?.(new Error("RTDB connection failed"));
+    });
+
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      "[useRealtimeBids] RTDB subscription error:",
+      expect.objectContaining({ error: "RTDB connection failed" }),
+    );
   });
 });

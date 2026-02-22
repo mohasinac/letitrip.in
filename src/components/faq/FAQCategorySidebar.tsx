@@ -108,7 +108,7 @@ export function FAQCategorySidebar({
           Still have questions?
         </p>
         <Link
-          href="/contact"
+          href={ROUTES.PUBLIC.CONTACT}
           className={`block text-center ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors`}
         >
           Contact Support

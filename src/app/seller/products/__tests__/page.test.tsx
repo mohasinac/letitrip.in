@@ -6,9 +6,9 @@ import { UI_LABELS } from "@/constants";
 
 const mockPush = jest.fn();
 
-// Mock global.fetch used by the seller/products page
+// Mock global.fetch (no longer used by seller/products page but kept for safety)
 const mockFetchData = {
-  data: [
+  items: [
     {
       id: "product-1",
       title: "Test Product",
@@ -18,7 +18,11 @@ const mockFetchData = {
       mainImage: null,
     },
   ],
-  meta: { total: 30, page: 1, limit: 25, totalPages: 2 },
+  total: 30,
+  page: 1,
+  pageSize: 25,
+  totalPages: 2,
+  hasMore: true,
 };
 global.fetch = jest.fn(() =>
   Promise.resolve({
@@ -57,8 +61,7 @@ jest.mock("@/hooks", () => ({
   })),
   useApiQuery: jest.fn(() => ({
     data: {
-      // seller/products page reads data?.data for the array
-      data: [
+      items: [
         {
           id: "product-1",
           title: "Test Product",
@@ -68,7 +71,11 @@ jest.mock("@/hooks", () => ({
           mainImage: null,
         },
       ],
-      meta: { page: 1, limit: 25, total: 30, totalPages: 2 },
+      total: 30,
+      page: 1,
+      pageSize: 25,
+      totalPages: 2,
+      hasMore: true,
     },
     isLoading: false,
     error: null,

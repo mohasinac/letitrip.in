@@ -11,13 +11,15 @@
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Package, Store, Gavel, FileText } from "lucide-react";
-import { Spinner, EmptyState } from "@/components";
 import {
+  Spinner,
+  EmptyState,
+  Heading,
+  Text,
   SellerStatCard,
   SellerQuickActions,
   SellerRecentListings,
 } from "@/components";
-import { Heading, Text } from "@/components/typography";
 import { useAuth, useApiQuery } from "@/hooks";
 import { UI_LABELS, ROUTES, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
 import type { ProductDocument } from "@/db/schema";

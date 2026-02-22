@@ -21,7 +21,7 @@ import {
   QuickActionsGrid,
   RecentActivityCard,
   AdminDashboardSkeleton,
-} from "@/components/admin/dashboard";
+} from "@/components";
 import { useAuth, useAdminStats } from "@/hooks";
 import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
 

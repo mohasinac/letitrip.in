@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { FAQ_CATEGORIES, ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
-import { FAQPageContent } from "@/components/faq";
+import { FAQPageContent } from "@/components";
 
 interface Props {
   params: Promise<{ category: string }>;

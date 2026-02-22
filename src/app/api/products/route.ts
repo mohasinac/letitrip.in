@@ -112,20 +112,14 @@ export async function GET(request: NextRequest) {
       pageSize,
     });
 
-    const response = NextResponse.json(
-      {
-        success: true,
-        data: sieveResult.items,
-        meta: {
-          page: sieveResult.page,
-          limit: sieveResult.pageSize,
-          total: sieveResult.total,
-          totalPages: sieveResult.totalPages,
-          hasMore: sieveResult.hasMore,
-        },
-      },
-      { status: 200 },
-    );
+    const response = successResponse({
+      items: sieveResult.items,
+      total: sieveResult.total,
+      page: sieveResult.page,
+      pageSize: sieveResult.pageSize,
+      totalPages: sieveResult.totalPages,
+      hasMore: sieveResult.hasMore,
+    });
     response.headers.set(
       "Cache-Control",
       "public, max-age=60, s-maxage=120, stale-while-revalidate=60",

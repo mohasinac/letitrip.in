@@ -17,6 +17,7 @@ import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { getStorage } from "@/lib/firebase/admin";
+import { formatFileSize } from "@/utils";
 
 /**
  * POST /api/media/upload
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
     if (file.size > maxSize) {
       return errorResponse(ERROR_MESSAGES.UPLOAD.FILE_TOO_LARGE, 400, {
         maxSize: isVideo ? "50MB" : "10MB",
-        fileSize: `${(file.size / (1024 * 1024)).toFixed(2)}MB`,
+        fileSize: formatFileSize(file.size),
       });
     }
 

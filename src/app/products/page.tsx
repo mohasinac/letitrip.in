@@ -15,6 +15,7 @@ import {
 import type { ActiveFilter } from "@/components";
 import { UI_LABELS, API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 import { useApiQuery, useUrlTable } from "@/hooks";
+import { apiClient } from "@/lib/api-client";
 import type { ProductDocument } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;
@@ -37,14 +38,12 @@ type ProductItem = Pick<
 >;
 
 interface ProductsResponse {
-  data: ProductItem[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasMore: boolean;
-  };
+  items: ProductItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
 }
 
 function ProductsPageContent() {
@@ -75,17 +74,14 @@ function ProductsPageContent() {
     return `${API_ENDPOINTS.PRODUCTS.LIST}?${params.toString()}`;
   }, [filtersStr, sortParam, pageParam]);
 
-  // Use fetch() to preserve meta field (apiClient strips the outer wrapper)
   const { data, isLoading } = useApiQuery<ProductsResponse>({
     queryKey: ["products", table.params.toString()],
-    queryFn: () =>
-      fetch(apiUrl)
-        .then((r) => r.json())
-        .then((r) => r as ProductsResponse),
+    queryFn: () => apiClient.get<ProductsResponse>(apiUrl),
   });
 
-  const products = data?.data ?? [];
-  const meta = data?.meta;
+  const products = data?.items ?? [];
+  const totalItems = data?.total ?? 0;
+  const totalPages = data?.totalPages ?? 1;
 
   const allCategoriesFromData = useMemo(() => {
     if (!products.length) return [];
@@ -190,7 +186,7 @@ function ProductsPageContent() {
             {/* Sort bar */}
             <div className="mb-4">
               <ProductSortBar
-                total={meta?.total ?? 0}
+                total={totalItems}
                 showing={products.length}
                 sort={sortParam}
                 onSortChange={(v) => table.set("sort", v)}
@@ -221,11 +217,11 @@ function ProductsPageContent() {
             )}
 
             {/* Pagination */}
-            {(meta?.totalPages ?? 1) > 1 && (
+            {totalPages > 1 && (
               <div className="mt-8 flex justify-center">
                 <Pagination
                   currentPage={pageParam}
-                  totalPages={meta?.totalPages ?? 1}
+                  totalPages={totalPages}
                   onPageChange={table.setPage}
                 />
               </div>

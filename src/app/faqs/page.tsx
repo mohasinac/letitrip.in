@@ -5,7 +5,7 @@ import {
   generateMetadata as genMetadata,
   SEO_CONFIG,
 } from "@/constants";
-import { FAQPageContent } from "@/components/faq";
+import { FAQPageContent } from "@/components";
 
 export const metadata: Metadata = genMetadata({
   title: SEO_CONFIG.pages.faqs.title,

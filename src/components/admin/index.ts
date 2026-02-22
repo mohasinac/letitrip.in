@@ -14,7 +14,11 @@ export { AdminFilterBar } from "./AdminFilterBar";
 export { DrawerFormFooter } from "./DrawerFormFooter";
 
 // Phase 4: Admin Dashboard
-export { QuickActionsGrid, RecentActivityCard } from "./dashboard";
+export {
+  QuickActionsGrid,
+  RecentActivityCard,
+  AdminDashboardSkeleton,
+} from "./dashboard";
 
 // Phase 4: Admin Site Settings
 export {

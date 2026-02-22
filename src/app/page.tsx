@@ -4,7 +4,7 @@ import {
   HeroCarousel,
   WelcomeSection,
   TrustFeaturesSection,
-} from "@/components/homepage";
+} from "@/components";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
 
 export const metadata: Metadata = genMetadata({

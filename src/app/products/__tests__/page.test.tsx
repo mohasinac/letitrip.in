@@ -133,7 +133,7 @@ describe("ProductsPage", () => {
   it("renders product grid cards when data is populated", () => {
     useApiQuery.mockReturnValue({
       data: {
-        data: [
+        items: [
           {
             id: "p1",
             title: "Product One",
@@ -161,7 +161,11 @@ describe("ProductsPage", () => {
             category: "cat1",
           },
         ],
-        meta: { page: 1, limit: 24, total: 2, totalPages: 1, hasMore: false },
+        total: 2,
+        page: 1,
+        pageSize: 24,
+        totalPages: 1,
+        hasMore: false,
       },
       isLoading: false,
       error: null,
@@ -175,8 +179,12 @@ describe("ProductsPage", () => {
   it("renders EmptyState when data.items is empty", () => {
     useApiQuery.mockReturnValue({
       data: {
-        data: [],
-        meta: { page: 1, limit: 24, total: 0, totalPages: 0, hasMore: false },
+        items: [],
+        total: 0,
+        page: 1,
+        pageSize: 24,
+        totalPages: 0,
+        hasMore: false,
       },
       isLoading: false,
       error: null,
@@ -224,7 +232,7 @@ describe("ProductsPage", () => {
   it("pagination visible when totalPages > 1", () => {
     useApiQuery.mockReturnValue({
       data: {
-        data: [
+        items: [
           {
             id: "p1",
             title: "P1",
@@ -239,7 +247,11 @@ describe("ProductsPage", () => {
             category: "c1",
           },
         ],
-        meta: { page: 1, limit: 24, total: 100, totalPages: 5, hasMore: true },
+        total: 100,
+        page: 1,
+        pageSize: 24,
+        totalPages: 5,
+        hasMore: true,
       },
       isLoading: false,
       error: null,

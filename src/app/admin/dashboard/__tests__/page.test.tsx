@@ -31,6 +31,9 @@ jest.mock("@/components", () => ({
   Heading: ({ children }: { children: React.ReactNode }) => <h2>{children}</h2>,
   AdminStatsCards: () => <div data-testid="stats-cards" />,
   AdminPageHeader: ({ title }: { title: string }) => <h1>{title}</h1>,
+  QuickActionsGrid: () => <div data-testid="quick-actions" />,
+  RecentActivityCard: () => <div data-testid="recent-activity" />,
+  AdminDashboardSkeleton: () => <div data-testid="dashboard-skeleton" />,
 }));
 
 jest.mock("@/components/admin/dashboard", () => ({

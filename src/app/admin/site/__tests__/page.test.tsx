@@ -10,6 +10,9 @@ jest.mock("@/components", () => ({
   BackgroundSettings: () => <div data-testid="background-settings" />,
   AdminPageHeader: ({ title }: { title: string }) => <h1>{title}</h1>,
   useToast: () => ({ showToast: jest.fn() }),
+  SiteBasicInfoForm: () => <div data-testid="basic-info-form" />,
+  SiteContactForm: () => <div data-testid="contact-form" />,
+  SiteSocialLinksForm: () => <div data-testid="social-links-form" />,
 }));
 
 jest.mock("@/components/admin/site", () => ({

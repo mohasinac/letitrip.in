@@ -15,6 +15,7 @@ import {
   UI_LABELS,
   ERROR_MESSAGES,
   API_ENDPOINTS,
+  ROUTES,
 } from "@/constants";
 import { formatMonthYear, formatCurrency } from "@/utils";
 import { useApiQuery } from "@/hooks";
@@ -135,7 +136,10 @@ export default function PublicProfilePage() {
             {error || ERROR_MESSAGES.USER.NOT_FOUND}
           </Alert>
           <div className="mt-4">
-            <Link href="/" className="text-primary-600 hover:underline">
+            <Link
+              href={ROUTES.HOME}
+              className="text-primary-600 hover:underline"
+            >
               {UI_LABELS.ACTIONS.GO_HOME}
             </Link>
           </div>
