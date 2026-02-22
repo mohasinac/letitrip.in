@@ -9,7 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Phase 18 — Test Suite Fixes: Missing Mocks for Analytics Methods (2026-02-22)
+### Phase 18.8–18.12 — API Route Test Suite (2026-02-22)
+
+#### Added
+
+- **`src/app/api/__tests__/public-search.test.ts`** _(NEW)_ — 9 tests covering GET /api/search (in-memory Sieve backend, category/price/page filtering, empty results, meta.q included).
+- **`src/app/api/__tests__/public-bids.test.ts`** _(NEW)_ — 9 tests covering GET/POST /api/bids (list bids, auth 401, bid placement 201, auction-ended 400, below-current-bid 400, schema validation 422). Key fix: mock `unitOfWork.runBatch` + `bidRepository.findBy` for POST flow.
+- **`src/app/api/__tests__/public-blog.test.ts`** _(NEW)_ — 6 tests covering GET /api/blog (paginated list, category filter, featured filter, empty list, meta fields).
+- **`src/app/api/__tests__/public-newsletter.test.ts`** _(NEW)_ — 5 tests covering POST /api/newsletter/subscribe (success 201, duplicate subscriber 201, validation 422).
+- **`src/app/api/__tests__/public-contact.test.ts`** _(NEW)_ — 8 tests covering POST /api/contact (valid submission, rate limit 429, email failure 500, validation 422). Fixed: rate-limit mock must be `jest.fn()` to allow `.mockResolvedValueOnce()`.
+- **`src/app/api/__tests__/public-coupons.test.ts`** _(NEW)_ — 6 tests covering POST /api/coupons/validate (auth, valid coupon, invalid schema, coupon details).
+- **`src/app/api/__tests__/admin-dashboard.test.ts`** _(NEW)_ — 5 tests covering GET /api/admin/dashboard (401/403/200, stats shape, error fallback).
+- **`src/app/api/__tests__/admin-newsletter.test.ts`** _(NEW)_ — 10 tests covering GET/PATCH/DELETE /api/admin/newsletter and /api/admin/newsletter/[id].
+- **`src/app/api/__tests__/admin-orders.test.ts`** _(NEW)_ — 12 tests covering GET/PATCH /api/admin/orders and /api/admin/orders/[id].
+- **`src/app/api/__tests__/admin-bids.test.ts`** _(NEW)_ — 5 tests covering GET /api/admin/bids (auth 401/403/200, Sieve forwarding, filters passthrough).
+- **`src/app/api/__tests__/admin-blog.test.ts`** _(NEW)_ — 6 tests covering GET/POST /api/admin/blog (auth, list with stats, create article, validation 422).
+- **`src/app/api/__tests__/admin-coupons.test.ts`** _(NEW)_ — 7 tests covering GET/POST /api/admin/coupons (list, create, duplicate code 409, validation 400).
+- **`src/app/api/__tests__/admin-payouts.test.ts`** _(NEW)_ — 5 tests covering GET /api/admin/payouts (auth, list with summary stats including pending count and totalAmount, empty list).
+- **`src/app/api/__tests__/admin-analytics.test.ts`** _(NEW)_ — 7 tests covering GET /api/admin/analytics (auth, summary/ordersByMonth/topProducts shape, numeric types, zero totals, 12-month breakdown).
+- **`src/app/api/__tests__/admin-algolia.test.ts`** _(NEW)_ — 6 tests covering POST /api/admin/algolia/sync (auth, sync count, published-only filter, Algolia not configured 422, indexProducts throw 500).
+- **`src/app/api/__tests__/seller-orders.test.ts`** _(NEW)_ — 5 tests covering GET /api/seller/orders (auth 401, seller-scoped list, empty products, Sieve forwarding).
+- **`src/app/api/__tests__/seller-analytics.test.ts`** _(NEW)_ — 5 tests covering GET /api/seller/analytics (auth, summary/revenueByMonth/topProducts keys, seller-scoped, zeros when no products).
+- **`src/app/api/__tests__/seller-payouts.test.ts`** _(NEW)_ — 8 tests covering GET/POST /api/seller/payouts (auth, list, summary with availableEarnings, create payout, invalid method 422, pending payout 422, no earnings 422).
+
+#### Fixed
+
+- `createApiHandler` mock across all admin test files now wraps `handler()` call in try/catch, propagating `AppError.statusCode` to the response (previously uncaught errors always returned 500).
+- `@/lib/errors` mock in all new admin test files includes `AuthenticationError`, `AuthorizationError`, `ValidationError`, `NotFoundError` (previously only `AppError` + `NotFoundError`, causing 500s when routes threw typed errors).
+- Sub-phases 18.8–18.12 marked ✅ Done in `docs/IMPLEMENTATION_PLAN.md`. **Final: 245 suites, 2925 tests (2921 passed + 4 skipped), 0 failures.**
+
+---
 
 #### Fixed
 
