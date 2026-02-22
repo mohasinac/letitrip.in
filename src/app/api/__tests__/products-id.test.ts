@@ -21,12 +21,15 @@ import {
 
 const mockFindById = jest.fn();
 const mockUpdate = jest.fn();
+const mockIncrementViewCount = jest.fn();
 
 jest.mock("@/repositories", () => ({
   productRepository: {
     findById: (...args: unknown[]) => mockFindById(...args),
     findByIdOrSlug: (...args: unknown[]) => mockFindById(...args),
     update: (...args: unknown[]) => mockUpdate(...args),
+    incrementViewCount: (...args: unknown[]) =>
+      Promise.resolve(mockIncrementViewCount(...args)),
   },
 }));
 

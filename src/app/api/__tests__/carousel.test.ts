@@ -22,12 +22,15 @@ import {
 const mockFindAll = jest.fn();
 const mockGetActiveSlides = jest.fn();
 const mockCreate = jest.fn();
+const mockIncrementViews = jest.fn();
 
 jest.mock("@/repositories", () => ({
   carouselRepository: {
     findAll: (...args: unknown[]) => mockFindAll(...args),
     getActiveSlides: (...args: unknown[]) => mockGetActiveSlides(...args),
     create: (...args: unknown[]) => mockCreate(...args),
+    incrementViews: (...args: unknown[]) =>
+      Promise.resolve(mockIncrementViews(...args)),
   },
 }));
 

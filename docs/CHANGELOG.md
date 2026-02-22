@@ -9,7 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Phase 7.10 — Tech Debt: Analytics, Compound Filters & Resolution Validation (2026-02-22)
+### Phase 18 — Test Suite Fixes: Missing Mocks for Analytics Methods (2026-02-22)
+
+#### Fixed
+
+- **`src/app/api/__tests__/carousel.test.ts`** — Added `incrementViews` mock to `carouselRepository` mock factory (wrapped in `Promise.resolve()` to satisfy `.catch()` calls in the route). Previously `carouselRepository.incrementViews is not a function` caused 2 test failures.
+
+- **`src/app/api/__tests__/products-id.test.ts`** — Added `incrementViewCount` mock to `productRepository` mock factory (wrapped in `Promise.resolve()`). Previously `undefined.catch` caused the `GET returns the product when found` test to receive 500 instead of 200.
+
+- **`docs/IMPLEMENTATION_PLAN.md`** — Phase 18 marked ✅ Done (was `Done` without emoji, reflecting prior 5-failure state). Final counts: 227 suites, 2793 tests (2789 passed + 4 skipped), 0 failures.
+
+---
 
 **Goal:** Close 4 outstanding tech debt items from TECH_DEBT.md. All changes are additive and backward-compatible.
 
