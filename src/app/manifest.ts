@@ -22,7 +22,7 @@ export default function manifest(): MetadataRoute.Manifest {
         src: "/favicon.svg",
         sizes: "any",
         type: "image/svg+xml",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         purpose: "any maskable" as any,
       },
     ],

@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import OrderSuccessPage from "../page";
 
 let mockSearchParamsGet: jest.Mock;
-const mockUseApiQuery = jest.fn(() => ({
+const mockUseApiQuery: jest.Mock = jest.fn(() => ({
   data: null,
   isLoading: false,
   error: null,
@@ -26,7 +26,7 @@ jest.mock("next/navigation", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
-  useApiQuery: (...args: any[]) => mockUseApiQuery(...args),
+  useApiQuery: (...args: any[]) => (mockUseApiQuery as any)(...args),
 }));
 
 jest.mock("@/constants", () => ({
@@ -115,9 +115,9 @@ describe("Checkout Success Page", () => {
     mockUseApiQuery.mockReturnValueOnce({
       data: { data: MOCK_ORDER },
       isLoading: false,
-      error: null,
+      error: null as any,
       refetch: jest.fn(),
-    });
+    } as any);
     render(<OrderSuccessPage />);
     expect(screen.getByTestId("order-success-hero")).toBeInTheDocument();
     expect(screen.getByTestId("order-success-card")).toBeInTheDocument();
@@ -131,9 +131,9 @@ describe("Checkout Success Page", () => {
     mockUseApiQuery.mockReturnValueOnce({
       data: null,
       isLoading: false,
-      error: new Error("Network error"),
+      error: new Error("Network error") as any,
       refetch: jest.fn(),
-    });
+    } as any);
     render(<OrderSuccessPage />);
     expect(screen.getByText("Order Received")).toBeInTheDocument();
   });

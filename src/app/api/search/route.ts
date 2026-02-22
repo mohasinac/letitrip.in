@@ -14,7 +14,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { productRepository } from "@/repositories";
 import { ERROR_MESSAGES } from "@/constants";
-import { applySieveToArray } from "@/helpers";
+import { applySieveToArray } from "@/helpers/data/sieve.helper";
 import {
   getNumberParam,
   getSearchParams,

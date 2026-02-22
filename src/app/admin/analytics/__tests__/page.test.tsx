@@ -10,14 +10,14 @@ jest.mock("next/navigation", () => ({
   usePathname: () => "/admin/analytics",
 }));
 
-const mockUseApiQuery = jest.fn(() => ({
+const mockUseApiQuery: jest.Mock = jest.fn(() => ({
   data: null,
   isLoading: false,
   error: null,
 }));
 
 jest.mock("@/hooks", () => ({
-  useApiQuery: (...args: any[]) => mockUseApiQuery(...args),
+  useApiQuery: (...args: any[]) => (mockUseApiQuery as any)(...args),
 }));
 
 jest.mock("@/utils", () => ({

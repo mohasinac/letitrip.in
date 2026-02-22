@@ -548,34 +548,38 @@ const gridCardSchema = z.object({
 });
 
 /**
+ * Carousel base object schema (no refinements — safe to call .partial() on)
+ */
+const carouselBaseSchema = z.object({
+  title: z.string().min(1).max(200),
+  order: z.number().int().nonnegative(),
+  active: z.boolean().default(false),
+  media: z.object({
+    type: z.enum(["image", "video"]),
+    url: urlSchema,
+    alt: z.string().min(1).max(200),
+    thumbnail: urlSchema.optional(),
+  }),
+  link: z
+    .object({
+      url: urlSchema,
+      openInNewTab: z.boolean().default(false),
+    })
+    .optional(),
+  gridCards: z.array(gridCardSchema).min(1).max(20),
+  startDate: dateStringSchema.optional(),
+  endDate: dateStringSchema.optional(),
+  template: z.string().max(100).optional(),
+  duplicateFrom: objectIdSchema.optional(),
+});
+
+/**
  * Carousel creation validation
  * NOTE: Active slides count limit (max 5) is enforced at the API route level (not in schema)
  * as it requires a DB query to count current active slides.
  * Grid overlap detection: validates that no two cards occupy overlapping cells.
  */
-export const carouselCreateSchema = z
-  .object({
-    title: z.string().min(1).max(200),
-    order: z.number().int().nonnegative(),
-    active: z.boolean().default(false),
-    media: z.object({
-      type: z.enum(["image", "video"]),
-      url: urlSchema,
-      alt: z.string().min(1).max(200),
-      thumbnail: urlSchema.optional(),
-    }),
-    link: z
-      .object({
-        url: urlSchema,
-        openInNewTab: z.boolean().default(false),
-      })
-      .optional(),
-    gridCards: z.array(gridCardSchema).min(1).max(20),
-    startDate: dateStringSchema.optional(),
-    endDate: dateStringSchema.optional(),
-    template: z.string().max(100).optional(),
-    duplicateFrom: objectIdSchema.optional(),
-  })
+export const carouselCreateSchema = carouselBaseSchema
   .refine(
     (data) =>
       !data.endDate ||
@@ -608,8 +612,9 @@ export const carouselCreateSchema = z
 
 /**
  * Carousel update validation
+ * Uses carouselBaseSchema (no refinements) so .partial() works correctly.
  */
-export const carouselUpdateSchema = carouselCreateSchema.partial();
+export const carouselUpdateSchema = carouselBaseSchema.partial();
 
 /**
  * Carousel reorder validation
@@ -640,47 +645,49 @@ export const homepageSectionsListQuerySchema = z.object({
 });
 
 /**
+ * Homepage section base object schema (no refinements — safe to call .partial() on)
+ */
+const homepageSectionBaseSchema = z.object({
+  type: z.enum(["welcome", "featured", "categories", "trending", "custom"]),
+  title: z.string().min(1).max(200),
+  order: z.number().int().nonnegative().optional(),
+  enabled: z.boolean().default(true),
+  config: z
+    .object({
+      maxItems: z.number().int().positive().optional(),
+      layout: z.enum(["grid", "carousel", "list"]).optional(),
+      columns: z.number().int().min(1).max(12).optional(),
+      template: z.string().max(100).optional(),
+    })
+    .optional(),
+});
+
+/**
  * Homepage section creation validation.
  * Type-specific config rules:
  *   - 'featured' and 'trending': config.maxItems must be a positive integer when provided
  *   - 'welcome': config.layout must be 'grid', 'carousel', or 'list' when provided
  */
-export const homepageSectionCreateSchema = z
-  .object({
-    type: z.enum(["welcome", "featured", "categories", "trending", "custom"]),
-    title: z.string().min(1).max(200),
-    order: z.number().int().nonnegative().optional(),
-    enabled: z.boolean().default(true),
-    config: z
-      .object({
-        maxItems: z.number().int().positive().optional(),
-        layout: z.enum(["grid", "carousel", "list"]).optional(),
-        columns: z.number().int().min(1).max(12).optional(),
-        template: z.string().max(100).optional(),
-      })
-      .optional(),
-  })
-  .refine(
-    (data) => {
-      if (
-        (data.type === "featured" || data.type === "trending") &&
-        data.config?.maxItems !== undefined
-      ) {
-        return data.config.maxItems > 0;
-      }
-      return true;
-    },
-    {
-      message:
-        "Featured/trending sections require a positive maxItems in config",
-    },
-  );
+export const homepageSectionCreateSchema = homepageSectionBaseSchema.refine(
+  (data) => {
+    if (
+      (data.type === "featured" || data.type === "trending") &&
+      data.config?.maxItems !== undefined
+    ) {
+      return data.config.maxItems > 0;
+    }
+    return true;
+  },
+  {
+    message: "Featured/trending sections require a positive maxItems in config",
+  },
+);
 
 /**
  * Homepage section update validation
+ * Uses homepageSectionBaseSchema (no refinements) so .partial() works correctly.
  */
-export const homepageSectionUpdateSchema =
-  homepageSectionCreateSchema.partial();
+export const homepageSectionUpdateSchema = homepageSectionBaseSchema.partial();
 
 /**
  * Homepage sections reorder validation
@@ -708,35 +715,39 @@ export const faqListQuerySchema = paginationQuerySchema.extend({
  * TODO (Future): Add variable syntax validation Ã¢â‚¬â€ verify {{variableName}} placeholders
  * in answer text are from the allowed set (companyName, supportEmail, etc.)
  */
-export const faqCreateSchema = z
-  .object({
-    question: z.string().min(10).max(500),
-    answer: z.object({
-      text: z.string().min(20).max(5000),
-      format: z.enum(["plain", "markdown", "html"]).default("plain"),
-    }),
-    category: z.string().min(1).max(100),
-    priority: z.number().int().min(1).max(10).default(5),
-    featured: z.boolean().default(false),
-    tags: z.array(z.string().min(1).max(50)).max(10).optional(),
-    relatedFAQs: z.array(objectIdSchema).max(5).optional(),
-    template: z.string().max(100).optional(),
-  })
-  .refine(
-    (data) => {
-      // Check for valid template variable syntax {{variableName}}
-      const text = data.answer.text;
-      const templateVarPattern = /\{\{[a-zA-Z_][a-zA-Z0-9_]*\}\}/g;
-      const matches = text.match(templateVarPattern) || [];
-      return matches.length <= 10; // Max 10 template variables
-    },
-    { message: "Too many template variables (max 10)" },
-  );
+/**
+ * FAQ base object schema (no refinements — safe to call .partial() on)
+ */
+const faqBaseSchema = z.object({
+  question: z.string().min(10).max(500),
+  answer: z.object({
+    text: z.string().min(20).max(5000),
+    format: z.enum(["plain", "markdown", "html"]).default("plain"),
+  }),
+  category: z.string().min(1).max(100),
+  priority: z.number().int().min(1).max(10).default(5),
+  featured: z.boolean().default(false),
+  tags: z.array(z.string().min(1).max(50)).max(10).optional(),
+  relatedFAQs: z.array(objectIdSchema).max(5).optional(),
+  template: z.string().max(100).optional(),
+});
+
+export const faqCreateSchema = faqBaseSchema.refine(
+  (data) => {
+    // Check for valid template variable syntax {{variableName}}
+    const text = data.answer.text;
+    const templateVarPattern = /\{\{[a-zA-Z_][a-zA-Z0-9_]*\}\}/g;
+    const matches = text.match(templateVarPattern) || [];
+    return matches.length <= 10; // Max 10 template variables
+  },
+  { message: "Too many template variables (max 10)" },
+);
 
 /**
  * FAQ update validation
+ * Uses faqBaseSchema (no refinements) so .partial() works correctly.
  */
-export const faqUpdateSchema = faqCreateSchema.partial();
+export const faqUpdateSchema = faqBaseSchema.partial();
 
 /**
  * FAQ vote validation

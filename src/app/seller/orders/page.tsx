@@ -7,7 +7,7 @@
  */
 
 "use client";
-
+import { Suspense } from "react";
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -51,7 +51,7 @@ const STATUS_TABS = [
   { key: "cancelled", label: "Cancelled" },
 ];
 
-export default function SellerOrdersPage() {
+function SellerOrdersPageContent() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
@@ -208,5 +208,13 @@ export default function SellerOrdersPage() {
         </Card>
       )}
     </div>
+  );
+}
+
+export default function SellerOrdersPage() {
+  return (
+    <Suspense>
+      <SellerOrdersPageContent />
+    </Suspense>
   );
 }

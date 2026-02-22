@@ -20,12 +20,11 @@ describe("useRazorpay", () => {
     );
     scripts.forEach((s) => s.parentNode?.removeChild(s));
     // Clean up window.Razorpay
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     delete (window as any).Razorpay;
   });
 
   it("starts with isLoading=false when window.Razorpay is already defined", async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).Razorpay = jest.fn(() => ({
       open: jest.fn(),
       close: jest.fn(),
@@ -68,7 +67,7 @@ describe("useRazorpay", () => {
 
   it("openRazorpay creates a Razorpay instance and calls open()", async () => {
     const mockOpen = jest.fn();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     (window as any).Razorpay = jest.fn(() => ({
       open: mockOpen,
       close: jest.fn(),

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Seller Products Page
  *
  * Route: /seller/products
@@ -7,7 +7,7 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Spinner,
@@ -78,7 +78,7 @@ const DEFAULT_PRODUCT: Partial<AdminProduct> = {
   returnPolicy: "",
 };
 
-export default function SellerProductsPage() {
+function SellerProductsPageContent() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const { showSuccess, showError } = useMessage();
@@ -193,7 +193,7 @@ export default function SellerProductsPage() {
 
   const { columns, actions } = useMemo(
     () => getProductTableColumns(openEdit, (p) => setDeleteTarget(p)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [],
   );
 
@@ -236,9 +236,9 @@ export default function SellerProductsPage() {
           >
             <option value="-createdAt">Newest First</option>
             <option value="createdAt">Oldest First</option>
-            <option value="title">Title A–Z</option>
-            <option value="-price">Price High–Low</option>
-            <option value="price">Price Low–High</option>
+            <option value="title">Title A�Z</option>
+            <option value="-price">Price High�Low</option>
+            <option value="price">Price Low�High</option>
           </select>
         </AdminFilterBar>
         <FilterDrawer
@@ -313,7 +313,7 @@ export default function SellerProductsPage() {
               ) : (
                 <div className="aspect-square bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                   <span className={`text-3xl ${THEME_CONSTANTS.icon.muted}`}>
-                    📦
+                    ??
                   </span>
                 </div>
               )}
@@ -421,5 +421,13 @@ export default function SellerProductsPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function SellerProductsPage() {
+  return (
+    <Suspense>
+      <SellerProductsPageContent />
+    </Suspense>
   );
 }

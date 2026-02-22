@@ -36,7 +36,7 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
   },
 
-  // Allow Turbopack to handle server-side Node.js modules
+  // Allow Turbopack and webpack to handle server-side Node.js modules
   serverExternalPackages: [
     "crypto",
     "bcryptjs",
@@ -51,7 +51,10 @@ const nextConfig = {
     },
   },
 
-  // Turbopack configuration (empty config to silence webpack warning)
+  // Turbopack is used for `next dev --turbopack` only.
+  // Production builds use webpack via `next build --webpack` because Turbopack
+  // has a chunk-generation bug in Next.js 16 with large deeply-nested `as const`
+  // objects (EcmascriptModuleContent::new_merged) — tracked in TECH_DEBT.md.
   turbopack: {},
 
   // Security headers

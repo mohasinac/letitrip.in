@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import {
   AuctionGrid,
   Pagination,
@@ -60,7 +60,7 @@ const SORT_OPTIONS = [
   { value: "-bidCount", label: UI_LABELS.AUCTIONS_PAGE.SORT_MOST_BIDS },
 ];
 
-export default function AuctionsPage() {
+function AuctionsPageContent() {
   const table = useUrlTable({
     defaults: { pageSize: String(PAGE_SIZE), sort: "auctionEndDate" },
   });
@@ -179,5 +179,13 @@ export default function AuctionsPage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function AuctionsPage() {
+  return (
+    <Suspense>
+      <AuctionsPageContent />
+    </Suspense>
   );
 }

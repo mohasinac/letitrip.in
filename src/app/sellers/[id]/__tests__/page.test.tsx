@@ -35,10 +35,10 @@ beforeEach(() => {
         }),
     }),
   );
-  global.fetch = mockFetchFn;
+  global.fetch = mockFetchFn as unknown as typeof fetch;
 });
 
-const mockUseApiQuery = jest.fn(() => ({
+const mockUseApiQuery: jest.Mock = jest.fn(() => ({
   data: null,
   isLoading: false,
   error: null,
@@ -46,7 +46,7 @@ const mockUseApiQuery = jest.fn(() => ({
 }));
 
 jest.mock("@/hooks", () => ({
-  useApiQuery: (...args: any[]) => mockUseApiQuery(...args),
+  useApiQuery: (...args: any[]) => (mockUseApiQuery as any)(...args),
 }));
 
 jest.mock("@/utils", () => ({
@@ -154,7 +154,9 @@ describe("Seller Detail Page (/sellers/[id])", () => {
 
   it("shows loading state while fetching seller data", () => {
     // Delay fetch to keep loading state
-    global.fetch = jest.fn(() => new Promise(() => {}));
+    global.fetch = jest.fn(
+      () => new Promise(() => {}),
+    ) as unknown as typeof fetch;
     render(<SellerDetailPage />);
     // Page renders its own inline spinner (animate-spin class) with loading text
     expect(
@@ -191,7 +193,7 @@ describe("Seller Detail Page (/sellers/[id])", () => {
         status: 404,
         json: () => Promise.resolve({ user: null }),
       }),
-    );
+    ) as unknown as typeof fetch;
     render(<SellerDetailPage />);
     await waitFor(() => {
       const notFound =

@@ -14,7 +14,6 @@ import { UserFilters } from "../UserFilters";
 
 // Mock @/constants to avoid rbac.ts → sieve ESM import chain
 jest.mock("@/constants", () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const ui = require("../../../../constants/ui");
   return {
     UI_LABELS: ui.UI_LABELS,

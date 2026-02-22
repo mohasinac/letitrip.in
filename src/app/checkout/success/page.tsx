@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useApiQuery } from "@/hooks";
@@ -16,7 +16,7 @@ import type { OrderDocument } from "@/db/schema";
 const LABELS = UI_LABELS.ORDER_SUCCESS_PAGE;
 const { themed, spacing, borderRadius } = THEME_CONSTANTS;
 
-export default function CheckoutSuccessPage() {
+function CheckoutSuccessPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
@@ -99,5 +99,13 @@ export default function CheckoutSuccessPage() {
         <OrderSuccessActions orderId={order.id} />
       </div>
     </div>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense>
+      <CheckoutSuccessPageContent />
+    </Suspense>
   );
 }

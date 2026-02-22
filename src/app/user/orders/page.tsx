@@ -1,5 +1,5 @@
 "use client";
-
+import { Suspense } from "react";
 import { useMemo } from "react";
 import { useAuth, useApiQuery, useUrlTable } from "@/hooks";
 import {
@@ -39,7 +39,7 @@ const STATUS_TABS = [
   { key: "cancelled", label: "Cancelled" },
 ];
 
-export default function UserOrdersPage() {
+function UserOrdersPageContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const table = useUrlTable({ defaults: { pageSize: "10" } });
@@ -190,5 +190,13 @@ export default function UserOrdersPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function UserOrdersPage() {
+  return (
+    <Suspense>
+      <UserOrdersPageContent />
+    </Suspense>
   );
 }

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Search Page
  *
  * Route: /search
@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { Search as SearchIcon } from "lucide-react";
 import { PRODUCT_SORT_VALUES } from "@/components";
 import {
@@ -60,7 +60,7 @@ interface CategoriesResponse {
   data: CategoryDocument[];
 }
 
-export default function SearchPage() {
+function SearchPageContent() {
   const table = useUrlTable({
     defaults: { sort: PRODUCT_SORT_VALUES.NEWEST, pageSize: String(PAGE_SIZE) },
   });
@@ -79,7 +79,6 @@ export default function SearchPage() {
     setInputValue(urlQ);
   }, [urlQ]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSetQ = useMemo(
     () => debounce((q: string) => table.set("q", q), DEBOUNCE_MS),
     [],
@@ -148,10 +147,10 @@ export default function SearchPage() {
         label: "Price",
         value:
           urlMinPrice && urlMaxPrice
-            ? `₹${urlMinPrice}–₹${urlMaxPrice}`
+            ? `?${urlMinPrice}�?${urlMaxPrice}`
             : urlMinPrice
-              ? `from ₹${urlMinPrice}`
-              : `up to ₹${urlMaxPrice}`,
+              ? `from ?${urlMinPrice}`
+              : `up to ?${urlMaxPrice}`,
       });
     }
     return result;
@@ -243,5 +242,13 @@ export default function SearchPage() {
         />
       )}
     </main>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense>
+      <SearchPageContent />
+    </Suspense>
   );
 }

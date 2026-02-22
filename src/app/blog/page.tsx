@@ -1,5 +1,5 @@
 "use client";
-
+import { Suspense } from "react";
 import { useApiQuery, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
@@ -16,7 +16,7 @@ import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
 const { themed } = THEME_CONSTANTS;
 const BLOG = UI_LABELS.BLOG_PAGE;
 
-export default function BlogPage() {
+function BlogPageContent() {
   const table = useUrlTable({ defaults: { pageSize: "9" } });
   const activeCategory = table.get("category") as "" | BlogPostCategory;
   const page = table.getNumber("page", 1);
@@ -113,5 +113,13 @@ export default function BlogPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function BlogPage() {
+  return (
+    <Suspense>
+      <BlogPageContent />
+    </Suspense>
   );
 }

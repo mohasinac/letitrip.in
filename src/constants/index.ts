@@ -11,7 +11,14 @@
  */
 
 // Messages constants
-export * from "./messages";
+// Messages split into two files to avoid Turbopack chunk-generation bug
+// (EcmascriptModuleContent::new_merged error in Next.js 16).
+export { ERROR_MESSAGES } from "./error-messages";
+export {
+  SUCCESS_MESSAGES,
+  INFO_MESSAGES,
+  CONFIRMATION_MESSAGES,
+} from "./success-messages";
 
 // UI constants (labels, placeholders, help text)
 export * from "./ui";

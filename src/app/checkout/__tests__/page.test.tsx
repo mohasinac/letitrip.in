@@ -8,7 +8,7 @@ jest.mock("next/navigation", () => ({
   usePathname: () => "/checkout",
 }));
 
-const mockUseApiQuery = jest.fn(() => ({
+const mockUseApiQuery: jest.Mock = jest.fn(() => ({
   data: null,
   isLoading: false,
   error: null,
@@ -21,10 +21,10 @@ const mockUseRazorpay = jest.fn(() => ({
 }));
 
 jest.mock("@/hooks", () => ({
-  useApiQuery: (...args: any[]) => mockUseApiQuery(...args),
+  useApiQuery: (...args: any[]) => (mockUseApiQuery as any)(...args),
   useApiMutation: () => ({ mutate: jest.fn(), isLoading: false }),
   useMessage: () => ({ showError: jest.fn(), showSuccess: jest.fn() }),
-  useRazorpay: (...args: any[]) => mockUseRazorpay(...args),
+  useRazorpay: (...args: any[]) => (mockUseRazorpay as any)(...args),
 }));
 
 jest.mock("@/constants", () => ({

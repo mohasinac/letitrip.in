@@ -7,7 +7,6 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 jest.mock("@/constants", () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const ui = require("../../../constants/ui");
   return {
     UI_LABELS: ui.UI_LABELS,

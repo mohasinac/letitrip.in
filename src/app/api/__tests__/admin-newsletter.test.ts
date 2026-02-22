@@ -162,7 +162,13 @@ jest.mock("@/lib/api/request-helpers", () => ({
 // ─── Import routes under test ─────────────────────────────────────────────────
 
 import { GET } from "../admin/newsletter/route";
-import { PATCH, DELETE } from "../admin/newsletter/[id]/route";
+import {
+  PATCH as _PATCH,
+  DELETE as _DELETE,
+} from "../admin/newsletter/[id]/route";
+// Cast to any to allow context parameter that TypeScript's inferred signature may omit
+const PATCH = _PATCH as any;
+const DELETE = _DELETE as any;
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 

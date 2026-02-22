@@ -7,6 +7,10 @@
  * Uses @mohasinac/sievejs (https://www.npmjs.com/package/@mohasinac/sievejs) with a
  * custom in-memory adapter, enabling the Sieve DSL (filters, sorts, page, pageSize)
  * over plain JavaScript arrays fetched from Firestore.
+ *
+ * SERVER-ONLY: @mohasinac/sievejs uses Node.js built-ins (node:url).
+ * Do NOT export from src/helpers/data/index.ts — import directly from this file
+ * in API routes: import { applySieveToArray } from '@/helpers/data/sieve.helper'.
  */
 
 import { createSieveProcessor } from "@mohasinac/sievejs";

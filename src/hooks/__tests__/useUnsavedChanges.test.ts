@@ -213,7 +213,7 @@ describe("useUnsavedChanges", () => {
     expect(result.current.isFormDirty).toBe(false);
 
     // Simulate profile data arriving
-    rerender({ initVals: { name: "Alice" } });
+    rerender({ initVals: { name: "Alice" } as any });
 
     // Values match the snapshot, so still clean
     expect(result.current.isFormDirty).toBe(false);

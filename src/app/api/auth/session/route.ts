@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     const auth = getAuth(getAdminApp());
 
     // Check if user profile exists
-    let userProfile = await userRepository.findById(decodedToken.uid);
+    const userProfile = await userRepository.findById(decodedToken.uid);
 
     if (!userProfile) {
       // Create profile for OAuth user (or any user without a profile)

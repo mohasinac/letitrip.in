@@ -37,11 +37,9 @@ export { DatabaseError } from "./database-error";
 export { ERROR_CODES, ERROR_MESSAGES } from "./error-codes";
 
 // Client-side error redirect utilities (Client-Only)
-export {
-  redirectOnError,
-  useErrorRedirect,
-  checkResponseOrRedirect,
-} from "./client-redirect";
+// Import directly from '@/lib/errors/client-redirect' in client components.
+// NOT re-exported here — doing so pulls "use client" into this barrel which
+// Turbopack cannot merge with server-safe error classes (chunk generation error).
 
 // Error Handler (Server-Only - import directly from './error-handler' in API routes)
 // Do not export here to avoid importing server-logger in client components

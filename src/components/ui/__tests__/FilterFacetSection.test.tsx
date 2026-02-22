@@ -11,7 +11,6 @@ import "@testing-library/jest-dom";
 
 // Mock @/constants barrel to avoid rbac → sieve ESM chain
 jest.mock("@/constants", () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const ui = require("../../../constants/ui");
   return {
     UI_LABELS: ui.UI_LABELS,

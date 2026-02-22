@@ -35,9 +35,9 @@ jest.mock("@/lib/firebase/config", () => ({
 }));
 
 jest.mock("firebase/database", () => ({
-  ref: (...args: unknown[]) => mockRef(...args),
-  onValue: (...args: unknown[]) => mockOnValue(...args),
-  off: (...args: unknown[]) => mockOff(...args),
+  ref: (...args: unknown[]) => (mockRef as any)(...args),
+  onValue: (...args: unknown[]) => (mockOnValue as any)(...args),
+  off: (...args: unknown[]) => (mockOff as any)(...args),
 }));
 
 import { useRealtimeBids } from "../useRealtimeBids";

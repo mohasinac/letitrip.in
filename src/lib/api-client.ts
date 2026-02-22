@@ -131,7 +131,7 @@ class ApiClient {
 
     // Merge external signal with timeout signal if provided
     const externalSignal = config?.signal;
-    let combinedSignal = controller.signal;
+    const combinedSignal = controller.signal;
 
     if (externalSignal) {
       // If external signal is already aborted, abort our controller

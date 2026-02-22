@@ -1,5 +1,5 @@
-﻿"use client";
-
+"use client";
+import { Suspense } from "react";
 import { useMemo } from "react";
 import { PackageSearch } from "lucide-react";
 import {
@@ -47,7 +47,7 @@ interface ProductsResponse {
   };
 }
 
-export default function ProductsPage() {
+function ProductsPageContent() {
   const table = useUrlTable({
     defaults: { pageSize: String(PAGE_SIZE), sort: PRODUCT_SORT_VALUES.NEWEST },
   });
@@ -234,5 +234,13 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense>
+      <ProductsPageContent />
+    </Suspense>
   );
 }

@@ -23,7 +23,7 @@ import {
   getSearchParams,
   getStringParam,
 } from "@/lib/api/request-helpers";
-import { applySieveToArray } from "@/helpers";
+import { applySieveToArray } from "@/helpers/data/sieve.helper";
 import { requireRoleFromRequest } from "@/lib/security/authorization";
 import {
   validateRequestBody,

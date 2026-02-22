@@ -5,7 +5,6 @@ import Page from "../page";
 // Since @/components/homepage is jest.mock'd, the dynamic imports resolve
 // in the microtask queue and findByTestId correctly awaits them.
 jest.mock("next/dynamic", () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const React = require("react");
   return function mockDynamic(
     fn: () => Promise<{ default: React.ComponentType<unknown> }>,
