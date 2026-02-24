@@ -7,6 +7,8 @@ interface ReviewStarsProps {
   size?: "sm" | "md";
 }
 
+const { rating: ratingTokens } = THEME_CONSTANTS;
+
 export function ReviewStars({ rating, size = "sm" }: ReviewStarsProps) {
   const sizeClass = size === "sm" ? "w-4 h-4" : "w-5 h-5";
 
@@ -16,9 +18,7 @@ export function ReviewStars({ rating, size = "sm" }: ReviewStarsProps) {
         <svg
           key={star}
           className={`${sizeClass} ${
-            star <= rating
-              ? "text-yellow-400"
-              : THEME_CONSTANTS.themed.textMuted
+            star <= rating ? ratingTokens.filled : ratingTokens.empty
           }`}
           fill="currentColor"
           viewBox="0 0 20 20"

@@ -5345,3 +5345,35 @@ Deploy indexes before activating any event: `firebase deploy --only firestore:in
 | 23b       | Sitemap events pages       | 1             |
 | 23c       | Schema TECH_DEBT (3 items) | 1             |
 | Total     |                            | 3             |
+
+---
+
+## Phase 24 — Styling Constants Cleanup (Phase 6.3 Final Batch)
+
+**Goal:** Close the last remaining items from the Phase 6.3 styling consistency audit. Replace hardcoded Tailwind star-rating colour strings and inline `style={{ height }}` chart attributes with `THEME_CONSTANTS` tokens. Zero new features — pure constants adoption.
+
+**Status:** Complete
+
+### 24a — Star Rating Class Fixes
+
+**Files:** `src/components/admin/reviews/ReviewStars.tsx`, `src/components/products/ProductReviews.tsx`, `src/components/homepage/CustomerReviewsSection.tsx`
+
+- `ReviewStars.tsx`: replaced hardcoded `"text-yellow-400"` → `ratingTokens.filled` and `THEME_CONSTANTS.themed.textMuted` → `ratingTokens.empty`; added `const { rating: ratingTokens } = THEME_CONSTANTS` destructure
+- `ProductReviews.tsx`: added `rating: ratingTokens` to existing `THEME_CONSTANTS` destructure; replaced `"text-gray-300 dark:text-gray-600"` → `ratingTokens.empty` (filled star design choice `text-amber-400` preserved)
+- `CustomerReviewsSection.tsx`: replaced `"text-gray-300 dark:text-gray-600"` → `THEME_CONSTANTS.rating.empty` (filled star design choice `text-yellow-500 fill-yellow-500` preserved)
+
+### 24b — Analytics Inline Style Removal
+
+**Files:** `src/constants/theme.ts`, `src/components/seller/SellerRevenueChart.tsx`, `src/app/admin/analytics/page.tsx`
+
+- `theme.ts`: added `chart.heightMd: "h-[280px]"` between `chart.height` (240 px) and `chart.heightLg` (320 px)
+- `SellerRevenueChart.tsx`: `<div style={{ height: 240 }}>` → `<div className={THEME_CONSTANTS.chart.height}>`
+- `admin/analytics/page.tsx`: two inline styles replaced — `style={{ height: 280 }}` → `className={THEME_CONSTANTS.chart.heightMd}` and `style={{ height: 240 }}` → `className={THEME_CONSTANTS.chart.height}`
+
+### Phase 24 — Summary
+
+| Sub-phase | Scope                            | Files changed |
+| --------- | -------------------------------- | ------------- |
+| 24a       | Star rating constants (3 files)  | 3             |
+| 24b       | Chart height constants (3 files) | 3             |
+| Total     |                                  | 6             |

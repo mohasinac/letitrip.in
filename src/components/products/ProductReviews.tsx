@@ -8,7 +8,7 @@ import { useApiQuery } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import type { ReviewDocument } from "@/db/schema";
 
-const { themed, borderRadius } = THEME_CONSTANTS;
+const { themed, borderRadius, rating: ratingTokens } = THEME_CONSTANTS;
 
 interface ReviewsResponse {
   data: ReviewDocument[];
@@ -38,11 +38,7 @@ function StarRating({
       {[1, 2, 3, 4, 5].map((star) => (
         <span
           key={star}
-          className={
-            star <= rating
-              ? "text-amber-400"
-              : "text-gray-300 dark:text-gray-600"
-          }
+          className={star <= rating ? "text-amber-400" : ratingTokens.empty}
         >
           ★
         </span>

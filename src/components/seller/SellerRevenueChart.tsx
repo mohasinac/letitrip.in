@@ -54,7 +54,7 @@ export function SellerRevenueChart({ data }: SellerRevenueChartProps) {
           {LABELS.REVENUE_CHART_TITLE}
         </h2>
         {data.some((m) => m.revenue > 0) ? (
-          <div style={{ height: 240 }}>
+          <div className={THEME_CONSTANTS.chart.height}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />

@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 24 — Styling Constants Cleanup (2026-02-24)
+
+#### Changed
+
+- **`src/constants/theme.ts`** — Added `chart.heightMd: "h-[280px]"` token between `chart.height` (h-60) and `chart.heightLg` (h-80).
+- **`src/components/admin/reviews/ReviewStars.tsx`** — Replaced hardcoded `"text-yellow-400"` → `THEME_CONSTANTS.rating.filled`; `themed.textMuted` → `THEME_CONSTANTS.rating.empty` for empty stars.
+- **`src/components/products/ProductReviews.tsx`** — Replaced `"text-gray-300 dark:text-gray-600"` → `THEME_CONSTANTS.rating.empty` for empty stars.
+- **`src/components/homepage/CustomerReviewsSection.tsx`** — Replaced `"text-gray-300 dark:text-gray-600"` → `THEME_CONSTANTS.rating.empty` for empty stars.
+- **`src/components/seller/SellerRevenueChart.tsx`** — Removed `style={{ height: 240 }}` inline style; replaced with `className={THEME_CONSTANTS.chart.height}`.
+- **`src/app/admin/analytics/page.tsx`** — Removed both inline chart height styles; replaced with `THEME_CONSTANTS.chart.heightMd` (280 px) and `THEME_CONSTANTS.chart.height` (240 px).
+
+---
+
 ### Phase 23 — Integration Hardening & TECH_DEBT Cleanup (2026-02-24)
 
 #### Changed

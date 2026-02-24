@@ -98,7 +98,7 @@ export function CustomerReviewsSection() {
                     className={`w-5 h-5 ${
                       i < review.rating
                         ? "text-yellow-500 fill-yellow-500"
-                        : "text-gray-300 dark:text-gray-600"
+                        : THEME_CONSTANTS.rating.empty
                     }`}
                   />
                 ))}

@@ -469,15 +469,15 @@
 
 > **Goal:** Zero raw Tailwind strings that duplicate what `THEME_CONSTANTS` already defines.
 
-| Location                          | Issue                                                        | Fix                                                    |
-| --------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
-| `sellers/page.tsx` L46, L52, L156 | Raw `bg-white text-emerald-700 ... rounded-full` CTA buttons | Add `THEME_CONSTANTS.button.ctaPrimary/ctaOutline`     |
-| Star ratings across 4+ pages      | `text-yellow-400` / `text-gray-300` hardcoded per file       | Add `THEME_CONSTANTS.rating.filled` / `.empty`         |
-| `promotions/page.tsx` L55         | `"Active"` string hardcoded                                  | Use `UI_LABELS.STATUS.ACTIVE`                          |
-| `seller/page.tsx` L242            | Raw `bg-gray-100 text-gray-700` status variant               | Use `THEME_CONSTANTS.badge.*` or `StatusBadge`         |
-| `seller/orders/page.tsx` L151     | Raw `hover:text-gray-700 dark:hover:text-gray-300` tab hover | Extract tab active/inactive to `THEME_CONSTANTS.tab`   |
-| `search/page.tsx` L211            | Raw `text-gray-400` search icon                              | Use `themed.textMuted` or `THEME_CONSTANTS.icon.muted` |
-| Analytics pages                   | `style={{ height: 240 }}` inline style                       | Use `THEME_CONSTANTS.chart.height` Tailwind token      |
+| Location                          | Issue                                                        | Status                                                                                 |
+| --------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| `sellers/page.tsx` L46, L52, L156 | Raw `bg-white text-emerald-700 ... rounded-full` CTA buttons | ✅ Done — `button.ctaPrimary/ctaOutline` added + used                                  |
+| Star ratings across 4+ pages      | `text-yellow-400` / `text-gray-300` hardcoded per file       | ✅ Done — Phase 24 (`ReviewStars`, `ProductReviews`, `CustomerReviewsSection` updated) |
+| `promotions/page.tsx` L55         | `"Active"` string hardcoded                                  | ✅ Done — no UI literal; all matches are variable names                                |
+| `seller/page.tsx` L242            | Raw `bg-gray-100 text-gray-700` status variant               | ✅ Done — already uses `StatusBadge` component                                         |
+| `seller/orders/page.tsx` L151     | Raw `hover:text-gray-700 dark:hover:text-gray-300` tab hover | ✅ Done — already uses `THEME_CONSTANTS.tab.inactive`                                  |
+| `search/page.tsx` L211            | Raw `text-gray-400` search icon                              | ✅ Done — already uses `THEME_CONSTANTS.icon.muted`                                    |
+| Analytics pages                   | `style={{ height: 240/280 }}` inline style                   | ✅ Done — Phase 24 (`chart.height` + `chart.heightMd` tokens added + used)             |
 
 **New THEME_CONSTANTS to add** in `src/constants/theme.ts`:
 

@@ -172,7 +172,7 @@ export default function AdminAnalyticsPage() {
             <h2 className={`${typography.h4} ${themed.textPrimary}`}>
               {LABELS.REVENUE_CHART_TITLE}
             </h2>
-            <div style={{ height: 280 }}>
+            <div className={THEME_CONSTANTS.chart.heightMd}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={ordersByMonth}>
                   <defs>
@@ -225,7 +225,7 @@ export default function AdminAnalyticsPage() {
             <h2 className={`${typography.h4} ${themed.textPrimary}`}>
               {LABELS.ORDERS_CHART_TITLE}
             </h2>
-            <div style={{ height: 240 }}>
+            <div className={THEME_CONSTANTS.chart.height}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={ordersByMonth}>
                   <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />

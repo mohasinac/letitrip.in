@@ -757,6 +757,7 @@ export const THEME_CONSTANTS = {
    */
   chart: {
     height: "h-60",
+    heightMd: "h-[280px]",
     heightLg: "h-80",
   },
 

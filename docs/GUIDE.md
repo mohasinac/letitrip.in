@@ -436,6 +436,19 @@ When ready to extract shared code into a library:
 - `opacity` - Opacity utilities (low, medium, high, full)
 - `text` - Text utilities
   - `emphasis` - Text emphasis (bold, semibold, medium, normal, light)
+- `rating` - Star rating colour tokens
+  - `filled` (`text-yellow-400`) — filled/active star
+  - `empty` (`text-gray-300 dark:text-gray-600`) — empty/inactive star
+- `tab` - Tab navigation styles
+  - `active` — active tab indicator style
+  - `inactive` — inactive tab hover style
+- `chart` - Chart wrapper height utilities (use on Recharts parent `<div>` with `ResponsiveContainer height="100%"` inside)
+  - `height` (`h-60`) — 240 px standard chart
+  - `heightMd` (`h-[280px]`) — 280 px medium chart
+  - `heightLg` (`h-80`) — 320 px tall chart
+- `badge` - Badge colour presets (`active`, `inactive`, `admin`, `seller`, `moderator`, `pending`, `banned`)
+- `pageHeader` - Page header gradient presets (`adminGradient`, `sellerGradient`, `userGradient`)
+- `sectionBg` - Section background presets (`subtle`, `card`)
 
 ---
 
