@@ -1,7 +1,5 @@
 import "./globals.css";
-import { LayoutClient, MonitoringProvider, ToastProvider } from "@/components";
-import { ThemeProvider, SessionProvider } from "@/contexts";
-import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
+import { getLocale } from "next-intl/server";
 import type { Metadata, Viewport } from "next";
 
 export const viewport: Viewport = {
@@ -15,19 +13,32 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
-export const metadata: Metadata = genMetadata({
-  title: SEO_CONFIG.defaultTitle,
-  description: SEO_CONFIG.defaultDescription,
-  path: "/",
-});
+export const metadata: Metadata = {
+  title: "LetItRip",
+  description: "Discover and shop amazing products",
+};
 
-export default function RootLayout({
+/**
+ * Root HTML shell layout.
+ *
+ * Responsibilities:
+ * - Sets <html lang> from the resolved locale (via next-intl middleware)
+ * - Injects the dark-mode detection script (runs before React hydrates)
+ * - Provides <body> with base classes
+ *
+ * All providers (ThemeProvider, SessionProvider, NextIntlClientProvider…)
+ * live in src/app/[locale]/layout.tsx so they receive the locale param.
+ */
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // getLocale() reads the locale set by the next-intl middleware from headers
+  const locale = await getLocale();
+
   return (
-    <html lang="en" suppressHydrationWarning className="h-full">
+    <html lang={locale} suppressHydrationWarning className="h-full">
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -42,23 +53,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="h-full overflow-x-hidden">
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md focus:outline-none"
-        >
-          Skip to main content
-        </a>
-        <ThemeProvider>
-          <SessionProvider>
-            <MonitoringProvider>
-              <ToastProvider position="top-right">
-                <LayoutClient>{children}</LayoutClient>
-              </ToastProvider>
-            </MonitoringProvider>
-          </SessionProvider>
-        </ThemeProvider>
-      </body>
+      <body className="h-full overflow-x-hidden">{children}</body>
     </html>
   );
 }

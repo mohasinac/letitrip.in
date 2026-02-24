@@ -5411,3 +5411,48 @@ Deploy indexes before activating any event: `firebase deploy --only firestore:in
 | Total     |                                      | 5             |
 
 **Next**: Phase 26 — `[locale]` route migration (move all `src/app/` pages under `src/app/[locale]/`, activate middleware, update layout)
+
+---
+
+## Phase 26 — [locale] Route Migration (Phase 8 Continued)
+
+**Goal:** Restructure all Next.js App Router pages under a `[locale]` dynamic segment. Activate the next-intl middleware for locale detection and URL rewriting. Move all providers into the locale-aware layout and slim down the root HTML shell.
+
+**Status:** Complete
+
+### 26a — Middleware & Locale Layout
+
+**Files:** `src/middleware.ts`, `src/app/[locale]/layout.tsx`, `src/app/layout.tsx`
+
+- `src/middleware.ts`: `createMiddleware(routing)` from `next-intl/middleware`. Matcher excludes `api/`, `_next`, static files, and PWA assets. English routes use no URL prefix; Hindi routes get `/hi/` prefix.
+- `src/app/layout.tsx`: updated to thin HTML root shell. Uses `getLocale()` from `next-intl/server` to set `<html lang={locale}>` dynamically. All providers removed from root.
+- `src/app/[locale]/layout.tsx`: new locale-aware layout. Calls `getMessages()` to load translations; wraps children with `NextIntlClientProvider` + `ThemeProvider` + `SessionProvider` + `MonitoringProvider` + `ToastProvider` + `LayoutClient`.
+
+### 26b — Bulk [locale] Route Migration
+
+**Method:** PowerShell `Copy-Item -Recurse` for all 23 route directories; `Remove-Item -Recurse` to delete old top-level routes after copying.
+
+**Directories moved to `[locale]/`:** about, admin, auctions, auth, blog, cart, categories, checkout, contact, demo, events, faqs, help, privacy, products, profile, promotions, search, seller, sellers, terms, unauthorized, user
+
+**Root files moved:** `page.tsx`, `error.tsx`, `not-found.tsx`
+
+**Stays at root (`src/app/`):** `api/`, `globals.css`, `layout.tsx`, `global-error.tsx`, `manifest.ts`, `robots.ts`, `sitemap.ts`, `opengraph-image.tsx`, `__tests__/`
+
+**Test fix:** `src/app/__tests__/page.test.tsx` import updated from `'../page'` → `'../[locale]/page'`
+
+**TypeScript result:** 0 errors after cleaning `.next/` build cache.
+
+### Phase 26 — Summary
+
+| Sub-phase | Scope                                                      | Files changed |
+| --------- | ---------------------------------------------------------- | ------------- |
+| 26a       | Middleware + locale layout + root shell                    | 3             |
+| 26b       | Bulk route migration (23 dirs + 3 root files + 1 test fix) | 27+           |
+| Total     |                                                            | 30+           |
+
+**Route URL behaviour after migration:**
+
+- English: `/products` → middleware rewrites internally to `[locale]/products` with `locale='en'` (URL stays clean)
+- Hindi: `/hi/products` → middleware routes to `[locale]/products` with `locale='hi'`
+
+**Next**: Phase 27 — Zod schema locale-aware error messages (`schemas.ts` lines 797, 812)

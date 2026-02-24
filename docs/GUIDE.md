@@ -511,17 +511,41 @@ When ready to extract shared code into a library:
 ## Internationalisation (i18n)
 
 **Package**: `next-intl@4.8.3` (App Router native)  
-**Status**: Infrastructure complete (Phase 25). `[locale]` route migration planned for Phase 26.
+**Status**: ✅ Complete — Phase 25–26. `[locale]` routing active, translations available.
 
-### File Overview
+### Architecture Overview
 
-| File                  | Purpose                                                                           |
-| --------------------- | --------------------------------------------------------------------------------- |
-| `src/i18n/routing.ts` | Locale routing config — `defineRouting({ locales, defaultLocale, localePrefix })` |
-| `src/i18n/request.ts` | Per-request server config — resolves locale + loads message JSON                  |
-| `next.config.js`      | `createNextIntlPlugin('./src/i18n/request.ts')` wrapping the Next config          |
-| `messages/en.json`    | English translation strings (source of truth)                                     |
-| `messages/hi.json`    | Hindi translation strings                                                         |
+```
+src/
+  middleware.ts              ← locale detection + URL rewriting (next-intl)
+  i18n/
+    routing.ts               ← defineRouting({ locales, defaultLocale, localePrefix })
+    request.ts               ← getRequestConfig (per-request server config)
+  app/
+    layout.tsx               ← thin HTML root shell — <html lang={locale}> via getLocale()
+    [locale]/
+      layout.tsx             ← NextIntlClientProvider + all app providers
+      page.tsx               ← homepage
+      about/ auth/ admin/ …  ← all localized routes
+    api/                     ← API routes (no locale, stay at root)
+    globals.css              ← stays at root
+messages/
+  en.json                    ← English translations (source of truth)
+  hi.json                    ← Hindi translations
+```
+
+### Key Files
+
+| File                          | Purpose                                                                           |
+| ----------------------------- | --------------------------------------------------------------------------------- |
+| `src/i18n/routing.ts`         | Locale routing config — `defineRouting({ locales, defaultLocale, localePrefix })` |
+| `src/i18n/request.ts`         | Per-request server config — resolves locale + loads message JSON                  |
+| `src/middleware.ts`           | `createMiddleware(routing)` — locale detection + URL rewriting                    |
+| `next.config.js`              | `createNextIntlPlugin('./src/i18n/request.ts')` wrapping the Next config          |
+| `src/app/layout.tsx`          | Root HTML shell — `<html lang={await getLocale()}>`                               |
+| `src/app/[locale]/layout.tsx` | Locale layout — `NextIntlClientProvider` + all providers                          |
+| `messages/en.json`            | English translation strings (source of truth)                                     |
+| `messages/hi.json`            | Hindi translation strings                                                         |
 
 ### Routing Config (`src/i18n/routing.ts`)
 

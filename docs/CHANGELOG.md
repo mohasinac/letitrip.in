@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 26 — [locale] Route Migration (2026-02-24)
+
+#### Added
+
+- **`src/middleware.ts`** — `next-intl` locale middleware. Detects user locale, rewrites URLs (`/` → English no-prefix, `/hi/` → Hindi). Matcher excludes `api/`, `_next`, static assets, and PWA files.
+- **`src/app/[locale]/layout.tsx`** — Locale-aware application shell. Loads translation messages via `getMessages()`; wraps all pages with `NextIntlClientProvider`, `ThemeProvider`, `SessionProvider`, `MonitoringProvider`, `ToastProvider`, `LayoutClient`.
+
+#### Changed
+
+- **`src/app/layout.tsx`** — Simplified to thin HTML root shell. Uses `getLocale()` from `next-intl/server` to set `<html lang>` dynamically. Providers moved to `[locale]/layout.tsx`.
+- **`src/app/__tests__/page.test.tsx`** — Updated import from `'../page'` → `'../[locale]/page'` to match new route location.
+
+#### Moved (all pages now live under `src/app/[locale]/`)
+
+- All 23 route directories: `about`, `admin`, `auctions`, `auth`, `blog`, `cart`, `categories`, `checkout`, `contact`, `demo`, `events`, `faqs`, `help`, `privacy`, `products`, `profile`, `promotions`, `search`, `seller`, `sellers`, `terms`, `unauthorized`, `user`
+- Root `page.tsx`, `error.tsx`, `not-found.tsx` → `[locale]/page.tsx`, `[locale]/error.tsx`, `[locale]/not-found.tsx`
+- `api/`, `globals.css`, `layout.tsx`, `global-error.tsx`, `manifest.ts`, `robots.ts`, `sitemap.ts`, `opengraph-image.tsx` remain at `src/app/` root.
+
+---
+
 ### Phase 25a…25b — i18n Infrastructure & Message Files (2026-02-24)
 
 #### Added

@@ -761,4 +761,4 @@ See `docs/TECH_DEBT.md` **High Impact** and **Medium Impact** tables for full de
 - Locale-aware routing (`/en/`, `/hi/`)
 - Update Zod schemas to use locale-aware error messages (`schemas.ts:797,812`)
 
-**Status**: � In Progress — Phase 25 (infrastructure + message files done; `[locale]` route migration next)
+**Status**: ✅ Infrastructure + Route Migration Complete (Phase 25–26). Outstanding: Zod locale error messages (Phase 27a).

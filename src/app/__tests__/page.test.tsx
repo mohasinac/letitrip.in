@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import Page from "../page";
+import Page from "../[locale]/page";
 
 // Make next/dynamic synchronous in tests using React.lazy + Suspense wrapper.
 // Since @/components/homepage is jest.mock'd, the dynamic imports resolve
