@@ -27,24 +27,24 @@ This document organises them by file and category so future phases can pick them
 
 ### `src/lib/validation/schemas.ts` — 18 items
 
-| Line | Category            | Description                                                                                                                                |
-| ---- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| 6    | Phase 2 header      | Future validation additions                                                                                                                |
-| 43   | Security            | ~~Domain whitelist for image URLs~~ ✅ Done — Phase 7.9 (`mediaUrlSchema`)                                                                 |
-| 170  | Media               | ~~Video format validation (mp4/webm/ogg whitelist)~~ ✅ Done — Phase 7.9                                                                   |
-| 171  | Media               | ~~Resolution validation (min width/height requirements)~~ ✅ Done — Phase 7.10 (`cropDataSchema` `minWidth`/`minHeight` params + refines)  |
-| 191  | Search              | ~~Compound filter support (price range + category combined)~~ ✅ Done — Phase 7.10 (compound Sieve filter assembly in `GET /api/products`) |
-| 253  | Content Policy      | ~~Prohibited words/content filter for titles and descriptions~~ ✅ Done — Phase 7.9                                                        |
-| 254  | Seller Verification | ~~Require seller email verification before listing products~~ ✅ Done — Phase 7.4                                                          |
-| 269  | Status Flow         | ~~Status transition validation (draft→published, not sold→draft)~~ ✅ Done — Phase 7.5                                                     |
-| 335  | Categories          | Name uniqueness validation per parent (requires DB lookup)                                                                                 |
-| 423  | Site Settings       | Deep nested validation for featuresEnabled, emailSettings, socialLinks                                                                     |
-| 452  | Carousel            | ~~Cross-card overlap detection for 9×9 grid~~ ✅ Done — Phase 7.9                                                                          |
-| 564  | Sections            | ~~Type-specific config validation per section type~~ ✅ Done — Phase 7.9                                                                   |
-| 611  | Email Templates     | Variable syntax validation — verify `{{variableName}}` placeholders                                                                        |
-| 719  | Media               | ~~Aspect ratio enforcement — verify width/height match declared aspectRatio~~ ✅ Done — Phase 7.9                                          |
-| 797  | i18n                | i18n support for Zod error messages                                                                                                        |
-| 812  | i18n                | Map field paths to localised error messages                                                                                                |
+| Line | Category            | Description                                                                                                                                                                                     |
+| ---- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 6    | Phase 2 header      | Future validation additions                                                                                                                                                                     |
+| 43   | Security            | ~~Domain whitelist for image URLs~~ ✅ Done — Phase 7.9 (`mediaUrlSchema`)                                                                                                                      |
+| 170  | Media               | ~~Video format validation (mp4/webm/ogg whitelist)~~ ✅ Done — Phase 7.9                                                                                                                        |
+| 171  | Media               | ~~Resolution validation (min width/height requirements)~~ ✅ Done — Phase 7.10 (`cropDataSchema` `minWidth`/`minHeight` params + refines)                                                       |
+| 191  | Search              | ~~Compound filter support (price range + category combined)~~ ✅ Done — Phase 7.10 (compound Sieve filter assembly in `GET /api/products`)                                                      |
+| 253  | Content Policy      | ~~Prohibited words/content filter for titles and descriptions~~ ✅ Done — Phase 7.9                                                                                                             |
+| 254  | Seller Verification | ~~Require seller email verification before listing products~~ ✅ Done — Phase 7.4                                                                                                               |
+| 269  | Status Flow         | ~~Status transition validation (draft→published, not sold→draft)~~ ✅ Done — Phase 7.5                                                                                                          |
+| 335  | Categories          | ~~Name uniqueness validation per parent~~ ✅ Done — Phase 23 (enforced in API route before `categoryRepository.create()`; Zod alone can't do DB lookups)                                        |
+| 423  | Site Settings       | ~~Deep nested validation for featuresEnabled, emailSettings, socialLinks~~ ✅ Done — Phase 23 (`emailSettings`, `socialLinks`, `features` array validators added to `siteSettingsUpdateSchema`) |
+| 452  | Carousel            | ~~Cross-card overlap detection for 9×9 grid~~ ✅ Done — Phase 7.9                                                                                                                               |
+| 564  | Sections            | ~~Type-specific config validation per section type~~ ✅ Done — Phase 7.9                                                                                                                        |
+| 611  | Email Templates     | ~~Variable syntax validation — verify `{{variableName}}` placeholders~~ ✅ Done — Phase 23 (`faqCreateSchema.refine()` validates placeholder count <= 10)                                       |
+| 719  | Media               | ~~Aspect ratio enforcement — verify width/height match declared aspectRatio~~ ✅ Done — Phase 7.9                                                                                               |
+| 797  | i18n                | i18n support for Zod error messages                                                                                                                                                             |
+| 812  | i18n                | Map field paths to localised error messages                                                                                                                                                     |
 
 ---
 

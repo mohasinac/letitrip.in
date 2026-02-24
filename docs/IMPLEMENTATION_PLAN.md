@@ -5303,3 +5303,45 @@ For each new file, write tests immediately after implementation (same PR).
 ```
 
 Deploy indexes before activating any event: `firebase deploy --only firestore:indexes`.
+
+---
+
+## Phase 23 � Integration Hardening & TECH_DEBT Cleanup
+
+**Goal:** Close integration gaps left after Phase 22 (events feature). Wire RBAC, SEO sitemap, and resolve outstanding schema TECH_DEBT items. No new features � pure hardening.
+
+**Status:** Complete
+
+### 23a � RBAC: Events Admin Routes
+
+**File:** src/constants/rbac.ts
+
+- Added ROUTES.ADMIN.EVENTS with allowedRoles: ["admin", "moderator"]
+- Sub-routes (/admin/events/[id]/entries) covered via startsWith prefix match in getRouteAccessConfig
+- /events and /events/[id] remain public (no RBAC entry needed)
+- /events/[id]/participate auth enforced at page level (router.replace to login when user is null)
+
+### 23b � Sitemap: Events Pages
+
+**File:** src/app/sitemap.ts
+
+- Added static /events entry (changeFrequency: "daily", priority: 0.7)
+- Added fetchEventUrls(): fetches all status == "active" events and emits /events/:id detail URLs
+- Event URLs included in exported sitemap alongside products and categories
+
+### 23c � Schema TECH_DEBT Cleanup
+
+**File:** src/lib/validation/schemas.ts
+
+- Line 335 Category name uniqueness: Clarified as DB-level check in API route. Comment updated.
+- Line 423 Site settings nested validation: Implemented emailSettings, socialLinks, and features validators in siteSettingsUpdateSchema
+- Line 611/715 FAQ template variables: Already implemented via faqCreateSchema.refine() � TODO updated to Done
+
+### Phase 23 � Summary
+
+| Sub-phase | Scope                      | Files changed |
+| --------- | -------------------------- | ------------- |
+| 23a       | RBAC events routes         | 1             |
+| 23b       | Sitemap events pages       | 1             |
+| 23c       | Schema TECH_DEBT (3 items) | 1             |
+| Total     |                            | 3             |

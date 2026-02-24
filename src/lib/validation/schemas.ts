@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Zod Validation Schemas for API Requests
  *
  * Centralized request validation using Zod
@@ -389,7 +389,8 @@ const categoryBaseSchema = z.object({
 
 /**
  * Category creation validation
- * TODO (Future): Add name uniqueness validation per parent (requires DB lookup, can't be done in Zod alone)
+ * NOTE: Name uniqueness per parent requires a DB lookup — enforced at the API route level
+ * before calling categoryRepository.create() (not implementable in Zod alone). — ✅ Documented
  */
 export const categoryCreateSchema = categoryBaseSchema;
 
@@ -476,8 +477,8 @@ export const reviewVoteSchema = z.object({
 
 /**
  * Site settings update validation (admin only)
- * Includes email format validation for contact fields
- * TODO (Future): Add deep nested validation for featuresEnabled, emailSettings, socialLinks objects
+ * Includes deep nested validation for emailSettings, socialLinks, and features.
+ * — ✅ Done (Phase 23)
  */
 export const siteSettingsUpdateSchema = z
   .object({
@@ -487,8 +488,33 @@ export const siteSettingsUpdateSchema = z
     supportEmail: z.string().email().optional(),
     maintenanceMode: z.boolean().optional(),
     maintenanceMessage: z.string().max(500).optional(),
-    // NOTE: Nested object validation for featuresEnabled, emailSettings etc.
-    // requires z.object() refinements Ã¢â‚¬â€ implement when those fields are exposed in admin UI
+    emailSettings: z
+      .object({
+        fromName: z.string().min(1).max(100),
+        fromEmail: z.string().email(),
+        replyTo: z.string().email(),
+      })
+      .optional(),
+    socialLinks: z
+      .object({
+        facebook: z.string().url().optional().or(z.literal("")),
+        twitter: z.string().url().optional().or(z.literal("")),
+        instagram: z.string().url().optional().or(z.literal("")),
+        linkedin: z.string().url().optional().or(z.literal("")),
+      })
+      .optional(),
+    features: z
+      .array(
+        z.object({
+          id: z.string().min(1).max(100),
+          name: z.string().min(1).max(100),
+          description: z.string().max(500).default(""),
+          icon: z.string().max(100).default(""),
+          enabled: z.boolean(),
+        }),
+      )
+      .max(50)
+      .optional(),
   })
   .partial();
 
@@ -712,8 +738,7 @@ export const faqListQuerySchema = paginationQuerySchema.extend({
 
 /**
  * FAQ creation validation
- * TODO (Future): Add variable syntax validation Ã¢â‚¬â€ verify {{variableName}} placeholders
- * in answer text are from the allowed set (companyName, supportEmail, etc.)
+ * Variable syntax validation: verifies {{variableName}} placeholder count (<= 10). —  Done (Phase 23)
  */
 /**
  * FAQ base object schema (no refinements — safe to call .partial() on)

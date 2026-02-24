@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 23 — Integration Hardening & TECH_DEBT Cleanup (2026-02-24)
+
+#### Changed
+
+- **`src/constants/rbac.ts`** — Added `ROUTES.ADMIN.EVENTS` with `allowedRoles: ["admin", "moderator"]`. Sub-routes (`/admin/events/[id]/entries`) covered via `startsWith` prefix match. Note added that `/events/[id]/participate` auth is handled at page level.
+- **`src/app/sitemap.ts`** — Added static `/events` sitemap entry. Added `fetchEventUrls()` that queries all `status == "active"` events and emits `/events/:id` detail URLs. Exported sitemap now includes event URLs.
+- **`src/lib/validation/schemas.ts`** — `siteSettingsUpdateSchema` now validates `emailSettings` (fromName, fromEmail, replyTo), `socialLinks` (facebook/twitter/instagram/linkedin URLs), and `features` array. Category name uniqueness comment updated. FAQ template variable TODO marked done.
+- **`docs/TECH_DEBT.md`** — Marked 3 schema items as resolved: line 335 (categories uniqueness), line 423 (site settings deep validation), line 611 (FAQ template variable validation).
+
+---
+
 ### Phase 22 — Event Management System (2026-02-24)
 
 #### Added

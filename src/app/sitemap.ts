@@ -5,6 +5,8 @@ import {
   PRODUCT_COLLECTION,
   PRODUCT_FIELDS,
   CATEGORY_FIELDS,
+  EVENTS_COLLECTION,
+  EVENT_FIELDS,
 } from "@/db/schema";
 import { CATEGORIES_COLLECTION } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";
@@ -40,6 +42,12 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
   },
   {
     url: `${BASE_URL}${ROUTES.PUBLIC.BLOG}`,
+    lastModified: new Date(),
+    changeFrequency: "daily",
+    priority: 0.7,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.EVENTS}`,
     lastModified: new Date(),
     changeFrequency: "daily",
     priority: 0.7,
@@ -123,6 +131,34 @@ async function fetchProductUrls(): Promise<MetadataRoute.Sitemap> {
   }
 }
 
+async function fetchEventUrls(): Promise<MetadataRoute.Sitemap> {
+  try {
+    const db = getAdminDb();
+    const snapshot = await db
+      .collection(EVENTS_COLLECTION)
+      .where(EVENT_FIELDS.STATUS, "==", EVENT_FIELDS.STATUS_VALUES.ACTIVE)
+      .select(EVENT_FIELDS.UPDATED_AT)
+      .limit(500)
+      .get();
+
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        url: `${BASE_URL}${ROUTES.PUBLIC.EVENT_DETAIL(doc.id)}`,
+        lastModified:
+          (
+            data[EVENT_FIELDS.UPDATED_AT] as { toDate?: () => Date } | undefined
+          )?.toDate?.() ?? new Date(),
+        changeFrequency: "daily" as const,
+        priority: 0.7,
+      };
+    });
+  } catch (err) {
+    serverLogger.warn("sitemap: failed to fetch event URLs", { error: err });
+    return [];
+  }
+}
+
 async function fetchCategoryUrls(): Promise<MetadataRoute.Sitemap> {
   try {
     const db = getAdminDb();
@@ -151,12 +187,13 @@ async function fetchCategoryUrls(): Promise<MetadataRoute.Sitemap> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [productUrls, categoryUrls] = await Promise.all([
+  const [productUrls, categoryUrls, eventUrls] = await Promise.all([
     fetchProductUrls(),
     fetchCategoryUrls(),
+    fetchEventUrls(),
   ]);
 
-  return [...STATIC_PAGES, ...categoryUrls, ...productUrls];
+  return [...STATIC_PAGES, ...categoryUrls, ...productUrls, ...eventUrls];
 }
 
 export const dynamic = "force-dynamic";

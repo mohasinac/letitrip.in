@@ -176,6 +176,16 @@ export const RBAC_CONFIG: Record<string, RouteAccessConfig> = {
     requireActiveAccount: true,
     redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
   },
+  [ROUTES.ADMIN.EVENTS]: {
+    path: ROUTES.ADMIN.EVENTS,
+    allowedRoles: ["admin", "moderator"],
+    requireEmailVerified: true,
+    requireActiveAccount: true,
+    redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
+  },
+  // NOTE: /events and /events/[id] are public (no RBAC entry).
+  // /events/[id]/participate requires auth — enforced at the page level via ProtectedRoute
+  // since the middleware prefix-match cannot distinguish /events/:id from /events/:id/participate.
 };
 
 /**
