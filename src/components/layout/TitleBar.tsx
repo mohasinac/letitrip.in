@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { useAuth } from "@/hooks";
-import { AvatarDisplay, NotificationBell } from "@/components";
+import { AvatarDisplay, NotificationBell, LocaleSwitcher } from "@/components";
 
 /**
  * TitleBar Component
@@ -117,6 +117,9 @@ export default function TitleBar({
 
           {/* Notification Bell - Authenticated users only, hidden on mobile */}
           {user && <NotificationBell />}
+
+          {/* Locale Switcher — hidden on mobile (available via sidebar) */}
+          <LocaleSwitcher />
 
           {/* User Profile - Hidden on mobile (available in bottom nav) */}
           <Link

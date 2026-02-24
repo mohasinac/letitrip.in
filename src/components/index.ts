@@ -119,3 +119,7 @@ export * from "./faq";
 
 // ==================== HOMEPAGE ====================
 export * from "./homepage";
+
+// ==================== SETUP UTILITIES ====================
+// Zod global error map (renders nothing, side-effect only)
+export { default as ZodSetup } from "./ZodSetup";

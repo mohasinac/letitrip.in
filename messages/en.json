@@ -545,5 +545,11 @@
     "cartIcon": "Cart icon",
     "userIcon": "User icon",
     "logoAlt": "Site logo"
+  },
+  "locale": {
+    "label": "Language",
+    "switchTo": "Switch language",
+    "en": "English",
+    "hi": "हिन्दी"
   }
 }

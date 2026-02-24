@@ -12,30 +12,38 @@ jest.mock("next/navigation", () => ({
 
 let mockFetchFn: jest.Mock;
 
+const mockSellerData = {
+  user: {
+    uid: "seller-123",
+    displayName: "Test Seller",
+    photoURL: null,
+    email: "seller@test.com",
+    role: "seller",
+    averageRating: 4.5,
+    totalReviews: 12,
+    publicProfile: {
+      bio: "Quality handmade goods",
+      location: "Delhi, India",
+    },
+    createdAt: new Date().toISOString(),
+  },
+};
+
 beforeEach(() => {
   mockFetchFn = jest.fn(() =>
     Promise.resolve({
       ok: true,
-      json: () =>
-        Promise.resolve({
-          user: {
-            uid: "seller-123",
-            displayName: "Test Seller",
-            photoURL: null,
-            email: "seller@test.com",
-            role: "seller",
-            averageRating: 4.5,
-            totalReviews: 12,
-            publicProfile: {
-              bio: "Quality handmade goods",
-              location: "Delhi, India",
-            },
-            createdAt: new Date().toISOString(),
-          },
-        }),
+      json: () => Promise.resolve(mockSellerData),
     }),
   );
   global.fetch = mockFetchFn as unknown as typeof fetch;
+  // Page uses useApiQuery (apiClient.get) — wire it to return seller data
+  mockUseApiQuery.mockImplementation(() => ({
+    data: mockSellerData,
+    isLoading: false,
+    error: null,
+    refetch: jest.fn(),
+  }));
 });
 
 const mockUseApiQuery: jest.Mock = jest.fn(() => ({
@@ -153,10 +161,13 @@ describe("Seller Detail Page (/sellers/[id])", () => {
   afterEach(() => jest.clearAllMocks());
 
   it("shows loading state while fetching seller data", () => {
-    // Delay fetch to keep loading state
-    global.fetch = jest.fn(
-      () => new Promise(() => {}),
-    ) as unknown as typeof fetch;
+    // Override useApiQuery to simulate pending state
+    mockUseApiQuery.mockImplementation(() => ({
+      data: null,
+      isLoading: true,
+      error: null,
+      refetch: jest.fn(),
+    }));
     render(<SellerDetailPage />);
     // Page renders its own inline spinner (animate-spin class) with loading text
     expect(
@@ -187,13 +198,12 @@ describe("Seller Detail Page (/sellers/[id])", () => {
   });
 
   it("shows not-found state when fetch returns no data", async () => {
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        ok: false,
-        status: 404,
-        json: () => Promise.resolve({ user: null }),
-      }),
-    ) as unknown as typeof fetch;
+    mockUseApiQuery.mockImplementation(() => ({
+      data: { user: null },
+      isLoading: false,
+      error: null,
+      refetch: jest.fn(),
+    }));
     render(<SellerDetailPage />);
     await waitFor(() => {
       const notFound =
@@ -203,11 +213,15 @@ describe("Seller Detail Page (/sellers/[id])", () => {
     });
   });
 
-  it("calls fetch with the seller id from useParams", async () => {
+  it("calls useApiQuery with the seller id from useParams", async () => {
     render(<SellerDetailPage />);
+    // The page uses apiClient.get() inside useApiQuery — not global.fetch directly.
+    // Verify useApiQuery was invoked with a queryKey containing the seller ID.
     await waitFor(() => {
-      expect(mockFetchFn).toHaveBeenCalledWith(
-        expect.stringContaining("seller-123"),
+      expect(mockUseApiQuery).toHaveBeenCalledWith(
+        expect.objectContaining({
+          queryKey: expect.arrayContaining(["seller-123"]),
+        }),
       );
     });
   });

@@ -8,8 +8,12 @@
 import { hasLocale } from "next-intl";
 import { getRequestConfig } from "next-intl/server";
 import { routing } from "./routing";
+import { setupZodErrorMap } from "@/lib/zod-error-map";
 
 export default getRequestConfig(async ({ requestLocale }) => {
+  // Apply custom Zod error messages on every server request (idempotent)
+  setupZodErrorMap();
+
   // Determine the locale from the request (set by middleware or [locale] segment)
   const requested = await requestLocale;
 

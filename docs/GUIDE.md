@@ -536,16 +536,17 @@ messages/
 
 ### Key Files
 
-| File                          | Purpose                                                                           |
-| ----------------------------- | --------------------------------------------------------------------------------- |
-| `src/i18n/routing.ts`         | Locale routing config — `defineRouting({ locales, defaultLocale, localePrefix })` |
-| `src/i18n/request.ts`         | Per-request server config — resolves locale + loads message JSON                  |
-| `src/middleware.ts`           | `createMiddleware(routing)` — locale detection + URL rewriting                    |
-| `next.config.js`              | `createNextIntlPlugin('./src/i18n/request.ts')` wrapping the Next config          |
-| `src/app/layout.tsx`          | Root HTML shell — `<html lang={await getLocale()}>`                               |
-| `src/app/[locale]/layout.tsx` | Locale layout — `NextIntlClientProvider` + all providers                          |
-| `messages/en.json`            | English translation strings (source of truth)                                     |
-| `messages/hi.json`            | Hindi translation strings                                                         |
+| File                          | Purpose                                                                                                                     |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `src/i18n/routing.ts`         | Locale routing config — `defineRouting({ locales, defaultLocale, localePrefix })`                                           |
+| `src/i18n/request.ts`         | Per-request server config — resolves locale + loads message JSON; calls `setupZodErrorMap()`                                |
+| `src/i18n/navigation.ts`      | Locale-aware navigation — `createNavigation(routing)` exports `Link`, `useRouter`, `usePathname`, `redirect`, `getPathname` |
+| `src/middleware.ts`           | `createMiddleware(routing)` — locale detection + URL rewriting                                                              |
+| `next.config.js`              | `createNextIntlPlugin('./src/i18n/request.ts')` wrapping the Next config                                                    |
+| `src/app/layout.tsx`          | Root HTML shell — `<html lang={await getLocale()}>`                                                                         |
+| `src/app/[locale]/layout.tsx` | Locale layout — `NextIntlClientProvider` + `<ZodSetup />` + all providers                                                   |
+| `messages/en.json`            | English translation strings (source of truth)                                                                               |
+| `messages/hi.json`            | Hindi translation strings                                                                                                   |
 
 ### Routing Config (`src/i18n/routing.ts`)
 
@@ -2671,6 +2672,12 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 **Purpose**: CSS Grid wrapper  
 **Props**: `columns`, `gap`, `responsive`
 
+#### LocaleSwitcher
+
+**File**: `LocaleSwitcher.tsx`  
+**Purpose**: Pill-style language toggle for switching between `en` (English) and `hi` (Hindi). Visible on `sm+` screens in the TitleBar. Uses `useLocale()` + locale-aware `router.replace()` from `@/i18n/navigation`.  
+**Import**: `import { LocaleSwitcher } from '@/components'`
+
 ---
 
 ### Upload Components
@@ -3561,6 +3568,28 @@ export * from "./constants";
 - `createPasswordResetToken(userId, email)` - Create reset token
 - `validateEmailVerificationToken(token)` - Validate verification token
 - `validatePasswordResetToken(token)` - Validate reset token
+
+---
+
+### Zod Error Map (`zod-error-map.ts`)
+
+**Purpose**: Zod v4 global error map — replaces default machine-y messages with human-friendly strings from `ERROR_MESSAGES` constants.  
+**Key exports**:
+
+- `zodErrorMap(issue)` — maps Zod v4 issue codes to friendly `{ message: string }`. Handles `invalid_type`, `too_small`, `too_big`, `invalid_format`, `invalid_value`, `custom`.
+- `setupZodErrorMap()` — calls `z.setErrorMap(zodErrorMap)` once (idempotent). Called by `src/i18n/request.ts` (server) and `<ZodSetup />` (client).
+
+**Issue code mapping:**
+| Zod v4 code | Condition | Message source |
+|------------|-----------|----------------|
+| `invalid_type` | input undefined/null | `ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD` |
+| `too_small` | string, min ≤ 1 | `REQUIRED_FIELD` |
+| `too_small` | string, min > 1 | `"Must be at least N characters"` |
+| `too_big` | string | `"Must be at most N characters"` |
+| `invalid_format` | email | `ERROR_MESSAGES.VALIDATION.INVALID_EMAIL` |
+| `invalid_format` | url | `"Please enter a valid URL"` |
+| `invalid_value` | enum | lists accepted values |
+| `custom` | — | passes message through |
 
 ---
 

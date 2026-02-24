@@ -1,4 +1,9 @@
-import { LayoutClient, MonitoringProvider, ToastProvider } from "@/components";
+import {
+  LayoutClient,
+  MonitoringProvider,
+  ToastProvider,
+  ZodSetup,
+} from "@/components";
 import { ThemeProvider, SessionProvider } from "@/contexts";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
 import { NextIntlClientProvider } from "next-intl";
@@ -41,6 +46,7 @@ export default async function LocaleLayout({
         Skip to main content
       </a>
       <NextIntlClientProvider messages={messages}>
+        <ZodSetup />
         <ThemeProvider>
           <SessionProvider>
             <MonitoringProvider>

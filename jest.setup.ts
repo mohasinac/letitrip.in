@@ -270,3 +270,37 @@ jest.mock("next/image", () => ({
     return React.createElement("img", { alt: alt || "", ...props });
   },
 }));
+
+// ============================================
+// next-intl Mocks
+// ============================================
+
+jest.mock("next-intl", () => ({
+  useLocale: () => "en",
+  useTranslations: () => (key: string) => key,
+  useMessages: () => ({}),
+  useTimeZone: () => "UTC",
+  useNow: () => new Date(),
+  NextIntlClientProvider: ({ children }: { children: unknown }) => children,
+}));
+
+// Mock locale-aware navigation (mirrors next/navigation shape)
+jest.mock("@/i18n/navigation", () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+    prefetch: jest.fn(),
+  }),
+  usePathname: () => "/",
+  Link: ({
+    children,
+    href,
+    ...props
+  }: { children?: unknown; href: string } & Record<string, unknown>) => {
+    const React = require("react");
+    return React.createElement("a", { href, ...props }, children);
+  },
+  redirect: jest.fn(),
+  getPathname: jest.fn(() => "/"),
+}));

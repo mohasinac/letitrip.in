@@ -69,22 +69,22 @@ describe("SellerAnalyticsPage", () => {
     role: "seller",
   };
 
+  // apiClient.get() unwraps the successResponse envelope (returns data.data).
+  // So useApiQuery<AnalyticsResponse> data = { summary, revenueByMonth, topProducts } directly.
   const mockAnalyticsData = {
-    data: {
-      summary: {
-        totalRevenue: 50000,
-        totalOrders: 120,
-        averageOrderValue: 416.67,
-        conversionRate: 3.2,
-      },
-      revenueByMonth: [
-        { month: "Jan", revenue: 10000 },
-        { month: "Feb", revenue: 15000 },
-      ],
-      topProducts: [
-        { id: "p1", title: "Top Seller", revenue: 20000, orderCount: 50 },
-      ],
+    summary: {
+      totalRevenue: 50000,
+      totalOrders: 120,
+      averageOrderValue: 416.67,
+      conversionRate: 3.2,
     },
+    revenueByMonth: [
+      { month: "Jan", revenue: 10000 },
+      { month: "Feb", revenue: 15000 },
+    ],
+    topProducts: [
+      { id: "p1", title: "Top Seller", revenue: 20000, orderCount: 50 },
+    ],
   };
 
   beforeEach(() => {
@@ -139,7 +139,7 @@ describe("SellerAnalyticsPage", () => {
   it("renders no-data message when summary is null", () => {
     mockUseAuth.mockReturnValue({ user: mockSeller, loading: false });
     mockUseApiQuery.mockReturnValue({
-      data: { data: { summary: null, revenueByMonth: [], topProducts: [] } },
+      data: { summary: null, revenueByMonth: [], topProducts: [] },
       isLoading: false,
       error: null,
     });

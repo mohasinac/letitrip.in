@@ -6,19 +6,10 @@ import { UI_LABELS } from "@/constants";
 
 const mockPush = jest.fn();
 
-// Mock global.fetch used by the seller/orders page
+// seller/orders now uses apiClient.get() + useApiQuery (not global.fetch directly).
+// global.fetch is kept as a no-op fallback for any indirect calls.
 global.fetch = jest.fn(() =>
-  Promise.resolve({
-    ok: true,
-    json: () =>
-      Promise.resolve({
-        success: true,
-        data: {
-          orders: [],
-          meta: { page: 1, limit: 25, total: 60, totalPages: 3, hasMore: true },
-        },
-      }),
-  } as Response),
+  Promise.resolve({ ok: true, json: () => Promise.resolve({}) } as Response),
 );
 
 jest.mock("next/navigation", () => ({
@@ -37,13 +28,11 @@ jest.mock("@/hooks", () => ({
     },
     loading: false,
   })),
+  // apiClient.get() unwraps successResponse ─ page reads data?.orders and data?.meta directly.
   useApiQuery: jest.fn(() => ({
     data: {
-      success: true,
-      data: {
-        orders: [],
-        meta: { page: 1, limit: 25, total: 60, totalPages: 3, hasMore: true },
-      },
+      orders: [],
+      meta: { page: 1, limit: 25, total: 60, totalPages: 3, hasMore: true },
     },
     isLoading: false,
     error: null,

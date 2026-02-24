@@ -32,7 +32,12 @@
 | **19** | _(reserved)_                                   | TBD                              | TBD                               | TBD                       |
 | **20** | Standards gap-fix sweep                        | All phases 1-18                  | âš ï¸ Cross-cutting               | ~45                       |
 | **21** | Code-reuse & fetch() violation sweep           | All phases 1-18                  | âš ï¸ Cross-cutting               | ~40                       |
-| **22** | Event management system                        | Schema, API, Admin UI, Public UI | ?? New vertical feature           | ~65                       |
+| **22** | Event management system                        | Schema, API, Admin UI, Public UI | ⚡ New vertical feature           | ~65                       |
+| **23** | Integration hardening & tech-debt cleanup      | Maintenance sweep                | ⚡ Additive                       | ~15                       |
+| **24** | Styling constants cleanup                      | THEME_CONSTANTS gap-fix          | ⚡ Additive                       | ~10                       |
+| **25** | i18n infrastructure & message files            | next-intl install + routing      | ⚡ Additive                       | ~8                        |
+| **26** | `[locale]` route migration                     | All `src/app/` pages moved       | ⚠️ Cross-cutting                  | ~35                       |
+| **27** | Zod error map + locale switcher UI             | Zod v4 map, LocaleSwitcher       | ⚡ Additive                       | ~8                        |
 
 ---
 
@@ -64,6 +69,11 @@
 | **20** | ✅ Done       | 2026-02-23 | 2026-02-23 | Gap-fix sweep complete — 274/274 suites green (3072 tests, +2 new). Barrel imports: 7 pages fixed; exceptions: `opengraph-image.tsx` keeps `@/constants/seo` (edge runtime), `api/search` + `api/faqs` keep `@/helpers/data/sieve.helper` (intentionally not in barrel). Hardcoded routes: 3 files fixed. `console.warn → logger.warn` in `useRealtimeBids`. Products API response shape: `successResponse({items,...})` (was `{data,meta}`); consuming pages updated. `formatMonthYear`/`formatFileSize` replace inline logic in 3 API routes. Tests: all 6 Phase 20 suites updated/extended. Pre-existing flaky test in `token.helper.test.ts` (timing-sensitive, passes in isolation) noted and unchanged. |
 | **21** | ✅ Done       | 2026-02-24 | 2026-02-24 | Code-reuse & fetch() violation sweep — 15 files migrated from raw fetch() → apiClient (wishlist, analytics, payouts, orders, seller/page, settings, addresses/add+edit, notifications, NotificationBell, FAQPageContent, ImageUpload, sellers/[id], profile/[userId], search/page). sieveQuery() added to faqs.repository.ts; api/faqs/route.ts dual-path (Firestore-native when no tags/search); api/search/route.ts fully replaced findAll()+applySieveToArray with productRepository.list(). Firestore indexes added for faqs/payouts/posts. Tests updated (public-search + faqs suites). 27/27 tests green.                                                                                               |
 | **22** | ✅ Done       | 2026-02-24 | 2026-02-24 | Event management system complete (22a–22d). Schema + constants + repositories (EventDocument, EventEntryDocument, 5 event types, SIEVE_FIELDS). 10 API routes (admin CRUD, status, entries, stats, public list/detail/enter/leaderboard). Admin UI feature module (EventFormDrawer with 5 type-config sub-forms, EventsTable, EventEntriesTable, EntryReviewDrawer, EventStatsBanner, SurveyFieldBuilder). Public UI (EventBanner in layout, EventCard, PollVotingSection, FeedbackEventSection, SurveyEventSection, EventLeaderboard, /events, /events/[id], /events/[id]/participate). 0 TS errors. 22e (tests) skipped per user instruction.                                                               |
+| **23** | ✅ Done       | 2026-02-24 | 2026-02-24 | Integration hardening — tech-debt cleanup, dead-code removal, type-safety sweep. 0 TS errors.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **24** | ✅ Done       | 2026-02-24 | 2026-02-24 | Styling constants cleanup — THEME_CONSTANTS gap-fix batch, raw Tailwind strings replaced with constants in 6.3 final batch. 0 TS errors.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **25** | ✅ Done       | 2026-02-24 | 2026-02-24 | i18n infrastructure — next-intl installed; `src/i18n/routing.ts` + `src/i18n/request.ts`; `messages/en.json` + `messages/hi.json` (550 keys each). 0 TS errors.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **26** | ✅ Done       | 2026-02-24 | 2026-02-24 | `[locale]` route migration — middleware activated; all 23 route dirs moved under `src/app/[locale]/`; root layout slimmed to HTML shell; 274/274 suites green.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **27** | ✅ Done       | 2026-02-25 | 2026-02-25 | Zod v4 error map + LocaleSwitcher — `src/lib/zod-error-map.ts` (custom `zodErrorMap` + `setupZodErrorMap`); `ZodSetup` client component wired in layout; `src/i18n/navigation.ts` (`createNavigation`); `LocaleSwitcher` pill UI in TitleBar; `locale` key added to en.json + hi.json; jest.config.ts updated (`next-intl` + `use-intl` in transform allowlist); `@/i18n/navigation` mock in jest.setup.ts; 25 new tests; 276/276 suites green — 3097 tests.                                                                                                                                                                                                                                                  |
 
 **Status legend:** ? Not started � ?? In progress � ? Done � ? Blocked
 
@@ -5456,3 +5466,59 @@ Deploy indexes before activating any event: `firebase deploy --only firestore:in
 - Hindi: `/hi/products` → middleware routes to `[locale]/products` with `locale='hi'`
 
 **Next**: Phase 27 — Zod schema locale-aware error messages (`schemas.ts` lines 797, 812)
+
+---
+
+## Phase 27 — Zod Error Map + Locale Switcher UI
+
+**Goal:** (27a) Replace Zod v4's default machine-y validation messages with human-friendly strings from `ERROR_MESSAGES` constants. (27b) Add a `LocaleSwitcher` component to the TitleBar so users can toggle between English and Hindi without a full page reload.
+
+### 27a — Zod v4 Error Map
+
+| File                                      | Change                                                               |
+| ----------------------------------------- | -------------------------------------------------------------------- |
+| `src/lib/zod-error-map.ts`                | New — `zodErrorMap` function + `setupZodErrorMap()` idempotent setup |
+| `src/components/ZodSetup.tsx`             | New — `"use client"` component that calls `setupZodErrorMap()` once  |
+| `src/i18n/request.ts`                     | Added `setupZodErrorMap()` call for server-side requests             |
+| `src/app/[locale]/layout.tsx`             | Added `<ZodSetup />` inside `NextIntlClientProvider`                 |
+| `src/components/index.ts`                 | Exported `ZodSetup`                                                  |
+| `src/lib/__tests__/zod-error-map.test.ts` | New — 18 tests covering all issue codes + idempotency                |
+
+**Zod v4 issue code mapping:**
+
+- `invalid_type` (undefined/null) → `ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD`
+- `too_small` (string, min ≤ 1) → `REQUIRED_FIELD`; (string, min > 1) → character count
+- `too_big` (string) → character count; (number) → numeric maximum
+- `invalid_format` (email) → `INVALID_EMAIL`; (url/uuid/regex) → contextual message
+- `invalid_value` → lists accepted values or `INVALID_INPUT`
+- `custom` → pass-through
+
+### 27b — Locale Switcher UI
+
+| File                                                      | Change                                                                                    |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `src/i18n/navigation.ts`                                  | New — `createNavigation(routing)` exports locale-aware `Link`, `useRouter`, `usePathname` |
+| `src/components/layout/LocaleSwitcher.tsx`                | New — pill-style `en`/`hi` toggle using `useLocale` + locale-aware router                 |
+| `src/components/layout/TitleBar.tsx`                      | Added `<LocaleSwitcher />` between NotificationBell and User avatar                       |
+| `src/components/layout/index.ts`                          | Exported `LocaleSwitcher`                                                                 |
+| `messages/en.json`                                        | Added `locale` key (`label`, `switchTo`, `en`, `hi`)                                      |
+| `messages/hi.json`                                        | Added `locale` key (Hindi translations)                                                   |
+| `src/components/layout/__tests__/LocaleSwitcher.test.tsx` | New — 6 tests (render, active/inactive state, ARIA, click handlers)                       |
+
+### 27c — Jest config updates for next-intl ESM
+
+| File             | Change                                                                             |
+| ---------------- | ---------------------------------------------------------------------------------- |
+| `jest.config.ts` | Added `next-intl` and `use-intl` to `transformIgnorePatterns` allowlist            |
+| `jest.setup.ts`  | Added `next-intl` mock (`useLocale`, `useTranslations`) + `@/i18n/navigation` mock |
+
+### Phase 27 — Summary
+
+| Sub-phase | Scope              | Files changed |
+| --------- | ------------------ | ------------- |
+| 27a       | Zod v4 error map   | 6             |
+| 27b       | Locale switcher UI | 7             |
+| 27c       | Jest ESM config    | 2             |
+| Total     |                    | 15            |
+
+**Tests:** 276/276 suites green — 3097 tests (3093 passed + 4 skipped) — 25 new tests.

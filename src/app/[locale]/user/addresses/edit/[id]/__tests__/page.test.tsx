@@ -12,6 +12,24 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("@/hooks", () => ({
   useAuth: () => ({ user: { uid: "user-1" }, loading: false }),
+  useApiQuery: jest.fn(() => ({
+    data: {
+      id: "address-1",
+      label: "Home",
+      fullName: "Test User",
+      phone: "1234567890",
+      addressLine1: "Line 1",
+      addressLine2: "",
+      landmark: "",
+      city: "City",
+      state: "State",
+      postalCode: "000000",
+      country: "India",
+      isDefault: false,
+    },
+    isLoading: false,
+    error: null,
+  })),
 }));
 
 jest.mock("@/components", () => ({

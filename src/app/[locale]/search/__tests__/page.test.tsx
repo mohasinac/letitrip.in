@@ -116,17 +116,17 @@ describe("SearchPage", () => {
         isLoading: false,
         error: null,
       })
+      // SearchResponse uses `items` (not `data`) after Phase 21 API shape change
       .mockReturnValueOnce({
         data: {
-          data: [],
-          meta: {
-            q: "shoes",
-            page: 1,
-            limit: 24,
-            total: 0,
-            totalPages: 0,
-            hasMore: false,
-          },
+          items: [],
+          q: "shoes",
+          page: 1,
+          pageSize: 24,
+          total: 0,
+          totalPages: 0,
+          hasMore: false,
+          backend: "in-memory",
         },
         isLoading: false,
         error: null,
@@ -161,7 +161,7 @@ describe("SearchPage", () => {
       })
       .mockReturnValueOnce({
         data: {
-          data: [
+          items: [
             {
               id: "p1",
               title: "Sneakers",
@@ -175,14 +175,13 @@ describe("SearchPage", () => {
               isPromoted: false,
             },
           ],
-          meta: {
-            q: "shoes",
-            page: 1,
-            limit: 24,
-            total: 1,
-            totalPages: 1,
-            hasMore: false,
-          },
+          q: "shoes",
+          page: 1,
+          pageSize: 24,
+          total: 1,
+          totalPages: 1,
+          hasMore: false,
+          backend: "in-memory",
         },
         isLoading: false,
         error: null,
@@ -202,15 +201,14 @@ describe("SearchPage", () => {
       })
       .mockReturnValueOnce({
         data: {
-          data: [],
-          meta: {
-            q: "xyz123",
-            page: 1,
-            limit: 24,
-            total: 0,
-            totalPages: 0,
-            hasMore: false,
-          },
+          items: [],
+          q: "xyz123",
+          page: 1,
+          pageSize: 24,
+          total: 0,
+          totalPages: 0,
+          hasMore: false,
+          backend: "in-memory",
         },
         isLoading: false,
         error: null,
@@ -232,15 +230,14 @@ describe("SearchPage", () => {
       })
       .mockReturnValueOnce({
         data: {
-          data: [],
-          meta: {
-            q: "",
-            page: 1,
-            limit: 24,
-            total: 0,
-            totalPages: 0,
-            hasMore: false,
-          },
+          items: [],
+          q: "",
+          page: 1,
+          pageSize: 24,
+          total: 0,
+          totalPages: 0,
+          hasMore: false,
+          backend: "in-memory",
         },
         isLoading: false,
         error: null,
@@ -263,15 +260,14 @@ describe("SearchPage", () => {
       })
       .mockReturnValueOnce({
         data: {
-          data: [],
-          meta: {
-            q: "",
-            page: 1,
-            limit: 24,
-            total: 0,
-            totalPages: 0,
-            hasMore: false,
-          },
+          items: [],
+          q: "",
+          page: 1,
+          pageSize: 24,
+          total: 0,
+          totalPages: 0,
+          hasMore: false,
+          backend: "in-memory",
         },
         isLoading: false,
         error: null,
@@ -293,7 +289,7 @@ describe("SearchPage", () => {
       })
       .mockReturnValueOnce({
         data: {
-          data: [
+          items: [
             {
               id: "p1",
               title: "Sneakers",
@@ -307,14 +303,13 @@ describe("SearchPage", () => {
               isPromoted: false,
             },
           ],
-          meta: {
-            q: "shoes",
-            page: 1,
-            limit: 24,
-            total: 1,
-            totalPages: 1,
-            hasMore: false,
-          },
+          q: "shoes",
+          page: 1,
+          pageSize: 24,
+          total: 1,
+          totalPages: 1,
+          hasMore: false,
+          backend: "in-memory",
         },
         isLoading: false,
         error: null,

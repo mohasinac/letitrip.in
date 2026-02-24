@@ -129,8 +129,10 @@ describe("FAQ Page", () => {
   };
 
   beforeEach(() => {
+    // FAQPageContent uses useApiQuery<FAQDocument[]> → apiClient unwraps the
+    // successResponse envelope, so data is the raw array, not { success, data: [...] }
     mockUseApiQuery.mockReturnValue({
-      data: mockFAQData,
+      data: mockFAQData.data,
       isLoading: false,
       error: null,
     });
@@ -178,7 +180,7 @@ describe("FAQ Page", () => {
 
     it("should display empty state when no FAQs available", () => {
       mockUseApiQuery.mockReturnValue({
-        data: { success: true, data: [] },
+        data: [],
         isLoading: false,
         error: null,
       });

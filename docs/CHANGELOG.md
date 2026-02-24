@@ -9,6 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 27 — Zod Error Map + Locale Switcher UI (2026-02-25)
+
+#### Added
+
+- **`src/lib/zod-error-map.ts`** — Zod v4 custom error map. Maps `invalid_type`, `too_small`, `too_big`, `invalid_format`, `invalid_value`, and `custom` issue codes to human-friendly strings from `ERROR_MESSAGES` constants. Exports `zodErrorMap` function and idempotent `setupZodErrorMap()` helper.
+- **`src/components/ZodSetup.tsx`** — `"use client"` component that applies the global Zod error map once on the client side. Renders nothing.
+- **`src/i18n/navigation.ts`** — Locale-aware navigation utilities via `createNavigation(routing)`. Re-exports `Link`, `redirect`, `useRouter`, `usePathname`, `getPathname` as locale-context-aware versions. Import from `@/i18n/navigation` instead of `next/navigation` in locale-aware components.
+- **`src/components/layout/LocaleSwitcher.tsx`** — Compact pill-style `en` / `हिन्दी` toggle in the TitleBar. Uses `useLocale()` + locale-aware `router.replace()` to switch locale without a full reload. Hidden on mobile (`hidden sm:flex`), visible on desktop.
+- **`src/lib/__tests__/zod-error-map.test.ts`** — 18 tests for the error map function (all issue codes, idempotency).
+- **`src/components/layout/__tests__/LocaleSwitcher.test.tsx`** — 7 tests (render, aria-label, active/inactive state, click handler routing).
+
+#### Changed
+
+- **`src/i18n/request.ts`** — Added `setupZodErrorMap()` call inside `getRequestConfig` so server-side Zod parsing uses friendly messages.
+- **`src/app/[locale]/layout.tsx`** — Added `<ZodSetup />` inside `NextIntlClientProvider` to bootstrap the client-side error map.
+- **`src/components/layout/TitleBar.tsx`** — Added `<LocaleSwitcher />` between `NotificationBell` and user avatar icons.
+- **`src/components/layout/index.ts`** — Exported `LocaleSwitcher`.
+- **`src/components/index.ts`** — Exported `ZodSetup`.
+- **`messages/en.json`** — Added `locale` key: `label`, `switchTo`, `en`, `hi`.
+- **`messages/hi.json`** — Added `locale` key with Hindi translations.
+- **`jest.config.ts`** — Added `next-intl` and `use-intl` to `transformIgnorePatterns` allowlist so Jest can transform ESM packages.
+- **`jest.setup.ts`** — Added `next-intl` mock (`useLocale → "en"`, `useTranslations → (key) => key`) and `@/i18n/navigation` mock.
+
+**Tests:** 276/276 suites green — 3097 tests (3093 passed, 4 skipped) — 25 new tests
+
+---
+
 ### Phase 26 — [locale] Route Migration (2026-02-24)
 
 #### Added

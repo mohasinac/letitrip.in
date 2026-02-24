@@ -143,8 +143,9 @@ describe("SellerPayoutsPage", () => {
 
   it("renders payout stats component", () => {
     mockUseAuth.mockReturnValue({ user: mockSeller, loading: false });
+    // apiClient.get() unwraps the successResponse envelope. Page reads data?.summary directly.
     mockUseApiQuery.mockReturnValue({
-      data: { data: { summary: mockSummary, payouts: mockPayouts } },
+      data: { summary: mockSummary, payouts: mockPayouts },
       isLoading: false,
       error: null,
       refetch: jest.fn(),
@@ -156,7 +157,7 @@ describe("SellerPayoutsPage", () => {
   it("renders payout request form when summary is available", () => {
     mockUseAuth.mockReturnValue({ user: mockSeller, loading: false });
     mockUseApiQuery.mockReturnValue({
-      data: { data: { summary: mockSummary, payouts: mockPayouts } },
+      data: { summary: mockSummary, payouts: mockPayouts },
       isLoading: false,
       error: null,
       refetch: jest.fn(),
@@ -171,7 +172,7 @@ describe("SellerPayoutsPage", () => {
   it("renders payout history table", () => {
     mockUseAuth.mockReturnValue({ user: mockSeller, loading: false });
     mockUseApiQuery.mockReturnValue({
-      data: { data: { summary: mockSummary, payouts: mockPayouts } },
+      data: { summary: mockSummary, payouts: mockPayouts },
       isLoading: false,
       error: null,
       refetch: jest.fn(),

@@ -27,13 +27,13 @@ const config: Config = {
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async.
-// We override transformIgnorePatterns AFTER next/jest sets its own, so our custom ESM package
-// (@mohasinac/sievejs) is correctly included in Jest's transform pipeline.
+// We override transformIgnorePatterns AFTER next/jest sets its own, so our custom ESM packages
+// (@mohasinac/sievejs, next-intl, use-intl) are correctly included in Jest's transform pipeline.
 const nextJestConfig = createJestConfig(config);
 export default async () => {
   const finalConfig = await nextJestConfig();
   finalConfig.transformIgnorePatterns = [
-    "node_modules/(?!(@mohasinac/sievejs)/)",
+    "node_modules/(?!(@mohasinac/sievejs|next-intl|use-intl)/)",
   ];
   return finalConfig;
 };
