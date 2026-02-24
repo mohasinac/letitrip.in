@@ -2,6 +2,7 @@
 
 import { useState, useRef, ChangeEvent } from "react";
 import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { apiClient } from "@/lib/api-client";
 
 interface ImageUploadProps {
   currentImage?: string;
@@ -75,25 +76,16 @@ export function ImageUpload({
 
       setProgress(30);
 
-      const response = await fetch(API_ENDPOINTS.MEDIA.UPLOAD, {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-
+      const data = await apiClient.upload<{ url: string }>(
+        API_ENDPOINTS.MEDIA.UPLOAD,
+        formData,
+      );
       setProgress(70);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Upload failed");
-      }
-
-      const data = await response.json();
       setProgress(100);
 
-      if (data.success && data.data?.url) {
-        onUpload(data.data.url);
-        setPreview(data.data.url);
+      if (data?.url) {
+        onUpload(data.url);
+        setPreview(data.url);
       } else {
         throw new Error("Upload response invalid");
       }

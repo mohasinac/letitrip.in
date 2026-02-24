@@ -5,6 +5,11 @@
  */
 
 import { BaseRepository } from "./base.repository";
+import type {
+  SieveModel,
+  FirebaseSieveFields,
+  FirebaseSieveResult,
+} from "@/lib/query";
 import {
   FAQS_COLLECTION,
   FAQDocument,
@@ -28,6 +33,18 @@ import { FieldValue } from "firebase-admin/firestore";
  * Repository for FAQ management with variable interpolation
  */
 class FAQsRepository extends BaseRepository<FAQDocument> {
+  static readonly SIEVE_FIELDS: FirebaseSieveFields = {
+    question: { canFilter: true, canSort: true },
+    category: { canFilter: true, canSort: false },
+    isActive: { canFilter: true, canSort: false },
+    helpful: { canFilter: false, canSort: true },
+    createdAt: { canFilter: true, canSort: true },
+  };
+
+  async list(model: SieveModel): Promise<FirebaseSieveResult<FAQDocument>> {
+    return this.sieveQuery<FAQDocument>(model, FAQsRepository.SIEVE_FIELDS);
+  }
+
   constructor() {
     super(FAQS_COLLECTION);
   }

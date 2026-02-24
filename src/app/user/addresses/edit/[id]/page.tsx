@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks";
+import { useAuth, useApiQuery } from "@/hooks";
 import {
   Card,
   Heading,
@@ -13,7 +13,7 @@ import {
 } from "@/components";
 import type { AddressFormData } from "@/hooks";
 import { useRouter, useParams } from "next/navigation";
-import { logger } from "@/classes";
+import { apiClient } from "@/lib/api-client";
 import {
   THEME_CONSTANTS,
   UI_LABELS,
@@ -30,11 +30,22 @@ export default function EditAddressPage() {
   const addressId = params?.id as string;
   const { showToast } = useToast();
 
-  const [address, setAddress] = useState<AddressFormData | null>(null);
-  const [loadingAddress, setLoadingAddress] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  const {
+    data: address,
+    isLoading: loadingAddress,
+    error: addressError,
+  } = useApiQuery<AddressFormData>({
+    queryKey: ["address", addressId],
+    queryFn: () =>
+      apiClient.get<AddressFormData>(
+        API_ENDPOINTS.ADDRESSES.GET_BY_ID(addressId),
+      ),
+    enabled: !!user && !!addressId,
+  });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -42,62 +53,21 @@ export default function EditAddressPage() {
     }
   }, [user, loading, router]);
 
-  // Fetch address data
   useEffect(() => {
-    if (user && addressId) {
-      const fetchAddress = async () => {
-        try {
-          const response = await fetch(
-            API_ENDPOINTS.ADDRESSES.GET_BY_ID(addressId),
-          );
-
-          if (!response.ok) {
-            throw new Error(ERROR_MESSAGES.DATABASE.NOT_FOUND);
-          }
-
-          const data = await response.json();
-          setAddress(data);
-        } catch (error) {
-          logger.error("Error fetching address:", error);
-          showToast(
-            error instanceof Error
-              ? error.message
-              : ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
-            "error",
-          );
-          router.push(ROUTES.USER.ADDRESSES);
-        } finally {
-          setLoadingAddress(false);
-        }
-      };
-
-      fetchAddress();
+    if (addressError) {
+      showToast(ERROR_MESSAGES.ADDRESS.FETCH_FAILED, "error");
+      router.push(ROUTES.USER.ADDRESSES);
     }
-  }, [user, addressId, router, showToast]);
+  }, [addressError, router, showToast]);
 
   const handleSubmit = async (data: AddressFormData) => {
     setSaving(true);
 
     try {
-      const response = await fetch(API_ENDPOINTS.ADDRESSES.UPDATE(addressId), {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
-        );
-      }
-
+      await apiClient.patch(API_ENDPOINTS.ADDRESSES.UPDATE(addressId), data);
       showToast(SUCCESS_MESSAGES.ADDRESS.UPDATED, "success");
       router.push(ROUTES.USER.ADDRESSES);
     } catch (error) {
-      logger.error("Error updating address:", error);
       showToast(
         error instanceof Error
           ? error.message
@@ -113,21 +83,10 @@ export default function EditAddressPage() {
     setDeleting(true);
 
     try {
-      const response = await fetch(API_ENDPOINTS.ADDRESSES.DELETE(addressId), {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
-        );
-      }
-
+      await apiClient.delete(API_ENDPOINTS.ADDRESSES.DELETE(addressId));
       showToast(SUCCESS_MESSAGES.ADDRESS.DELETED, "success");
       router.push(ROUTES.USER.ADDRESSES);
     } catch (error) {
-      logger.error("Error deleting address:", error);
       showToast(
         error instanceof Error
           ? error.message

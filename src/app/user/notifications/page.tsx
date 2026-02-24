@@ -12,6 +12,7 @@ import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ROUTES, UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
 import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";
+import { apiClient } from "@/lib/api-client";
 import { Spinner, EmptyState } from "@/components";
 import { NotificationItem, NotificationsBulkActions } from "@/components";
 import type { NotificationDocument } from "@/db/schema";
@@ -50,47 +51,29 @@ export default function UserNotificationsPage() {
 
   const { data, isLoading, refetch } = useApiQuery<NotificationsResponse>({
     queryKey: ["notifications", "page"],
-    queryFn: async () => {
-      const res = await fetch(API_ENDPOINTS.NOTIFICATIONS.LIST + "?limit=50");
-      if (!res.ok) throw new Error("Failed to fetch notifications");
-      const json = await res.json();
-      return json.data;
-    },
+    queryFn: () =>
+      apiClient.get<NotificationsResponse>(
+        API_ENDPOINTS.NOTIFICATIONS.LIST + "?limit=50",
+      ),
     enabled: !!user,
     cacheTTL: 0,
   });
 
   const { mutate: markRead } = useApiMutation<unknown, string>({
-    mutationFn: async (id: string) => {
-      const res = await fetch(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(id), {
-        method: "PATCH",
-      });
-      if (!res.ok) throw new Error("Failed");
-      return res.json();
-    },
+    mutationFn: (id: string) =>
+      apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(id), {}),
   });
 
   const { mutate: deleteOne } = useApiMutation<unknown, string>({
-    mutationFn: async (id: string) => {
-      const res = await fetch(API_ENDPOINTS.NOTIFICATIONS.DELETE(id), {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Failed");
-      return res.json();
-    },
+    mutationFn: (id: string) =>
+      apiClient.delete(API_ENDPOINTS.NOTIFICATIONS.DELETE(id)),
   });
 
   const { mutate: markAllRead, isLoading: isMarkingAll } = useApiMutation<
     unknown,
     void
   >({
-    mutationFn: async () => {
-      const res = await fetch(API_ENDPOINTS.NOTIFICATIONS.READ_ALL, {
-        method: "PATCH",
-      });
-      if (!res.ok) throw new Error("Failed");
-      return res.json();
-    },
+    mutationFn: () => apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.READ_ALL, {}),
   });
 
   const handleMarkRead = useCallback(

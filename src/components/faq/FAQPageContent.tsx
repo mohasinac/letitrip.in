@@ -11,6 +11,7 @@ import {
 } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
 import { useApiQuery } from "@/hooks";
+import { apiClient } from "@/lib/api-client";
 import { FAQCategorySidebar } from "./FAQCategorySidebar";
 import { FAQSearchBar } from "./FAQSearchBar";
 import { FAQSortDropdown } from "./FAQSortDropdown";
@@ -35,19 +36,13 @@ export function FAQPageContent({
   const [sortOption, setSortOption] = useState<FAQSortOption>("helpful");
 
   // Fetch all FAQs
-  const { data: faqsData, isLoading } = useApiQuery<{
-    success: boolean;
-    data: FAQDocument[];
-  }>({
+  const { data: faqsData, isLoading } = useApiQuery<FAQDocument[]>({
     queryKey: [API_ENDPOINTS.FAQS.LIST],
-    queryFn: async () => {
-      const response = await fetch(`${API_ENDPOINTS.FAQS.LIST}?isActive=true`);
-      if (!response.ok) throw new Error("Failed to fetch FAQs");
-      return response.json();
-    },
+    queryFn: () =>
+      apiClient.get<FAQDocument[]>(`${API_ENDPOINTS.FAQS.LIST}?isActive=true`),
   });
 
-  const allFAQs = faqsData?.data || [];
+  const allFAQs = faqsData || [];
 
   // Calculate category counts
   const categoryCounts = useMemo(() => {

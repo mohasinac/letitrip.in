@@ -21,6 +21,7 @@ import {
 import type { ActiveFilter } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
 import { useApiQuery, useUrlTable } from "@/hooks";
+import { apiClient } from "@/lib/api-client";
 import { debounce } from "@/utils";
 import type { ProductDocument, CategoryDocument } from "@/db/schema";
 import type { ProductSortValue } from "@/components";
@@ -45,19 +46,14 @@ type ProductCardData = Pick<
 >;
 
 interface SearchResponse {
-  data: ProductCardData[];
-  meta: {
-    q: string;
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasMore: boolean;
-  };
-}
-
-interface CategoriesResponse {
-  data: CategoryDocument[];
+  items: ProductCardData[];
+  q: string;
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
+  backend: "algolia" | "in-memory";
 }
 
 function SearchPageContent() {
@@ -90,14 +86,16 @@ function SearchPageContent() {
     debouncedSetQ(val);
   };
 
-  const { data: catData } = useApiQuery<CategoriesResponse>({
+  const { data: catData } = useApiQuery<CategoryDocument[]>({
     queryKey: ["categories", "flat"],
     queryFn: () =>
-      fetch(`${API_ENDPOINTS.CATEGORIES.LIST}?flat=true`).then((r) => r.json()),
+      apiClient.get<CategoryDocument[]>(
+        `${API_ENDPOINTS.CATEGORIES.LIST}?flat=true`,
+      ),
   });
 
   const topCategories = useMemo(
-    () => (catData?.data ?? []).filter((c) => c.tier === 1),
+    () => (catData ?? []).filter((c) => c.tier === 1),
     [catData],
   );
 
@@ -115,12 +113,12 @@ function SearchPageContent() {
 
   const { data: searchData, isLoading } = useApiQuery<SearchResponse>({
     queryKey: ["search", table.params.toString()],
-    queryFn: () => fetch(searchUrl).then((r) => r.json()),
+    queryFn: () => apiClient.get<SearchResponse>(searchUrl),
   });
 
-  const products = useMemo(() => searchData?.data ?? [], [searchData]);
-  const total = searchData?.meta?.total ?? 0;
-  const totalPages = searchData?.meta?.totalPages ?? 1;
+  const products = useMemo(() => searchData?.items ?? [], [searchData]);
+  const total = searchData?.total ?? 0;
+  const totalPages = searchData?.totalPages ?? 1;
 
   const categoryOptions = useMemo(
     () => topCategories.map((c) => ({ value: c.id, label: c.name })),

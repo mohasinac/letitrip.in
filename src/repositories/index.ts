@@ -69,3 +69,7 @@ export type { WishlistItem } from "./wishlist.repository";
 export * from "./notification.repository";
 export { notificationRepository } from "./notification.repository";
 export { payoutRepository } from "./payout.repository";
+export * from "./event.repository";
+export { eventRepository } from "./event.repository";
+export * from "./eventEntry.repository";
+export { eventEntryRepository } from "./eventEntry.repository";

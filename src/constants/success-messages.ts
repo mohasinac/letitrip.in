@@ -232,6 +232,18 @@ export const SUCCESS_MESSAGES = {
     DELETED: "Notification deleted",
     ALL_CLEARED: "All notifications cleared",
   },
+
+  // Event success messages
+  EVENT: {
+    CREATED: "Event created successfully",
+    UPDATED: "Event updated successfully",
+    DELETED: "Event deleted successfully",
+    ENTRY_SUBMITTED: "Your entry has been submitted",
+    VOTE_SUBMITTED: "Your vote has been recorded",
+    ENTRY_APPROVED: "Entry approved",
+    ENTRY_FLAGGED: "Entry flagged",
+    STATUS_CHANGED: "Event status updated",
+  },
 } as const;
 
 export const INFO_MESSAGES = {

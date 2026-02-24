@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { apiClient } from "@/lib/api-client";
 import {
   Card,
   Badge,
@@ -19,7 +19,6 @@ import {
 } from "@/constants";
 import { formatMonthYear, formatCurrency } from "@/utils";
 import { useApiQuery } from "@/hooks";
-import { logger } from "@/classes";
 import type { UserDocument, ProductDocument } from "@/db/schema";
 import type { ImageCropData } from "@/components";
 import Link from "next/link";
@@ -49,9 +48,23 @@ interface ProductsApiResponse {
 export default function PublicProfilePage() {
   const params = useParams();
   const userId = params?.userId as string;
-  const [user, setUser] = useState<UserDocument | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+  // Fetch public profile
+  const {
+    data: profileData,
+    isLoading: loading,
+    error: fetchError,
+  } = useApiQuery<{ user: UserDocument }>({
+    queryKey: ["public-profile", userId],
+    queryFn: () =>
+      apiClient.get<{ user: UserDocument }>(
+        API_ENDPOINTS.PROFILE.GET_BY_ID(userId),
+      ),
+    enabled: !!userId,
+  });
+
+  const user = profileData?.user;
+  const profileError: string | null = (fetchError as Error)?.message ?? null;
 
   const isSeller = user?.role === "seller";
 
@@ -59,63 +72,25 @@ export default function PublicProfilePage() {
   const { data: productsData, isLoading: productsLoading } =
     useApiQuery<ProductsApiResponse>({
       queryKey: ["profile-products", userId],
-      queryFn: async () => {
-        const res = await fetch(
+      queryFn: () =>
+        apiClient.get<ProductsApiResponse>(
           API_ENDPOINTS.PROFILE.GET_SELLER_PRODUCTS(userId),
-        );
-        if (!res.ok) throw new Error("Failed to fetch products");
-        const json = await res.json();
-        return json;
-      },
+        ),
       enabled: !!userId && isSeller,
       cacheTTL: 60000,
     });
 
   // Fetch seller reviews
-  const { data: reviewsData, isLoading: reviewsLoading } = useApiQuery<{
-    data: SellerReviewsData;
-  }>({
-    queryKey: ["profile-reviews", userId],
-    queryFn: async () => {
-      const res = await fetch(API_ENDPOINTS.PROFILE.GET_SELLER_REVIEWS(userId));
-      if (!res.ok) throw new Error("Failed to fetch reviews");
-      return res.json();
-    },
-    enabled: !!userId && isSeller,
-    cacheTTL: 60000,
-  });
-
-  useEffect(() => {
-    if (!userId) return;
-
-    const fetchPublicProfile = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(API_ENDPOINTS.PROFILE.GET_BY_ID(userId));
-
-        if (!response.ok) {
-          if (response.status === 404) {
-            setError(ERROR_MESSAGES.USER.NOT_FOUND);
-          } else if (response.status === 403) {
-            setError(ERROR_MESSAGES.GENERIC.PROFILE_PRIVATE);
-          } else {
-            setError(ERROR_MESSAGES.GENERIC.INTERNAL_ERROR);
-          }
-          return;
-        }
-
-        const data = await response.json();
-        setUser(data.user);
-      } catch (err) {
-        setError(ERROR_MESSAGES.GENERIC.INTERNAL_ERROR);
-        logger.error("Error fetching profile:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPublicProfile();
-  }, [userId]);
+  const { data: reviewsData, isLoading: reviewsLoading } =
+    useApiQuery<SellerReviewsData>({
+      queryKey: ["profile-reviews", userId],
+      queryFn: () =>
+        apiClient.get<SellerReviewsData>(
+          API_ENDPOINTS.PROFILE.GET_SELLER_REVIEWS(userId),
+        ),
+      enabled: !!userId && isSeller,
+      cacheTTL: 60000,
+    });
 
   if (loading) {
     return (
@@ -128,12 +103,12 @@ export default function PublicProfilePage() {
     );
   }
 
-  if (error || !user) {
+  if (profileError || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <Alert variant="error">
-            {error || ERROR_MESSAGES.USER.NOT_FOUND}
+            {profileError || ERROR_MESSAGES.USER.NOT_FOUND}
           </Alert>
           <div className="mt-4">
             <Link
@@ -473,13 +448,13 @@ export default function PublicProfilePage() {
               <h2 className={THEME_CONSTANTS.typography.h4}>
                 {UI_LABELS.PROFILE.SELLER_REVIEWS_TITLE}
               </h2>
-              {reviewsData?.data && reviewsData.data.totalReviews > 0 && (
+              {reviewsData && reviewsData.totalReviews > 0 && (
                 <div className="flex items-center gap-2">
                   <div className="flex items-center">
                     {[...Array(5)].map((_, i) => (
                       <svg
                         key={i}
-                        className={`w-4 h-4 ${i < Math.round(reviewsData.data.averageRating) ? THEME_CONSTANTS.rating.filled : THEME_CONSTANTS.rating.empty}`}
+                        className={`w-4 h-4 ${i < Math.round(reviewsData.averageRating) ? THEME_CONSTANTS.rating.filled : THEME_CONSTANTS.rating.empty}`}
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -488,10 +463,10 @@ export default function PublicProfilePage() {
                     ))}
                   </div>
                   <Text className="text-sm font-semibold">
-                    {reviewsData.data.averageRating.toFixed(1)}
+                    {reviewsData.averageRating.toFixed(1)}
                   </Text>
                   <Text variant="secondary" className="text-xs">
-                    ({reviewsData.data.totalReviews})
+                    ({reviewsData.totalReviews})
                   </Text>
                 </div>
               )}
@@ -501,9 +476,9 @@ export default function PublicProfilePage() {
               <div className="flex justify-center py-8">
                 <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
               </div>
-            ) : reviewsData?.data && reviewsData.data.reviews.length > 0 ? (
+            ) : reviewsData?.reviews && reviewsData.reviews.length > 0 ? (
               <div className={THEME_CONSTANTS.spacing.stack}>
-                {reviewsData.data.reviews.map((review) => (
+                {reviewsData.reviews.map((review) => (
                   <div
                     key={review.id}
                     className={`p-4 rounded-xl ${THEME_CONSTANTS.themed.bgSecondary}`}

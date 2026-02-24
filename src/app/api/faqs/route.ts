@@ -39,6 +39,7 @@ import {
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { slugifyQuestion } from "@/db/schema";
+import type { FAQDocument } from "@/db/schema";
 
 /**
  * GET /api/faqs
@@ -81,90 +82,112 @@ export const GET = withCache(async (request: NextRequest) => {
     const priority = priorityStr ? parseInt(priorityStr, 10) : undefined;
     const showOnHomepage = showOnHomepageParam === true;
 
-    // Step 1: Fetch all FAQs
-    let faqs = await faqsRepository.findAll();
+    // Helper: build structured Sieve filter string from legacy params
+    const buildStructuredFilters = (): string | undefined => {
+      const parts: string[] = [];
+      if (category) parts.push(`category==${category}`);
+      if (showOnHomepageStr) parts.push(`showOnHomepage==${showOnHomepage}`);
+      if (priority !== undefined) parts.push(`priority==${priority}`);
+      if (sieveFilters) parts.push(sieveFilters);
+      return parts.join(",") || undefined;
+    };
 
-    // Step 2: Pre-filter for complex cases that Sieve can't handle natively
-    // Tags: array membership (any tag in requested list)
-    if (tags && tags.length > 0) {
-      faqs = faqs.filter((faq) => faq.tags?.some((tag) => tags.includes(tag)));
-    }
-
-    // Step 3: Normalize answer field (must happen before Sieve so field paths resolve)
-    faqs = faqs.map((faq) => ({
+    // Normalise the answer field so Sieve field paths resolve consistently
+    const normaliseAnswer = (faq: FAQDocument) => ({
       ...faq,
       answer:
         typeof faq.answer === "string"
           ? { text: faq.answer, format: "plain" as const }
           : (faq.answer ?? { text: "", format: "plain" as const }),
-    }));
-
-    // Step 4: Full-text search — multi-field, can't be done purely in Sieve DSL
-    if (search) {
-      const searchLower = search.toLowerCase();
-      faqs = faqs.filter(
-        (faq) =>
-          faq.question.toLowerCase().includes(searchLower) ||
-          (faq.answer.text ?? "").toLowerCase().includes(searchLower),
-      );
-    }
-
-    // Step 5: Build internal Sieve filter string from legacy params
-    const internalFiltersArr: string[] = [];
-    if (category) internalFiltersArr.push(`category==${category}`);
-    if (showOnHomepageStr)
-      internalFiltersArr.push(`showOnHomepage==${showOnHomepage}`);
-    if (priority !== undefined)
-      internalFiltersArr.push(`priority==${priority}`);
-
-    // Merge internal filters with any caller-provided Sieve filters
-    const mergedFilters =
-      [...internalFiltersArr, ...(sieveFilters ? [sieveFilters] : [])].join(
-        ",",
-      ) || undefined;
-
-    // Step 6: Apply Sieve (filter, sort, paginate)
-    const sieveResult = await applySieveToArray({
-      items: faqs,
-      model: {
-        filters: mergedFilters,
-        sorts: sieveSorts || "-priority,order",
-        page,
-        pageSize,
-      },
-      fields: {
-        id: { canFilter: true, canSort: false },
-        question: { canFilter: true, canSort: true },
-        category: { canFilter: true, canSort: true },
-        status: { canFilter: true, canSort: true },
-        priority: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => Number(v),
-        },
-        order: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => Number(v),
-        },
-        showOnHomepage: {
-          canFilter: true,
-          canSort: false,
-          parseValue: (v: string) => v === "true",
-        },
-        isFeatured: {
-          canFilter: true,
-          canSort: false,
-          parseValue: (v: string) => v === "true",
-        },
-        createdAt: {
-          canFilter: true,
-          canSort: true,
-          parseValue: (v: string) => new Date(v),
-        },
-      },
-      options: { defaultPageSize: 100, maxPageSize: 200 },
     });
+
+    const needsPreFilter = !!(tags && tags.length > 0) || !!search;
+
+    let sieveResult: {
+      items: FAQDocument[];
+      total: number;
+      page: number;
+      pageSize: number;
+      totalPages: number;
+      hasMore: boolean;
+    };
+
+    if (needsPreFilter) {
+      // Legacy in-memory path: required for tags array-membership + full-text search
+      let faqs = await faqsRepository.findAll();
+
+      if (tags && tags.length > 0) {
+        faqs = faqs.filter((faq) =>
+          faq.tags?.some((tag) => tags.includes(tag)),
+        );
+      }
+
+      faqs = faqs.map(normaliseAnswer);
+
+      if (search) {
+        const searchLower = search.toLowerCase();
+        faqs = faqs.filter(
+          (faq) =>
+            faq.question.toLowerCase().includes(searchLower) ||
+            (faq.answer.text ?? "").toLowerCase().includes(searchLower),
+        );
+      }
+
+      sieveResult = await applySieveToArray({
+        items: faqs,
+        model: {
+          filters: buildStructuredFilters(),
+          sorts: sieveSorts || "-priority,order",
+          page,
+          pageSize,
+        },
+        fields: {
+          id: { canFilter: true, canSort: false },
+          question: { canFilter: true, canSort: true },
+          category: { canFilter: true, canSort: true },
+          status: { canFilter: true, canSort: true },
+          priority: {
+            canFilter: true,
+            canSort: true,
+            parseValue: (v: string) => Number(v),
+          },
+          order: {
+            canFilter: true,
+            canSort: true,
+            parseValue: (v: string) => Number(v),
+          },
+          showOnHomepage: {
+            canFilter: true,
+            canSort: false,
+            parseValue: (v: string) => v === "true",
+          },
+          isFeatured: {
+            canFilter: true,
+            canSort: false,
+            parseValue: (v: string) => v === "true",
+          },
+          createdAt: {
+            canFilter: true,
+            canSort: true,
+            parseValue: (v: string) => new Date(v),
+          },
+        },
+        options: { defaultPageSize: 100, maxPageSize: 200 },
+      });
+    } else {
+      // Firestore-native path: structured filters + Sieve sort + pagination
+      const rawResult = await faqsRepository.list({
+        filters: buildStructuredFilters(),
+        sorts: sieveSorts || "-priority,order",
+        page: String(page),
+        pageSize: String(pageSize),
+      });
+
+      sieveResult = {
+        ...rawResult,
+        items: rawResult.items.map(normaliseAnswer),
+      };
+    }
 
     // Step 7: Get site settings, then interpolate only the current page's items
     const siteSettings = await siteSettingsRepository.getSingleton();

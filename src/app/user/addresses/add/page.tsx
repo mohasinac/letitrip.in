@@ -6,6 +6,7 @@ import { Card, Heading, Spinner, AddressForm, useToast } from "@/components";
 import type { AddressFormData } from "@/hooks";
 import { useRouter } from "next/navigation";
 import { logger } from "@/classes";
+import { apiClient } from "@/lib/api-client";
 import {
   UI_LABELS,
   THEME_CONSTANTS,
@@ -31,20 +32,7 @@ export default function AddAddressPage() {
     setSaving(true);
 
     try {
-      const response = await fetch(API_ENDPOINTS.ADDRESSES.CREATE, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
-        );
-      }
+      await apiClient.post(API_ENDPOINTS.ADDRESSES.CREATE, data);
 
       showToast(SUCCESS_MESSAGES.ADDRESS.CREATED, "success");
       router.push(ROUTES.USER.ADDRESSES);

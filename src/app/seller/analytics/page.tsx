@@ -22,15 +22,14 @@ import type {
 } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
 import { useAuth, useApiQuery } from "@/hooks";
+import { apiClient } from "@/lib/api-client";
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
 
 interface AnalyticsResponse {
-  data: {
-    summary: SellerAnalyticsSummary;
-    revenueByMonth: MonthEntry[];
-    topProducts: TopProduct[];
-  };
+  summary: SellerAnalyticsSummary;
+  revenueByMonth: MonthEntry[];
+  topProducts: TopProduct[];
 }
 
 export default function SellerAnalyticsPage() {
@@ -49,14 +48,15 @@ export default function SellerAnalyticsPage() {
 
   const { data, isLoading } = useApiQuery<AnalyticsResponse>({
     queryKey: ["seller-analytics", user?.uid ?? ""],
-    queryFn: () => fetch(API_ENDPOINTS.SELLER.ANALYTICS).then((r) => r.json()),
+    queryFn: () =>
+      apiClient.get<AnalyticsResponse>(API_ENDPOINTS.SELLER.ANALYTICS),
     enabled: !!user && (user.role === "seller" || user.role === "admin"),
     cacheTTL: 5 * 60 * 1000,
   });
 
-  const summary = data?.data?.summary;
-  const revenueByMonth = data?.data?.revenueByMonth ?? [];
-  const topProducts = data?.data?.topProducts ?? [];
+  const summary = data?.summary;
+  const revenueByMonth = data?.revenueByMonth ?? [];
+  const topProducts = data?.topProducts ?? [];
 
   if (authLoading || (!user && !authLoading)) {
     return (

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth, useChangePassword, useResendVerification } from "@/hooks";
+import { apiClient } from "@/lib/api-client";
 import {
   Heading,
   Alert,
@@ -78,21 +79,10 @@ export default function UserSettingsPage() {
     setMessage(null);
 
     try {
-      const response = await fetch(API_ENDPOINTS.USER.PROFILE, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          displayName: data.displayName,
-          phoneNumber: data.phone,
-        }),
+      await apiClient.patch(API_ENDPOINTS.USER.PROFILE, {
+        displayName: data.displayName,
+        phoneNumber: data.phone,
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || ERROR_MESSAGES.USER.UPDATE_FAILED);
-      }
 
       showToast(SUCCESS_MESSAGES.USER.SETTINGS_SAVED, "success");
       await refreshUser();
@@ -114,20 +104,7 @@ export default function UserSettingsPage() {
     if (!profile?.uid) return;
 
     try {
-      const response = await fetch(API_ENDPOINTS.USER.PROFILE, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          photoURL: url,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || ERROR_MESSAGES.USER.UPDATE_FAILED);
-      }
+      await apiClient.patch(API_ENDPOINTS.USER.PROFILE, { photoURL: url });
 
       showToast(SUCCESS_MESSAGES.USER.SETTINGS_SAVED, "success");
     } catch (error) {

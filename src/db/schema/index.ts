@@ -29,3 +29,4 @@ export * from "./newsletter";
 export * from "./blog-posts";
 export * from "./notifications";
 export * from "./payouts";
+export * from "./events";

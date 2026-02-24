@@ -16,16 +16,11 @@ jest.mock("@/lib/server-logger", () => ({
   serverLogger: { info: jest.fn(), error: jest.fn(), warn: jest.fn() },
 }));
 
-const mockFindAll = jest.fn();
+const mockList = jest.fn();
 jest.mock("@/repositories", () => ({
   productRepository: {
-    findAll: (...args: unknown[]) => mockFindAll(...args),
+    list: (...args: unknown[]) => mockList(...args),
   },
-}));
-
-const mockApplySieveToArray = jest.fn();
-jest.mock("@/helpers/data/sieve.helper", () => ({
-  applySieveToArray: (...args: unknown[]) => mockApplySieveToArray(...args),
 }));
 
 jest.mock("@/lib/search/algolia", () => ({
@@ -106,8 +101,7 @@ const mockSieveResult = {
 describe("GET /api/search", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockFindAll.mockResolvedValue(mockProducts);
-    mockApplySieveToArray.mockResolvedValue(mockSieveResult);
+    mockList.mockResolvedValue(mockSieveResult);
   });
 
   it("returns paginated results for a valid query", async () => {
@@ -118,7 +112,7 @@ describe("GET /api/search", () => {
     expect(status).toBe(200);
     expect(body.success).toBe(true);
     expect(body.data).toBeDefined();
-    expect(body.meta).toBeDefined();
+    expect(body.data.items).toBeDefined();
   });
 
   it("returns backend=in-memory in meta when Algolia is not configured", async () => {
@@ -126,11 +120,11 @@ describe("GET /api/search", () => {
     const res = await GET(req);
     const { body } = await parseResponse(res);
 
-    expect(body.meta.backend).toBe("in-memory");
+    expect(body.data.backend).toBe("in-memory");
   });
 
   it("returns an empty result when no products match the query", async () => {
-    mockApplySieveToArray.mockResolvedValue({
+    mockList.mockResolvedValue({
       items: [],
       total: 0,
       page: 1,
@@ -144,19 +138,17 @@ describe("GET /api/search", () => {
     const { status, body } = await parseResponse(res);
 
     expect(status).toBe(200);
-    expect(body.data).toHaveLength(0);
-    expect(body.meta.total).toBe(0);
+    expect(body.data.items).toHaveLength(0);
+    expect(body.data.total).toBe(0);
   });
 
   it("passes category filter to Sieve when ?category= is provided", async () => {
     const req = buildRequest("/api/search?q=shoes&category=footwear");
     await GET(req);
 
-    expect(mockApplySieveToArray).toHaveBeenCalledWith(
+    expect(mockList).toHaveBeenCalledWith(
       expect.objectContaining({
-        model: expect.objectContaining({
-          filters: expect.stringContaining("category==footwear"),
-        }),
+        filters: expect.stringContaining("category==footwear"),
       }),
     );
   });
@@ -165,11 +157,9 @@ describe("GET /api/search", () => {
     const req = buildRequest("/api/search?q=shoes&minPrice=100&maxPrice=2000");
     await GET(req);
 
-    expect(mockApplySieveToArray).toHaveBeenCalledWith(
+    expect(mockList).toHaveBeenCalledWith(
       expect.objectContaining({
-        model: expect.objectContaining({
-          filters: expect.stringContaining("price>=100"),
-        }),
+        filters: expect.stringContaining("price>=100"),
       }),
     );
   });
@@ -178,10 +168,8 @@ describe("GET /api/search", () => {
     const req = buildRequest("/api/search?q=shoes&page=2&pageSize=5");
     await GET(req);
 
-    expect(mockApplySieveToArray).toHaveBeenCalledWith(
-      expect.objectContaining({
-        model: expect.objectContaining({ page: 2, pageSize: 5 }),
-      }),
+    expect(mockList).toHaveBeenCalledWith(
+      expect.objectContaining({ page: "2", pageSize: "5" }),
     );
   });
 
@@ -189,13 +177,12 @@ describe("GET /api/search", () => {
     const req = buildRequest("/api/search?q=product");
     await GET(req);
 
-    // applySieveToArray should be called with only published products
-    const callArgs = mockApplySieveToArray.mock.calls[0]?.[0];
-    if (callArgs?.items) {
-      callArgs.items.forEach((item: any) => {
-        expect(item.status).toBe("published");
-      });
-    }
+    // list should be called with status==published in the filters
+    expect(mockList).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filters: expect.stringContaining("status==published"),
+      }),
+    );
   });
 
   it("returns 200 even with an empty query string", async () => {
@@ -211,6 +198,6 @@ describe("GET /api/search", () => {
     const res = await GET(req);
     const { body } = await parseResponse(res);
 
-    expect(body.meta.q).toBe("running");
+    expect(body.data.q).toBe("running");
   });
 });

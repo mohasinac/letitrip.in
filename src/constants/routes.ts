@@ -32,6 +32,9 @@ export const ROUTES = {
     SELLER_GUIDE: "/seller-guide",
     COOKIE_POLICY: "/cookies",
     REFUND_POLICY: "/refund-policy",
+    EVENTS: "/events",
+    EVENT_DETAIL: (id: string) => `/events/${id}`,
+    EVENT_PARTICIPATE: (id: string) => `/events/${id}/participate`,
   },
 
   // Error Pages
@@ -96,6 +99,8 @@ export const ROUTES = {
     ANALYTICS: "/admin/analytics",
     PAYOUTS: "/admin/payouts",
     NEWSLETTER: "/admin/newsletter",
+    EVENTS: "/admin/events",
+    EVENT_ENTRIES: (id: string) => `/admin/events/${id}/entries`,
   },
 
   // Demo Routes (dev-only)

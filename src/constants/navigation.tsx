@@ -35,6 +35,7 @@ import {
   Settings,
   Mail,
   HelpCircle,
+  CalendarDays,
 } from "lucide-react";
 import { SITE_CONFIG } from "./site";
 import { UI_LABELS } from "./ui";
@@ -174,6 +175,7 @@ export const ADMIN_TAB_ITEMS = [
   { label: UI_LABELS.NAV.BLOG_ADMIN, href: ROUTES.ADMIN.BLOG },
   { label: UI_LABELS.NAV.PAYOUTS_ADMIN, href: ROUTES.ADMIN.PAYOUTS },
   { label: UI_LABELS.NAV.NEWSLETTER_ADMIN, href: ROUTES.ADMIN.NEWSLETTER },
+  { label: UI_LABELS.NAV.EVENTS_ADMIN, href: ROUTES.ADMIN.EVENTS },
 ] as const;
 
 /**

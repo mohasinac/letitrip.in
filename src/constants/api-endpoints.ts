@@ -116,6 +116,16 @@ export const API_ENDPOINTS = {
     /** ✅ Admin newsletter — manage subscribers */
     NEWSLETTER: "/api/admin/newsletter", // GET - List subscribers with stats
     NEWSLETTER_BY_ID: (id: string) => `/api/admin/newsletter/${id}`, // PATCH/DELETE
+    /** ✅ Admin events endpoints */
+    EVENTS: {
+      LIST: "/api/admin/events",
+      DETAIL: (id: string) => `/api/admin/events/${id}`,
+      STATUS: (id: string) => `/api/admin/events/${id}/status`,
+      ENTRIES: (id: string) => `/api/admin/events/${id}/entries`,
+      ENTRY: (id: string, entryId: string) =>
+        `/api/admin/events/${id}/entries/${entryId}`,
+      STATS: (id: string) => `/api/admin/events/${id}/stats`,
+    },
   },
 
   // Product endpoints ✅ All routes exist
@@ -263,6 +273,14 @@ export const API_ENDPOINTS = {
   // Contact endpoint
   CONTACT: {
     SEND: "/api/contact", // POST - Send a contact message
+  },
+
+  // Events endpoints (public)
+  EVENTS: {
+    LIST: "/api/events",
+    DETAIL: (id: string) => `/api/events/${id}`,
+    ENTER: (id: string) => `/api/events/${id}/enter`,
+    LEADERBOARD: (id: string) => `/api/events/${id}/leaderboard`,
   },
 
   // Notifications endpoints

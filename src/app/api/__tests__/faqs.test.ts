@@ -15,12 +15,14 @@ import { buildRequest, parseResponse, mockAdminUser } from "./helpers";
 // ============================================
 
 const mockFaqsFindAll = jest.fn();
+const mockFaqsList = jest.fn();
 const mockFaqsCreate = jest.fn();
 const mockGetSingleton = jest.fn();
 
 jest.mock("@/repositories", () => ({
   faqsRepository: {
     findAll: (...args: unknown[]) => mockFaqsFindAll(...args),
+    list: (...args: unknown[]) => mockFaqsList(...args),
     create: (...args: unknown[]) => mockFaqsCreate(...args),
   },
   siteSettingsRepository: {
@@ -132,6 +134,31 @@ describe("FAQs API - GET /api/faqs", () => {
     cache.clear();
     mockFaqsFindAll.mockResolvedValue([...mockFAQs]);
     mockGetSingleton.mockResolvedValue(mockSiteSettings);
+    // Smart mock for Firestore-native list() — returns filtered/sorted subset
+    mockFaqsList.mockImplementation(async (model: any) => {
+      let items = [...mockFAQs] as any[];
+      if (model?.filters) {
+        const catMatch = model.filters.match(/category==([\w]+)/);
+        if (catMatch) items = items.filter((f) => f.category === catMatch[1]);
+        if (model.filters.includes("showOnHomepage==true")) {
+          items = items.filter((f) => f.showOnHomepage === true);
+        }
+      }
+      const sorts: string = model?.sorts ?? "-priority";
+      if (sorts.includes("-priority")) {
+        items = [...items].sort(
+          (a, b) => (b.priority ?? 0) - (a.priority ?? 0),
+        );
+      }
+      return {
+        items,
+        total: items.length,
+        page: 1,
+        pageSize: 100,
+        totalPages: 1,
+        hasMore: false,
+      };
+    });
   });
 
   it("returns all FAQs with success", async () => {
@@ -240,7 +267,7 @@ describe("FAQs API - GET /api/faqs", () => {
   });
 
   it("handles repository errors gracefully", async () => {
-    mockFaqsFindAll.mockRejectedValue(new Error("DB error"));
+    mockFaqsList.mockRejectedValue(new Error("DB error"));
     const req = buildRequest("/api/faqs");
     const res = await GET(req);
     const { status, body } = await parseResponse(res);

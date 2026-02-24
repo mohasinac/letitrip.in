@@ -18,6 +18,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { THEME_CONSTANTS, UI_LABELS, API_ENDPOINTS, ROUTES } from "@/constants";
 import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
+import { apiClient } from "@/lib/api-client";
 import { NotificationDocument } from "@/db/schema";
 import { formatRelativeTime } from "@/utils";
 import { Spinner } from "@/components";
@@ -53,36 +54,23 @@ export default function NotificationBell() {
 
   const { data, isLoading, refetch } = useApiQuery<NotificationsResponse>({
     queryKey: ["notifications", "list"],
-    queryFn: async () => {
-      const res = await fetch(API_ENDPOINTS.NOTIFICATIONS.LIST + "?limit=10");
-      if (!res.ok) throw new Error("Failed to fetch");
-      const json = await res.json();
-      return json.data;
-    },
+    queryFn: () =>
+      apiClient.get<NotificationsResponse>(
+        API_ENDPOINTS.NOTIFICATIONS.LIST + "?limit=10",
+      ),
     cacheTTL: 30000, // Cache for 30 seconds
   });
 
   const { mutate: markRead } = useApiMutation<unknown, string>({
-    mutationFn: async (id: string) => {
-      const res = await fetch(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(id), {
-        method: "PATCH",
-      });
-      if (!res.ok) throw new Error("Failed");
-      return res.json();
-    },
+    mutationFn: (id: string) =>
+      apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(id), {}),
   });
 
   const { mutate: markAllRead, isLoading: isMarkingAll } = useApiMutation<
     unknown,
     void
   >({
-    mutationFn: async () => {
-      const res = await fetch(API_ENDPOINTS.NOTIFICATIONS.READ_ALL, {
-        method: "PATCH",
-      });
-      if (!res.ok) throw new Error("Failed");
-      return res.json();
-    },
+    mutationFn: () => apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.READ_ALL, {}),
   });
 
   // Close dropdown when clicking outside

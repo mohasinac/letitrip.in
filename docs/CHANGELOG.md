@@ -9,6 +9,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 22 — Event Management System (2026-02-24)
+
+#### Added
+
+- **`src/db/schema/events.ts`** — `EventDocument`, `EventEntryDocument`, 5 event types (sale/offer/poll/survey/feedback), `EventStatus`, `EntryReviewStatus`, `FormFieldType`, `SurveyFormField`, config interfaces, `SIEVE_FIELDS`, collection constants `EVENTS_COLLECTION` / `EVENT_ENTRIES_COLLECTION`.
+- **`src/repositories/events.repository.ts`** — `eventRepository` with full CRUD + `list()`, `listEntries()`, `getStats()`, `getLeaderboard()`. Added to `@/repositories` barrel.
+- **`src/app/api/admin/events/`** — 3 route files: list/create (GET, POST), detail/update/delete (GET, PATCH, DELETE), status change (PATCH).
+- **`src/app/api/admin/events/[id]/entries/`** — 2 route files: entries list (GET), entry review (PATCH).
+- **`src/app/api/admin/events/[id]/stats/route.ts`** — Event stats + poll results.
+- **`src/app/api/events/`** — 3 public route files: list (GET), detail (GET), enter (POST), leaderboard (GET).
+- **`src/features/events/`** — Full feature module: types, constants (EVENT_TYPE_OPTIONS, EVENT_STATUS_OPTIONS, EVENT_SORT_OPTIONS, FORM_FIELD_TYPE_OPTIONS), hooks (useEvents, useEvent, useEventEntries, useEventStats, useEventMutations), components (EventStatusBadge, EventStatsBanner, EventsTable, EventEntriesTable, SurveyFieldBuilder, EntryReviewDrawer, EventFormDrawer, EventTypeConfig/\*).
+- **`src/features/events/components/EventCard.tsx`** — Public event card with cover image, type badge, status badge, and CTA link.
+- **`src/features/events/components/PollVotingSection.tsx`** — Radio/checkbox poll voting with optional comment, already-voted state, POST to enter endpoint.
+- **`src/features/events/components/SurveyEventSection.tsx`** — Survey CTA with auth gate, entry review status display.
+- **`src/features/events/components/FeedbackEventSection.tsx`** — Inline feedback form rendered from `feedbackConfig.formFields`, anonymous-friendly.
+- **`src/features/events/components/EventLeaderboard.tsx`** — Top-N leaderboard with gold/silver/bronze highlights; "you" indicator for current user.
+- **`src/components/ui/EventBanner.tsx`** — Site-wide dismissible sale/offer banner (sessionStorage persists dismiss per session). Wired into `LayoutClient` after `MainNavbar`.
+- **`src/app/admin/events/page.tsx`** — Admin events list with filter, sort, pagination, create/edit/delete/status actions.
+- **`src/app/admin/events/[id]/entries/page.tsx`** — Admin event entries moderation with stats banner, review drawer.
+- **`src/app/events/page.tsx`** — Public events listing (active + past sections, EventCard grid).
+- **`src/app/events/[id]/page.tsx`** — Public event detail with type-specific participation section (poll/survey/feedback/sale/offer).
+- **`src/app/events/[id]/participate/page.tsx`** — Survey/giveaway participation form (auth-gated, dynamic fields, thank-you state).
+- **`firestore.indexes.json`** — 4 new composite indexes: `events(status+endsAt)`, `events(type+status)`, `eventEntries(eventId+reviewStatus+submittedAt)`, `eventEntries(eventId+points)`.
+
+#### Changed
+
+- **`src/components/LayoutClient.tsx`** — Added `<EventBanner />` after `<MainNavbar />`.
+- **`src/components/ui/index.ts`** — Exports `EventBanner`.
+- **`src/constants/api-endpoints.ts`** — Added `EVENTS` group (public) and `ADMIN.EVENTS` group.
+- **`src/constants/routes.ts`** — Added `PUBLIC.EVENTS`, `PUBLIC.EVENT_DETAIL`, `PUBLIC.EVENT_PARTICIPATE`, `ADMIN.EVENTS`, `ADMIN.EVENT_ENTRIES`.
+- **`src/constants/ui.ts`** — Added `UI_LABELS.EVENTS`, `UI_LABELS.EVENT_TYPES`, `UI_LABELS.EVENT_STATUS`, `UI_LABELS.FORM_FIELD_TYPES`, `UI_LABELS.ADMIN.EVENTS`.
+- **`src/constants/error-messages.ts`** — Added `ERROR_MESSAGES.EVENT`.
+- **`src/constants/success-messages.ts`** — Added `SUCCESS_MESSAGES.EVENT`.
+
+---
+
 ### Phase 18.19 — Build Chain Fixes: ESLint Baseline, Next.js 16.1.6, Webpack Build (2026-02-25)
 
 #### Changed

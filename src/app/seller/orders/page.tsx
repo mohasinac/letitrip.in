@@ -20,6 +20,7 @@ import {
   getOrderTableColumns,
 } from "@/components";
 import { useAuth, useApiQuery, useUrlTable } from "@/hooks";
+import { apiClient } from "@/lib/api-client";
 import { UI_LABELS, ROUTES, API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
 import type { OrderDocument } from "@/db/schema";
 import { formatCurrency, formatDate } from "@/utils";
@@ -28,16 +29,13 @@ const { themed, spacing } = THEME_CONSTANTS;
 const SELLER_LABELS = UI_LABELS.SELLER_PAGE;
 
 interface OrdersRaw {
-  success: boolean;
-  data: {
-    orders: OrderDocument[];
-    meta: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-      hasMore: boolean;
-    };
+  orders: OrderDocument[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasMore: boolean;
   };
 }
 
@@ -80,7 +78,7 @@ function SellerOrdersPageContent() {
 
   const { data, isLoading } = useApiQuery<OrdersRaw>({
     queryKey: ["seller-orders", table.params.toString()],
-    queryFn: () => fetch(ordersUrl).then((r) => r.json()),
+    queryFn: () => apiClient.get<OrdersRaw>(ordersUrl),
     enabled: !!user,
   });
 
@@ -102,8 +100,8 @@ function SellerOrdersPageContent() {
 
   if (!user) return null;
 
-  const orders = data?.data?.orders ?? [];
-  const meta = data?.data?.meta;
+  const orders = data?.orders ?? [];
+  const meta = data?.meta;
 
   return (
     <div className={spacing.stack}>

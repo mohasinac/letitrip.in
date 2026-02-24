@@ -13,6 +13,7 @@ import { classNames } from "@/helpers";
 import { logger } from "@/classes";
 import { useApiQuery } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
+import { EventBanner } from "./ui/EventBanner";
 
 /**
  * LayoutClient Component
@@ -122,6 +123,9 @@ export default function LayoutClient({
       />
 
       <MainNavbar />
+
+      {/* Dismissible event banner for active sales / offers */}
+      <EventBanner />
 
       <Search
         isOpen={searchOpen}

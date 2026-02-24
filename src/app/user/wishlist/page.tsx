@@ -13,6 +13,7 @@ import { useAuth, useApiQuery } from "@/hooks";
 import { Spinner, EmptyState, ProductGrid, WishlistButton } from "@/components";
 import { ROUTES, UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
 import type { ProductDocument } from "@/db/schema";
+import { apiClient } from "@/lib/api-client";
 
 const { themed, typography, spacing } = THEME_CONSTANTS;
 
@@ -23,7 +24,8 @@ interface WishlistItem {
 }
 
 interface WishlistResponse {
-  data: { items: WishlistItem[]; meta: { total: number } };
+  items: WishlistItem[];
+  meta: { total: number };
 }
 
 export default function UserWishlistPage() {
@@ -39,11 +41,11 @@ export default function UserWishlistPage() {
   const { data, isLoading } = useApiQuery<WishlistResponse>({
     queryKey: ["user", "wishlist"],
     queryFn: () =>
-      fetch(API_ENDPOINTS.USER.WISHLIST.LIST).then((r) => r.json()),
+      apiClient.get<WishlistResponse>(API_ENDPOINTS.USER.WISHLIST.LIST),
     enabled: !!user,
   });
 
-  const items = data?.data?.items ?? [];
+  const items = data?.items ?? [];
   const products = items
     .map((item) => item.product)
     .filter((p): p is ProductDocument => p !== null);

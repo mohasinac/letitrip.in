@@ -426,4 +426,19 @@ export const ERROR_MESSAGES = {
     LOGOUT_REVOCATION_ERROR: "Session revocation error:",
     LOGOUT_TOKEN_ERROR: "Token revocation error:",
   },
+
+  // Event errors
+  EVENT: {
+    NOT_FOUND: "Event not found",
+    FETCH_FAILED: "Failed to fetch events",
+    CREATE_FAILED: "Failed to create event",
+    UPDATE_FAILED: "Failed to update event",
+    DELETE_FAILED: "Failed to delete event",
+    ALREADY_ENTERED: "You have already submitted an entry for this event",
+    ENTRIES_CLOSED: "This event is no longer accepting entries",
+    LOGIN_REQUIRED: "You must be logged in to participate",
+    INVALID_TYPE: "Unknown event type",
+    ENTRY_REVIEW_FAILED: "Failed to update entry review status",
+    INVALID_STATUS_TRANSITION: "This status transition is not allowed",
+  },
 } as const;

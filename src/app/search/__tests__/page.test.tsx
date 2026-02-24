@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+﻿import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import type React from "react";
 import SearchPage from "../page";
@@ -100,7 +100,7 @@ describe("SearchPage", () => {
     // Default: two useApiQuery calls (categories + search)
     mockUseApiQuery
       .mockReturnValueOnce({
-        data: { data: [] },
+        data: [],
         isLoading: false,
         error: null,
       }) // categories
@@ -112,7 +112,7 @@ describe("SearchPage", () => {
     mockUseApiQuery
       .mockReset()
       .mockReturnValueOnce({
-        data: { data: [] },
+        data: [],
         isLoading: false,
         error: null,
       })
@@ -141,7 +141,7 @@ describe("SearchPage", () => {
     mockUseApiQuery
       .mockReset()
       .mockReturnValueOnce({
-        data: { data: [] },
+        data: [],
         isLoading: false,
         error: null,
       })
@@ -155,7 +155,7 @@ describe("SearchPage", () => {
     mockUseApiQuery
       .mockReset()
       .mockReturnValueOnce({
-        data: { data: [] },
+        data: [],
         isLoading: false,
         error: null,
       })
@@ -196,7 +196,7 @@ describe("SearchPage", () => {
     mockUseApiQuery
       .mockReset()
       .mockReturnValueOnce({
-        data: { data: [] },
+        data: [],
         isLoading: false,
         error: null,
       })
@@ -226,7 +226,7 @@ describe("SearchPage", () => {
     mockUseApiQuery
       .mockReset()
       .mockReturnValueOnce({
-        data: { data: [] },
+        data: [],
         isLoading: false,
         error: null,
       })
@@ -257,7 +257,7 @@ describe("SearchPage", () => {
     mockUseApiQuery
       .mockReset()
       .mockReturnValueOnce({
-        data: { data: [] },
+        data: [],
         isLoading: false,
         error: null,
       })
@@ -287,7 +287,7 @@ describe("SearchPage", () => {
     mockUseApiQuery
       .mockReset()
       .mockReturnValueOnce({
-        data: { data: [] },
+        data: [],
         isLoading: false,
         error: null,
       })

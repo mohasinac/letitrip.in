@@ -258,6 +258,7 @@ export const UI_LABELS = {
     BLOG_ADMIN: "Blog",
     PAYOUTS_ADMIN: "Payouts",
     NEWSLETTER_ADMIN: "Newsletter",
+    EVENTS_ADMIN: "Events",
   },
 
   // Profile section
@@ -872,6 +873,26 @@ export const UI_LABELS = {
       COLUMN_UNSUBSCRIBED_AT: "Unsubscribed",
       COLUMN_ACTIONS: "Actions",
       SEARCH_PLACEHOLDER: "Search by email...",
+    },
+    EVENTS: {
+      TITLE: "Events",
+      SUBTITLE: "Manage sales, offers, polls, surveys, and feedback campaigns",
+      NEW: "New Event",
+      EDIT: "Edit Event",
+      DELETE: "Delete Event",
+      ENTRIES: "Entries",
+      REVIEW_ENTRY: "Review Entry",
+      APPROVE: "Approve",
+      FLAG: "Flag",
+      LEADERBOARD: "Leaderboard",
+      ADD_FIELD: "Add field",
+      PREVIEW_FORM: "Preview Form",
+      END_EVENT: "End Event",
+      ACTIVATE: "Activate",
+      PAUSE: "Pause",
+      NO_EVENTS: "No events found",
+      CONFIRM_DELETE:
+        "Permanently delete this event? This will also remove all entries.",
     },
     CONTENT: {
       TITLE: "Content Management",
@@ -1814,6 +1835,62 @@ export const UI_LABELS = {
     NEW_BADGE: "New",
     LOADING: "Loading notifications...",
     ERROR: "Failed to load notifications",
+  },
+
+  // Public-facing event labels
+  EVENTS: {
+    PARTICIPATE: "Participate",
+    VOTE: "Vote",
+    SUBMIT: "Submit Entry",
+    VIEW_RESULTS: "View Results",
+    LEADERBOARD: "Leaderboard",
+    ENTRIES_CLOSED: "Entries closed",
+    STARTS_IN: "Starts in",
+    ENDS_IN: "Ends in",
+    SALE_BANNER: (pct: number) => `Up to ${pct}% Off — Limited Time!`,
+    OFFER_BANNER: (code: string) => `Use code ${code} at checkout`,
+    YOUR_ENTRY: "Your entry",
+    ALREADY_VOTED: "You have already voted",
+    LOGIN_TO_PARTICIPATE: "Log in to participate",
+    CURRENT_EVENTS: "Current Events",
+    PAST_EVENTS: "Past Events",
+    NO_ACTIVE_EVENTS: "No active events right now",
+    NO_ACTIVE_EVENTS_DESC: "Check back soon for sales, polls, and giveaways!",
+    THANK_YOU_TITLE: "Thank you!",
+    THANK_YOU_DESC: "Your submission has been received.",
+    REVIEW_PENDING: "Your entry is under review",
+    ENTRY_APPROVED: "Your entry has been approved",
+    ENTRY_FLAGGED: "Your entry has been flagged",
+  },
+
+  EVENT_TYPES: {
+    SALE: "Sale",
+    OFFER: "Offer",
+    POLL: "Poll",
+    SURVEY: "Survey / Giveaway",
+    FEEDBACK: "Feedback",
+  },
+
+  EVENT_STATUS: {
+    DRAFT: "Draft",
+    ACTIVE: "Active",
+    PAUSED: "Paused",
+    ENDED: "Ended",
+  },
+
+  FORM_FIELD_TYPES: {
+    TEXT: "Short text",
+    TEXTAREA: "Long text",
+    EMAIL: "Email",
+    PHONE: "Phone",
+    NUMBER: "Number",
+    SELECT: "Dropdown",
+    MULTISELECT: "Multi-select",
+    CHECKBOX: "Checkboxes",
+    RADIO: "Radio buttons",
+    DATE: "Date",
+    RATING: "Rating (1–5)",
+    FILE: "File upload",
   },
 } as const;
 

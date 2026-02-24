@@ -65,3 +65,4 @@ export type { CategorySelectorCreateProps } from "./CategorySelectorCreate";
 export { AddressSelectorCreate } from "./AddressSelectorCreate";
 export type { AddressSelectorCreateProps } from "./AddressSelectorCreate";
 export { default as NotificationBell } from "./NotificationBell";
+export { EventBanner } from "./EventBanner";

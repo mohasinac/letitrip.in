@@ -17,14 +17,13 @@ import {
 import type { PayoutSummary, PayoutRecord } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
 import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";
+import { apiClient } from "@/lib/api-client";
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
 
 interface PayoutsResponse {
-  data: {
-    summary: PayoutSummary;
-    payouts: PayoutRecord[];
-  };
+  summary: PayoutSummary;
+  payouts: PayoutRecord[];
 }
 
 export default function SellerPayoutsPage() {
@@ -38,7 +37,7 @@ export default function SellerPayoutsPage() {
 
   const { data, isLoading, refetch } = useApiQuery<PayoutsResponse>({
     queryKey: ["seller-payouts", user?.uid ?? ""],
-    queryFn: () => fetch(API_ENDPOINTS.SELLER.PAYOUTS).then((r) => r.json()),
+    queryFn: () => apiClient.get<PayoutsResponse>(API_ENDPOINTS.SELLER.PAYOUTS),
     enabled: !!user,
     cacheTTL: 0,
   });
@@ -48,11 +47,7 @@ export default function SellerPayoutsPage() {
     Record<string, unknown>
   >({
     mutationFn: (payload) =>
-      fetch(API_ENDPOINTS.SELLER.PAYOUTS, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }).then((r) => r.json()),
+      apiClient.post(API_ENDPOINTS.SELLER.PAYOUTS, payload),
   });
 
   if (authLoading || !user) {
@@ -65,8 +60,8 @@ export default function SellerPayoutsPage() {
     );
   }
 
-  const summary = data?.data?.summary;
-  const payouts = data?.data?.payouts ?? [];
+  const summary = data?.summary;
+  const payouts = data?.payouts ?? [];
 
   const handleRequestPayout = async (payload: Record<string, unknown>) => {
     const result = await requestPayout(payload);

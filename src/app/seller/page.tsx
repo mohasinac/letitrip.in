@@ -21,15 +21,20 @@ import {
   SellerRecentListings,
 } from "@/components";
 import { useAuth, useApiQuery } from "@/hooks";
+import { apiClient } from "@/lib/api-client";
 import { UI_LABELS, ROUTES, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
 import type { ProductDocument } from "@/db/schema";
 
 interface ProductsResponse {
-  data: Pick<
+  items: Pick<
     ProductDocument,
     "id" | "title" | "status" | "isAuction" | "price" | "mainImage"
   >[];
-  meta: { total: number; page: number; limit: number; totalPages: number };
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
 }
 
 const { themed, spacing, enhancedCard } = THEME_CONSTANTS;
@@ -53,13 +58,13 @@ export default function SellerDashboardPage() {
   const { data: productsData, isLoading: productsLoading } =
     useApiQuery<ProductsResponse>({
       queryKey: ["seller-products", user?.uid ?? ""],
-      queryFn: () => fetch(productsUrl!).then((r) => r.json()),
+      queryFn: () => apiClient.get<ProductsResponse>(productsUrl!),
       enabled: !!productsUrl,
     });
 
   const stats = useMemo(() => {
-    const products = productsData?.data ?? [];
-    const total = productsData?.meta?.total ?? products.length;
+    const products = productsData?.items ?? [];
+    const total = productsData?.total ?? products.length;
     const activeListings = products.filter(
       (p) => p.status === "published" && !p.isAuction,
     ).length;
@@ -133,12 +138,12 @@ export default function SellerDashboardPage() {
       <SellerQuickActions />
 
       <SellerRecentListings
-        products={productsData?.data ?? []}
+        products={productsData?.items ?? []}
         loading={productsLoading}
       />
 
       {/* Empty State */}
-      {!productsLoading && (productsData?.data?.length ?? 0) === 0 && (
+      {!productsLoading && (productsData?.items?.length ?? 0) === 0 && (
         <EmptyState
           icon={<Store className="w-10 h-10 text-gray-400" />}
           title={UI_LABELS.SELLER_PAGE.NO_PRODUCTS}

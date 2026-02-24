@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { apiClient } from "@/lib/api-client";
 import Link from "next/link";
 import {
   Card,
@@ -20,7 +20,6 @@ import {
 } from "@/constants";
 import { formatMonthYear, formatCurrency } from "@/utils";
 import { useApiQuery } from "@/hooks";
-import { logger } from "@/classes";
 import type { UserDocument, ProductDocument } from "@/db/schema";
 import type { ImageCropData } from "@/components";
 
@@ -50,82 +49,52 @@ export default function SellerStorefrontPage() {
   const params = useParams();
   const sellerId = params?.id as string;
 
-  const [seller, setSeller] = useState<UserDocument | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   // Fetch seller profile
-  useEffect(() => {
-    if (!sellerId) return;
+  const {
+    data: sellerData,
+    isLoading: loading,
+    error: fetchError,
+  } = useApiQuery<{ user: UserDocument }>({
+    queryKey: ["seller-profile", sellerId],
+    queryFn: () =>
+      apiClient.get<{ user: UserDocument }>(
+        API_ENDPOINTS.PROFILE.GET_BY_ID(sellerId),
+      ),
+    enabled: !!sellerId,
+  });
 
-    const fetchSeller = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(API_ENDPOINTS.PROFILE.GET_BY_ID(sellerId));
+  const seller = sellerData?.user;
+  const profileError: string | null =
+    (fetchError as Error)?.message ??
+    (seller && seller.role !== "seller" && seller.role !== "admin"
+      ? UI_LABELS.SELLER_STOREFRONT.NOT_FOUND
+      : null);
 
-        if (!res.ok) {
-          if (res.status === 404) {
-            setError(UI_LABELS.SELLER_STOREFRONT.NOT_FOUND);
-          } else if (res.status === 403) {
-            setError(ERROR_MESSAGES.GENERIC.PROFILE_PRIVATE);
-          } else {
-            setError(ERROR_MESSAGES.GENERIC.INTERNAL_ERROR);
-          }
-          return;
-        }
-
-        const data = await res.json();
-        const user = data.user as UserDocument;
-
-        if (user.role !== "seller" && user.role !== "admin") {
-          setError(UI_LABELS.SELLER_STOREFRONT.NOT_FOUND);
-          return;
-        }
-
-        setSeller(user);
-      } catch (err) {
-        setError(ERROR_MESSAGES.GENERIC.INTERNAL_ERROR);
-        logger.error("Error fetching seller profile:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSeller();
-  }, [sellerId]);
-
-  const isReady = !!seller && !!sellerId;
+  const isReady = !!seller && !profileError && !!sellerId;
 
   // Fetch seller products
   const { data: productsData, isLoading: productsLoading } =
     useApiQuery<ProductsApiResponse>({
       queryKey: ["storefront-products", sellerId],
-      queryFn: async () => {
-        const res = await fetch(
+      queryFn: () =>
+        apiClient.get<ProductsApiResponse>(
           API_ENDPOINTS.PROFILE.GET_STOREFRONT_PRODUCTS(sellerId),
-        );
-        if (!res.ok) throw new Error("Failed to fetch products");
-        return res.json();
-      },
+        ),
       enabled: isReady,
       cacheTTL: 60000,
     });
 
   // Fetch seller reviews
-  const { data: reviewsData, isLoading: reviewsLoading } = useApiQuery<{
-    data: SellerReviewsData;
-  }>({
-    queryKey: ["storefront-reviews", sellerId],
-    queryFn: async () => {
-      const res = await fetch(
-        API_ENDPOINTS.PROFILE.GET_SELLER_REVIEWS(sellerId),
-      );
-      if (!res.ok) throw new Error("Failed to fetch reviews");
-      return res.json();
-    },
-    enabled: isReady,
-    cacheTTL: 60000,
-  });
+  const { data: reviewsData, isLoading: reviewsLoading } =
+    useApiQuery<SellerReviewsData>({
+      queryKey: ["storefront-reviews", sellerId],
+      queryFn: () =>
+        apiClient.get<SellerReviewsData>(
+          API_ENDPOINTS.PROFILE.GET_SELLER_REVIEWS(sellerId),
+        ),
+      enabled: isReady,
+      cacheTTL: 60000,
+    });
 
   // Loading state
   if (loading) {
@@ -140,12 +109,12 @@ export default function SellerStorefrontPage() {
   }
 
   // Error / not found state
-  if (error || !seller) {
+  if (profileError || !seller) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <Alert variant="error">
-            {error || UI_LABELS.SELLER_STOREFRONT.NOT_FOUND}
+            {profileError || UI_LABELS.SELLER_STOREFRONT.NOT_FOUND}
           </Alert>
           <div className="mt-4 flex gap-4">
             <Link
@@ -181,7 +150,7 @@ export default function SellerStorefrontPage() {
       : null);
 
   const hasProducts = productsData?.data && productsData.data.length > 0;
-  const hasReviews = reviewsData?.data && reviewsData.data.reviews.length > 0;
+  const hasReviews = reviewsData?.reviews && reviewsData.reviews.length > 0;
 
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
@@ -239,7 +208,7 @@ export default function SellerStorefrontPage() {
                     </Text>
                   </div>
                 )}
-                {reviewsData?.data && reviewsData.data.totalReviews > 0 && (
+                {reviewsData && reviewsData.totalReviews > 0 && (
                   <div className="flex items-center gap-1">
                     <svg
                       className={`w-4 h-4 ${THEME_CONSTANTS.rating.filled}`}
@@ -249,10 +218,10 @@ export default function SellerStorefrontPage() {
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
                     <Text className="text-sm font-semibold">
-                      {reviewsData.data.averageRating.toFixed(1)}
+                      {reviewsData.averageRating.toFixed(1)}
                     </Text>
                     <Text variant="secondary" className="text-xs">
-                      ({reviewsData.data.totalReviews}{" "}
+                      ({reviewsData.totalReviews}{" "}
                       {UI_LABELS.SELLER_STOREFRONT.TOTAL_REVIEWS.toLowerCase()})
                     </Text>
                   </div>
@@ -359,13 +328,13 @@ export default function SellerStorefrontPage() {
             <h2 className={THEME_CONSTANTS.typography.h4}>
               {UI_LABELS.SELLER_STOREFRONT.REVIEWS_TITLE}
             </h2>
-            {reviewsData?.data && reviewsData.data.totalReviews > 0 && (
+            {reviewsData && reviewsData.totalReviews > 0 && (
               <div className="flex items-center gap-2">
                 <div className="flex">
                   {[...Array(5)].map((_, i) => (
                     <svg
                       key={i}
-                      className={`w-4 h-4 ${i < Math.round(reviewsData.data.averageRating) ? THEME_CONSTANTS.rating.filled : THEME_CONSTANTS.rating.empty}`}
+                      className={`w-4 h-4 ${i < Math.round(reviewsData.averageRating) ? THEME_CONSTANTS.rating.filled : THEME_CONSTANTS.rating.empty}`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -374,10 +343,10 @@ export default function SellerStorefrontPage() {
                   ))}
                 </div>
                 <Text className="text-sm font-semibold">
-                  {reviewsData.data.averageRating.toFixed(1)}
+                  {reviewsData.averageRating.toFixed(1)}
                 </Text>
                 <Text variant="secondary" className="text-xs">
-                  ({reviewsData.data.totalReviews})
+                  ({reviewsData.totalReviews})
                 </Text>
               </div>
             )}
@@ -389,7 +358,7 @@ export default function SellerStorefrontPage() {
             </div>
           ) : hasReviews ? (
             <div className={THEME_CONSTANTS.spacing.stack}>
-              {reviewsData!.data.reviews.map((review) => (
+              {reviewsData!.reviews.map((review) => (
                 <div
                   key={review.id}
                   className={`p-4 rounded-xl ${THEME_CONSTANTS.themed.bgSecondary}`}
