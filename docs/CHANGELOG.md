@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 25a…25b — i18n Infrastructure & Message Files (2026-02-24)
+
+#### Added
+
+- **`next-intl@4.8.3`** — installed via `npm install next-intl --legacy-peer-deps`.
+- **`src/i18n/routing.ts`** — defines `routing` with `locales: ['en', 'hi']`, `defaultLocale: 'en'`, `localePrefix: 'as-needed'`. Exports `Locale` type.
+- **`src/i18n/request.ts`** — `getRequestConfig` per-request server config: resolves locale from request, falls back to `defaultLocale`, dynamically imports `messages/<locale>.json`.
+- **`messages/en.json`** — English translation file covering: loading, empty, errorPages, actions, sort, form, status, roles, confirm, messages, nav, auth (all sub-sections), profile, wishlist, settings, table, products, cart, orders, checkout, auctions, search, seller, homepage, footer, accessibility.
+- **`messages/hi.json`** — Hindi translation file with complete translations for all keys in `en.json`.
+
+#### Changed
+
+- **`next.config.js`** — added `createNextIntlPlugin` from `next-intl/plugin`; wrapped export with `withNextIntl(withBundleAnalyzer(withSerwist(...)(nextConfig)))`. References `./src/i18n/request.ts`.
+
+---
+
 ### Phase 24 — Styling Constants Cleanup (2026-02-24)
 
 #### Changed

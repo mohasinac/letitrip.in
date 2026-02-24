@@ -508,6 +508,94 @@ When ready to extract shared code into a library:
 
 ---
 
+## Internationalisation (i18n)
+
+**Package**: `next-intl@4.8.3` (App Router native)  
+**Status**: Infrastructure complete (Phase 25). `[locale]` route migration planned for Phase 26.
+
+### File Overview
+
+| File                  | Purpose                                                                           |
+| --------------------- | --------------------------------------------------------------------------------- |
+| `src/i18n/routing.ts` | Locale routing config — `defineRouting({ locales, defaultLocale, localePrefix })` |
+| `src/i18n/request.ts` | Per-request server config — resolves locale + loads message JSON                  |
+| `next.config.js`      | `createNextIntlPlugin('./src/i18n/request.ts')` wrapping the Next config          |
+| `messages/en.json`    | English translation strings (source of truth)                                     |
+| `messages/hi.json`    | Hindi translation strings                                                         |
+
+### Routing Config (`src/i18n/routing.ts`)
+
+```ts
+import { defineRouting } from "next-intl/routing";
+
+export const routing = defineRouting({
+  locales: ["en", "hi"], // supported locales
+  defaultLocale: "en", // English = default (no URL prefix)
+  localePrefix: "as-needed", // /products (en) vs /hi/products (hi)
+});
+
+export type Locale = (typeof routing.locales)[number]; // 'en' | 'hi'
+```
+
+### Message File Structure (`messages/en.json`)
+
+Keys mirror `UI_LABELS` with camelCase names. Top-level sections:
+
+| Key             | Content                                                                             |
+| --------------- | ----------------------------------------------------------------------------------- |
+| `loading`       | Loading state strings                                                               |
+| `empty`         | Empty state strings                                                                 |
+| `errorPages`    | 404/401/403/500 page content                                                        |
+| `actions`       | Button labels (save, cancel, delete…)                                               |
+| `sort`          | Sort option labels                                                                  |
+| `form`          | Form field labels                                                                   |
+| `status`        | Status labels (active, pending…)                                                    |
+| `roles`         | Role names                                                                          |
+| `confirm`       | Confirmation dialog strings                                                         |
+| `messages`      | System notification strings                                                         |
+| `nav`           | Navigation labels                                                                   |
+| `auth`          | All auth page strings (login, register, forgotPassword, resetPassword, verifyEmail) |
+| `profile`       | Profile section strings                                                             |
+| `wishlist`      | Wishlist section strings                                                            |
+| `settings`      | Account settings strings                                                            |
+| `table`         | DataTable labels                                                                    |
+| `products`      | Product listing/detail strings                                                      |
+| `cart`          | Shopping cart strings                                                               |
+| `orders`        | Order management strings                                                            |
+| `checkout`      | Checkout flow strings                                                               |
+| `auctions`      | Auction/bid strings                                                                 |
+| `search`        | Search page strings                                                                 |
+| `seller`        | Seller dashboard strings                                                            |
+| `homepage`      | Homepage section strings                                                            |
+| `footer`        | Footer link strings                                                                 |
+| `accessibility` | ARIA / screen reader strings                                                        |
+
+### Adding Translations
+
+1. Add the key to `messages/en.json` first (English is the source of truth).
+2. Add the same key with the translated value to `messages/hi.json`.
+3. Use `useTranslations('section')` (client components) or `getTranslations('section')` (server components) to consume.
+
+```tsx
+// Client component
+import { useTranslations } from "next-intl";
+const t = useTranslations("actions");
+<button>{t("save")}</button>;
+
+// Server component / async
+import { getTranslations } from "next-intl/server";
+const t = await getTranslations("nav");
+<title>{t("home")}</title>;
+```
+
+### Adding a New Locale
+
+1. Add the locale code to `routing.locales` array in `src/i18n/routing.ts`.
+2. Create `messages/<locale>.json` with all keys from `en.json` translated.
+3. No other config changes needed — `request.ts` dynamically imports by locale.
+
+---
+
 ### API_ENDPOINTS
 
 **File**: `api-endpoints.ts`  

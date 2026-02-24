@@ -6,6 +6,10 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 const withSerwist = require("@serwist/next").default;
 
+// next-intl plugin — wires src/i18n/request.ts as the per-request i18n config
+const createNextIntlPlugin = require("next-intl/plugin");
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+
 const nextConfig = {
   // Image optimization for Firebase Storage and other remote sources
   images: {
@@ -107,12 +111,14 @@ const nextConfig = {
   },
 };
 
-module.exports = withBundleAnalyzer(
-  withSerwist({
-    swSrc: "src/sw.ts",
-    swDest: "public/sw.js",
-    reloadOnOnline: true,
-    // Disable in development to avoid service worker caching issues during dev
-    disable: process.env.NODE_ENV === "development",
-  })(nextConfig),
+module.exports = withNextIntl(
+  withBundleAnalyzer(
+    withSerwist({
+      swSrc: "src/sw.ts",
+      swDest: "public/sw.js",
+      reloadOnOnline: true,
+      // Disable in development to avoid service worker caching issues during dev
+      disable: process.env.NODE_ENV === "development",
+    })(nextConfig),
+  ),
 );

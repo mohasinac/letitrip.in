@@ -5377,3 +5377,37 @@ Deploy indexes before activating any event: `firebase deploy --only firestore:in
 | 24a       | Star rating constants (3 files)  | 3             |
 | 24b       | Chart height constants (3 files) | 3             |
 | Total     |                                  | 6             |
+
+---
+
+## Phase 25 — i18n Infrastructure & Message Files (Phase 8 Start)
+
+**Goal:** Lay the foundation for multi-language support. Install `next-intl`, create the routing config, per-request server config, and translation message files for English and Hindi. Routes are not yet restructured under `[locale]` — that is Phase 26.
+
+**Status:** Complete (25a + 25b)
+
+### 25a — next-intl Installation & Config
+
+**Files:** `src/i18n/routing.ts`, `src/i18n/request.ts`, `next.config.js`
+
+- `npm install next-intl@4.8.3 --legacy-peer-deps`
+- `src/i18n/routing.ts`: defines `routing` via `defineRouting()` — locales `['en', 'hi']`, default `'en'`, `localePrefix: 'as-needed'` (English has no URL prefix, Hindi gets `/hi/`)
+- `src/i18n/request.ts`: `getRequestConfig` resolves locale from request, falls back to default, dynamically imports `messages/<locale>.json`
+- `next.config.js`: added `createNextIntlPlugin('./src/i18n/request.ts')`; wrapped final export as `withNextIntl(withBundleAnalyzer(withSerwist(...)(nextConfig)))`
+
+### 25b — Translation Message Files
+
+**Files:** `messages/en.json`, `messages/hi.json`
+
+- `messages/en.json`: complete English translations mirroring `UI_LABELS` structure with camelCase keys — covers: `loading`, `empty`, `errorPages`, `actions`, `sort`, `form`, `status`, `roles`, `confirm`, `messages`, `nav`, `auth` (all sub-sections), `profile`, `wishlist`, `settings`, `table`, `products`, `cart`, `orders`, `checkout`, `auctions`, `search`, `seller`, `homepage`, `footer`, `accessibility`
+- `messages/hi.json`: complete Hindi translations for all keys in `en.json`
+
+### Phase 25 — Summary
+
+| Sub-phase | Scope                                | Files changed |
+| --------- | ------------------------------------ | ------------- |
+| 25a       | next-intl install + config (3 files) | 3             |
+| 25b       | Translation message files (2 files)  | 2             |
+| Total     |                                      | 5             |
+
+**Next**: Phase 26 — `[locale]` route migration (move all `src/app/` pages under `src/app/[locale]/`, activate middleware, update layout)
