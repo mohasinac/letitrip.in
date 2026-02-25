@@ -4,7 +4,8 @@ import { useState, useEffect, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   Card,
   Button,
@@ -26,7 +27,11 @@ interface PageProps {
 export default function AdminReviewsPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
-  const REVIEWS = UI_LABELS.ADMIN.REVIEWS;
+  const t = useTranslations("adminReviews");
+  const tActions = useTranslations("actions");
+  const tLoading = useTranslations("loading");
+  const tTable = useTranslations("table");
+  const tStatus = useTranslations("status");
   const { showToast } = useToast();
   const table = useUrlTable({
     defaults: { pageSize: "25", sort: "-createdAt", status: "pending" },
@@ -132,7 +137,7 @@ export default function AdminReviewsPage({ params }: PageProps) {
       await refetch();
       handleBackToList();
     } catch (err) {
-      showToast(REVIEWS.APPROVE_FAILED, "error");
+      showToast(t("approveFailed"), "error");
     }
   };
 
@@ -151,7 +156,7 @@ export default function AdminReviewsPage({ params }: PageProps) {
       await refetch();
       handleBackToList();
     } catch (err) {
-      showToast(REVIEWS.REJECT_FAILED, "error");
+      showToast(t("rejectFailed"), "error");
     } finally {
       setRejectModal({ open: false, review: null, reason: "" });
     }
@@ -168,7 +173,7 @@ export default function AdminReviewsPage({ params }: PageProps) {
       await refetch();
       handleBackToList();
     } catch (err) {
-      showToast(REVIEWS.DELETE_FAILED, "error");
+      showToast(t("deleteFailed"), "error");
     } finally {
       setDeleteConfirm(null);
     }
@@ -177,7 +182,7 @@ export default function AdminReviewsPage({ params }: PageProps) {
   const handleBulkApprove = () => {
     const pendingReviews = reviews.filter((r) => r.status === "pending");
     if (pendingReviews.length === 0) {
-      showToast(REVIEWS.NO_PENDING, "warning");
+      showToast(t("noPending"), "warning");
       return;
     }
     setBulkApproveConfirm(true);
@@ -197,7 +202,7 @@ export default function AdminReviewsPage({ params }: PageProps) {
       );
       await refetch();
     } catch (err) {
-      showToast(REVIEWS.APPROVE_FAILED, "error");
+      showToast(t("approveFailed"), "error");
     }
   };
 
@@ -219,9 +224,9 @@ export default function AdminReviewsPage({ params }: PageProps) {
   return (
     <div className={THEME_CONSTANTS.spacing.stack}>
       <AdminPageHeader
-        title={REVIEWS.TITLE}
-        subtitle={`${REVIEWS.SUBTITLE} (${total} total)`}
-        actionLabel={REVIEWS.APPROVE_ALL}
+        title={t("title")}
+        subtitle={`${t("subtitle")} (${total} total)`}
+        actionLabel={t("approveAll")}
         onAction={handleBulkApprove}
         actionDisabled={pendingCount === 0}
       />
@@ -232,7 +237,7 @@ export default function AdminReviewsPage({ params }: PageProps) {
             <label
               className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
             >
-              {UI_LABELS.TABLE.STATUS}
+              {tTable("status")}
             </label>
             <select
               value={statusFilter}
@@ -241,10 +246,10 @@ export default function AdminReviewsPage({ params }: PageProps) {
               }
               className={THEME_CONSTANTS.patterns.adminInput}
             >
-              <option value="all">{UI_LABELS.STATUS.ALL}</option>
-              <option value="pending">{REVIEWS.PENDING}</option>
-              <option value="approved">{REVIEWS.APPROVED}</option>
-              <option value="rejected">{REVIEWS.REJECTED}</option>
+              <option value="all">{tStatus("all")}</option>
+              <option value="pending">{t("pending")}</option>
+              <option value="approved">{t("approved")}</option>
+              <option value="rejected">{t("rejected")}</option>
             </select>
           </div>
 
@@ -252,14 +257,14 @@ export default function AdminReviewsPage({ params }: PageProps) {
             <label
               className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
             >
-              {REVIEWS.RATING}
+              {t("rating")}
             </label>
             <select
               value={ratingFilter}
               onChange={(e) => table.set("rating", e.target.value)}
               className={THEME_CONSTANTS.patterns.adminInput}
             >
-              <option value="all">{REVIEWS.ALL_RATINGS}</option>
+              <option value="all">{t("allRatings")}</option>
               {[5, 4, 3, 2, 1].map((n) => (
                 <option key={n} value={String(n)}>
                   {n} {n === 1 ? "Star" : "Stars"}
@@ -272,13 +277,13 @@ export default function AdminReviewsPage({ params }: PageProps) {
             <label
               className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
             >
-              {UI_LABELS.ACTIONS.SEARCH}
+              {tActions("search")}
             </label>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => table.set("q", e.target.value)}
-              placeholder={REVIEWS.SEARCH_PLACEHOLDER}
+              placeholder={t("searchPlaceholder")}
               className={THEME_CONSTANTS.patterns.adminInput}
             />
           </div>
@@ -287,13 +292,13 @@ export default function AdminReviewsPage({ params }: PageProps) {
 
       {isLoading ? (
         <Card>
-          <div className="text-center py-8">{UI_LABELS.LOADING.DEFAULT}</div>
+          <div className="text-center py-8">{tLoading("default")}</div>
         </Card>
       ) : error ? (
         <Card>
           <div className="text-center py-8">
             <p className="text-red-600 mb-4">{error.message}</p>
-            <Button onClick={() => refetch()}>{UI_LABELS.ACTIONS.RETRY}</Button>
+            <Button onClick={() => refetch()}>{tActions("retry")}</Button>
           </div>
         </Card>
       ) : (
@@ -330,7 +335,7 @@ export default function AdminReviewsPage({ params }: PageProps) {
         onClose={() =>
           setRejectModal({ open: false, review: null, reason: "" })
         }
-        title={REVIEWS.REJECTION_REASON}
+        title={t("rejectionReason")}
       >
         <div className={THEME_CONSTANTS.spacing.stack}>
           <textarea
@@ -349,10 +354,10 @@ export default function AdminReviewsPage({ params }: PageProps) {
                 setRejectModal({ open: false, review: null, reason: "" })
               }
             >
-              {UI_LABELS.ACTIONS.CANCEL}
+              {tActions("cancel")}
             </Button>
             <Button variant="danger" onClick={confirmReject}>
-              {UI_LABELS.ACTIONS.CONFIRM}
+              {tActions("confirm")}
             </Button>
           </div>
         </div>
@@ -363,9 +368,11 @@ export default function AdminReviewsPage({ params }: PageProps) {
         isOpen={!!deleteConfirm}
         onConfirm={confirmDelete}
         onClose={() => setDeleteConfirm(null)}
-        title={REVIEWS.DELETE}
+        title={tActions("delete")}
         message={
-          deleteConfirm ? `${REVIEWS.DELETE} - ${deleteConfirm.userName}?` : ""
+          deleteConfirm
+            ? `${tActions("delete")} - ${deleteConfirm.userName}?`
+            : ""
         }
       />
 
@@ -374,9 +381,9 @@ export default function AdminReviewsPage({ params }: PageProps) {
         isOpen={bulkApproveConfirm}
         onConfirm={confirmBulkApprove}
         onClose={() => setBulkApproveConfirm(false)}
-        title={REVIEWS.APPROVE_ALL}
-        message={`${REVIEWS.APPROVE_ALL} (${pendingCount})?`}
-        confirmText={UI_LABELS.ACTIONS.CONFIRM}
+        title={t("approveAll")}
+        message={`${t("approveAll")} (${pendingCount})?`}
+        confirmText={tActions("confirm")}
       />
     </div>
   );

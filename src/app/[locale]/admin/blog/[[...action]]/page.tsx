@@ -6,10 +6,11 @@ import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import {
   API_ENDPOINTS,
-  UI_LABELS,
   ROUTES,
   SUCCESS_MESSAGES,
+  THEME_CONSTANTS,
 } from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   Card,
   Button,
@@ -21,7 +22,6 @@ import {
   getBlogTableColumns,
   BlogForm,
 } from "@/components";
-import { THEME_CONSTANTS } from "@/constants";
 import type { BlogPostDocument } from "@/db/schema";
 import type { BlogFormData } from "@/components";
 
@@ -29,15 +29,7 @@ interface PageProps {
   params: Promise<{ action?: string[] }>;
 }
 
-const LABELS = UI_LABELS.ADMIN.BLOG;
 const { themed, typography } = THEME_CONSTANTS;
-
-const STATUS_TABS = [
-  { key: "", label: LABELS.FILTER_ALL },
-  { key: "draft", label: LABELS.FILTER_DRAFT },
-  { key: "published", label: LABELS.FILTER_PUBLISHED },
-  { key: "archived", label: LABELS.FILTER_ARCHIVED },
-];
 
 const DEFAULT_FORM: BlogFormData = {
   title: "",
@@ -54,6 +46,8 @@ const DEFAULT_FORM: BlogFormData = {
 export default function AdminBlogPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
+  const t = useTranslations("adminBlog");
+  const tLoading = useTranslations("loading");
   const { showSuccess, showError } = useMessage();
 
   const [statusFilter, setStatusFilter] = useState("");
@@ -163,9 +157,7 @@ export default function AdminBlogPage({ params }: PageProps) {
       closeDrawer();
       refetch();
     } catch {
-      showError(
-        editingPost ? UI_LABELS.ADMIN.BLOG.EDIT : UI_LABELS.ADMIN.BLOG.CREATE,
-      );
+      showError(editingPost ? t("edit") : t("create"));
     }
   }, [
     editingPost,
@@ -186,13 +178,20 @@ export default function AdminBlogPage({ params }: PageProps) {
       setDeleteTarget(null);
       refetch();
     } catch {
-      showError(UI_LABELS.ADMIN.BLOG.DELETE);
+      showError(t("delete"));
     }
   }, [deleteTarget, deleteMutation, refetch, showSuccess, showError]);
 
   const isSaving = createMutation.isLoading || updateMutation.isLoading;
   const isDeleting = deleteMutation.isLoading;
-  const drawerTitle = editingPost ? LABELS.EDIT : LABELS.CREATE;
+  const STATUS_TABS = [
+    { key: "", label: t("filterAll") },
+    { key: "draft", label: t("filterDraft") },
+    { key: "published", label: t("filterPublished") },
+    { key: "archived", label: t("filterArchived") },
+  ];
+
+  const drawerTitle = editingPost ? t("edit") : t("create");
 
   const { columns } = getBlogTableColumns(openEdit, (post) =>
     setDeleteTarget(post),
@@ -207,19 +206,19 @@ export default function AdminBlogPage({ params }: PageProps) {
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title={LABELS.TITLE}
-        subtitle={`${LABELS.SUBTITLE} — ${totalPosts} total`}
-        actionLabel={LABELS.CREATE}
+        title={t("title")}
+        subtitle={`${t("subtitle")} — ${totalPosts} total`}
+        actionLabel={t("create")}
         onAction={openCreate}
       />
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: LABELS.TOTAL_POSTS, value: totalPosts },
-          { label: LABELS.PUBLISHED_POSTS, value: publishedCount },
-          { label: LABELS.DRAFT_POSTS, value: draftsCount },
-          { label: LABELS.FEATURED_POSTS, value: featuredCount },
+          { label: t("totalPosts"), value: totalPosts },
+          { label: t("publishedPosts"), value: publishedCount },
+          { label: t("draftPosts"), value: draftsCount },
+          { label: t("featuredPosts"), value: featuredCount },
         ].map(({ label, value }) => (
           <Card key={label} className="p-4">
             <p
@@ -249,15 +248,15 @@ export default function AdminBlogPage({ params }: PageProps) {
       {/* DataTable */}
       <Card>
         {error ? (
-          <p className="p-6 text-red-500 text-sm">{UI_LABELS.LOADING.FAILED}</p>
+          <p className="p-6 text-red-500 text-sm">{tLoading("failed")}</p>
         ) : (
           <DataTable
             columns={columns as any}
             data={allPosts}
             keyExtractor={(p: any) => p.id}
             loading={isLoading}
-            emptyMessage={LABELS.EMPTY}
-            emptyTitle={LABELS.EMPTY_SUBTITLE}
+            emptyMessage={t("empty")}
+            emptyTitle={t("emptySubtitle")}
           />
         )}
       </Card>

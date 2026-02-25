@@ -6,11 +6,11 @@ import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import {
   API_ENDPOINTS,
-  UI_LABELS,
   ROUTES,
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
 } from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   Card,
   Button,
@@ -29,21 +29,10 @@ interface PageProps {
   params: Promise<{ action?: string[] }>;
 }
 
-const LABELS = UI_LABELS.ADMIN.ORDERS;
-
-// Status filter tabs
-const STATUS_TABS = [
-  { key: "", label: LABELS.FILTER_ALL },
-  { key: "pending", label: "Pending" },
-  { key: "confirmed", label: "Confirmed" },
-  { key: "shipped", label: "Shipped" },
-  { key: "delivered", label: "Delivered" },
-  { key: "cancelled", label: "Cancelled" },
-];
-
 export default function AdminOrdersPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
+  const t = useTranslations("adminOrders");
   const { showSuccess, showError } = useMessage();
   const table = useUrlTable({
     defaults: { pageSize: "25", sort: "-createdAt" },
@@ -130,13 +119,22 @@ export default function AdminOrdersPage({ params }: PageProps) {
     refetch,
   ]);
 
+  const STATUS_TABS = [
+    { key: "", label: t("filterAll") },
+    { key: "pending", label: t("filterPending") },
+    { key: "confirmed", label: t("filterConfirmed") },
+    { key: "shipped", label: t("filterShipped") },
+    { key: "delivered", label: t("filterDelivered") },
+    { key: "cancelled", label: t("filterCancelled") },
+  ];
+
   const { columns } = getOrderTableColumns(handleView);
 
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title={LABELS.TITLE}
-        subtitle={`${LABELS.SUBTITLE} — ${data?.meta.total ?? 0} total`}
+        title={t("title")}
+        subtitle={`${t("subtitle")} — ${data?.meta.total ?? 0} total`}
       />
 
       {/* Status filter tabs */}
@@ -178,7 +176,7 @@ export default function AdminOrdersPage({ params }: PageProps) {
       <SideDrawer
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
-        title={LABELS.UPDATE_STATUS}
+        title={t("updateStatus")}
         side="right"
       >
         {selectedOrder && (
@@ -190,7 +188,7 @@ export default function AdminOrdersPage({ params }: PageProps) {
               onCancel={handleCloseDrawer}
               onSubmit={handleSave}
               isLoading={updateMutation.isLoading}
-              submitLabel={LABELS.UPDATE_ORDER}
+              submitLabel={t("updateOrder")}
             />
           </div>
         )}

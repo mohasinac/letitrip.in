@@ -6,11 +6,11 @@ import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import {
   API_ENDPOINTS,
-  UI_LABELS,
   ROUTES,
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
 } from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   Card,
   Button,
@@ -36,12 +36,12 @@ interface PageProps {
 
 type DrawerMode = "create" | "edit" | null;
 
-const LABELS = UI_LABELS.ADMIN.COUPONS;
-
 export default function AdminCouponsPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
   const { showSuccess, showError } = useMessage();
+  const t = useTranslations("adminCoupons");
+  const tActions = useTranslations("actions");
   const table = useUrlTable({
     defaults: { pageSize: "25", sort: "-createdAt" },
   });
@@ -182,14 +182,14 @@ export default function AdminCouponsPage({ params }: PageProps) {
     setCouponToDelete(coupon),
   );
 
-  const drawerTitle = drawerMode === "create" ? LABELS.CREATE : LABELS.EDIT;
+  const drawerTitle = drawerMode === "create" ? t("create") : t("edit");
 
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title={LABELS.TITLE}
-        subtitle={`${LABELS.SUBTITLE} — ${data?.meta.total ?? 0} total`}
-        actionLabel={LABELS.CREATE}
+        title={t("title")}
+        subtitle={`${t("subtitle")} — ${data?.meta.total ?? 0} total`}
+        actionLabel={t("create")}
         onAction={handleCreate}
       />
 
@@ -200,7 +200,7 @@ export default function AdminCouponsPage({ params }: PageProps) {
             name="search"
             value={searchTerm}
             onChange={(value) => table.set("q", value)}
-            placeholder={UI_LABELS.ADMIN.COUPONS.SEARCH_PLACEHOLDER}
+            placeholder={t("searchPlaceholder")}
           />
         </AdminFilterBar>
         <DataTable
@@ -208,7 +208,7 @@ export default function AdminCouponsPage({ params }: PageProps) {
           data={coupons}
           loading={isLoading}
           emptyMessage={
-            error ? ERROR_MESSAGES.COUPON.FETCH_FAILED : LABELS.NO_COUPONS
+            error ? ERROR_MESSAGES.COUPON.FETCH_FAILED : t("noCoupons")
           }
           keyExtractor={(c: CouponDocument) => c.id}
           externalPagination
@@ -246,7 +246,7 @@ export default function AdminCouponsPage({ params }: PageProps) {
             isLoading={isSaving}
             isSubmitDisabled={!isDirty && drawerMode === "edit"}
             submitLabel={
-              drawerMode === "create" ? LABELS.CREATE : UI_LABELS.ACTIONS.SAVE
+              drawerMode === "create" ? t("create") : tActions("save")
             }
           />
         </div>
@@ -257,7 +257,7 @@ export default function AdminCouponsPage({ params }: PageProps) {
         isOpen={!!couponToDelete}
         onClose={() => setCouponToDelete(null)}
         onConfirm={handleDeleteConfirm}
-        title={LABELS.DELETE}
+        title={t("delete")}
         message={`Delete coupon "${couponToDelete?.code}"? This cannot be undone.`}
         isDeleting={deleteMutation.isLoading}
       />

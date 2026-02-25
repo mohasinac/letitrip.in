@@ -8,7 +8,8 @@ import {
   TablePagination,
   ConfirmDeleteModal,
 } from "@/components";
-import { UI_LABELS, ROUTES } from "@/constants";
+import { ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useUrlTable, useMessage } from "@/hooks";
 import {
   useEvents,
@@ -18,10 +19,11 @@ import {
 import { useDeleteEvent, useChangeEventStatus } from "@/features/events";
 import type { EventDocument } from "@/db/schema";
 
-const LABELS = UI_LABELS.ADMIN.EVENTS;
-
 export default function AdminEventsPage() {
   const { showSuccess, showError } = useMessage();
+  const t = useTranslations("adminEvents");
+  const tActions = useTranslations("actions");
+  const tEventStatus = useTranslations("eventStatus");
   const table = useUrlTable({
     defaults: { pageSize: "25", sort: "-createdAt" },
   });
@@ -35,7 +37,7 @@ export default function AdminEventsPage() {
     useEvents({ params });
 
   const deleteMutation = useDeleteEvent(() => {
-    showSuccess(UI_LABELS.ADMIN.EVENTS.CONFIRM_DELETE);
+    showSuccess(t("confirmDelete"));
     setDeleteTarget(null);
     refetch();
   });
@@ -54,7 +56,7 @@ export default function AdminEventsPage() {
     try {
       await deleteMutation.mutate(deleteTarget.id);
     } catch {
-      showError(UI_LABELS.ADMIN.EVENTS.CONFIRM_DELETE);
+      showError(t("confirmDelete"));
     }
   }, [deleteTarget, deleteMutation, showError]);
 
@@ -65,9 +67,9 @@ export default function AdminEventsPage() {
   return (
     <>
       <AdminPageHeader
-        title={LABELS.TITLE}
-        subtitle={LABELS.SUBTITLE}
-        actionLabel={LABELS.NEW}
+        title={t("title")}
+        subtitle={t("subtitle")}
+        actionLabel={t("newEvent")}
         onAction={() => {
           setEditTarget(null);
           setDrawerOpen(true);
@@ -78,7 +80,7 @@ export default function AdminEventsPage() {
         <AdminFilterBar columns={3}>
           <input
             type="text"
-            placeholder={UI_LABELS.ACTIONS.SEARCH}
+            placeholder={tActions("search")}
             value={table.get("q")}
             onChange={(e) => table.set("q", e.target.value)}
             className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
@@ -101,10 +103,10 @@ export default function AdminEventsPage() {
             className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
           >
             <option value="">All Statuses</option>
-            <option value="draft">{UI_LABELS.EVENT_STATUS.DRAFT}</option>
-            <option value="active">{UI_LABELS.EVENT_STATUS.ACTIVE}</option>
-            <option value="paused">{UI_LABELS.EVENT_STATUS.PAUSED}</option>
-            <option value="ended">{UI_LABELS.EVENT_STATUS.ENDED}</option>
+            <option value="draft">{tEventStatus("draft")}</option>
+            <option value="active">{tEventStatus("active")}</option>
+            <option value="paused">{tEventStatus("paused")}</option>
+            <option value="ended">{tEventStatus("ended")}</option>
           </select>
         </AdminFilterBar>
 
@@ -113,7 +115,7 @@ export default function AdminEventsPage() {
           columns={columns}
           keyExtractor={(e) => e.id}
           loading={isLoading}
-          emptyMessage={LABELS.NO_EVENTS}
+          emptyMessage={t("noEvents")}
           externalPagination
         />
 
@@ -142,7 +144,7 @@ export default function AdminEventsPage() {
           isOpen={!!deleteTarget}
           onClose={() => setDeleteTarget(null)}
           onConfirm={handleDelete}
-          title={`${UI_LABELS.ACTIONS.DELETE} "${deleteTarget.title}"?`}
+          title={`${tActions("delete")} "${deleteTarget.title}"?`}
           isDeleting={deleteMutation.isLoading}
         />
       )}

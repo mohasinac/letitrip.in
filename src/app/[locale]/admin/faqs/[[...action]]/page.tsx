@@ -4,7 +4,8 @@ import { useState, useEffect, use, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, UI_LABELS, ROUTES } from "@/constants";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   Card,
   Button,
@@ -32,12 +33,13 @@ interface PageProps {
   params: Promise<{ action?: string[] }>;
 }
 
-const LABELS = UI_LABELS.ADMIN.FAQS;
-
 export default function AdminFAQsPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
   const { showError } = useMessage();
+  const t = useTranslations("adminFaqs");
+  const tActions = useTranslations("actions");
+  const tLoading = useTranslations("loading");
   const table = useUrlTable({
     defaults: { pageSize: "50", sort: "-priority,order" },
   });
@@ -190,7 +192,7 @@ export default function AdminFAQsPage({ params }: PageProps) {
       await refetch();
       handleCloseDrawer();
     } catch {
-      showError(LABELS.SAVE_FAILED);
+      showError(t("saveFailed"));
     }
   };
 
@@ -201,7 +203,7 @@ export default function AdminFAQsPage({ params }: PageProps) {
       await refetch();
       handleCloseDrawer();
     } catch {
-      showError(LABELS.DELETE_FAILED);
+      showError(t("deleteFailed"));
     }
   };
 
@@ -209,10 +211,10 @@ export default function AdminFAQsPage({ params }: PageProps) {
 
   const drawerTitle =
     drawerMode === "create"
-      ? LABELS.CREATE_FAQ
+      ? t("createFaq")
       : drawerMode === "delete"
-        ? LABELS.DELETE_FAQ
-        : LABELS.EDIT_FAQ;
+        ? t("deleteFaq")
+        : t("editFaq");
 
   const { columns, actions } = getFaqTableColumns(
     handleEdit,
@@ -224,7 +226,7 @@ export default function AdminFAQsPage({ params }: PageProps) {
       <DrawerFormFooter
         onCancel={handleCloseDrawer}
         onSubmit={handleConfirmDelete}
-        submitLabel={UI_LABELS.ACTIONS.DELETE}
+        submitLabel={tActions("delete")}
       />
     ) : (
       <DrawerFormFooter onCancel={handleCloseDrawer} onSubmit={handleSave} />
@@ -234,23 +236,21 @@ export default function AdminFAQsPage({ params }: PageProps) {
     <>
       <div className="space-y-6">
         <AdminPageHeader
-          title={LABELS.TITLE}
-          subtitle={LABELS.SUBTITLE}
-          actionLabel={UI_LABELS.ACTIONS.CREATE}
+          title={t("title")}
+          subtitle={t("subtitle")}
+          actionLabel={tActions("create")}
           onAction={handleCreate}
         />
 
         {isLoading ? (
           <Card>
-            <div className="text-center py-8">{UI_LABELS.LOADING.DEFAULT}</div>
+            <div className="text-center py-8">{tLoading("default")}</div>
           </Card>
         ) : error ? (
           <Card>
             <div className="text-center py-8">
               <p className="text-red-600 mb-4">{error.message}</p>
-              <Button onClick={() => refetch()}>
-                {UI_LABELS.ACTIONS.RETRY}
-              </Button>
+              <Button onClick={() => refetch()}>{tActions("retry")}</Button>
             </div>
           </Card>
         ) : (
@@ -261,7 +261,7 @@ export default function AdminFAQsPage({ params }: PageProps) {
                 name="search"
                 value={searchTerm}
                 onChange={(value) => table.set("q", value)}
-                placeholder={UI_LABELS.ADMIN.FAQS.SEARCH_PLACEHOLDER}
+                placeholder={t("searchPlaceholder")}
               />
             </AdminFilterBar>
             <DataTable

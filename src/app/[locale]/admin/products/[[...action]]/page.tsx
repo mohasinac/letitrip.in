@@ -4,7 +4,8 @@ import { useState, useEffect, use, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, UI_LABELS, ROUTES } from "@/constants";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   Card,
   Button,
@@ -24,11 +25,13 @@ interface PageProps {
   params: Promise<{ action?: string[] }>;
 }
 
-const LABELS = UI_LABELS.ADMIN.PRODUCTS;
-
 export default function AdminProductsPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
+  const t = useTranslations("adminProducts");
+  const tActions = useTranslations("actions");
+  const tLoading = useTranslations("loading");
+  const tStatus = useTranslations("status");
   const { showError } = useMessage();
   const table = useUrlTable({
     defaults: { pageSize: "25", sort: "-createdAt" },
@@ -192,7 +195,7 @@ export default function AdminProductsPage({ params }: PageProps) {
       await refetch();
       handleCloseDrawer();
     } catch {
-      showError(LABELS.SAVE_FAILED);
+      showError(t("saveFailed"));
     }
   };
 
@@ -203,7 +206,7 @@ export default function AdminProductsPage({ params }: PageProps) {
       await refetch();
       handleCloseDrawer();
     } catch {
-      showError(LABELS.DELETE_FAILED);
+      showError(t("deleteFailed"));
     }
   };
 
@@ -211,10 +214,10 @@ export default function AdminProductsPage({ params }: PageProps) {
 
   const drawerTitle =
     drawerMode === "create"
-      ? LABELS.CREATE_PRODUCT
+      ? t("createProduct")
       : drawerMode === "delete"
-        ? LABELS.DELETE_PRODUCT
-        : LABELS.EDIT_PRODUCT;
+        ? t("deleteProduct")
+        : t("editProduct");
 
   const { columns, actions } = getProductTableColumns(
     handleEdit,
@@ -226,7 +229,7 @@ export default function AdminProductsPage({ params }: PageProps) {
       <DrawerFormFooter
         onCancel={handleCloseDrawer}
         onSubmit={handleConfirmDelete}
-        submitLabel={UI_LABELS.ACTIONS.DELETE}
+        submitLabel={tActions("delete")}
       />
     ) : (
       <DrawerFormFooter onCancel={handleCloseDrawer} onSubmit={handleSave} />
@@ -236,23 +239,21 @@ export default function AdminProductsPage({ params }: PageProps) {
     <>
       <div className="space-y-6">
         <AdminPageHeader
-          title={LABELS.TITLE}
-          subtitle={LABELS.SUBTITLE}
-          actionLabel={LABELS.CREATE_PRODUCT}
+          title={t("title")}
+          subtitle={t("subtitle")}
+          actionLabel={t("createProduct")}
           onAction={handleCreate}
         />
 
         {isLoading ? (
           <Card>
-            <div className="text-center py-8">{UI_LABELS.LOADING.DEFAULT}</div>
+            <div className="text-center py-8">{tLoading("default")}</div>
           </Card>
         ) : error ? (
           <Card>
             <div className="text-center py-8">
               <p className="text-red-600 mb-4">{error.message}</p>
-              <Button onClick={() => refetch()}>
-                {UI_LABELS.ACTIONS.RETRY}
-              </Button>
+              <Button onClick={() => refetch()}>{tActions("retry")}</Button>
             </div>
           </Card>
         ) : (
@@ -263,17 +264,17 @@ export default function AdminProductsPage({ params }: PageProps) {
                 name="search"
                 value={searchTerm}
                 onChange={(value) => table.set("q", value)}
-                placeholder={UI_LABELS.ADMIN.PRODUCTS.SEARCH_PLACEHOLDER}
+                placeholder={t("searchPlaceholder")}
               />
               <select
                 value={statusFilter}
                 onChange={(e) => table.set("status", e.target.value)}
                 className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm"
               >
-                <option value="">{UI_LABELS.ADMIN.PRODUCTS.FILTER_ALL}</option>
-                <option value="draft">{UI_LABELS.STATUS.DRAFT}</option>
-                <option value="published">{UI_LABELS.STATUS.PUBLISHED}</option>
-                <option value="archived">{UI_LABELS.STATUS.ARCHIVED}</option>
+                <option value="">{t("filterAll")}</option>
+                <option value="draft">{tStatus("draft")}</option>
+                <option value="published">{tStatus("published")}</option>
+                <option value="archived">{tStatus("archived")}</option>
               </select>
             </AdminFilterBar>
             <DataTable
@@ -309,7 +310,7 @@ export default function AdminProductsPage({ params }: PageProps) {
           {drawerMode === "delete" ? (
             <div className="space-y-4">
               <p className="text-gray-700 dark:text-gray-300">
-                {LABELS.CONFIRM_DELETE}
+                {t("confirmDelete")}
               </p>
               <p className="font-medium">{editingProduct.title}</p>
             </div>

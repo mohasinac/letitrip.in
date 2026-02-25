@@ -4,7 +4,8 @@ import { useState, useEffect, use, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, UI_LABELS, ROUTES } from "@/constants";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   DataTable,
   Card,
@@ -22,12 +23,13 @@ interface PageProps {
   params: Promise<{ action?: string[] }>;
 }
 
-const LABELS = UI_LABELS.ADMIN.CAROUSEL;
-
 export default function AdminCarouselPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
   const { showToast } = useToast();
+  const t = useTranslations("adminCarousel");
+  const tActions = useTranslations("actions");
+  const tLoading = useTranslations("loading");
 
   const { data, isLoading, error, refetch } = useApiQuery<{
     slides: CarouselSlide[];
@@ -164,7 +166,7 @@ export default function AdminCarouselPage({ params }: PageProps) {
       await refetch();
       handleCloseDrawer();
     } catch {
-      showToast(LABELS.SAVE_FAILED, "error");
+      showToast(t("saveFailed"), "error");
     }
   };
 
@@ -175,7 +177,7 @@ export default function AdminCarouselPage({ params }: PageProps) {
       await refetch();
       handleCloseDrawer();
     } catch {
-      showToast(LABELS.DELETE_FAILED, "error");
+      showToast(t("deleteFailed"), "error");
     }
   };
 
@@ -183,10 +185,10 @@ export default function AdminCarouselPage({ params }: PageProps) {
 
   const drawerTitle =
     drawerMode === "create"
-      ? LABELS.CREATE_SLIDE
+      ? t("createSlide")
       : drawerMode === "delete"
-        ? LABELS.DELETE_SLIDE
-        : LABELS.EDIT_SLIDE;
+        ? t("deleteSlide")
+        : t("editSlide");
 
   const { columns, actions } = getCarouselTableColumns(
     handleEdit,
@@ -198,7 +200,7 @@ export default function AdminCarouselPage({ params }: PageProps) {
       <DrawerFormFooter
         onCancel={handleCloseDrawer}
         onSubmit={handleConfirmDelete}
-        submitLabel={UI_LABELS.ACTIONS.DELETE}
+        submitLabel={tActions("delete")}
       />
     ) : (
       <DrawerFormFooter onCancel={handleCloseDrawer} onSubmit={handleSave} />
@@ -208,24 +210,22 @@ export default function AdminCarouselPage({ params }: PageProps) {
     <>
       <div className="space-y-6">
         <AdminPageHeader
-          title={LABELS.TITLE}
-          subtitle={LABELS.SUBTITLE}
-          actionLabel={`+ ${UI_LABELS.ACTIONS.CREATE}`}
+          title={t("title")}
+          subtitle={t("subtitle")}
+          actionLabel={`+ ${tActions("create")}`}
           onAction={handleCreate}
           actionDisabled={slides.filter((s) => s.isActive).length >= 5}
         />
 
         {isLoading ? (
           <Card>
-            <div className="text-center py-8">{UI_LABELS.LOADING.DEFAULT}</div>
+            <div className="text-center py-8">{tLoading("default")}</div>
           </Card>
         ) : error ? (
           <Card>
             <div className="text-center py-8">
               <p className="text-red-600 mb-4">{error.message}</p>
-              <Button onClick={() => refetch()}>
-                {UI_LABELS.ACTIONS.RETRY}
-              </Button>
+              <Button onClick={() => refetch()}>{tActions("retry")}</Button>
             </div>
           </Card>
         ) : (

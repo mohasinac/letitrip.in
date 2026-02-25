@@ -4,7 +4,8 @@ import { useState, useEffect, use, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   CategoryTreeView,
   DataTable,
@@ -24,12 +25,13 @@ interface PageProps {
   params: Promise<{ action?: string[] }>;
 }
 
-const LABELS = UI_LABELS.ADMIN.CATEGORIES;
-
 export default function AdminCategoriesPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
   const { showToast } = useToast();
+  const t = useTranslations("adminCategories");
+  const tActions = useTranslations("actions");
+  const tLoading = useTranslations("loading");
 
   const { data, isLoading, error, refetch } = useApiQuery<{
     categories: Category[];
@@ -117,14 +119,14 @@ export default function AdminCategoriesPage({ params }: PageProps) {
   const handleDeleteDrawer = useCallback(
     (cat: Category | Partial<Category>) => {
       if ((cat as Category).children?.length > 0) {
-        showToast(LABELS.CANNOT_DELETE_WITH_CHILDREN, "warning");
+        showToast(t("cannotDeleteWithChildren"), "warning");
         return;
       }
       if (
         (cat as Category).metrics?.productCount > 0 ||
         (cat as Category).metrics?.auctionCount > 0
       ) {
-        showToast(LABELS.CANNOT_DELETE_WITH_PRODUCTS, "warning");
+        showToast(t("cannotDeleteWithProducts"), "warning");
         return;
       }
       setEditingCategory(cat);
@@ -195,7 +197,7 @@ export default function AdminCategoriesPage({ params }: PageProps) {
       await refetch();
       handleCloseDrawer();
     } catch {
-      showToast(LABELS.SAVE_FAILED, "error");
+      showToast(t("saveFailed"), "error");
     }
   };
 
@@ -206,7 +208,7 @@ export default function AdminCategoriesPage({ params }: PageProps) {
       await refetch();
       handleCloseDrawer();
     } catch {
-      showToast(LABELS.DELETE_FAILED, "error");
+      showToast(t("deleteFailed"), "error");
     }
   };
 
@@ -214,10 +216,10 @@ export default function AdminCategoriesPage({ params }: PageProps) {
 
   const drawerTitle =
     drawerMode === "create"
-      ? LABELS.CREATE_CATEGORY
+      ? t("createCategory")
       : drawerMode === "delete"
-        ? LABELS.DELETE_CATEGORY
-        : LABELS.EDIT_CATEGORY;
+        ? t("deleteCategory")
+        : t("editCategory");
 
   const { columns, actions } = getCategoryTableColumns(
     handleEdit as (cat: Category) => void,
@@ -229,7 +231,7 @@ export default function AdminCategoriesPage({ params }: PageProps) {
       <DrawerFormFooter
         onCancel={handleCloseDrawer}
         onSubmit={handleConfirmDelete}
-        submitLabel={UI_LABELS.ACTIONS.DELETE}
+        submitLabel={tActions("delete")}
       />
     ) : (
       <DrawerFormFooter onCancel={handleCloseDrawer} onSubmit={handleSave} />
@@ -241,7 +243,7 @@ export default function AdminCategoriesPage({ params }: PageProps) {
     <>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <AdminPageHeader title={LABELS.TITLE} subtitle={LABELS.SUBTITLE} />
+          <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
           <div className="flex gap-2">
             <div className={`flex border ${themed.border} rounded-md`}>
               <button
@@ -252,7 +254,7 @@ export default function AdminCategoriesPage({ params }: PageProps) {
                     : `${themed.bgTertiary} ${themed.textSecondary}`
                 }`}
               >
-                {LABELS.TREE_VIEW}
+                {t("treeView")}
               </button>
               <button
                 onClick={() => setViewMode("table")}
@@ -262,26 +264,24 @@ export default function AdminCategoriesPage({ params }: PageProps) {
                     : `${themed.bgTertiary} ${themed.textSecondary}`
                 }`}
               >
-                {LABELS.TABLE_VIEW}
+                {t("tableView")}
               </button>
             </div>
             <Button onClick={handleCreate} variant="primary">
-              + {UI_LABELS.ACTIONS.CREATE}
+              + {tActions("create")}
             </Button>
           </div>
         </div>
 
         {isLoading ? (
           <Card>
-            <div className="text-center py-8">{UI_LABELS.LOADING.DEFAULT}</div>
+            <div className="text-center py-8">{tLoading("default")}</div>
           </Card>
         ) : error ? (
           <Card>
             <div className="text-center py-8">
               <p className="text-red-600 mb-4">{error.message}</p>
-              <Button onClick={() => refetch()}>
-                {UI_LABELS.ACTIONS.RETRY}
-              </Button>
+              <Button onClick={() => refetch()}>{tActions("retry")}</Button>
             </div>
           </Card>
         ) : viewMode === "tree" ? (

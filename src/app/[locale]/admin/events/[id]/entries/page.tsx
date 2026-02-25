@@ -8,7 +8,8 @@ import {
   DataTable,
   TablePagination,
 } from "@/components";
-import { UI_LABELS, ROUTES } from "@/constants";
+import { ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useUrlTable, useMessage } from "@/hooks";
 import {
   useEvent,
@@ -19,8 +20,6 @@ import {
   EntryReviewDrawer,
 } from "@/features/events";
 import type { EventEntryDocument } from "@/db/schema";
-
-const LABELS = UI_LABELS.ADMIN.EVENTS;
 
 export default function AdminEventEntriesPage() {
   const params = useParams<{ id: string }>();
@@ -33,6 +32,8 @@ export default function AdminEventEntriesPage() {
     null,
   );
   const { showSuccess } = useMessage();
+  const t = useTranslations("adminEvents");
+  const tEmpty = useTranslations("empty");
 
   const queryParams = table.params.toString();
   const { event, isLoading: eventLoading } = useEvent({ id: eventId });
@@ -49,10 +50,10 @@ export default function AdminEventEntriesPage() {
   return (
     <>
       <AdminPageHeader
-        title={LABELS.ENTRIES}
+        title={t("entries")}
         subtitle={event?.title ?? ""}
         breadcrumb={[
-          { label: LABELS.TITLE, href: ROUTES.ADMIN.EVENTS },
+          { label: t("title"), href: ROUTES.ADMIN.EVENTS },
           { label: event?.title ?? eventId },
         ]}
       />
@@ -95,7 +96,7 @@ export default function AdminEventEntriesPage() {
           columns={columns}
           keyExtractor={(e) => e.id}
           loading={isLoading}
-          emptyMessage={UI_LABELS.EMPTY.NO_DATA}
+          emptyMessage={tEmpty("noData")}
           externalPagination
         />
 

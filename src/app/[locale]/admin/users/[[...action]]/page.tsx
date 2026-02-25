@@ -12,7 +12,8 @@ import { useState, useEffect, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { THEME_CONSTANTS, UI_LABELS, ROUTES, API_ENDPOINTS } from "@/constants";
+import { THEME_CONSTANTS, ROUTES, API_ENDPOINTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   Card,
   Button,
@@ -35,7 +36,9 @@ export default function AdminUsersPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
   const { showToast } = useToast();
-  const USERS = UI_LABELS.ADMIN.USERS;
+  const t = useTranslations("adminUsers");
+  const tActions = useTranslations("actions");
+  const tLoading = useTranslations("loading");
   const table = useUrlTable({
     defaults: { pageSize: "25", sort: "-createdAt" },
   });
@@ -124,8 +127,8 @@ export default function AdminUsersPage({ params }: PageProps) {
   const handleRoleChange = async (user: AdminUser, newRole: string) => {
     setConfirmModal({
       open: true,
-      title: USERS.CONFIRM_ROLE_CHANGE,
-      message: `${USERS.CONFIRM_ROLE_CHANGE} ${newRole}?`,
+      title: t("confirmRoleChange"),
+      message: `${t("confirmRoleChange")} ${newRole}?`,
       onConfirm: async () => {
         try {
           await updateUserMutation.mutate({
@@ -137,7 +140,7 @@ export default function AdminUsersPage({ params }: PageProps) {
             setSelectedUser({ ...user, role: newRole as AdminUser["role"] });
           }
         } catch {
-          showToast(USERS.ROLE_UPDATE_FAILED, "error");
+          showToast(t("roleUpdateFailed"), "error");
         }
         setConfirmModal((prev) => ({ ...prev, open: false }));
       },
@@ -162,7 +165,7 @@ export default function AdminUsersPage({ params }: PageProps) {
           }
           handleCloseDrawer();
         } catch {
-          showToast(USERS.BAN_FAILED, "error");
+          showToast(t("banFailed"), "error");
         }
         setConfirmModal((prev) => ({ ...prev, open: false }));
       },
@@ -172,8 +175,8 @@ export default function AdminUsersPage({ params }: PageProps) {
   const handleDeleteUser = async (user: AdminUser) => {
     setConfirmModal({
       open: true,
-      title: USERS.CONFIRM_DELETE,
-      message: USERS.TYPE_DELETE_CONFIRM,
+      title: t("confirmDelete"),
+      message: t("typeDeleteConfirm"),
       requireTypedConfirmation: true,
       onConfirm: async () => {
         try {
@@ -181,7 +184,7 @@ export default function AdminUsersPage({ params }: PageProps) {
           await refetch();
           handleCloseDrawer();
         } catch {
-          showToast(USERS.DELETE_FAILED, "error");
+          showToast(t("deleteFailed"), "error");
         }
         setConfirmModal((prev) => ({ ...prev, open: false }));
       },
@@ -197,13 +200,13 @@ export default function AdminUsersPage({ params }: PageProps) {
     <>
       <div className={THEME_CONSTANTS.spacing.stack}>
         <AdminPageHeader
-          title={UI_LABELS.ADMIN.USERS.TITLE}
-          subtitle={`${UI_LABELS.ADMIN.USERS.SUBTITLE} (${total} total)`}
+          title={t("title")}
+          subtitle={`${t("subtitle")} (${total} total)`}
         />
 
         <UserFilters
           activeTab={activeTab}
-          onTabChange={(t) => table.set("tab", t)}
+          onTabChange={(tab) => table.set("tab", tab)}
           searchTerm={searchTerm}
           onSearchChange={(v) => table.set("q", v)}
           roleFilter={roleFilter}
@@ -213,15 +216,13 @@ export default function AdminUsersPage({ params }: PageProps) {
 
         {isLoading ? (
           <Card>
-            <div className="text-center py-8">{UI_LABELS.LOADING.DEFAULT}</div>
+            <div className="text-center py-8">{tLoading("default")}</div>
           </Card>
         ) : error ? (
           <Card>
             <div className="text-center py-8">
               <p className="text-red-600 mb-4">{error.message}</p>
-              <Button onClick={() => refetch()}>
-                {UI_LABELS.ACTIONS.RETRY}
-              </Button>
+              <Button onClick={() => refetch()}>{tActions("retry")}</Button>
             </div>
           </Card>
         ) : (

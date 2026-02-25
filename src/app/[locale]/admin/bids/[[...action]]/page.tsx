@@ -4,7 +4,13 @@ import { useState, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, UI_LABELS, ROUTES, ERROR_MESSAGES } from "@/constants";
+import {
+  ROUTES,
+  ERROR_MESSAGES,
+  THEME_CONSTANTS,
+  API_ENDPOINTS,
+} from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   Card,
   Button,
@@ -15,29 +21,28 @@ import {
   TablePagination,
 } from "@/components";
 import { formatCurrency, formatDate } from "@/utils";
-import { THEME_CONSTANTS } from "@/constants";
 import type { BidDocument } from "@/db/schema";
 
 interface PageProps {
   params: Promise<{ action?: string[] }>;
 }
 
-const LABELS = UI_LABELS.ADMIN.BIDS;
-const { themed } = THEME_CONSTANTS;
-
-const STATUS_TABS = [
-  { key: "", label: LABELS.FILTER_ALL },
-  { key: "active", label: LABELS.FILTER_ACTIVE },
-  { key: "won", label: LABELS.FILTER_WON },
-  { key: "outbid", label: LABELS.FILTER_OUTBID },
-  { key: "cancelled", label: LABELS.FILTER_CANCELLED },
-];
-
 export default function AdminBidsPage({ params }: PageProps) {
   const { action } = use(params);
   const router = useRouter();
+  const t = useTranslations("adminBids");
+  const tTable = useTranslations("table");
+  const { themed } = THEME_CONSTANTS;
   const table = useUrlTable({ defaults: { pageSize: "25", sort: "-bidDate" } });
   const statusFilter = table.get("status");
+
+  const STATUS_TABS = [
+    { key: "", label: t("filterAll") },
+    { key: "active", label: t("filterActive") },
+    { key: "won", label: t("filterWon") },
+    { key: "outbid", label: t("filterOutbid") },
+    { key: "cancelled", label: t("filterCancelled") },
+  ];
 
   const [selectedBid, setSelectedBid] = useState<BidDocument | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -85,17 +90,17 @@ export default function AdminBidsPage({ params }: PageProps) {
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title={LABELS.TITLE}
-        subtitle={`${LABELS.SUBTITLE} — ${totalBids} total`}
+        title={t("title")}
+        subtitle={`${t("subtitle")} — ${totalBids} total`}
       />
 
       {/* Summary stat cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: LABELS.TOTAL_BIDS, value: totalBids },
-          { label: LABELS.ACTIVE_BIDS, value: activeBids },
-          { label: LABELS.WON_BIDS, value: wonBids },
-          { label: LABELS.TOTAL_VALUE, value: formatCurrency(totalValue) },
+          { label: t("totalBids"), value: totalBids },
+          { label: t("activeBids"), value: activeBids },
+          { label: t("wonBids"), value: wonBids },
+          { label: t("totalValue"), value: formatCurrency(totalValue) },
         ].map(({ label, value }) => (
           <Card key={label} className="p-4">
             <p
@@ -129,9 +134,9 @@ export default function AdminBidsPage({ params }: PageProps) {
           columns={columns}
           data={bids}
           loading={isLoading}
-          emptyTitle={LABELS.EMPTY}
+          emptyTitle={t("empty")}
           emptyMessage={
-            error ? ERROR_MESSAGES.BID.FETCH_FAILED : LABELS.EMPTY_SUBTITLE
+            error ? ERROR_MESSAGES.BID.FETCH_FAILED : t("emptySubtitle")
           }
           keyExtractor={(bid: BidDocument) => bid.id}
           externalPagination
@@ -150,7 +155,7 @@ export default function AdminBidsPage({ params }: PageProps) {
       <SideDrawer
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
-        title={LABELS.TITLE}
+        title={t("title")}
         side="right"
       >
         {selectedBid && (
@@ -160,7 +165,7 @@ export default function AdminBidsPage({ params }: PageProps) {
               <p
                 className={`text-xs font-semibold uppercase tracking-wide ${themed.textSecondary}`}
               >
-                {LABELS.PRODUCT}
+                {t("product")}
               </p>
               <p className={`mt-1 text-sm font-medium ${themed.textPrimary}`}>
                 {selectedBid.productTitle}
@@ -175,7 +180,7 @@ export default function AdminBidsPage({ params }: PageProps) {
               <p
                 className={`text-xs font-semibold uppercase tracking-wide ${themed.textSecondary}`}
               >
-                {LABELS.BIDDER}
+                {t("bidder")}
               </p>
               <p className={`mt-1 text-sm font-medium ${themed.textPrimary}`}>
                 {selectedBid.userName}
@@ -191,7 +196,7 @@ export default function AdminBidsPage({ params }: PageProps) {
                 <p
                   className={`text-xs font-semibold uppercase tracking-wide ${themed.textSecondary}`}
                 >
-                  {LABELS.BID_AMOUNT}
+                  {t("bidAmount")}
                 </p>
                 <p className={`mt-1 text-lg font-bold ${themed.textPrimary}`}>
                   {formatCurrency(selectedBid.bidAmount)}
@@ -201,7 +206,7 @@ export default function AdminBidsPage({ params }: PageProps) {
                 <p
                   className={`text-xs font-semibold uppercase tracking-wide ${themed.textSecondary}`}
                 >
-                  {LABELS.STATUS}
+                  {tTable("status")}
                 </p>
                 <p
                   className={`mt-1 text-sm font-medium capitalize ${themed.textPrimary}`}
@@ -209,7 +214,7 @@ export default function AdminBidsPage({ params }: PageProps) {
                   {selectedBid.status}
                   {selectedBid.isWinning && (
                     <span className="ml-1 text-indigo-600 dark:text-indigo-400">
-                      ★ {LABELS.WINNING}
+                      ★ {t("winning")}
                     </span>
                   )}
                 </p>
@@ -221,7 +226,7 @@ export default function AdminBidsPage({ params }: PageProps) {
               <p
                 className={`text-xs font-semibold uppercase tracking-wide ${themed.textSecondary}`}
               >
-                {LABELS.BID_DATE}
+                {t("bidDate")}
               </p>
               <p className={`mt-1 text-sm ${themed.textPrimary}`}>
                 {formatDate(selectedBid.bidDate)}

@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 36 — Admin Pages i18n Wiring Batch 2 (2026-02-28)
+
+#### Changed
+
+- **`src/app/[locale]/admin/users/[[...action]]/page.tsx`** — Moved `const LABELS = UI_LABELS.ADMIN.USERS` inside component. Added `useTranslations("adminUsers")`, `useTranslations("actions")`, `useTranslations("loading")`. Fixed `onTabChange={(t) =>` → `(tab) =>` naming conflict. Replaced 15+ label references.
+- **`src/app/[locale]/admin/products/[[...action]]/page.tsx`** — Removed module-level `const LABELS = UI_LABELS.ADMIN.PRODUCTS`. Added `useTranslations("adminProducts")`, `useTranslations("actions")`, `useTranslations("loading")`, `useTranslations("status")`. Replaced 13 references.
+- **`src/app/[locale]/admin/orders/[[...action]]/page.tsx`** — Removed module-level `const LABELS` + `STATUS_TABS`. Moved `STATUS_TABS` inside component using `t("filter*")` calls. Fixed em-dash encoding. Replaced 10 references.
+- **`src/app/[locale]/admin/reviews/[[...action]]/page.tsx`** — Replaced `const REVIEWS = UI_LABELS.ADMIN.REVIEWS` with `useTranslations("adminReviews")` + `tActions` + `tLoading` + `tTable` + `tStatus`. Replaced 17+ references.
+- **`src/app/[locale]/admin/bids/[[...action]]/page.tsx`** — Removed module-level `LABELS` + `STATUS_TABS`. Merged separate `THEME_CONSTANTS` import. Added `useTranslations("adminBids")`, `useTranslations("table")`. Moved `STATUS_TABS` inside component. Replaced 19 references.
+- **`src/app/[locale]/admin/blog/[[...action]]/page.tsx`** — Removed module-level `LABELS` + `STATUS_TABS`. Merged `THEME_CONSTANTS` import. Added `useTranslations("adminBlog")`, `useTranslations("loading")`. Moved `STATUS_TABS` inside component. Replaced 15 references.
+- **`src/app/[locale]/admin/categories/[[...action]]/page.tsx`** — Removed module-level `const LABELS`. Added `useTranslations("adminCategories")`, `useTranslations("actions")`, `useTranslations("loading")`. Replaced 15 references including `TREE_VIEW`/`TABLE_VIEW`.
+- **`src/app/[locale]/admin/faqs/[[...action]]/page.tsx`** — Removed module-level `const LABELS`. Added `useTranslations("adminFaqs")`, `useTranslations("actions")`, `useTranslations("loading")`. Replaced 12 references including inline `SEARCH_PLACEHOLDER`.
+- **`src/app/[locale]/admin/carousel/[[...action]]/page.tsx`** — Removed module-level `const LABELS`. Added `useTranslations("adminCarousel")`, `useTranslations("actions")`, `useTranslations("loading")`. Replaced 11 references.
+- **`src/app/[locale]/admin/sections/[[...action]]/page.tsx`** — Removed module-level `const LABELS`. Added `useTranslations("adminSections")`, `useTranslations("actions")`, `useTranslations("loading")`. Replaced 11 references.
+- **`src/app/[locale]/admin/coupons/[[...action]]/page.tsx`** — Removed module-level `const LABELS`. Added `useTranslations("adminCoupons")`, `useTranslations("actions")`. Replaced 8 references including em-dash subtitle interpolation and `UI_LABELS.ACTIONS.SAVE`.
+- **`src/app/[locale]/admin/events/page.tsx`** — Removed module-level `const LABELS`. Added `useTranslations("adminEvents")`, `useTranslations("actions")`, `useTranslations("eventStatus")`. Replaced 11 references including `EVENT_STATUS.*` option labels.
+- **`src/app/[locale]/admin/events/[id]/entries/page.tsx`** — Removed module-level `const LABELS`. Added `useTranslations("adminEvents")`, `useTranslations("empty")`. Replaced 3 references.
+- **`messages/en.json`** — Added 13 namespaces: `adminUsers` (25 keys), `adminProducts` (11 keys), `adminOrders` (10 keys), `adminReviews` (17 keys), `adminBids` (19 keys), `adminBlog` (15 keys), `adminCategories` (12 keys including `treeView`/`tableView`), `adminFaqs` (10 keys), `adminCarousel` (8 keys), `adminSections` (8 keys), `adminCoupons` (8 keys), `adminEvents` (9 keys), `eventStatus` (4 keys).
+- **`messages/hi.json`** — Matching Hindi translations for all Phase 36 namespaces (written via Python to preserve UTF-8 encoding).
+
+**TypeScript:** 0 errors.
+
+---
+
 ### Phase 35 — Admin Pages i18n Wiring Batch 1 (2026-02-27)
 
 #### Changed
