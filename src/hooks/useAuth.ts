@@ -21,6 +21,7 @@
 import { useApiMutation } from "./useApiMutation";
 import { authService } from "@/services";
 import { ERROR_MESSAGES } from "@/constants";
+import { NotFoundError } from "@/lib/errors";
 import {
   signInWithGoogle,
   signInWithApple,
@@ -266,7 +267,7 @@ export function useChangePassword(options?: {
 
       const user = getCurrentUser();
       if (!user?.email) {
-        throw new Error(ERROR_MESSAGES.USER.NOT_FOUND);
+        throw new NotFoundError(ERROR_MESSAGES.USER.NOT_FOUND);
       }
 
       // Verify current password client-side first

@@ -28,8 +28,8 @@ export {
 // Components
 export { EventStatusBadge } from "./components/EventStatusBadge";
 export { EventStatsBanner } from "./components/EventStatsBanner";
-export { getEventsTableColumns } from "./components/EventsTable";
-export { getEventEntriesTableColumns } from "./components/EventEntriesTable";
+export { useEventsTableColumns } from "./components/EventsTable";
+export { useEventEntriesTableColumns } from "./components/EventEntriesTable";
 export { EventFormDrawer } from "./components/EventFormDrawer";
 export { EntryReviewDrawer } from "./components/EntryReviewDrawer";
 export { SurveyFieldBuilder } from "./components/SurveyFieldBuilder";

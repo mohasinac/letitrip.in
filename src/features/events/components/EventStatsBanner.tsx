@@ -1,7 +1,8 @@
 "use client";
 
 import { Card } from "@/components";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 
 interface EventStatsBannerProps {
   totalEntries: number;
@@ -12,7 +13,6 @@ interface EventStatsBannerProps {
 }
 
 const { themed, spacing } = THEME_CONSTANTS;
-const LABELS = UI_LABELS.ADMIN.EVENTS;
 
 export function EventStatsBanner({
   totalEntries,
@@ -21,6 +21,8 @@ export function EventStatsBanner({
   pendingEntries,
   isLoading = false,
 }: EventStatsBannerProps) {
+  const t = useTranslations("adminEvents");
+
   const stats = [
     {
       label: "Total Entries",
@@ -28,7 +30,7 @@ export function EventStatsBanner({
       color: "text-violet-600 dark:text-violet-400",
     },
     {
-      label: LABELS.APPROVE,
+      label: t("approve"),
       value: approvedEntries,
       color: "text-green-600 dark:text-green-400",
     },
@@ -38,7 +40,7 @@ export function EventStatsBanner({
       color: "text-yellow-600 dark:text-yellow-400",
     },
     {
-      label: LABELS.FLAG,
+      label: t("flag"),
       value: flaggedEntries,
       color: "text-red-600 dark:text-red-400",
     },

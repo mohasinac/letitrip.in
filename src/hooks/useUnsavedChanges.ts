@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { UI_LABELS } from "@/constants";
+import { eventBus } from "@/classes";
+
+export const UNSAVED_CHANGES_EVENT = "unsaved-changes:confirm";
 
 /**
  * Hook to track unsaved changes and warn users before navigating away.
@@ -40,7 +43,7 @@ export interface UseUnsavedChangesReturn {
   /** Call after a successful save to reset initial values to current */
   markClean: () => void;
   /** Prompt the user and return true if they confirmed leaving, false otherwise */
-  confirmLeave: () => boolean;
+  confirmLeave: () => Promise<boolean>;
 }
 
 export function useUnsavedChanges({
@@ -92,10 +95,12 @@ export function useUnsavedChanges({
     setSavedSnapshot({ ...formValues });
   }, [formValues]);
 
-  /** Confirm with the user whether they want to leave; returns true if confirmed */
-  const confirmLeave = useCallback((): boolean => {
-    if (!isDirty) return true;
-    return window.confirm(UI_LABELS.CONFIRM.UNSAVED_CHANGES);
+  /** Confirm with the user whether they want to leave; returns a Promise<boolean> */
+  const confirmLeave = useCallback((): Promise<boolean> => {
+    if (!isDirty) return Promise.resolve(true);
+    return new Promise<boolean>((resolve) => {
+      eventBus.emit(UNSAVED_CHANGES_EVENT, resolve);
+    });
   }, [isDirty]);
 
   return { isDirty, isFormDirty, markClean, confirmLeave };

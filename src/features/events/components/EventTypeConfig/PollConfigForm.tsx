@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components";
-import { UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
 import type { PollConfig } from "@/db/schema";
 
 interface PollConfigFormProps {
@@ -17,6 +17,7 @@ function generateId() {
 type PollOption = { id: string; label: string };
 
 export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
+  const tActions = useTranslations("actions");
   const options: PollOption[] = value.options ?? [];
 
   const setField = <K extends keyof PollConfig>(k: K, v: PollConfig[K]) =>
@@ -62,7 +63,7 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
               onClick={() => removeOption(opt.id)}
               type="button"
             >
-              {UI_LABELS.ACTIONS.DELETE}
+              {tActions("delete")}
             </Button>
           </div>
         ))}

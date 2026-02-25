@@ -69,24 +69,49 @@ export const GET = createApiHandler({
       pageSize,
     });
 
-    const allPosts = await blogRepository.findAll();
+    // Compute summary counts + paginated results in parallel (Rule 8 — no findAll())
+    const [
+      publishedResult,
+      draftsResult,
+      featuredResult,
+      allResult,
+      sieveResult,
+    ] = await Promise.all([
+      blogRepository.listAll({
+        filters: "status==published",
+        sorts: "createdAt",
+        page: "1",
+        pageSize: "1",
+      }),
+      blogRepository.listAll({
+        filters: "status==draft",
+        sorts: "createdAt",
+        page: "1",
+        pageSize: "1",
+      }),
+      blogRepository.listAll({
+        filters: "isFeatured==true",
+        sorts: "createdAt",
+        page: "1",
+        pageSize: "1",
+      }),
+      blogRepository.listAll({ sorts: "createdAt", page: "1", pageSize: "1" }),
+      blogRepository.listAll({
+        filters,
+        sorts,
+        page: String(page),
+        pageSize: String(pageSize),
+      }),
+    ]);
 
-    // Compute summary stats from all posts — unaffected by active filters
-    const published = allPosts.filter((p) => p.status === "published").length;
-    const drafts = allPosts.filter((p) => p.status === "draft").length;
-    const featured = allPosts.filter((p) => p.isFeatured).length;
-
-    const sieveResult = await blogRepository.listAll({
-      filters,
-      sorts,
-      page,
-      pageSize,
-    });
+    const published = publishedResult.total;
+    const drafts = draftsResult.total;
+    const featured = featuredResult.total;
 
     return successResponse({
       posts: sieveResult.items,
       meta: {
-        total: allPosts.length, // Always full count for stat cards
+        total: allResult.total, // Always full count for stat cards
         published,
         drafts,
         featured,

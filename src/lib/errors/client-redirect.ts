@@ -61,7 +61,7 @@ export function redirectOnError(
     case 404:
       // Next.js App Router handles 404s via not-found.tsx automatically
       // Navigate to home as fallback
-      router.push("/");
+      router.push(ROUTES.HOME);
       break;
     default:
       // For 500 and other errors, let error.tsx boundary catch it

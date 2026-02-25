@@ -107,6 +107,12 @@ export const ROUTES = {
   DEMO: {
     SEED: "/demo/seed",
   },
+
+  // Blog Routes
+  BLOG: {
+    LIST: "/blog",
+    ARTICLE: (slug: string) => `/blog/${slug}`,
+  },
 } as const;
 
 /**

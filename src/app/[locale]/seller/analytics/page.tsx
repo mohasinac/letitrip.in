@@ -24,6 +24,7 @@ import { THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useAuth, useApiQuery } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
+import { hasAnyRole } from "@/helpers";
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
 
@@ -41,7 +42,7 @@ export default function SellerAnalyticsPage() {
   useEffect(() => {
     if (
       !authLoading &&
-      (!user || (user.role !== "seller" && user.role !== "admin"))
+      (!user || !hasAnyRole(user.role, ["seller", "admin"]))
     ) {
       router.push(ROUTES.SELLER.DASHBOARD);
     }
@@ -51,7 +52,7 @@ export default function SellerAnalyticsPage() {
     queryKey: ["seller-analytics", user?.uid ?? ""],
     queryFn: () =>
       apiClient.get<AnalyticsResponse>(API_ENDPOINTS.SELLER.ANALYTICS),
-    enabled: !!user && (user.role === "seller" || user.role === "admin"),
+    enabled: !!user && hasAnyRole(user.role, ["seller", "admin"]),
     cacheTTL: 5 * 60 * 1000,
   });
 

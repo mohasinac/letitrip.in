@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, ChangeEvent } from "react";
-import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { apiClient } from "@/lib/api-client";
+import { ValidationError } from "@/lib/errors";
 
 interface ImageUploadProps {
   currentImage?: string;
@@ -87,7 +88,7 @@ export function ImageUpload({
         onUpload(data.url);
         setPreview(data.url);
       } else {
-        throw new Error("Upload response invalid");
+        throw new ValidationError(ERROR_MESSAGES.UPLOAD.INVALID_TYPE);
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Upload failed";

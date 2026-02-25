@@ -45,6 +45,7 @@ import { UserRole } from "@/types/auth";
 import { AuthenticationError, ApiError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { logger } from "@/classes";
+import { sessionService } from "@/services";
 
 /**
  * Helper: Create session via API call
@@ -53,23 +54,8 @@ import { logger } from "@/classes";
  */
 async function createSession(idToken: string): Promise<string | null> {
   try {
-    const response = await fetch("/api/auth/session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idToken }),
-      credentials: "include", // Important for cookies
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      logger.error("Session creation failed", { error });
-      throw new AuthenticationError(
-        error.message || ERROR_MESSAGES.AUTH.SESSION_CREATION_FAILED,
-      );
-    }
-
-    const data = await response.json();
-    return data.sessionId || null;
+    const data = await sessionService.create({ idToken });
+    return (data as { sessionId?: string }).sessionId || null;
   } catch (error) {
     logger.error("Session creation error", { error });
     // Don't throw - allow auth to succeed even if session creation fails
@@ -83,10 +69,7 @@ async function createSession(idToken: string): Promise<string | null> {
  */
 async function destroySession(): Promise<void> {
   try {
-    await fetch("/api/auth/session", {
-      method: "DELETE",
-      credentials: "include",
-    });
+    await sessionService.destroy();
   } catch (error) {
     logger.error("Session destruction error", { error });
   }

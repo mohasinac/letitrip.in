@@ -13,11 +13,11 @@ import {
 } from "@/components";
 import {
   THEME_CONSTANTS,
-  UI_LABELS,
   ERROR_MESSAGES,
   API_ENDPOINTS,
   ROUTES,
 } from "@/constants";
+import { useTranslations } from "next-intl";
 import { formatMonthYear, formatCurrency } from "@/utils";
 import { useApiQuery } from "@/hooks";
 import type { UserDocument, ProductDocument } from "@/db/schema";
@@ -48,6 +48,8 @@ interface ProductsApiResponse {
 export default function SellerStorefrontPage() {
   const params = useParams();
   const sellerId = params?.id as string;
+  const tSf = useTranslations("sellerStorefront");
+  const tActions = useTranslations("actions");
 
   // Fetch seller profile
   const {
@@ -67,7 +69,7 @@ export default function SellerStorefrontPage() {
   const profileError: string | null =
     (fetchError as Error)?.message ??
     (seller && seller.role !== "seller" && seller.role !== "admin"
-      ? UI_LABELS.SELLER_STOREFRONT.NOT_FOUND
+      ? tSf("notFound")
       : null);
 
   const isReady = !!seller && !profileError && !!sellerId;
@@ -102,7 +104,7 @@ export default function SellerStorefrontPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <Text>{UI_LABELS.SELLER_STOREFRONT.LOADING}</Text>
+          <Text>{tSf("loading")}</Text>
         </div>
       </div>
     );
@@ -113,21 +115,19 @@ export default function SellerStorefrontPage() {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
-          <Alert variant="error">
-            {profileError || UI_LABELS.SELLER_STOREFRONT.NOT_FOUND}
-          </Alert>
+          <Alert variant="error">{profileError || tSf("notFound")}</Alert>
           <div className="mt-4 flex gap-4">
             <Link
               href={ROUTES.PUBLIC.SELLERS}
               className="text-primary-600 hover:underline text-sm"
             >
-              {UI_LABELS.SELLER_STOREFRONT.BACK}
+              {tSf("back")}
             </Link>
             <Link
               href={ROUTES.HOME}
               className="text-primary-600 hover:underline text-sm"
             >
-              {UI_LABELS.ACTIONS.GO_HOME}
+              {tActions("goHome")}
             </Link>
           </div>
         </Card>
@@ -188,7 +188,7 @@ export default function SellerStorefrontPage() {
               {/* Meta row */}
               <div className="flex flex-wrap items-center gap-4 text-sm">
                 <Text variant="secondary">
-                  {UI_LABELS.SELLER_STOREFRONT.MEMBER_SINCE} {memberSince}
+                  {tSf("memberSince")} {memberSince}
                 </Text>
                 {seller.publicProfile?.location && (
                   <div className="flex items-center gap-1">
@@ -222,7 +222,7 @@ export default function SellerStorefrontPage() {
                     </Text>
                     <Text variant="secondary" className="text-xs">
                       ({reviewsData.totalReviews}{" "}
-                      {UI_LABELS.SELLER_STOREFRONT.TOTAL_REVIEWS.toLowerCase()})
+                      {tSf("totalReviews").toLowerCase()})
                     </Text>
                   </div>
                 )}
@@ -234,7 +234,7 @@ export default function SellerStorefrontPage() {
                   href={ROUTES.PUBLIC.PROFILE(sellerId)}
                   className="text-sm text-primary-600 hover:underline"
                 >
-                  {UI_LABELS.SELLER_STOREFRONT.VISIT_PROFILE} →
+                  {tSf("visitProfile")} →
                 </Link>
               </div>
             </div>
@@ -248,7 +248,7 @@ export default function SellerStorefrontPage() {
                       {productsData?.meta?.total ?? seller.stats.itemsSold ?? 0}
                     </div>
                     <Text variant="secondary" className="text-xs">
-                      {UI_LABELS.SELLER_STOREFRONT.TOTAL_PRODUCTS}
+                      {tSf("totalProducts")}
                     </Text>
                   </div>
                   <div>
@@ -256,7 +256,7 @@ export default function SellerStorefrontPage() {
                       {seller.stats.itemsSold ?? 0}
                     </div>
                     <Text variant="secondary" className="text-xs">
-                      {UI_LABELS.SELLER_STOREFRONT.TOTAL_SALES}
+                      {tSf("totalSales")}
                     </Text>
                   </div>
                 </>
@@ -268,7 +268,7 @@ export default function SellerStorefrontPage() {
         {/* Products Section */}
         <Card className="mb-6">
           <h2 className={`${THEME_CONSTANTS.typography.h4} mb-4`}>
-            {UI_LABELS.SELLER_STOREFRONT.PRODUCTS_TITLE}
+            {tSf("productsTitle")}
           </h2>
           {productsLoading ? (
             <div className="flex justify-center py-8">
@@ -307,7 +307,7 @@ export default function SellerStorefrontPage() {
                     </Text>
                     {product.isAuction && (
                       <Badge variant="warning" className="mt-1 text-xs">
-                        {UI_LABELS.SELLER_STOREFRONT.AUCTION_BADGE}
+                        {tSf("auctionBadge")}
                       </Badge>
                     )}
                   </div>
@@ -316,8 +316,8 @@ export default function SellerStorefrontPage() {
             </div>
           ) : (
             <EmptyState
-              title={UI_LABELS.SELLER_STOREFRONT.NO_PRODUCTS}
-              description={UI_LABELS.SELLER_STOREFRONT.NO_PRODUCTS_DESC}
+              title={tSf("noProducts")}
+              description={tSf("noProductsDesc")}
             />
           )}
         </Card>
@@ -326,7 +326,7 @@ export default function SellerStorefrontPage() {
         <Card className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className={THEME_CONSTANTS.typography.h4}>
-              {UI_LABELS.SELLER_STOREFRONT.REVIEWS_TITLE}
+              {tSf("reviewsTitle")}
             </h2>
             {reviewsData && reviewsData.totalReviews > 0 && (
               <div className="flex items-center gap-2">
@@ -374,7 +374,7 @@ export default function SellerStorefrontPage() {
                         </Text>
                         {review.verified && (
                           <Badge variant="success" className="text-xs">
-                            {UI_LABELS.SELLER_STOREFRONT.VERIFIED_PURCHASE}
+                            {tSf("verifiedPurchase")}
                           </Badge>
                         )}
                       </div>
@@ -411,8 +411,8 @@ export default function SellerStorefrontPage() {
             </div>
           ) : (
             <EmptyState
-              title={UI_LABELS.SELLER_STOREFRONT.NO_REVIEWS}
-              description={UI_LABELS.SELLER_STOREFRONT.NO_REVIEWS_DESC}
+              title={tSf("noReviews")}
+              description={tSf("noReviewsDesc")}
             />
           )}
         </Card>
@@ -423,7 +423,7 @@ export default function SellerStorefrontPage() {
             href={ROUTES.PUBLIC.SELLERS}
             className="text-primary-600 hover:underline text-sm"
           >
-            ← {UI_LABELS.SELLER_STOREFRONT.BACK}
+            ← {tSf("back")}
           </Link>
         </div>
       </div>

@@ -1,11 +1,11 @@
 "use client";
 
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { Button, Badge } from "@/components";
 import type { EventEntryDocument, EntryReviewStatus } from "@/db/schema";
 
-const LABELS = UI_LABELS.ADMIN.EVENTS;
 const { themed } = THEME_CONSTANTS;
 
 const REVIEW_VARIANT: Record<
@@ -17,9 +17,12 @@ const REVIEW_VARIANT: Record<
   flagged: "danger",
 };
 
-export function getEventEntriesTableColumns(
+export function useEventEntriesTableColumns(
   onReview: (entry: EventEntryDocument) => void,
 ) {
+  const t = useTranslations("adminEvents");
+  const tTable = useTranslations("table");
+
   return {
     columns: [
       {
@@ -73,11 +76,11 @@ export function getEventEntriesTableColumns(
       },
       {
         key: "actions",
-        header: UI_LABELS.TABLE.ACTIONS,
+        header: tTable("actions"),
         width: "12%",
         render: (e: EventEntryDocument) => (
           <Button variant="ghost" size="sm" onClick={() => onReview(e)}>
-            {LABELS.REVIEW_ENTRY}
+            {t("reviewEntry")}
           </Button>
         ),
       },

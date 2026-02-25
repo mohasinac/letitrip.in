@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { SideDrawer, Button, FormField } from "@/components";
-import { UI_LABELS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useMessage } from "@/hooks";
 import { useReviewEntry } from "../hooks/useEventMutations";
 import type { EventEntryDocument } from "@/db/schema";
@@ -15,8 +16,6 @@ interface EntryReviewDrawerProps {
   onSuccess: () => void;
 }
 
-const LABELS = UI_LABELS.ADMIN.EVENTS;
-
 export function EntryReviewDrawer({
   entry,
   eventId,
@@ -26,6 +25,8 @@ export function EntryReviewDrawer({
 }: EntryReviewDrawerProps) {
   const [reviewNote, setReviewNote] = useState("");
   const { showSuccess, showError } = useMessage();
+  const t = useTranslations("adminEvents");
+  const tActions = useTranslations("actions");
   const mutation = useReviewEntry(() => {
     showSuccess(SUCCESS_MESSAGES.EVENT.ENTRY_APPROVED);
     onSuccess();
@@ -62,7 +63,7 @@ export function EntryReviewDrawer({
     <SideDrawer
       isOpen={isOpen}
       onClose={onClose}
-      title={LABELS.REVIEW_ENTRY}
+      title={t("reviewEntry")}
       mode="edit"
       footer={
         <div className="flex gap-3">
@@ -72,17 +73,17 @@ export function EntryReviewDrawer({
             onClick={() => handleReview("flagged")}
             isLoading={mutation.isLoading}
           >
-            {LABELS.FLAG}
+            {t("flag")}
           </Button>
           <Button
             variant="primary"
             onClick={() => handleReview("approved")}
             isLoading={mutation.isLoading}
           >
-            {LABELS.APPROVE}
+            {t("approve")}
           </Button>
           <Button variant="ghost" onClick={onClose}>
-            {UI_LABELS.ACTIONS.CANCEL}
+            {tActions("cancel")}
           </Button>
         </div>
       }

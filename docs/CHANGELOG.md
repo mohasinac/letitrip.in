@@ -9,6 +9,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 37 — Service Layer Migration, Sub-tasks 37.8–37.13 (2026-03-01)
+
+#### Added
+
+- **`src/components/modals/UnsavedChangesModal.tsx`** — New modal component that listens on `eventBus` for `UNSAVED_CHANGES_EVENT`; resolves the caller's `Promise<boolean>`. Mounted once in `LayoutClient`.
+- **`ROUTES.BLOG`** — Added `ROUTES.BLOG.LIST` and `ROUTES.BLOG.ARTICLE(slug)` to `src/constants/routes.ts`.
+- **`messages/en.json` + `messages/hi.json`** — Added `"unsavedChanges"` i18n namespace (`title`, `message`, `stay`, `leave`) for the new modal.
+
+#### Changed
+
+- **Phase 37.8 — Rule 2 (`useTranslations` migration)**: `src/app/[locale]/sellers/[id]/page.tsx` — replaced all remaining `UI_LABELS.SELLER_STOREFRONT.*` and `UI_LABELS.ACTIONS.*` with `useTranslations("sellerStorefront")` / `useTranslations("actions")`.
+- **Phase 37.9 — Rule 8 (no `findAll` in list endpoints)**:
+  - `src/app/api/profile/[userId]/route.ts` — removed direct Firestore queries; uses `userRepository.findById(userId)` instead.
+  - `src/app/api/admin/blog/route.ts` — replaced `blogRepository.findAll()` for summary stats with 5 parallel `listAll()` count queries.
+  - `src/app/api/admin/payouts/route.ts` — replaced `payoutRepository.findAll()` with 6 parallel `list()` count queries.
+- **Phase 37.10 — Rule 10 (typed error classes)**:
+  - `src/app/api/auth/login/route.ts` — `throw new Error` → `throw new AppError(500, …, "SERVER_CONFIG_ERROR")`.
+  - `src/lib/search/algolia.ts` — `throw new Error` → `throw new AppError(500, …, "ALGOLIA_CONFIG_ERROR")`.
+  - `src/lib/payment/razorpay.ts` — 3× `throw new Error` → `throw new AppError(500, …, "RAZORPAY_CONFIG_ERROR")`.
+  - `src/lib/firebase/admin.ts` — `throw new Error` → `throw new AppError(500, …, "FIREBASE_ADMIN_INIT_ERROR")`.
+  - `src/hooks/useAuth.ts` — `throw new Error` → `throw new NotFoundError(ERROR_MESSAGES.USER.NOT_FOUND)`.
+  - `src/components/admin/ImageUpload.tsx` — `throw new Error` → `throw new ValidationError(ERROR_MESSAGES.UPLOAD.INVALID_TYPE)`.
+- **Phase 37.11 — Rule 18 (no `console.*` in production)**:
+  - `src/lib/firebase/admin.ts` — 2× `console.log` → `serverLogger.info`; 1× `console.error` → `serverLogger.error`. Added `serverLogger` import.
+  - `src/lib/firebase/auth-server.ts` — 4× `console.error` → `serverLogger.error`. Added `serverLogger` import.
+  - `src/lib/firebase/storage.ts` — 2× `console.error` → `logger.error` (client-side file, already imports `logger`).
+  - `src/app/api/demo/seed/route.ts` — 20+ `console.log/error` → `serverLogger.info/error`. Added `serverLogger` import.
+- **Phase 37.12 — Rule 12 (RBAC helpers)**:
+  - `src/components/layout/Sidebar.tsx` — 3× raw role comparisons → `hasAnyRole(user.role, [...])`. Added `hasAnyRole` import from `@/helpers`.
+  - `src/app/[locale]/seller/analytics/page.tsx` — 2× raw role comparisons → `hasAnyRole(user.role, ["seller","admin"])`. Added `hasAnyRole` import.
+  - `src/app/[locale]/profile/[userId]/page.tsx` — `isSeller` assignment and 2× inline role checks → `hasRole(user.role, "seller")`. Added `hasRole` import.
+- **Phase 37.13 — Rules 14/15/17 (hardcoded routes, API paths, native dialogs)**:
+  - `src/lib/errors/client-redirect.ts` — `router.push("/")` → `router.push(ROUTES.HOME)`.
+  - `src/components/homepage/BlogArticlesSection.tsx` — `` `/blog/${slug}` `` → `ROUTES.BLOG.ARTICLE(article.slug)`.
+  - `src/lib/firebase/auth-helpers.ts` — replaced raw `fetch("/api/auth/session", …)` with `sessionService.create({ idToken })` / `sessionService.destroy()`. Added `sessionService` import from `@/services`.
+  - `src/hooks/useUnsavedChanges.ts` — `window.confirm` replaced with `eventBus.emit(UNSAVED_CHANGES_EVENT, resolve)`. Return type of `confirmLeave()` changed from `boolean` to `Promise<boolean>`. Added `UNSAVED_CHANGES_EVENT` export.
+  - `src/hooks/__tests__/useUnsavedChanges.test.ts` — Updated 3 `confirmLeave` tests for async `Promise<boolean>` API; replaced `window.confirm` mock with `eventBus.emit` mock.
+  - `src/hooks/index.ts` — Added `UNSAVED_CHANGES_EVENT` to barrel exports.
+  - `src/components/index.ts` — Added `UnsavedChangesModal` to barrel exports.
+  - `src/components/LayoutClient.tsx` — Mounted `<UnsavedChangesModal />` at app-shell level.
+
+---
+
 ### Phase 37 — Service Layer Migration, Batch 1 (37.2–37.7) (2026-02-28)
 
 #### Added

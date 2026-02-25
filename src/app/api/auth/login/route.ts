@@ -21,7 +21,7 @@ import { parseUserAgent } from "@/db/schema";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
-import { ValidationError, AuthenticationError } from "@/lib/errors";
+import { ValidationError, AuthenticationError, AppError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { z } from "zod";
@@ -81,7 +81,11 @@ export async function POST(request: NextRequest) {
       process.env.FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
     if (!apiKey) {
       serverLogger.error("FIREBASE_API_KEY not configured");
-      throw new Error(ERROR_MESSAGES.GENERIC.SERVER_CONFIG_ERROR);
+      throw new AppError(
+        500,
+        ERROR_MESSAGES.GENERIC.SERVER_CONFIG_ERROR,
+        "SERVER_CONFIG_ERROR",
+      );
     }
     const verifyPasswordUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
 

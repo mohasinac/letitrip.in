@@ -1,8 +1,5 @@
 import { NextRequest } from "next/server";
-import { getFirestore } from "firebase-admin/firestore";
-import { getAdminApp } from "@/lib/firebase/admin";
-import { USER_COLLECTION } from "@/db/schema/users";
-import type { UserDocument } from "@/db/schema/users";
+import type { UserDocument } from "@/db/schema";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse } from "@/lib/api-response";
 import {
@@ -11,6 +8,7 @@ import {
   AuthorizationError,
 } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
+import { userRepository } from "@/repositories";
 
 export async function GET(
   request: NextRequest,
@@ -23,17 +21,12 @@ export async function GET(
       throw new ValidationError(ERROR_MESSAGES.GENERIC.USER_ID_REQUIRED);
     }
 
-    // Get Firestore instance
-    const db = getFirestore(getAdminApp());
+    // Fetch user using repository (Rule 8 — no direct Firestore access)
+    const userData = await userRepository.findById(userId);
 
-    // Fetch user document
-    const userDoc = await db.collection(USER_COLLECTION).doc(userId).get();
-
-    if (!userDoc.exists) {
+    if (!userData) {
       throw new NotFoundError(ERROR_MESSAGES.USER.NOT_FOUND);
     }
-
-    const userData = userDoc.data() as UserDocument;
 
     // Check if profile is public
     if (!userData.publicProfile?.isPublic) {

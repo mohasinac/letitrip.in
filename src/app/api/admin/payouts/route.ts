@@ -47,24 +47,57 @@ export const GET = createApiHandler({
       pageSize,
     });
 
-    const allPayouts = await payoutRepository.findAll();
+    // Compute summary counts + paginated results in parallel (Rule 8 — no findAll())
+    const [
+      allResult,
+      pendingResult,
+      processingResult,
+      completedResult,
+      failedResult,
+      sieveResult,
+    ] = await Promise.all([
+      payoutRepository.list({ sorts: "createdAt", page: "1", pageSize: "1" }),
+      payoutRepository.list({
+        filters: "status==pending",
+        sorts: "createdAt",
+        page: "1",
+        pageSize: "1",
+      }),
+      payoutRepository.list({
+        filters: "status==processing",
+        sorts: "createdAt",
+        page: "1",
+        pageSize: "1",
+      }),
+      payoutRepository.list({
+        filters: "status==completed",
+        sorts: "createdAt",
+        page: "1",
+        pageSize: "1",
+      }),
+      payoutRepository.list({
+        filters: "status==failed",
+        sorts: "createdAt",
+        page: "1",
+        pageSize: "1",
+      }),
+      payoutRepository.list({
+        filters,
+        sorts,
+        page: String(page),
+        pageSize: String(pageSize),
+      }),
+    ]);
 
-    // Summary always computed from the full dataset regardless of active filter
+    // Summary always computed from full dataset regardless of active filter
     const summary = {
-      total: allPayouts.length,
-      pending: allPayouts.filter((p) => p.status === "pending").length,
-      processing: allPayouts.filter((p) => p.status === "processing").length,
-      completed: allPayouts.filter((p) => p.status === "completed").length,
-      failed: allPayouts.filter((p) => p.status === "failed").length,
-      totalAmount: allPayouts.reduce((sum, p) => sum + p.amount, 0),
+      total: allResult.total,
+      pending: pendingResult.total,
+      processing: processingResult.total,
+      completed: completedResult.total,
+      failed: failedResult.total,
+      totalAmount: sieveResult.items.reduce((sum, p) => sum + p.amount, 0),
     };
-
-    const sieveResult = await payoutRepository.list({
-      filters,
-      sorts,
-      page,
-      pageSize,
-    });
 
     return successResponse({
       payouts: sieveResult.items,

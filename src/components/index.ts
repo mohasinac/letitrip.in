@@ -49,6 +49,7 @@ export { ErrorBoundary } from "./ErrorBoundary";
 export { default as ConfirmDeleteModal } from "./modals/ConfirmDeleteModal";
 export { ImageCropModal } from "./modals/ImageCropModal";
 export type { ImageCropData } from "./modals/ImageCropModal";
+export { default as UnsavedChangesModal } from "./modals/UnsavedChangesModal";
 
 // ==================== UTILITY COMPONENTS ====================
 // Re-export from utility subdirectory

@@ -2,7 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { eventService } from "../services/event.service";
-import { UI_LABELS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useMessage, useAuth } from "@/hooks";
 import { useApiMutation } from "@/hooks";
 import type { PollConfig } from "@/db/schema";
@@ -26,6 +27,8 @@ export function PollVotingSection({
 }: PollVotingSectionProps) {
   const { user } = useAuth();
   const { showSuccess, showError } = useMessage();
+  const tEvents = useTranslations("events");
+  const tLoading = useTranslations("loading");
 
   const [selected, setSelected] = useState<string[]>(existingVotes);
   const [comment, setComment] = useState("");
@@ -65,7 +68,7 @@ export function PollVotingSection({
     return (
       <div className="space-y-4">
         <p className="text-sm font-medium text-green-600 dark:text-green-400">
-          ✓ {UI_LABELS.EVENTS.ALREADY_VOTED}
+          ✓ {tEvents("alreadyVoted")}
         </p>
         <div className="space-y-2">
           {pollConfig.options.map((opt) => {
@@ -141,7 +144,7 @@ export function PollVotingSection({
         disabled={selected.length === 0 || mutation.isLoading}
         className="w-full px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium transition-colors"
       >
-        {mutation.isLoading ? UI_LABELS.LOADING.DEFAULT : UI_LABELS.EVENTS.VOTE}
+        {mutation.isLoading ? tLoading("default") : tEvents("vote")}
       </button>
     </div>
   );

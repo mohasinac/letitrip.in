@@ -15,6 +15,7 @@
 
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import { AppError } from "@/lib/errors";
 
 // ─── Singleton Razorpay instance ─────────────────────────────────────────────
 
@@ -26,8 +27,10 @@ export function getRazorpay(): Razorpay {
     const key_secret = process.env.RAZORPAY_KEY_SECRET;
 
     if (!key_id || !key_secret) {
-      throw new Error(
+      throw new AppError(
+        500,
         "Razorpay credentials are missing. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env.local",
+        "RAZORPAY_CONFIG_ERROR",
       );
     }
 
@@ -87,7 +90,11 @@ export interface RazorpayPaymentResult {
 export function verifyPaymentSignature(params: RazorpayPaymentResult): boolean {
   const key_secret = process.env.RAZORPAY_KEY_SECRET;
   if (!key_secret) {
-    throw new Error("RAZORPAY_KEY_SECRET is not configured");
+    throw new AppError(
+      500,
+      "RAZORPAY_KEY_SECRET is not configured",
+      "RAZORPAY_CONFIG_ERROR",
+    );
   }
 
   const generatedSignature = crypto
@@ -110,7 +117,11 @@ export function verifyWebhookSignature(
 ): boolean {
   const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
   if (!webhookSecret) {
-    throw new Error("RAZORPAY_WEBHOOK_SECRET is not configured");
+    throw new AppError(
+      500,
+      "RAZORPAY_WEBHOOK_SECRET is not configured",
+      "RAZORPAY_CONFIG_ERROR",
+    );
   }
 
   const generatedSignature = crypto

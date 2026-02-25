@@ -68,7 +68,7 @@ export type { Address, AddressFormData } from "./useAddresses";
 export { useStorageUpload } from "./useStorageUpload";
 export type { UploadOptions, UploadState } from "./useStorageUpload";
 
-export { useUnsavedChanges } from "./useUnsavedChanges";
+export { useUnsavedChanges, UNSAVED_CHANGES_EVENT } from "./useUnsavedChanges";
 export type {
   UseUnsavedChangesOptions,
   UseUnsavedChangesReturn,

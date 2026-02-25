@@ -1,13 +1,13 @@
 /**
  * Tests for useUnsavedChanges hook
  * Phase 18.3 — Security / UX Hooks
+ * Updated Phase 37.13 — window.confirm replaced with eventBus
  */
 
 import { renderHook, act } from "@testing-library/react";
-import { useUnsavedChanges } from "../useUnsavedChanges";
+import { useUnsavedChanges, UNSAVED_CHANGES_EVENT } from "../useUnsavedChanges";
 
 // ─── Mock @/constants ─────────────────────────────────────────────────────────
-// jest.mock is hoisted above variable declarations, so the factory must be self-contained
 jest.mock("@/constants", () => ({
   UI_LABELS: {
     CONFIRM: {
@@ -17,14 +17,19 @@ jest.mock("@/constants", () => ({
   },
 }));
 
-// Used in assertions — must match the literal above
-const UNSAVED_MSG = "You have unsaved changes. Are you sure you want to leave?";
+// ─── Mock eventBus ────────────────────────────────────────────────────────────
+const mockEmit = jest.fn();
+jest.mock("@/classes", () => ({
+  eventBus: {
+    emit: (...args: unknown[]) => mockEmit(...args),
+  },
+}));
 
 // ─── Setup ────────────────────────────────────────────────────────────────────
 beforeEach(() => {
   jest.spyOn(window, "addEventListener");
   jest.spyOn(window, "removeEventListener");
-  jest.spyOn(window, "confirm").mockReturnValue(false);
+  mockEmit.mockReset();
 });
 
 afterEach(() => {
@@ -134,7 +139,7 @@ describe("useUnsavedChanges", () => {
     expect(result.current.isFormDirty).toBe(false);
   });
 
-  it("confirmLeave() returns true without calling window.confirm when not dirty", () => {
+  it("confirmLeave() resolves true immediately when not dirty", async () => {
     const initialValues = { name: "Alice" };
     const { result } = renderHook(() =>
       useUnsavedChanges({
@@ -144,16 +149,15 @@ describe("useUnsavedChanges", () => {
     );
 
     let confirmed: boolean | undefined;
-    act(() => {
-      confirmed = result.current.confirmLeave();
+    await act(async () => {
+      confirmed = await result.current.confirmLeave();
     });
 
-    expect(window.confirm).not.toHaveBeenCalled();
+    expect(mockEmit).not.toHaveBeenCalled();
     expect(confirmed).toBe(true);
   });
 
-  it("confirmLeave() calls window.confirm when dirty and returns its result", () => {
-    (window.confirm as jest.Mock).mockReturnValue(true);
+  it("confirmLeave() emits eventBus event when dirty", async () => {
     const initialValues = { name: "Alice" };
     const { result } = renderHook(() =>
       useUnsavedChanges({
@@ -162,17 +166,25 @@ describe("useUnsavedChanges", () => {
       }),
     );
 
+    mockEmit.mockImplementation(
+      (_event: string, resolve: (v: boolean) => void) => {
+        resolve(true);
+      },
+    );
+
     let confirmed: boolean | undefined;
-    act(() => {
-      confirmed = result.current.confirmLeave();
+    await act(async () => {
+      confirmed = await result.current.confirmLeave();
     });
 
-    expect(window.confirm).toHaveBeenCalledWith(UNSAVED_MSG);
+    expect(mockEmit).toHaveBeenCalledWith(
+      UNSAVED_CHANGES_EVENT,
+      expect.any(Function),
+    );
     expect(confirmed).toBe(true);
   });
 
-  it("confirmLeave() returns false when user rejects the confirm dialog", () => {
-    (window.confirm as jest.Mock).mockReturnValue(false);
+  it("confirmLeave() resolves false when user rejects the modal", async () => {
     const initialValues = { name: "Alice" };
     const { result } = renderHook(() =>
       useUnsavedChanges({
@@ -181,9 +193,15 @@ describe("useUnsavedChanges", () => {
       }),
     );
 
+    mockEmit.mockImplementation(
+      (_event: string, resolve: (v: boolean) => void) => {
+        resolve(false);
+      },
+    );
+
     let confirmed: boolean | undefined;
-    act(() => {
-      confirmed = result.current.confirmLeave();
+    await act(async () => {
+      confirmed = await result.current.confirmLeave();
     });
 
     expect(confirmed).toBe(false);

@@ -54,7 +54,7 @@ export function BlogArticlesSection() {
             <button
               key={article.id}
               className={`group ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} overflow-hidden hover:shadow-xl transition-all text-left`}
-              onClick={() => router.push(`/blog/${article.slug}`)}
+              onClick={() => router.push(ROUTES.BLOG.ARTICLE(article.slug))}
             >
               {/* Thumbnail */}
               <div className="relative aspect-video overflow-hidden bg-gray-200 dark:bg-gray-700">

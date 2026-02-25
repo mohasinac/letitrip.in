@@ -706,7 +706,27 @@
     "currentEvents": "Current Events",
     "pastEvents": "Past Events",
     "noActiveEvents": "No active events right now",
-    "noActiveEventsDesc": "Check back soon for sales, polls, and giveaways!"
+    "noActiveEventsDesc": "Check back soon for sales, polls, and giveaways!",
+    "vote": "Vote",
+    "participate": "Participate",
+    "viewResults": "View Results",
+    "leaderboard": "Leaderboard",
+    "endsIn": "Ends in",
+    "alreadyVoted": "You have already voted",
+    "loginToParticipate": "Log in to participate",
+    "thankYouTitle": "Thank you!",
+    "thankYouDesc": "Your submission has been received.",
+    "reviewPending": "Your entry is under review",
+    "entryApproved": "Your entry has been approved",
+    "entryFlagged": "Your entry has been flagged",
+    "submit": "Submit Entry"
+  },
+  "eventTypes": {
+    "sale": "Sale",
+    "offer": "Offer",
+    "poll": "Poll",
+    "survey": "Survey / Giveaway",
+    "feedback": "Feedback"
   },
   "about": {
     "title": "About LetItRip",
@@ -1144,12 +1164,44 @@
     "delete": "Delete Event",
     "entries": "Entries",
     "noEvents": "No events found",
-    "confirmDelete": "Permanently delete this event? This will also remove all entries."
+    "confirmDelete": "Permanently delete this event? This will also remove all entries.",
+    "reviewEntry": "Review Entry",
+    "approve": "Approve",
+    "flag": "Flag",
+    "addField": "Add field",
+    "endEvent": "End Event",
+    "activate": "Activate",
+    "pause": "Pause"
   },
   "eventStatus": {
     "draft": "Draft",
     "active": "Active",
     "paused": "Paused",
     "ended": "Ended"
+  },
+  "sellerStorefront": {
+    "back": "Back to Sellers",
+    "memberSince": "Member since",
+    "productsTitle": "Products",
+    "reviewsTitle": "Reviews",
+    "totalProducts": "Products Listed",
+    "totalSales": "Items Sold",
+    "totalReviews": "Reviews",
+    "loading": "Loading storefront...",
+    "notFound": "Seller not found",
+    "notFoundDesc": "This seller profile could not be found.",
+    "noProducts": "No products listed",
+    "noProductsDesc": "This seller hasn't listed any products yet.",
+    "noReviews": "No reviews yet",
+    "noReviewsDesc": "Be the first to review this seller's products.",
+    "visitProfile": "View Full Profile",
+    "auctionBadge": "Auction",
+    "verifiedPurchase": "Verified"
+  },
+  "unsavedChanges": {
+    "title": "Unsaved Changes",
+    "message": "You have unsaved changes. Are you sure you want to leave this page?",
+    "stay": "Stay",
+    "leave": "Leave"
   }
 }

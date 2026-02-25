@@ -1,9 +1,10 @@
 "use client";
 
 import { useEventLeaderboard } from "../hooks/useEventLeaderboard";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { Spinner } from "@/components";
 import { useAuth } from "@/hooks";
+import { useTranslations } from "next-intl";
 import type { EventEntryDocument } from "@/db/schema";
 
 interface EventLeaderboardProps {
@@ -18,6 +19,7 @@ export function EventLeaderboard({
   pointsLabel = "Points",
 }: EventLeaderboardProps) {
   const { user } = useAuth();
+  const t = useTranslations("events");
 
   const { leaderboard, isLoading } = useEventLeaderboard(eventId);
 
@@ -45,7 +47,7 @@ export function EventLeaderboard({
 
   return (
     <div className="space-y-2">
-      <p className="text-sm font-medium mb-3">{UI_LABELS.EVENTS.LEADERBOARD}</p>
+      <p className="text-sm font-medium mb-3">{t("leaderboard")}</p>
       {leaderboard.map((entry, idx) => {
         const isCurrentUser = user?.uid === entry.userId;
         const rankStyle = RANK_STYLES[idx] ?? "";

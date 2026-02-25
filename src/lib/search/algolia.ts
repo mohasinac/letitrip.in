@@ -15,6 +15,8 @@
 
 import { algoliasearch } from "algoliasearch";
 import type { ProductDocument } from "@/db/schema";
+import { AppError } from "@/lib/errors";
+import { ERROR_MESSAGES } from "@/constants";
 
 // ── Env var resolution ───────────────────────────────────────────────────────
 
@@ -49,8 +51,10 @@ let _adminClient: ReturnType<typeof algoliasearch> | null = null;
  */
 export function getAlgoliaAdminClient(): ReturnType<typeof algoliasearch> {
   if (!ALGOLIA_APP_ID || !ALGOLIA_ADMIN_KEY) {
-    throw new Error(
-      "Algolia is not configured. Set ALGOLIA_APP_ID and ALGOLIA_ADMIN_API_KEY.",
+    throw new AppError(
+      500,
+      ERROR_MESSAGES.GENERIC.SERVER_CONFIG_ERROR,
+      "ALGOLIA_CONFIG_ERROR",
     );
   }
   if (!_adminClient) {

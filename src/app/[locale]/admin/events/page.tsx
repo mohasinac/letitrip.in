@@ -13,7 +13,7 @@ import { useTranslations } from "next-intl";
 import { useUrlTable, useMessage } from "@/hooks";
 import {
   useEvents,
-  getEventsTableColumns,
+  useEventsTableColumns,
   EventFormDrawer,
 } from "@/features/events";
 import { useDeleteEvent, useChangeEventStatus } from "@/features/events";
@@ -60,7 +60,7 @@ export default function AdminEventsPage() {
     }
   }, [deleteTarget, deleteMutation, showError]);
 
-  const { columns } = getEventsTableColumns(handleEdit, handleEntries, (e) =>
+  const { columns } = useEventsTableColumns(handleEdit, handleEntries, (e) =>
     setDeleteTarget(e),
   );
 

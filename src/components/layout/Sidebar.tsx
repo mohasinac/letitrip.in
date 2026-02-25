@@ -14,6 +14,7 @@ import { useSwipe, useAuth } from "@/hooks";
 import { logger } from "@/classes";
 import { AvatarDisplay } from "@/components";
 import { preventBodyScroll } from "@/utils";
+import { hasAnyRole } from "@/helpers";
 import { apiClient } from "@/lib/api-client";
 
 /**
@@ -416,9 +417,7 @@ export default function Sidebar({
           {/* Role-based Actions - Only shown when logged in with special roles */}
           {isAuthenticated &&
             user?.role &&
-            (user.role === "admin" ||
-              user.role === "moderator" ||
-              user.role === "seller") && (
+            hasAnyRole(user.role, ["admin", "moderator", "seller"]) && (
               <div className="space-y-2">
                 <div
                   className={`flex items-center gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
@@ -438,7 +437,7 @@ export default function Sidebar({
 
                 <ul className="space-y-1">
                   {/* Admin Dashboard */}
-                  {(user.role === "admin" || user.role === "moderator") && (
+                  {hasAnyRole(user.role, ["admin", "moderator"]) && (
                     <li>
                       <Link
                         href={ROUTES.ADMIN.DASHBOARD}
@@ -508,7 +507,7 @@ export default function Sidebar({
                   )}
 
                   {/* Seller Dashboard */}
-                  {(user.role === "seller" || user.role === "admin") && (
+                  {hasAnyRole(user.role, ["seller", "admin"]) && (
                     <li>
                       <Link
                         href={ROUTES.SELLER.DASHBOARD}

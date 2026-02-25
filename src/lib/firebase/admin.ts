@@ -19,6 +19,8 @@ import {
 import { getDatabase, Database } from "firebase-admin/database";
 import * as path from "path";
 import * as fs from "fs";
+import { AppError } from "@/lib/errors";
+import { serverLogger } from "@/lib/server-logger";
 
 let _adminApp: App | null = null;
 let _adminAuth: Auth | null = null;
@@ -39,7 +41,7 @@ export function getAdminApp(): App {
           "firebase-admin-key.json",
         );
         if (fs.existsSync(serviceAccountPath)) {
-          console.log(
+          serverLogger.info(
             "🔑 Initializing Firebase Admin with service account JSON file",
           );
           const serviceAccount = JSON.parse(
@@ -62,7 +64,7 @@ export function getAdminApp(): App {
           process.env.FIREBASE_ADMIN_CLIENT_EMAIL &&
           process.env.FIREBASE_ADMIN_PRIVATE_KEY
         ) {
-          console.log(
+          serverLogger.info(
             "🔑 Initializing Firebase Admin with environment variables",
           );
           const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
@@ -84,15 +86,20 @@ export function getAdminApp(): App {
             ignoreUndefinedProperties: true,
           });
         } else {
-          throw new Error(
+          throw new AppError(
+            500,
             "Firebase Admin credentials not found. Please either:\n" +
               "1. Add firebase-admin-key.json to project root (development), OR\n" +
               "2. Set FIREBASE_ADMIN_* environment variables (production)\n" +
               "See FIREBASE_KEY_SETUP.md for instructions.",
+            "FIREBASE_ADMIN_INIT_ERROR",
           );
         }
       } catch (error) {
-        console.error("❌ Failed to initialize Firebase Admin SDK:", error);
+        serverLogger.error(
+          "❌ Failed to initialize Firebase Admin SDK:",
+          error,
+        );
         throw error;
       }
     } else {

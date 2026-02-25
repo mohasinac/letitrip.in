@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { Card, Badge } from "@/components";
-import { THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatRelativeTime } from "@/utils";
+import { useTranslations } from "next-intl";
 import { EventStatusBadge } from "./EventStatusBadge";
 import type { EventDocument } from "@/db/schema";
 
@@ -13,35 +14,34 @@ interface EventCardProps {
 
 const { themed, spacing, borderRadius, typography } = THEME_CONSTANTS;
 
-function getCtaLabel(event: EventDocument): string {
-  if (event.status === "ended") return UI_LABELS.EVENTS.VIEW_RESULTS;
-  switch (event.type) {
-    case "sale":
-      return "Shop Now";
-    case "offer":
-      return "Get Offer";
-    case "poll":
-      return UI_LABELS.EVENTS.VOTE;
-    case "survey":
-      return UI_LABELS.EVENTS.PARTICIPATE;
-    case "feedback":
-      return "Give Feedback";
-    default:
-      return UI_LABELS.EVENTS.PARTICIPATE;
-  }
-}
-
-function getCtaHref(event: EventDocument): string {
-  if (event.type === "sale") return ROUTES.PUBLIC.PRODUCTS;
-  return ROUTES.PUBLIC.EVENT_DETAIL(event.id);
-}
-
 export function EventCard({ event }: EventCardProps) {
-  const typeLabel =
-    UI_LABELS.EVENT_TYPES[
-      event.type.toUpperCase() as keyof typeof UI_LABELS.EVENT_TYPES
-    ] ?? event.type;
+  const t = useTranslations("events");
+  const tTypes = useTranslations("eventTypes");
 
+  function getCtaLabel(ev: EventDocument): string {
+    if (ev.status === "ended") return t("viewResults");
+    switch (ev.type) {
+      case "sale":
+        return "Shop Now";
+      case "offer":
+        return "Get Offer";
+      case "poll":
+        return t("vote");
+      case "survey":
+        return t("participate");
+      case "feedback":
+        return "Give Feedback";
+      default:
+        return t("participate");
+    }
+  }
+
+  function getCtaHref(ev: EventDocument): string {
+    if (ev.type === "sale") return ROUTES.PUBLIC.PRODUCTS;
+    return ROUTES.PUBLIC.EVENT_DETAIL(ev.id);
+  }
+
+  const typeLabel = tTypes(event.type as Parameters<typeof tTypes>[0]);
   const endsAtDate = event.endsAt as unknown as Date | string | null;
   const endsIn = endsAtDate ? formatRelativeTime(endsAtDate) : null;
 
@@ -79,7 +79,7 @@ export function EventCard({ event }: EventCardProps) {
         {/* Ends in */}
         {endsIn && event.status === "active" && (
           <p className={`text-xs mt-1 ${themed.textSecondary}`}>
-            {UI_LABELS.EVENTS.ENDS_IN}: {endsIn}
+            {t("endsIn")}: {endsIn}
           </p>
         )}
 

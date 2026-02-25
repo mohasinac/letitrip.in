@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb, getAdminAuth } from "@/lib/firebase/admin";
+import { serverLogger } from "@/lib/server-logger";
 import {
   usersSeedData,
   addressesSeedData,
@@ -120,7 +121,7 @@ export async function POST(request: NextRequest) {
           const seedData = SEED_DATA_MAP[collectionName];
 
           if (!seedData || seedData.length === 0) {
-            console.log(`⚠️ No seed data for ${collectionName}`);
+            serverLogger.info(`⚠️ No seed data for ${collectionName}`);
             continue;
           }
 
@@ -200,7 +201,7 @@ export async function POST(request: NextRequest) {
                   totalCreated++;
                 }
               } catch (err) {
-                console.error(`Error seeding user ${userData.uid}:`, err);
+                serverLogger.error(`Error seeding user ${userData.uid}:`, err);
                 totalErrors++;
               }
             }
@@ -211,7 +212,7 @@ export async function POST(request: NextRequest) {
                 const { userId, id, ...data } = addressData as any;
 
                 if (!userId || !id) {
-                  console.error("Address missing userId or id");
+                  serverLogger.error("Address missing userId or id");
                   totalErrors++;
                   continue;
                 }
@@ -234,7 +235,7 @@ export async function POST(request: NextRequest) {
                   totalCreated++;
                 }
               } catch (err) {
-                console.error(`Error seeding address:`, err);
+                serverLogger.error(`Error seeding address:`, err);
                 totalErrors++;
               }
             }
@@ -268,14 +269,16 @@ export async function POST(request: NextRequest) {
                     question: (docData as any).question,
                   });
                   if (!id) {
-                    console.error(
+                    serverLogger.error(
                       `Failed to generate ID for FAQ: ${(docData as any).question}`,
                     );
                     totalErrors++;
                     continue;
                   }
                 } else if (!id) {
-                  console.error(`Document missing ID in ${collectionName}`);
+                  serverLogger.error(
+                    `Document missing ID in ${collectionName}`,
+                  );
                   totalErrors++;
                   continue;
                 }
@@ -302,7 +305,7 @@ export async function POST(request: NextRequest) {
                   totalCreated++;
                 }
               } catch (err) {
-                console.error(
+                serverLogger.error(
                   `Error seeding document in ${collectionName}:`,
                   err,
                 );
@@ -313,7 +316,10 @@ export async function POST(request: NextRequest) {
 
           processedCollections.push(collectionName);
         } catch (err) {
-          console.error(`Error processing collection ${collectionName}:`, err);
+          serverLogger.error(
+            `Error processing collection ${collectionName}:`,
+            err,
+          );
           totalErrors++;
         }
       }
@@ -336,7 +342,7 @@ export async function POST(request: NextRequest) {
           const seedData = SEED_DATA_MAP[collectionName];
 
           if (!seedData || seedData.length === 0) {
-            console.log(`⚠️ No seed data for ${collectionName}`);
+            serverLogger.info(`⚠️ No seed data for ${collectionName}`);
             continue;
           }
 
@@ -353,7 +359,7 @@ export async function POST(request: NextRequest) {
                   authUserExists = true;
                 } catch (err: any) {
                   if (err.code !== "auth/user-not-found") {
-                    console.error(`Error checking auth user ${uid}:`, err);
+                    serverLogger.error(`Error checking auth user ${uid}:`, err);
                   }
                 }
 
@@ -362,7 +368,7 @@ export async function POST(request: NextRequest) {
                   try {
                     await auth.deleteUser(uid);
                   } catch (err: any) {
-                    console.error(`Error deleting auth user ${uid}:`, err);
+                    serverLogger.error(`Error deleting auth user ${uid}:`, err);
                   }
                 }
 
@@ -377,7 +383,7 @@ export async function POST(request: NextRequest) {
                   totalSkipped++;
                 }
               } catch (err) {
-                console.error(`Error deleting user ${userData.uid}:`, err);
+                serverLogger.error(`Error deleting user ${userData.uid}:`, err);
                 totalErrors++;
               }
             }
@@ -388,7 +394,7 @@ export async function POST(request: NextRequest) {
                 const { userId, id } = addressData as any;
 
                 if (!userId || !id) {
-                  console.error("Address missing userId or id");
+                  serverLogger.error("Address missing userId or id");
                   totalErrors++;
                   continue;
                 }
@@ -408,7 +414,7 @@ export async function POST(request: NextRequest) {
                   totalSkipped++;
                 }
               } catch (err) {
-                console.error(`Error deleting address:`, err);
+                serverLogger.error(`Error deleting address:`, err);
                 totalErrors++;
               }
             }
@@ -437,14 +443,16 @@ export async function POST(request: NextRequest) {
                     question: (docData as any).question,
                   });
                   if (!id) {
-                    console.error(
+                    serverLogger.error(
                       `Failed to generate ID for FAQ: ${(docData as any).question}`,
                     );
                     totalErrors++;
                     continue;
                   }
                 } else if (!id) {
-                  console.error(`Document missing ID in ${collectionName}`);
+                  serverLogger.error(
+                    `Document missing ID in ${collectionName}`,
+                  );
                   totalErrors++;
                   continue;
                 }
@@ -460,7 +468,7 @@ export async function POST(request: NextRequest) {
                   totalSkipped++;
                 }
               } catch (err) {
-                console.error(
+                serverLogger.error(
                   `Error deleting document ${docData.id} in ${collectionName}:`,
                   err,
                 );
@@ -471,7 +479,10 @@ export async function POST(request: NextRequest) {
 
           processedCollections.push(collectionName);
         } catch (err) {
-          console.error(`Error processing collection ${collectionName}:`, err);
+          serverLogger.error(
+            `Error processing collection ${collectionName}:`,
+            err,
+          );
           totalErrors++;
         }
       }
@@ -493,7 +504,7 @@ export async function POST(request: NextRequest) {
       { status: 400 },
     );
   } catch (error) {
-    console.error("Seed API error:", error);
+    serverLogger.error("Seed API error:", error);
     return NextResponse.json(
       {
         success: false,

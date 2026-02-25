@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Alert } from "@/components";
-import { UI_LABELS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useMessage, useApiMutation } from "@/hooks";
 import { eventService } from "../services/event.service";
 import type { FeedbackConfig, SurveyFormField } from "@/db/schema";
@@ -17,6 +18,8 @@ export function FeedbackEventSection({
   feedbackConfig,
 }: FeedbackEventSectionProps) {
   const { showSuccess, showError } = useMessage();
+  const tEvents = useTranslations("events");
+  const tLoading = useTranslations("loading");
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -32,8 +35,8 @@ export function FeedbackEventSection({
   if (submitted) {
     return (
       <Alert variant="success">
-        <p className="font-medium">{UI_LABELS.EVENTS.THANK_YOU_TITLE}</p>
-        <p className="text-sm">{UI_LABELS.EVENTS.THANK_YOU_DESC}</p>
+        <p className="font-medium">{tEvents("thankYouTitle")}</p>
+        <p className="text-sm">{tEvents("thankYouDesc")}</p>
       </Alert>
     );
   }
@@ -89,9 +92,7 @@ export function FeedbackEventSection({
         disabled={mutation.isLoading}
         className="w-full px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium transition-colors"
       >
-        {mutation.isLoading
-          ? UI_LABELS.LOADING.DEFAULT
-          : UI_LABELS.EVENTS.SUBMIT}
+        {mutation.isLoading ? tLoading("default") : tEvents("submit")}
       </button>
     </div>
   );

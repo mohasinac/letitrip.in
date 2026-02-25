@@ -199,7 +199,7 @@ export async function updateFileMetadata(
     const storageRef = ref(storage, path);
     return await updateMetadata(storageRef, metadata);
   } catch (error: any) {
-    console.error("Update metadata error:", error);
+    logger.error("Update metadata error:", error);
     throw new DatabaseError(error.message || "Failed to update file metadata", {
       path,
       metadata,
@@ -215,7 +215,7 @@ export async function deleteFolder(folderPath: string): Promise<void> {
     const files = await listFiles(folderPath);
     await Promise.all(files.map((file) => deleteObject(file)));
   } catch (error: any) {
-    console.error("Delete folder error:", error);
+    logger.error("Delete folder error:", error);
     throw new DatabaseError(error.message || "Failed to delete folder", {
       folderPath,
     });

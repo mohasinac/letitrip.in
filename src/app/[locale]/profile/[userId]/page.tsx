@@ -19,6 +19,7 @@ import {
 } from "@/constants";
 import { formatMonthYear, formatCurrency } from "@/utils";
 import { useApiQuery } from "@/hooks";
+import { hasRole } from "@/helpers";
 import type { UserDocument, ProductDocument } from "@/db/schema";
 import type { ImageCropData } from "@/components";
 import Link from "next/link";
@@ -66,7 +67,7 @@ export default function PublicProfilePage() {
   const user = profileData?.user;
   const profileError: string | null = (fetchError as Error)?.message ?? null;
 
-  const isSeller = user?.role === "seller";
+  const isSeller = hasRole(user?.role ?? "user", "seller");
 
   // Fetch seller products (only relevant once user is loaded and is a seller)
   const { data: productsData, isLoading: productsLoading } =

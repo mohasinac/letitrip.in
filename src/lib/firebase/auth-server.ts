@@ -10,6 +10,7 @@ import { cookies } from "next/headers";
 import type { DecodedIdToken } from "firebase-admin/auth";
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
+import { serverLogger } from "@/lib/server-logger";
 
 /**
  * Verify Firebase ID token from request
@@ -21,7 +22,7 @@ export async function verifyIdToken(
     const decodedToken = await getAdminAuth().verifyIdToken(token);
     return decodedToken;
   } catch (error) {
-    console.error("Token verification failed:", error);
+    serverLogger.error("Token verification failed:", error);
     return null;
   }
 }
@@ -39,7 +40,7 @@ export async function verifySessionCookie(
     );
     return decodedClaims;
   } catch (error) {
-    console.error("Session cookie verification failed:", error);
+    serverLogger.error("Session cookie verification failed:", error);
     return null;
   }
 }
@@ -110,7 +111,7 @@ export async function createSessionCookie(
     });
     return sessionCookie;
   } catch (error) {
-    console.error("Failed to create session cookie:", error);
+    serverLogger.error("Failed to create session cookie:", error);
     throw error;
   }
 }
@@ -122,7 +123,7 @@ export async function revokeUserTokens(uid: string): Promise<void> {
   try {
     await getAdminAuth().revokeRefreshTokens(uid);
   } catch (error) {
-    console.error("Failed to revoke tokens:", error);
+    serverLogger.error("Failed to revoke tokens:", error);
     throw error;
   }
 }

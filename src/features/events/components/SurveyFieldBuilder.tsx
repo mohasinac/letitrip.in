@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components";
-import { UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { FORM_FIELD_TYPE_OPTIONS } from "../constants/FORM_FIELD_TYPE_OPTIONS";
 import type { SurveyFormField, FormFieldType } from "@/db/schema";
 
@@ -28,6 +28,8 @@ export function SurveyFieldBuilder({
   fields,
   onChange,
 }: SurveyFieldBuilderProps) {
+  const t = useTranslations("adminEvents");
+  const tActions = useTranslations("actions");
   const addField = () => onChange([...fields, emptyField(fields.length)]);
 
   const updateField = (id: string, patch: Partial<SurveyFormField>) =>
@@ -49,7 +51,7 @@ export function SurveyFieldBuilder({
       <div className="flex items-center justify-between">
         <label className="text-sm font-medium">Form Fields</label>
         <Button variant="outline" size="sm" onClick={addField} type="button">
-          {UI_LABELS.ADMIN.EVENTS.ADD_FIELD}
+          {t("addField")}
         </Button>
       </div>
 
@@ -160,7 +162,7 @@ export function SurveyFieldBuilder({
                 onClick={() => removeField(field.id)}
                 type="button"
               >
-                {UI_LABELS.ACTIONS.DELETE}
+                {tActions("delete")}
               </Button>
             </div>
           </div>

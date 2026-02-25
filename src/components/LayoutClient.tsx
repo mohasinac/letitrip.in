@@ -13,6 +13,7 @@ import { classNames } from "@/helpers";
 import { logger } from "@/classes";
 import { useSiteSettings } from "@/hooks";
 import { EventBanner } from "./ui/EventBanner";
+import UnsavedChangesModal from "./modals/UnsavedChangesModal";
 
 /**
  * LayoutClient Component
@@ -164,6 +165,9 @@ export default function LayoutClient({
       <Footer />
 
       <BottomNavbar onSearchToggle={() => setSearchOpen(!searchOpen)} />
+
+      {/* Global unsaved-changes confirmation modal */}
+      <UnsavedChangesModal />
     </div>
   );
 }

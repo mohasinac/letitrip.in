@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components";
-import { UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
 import type { EventStatus } from "@/db/schema";
 
 interface EventStatusBadgeProps {
@@ -19,9 +19,6 @@ const STATUS_VARIANT: Record<
 };
 
 export function EventStatusBadge({ status }: EventStatusBadgeProps) {
-  const label =
-    UI_LABELS.EVENT_STATUS[
-      status.toUpperCase() as keyof typeof UI_LABELS.EVENT_STATUS
-    ];
-  return <Badge variant={STATUS_VARIANT[status]}>{label ?? status}</Badge>;
+  const t = useTranslations("eventStatus");
+  return <Badge variant={STATUS_VARIANT[status]}>{t(status)}</Badge>;
 }

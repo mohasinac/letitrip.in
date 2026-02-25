@@ -15,7 +15,7 @@ import {
   useEvent,
   useEventEntries,
   useEventStats,
-  getEventEntriesTableColumns,
+  useEventEntriesTableColumns,
   EventStatsBanner,
   EntryReviewDrawer,
 } from "@/features/events";
@@ -45,7 +45,7 @@ export default function AdminEventEntriesPage() {
     setReviewEntry(entry);
   }, []);
 
-  const { columns } = getEventEntriesTableColumns(handleReview);
+  const { columns } = useEventEntriesTableColumns(handleReview);
 
   return (
     <>

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { SideDrawer, Button, FormField, Alert } from "@/components";
-import { UI_LABELS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useMessage } from "@/hooks";
 import { useCreateEvent, useUpdateEvent } from "../hooks/useEventMutations";
 import { EVENT_TYPE_OPTIONS } from "../constants/EVENT_TYPE_OPTIONS";
@@ -27,8 +28,6 @@ interface EventFormDrawerProps {
   onSuccess: () => void;
   editTarget?: EventDocument | null;
 }
-
-const LABELS = UI_LABELS.ADMIN.EVENTS;
 
 interface FormState {
   title: string;
@@ -125,6 +124,8 @@ export function EventFormDrawer({
   const [form, setForm] = useState<FormState>(emptyForm());
   const [formError, setFormError] = useState<string | null>(null);
   const { showSuccess, showError } = useMessage();
+  const t = useTranslations("adminEvents");
+  const tActions = useTranslations("actions");
 
   // Reset/populate form on open
   useEffect(() => {
@@ -237,16 +238,16 @@ export function EventFormDrawer({
     <SideDrawer
       isOpen={isOpen}
       onClose={onClose}
-      title={isEdit ? LABELS.EDIT : LABELS.NEW}
+      title={isEdit ? t("edit") : t("newEvent")}
       mode={isEdit ? "edit" : "create"}
       isDirty={isDirty}
       footer={
         <div className="flex gap-3">
           <Button variant="primary" onClick={handleSubmit} isLoading={isSaving}>
-            {isEdit ? UI_LABELS.ACTIONS.SAVE : UI_LABELS.ACTIONS.CREATE}
+            {isEdit ? tActions("save") : tActions("create")}
           </Button>
           <Button variant="ghost" onClick={onClose}>
-            {UI_LABELS.ACTIONS.CANCEL}
+            {tActions("cancel")}
           </Button>
         </div>
       }

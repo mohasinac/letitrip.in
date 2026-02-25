@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { Alert } from "@/components";
-import { ROUTES, UI_LABELS } from "@/constants";
+import { ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/hooks";
 import type { EventDocument } from "@/db/schema";
 
@@ -16,29 +17,31 @@ export function SurveyEventSection({
   userEntryStatus,
 }: SurveyEventSectionProps) {
   const { user } = useAuth();
+  const tEvents = useTranslations("events");
+  const tActions = useTranslations("actions");
 
   if (!user) {
     return (
       <div className="space-y-4">
-        <Alert variant="info">{UI_LABELS.EVENTS.LOGIN_TO_PARTICIPATE}</Alert>
+        <Alert variant="info">{tEvents("loginToParticipate")}</Alert>
         <Link
           href={ROUTES.AUTH.LOGIN}
           className="inline-block px-6 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors"
         >
-          {UI_LABELS.ACTIONS.LOGIN}
+          {tActions("login")}
         </Link>
       </div>
     );
   }
 
   if (userEntryStatus === "pending") {
-    return <Alert variant="info">{UI_LABELS.EVENTS.REVIEW_PENDING}</Alert>;
+    return <Alert variant="info">{tEvents("reviewPending")}</Alert>;
   }
   if (userEntryStatus === "approved") {
-    return <Alert variant="success">{UI_LABELS.EVENTS.ENTRY_APPROVED}</Alert>;
+    return <Alert variant="success">{tEvents("entryApproved")}</Alert>;
   }
   if (userEntryStatus === "flagged") {
-    return <Alert variant="warning">{UI_LABELS.EVENTS.ENTRY_FLAGGED}</Alert>;
+    return <Alert variant="warning">{tEvents("entryFlagged")}</Alert>;
   }
 
   return (
@@ -53,7 +56,7 @@ export function SurveyEventSection({
         rel="noopener noreferrer"
         className="inline-block px-6 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors"
       >
-        {UI_LABELS.EVENTS.PARTICIPATE}
+        {tEvents("participate")}
       </Link>
     </div>
   );
