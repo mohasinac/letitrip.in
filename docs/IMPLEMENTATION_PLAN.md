@@ -9,35 +9,38 @@
 
 > **Testing strategy:** Every sub-step in every phase includes tests written immediately after the implementation code. There is no separate test phase. Tests ship in the same PR as the code they cover.
 
-| Phase  | Name                                           | Sections                         | Risk                              | Est. files (impl + tests) |
-| ------ | ---------------------------------------------- | -------------------------------- | --------------------------------- | ------------------------- |
-| **1**  | Foundation � deps, constants, schema + cleanup | F1, G, C4, G-remaining           | ?? Zero breaking                  | ~12                       |
-| **2**  | Shared UI primitives                           | B1�B5, A1�A3                     | ?? Additive only                  | ~18                       |
-| **3**  | Infrastructure wiring                          | A4�A5, barrel exports            | ?? Minor API change               | ~8                        |
-| **4**  | Admin pages                                    | A (admin)                        | ?? Admin-only impact              | ~14                       |
-| **5**  | Public list pages                              | A+B (public)                     | ?? User-facing                    | ~10                       |
-| **6**  | Seller & user pages + CRUD drawers             | A+B+D (seller/user)              | ?? Seller-facing                  | ~10                       |
-| **7**  | FAQ routes + homepage tabs                     | E                                | ?? New routes                     | ~8                        |
-| **8**  | Footer & navigation rewrite                    | F2�F5                            | ?? Visual, site-wide              | ~8                        |
-| **9**  | Inline create drawers                          | C1�C3                            | ?? Schema change                  | ~10                       |
-| **10** | Gestures + accessibility                       | H                                | ?? Cross-cutting                  | ~22                       |
-| **11** | Homepage sections                              | I                                | ?? Public-facing                  | ~20                       |
-| **12** | Dashboard page styling                         | J                                | ?? Internal-facing                | ~16                       |
-| **13** | Non-tech friendly UX                           | K                                | ?? User-facing, site-wide         | ~28                       |
-| **14** | Code deduplication                             | L                                | ?? Minor breaking (route renames) | ~12                       |
-| **15** | SEO � full-stack coverage                      | M                                | ?? Additive + schema change       | ~30                       |
-| **16** | Newsletter admin management                    | N                                | ?? Additive                       | ~8                        |
-| **17** | Next.js 16 compatibility � async params        | Maintenance                      | ?? Zero breaking                  | ~5                        |
-| **18** | Dedicated test phase                           | All phases 1�17                  | ?? Non-breaking (tests only)      | ~90 test files            |
-| **19** | _(reserved)_                                   | TBD                              | TBD                               | TBD                       |
-| **20** | Standards gap-fix sweep                        | All phases 1-18                  | âš ï¸ Cross-cutting               | ~45                       |
-| **21** | Code-reuse & fetch() violation sweep           | All phases 1-18                  | âš ï¸ Cross-cutting               | ~40                       |
-| **22** | Event management system                        | Schema, API, Admin UI, Public UI | ⚡ New vertical feature           | ~65                       |
-| **23** | Integration hardening & tech-debt cleanup      | Maintenance sweep                | ⚡ Additive                       | ~15                       |
-| **24** | Styling constants cleanup                      | THEME_CONSTANTS gap-fix          | ⚡ Additive                       | ~10                       |
-| **25** | i18n infrastructure & message files            | next-intl install + routing      | ⚡ Additive                       | ~8                        |
-| **26** | `[locale]` route migration                     | All `src/app/` pages moved       | ⚠️ Cross-cutting                  | ~35                       |
-| **27** | Zod error map + locale switcher UI             | Zod v4 map, LocaleSwitcher       | ⚡ Additive                       | ~8                        |
+| Phase  | Name                                           | Sections                            | Risk                              | Est. files (impl + tests) |
+| ------ | ---------------------------------------------- | ----------------------------------- | --------------------------------- | ------------------------- |
+| **1**  | Foundation � deps, constants, schema + cleanup | F1, G, C4, G-remaining              | ?? Zero breaking                  | ~12                       |
+| **2**  | Shared UI primitives                           | B1�B5, A1�A3                        | ?? Additive only                  | ~18                       |
+| **3**  | Infrastructure wiring                          | A4�A5, barrel exports               | ?? Minor API change               | ~8                        |
+| **4**  | Admin pages                                    | A (admin)                           | ?? Admin-only impact              | ~14                       |
+| **5**  | Public list pages                              | A+B (public)                        | ?? User-facing                    | ~10                       |
+| **6**  | Seller & user pages + CRUD drawers             | A+B+D (seller/user)                 | ?? Seller-facing                  | ~10                       |
+| **7**  | FAQ routes + homepage tabs                     | E                                   | ?? New routes                     | ~8                        |
+| **8**  | Footer & navigation rewrite                    | F2�F5                               | ?? Visual, site-wide              | ~8                        |
+| **9**  | Inline create drawers                          | C1�C3                               | ?? Schema change                  | ~10                       |
+| **10** | Gestures + accessibility                       | H                                   | ?? Cross-cutting                  | ~22                       |
+| **11** | Homepage sections                              | I                                   | ?? Public-facing                  | ~20                       |
+| **12** | Dashboard page styling                         | J                                   | ?? Internal-facing                | ~16                       |
+| **13** | Non-tech friendly UX                           | K                                   | ?? User-facing, site-wide         | ~28                       |
+| **14** | Code deduplication                             | L                                   | ?? Minor breaking (route renames) | ~12                       |
+| **15** | SEO � full-stack coverage                      | M                                   | ?? Additive + schema change       | ~30                       |
+| **16** | Newsletter admin management                    | N                                   | ?? Additive                       | ~8                        |
+| **17** | Next.js 16 compatibility � async params        | Maintenance                         | ?? Zero breaking                  | ~5                        |
+| **18** | Dedicated test phase                           | All phases 1�17                     | ?? Non-breaking (tests only)      | ~90 test files            |
+| **19** | _(reserved)_                                   | TBD                                 | TBD                               | TBD                       |
+| **20** | Standards gap-fix sweep                        | All phases 1-18                     | âš ï¸ Cross-cutting               | ~45                       |
+| **21** | Code-reuse & fetch() violation sweep           | All phases 1-18                     | âš ï¸ Cross-cutting               | ~40                       |
+| **22** | Event management system                        | Schema, API, Admin UI, Public UI    | ⚡ New vertical feature           | ~65                       |
+| **23** | Integration hardening & tech-debt cleanup      | Maintenance sweep                   | ⚡ Additive                       | ~15                       |
+| **24** | Styling constants cleanup                      | THEME_CONSTANTS gap-fix             | ⚡ Additive                       | ~10                       |
+| **25** | i18n infrastructure & message files            | next-intl install + routing         | ⚡ Additive                       | ~8                        |
+| **26** | `[locale]` route migration                     | All `src/app/` pages moved          | ⚠️ Cross-cutting                  | ~35                       |
+| **27** | Zod error map + locale switcher UI             | Zod v4 map, LocaleSwitcher          | ⚡ Additive                       | ~8                        |
+| **28** | Nav/Layout i18n wiring                         | TitleBar, Sidebar aria-labels       | ⚡ Additive                       | ~5                        |
+| **29** | Auth pages i18n wiring                         | LoginForm, RegisterForm, auth pages | ⚡ Additive                       | ~12                       |
+| **30** | Public pages i18n wiring                       | cart, wishlist, settings pages      | ⚡ Additive                       | ~6                        |
 
 ---
 
@@ -74,6 +77,9 @@
 | **25** | ✅ Done       | 2026-02-24 | 2026-02-24 | i18n infrastructure — next-intl installed; `src/i18n/routing.ts` + `src/i18n/request.ts`; `messages/en.json` + `messages/hi.json` (550 keys each). 0 TS errors.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **26** | ✅ Done       | 2026-02-24 | 2026-02-24 | `[locale]` route migration — middleware activated; all 23 route dirs moved under `src/app/[locale]/`; root layout slimmed to HTML shell; 274/274 suites green.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | **27** | ✅ Done       | 2026-02-25 | 2026-02-25 | Zod v4 error map + LocaleSwitcher — `src/lib/zod-error-map.ts` (custom `zodErrorMap` + `setupZodErrorMap`); `ZodSetup` client component wired in layout; `src/i18n/navigation.ts` (`createNavigation`); `LocaleSwitcher` pill UI in TitleBar; `locale` key added to en.json + hi.json; jest.config.ts updated (`next-intl` + `use-intl` in transform allowlist); `@/i18n/navigation` mock in jest.setup.ts; 25 new tests; 276/276 suites green — 3097 tests.                                                                                                                                                                                                                                                  |
+| **28** | ✅ Done       | 2026-02-26 | 2026-02-26 | Nav/Layout i18n wiring — `TitleBar` aria-labels → `useTranslations("accessibility")` (4 strings); `Sidebar` → `useTranslations("nav")` (~17 strings); orphaned duplicate return block removed from `not-found.tsx`; TitleBar + Sidebar tests updated; 276/276 suites green.                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **29** | ✅ Done       | 2026-02-26 | 2026-02-26 | Auth pages i18n wiring — `LoginForm`/`RegisterForm` module-level `LABELS` const moved inside component as `useTranslations("auth")`; `forgot-password`, `reset-password`, `verify-email`, `unauthorized` pages fully wired; next-intl interpolation `t("key", { var })` pattern applied; 276/276 suites green.                                                                                                                                                                                                                                                                                                                                                                                                |
+| **30** | ✅ Done       | 2026-02-26 | 2026-02-26 | Public pages i18n wiring — `cart/page`, `user/wishlist/page`, `user/settings/page` wired; `wishlist.subtitle` key added to `en.json` + `hi.json`; all existing page tests updated to use i18n-resolved values; 276/276 suites green — 3097 tests.                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 **Status legend:** ? Not started � ?? In progress � ? Done � ? Blocked
 

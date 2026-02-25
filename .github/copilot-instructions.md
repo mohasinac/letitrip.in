@@ -165,9 +165,50 @@ import { groupBy } from '@/helpers';
 
 ## RULE 2: ZERO Hardcoded Strings
 
-**NEVER write literal UI text. ALWAYS use constants.**
+**NEVER write literal UI text. ALWAYS use the right string constant for the context.**
 
-### String Lookup Table
+> **i18n rule (client components):** For any React component that renders JSX, use `useTranslations()` from `next-intl` — NOT `UI_LABELS`. `UI_LABELS` is for API routes, server utilities, and non-JSX code only.
+
+```tsx
+// WRONG — hardcoded literal
+<button>Save</button>
+
+// WRONG — UI_LABELS in a client component
+import { UI_LABELS } from '@/constants';
+<button>{UI_LABELS.ACTIONS.SAVE}</button>
+
+// RIGHT — useTranslations in a client component
+import { useTranslations } from 'next-intl';
+const t = useTranslations('actions'); // called INSIDE the component function
+<button>{t('save')}</button>
+
+// RIGHT — UI_LABELS in API route (server, non-JSX)
+import { UI_LABELS } from '@/constants';
+return successResponse(result, SUCCESS_MESSAGES.PRODUCT.CREATED);
+```
+
+**Key rule for hooks:** `useTranslations()` is a React hook — it MUST be called inside the component function body, never at module scope.
+
+```tsx
+// WRONG — module-level hook (breaks React rules)
+const LABELS = UI_LABELS.AUTH; // ← UI_LABELS is fine here, but...
+const t = useTranslations('auth'); // ❌ module scope
+
+// RIGHT
+export function MyComponent() {
+  const t = useTranslations('auth'); // ✅ inside component
+}
+```
+
+**Interpolation** — use next-intl `t("key", { variable })`, NOT string `.replace()`:
+```tsx
+// WRONG
+{UI_LABELS.AUTH.RESET_LINK_SENT_TO.replace('{email}', email)}
+// RIGHT
+{t('forgotPassword.resetLinkSentTo', { email })}
+```
+
+### String Lookup Table (API routes / server utilities only)
 
 | Instead of writing... | Use this constant |
 |----------------------|-------------------|
@@ -247,11 +288,14 @@ import { groupBy } from '@/helpers';
 <input placeholder="Enter your email" />
 <p>Loading...</p>
 
-// RIGHT
-import { UI_LABELS, UI_PLACEHOLDERS } from '@/constants';
-<button>{UI_LABELS.ACTIONS.SAVE}</button>
-<input placeholder={UI_PLACEHOLDERS.EMAIL} />
-<p>{UI_LABELS.LOADING.DEFAULT}</p>
+// RIGHT (client component)
+import { useTranslations } from 'next-intl';
+const t = useTranslations('actions');
+const tForm = useTranslations('form');
+const tLoading = useTranslations('loading');
+<button>{t('save')}</button>
+<input placeholder={tForm('emailPlaceholder')} />
+<p>{tLoading('default')}</p>
 ```
 
 ---
@@ -1066,7 +1110,8 @@ Before writing ANY code, verify:
 - [ ] Does a component for this already exist in `@/components` or `@/features/<name>`?
 - [ ] Does a hook for this already exist in `@/hooks` or `@/features/<name>/hooks`?
 - [ ] Does a util/helper for this already exist in `@/utils` or `@/helpers`?
-- [ ] Am I using `UI_LABELS` / `UI_PLACEHOLDERS` / `ERROR_MESSAGES` / `SUCCESS_MESSAGES` for all text?
+- [ ] Am I using `useTranslations()` (next-intl) for all JSX text in client components — NOT `UI_LABELS`?
+- [ ] Am I using `UI_LABELS` / `UI_PLACEHOLDERS` / `ERROR_MESSAGES` / `SUCCESS_MESSAGES` for all API routes and non-JSX server code?
 - [ ] Am I using `THEME_CONSTANTS` for all repeated Tailwind classes?
 - [ ] Am I using `ROUTES` for all route paths?
 - [ ] Am I using `API_ENDPOINTS` for all API paths?
