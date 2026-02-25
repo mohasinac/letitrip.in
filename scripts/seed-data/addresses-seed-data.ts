@@ -3,6 +3,7 @@
  * Sample user addresses for development and testing
  *
  * Addresses stored as subcollection: users/{userId}/addresses/{addressId}
+ * All address documents mapped to users that exist in users-seed-data.ts.
  */
 
 export interface AddressSeedData {
@@ -12,11 +13,14 @@ export interface AddressSeedData {
   phone: string;
   addressLine1: string;
   addressLine2?: string;
+  landmark?: string;
   city: string;
   state: string;
   postalCode: string;
   country: string;
-  isDefault?: boolean;
+  isDefault: boolean;
+  createdAt: Date;
+  updatedAt: Date;
   userId: string; // Parent user reference
 }
 
@@ -37,6 +41,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "400069",
     country: "India",
     isDefault: true,
+    createdAt: new Date("2024-02-15T08:30:00Z"),
+    updatedAt: new Date("2024-02-15T08:30:00Z"),
   },
   {
     id: "addr-john-office-1707400002",
@@ -51,6 +57,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "400076",
     country: "India",
     isDefault: false,
+    createdAt: new Date("2024-03-01T10:00:00Z"),
+    updatedAt: new Date("2024-03-01T10:00:00Z"),
   },
   {
     id: "addr-john-parents-1707400003",
@@ -60,11 +68,14 @@ export const addressesSeedData: AddressSeedData[] = [
     phone: "+912066554433",
     addressLine1: "House No. 45, Sector 12",
     addressLine2: "Near Central Park",
+    landmark: "Opposite State Bank",
     city: "Pune",
     state: "Maharashtra",
     postalCode: "411038",
     country: "India",
     isDefault: false,
+    createdAt: new Date("2024-04-10T14:00:00Z"),
+    updatedAt: new Date("2024-04-10T14:00:00Z"),
   },
 
   // ============================================
@@ -83,6 +94,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "560037",
     country: "India",
     isDefault: true,
+    createdAt: new Date("2024-03-10T10:00:00Z"),
+    updatedAt: new Date("2024-03-10T10:00:00Z"),
   },
   {
     id: "addr-jane-work-1707400005",
@@ -97,6 +110,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "560103",
     country: "India",
     isDefault: false,
+    createdAt: new Date("2024-04-05T09:00:00Z"),
+    updatedAt: new Date("2024-04-05T09:00:00Z"),
   },
 
   // ============================================
@@ -104,181 +119,170 @@ export const addressesSeedData: AddressSeedData[] = [
   // ============================================
   {
     id: "addr-mike-home-1707400006",
-    userId: "user-mike-johnson-mikejon",
+    userId: "user-mike-johnson-mikejohn",
     label: "Home",
     fullName: "Mike Johnson",
     phone: "+919876543213",
-    addressLine1: "Apartment 12B, Lake View Residency",
-    addressLine2: "Salt Lake City",
-    city: "Kolkata",
-    state: "West Bengal",
-    postalCode: "700091",
+    addressLine1: "78, MG Road",
+    addressLine2: "Brigade Road Area",
+    landmark: "Near Forum Mall",
+    city: "Bangalore",
+    state: "Karnataka",
+    postalCode: "560001",
     country: "India",
     isDefault: true,
+    createdAt: new Date("2024-04-20T14:15:00Z"),
+    updatedAt: new Date("2024-04-20T14:15:00Z"),
   },
   {
     id: "addr-mike-shipping-1707400007",
-    userId: "user-mike-johnson-mikejon",
+    userId: "user-mike-johnson-mikejohn",
     label: "Alternative Shipping",
     fullName: "Mike Johnson",
     phone: "+919876543213",
-    addressLine1: "56 Park Street",
-    addressLine2: "Near Coffee House",
-    city: "Kolkata",
-    state: "West Bengal",
-    postalCode: "700016",
+    addressLine1: "56, Indiranagar 100ft Road",
+    addressLine2: "Near CMH Hospital",
+    city: "Bangalore",
+    state: "Karnataka",
+    postalCode: "560038",
     country: "India",
     isDefault: false,
+    createdAt: new Date("2025-01-10T11:00:00Z"),
+    updatedAt: new Date("2025-01-10T11:00:00Z"),
   },
 
   // ============================================
-  // Sarah Lee's Addresses
+  // Priya Sharma's Addresses
   // ============================================
   {
-    id: "addr-sarah-home-1707400008",
-    userId: "user-sarah-lee-sarahl",
+    id: "addr-priya-home-1707400008",
+    userId: "user-priya-sharma-priya",
     label: "Home",
-    fullName: "Sarah Lee",
-    phone: "+919876543214",
-    addressLine1: "Plot 78, Jubilee Hills",
-    addressLine2: "Road No. 36",
+    fullName: "Priya Sharma",
+    phone: "+919876543260",
+    addressLine1: "34, Banjara Hills",
+    addressLine2: "Road No. 12",
+    landmark: "Near Café Coffee Day",
     city: "Hyderabad",
     state: "Telangana",
-    postalCode: "500033",
+    postalCode: "500034",
     country: "India",
     isDefault: true,
+    createdAt: new Date("2025-03-15T00:00:00Z"),
+    updatedAt: new Date("2025-03-15T00:00:00Z"),
   },
   {
-    id: "addr-sarah-office-1707400009",
-    userId: "user-sarah-lee-sarahl",
+    id: "addr-priya-work-1707400009",
+    userId: "user-priya-sharma-priya",
     label: "Office",
-    fullName: "Sarah Lee",
-    phone: "+919876543214",
-    addressLine1: "DLF Cyber City, Tower B",
+    fullName: "Priya Sharma",
+    phone: "+919876543260",
+    addressLine1: "DLF Cyber City, Tower 11",
     addressLine2: "HITEC City",
     city: "Hyderabad",
     state: "Telangana",
     postalCode: "500081",
     country: "India",
     isDefault: false,
+    createdAt: new Date("2025-04-01T09:00:00Z"),
+    updatedAt: new Date("2025-04-01T09:00:00Z"),
   },
 
   // ============================================
-  // David Kumar's Addresses
+  // Raj Patel's Addresses
   // ============================================
   {
-    id: "addr-david-home-1707400010",
-    userId: "user-david-kumar-davidkumar",
+    id: "addr-raj-home-1707400010",
+    userId: "user-raj-patel-rajpatel",
     label: "Home",
-    fullName: "David Kumar",
-    phone: "+919876543215",
-    addressLine1: "House 123, Sector 50",
-    addressLine2: "Golf Course Road",
-    city: "Gurugram",
-    state: "Haryana",
-    postalCode: "122018",
-    country: "India",
-    isDefault: true,
-  },
-  {
-    id: "addr-david-warehouse-1707400011",
-    userId: "user-david-kumar-davidkumar",
-    label: "Business Warehouse",
-    fullName: "David Kumar Enterprises",
-    phone: "+911123456789",
-    addressLine1: "Warehouse 45, Industrial Area Phase 2",
-    addressLine2: "IMT Manesar",
-    city: "Gurugram",
-    state: "Haryana",
-    postalCode: "122051",
-    country: "India",
-    isDefault: false,
-  },
-
-  // ============================================
-  // Emily Chen's Addresses
-  // ============================================
-  {
-    id: "addr-emily-home-1707400012",
-    userId: "user-emily-chen-emilyc",
-    label: "Home",
-    fullName: "Emily Chen",
-    phone: "+919876543216",
-    addressLine1: "Flat 805, Skyline Apartments",
-    addressLine2: "Anna Nagar West",
-    city: "Chennai",
-    state: "Tamil Nadu",
-    postalCode: "600040",
-    country: "India",
-    isDefault: true,
-  },
-  {
-    id: "addr-emily-shop-1707400013",
-    userId: "user-emily-chen-emilyc",
-    label: "Shop Address",
-    fullName: "Emily's Boutique",
-    phone: "+914423456789",
-    addressLine1: "Shop 12, Phoenix Mall",
-    addressLine2: "Velachery Main Road",
-    city: "Chennai",
-    state: "Tamil Nadu",
-    postalCode: "600042",
-    country: "India",
-    isDefault: false,
-  },
-
-  // ============================================
-  // Ryan Patel's Addresses
-  // ============================================
-  {
-    id: "addr-ryan-home-1707400014",
-    userId: "user-ryan-patel-ryanp",
-    label: "Home",
-    fullName: "Ryan Patel",
-    phone: "+919876543217",
-    addressLine1: "Bungalow 45, Satellite Area",
-    addressLine2: "Near ISKCON Temple",
+    fullName: "Raj Patel",
+    phone: "+919876543270",
+    addressLine1: "12, MG Road",
+    addressLine2: "Navrangpura",
     city: "Ahmedabad",
     state: "Gujarat",
-    postalCode: "380015",
+    postalCode: "380009",
     country: "India",
     isDefault: true,
-  },
-
-  // ============================================
-  // Lisa Sharma's Addresses
-  // ============================================
-  {
-    id: "addr-lisa-home-1707400015",
-    userId: "user-lisa-sharma-lisas",
-    label: "Home",
-    fullName: "Lisa Sharma",
-    phone: "+919876543218",
-    addressLine1: "C-204, Green Valley Apartments",
-    addressLine2: "Gomti Nagar",
-    city: "Lucknow",
-    state: "Uttar Pradesh",
-    postalCode: "226010",
-    country: "India",
-    isDefault: true,
+    createdAt: new Date("2025-05-20T00:00:00Z"),
+    updatedAt: new Date("2025-05-20T00:00:00Z"),
   },
   {
-    id: "addr-lisa-parents-1707400016",
-    userId: "user-lisa-sharma-lisas",
-    label: "Parents",
-    fullName: "Rajesh Sharma",
-    phone: "+915223344556",
-    addressLine1: "House 67, Civil Lines",
-    addressLine2: "Near District Court",
-    city: "Lucknow",
-    state: "Uttar Pradesh",
-    postalCode: "226001",
+    id: "addr-raj-business-1707400011",
+    userId: "user-raj-patel-rajpatel",
+    label: "Business",
+    fullName: "Raj Patel Enterprises",
+    phone: "+912712233445",
+    addressLine1: "Shop 45, GIDC Industrial Estate",
+    addressLine2: "Phase 2, Vatva",
+    city: "Ahmedabad",
+    state: "Gujarat",
+    postalCode: "382445",
     country: "India",
     isDefault: false,
+    createdAt: new Date("2025-06-15T10:00:00Z"),
+    updatedAt: new Date("2025-06-15T10:00:00Z"),
   },
 
   // ============================================
-  // Admin User's Address (for testing)
+  // Meera Nair's Addresses
+  // ============================================
+  {
+    id: "addr-meera-home-1707400012",
+    userId: "user-meera-nair-meera",
+    label: "Home",
+    fullName: "Meera Nair",
+    phone: "+919876543280",
+    addressLine1: "88/4, MG Road",
+    addressLine2: "Near Broadway",
+    landmark: "Opposite Ernakulam Junction",
+    city: "Kochi",
+    state: "Kerala",
+    postalCode: "682001",
+    country: "India",
+    isDefault: true,
+    createdAt: new Date("2025-08-01T00:00:00Z"),
+    updatedAt: new Date("2025-08-01T00:00:00Z"),
+  },
+  {
+    id: "addr-meera-parents-1707400013",
+    userId: "user-meera-nair-meera",
+    label: "Parents",
+    fullName: "Suresh Nair",
+    phone: "+914842334455",
+    addressLine1: "TC 25/1104, Pulimoodu",
+    addressLine2: "Near Padmatheertham",
+    city: "Thiruvananthapuram",
+    state: "Kerala",
+    postalCode: "695001",
+    country: "India",
+    isDefault: false,
+    createdAt: new Date("2025-09-10T08:00:00Z"),
+    updatedAt: new Date("2025-09-10T08:00:00Z"),
+  },
+
+  // ============================================
+  // Moderator's Address
+  // ============================================
+  {
+    id: "addr-mod-primary-1707400014",
+    userId: "user-moderator-mod-user",
+    label: "Primary",
+    fullName: "Content Moderator",
+    phone: "+919876543220",
+    addressLine1: "LetItRip Office, 9th Floor",
+    addressLine2: "BKC, G Block",
+    city: "Mumbai",
+    state: "Maharashtra",
+    postalCode: "400051",
+    country: "India",
+    isDefault: true,
+    createdAt: new Date("2024-03-01T00:00:00Z"),
+    updatedAt: new Date("2024-03-01T00:00:00Z"),
+  },
+
+  // ============================================
+  // Admin User's Address
   // ============================================
   {
     id: "addr-admin-primary-1707400017",
@@ -293,5 +297,7 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "400051",
     country: "India",
     isDefault: true,
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+    updatedAt: new Date("2024-01-01T00:00:00Z"),
   },
 ];
