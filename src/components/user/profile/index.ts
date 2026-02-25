@@ -7,3 +7,4 @@
 export { ProfileHeader } from "./ProfileHeader";
 export { ProfileStatsGrid } from "./ProfileStatsGrid";
 export type { ProfileStats } from "./ProfileStatsGrid";
+export { PublicProfileView } from "./PublicProfileView";

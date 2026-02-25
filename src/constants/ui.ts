@@ -284,6 +284,11 @@ export const UI_LABELS = {
     NO_REVIEWS_DESC: "This seller hasn't received any reviews yet.",
     VIEW_PRODUCT: "View Product",
     VERIFIED_PURCHASE: "Verified Purchase",
+    MEMBER_SINCE: "Member since",
+    STAT_ORDERS: "Orders",
+    STAT_AUCTIONS_WON: "Auctions Won",
+    STAT_ITEMS_SOLD: "Items Sold",
+    STAT_REVIEWS: "Reviews",
   },
 
   // Wishlist section

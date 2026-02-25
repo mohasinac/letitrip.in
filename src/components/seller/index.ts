@@ -13,3 +13,4 @@ export { SellerPayoutRequestForm } from "./SellerPayoutRequestForm";
 export { SellerPayoutHistoryTable } from "./SellerPayoutHistoryTable";
 export type { PayoutSummary } from "./SellerPayoutStats";
 export type { PayoutRecord } from "./SellerPayoutHistoryTable";
+export { SellerStorefrontView } from "./SellerStorefrontView";

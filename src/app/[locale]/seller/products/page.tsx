@@ -20,34 +20,18 @@ import {
   ProductForm,
   getProductTableColumns,
   EmptyState,
-  Badge,
   FilterDrawer,
   FilterFacetSection,
   ActiveFilterChips,
 } from "@/components";
-import type { ActiveFilter } from "@/components";
+import type { ActiveFilter, AdminProduct } from "@/components";
 import { Store } from "lucide-react";
-import type { AdminProduct } from "@/components";
-import {
-  useAuth,
-  useApiQuery,
-  useApiMutation,
-  useMessage,
-  useUrlTable,
-} from "@/hooks";
-import {
-  ROUTES,
-  API_ENDPOINTS,
-  THEME_CONSTANTS,
-  SUCCESS_MESSAGES,
-} from "@/constants";
+import { useAuth, useMessage, useUrlTable } from "@/hooks";
+import { ROUTES, THEME_CONSTANTS, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { apiClient } from "@/lib/api-client";
-import { formatCurrency } from "@/utils";
+import { useSellerProducts, SellerProductCard } from "@/features/seller";
 
-const { input, themed } = THEME_CONSTANTS;
-
-const PAGE_SIZE = 25;
+const { input } = THEME_CONSTANTS;
 
 const DEFAULT_PRODUCT: Partial<AdminProduct> = {
   title: "",
@@ -76,6 +60,7 @@ function SellerProductsPageContent() {
   const t = useTranslations("sellerProducts");
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
+
   const STATUS_OPTIONS = [
     { value: "published", label: t("statusPublished") },
     { value: "draft", label: t("statusDraft") },
@@ -84,80 +69,40 @@ function SellerProductsPageContent() {
   ];
 
   const table = useUrlTable({
-    defaults: { pageSize: String(PAGE_SIZE), sort: "-createdAt" },
+    defaults: { pageSize: "25", sort: "-createdAt" },
   });
-  const searchParam = table.get("q");
-  const sortParam = table.get("sort") || "-createdAt";
   const statusParam = table.get("status");
   const page = table.getNumber("page", 1);
 
-  // Drawer state
   const [drawerMode, setDrawerMode] = useState<"create" | "edit" | null>(null);
   const [formProduct, setFormProduct] =
     useState<Partial<AdminProduct>>(DEFAULT_PRODUCT);
   const [deleteTarget, setDeleteTarget] = useState<AdminProduct | null>(null);
   const [isFormDirty, setIsFormDirty] = useState(false);
 
+  const {
+    data,
+    isLoading,
+    refetch,
+    deleteMutation,
+    createMutation,
+    updateMutation,
+  } = useSellerProducts(user?.uid, table);
+
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push(ROUTES.AUTH.LOGIN);
-    }
+    if (!authLoading && !user) router.push(ROUTES.AUTH.LOGIN);
   }, [user, authLoading, router]);
-
-  const productsUrl = useMemo(() => {
-    if (!user?.uid) return null;
-    const filtersArr = [`sellerId==${user.uid}`];
-    if (searchParam) filtersArr.push(`title@=*${searchParam}`);
-    if (statusParam) filtersArr.push(`status==${statusParam}`);
-    const params = new URLSearchParams({
-      filters: filtersArr.join(","),
-      pageSize: String(PAGE_SIZE),
-      page: String(page),
-      sorts: sortParam,
-    });
-    return `${API_ENDPOINTS.PRODUCTS.LIST}?${params.toString()}`;
-  }, [user?.uid, searchParam, page, sortParam, statusParam]);
-
-  const { data, isLoading, refetch } = useApiQuery<{
-    items: AdminProduct[];
-    total: number;
-    page: number;
-    pageSize: number;
-    totalPages: number;
-    hasMore: boolean;
-  }>({
-    queryKey: [
-      "seller-products-list",
-      table.params.toString(),
-      user?.uid ?? "",
-    ],
-    queryFn: () => apiClient.get(productsUrl!),
-    enabled: !!productsUrl,
-  });
-
-  const deleteMutation = useApiMutation<void, string>({
-    mutationFn: (id) => apiClient.delete(API_ENDPOINTS.PRODUCTS.DELETE(id)),
-  });
-
-  const saveMutation = useApiMutation<void, Partial<AdminProduct>>({
-    mutationFn: (product) =>
-      drawerMode === "create"
-        ? apiClient.post(API_ENDPOINTS.PRODUCTS.CREATE, product)
-        : apiClient.patch(API_ENDPOINTS.PRODUCTS.UPDATE(product.id!), product),
-  });
 
   const openCreate = () => {
     setFormProduct(DEFAULT_PRODUCT);
     setIsFormDirty(false);
     setDrawerMode("create");
   };
-
-  const openEdit = (product: AdminProduct) => {
-    setFormProduct({ ...product });
+  const openEdit = (p: AdminProduct) => {
+    setFormProduct({ ...p });
     setIsFormDirty(false);
     setDrawerMode("edit");
   };
-
   const closeDrawer = () => {
     setDrawerMode(null);
     setFormProduct(DEFAULT_PRODUCT);
@@ -170,7 +115,13 @@ function SellerProductsPageContent() {
       return;
     }
     try {
-      await saveMutation.mutate(formProduct);
+      if (drawerMode === "create") {
+        await createMutation.mutate(formProduct);
+      } else {
+        await updateMutation.mutate(
+          formProduct as Partial<AdminProduct> & { id: string },
+        );
+      }
       showSuccess(
         drawerMode === "create"
           ? SUCCESS_MESSAGES.PRODUCT.CREATED
@@ -197,23 +148,22 @@ function SellerProductsPageContent() {
 
   const { columns, actions } = useMemo(
     () => getProductTableColumns(openEdit, (p) => setDeleteTarget(p)),
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
-  if (authLoading) {
+  if (authLoading)
     return (
       <div className="flex items-center justify-center py-16">
         <Spinner size="xl" variant="primary" />
       </div>
     );
-  }
-
   if (!user) return null;
 
   const products = data?.items ?? [];
   const totalPages = data?.totalPages ?? 1;
   const totalItems = data?.total ?? 0;
+  const isSaving = createMutation.isLoading || updateMutation.isLoading;
 
   return (
     <div className="space-y-6">
@@ -224,18 +174,17 @@ function SellerProductsPageContent() {
         onAction={openCreate}
       />
 
-      {/* Filter bar */}
       <div className="flex flex-wrap items-center gap-2">
         <AdminFilterBar withCard={false} columns={2}>
           <input
             type="search"
-            value={searchParam}
+            value={table.get("q")}
             onChange={(e) => table.set("q", e.target.value)}
             placeholder={t("searchPlaceholder")}
             className={input.base}
           />
           <select
-            value={sortParam}
+            value={table.get("sort") || "-createdAt"}
             onChange={(e) => table.setSort(e.target.value)}
             className={input.base}
           >
@@ -300,79 +249,26 @@ function SellerProductsPageContent() {
           viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(product) => (
-            <div
-              className={`rounded-xl overflow-hidden border ${themed.border} ${themed.bgPrimary} h-full`}
-            >
-              {product.mainImage ? (
-                <div className="aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
-                  <img
-                    src={product.mainImage}
-                    alt={product.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="aspect-square bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                  <span className={`text-3xl ${THEME_CONSTANTS.icon.muted}`}>
-                    ??
-                  </span>
-                </div>
-              )}
-              <div className="p-3 space-y-2">
-                <p
-                  className={`text-sm font-semibold truncate ${themed.textPrimary}`}
-                >
-                  {product.title}
-                </p>
-                <div className="flex items-center justify-between gap-2">
-                  <p className={`text-sm font-bold ${themed.textPrimary}`}>
-                    {formatCurrency(product.price)}
-                  </p>
-                  <Badge
-                    variant={
-                      product.status === "published"
-                        ? "success"
-                        : product.status === "out_of_stock"
-                          ? "warning"
-                          : "default"
-                    }
-                    className="text-xs capitalize"
-                  >
-                    {product.status.replace(/_/g, " ")}
-                  </Badge>
-                </div>
-                <div className="flex gap-2 pt-1">
-                  <button
-                    onClick={() => openEdit(product)}
-                    className="flex-1 text-xs py-1.5 rounded-lg border border-indigo-500 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
-                  >
-                    {tActions("edit")}
-                  </button>
-                  <button
-                    onClick={() => setDeleteTarget(product)}
-                    className="flex-1 text-xs py-1.5 rounded-lg border border-red-400 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                  >
-                    {tActions("delete")}
-                  </button>
-                </div>
-              </div>
-            </div>
+            <SellerProductCard
+              product={product}
+              onEdit={openEdit}
+              onDelete={setDeleteTarget}
+            />
           )}
         />
       )}
 
-      {(totalPages ?? 1) > 1 && (
+      {totalPages > 1 && (
         <TablePagination
           currentPage={page}
-          totalPages={totalPages ?? 1}
-          pageSize={PAGE_SIZE}
-          total={totalItems ?? 0}
+          totalPages={totalPages}
+          pageSize={25}
+          total={totalItems}
           onPageChange={table.setPage}
           isLoading={isLoading}
         />
       )}
 
-      {/* Create / Edit Drawer */}
       <SideDrawer
         isOpen={drawerMode !== null}
         onClose={closeDrawer}
@@ -380,19 +276,19 @@ function SellerProductsPageContent() {
         mode={drawerMode ?? "view"}
         isDirty={isFormDirty}
         footer={
-          <div className={`flex gap-3 justify-end`}>
+          <div className="flex gap-3 justify-end">
             <button
               onClick={closeDrawer}
-              className={`px-4 py-2 rounded-lg text-sm border ${themed.border} ${themed.textPrimary} ${themed.bgPrimary}`}
+              className={`px-4 py-2 rounded-lg text-sm border ${THEME_CONSTANTS.themed.border} ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.bgPrimary}`}
             >
               {tActions("cancel")}
             </button>
             <button
               onClick={handleSave}
-              disabled={saveMutation.isLoading}
+              disabled={isSaving}
               className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
             >
-              {saveMutation.isLoading ? tLoading("default") : tActions("save")}
+              {isSaving ? tLoading("default") : tActions("save")}
             </button>
           </div>
         }
@@ -406,7 +302,6 @@ function SellerProductsPageContent() {
         />
       </SideDrawer>
 
-      {/* Delete confirmation */}
       {deleteTarget && (
         <ConfirmDeleteModal
           isOpen={!!deleteTarget}

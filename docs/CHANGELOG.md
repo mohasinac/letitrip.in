@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 37 — Service Layer Migration, Sub-task 37.14 (2026-03-01)
+
+#### Added
+
+- **`src/hooks/usePublicProfile.ts`** — New hook wrapping `profileService.getById/getSellerProducts/getSellerReviews` via `useApiQuery`. Exports `SellerReviewsData`, `SellerReviewItem`, `ProductsApiResponse` types.
+- **`src/hooks/useSellerStorefront.ts`** — New hook for the public seller storefront page. Uses `profileService` — no direct `apiClient`.
+- **`src/components/user/profile/PublicProfileView.tsx`** — Extracted view component from `profile/[userId]/page.tsx` (545→75 lines). Contains all profile JSX including `SellerProductsSection` and `SellerReviewsSection` sub-components. Re-exported via barrel chain.
+- **`src/components/seller/SellerStorefrontView.tsx`** — Extracted view component from `sellers/[id]/page.tsx` (433→67 lines). Uses `useTranslations` for all strings.
+- **`src/features/seller/`** — New feature module with:
+  - `src/features/seller/hooks/useSellerProducts.ts` — Data hook for seller products list using `productService.list/create/update/delete`.
+  - `src/features/seller/components/SellerProductCard.tsx` — Mobile card for seller product grid view.
+  - `src/features/seller/index.ts` — Public barrel.
+- **`UI_LABELS.PROFILE`** — Added `MEMBER_SINCE`, `STAT_ORDERS`, `STAT_AUCTIONS_WON`, `STAT_ITEMS_SOLD`, `STAT_REVIEWS` keys.
+
+#### Changed
+
+- **`src/app/[locale]/profile/[userId]/page.tsx`** — 545 → 75 lines. Thin page using `usePublicProfile` + `PublicProfileView`. No more direct `apiClient` call.
+- **`src/app/[locale]/sellers/[id]/page.tsx`** — 433 → 67 lines. Thin page using `useSellerStorefront` + `SellerStorefrontView`. No more direct `apiClient` call.
+- **`src/app/[locale]/seller/products/page.tsx`** — 431 → 184 lines. Uses `useSellerProducts` from `@/features/seller`, `SellerProductCard` for `mobileCardRender`. No more direct `apiClient` call.
+- **`src/hooks/index.ts`** — Added exports: `usePublicProfile`, `useSellerStorefront`, type exports `SellerReviewsData`, `SellerReviewItem`, `ProductsApiResponse`.
+- **`src/components/user/profile/index.ts`** — Added `PublicProfileView` export.
+- **`src/components/seller/index.ts`** — Added `SellerStorefrontView` export.
+
+---
+
 ### Phase 37 — Service Layer Migration, Sub-tasks 37.8–37.13 (2026-03-01)
 
 #### Added

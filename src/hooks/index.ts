@@ -19,6 +19,13 @@ export type { UseGestureOptions, GestureType } from "./useGesture";
 export { useApiQuery } from "./useApiQuery";
 export { useApiMutation } from "./useApiMutation";
 export { useProfile } from "./useProfile";
+export { usePublicProfile } from "./usePublicProfile";
+export type {
+  SellerReviewsData,
+  SellerReviewItem,
+  ProductsApiResponse,
+} from "./usePublicProfile";
+export { useSellerStorefront } from "./useSellerStorefront";
 export { useForm } from "./useForm";
 export { useAdminStats } from "./useAdminStats";
 export { useMessage } from "./useMessage";
