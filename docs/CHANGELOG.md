@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 37.14 — Oversized Pages Batch 2 (2026-02-26)
+
+#### Added
+
+- **`src/components/user/orders/OrderTrackingView.tsx`** — Extracted all order tracking UI (`buildTimeline`, `StepIcon`, `Connector`, timeline JSX) from `user/orders/[id]/track/page.tsx` (394→71 lines). Manages its own i18n via `useTranslations("orders")`.
+- **`src/components/user/orders/index.ts`** — New barrel for user orders components. Exports `OrderTrackingView`.
+- **`src/features/admin/`** — New admin feature module:
+  - `AdminReviewsView.tsx` — All review management state, mutations, filter bar, DataTable, modals. Consumed by the 11-line admin reviews page.
+  - `AdminProductsView.tsx` — All product management state, drawer logic, mutations, filter bar, DataTable. Consumed by the 11-line admin products page.
+  - `index.ts` — Public barrel exporting both views.
+
+#### Changed
+
+- **`src/app/[locale]/user/orders/[id]/track/page.tsx`** — 394 → 71 lines. Thin page: auth + data fetch → `<OrderTrackingView>`.
+- **`src/app/[locale]/admin/reviews/[[...action]]/page.tsx`** — 391 → 11 lines. Thin server component: `use(params)` → `<AdminReviewsView>`.
+- **`src/app/[locale]/admin/products/[[...action]]/page.tsx`** — 329 → 11 lines. Thin server component: `use(params)` → `<AdminProductsView>`.
+- **`src/components/user/index.ts`** — Added `export * from "./orders"`.
+
+---
+
 ### Phase 37 — Service Layer Migration, Sub-task 37.14 (2026-03-01)
 
 #### Added
