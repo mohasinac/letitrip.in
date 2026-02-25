@@ -8,12 +8,14 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, Button, Alert, Spinner, Heading, Text } from "@/components";
-import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useVerifyEmail } from "@/hooks";
 
 function VerifyEmailContent() {
   const router = useRouter();
+  const t = useTranslations("auth");
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [isSuccess, setIsSuccess] = useState(false);
@@ -21,15 +23,14 @@ function VerifyEmailContent() {
 
   const { mutate: verifyEmail, isLoading } = useVerifyEmail({
     onSuccess: () => setIsSuccess(true),
-    onError: (err) =>
-      setError(err.message || UI_LABELS.AUTH.VERIFY_EMAIL.CHECK_FAILED),
+    onError: (err) => setError(err.message || t("verifyEmail.checkFailed")),
   });
 
   useEffect(() => {
     if (token) {
       verifyEmail({ token });
     } else {
-      setError(UI_LABELS.AUTH.VERIFY_EMAIL.NO_TOKEN);
+      setError(t("verifyEmail.noToken"));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
@@ -61,10 +62,10 @@ function VerifyEmailContent() {
               </svg>
             </div>
             <Heading level={4} className="mb-2">
-              {UI_LABELS.AUTH.VERIFY_EMAIL.VERIFYING_TITLE}
+              {t("verifyEmail.verifyingTitle")}
             </Heading>
             <Text className="text-gray-600">
-              {UI_LABELS.AUTH.VERIFY_EMAIL.VERIFYING_MESSAGE}
+              {t("verifyEmail.verifyingMessage")}
             </Text>
           </>
         )}
@@ -87,17 +88,17 @@ function VerifyEmailContent() {
               </svg>
             </div>
             <Heading level={4} className="mb-2">
-              {UI_LABELS.AUTH.VERIFY_EMAIL.SUCCESS}
+              {t("verifyEmail.success")}
             </Heading>
             <Text className="text-gray-600 mb-6">
-              {UI_LABELS.AUTH.VERIFY_EMAIL.SUCCESS_MESSAGE}
+              {t("verifyEmail.successMessage")}
             </Text>
             <Button
               variant="primary"
               onClick={() => router.push(ROUTES.USER.PROFILE)}
               className="w-full"
             >
-              {UI_LABELS.AUTH.VERIFY_EMAIL.GO_TO_PROFILE}
+              {t("verifyEmail.goToProfile")}
             </Button>
           </>
         )}
@@ -120,13 +121,13 @@ function VerifyEmailContent() {
               </svg>
             </div>
             <Heading level={4} className="mb-2">
-              {UI_LABELS.AUTH.VERIFY_EMAIL.FAILED}
+              {t("verifyEmail.failed")}
             </Heading>
             <Alert variant="error" className="mb-6">
               {error}
             </Alert>
             <Text className="text-gray-600 mb-6">
-              {UI_LABELS.AUTH.VERIFY_EMAIL.INVALID_TOKEN_MESSAGE}
+              {t("verifyEmail.invalidTokenMessage")}
             </Text>
             <div className={THEME_CONSTANTS.spacing.stackSmall}>
               <Button
@@ -134,14 +135,14 @@ function VerifyEmailContent() {
                 onClick={() => router.push(ROUTES.USER.PROFILE)}
                 className="w-full"
               >
-                {UI_LABELS.AUTH.VERIFY_EMAIL.GO_TO_PROFILE}
+                {t("verifyEmail.goToProfile")}
               </Button>
               <Button
                 variant="ghost"
                 onClick={() => router.push(ROUTES.HOME)}
                 className="w-full"
               >
-                {UI_LABELS.AUTH.VERIFY_EMAIL.GO_TO_HOME}
+                {t("verifyEmail.goToHome")}
               </Button>
             </div>
           </>

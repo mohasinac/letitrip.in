@@ -11,7 +11,8 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth, useApiQuery } from "@/hooks";
 import { Spinner, EmptyState, ProductGrid, WishlistButton } from "@/components";
-import { ROUTES, UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import type { ProductDocument } from "@/db/schema";
 import { apiClient } from "@/lib/api-client";
 
@@ -31,6 +32,9 @@ interface WishlistResponse {
 export default function UserWishlistPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const t = useTranslations("wishlist");
+  const tActions = useTranslations("actions");
+  const tLoading = useTranslations("loading");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -53,7 +57,7 @@ export default function UserWishlistPage() {
   if (authLoading || !user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
+        <Spinner size="lg" label={tLoading("default")} />
       </div>
     );
   }
@@ -80,15 +84,15 @@ export default function UserWishlistPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className={`${typography.h3} ${themed.textPrimary}`}>
-            {UI_LABELS.USER.WISHLIST.TITLE}
+            {t("title")}
           </h1>
           <p className={`mt-0.5 text-sm ${themed.textSecondary}`}>
-            {UI_LABELS.USER.WISHLIST.SUBTITLE}
+            {t("subtitle")}
           </p>
         </div>
         {items.length > 0 && (
           <span className={`text-sm ${themed.textSecondary}`}>
-            {UI_LABELS.USER.WISHLIST.ITEMS}: {items.length}
+            {t("itemsCount")}: {items.length}
           </span>
         )}
       </div>
@@ -101,9 +105,9 @@ export default function UserWishlistPage() {
       ) : items.length === 0 ? (
         <EmptyState
           icon={heartIcon}
-          title={UI_LABELS.USER.WISHLIST.EMPTY}
-          description={UI_LABELS.USER.WISHLIST.EMPTY_SUBTITLE}
-          actionLabel={UI_LABELS.USER.ORDERS.BROWSE_PRODUCTS}
+          title={t("empty")}
+          description={t("description")}
+          actionLabel={tActions("browseProducts")}
           onAction={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
         />
       ) : (

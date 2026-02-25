@@ -267,7 +267,8 @@
       "returnToLogin": "लॉगिन पर वापस जाएं",
       "sendAnotherEmail": "दूसरा ईमेल भेजें",
       "backTo": "वापस",
-      "failedSendEmail": "रीसेट ईमेल भेजने में विफल"
+      "failedSendEmail": "रीसेट ईमेल भेजने में विफल",
+      "resetLinkSentTo": "यदि {email} के साथ कोई खाता मौजूद है, तो आपको जल्द ही पासवर्ड रीसेट लिंक प्राप्त होगा।"
     },
     "resetPassword": {
       "title": "नया पासवर्ड बनाएं",
@@ -353,6 +354,7 @@
   },
   "wishlist": {
     "title": "मेरी विशलिस्ट",
+    "subtitle": "बाद के लिए सहेजी गई चीज़ें",
     "description": "अपनी पसंदीदा वस्तुएं विशलिस्ट में सहेजें",
     "empty": "आपकी विशलिस्ट खाली है",
     "addToWishlist": "विशलिस्ट में जोड़ें",
@@ -534,7 +536,21 @@
     "helpCenter": "सहायता केंद्र",
     "sellerCenter": "विक्रेता केंद्र",
     "allRightsReserved": "सर्वाधिकार सुरक्षित।",
-    "followUs": "हमें फॉलो करें"
+    "followUs": "हमें फॉलो करें",
+    "shop": "खरीदारी",
+    "support": "सहायता",
+    "legal": "कानूनी",
+    "sellersSection": "विक्रेताओं के लिए",
+    "sellOnPlatform": "प्लेटफॉर्म पर बेचें",
+    "sellerGuide": "विक्रेता गाइड",
+    "trackOrder": "ऑर्डर ट्रैक करें",
+    "cookiePolicy": "कुकी नीति",
+    "refundPolicy": "वापसी नीति",
+    "madeIn": "भारत में निर्मित",
+    "copyright": "\u00a9 {year} {brand}. सर्वाधिकार सुरक्षित।",
+    "faqs": "अक्सर पूछे जाने वाले प्रश्न",
+    "blog": "ब्लॉग",
+    "contact": "संपर्क"
   },
   "accessibility": {
     "closeMenu": "मेनू बंद करें",

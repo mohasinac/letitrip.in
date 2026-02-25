@@ -267,7 +267,8 @@
       "returnToLogin": "Return to Login",
       "sendAnotherEmail": "Send Another Email",
       "backTo": "Back to",
-      "failedSendEmail": "Failed to send reset email"
+      "failedSendEmail": "Failed to send reset email",
+      "resetLinkSentTo": "If an account exists with {email}, you will receive a password reset link shortly."
     },
     "resetPassword": {
       "title": "Create new password",
@@ -353,6 +354,7 @@
   },
   "wishlist": {
     "title": "My Wishlist",
+    "subtitle": "Items you've saved for later",
     "description": "Save items you love to your wishlist",
     "empty": "Your wishlist is empty",
     "addToWishlist": "Add to Wishlist",
@@ -534,7 +536,21 @@
     "helpCenter": "Help Center",
     "sellerCenter": "Seller Center",
     "allRightsReserved": "All rights reserved.",
-    "followUs": "Follow Us"
+    "followUs": "Follow Us",
+    "shop": "Shop",
+    "support": "Support",
+    "legal": "Legal",
+    "sellersSection": "For Sellers",
+    "sellOnPlatform": "Sell on Platform",
+    "sellerGuide": "Seller Guide",
+    "trackOrder": "Track Order",
+    "cookiePolicy": "Cookie Policy",
+    "refundPolicy": "Refund Policy",
+    "madeIn": "Made in India",
+    "copyright": "\u00a9 {year} {brand}. All rights reserved.",
+    "faqs": "FAQs",
+    "blog": "Blog",
+    "contact": "Contact"
   },
   "accessibility": {
     "closeMenu": "Close menu",

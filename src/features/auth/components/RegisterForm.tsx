@@ -21,15 +21,15 @@ import {
   SUCCESS_MESSAGES,
   ROUTES,
   THEME_CONSTANTS,
-  UI_LABELS,
 } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useAuth, useRegister, useGoogleLogin, useAppleLogin } from "@/hooks";
 import { AuthSocialButtons } from "./AuthSocialButtons";
 
 const { themed, spacing } = THEME_CONSTANTS;
-const LABELS = UI_LABELS.AUTH;
 
 export function RegisterForm() {
+  const t = useTranslations("auth");
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
@@ -66,7 +66,7 @@ export function RegisterForm() {
     onError: (err) =>
       setMessage({
         type: "error",
-        text: err.message || LABELS.REGISTER.GOOGLE_REGISTER_FAILED,
+        text: t("register.googleRegisterFailed"),
       }),
   });
 
@@ -75,7 +75,7 @@ export function RegisterForm() {
     onError: (err) =>
       setMessage({
         type: "error",
-        text: err.message || LABELS.REGISTER.APPLE_REGISTER_FAILED,
+        text: t("register.appleRegisterFailed"),
       }),
   });
 
@@ -115,7 +115,7 @@ export function RegisterForm() {
     setMessage(null);
 
     if (formData.password !== formData.confirmPassword) {
-      setMessage({ type: "error", text: LABELS.REGISTER.PASSWORDS_NO_MATCH });
+      setMessage({ type: "error", text: t("register.passwordsNoMatch") });
       return;
     }
     if (formData.password.length < 8) {
@@ -126,7 +126,7 @@ export function RegisterForm() {
       return;
     }
     if (!formData.acceptTerms) {
-      setMessage({ type: "error", text: LABELS.REGISTER.MUST_ACCEPT_TERMS });
+      setMessage({ type: "error", text: t("register.mustAcceptTerms") });
       return;
     }
     if (!formData.email) {
@@ -157,15 +157,15 @@ export function RegisterForm() {
           <h1
             className={`mt-6 text-center text-3xl font-extrabold ${themed.textPrimary}`}
           >
-            {LABELS.REGISTER.TITLE}
+            {t("register.title")}
           </h1>
           <p className={`mt-2 text-center text-sm ${themed.textSecondary}`}>
-            {LABELS.REGISTER.OR}{" "}
+            {t("register.or")}{" "}
             <Link
               href={ROUTES.AUTH.LOGIN}
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              {LABELS.REGISTER.SIGN_IN_LINK}
+              {t("register.signInLink")}
             </Link>
           </p>
         </div>
@@ -181,7 +181,7 @@ export function RegisterForm() {
         <form onSubmit={handleSubmit} className={`mt-8 ${spacing.stack}`}>
           <div className={spacing.stack}>
             <FormField
-              label={LABELS.REGISTER.DISPLAY_NAME_LABEL}
+              label={t("register.displayNameLabel")}
               name="displayName"
               type="text"
               value={formData.displayName}
@@ -191,11 +191,11 @@ export function RegisterForm() {
               onBlur={handleBlur("displayName")}
               touched={touched.displayName}
               disabled={isLoading}
-              placeholder={LABELS.REGISTER.DISPLAY_NAME_PLACEHOLDER}
+              placeholder={t("register.displayNamePlaceholder")}
             />
 
             <FormField
-              label={LABELS.SHARED.EMAIL_ADDRESS}
+              label={t("shared.emailAddress")}
               name="email"
               type="email"
               value={formData.email}
@@ -203,12 +203,12 @@ export function RegisterForm() {
               onBlur={handleBlur("email")}
               touched={touched.email}
               disabled={isLoading}
-              placeholder={LABELS.SHARED.EMAIL_PLACEHOLDER}
+              placeholder={t("shared.emailPlaceholder")}
               required
             />
 
             <FormField
-              label={LABELS.SHARED.PASSWORD}
+              label={t("shared.password")}
               name="password"
               type="password"
               value={formData.password}
@@ -218,7 +218,7 @@ export function RegisterForm() {
               onBlur={handleBlur("password")}
               touched={touched.password}
               disabled={isLoading}
-              placeholder={LABELS.SHARED.PASSWORD_PLACEHOLDER}
+              placeholder={t("shared.passwordPlaceholder")}
               required
             />
 
@@ -227,7 +227,7 @@ export function RegisterForm() {
             )}
 
             <FormField
-              label={LABELS.REGISTER.CONFIRM_PASSWORD}
+              label={t("register.confirmPassword")}
               name="confirmPassword"
               type="password"
               value={formData.confirmPassword}
@@ -239,11 +239,11 @@ export function RegisterForm() {
               error={
                 formData.confirmPassword &&
                 formData.password !== formData.confirmPassword
-                  ? LABELS.REGISTER.PASSWORDS_NO_MATCH
+                  ? t("register.passwordsNoMatch")
                   : undefined
               }
               disabled={isLoading}
-              placeholder={LABELS.SHARED.PASSWORD_PLACEHOLDER}
+              placeholder={t("shared.passwordPlaceholder")}
               required
             />
 
@@ -260,19 +260,19 @@ export function RegisterForm() {
                 htmlFor="acceptTerms"
                 className={`ml-2 text-sm ${themed.textSecondary}`}
               >
-                {LABELS.REGISTER.ACCEPT_TERMS}{" "}
+                {t("register.acceptTerms")}{" "}
                 <Link
                   href={ROUTES.PUBLIC.TERMS}
                   className="text-blue-600 hover:text-blue-500"
                 >
-                  {LABELS.REGISTER.TERMS_OF_SERVICE}
+                  {t("register.termsOfService")}
                 </Link>{" "}
-                {LABELS.REGISTER.AND}{" "}
+                {t("register.and")}{" "}
                 <Link
                   href={ROUTES.PUBLIC.PRIVACY}
                   className="text-blue-600 hover:text-blue-500"
                 >
-                  {LABELS.REGISTER.PRIVACY_POLICY}
+                  {t("register.privacyPolicy")}
                 </Link>
               </label>
             </div>
@@ -286,8 +286,8 @@ export function RegisterForm() {
             disabled={isLoading || !formData.acceptTerms}
           >
             {isLoading
-              ? LABELS.REGISTER.CREATING_ACCOUNT
-              : LABELS.REGISTER.CREATE_ACCOUNT}
+              ? t("register.creatingAccount")
+              : t("register.createAccount")}
           </Button>
         </form>
 

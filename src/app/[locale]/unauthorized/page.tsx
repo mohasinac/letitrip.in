@@ -10,11 +10,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components";
-import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 export default function UnauthorizedPage() {
   const router = useRouter();
+  const tError = useTranslations("errorPages");
+  const tAuth = useTranslations("auth");
+  const tActions = useTranslations("actions");
   const [countdown, setCountdown] = useState(5);
   const { themed, spacing, typography } = THEME_CONSTANTS;
 
@@ -77,14 +81,14 @@ export default function UnauthorizedPage() {
         <h1
           className={`${typography.h1} ${themed.textPrimary} ${spacing.margin.bottom.md}`}
         >
-          {UI_LABELS.ERROR_PAGES.UNAUTHORIZED.TITLE}
+          {tError("unauthorized.title")}
         </h1>
 
         {/* Error Description */}
         <p
           className={`${typography.body} ${themed.textSecondary} ${spacing.margin.bottom.xl}`}
         >
-          {UI_LABELS.ERROR_PAGES.UNAUTHORIZED.DESCRIPTION}
+          {tError("unauthorized.description")}
         </p>
 
         {/* Countdown Message */}
@@ -92,9 +96,9 @@ export default function UnauthorizedPage() {
           className={`${themed.bgSecondary} ${themed.border} ${THEME_CONSTANTS.borderRadius.lg} ${spacing.padding.md} ${spacing.margin.bottom.xl}`}
         >
           <p className={`${typography.body} ${themed.textSecondary}`}>
-            {UI_LABELS.AUTH.REDIRECTING_IN}{" "}
+            {tAuth("redirectingIn")}{" "}
             <span className={THEME_CONSTANTS.text.emphasis}>{countdown}</span>{" "}
-            {UI_LABELS.AUTH.SECONDS}
+            {tAuth("seconds")}
           </p>
         </div>
 
@@ -108,7 +112,7 @@ export default function UnauthorizedPage() {
               size="lg"
               className={THEME_CONSTANTS.button.minWidth}
             >
-              {UI_LABELS.ACTIONS.LOGIN}
+              {tActions("login")}
             </Button>
           </Link>
           <Button
@@ -117,7 +121,7 @@ export default function UnauthorizedPage() {
             onClick={() => router.push(ROUTES.HOME)}
             className={THEME_CONSTANTS.button.minWidth}
           >
-            {UI_LABELS.ACTIONS.GO_HOME_NOW}
+            {tActions("goHomeNow")}
           </Button>
         </div>
       </div>

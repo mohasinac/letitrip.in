@@ -3,12 +3,12 @@
 import { useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   THEME_CONSTANTS,
   ROUTES,
   API_ENDPOINTS,
   ERROR_MESSAGES,
-  UI_LABELS,
 } from "@/constants";
 import { useSwipe, useAuth } from "@/hooks";
 import { logger } from "@/classes";
@@ -53,6 +53,7 @@ export default function Sidebar({
   const { user, loading } = useAuth();
   const isAuthenticated = !!user && !loading;
   const sidebarRef = useRef<HTMLElement>(null);
+  const tNav = useTranslations("nav");
 
   const handleSignOut = async () => {
     try {
@@ -139,7 +140,7 @@ export default function Sidebar({
                       ]
                     } bg-white/90 dark:bg-gray-900/90`}
                   >
-                    {user.role || UI_LABELS.AUTH.DEFAULT_ROLE}
+                    {user.role || "user"}
                   </span>
                 </div>
               </div>
@@ -217,7 +218,7 @@ export default function Sidebar({
                 `}
                 onClick={onClose}
               >
-                {UI_LABELS.NAV.LOGIN}
+                {tNav("login")}
               </Link>
               <Link
                 href={ROUTES.AUTH.REGISTER}
@@ -235,7 +236,7 @@ export default function Sidebar({
                 `}
                 onClick={onClose}
               >
-                {UI_LABELS.NAV.REGISTER}
+                {tNav("register")}
               </Link>
             </div>
           </div>
@@ -257,7 +258,7 @@ export default function Sidebar({
                 <h3
                   className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
                 >
-                  {UI_LABELS.NAV.PROFILE}
+                  {tNav("profile")}
                 </h3>
                 <div
                   className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
@@ -268,7 +269,7 @@ export default function Sidebar({
                 {[
                   {
                     href: ROUTES.USER.PROFILE,
-                    label: UI_LABELS.NAV.MY_PROFILE,
+                    label: tNav("myProfile"),
                     icon: (
                       <path
                         strokeLinecap="round"
@@ -280,7 +281,7 @@ export default function Sidebar({
                   },
                   {
                     href: ROUTES.USER.ORDERS,
-                    label: UI_LABELS.NAV.MY_ORDERS,
+                    label: tNav("myOrders"),
                     icon: (
                       <path
                         strokeLinecap="round"
@@ -292,7 +293,7 @@ export default function Sidebar({
                   },
                   {
                     href: ROUTES.USER.WISHLIST,
-                    label: UI_LABELS.NAV.WISHLIST,
+                    label: tNav("wishlist"),
                     icon: (
                       <path
                         strokeLinecap="round"
@@ -304,7 +305,7 @@ export default function Sidebar({
                   },
                   {
                     href: ROUTES.USER.SETTINGS,
-                    label: UI_LABELS.NAV.SETTINGS,
+                    label: tNav("settings"),
                     icon: (
                       <>
                         <path
@@ -407,7 +408,7 @@ export default function Sidebar({
                     d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                   />
                 </svg>
-                {UI_LABELS.NAV.LOGOUT}
+                {tNav("logout")}
               </button>
             </div>
           )}
@@ -428,7 +429,7 @@ export default function Sidebar({
                   <h3
                     className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
                   >
-                    {UI_LABELS.NAV.DASHBOARD}
+                    {tNav("dashboard")}
                   </h3>
                   <div
                     className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
@@ -486,7 +487,7 @@ export default function Sidebar({
                         <span
                           className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
                         >
-                          {UI_LABELS.NAV.ADMIN_DASHBOARD}
+                          {tNav("adminDashboard")}
                         </span>
                         {(pathname === ROUTES.ADMIN.DASHBOARD ||
                           pathname?.startsWith("/admin/")) && (
@@ -556,7 +557,7 @@ export default function Sidebar({
                         <span
                           className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
                         >
-                          {UI_LABELS.NAV.SELLER_DASHBOARD}
+                          {tNav("sellerDashboard")}
                         </span>
                         {(pathname === ROUTES.SELLER.DASHBOARD ||
                           pathname?.startsWith("/seller/")) && (
@@ -590,7 +591,7 @@ export default function Sidebar({
               <h3
                 className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
               >
-                {UI_LABELS.NAV.SUPPORT}
+                {tNav("support")}
               </h3>
               <div
                 className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
@@ -601,7 +602,7 @@ export default function Sidebar({
               {[
                 {
                   href: ROUTES.PUBLIC.CONTACT,
-                  label: UI_LABELS.NAV.CONTACT_US,
+                  label: tNav("contactUs"),
                   icon: (
                     <path
                       strokeLinecap="round"
@@ -613,7 +614,7 @@ export default function Sidebar({
                 },
                 {
                   href: ROUTES.PUBLIC.HELP,
-                  label: UI_LABELS.NAV.HELP_CENTER,
+                  label: tNav("helpCenter"),
                   icon: (
                     <path
                       strokeLinecap="round"
@@ -692,7 +693,7 @@ export default function Sidebar({
               <h3
                 className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
               >
-                {UI_LABELS.NAV.SETTINGS}
+                {tNav("settings")}
               </h3>
               <div
                 className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
@@ -740,7 +741,7 @@ export default function Sidebar({
               <span
                 className={`${THEME_CONSTANTS.typography.small} font-medium flex-1 text-left`}
               >
-                {UI_LABELS.NAV.DARK_MODE}
+                {tNav("darkMode")}
               </span>
               {/* Toggle indicator */}
               <div

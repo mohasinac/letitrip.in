@@ -11,19 +11,15 @@ import { useState, FormEvent, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Input, Button, Alert, Spinner, Checkbox } from "@/components";
-import {
-  UI_LABELS,
-  ERROR_MESSAGES,
-  ROUTES,
-  THEME_CONSTANTS,
-} from "@/constants";
+import { ERROR_MESSAGES, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useAuth, useLogin, useGoogleLogin, useAppleLogin } from "@/hooks";
 import { AuthSocialButtons } from "./AuthSocialButtons";
 
 const { themed, spacing } = THEME_CONSTANTS;
-const LABELS = UI_LABELS.AUTH;
 
 export function LoginForm() {
+  const t = useTranslations("auth");
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || ROUTES.USER.PROFILE;
@@ -99,15 +95,15 @@ export function LoginForm() {
           <h1
             className={`mt-6 text-center text-3xl font-extrabold ${themed.textPrimary}`}
           >
-            {LABELS.LOGIN.TITLE}
+            {t("login.title")}
           </h1>
           <p className={`mt-2 text-center text-sm ${themed.textSecondary}`}>
-            {LABELS.LOGIN.OR}{" "}
+            {t("login.or")}{" "}
             <Link
               href={ROUTES.AUTH.REGISTER}
               className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
             >
-              {LABELS.LOGIN.CREATE_ACCOUNT_LINK}
+              {t("login.createAccountLink")}
             </Link>
           </p>
         </div>
@@ -126,27 +122,27 @@ export function LoginForm() {
               id="email"
               name="email"
               type="email"
-              label={LABELS.SHARED.EMAIL_ADDRESS}
+              label={t("shared.emailAddress")}
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
               required
               autoComplete="username"
-              placeholder={LABELS.SHARED.EMAIL_PLACEHOLDER}
+              placeholder={t("shared.emailPlaceholder")}
             />
             <Input
               id="password"
               name="password"
               type="password"
-              label={LABELS.SHARED.PASSWORD}
+              label={t("shared.password")}
               value={formData.password}
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
               required
               autoComplete="current-password"
-              placeholder={LABELS.SHARED.PASSWORD_PLACEHOLDER}
+              placeholder={t("shared.passwordPlaceholder")}
             />
           </div>
 
@@ -163,7 +159,7 @@ export function LoginForm() {
                 htmlFor="remember-me"
                 className={`ml-2 block text-sm ${themed.textPrimary}`}
               >
-                {LABELS.LOGIN.REMEMBER_ME}
+                {t("login.rememberMe")}
               </label>
             </div>
             <div className="text-sm">
@@ -171,7 +167,7 @@ export function LoginForm() {
                 href={ROUTES.AUTH.FORGOT_PASSWORD}
                 className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
               >
-                {LABELS.LOGIN.FORGOT_PASSWORD_LINK}
+                {t("login.forgotPasswordLink")}
               </Link>
             </div>
           </div>
@@ -183,7 +179,7 @@ export function LoginForm() {
             className="w-full"
             disabled={loading}
           >
-            {loading ? LABELS.LOGIN.SIGNING_IN : LABELS.LOGIN.SIGN_IN}
+            {loading ? t("login.signingIn") : t("login.signIn")}
           </Button>
         </form>
 

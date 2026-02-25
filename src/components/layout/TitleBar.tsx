@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { useAuth } from "@/hooks";
 import { AvatarDisplay, NotificationBell, LocaleSwitcher } from "@/components";
@@ -40,6 +41,7 @@ export default function TitleBar({
 }: TitleBarProps) {
   const { colors, layout, zIndex } = THEME_CONSTANTS;
   const { user } = useAuth();
+  const tA = useTranslations("accessibility");
 
   return (
     <header
@@ -72,7 +74,7 @@ export default function TitleBar({
           <Link
             href={SITE_CONFIG.account.cart}
             className={`p-2.5 md:p-3 rounded-xl transition-colors relative ${THEME_CONSTANTS.colors.iconButton.onLight}`}
-            aria-label="Shopping cart"
+            aria-label={tA("cartIcon")}
           >
             <svg
               className={`w-6 h-6 md:w-7 md:h-7 ${THEME_CONSTANTS.colors.icon.titleBar}`}
@@ -98,7 +100,7 @@ export default function TitleBar({
           <button
             onClick={onSearchToggle}
             className={`hidden md:flex p-2.5 md:p-3 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onLight}`}
-            aria-label="Search"
+            aria-label={tA("searchIcon")}
           >
             <svg
               className={`w-6 h-6 md:w-7 md:h-7 ${THEME_CONSTANTS.colors.icon.titleBar}`}
@@ -125,7 +127,7 @@ export default function TitleBar({
           <Link
             href={SITE_CONFIG.account.profile}
             className={`hidden md:flex items-center justify-center rounded-xl transition-colors ${user ? "" : `p-2.5 md:p-3 ${THEME_CONSTANTS.colors.iconButton.onLight}`}`}
-            aria-label="User account"
+            aria-label={tA("userIcon")}
           >
             {user ? (
               <div className="flex flex-col items-center gap-0.5">
@@ -175,7 +177,7 @@ export default function TitleBar({
           <button
             onClick={onToggleSidebar}
             className={`p-2.5 md:p-3 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onLight}`}
-            aria-label="Toggle menu"
+            aria-label={sidebarOpen ? tA("closeMenu") : tA("openMenu")}
           >
             <svg
               className={`w-6 h-6 md:w-7 md:h-7 ${THEME_CONSTANTS.colors.icon.titleBar}`}

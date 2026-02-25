@@ -1,9 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
-import { THEME_CONSTANTS, SITE_CONFIG, UI_LABELS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS, SITE_CONFIG, ROUTES } from "@/constants";
 
 export default function Footer() {
   const { colors, layout } = THEME_CONSTANTS;
+  const t = useTranslations("footer");
+  const tNav = useTranslations("nav");
 
   return (
     <footer
@@ -66,21 +71,21 @@ export default function Footer() {
           {/* Column 2: Shop */}
           <div>
             <h3 className={`font-bold text-sm mb-3 ${colors.footer.title}`}>
-              {UI_LABELS.FOOTER.SHOP}
+              {t("shop")}
             </h3>
             <ul className="space-y-2 text-sm">
               {[
-                { href: ROUTES.PUBLIC.PRODUCTS, label: UI_LABELS.NAV.PRODUCTS },
-                { href: ROUTES.PUBLIC.AUCTIONS, label: UI_LABELS.NAV.AUCTIONS },
+                { href: ROUTES.PUBLIC.PRODUCTS, label: tNav("products") },
+                { href: ROUTES.PUBLIC.AUCTIONS, label: tNav("auctions") },
                 {
                   href: ROUTES.PUBLIC.CATEGORIES,
-                  label: UI_LABELS.NAV.CATEGORIES,
+                  label: tNav("categories"),
                 },
                 {
                   href: ROUTES.PUBLIC.PROMOTIONS,
-                  label: UI_LABELS.NAV.PROMOTIONS,
+                  label: tNav("promotions"),
                 },
-                { href: ROUTES.PUBLIC.SEARCH, label: UI_LABELS.NAV.SEARCH },
+                { href: ROUTES.PUBLIC.SEARCH, label: tNav("search") },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
@@ -97,22 +102,22 @@ export default function Footer() {
           {/* Column 3: Support */}
           <div>
             <h3 className={`font-bold text-sm mb-3 ${colors.footer.title}`}>
-              {UI_LABELS.FOOTER.SUPPORT}
+              {t("support")}
             </h3>
             <ul className="space-y-2 text-sm">
               {[
                 {
                   href: ROUTES.PUBLIC.HELP,
-                  label: UI_LABELS.FOOTER.HELP_CENTER,
+                  label: t("helpCenter"),
                 },
-                { href: ROUTES.PUBLIC.FAQS, label: UI_LABELS.FOOTER.FAQS },
+                { href: ROUTES.PUBLIC.FAQS, label: t("faqs") },
                 {
                   href: ROUTES.PUBLIC.TRACK_ORDER,
-                  label: UI_LABELS.FOOTER.TRACK_ORDER,
+                  label: t("trackOrder"),
                 },
                 {
                   href: ROUTES.PUBLIC.CONTACT,
-                  label: UI_LABELS.FOOTER.CONTACT,
+                  label: t("contact"),
                 },
               ].map((link) => (
                 <li key={link.href}>
@@ -130,17 +135,17 @@ export default function Footer() {
           {/* Column 4: Sellers */}
           <div>
             <h3 className={`font-bold text-sm mb-3 ${colors.footer.title}`}>
-              {UI_LABELS.FOOTER.SELLERS_SECTION}
+              {t("sellersSection")}
             </h3>
             <ul className="space-y-2 text-sm">
               {[
                 {
                   href: ROUTES.PUBLIC.SELLERS,
-                  label: UI_LABELS.FOOTER.SELL_ON_PLATFORM,
+                  label: t("sellOnPlatform"),
                 },
                 {
                   href: ROUTES.PUBLIC.SELLER_GUIDE,
-                  label: UI_LABELS.FOOTER.SELLER_GUIDE,
+                  label: t("sellerGuide"),
                 },
               ].map((link) => (
                 <li key={link.href}>
@@ -158,25 +163,25 @@ export default function Footer() {
           {/* Column 5: Legal */}
           <div>
             <h3 className={`font-bold text-sm mb-3 ${colors.footer.title}`}>
-              {UI_LABELS.FOOTER.LEGAL}
+              {t("legal")}
             </h3>
             <ul className="space-y-2 text-sm">
               {[
                 {
                   href: ROUTES.PUBLIC.PRIVACY,
-                  label: UI_LABELS.FOOTER.PRIVACY_POLICY,
+                  label: t("privacyPolicy"),
                 },
                 {
                   href: ROUTES.PUBLIC.TERMS,
-                  label: UI_LABELS.FOOTER.TERMS_OF_SERVICE,
+                  label: t("termsOfService"),
                 },
                 {
                   href: ROUTES.PUBLIC.COOKIE_POLICY,
-                  label: UI_LABELS.FOOTER.COOKIE_POLICY,
+                  label: t("cookiePolicy"),
                 },
                 {
                   href: ROUTES.PUBLIC.REFUND_POLICY,
-                  label: UI_LABELS.FOOTER.REFUND_POLICY,
+                  label: t("refundPolicy"),
                 },
               ].map((link) => (
                 <li key={link.href}>
@@ -197,12 +202,12 @@ export default function Footer() {
           className={`border-t ${colors.footer.border} mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm ${colors.footer.copyright}`}
         >
           <span>
-            {UI_LABELS.FOOTER.COPYRIGHT.replace(
-              "{year}",
-              new Date().getFullYear().toString(),
-            ).replace("{brand}", SITE_CONFIG.brand.name)}
+            {t("copyright", {
+              year: new Date().getFullYear().toString(),
+              brand: SITE_CONFIG.brand.name,
+            })}
           </span>
-          <span>{UI_LABELS.FOOTER.MADE_IN}</span>
+          <span>{t("madeIn")}</span>
         </div>
       </div>
     </footer>

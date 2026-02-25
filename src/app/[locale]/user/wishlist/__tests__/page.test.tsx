@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import type React from "react";
 import UserWishlistPage from "../page";
-import { UI_LABELS } from "@/constants";
 
 const mockPush = jest.fn();
 
@@ -40,10 +39,12 @@ describe("User Wishlist Page", () => {
   it("renders empty state", () => {
     render(<UserWishlistPage />);
 
-    expect(screen.getByText(UI_LABELS.USER.WISHLIST.TITLE)).toBeInTheDocument();
+    // wishlist.title from messages/en.json = "My Wishlist"
+    expect(screen.getByText("My Wishlist")).toBeInTheDocument();
+    // actions.browseProducts from messages/en.json = "Browse products"
     expect(
       screen.getByRole("button", {
-        name: UI_LABELS.USER.ORDERS.BROWSE_PRODUCTS,
+        name: "Browse products",
       }),
     ).toBeInTheDocument();
   });

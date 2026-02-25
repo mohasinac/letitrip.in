@@ -6,10 +6,10 @@ import type { CartDocument } from "@/db/schema";
 import { CartItemList, CartSummary, PromoCodeInput } from "@/components";
 import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
+import { useTranslations } from "next-intl";
 import {
   API_ENDPOINTS,
   ROUTES,
-  UI_LABELS,
   THEME_CONSTANTS,
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
@@ -48,6 +48,7 @@ function CartPageSkeleton() {
 
 export default function CartPage() {
   const router = useRouter();
+  const t = useTranslations("cart");
   const { showError, showSuccess } = useMessage();
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -114,7 +115,7 @@ export default function CartPage() {
     <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Page heading */}
       <h1 className={`${typography.h2} ${themed.textPrimary} mb-8`}>
-        {UI_LABELS.CART.TITLE}
+        {t("title")}
       </h1>
 
       <div className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start">

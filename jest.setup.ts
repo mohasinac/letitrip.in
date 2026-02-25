@@ -275,14 +275,94 @@ jest.mock("next/image", () => ({
 // next-intl Mocks
 // ============================================
 
-jest.mock("next-intl", () => ({
-  useLocale: () => "en",
-  useTranslations: () => (key: string) => key,
-  useMessages: () => ({}),
-  useTimeZone: () => "UTC",
-  useNow: () => new Date(),
-  NextIntlClientProvider: ({ children }: { children: unknown }) => children,
-}));
+// Resolve translation key from messages/en.json so existing assertions
+// using UI_LABELS string values continue to pass after i18n wiring.
+jest.mock("next-intl", () => {
+  function _res(
+    ns: string | undefined,
+    key: string,
+    params?: Record<string, unknown>,
+  ): string {
+    try {
+      const msgs = require("./messages/en.json");
+      const segs = [...(ns ? ns.split(".") : []), ...key.split(".")];
+      let val: unknown = msgs;
+      for (const seg of segs) {
+        if (val && typeof val === "object")
+          val = (val as Record<string, unknown>)[seg];
+        else return key;
+      }
+      if (typeof val !== "string") return key;
+      if (!params) return val;
+      return Object.entries(params).reduce(
+        (s, [k, v]) => s.replace(`{${k}}`, String(v)),
+        val,
+      );
+    } catch {
+      return key;
+    }
+  }
+  const React = require("react");
+  return {
+    useLocale: () => "en",
+    useTranslations:
+      (ns?: string) => (key: string, params?: Record<string, unknown>) =>
+        _res(ns, key, params),
+    useMessages: () => {
+      try {
+        return require("./messages/en.json");
+      } catch {
+        return {};
+      }
+    },
+    useTimeZone: () => "UTC",
+    useNow: () => new Date(),
+    NextIntlClientProvider: ({ children }: { children: unknown }) =>
+      React.createElement(React.Fragment, null, children),
+  };
+});
+
+// Mock next-intl/server (used by server components with getTranslations)
+jest.mock("next-intl/server", () => {
+  function _res(
+    ns: string | undefined,
+    key: string,
+    params?: Record<string, unknown>,
+  ): string {
+    try {
+      const msgs = require("./messages/en.json");
+      const segs = [...(ns ? ns.split(".") : []), ...key.split(".")];
+      let val: unknown = msgs;
+      for (const seg of segs) {
+        if (val && typeof val === "object")
+          val = (val as Record<string, unknown>)[seg];
+        else return key;
+      }
+      if (typeof val !== "string") return key;
+      if (!params) return val;
+      return Object.entries(params).reduce(
+        (s, [k, v]) => s.replace(`{${k}}`, String(v)),
+        val,
+      );
+    } catch {
+      return key;
+    }
+  }
+  return {
+    getTranslations:
+      (ns?: string) => async (key: string, params?: Record<string, unknown>) =>
+        _res(ns, key, params),
+    getMessages: async () => {
+      try {
+        return require("./messages/en.json");
+      } catch {
+        return {};
+      }
+    },
+    getLocale: async () => "en",
+    getTimeZone: async () => "UTC",
+  };
+});
 
 // Mock locale-aware navigation (mirrors next/navigation shape)
 jest.mock("@/i18n/navigation", () => ({

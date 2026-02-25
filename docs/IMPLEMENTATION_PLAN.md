@@ -5522,3 +5522,120 @@ Deploy indexes before activating any event: `firebase deploy --only firestore:in
 | Total     |                    | 15            |
 
 **Tests:** 276/276 suites green — 3097 tests (3093 passed + 4 skipped) — 25 new tests.
+
+---
+
+## Phase 28 — Nav/Layout i18n Wiring
+
+**Goal:** Replace all hardcoded English strings in layout components with `useTranslations` hooks.
+
+### Files Changed
+
+| File                                                | Change                                                  |
+| --------------------------------------------------- | ------------------------------------------------------- |
+| `src/app/[locale]/not-found.tsx`                    | Removed orphaned duplicate return block                 |
+| `src/components/layout/TitleBar.tsx`                | `useTranslations("accessibility")` for 4 aria-labels    |
+| `src/components/layout/Sidebar.tsx`                 | `useTranslations("nav")` replaces ~17 `UI_LABELS.NAV.*` |
+| `src/components/layout/__tests__/TitleBar.test.tsx` | Updated assertions for new i18n values                  |
+| `src/components/layout/__tests__/Sidebar.test.tsx`  | Removed unused `UI_LABELS` import                       |
+
+### Pattern Used
+
+```tsx
+// Sidebar: hook declared after useRef, before early returns
+const tNav = useTranslations("nav");
+
+// TitleBar: accessibility aria-labels
+const tA = useTranslations("accessibility");
+<button aria-label={sidebarOpen ? tA("closeMenu") : tA("openMenu")} />;
+```
+
+### Phase 28 — Summary
+
+| Component | Namespace       | Strings replaced |
+| --------- | --------------- | ---------------- |
+| TitleBar  | `accessibility` | 4 aria-labels    |
+| Sidebar   | `nav`           | ~17 nav labels   |
+
+**Tests:** 276/276 suites green.
+
+---
+
+## Phase 29 — Auth Pages i18n Wiring
+
+**Goal:** Replace module-level `UI_LABELS.AUTH` constants in auth forms and pages with `useTranslations("auth")`.
+
+### Files Changed
+
+| File                                             | Change                                                       |
+| ------------------------------------------------ | ------------------------------------------------------------ |
+| `src/features/auth/components/LoginForm.tsx`     | `useTranslations("auth")`, removed module-level LABELS const |
+| `src/features/auth/components/RegisterForm.tsx`  | Same pattern as LoginForm                                    |
+| `src/app/[locale]/auth/forgot-password/page.tsx` | All `UI_LABELS.AUTH.FORGOT_PASSWORD.*` + interpolation       |
+| `src/app/[locale]/auth/reset-password/page.tsx`  | All `UI_LABELS.AUTH.RESET_PASSWORD.*`                        |
+| `src/app/[locale]/auth/verify-email/page.tsx`    | All `UI_LABELS.AUTH.VERIFY_EMAIL.*`                          |
+| `src/app/[locale]/unauthorized/page.tsx`         | Three namespaces: errorPages, auth, actions                  |
+
+### Key Pattern — Move Module-Level LABELS Inside Component
+
+```tsx
+// BEFORE (broken pattern — cannot call hooks at module level)
+const LABELS = UI_LABELS.AUTH; // module scope
+
+// AFTER (correct)
+function LoginForm() {
+  const t = useTranslations("auth"); // component scope
+```
+
+### Interpolation Pattern
+
+```tsx
+// BEFORE
+{
+  UI_LABELS.AUTH.FORGOT_PASSWORD.RESET_LINK_SENT_TO.replace("{email}", email);
+}
+
+// AFTER (next-intl syntax)
+{
+  t("forgotPassword.resetLinkSentTo", { email });
+}
+```
+
+### Phase 29 — Summary
+
+| File            | Namespace(s)                    | Strings replaced |
+| --------------- | ------------------------------- | ---------------- |
+| LoginForm       | `auth`                          | ~13              |
+| RegisterForm    | `auth`                          | ~15              |
+| forgot-password | `auth`                          | ~7               |
+| reset-password  | `auth`                          | ~10+             |
+| verify-email    | `auth`                          | ~8               |
+| unauthorized    | `errorPages`, `auth`, `actions` | ~6               |
+
+**Tests:** 276/276 suites green.
+
+---
+
+## Phase 30 — Public Pages i18n Wiring
+
+**Goal:** Wire remaining public user-facing pages with `useTranslations`.
+
+### Files Changed
+
+| File                                      | Change                                                  |
+| ----------------------------------------- | ------------------------------------------------------- |
+| `src/app/[locale]/cart/page.tsx`          | `useTranslations("cart")`                               |
+| `src/app/[locale]/user/wishlist/page.tsx` | `useTranslations("wishlist")`, `"actions"`, `"loading"` |
+| `src/app/[locale]/user/settings/page.tsx` | `useTranslations("settings")`                           |
+| `messages/en.json`                        | Added `wishlist.subtitle`                               |
+| `messages/hi.json`                        | Added `wishlist.subtitle` (Hindi)                       |
+
+### Phase 30 — Summary
+
+| Page     | Namespace(s)                     | Strings replaced |
+| -------- | -------------------------------- | ---------------- |
+| cart     | `cart`                           | 1 heading        |
+| wishlist | `wishlist`, `actions`, `loading` | 7                |
+| settings | `settings`                       | 1 heading        |
+
+**Tests:** 276/276 suites green.

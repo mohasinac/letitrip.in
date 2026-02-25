@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import type React from "react";
 import UserSettingsPage from "../page";
-import { UI_LABELS } from "@/constants";
 
 const mockPush = jest.fn();
 
@@ -41,7 +40,8 @@ describe("User Settings Page", () => {
   it("renders settings content", () => {
     render(<UserSettingsPage />);
 
-    expect(screen.getByText(UI_LABELS.SETTINGS.TITLE)).toBeInTheDocument();
+    // settings.title from messages/en.json = "Account Settings"
+    expect(screen.getByText("Account Settings")).toBeInTheDocument();
     expect(screen.getByTestId("email-card")).toBeInTheDocument();
     expect(screen.getByTestId("profile-info-form")).toBeInTheDocument();
     expect(screen.getByTestId("password-form")).toBeInTheDocument();

@@ -25,8 +25,8 @@ describe("TitleBar", () => {
     );
 
     expect(homeLink).toBeDefined();
-    expect(screen.getByLabelText("Shopping cart")).toBeInTheDocument();
-    expect(screen.getByLabelText("Search")).toBeInTheDocument();
-    expect(screen.getByLabelText("Toggle menu")).toBeInTheDocument();
+    expect(screen.getByLabelText("Cart icon")).toBeInTheDocument();
+    expect(screen.getByLabelText("Search icon")).toBeInTheDocument();
+    expect(screen.getByLabelText("Open menu")).toBeInTheDocument();
   });
 });

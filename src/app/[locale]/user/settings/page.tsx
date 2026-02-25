@@ -19,16 +19,17 @@ import { useRouter } from "next/navigation";
 import { logger } from "@/classes";
 import {
   THEME_CONSTANTS,
-  UI_LABELS,
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
   API_ENDPOINTS,
   ROUTES,
 } from "@/constants";
+import { useTranslations } from "next-intl";
 
 export default function UserSettingsPage() {
   const { user: profile, loading, refreshUser } = useAuth();
   const router = useRouter();
+  const t = useTranslations("settings");
   const { showToast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -149,7 +150,7 @@ export default function UserSettingsPage() {
   return (
     <div className="w-full">
       <div className={THEME_CONSTANTS.spacing.stack}>
-        <Heading level={3}>{UI_LABELS.SETTINGS.TITLE}</Heading>
+        <Heading level={3}>{t("title")}</Heading>
 
         {/* Error messages (success messages are now toasts) */}
         {message && (

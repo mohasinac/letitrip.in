@@ -9,12 +9,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Card, Button, Alert, FormField, Heading, Text } from "@/components";
-import { ROUTES, THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useForgotPassword } from "@/hooks";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
+  const t = useTranslations("auth");
   const [email, setEmail] = useState("");
   const [touched, setTouched] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -23,7 +25,7 @@ export default function ForgotPasswordPage() {
   const { mutate: forgotPassword, isLoading } = useForgotPassword({
     onSuccess: () => setSuccess(true),
     onError: (err) =>
-      setError(err.message || UI_LABELS.AUTH.FORGOT_PASSWORD.FAILED_SEND_EMAIL),
+      setError(err.message || t("forgotPassword.failedSendEmail")),
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -53,16 +55,13 @@ export default function ForgotPasswordPage() {
               </svg>
             </div>
             <Heading level={4} className="mb-2">
-              {UI_LABELS.AUTH.FORGOT_PASSWORD.CHECK_EMAIL}
+              {t("forgotPassword.checkEmail")}
             </Heading>
             <Text className="text-gray-600 mb-6">
-              {UI_LABELS.AUTH.FORGOT_PASSWORD.RESET_LINK_SENT_TO.replace(
-                "{email}",
-                email,
-              )}
+              {t("forgotPassword.resetLinkSentTo", { email })}
             </Text>
             <Text className="text-gray-500 mb-6 block text-sm">
-              {UI_LABELS.AUTH.FORGOT_PASSWORD.LINK_EXPIRES}
+              {t("forgotPassword.linkExpires")}
             </Text>
           </div>
 
@@ -72,7 +71,7 @@ export default function ForgotPasswordPage() {
               onClick={() => router.push(ROUTES.AUTH.LOGIN)}
               className="w-full"
             >
-              {UI_LABELS.AUTH.FORGOT_PASSWORD.RETURN_TO_LOGIN}
+              {t("forgotPassword.returnToLogin")}
             </Button>
             <Button
               variant="ghost"
@@ -83,7 +82,7 @@ export default function ForgotPasswordPage() {
               }}
               className="w-full"
             >
-              {UI_LABELS.AUTH.FORGOT_PASSWORD.SEND_ANOTHER_EMAIL}
+              {t("forgotPassword.sendAnotherEmail")}
             </Button>
           </div>
         </Card>
@@ -96,11 +95,9 @@ export default function ForgotPasswordPage() {
       <Card className="max-w-md w-full p-6 sm:p-8">
         <div className="text-center mb-6">
           <Heading level={4} className="mb-2">
-            {UI_LABELS.AUTH.FORGOT_PASSWORD.PAGE_TITLE}
+            {t("forgotPassword.pageTitle")}
           </Heading>
-          <Text className="text-gray-600">
-            {UI_LABELS.AUTH.FORGOT_PASSWORD.SUBTITLE}
-          </Text>
+          <Text className="text-gray-600">{t("forgotPassword.subtitle")}</Text>
         </div>
 
         {error && (
@@ -111,14 +108,14 @@ export default function ForgotPasswordPage() {
 
         <form onSubmit={handleSubmit} className={THEME_CONSTANTS.spacing.stack}>
           <FormField
-            label={UI_LABELS.AUTH.SHARED.EMAIL_ADDRESS}
+            label={t("shared.emailAddress")}
             name="email"
             type="email"
             value={email}
             onChange={setEmail}
             onBlur={() => setTouched(true)}
             touched={touched}
-            placeholder={UI_LABELS.AUTH.SHARED.EMAIL_PLACEHOLDER}
+            placeholder={t("shared.emailPlaceholder")}
             disabled={isLoading}
             required
           />
@@ -130,19 +127,19 @@ export default function ForgotPasswordPage() {
             className="w-full"
           >
             {isLoading
-              ? UI_LABELS.AUTH.FORGOT_PASSWORD.SENDING
-              : UI_LABELS.AUTH.FORGOT_PASSWORD.SEND_RESET_EMAIL}
+              ? t("forgotPassword.sending")
+              : t("forgotPassword.sendResetEmail")}
           </Button>
         </form>
 
         <div className="mt-6 text-center">
           <Text className="text-gray-600 text-sm">
-            {UI_LABELS.AUTH.FORGOT_PASSWORD.REMEMBER_PASSWORD}{" "}
+            {t("forgotPassword.rememberPassword")}{" "}
             <Link
               href={ROUTES.AUTH.LOGIN}
               className="text-blue-600 hover:underline"
             >
-              {UI_LABELS.AUTH.FORGOT_PASSWORD.SIGN_IN_LINK}
+              {t("forgotPassword.signInLink")}
             </Link>
           </Text>
         </div>

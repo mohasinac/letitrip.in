@@ -11,8 +11,9 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components";
-import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { logger } from "@/classes";
 
 interface ErrorProps {
@@ -32,6 +33,8 @@ export default function Error({ error, reset }: ErrorProps) {
     });
   }, [error]);
 
+  const tError = useTranslations("errorPages");
+  const tActions = useTranslations("actions");
   const { themed, spacing, typography, borderRadius } = THEME_CONSTANTS;
 
   return (
@@ -64,12 +67,12 @@ export default function Error({ error, reset }: ErrorProps) {
 
         {/* Error Title */}
         <h1 className={`${typography.h1} ${themed.textPrimary} mb-4`}>
-          {UI_LABELS.ERROR_PAGES.GENERIC_ERROR.TITLE}
+          {tError("genericError.title")}
         </h1>
 
         {/* Error Description */}
         <p className={`${typography.body} ${themed.textSecondary} mb-6`}>
-          {UI_LABELS.ERROR_PAGES.GENERIC_ERROR.DESCRIPTION}
+          {tError("genericError.description")}
         </p>
 
         {/* Error Details (Development Only) */}
@@ -100,7 +103,7 @@ export default function Error({ error, reset }: ErrorProps) {
             onClick={reset}
             className="min-w-[200px]"
           >
-            {UI_LABELS.ACTIONS.RETRY}
+            {tActions("retry")}
           </Button>
           <Link href={ROUTES.HOME}>
             <Button
@@ -108,7 +111,7 @@ export default function Error({ error, reset }: ErrorProps) {
               size="lg"
               className="min-w-[200px] w-full"
             >
-              {UI_LABELS.ACTIONS.BACK} to Home
+              {tActions("goHome")}
             </Button>
           </Link>
         </div>

@@ -9,6 +9,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 30 — Public Pages i18n Wiring (2026-02-26)
+
+#### Changed
+
+- **`src/app/[locale]/cart/page.tsx`** — Replaced `UI_LABELS.CART.TITLE` with `useTranslations("cart")`. Removed `UI_LABELS` import.
+- **`src/app/[locale]/user/wishlist/page.tsx`** — Replaced all `UI_LABELS.USER.WISHLIST.*`, `UI_LABELS.USER.ORDERS.BROWSE_PRODUCTS`, and `UI_LABELS.LOADING.DEFAULT` with `useTranslations("wishlist")`, `useTranslations("actions")`, and `useTranslations("loading")`. Removed `UI_LABELS` import.
+- **`src/app/[locale]/user/settings/page.tsx`** — Replaced `UI_LABELS.SETTINGS.TITLE` with `useTranslations("settings")`. Removed `UI_LABELS` import.
+- **`messages/en.json`** — Added `wishlist.subtitle` key: "Items you've saved for later".
+- **`messages/hi.json`** — Added `wishlist.subtitle` key with Hindi translation.
+- **`src/app/[locale]/user/wishlist/__tests__/page.test.tsx`** — Updated assertions to use i18n-resolved values instead of `UI_LABELS` constants.
+- **`src/app/[locale]/user/settings/__tests__/page.test.tsx`** — Updated assertions to use i18n-resolved values instead of `UI_LABELS` constants.
+
+**Tests:** 276/276 suites green — 3097 tests (3093 passed + 4 skipped)
+
+---
+
+### Phase 29 — Auth Pages i18n Wiring (2026-02-26)
+
+#### Changed
+
+- **`src/features/auth/components/LoginForm.tsx`** — Replaced module-level `const LABELS = UI_LABELS.AUTH` with `const t = useTranslations("auth")` inside component. All `LABELS.LOGIN.*` / `LABELS.SHARED.*` replaced with `t("login.*")` / `t("shared.*")`.
+- **`src/features/auth/components/RegisterForm.tsx`** — Same pattern as LoginForm. Replaced `LABELS.REGISTER.*` and `LABELS.SHARED.*` with `t("register.*")` / `t("shared.*")`.
+- **`src/app/[locale]/auth/forgot-password/page.tsx`** — Wired with `useTranslations("auth")`. Replaced all `UI_LABELS.AUTH.FORGOT_PASSWORD.*` and `UI_LABELS.AUTH.SHARED.*`. Uses next-intl `t("forgotPassword.resetLinkSentTo", { email })` for interpolation.
+- **`src/app/[locale]/auth/reset-password/page.tsx`** — Wired with `useTranslations("auth")`. Replaced all `UI_LABELS.AUTH.RESET_PASSWORD.*`.
+- **`src/app/[locale]/auth/verify-email/page.tsx`** — Wired with `useTranslations("auth")`. Replaced all `UI_LABELS.AUTH.VERIFY_EMAIL.*`.
+- **`src/app/[locale]/unauthorized/page.tsx`** — Wired with `useTranslations("errorPages")`, `useTranslations("auth")`, `useTranslations("actions")`. Replaced all `UI_LABELS.ERROR_PAGES.UNAUTHORIZED.*`, `UI_LABELS.AUTH.REDIRECTING_IN`, `UI_LABELS.AUTH.SECONDS`, `UI_LABELS.ACTIONS.*`.
+
+**Tests:** 276/276 suites green
+
+---
+
+### Phase 28 — Nav/Layout i18n Wiring (2026-02-26)
+
+#### Fixed
+
+- **`src/app/[locale]/not-found.tsx`** — Removed orphaned duplicate return block (~52 lines) that appeared after the component's closing `}`.
+
+#### Changed
+
+- **`src/components/layout/TitleBar.tsx`** — Added `useTranslations("accessibility")`. Replaced 4 hardcoded `aria-label` strings (`"Shopping cart"`, `"Search"`, `"User account"`, `"Toggle menu"`) with `tA("cartIcon")`, `tA("searchIcon")`, `tA("userIcon")`, and conditional `tA("openMenu")` / `tA("closeMenu")`.
+- **`src/components/layout/Sidebar.tsx`** — Replaced all `UI_LABELS.NAV.*` usages (~17 total) with `useTranslations("nav")`. Removed `UI_LABELS` import.
+- **`src/components/layout/__tests__/TitleBar.test.tsx`** — Updated `getByLabelText` assertions to match new i18n values: `"Cart icon"`, `"Search icon"`, `"Open menu"`.
+- **`src/components/layout/__tests__/Sidebar.test.tsx`** — Removed unused `UI_LABELS` import.
+
+**Tests:** 276/276 suites green
+
+---
+
 ### Phase 27 — Zod Error Map + Locale Switcher UI (2026-02-25)
 
 #### Added

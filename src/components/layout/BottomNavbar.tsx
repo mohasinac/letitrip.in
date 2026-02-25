@@ -1,7 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { THEME_CONSTANTS, ROUTES, SITE_CONFIG, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS, ROUTES, SITE_CONFIG } from "@/constants";
 import { ReactNode } from "react";
 import { useAuth } from "@/hooks";
 import { AvatarDisplay } from "@/components";
@@ -31,50 +32,51 @@ interface BottomNavLink {
   icon: ReactNode;
 }
 
-const bottomNavLinks: BottomNavLink[] = [
-  {
-    href: SITE_CONFIG.nav.home,
-    label: UI_LABELS.NAV.HOME,
-    icon: (
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-      />
-    ),
-  },
-  {
-    href: SITE_CONFIG.nav.products,
-    label: UI_LABELS.NAV.PRODUCTS,
-    icon: (
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-      />
-    ),
-  },
-  {
-    href: SITE_CONFIG.nav.auctions,
-    label: UI_LABELS.NAV.AUCTIONS,
-    icon: (
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-      />
-    ),
-  },
-];
-
 export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
   const { layout, zIndex, themed, typography } = THEME_CONSTANTS;
   const pathname = usePathname();
   const { user } = useAuth();
   const isSeller = user?.role === "seller" || user?.role === "admin";
+  const t = useTranslations("nav");
+
+  const bottomNavLinks: BottomNavLink[] = [
+    {
+      href: SITE_CONFIG.nav.home,
+      label: t("home"),
+      icon: (
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+        />
+      ),
+    },
+    {
+      href: SITE_CONFIG.nav.products,
+      label: t("products"),
+      icon: (
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+        />
+      ),
+    },
+    {
+      href: SITE_CONFIG.nav.auctions,
+      label: t("auctions"),
+      icon: (
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+        />
+      ),
+    },
+  ];
 
   return (
     <nav
@@ -100,7 +102,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
           <li className="flex-1">
             <NavItem
               href={ROUTES.SELLER.DASHBOARD}
-              label={UI_LABELS.NAV.SELLER}
+              label={t("seller")}
               icon={
                 <path
                   strokeLinecap="round"
@@ -119,7 +121,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
           <button
             onClick={onSearchToggle}
             className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-colors duration-200 ${themed.textSecondary} hover:${themed.textPrimary}`}
-            aria-label="Search"
+            aria-label={t("search")}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -135,7 +137,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-            <span className={typography.xs}>{UI_LABELS.NAV.SEARCH}</span>
+            <span className={typography.xs}>{t("search")}</span>
           </button>
         </li>
 
@@ -180,7 +182,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
           ) : (
             <NavItem
               href={SITE_CONFIG.account.profile}
-              label={UI_LABELS.NAV.PROFILE}
+              label={t("profile")}
               icon={
                 <path
                   strokeLinecap="round"

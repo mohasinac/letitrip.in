@@ -9,6 +9,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   Card,
   Button,
@@ -23,13 +24,13 @@ import { useResetPassword } from "@/hooks";
 import {
   ERROR_MESSAGES,
   ROUTES,
-  UI_LABELS,
   UI_PLACEHOLDERS,
   THEME_CONSTANTS,
 } from "@/constants";
 
 function ResetPasswordContent() {
   const router = useRouter();
+  const t = useTranslations("auth");
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
@@ -43,9 +44,9 @@ function ResetPasswordContent() {
 
   useEffect(() => {
     if (!token) {
-      setTokenError(UI_LABELS.AUTH.RESET_PASSWORD.INVALID_OR_MISSING_TOKEN);
+      setTokenError(t("resetPassword.invalidOrMissingToken"));
     }
-  }, [token]);
+  }, [token, t]);
 
   const {
     mutate: resetPassword,
@@ -65,7 +66,7 @@ function ResetPasswordContent() {
     e.preventDefault();
 
     if (!token) {
-      setTokenError(UI_LABELS.AUTH.RESET_PASSWORD.INVALID_OR_MISSING_TOKEN);
+      setTokenError(t("resetPassword.invalidOrMissingToken"));
       return;
     }
 
@@ -99,17 +100,17 @@ function ResetPasswordContent() {
             </svg>
           </div>
           <Heading level={4} className="mb-2">
-            {UI_LABELS.AUTH.RESET_PASSWORD.SUCCESS}
+            {t("resetPassword.success")}
           </Heading>
           <Text className="text-gray-600 mb-6">
-            {UI_LABELS.AUTH.RESET_PASSWORD.SUCCESS_MESSAGE}
+            {t("resetPassword.successMessage")}
           </Text>
           <Button
             variant="primary"
             onClick={() => router.push(ROUTES.AUTH.LOGIN)}
             className="w-full"
           >
-            {UI_LABELS.AUTH.RESET_PASSWORD.GO_TO_LOGIN}
+            {t("resetPassword.goToLogin")}
           </Button>
         </Card>
       </div>
@@ -121,10 +122,10 @@ function ResetPasswordContent() {
       <Card className="max-w-md w-full p-8">
         <div className="text-center mb-6">
           <Heading level={4} className="mb-2">
-            {UI_LABELS.AUTH.RESET_PASSWORD.PAGE_TITLE}
+            {t("resetPassword.pageTitle")}
           </Heading>
           <Text className="text-gray-600">
-            {UI_LABELS.AUTH.RESET_PASSWORD.SUBTITLE_SHORT}
+            {t("resetPassword.subtitleShort")}
           </Text>
         </div>
 
@@ -136,7 +137,7 @@ function ResetPasswordContent() {
 
         <form onSubmit={handleSubmit} className={THEME_CONSTANTS.spacing.stack}>
           <FormField
-            label={UI_LABELS.AUTH.RESET_PASSWORD.NEW_PASSWORD}
+            label={t("resetPassword.newPassword")}
             name="newPassword"
             type="password"
             value={passwords.newPassword}
@@ -155,7 +156,7 @@ function ResetPasswordContent() {
           )}
 
           <FormField
-            label={UI_LABELS.AUTH.RESET_PASSWORD.CONFIRM_NEW_PASSWORD}
+            label={t("resetPassword.confirmNewPassword")}
             name="confirmPassword"
             type="password"
             value={passwords.confirmPassword}
@@ -167,12 +168,10 @@ function ResetPasswordContent() {
             error={
               passwords.confirmPassword &&
               passwords.newPassword !== passwords.confirmPassword
-                ? UI_LABELS.AUTH.RESET_PASSWORD.PASSWORDS_NO_MATCH
+                ? t("resetPassword.passwordsNoMatch")
                 : undefined
             }
-            placeholder={
-              UI_LABELS.AUTH.RESET_PASSWORD.CONFIRM_NEW_PASSWORD_PLACEHOLDER
-            }
+            placeholder={t("resetPassword.confirmNewPasswordPlaceholder")}
             disabled={isLoading}
             required
           />
@@ -189,19 +188,19 @@ function ResetPasswordContent() {
             className="w-full"
           >
             {isLoading
-              ? UI_LABELS.AUTH.RESET_PASSWORD.RESETTING
-              : UI_LABELS.AUTH.RESET_PASSWORD.RESET_PASSWORD}
+              ? t("resetPassword.resetting")
+              : t("resetPassword.resetPassword")}
           </Button>
         </form>
 
         <div className="mt-6 text-center">
           <Text className="text-gray-600 text-sm">
-            {UI_LABELS.AUTH.FORGOT_PASSWORD.REMEMBER_PASSWORD}{" "}
+            {t("forgotPassword.rememberPassword")}{" "}
             <Link
               href={ROUTES.AUTH.LOGIN}
               className="text-blue-600 hover:underline"
             >
-              {UI_LABELS.AUTH.FORGOT_PASSWORD.SIGN_IN_LINK}
+              {t("forgotPassword.signInLink")}
             </Link>
           </Text>
         </div>

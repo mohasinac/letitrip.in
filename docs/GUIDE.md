@@ -613,6 +613,59 @@ const t = await getTranslations("nav");
 <title>{t("home")}</title>;
 ```
 
+### i18n Wiring Pattern (Phases 28–30)
+
+**Rule**: New and refactored client components MUST use `useTranslations` — not `UI_LABELS` — for all user-visible text.
+
+**Wired components (Phases 28–30):**
+
+| Component / Page           | Namespace(s)                     |
+| -------------------------- | -------------------------------- |
+| `TitleBar.tsx`             | `accessibility` (aria-labels)    |
+| `Sidebar.tsx`              | `nav` (all nav labels)           |
+| `BottomNavbar.tsx`         | `nav`                            |
+| `Footer.tsx`               | `footer`, `nav`                  |
+| `LoginForm.tsx`            | `auth`                           |
+| `RegisterForm.tsx`         | `auth`                           |
+| `forgot-password/page.tsx` | `auth`                           |
+| `reset-password/page.tsx`  | `auth`                           |
+| `verify-email/page.tsx`    | `auth`                           |
+| `unauthorized/page.tsx`    | `errorPages`, `auth`, `actions`  |
+| `not-found.tsx`            | `errorPages`, `actions`          |
+| `error.tsx`                | `errorPages`, `actions`          |
+| `cart/page.tsx`            | `cart`                           |
+| `user/wishlist/page.tsx`   | `wishlist`, `actions`, `loading` |
+| `user/settings/page.tsx`   | `settings`                       |
+
+**Critical rule**: Never use `useTranslations` at module scope. Always call it inside the component function body (before any early returns).
+
+```tsx
+// WRONG — module-level hook call
+const LABELS = UI_LABELS.AUTH; // static constant fine
+const t = useTranslations("auth"); // ❌ cannot call hooks here
+
+// CORRECT
+export function MyComponent() {
+  const t = useTranslations("auth"); // ✅ inside component
+  return <button>{t("login.signIn")}</button>;
+}
+```
+
+**Interpolation**: Use `t("key", { variable: value })` — NOT `.replace("{var}", val)`.
+
+```tsx
+// WRONG
+{
+  UI_LABELS.FORGOT_PASSWORD.RESET_LINK_SENT_TO.replace("{email}", email);
+}
+
+// RIGHT
+{
+  t("forgotPassword.resetLinkSentTo", { email });
+}
+// messages: "resetLinkSentTo": "We sent a reset link to {email}"
+```
+
 ### Adding a New Locale
 
 1. Add the locale code to `routing.locales` array in `src/i18n/routing.ts`.

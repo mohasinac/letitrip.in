@@ -7,12 +7,17 @@
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/not-found
  */
 
+"use client";
+
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components";
-import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 export default function NotFound() {
-  const { themed, spacing, typography, borderRadius } = THEME_CONSTANTS;
+  const { themed, spacing, typography } = THEME_CONSTANTS;
+  const tError = useTranslations("errorPages");
+  const tActions = useTranslations("actions");
 
   return (
     <div
@@ -49,19 +54,19 @@ export default function NotFound() {
 
         {/* Error Title */}
         <h1 className={`${typography.h1} ${themed.textPrimary} mb-4`}>
-          {UI_LABELS.ERROR_PAGES.NOT_FOUND.TITLE}
+          {tError("notFound.title")}
         </h1>
 
         {/* Error Description */}
         <p className={`${typography.body} ${themed.textSecondary} mb-8`}>
-          {UI_LABELS.ERROR_PAGES.NOT_FOUND.DESCRIPTION}
+          {tError("notFound.description")}
         </p>
 
         {/* Action Button */}
         <div className="flex justify-center">
           <Link href={ROUTES.HOME}>
             <Button variant="primary" size="lg" className="min-w-[200px]">
-              {UI_LABELS.ACTIONS.BACK} to Home
+              {tActions("goHome")}
             </Button>
           </Link>
         </div>
