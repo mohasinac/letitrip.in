@@ -36,25 +36,16 @@ import {
   useUrlTable,
 } from "@/hooks";
 import {
-  UI_LABELS,
   ROUTES,
   API_ENDPOINTS,
   THEME_CONSTANTS,
   SUCCESS_MESSAGES,
 } from "@/constants";
+import { useTranslations } from "next-intl";
 import { apiClient } from "@/lib/api-client";
 import { formatCurrency } from "@/utils";
 
 const { input, themed } = THEME_CONSTANTS;
-const LABELS = UI_LABELS.ADMIN.PRODUCTS;
-const SELLER_LABELS = UI_LABELS.SELLER_PAGE;
-
-const STATUS_OPTIONS = [
-  { value: "published", label: "Published" },
-  { value: "draft", label: "Draft" },
-  { value: "out_of_stock", label: "Out of Stock" },
-  { value: "archived", label: "Archived" },
-];
 
 const PAGE_SIZE = 25;
 
@@ -82,6 +73,15 @@ function SellerProductsPageContent() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const { showSuccess, showError } = useMessage();
+  const t = useTranslations("sellerProducts");
+  const tActions = useTranslations("actions");
+  const tLoading = useTranslations("loading");
+  const STATUS_OPTIONS = [
+    { value: "published", label: t("statusPublished") },
+    { value: "draft", label: t("statusDraft") },
+    { value: "out_of_stock", label: t("statusOutOfStock") },
+    { value: "archived", label: t("statusArchived") },
+  ];
 
   const table = useUrlTable({
     defaults: { pageSize: String(PAGE_SIZE), sort: "-createdAt" },
@@ -179,7 +179,7 @@ function SellerProductsPageContent() {
       closeDrawer();
       refetch();
     } catch {
-      showError(LABELS.SAVE_FAILED);
+      showError(t("saveFailed"));
     }
   };
 
@@ -191,7 +191,7 @@ function SellerProductsPageContent() {
       setDeleteTarget(null);
       refetch();
     } catch {
-      showError(LABELS.DELETE_FAILED);
+      showError(t("deleteFailed"));
     }
   };
 
@@ -218,9 +218,9 @@ function SellerProductsPageContent() {
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title={SELLER_LABELS.PRODUCTS_TITLE}
-        subtitle={SELLER_LABELS.PRODUCTS_SUBTITLE}
-        actionLabel={SELLER_LABELS.ADD_PRODUCT}
+        title={t("title")}
+        subtitle={t("subtitle")}
+        actionLabel={t("addProduct")}
         onAction={openCreate}
       />
 
@@ -231,7 +231,7 @@ function SellerProductsPageContent() {
             type="search"
             value={searchParam}
             onChange={(e) => table.set("q", e.target.value)}
-            placeholder={LABELS.SEARCH_PLACEHOLDER}
+            placeholder={t("searchPlaceholder")}
             className={input.base}
           />
           <select
@@ -239,11 +239,11 @@ function SellerProductsPageContent() {
             onChange={(e) => table.setSort(e.target.value)}
             className={input.base}
           >
-            <option value="-createdAt">Newest First</option>
-            <option value="createdAt">Oldest First</option>
-            <option value="title">Title A�Z</option>
-            <option value="-price">Price High�Low</option>
-            <option value="price">Price Low�High</option>
+            <option value="-createdAt">{t("sortNewest")}</option>
+            <option value="createdAt">{t("sortOldest")}</option>
+            <option value="title">{t("sortTitleAZ")}</option>
+            <option value="-price">{t("sortPriceHighLow")}</option>
+            <option value="price">{t("sortPriceLowHigh")}</option>
           </select>
         </AdminFilterBar>
         <FilterDrawer
@@ -251,7 +251,7 @@ function SellerProductsPageContent() {
           onClearAll={() => table.set("status", "")}
         >
           <FilterFacetSection
-            title="Status"
+            title={t("filterStatusTitle")}
             options={STATUS_OPTIONS}
             selected={statusParam ? [statusParam] : []}
             onChange={(vals) => table.set("status", vals[0] ?? "")}
@@ -281,13 +281,9 @@ function SellerProductsPageContent() {
       {!isLoading && products.length === 0 ? (
         <EmptyState
           icon={<Store className="w-16 h-16" />}
-          title={searchParam ? LABELS.NO_PRODUCTS : SELLER_LABELS.NO_PRODUCTS}
-          description={
-            searchParam
-              ? SELLER_LABELS.NO_PRODUCTS_SUBTITLE
-              : SELLER_LABELS.NO_PRODUCTS_SUBTITLE
-          }
-          actionLabel={SELLER_LABELS.ADD_PRODUCT}
+          title={t("noProducts")}
+          description={t("noProductsSubtitle")}
+          actionLabel={t("addProduct")}
           onAction={openCreate}
         />
       ) : (
@@ -297,8 +293,8 @@ function SellerProductsPageContent() {
           keyExtractor={(p) => p.id}
           loading={isLoading}
           actions={actions}
-          emptyTitle={LABELS.NO_PRODUCTS}
-          emptyMessage={SELLER_LABELS.NO_PRODUCTS_SUBTITLE}
+          emptyTitle={t("noProducts")}
+          emptyMessage={t("noProductsSubtitle")}
           externalPagination
           showViewToggle
           viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
@@ -350,13 +346,13 @@ function SellerProductsPageContent() {
                     onClick={() => openEdit(product)}
                     className="flex-1 text-xs py-1.5 rounded-lg border border-indigo-500 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
                   >
-                    {UI_LABELS.ACTIONS.EDIT}
+                    {tActions("edit")}
                   </button>
                   <button
                     onClick={() => setDeleteTarget(product)}
                     className="flex-1 text-xs py-1.5 rounded-lg border border-red-400 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                   >
-                    {UI_LABELS.ACTIONS.DELETE}
+                    {tActions("delete")}
                   </button>
                 </div>
               </div>
@@ -380,9 +376,7 @@ function SellerProductsPageContent() {
       <SideDrawer
         isOpen={drawerMode !== null}
         onClose={closeDrawer}
-        title={
-          drawerMode === "create" ? LABELS.CREATE_PRODUCT : LABELS.EDIT_PRODUCT
-        }
+        title={drawerMode === "create" ? t("createProduct") : t("editProduct")}
         mode={drawerMode ?? "view"}
         isDirty={isFormDirty}
         footer={
@@ -391,16 +385,14 @@ function SellerProductsPageContent() {
               onClick={closeDrawer}
               className={`px-4 py-2 rounded-lg text-sm border ${themed.border} ${themed.textPrimary} ${themed.bgPrimary}`}
             >
-              {UI_LABELS.ACTIONS.CANCEL}
+              {tActions("cancel")}
             </button>
             <button
               onClick={handleSave}
               disabled={saveMutation.isLoading}
               className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
             >
-              {saveMutation.isLoading
-                ? UI_LABELS.LOADING.DEFAULT
-                : UI_LABELS.ACTIONS.SAVE}
+              {saveMutation.isLoading ? tLoading("default") : tActions("save")}
             </button>
           </div>
         }
@@ -420,8 +412,8 @@ function SellerProductsPageContent() {
           isOpen={!!deleteTarget}
           onClose={() => setDeleteTarget(null)}
           onConfirm={handleDeleteConfirm}
-          title={LABELS.DELETE_PRODUCT}
-          message={SELLER_LABELS.DELETE_LISTING_CONFIRM}
+          title={t("deleteProduct")}
+          message={t("deleteListingConfirm")}
           isDeleting={deleteMutation.isLoading}
         />
       )}

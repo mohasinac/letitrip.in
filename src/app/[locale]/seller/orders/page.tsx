@@ -21,12 +21,12 @@ import {
 } from "@/components";
 import { useAuth, useApiQuery, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { UI_LABELS, ROUTES, API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import type { OrderDocument } from "@/db/schema";
 import { formatCurrency, formatDate } from "@/utils";
 
 const { themed, spacing } = THEME_CONSTANTS;
-const SELLER_LABELS = UI_LABELS.SELLER_PAGE;
 
 interface OrdersRaw {
   orders: OrderDocument[];
@@ -39,19 +39,18 @@ interface OrdersRaw {
   };
 }
 
-// Status filter tabs
-const STATUS_TABS = [
-  { key: "", label: "All Orders" },
-  { key: "pending", label: "Pending" },
-  { key: "confirmed", label: "Confirmed" },
-  { key: "shipped", label: "Shipped" },
-  { key: "delivered", label: "Delivered" },
-  { key: "cancelled", label: "Cancelled" },
-];
-
 function SellerOrdersPageContent() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const t = useTranslations("sellerOrders");
+  const STATUS_TABS = [
+    { key: "", label: t("tabAll") },
+    { key: "pending", label: t("tabPending") },
+    { key: "confirmed", label: t("tabConfirmed") },
+    { key: "shipped", label: t("tabShipped") },
+    { key: "delivered", label: t("tabDelivered") },
+    { key: "cancelled", label: t("tabCancelled") },
+  ];
 
   const table = useUrlTable({ defaults: { pageSize: "25" } });
   const statusFilter = table.get("status");
@@ -105,10 +104,7 @@ function SellerOrdersPageContent() {
 
   return (
     <div className={spacing.stack}>
-      <AdminPageHeader
-        title={SELLER_LABELS.ORDERS_TITLE}
-        subtitle={SELLER_LABELS.ORDERS_SUBTITLE}
-      />
+      <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
 
       {/* Summary Stats */}
       {!isLoading && orders.length > 0 && (
@@ -116,22 +112,22 @@ function SellerOrdersPageContent() {
           {(
             [
               {
-                label: "Total",
+                label: t("statTotal"),
                 count: orders.length,
                 color: "text-indigo-600 dark:text-indigo-400",
               },
               {
-                label: "Pending",
+                label: t("statPending"),
                 count: orders.filter((o) => o.status === "pending").length,
                 color: "text-yellow-600 dark:text-yellow-400",
               },
               {
-                label: "Confirmed",
+                label: t("statConfirmed"),
                 count: orders.filter((o) => o.status === "confirmed").length,
                 color: "text-blue-600 dark:text-blue-400",
               },
               {
-                label: "Delivered",
+                label: t("statDelivered"),
                 count: orders.filter((o) => o.status === "delivered").length,
                 color: "text-green-600 dark:text-green-400",
               },
@@ -172,8 +168,8 @@ function SellerOrdersPageContent() {
         columns={columns}
         keyExtractor={(o) => o.id}
         loading={isLoading}
-        emptyTitle={SELLER_LABELS.ORDERS_EMPTY}
-        emptyMessage={SELLER_LABELS.ORDERS_EMPTY_SUBTITLE}
+        emptyTitle={t("emptyTitle")}
+        emptyMessage={t("emptySubtitle")}
         externalPagination
       />
 
@@ -194,8 +190,8 @@ function SellerOrdersPageContent() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <Text className={`font-medium ${themed.textPrimary}`}>
               {statusFilter
-                ? `Revenue (${statusFilter} orders, this page)`
-                : "Revenue (this page)"}
+                ? t("revenueFiltered", { status: statusFilter })
+                : t("revenueThisPage")}
             </Text>
             <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
               {formatCurrency(

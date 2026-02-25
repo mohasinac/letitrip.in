@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 34 — Seller Portal Pages i18n Wiring (2026-02-27)
+
+#### Changed
+
+- **`src/app/[locale]/seller/page.tsx`** — Replaced `UI_LABELS.SELLER_PAGE.*` with `useTranslations("sellerDashboard")`. ICU interpolation for `welcome` (`{name}`). Removed `UI_LABELS` import.
+- **`src/app/[locale]/seller/analytics/page.tsx`** — Removed module-level `const LABELS = UI_LABELS.SELLER_ANALYTICS`. Added `useTranslations("sellerAnalytics")` inside component. Replaced 5 label references.
+- **`src/app/[locale]/seller/payouts/page.tsx`** — Added `useTranslations("sellerPayouts")` + `useTranslations("loading")` inside component. Replaced 4 `UI_LABELS.SELLER_PAYOUTS.*` and `UI_LABELS.LOADING.DEFAULT` references.
+- **`src/app/[locale]/seller/orders/page.tsx`** — Removed module-level `const SELLER_LABELS = UI_LABELS.SELLER_PAGE`. Moved `STATUS_TABS` array inside `SellerOrdersPageContent()` using `t("tabAll")`, `t("tabPending")` etc. Replaced stat labels, empty state, and revenue summary text using `t("revenueFiltered", { status })`/`t("revenueThisPage")`.
+- **`src/app/[locale]/seller/products/page.tsx`** — Removed module-level `LABELS`, `SELLER_LABELS`, and `STATUS_OPTIONS`. Moved `STATUS_OPTIONS` inside component using `t("statusPublished")` etc. Added `useTranslations("sellerProducts")`, `useTranslations("actions")`, `useTranslations("loading")`. Replaced 16+ label references including sort option labels (fixed corrupted `U+FFFD` characters), filter facet title, drawer titles, empty state, confirm-delete message.
+- **`src/app/[locale]/seller/products/[id]/edit/page.tsx`** — Removed module-level `LABELS` and `SELLER_LABELS` aliases. Added `useTranslations("sellerProducts")` + `useTranslations("actions")`. Replaced 9 label references (`editListingTitle` ×3, `saving`, `saveListing`, `saveFailed`, `back` ×3, `cancel`).
+- **`messages/en.json`** — Added 6 namespaces: `sellerDashboard.*` (9 keys), `sellerAnalytics.*` (5 keys), `sellerPayouts.*` (4 keys), `sellerOrders.*` (14 keys), `sellerProducts.*` (26 keys).
+- **`messages/hi.json`** — Matching Hindi translations for all Phase 34 namespaces.
+
+**TypeScript:** 0 errors.
+
+---
+
 ### Phase 33 — Static/Content Pages i18n Wiring (2026-02-27)
 
 #### Changed

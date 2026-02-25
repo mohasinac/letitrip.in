@@ -22,7 +22,8 @@ import {
 } from "@/components";
 import { useAuth, useApiQuery } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { UI_LABELS, ROUTES, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import type { ProductDocument } from "@/db/schema";
 
 interface ProductsResponse {
@@ -42,6 +43,7 @@ const { themed, spacing, enhancedCard } = THEME_CONSTANTS;
 export default function SellerDashboardPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const t = useTranslations("sellerDashboard");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -90,19 +92,15 @@ export default function SellerDashboardPage() {
       {/* Welcome Banner */}
       <div>
         <Heading level={2} variant="primary">
-          {UI_LABELS.SELLER_PAGE.WELCOME(
-            user.displayName ?? user.email ?? "Seller",
-          )}
+          {t("welcome", { name: user.displayName ?? user.email ?? "Seller" })}
         </Heading>
-        <Text className={`${themed.textSecondary} mt-1`}>
-          {UI_LABELS.SELLER_PAGE.SUBTITLE}
-        </Text>
+        <Text className={`${themed.textSecondary} mt-1`}>{t("subtitle")}</Text>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <SellerStatCard
-          label={UI_LABELS.SELLER_PAGE.TOTAL_PRODUCTS}
+          label={t("totalProducts")}
           value={stats.total}
           icon={<Package className="w-5 h-5" />}
           cardClass={enhancedCard.stat.indigo}
@@ -110,7 +108,7 @@ export default function SellerDashboardPage() {
           loading={productsLoading}
         />
         <SellerStatCard
-          label={UI_LABELS.SELLER_PAGE.ACTIVE_LISTINGS}
+          label={t("activeListings")}
           value={stats.activeListings}
           icon={<Store className="w-5 h-5" />}
           cardClass={enhancedCard.stat.emerald}
@@ -118,7 +116,7 @@ export default function SellerDashboardPage() {
           loading={productsLoading}
         />
         <SellerStatCard
-          label={UI_LABELS.SELLER_PAGE.ACTIVE_AUCTIONS}
+          label={t("activeAuctions")}
           value={stats.activeAuctions}
           icon={<Gavel className="w-5 h-5" />}
           cardClass={enhancedCard.stat.teal}
@@ -126,7 +124,7 @@ export default function SellerDashboardPage() {
           loading={productsLoading}
         />
         <SellerStatCard
-          label={UI_LABELS.SELLER_PAGE.DRAFT_PRODUCTS}
+          label={t("draftProducts")}
           value={stats.drafts}
           icon={<FileText className="w-5 h-5" />}
           cardClass={enhancedCard.stat.amber}
@@ -146,9 +144,9 @@ export default function SellerDashboardPage() {
       {!productsLoading && (productsData?.items?.length ?? 0) === 0 && (
         <EmptyState
           icon={<Store className="w-10 h-10 text-gray-400" />}
-          title={UI_LABELS.SELLER_PAGE.NO_PRODUCTS}
-          description={UI_LABELS.SELLER_PAGE.NO_PRODUCTS_SUBTITLE}
-          actionLabel={UI_LABELS.SELLER_PAGE.ADD_PRODUCT}
+          title={t("noProducts")}
+          description={t("noProductsSubtitle")}
+          actionLabel={t("addProduct")}
           onAction={() => router.push(ROUTES.SELLER.PRODUCTS)}
         />
       )}

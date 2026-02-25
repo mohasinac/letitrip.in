@@ -15,7 +15,8 @@ import {
   SellerPayoutHistoryTable,
 } from "@/components";
 import type { PayoutSummary, PayoutRecord } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 
@@ -30,6 +31,8 @@ export default function SellerPayoutsPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { showSuccess, showError } = useMessage();
+  const t = useTranslations("sellerPayouts");
+  const tLoading = useTranslations("loading");
 
   useEffect(() => {
     if (!authLoading && !user) router.replace(ROUTES.AUTH.LOGIN);
@@ -55,7 +58,7 @@ export default function SellerPayoutsPage() {
       <div
         className={`${themed.bgPrimary} min-h-screen flex items-center justify-center`}
       >
-        <p className={themed.textSecondary}>{UI_LABELS.LOADING.DEFAULT}</p>
+        <p className={themed.textSecondary}>{tLoading("default")}</p>
       </div>
     );
   }
@@ -66,10 +69,10 @@ export default function SellerPayoutsPage() {
   const handleRequestPayout = async (payload: Record<string, unknown>) => {
     const result = await requestPayout(payload);
     if (result) {
-      showSuccess(UI_LABELS.SELLER_PAYOUTS.STATUS_PENDING);
+      showSuccess(t("statusPending"));
       refetch();
     } else {
-      showError(UI_LABELS.SELLER_PAYOUTS.NO_EARNINGS);
+      showError(t("noEarnings"));
     }
   };
 
@@ -78,11 +81,9 @@ export default function SellerPayoutsPage() {
       <div className={`max-w-4xl mx-auto ${spacing.padding.lg}`}>
         <div className={`${spacing.stack} mb-8`}>
           <h1 className={`${typography.h2} ${themed.textPrimary}`}>
-            {UI_LABELS.SELLER_PAYOUTS.PAGE_TITLE}
+            {t("pageTitle")}
           </h1>
-          <p className={themed.textSecondary}>
-            {UI_LABELS.SELLER_PAYOUTS.PAGE_SUBTITLE}
-          </p>
+          <p className={themed.textSecondary}>{t("pageSubtitle")}</p>
         </div>
 
         <SellerPayoutStats summary={summary} isLoading={isLoading} />

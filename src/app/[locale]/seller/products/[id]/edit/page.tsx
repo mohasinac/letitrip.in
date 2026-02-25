@@ -20,13 +20,13 @@ import {
 import type { AdminProduct } from "@/components";
 import { useAuth, useApiQuery, useMessage } from "@/hooks";
 import {
-  UI_LABELS,
   ROUTES,
   API_ENDPOINTS,
   THEME_CONSTANTS,
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
 } from "@/constants";
+import { useTranslations } from "next-intl";
 import { apiClient } from "@/lib/api-client";
 
 interface PageProps {
@@ -34,14 +34,14 @@ interface PageProps {
 }
 
 const { spacing } = THEME_CONSTANTS;
-const LABELS = UI_LABELS.ADMIN.PRODUCTS;
-const SELLER_LABELS = UI_LABELS.SELLER_PAGE;
 
 export default function SellerEditProductPage({ params }: PageProps) {
   const { id } = use(params);
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const { showSuccess, showError } = useMessage();
+  const t = useTranslations("sellerProducts");
+  const tActions = useTranslations("actions");
 
   const [formData, setFormData] = useState<Partial<AdminProduct> | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -117,7 +117,7 @@ export default function SellerEditProductPage({ params }: PageProps) {
       showSuccess(SUCCESS_MESSAGES.PRODUCT.UPDATED);
       router.push(ROUTES.SELLER.PRODUCTS);
     } catch (err: any) {
-      const msg = err?.message ?? LABELS.SAVE_FAILED;
+      const msg = err?.message ?? t("saveFailed");
       setError(msg);
       showError(msg);
     } finally {
@@ -139,8 +139,8 @@ export default function SellerEditProductPage({ params }: PageProps) {
     return (
       <div className={spacing.stack}>
         <AdminPageHeader
-          title={SELLER_LABELS.EDIT_LISTING_TITLE}
-          actionLabel={UI_LABELS.ACTIONS.BACK}
+          title={t("editListingTitle")}
+          actionLabel={tActions("back")}
           onAction={() => router.push(ROUTES.SELLER.PRODUCTS)}
         />
         <Alert variant="error">{ERROR_MESSAGES.PRODUCT.NOT_FOUND}</Alert>
@@ -153,8 +153,8 @@ export default function SellerEditProductPage({ params }: PageProps) {
     return (
       <div className={spacing.stack}>
         <AdminPageHeader
-          title={SELLER_LABELS.EDIT_LISTING_TITLE}
-          actionLabel={UI_LABELS.ACTIONS.BACK}
+          title={t("editListingTitle")}
+          actionLabel={tActions("back")}
           onAction={() => router.push(ROUTES.SELLER.PRODUCTS)}
         />
         <Alert variant="error">
@@ -167,9 +167,9 @@ export default function SellerEditProductPage({ params }: PageProps) {
   return (
     <div className={spacing.stack}>
       <AdminPageHeader
-        title={SELLER_LABELS.EDIT_LISTING_TITLE}
+        title={t("editListingTitle")}
         subtitle={formData?.title}
-        actionLabel={UI_LABELS.ACTIONS.BACK}
+        actionLabel={tActions("back")}
         onAction={() => router.push(ROUTES.SELLER.PRODUCTS)}
       />
 
@@ -188,14 +188,14 @@ export default function SellerEditProductPage({ params }: PageProps) {
             onClick={() => router.push(ROUTES.SELLER.PRODUCTS)}
             disabled={isSubmitting}
           >
-            {UI_LABELS.ACTIONS.CANCEL}
+            {tActions("cancel")}
           </Button>
           <Button
             variant="primary"
             onClick={handleSubmit}
             disabled={isSubmitting || !formData}
           >
-            {isSubmitting ? SELLER_LABELS.SAVING : SELLER_LABELS.SAVE_LISTING}
+            {isSubmitting ? t("saving") : t("saveListing")}
           </Button>
         </div>
       </Card>

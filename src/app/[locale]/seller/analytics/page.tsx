@@ -20,7 +20,8 @@ import type {
   MonthEntry,
   TopProduct,
 } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useAuth, useApiQuery } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 
@@ -35,7 +36,7 @@ interface AnalyticsResponse {
 export default function SellerAnalyticsPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const LABELS = UI_LABELS.SELLER_ANALYTICS;
+  const t = useTranslations("sellerAnalytics");
 
   useEffect(() => {
     if (
@@ -70,16 +71,16 @@ export default function SellerAnalyticsPage() {
     <div className={spacing.stack}>
       <div>
         <h1 className={`${typography.h3} ${themed.textPrimary}`}>
-          {LABELS.PAGE_TITLE}
+          {t("pageTitle")}
         </h1>
         <p className={`mt-1 text-sm ${themed.textSecondary}`}>
-          {LABELS.PAGE_SUBTITLE}
+          {t("pageSubtitle")}
         </p>
       </div>
 
       {isLoading && (
         <div className={`text-center py-12 ${themed.textSecondary}`}>
-          {LABELS.LOADING}
+          {t("loading")}
         </div>
       )}
 
@@ -94,11 +95,9 @@ export default function SellerAnalyticsPage() {
       {!isLoading && !summary && (
         <div className={`text-center py-12 ${spacing.stack}`}>
           <p className={`text-sm font-medium ${themed.textPrimary}`}>
-            {LABELS.NO_DATA}
+            {t("noData")}
           </p>
-          <p className={`text-xs ${themed.textSecondary}`}>
-            {LABELS.NO_DATA_DESC}
-          </p>
+          <p className={`text-xs ${themed.textSecondary}`}>{t("noDataDesc")}</p>
         </div>
       )}
     </div>
