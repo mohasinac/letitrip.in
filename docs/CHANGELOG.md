@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 35 — Admin Pages i18n Wiring Batch 1 (2026-02-27)
+
+#### Changed
+
+- **`src/app/[locale]/admin/dashboard/page.tsx`** — Replaced `UI_LABELS.ADMIN.DASHBOARD.*` + `UI_LABELS.ACTIONS.RETRY/REFRESH` with `useTranslations("adminDashboard")` + `useTranslations("actions")`.
+- **`src/app/[locale]/admin/analytics/page.tsx`** — Moved `const LABELS = UI_LABELS.ADMIN_ANALYTICS` inside component, replaced with `useTranslations("adminAnalytics")`. Replaced 13 label references including stat cards, chart titles, tooltip formatters.
+- **`src/app/[locale]/admin/media/page.tsx`** — Removed module-level `const LABELS = UI_LABELS.ADMIN.MEDIA`. Added `useTranslations("adminMedia")` inside component. Replaced 6 references.
+- **`src/app/[locale]/admin/newsletter/page.tsx`** — Removed module-level `const LABELS` + `STATUS_TABS`. Moved both inside component using `useTranslations("adminNewsletter")`. Replaced 7 label references.
+- **`src/app/[locale]/admin/payouts/page.tsx`** — Removed module-level `const LABELS` + `STATUS_TABS`. Moved both inside component using `useTranslations("adminPayouts")`. Replaced 7 label references.
+- **`src/app/[locale]/admin/site/page.tsx`** — Added `useTranslations("adminSite")`, `useTranslations("actions")`, `useTranslations("loading")`. Replaced 8 `UI_LABELS.ADMIN.SITE.*`, `UI_LABELS.LOADING.*`, `UI_LABELS.ACTIONS.*` references.
+- **`messages/en.json`** — Added 6 namespaces: `adminDashboard.*` (2 keys), `adminAnalytics.*` (13 keys), `adminMedia.*` (6 keys), `adminNewsletter.*` (11 keys), `adminPayouts.*` (13 keys), `adminSite.*` (5 keys).
+- **`messages/hi.json`** — Matching Hindi translations for all Phase 35 namespaces.
+
+**TypeScript:** 0 errors.
+
+---
+
 ### Phase 34 — Seller Portal Pages i18n Wiring (2026-02-27)
 
 #### Changed

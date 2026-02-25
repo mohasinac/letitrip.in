@@ -5,11 +5,11 @@ import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import {
   API_ENDPOINTS,
-  UI_LABELS,
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
   THEME_CONSTANTS,
 } from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   Card,
   Button,
@@ -20,14 +20,7 @@ import {
 } from "@/components";
 import type { NewsletterSubscriberDocument } from "@/db/schema";
 
-const LABELS = UI_LABELS.ADMIN.NEWSLETTER;
 const { themed, spacing } = THEME_CONSTANTS;
-
-const STATUS_TABS = [
-  { key: "", label: LABELS.FILTER_ALL },
-  { key: "active", label: LABELS.FILTER_ACTIVE },
-  { key: "unsubscribed", label: LABELS.FILTER_UNSUBSCRIBED },
-];
 
 interface NewsletterStats {
   total: number;
@@ -50,6 +43,12 @@ interface NewsletterResponse {
 
 export default function AdminNewsletterPage() {
   const { showSuccess, showError } = useMessage();
+  const t = useTranslations("adminNewsletter");
+  const STATUS_TABS = [
+    { key: "", label: t("filterAll") },
+    { key: "active", label: t("filterActive") },
+    { key: "unsubscribed", label: t("filterUnsubscribed") },
+  ];
 
   const [statusFilter, setStatusFilter] = useState("");
   const [deleteTarget, setDeleteTarget] =
@@ -122,8 +121,8 @@ export default function AdminNewsletterPage() {
   return (
     <div className={spacing.stack}>
       <AdminPageHeader
-        title={LABELS.TITLE}
-        subtitle={`${LABELS.SUBTITLE} — ${stats?.total ?? subscribers.length} total`}
+        title={t("title")}
+        subtitle={`${t("subtitle")} \u2014 ${stats?.total ?? subscribers.length} total`}
       />
 
       {/* Stats row */}
@@ -133,7 +132,7 @@ export default function AdminNewsletterPage() {
             <p
               className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary} mb-1`}
             >
-              {LABELS.TOTAL_SUBSCRIBERS}
+              {t("totalSubscribers")}
             </p>
             <p className="text-2xl font-bold tabular-nums">{stats.total}</p>
           </Card>
@@ -141,7 +140,7 @@ export default function AdminNewsletterPage() {
             <p
               className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary} mb-1`}
             >
-              {LABELS.ACTIVE_SUBSCRIBERS}
+              {t("activeSubscribers")}
             </p>
             <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
               {stats.active}
@@ -156,7 +155,7 @@ export default function AdminNewsletterPage() {
             <p
               className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary} mb-1`}
             >
-              {LABELS.UNSUBSCRIBED}
+              {t("unsubscribed")}
             </p>
             <p className="text-2xl font-bold text-gray-500 dark:text-gray-400 tabular-nums">
               {stats.unsubscribed}
@@ -171,7 +170,7 @@ export default function AdminNewsletterPage() {
           <p
             className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary} mb-3`}
           >
-            {LABELS.SOURCE_BREAKDOWN}
+            {t("sourceBreakdown")}
           </p>
           <div className="flex flex-wrap gap-2">
             {Object.entries(stats.sources)
@@ -208,9 +207,9 @@ export default function AdminNewsletterPage() {
           data={subscribers}
           loading={isLoading}
           emptyMessage={
-            error ? ERROR_MESSAGES.NEWSLETTER.FETCH_FAILED : LABELS.EMPTY
+            error ? ERROR_MESSAGES.NEWSLETTER.FETCH_FAILED : t("empty")
           }
-          emptyTitle={LABELS.EMPTY_SUBTITLE}
+          emptyTitle={t("emptySubtitle")}
           keyExtractor={(s: NewsletterSubscriberDocument) => s.id}
         />
       </Card>

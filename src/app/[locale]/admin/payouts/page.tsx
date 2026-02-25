@@ -5,11 +5,11 @@ import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import {
   API_ENDPOINTS,
-  UI_LABELS,
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
   THEME_CONSTANTS,
 } from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   Card,
   Button,
@@ -24,16 +24,7 @@ import type { PayoutStatusFormState } from "@/components";
 import { formatCurrency } from "@/utils";
 import type { PayoutDocument } from "@/db/schema";
 
-const LABELS = UI_LABELS.ADMIN.PAYOUTS;
 const { themed, spacing } = THEME_CONSTANTS;
-
-const STATUS_TABS = [
-  { key: "", label: LABELS.FILTER_ALL },
-  { key: "pending", label: LABELS.FILTER_PENDING },
-  { key: "processing", label: LABELS.FILTER_PROCESSING },
-  { key: "completed", label: LABELS.FILTER_COMPLETED },
-  { key: "failed", label: LABELS.FILTER_FAILED },
-];
 
 interface PayoutsResponse {
   payouts: PayoutDocument[];
@@ -42,6 +33,14 @@ interface PayoutsResponse {
 
 export default function AdminPayoutsPage() {
   const { showSuccess, showError } = useMessage();
+  const t = useTranslations("adminPayouts");
+  const STATUS_TABS = [
+    { key: "", label: t("filterAll") },
+    { key: "pending", label: t("filterPending") },
+    { key: "processing", label: t("filterProcessing") },
+    { key: "completed", label: t("filterCompleted") },
+    { key: "failed", label: t("filterFailed") },
+  ];
 
   const [statusFilter, setStatusFilter] = useState("");
   const [selectedPayout, setSelectedPayout] = useState<PayoutDocument | null>(
@@ -128,8 +127,8 @@ export default function AdminPayoutsPage() {
   return (
     <div className={spacing.stack}>
       <AdminPageHeader
-        title={LABELS.TITLE}
-        subtitle={`${LABELS.SUBTITLE} — ${data?.meta?.total ?? payouts.length} total`}
+        title={t("title")}
+        subtitle={`${t("subtitle")} \u2014 ${data?.meta?.total ?? payouts.length} total`}
       />
 
       {/* Stats row */}
@@ -139,7 +138,7 @@ export default function AdminPayoutsPage() {
             <p
               className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary} mb-1`}
             >
-              {LABELS.TOTAL_PENDING}
+              {t("totalPending")}
             </p>
             <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 tabular-nums">
               {formatCurrency(totalPending)}
@@ -153,7 +152,7 @@ export default function AdminPayoutsPage() {
             <p
               className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary} mb-1`}
             >
-              {LABELS.TOTAL_PAID_MONTH}
+              {t("totalPaidMonth")}
             </p>
             <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
               {formatCurrency(totalPaidMonth)}
@@ -167,7 +166,7 @@ export default function AdminPayoutsPage() {
             <p
               className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary} mb-1`}
             >
-              {LABELS.FAILURE_COUNT}
+              {t("failureCount")}
             </p>
             <p className="text-2xl font-bold text-red-600 dark:text-red-400 tabular-nums">
               {failedThisMonth}
@@ -198,9 +197,7 @@ export default function AdminPayoutsPage() {
           columns={columns}
           data={payouts}
           loading={isLoading}
-          emptyMessage={
-            error ? ERROR_MESSAGES.PAYOUT.FETCH_FAILED : LABELS.EMPTY
-          }
+          emptyMessage={error ? ERROR_MESSAGES.PAYOUT.FETCH_FAILED : t("empty")}
           keyExtractor={(p: PayoutDocument) => p.id}
         />
       </Card>
@@ -209,7 +206,7 @@ export default function AdminPayoutsPage() {
       <SideDrawer
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
-        title={LABELS.UPDATE_STATUS}
+        title={t("updateStatus")}
         side="right"
       >
         {selectedPayout && (
@@ -224,7 +221,7 @@ export default function AdminPayoutsPage() {
               onCancel={handleCloseDrawer}
               onSubmit={handleSave}
               isLoading={updateMutation.isLoading}
-              submitLabel={LABELS.UPDATE_PAYOUT}
+              submitLabel={t("updatePayout")}
             />
           </div>
         )}

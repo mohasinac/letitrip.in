@@ -906,5 +906,67 @@
     "sortPriceHighLow": "कीमत ज़्यादा-कम",
     "sortPriceLowHigh": "कीमत कम-ज़्यादा",
     "filterStatusTitle": "स्थिति"
+  },
+  "adminDashboard": {
+    "title": "डैशबोर्ड अवलोकन",
+    "subtitle": "सिस्टम आंकड़े और त्वरित क्रियाएं"
+  },
+  "adminAnalytics": {
+    "pageTitle": "बिक्री विश्लेषण",
+    "pageSubtitle": "प्लेटफॉर्म पर राजस्व और ऑर्डर प्रवृत्तियां",
+    "loading": "विश्लेषण लोड हो रहा है...",
+    "noData": "कोई डेटा उपलब्ध नहीं",
+    "totalRevenue": "कुल राजस्व",
+    "totalOrders": "कुल ऑर्डर",
+    "revenueThisMonth": "इस माह का राजस्व",
+    "ordersThisMonth": "इस माह के ऑर्डर",
+    "revenueChartTitle": "मासिक राजस्व",
+    "ordersChartTitle": "मासिक ऑर्डर",
+    "topProductsTitle": "राजस्व द्वारा शीर्ष उत्पाद",
+    "revenueLabel": "राजस्व",
+    "ordersLabel": "ऑर्डर"
+  },
+  "adminMedia": {
+    "title": "मीडिया ऑपरेशन",
+    "subtitle": "छवि क्रॉपिंग और वीडियो ट्रिमिंग प्रबंधित करें",
+    "cropImage": "छवि क्रॉप करें",
+    "trimVideo": "वीडियो ट्रिम करें",
+    "recentOperations": "हालिया ऑपरेशन",
+    "noOperations": "अभी तक कोई मीडिया ऑपरेशन नहीं"
+  },
+  "adminNewsletter": {
+    "title": "न्यूज़लेटर सदस्य",
+    "subtitle": "ईमेल न्यूज़लेटर सदस्यता प्रबंधित करें",
+    "filterAll": "सभी सदस्य",
+    "filterActive": "सक्रिय",
+    "filterUnsubscribed": "असदस्यता रद्द",
+    "totalSubscribers": "कुल सदस्य",
+    "activeSubscribers": "सक्रिय सदस्य",
+    "unsubscribed": "असदस्यता रद्द",
+    "sourceBreakdown": "स्रोत विभाजन",
+    "empty": "कोई सदस्य नहीं मिला",
+    "emptySubtitle": "न्यूज़लेटर सदस्य यहाँ दिखाई देंगे।"
+  },
+  "adminPayouts": {
+    "title": "भुगतान",
+    "subtitle": "विक्रेता भुगतान अनुरोधों की समीक्षा और प्रक्रिया करें",
+    "filterAll": "सभी भुगतान",
+    "filterPending": "लंबित",
+    "filterProcessing": "प्रक्रियाधीन",
+    "filterCompleted": "पूर्ण",
+    "filterFailed": "विफल",
+    "totalPending": "कुल लंबित",
+    "totalPaidMonth": "इस माह भुगतान",
+    "failureCount": "इस माह विफल",
+    "empty": "कोई भुगतान अनुरोध नहीं",
+    "updateStatus": "भुगतान स्थिति अपडेट करें",
+    "updatePayout": "भुगतान अपडेट करें"
+  },
+  "adminSite": {
+    "title": "साइट सेटिंग्स",
+    "subtitle": "वैश्विक साइट सेटिंग्स, ब्रांडिंग और रूप कॉन्फ़िगर करें",
+    "settingsSaved": "सेटिंग्स सफलतापूर्वक सहेजी गई",
+    "settingsFailed": "सेटिंग्स सहेजने में विफल",
+    "saveAllChanges": "सभी बदलाव सहेजें"
   }
 }

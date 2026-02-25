@@ -9,7 +9,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { THEME_CONSTANTS, UI_LABELS, API_ENDPOINTS } from "@/constants";
+import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   Button,
   BackgroundSettings,
@@ -28,6 +29,9 @@ import type { SiteSettingsDocument } from "@/db/schema";
 
 export default function AdminSiteSettings() {
   const { showToast } = useToast();
+  const t = useTranslations("adminSite");
+  const tActions = useTranslations("actions");
+  const tLoading = useTranslations("loading");
 
   const { data, isLoading, error, refetch } = useApiQuery<{
     data: SiteSettingsDocument;
@@ -80,9 +84,9 @@ export default function AdminSiteSettings() {
     try {
       await updateMutation.mutate(settings);
       await refetch();
-      showToast(UI_LABELS.ADMIN.SITE.SETTINGS_SAVED, "success");
+      showToast(t("settingsSaved"), "success");
     } catch {
-      showToast(UI_LABELS.ADMIN.SITE.SETTINGS_FAILED, "error");
+      showToast(t("settingsFailed"), "error");
     }
   };
 
@@ -91,12 +95,9 @@ export default function AdminSiteSettings() {
   if (isLoading) {
     return (
       <div className={`${THEME_CONSTANTS.spacing.stack} sm:space-y-6 w-full`}>
-        <AdminPageHeader
-          title={UI_LABELS.ADMIN.SITE.TITLE}
-          subtitle={UI_LABELS.ADMIN.SITE.SUBTITLE}
-        />
+        <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
         <Card>
-          <div className="text-center py-8">{UI_LABELS.LOADING.DEFAULT}</div>
+          <div className="text-center py-8">{tLoading("default")}</div>
         </Card>
       </div>
     );
@@ -105,14 +106,11 @@ export default function AdminSiteSettings() {
   if (error) {
     return (
       <div className={`${THEME_CONSTANTS.spacing.stack} sm:space-y-6 w-full`}>
-        <AdminPageHeader
-          title={UI_LABELS.ADMIN.SITE.TITLE}
-          subtitle={UI_LABELS.ADMIN.SITE.SUBTITLE}
-        />
+        <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
         <Card>
           <div className="text-center py-8">
             <p className="text-red-600 mb-4">{error.message}</p>
-            <Button onClick={() => refetch()}>{UI_LABELS.ACTIONS.RETRY}</Button>
+            <Button onClick={() => refetch()}>{tActions("retry")}</Button>
           </div>
         </Card>
       </div>
@@ -122,13 +120,9 @@ export default function AdminSiteSettings() {
   return (
     <div className={`${THEME_CONSTANTS.spacing.stack} sm:space-y-6 w-full`}>
       <AdminPageHeader
-        title={UI_LABELS.ADMIN.SITE.TITLE}
-        subtitle={UI_LABELS.ADMIN.SITE.SUBTITLE}
-        actionLabel={
-          isSaving
-            ? UI_LABELS.LOADING.SAVING
-            : UI_LABELS.ADMIN.SITE.SAVE_ALL_CHANGES
-        }
+        title={t("title")}
+        subtitle={t("subtitle")}
+        actionLabel={isSaving ? tLoading("saving") : t("saveAllChanges")}
         onAction={handleSave}
         actionDisabled={isSaving}
       />
@@ -161,7 +155,7 @@ export default function AdminSiteSettings() {
           variant="primary"
           className="shadow-xl"
         >
-          {isSaving ? UI_LABELS.LOADING.SAVING : `💾 ${UI_LABELS.ACTIONS.SAVE}`}
+          {isSaving ? tLoading("saving") : `💾 ${tActions("save")}`}
         </Button>
       </div>
     </div>

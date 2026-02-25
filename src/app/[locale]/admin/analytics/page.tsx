@@ -11,7 +11,8 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { AdminPageHeader } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useApiQuery } from "@/hooks";
 import { formatCurrency } from "@/utils";
 
@@ -120,18 +121,15 @@ export default function AdminAnalyticsPage() {
   const ordersByMonth = data?.data?.ordersByMonth ?? [];
   const topProducts = data?.data?.topProducts ?? [];
 
-  const LABELS = UI_LABELS.ADMIN_ANALYTICS;
+  const t = useTranslations("adminAnalytics");
 
   return (
     <div className={spacing.stack}>
-      <AdminPageHeader
-        title={LABELS.PAGE_TITLE}
-        subtitle={LABELS.PAGE_SUBTITLE}
-      />
+      <AdminPageHeader title={t("pageTitle")} subtitle={t("pageSubtitle")} />
 
       {isLoading && (
         <div className={`${themed.textSecondary} text-center py-12`}>
-          {LABELS.LOADING}
+          {t("loading")}
         </div>
       )}
 
@@ -140,25 +138,25 @@ export default function AdminAnalyticsPage() {
           {/* Summary stat cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
-              label={LABELS.TOTAL_REVENUE}
+              label={t("totalRevenue")}
               value={formatCurrency(summary.totalRevenue)}
               icon="💰"
               colorClass="text-emerald-600 dark:text-emerald-400"
             />
             <StatCard
-              label={LABELS.TOTAL_ORDERS}
+              label={t("totalOrders")}
               value={String(summary.totalOrders)}
               icon="📦"
               colorClass="text-indigo-600 dark:text-indigo-400"
             />
             <StatCard
-              label={LABELS.REVENUE_THIS_MONTH}
+              label={t("revenueThisMonth")}
               value={formatCurrency(summary.revenueThisMonth)}
               icon="📈"
               colorClass="text-violet-600 dark:text-violet-400"
             />
             <StatCard
-              label={LABELS.ORDERS_THIS_MONTH}
+              label={t("ordersThisMonth")}
               value={String(summary.newOrdersThisMonth)}
               icon="🛍️"
               colorClass="text-amber-600 dark:text-amber-400"
@@ -170,7 +168,7 @@ export default function AdminAnalyticsPage() {
             className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-6 ${spacing.stack}`}
           >
             <h2 className={`${typography.h4} ${themed.textPrimary}`}>
-              {LABELS.REVENUE_CHART_TITLE}
+              {t("revenueChartTitle")}
             </h2>
             <div className={THEME_CONSTANTS.chart.heightMd}>
               <ResponsiveContainer width="100%" height="100%">
@@ -203,7 +201,7 @@ export default function AdminAnalyticsPage() {
                   <Tooltip
                     formatter={(value) => [
                       formatCurrency(Number(value)),
-                      LABELS.REVENUE_LABEL,
+                      t("revenueLabel"),
                     ]}
                   />
                   <Area
@@ -223,7 +221,7 @@ export default function AdminAnalyticsPage() {
             className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-6 ${spacing.stack}`}
           >
             <h2 className={`${typography.h4} ${themed.textPrimary}`}>
-              {LABELS.ORDERS_CHART_TITLE}
+              {t("ordersChartTitle")}
             </h2>
             <div className={THEME_CONSTANTS.chart.height}>
               <ResponsiveContainer width="100%" height="100%">
@@ -240,9 +238,7 @@ export default function AdminAnalyticsPage() {
                     tickLine={false}
                     axisLine={false}
                   />
-                  <Tooltip
-                    formatter={(value) => [value, LABELS.ORDERS_LABEL]}
-                  />
+                  <Tooltip formatter={(value) => [value, t("ordersLabel")]} />
                   <Bar dataKey="orders" fill="#818cf8" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -255,7 +251,7 @@ export default function AdminAnalyticsPage() {
               className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-6 ${spacing.stack}`}
             >
               <h2 className={`${typography.h4} ${themed.textPrimary}`}>
-                {LABELS.TOP_PRODUCTS_TITLE}
+                {t("topProductsTitle")}
               </h2>
               <div className="divide-y divide-gray-100 dark:divide-gray-800">
                 {topProducts.map((p, i) => (
@@ -275,7 +271,7 @@ export default function AdminAnalyticsPage() {
                         {p.title}
                       </p>
                       <p className={`text-xs ${themed.textSecondary}`}>
-                        {p.orders} {LABELS.ORDERS_LABEL}
+                        {p.orders} {t("ordersLabel")}
                       </p>
                     </div>
                     <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
@@ -297,7 +293,7 @@ export default function AdminAnalyticsPage() {
 
       {!isLoading && !summary && (
         <div className={`text-center py-12 ${themed.textSecondary}`}>
-          {LABELS.NO_DATA}
+          {t("noData")}
         </div>
       )}
     </div>

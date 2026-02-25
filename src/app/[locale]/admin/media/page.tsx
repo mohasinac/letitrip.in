@@ -4,7 +4,8 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useApiMutation } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, UI_LABELS, ROUTES } from "@/constants";
+import { API_ENDPOINTS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   Card,
   AdminPageHeader,
@@ -16,11 +17,10 @@ import {
 } from "@/components";
 import type { MediaOperation } from "@/components";
 
-const LABELS = UI_LABELS.ADMIN.MEDIA;
-
 export default function AdminMediaPage() {
   const router = useRouter();
   const { showToast } = useToast();
+  const t = useTranslations("adminMedia");
   const [operationType, setOperationType] = useState<"crop" | "trim">("crop");
   const [recentOperations, setRecentOperations] = useState<MediaOperation[]>(
     [],
@@ -108,7 +108,7 @@ export default function AdminMediaPage() {
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader title={LABELS.TITLE} subtitle={LABELS.SUBTITLE} />
+      <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
 
       {/* Operation Type Selector */}
       <Card className="p-4">
@@ -121,7 +121,7 @@ export default function AdminMediaPage() {
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
-            🖼️ {LABELS.CROP_IMAGE}
+            🖼️ {t("cropImage")}
           </button>
           <button
             onClick={() => setOperationType("trim")}
@@ -131,7 +131,7 @@ export default function AdminMediaPage() {
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
-            🎬 {LABELS.TRIM_VIDEO}
+            🎬 {t("trimVideo")}
           </button>
         </div>
       </Card>
@@ -149,9 +149,7 @@ export default function AdminMediaPage() {
       {recentOperations.length > 0 && (
         <Card className="p-6">
           <div className="mb-4">
-            <h2 className="text-lg font-semibold">
-              {LABELS.RECENT_OPERATIONS}
-            </h2>
+            <h2 className="text-lg font-semibold">{t("recentOperations")}</h2>
             <p className="text-sm text-gray-600">
               Last {recentOperations.length} operations
             </p>
@@ -168,7 +166,7 @@ export default function AdminMediaPage() {
       {/* Empty State */}
       {recentOperations.length === 0 && (
         <Card className="p-12 text-center">
-          <p className="text-gray-500">{LABELS.NO_OPERATIONS}</p>
+          <p className="text-gray-500">{t("noOperations")}</p>
         </Card>
       )}
     </div>

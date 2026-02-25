@@ -906,5 +906,67 @@
     "sortPriceHighLow": "Price High\u2013Low",
     "sortPriceLowHigh": "Price Low\u2013High",
     "filterStatusTitle": "Status"
+  },
+  "adminDashboard": {
+    "title": "Dashboard Overview",
+    "subtitle": "System statistics and quick actions"
+  },
+  "adminAnalytics": {
+    "pageTitle": "Sales Analytics",
+    "pageSubtitle": "Revenue and order trends across the platform",
+    "loading": "Loading analytics...",
+    "noData": "No data available",
+    "totalRevenue": "Total Revenue",
+    "totalOrders": "Total Orders",
+    "revenueThisMonth": "Revenue This Month",
+    "ordersThisMonth": "Orders This Month",
+    "revenueChartTitle": "Monthly Revenue",
+    "ordersChartTitle": "Monthly Orders",
+    "topProductsTitle": "Top Products by Revenue",
+    "revenueLabel": "Revenue",
+    "ordersLabel": "Orders"
+  },
+  "adminMedia": {
+    "title": "Media Operations",
+    "subtitle": "Manage image cropping and video trimming",
+    "cropImage": "Crop Image",
+    "trimVideo": "Trim Video",
+    "recentOperations": "Recent Operations",
+    "noOperations": "No media operations yet"
+  },
+  "adminNewsletter": {
+    "title": "Newsletter Subscribers",
+    "subtitle": "Manage email newsletter subscriptions",
+    "filterAll": "All Subscribers",
+    "filterActive": "Active",
+    "filterUnsubscribed": "Unsubscribed",
+    "totalSubscribers": "Total Subscribers",
+    "activeSubscribers": "Active Subscribers",
+    "unsubscribed": "Unsubscribed",
+    "sourceBreakdown": "Source Breakdown",
+    "empty": "No subscribers found",
+    "emptySubtitle": "Newsletter subscribers will appear here."
+  },
+  "adminPayouts": {
+    "title": "Payouts",
+    "subtitle": "Review and process seller payout requests",
+    "filterAll": "All Payouts",
+    "filterPending": "Pending",
+    "filterProcessing": "Processing",
+    "filterCompleted": "Completed",
+    "filterFailed": "Failed",
+    "totalPending": "Total Pending",
+    "totalPaidMonth": "Paid This Month",
+    "failureCount": "Failed This Month",
+    "empty": "No payout requests",
+    "updateStatus": "Update Payout Status",
+    "updatePayout": "Update Payout"
+  },
+  "adminSite": {
+    "title": "Site Settings",
+    "subtitle": "Configure global site settings, branding, and appearance",
+    "settingsSaved": "Settings saved successfully",
+    "settingsFailed": "Failed to save settings",
+    "saveAllChanges": "Save All Changes"
   }
 }

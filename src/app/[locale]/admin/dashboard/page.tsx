@@ -23,13 +23,16 @@ import {
   AdminDashboardSkeleton,
 } from "@/components";
 import { useAuth, useAdminStats } from "@/hooks";
-import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const { stats, isLoading, error, refresh } = useAdminStats();
   const { spacing } = THEME_CONSTANTS;
+  const t = useTranslations("adminDashboard");
+  const tActions = useTranslations("actions");
 
   useEffect(() => {
     if (
@@ -55,7 +58,7 @@ export default function AdminDashboardPage() {
           {error}
         </Heading>
         <Button onClick={refresh} variant="primary" className="mt-4">
-          {UI_LABELS.ACTIONS.RETRY}
+          {tActions("retry")}
         </Button>
       </Card>
     );
@@ -64,9 +67,9 @@ export default function AdminDashboardPage() {
   return (
     <div className={`${spacing.stack} w-full`}>
       <AdminPageHeader
-        title={UI_LABELS.ADMIN.DASHBOARD.TITLE}
-        subtitle={UI_LABELS.ADMIN.DASHBOARD.SUBTITLE}
-        actionLabel={UI_LABELS.ACTIONS.REFRESH}
+        title={t("title")}
+        subtitle={t("subtitle")}
+        actionLabel={tActions("refresh")}
         onAction={refresh}
         actionIcon={
           <svg
