@@ -16,17 +16,11 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { THEME_CONSTANTS, UI_LABELS, API_ENDPOINTS, ROUTES } from "@/constants";
-import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
+import { useNotifications, useMessage } from "@/hooks";
 import { NotificationDocument } from "@/db/schema";
 import { formatRelativeTime } from "@/utils";
 import { Spinner } from "@/components";
-
-interface NotificationsResponse {
-  notifications: NotificationDocument[];
-  unreadCount: number;
-}
 
 const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   order_placed: "🛍️",
@@ -52,26 +46,15 @@ export default function NotificationBell() {
   const { showSuccess, showError } = useMessage();
   const { colors } = THEME_CONSTANTS;
 
-  const { data, isLoading, refetch } = useApiQuery<NotificationsResponse>({
-    queryKey: ["notifications", "list"],
-    queryFn: () =>
-      apiClient.get<NotificationsResponse>(
-        API_ENDPOINTS.NOTIFICATIONS.LIST + "?limit=10",
-      ),
-    cacheTTL: 30000, // Cache for 30 seconds
-  });
-
-  const { mutate: markRead } = useApiMutation<unknown, string>({
-    mutationFn: (id: string) =>
-      apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(id), {}),
-  });
-
-  const { mutate: markAllRead, isLoading: isMarkingAll } = useApiMutation<
-    unknown,
-    void
-  >({
-    mutationFn: () => apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.READ_ALL, {}),
-  });
+  const {
+    notifications,
+    unreadCount,
+    isLoading,
+    refetch,
+    markRead,
+    markAllRead,
+    isMarkingAll,
+  } = useNotifications(10);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -113,9 +96,6 @@ export default function NotificationBell() {
       showError(UI_LABELS.NOTIFICATIONS.ERROR);
     }
   }, [markAllRead, refetch, showSuccess, showError]);
-
-  const unreadCount = data?.unreadCount ?? 0;
-  const notifications = data?.notifications ?? [];
 
   return (
     <div className="relative" ref={dropdownRef}>

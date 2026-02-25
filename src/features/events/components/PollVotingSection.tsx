@@ -1,14 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import {
-  API_ENDPOINTS,
-  UI_LABELS,
-  SUCCESS_MESSAGES,
-  ERROR_MESSAGES,
-} from "@/constants";
+import { eventService } from "../services/event.service";
+import { UI_LABELS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useMessage, useAuth } from "@/hooks";
 import { useApiMutation } from "@/hooks";
 import type { PollConfig } from "@/db/schema";
@@ -38,8 +32,7 @@ export function PollVotingSection({
   const [voted, setVoted] = useState(existingVotes.length > 0);
 
   const mutation = useApiMutation<void, EnterEventPayload>({
-    mutationFn: (data) =>
-      apiClient.post<void>(API_ENDPOINTS.EVENTS.ENTER(eventId), data),
+    mutationFn: (data) => eventService.enter(eventId, data),
     onSuccess: () => {
       showSuccess(SUCCESS_MESSAGES.EVENT.VOTE_SUBMITTED);
       setVoted(true);

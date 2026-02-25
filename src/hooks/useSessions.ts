@@ -8,7 +8,7 @@
 
 import { useApiQuery } from "./useApiQuery";
 import { useApiMutation } from "./useApiMutation";
-import { apiClient, API_ENDPOINTS } from "@/lib/api-client";
+import { sessionService, adminService } from "@/services";
 import type { SessionDocument } from "@/db/schema/sessions";
 
 interface SessionWithUser extends SessionDocument {
@@ -45,10 +45,7 @@ interface UserSessionsResponse {
 export function useAdminSessions(limit = 100) {
   return useApiQuery<SessionsResponse>({
     queryKey: ["admin-sessions", limit.toString()],
-    queryFn: () =>
-      apiClient.get<SessionsResponse>(
-        `${API_ENDPOINTS.ADMIN.SESSIONS}?limit=${limit}`,
-      ),
+    queryFn: () => adminService.listSessions(`limit=${limit}`),
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 }
@@ -60,10 +57,7 @@ export function useAdminSessions(limit = 100) {
 export function useUserSessions(userId: string | null) {
   return useApiQuery<SessionsResponse>({
     queryKey: ["user-sessions", userId || ""],
-    queryFn: () =>
-      apiClient.get<SessionsResponse>(
-        `${API_ENDPOINTS.ADMIN.SESSIONS}?userId=${userId}`,
-      ),
+    queryFn: () => adminService.listSessions(`userId=${userId}`),
     enabled: !!userId,
   });
 }
@@ -76,11 +70,7 @@ export function useRevokeSession() {
     { success: boolean; message: string },
     { sessionId: string }
   >({
-    mutationFn: async ({ sessionId }) => {
-      return apiClient.delete<{ success: boolean; message: string }>(
-        API_ENDPOINTS.ADMIN.REVOKE_SESSION(sessionId),
-      );
-    },
+    mutationFn: async ({ sessionId }) => adminService.revokeSession(sessionId),
   });
 }
 
@@ -92,13 +82,7 @@ export function useRevokeUserSessions() {
     { success: boolean; message: string; revokedCount: number },
     { userId: string }
   >({
-    mutationFn: async ({ userId }) => {
-      return apiClient.post<{
-        success: boolean;
-        message: string;
-        revokedCount: number;
-      }>(API_ENDPOINTS.ADMIN.REVOKE_USER_SESSIONS, { userId });
-    },
+    mutationFn: async ({ userId }) => adminService.revokeUserSessions(userId),
   });
 }
 
@@ -109,8 +93,7 @@ export function useRevokeUserSessions() {
 export function useMySessions() {
   return useApiQuery<UserSessionsResponse>({
     queryKey: ["my-sessions"],
-    queryFn: () =>
-      apiClient.get<UserSessionsResponse>(API_ENDPOINTS.USER.SESSIONS),
+    queryFn: () => sessionService.listMySessions(),
   });
 }
 
@@ -123,10 +106,7 @@ export function useRevokeMySession() {
     { success: boolean; message: string },
     { sessionId: string }
   >({
-    mutationFn: async ({ sessionId }) => {
-      return apiClient.delete<{ success: boolean; message: string }>(
-        API_ENDPOINTS.USER.REVOKE_SESSION(sessionId),
-      );
-    },
+    mutationFn: async ({ sessionId }) =>
+      sessionService.revokeSession(sessionId),
   });
 }

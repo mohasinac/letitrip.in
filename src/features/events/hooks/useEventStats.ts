@@ -1,8 +1,7 @@
 "use client";
 
 import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS } from "@/constants";
+import { eventService } from "../services/event.service";
 import type { EventDocument, EventEntryDocument } from "@/db/schema";
 
 interface PollOptionResult {
@@ -33,10 +32,7 @@ export function useEventStats({
 }: UseEventStatsOptions) {
   const { data, isLoading, error, refetch } = useApiQuery<EventStatsResult>({
     queryKey: ["admin-event-stats", eventId],
-    queryFn: () =>
-      apiClient.get<EventStatsResult>(
-        API_ENDPOINTS.ADMIN.EVENTS.STATS(eventId),
-      ),
+    queryFn: () => eventService.adminGetStats(eventId),
     enabled: enabled && !!eventId,
   });
 

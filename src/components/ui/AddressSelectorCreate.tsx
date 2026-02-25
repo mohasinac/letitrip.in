@@ -23,11 +23,10 @@
 
 import { useState, useCallback } from "react";
 import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { addressService } from "@/services";
 import { SideDrawer, Button, AddressForm } from "@/components";
 import type { AddressFormData } from "@/hooks";
 import {
-  API_ENDPOINTS,
   UI_LABELS,
   UI_PLACEHOLDERS,
   SUCCESS_MESSAGES,
@@ -80,7 +79,7 @@ export function AddressSelectorCreate({
     refetch,
   } = useApiQuery<AddressesApiResponse>({
     queryKey: ["user-addresses"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.ADDRESSES.LIST),
+    queryFn: () => addressService.list(),
   });
 
   const addresses: SavedAddress[] = raw?.data ?? raw?.items ?? [];
@@ -89,7 +88,7 @@ export function AddressSelectorCreate({
     CreateAddressApiResponse,
     AddressFormData
   >({
-    mutationFn: (data) => apiClient.post(API_ENDPOINTS.ADDRESSES.CREATE, data),
+    mutationFn: (data) => addressService.create(data),
     onSuccess: (res) => {
       showSuccess(SUCCESS_MESSAGES.ADDRESS.CREATED);
       setDrawerOpen(false);

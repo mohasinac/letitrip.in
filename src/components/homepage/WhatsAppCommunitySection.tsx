@@ -1,23 +1,18 @@
 "use client";
 
 import { MessageCircle } from "lucide-react";
-import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { useHomepageSections } from "@/hooks";
+import { THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
-import { apiClient } from "@/lib/api-client";
 import type {
   HomepageSectionDocument,
   WhatsAppCommunitySectionConfig,
 } from "@/db/schema";
 
 export function WhatsAppCommunitySection() {
-  const { data, isLoading } = useApiQuery<HomepageSectionDocument[]>({
-    queryKey: ["homepage-section", "whatsapp-community"],
-    queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.HOMEPAGE_SECTIONS.LIST}?type=whatsapp-community&enabled=true`,
-      ),
-  });
+  const { data, isLoading } = useHomepageSections(
+    "type=whatsapp-community&enabled=true",
+  );
 
   if (isLoading) {
     return (

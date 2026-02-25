@@ -47,6 +47,7 @@
 | **34** | Seller portal pages i18n wiring                | 7 seller pages                       | ⚡ Additive                       | ~7                        |
 | **35** | Admin pages i18n wiring (batch 1)              | dashboard, analytics, media, etc.    | ⚡ Additive                       | ~6                        |
 | **36** | Admin pages i18n wiring (batch 2)              | users, products, orders, etc.        | ⚡ Additive                       | ~13                       |
+| **37** | Service layer migration                        | All API-calling components, contexts | ⚠️ Cross-cutting                  | ~32                       |
 
 ---
 
@@ -54,44 +55,45 @@
 
 > Update this table as work proceeds. One phase at a time � mark **In Progress** before starting, **Done** when every file change and test in that phase is complete and `npx tsc --noEmit` passes.
 
-| Phase  | Status        | Started    | Completed  | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| ------ | ------------- | ---------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1**  | ? Done        | 2026-02-21 | 2026-02-21 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| **2**  | ? Done        | 2026-02-21 | 2026-02-21 | 48 tests � 9 components/hooks � 0 TS errors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| **3**  | ? Done        | 2026-02-21 | 2026-02-21 | 12 tests � externalPagination � SearchResultsSection Pagination                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| **4**  | ? Done        | 2026-02-21 | 2026-02-21 | 7 admin pages � useUrlTable � server pagination � filter bars � FAQs data bug fixed � 0 TS errors � **gap fix: admin FAQs TablePagination + paginated response type**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| **5**  | ? Done        | 2026-02-21 | 2026-02-21 | products � search � auctions � blog � categories/[slug] � FilterDrawer � ActiveFilterChips � **gap fix: search/auctions/categories FilterDrawer+ActiveFilterChips wired** âš ï¸ raw fetch() violations â†’ Phase 21; barrel import violations â†’ Phase 20                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| **6**  | ? Done        | 2026-02-21 | 2026-02-21 | seller/products drawer � seller/orders � user/orders � CRUD drawers verified � **gap fix: seller/products FilterDrawer+ActiveFilterChips � user/orders TablePagination** âš ï¸ raw fetch() in addresses/notifications/settings/wishlist/sellers pages â†’ Phase 21                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| **7**  | ? Done        | 2026-02-21 | 2026-02-21 | FAQ dynamic route � category tabs � FAQCategorySidebar URL update � **gap fix: FAQCategorySidebar `<Link>` with ROUTES.PUBLIC.FAQ_CATEGORY**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| **8**  | ? Done        | 2026-02-21 | 2026-02-21 | Footer 5-col rewrite � EnhancedFooter deleted � lucide-react nav icons � Sidebar polish                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| **9**  | ? Done        | 2026-02-21 | 2026-02-21 | CategorySelectorCreate � AddressSelectorCreate � ProductForm wired                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| **10** | ? Done        | 2026-02-21 | 2026-02-21 | useLongPress � usePullToRefresh � SideDrawer focus trap � Tabs keyboard � HeroCarousel ARIA                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| **11** | ? Done        | 2026-02-21 | 2026-02-21 | TrustFeaturesSection (merged) � HomepageSkeleton � mobile snap-scroll carousels � lucide icons � useSwipe � useApiMutation newsletter                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| **12** | ? Done        | 2026-02-21 | 2026-02-21 | AdminStatsCards lucide+stat tokens � AdminDashboardSkeleton � SellerStatCard ReactNode icon � RecentActivityCard lucide � AdminPageHeader description+breadcrumb � user/profile hooks order fix                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| **13** | ? Done        | 2026-02-21 | 2026-02-21 | Button isLoading+touch targets � EmptyState actionHref � SORT/HELP_TEXT/ACTIONS constants � messages human-friendly � search EmptyState+lucide � products empty state � seller onboarding                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| **14** | ? Done        | 2026-02-21 | 2026-02-21 | AutoBreadcrumbs extracted � validation schemas merged � profile PATCH on USER.PROFILE � 4 files deleted � 0 TS errors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| **15** | ? Done        | 2026-02-21 | 2026-02-21 | sitemap � robots � OG image � JSON-LD helpers � product slug URLs � per-page metadata � noIndex for auth/admin/seller/user/checkout/cart                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| **16** | ? Done        | 2026-02-22 | 2026-02-22 | newsletter subscriber list � stats � unsubscribe/resubscribe/delete � Sieve-powered API � admin nav entry                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| **17** | ? Done        | 2026-02-21 | 2026-02-21 | Next.js 16 async params migration: 4 route handlers + faqs page � .next cache cleared � 0 TS errors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| **18** | ✅ Done       | 2026-02-21 | 2026-02-24 | 274/274 suites green — 3070 tests (3066 passed + 4 skipped) — 0 failures. 11 new test files added across 3 batches: FilterDrawer/admin list pages, API routes (admin-users, admin-sessions), cart/checkout/checkout-success/sellers/sellers-[id] pages. All 18 sub-phases (18.1–18.19) complete.                                                                                                                                                                                                                                                                                                                                                                                                              |
-| **19** | ? Not started | --         | --         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| **20** | ✅ Done       | 2026-02-23 | 2026-02-23 | Gap-fix sweep complete — 274/274 suites green (3072 tests, +2 new). Barrel imports: 7 pages fixed; exceptions: `opengraph-image.tsx` keeps `@/constants/seo` (edge runtime), `api/search` + `api/faqs` keep `@/helpers/data/sieve.helper` (intentionally not in barrel). Hardcoded routes: 3 files fixed. `console.warn → logger.warn` in `useRealtimeBids`. Products API response shape: `successResponse({items,...})` (was `{data,meta}`); consuming pages updated. `formatMonthYear`/`formatFileSize` replace inline logic in 3 API routes. Tests: all 6 Phase 20 suites updated/extended. Pre-existing flaky test in `token.helper.test.ts` (timing-sensitive, passes in isolation) noted and unchanged. |
-| **21** | ✅ Done       | 2026-02-24 | 2026-02-24 | Code-reuse & fetch() violation sweep — 15 files migrated from raw fetch() → apiClient (wishlist, analytics, payouts, orders, seller/page, settings, addresses/add+edit, notifications, NotificationBell, FAQPageContent, ImageUpload, sellers/[id], profile/[userId], search/page). sieveQuery() added to faqs.repository.ts; api/faqs/route.ts dual-path (Firestore-native when no tags/search); api/search/route.ts fully replaced findAll()+applySieveToArray with productRepository.list(). Firestore indexes added for faqs/payouts/posts. Tests updated (public-search + faqs suites). 27/27 tests green.                                                                                               |
-| **22** | ✅ Done       | 2026-02-24 | 2026-02-24 | Event management system complete (22a–22d). Schema + constants + repositories (EventDocument, EventEntryDocument, 5 event types, SIEVE_FIELDS). 10 API routes (admin CRUD, status, entries, stats, public list/detail/enter/leaderboard). Admin UI feature module (EventFormDrawer with 5 type-config sub-forms, EventsTable, EventEntriesTable, EntryReviewDrawer, EventStatsBanner, SurveyFieldBuilder). Public UI (EventBanner in layout, EventCard, PollVotingSection, FeedbackEventSection, SurveyEventSection, EventLeaderboard, /events, /events/[id], /events/[id]/participate). 0 TS errors. 22e (tests) skipped per user instruction.                                                               |
-| **23** | ✅ Done       | 2026-02-24 | 2026-02-24 | Integration hardening — tech-debt cleanup, dead-code removal, type-safety sweep. 0 TS errors.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| **24** | ✅ Done       | 2026-02-24 | 2026-02-24 | Styling constants cleanup — THEME_CONSTANTS gap-fix batch, raw Tailwind strings replaced with constants in 6.3 final batch. 0 TS errors.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| **25** | ✅ Done       | 2026-02-24 | 2026-02-24 | i18n infrastructure — next-intl installed; `src/i18n/routing.ts` + `src/i18n/request.ts`; `messages/en.json` + `messages/hi.json` (550 keys each). 0 TS errors.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| **26** | ✅ Done       | 2026-02-24 | 2026-02-24 | `[locale]` route migration — middleware activated; all 23 route dirs moved under `src/app/[locale]/`; root layout slimmed to HTML shell; 274/274 suites green.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| **27** | ✅ Done       | 2026-02-25 | 2026-02-25 | Zod v4 error map + LocaleSwitcher — `src/lib/zod-error-map.ts` (custom `zodErrorMap` + `setupZodErrorMap`); `ZodSetup` client component wired in layout; `src/i18n/navigation.ts` (`createNavigation`); `LocaleSwitcher` pill UI in TitleBar; `locale` key added to en.json + hi.json; jest.config.ts updated (`next-intl` + `use-intl` in transform allowlist); `@/i18n/navigation` mock in jest.setup.ts; 25 new tests; 276/276 suites green — 3097 tests.                                                                                                                                                                                                                                                  |
-| **28** | ✅ Done       | 2026-02-26 | 2026-02-26 | Nav/Layout i18n wiring — `TitleBar` aria-labels → `useTranslations("accessibility")` (4 strings); `Sidebar` → `useTranslations("nav")` (~17 strings); orphaned duplicate return block removed from `not-found.tsx`; TitleBar + Sidebar tests updated; 276/276 suites green.                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| **29** | ✅ Done       | 2026-02-26 | 2026-02-26 | Auth pages i18n wiring — `LoginForm`/`RegisterForm` module-level `LABELS` const moved inside component as `useTranslations("auth")`; `forgot-password`, `reset-password`, `verify-email`, `unauthorized` pages fully wired; next-intl interpolation `t("key", { var })` pattern applied; 276/276 suites green.                                                                                                                                                                                                                                                                                                                                                                                                |
-| **30** | ✅ Done       | 2026-02-26 | 2026-02-26 | Public pages i18n wiring — `cart/page`, `user/wishlist/page`, `user/settings/page` wired; `wishlist.subtitle` key added to `en.json` + `hi.json`; all existing page tests updated to use i18n-resolved values; 276/276 suites green — 3097 tests.                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| **31** | ✅ Done       | 2026-02-27 | 2026-02-27 | User pages i18n wiring — all user portal pages (`dashboard`, `orders`, `orders/[id]`, `profile`, `addresses`, `notifications`, `reviews`, `bids`) wired with `useTranslations`; `userDashboard.*`, `userOrders.*`, `userProfile.*`, `userAddresses.*`, `userNotifications.*`, `userReviews.*`, `userBids.*` namespaces added to `en.json` + `hi.json`; 0 TS errors.                                                                                                                                                                                                                                                                                                                                           |
-| **32** | ✅ Done       | 2026-02-27 | 2026-02-27 | Product/checkout/search/categories/auctions i18n wiring — 9 pages wired: `products`, `products/[slug]`, `checkout`, `checkout/success`, `categories`, `categories/[slug]`, `search`, `auctions`, `auctions/[id]`; module-level `SORT_OPTIONS`/`STEPS` arrays moved inside components; `formatCountdown` refactored to accept `endedLabel: string` param; ICU plurals for `resultsCount` + `totalBids`; `products.*`, `checkout.*`, `orderSuccess.*`, `auctions.*`, `search.*`, `categories.*` namespaces extended in `en.json` + `hi.json`; 0 TS errors.                                                                                                                                                      |
-| **33** | ✅ Done       | 2026-02-27 | 2026-02-27 | Static/content pages i18n wiring — 9 pages wired: `contact`, `events`, `blog`, `blog/[slug]` (client, `useTranslations`); `about`, `terms`, `privacy`, `sellers`, `help` (server components, `getTranslations` from `next-intl/server`); `export const metadata` → `export async function generateMetadata()`; module-level `SECTIONS`/`BENEFITS`/`STEPS`/`FAQS`/`TOPICS` arrays moved inside async component bodies; `blog.*`, `contact.*`, `events.*`, `about.*`, `terms.*`, `privacy.*`, `sellersPage.*`, `help.*` namespaces added to `en.json` + `hi.json`; 0 TS errors.                                                                                                                                 |
-| **34** | ✅ Done       | 2026-02-27 | 2026-02-27 | Seller portal pages i18n wiring — `seller/page`, `seller/analytics`, `seller/orders`, `seller/payouts`, `seller/products`, `seller/products/[id]/edit`. All `UI_LABELS.SELLER_PAGE.*`, `UI_LABELS.SELLER_ANALYTICS.*`, `UI_LABELS.SELLER_PAYOUTS.*` replaced with `useTranslations`. Module-level `SELLER_LABELS` + `STATUS_TABS`/`STATUS_OPTIONS` aliases moved inside components. `sellerDashboard.*`, `sellerAnalytics.*`, `sellerOrders.*`, `sellerPayouts.*`, `sellerProducts.*` namespaces added to `en.json` + `hi.json`. 0 TS errors.                                                                                                                                                                 |
-| **35** | ✅ Done       | 2026-02-27 | 2026-02-27 | Admin pages i18n wiring batch 1 — `admin/dashboard`, `admin/analytics`, `admin/media`, `admin/newsletter`, `admin/payouts`, `admin/site`. Module-level `LABELS`/`STATUS_TABS` aliases moved inside components. `adminDashboard.*`, `adminAnalytics.*`, `adminMedia.*`, `adminNewsletter.*`, `adminPayouts.*`, `adminSite.*` namespaces added to `en.json` + `hi.json`. 0 TS errors.                                                                                                                                                                                                                                                                                                                           |
-| **36** | ✅ Done       | 2026-02-27 | 2026-02-28 | Admin pages i18n wiring batch 2 — `admin/users`, `admin/products`, `admin/orders`, `admin/reviews`, `admin/bids`, `admin/blog`, `admin/categories`, `admin/faqs`, `admin/carousel`, `admin/sections`, `admin/coupons`, `admin/events`, `admin/events/[id]/entries`. All remaining `UI_LABELS.ADMIN.*` replaced.                                                                                                                                                                                                                                                                                                                                                                                               |
+| Phase  | Status         | Started    | Completed  | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------ | -------------- | ---------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1**  | ? Done         | 2026-02-21 | 2026-02-21 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **2**  | ? Done         | 2026-02-21 | 2026-02-21 | 48 tests � 9 components/hooks � 0 TS errors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **3**  | ? Done         | 2026-02-21 | 2026-02-21 | 12 tests � externalPagination � SearchResultsSection Pagination                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **4**  | ? Done         | 2026-02-21 | 2026-02-21 | 7 admin pages � useUrlTable � server pagination � filter bars � FAQs data bug fixed � 0 TS errors � **gap fix: admin FAQs TablePagination + paginated response type**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **5**  | ? Done         | 2026-02-21 | 2026-02-21 | products � search � auctions � blog � categories/[slug] � FilterDrawer � ActiveFilterChips � **gap fix: search/auctions/categories FilterDrawer+ActiveFilterChips wired** âš ï¸ raw fetch() violations â†’ Phase 21; barrel import violations â†’ Phase 20                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **6**  | ? Done         | 2026-02-21 | 2026-02-21 | seller/products drawer � seller/orders � user/orders � CRUD drawers verified � **gap fix: seller/products FilterDrawer+ActiveFilterChips � user/orders TablePagination** âš ï¸ raw fetch() in addresses/notifications/settings/wishlist/sellers pages â†’ Phase 21                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **7**  | ? Done         | 2026-02-21 | 2026-02-21 | FAQ dynamic route � category tabs � FAQCategorySidebar URL update � **gap fix: FAQCategorySidebar `<Link>` with ROUTES.PUBLIC.FAQ_CATEGORY**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **8**  | ? Done         | 2026-02-21 | 2026-02-21 | Footer 5-col rewrite � EnhancedFooter deleted � lucide-react nav icons � Sidebar polish                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **9**  | ? Done         | 2026-02-21 | 2026-02-21 | CategorySelectorCreate � AddressSelectorCreate � ProductForm wired                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **10** | ? Done         | 2026-02-21 | 2026-02-21 | useLongPress � usePullToRefresh � SideDrawer focus trap � Tabs keyboard � HeroCarousel ARIA                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **11** | ? Done         | 2026-02-21 | 2026-02-21 | TrustFeaturesSection (merged) � HomepageSkeleton � mobile snap-scroll carousels � lucide icons � useSwipe � useApiMutation newsletter                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **12** | ? Done         | 2026-02-21 | 2026-02-21 | AdminStatsCards lucide+stat tokens � AdminDashboardSkeleton � SellerStatCard ReactNode icon � RecentActivityCard lucide � AdminPageHeader description+breadcrumb � user/profile hooks order fix                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **13** | ? Done         | 2026-02-21 | 2026-02-21 | Button isLoading+touch targets � EmptyState actionHref � SORT/HELP_TEXT/ACTIONS constants � messages human-friendly � search EmptyState+lucide � products empty state � seller onboarding                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **14** | ? Done         | 2026-02-21 | 2026-02-21 | AutoBreadcrumbs extracted � validation schemas merged � profile PATCH on USER.PROFILE � 4 files deleted � 0 TS errors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **15** | ? Done         | 2026-02-21 | 2026-02-21 | sitemap � robots � OG image � JSON-LD helpers � product slug URLs � per-page metadata � noIndex for auth/admin/seller/user/checkout/cart                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **16** | ? Done         | 2026-02-22 | 2026-02-22 | newsletter subscriber list � stats � unsubscribe/resubscribe/delete � Sieve-powered API � admin nav entry                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **17** | ? Done         | 2026-02-21 | 2026-02-21 | Next.js 16 async params migration: 4 route handlers + faqs page � .next cache cleared � 0 TS errors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **18** | ✅ Done        | 2026-02-21 | 2026-02-24 | 274/274 suites green — 3070 tests (3066 passed + 4 skipped) — 0 failures. 11 new test files added across 3 batches: FilterDrawer/admin list pages, API routes (admin-users, admin-sessions), cart/checkout/checkout-success/sellers/sellers-[id] pages. All 18 sub-phases (18.1–18.19) complete.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **19** | ? Not started  | --         | --         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **20** | ✅ Done        | 2026-02-23 | 2026-02-23 | Gap-fix sweep complete — 274/274 suites green (3072 tests, +2 new). Barrel imports: 7 pages fixed; exceptions: `opengraph-image.tsx` keeps `@/constants/seo` (edge runtime), `api/search` + `api/faqs` keep `@/helpers/data/sieve.helper` (intentionally not in barrel). Hardcoded routes: 3 files fixed. `console.warn → logger.warn` in `useRealtimeBids`. Products API response shape: `successResponse({items,...})` (was `{data,meta}`); consuming pages updated. `formatMonthYear`/`formatFileSize` replace inline logic in 3 API routes. Tests: all 6 Phase 20 suites updated/extended. Pre-existing flaky test in `token.helper.test.ts` (timing-sensitive, passes in isolation) noted and unchanged. |
+| **21** | ✅ Done        | 2026-02-24 | 2026-02-24 | Code-reuse & fetch() violation sweep — 15 files migrated from raw fetch() → apiClient (wishlist, analytics, payouts, orders, seller/page, settings, addresses/add+edit, notifications, NotificationBell, FAQPageContent, ImageUpload, sellers/[id], profile/[userId], search/page). sieveQuery() added to faqs.repository.ts; api/faqs/route.ts dual-path (Firestore-native when no tags/search); api/search/route.ts fully replaced findAll()+applySieveToArray with productRepository.list(). Firestore indexes added for faqs/payouts/posts. Tests updated (public-search + faqs suites). 27/27 tests green.                                                                                               |
+| **22** | ✅ Done        | 2026-02-24 | 2026-02-24 | Event management system complete (22a–22d). Schema + constants + repositories (EventDocument, EventEntryDocument, 5 event types, SIEVE_FIELDS). 10 API routes (admin CRUD, status, entries, stats, public list/detail/enter/leaderboard). Admin UI feature module (EventFormDrawer with 5 type-config sub-forms, EventsTable, EventEntriesTable, EntryReviewDrawer, EventStatsBanner, SurveyFieldBuilder). Public UI (EventBanner in layout, EventCard, PollVotingSection, FeedbackEventSection, SurveyEventSection, EventLeaderboard, /events, /events/[id], /events/[id]/participate). 0 TS errors. 22e (tests) skipped per user instruction.                                                               |
+| **23** | ✅ Done        | 2026-02-24 | 2026-02-24 | Integration hardening — tech-debt cleanup, dead-code removal, type-safety sweep. 0 TS errors.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **24** | ✅ Done        | 2026-02-24 | 2026-02-24 | Styling constants cleanup — THEME_CONSTANTS gap-fix batch, raw Tailwind strings replaced with constants in 6.3 final batch. 0 TS errors.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **25** | ✅ Done        | 2026-02-24 | 2026-02-24 | i18n infrastructure — next-intl installed; `src/i18n/routing.ts` + `src/i18n/request.ts`; `messages/en.json` + `messages/hi.json` (550 keys each). 0 TS errors.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **26** | ✅ Done        | 2026-02-24 | 2026-02-24 | `[locale]` route migration — middleware activated; all 23 route dirs moved under `src/app/[locale]/`; root layout slimmed to HTML shell; 274/274 suites green.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **27** | ✅ Done        | 2026-02-25 | 2026-02-25 | Zod v4 error map + LocaleSwitcher — `src/lib/zod-error-map.ts` (custom `zodErrorMap` + `setupZodErrorMap`); `ZodSetup` client component wired in layout; `src/i18n/navigation.ts` (`createNavigation`); `LocaleSwitcher` pill UI in TitleBar; `locale` key added to en.json + hi.json; jest.config.ts updated (`next-intl` + `use-intl` in transform allowlist); `@/i18n/navigation` mock in jest.setup.ts; 25 new tests; 276/276 suites green — 3097 tests.                                                                                                                                                                                                                                                  |
+| **28** | ✅ Done        | 2026-02-26 | 2026-02-26 | Nav/Layout i18n wiring — `TitleBar` aria-labels → `useTranslations("accessibility")` (4 strings); `Sidebar` → `useTranslations("nav")` (~17 strings); orphaned duplicate return block removed from `not-found.tsx`; TitleBar + Sidebar tests updated; 276/276 suites green.                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **29** | ✅ Done        | 2026-02-26 | 2026-02-26 | Auth pages i18n wiring — `LoginForm`/`RegisterForm` module-level `LABELS` const moved inside component as `useTranslations("auth")`; `forgot-password`, `reset-password`, `verify-email`, `unauthorized` pages fully wired; next-intl interpolation `t("key", { var })` pattern applied; 276/276 suites green.                                                                                                                                                                                                                                                                                                                                                                                                |
+| **30** | ✅ Done        | 2026-02-26 | 2026-02-26 | Public pages i18n wiring — `cart/page`, `user/wishlist/page`, `user/settings/page` wired; `wishlist.subtitle` key added to `en.json` + `hi.json`; all existing page tests updated to use i18n-resolved values; 276/276 suites green — 3097 tests.                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **31** | ✅ Done        | 2026-02-27 | 2026-02-27 | User pages i18n wiring — all user portal pages (`dashboard`, `orders`, `orders/[id]`, `profile`, `addresses`, `notifications`, `reviews`, `bids`) wired with `useTranslations`; `userDashboard.*`, `userOrders.*`, `userProfile.*`, `userAddresses.*`, `userNotifications.*`, `userReviews.*`, `userBids.*` namespaces added to `en.json` + `hi.json`; 0 TS errors.                                                                                                                                                                                                                                                                                                                                           |
+| **32** | ✅ Done        | 2026-02-27 | 2026-02-27 | Product/checkout/search/categories/auctions i18n wiring — 9 pages wired: `products`, `products/[slug]`, `checkout`, `checkout/success`, `categories`, `categories/[slug]`, `search`, `auctions`, `auctions/[id]`; module-level `SORT_OPTIONS`/`STEPS` arrays moved inside components; `formatCountdown` refactored to accept `endedLabel: string` param; ICU plurals for `resultsCount` + `totalBids`; `products.*`, `checkout.*`, `orderSuccess.*`, `auctions.*`, `search.*`, `categories.*` namespaces extended in `en.json` + `hi.json`; 0 TS errors.                                                                                                                                                      |
+| **33** | ✅ Done        | 2026-02-27 | 2026-02-27 | Static/content pages i18n wiring — 9 pages wired: `contact`, `events`, `blog`, `blog/[slug]` (client, `useTranslations`); `about`, `terms`, `privacy`, `sellers`, `help` (server components, `getTranslations` from `next-intl/server`); `export const metadata` → `export async function generateMetadata()`; module-level `SECTIONS`/`BENEFITS`/`STEPS`/`FAQS`/`TOPICS` arrays moved inside async component bodies; `blog.*`, `contact.*`, `events.*`, `about.*`, `terms.*`, `privacy.*`, `sellersPage.*`, `help.*` namespaces added to `en.json` + `hi.json`; 0 TS errors.                                                                                                                                 |
+| **34** | ✅ Done        | 2026-02-27 | 2026-02-27 | Seller portal pages i18n wiring — `seller/page`, `seller/analytics`, `seller/orders`, `seller/payouts`, `seller/products`, `seller/products/[id]/edit`. All `UI_LABELS.SELLER_PAGE.*`, `UI_LABELS.SELLER_ANALYTICS.*`, `UI_LABELS.SELLER_PAYOUTS.*` replaced with `useTranslations`. Module-level `SELLER_LABELS` + `STATUS_TABS`/`STATUS_OPTIONS` aliases moved inside components. `sellerDashboard.*`, `sellerAnalytics.*`, `sellerOrders.*`, `sellerPayouts.*`, `sellerProducts.*` namespaces added to `en.json` + `hi.json`. 0 TS errors.                                                                                                                                                                 |
+| **35** | ✅ Done        | 2026-02-27 | 2026-02-27 | Admin pages i18n wiring batch 1 — `admin/dashboard`, `admin/analytics`, `admin/media`, `admin/newsletter`, `admin/payouts`, `admin/site`. Module-level `LABELS`/`STATUS_TABS` aliases moved inside components. `adminDashboard.*`, `adminAnalytics.*`, `adminMedia.*`, `adminNewsletter.*`, `adminPayouts.*`, `adminSite.*` namespaces added to `en.json` + `hi.json`. 0 TS errors.                                                                                                                                                                                                                                                                                                                           |
+| **36** | ✅ Done        | 2026-02-27 | 2026-02-28 | Admin pages i18n wiring batch 2 — `admin/users`, `admin/products`, `admin/orders`, `admin/reviews`, `admin/bids`, `admin/blog`, `admin/categories`, `admin/faqs`, `admin/carousel`, `admin/sections`, `admin/coupons`, `admin/events`, `admin/events/[id]/entries`. All remaining `UI_LABELS.ADMIN.*` replaced.                                                                                                                                                                                                                                                                                                                                                                                               |
+| **37** | 🔄 In Progress | 2026-02-28 | --         | Service Layer Migration — 37.1 (scaffolding) + 37.2 (homepage components) + 37.3 (product components) + 37.4 (shared UI) + 37.5 (events feature) + 37.6 (SessionContext raw fetch) + 37.7 (hook internals) ✅ complete. New: `admin.service.ts`, `event.service.ts` (Tier 1), `usePublicEvents` (Tier 1 hook), 17 new hooks. `useAuth`/`useProfile`/`useAdminStats`/`useAddresses`/`useSessions` migrated. 0 TS errors. Remaining: 37.8 (UI_LABELS in JSX), 37.9 (findAll billing), 37.10–37.14.                                                                                                                                                                                                              |
 
 **Status legend:** ? Not started � ?? In progress � ? Done � ? Blocked
 
@@ -5656,4 +5658,429 @@ function LoginForm() {
 | wishlist | `wishlist`, `actions`, `loading` | 7                |
 | settings | `settings`                       | 1 heading        |
 
-**Tests:** 276/276 suites green.
+## **Tests:** 276/276 suites green.
+
+## Phase 37 — Service Layer Migration
+
+**Goal:** Eliminate all direct `apiClient.*` and `fetch()` calls in React components, pages, and contexts. Every API call must flow through a service function (`src/services/`) consumed via a hook (`useApiQuery` / `useApiMutation`). This prevents business logic duplication, makes all API calls independently testable, and enforces the three-layer architecture: **Component → Hook → Service → apiClient**.
+
+> **Rules enforced:** Rule 19 (no direct `fetch`), Rule 20 (no `apiClient` in components).
+
+---
+
+### Phase 37 — Sub-phases
+
+#### Phase 37.1 — Service Scaffolding ✅ Done
+
+All service files created under `src/services/` and `src/features/events/services/`.
+
+| Service file                                | Domain             | Methods                                                                                                            |
+| ------------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `auth.service.ts`                           | Auth               | `login`, `register`, `logout`, `sendVerification`, `verifyEmail`, `forgotPassword`, `resetPassword`                |
+| `session.service.ts`                        | Session            | `create`, `destroy`, `getProfile`, `recordActivity`, `validate`, `listMySessions`, `revokeSession`                 |
+| `profile.service.ts`                        | Profiles           | `getById`, `getSellerReviews`, `getSellerProducts`, `update`                                                       |
+| `address.service.ts`                        | Addresses          | `list`, `getById`, `create`, `update`, `delete`, `setDefault`                                                      |
+| `order.service.ts`                          | Orders             | `list`, `getById`, `track`, `cancel`                                                                               |
+| `product.service.ts`                        | Products           | `list`, `getById`, `getFeatured`, `getFeaturedAuctions`, `getRelated`, `getBySeller`, `create`, `update`, `delete` |
+| `carousel.service.ts`                       | Carousel           | `list`, `getActive`, `getById`, `create`, `update`, `delete`, `reorder`                                            |
+| `review.service.ts`                         | Reviews            | `list`, `listByProduct`, `listBySeller`, `getHomepageReviews`, `getById`, `create`, `update`, `delete`, `vote`     |
+| `category.service.ts`                       | Categories         | `list`, `listTopLevel`, `getById`, `create`, `update`, `delete`                                                    |
+| `faq.service.ts`                            | FAQs               | `list`, `listPublic`, `getById`, `create`, `update`, `delete`, `vote`                                              |
+| `cart.service.ts`                           | Cart               | `get`, `addItem`, `updateItem`, `removeItem`, `clear`                                                              |
+| `wishlist.service.ts`                       | Wishlist           | `list`, `add`, `remove`, `check`                                                                                   |
+| `notification.service.ts`                   | Notifications      | `list`, `getUnreadCount`, `markRead`, `markAllRead`, `delete`                                                      |
+| `newsletter.service.ts`                     | Newsletter         | `subscribe`, `list`, `getById`, `update`, `delete`                                                                 |
+| `site-settings.service.ts`                  | Site Settings      | `get`, `update`                                                                                                    |
+| `homepage-sections.service.ts`              | Homepage Sections  | `list`, `listEnabled`, `getById`, `create`, `update`, `delete`, `reorder`                                          |
+| `search.service.ts`                         | Search             | `query`                                                                                                            |
+| `checkout.service.ts`                       | Checkout + Payment | `placeOrder`, `createPaymentOrder`, `verifyPayment`, `couponService.validate`                                      |
+| `features/events/services/event.service.ts` | Events (Tier 2)    | Admin + public event CRUD + entry management                                                                       |
+
+**Barrel:** `src/services/index.ts` exports all Tier 1 services.  
+`src/features/events/index.ts` exports `eventService`.
+
+---
+
+#### Phase 37.2 — Homepage Component Violations ✅ Done
+
+| File                                               | Current violation                                    | Target service function                 | Target hook                                 |
+| -------------------------------------------------- | ---------------------------------------------------- | --------------------------------------- | ------------------------------------------- |
+| `components/homepage/HeroCarousel.tsx`             | `apiClient.get(CAROUSEL.LIST + "?active=true")`      | `carouselService.getActive()`           | `useHeroCarousel` (new in `@/hooks`)        |
+| `components/homepage/FeaturedProductsSection.tsx`  | `apiClient.get(PRODUCTS.LIST + "?featured=true...")` | `productService.getFeatured()`          | `useFeaturedProducts` (new in `@/hooks`)    |
+| `components/homepage/FeaturedAuctionsSection.tsx`  | `apiClient.get(PRODUCTS.LIST + "?type==auction...")` | `productService.getFeaturedAuctions()`  | `useFeaturedAuctions` (new in `@/hooks`)    |
+| `components/homepage/CustomerReviewsSection.tsx`   | `apiClient.get(REVIEWS.LIST + "?...")`               | `reviewService.getHomepageReviews()`    | `useHomepageReviews` (new in `@/hooks`)     |
+| `components/homepage/FAQSection.tsx`               | `apiClient.get(FAQS.LIST + "?...")`                  | `faqService.listPublic()`               | `usePublicFaqs` (new in `@/hooks`)          |
+| `components/homepage/TopCategoriesSection.tsx`     | `apiClient.get(CATEGORIES.LIST + "?...")`            | `categoryService.listTopLevel()`        | `useTopCategories` (new in `@/hooks`)       |
+| `components/homepage/WelcomeSection.tsx`           | `apiClient.get(SITE_SETTINGS.GET)`                   | `siteSettingsService.get()`             | `useSiteSettings` (new in `@/hooks`)        |
+| `components/homepage/WhatsAppCommunitySection.tsx` | `apiClient.get(SITE_SETTINGS.GET)`                   | `siteSettingsService.get()`             | `useSiteSettings` (reuse)                   |
+| `components/homepage/AdvertisementBanner.tsx`      | `apiClient.get(...)`                                 | `homepageSectionsService.listEnabled()` | `useHomepageSections` (new in `@/hooks`)    |
+| `components/homepage/NewsletterSection.tsx`        | `apiClient.post(NEWSLETTER.SUBSCRIBE, vars)`         | `newsletterService.subscribe(vars)`     | `useNewsletterSubscribe` (new in `@/hooks`) |
+| `components/LayoutClient.tsx`                      | `apiClient.get(SITE_SETTINGS.GET)`                   | `siteSettingsService.get()`             | `useSiteSettings` (reuse)                   |
+
+**Steps per file:**
+
+1. Create the named hook in `src/hooks/` calling the service function via `useApiQuery` / `useApiMutation`.
+2. Export the hook from `src/hooks/index.ts`.
+3. Replace the inline `apiClient.*` call in the component with the hook.
+4. Write tests for the new hook.
+
+---
+
+#### Phase 37.3 — Product Component Violations ✅ Done
+
+|---|---|---|
+| `components/products/ProductReviews.tsx` | `apiClient.get(REVIEWS.LIST?productId=...)` | `reviewService.listByProduct()` → `useProductReviews` hook |
+| `components/products/RelatedProducts.tsx` | `apiClient.get(PRODUCTS.LIST?category=...)` | `productService.getRelated()` → `useRelatedProducts` hook |
+| `components/products/AddToCartButton.tsx` | `apiClient.post(CART.ADD_ITEM, data)` | `cartService.addItem()` → `useAddToCart` hook |
+
+---
+
+#### Phase 37.4 — Shared UI Component Violations ✅ Done
+
+|---|---|---|
+| `components/user/WishlistButton.tsx` | `apiClient.post/delete(WISHLIST.*)` | `wishlistService.*()` → `useWishlistToggle` hook |
+| `components/ui/NotificationBell.tsx` | `apiClient.get/patch(NOTIFICATIONS.*)` | `notificationService.*()` → `useNotifications` hook |
+| `components/ui/AddressSelectorCreate.tsx` | `apiClient.get/post(ADDRESSES.*)` | `addressService.*()` → reuse `useAddresses` (already exists in `@/hooks`) |
+| `components/ui/CategorySelectorCreate.tsx` | `apiClient.get/post(CATEGORIES.*)` | `categoryService.*()` → `useCategorySelector` hook |
+| `components/ui/EventBanner.tsx` | `apiClient.get(EVENTS.LIST...)` | `eventService.list()` → `usePublicEvents` (from `@/features/events/hooks`) |
+
+---
+
+#### Phase 37.5 — Events Feature Component Violations ✅ Done
+
+| File                       | Violation                                | Target                                                               |
+| -------------------------- | ---------------------------------------- | -------------------------------------------------------------------- |
+| `EventLeaderboard.tsx`     | `apiClient.get(EVENTS.[id]/leaderboard)` | `eventService.getLeaderboard(id)` → `useEventLeaderboard` hook       |
+| `FeedbackEventSection.tsx` | `apiClient.post(EVENTS.ENTER(id), data)` | `eventService.enter(id, data)` → reuse or extend `useEventMutations` |
+| `PollVotingSection.tsx`    | `apiClient.post(EVENTS.ENTER(id), data)` | `eventService.enter(id, data)` → reuse or extend `useEventMutations` |
+
+---
+
+#### Phase 37.6 — Context Violations (raw `fetch`) ✅ Done that must be replaced with `apiClient` via the `sessionService`:
+
+| Line | Endpoint                       | Replacement                       |
+| ---- | ------------------------------ | --------------------------------- |
+| 156  | `fetch(USER.PROFILE)`          | `sessionService.getProfile()`     |
+| 215  | `fetch(AUTH.SESSION_ACTIVITY)` | `sessionService.recordActivity()` |
+| 243  | `fetch(AUTH.SESSION_VALIDATE)` | `sessionService.validate()`       |
+| 271  | `fetch(AUTH.LOGOUT)`           | `sessionService.destroy()`        |
+| 323  | `fetch(AUTH.CREATE_SESSION)`   | `sessionService.create(data)`     |
+
+> `SessionContext` is a special case — it is a React context, not a component, so it may call service functions directly without going through a hook (since it IS the reactive layer). However, the raw `fetch()` must still be replaced with `apiClient` via `sessionService`.
+
+Also:
+
+| File                                               | Violation                     | Fix                                                |
+| -------------------------------------------------- | ----------------------------- | -------------------------------------------------- |
+| `app/[locale]/checkout/success/page.tsx` (line 32) | `fetch(ORDERS.GET_BY_ID(id))` | `apiClient.get(...)` or `orderService.getById(id)` |
+| `app/[locale]/demo/seed/page.tsx` (line 64)        | `fetch("/api/demo/seed")`     | Acceptable (dev-only demo page) — no change needed |
+
+---
+
+#### Phase 37.7 — Hook Internals (apiClient → service functions) ✅ Done inside `queryFn`/`mutationFn`. These must be refactored to call service functions:
+
+| Hook file                    | Current                                         | Target                                                               |
+| ---------------------------- | ----------------------------------------------- | -------------------------------------------------------------------- |
+| `useAuth.ts`                 | `apiClient.post(AUTH.LOGIN, ...)`               | `authService.login(...)`                                             |
+| `useAuth.ts`                 | `apiClient.post(AUTH.REGISTER, ...)`            | `authService.register(...)`                                          |
+| `useAuth.ts`                 | `apiClient.post(AUTH.RESEND_VERIFICATION, ...)` | `authService.sendVerification(...)`                                  |
+| `useAuth.ts`                 | `apiClient.post(USER.CHANGE_PASSWORD, ...)`     | `sessionService.*(...)`                                              |
+| `useProfile.ts`              | `apiClient.get(USER.PROFILE)`                   | `sessionService.getProfile()`                                        |
+| `useProfile.ts`              | `apiClient.patch(USER.PROFILE, data)`           | `profileService.update(data)`                                        |
+| `useAdminStats.ts`           | `apiClient.get(ADMIN.DASHBOARD)`                | `adminService.getDashboard()` (new: `src/services/admin.service.ts`) |
+| `useAddresses.ts`            | `apiClient.get/post/patch/delete(ADDRESSES.*)`  | `addressService.*()`                                                 |
+| `useSessions.ts`             | `apiClient.get/delete/post(*)`                  | `sessionService.*()`                                                 |
+| `features/events/hooks/*.ts` | `apiClient.get/post/put/patch/delete(EVENTS.*)` | `eventService.*()`                                                   |
+
+---
+
+### Phase 37 — Files to Create/Modify
+
+**New files:**
+
+- `src/services/*.service.ts` × 18 ✅ Done
+- `src/features/events/services/event.service.ts` ✅ Done
+- `src/services/index.ts` ✅ Done
+- `src/services/admin.service.ts` ✅ Done (37.7 — admin dashboard + sessions)
+- `src/hooks/useSiteSettings.ts` ✅ Done
+- `src/hooks/useFeaturedProducts.ts` ✅ Done
+- `src/hooks/useFeaturedAuctions.ts` ✅ Done
+- `src/hooks/useHeroCarousel.ts` ✅ Done
+- `src/hooks/useHomepageReviews.ts` ✅ Done
+- `src/hooks/usePublicFaqs.ts` ✅ Done
+- `src/hooks/useTopCategories.ts` ✅ Done
+- `src/hooks/useHomepageSections.ts` ✅ Done
+- `src/hooks/useNewsletterSubscribe.ts` ✅ Done
+- `src/hooks/useProductReviews.ts` ✅ Done
+- `src/hooks/useRelatedProducts.ts` ✅ Done
+- `src/hooks/useAddToCart.ts` ✅ Done
+- `src/hooks/useWishlistToggle.ts` ✅ Done
+- `src/hooks/useNotifications.ts` ✅ Done
+- `src/hooks/useCategorySelector.ts` ✅ Done
+- `src/hooks/usePublicEvents.ts` ✅ Done (Tier 1)
+- `src/features/events/hooks/useEventLeaderboard.ts` ✅ Done
+- `src/features/events/hooks/usePublicEvents.ts` ✅ Done (Tier 2)
+
+**Modified files:**
+
+- `src/hooks/useAuth.ts` ✅ Done — replaced inline `apiClient` with `authService` calls
+- `src/hooks/useProfile.ts` ✅ Done — replaced inline `apiClient` with `sessionService`/`profileService`
+- `src/hooks/useAdminStats.ts` ✅ Done — replaced inline `apiClient` with `adminService`
+- `src/hooks/useAddresses.ts` ✅ Done — replaced inline `apiClient` with `addressService`
+- `src/hooks/useSessions.ts` ✅ Done — replaced inline `apiClient` with `sessionService`/`adminService`
+- `src/hooks/index.ts` ✅ Done — exported all new hooks
+- `src/features/events/hooks/useEvents.ts` ✅ Done — uses `eventService`
+- `src/features/events/hooks/useEvent.ts` ✅ Done — uses `eventService`
+- `src/features/events/hooks/useEventEntries.ts` ✅ Done — uses `eventService`
+- `src/features/events/hooks/useEventMutations.ts` ✅ Done — uses `eventService`
+- `src/features/events/hooks/useEventStats.ts` ✅ Done — uses `eventService`
+- `src/contexts/SessionContext.tsx` ✅ Done — replaced raw `fetch` with `sessionService`/`authService`
+- All ~15 component files from sub-phases 37.2–37.5 ✅ Done
+
+---
+
+### Phase 37 — Completion Criteria
+
+---
+
+#### Phase 37.8 — Rule 2: `UI_LABELS` in JSX Client Components
+
+**Goal:** All `UI_LABELS.*` usages inside `.tsx` client component JSX replaced with `useTranslations()` from `next-intl`. `UI_LABELS` is restricted to API routes and non-JSX server utilities only.
+
+**Pattern to fix:**
+
+```tsx
+// BEFORE — violates Rule 2
+const LABELS = UI_LABELS.ADMIN.EVENTS; // module-scope: also breaks React rules
+<p>{UI_LABELS.EVENTS.LEADERBOARD}</p>;
+
+// AFTER
+export function MyComponent() {
+  const t = useTranslations("events");
+  return <p>{t("leaderboard")}</p>;
+}
+```
+
+**Files to fix — `src/features/events/components/`:**
+
+| File                       | Violation pattern                                                                                           | Notes                                                                 |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `EventCard.tsx`            | `UI_LABELS.EVENTS.*`, `UI_LABELS.EVENT_TYPES[...]` (lines 17, 24, 26, 30, 41, 82)                           | Needs `useTranslations('events')` + `useTranslations('eventTypes')`   |
+| `EventStatsBanner.tsx`     | Module-scope `const LABELS = UI_LABELS.ADMIN.EVENTS` (line 15)                                              | Move inside component; replace with `useTranslations('admin.events')` |
+| `EventsTable.tsx`          | Module-scope `const LABELS = UI_LABELS.ADMIN.EVENTS` (line 9)                                               | Same fix; `UI_LABELS.TABLE.ACTIONS` → `useTranslations('table')`      |
+| `EventFormDrawer.tsx`      | Module-scope `const LABELS = UI_LABELS.ADMIN.EVENTS` (line 31); lines 246, 249                              | Move inside component; use `useTranslations`                          |
+| `EventEntriesTable.tsx`    | Module-scope `const LABELS = UI_LABELS.ADMIN.EVENTS` (line 8)                                               | Same fix                                                              |
+| `EntryReviewDrawer.tsx`    | Module-scope `const LABELS = UI_LABELS.ADMIN.EVENTS` (line 18); line 85                                     | Same fix                                                              |
+| `SurveyFieldBuilder.tsx`   | `UI_LABELS.ADMIN.EVENTS.ADD_FIELD`, `UI_LABELS.ACTIONS.DELETE` (lines 52, 163)                              | Use `useTranslations`                                                 |
+| `SurveyEventSection.tsx`   | `UI_LABELS.EVENTS.*`, `UI_LABELS.ACTIONS.*` (lines 23, 28, 35, 38, 41, 56)                                  | Use `useTranslations('events')` + `'actions'`                         |
+| `PollVotingSection.tsx`    | `UI_LABELS.LOADING.DEFAULT`, `UI_LABELS.EVENTS.VOTE` (line 151), `UI_LABELS.EVENTS.ALREADY_VOTED` (line 75) | Use `useTranslations`                                                 |
+| `FeedbackEventSection.tsx` | `UI_LABELS.EVENTS.*`, `UI_LABELS.LOADING.DEFAULT` (lines 41, 42, 99, 100)                                   | Use `useTranslations`                                                 |
+| `EventStatusBadge.tsx`     | `UI_LABELS.EVENT_STATUS[status.toUpperCase()]` (lines 23–24)                                                | Use `useTranslations('eventStatus')` + `t(status)`                    |
+| `EventLeaderboard.tsx`     | `UI_LABELS.EVENTS.LEADERBOARD` (line 55)                                                                    | Use `useTranslations('events')`                                       |
+| `PollConfigForm.tsx`       | `UI_LABELS.ACTIONS.DELETE` (line 65)                                                                        | Use `useTranslations('actions')`                                      |
+
+**Files to fix — `src/features/auth/components/`:**
+
+| File                    | Violation                                   | Fix                                 |
+| ----------------------- | ------------------------------------------- | ----------------------------------- |
+| `AuthSocialButtons.tsx` | `UI_LABELS.AUTH.LOGIN.*` (lines 33, 64, 81) | Use `useTranslations('auth.login')` |
+
+**Files to fix — `src/app/[locale]/`:**
+
+| File                    | Violation                                                                             | Fix                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `sellers/[id]/page.tsx` | 20+ `UI_LABELS.SELLER_STOREFRONT.*`, `UI_LABELS.ACTIONS.*` uses in JSX (lines 70–377) | Use `useTranslations('sellerStorefront')` + `'actions'` |
+
+**Supporting work:**
+
+- Verify all required keys exist in `messages/en.json` and `messages/hi.json`; add any missing keys.
+- All test files using `UI_LABELS` for `screen.getBy*` assertions are acceptable (test-only, non-JSX).
+
+---
+
+#### Phase 37.9 — Rule 8: `findAll()` + In-Memory Filter (Billing Hazard)
+
+**Goal:** Replace every `findAll()` + `applySieveToArray` pattern in API routes with `sieveQuery()` via `list(model)`, reducing Firestore read costs from O(collection-size) to O(pageSize + 1).
+
+**Direct Firestore violation:**
+
+| File                                    | Line | Fix                                                                                               |
+| --------------------------------------- | ---- | ------------------------------------------------------------------------------------------------- |
+| `src/app/api/profile/[userId]/route.ts` | 30   | Replace `db.collection(USER_COLLECTION).doc(userId).get()` with `userRepository.findById(userId)` |
+
+**`findAll()` violations requiring `list(model)` migration:**
+
+| File                                      | Lines    | Issue                                                       | Action                                                                                |
+| ----------------------------------------- | -------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `src/app/api/faqs/route.ts`               | 117, 136 | `findAll()` + `applySieveToArray`                           | Add `SIEVE_FIELDS` to `FaqRepository`; replace with `faqRepository.list(model)`       |
+| `src/app/api/admin/blog/route.ts`         | 72       | `blogRepository.findAll()` in-memory filter                 | Add `SIEVE_FIELDS` to `BlogRepository`; replace with `blogRepository.list(model)`     |
+| `src/app/api/admin/payouts/route.ts`      | 50       | `payoutRepository.findAll()`                                | Add `SIEVE_FIELDS` to `PayoutRepository`; replace with `payoutRepository.list(model)` |
+| `src/app/api/admin/algolia/sync/route.ts` | 35       | `productRepository.findAll()` — entire collection           | Acceptable for sync but add a `limit` safety cap (`pageSize=500`)                     |
+| `src/app/api/admin/analytics/route.ts`    | 29–30    | `orderRepository.findAll()` + `productRepository.findAll()` | Analytics aggregation can remain but must add document cap; document the exception    |
+
+**Acceptable `findAll()` uses (ordered data / tree structures):**
+
+| File                                     | Reason `findAll()` is acceptable                    |
+| ---------------------------------------- | --------------------------------------------------- |
+| `api/homepage-sections/route.ts`         | Reorder logic requires full ordered list (≤50 docs) |
+| `api/carousel/route.ts`                  | Same — reorder context                              |
+| `api/carousel/reorder/route.ts`          | Same                                                |
+| `api/homepage-sections/reorder/route.ts` | Same                                                |
+| `api/categories/route.ts`                | Category tree construction requires all nodes       |
+
+**Steps per route needing `SIEVE_FIELDS`:**
+
+1. Add `static readonly SIEVE_FIELDS: FirebaseSieveFields` to the repository class.
+2. Add `async list(model: SieveModel)` method calling `this.sieveQuery(...)`.
+3. Update the API route to parse `SieveModel` from `searchParams` and call `repo.list(model)`.
+4. Remove the `applySieveToArray` import and call.
+5. Write/update route tests.
+
+---
+
+#### Phase 37.10 — Rule 10: Typed Error Classes
+
+**Goal:** Replace all `throw new Error(...)` in production API routes, contexts, and lib utilities with typed error classes from `@/lib/errors`.
+
+| File                                         | Line        | Current                                                       | Replacement                                                       |
+| -------------------------------------------- | ----------- | ------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `src/app/api/auth/login/route.ts`            | 84          | `throw new Error(ERROR_MESSAGES.GENERIC.SERVER_CONFIG_ERROR)` | `throw new AppError(ERROR_MESSAGES.GENERIC.SERVER_CONFIG_ERROR)`  |
+| `src/app/[locale]/checkout/success/page.tsx` | 33          | `throw new Error("Failed to fetch order")`                    | Remove — use `useApiQuery` error state instead (refactor to hook) |
+| `src/contexts/SessionContext.tsx`            | 162         | `throw new Error("Failed to fetch user profile")`             | `throw new DatabaseError(ERROR_MESSAGES.USER.NOT_FOUND)`          |
+| `src/lib/firebase/admin.ts`                  | 87          | `throw new Error(...)`                                        | `throw new AppError(...)`                                         |
+| `src/lib/search/algolia.ts`                  | 52          | `throw new Error(...)`                                        | `throw new AppError(ERROR_MESSAGES.GENERIC.SERVER_CONFIG_ERROR)`  |
+| `src/lib/payment/razorpay.ts`                | 29, 90, 113 | `throw new Error(...)` × 3                                    | `throw new AppError(...)` × 3                                     |
+| `src/components/admin/ImageUpload.tsx`       | 90          | `throw new Error("Upload response invalid")`                  | `throw new ValidationError(ERROR_MESSAGES.UPLOAD.INVALID_TYPE)`   |
+| `src/hooks/useAuth.ts`                       | 270         | `throw new Error(ERROR_MESSAGES.USER.NOT_FOUND)`              | `throw new NotFoundError(ERROR_MESSAGES.USER.NOT_FOUND)`          |
+
+> **Acceptable** — compound component context guards (`Tabs`, `Menu`, `Accordion`, `Dropdown`, `Toast`, `ThemeContext`): these are developer-facing guard throws, not user-facing errors. Leave unchanged.
+
+---
+
+#### Phase 37.11 — Rule 11/18: `console.*` in Production Code
+
+**Goal:** Replace all bare `console.log/error/warn/info` in production server-side code with `serverLogger`. Remove from client-side code entirely (use `logger`).
+
+**Files to fix:**
+
+| File                              | Lines            | Fix                                                            |
+| --------------------------------- | ---------------- | -------------------------------------------------------------- |
+| `src/lib/firebase/admin.ts`       | 42, 65, 95       | Replace `console.log/error` with `serverLogger.info/error`     |
+| `src/lib/firebase/auth-server.ts` | 24, 42, 113, 125 | Replace `console.error` with `serverLogger.error`              |
+| `src/lib/firebase/storage.ts`     | 202, 218         | Replace `console.error` with `serverLogger.error`              |
+| `src/app/api/demo/seed/route.ts`  | 20+ occurrences  | Replace all `console.log/error` with `serverLogger.info/error` |
+
+> **Acceptable** (these ARE the logging implementations — leave unchanged): `src/classes/Logger.ts`, `src/lib/server-logger.ts`, `src/db/indices/merge-indices.ts` (build script only).
+
+---
+
+#### Phase 37.12 — Rule 12: Raw Role String Comparisons
+
+**Goal:** Replace all `user.role === "admin"` / `"seller"` / `"moderator"` with `hasRole()` / `hasAnyRole()` from `@/helpers`.
+
+| File                                         | Lines            | Current                                                                            | Replacement                                            |
+| -------------------------------------------- | ---------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `src/components/layout/Sidebar.tsx`          | 419–421          | `user.role === "admin" \|\| user.role === "moderator" \|\| user.role === "seller"` | `hasAnyRole(user, ['admin', 'moderator', 'seller'])`   |
+| `src/components/layout/Sidebar.tsx`          | 441              | `user.role === "admin" \|\| user.role === "moderator"`                             | `hasAnyRole(user, ['admin', 'moderator'])`             |
+| `src/components/layout/Sidebar.tsx`          | 511              | `user.role === "seller" \|\| user.role === "admin"`                                | `hasAnyRole(user, ['seller', 'admin'])`                |
+| `src/app/[locale]/seller/analytics/page.tsx` | 54               | `user.role === "seller" \|\| user.role === "admin"`                                | `hasAnyRole(user, ['seller', 'admin'])`                |
+| `src/app/[locale]/profile/[userId]/page.tsx` | 161, 163         | `user.role === "admin"`, `user.role === "seller"`                                  | `hasRole(user, 'admin')`, `hasRole(user, 'seller')`    |
+| `src/app/api/products/[id]/route.ts`         | 116–117, 200–201 | `user.role === "moderator"`, `user.role === "admin"` (×2 locations)                | `hasRole(user, 'moderator')`, `hasRole(user, 'admin')` |
+
+> `src/constants/rbac.ts` line 271 — `user.role === "admin"` is inside the RBAC utility itself; leave unchanged.
+
+---
+
+#### Phase 37.13 — Rules 14/15/17: Hardcoded Routes, Endpoints, Native Dialogs
+
+**Goal:** Replace all hardcoded route strings and API paths with constants. Replace `window.confirm` with a modal.
+
+**Hardcoded routes (Rule 14):**
+
+| File                                              | Line | Current                                  | Replacement                                                                                         |
+| ------------------------------------------------- | ---- | ---------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `src/lib/errors/client-redirect.ts`               | 64   | `router.push("/")`                       | `router.push(ROUTES.HOME)`                                                                          |
+| `src/components/homepage/BlogArticlesSection.tsx` | 57   | ``router.push(`/blog/${article.slug}`)`` | `router.push(ROUTES.BLOG.ARTICLE(article.slug))` (add `ARTICLE` helper to `ROUTES.BLOG` if missing) |
+
+**Hardcoded API paths (Rule 15):**
+
+| File                               | Lines  | Current                    | Replacement                                                                                        |
+| ---------------------------------- | ------ | -------------------------- | -------------------------------------------------------------------------------------------------- |
+| `src/lib/firebase/auth-helpers.ts` | 56, 86 | `"/api/auth/session"` (×2) | `API_ENDPOINTS.AUTH.CREATE_SESSION` — **also replace raw `fetch` with `sessionService`** (Rule 19) |
+
+**Native dialog (Rule 17):**
+
+| File                             | Line | Current                                             | Replacement                                                                                                                                                                                            |
+| -------------------------------- | ---- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/hooks/useUnsavedChanges.ts` | 98   | `window.confirm(UI_LABELS.CONFIRM.UNSAVED_CHANGES)` | Emit an event via `eventBus` that triggers a `ConfirmDeleteModal`; the hook returns a `Promise<boolean>` that resolves on confirm/cancel. Add a `<UnsavedChangesModal>` wrapper to `LayoutClient.tsx`. |
+
+---
+
+#### Phase 37.14 — Rule 16: Oversized Pages (> 150 lines)
+
+**Goal:** Decompose all 37 page files that exceed 150 lines into thin orchestration layers. Each page should delegate all JSX rendering, state management, and table definitions to feature components and custom hooks.
+
+**Priority order (by severity):**
+
+| Lines | File                                  | Primary decomposition target                                                                                                              |
+| ----- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| 517   | `profile/[userId]/page.tsx`           | Extract `<SellerStorefrontProfile>` component + `useProfilePage` hook                                                                     |
+| 407   | `sellers/[id]/page.tsx`               | Extract `<SellerStorefront>` component (most of JSX is already there; split into `<SellerHeader>`, `<SellerProducts>`, `<SellerReviews>`) |
+| 399   | `seller/products/page.tsx`            | Extract `<SellerProductsTable>` + `<SellerProductDrawer>` into `src/features/seller/`                                                     |
+| 360   | `user/orders/[id]/track/page.tsx`     | Extract `<OrderTrackingTimeline>` + `<OrderTrackingMap>` components                                                                       |
+| 357   | `admin/reviews/[...action]/page.tsx`  | Extract `<ReviewsTable>` columns + filters into `src/features/admin/`                                                                     |
+| 301   | `admin/products/[...action]/page.tsx` | Extract `<ProductsTable>` + `<ProductFormDrawer>` into `src/features/admin/`                                                              |
+| 282   | `admin/analytics/page.tsx`            | Extract `<RevenueChart>`, `<OrdersChart>`, `<AdminStatCards>`                                                                             |
+| 282   | `admin/faqs/[...action]/page.tsx`     | Extract `<FaqsTable>` + `<FaqFormDrawer>`                                                                                                 |
+| 277   | `auctions/[id]/page.tsx`              | Extract `<AuctionDetail>`, `<BidHistory>`, `<BidForm>`                                                                                    |
+| 265   | `admin/blog/[...action]/page.tsx`     | Extract `<BlogTable>` + `<BlogFormDrawer>`                                                                                                |
+| 255   | `checkout/page.tsx`                   | Extract `<CheckoutForm>`, `<OrderSummary>`, `<PaymentSection>`                                                                            |
+| 245   | `admin/users/[...action]/page.tsx`    | Extract `<UsersTable>` + `<UserDetailDrawer>`                                                                                             |
+| 243   | `admin/sections/[...action]/page.tsx` | Extract `<SectionsTable>` + `<SectionFormDrawer>`                                                                                         |
+| 240   | `admin/coupons/[...action]/page.tsx`  | Extract `<CouponsTable>` + `<CouponFormDrawer>`                                                                                           |
+| 235   | `categories/[slug]/page.tsx`          | Extract `<CategoryProductGrid>` + `<CategoryFilterPanel>`                                                                                 |
+| 234   | `admin/carousel/[...action]/page.tsx` | Extract `<CarouselTable>` + `<CarouselFormDrawer>`                                                                                        |
+| 233   | `admin/bids/[...action]/page.tsx`     | Extract `<BidsTable>`                                                                                                                     |
+| 225   | `search/page.tsx`                     | Extract `<SearchResults>` + `<SearchFilters>`                                                                                             |
+| 224   | `products/page.tsx`                   | Extract `<ProductListings>` + `<ProductFilters>`                                                                                          |
+| 219   | `user/orders/view/[id]/page.tsx`      | Extract `<OrderDetail>` component                                                                                                         |
+| 213   | `admin/payouts/page.tsx`              | Extract `<PayoutsTable>`                                                                                                                  |
+| 209   | `admin/newsletter/page.tsx`           | Extract `<NewsletterTable>`                                                                                                               |
+| 204   | `auth/reset-password/page.tsx`        | Extract `<ResetPasswordForm>`                                                                                                             |
+| 195   | `seller/orders/page.tsx`              | Extract `<SellerOrdersTable>`                                                                                                             |
+| 194   | `blog/[slug]/page.tsx`                | Extract `<BlogPostContent>`, `<BlogPostSidebar>`                                                                                          |
+| 192   | `user/orders/page.tsx`                | Extract `<UserOrdersTable>`                                                                                                               |
+| 188   | `user/settings/page.tsx`              | Extract `<SettingsLayout>` with tab sections                                                                                              |
+| 183   | `seller/products/[id]/edit/page.tsx`  | Extract `<EditProductForm>`                                                                                                               |
+| 180   | `admin/orders/[...action]/page.tsx`   | Extract `<AdminOrdersTable>` + `<OrderDetailDrawer>`                                                                                      |
+| 173   | `auctions/page.tsx`                   | Extract `<AuctionsGrid>` + filters                                                                                                        |
+| 171   | `user/addresses/page.tsx`             | Extract `<AddressesManager>`                                                                                                              |
+| 169   | `events/[id]/participate/page.tsx`    | Extract `<EventParticipateForm>`                                                                                                          |
+| 169   | `about/page.tsx`                      | Extract `<AboutHero>`, `<AboutTeam>`, `<AboutMission>` sections                                                                           |
+| 167   | `sellers/page.tsx`                    | Extract `<SellersGrid>` + search                                                                                                          |
+| 163   | `products/[slug]/page.tsx`            | Extract `<ProductDetail>` + `<ProductImageGallery>`                                                                                       |
+| 158   | `auth/verify-email/page.tsx`          | Extract `<VerifyEmailForm>`                                                                                                               |
+| 157   | `admin/media/page.tsx`                | Extract `<MediaGrid>` + `<MediaUploadPanel>`                                                                                              |
+
+**Rules per decomposition:**
+
+1. New feature or domain components go into `src/features/<name>/components/` or `src/components/<domain>/`.
+2. API calls extracted into hooks (and hooks use service functions — Rule 20).
+3. Page file MUST be ≤ 150 lines after decomposition.
+4. Each new component gets a test file.
+
+---
+
+### Phase 37 — Completion Criteria
+
+- [ ] `grep -r "apiClient\." src/components src/app src/contexts` returns zero matches
+- [ ] `grep -r "await fetch(" src/components src/app src/contexts` returns zero matches (excluding server API routes and `src/lib/firebase/`)
+- [ ] All new hooks have unit tests in `__tests__/`
+- [ ] `npx tsc --noEmit` passes with 0 errors
+- [ ] All 276+ test suites green
+- [ ] `grep -rn "UI_LABELS\." src/features src/app --include="*.tsx"` returns zero matches in JSX-rendering files
+- [ ] `grep -rn "user\.role ===" src/components src/app src/features` returns zero matches (except `src/constants/rbac.ts`)
+- [ ] `grep -rn 'window\.confirm\|window\.alert\|window\.prompt' src/` returns zero matches
+- [ ] `grep -rn 'throw new Error(' src/app/api src/contexts src/hooks src/lib/payment src/lib/search` returns zero matches
+- [ ] `grep -rn 'console\.' src/lib/firebase src/app/api/demo` returns zero matches
+- [ ] All 69 `page.tsx` files are ≤ 150 lines

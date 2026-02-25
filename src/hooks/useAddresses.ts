@@ -18,8 +18,7 @@
 
 import { useApiQuery } from "./useApiQuery";
 import { useApiMutation } from "./useApiMutation";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS } from "@/constants";
+import { addressService } from "@/services";
 
 // ============================================================================
 // Types
@@ -70,7 +69,7 @@ export function useAddresses(options?: {
 }) {
   return useApiQuery<Address[]>({
     queryKey: ["addresses"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.USER.ADDRESSES.LIST),
+    queryFn: () => addressService.list(),
     enabled: options?.enabled,
     onSuccess: options?.onSuccess,
     onError: options?.onError,
@@ -90,7 +89,7 @@ export function useAddress(
 ) {
   return useApiQuery<Address>({
     queryKey: ["address", id],
-    queryFn: () => apiClient.get(API_ENDPOINTS.USER.ADDRESSES.GET_BY_ID(id)),
+    queryFn: () => addressService.getById(id),
     enabled: options?.enabled !== false && !!id,
     onSuccess: options?.onSuccess,
     onError: options?.onError,
@@ -105,8 +104,7 @@ export function useCreateAddress(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<Address, AddressFormData>({
-    mutationFn: (data) =>
-      apiClient.post(API_ENDPOINTS.USER.ADDRESSES.CREATE, data),
+    mutationFn: (data) => addressService.create(data),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });
@@ -123,8 +121,7 @@ export function useUpdateAddress(
   },
 ) {
   return useApiMutation<Address, AddressFormData>({
-    mutationFn: (data) =>
-      apiClient.patch(API_ENDPOINTS.USER.ADDRESSES.UPDATE(id), data),
+    mutationFn: (data) => addressService.update(id, data),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });
@@ -138,8 +135,7 @@ export function useDeleteAddress(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, { id: string }>({
-    mutationFn: (data) =>
-      apiClient.delete(API_ENDPOINTS.USER.ADDRESSES.DELETE(data.id)),
+    mutationFn: (data) => addressService.delete(data.id),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });
@@ -153,8 +149,7 @@ export function useSetDefaultAddress(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, SetDefaultAddressData>({
-    mutationFn: (data) =>
-      apiClient.post(API_ENDPOINTS.USER.ADDRESSES.SET_DEFAULT(data.addressId)),
+    mutationFn: (data) => addressService.setDefault(data.addressId),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });

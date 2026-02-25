@@ -22,7 +22,7 @@
 
 import { useState, useCallback } from "react";
 import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { categoryService } from "@/services";
 import {
   SideDrawer,
   Button,
@@ -32,7 +32,6 @@ import {
 } from "@/components";
 import type { Category } from "@/components";
 import {
-  API_ENDPOINTS,
   UI_LABELS,
   UI_PLACEHOLDERS,
   SUCCESS_MESSAGES,
@@ -83,7 +82,7 @@ function CreateCategoryContent({
     ApiSuccessCategory,
     Partial<Category>
   >({
-    mutationFn: (data) => apiClient.post(API_ENDPOINTS.CATEGORIES.CREATE, data),
+    mutationFn: (data) => categoryService.create(data),
     onSuccess: (res) => {
       showSuccess(SUCCESS_MESSAGES.CATEGORY.CREATED);
       onSuccess(res.data?.id ?? "");
@@ -127,7 +126,7 @@ export function CategorySelectorCreate({
     refetch,
   } = useApiQuery<CategoriesApiResponse>({
     queryKey: ["categories"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.CATEGORIES.LIST),
+    queryFn: () => categoryService.list(),
   });
 
   const categories: Category[] = raw?.data ?? raw?.items ?? [];

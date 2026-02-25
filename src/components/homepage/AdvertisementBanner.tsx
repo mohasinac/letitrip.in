@@ -1,21 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { useHomepageSections } from "@/hooks";
+import { THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
-import { apiClient } from "@/lib/api-client";
 import type { HomepageSectionDocument, BannerSectionConfig } from "@/db/schema";
 
 export function AdvertisementBanner() {
   const router = useRouter();
-  const { data, isLoading } = useApiQuery<HomepageSectionDocument[]>({
-    queryKey: ["homepage-sections", "ad-banner"],
-    queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.HOMEPAGE_SECTIONS.LIST}?type=advertisement&enabled=true&limit=1`,
-      ),
-  });
+  const { data, isLoading } = useHomepageSections(
+    "type=advertisement&enabled=true&limit=1",
+  );
 
   if (isLoading) {
     return (

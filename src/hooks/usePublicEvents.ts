@@ -1,0 +1,50 @@
+"use client";
+
+import { useApiQuery } from "@/hooks/useApiQuery";
+import { publicEventService } from "@/services";
+import type { EventDocument } from "@/db/schema";
+
+interface EventsListResult {
+  items: EventDocument[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
+}
+
+interface UsePublicEventsOptions {
+  params?: string;
+  enabled?: boolean;
+  cacheTTL?: number;
+}
+
+/**
+ * usePublicEvents  (Tier 1 — shared hook)
+ * Fetches public-facing events with optional filtering.
+ * Uses the Tier 1 publicEventService so it can be consumed by Tier 1 components
+ * (e.g. EventBanner in src/components/ui/).
+ *
+ * @example
+ * const { events } = usePublicEvents({ params: 'types=sale,offer&status=active&pageSize=1' });
+ */
+export function usePublicEvents({
+  params = "",
+  enabled = true,
+  cacheTTL = 5 * 60 * 1000,
+}: UsePublicEventsOptions = {}) {
+  const { data, isLoading, error, refetch } = useApiQuery<EventsListResult>({
+    queryKey: ["public-events", params],
+    queryFn: () => publicEventService.list(params),
+    enabled,
+    cacheTTL,
+  });
+
+  return {
+    events: data?.items ?? [],
+    total: data?.total ?? 0,
+    isLoading,
+    error: error?.message ?? null,
+    refetch,
+  };
+}

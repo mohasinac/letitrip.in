@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  UI_LABELS,
-  API_ENDPOINTS,
-  ERROR_MESSAGES,
-  SUCCESS_MESSAGES,
-} from "@/constants";
-import { useApiMutation, useMessage } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { UI_LABELS, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { useAddToCart, useMessage } from "@/hooks";
 
 interface AddToCartButtonProps {
   productId: string;
@@ -26,11 +20,7 @@ export function AddToCartButton({
 }: AddToCartButtonProps) {
   const { showSuccess, showError } = useMessage();
 
-  const { mutate, isLoading } = useApiMutation<
-    unknown,
-    { productId: string; quantity: number }
-  >({
-    mutationFn: (data) => apiClient.post(API_ENDPOINTS.CART.ADD_ITEM, data),
+  const { mutate, isLoading } = useAddToCart({
     onSuccess: () => showSuccess(SUCCESS_MESSAGES.CART.ITEM_ADDED),
     onError: () => showError(ERROR_MESSAGES.CART.ADD_FAILED),
   });

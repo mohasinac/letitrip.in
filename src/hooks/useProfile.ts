@@ -14,7 +14,7 @@
 
 import { useApiQuery } from "./useApiQuery";
 import { useApiMutation } from "./useApiMutation";
-import { apiClient, API_ENDPOINTS } from "@/lib/api-client";
+import { sessionService, profileService } from "@/services";
 
 // ============================================================================
 // Types
@@ -52,7 +52,7 @@ export function useProfile(options?: {
 }) {
   return useApiQuery<UserProfile>({
     queryKey: ["profile"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.USER.PROFILE),
+    queryFn: () => sessionService.getProfile(),
     enabled: options?.enabled,
     onSuccess: options?.onSuccess,
     onError: options?.onError,
@@ -67,7 +67,7 @@ export function useUpdateProfile(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, UpdateProfileData>({
-    mutationFn: (data) => apiClient.patch(API_ENDPOINTS.USER.PROFILE, data),
+    mutationFn: (data) => profileService.update(data),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });

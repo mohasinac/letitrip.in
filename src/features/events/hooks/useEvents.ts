@@ -1,8 +1,7 @@
 "use client";
 
 import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS } from "@/constants";
+import { eventService } from "../services/event.service";
 import type { EventDocument } from "@/db/schema";
 
 interface EventsListResult {
@@ -25,10 +24,7 @@ export function useEvents({
 }: UseEventsOptions = {}) {
   const { data, isLoading, error, refetch } = useApiQuery<EventsListResult>({
     queryKey: ["admin-events", params],
-    queryFn: () =>
-      apiClient.get<EventsListResult>(
-        `${API_ENDPOINTS.ADMIN.EVENTS.LIST}${params ? `?${params}` : ""}`,
-      ),
+    queryFn: () => eventService.adminList(params),
     enabled,
   });
 

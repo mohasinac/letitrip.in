@@ -27,9 +27,10 @@ import {
   onAuthStateChanged as firebaseOnAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
-import { ERROR_MESSAGES, API_ENDPOINTS } from "@/constants";
+import { ERROR_MESSAGES } from "@/constants";
 import { getCookie, hasCookie, deleteCookie } from "@/utils";
 import { logger } from "@/classes";
+import { sessionService, authService } from "@/services";
 import type { AvatarMetadata } from "@/db/schema";
 import type { UserRole } from "@/types/auth";
 
@@ -151,18 +152,8 @@ export function SessionProvider({ children }: SessionProviderProps) {
   const fetchUserProfile = useCallback(
     async (authUser: User): Promise<SessionUser> => {
       try {
-        // Use API endpoint instead of direct Firestore access
-        // This maintains API-only architecture and respects security rules
-        const response = await fetch(API_ENDPOINTS.USER.PROFILE, {
-          method: "GET",
-          credentials: "include", // Include session cookie
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch user profile");
-        }
-
-        const { data } = await response.json();
+        // Use session service (apiClient with credentials) instead of raw fetch
+        const { data } = await sessionService.getProfile();
         const currentSessionId = getSessionIdFromCookie();
 
         // Return session user with data from API
@@ -212,11 +203,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
     if (!currentSessionId || !user) return;
 
     try {
-      await fetch(API_ENDPOINTS.AUTH.SESSION_ACTIVITY, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId: currentSessionId }),
-      });
+      await sessionService.recordActivity({ sessionId: currentSessionId });
     } catch (error) {
       // Silent fail - activity update is not critical
       logger.debug("Session activity update failed", { error });
@@ -240,22 +227,13 @@ export function SessionProvider({ children }: SessionProviderProps) {
   // Refresh session (validate with server)
   const refreshSession = useCallback(async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.AUTH.SESSION_VALIDATE, {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        // Session invalid, sign out
-        await signOutRef.current?.();
-        return;
-      }
-
-      const data = await response.json();
+      const data = await sessionService.validate();
       if (data.valid && data.sessionId) {
         setSessionId(data.sessionId);
       }
     } catch (error) {
+      // Session invalid — sign out
+      await signOutRef.current?.();
       logger.error(ERROR_MESSAGES.SESSION.VALIDATION_FAILED, { error });
     }
   }, []);
@@ -268,10 +246,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
 
       // Clear session on server (with cookies)
       try {
-        await fetch(API_ENDPOINTS.AUTH.LOGOUT, {
-          method: "POST",
-          credentials: "include",
-        });
+        await authService.logout();
       } catch (error) {
         logger.error(ERROR_MESSAGES.SESSION.SERVER_LOGOUT_ERROR, { error });
       }
@@ -320,16 +295,10 @@ export function SessionProvider({ children }: SessionProviderProps) {
           try {
             const idToken = await authUser.getIdToken(true);
             if (thisVersion !== authVersion) return; // stale, discard
-            const response = await fetch(API_ENDPOINTS.AUTH.CREATE_SESSION, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ idToken }),
-              credentials: "include",
-            });
+            const data = await sessionService.create({ idToken });
 
             if (thisVersion !== authVersion) return;
-            if (response.ok) {
-              const data = await response.json();
+            if (data?.sessionId) {
               setSessionId(data.sessionId);
             }
           } catch (error) {

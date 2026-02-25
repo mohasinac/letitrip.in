@@ -14,9 +14,8 @@ import {
   Car,
   Sparkles,
 } from "lucide-react";
-import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
-import { apiClient } from "@/lib/api-client";
+import { useTopCategories } from "@/hooks";
+import { THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
 import type { CategoryDocument } from "@/db/schema";
 
 /** Lucide icon fallback mapped from category slug keywords */
@@ -60,13 +59,7 @@ function CategoryIcon({
 }
 
 export function TopCategoriesSection() {
-  const { data, isLoading } = useApiQuery<CategoryDocument[]>({
-    queryKey: ["categories", "featured"],
-    queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.CATEGORIES.LIST}?featured=true&maxDepth=1&limit=12`,
-      ),
-  });
+  const { data, isLoading } = useTopCategories(12);
 
   const categories = data || [];
 

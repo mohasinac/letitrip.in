@@ -148,6 +148,8 @@ import { groupBy } from '@/helpers';
 | Validators, formatters, converters, events | `@/utils` | 1 |
 | Auth/data/UI helpers | `@/helpers` | 1 |
 | Singletons (CacheManager, Logger, EventBus...) | `@/classes` | 1 |
+| Domain service functions (productService, cartService...) | `@/services` | 1 |
+| Feature service functions (eventService...) | `@/features/<name>/services` | 2 |
 | Repositories (userRepository, orderRepository...) | `@/repositories` | — |
 | DB schemas & types | `@/db/schema` | — |
 | Schema field constants (USER_FIELDS, SCHEMA_DEFAULTS...) | `@/db/schema` | — |
@@ -490,6 +492,25 @@ const table = useUrlTable({ defaults: { view: 'grid', pageSize: '24' } });
   onViewModeChange={(mode) => table.set('view', mode)}
   mobileCardRender={(item) => <ProductCard product={item} />}
 />
+```
+
+### Service Layer — Rule for Hooks
+
+Every `queryFn` / `mutationFn` passed to `useApiQuery` / `useApiMutation` **MUST** call a named service function from `@/services` or `@/features/<name>/services`, never an inline `apiClient.*` call. See **Rule 20** for the full service + hook layer pattern.
+
+```tsx
+// WRONG — inline apiClient inside hook
+useApiQuery({
+  queryKey: ['products', 'featured'],
+  queryFn: () => apiClient.get(`${API_ENDPOINTS.PRODUCTS.LIST}?featured=true`), // ❌
+});
+
+// RIGHT — named service function
+import { productService } from '@/services';
+useApiQuery({
+  queryKey: ['products', 'featured'],
+  queryFn: () => productService.getFeatured(), // ✅
+});
 ```
 
 ---
@@ -973,6 +994,148 @@ export default function CarouselPage() {
 
 ---
 
+## RULE 19: No Direct `fetch()` — Always Use `apiClient`
+
+**NEVER call `fetch()` directly in client-side code. ALWAYS use `apiClient` from `@/lib/api-client`.**
+
+`apiClient` provides: automatic cookie credentials, configurable timeout + abort, typed `ApiClientError`, consistent JSON parsing, and file upload support.
+
+```tsx
+// WRONG — raw fetch in component or hook
+const res = await fetch('/api/products');
+const data = await res.json();
+
+// WRONG — manual headers + JSON stringify
+const res = await fetch(API_ENDPOINTS.USER.PROFILE, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(payload),
+});
+
+// RIGHT — use apiClient (always via a service function — see Rule 20)
+import { apiClient } from '@/lib/api-client';
+const data = await apiClient.get(API_ENDPOINTS.PRODUCTS.LIST);
+const result = await apiClient.post(API_ENDPOINTS.USER.PROFILE, payload);
+```
+
+**Exceptions where raw `fetch` is acceptable:**
+- `src/app/api/**` — server-side routes calling external REST APIs (Firebase Auth, Razorpay, etc.). These are server-only and run before the session cookie exists.
+- `src/lib/firebase/` — thin auth bootstrap utilities that run before the session cookie is established.
+
+---
+
+## RULE 20: No `apiClient` Directly in Components — Use Service + Hook Layer
+
+**NEVER call `apiClient` (or `fetch`) directly inside a React component, page, or context. Always go through a service function consumed via a hook.**
+
+### Three-Layer Data Flow
+
+```
+Component  (src/app/ or src/components/ or src/features/<name>/components/)
+  └─ Feature / Shared Hook  (useApiQuery / useApiMutation wrapping a service fn)
+       └─ Service Function  (src/services/<domain>.service.ts  OR  src/features/<name>/services/)
+            └─ apiClient    (src/lib/api-client.ts)
+                 └─ fetch   (native — called only inside apiClient)
+```
+
+### Service Layer (`src/services/` — Tier 1)
+
+Service files are **pure async functions** — no React, no hooks, no state. One file per domain, one method per endpoint.
+
+```ts
+// src/services/product.service.ts
+import { apiClient } from '@/lib/api-client';
+import { API_ENDPOINTS } from '@/constants';
+
+export const productService = {
+  list:        (params?: string)              => apiClient.get(`${API_ENDPOINTS.PRODUCTS.LIST}${params ? `?${params}` : ''}`),
+  getById:     (id: string)                   => apiClient.get(API_ENDPOINTS.PRODUCTS.GET_BY_ID(id)),
+  getFeatured: ()                             => apiClient.get(`${API_ENDPOINTS.PRODUCTS.LIST}?filters=featured==true&sorts=-createdAt&pageSize=8`),
+  create:      (data: unknown)                => apiClient.post(API_ENDPOINTS.PRODUCTS.CREATE, data),
+  update:      (id: string, data: unknown)    => apiClient.patch(API_ENDPOINTS.PRODUCTS.UPDATE(id), data),
+  delete:      (id: string)                   => apiClient.delete(API_ENDPOINTS.PRODUCTS.DELETE(id)),
+};
+```
+
+Export via `src/services/index.ts`:
+```ts
+export * from './product.service';
+export * from './cart.service';
+// ... all domain services
+```
+
+### Feature Service Layer (`src/features/<name>/services/` — Tier 2)
+
+For feature-specific API calls that are not shared across features:
+
+```ts
+// src/features/events/services/event.service.ts
+import { apiClient } from '@/lib/api-client';
+import { API_ENDPOINTS } from '@/constants';
+
+export const eventService = {
+  list:     (params?: string) => apiClient.get(`${API_ENDPOINTS.EVENTS.LIST}${params ? `?${params}` : ''}`),
+  getById:  (id: string)      => apiClient.get(API_ENDPOINTS.EVENTS.DETAIL(id)),
+  enter:    (id: string, data: unknown) => apiClient.post(API_ENDPOINTS.EVENTS.ENTER(id), data),
+  leaderboard: (id: string)  => apiClient.get(API_ENDPOINTS.EVENTS.LEADERBOARD(id)),
+};
+```
+
+Export from the feature barrel:
+```ts
+// src/features/events/index.ts
+export * from './services/event.service';
+```
+
+### Hook Layer
+
+Hooks compose service calls with React state:
+
+```ts
+// src/hooks/useProducts.ts
+import { useApiQuery } from '@/hooks';
+import { productService } from '@/services';
+
+export function useFeaturedProducts() {
+  return useApiQuery({
+    queryKey: ['products', 'featured'],
+    queryFn:  () => productService.getFeatured(),
+  });
+}
+```
+
+### Component Layer
+
+Components ONLY consume hooks — they never import `apiClient` or service functions:
+
+```tsx
+// WRONG — apiClient directly in component
+export function FeaturedProductsSection() {
+  const { data } = useApiQuery({
+    queryFn: () => apiClient.get(API_ENDPOINTS.PRODUCTS.LIST), // ❌
+  });
+}
+
+// RIGHT — component uses a named hook
+export function FeaturedProductsSection() {
+  const { data } = useFeaturedProducts(); // ✅
+}
+```
+
+### Service Directory Rules
+
+| Service type | Location | Imports from | Tier |
+|---|---|---|---|
+| Shared (products, cart, reviews…) | `src/services/<domain>.service.ts` | `@/lib/api-client`, `@/constants` | 1 |
+| Feature-scoped | `src/features/<name>/services/<domain>.service.ts` | `@/lib/api-client`, `@/constants` | 2 |
+
+- Services **MUST NOT** import React, hooks, or component code.
+- Services **MUST** use `API_ENDPOINTS` from `@/constants` — never hardcode paths.
+- Services **MUST** be exported through a barrel (`src/services/index.ts` or `src/features/<name>/index.ts`).
+- **One service object per domain** matching the API route group.
+
+---
+
 ## Schema Standards
 
 Every schema file in `src/db/schema/` MUST have these 6 sections:
@@ -1125,6 +1288,9 @@ Before writing ANY code, verify:
 - [ ] Is my `page.tsx` thin? (< 150 lines, no inline forms/tables)
 - [ ] No `alert()` / `confirm()` / `prompt()` calls?
 - [ ] No `console.log()` in production code? (use `logger` or `serverLogger`)
+- [ ] Am I calling `fetch()` directly in client code? → use `apiClient` instead (Rule 19)
+- [ ] Am I calling `apiClient` directly in a component, page, or context? → create/reuse a service function in `@/services` and call it via a hook (Rule 20)
+- [ ] Does a service for this domain already exist in `@/services` or `@/features/<name>/services`? → reuse it
 
 ---
 

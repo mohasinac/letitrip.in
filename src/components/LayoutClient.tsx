@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { THEME_CONSTANTS, ROUTES, API_ENDPOINTS } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTheme } from "@/contexts/ThemeContext";
 import { TitleBar, MainNavbar, Sidebar, Footer, BottomNavbar } from "./layout";
 import Search from "./utility/Search";
@@ -11,8 +11,7 @@ import AutoBreadcrumbs from "./layout/AutoBreadcrumbs";
 import { BackgroundRenderer } from "./utility";
 import { classNames } from "@/helpers";
 import { logger } from "@/classes";
-import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { useSiteSettings } from "@/hooks";
 import { EventBanner } from "./ui/EventBanner";
 
 /**
@@ -57,16 +56,9 @@ export default function LayoutClient({
 
   // Fetch background settings from site settings API.
   // Falls back to site defaults when data is not yet loaded or on error.
-  const { data: siteSettings } = useApiQuery<{
+  const { data: siteSettings } = useSiteSettings<{
     backgroundConfig?: typeof defaultBackgroundConfig;
-  }>({
-    queryKey: ["site-settings"],
-    queryFn: () =>
-      apiClient.get<{ backgroundConfig?: typeof defaultBackgroundConfig }>(
-        API_ENDPOINTS.SITE_SETTINGS.GET,
-      ),
-    cacheTTL: 10 * 60 * 1000, // 10 minutes — site settings rarely change
-  });
+  }>();
 
   const backgroundConfig =
     siteSettings?.backgroundConfig ?? defaultBackgroundConfig;

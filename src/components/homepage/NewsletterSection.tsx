@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Mail } from "lucide-react";
 import {
   THEME_CONSTANTS,
-  API_ENDPOINTS,
   UI_LABELS,
   UI_PLACEHOLDERS,
   ROUTES,
@@ -13,17 +12,14 @@ import {
   SUCCESS_MESSAGES,
 } from "@/constants";
 import { Button, Input } from "@/components";
-import { useApiMutation, useMessage } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { useNewsletterSubscribe, useMessage } from "@/hooks";
 
 export function NewsletterSection() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const { message, showSuccess, showError } = useMessage();
 
-  const { mutate, isLoading } = useApiMutation<unknown, { email: string }>({
-    mutationFn: (vars) =>
-      apiClient.post(API_ENDPOINTS.NEWSLETTER.SUBSCRIBE, vars),
+  const { mutate, isLoading } = useNewsletterSubscribe({
     onSuccess: () => {
       setSubscribed(true);
       setEmail("");

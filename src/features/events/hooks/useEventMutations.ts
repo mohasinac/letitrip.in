@@ -1,8 +1,7 @@
 "use client";
 
 import { useApiMutation } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS } from "@/constants";
+import { eventService } from "../services/event.service";
 import type {
   EventDocument,
   EventCreateInput,
@@ -13,8 +12,7 @@ import type {
 // --- Create ---
 export function useCreateEvent(onSuccess?: (event: EventDocument) => void) {
   return useApiMutation<EventDocument, EventCreateInput>({
-    mutationFn: (data) =>
-      apiClient.post<EventDocument>(API_ENDPOINTS.ADMIN.EVENTS.LIST, data),
+    mutationFn: (data) => eventService.adminCreate(data),
     onSuccess,
   });
 }
@@ -27,8 +25,7 @@ interface UpdateEventVars {
 
 export function useUpdateEvent(onSuccess?: (event: EventDocument) => void) {
   return useApiMutation<EventDocument, UpdateEventVars>({
-    mutationFn: ({ id, data }) =>
-      apiClient.put<EventDocument>(API_ENDPOINTS.ADMIN.EVENTS.DETAIL(id), data),
+    mutationFn: ({ id, data }) => eventService.adminUpdate(id, data),
     onSuccess,
   });
 }
@@ -36,8 +33,7 @@ export function useUpdateEvent(onSuccess?: (event: EventDocument) => void) {
 // --- Delete ---
 export function useDeleteEvent(onSuccess?: () => void) {
   return useApiMutation<void, string>({
-    mutationFn: (id) =>
-      apiClient.delete<void>(API_ENDPOINTS.ADMIN.EVENTS.DETAIL(id)),
+    mutationFn: (id) => eventService.adminDelete(id),
     onSuccess,
   });
 }
@@ -52,10 +48,7 @@ export function useChangeEventStatus(
   onSuccess?: (event: EventDocument) => void,
 ) {
   return useApiMutation<EventDocument, ChangeStatusVars>({
-    mutationFn: ({ id, status }) =>
-      apiClient.patch<EventDocument>(API_ENDPOINTS.ADMIN.EVENTS.STATUS(id), {
-        status,
-      }),
+    mutationFn: ({ id, status }) => eventService.adminSetStatus(id, status),
     onSuccess,
   });
 }
@@ -71,10 +64,10 @@ interface ReviewEntryVars {
 export function useReviewEntry(onSuccess?: () => void) {
   return useApiMutation<void, ReviewEntryVars>({
     mutationFn: ({ eventId, entryId, reviewStatus, reviewNote }) =>
-      apiClient.patch<void>(
-        API_ENDPOINTS.ADMIN.EVENTS.ENTRY(eventId, entryId),
-        { reviewStatus, reviewNote },
-      ),
+      eventService.adminUpdateEntry(eventId, entryId, {
+        reviewStatus,
+        reviewNote,
+      }),
     onSuccess,
   });
 }

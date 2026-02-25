@@ -1,15 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, ROUTES, UI_LABELS } from "@/constants";
-import type { EventDocument } from "@/db/schema";
+import { usePublicEvents } from "@/hooks";
+import { ROUTES, UI_LABELS } from "@/constants";
 import Link from "next/link";
-
-interface EventsListResponse {
-  items: EventDocument[];
-}
 
 /**
  * EventBanner
@@ -31,19 +25,15 @@ export function EventBanner() {
     setMounted(true);
   }, []);
 
-  const { data } = useApiQuery<EventsListResponse>({
-    queryKey: ["public-events-banner"],
-    queryFn: () =>
-      apiClient.get<EventsListResponse>(
-        `${API_ENDPOINTS.EVENTS.LIST}?types=sale,offer&status=active&pageSize=1`,
-      ),
+  const { events } = usePublicEvents({
+    params: "types=sale,offer&status=active&pageSize=1",
     cacheTTL: 5 * 60 * 1000, // 5 minutes
   });
 
   if (!mounted) return null;
 
   // Pick first active sale or offer not yet dismissed
-  const event = data?.items?.find(
+  const event = events.find(
     (e) =>
       (e.type === "sale" || e.type === "offer") && !dismissedIds.includes(e.id),
   );

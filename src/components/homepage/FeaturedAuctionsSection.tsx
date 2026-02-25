@@ -3,20 +3,13 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
+import { useFeaturedAuctions } from "@/hooks";
+import { THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
 import { formatCurrency } from "@/utils";
-import { apiClient } from "@/lib/api-client";
 import type { ProductDocument } from "@/db/schema";
 
 export function FeaturedAuctionsSection() {
-  const { data, isLoading } = useApiQuery<ProductDocument[]>({
-    queryKey: ["auctions", "featured"],
-    queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.PRODUCTS.LIST}?isAuction=true&status=published&isPromoted=true&limit=18`,
-      ),
-  });
+  const { data, isLoading } = useFeaturedAuctions();
 
   if (isLoading) {
     return (

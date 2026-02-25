@@ -1,10 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useHomepageSections } from "@/hooks";
+import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
-import { apiClient } from "@/lib/api-client";
 import type {
   HomepageSectionDocument,
   WelcomeSectionConfig,
@@ -12,13 +11,7 @@ import type {
 
 export function WelcomeSection() {
   const router = useRouter();
-  const { data, isLoading } = useApiQuery<HomepageSectionDocument[]>({
-    queryKey: ["homepage-section", "welcome"],
-    queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.HOMEPAGE_SECTIONS.LIST}?type=welcome&enabled=true`,
-      ),
-  });
+  const { data, isLoading } = useHomepageSections("type=welcome&enabled=true");
 
   if (isLoading) {
     return (

@@ -2,16 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useApiQuery } from "@/hooks";
+import { usePublicFaqs } from "@/hooks";
 import {
-  API_ENDPOINTS,
   THEME_CONSTANTS,
   ROUTES,
   UI_LABELS,
   FAQ_CATEGORIES,
 } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
-import { apiClient } from "@/lib/api-client";
 import type { FAQDocument } from "@/db/schema";
 
 export function FAQSection() {
@@ -19,13 +17,7 @@ export function FAQSection() {
     useState<FAQCategoryKey>("general");
   const [openFaqId, setOpenFaqId] = useState<string | null>(null);
 
-  const { data, isLoading } = useApiQuery<FAQDocument[]>({
-    queryKey: ["faqs", "homepage", activeCategory],
-    queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.FAQS.LIST}?category=${activeCategory}&limit=6`,
-      ),
-  });
+  const { data, isLoading } = usePublicFaqs(activeCategory, 6);
 
   const handleCategoryChange = (cat: FAQCategoryKey) => {
     setActiveCategory(cat);

@@ -4,21 +4,14 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
-import { useApiQuery, useSwipe } from "@/hooks";
-import { API_ENDPOINTS, THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
-import { apiClient } from "@/lib/api-client";
+import { useHomepageReviews, useSwipe } from "@/hooks";
+import { THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
 import type { ReviewDocument } from "@/db/schema";
 
 export function CustomerReviewsSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const { data, isLoading } = useApiQuery<ReviewDocument[]>({
-    queryKey: ["reviews", "featured"],
-    queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.REVIEWS.LIST}?featured=true&status=approved&limit=6`,
-      ),
-  });
+  const { data, isLoading } = useHomepageReviews();
 
   const reviews = data || [];
   const totalGroups = Math.ceil(reviews.length / 3);

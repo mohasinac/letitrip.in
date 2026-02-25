@@ -1,8 +1,7 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useEventLeaderboard } from "../hooks/useEventLeaderboard";
+import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { Spinner } from "@/components";
 import { useAuth } from "@/hooks";
 import type { EventEntryDocument } from "@/db/schema";
@@ -20,13 +19,7 @@ export function EventLeaderboard({
 }: EventLeaderboardProps) {
   const { user } = useAuth();
 
-  const { data: leaderboard, isLoading } = useApiQuery<EventEntryDocument[]>({
-    queryKey: ["event-leaderboard", eventId],
-    queryFn: () =>
-      apiClient.get<EventEntryDocument[]>(
-        API_ENDPOINTS.EVENTS.LEADERBOARD(eventId),
-      ),
-  });
+  const { leaderboard, isLoading } = useEventLeaderboard(eventId);
 
   const RANK_STYLES = [
     "bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200",

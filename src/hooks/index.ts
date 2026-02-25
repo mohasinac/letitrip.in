@@ -107,3 +107,25 @@ export type {
   UsePullToRefreshOptions,
   UsePullToRefreshReturn,
 } from "./usePullToRefresh";
+
+// Phase 37: Service layer — homepage hooks
+export { useHeroCarousel } from "./useHeroCarousel";
+export { useFeaturedProducts } from "./useFeaturedProducts";
+export { useFeaturedAuctions } from "./useFeaturedAuctions";
+export { useHomepageReviews } from "./useHomepageReviews";
+export { usePublicFaqs } from "./usePublicFaqs";
+export { useTopCategories } from "./useTopCategories";
+export { useSiteSettings } from "./useSiteSettings";
+export { useHomepageSections } from "./useHomepageSections";
+export { useNewsletterSubscribe } from "./useNewsletterSubscribe";
+
+// Phase 37: Service layer — product hooks
+export { useProductReviews } from "./useProductReviews";
+export { useRelatedProducts } from "./useRelatedProducts";
+export { useAddToCart } from "./useAddToCart";
+
+// Phase 37: Service layer — shared UI hooks
+export { useWishlistToggle } from "./useWishlistToggle";
+export { useNotifications } from "./useNotifications";
+export { useCategorySelector } from "./useCategorySelector";
+export { usePublicEvents } from "./usePublicEvents";

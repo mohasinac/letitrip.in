@@ -1,8 +1,7 @@
 "use client";
 
-import { UI_LABELS, API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
-import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useRelatedProducts } from "@/hooks";
 import { ProductCard } from "./ProductCard";
 import type { ProductDocument } from "@/db/schema";
 
@@ -34,13 +33,7 @@ interface RelatedProductsProps {
 }
 
 export function RelatedProducts({ category, excludeId }: RelatedProductsProps) {
-  const url = `${API_ENDPOINTS.PRODUCTS.LIST}?pageSize=8&filters=status==published,category==${encodeURIComponent(category)}&sorts=-createdAt`;
-
-  const { data, isLoading } = useApiQuery<RelatedProductsResponse>({
-    queryKey: ["related-products", category, excludeId],
-    queryFn: () => apiClient.get(url),
-    enabled: Boolean(category),
-  });
+  const { data, isLoading } = useRelatedProducts(category, excludeId, 8);
 
   const products =
     data?.data?.filter((p: RelatedProduct) => p.id !== excludeId) ?? [];

@@ -3,10 +3,9 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useSwipe, useMediaQuery } from "@/hooks";
-import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useHeroCarousel, useSwipe, useMediaQuery } from "@/hooks";
+import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
-import { apiClient } from "@/lib/api-client";
 import type { CarouselSlideDocument, GridCard } from "@/db/schema";
 
 export function HeroCarousel() {
@@ -19,10 +18,7 @@ export function HeroCarousel() {
     "(prefers-reduced-motion: reduce)",
   );
 
-  const { data, isLoading } = useApiQuery<CarouselSlideDocument[]>({
-    queryKey: ["carousel", "active"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.CAROUSEL.LIST + "?active=true"),
-  });
+  const { data, isLoading } = useHeroCarousel();
 
   const slides =
     data?.filter((s) => s.active)?.sort((a, b) => a.order - b.order) || [];

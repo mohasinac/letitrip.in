@@ -10,11 +10,11 @@
 
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { useAuth } from "@/hooks";
 import { useRouter } from "next/navigation";
-import { API_ENDPOINTS, ROUTES, UI_LABELS } from "@/constants";
-import { apiClient } from "@/lib/api-client";
+import { ROUTES, UI_LABELS } from "@/constants";
+import { useWishlistToggle } from "@/hooks";
 
 interface WishlistButtonProps {
   productId: string;
@@ -38,8 +38,11 @@ export function WishlistButton({
 }: WishlistButtonProps) {
   const { user } = useAuth();
   const router = useRouter();
-  const [inWishlist, setInWishlist] = useState(initialInWishlist);
-  const [loading, setLoading] = useState(false);
+  const {
+    inWishlist,
+    isLoading: loading,
+    toggle,
+  } = useWishlistToggle(productId, initialInWishlist);
 
   const handleToggle = useCallback(
     async (e: React.MouseEvent) => {
@@ -51,22 +54,13 @@ export function WishlistButton({
         return;
       }
 
-      setLoading(true);
       try {
-        if (inWishlist) {
-          await apiClient.delete(API_ENDPOINTS.USER.WISHLIST.REMOVE(productId));
-          setInWishlist(false);
-        } else {
-          await apiClient.post(API_ENDPOINTS.USER.WISHLIST.ADD, { productId });
-          setInWishlist(true);
-        }
+        await toggle();
       } catch {
-        // Silently revert on error
-      } finally {
-        setLoading(false);
+        // Silently ignore errors — wishlist state reverts automatically
       }
     },
-    [user, router, inWishlist, productId],
+    [user, router, toggle],
   );
 
   const label = inWishlist

@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { UI_LABELS, API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatRelativeTime } from "@/utils";
-import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { useProductReviews } from "@/hooks";
 import type { ReviewDocument } from "@/db/schema";
 
 const { themed, borderRadius, rating: ratingTokens } = THEME_CONSTANTS;
@@ -76,13 +75,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  const { data, isLoading } = useApiQuery<ReviewsResponse>({
-    queryKey: ["reviews", productId, String(page)],
-    queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.REVIEWS.LIST}?productId=${productId}&page=${page}&pageSize=${pageSize}`,
-      ),
-  });
+  const { data, isLoading } = useProductReviews(productId, page, pageSize);
 
   const reviews = data?.data ?? [];
   const meta = data?.meta;

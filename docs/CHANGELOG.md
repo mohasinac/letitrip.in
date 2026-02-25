@@ -9,6 +9,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 37 — Service Layer Migration, Batch 1 (37.2–37.7) (2026-02-28)
+
+#### Added
+
+- **`src/services/admin.service.ts`** — New Tier 1 service: `getDashboardStats()`, `listSessions(params?)`, `revokeSession(id)`, `revokeUserSessions(userId)`.
+- **`src/services/event.service.ts`** — New Tier 1 service for public event endpoints: `list(params?)`, `getById(id)`, `enter(id, data)`, `getLeaderboard(id)`. Allows Tier 1 components to access public events without importing from Tier 2.
+- **`src/services/auth.service.ts`** — Added `changePassword(data)` method (`POST /api/user/change-password`).
+- **`src/hooks/useHeroCarousel.ts`** — Wraps `carouselService.getActive()`.
+- **`src/hooks/useFeaturedProducts.ts`** — Wraps `productService.list()` for promoted products.
+- **`src/hooks/useFeaturedAuctions.ts`** — Wraps `productService.list()` for promoted auctions.
+- **`src/hooks/useHomepageReviews.ts`** — Wraps `reviewService.getHomepageReviews()`.
+- **`src/hooks/usePublicFaqs.ts`** — Wraps `faqService.listPublic(category?, limit)`.
+- **`src/hooks/useTopCategories.ts`** — Wraps `categoryService.listTopLevel(limit)`.
+- **`src/hooks/useSiteSettings.ts`** — Generic hook wrapping `siteSettingsService.get()`.
+- **`src/hooks/useHomepageSections.ts`** — Wraps `homepageSectionsService.list(params?)`.
+- **`src/hooks/useNewsletterSubscribe.ts`** — Mutation hook wrapping `newsletterService.subscribe(data)`.
+- **`src/hooks/useProductReviews.ts`** — Wraps `reviewService.listByProduct(productId, page, pageSize)`.
+- **`src/hooks/useRelatedProducts.ts`** — Wraps `productService.list()` with category/exclude filters.
+- **`src/hooks/useAddToCart.ts`** — Mutation hook wrapping `cartService.addItem(data)`.
+- **`src/hooks/useWishlistToggle.ts`** — Manages `inWishlist` state via `wishlistService.add/remove()`.
+- **`src/hooks/useNotifications.ts`** — Wraps `notificationService.list/markRead/markAllRead()`.
+- **`src/hooks/useCategorySelector.ts`** — Wraps `categoryService.list()/create()` for admin selectors.
+- **`src/hooks/usePublicEvents.ts`** — Tier 1 hook wrapping `publicEventService.list(params?)`.
+- **`src/features/events/hooks/usePublicEvents.ts`** — Tier 2 hook wrapping `eventService.list(params?)`.
+- **`src/features/events/hooks/useEventLeaderboard.ts`** — Wraps `eventService.getLeaderboard(eventId)`.
+
+#### Changed
+
+- **`src/services/index.ts`** — Added `admin.service` and `event.service` (Tier 1 public) to barrel exports.
+- **`src/hooks/index.ts`** — Exported all 17 new Phase 37 hooks.
+- **`src/hooks/useAuth.ts`** — Replaced `apiClient.post(AUTH.LOGIN/REGISTER/RESEND_VERIFICATION)` and `apiClient.post(USER.CHANGE_PASSWORD)` with `authService.*` calls. Removed `apiClient` import.
+- **`src/hooks/useProfile.ts`** — Replaced `apiClient.get/patch(USER.PROFILE)` with `sessionService.getProfile()` + `profileService.update()`. Removed `apiClient` import.
+- **`src/hooks/useAdminStats.ts`** — Replaced `apiClient.get(ADMIN.DASHBOARD)` with `adminService.getDashboardStats()`.
+- **`src/hooks/useAddresses.ts`** — Replaced all 6 `apiClient.*` calls with `addressService.*` equivalents.
+- **`src/hooks/useSessions.ts`** — Replaced all `apiClient.*` calls with `adminService.*` (admin ops) and `sessionService.*` (user ops). Removed duplicate `API_ENDPOINTS` import from `@/lib/api-client`.
+- **`src/contexts/SessionContext.tsx`** — Replaced 5 raw `fetch()` calls with service functions: `sessionService.getProfile()`, `sessionService.recordActivity()`, `sessionService.validate()`, `authService.logout()`, `sessionService.create()`. Removed `API_ENDPOINTS` import.
+- **`src/components/homepage/HeroCarousel.tsx`** — Uses `useHeroCarousel()`.
+- **`src/components/homepage/FeaturedProductsSection.tsx`** — Uses `useFeaturedProducts()`.
+- **`src/components/homepage/FeaturedAuctionsSection.tsx`** — Uses `useFeaturedAuctions()`.
+- **`src/components/homepage/CustomerReviewsSection.tsx`** — Uses `useHomepageReviews()`.
+- **`src/components/homepage/FAQSection.tsx`** — Uses `usePublicFaqs(activeCategory, 6)`.
+- **`src/components/homepage/TopCategoriesSection.tsx`** — Uses `useTopCategories(12)`.
+- **`src/components/homepage/WelcomeSection.tsx`** — Uses `useHomepageSections("type=welcome&enabled=true")`.
+- **`src/components/homepage/WhatsAppCommunitySection.tsx`** — Uses `useHomepageSections("type=whatsapp-community&enabled=true")`.
+- **`src/components/homepage/AdvertisementBanner.tsx`** — Uses `useHomepageSections("type=advertisement&enabled=true&limit=1")`.
+- **`src/components/homepage/NewsletterSection.tsx`** — Uses `useNewsletterSubscribe({ onSuccess, onError })`.
+- **`src/components/LayoutClient.tsx`** — Uses `useSiteSettings<{ backgroundConfig? }>()`.
+- **`src/components/products/ProductReviews.tsx`** — Uses `useProductReviews(productId, page, pageSize)`.
+- **`src/components/products/RelatedProducts.tsx`** — Uses `useRelatedProducts(category, excludeId, 8)`.
+- **`src/components/products/AddToCartButton.tsx`** — Uses `useAddToCart({ onSuccess, onError })`.
+- **`src/components/user/WishlistButton.tsx`** — Uses `useWishlistToggle(productId, initialInWishlist)`.
+- **`src/components/ui/NotificationBell.tsx`** — Uses `useNotifications(10)`.
+- **`src/components/ui/AddressSelectorCreate.tsx`** — Uses `addressService.list()/create()`.
+- **`src/components/ui/CategorySelectorCreate.tsx`** — Uses `categoryService.list()/create()`.
+- **`src/components/ui/EventBanner.tsx`** — Uses `usePublicEvents` from `@/hooks` (Tier 1). Removed `apiClient`, `API_ENDPOINTS`, unused `EventsListResponse` interface.
+- **`src/features/events/hooks/useEvents.ts`** — Uses `eventService.adminList(params)`.
+- **`src/features/events/hooks/useEvent.ts`** — Uses `eventService.adminGetById(id)`.
+- **`src/features/events/hooks/useEventEntries.ts`** — Uses `eventService.adminGetEntries(eventId, params)`.
+- **`src/features/events/hooks/useEventMutations.ts`** — All 5 mutations use `eventService.admin*` methods.
+- **`src/features/events/hooks/useEventStats.ts`** — Uses `eventService.adminGetStats(eventId)`.
+- **`src/features/events/components/EventLeaderboard.tsx`** — Uses `useEventLeaderboard(eventId)`.
+- **`src/features/events/components/PollVotingSection.tsx`** — Uses `eventService.enter(eventId, data)`.
+- **`src/features/events/components/FeedbackEventSection.tsx`** — Uses `eventService.enter(eventId, data)`.
+- **`src/features/events/index.ts`** — Exports `usePublicEvents` and `useEventLeaderboard`.
+
+---
+
 ### Phase 36 — Admin Pages i18n Wiring Batch 2 (2026-02-28)
 
 #### Changed

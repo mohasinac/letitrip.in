@@ -2,14 +2,9 @@
 
 import { useState } from "react";
 import { Alert } from "@/components";
-import {
-  UI_LABELS,
-  API_ENDPOINTS,
-  SUCCESS_MESSAGES,
-  ERROR_MESSAGES,
-} from "@/constants";
+import { UI_LABELS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useMessage, useApiMutation } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { eventService } from "../services/event.service";
 import type { FeedbackConfig, SurveyFormField } from "@/db/schema";
 
 interface FeedbackEventSectionProps {
@@ -26,8 +21,7 @@ export function FeedbackEventSection({
   const [submitted, setSubmitted] = useState(false);
 
   const mutation = useApiMutation<void, Record<string, unknown>>({
-    mutationFn: (data) =>
-      apiClient.post<void>(API_ENDPOINTS.EVENTS.ENTER(eventId), data),
+    mutationFn: (data) => eventService.enter(eventId, data),
     onSuccess: () => {
       showSuccess(SUCCESS_MESSAGES.EVENT.ENTRY_SUBMITTED);
       setSubmitted(true);

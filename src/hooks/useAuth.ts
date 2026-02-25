@@ -19,8 +19,8 @@
  */
 
 import { useApiMutation } from "./useApiMutation";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, UI_LABELS, ERROR_MESSAGES } from "@/constants";
+import { authService } from "@/services";
+import { ERROR_MESSAGES } from "@/constants";
 import {
   signInWithGoogle,
   signInWithApple,
@@ -84,7 +84,7 @@ export function useLogin(options?: {
   return useApiMutation<any, LoginCredentials>({
     mutationFn: async (credentials) => {
       // 1. Server-side login: validates credentials, creates session cookie, tracks metadata
-      await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, {
+      await authService.login({
         email: credentials.email.trim(),
         password: credentials.password,
       });
@@ -151,10 +151,10 @@ export function useRegister(options?: {
   return useApiMutation<any, RegisterData>({
     mutationFn: async (data) => {
       // Server-side registration: Admin SDK creates user, stores profile, creates session, sends verification
-      const response = await apiClient.post(API_ENDPOINTS.AUTH.REGISTER, {
+      const response = await authService.register({
         email: data.email.trim(),
         password: data.password,
-        displayName: data.displayName?.trim() || undefined,
+        displayName: data.displayName?.trim() || "",
       });
 
       return { success: true, ...response };
@@ -198,8 +198,7 @@ export function useResendVerification(options?: {
   onError?: (error: any) => void;
 }) {
   return useApiMutation<any, ResendVerificationData>({
-    mutationFn: (data) =>
-      apiClient.post(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, data),
+    mutationFn: (data) => authService.sendVerification(data),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });
@@ -274,7 +273,7 @@ export function useChangePassword(options?: {
       await reauthenticateWithPassword(user.email, data.currentPassword);
 
       // Then call API to update password
-      return apiClient.post(API_ENDPOINTS.USER.CHANGE_PASSWORD, data);
+      return authService.changePassword(data);
     },
     onSuccess: options?.onSuccess,
     onError: options?.onError,

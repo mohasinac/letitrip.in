@@ -1,8 +1,7 @@
 "use client";
 
 import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS } from "@/constants";
+import { eventService } from "../services/event.service";
 import type { EventEntryDocument } from "@/db/schema";
 
 interface EventEntriesResult {
@@ -27,10 +26,7 @@ export function useEventEntries({
 }: UseEventEntriesOptions) {
   const { data, isLoading, error, refetch } = useApiQuery<EventEntriesResult>({
     queryKey: ["admin-event-entries", eventId, params],
-    queryFn: () =>
-      apiClient.get<EventEntriesResult>(
-        `${API_ENDPOINTS.ADMIN.EVENTS.ENTRIES(eventId)}${params ? `?${params}` : ""}`,
-      ),
+    queryFn: () => eventService.adminGetEntries(eventId, params),
     enabled: enabled && !!eventId,
   });
 
