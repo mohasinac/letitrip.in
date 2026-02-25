@@ -4,12 +4,12 @@ import { use } from "react";
 import Link from "next/link";
 import { useApiQuery } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { Card, Button, Spinner } from "@/components";
 import { formatDate } from "@/utils";
 import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
 
-const LABELS = UI_LABELS.ADMIN.BLOG;
 const { themed, typography } = THEME_CONSTANTS;
 
 const CATEGORY_BADGE: Record<BlogPostCategory, string> = {
@@ -29,6 +29,8 @@ interface PageProps {
 
 export default function BlogPostPage({ params }: PageProps) {
   const { slug } = use(params);
+  const t = useTranslations("blog");
+  const tActions = useTranslations("actions");
 
   const { data, isLoading, error } = useApiQuery<{
     post: BlogPostDocument;
@@ -57,13 +59,11 @@ export default function BlogPostPage({ params }: PageProps) {
         className={`min-h-screen ${themed.bgPrimary} flex flex-col items-center justify-center gap-4 p-8`}
       >
         <h1 className={`${typography.h3} ${themed.textPrimary}`}>
-          Post not found
+          {t("postNotFound")}
         </h1>
-        <p className={`${themed.textSecondary}`}>
-          This article doesn&apos;t exist or is no longer available.
-        </p>
+        <p className={`${themed.textSecondary}`}>{t("postNotAvailable")}</p>
         <Link href={ROUTES.PUBLIC.BLOG}>
-          <Button variant="primary">Back to Blog</Button>
+          <Button variant="primary">{t("backToBlog")}</Button>
         </Link>
       </div>
     );
@@ -108,7 +108,7 @@ export default function BlogPostPage({ params }: PageProps) {
             </span>
             {post.isFeatured && (
               <span className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 px-2 py-0.5 rounded-full text-xs font-medium">
-                Featured
+                {t("featured")}
               </span>
             )}
           </div>
@@ -122,14 +122,14 @@ export default function BlogPostPage({ params }: PageProps) {
             className={`flex flex-wrap items-center gap-4 text-sm ${themed.textSecondary}`}
           >
             <span>
-              {LABELS.AUTHOR}: <strong>{post.authorName}</strong>
+              {t("author")}: <strong>{post.authorName}</strong>
             </span>
             <span>
-              {post.readTimeMinutes} {LABELS.READ_TIME}
+              {post.readTimeMinutes} {t("readTime")}
             </span>
             {post.publishedAt && (
               <span>
-                {LABELS.PUBLISHED_ON} {formatDate(post.publishedAt)}
+                {t("publishedOn")} {formatDate(post.publishedAt)}
               </span>
             )}
             <span>{post.views} views</span>
@@ -162,7 +162,7 @@ export default function BlogPostPage({ params }: PageProps) {
         {related.length > 0 && (
           <div>
             <h2 className={`${typography.h3} ${themed.textPrimary} mb-6`}>
-              {LABELS.RELATED}
+              {t("related")}
             </h2>
             <div className="grid sm:grid-cols-3 gap-4">
               {related.map((rel) => (
@@ -188,7 +188,7 @@ export default function BlogPostPage({ params }: PageProps) {
                         {rel.title}
                       </h3>
                       <p className={`text-xs ${themed.textSecondary} mt-1`}>
-                        {rel.readTimeMinutes} {LABELS.READ_TIME}
+                        {post.readTimeMinutes} {t("readTime")}
                       </p>
                     </div>
                   </Card>
@@ -201,9 +201,7 @@ export default function BlogPostPage({ params }: PageProps) {
         {/* Back link */}
         <div className="mt-10 pt-8 border-t border-gray-200 dark:border-gray-700">
           <Link href={ROUTES.PUBLIC.BLOG}>
-            <Button variant="outline">
-              &larr; {UI_LABELS.ACTIONS.BACK} to Blog
-            </Button>
+            <Button variant="outline">&larr; {tActions("back")} to Blog</Button>
           </Link>
         </div>
       </div>

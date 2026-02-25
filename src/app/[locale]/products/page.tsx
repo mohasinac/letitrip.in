@@ -13,7 +13,8 @@ import {
   EmptyState,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
-import { UI_LABELS, API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useApiQuery, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import type { ProductDocument } from "@/db/schema";
@@ -47,6 +48,8 @@ interface ProductsResponse {
 }
 
 function ProductsPageContent() {
+  const t = useTranslations("products");
+  const tActions = useTranslations("actions");
   const table = useUrlTable({
     defaults: { pageSize: String(PAGE_SIZE), sort: PRODUCT_SORT_VALUES.NEWEST },
   });
@@ -139,10 +142,10 @@ function ProductsPageContent() {
         {/* Page Header */}
         <div className="mb-6">
           <h1 className={`text-2xl font-bold ${themed.textPrimary}`}>
-            {UI_LABELS.PRODUCTS_PAGE.TITLE}
+            {t("title")}
           </h1>
           <p className={`text-sm mt-1 ${themed.textSecondary}`}>
-            {UI_LABELS.PRODUCTS_PAGE.SUBTITLE}
+            {t("subtitle")}
           </p>
         </div>
 
@@ -197,10 +200,10 @@ function ProductsPageContent() {
             {!isLoading && products.length === 0 ? (
               <EmptyState
                 icon={<PackageSearch className="w-16 h-16" />}
-                title={UI_LABELS.PRODUCTS_PAGE.NO_PRODUCTS}
-                description={UI_LABELS.PRODUCTS_PAGE.NO_PRODUCTS_SUBTITLE}
+                title={t("noProductsFound")}
+                description={t("noProductsSubtitle")}
                 actionLabel={
-                  hasActiveFilters ? UI_LABELS.ACTIONS.CLEAR_ALL : undefined
+                  hasActiveFilters ? tActions("clearAll") : undefined
                 }
                 onAction={
                   hasActiveFilters

@@ -1,25 +1,27 @@
 import Link from "next/link";
-import { ROUTES, UI_LABELS, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
+import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
+import { getTranslations } from "next-intl/server";
 
-const LABELS = UI_LABELS.ABOUT_PAGE;
 const { themed, typography, spacing } = THEME_CONSTANTS;
 
-export const metadata = {
-  title: `About Us — ${SITE_CONFIG.brand.name}`,
-  description: LABELS.SUBTITLE,
-};
+export async function generateMetadata() {
+  const t = await getTranslations("about");
+  return {
+    title: `About Us — ${SITE_CONFIG.brand.name}`,
+    description: t("subtitle"),
+  };
+}
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const t = await getTranslations("about");
   return (
     <div className={`${themed.bgPrimary} min-h-screen`}>
       {/* Hero */}
       <section className="bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-white py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            {LABELS.TITLE}
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">{t("title")}</h1>
           <p className="text-xl text-indigo-100 max-w-2xl mx-auto">
-            {LABELS.SUBTITLE}
+            {t("subtitle")}
           </p>
         </div>
       </section>
@@ -28,10 +30,10 @@ export default function AboutPage() {
         {/* Mission */}
         <section className="text-center max-w-3xl mx-auto">
           <h2 className={`${typography.h2} ${themed.textPrimary} mb-4`}>
-            {LABELS.MISSION_TITLE}
+            {t("missionTitle")}
           </h2>
           <p className={`text-lg ${themed.textSecondary} leading-relaxed`}>
-            {LABELS.MISSION_TEXT}
+            {t("missionText")}
           </p>
         </section>
 
@@ -40,27 +42,27 @@ export default function AboutPage() {
           <h2
             className={`${typography.h2} ${themed.textPrimary} text-center mb-12`}
           >
-            {LABELS.HOW_IT_WORKS_TITLE}
+            {t("howItWorksTitle")}
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                title: LABELS.HOW_BUYERS_TITLE,
-                text: LABELS.HOW_BUYERS_TEXT,
+                title: t("howBuyersTitle"),
+                text: t("howBuyersText"),
                 icon: "🛒",
                 color:
                   "from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20",
               },
               {
-                title: LABELS.HOW_SELLERS_TITLE,
-                text: LABELS.HOW_SELLERS_TEXT,
+                title: t("howSellersTitle"),
+                text: t("howSellersText"),
                 icon: "🏪",
                 color:
                   "from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20",
               },
               {
-                title: LABELS.HOW_BIDDERS_TITLE,
-                text: LABELS.HOW_BIDDERS_TEXT,
+                title: t("howBiddersTitle"),
+                text: t("howBiddersText"),
                 icon: "🏆",
                 color:
                   "from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20",
@@ -89,23 +91,23 @@ export default function AboutPage() {
           <h2
             className={`${typography.h2} ${themed.textPrimary} text-center mb-12`}
           >
-            {LABELS.VALUES_TITLE}
+            {t("valuesTitle")}
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
-                title: LABELS.VALUES_TRUST,
-                text: LABELS.VALUES_TRUST_TEXT,
+                title: t("valuesTrust"),
+                text: t("valuesTrustText"),
                 icon: "🔒",
               },
               {
-                title: LABELS.VALUES_COMMUNITY,
-                text: LABELS.VALUES_COMMUNITY_TEXT,
+                title: t("valuesCommunity"),
+                text: t("valuesCommunityText"),
                 icon: "🤝",
               },
               {
-                title: LABELS.VALUES_INNOVATION,
-                text: LABELS.VALUES_INNOVATION_TEXT,
+                title: t("valuesInnovation"),
+                text: t("valuesInnovationText"),
                 icon: "🚀",
               },
             ].map(({ title, text, icon }) => (
@@ -132,13 +134,13 @@ export default function AboutPage() {
           <h2
             className={`${typography.h2} ${themed.textPrimary} text-center mb-10`}
           >
-            {LABELS.MILESTONES_TITLE}
+            {t("milestonesTitle")}
           </h2>
           <div className="relative border-l-2 border-indigo-300 dark:border-indigo-700 pl-8 space-y-8 max-w-2xl mx-auto">
             {[
-              { year: "2023", text: LABELS.MILESTONE_FOUNDED },
-              { year: "2024", text: LABELS.MILESTONE_AUCTIONS },
-              { year: "2025", text: LABELS.MILESTONE_MOBILE },
+              { year: "2023", text: t("milestoneFounded") },
+              { year: "2024", text: t("milestoneAuctions") },
+              { year: "2025", text: t("milestoneMobile") },
             ].map(({ year, text }) => (
               <div key={year} className="relative">
                 <div className="absolute -left-10 top-1 w-4 h-4 rounded-full bg-indigo-500 border-2 border-white dark:border-gray-900" />
@@ -153,19 +155,19 @@ export default function AboutPage() {
 
         {/* CTA */}
         <section className="text-center bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-12 text-white">
-          <h2 className="text-3xl font-bold mb-8">{LABELS.CTA_TITLE}</h2>
+          <h2 className="text-3xl font-bold mb-8">{t("ctaTitle")}</h2>
           <div className="flex justify-center gap-4 flex-wrap">
             <Link
               href={ROUTES.AUTH.REGISTER}
               className="bg-white text-indigo-600 font-semibold px-8 py-3 rounded-full hover:bg-indigo-50 transition-colors"
             >
-              {LABELS.CTA_SELL}
+              {t("ctaSell")}
             </Link>
             <Link
               href={ROUTES.PUBLIC.PRODUCTS}
               className="border-2 border-white text-white font-semibold px-8 py-3 rounded-full hover:bg-white/10 transition-colors"
             >
-              {LABELS.CTA_SHOP}
+              {t("ctaShop")}
             </Link>
           </div>
         </section>

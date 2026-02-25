@@ -9,7 +9,8 @@
 
 import { useMemo, useState } from "react";
 import { CategoryGrid, Spinner, Input } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useApiQuery } from "@/hooks";
 import type { CategoryDocument } from "@/db/schema";
 
@@ -22,6 +23,7 @@ interface CategoriesApiResponse {
 
 export default function CategoriesPage() {
   const [search, setSearch] = useState("");
+  const t = useTranslations("categories");
 
   const { data, isLoading, error } = useApiQuery<CategoriesApiResponse>({
     queryKey: ["categories", "flat"],
@@ -54,9 +56,7 @@ export default function CategoriesPage() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <p className={`text-sm ${themed.textSecondary}`}>
-          {UI_LABELS.CATEGORIES_PAGE.NO_CATEGORIES}
-        </p>
+        <p className={`text-sm ${themed.textSecondary}`}>{t("noCategories")}</p>
       </div>
     );
   }
@@ -69,18 +69,16 @@ export default function CategoriesPage() {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <h1 className={`${typography.h2} ${themed.textPrimary}`}>
-            {UI_LABELS.CATEGORIES_PAGE.TITLE}
+            {t("title")}
           </h1>
-          <p className={`mt-1 ${themed.textSecondary}`}>
-            {UI_LABELS.CATEGORIES_PAGE.SUBTITLE}
-          </p>
+          <p className={`mt-1 ${themed.textSecondary}`}>{t("subtitle")}</p>
         </div>
 
         {/* Search */}
         <div className="sm:w-64">
           <Input
             type="text"
-            placeholder="Search categories…"
+            placeholder={t("searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -91,8 +89,11 @@ export default function CategoriesPage() {
       {allCategories.length > 0 && (
         <p className={`text-sm ${themed.textSecondary}`}>
           {displayed.length !== allCategories.length
-            ? `${displayed.length} of ${allCategories.length} categories`
-            : `${allCategories.length} ${UI_LABELS.CATEGORIES_PAGE.ALL_CATEGORIES.toLowerCase()}`}
+            ? t("filteredCategoriesCount", {
+                shown: displayed.length,
+                total: allCategories.length,
+              })
+            : t("allCategoriesCount", { count: allCategories.length })}
         </p>
       )}
 

@@ -19,11 +19,11 @@ import {
 import { useRouter } from "next/navigation";
 import {
   ROUTES,
-  UI_LABELS,
   THEME_CONSTANTS,
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
 } from "@/constants";
+import { useTranslations } from "next-intl";
 import type { Address } from "@/hooks";
 import { useState } from "react";
 
@@ -32,6 +32,9 @@ export default function UserAddressesPage() {
   const router = useRouter();
   const { showSuccess, showError } = useMessage();
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const tAddresses = useTranslations("addresses");
+  const tLoading = useTranslations("loading");
+  const tConfirm = useTranslations("confirm");
 
   // Fetch addresses
   const {
@@ -92,7 +95,7 @@ export default function UserAddressesPage() {
   if (authLoading || fetchLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
+        <Spinner size="lg" label={tLoading("default")} />
       </div>
     );
   }
@@ -107,12 +110,12 @@ export default function UserAddressesPage() {
     <>
       <div className={spacing.stack}>
         <div className="flex items-center justify-between">
-          <Heading level={3}>{UI_LABELS.USER.ADDRESSES.TITLE}</Heading>
+          <Heading level={3}>{tAddresses("title")}</Heading>
           <Button
             variant="primary"
             onClick={() => router.push(ROUTES.USER.ADDRESSES_ADD)}
           >
-            {UI_LABELS.USER.ADDRESSES.ADD}
+            {tAddresses("add")}
           </Button>
         </div>
 
@@ -147,9 +150,9 @@ export default function UserAddressesPage() {
                 />
               </svg>
             }
-            title={UI_LABELS.USER.ADDRESSES.EMPTY}
-            description={UI_LABELS.USER.ADDRESSES.EMPTY_SUBTITLE}
-            actionLabel={UI_LABELS.USER.ADDRESSES.ADD_FIRST}
+            title={tAddresses("empty")}
+            description={tAddresses("emptySubtitle")}
+            actionLabel={tAddresses("addFirst")}
             onAction={() => router.push(ROUTES.USER.ADDRESSES_ADD)}
           />
         )}
@@ -176,8 +179,8 @@ export default function UserAddressesPage() {
           isOpen={true}
           onClose={() => setDeleteId(null)}
           onConfirm={confirmDelete}
-          title={UI_LABELS.USER.ADDRESSES.DELETE_CONFIRM_TITLE}
-          message={UI_LABELS.USER.ADDRESSES.DELETE_CONFIRM_MESSAGE}
+          title={tAddresses("deleteConfirmTitle")}
+          message={tAddresses("deleteConfirmMessage")}
           isDeleting={deleting}
         />
       )}

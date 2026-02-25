@@ -1,51 +1,54 @@
-import Link from "next/link";
-import { ROUTES, UI_LABELS, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
+﻿import Link from "next/link";
+import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
+import { getTranslations } from "next-intl/server";
 
-const LABELS = UI_LABELS.SELLERS_PAGE;
 const { themed, typography, spacing, button } = THEME_CONSTANTS;
 
-export const metadata = {
-  title: `Sell on ${SITE_CONFIG.brand.name}`,
-  description: LABELS.SUBTITLE,
-};
+export async function generateMetadata() {
+  const t = await getTranslations("sellersPage");
+  return {
+    title: `Sell on ${SITE_CONFIG.brand.name}`,
+    description: t("subtitle"),
+  };
+}
 
-const BENEFITS = [
-  { title: LABELS.BENEFIT_REACH, text: LABELS.BENEFIT_REACH_TEXT, icon: "🌐" },
-  { title: LABELS.BENEFIT_TOOLS, text: LABELS.BENEFIT_TOOLS_TEXT, icon: "🛠️" },
-  { title: LABELS.BENEFIT_TRUST, text: LABELS.BENEFIT_TRUST_TEXT, icon: "🛡️" },
-  { title: LABELS.BENEFIT_FEES, text: LABELS.BENEFIT_FEES_TEXT, icon: "💰" },
-];
+export default async function SellersPage() {
+  const t = await getTranslations("sellersPage");
 
-const STEPS = [
-  { step: "01", title: LABELS.STEP_1_TITLE, text: LABELS.STEP_1_TEXT },
-  { step: "02", title: LABELS.STEP_2_TITLE, text: LABELS.STEP_2_TEXT },
-  { step: "03", title: LABELS.STEP_3_TITLE, text: LABELS.STEP_3_TEXT },
-];
+  const BENEFITS = [
+    { title: t("benefitReach"), text: t("benefitReachText"), icon: "ðŸŒ" },
+    { title: t("benefitTools"), text: t("benefitToolsText"), icon: "ðŸ› ï¸" },
+    { title: t("benefitTrust"), text: t("benefitTrustText"), icon: "ðŸ›¡ï¸" },
+    { title: t("benefitFees"), text: t("benefitFeesText"), icon: "ðŸ’°" },
+  ];
 
-const FAQS = [
-  { q: LABELS.FAQ_1_Q, a: LABELS.FAQ_1_A },
-  { q: LABELS.FAQ_2_Q, a: LABELS.FAQ_2_A },
-  { q: LABELS.FAQ_3_Q, a: LABELS.FAQ_3_A },
-];
+  const STEPS = [
+    { step: "01", title: t("step1Title"), text: t("step1Text") },
+    { step: "02", title: t("step2Title"), text: t("step2Text") },
+    { step: "03", title: t("step3Title"), text: t("step3Text") },
+  ];
 
-export default function SellersPage() {
+  const FAQS = [
+    { q: t("faq1Q"), a: t("faq1A") },
+    { q: t("faq2Q"), a: t("faq2A") },
+    { q: t("faq3Q"), a: t("faq3A") },
+  ];
+
   return (
     <div className={`${themed.bgPrimary} min-h-screen`}>
       {/* Hero */}
       <section className="bg-gradient-to-br from-emerald-600 via-green-600 to-teal-700 text-white py-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            {LABELS.TITLE}
-          </h1>
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">{t("title")}</h1>
           <p className="text-xl text-green-100 mb-10 max-w-2xl mx-auto">
-            {LABELS.SUBTITLE}
+            {t("subtitle")}
           </p>
           <div className="flex justify-center gap-4 flex-wrap">
             <Link href={ROUTES.AUTH.REGISTER} className={button.ctaPrimary}>
-              {LABELS.HERO_CTA}
+              {t("heroCta")}
             </Link>
             <a href="#how-it-works" className={button.ctaOutline}>
-              {LABELS.HERO_SECONDARY}
+              {t("heroSecondary")}
             </a>
           </div>
         </div>
@@ -56,20 +59,20 @@ export default function SellersPage() {
         <div className="max-w-4xl mx-auto flex justify-center gap-12 flex-wrap">
           {[
             {
-              label: LABELS.STAT_SELLERS_LABEL,
-              value: LABELS.STAT_SELLERS_VALUE,
+              label: t("statSellersLabel"),
+              value: t("statSellersValue"),
             },
             {
-              label: LABELS.STAT_PRODUCTS_LABEL,
-              value: LABELS.STAT_PRODUCTS_VALUE,
+              label: t("statProductsLabel"),
+              value: t("statProductsValue"),
             },
             {
-              label: LABELS.STAT_BUYERS_LABEL,
-              value: LABELS.STAT_BUYERS_VALUE,
+              label: t("statBuyersLabel"),
+              value: t("statBuyersValue"),
             },
             {
-              label: LABELS.STAT_COMMISSION_LABEL,
-              value: LABELS.STAT_COMMISSION_VALUE,
+              label: t("statCommissionLabel"),
+              value: t("statCommissionValue"),
             },
           ].map(({ label, value }) => (
             <div key={label} className="text-center">
@@ -86,7 +89,7 @@ export default function SellersPage() {
           <h2
             className={`${typography.h2} ${themed.textPrimary} text-center mb-12`}
           >
-            {LABELS.WHY_TITLE}
+            {t("whyTitle")}
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
             {BENEFITS.map(({ title, text, icon }) => (
@@ -115,7 +118,7 @@ export default function SellersPage() {
           <h2
             className={`${typography.h2} ${themed.textPrimary} text-center mb-12`}
           >
-            {LABELS.HOW_TITLE}
+            {t("howTitle")}
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             {STEPS.map(({ step, title, text }) => (
@@ -137,7 +140,7 @@ export default function SellersPage() {
           <h2
             className={`${typography.h2} ${themed.textPrimary} text-center mb-10`}
           >
-            {LABELS.FAQ_TITLE}
+            {t("faqTitle")}
           </h2>
           <div className={`${spacing.stack} max-w-2xl mx-auto`}>
             {FAQS.map(({ q, a }) => (
@@ -156,17 +159,17 @@ export default function SellersPage() {
 
         {/* Final CTA */}
         <section className="text-center bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-12 text-white">
-          <h2 className="text-3xl font-bold mb-4">{LABELS.CTA_TITLE}</h2>
+          <h2 className="text-3xl font-bold mb-4">{t("ctaTitle")}</h2>
           <Link
             href={ROUTES.AUTH.REGISTER}
             className={`inline-block mt-4 ${button.ctaPrimary}`}
           >
-            {LABELS.CTA_BUTTON}
+            {t("ctaButton")}
           </Link>
           <p className="mt-4 text-emerald-100 text-sm">
-            {LABELS.SIGN_IN_PROMPT}{" "}
+            {t("signInPrompt")}{" "}
             <Link href={ROUTES.AUTH.LOGIN} className="underline font-medium">
-              {LABELS.SIGN_IN_LINK}
+              {t("signInLink")}
             </Link>
           </p>
         </section>

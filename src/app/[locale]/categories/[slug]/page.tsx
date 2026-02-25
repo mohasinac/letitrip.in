@@ -21,7 +21,8 @@ import {
   ActiveFilterChips,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useApiQuery, useUrlTable } from "@/hooks";
 import type { CategoryDocument, ProductDocument } from "@/db/schema";
 import type { ProductSortValue } from "@/components";
@@ -66,6 +67,7 @@ interface Props {
 
 export default function CategoryProductsPage({ params }: Props) {
   const { slug } = use(params);
+  const t = useTranslations("categories");
   const table = useUrlTable({
     defaults: { pageSize: String(PAGE_SIZE), sort: PRODUCT_SORT_VALUES.NEWEST },
   });
@@ -150,13 +152,13 @@ export default function CategoryProductsPage({ params }: Props) {
         className={`max-w-7xl mx-auto px-4 py-20 text-center ${spacing.stack}`}
       >
         <p className={`text-lg font-medium ${themed.textPrimary}`}>
-          {UI_LABELS.CATEGORIES_PAGE.NO_CATEGORIES}
+          {t("noCategories")}
         </p>
         <Link
           href={ROUTES.PUBLIC.CATEGORIES}
           className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
         >
-          {UI_LABELS.CATEGORIES_PAGE.BACK_TO_CATEGORIES}
+          {t("backToCategories")}
         </Link>
       </div>
     );
@@ -172,7 +174,7 @@ export default function CategoryProductsPage({ params }: Props) {
           href={ROUTES.PUBLIC.CATEGORIES}
           className="hover:text-indigo-600 dark:hover:text-indigo-400"
         >
-          {UI_LABELS.CATEGORIES_PAGE.TITLE}
+          {t("title")}
         </Link>
         <span className="mx-2">/</span>
         <span className={themed.textPrimary}>{category.name}</span>
@@ -230,13 +232,13 @@ export default function CategoryProductsPage({ params }: Props) {
       ) : products.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <p className={`text-lg font-medium ${themed.textPrimary}`}>
-            {UI_LABELS.CATEGORIES_PAGE.NO_PRODUCTS_IN(category.name)}
+            {t("noProductsIn", { name: category.name })}
           </p>
           <Link
             href={ROUTES.PUBLIC.CATEGORIES}
             className="mt-3 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
           >
-            {UI_LABELS.CATEGORIES_PAGE.BACK_TO_CATEGORIES}
+            {t("backToCategories")}
           </Link>
         </div>
       ) : (

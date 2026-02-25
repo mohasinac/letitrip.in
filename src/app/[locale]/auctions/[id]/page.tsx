@@ -13,7 +13,8 @@ import { use, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { BidHistory, PlaceBidForm, Spinner } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useApiQuery, useAuth, useRealtimeBids } from "@/hooks";
 import { formatCurrency } from "@/utils";
 import type { ProductDocument, BidDocument } from "@/db/schema";
@@ -57,12 +58,14 @@ function useCountdown(endDate: Date | string | undefined) {
   return remaining;
 }
 
-function formatCountdown(r: ReturnType<typeof useCountdown>): {
+function formatCountdown(
+  r: ReturnType<typeof useCountdown>,
+  endedLabel: string,
+): {
   display: string;
   isEndingSoon: boolean;
 } {
-  if (!r)
-    return { display: UI_LABELS.AUCTIONS_PAGE.ENDED, isEndingSoon: false };
+  if (!r) return { display: endedLabel, isEndingSoon: false };
   const { days, hours, minutes, seconds } = r;
   const isEndingSoon = days === 0 && hours < 1;
   let display: string;
@@ -75,6 +78,9 @@ function formatCountdown(r: ReturnType<typeof useCountdown>): {
 export default function AuctionDetailPage({ params }: Props) {
   const { id } = use(params);
   const { user } = useAuth();
+  const tAuctions = useTranslations("auctions");
+  const tProducts = useTranslations("products");
+  const tActions = useTranslations("actions");
 
   /* ---- Fetch product ---- */
   const { data: productData, isLoading: productLoading } =
@@ -110,8 +116,10 @@ export default function AuctionDetailPage({ params }: Props) {
   /* ---- Countdown ---- */
   const remaining = useCountdown(product?.auctionEndDate);
   const isEnded = remaining === null && !!product?.auctionEndDate;
-  const { display: countdownDisplay, isEndingSoon } =
-    formatCountdown(remaining);
+  const { display: countdownDisplay, isEndingSoon } = formatCountdown(
+    remaining,
+    tAuctions("ended"),
+  );
 
   /* ---- Derived bid info (RTDB takes precedence over Firestore snapshot) ---- */
   const firestoreBid = product?.currentBid ?? 0;
@@ -136,13 +144,13 @@ export default function AuctionDetailPage({ params }: Props) {
         className={`max-w-7xl mx-auto px-4 py-20 text-center ${spacing.stack}`}
       >
         <p className={`text-lg font-medium ${themed.textPrimary}`}>
-          {UI_LABELS.PRODUCT_DETAIL.PRODUCT_NOT_FOUND}
+          {tProducts("productNotFound")}
         </p>
         <Link
           href={ROUTES.PUBLIC.AUCTIONS}
           className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
         >
-          {UI_LABELS.ACTIONS.BACK}
+          {tActions("back")}
         </Link>
       </div>
     );
@@ -155,13 +163,13 @@ export default function AuctionDetailPage({ params }: Props) {
         className={`max-w-7xl mx-auto px-4 py-20 text-center ${spacing.stack}`}
       >
         <p className={`text-lg font-medium ${themed.textPrimary}`}>
-          {UI_LABELS.AUCTIONS_PAGE.NO_AUCTIONS}
+          {tAuctions("noAuctions")}
         </p>
         <Link
           href={ROUTES.PUBLIC.PRODUCTS + `/${product.id}`}
           className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
         >
-          {UI_LABELS.PRODUCT_DETAIL.BACK_TO_PRODUCTS}
+          {tProducts("backToProducts")}
         </Link>
       </div>
     );
@@ -177,7 +185,7 @@ export default function AuctionDetailPage({ params }: Props) {
           href={ROUTES.PUBLIC.AUCTIONS}
           className="hover:text-indigo-600 dark:hover:text-indigo-400"
         >
-          {UI_LABELS.AUCTIONS_PAGE.TITLE}
+          {tAuctions("title")}
         </Link>
         <span className="mx-2">/</span>
         <span className={`${themed.textPrimary} line-clamp-1`}>
@@ -206,14 +214,14 @@ export default function AuctionDetailPage({ params }: Props) {
           {/* LIVE badge */}
           {!isEnded && (
             <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
-              {UI_LABELS.AUCTIONS_PAGE.LIVE_BADGE}
+              {tAuctions("liveBadge")}
             </span>
           )}
           {/* Real-time connection indicator */}
           {rtdbConnected && !isEnded && (
             <span className="absolute top-3 right-3 flex items-center gap-1 bg-emerald-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              {UI_LABELS.AUCTIONS_PAGE.REALTIME_BADGE}
+              {tAuctions("realtimeBadge")}
             </span>
           )}
         </div>
@@ -231,18 +239,18 @@ export default function AuctionDetailPage({ params }: Props) {
             <div className="flex flex-col gap-1">
               <p className={`text-xs ${themed.textSecondary}`}>
                 {hasCurrentBid
-                  ? UI_LABELS.PRODUCT_DETAIL.CURRENT_BID
-                  : UI_LABELS.PRODUCT_DETAIL.STARTING_BID}
+                  ? tAuctions("currentBid")
+                  : tAuctions("startingBid")}
               </p>
               <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
                 {formatCurrency(displayBid)}
               </p>
               <p className={`text-sm ${themed.textSecondary}`}>
-                {UI_LABELS.PRODUCT_DETAIL.TOTAL_BIDS(liveBidCount)}
+                {tAuctions("totalBids", { count: liveBidCount })}
               </p>
               {lastRtdbBid && (
                 <p className={`text-xs ${themed.textSecondary}`}>
-                  {UI_LABELS.AUCTIONS_PAGE.LAST_BID_BY(lastRtdbBid.bidderName)}
+                  {tAuctions("lastBidBy", { name: lastRtdbBid.bidderName })}
                 </p>
               )}
             </div>
@@ -250,9 +258,7 @@ export default function AuctionDetailPage({ params }: Props) {
             {/* Countdown */}
             <div className="flex items-center justify-between">
               <span className={`text-sm ${themed.textSecondary}`}>
-                {isEnded
-                  ? UI_LABELS.AUCTIONS_PAGE.ENDED
-                  : `${UI_LABELS.AUCTIONS_PAGE.ENDS_IN}:`}
+                {isEnded ? tAuctions("ended") : `${tAuctions("endsIn")}:`}
               </span>
               <span
                 className={`font-mono font-bold text-lg ${
@@ -282,7 +288,7 @@ export default function AuctionDetailPage({ params }: Props) {
           {product.description && (
             <div>
               <h3 className={`font-semibold ${themed.textPrimary} mb-1`}>
-                {UI_LABELS.PRODUCT_DETAIL.DESCRIPTION}
+                {tAuctions("description")}
               </h3>
               <p className={`text-sm ${themed.textSecondary} leading-relaxed`}>
                 {product.description}

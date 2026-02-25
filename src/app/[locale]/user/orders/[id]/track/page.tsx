@@ -11,9 +11,10 @@ import { useCallback, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth, useApiQuery } from "@/hooks";
 import { Card, Spinner, Button, EmptyState } from "@/components";
-import { ROUTES, UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
 import { formatDate, formatRelativeTime } from "@/utils";
 import { apiClient } from "@/lib/api-client";
+import { useTranslations } from "next-intl";
 import type { OrderDocument, OrderStatus } from "@/db/schema";
 
 const { themed, typography, spacing } = THEME_CONSTANTS;
@@ -30,35 +31,53 @@ interface TimelineStep {
   state: TimelineStepState;
 }
 
-function buildTimeline(order: OrderDocument): TimelineStep[] {
+interface TimelineLabels {
+  stepPlaced: string;
+  stepPlacedDesc: string;
+  stepConfirmed: string;
+  stepConfirmedDesc: string;
+  stepShipped: string;
+  stepShippedDesc: string;
+  stepDelivered: string;
+  stepDeliveredDesc: string;
+  stepCancelled: string;
+  stepCancelledDesc: string;
+  stepReturned: string;
+  stepReturnedDesc: string;
+}
+
+function buildTimeline(
+  order: OrderDocument,
+  labels: TimelineLabels,
+): TimelineStep[] {
   const isCancelled =
     order.status === "cancelled" || order.status === "returned";
 
   const steps: TimelineStep[] = [
     {
       key: "placed",
-      label: UI_LABELS.USER.ORDERS.STEP_PLACED,
-      description: UI_LABELS.USER.ORDERS.STEP_PLACED_DESC,
+      label: labels.stepPlaced,
+      description: labels.stepPlacedDesc,
       date: order.orderDate,
       state: "completed", // Always completed if order exists
     },
     {
       key: "confirmed",
-      label: UI_LABELS.USER.ORDERS.STEP_CONFIRMED,
-      description: UI_LABELS.USER.ORDERS.STEP_CONFIRMED_DESC,
+      label: labels.stepConfirmed,
+      description: labels.stepConfirmedDesc,
       state: "pending",
     },
     {
       key: "shipped",
-      label: UI_LABELS.USER.ORDERS.STEP_SHIPPED,
-      description: UI_LABELS.USER.ORDERS.STEP_SHIPPED_DESC,
+      label: labels.stepShipped,
+      description: labels.stepShippedDesc,
       date: order.shippingDate,
       state: "pending",
     },
     {
       key: "delivered",
-      label: UI_LABELS.USER.ORDERS.STEP_DELIVERED,
-      description: UI_LABELS.USER.ORDERS.STEP_DELIVERED_DESC,
+      label: labels.stepDelivered,
+      description: labels.stepDeliveredDesc,
       date: order.deliveryDate,
       state: "pending",
     },
@@ -71,13 +90,11 @@ function buildTimeline(order: OrderDocument): TimelineStep[] {
     steps[3] = {
       key: terminalKey,
       label:
-        terminalKey === "returned"
-          ? UI_LABELS.USER.ORDERS.STEP_RETURNED
-          : UI_LABELS.USER.ORDERS.STEP_CANCELLED,
+        terminalKey === "returned" ? labels.stepReturned : labels.stepCancelled,
       description:
         terminalKey === "returned"
-          ? UI_LABELS.USER.ORDERS.STEP_RETURNED_DESC
-          : UI_LABELS.USER.ORDERS.STEP_CANCELLED_DESC,
+          ? labels.stepReturnedDesc
+          : labels.stepCancelledDesc,
       date: order.cancellationDate,
       state: "skipped",
     };
@@ -199,6 +216,22 @@ export default function OrderTrackPage() {
   const params = useParams();
   const orderId = params?.id as string;
   const [copied, setCopied] = useState(false);
+  const tOrders = useTranslations("orders");
+
+  const timelineLabels: TimelineLabels = {
+    stepPlaced: tOrders("stepPlaced"),
+    stepPlacedDesc: tOrders("stepPlacedDesc"),
+    stepConfirmed: tOrders("stepConfirmed"),
+    stepConfirmedDesc: tOrders("stepConfirmedDesc"),
+    stepShipped: tOrders("stepShipped"),
+    stepShippedDesc: tOrders("stepShippedDesc"),
+    stepDelivered: tOrders("stepDelivered"),
+    stepDeliveredDesc: tOrders("stepDeliveredDesc"),
+    stepCancelled: tOrders("stepCancelled"),
+    stepCancelledDesc: tOrders("stepCancelledDesc"),
+    stepReturned: tOrders("stepReturned"),
+    stepReturnedDesc: tOrders("stepReturnedDesc"),
+  };
 
   const { data, isLoading, error } = useApiQuery<{ data: OrderDocument }>({
     queryKey: ["order-track", orderId],
@@ -237,19 +270,19 @@ export default function OrderTrackPage() {
           onClick={() => router.push(ROUTES.USER.ORDERS)}
           className="w-fit"
         >
-          ← {UI_LABELS.USER.ORDERS.BACK_TO_ORDERS}
+          ← {tOrders("backToOrders")}
         </Button>
         <EmptyState
-          title={UI_LABELS.USER.ORDERS.ORDER_NOT_FOUND}
-          description={UI_LABELS.USER.ORDERS.ORDER_NOT_FOUND_MESSAGE}
-          actionLabel={UI_LABELS.USER.ORDERS.VIEW_ALL_ORDERS}
+          title={tOrders("orderNotFound")}
+          description={tOrders("orderNotFoundMessage")}
+          actionLabel={tOrders("viewAllOrders")}
           onAction={() => router.push(ROUTES.USER.ORDERS)}
         />
       </div>
     );
   }
 
-  const steps = buildTimeline(order);
+  const steps = buildTimeline(order, timelineLabels);
 
   return (
     <div className={`container mx-auto px-4 py-8 max-w-2xl ${spacing.stack}`}>
@@ -259,19 +292,18 @@ export default function OrderTrackPage() {
         onClick={() => router.push(ROUTES.USER.ORDER_DETAIL(orderId))}
         className="w-fit"
       >
-        ← {UI_LABELS.USER.ORDERS.TRACK_BACK}
+        ← {tOrders("trackBack")}
       </Button>
 
       {/* Header */}
       <div>
         <h1 className={`${typography.h2} ${themed.textPrimary}`}>
-          {UI_LABELS.USER.ORDERS.TRACK_TITLE}
+          {tOrders("trackTitle")}
         </h1>
         <p className={`mt-1 text-sm ${themed.textSecondary}`}>
-          {UI_LABELS.USER.ORDERS.ORDER_NUMBER} #
-          {order.id.slice(0, 8).toUpperCase()}
+          {tOrders("orderNumber")} #{order.id.slice(0, 8).toUpperCase()}
           {" · "}
-          {UI_LABELS.USER.ORDERS.PLACED_ON} {formatDate(order.orderDate)}
+          {tOrders("placedOn")} {formatDate(order.orderDate)}
         </p>
       </div>
 
@@ -283,7 +315,7 @@ export default function OrderTrackPage() {
               <p
                 className={`text-xs font-semibold uppercase tracking-wider ${themed.textSecondary}`}
               >
-                {UI_LABELS.USER.ORDERS.TRACKING_NUMBER_LABEL}
+                {tOrders("trackingNumberLabel")}
               </p>
               <p
                 className={`mt-1 font-mono font-semibold text-lg ${themed.textPrimary}`}
@@ -293,8 +325,8 @@ export default function OrderTrackPage() {
             </div>
             <Button variant="secondary" size="sm" onClick={handleCopyTracking}>
               {copied
-                ? UI_LABELS.USER.ORDERS.TRACKING_NUMBER_COPIED
-                : UI_LABELS.USER.ORDERS.TRACKING_NUMBER_COPY}
+                ? tOrders("trackingNumberCopied")
+                : tOrders("trackingNumberCopy")}
             </Button>
           </div>
         </Card>
@@ -303,7 +335,7 @@ export default function OrderTrackPage() {
       {/* Timeline */}
       <Card className={THEME_CONSTANTS.spacing.cardPadding}>
         <h2 className={`${typography.h4} ${themed.textPrimary} mb-6`}>
-          {UI_LABELS.USER.ORDERS.TRACK_SUBTITLE}
+          {tOrders("trackSubtitle")}
         </h2>
 
         <div className="relative">
@@ -353,7 +385,7 @@ export default function OrderTrackPage() {
           variant="primary"
           onClick={() => router.push(ROUTES.USER.ORDER_DETAIL(orderId))}
         >
-          {UI_LABELS.USER.ORDERS.VIEW_ORDER}
+          {tOrders("viewOrder")}
         </Button>
       </div>
     </div>

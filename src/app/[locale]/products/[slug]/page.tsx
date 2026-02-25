@@ -9,7 +9,8 @@ import {
   AddToCartButton,
   RelatedProducts,
 } from "@/components";
-import { UI_LABELS, API_ENDPOINTS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useApiQuery } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import type { ProductDocument } from "@/db/schema";
@@ -26,6 +27,7 @@ interface ProductDetailPageProps {
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { slug } = use(params);
+  const t = useTranslations("products");
 
   const { data, isLoading, error } = useApiQuery<ProductResponse>({
     queryKey: ["product", slug],
@@ -64,16 +66,16 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         <div className="text-center py-16 px-4">
           <span className="text-6xl mb-4 block">­ƒöì</span>
           <h1 className={`text-2xl font-bold mb-2 ${themed.textPrimary}`}>
-            {UI_LABELS.PRODUCT_DETAIL.PRODUCT_NOT_FOUND}
+            {t("productNotFound")}
           </h1>
           <p className={`text-sm mb-6 ${themed.textSecondary}`}>
-            {UI_LABELS.PRODUCT_DETAIL.PRODUCT_NOT_FOUND_SUBTITLE}
+            {t("productNotFoundSubtitle")}
           </p>
           <Link
             href={ROUTES.PUBLIC.PRODUCTS}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors text-sm"
           >
-            ÔåÉ {UI_LABELS.PRODUCT_DETAIL.BACK_TO_PRODUCTS}
+            ← {t("backToProducts")}
           </Link>
         </div>
       </div>
@@ -94,7 +96,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             href={ROUTES.PUBLIC.PRODUCTS}
             className={`${themed.textSecondary} hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors`}
           >
-            ÔåÉ {UI_LABELS.PRODUCT_DETAIL.BACK_TO_PRODUCTS}
+            ← {t("backToProducts")}
           </Link>
           {product.category && (
             <>
@@ -155,9 +157,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               )}
               {isOutOfStock && (
                 <div className="w-full py-3 px-6 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-xl text-center font-medium text-sm cursor-not-allowed">
-                  {product.status === "sold"
-                    ? UI_LABELS.PRODUCTS_PAGE.SOLD
-                    : UI_LABELS.PRODUCTS_PAGE.OUT_OF_STOCK}
+                  {product.status === "sold" ? t("sold") : t("outOfStock")}
                 </div>
               )}
             </div>

@@ -8,7 +8,8 @@ import {
   ProfileHeader,
   ProfileStatsGrid,
 } from "@/components";
-import { THEME_CONSTANTS, UI_LABELS, ROUTES, API_ENDPOINTS } from "@/constants";
+import { THEME_CONSTANTS, ROUTES, API_ENDPOINTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { apiClient } from "@/lib/api-client";
@@ -16,6 +17,9 @@ import { apiClient } from "@/lib/api-client";
 export default function UserProfilePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const tProfile = useTranslations("profile");
+  const tLoading = useTranslations("loading");
+  const tActions = useTranslations("actions");
 
   const { data: ordersData } = useApiQuery<{ data: { total: number } }>({
     queryKey: ["user-orders-count"],
@@ -38,7 +42,7 @@ export default function UserProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
+        <Spinner size="lg" label={tLoading("default")} />
       </div>
     );
   }
@@ -61,14 +65,14 @@ export default function UserProfilePage() {
     <div className={spacing.stack}>
       {/* Header with Edit Button */}
       <div className="flex items-center justify-between">
-        <Heading level={3}>{UI_LABELS.PROFILE.MY_PROFILE}</Heading>
+        <Heading level={3}>{tProfile("myProfile")}</Heading>
         <Button
           variant="secondary"
           size="sm"
           onClick={() => router.push(ROUTES.USER.SETTINGS)}
           className="shadow-md hover:shadow-lg transition-shadow"
         >
-          {UI_LABELS.ACTIONS.EDIT_PROFILE}
+          {tActions("editProfile")}
         </Button>
       </div>
 

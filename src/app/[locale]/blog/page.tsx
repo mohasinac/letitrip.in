@@ -2,7 +2,8 @@
 import { Suspense } from "react";
 import { useApiQuery, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import {
   Spinner,
   Pagination,
@@ -14,9 +15,9 @@ import {
 import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;
-const BLOG = UI_LABELS.BLOG_PAGE;
 
 function BlogPageContent() {
+  const t = useTranslations("blog");
   const table = useUrlTable({ defaults: { pageSize: "9" } });
   const activeCategory = table.get("category") as "" | BlogPostCategory;
   const page = table.getNumber("page", 1);
@@ -52,9 +53,9 @@ function BlogPageContent() {
       {/* Header */}
       <div className="bg-gradient-to-br from-indigo-600 to-purple-700 text-white py-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">{BLOG.TITLE}</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">{t("title")}</h1>
           <p className="text-lg text-indigo-100 max-w-2xl mx-auto">
-            {BLOG.SUBTITLE}
+            {t("subtitle")}
           </p>
         </div>
       </div>
@@ -73,16 +74,14 @@ function BlogPageContent() {
 
         {error && (
           <div className="text-center py-16">
-            <p className={`${themed.textSecondary}`}>
-              {UI_LABELS.LOADING.FAILED}
-            </p>
+            <p className={`${themed.textSecondary}`}>{t("failedToLoad")}</p>
           </div>
         )}
 
         {!isLoading && !error && posts.length === 0 && (
           <EmptyState
-            title={BLOG.NO_POSTS}
-            description={BLOG.NO_POSTS_DESCRIPTION}
+            title={t("noPosts")}
+            description={t("noPostsDescription")}
           />
         )}
 

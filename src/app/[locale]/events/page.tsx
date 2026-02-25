@@ -2,7 +2,8 @@
 
 import { useApiQuery } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { EmptyState, Spinner } from "@/components";
 import { EventCard } from "@/features/events";
 import type { EventDocument } from "@/db/schema";
@@ -14,6 +15,7 @@ interface EventsListResponse {
 const { themed, spacing, typography } = THEME_CONSTANTS;
 
 export default function EventsPage() {
+  const t = useTranslations("events");
   const { data: activeData, isLoading } = useApiQuery<EventsListResponse>({
     queryKey: ["public-events-active"],
     queryFn: () =>
@@ -39,7 +41,7 @@ export default function EventsPage() {
       {/* Current Events */}
       <section>
         <h1 className={`${typography.h2} ${themed.textPrimary} mb-4`}>
-          {UI_LABELS.EVENTS.CURRENT_EVENTS}
+          {t("currentEvents")}
         </h1>
 
         {isLoading ? (
@@ -48,8 +50,8 @@ export default function EventsPage() {
           </div>
         ) : activeEvents.length === 0 ? (
           <EmptyState
-            title={UI_LABELS.EVENTS.NO_ACTIVE_EVENTS}
-            description={UI_LABELS.EVENTS.NO_ACTIVE_EVENTS_DESC}
+            title={t("noActiveEvents")}
+            description={t("noActiveEventsDesc")}
           />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -64,7 +66,7 @@ export default function EventsPage() {
       {!pastLoading && pastEvents.length > 0 && (
         <section className="mt-10">
           <h2 className={`${typography.h3} ${themed.textPrimary} mb-4`}>
-            {UI_LABELS.EVENTS.PAST_EVENTS}
+            {t("pastEvents")}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {pastEvents.map((event) => (

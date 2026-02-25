@@ -1,39 +1,43 @@
-import { ROUTES, UI_LABELS, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
+import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
-const LABELS = UI_LABELS.PRIVACY_PAGE;
 const { themed, typography } = THEME_CONSTANTS;
 
-export const metadata = {
-  title: `Privacy Policy — ${SITE_CONFIG.brand.name}`,
-  description: "Privacy policy for the LetItRip platform",
-};
+export async function generateMetadata() {
+  return {
+    title: `Privacy Policy — ${SITE_CONFIG.brand.name}`,
+    description: "Privacy policy for the LetItRip platform",
+  };
+}
 
-const SECTIONS = [
-  { title: LABELS.INTRO_TITLE, text: LABELS.INTRO_TEXT },
-  { title: LABELS.COLLECT_TITLE, text: LABELS.COLLECT_TEXT },
-  { title: LABELS.USE_TITLE, text: LABELS.USE_TEXT },
-  { title: LABELS.SHARE_TITLE, text: LABELS.SHARE_TEXT },
-  { title: LABELS.SECURITY_TITLE, text: LABELS.SECURITY_TEXT },
-  { title: LABELS.RIGHTS_TITLE, text: LABELS.RIGHTS_TEXT },
-  { title: LABELS.COOKIES_TITLE, text: LABELS.COOKIES_TEXT },
-  { title: LABELS.CHANGES_TITLE, text: LABELS.CHANGES_TEXT },
-];
+export default async function PrivacyPage() {
+  const t = await getTranslations("privacy");
 
-export default function PrivacyPage() {
+  const SECTIONS = [
+    { title: t("introTitle"), text: t("introText") },
+    { title: t("collectTitle"), text: t("collectText") },
+    { title: t("useTitle"), text: t("useText") },
+    { title: t("shareTitle"), text: t("shareText") },
+    { title: t("securityTitle"), text: t("securityText") },
+    { title: t("rightsTitle"), text: t("rightsText") },
+    { title: t("cookiesTitle"), text: t("cookiesText") },
+    { title: t("changesTitle"), text: t("changesText") },
+  ];
+
   return (
     <div className={`${themed.bgPrimary} min-h-screen`}>
       {/* Header */}
       <section className="bg-gradient-to-br from-slate-700 to-slate-900 text-white py-16 px-4">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold mb-3">{LABELS.TITLE}</h1>
-          <p className="text-slate-300">{LABELS.LAST_UPDATED}</p>
+          <h1 className="text-4xl font-bold mb-3">{t("title")}</h1>
+          <p className="text-slate-300">{t("lastUpdated")}</p>
         </div>
       </section>
 
       <div className="max-w-3xl mx-auto px-4 py-12">
         <p className={`text-lg ${themed.textSecondary} mb-10`}>
-          {LABELS.SUBTITLE}
+          {t("subtitle")}
         </p>
 
         <div className="space-y-8">
@@ -53,9 +57,9 @@ export default function PrivacyPage() {
             className={`${themed.bgSecondary} rounded-xl p-6 border ${themed.border}`}
           >
             <h2 className={`${typography.h4} ${themed.textPrimary} mb-2`}>
-              {LABELS.CONTACT_TITLE}
+              {t("contactTitle")}
             </h2>
-            <p className={`${themed.textSecondary}`}>{LABELS.CONTACT_TEXT}</p>
+            <p className={`${themed.textSecondary}`}>{t("contactText")}</p>
           </section>
         </div>
 
@@ -64,13 +68,13 @@ export default function PrivacyPage() {
             href={ROUTES.PUBLIC.TERMS}
             className="text-indigo-600 dark:text-indigo-400 hover:underline"
           >
-            {UI_LABELS.FOOTER.TERMS_OF_SERVICE}
+            {t("termsOfService")}
           </Link>
           <Link
             href={ROUTES.PUBLIC.CONTACT}
             className="text-indigo-600 dark:text-indigo-400 hover:underline"
           >
-            {UI_LABELS.FOOTER.CONTACT}
+            {t("contactUs")}
           </Link>
         </div>
       </div>

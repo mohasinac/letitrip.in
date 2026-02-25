@@ -13,9 +13,10 @@ import {
   TablePagination,
 } from "@/components";
 import { useRouter } from "next/navigation";
-import { ROUTES, UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 import { apiClient } from "@/lib/api-client";
+import { useTranslations } from "next-intl";
 import type { OrderDocument } from "@/db/schema";
 
 const STATUS_MAP: Record<
@@ -43,6 +44,9 @@ function UserOrdersPageContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const table = useUrlTable({ defaults: { pageSize: "10" } });
+  const tOrders = useTranslations("orders");
+  const tLoading = useTranslations("loading");
+  const tActions = useTranslations("actions");
   const statusFilter = table.get("status");
   const page = table.getNumber("page", 1);
   const pageSize = table.getNumber("pageSize", 10);
@@ -74,7 +78,7 @@ function UserOrdersPageContent() {
   if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
+        <Spinner size="lg" label={tLoading("default")} />
       </div>
     );
   }
@@ -86,7 +90,7 @@ function UserOrdersPageContent() {
 
   return (
     <div className={THEME_CONSTANTS.spacing.stack}>
-      <Heading level={3}>{UI_LABELS.USER.ORDERS.TITLE}</Heading>
+      <Heading level={3}>{tOrders("title")}</Heading>
 
       {/* Status filter tabs */}
       <div
@@ -124,9 +128,9 @@ function UserOrdersPageContent() {
               />
             </svg>
           }
-          title={UI_LABELS.USER.ORDERS.EMPTY}
-          description={UI_LABELS.USER.ORDERS.EMPTY_SUBTITLE}
-          actionLabel={UI_LABELS.USER.ORDERS.BROWSE_PRODUCTS}
+          title={tOrders("noOrders")}
+          description={tOrders("emptySubtitle")}
+          actionLabel={tActions("browseProducts")}
           onAction={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
         />
       ) : (
@@ -142,12 +146,11 @@ function UserOrdersPageContent() {
                 <div className={THEME_CONSTANTS.spacing.stackSmall}>
                   <Heading level={6}>{order.productTitle}</Heading>
                   <Text className={THEME_CONSTANTS.typography.caption}>
-                    {UI_LABELS.USER.ORDERS.ORDER_NUMBER} #
+                    {tOrders("orderNumber")} #
                     {order.id.slice(0, 8).toUpperCase()}
                   </Text>
                   <Text className={THEME_CONSTANTS.typography.caption}>
-                    {UI_LABELS.USER.ORDERS.PLACED_ON}{" "}
-                    {formatDate(order.orderDate)}
+                    {tOrders("placedOn")} {formatDate(order.orderDate)}
                   </Text>
                 </div>
                 <div
@@ -170,7 +173,7 @@ function UserOrdersPageContent() {
                       router.push(ROUTES.USER.ORDER_DETAIL(order.id))
                     }
                   >
-                    {UI_LABELS.USER.ORDERS.VIEW_ORDER}
+                    {tOrders("viewOrder")}
                   </Button>
                 </div>
               </div>

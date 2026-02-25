@@ -4,7 +4,8 @@ import React, { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { Spinner } from "@/components";
 import {
   OrderSuccessHero,
@@ -13,13 +14,13 @@ import {
 } from "@/components";
 import type { OrderDocument } from "@/db/schema";
 
-const LABELS = UI_LABELS.ORDER_SUCCESS_PAGE;
 const { themed, spacing, borderRadius } = THEME_CONSTANTS;
 
 function CheckoutSuccessPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
+  const t = useTranslations("orderSuccess");
 
   const {
     data: orderData,
@@ -63,27 +64,27 @@ function CheckoutSuccessPageContent() {
         >
           <div className="text-5xl mb-2">✅</div>
           <h1 className={`text-2xl font-bold ${themed.textPrimary}`}>
-            {LABELS.FALLBACK_TITLE}
+            {t("fallbackTitle")}
           </h1>
           <p className={themed.textSecondary}>
-            {UI_LABELS.ACTIONS.CONFIRM} — Order ID:{" "}
+            {t("fallbackConfirmed")} — Order ID:{" "}
             <span className="font-mono font-semibold">{orderId}</span>
           </p>
           <p className={`text-sm ${themed.textSecondary}`}>
-            {LABELS.FALLBACK_SUBTITLE}
+            {t("fallbackSubtitle")}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <Link
               href={ROUTES.USER.ORDERS}
               className="flex-1 text-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
             >
-              {UI_LABELS.USER.ORDERS.TITLE}
+              {t("viewOrders")}
             </Link>
             <Link
               href={ROUTES.PUBLIC.PRODUCTS}
               className={`flex-1 text-center px-4 py-2 ${themed.bgPrimary} border ${themed.border} ${themed.textPrimary} rounded-lg font-medium hover:opacity-80 transition-opacity`}
             >
-              {LABELS.CONTINUE_SHOPPING}
+              {t("continueShopping")}
             </Link>
           </div>
         </div>

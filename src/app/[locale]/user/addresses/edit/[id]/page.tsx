@@ -16,12 +16,12 @@ import { useRouter, useParams } from "next/navigation";
 import { apiClient } from "@/lib/api-client";
 import {
   THEME_CONSTANTS,
-  UI_LABELS,
   ROUTES,
   API_ENDPOINTS,
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
 } from "@/constants";
+import { useTranslations } from "next-intl";
 
 export default function EditAddressPage() {
   const { user, loading } = useAuth();
@@ -33,6 +33,10 @@ export default function EditAddressPage() {
   const [saving, setSaving] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const tAddresses = useTranslations("addresses");
+  const tLoading = useTranslations("loading");
+  const tActions = useTranslations("actions");
+  const tConfirm = useTranslations("confirm");
 
   const {
     data: address,
@@ -106,7 +110,7 @@ export default function EditAddressPage() {
   if (loading || loadingAddress) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
+        <Spinner size="lg" label={tLoading("default")} />
       </div>
     );
   }
@@ -119,13 +123,13 @@ export default function EditAddressPage() {
     <div className="max-w-3xl">
       <div className={THEME_CONSTANTS.spacing.stack}>
         <div className="flex items-center justify-between">
-          <Heading level={3}>{UI_LABELS.USER.ADDRESSES.EDIT}</Heading>
+          <Heading level={3}>{tAddresses("edit")}</Heading>
           <Button
             variant="danger"
             onClick={() => setShowDeleteModal(true)}
             disabled={saving || deleting}
           >
-            {UI_LABELS.ACTIONS.DELETE}
+            {tActions("delete")}
           </Button>
         </div>
 
@@ -135,7 +139,7 @@ export default function EditAddressPage() {
             onSubmit={handleSubmit}
             onCancel={handleCancel}
             isLoading={saving}
-            submitLabel={UI_LABELS.ACTIONS.UPDATE}
+            submitLabel={tActions("update")}
           />
         </Card>
       </div>
@@ -144,8 +148,8 @@ export default function EditAddressPage() {
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDelete}
-        title={UI_LABELS.MODALS.CONFIRM_DELETE}
-        message={UI_LABELS.USER.ADDRESSES.DELETE_CONFIRM}
+        title={tConfirm("delete")}
+        message={tAddresses("deleteConfirm")}
         isDeleting={deleting}
       />
     </div>

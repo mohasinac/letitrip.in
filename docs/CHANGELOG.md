@@ -9,6 +9,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 33 — Static/Content Pages i18n Wiring (2026-02-27)
+
+#### Changed
+
+- **`src/app/[locale]/contact/page.tsx`** — Replaced `UI_LABELS.CONTACT_PAGE` with `useTranslations("contact")`. Uses `t("title")`, `t("subtitle")`.
+- **`src/app/[locale]/events/page.tsx`** — Replaced `UI_LABELS.EVENTS` with `useTranslations("events")`. Uses `t("currentEvents")`, `t("noActiveEvents")`, `t("noActiveEventsDesc")`, `t("pastEvents")`.
+- **`src/app/[locale]/blog/page.tsx`** — Replaced module-level `BLOG` alias with `useTranslations("blog")` inside `BlogPageContent`. Uses `t("title")`, `t("subtitle")`, `t("failedToLoad")`, `t("noPosts")`, `t("noPostsDescription")`.
+- **`src/app/[locale]/blog/[slug]/page.tsx`** — Replaced `UI_LABELS.ADMIN.BLOG` alias with `useTranslations("blog")` + `useTranslations("actions")`. All blog detail labels wired.
+- **`src/app/[locale]/about/page.tsx`** — Converted to async server component with `getTranslations("about")`. `export const metadata` → `generateMetadata()`. Module-level `LABELS` alias removed. All 22 string references replaced.
+- **`src/app/[locale]/terms/page.tsx`** — Converted to async server component with `getTranslations("terms")`. `SECTIONS` array moved inside async function. Footer links use `t("privacyPolicy")` / `t("contactUs")`.
+- **`src/app/[locale]/privacy/page.tsx`** — Converted to async server component with `getTranslations("privacy")`. `SECTIONS` array moved inside async function. Footer links use `t("termsOfService")` / `t("contactUs")`.
+- **`src/app/[locale]/sellers/page.tsx`** — Converted to async server component with `getTranslations("sellersPage")`. `BENEFITS`, `STEPS`, `FAQS` arrays moved inside async function. `generateMetadata` uses `t("subtitle")`.
+- **`src/app/[locale]/help/page.tsx`** — Converted to async server component with `getTranslations("help")`. `TOPICS` array moved inside async function.
+- **`messages/en.json`** — Added namespaces: `blog.*` (14 keys), `contact.*` (2 keys), `events.*` (4 keys), `about.*` (25 keys), `terms.*` (17 keys), `privacy.*` (17 keys), `sellersPage.*` (30 keys), `help.*` (12 keys).
+- **`messages/hi.json`** — Matching Hindi translations for all Phase 33 namespaces.
+
+**TypeScript:** 0 errors.
+
+---
+
+### Phase 32 — Products/Checkout/Search/Categories/Auctions i18n Wiring (2026-02-27)
+
+#### Changed
+
+- **`src/app/[locale]/products/page.tsx`** — Replaced `UI_LABELS.PRODUCTS_PAGE` with `useTranslations("products")` + `useTranslations("actions")`.
+- **`src/app/[locale]/products/[slug]/page.tsx`** — Replaced all `UI_LABELS.PRODUCT_DETAIL` / `UI_LABELS.PRODUCTS_PAGE` with `useTranslations("products")`.
+- **`src/app/[locale]/checkout/page.tsx`** — Module-level `STEPS` array (referencing `UI_LABELS.CHECKOUT`) moved inside `CheckoutPage()` component; wired with `useTranslations("checkout")`.
+- **`src/app/[locale]/checkout/success/page.tsx`** — Removed `const LABELS = UI_LABELS.ORDER_SUCCESS_PAGE` alias; wired with `useTranslations("orderSuccess")`.
+- **`src/app/[locale]/categories/page.tsx`** — Replaced all `UI_LABELS.CATEGORIES_PAGE` with `useTranslations("categories")`. ICU interpolations for category counts.
+- **`src/app/[locale]/categories/[slug]/page.tsx`** — Replaced all `UI_LABELS.CATEGORIES_PAGE` with `useTranslations("categories")`. `t("noProductsIn", { name })` interpolation.
+- **`src/app/[locale]/search/page.tsx`** — Replaced `UI_LABELS.SEARCH_PAGE` with `useTranslations("search")`.
+- **`src/app/[locale]/auctions/page.tsx`** — Module-level `SORT_OPTIONS` moved inside `AuctionsPageContent()` as `sortOptions`; wired with `useTranslations("auctions")`. ICU plural for `resultsCount`.
+- **`src/app/[locale]/auctions/[id]/page.tsx`** — `formatCountdown(r)` refactored to `formatCountdown(r, endedLabel: string)` to avoid hook-at-module-scope; wired with `useTranslations("auctions")` + `useTranslations("products")` + `useTranslations("actions")`.
+- **`messages/en.json`** — Extended `products.*`, `checkout.*`, `auctions.*`, `search.*`; added `orderSuccess.*`, `categories.*` namespaces.
+- **`messages/hi.json`** — Matching Hindi translations for all Phase 32 additions.
+
+**TypeScript:** 0 errors.
+
+---
+
+### Phase 31 — User Pages i18n Wiring (2026-02-27)
+
+#### Changed
+
+- All user portal pages wired with `useTranslations` replacing `UI_LABELS`: `user/dashboard`, `user/orders`, `user/orders/[id]`, `user/profile`, `user/addresses`, `user/notifications`, `user/reviews`, `user/bids`.
+- **`messages/en.json`** — Added `userDashboard.*`, `userOrders.*`, `userProfile.*`, `userAddresses.*`, `userNotifications.*`, `userReviews.*`, `userBids.*` namespaces.
+- **`messages/hi.json`** — Matching Hindi translations.
+
+**TypeScript:** 0 errors.
+
+---
+
 ### Phase 30 — Public Pages i18n Wiring (2026-02-26)
 
 #### Changed

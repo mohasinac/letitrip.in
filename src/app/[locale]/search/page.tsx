@@ -19,7 +19,8 @@ import {
   EmptyState,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useApiQuery, useUrlTable } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
 import { debounce } from "@/utils";
@@ -57,6 +58,7 @@ interface SearchResponse {
 }
 
 function SearchPageContent() {
+  const t = useTranslations("search");
   const table = useUrlTable({
     defaults: { sort: PRODUCT_SORT_VALUES.NEWEST, pageSize: String(PAGE_SIZE) },
   });
@@ -170,11 +172,9 @@ function SearchPageContent() {
     >
       <div>
         <h1 className={`${typography.h2} ${themed.textPrimary}`}>
-          {UI_LABELS.SEARCH_PAGE.TITLE}
+          {t("title")}
         </h1>
-        <p className={`mt-1 ${themed.textSecondary}`}>
-          {UI_LABELS.SEARCH_PAGE.SUBTITLE}
-        </p>
+        <p className={`mt-1 ${themed.textSecondary}`}>{t("subtitle")}</p>
       </div>
 
       {/* Search Input */}
@@ -183,7 +183,7 @@ function SearchPageContent() {
           type="search"
           value={inputValue}
           onChange={handleInputChange}
-          placeholder={UI_LABELS.SEARCH_PAGE.PLACEHOLDER}
+          placeholder={t("searchInputPlaceholder")}
           autoFocus
           className={`w-full h-12 pl-4 pr-12 rounded-xl border text-base ${themed.border} ${themed.bgPrimary} ${themed.textPrimary} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
         />
@@ -235,8 +235,8 @@ function SearchPageContent() {
       ) : (
         <EmptyState
           icon={<SearchIcon className="w-16 h-16" />}
-          title={UI_LABELS.SEARCH_PAGE.EMPTY_QUERY}
-          description={UI_LABELS.SEARCH_PAGE.SUBTITLE}
+          title={t("emptyQuery")}
+          description={t("subtitle")}
         />
       )}
     </main>

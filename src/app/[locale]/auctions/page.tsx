@@ -17,7 +17,8 @@ import {
   ActiveFilterChips,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useApiQuery, useUrlTable } from "@/hooks";
 import type { ProductDocument } from "@/db/schema";
 
@@ -52,15 +53,16 @@ const PRICE_BUCKETS = [
   { value: "20000+", label: "Over ₹20,000" },
 ];
 
-const SORT_OPTIONS = [
-  { value: "auctionEndDate", label: UI_LABELS.AUCTIONS_PAGE.SORT_ENDING_SOON },
-  { value: "-auctionEndDate", label: "Ending Latest" },
-  { value: "currentBid", label: UI_LABELS.AUCTIONS_PAGE.SORT_LOWEST_BID },
-  { value: "-currentBid", label: UI_LABELS.AUCTIONS_PAGE.SORT_HIGHEST_BID },
-  { value: "-bidCount", label: UI_LABELS.AUCTIONS_PAGE.SORT_MOST_BIDS },
-];
-
 function AuctionsPageContent() {
+  const t = useTranslations("auctions");
+
+  const sortOptions = [
+    { value: "auctionEndDate", label: t("sortEndingSoon") },
+    { value: "-auctionEndDate", label: t("sortEndingLatest") },
+    { value: "currentBid", label: t("sortLowestBid") },
+    { value: "-currentBid", label: t("sortHighestBid") },
+    { value: "-bidCount", label: t("sortMostBids") },
+  ];
   const table = useUrlTable({
     defaults: { pageSize: String(PAGE_SIZE), sort: "auctionEndDate" },
   });
@@ -112,18 +114,16 @@ function AuctionsPageContent() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className={`${typography.h2} ${themed.textPrimary}`}>
-            {UI_LABELS.AUCTIONS_PAGE.TITLE}
+            {t("title")}
           </h1>
-          <p className={`mt-1 ${themed.textSecondary}`}>
-            {UI_LABELS.AUCTIONS_PAGE.SUBTITLE}
-          </p>
+          <p className={`mt-1 ${themed.textSecondary}`}>{t("subtitle")}</p>
         </div>
 
         {/* Sort control */}
         <div className="flex items-center gap-2">
           {total > 0 && (
             <span className={`text-sm ${themed.textSecondary}`}>
-              {UI_LABELS.AUCTIONS_PAGE.RESULTS_COUNT(total)}
+              {t("resultsCount", { count: total })}
             </span>
           )}
           <select
@@ -131,7 +131,7 @@ function AuctionsPageContent() {
             onChange={(e) => table.set("sort", e.target.value)}
             className={`h-10 px-3 rounded-lg border text-sm ${themed.border} ${themed.bgPrimary} ${themed.textPrimary} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
           >
-            {SORT_OPTIONS.map((opt) => (
+            {sortOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>

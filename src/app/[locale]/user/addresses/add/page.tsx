@@ -8,19 +8,22 @@ import { useRouter } from "next/navigation";
 import { logger } from "@/classes";
 import { apiClient } from "@/lib/api-client";
 import {
-  UI_LABELS,
   THEME_CONSTANTS,
   ROUTES,
   API_ENDPOINTS,
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
 } from "@/constants";
+import { useTranslations } from "next-intl";
 
 export default function AddAddressPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const { showToast } = useToast();
   const [saving, setSaving] = useState(false);
+  const tAddresses = useTranslations("addresses");
+  const tLoading = useTranslations("loading");
+  const tActions = useTranslations("actions");
 
   useEffect(() => {
     if (!loading && !user) {
@@ -56,7 +59,7 @@ export default function AddAddressPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
+        <Spinner size="lg" label={tLoading("default")} />
       </div>
     );
   }
@@ -68,14 +71,14 @@ export default function AddAddressPage() {
   return (
     <div className="max-w-3xl">
       <div className={THEME_CONSTANTS.spacing.stack}>
-        <Heading level={3}>{UI_LABELS.USER.ADDRESSES.ADD}</Heading>
+        <Heading level={3}>{tAddresses("add")}</Heading>
 
         <Card className={THEME_CONSTANTS.spacing.cardPadding}>
           <AddressForm
             onSubmit={handleSubmit}
             onCancel={handleCancel}
             isLoading={saving}
-            submitLabel={UI_LABELS.ACTIONS.CREATE}
+            submitLabel={tActions("create")}
           />
         </Card>
       </div>

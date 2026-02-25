@@ -11,9 +11,10 @@ import {
   EmptyState,
 } from "@/components";
 import { useRouter, useParams } from "next/navigation";
-import { THEME_CONSTANTS, ROUTES, UI_LABELS, API_ENDPOINTS } from "@/constants";
+import { THEME_CONSTANTS, ROUTES, API_ENDPOINTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 import { apiClient } from "@/lib/api-client";
+import { useTranslations } from "next-intl";
 import type { OrderDocument } from "@/db/schema";
 
 const STATUS_MAP: Record<
@@ -43,6 +44,8 @@ export default function OrderViewPage() {
   const router = useRouter();
   const params = useParams();
   const orderId = params?.id as string;
+  const tOrders = useTranslations("orders");
+  const tLoading = useTranslations("loading");
 
   const { data, isLoading, error } = useApiQuery<{ data: OrderDocument }>({
     queryKey: ["user-order", orderId],
@@ -55,7 +58,7 @@ export default function OrderViewPage() {
   if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
+        <Spinner size="lg" label={tLoading("default")} />
       </div>
     );
   }
@@ -73,7 +76,7 @@ export default function OrderViewPage() {
           onClick={() => router.push(ROUTES.USER.ORDERS)}
           className="w-fit"
         >
-          ← {UI_LABELS.USER.ORDERS.BACK_TO_ORDERS}
+          ← {tOrders("backToOrders")}
         </Button>
 
         <EmptyState
@@ -92,9 +95,9 @@ export default function OrderViewPage() {
               />
             </svg>
           }
-          title={UI_LABELS.USER.ORDERS.ORDER_NOT_FOUND}
-          description={UI_LABELS.USER.ORDERS.ORDER_NOT_FOUND_MESSAGE}
-          actionLabel={UI_LABELS.USER.ORDERS.VIEW_ALL_ORDERS}
+          title={tOrders("orderNotFound")}
+          description={tOrders("orderNotFoundMessage")}
+          actionLabel={tOrders("viewAllOrders")}
           onAction={() => router.push(ROUTES.USER.ORDERS)}
         />
       </div>
@@ -108,7 +111,7 @@ export default function OrderViewPage() {
         onClick={() => router.push(ROUTES.USER.ORDERS)}
         className="w-fit"
       >
-        ← {UI_LABELS.USER.ORDERS.BACK_TO_ORDERS}
+        ← {tOrders("backToOrders")}
       </Button>
 
       {/* Order Header */}
@@ -118,11 +121,10 @@ export default function OrderViewPage() {
         >
           <div>
             <Heading level={4}>
-              {UI_LABELS.USER.ORDERS.ORDER_NUMBER} #
-              {order.id.slice(0, 8).toUpperCase()}
+              {tOrders("orderNumber")} #{order.id.slice(0, 8).toUpperCase()}
             </Heading>
             <Text className={`${THEME_CONSTANTS.typography.caption} mt-1`}>
-              {UI_LABELS.USER.ORDERS.PLACED_ON} {formatDate(order.orderDate)}
+              {tOrders("placedOn")} {formatDate(order.orderDate)}
             </Text>
           </div>
           <div
@@ -141,7 +143,7 @@ export default function OrderViewPage() {
                 size="sm"
                 onClick={() => router.push(ROUTES.USER.ORDER_TRACK(orderId))}
               >
-                {UI_LABELS.USER.ORDERS.TRACK_ORDER}
+                {tOrders("trackOrder")}
               </Button>
             )}
           </div>
@@ -151,17 +153,17 @@ export default function OrderViewPage() {
       {/* Order Items */}
       <Card className={THEME_CONSTANTS.spacing.cardPadding}>
         <Heading level={5} className="mb-4">
-          {UI_LABELS.USER.ORDERS.ORDER_ITEMS}
+          {tOrders("orderItems")}
         </Heading>
         <div className={`flex ${THEME_CONSTANTS.spacing.gap.md} pb-4`}>
           <div className="flex-1">
             <Heading level={6}>{order.productTitle}</Heading>
             <Text className={THEME_CONSTANTS.typography.caption}>
-              {UI_LABELS.USER.ORDERS.QUANTITY}: {order.quantity}
+              {tOrders("quantity")}: {order.quantity}
             </Text>
             <Text className={THEME_CONSTANTS.typography.caption}>
               {formatCurrency(order.unitPrice, order.currency)}{" "}
-              {UI_LABELS.USER.ORDERS.EACH}
+              {tOrders("each")}
             </Text>
           </div>
           <div className="text-right">
@@ -178,9 +180,7 @@ export default function OrderViewPage() {
           <div
             className={`flex justify-between pt-2 ${THEME_CONSTANTS.themed.border} border-t`}
           >
-            <Text className="font-semibold text-lg">
-              {UI_LABELS.USER.ORDERS.TOTAL}
-            </Text>
+            <Text className="font-semibold text-lg">{tOrders("total")}</Text>
             <Text className="font-semibold text-lg">
               {formatCurrency(order.totalPrice, order.currency)}
             </Text>
@@ -194,7 +194,7 @@ export default function OrderViewPage() {
         {/* Shipping Address */}
         <Card className={THEME_CONSTANTS.spacing.cardPadding}>
           <Heading level={5} className="mb-4">
-            {UI_LABELS.USER.ORDERS.SHIPPING_ADDRESS}
+            {tOrders("shippingAddress")}
           </Heading>
           <div className={THEME_CONSTANTS.spacing.stackSmall}>
             {order.shippingAddress ? (
@@ -208,17 +208,17 @@ export default function OrderViewPage() {
         {/* Payment Information */}
         <Card className={THEME_CONSTANTS.spacing.cardPadding}>
           <Heading level={5} className="mb-4">
-            {UI_LABELS.USER.ORDERS.PAYMENT_INFO}
+            {tOrders("paymentInfo")}
           </Heading>
           <div className={THEME_CONSTANTS.spacing.stackSmall}>
             <div className="flex justify-between">
-              <Text>{UI_LABELS.USER.ORDERS.PAYMENT_METHOD}</Text>
+              <Text>{tOrders("paymentMethod")}</Text>
               <Text className="font-semibold">
                 {order.paymentMethod ?? "—"}
               </Text>
             </div>
             <div className="flex justify-between">
-              <Text>{UI_LABELS.USER.ORDERS.PAYMENT_STATUS}</Text>
+              <Text>{tOrders("paymentStatus")}</Text>
               <StatusBadge
                 status={PAYMENT_STATUS_MAP[order.paymentStatus]}
                 label={

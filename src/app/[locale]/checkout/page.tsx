@@ -14,10 +14,10 @@ import { apiClient } from "@/lib/api-client";
 import {
   API_ENDPOINTS,
   ROUTES,
-  UI_LABELS,
   THEME_CONSTANTS,
   ERROR_MESSAGES,
 } from "@/constants";
+import { useTranslations } from "next-intl";
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
 
@@ -76,15 +76,16 @@ function CheckoutSkeleton() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-const STEPS = [
-  { number: 1, label: UI_LABELS.CHECKOUT.STEP_ADDRESS },
-  { number: 2, label: UI_LABELS.CHECKOUT.STEP_REVIEW },
-];
-
 export default function CheckoutPage() {
   const router = useRouter();
   const { showError } = useMessage();
   const { openRazorpay } = useRazorpay();
+  const t = useTranslations("checkout");
+
+  const STEPS = [
+    { number: 1, label: t("stepAddress") },
+    { number: 2, label: t("stepReview") },
+  ];
 
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
@@ -211,7 +212,7 @@ export default function CheckoutPage() {
     <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Heading */}
       <h1 className={`${typography.h2} ${themed.textPrimary} mb-6`}>
-        {UI_LABELS.CHECKOUT.TITLE}
+        {t("title")}
       </h1>
 
       {/* Stepper */}
@@ -233,14 +234,14 @@ export default function CheckoutPage() {
                   onClick={() => router.push(ROUTES.USER.CART)}
                   className={`text-sm font-medium ${themed.textSecondary} hover:text-indigo-600 transition-colors`}
                 >
-                  ← {UI_LABELS.CHECKOUT.BACK_TO_CART}
+                  ← {t("backToCart")}
                 </button>
                 <button
                   onClick={handleNext}
                   disabled={!selectedAddressId}
                   className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
                 >
-                  {UI_LABELS.CHECKOUT.STEP_REVIEW} →
+                  {t("stepReview")} →
                 </button>
               </div>
             </div>
@@ -262,16 +263,14 @@ export default function CheckoutPage() {
                   onClick={() => setStep(1)}
                   className={`text-sm font-medium ${themed.textSecondary} hover:text-indigo-600 transition-colors`}
                 >
-                  ← {UI_LABELS.CHECKOUT.STEP_ADDRESS}
+                  ← {t("stepAddress")}
                 </button>
                 <button
                   onClick={handlePlaceOrder}
                   disabled={isPlacingOrder}
                   className="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
                 >
-                  {isPlacingOrder
-                    ? UI_LABELS.CHECKOUT.PLACING_ORDER
-                    : UI_LABELS.CHECKOUT.PLACE_ORDER}
+                  {isPlacingOrder ? t("placingOrder") : t("placeOrder")}
                 </button>
               </div>
             </div>

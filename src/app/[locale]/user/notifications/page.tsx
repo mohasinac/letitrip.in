@@ -10,8 +10,9 @@
 
 import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ROUTES, UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
 import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";
+import { useTranslations } from "next-intl";
 import { apiClient } from "@/lib/api-client";
 import { Spinner, EmptyState } from "@/components";
 import { NotificationItem, NotificationsBulkActions } from "@/components";
@@ -44,6 +45,7 @@ export default function UserNotificationsPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { showSuccess, showError } = useMessage();
+  const tNotifications = useTranslations("notifications");
 
   useEffect(() => {
     if (!authLoading && !user) router.push(ROUTES.AUTH.LOGIN);
@@ -82,7 +84,7 @@ export default function UserNotificationsPage() {
         await markRead(id);
         refetch();
       } catch {
-        showError(UI_LABELS.NOTIFICATIONS.ERROR);
+        showError(tNotifications("error"));
       }
     },
     [markRead, refetch, showError],
@@ -93,9 +95,9 @@ export default function UserNotificationsPage() {
       try {
         await deleteOne(id);
         refetch();
-        showSuccess(UI_LABELS.NOTIFICATIONS.DELETE);
+        showSuccess(tNotifications("deleted"));
       } catch {
-        showError(UI_LABELS.NOTIFICATIONS.ERROR);
+        showError(tNotifications("error"));
       }
     },
     [deleteOne, refetch, showSuccess, showError],
@@ -105,9 +107,9 @@ export default function UserNotificationsPage() {
     try {
       await markAllRead();
       refetch();
-      showSuccess(UI_LABELS.NOTIFICATIONS.MARK_ALL_READ);
+      showSuccess(tNotifications("markAllRead"));
     } catch {
-      showError(UI_LABELS.NOTIFICATIONS.ERROR);
+      showError(tNotifications("error"));
     }
   }, [markAllRead, refetch, showSuccess, showError]);
 
@@ -137,8 +139,8 @@ export default function UserNotificationsPage() {
       ) : notifications.length === 0 ? (
         <EmptyState
           icon={bellIcon}
-          title={UI_LABELS.NOTIFICATIONS.NO_NOTIFICATIONS}
-          description={UI_LABELS.NOTIFICATIONS.NO_NOTIFICATIONS_DESC}
+          title={tNotifications("empty")}
+          description={tNotifications("emptyDesc")}
         />
       ) : (
         <div

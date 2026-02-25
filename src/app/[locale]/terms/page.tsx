@@ -1,38 +1,42 @@
-import { ROUTES, UI_LABELS, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
+import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
-const LABELS = UI_LABELS.TERMS_PAGE;
 const { themed, typography } = THEME_CONSTANTS;
 
-export const metadata = {
-  title: `Terms & Conditions — ${SITE_CONFIG.brand.name}`,
-  description: "Terms and conditions for using the LetItRip platform",
-};
+export async function generateMetadata() {
+  return {
+    title: `Terms & Conditions — ${SITE_CONFIG.brand.name}`,
+    description: "Terms and conditions for using the LetItRip platform",
+  };
+}
 
-const SECTIONS = [
-  { title: LABELS.ACCEPTANCE_TITLE, text: LABELS.ACCEPTANCE_TEXT },
-  { title: LABELS.USE_TITLE, text: LABELS.USE_TEXT },
-  { title: LABELS.ACCOUNTS_TITLE, text: LABELS.ACCOUNTS_TEXT },
-  { title: LABELS.SELLERS_TITLE, text: LABELS.SELLERS_TEXT },
-  { title: LABELS.AUCTIONS_TITLE, text: LABELS.AUCTIONS_TEXT },
-  { title: LABELS.LIABILITY_TITLE, text: LABELS.LIABILITY_TEXT },
-  { title: LABELS.CHANGES_TITLE, text: LABELS.CHANGES_TEXT },
-];
+export default async function TermsPage() {
+  const t = await getTranslations("terms");
 
-export default function TermsPage() {
+  const SECTIONS = [
+    { title: t("acceptanceTitle"), text: t("acceptanceText") },
+    { title: t("useTitle"), text: t("useText") },
+    { title: t("accountsTitle"), text: t("accountsText") },
+    { title: t("sellersTitle"), text: t("sellersText") },
+    { title: t("auctionsTitle"), text: t("auctionsText") },
+    { title: t("liabilityTitle"), text: t("liabilityText") },
+    { title: t("changesTitle"), text: t("changesText") },
+  ];
+
   return (
     <div className={`${themed.bgPrimary} min-h-screen`}>
       {/* Header */}
       <section className="bg-gradient-to-br from-slate-700 to-slate-900 text-white py-16 px-4">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold mb-3">{LABELS.TITLE}</h1>
-          <p className="text-slate-300">{LABELS.LAST_UPDATED}</p>
+          <h1 className="text-4xl font-bold mb-3">{t("title")}</h1>
+          <p className="text-slate-300">{t("lastUpdated")}</p>
         </div>
       </section>
 
       <div className="max-w-3xl mx-auto px-4 py-12">
         <p className={`text-lg ${themed.textSecondary} mb-10`}>
-          {LABELS.SUBTITLE}
+          {t("subtitle")}
         </p>
 
         <div className="space-y-8">
@@ -52,9 +56,9 @@ export default function TermsPage() {
             className={`${themed.bgSecondary} rounded-xl p-6 border ${themed.border}`}
           >
             <h2 className={`${typography.h4} ${themed.textPrimary} mb-2`}>
-              {LABELS.CONTACT_TITLE}
+              {t("contactTitle")}
             </h2>
-            <p className={`${themed.textSecondary}`}>{LABELS.CONTACT_TEXT}</p>
+            <p className={`${themed.textSecondary}`}>{t("contactText")}</p>
           </section>
         </div>
 
@@ -63,13 +67,13 @@ export default function TermsPage() {
             href={ROUTES.PUBLIC.PRIVACY}
             className="text-indigo-600 dark:text-indigo-400 hover:underline"
           >
-            {UI_LABELS.FOOTER.PRIVACY_POLICY}
+            {t("privacyPolicy")}
           </Link>
           <Link
             href={ROUTES.PUBLIC.CONTACT}
             className="text-indigo-600 dark:text-indigo-400 hover:underline"
           >
-            {UI_LABELS.FOOTER.CONTACT}
+            {t("contactUs")}
           </Link>
         </div>
       </div>
