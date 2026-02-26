@@ -16,3 +16,5 @@ export { AdminUsersView } from "./components/AdminUsersView";
 export { AdminCouponsView } from "./components/AdminCouponsView";
 export { AdminCarouselView } from "./components/AdminCarouselView";
 export { AdminBidsView } from "./components/AdminBidsView";
+export { AdminPayoutsView } from "./components/AdminPayoutsView";
+export { AdminNewsletterView } from "./components/AdminNewsletterView";

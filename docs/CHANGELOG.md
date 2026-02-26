@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 37.14 — Oversized Pages Batch 8 (2026-02-26)
+
+#### Added
+
+- **`src/features/admin/components/AdminPayoutsView.tsx`** — Extracted full payouts management page (stats cards, status filter tabs, `DataTable`, `SideDrawer` with `PayoutStatusForm` + `DrawerFormFooter`) from `admin/payouts/page.tsx` (232→4 lines). No props.
+- **`src/features/admin/components/AdminNewsletterView.tsx`** — Extracted full newsletter subscriber management page (stats cards, source breakdown, status filter tabs, `DataTable`, `ConfirmDeleteModal`) from `admin/newsletter/page.tsx` (228→4 lines). No props.
+- **`src/features/auth/components/ResetPasswordView.tsx`** — Extracted `ResetPasswordContent` inner component (success state, token validation, password form with `PasswordStrengthIndicator`) from `auth/reset-password/page.tsx` (224→16 lines Suspense wrapper). Uses `useSearchParams` internally.
+- **`src/features/auth/`** — New `ResetPasswordView` added to existing auth feature barrel.
+
+#### Changed
+
+- **`src/app/[locale]/admin/payouts/page.tsx`** — 232 → 4 lines. `<AdminPayoutsView />`.
+- **`src/app/[locale]/admin/newsletter/page.tsx`** — 228 → 4 lines. `<AdminNewsletterView />`.
+- **`src/app/[locale]/auth/reset-password/page.tsx`** — 224 → 16 lines. `<Suspense><ResetPasswordView /></Suspense>`.
+- **`src/features/admin/index.ts`** — Added `AdminPayoutsView` and `AdminNewsletterView` exports (13 views total).
+- No test file changes needed — all 3 tests render the page component which delegates to the view transparently.
+- 0 TS errors.
+
+---
+
 ### Phase 37.14 — Oversized Pages Batch 7 (2026-02-26)
 
 #### Added
