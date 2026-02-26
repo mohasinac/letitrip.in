@@ -6272,3 +6272,43 @@ export function MyComponent() {
 
 - [x] No `apiClient` direct calls in target page files
 - [x] `npx tsc --noEmit` passes with 0 errors
+
+---
+
+## Phase 44 -- apiClient Elimination: Blog, Products Slug + Seller Edit Pages [DONE]
+
+**Goal:** Replace all direct `apiClient` calls in blog/slug, products/slug, and seller/products/edit pages.
+
+### Phase 44 -- Files Modified
+
+| File                                                  | Change                                                                                        |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `src/app/[locale]/blog/[slug]/page.tsx`               | MODIFIED -- `apiClient.get()` -> `blogService.getBySlug()`                                    |
+| `src/app/[locale]/products/[slug]/page.tsx`           | MODIFIED -- `apiClient.get()` -> `productService.getById()`. Removed `API_ENDPOINTS` import.  |
+| `src/app/[locale]/seller/products/[id]/edit/page.tsx` | MODIFIED -- `apiClient.get/patch()` -> `productService.getById()` / `productService.update()` |
+
+### Phase 44 -- Completion Criteria
+
+- [x] No `apiClient` direct calls in target page files
+- [x] `npx tsc --noEmit` passes with 0 errors
+
+---
+
+## Phase 45 -- apiClient Elimination: Cart + Events Pages [DONE]
+
+**Goal:** Replace all direct `apiClient` calls in cart and events pages. Final phase -- achieves Rule 20 compliance across all `page.tsx` files.
+
+### Phase 45 -- Files Modified
+
+| File                                                | Change                                                                                            |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `src/app/[locale]/cart/page.tsx`                    | MODIFIED -- `apiClient.get/patch/delete()` -> `cartService.get/updateItem/removeItem()`           |
+| `src/app/[locale]/events/page.tsx`                  | MODIFIED -- `apiClient.get()` x2 -> `eventService.list()`. Removed `apiClient` + `API_ENDPOINTS`. |
+| `src/app/[locale]/events/[id]/page.tsx`             | MODIFIED -- `apiClient.get()` -> `eventService.getById()`. Removed `API_ENDPOINTS`.               |
+| `src/app/[locale]/events/[id]/participate/page.tsx` | MODIFIED -- `apiClient.get/post()` -> `eventService.getById()` / `eventService.enter()`           |
+
+### Phase 45 -- Completion Criteria
+
+- [x] No `apiClient` direct calls in ANY `page.tsx` file under `src/app/[locale]/`
+- [x] Rule 20 fully compliant across all pages
+- [x] `npx tsc --noEmit` passes with 0 errors

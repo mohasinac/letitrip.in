@@ -1,11 +1,10 @@
 "use client";
 
 import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { EmptyState, Spinner } from "@/components";
-import { EventCard } from "@/features/events";
+import { EventCard, eventService } from "@/features/events";
 import type { EventDocument } from "@/db/schema";
 
 interface EventsListResponse {
@@ -19,18 +18,13 @@ export default function EventsPage() {
   const { data: activeData, isLoading } = useApiQuery<EventsListResponse>({
     queryKey: ["public-events-active"],
     queryFn: () =>
-      apiClient.get<EventsListResponse>(
-        `${API_ENDPOINTS.EVENTS.LIST}?status=active&sorts=-startsAt&pageSize=20`,
-      ),
+      eventService.list("status=active&sorts=-startsAt&pageSize=20"),
   });
 
   const { data: pastData, isLoading: pastLoading } =
     useApiQuery<EventsListResponse>({
       queryKey: ["public-events-past"],
-      queryFn: () =>
-        apiClient.get<EventsListResponse>(
-          `${API_ENDPOINTS.EVENTS.LIST}?status=ended&sorts=-endsAt&pageSize=6`,
-        ),
+      queryFn: () => eventService.list("status=ended&sorts=-endsAt&pageSize=6"),
     });
 
   const activeEvents = activeData?.items ?? [];

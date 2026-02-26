@@ -9,10 +9,10 @@ import {
   AddToCartButton,
   RelatedProducts,
 } from "@/components";
-import { API_ENDPOINTS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { productService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
 const { themed, borderRadius } = THEME_CONSTANTS;
@@ -31,7 +31,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   const { data, isLoading, error } = useApiQuery<ProductResponse>({
     queryKey: ["product", slug],
-    queryFn: () => apiClient.get(API_ENDPOINTS.PRODUCTS.GET_BY_ID(slug)),
+    queryFn: () => productService.getById(slug),
     enabled: Boolean(slug),
   });
 

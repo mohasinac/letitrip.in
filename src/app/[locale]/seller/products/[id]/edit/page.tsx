@@ -21,13 +21,12 @@ import type { AdminProduct } from "@/components";
 import { useAuth, useApiQuery, useMessage } from "@/hooks";
 import {
   ROUTES,
-  API_ENDPOINTS,
   THEME_CONSTANTS,
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
 } from "@/constants";
 import { useTranslations } from "next-intl";
-import { apiClient } from "@/lib/api-client";
+import { productService } from "@/services";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -58,8 +57,7 @@ export default function SellerEditProductPage({ params }: PageProps) {
   const { data: productData, isLoading: productLoading } =
     useApiQuery<AdminProduct>({
       queryKey: ["seller-product-edit", id],
-      queryFn: () =>
-        apiClient.get<AdminProduct>(API_ENDPOINTS.PRODUCTS.GET_BY_ID(id)),
+      queryFn: () => productService.getById(id),
       enabled: !!id,
     });
 
@@ -95,7 +93,7 @@ export default function SellerEditProductPage({ params }: PageProps) {
 
     try {
       setIsSubmitting(true);
-      await apiClient.patch(API_ENDPOINTS.PRODUCTS.UPDATE(id), {
+      await productService.update(id, {
         title: formData.title,
         description: formData.description,
         category: formData.category,

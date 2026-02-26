@@ -3,8 +3,8 @@
 import { use } from "react";
 import Link from "next/link";
 import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { blogService } from "@/services";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { Card, Button, Spinner } from "@/components";
 import { formatDate } from "@/utils";
@@ -37,7 +37,7 @@ export default function BlogPostPage({ params }: PageProps) {
     related: BlogPostDocument[];
   }>({
     queryKey: ["blog", "post", slug],
-    queryFn: () => apiClient.get(API_ENDPOINTS.BLOG.GET_BY_SLUG(slug)),
+    queryFn: () => blogService.getBySlug(slug),
   });
 
   const post = data?.post;

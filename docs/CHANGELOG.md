@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phases 44–45 — apiClient Elimination: Blog, Products, Seller Edit, Cart + Events Pages (2026-02-28)
+
+#### Changed
+
+- **`src/app/[locale]/blog/[slug]/page.tsx`** — `apiClient.get()` → `blogService.getBySlug()`.
+- **`src/app/[locale]/products/[slug]/page.tsx`** — `apiClient.get()` → `productService.getById()`. Removed unused `API_ENDPOINTS` import.
+- **`src/app/[locale]/seller/products/[id]/edit/page.tsx`** — `apiClient.get/patch()` → `productService.getById()` / `productService.update()`.
+- **`src/app/[locale]/cart/page.tsx`** — `apiClient.get/patch/delete()` → `cartService.get()` / `cartService.updateItem()` / `cartService.removeItem()`.
+- **`src/app/[locale]/events/page.tsx`** — `apiClient.get()` × 2 → `eventService.list()`. Removed `API_ENDPOINTS` import.
+- **`src/app/[locale]/events/[id]/page.tsx`** — `apiClient.get()` → `eventService.getById()`. Removed `API_ENDPOINTS` import.
+- **`src/app/[locale]/events/[id]/participate/page.tsx`** — `apiClient.get/post()` → `eventService.getById()` / `eventService.enter()`.
+
+**Rule 20 compliance: All `apiClient` direct calls eliminated from every `page.tsx` file in `src/app/[locale]/`.**
+
+---
+
 ### Phases 40–43 — apiClient Elimination: Seller, Admin, User Pages (2026-02-28)
 
 #### Added

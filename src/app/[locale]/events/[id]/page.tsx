@@ -2,8 +2,7 @@
 
 import { use } from "react";
 import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { Card, Spinner, EmptyState } from "@/components";
 import {
   EventStatusBadge,
@@ -11,6 +10,7 @@ import {
   SurveyEventSection,
   FeedbackEventSection,
   EventLeaderboard,
+  eventService,
 } from "@/features/events";
 import { formatDate } from "@/utils";
 import type { EventDocument } from "@/db/schema";
@@ -26,8 +26,7 @@ export default function EventDetailPage({ params }: Props) {
 
   const { data: event, isLoading } = useApiQuery<EventDocument>({
     queryKey: ["public-event", id],
-    queryFn: () =>
-      apiClient.get<EventDocument>(API_ENDPOINTS.EVENTS.DETAIL(id)),
+    queryFn: () => eventService.getById(id),
   });
 
   if (isLoading) {

@@ -3,9 +3,8 @@
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useAuth, useApiMutation, useMessage } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { eventService } from "@/features/events";
 import {
-  API_ENDPOINTS,
   ROUTES,
   UI_LABELS,
   THEME_CONSTANTS,
@@ -33,14 +32,12 @@ export default function EventParticipatePage({ params }: Props) {
 
   const { data: event, isLoading: eventLoading } = useApiQuery<EventDocument>({
     queryKey: ["public-event-participate", id],
-    queryFn: () =>
-      apiClient.get<EventDocument>(API_ENDPOINTS.EVENTS.DETAIL(id)),
+    queryFn: () => eventService.getById(id),
     enabled: !authLoading,
   });
 
   const mutation = useApiMutation<void, Record<string, unknown>>({
-    mutationFn: (data) =>
-      apiClient.post<void>(API_ENDPOINTS.EVENTS.ENTER(id), data),
+    mutationFn: (data) => eventService.enter(id, data),
     onSuccess: () => {
       showSuccess(SUCCESS_MESSAGES.EVENT.ENTRY_SUBMITTED);
       setSubmitted(true);

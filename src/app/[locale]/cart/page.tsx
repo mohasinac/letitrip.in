@@ -5,10 +5,9 @@ import { useRouter } from "next/navigation";
 import type { CartDocument } from "@/db/schema";
 import { CartItemList, CartSummary, PromoCodeInput } from "@/components";
 import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { cartService } from "@/services";
 import { useTranslations } from "next-intl";
 import {
-  API_ENDPOINTS,
   ROUTES,
   THEME_CONSTANTS,
   ERROR_MESSAGES,
@@ -57,7 +56,7 @@ export default function CartPage() {
 
   const { data, isLoading, refetch } = useApiQuery<CartApiResponse>({
     queryKey: ["cart"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.CART.GET),
+    queryFn: () => cartService.get(),
   });
 
   const { mutate: updateItem } = useApiMutation<
@@ -65,7 +64,7 @@ export default function CartPage() {
     { itemId: string; quantity: number }
   >({
     mutationFn: ({ itemId, quantity }) =>
-      apiClient.patch(API_ENDPOINTS.CART.UPDATE_ITEM(itemId), { quantity }),
+      cartService.updateItem(itemId, { quantity }),
     onSuccess: () => {
       refetch();
       setUpdatingItemId(null);
@@ -77,8 +76,7 @@ export default function CartPage() {
   });
 
   const { mutate: removeItem } = useApiMutation<unknown, { itemId: string }>({
-    mutationFn: ({ itemId }) =>
-      apiClient.delete(API_ENDPOINTS.CART.REMOVE_ITEM(itemId)),
+    mutationFn: ({ itemId }) => cartService.removeItem(itemId),
     onSuccess: () => {
       showSuccess(SUCCESS_MESSAGES.CART.ITEM_REMOVED);
       refetch();
