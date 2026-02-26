@@ -98,14 +98,20 @@ export function ProductsView() {
   const activeFilters = useMemo<ActiveFilter[]>(
     () => [
       ...(categoryParam
-        ? [{ key: "category", label: "Category", value: categoryParam }]
+        ? [
+            {
+              key: "category",
+              label: t("filterCategory"),
+              value: categoryParam,
+            },
+          ]
         : []),
       ...(minPriceParam
         ? [
             {
               key: "minPrice",
-              label: "Min Price",
-              value: `Rs.${minPriceParam}`,
+              label: t("filterMinPrice"),
+              value: t("filterPriceValue", { value: minPriceParam }),
             },
           ]
         : []),
@@ -113,13 +119,13 @@ export function ProductsView() {
         ? [
             {
               key: "maxPrice",
-              label: "Max Price",
-              value: `Rs.${maxPriceParam}`,
+              label: t("filterMaxPrice"),
+              value: t("filterPriceValue", { value: maxPriceParam }),
             },
           ]
         : []),
     ],
-    [categoryParam, minPriceParam, maxPriceParam],
+    [categoryParam, minPriceParam, maxPriceParam, t],
   );
 
   const filterContent = (

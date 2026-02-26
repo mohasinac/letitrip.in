@@ -441,7 +441,11 @@
     "noProductsSubtitle": "Try adjusting your filters or search term",
     "backToProducts": "Back to Products",
     "productNotFound": "Product not found",
-    "productNotFoundSubtitle": "This product may have been removed or the link is incorrect"
+    "productNotFoundSubtitle": "This product may have been removed or the link is incorrect",
+    "filterCategory": "Category",
+    "filterMinPrice": "Min Price",
+    "filterMaxPrice": "Max Price",
+    "filterPriceValue": "₹{value}"
   },
   "cart": {
     "title": "Shopping Cart",
@@ -579,7 +583,9 @@
     "resultsCount": "{count, plural, one {# active auction} other {# active auctions}}",
     "lastBidBy": "Last bid by {name}",
     "totalBids": "{count, plural, one {# bid} other {# bids}}",
-    "description": "Description"
+    "description": "Description",
+    "filterBidRange": "Bid Range",
+    "endingSoon": "Ending Soon"
   },
   "search": {
     "title": "Search",
@@ -925,7 +931,24 @@
     "sortTitleAZ": "Title A\u2013Z",
     "sortPriceHighLow": "Price High\u2013Low",
     "sortPriceLowHigh": "Price Low\u2013High",
-    "filterStatusTitle": "Status"
+    "filterStatusTitle": "Status",
+    "titleRequired": "Title is required",
+    "descriptionRequired": "Description is required",
+    "categoryRequired": "Category is required"
+  },
+  "promotions": {
+    "title": "Promotions & Deals",
+    "subtitle": "Discover exclusive offers, featured products, and active discount codes",
+    "exclusiveOffersBadge": "Exclusive Offers",
+    "dealsTitle": "Current Deals",
+    "dealsSubtitle": "Promoted products with special pricing",
+    "featuredTitle": "Featured Products",
+    "featuredSubtitle": "Handpicked products from our catalog",
+    "couponsTitle": "Discount Coupons",
+    "couponsSubtitle": "Use these codes at checkout to save on your order",
+    "emptyDeals": "No deals available right now",
+    "checkBack": "Check back soon for new promotions!",
+    "emptyCoupons": "No active coupons at this time"
   },
   "adminDashboard": {
     "title": "Dashboard Overview",

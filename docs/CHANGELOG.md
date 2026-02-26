@@ -9,7 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Phase 37.14 — Oversized Pages Batch 8 (2026-02-26)
+### Phases 32–34 — i18n Gap Fixes (2026-02-26)
+
+#### Changed
+
+- **`src/components/auctions/AuctionCard.tsx`** — Eliminated all `UI_LABELS.AUCTIONS_PAGE.*` usages in JSX. Wired `useTranslations("auctions")`; `liveBadge`, `endingSoon`, `ended`, `currentBid`, `startingBid`, `endsIn`, `totalBids` (ICU plural) now resolved via `t()`; `formatCountdown` updated to accept `endedLabel: string` param instead of accessing `UI_LABELS` directly.
+- **`src/features/products/components/ProductsView.tsx`** — Active filter chip labels (`"Category"`, `"Min Price"`, `"Max Price"`) and price format (`"Rs.{value}"`) converted to `t("filterCategory")`, `t("filterMinPrice")`, `t("filterMaxPrice")`, `t("filterPriceValue", { value })`.
+- **`src/app/[locale]/auctions/page.tsx`** — Hardcoded `"Bid Range"` active filter chip label replaced with `t("filterBidRange")`.
+- **`src/app/[locale]/checkout/success/page.tsx`** — Raw `fetch(API_ENDPOINTS.ORDERS.GET_BY_ID)` replaced with `orderService.getById(orderId)`; unused `API_ENDPOINTS` import removed.
+- **`src/app/[locale]/promotions/page.tsx`** — Fully wired to `useTranslations("promotions")`; all `UI_LABELS.PROMOTIONS_PAGE.*` and `UI_LABELS.LOADING.FAILED` usages replaced with `t()` calls; hardcoded `"🎉 Exclusive Offers"` badge moved to `t("exclusiveOffersBadge")`.
+- **`src/app/[locale]/seller/products/[id]/edit/page.tsx`** — Hardcoded validation error strings `"Title is required"`, `"Description is required"`, `"Category is required"` replaced with `t("titleRequired")`, `t("descriptionRequired")`, `t("categoryRequired")`.
+
+#### Added (messages/en.json + messages/hi.json)
+
+- `auctions.filterBidRange` — "Bid Range" / "बोली सीमा"
+- `auctions.endingSoon` — "Ending Soon" / "जल्द समाप्त"
+- `products.filterCategory` / `filterMinPrice` / `filterMaxPrice` / `filterPriceValue` — filter chip labels + ₹ price interpolation
+- `promotions.*` namespace — 11 keys: `title`, `subtitle`, `exclusiveOffersBadge`, `dealsTitle/Subtitle`, `featuredTitle/Subtitle`, `couponsTitle/Subtitle`, `emptyDeals`, `checkBack`, `emptyCoupons`
+- `sellerProducts.titleRequired` / `descriptionRequired` / `categoryRequired` — validation error messages
 
 #### Added
 

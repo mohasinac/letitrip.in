@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ROUTES, THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { formatCurrency } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
 
@@ -54,8 +55,11 @@ function useCountdown(endDate: Date | string | undefined) {
   return remaining;
 }
 
-function formatCountdown(remaining: ReturnType<typeof useCountdown>): string {
-  if (!remaining) return UI_LABELS.AUCTIONS_PAGE.ENDED;
+function formatCountdown(
+  remaining: ReturnType<typeof useCountdown>,
+  endedLabel: string,
+): string {
+  if (!remaining) return endedLabel;
   const { days, hours, minutes, seconds } = remaining;
   if (days > 0) return `${days}d ${hours}h ${minutes}m`;
   if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
@@ -63,6 +67,7 @@ function formatCountdown(remaining: ReturnType<typeof useCountdown>): string {
 }
 
 export function AuctionCard({ product, className = "" }: AuctionCardProps) {
+  const t = useTranslations("auctions");
   const remaining = useCountdown(product.auctionEndDate);
   const isEnded = remaining === null;
   const isEndingSoon =
@@ -100,17 +105,17 @@ export function AuctionCard({ product, className = "" }: AuctionCardProps) {
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {!isEnded && (
             <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
-              {UI_LABELS.AUCTIONS_PAGE.LIVE_BADGE}
+              {t("liveBadge")}
             </span>
           )}
           {isEndingSoon && (
             <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-              {UI_LABELS.AUCTIONS_PAGE.ENDING_SOON}
+              {t("endingSoon")}
             </span>
           )}
           {isEnded && (
             <span className="bg-gray-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-              {UI_LABELS.AUCTIONS_PAGE.ENDED}
+              {t("ended")}
             </span>
           )}
         </div>
@@ -128,9 +133,7 @@ export function AuctionCard({ product, className = "" }: AuctionCardProps) {
         {/* Current bid */}
         <div>
           <p className={`text-xs ${themed.textSecondary}`}>
-            {hasCurrentBid
-              ? UI_LABELS.AUCTIONS_PAGE.CURRENT_BID
-              : UI_LABELS.AUCTIONS_PAGE.STARTING_BID}
+            {hasCurrentBid ? t("currentBid") : t("startingBid")}
           </p>
           <p className="text-base font-bold text-indigo-600 dark:text-indigo-400">
             {formatCurrency(displayBid)}
@@ -140,7 +143,7 @@ export function AuctionCard({ product, className = "" }: AuctionCardProps) {
         {/* Bid count + Countdown */}
         <div className={`flex items-center justify-between text-xs mt-auto`}>
           <span className={themed.textSecondary}>
-            {UI_LABELS.AUCTIONS_PAGE.BID_COUNT(bidCount)}
+            {t("totalBids", { count: bidCount })}
           </span>
           <span
             className={`font-mono font-semibold ${
@@ -153,10 +156,10 @@ export function AuctionCard({ product, className = "" }: AuctionCardProps) {
           >
             {!isEnded && (
               <span className={`${themed.textSecondary} mr-1`}>
-                {UI_LABELS.AUCTIONS_PAGE.ENDS_IN}:
+                {t("endsIn")}:
               </span>
             )}
-            {formatCountdown(remaining)}
+            {formatCountdown(remaining, t("ended"))}
           </span>
         </div>
       </div>

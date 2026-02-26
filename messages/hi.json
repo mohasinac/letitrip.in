@@ -441,7 +441,11 @@
     "noProductsSubtitle": "अपने फ़िल्टर या खोज शब्द बदलकर देखें",
     "backToProducts": "उत्पादों पर वापस जाएं",
     "productNotFound": "उत्पाद नहीं मिला",
-    "productNotFoundSubtitle": "यह उत्पाद हटाया जा सकता है या लिंक गलत है"
+    "productNotFoundSubtitle": "यह उत्पाद हटाया जा सकता है या लिंक गलत है",
+    "filterCategory": "श्रेणी",
+    "filterMinPrice": "न्यूनतम कीमत",
+    "filterMaxPrice": "अधिकतम कीमत",
+    "filterPriceValue": "₹{value}"
   },
   "cart": {
     "title": "शॉपिंग कार्ट",
@@ -578,7 +582,9 @@
     "resultsCount": "{count, plural, one {# सक्रिय नीलामी} other {# सक्रिय नीलामियां}}",
     "lastBidBy": "अंतिम बोली {name} द्वारा",
     "totalBids": "{count, plural, one {# बोली} other {# बोलियां}}",
-    "description": "विवरण"
+    "description": "विवरण",
+    "filterBidRange": "बोली सीमा",
+    "endingSoon": "जल्द समाप्त"
   },
   "search": {
     "title": "खोज",
@@ -924,7 +930,24 @@
     "sortTitleAZ": "शीर्षक A-Z",
     "sortPriceHighLow": "कीमत ज़्यादा-कम",
     "sortPriceLowHigh": "कीमत कम-ज़्यादा",
-    "filterStatusTitle": "स्थिति"
+    "filterStatusTitle": "स्थिति",
+    "titleRequired": "शीर्षक आवश्यक है",
+    "descriptionRequired": "विवरण आवश्यक है",
+    "categoryRequired": "श्रेणी आवश्यक है"
+  },
+  "promotions": {
+    "title": "प्रमोशन और डील",
+    "subtitle": "एक्सक्लूसिव ऑफर, विशेष उत्पाद और सक्रिय डिस्काउंट कोड खोजें",
+    "exclusiveOffersBadge": "एक्सक्लूसिव ऑफर",
+    "dealsTitle": "वर्तमान डील",
+    "dealsSubtitle": "विशेष मूल्य पर प्रमोटेड उत्पाद",
+    "featuredTitle": "विशेष उत्पाद",
+    "featuredSubtitle": "हमारे कैटलॉग से चुने गए उत्पाद",
+    "couponsTitle": "डिस्काउंट कूपन",
+    "couponsSubtitle": "अपने ऑर्डर पर बचत के लिए चेकआउट में इन कोड का उपयोग करें",
+    "emptyDeals": "अभी कोई डील उपलब्ध नहीं",
+    "checkBack": "नए प्रमोशन के लिए जल्द वापस आएं!",
+    "emptyCoupons": "इस समय कोई सक्रिय कूपन नहीं"
   },
   "adminDashboard": {
     "title": "डैशबोर्ड अवलोकन",

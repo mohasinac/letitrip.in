@@ -81,15 +81,15 @@ export default function SellerEditProductPage({ params }: PageProps) {
     setError(null);
 
     if (!formData.title?.trim()) {
-      setError("Title is required");
+      setError(t("titleRequired"));
       return;
     }
     if (!formData.description?.trim()) {
-      setError("Description is required");
+      setError(t("descriptionRequired"));
       return;
     }
     if (!formData.category?.trim()) {
-      setError("Category is required");
+      setError(t("categoryRequired"));
       return;
     }
 

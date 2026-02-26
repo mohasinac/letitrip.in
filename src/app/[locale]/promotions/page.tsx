@@ -2,11 +2,11 @@
 
 import { useApiQuery } from "@/hooks";
 import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { Spinner, CouponCard, ProductSection } from "@/components";
 import type { ProductDocument, CouponDocument } from "@/db/schema";
 
-const LABELS = UI_LABELS.PROMOTIONS_PAGE;
 const { themed, typography, spacing } = THEME_CONSTANTS;
 
 interface PromotionsData {
@@ -16,6 +16,9 @@ interface PromotionsData {
 }
 
 export default function PromotionsPage() {
+  const t = useTranslations("promotions");
+  const tLoading = useTranslations("loading");
+
   const { data, isLoading, error } = useApiQuery<PromotionsData>({
     queryKey: ["promotions"],
     queryFn: () => apiClient.get(API_ENDPOINTS.PROMOTIONS.LIST),
@@ -35,13 +38,11 @@ export default function PromotionsPage() {
       <div className="bg-gradient-to-br from-rose-500 via-pink-600 to-orange-500 text-white py-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-rose-100 font-medium mb-2 uppercase tracking-widest text-sm">
-            🎉 Exclusive Offers
+            🎉 {t("exclusiveOffersBadge")}
           </p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            {LABELS.TITLE}
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">{t("title")}</h1>
           <p className="text-lg text-rose-100 max-w-2xl mx-auto">
-            {LABELS.SUBTITLE}
+            {t("subtitle")}
           </p>
         </div>
       </div>
@@ -57,18 +58,16 @@ export default function PromotionsPage() {
 
         {error && (
           <div className="text-center py-16">
-            <p className={`${themed.textSecondary}`}>
-              {UI_LABELS.LOADING.FAILED}
-            </p>
+            <p className={`${themed.textSecondary}`}>{tLoading("failed")}</p>
           </div>
         )}
 
         {!isLoading && !error && !hasContent && (
           <div className="text-center py-16">
             <p className={`${typography.h4} ${themed.textPrimary} mb-2`}>
-              {LABELS.EMPTY_DEALS}
+              {t("emptyDeals")}
             </p>
-            <p className={`${themed.textSecondary}`}>{LABELS.CHECK_BACK}</p>
+            <p className={`${themed.textSecondary}`}>{t("checkBack")}</p>
           </div>
         )}
 
@@ -79,10 +78,10 @@ export default function PromotionsPage() {
               <section>
                 <div className="mb-6">
                   <h2 className={`${typography.h3} ${themed.textPrimary}`}>
-                    {LABELS.COUPONS_TITLE}
+                    {t("couponsTitle")}
                   </h2>
                   <p className={`mt-1 ${themed.textSecondary}`}>
-                    {LABELS.COUPONS_SUBTITLE}
+                    {t("couponsSubtitle")}
                   </p>
                 </div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -97,26 +96,26 @@ export default function PromotionsPage() {
               <section>
                 <div className="mb-6">
                   <h2 className={`${typography.h3} ${themed.textPrimary}`}>
-                    {LABELS.COUPONS_TITLE}
+                    {t("couponsTitle")}
                   </h2>
                 </div>
                 <p className={`${themed.textSecondary} text-sm`}>
-                  {LABELS.EMPTY_COUPONS}
+                  {t("emptyCoupons")}
                 </p>
               </section>
             )}
 
             {/* Promoted Products */}
             <ProductSection
-              title={LABELS.DEALS_TITLE}
-              subtitle={LABELS.DEALS_SUBTITLE}
+              title={t("dealsTitle")}
+              subtitle={t("dealsSubtitle")}
               products={promotedProducts}
             />
 
             {/* Featured Products */}
             <ProductSection
-              title={LABELS.FEATURED_TITLE}
-              subtitle={LABELS.FEATURED_SUBTITLE}
+              title={t("featuredTitle")}
+              subtitle={t("featuredSubtitle")}
               products={featuredProducts}
             />
           </div>

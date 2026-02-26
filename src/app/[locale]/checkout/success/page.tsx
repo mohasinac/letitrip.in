@@ -4,7 +4,7 @@ import React, { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useApiQuery } from "@/hooks";
-import { API_ENDPOINTS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { Spinner } from "@/components";
 import {
@@ -12,6 +12,7 @@ import {
   OrderSuccessCard,
   OrderSuccessActions,
 } from "@/components";
+import { orderService } from "@/services";
 import type { OrderDocument } from "@/db/schema";
 
 const { themed, spacing, borderRadius } = THEME_CONSTANTS;
@@ -28,11 +29,7 @@ function CheckoutSuccessPageContent() {
     error,
   } = useApiQuery<{ data: OrderDocument }>({
     queryKey: ["order", orderId ?? ""],
-    queryFn: async () => {
-      const res = await fetch(API_ENDPOINTS.ORDERS.GET_BY_ID(orderId!));
-      if (!res.ok) throw new Error("Failed to fetch order");
-      return res.json();
-    },
+    queryFn: () => orderService.getById(orderId!),
     enabled: !!orderId,
   });
 

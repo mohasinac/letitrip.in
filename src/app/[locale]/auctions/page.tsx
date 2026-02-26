@@ -97,13 +97,13 @@ function AuctionsPageContent() {
     return [
       {
         key: "priceRange",
-        label: "Bid Range",
+        label: t("filterBidRange"),
         value:
           PRICE_BUCKETS.find((b) => b.value === priceRange)?.label ??
           priceRange,
       },
     ];
-  }, [priceRange]);
+  }, [priceRange, t]);
   const activeFilterCount = activeFilters.length;
 
   return (
