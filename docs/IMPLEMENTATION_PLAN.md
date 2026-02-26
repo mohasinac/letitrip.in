@@ -1,4 +1,4 @@
-﻿# Frontend Implementation Plan
+# Frontend Implementation Plan
 
 > **Source:** Derived from `FRONTEND_REFACTOR_PLAN.md` audit (Feb 20, 2026)  
 > **Principle:** Each phase is independently shippable. Later phases depend on earlier ones. Tests are last.
@@ -55,7 +55,8 @@
 | **42** | apiClient elimination â€” user address+track      | addresses/add, edit, track           | âš¡ Additive                      | ~3                        |
 | **43** | apiClient elimination â€” user profile+promotions | profile, wishlist, promotions        | âš¡ Additive                      | ~4                        |
 | **44** | apiClient elimination â€” blog, products, edit    | blog/[slug], products/[slug], edit   | âš¡ Additive                      | ~3                        |
-| **45** | apiClient elimination â€” cart + events           | cart, events, Rule 20 complete       | âš¡ Additive                      | ~4                        |
+| **45** | apiClient elimination — cart + events             | cart, events, Rule 20 complete       | ⚡ Additive                       | ~4                        |
+| **46** | Admin feature view Rule 20 compliance             | `src/features/admin/components/`     | ⚠️ Cross-cutting                  | ~30                       |
 
 ---
 
@@ -110,6 +111,7 @@
 | **43** | âœ… Done       | 2026-02-28 | 2026-02-28 | apiClient elimination â€” `user/profile` (â†’ `orderService.list()` + `addressService.list()`), `user/wishlist` (â†’ `wishlistService.list()`), `promotions` (â†’ `promotionsService.list()`). New `promotionsService` created and exported from `@/services`. 0 TS errors.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | **44** | âœ… Done       | 2026-02-28 | 2026-02-28 | apiClient elimination â€” `blog/[slug]` (â†’ `blogService.getBySlug()`), `products/[slug]` (â†’ `productService.getById()`, removed unused `API_ENDPOINTS`), `seller/products/[id]/edit` (â†’ `productService.getById/update()`). 0 TS errors.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | **45** | âœ… Done       | 2026-02-28 | 2026-02-28 | apiClient elimination â€” `cart` (â†’ `cartService.get/updateItem/removeItem()`), `events` (â†’ `eventService.list()`), `events/[id]` (â†’ `eventService.getById()`), `events/[id]/participate` (â†’ `eventService.getById/enter()`). **Rule 20 FULLY COMPLIANT â€” zero `apiClient` direct calls in any `page.tsx` under `src/app/[locale]/`.** 0 TS errors.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **46** | Not started    | --         | --         | **Admin feature view Rule 20 compliance.** All 13 Admin\*View.tsx feature components call apiClient directly — Rule 20 violation in feature layer. 46.1: expand adminService with ~18 new methods. 46.2: create couponService (missing entirely). 46.3: migrate 5 views where services already exist (Carousel, Categories, FAQs, Reviews, Sections). 46.4: migrate 5 views using expanded adminService (Analytics, Bids, Newsletter, Payouts, Users). 46.5: migrate Blog + Products views. 46.6: migrate Coupons view ( new couponService). See Phase Details below.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 **Status legend:** ? Not started ï¿½ ?? In progress ï¿½ ? Done ï¿½ ? Blocked
 
@@ -267,16 +269,14 @@ describe("productService", () => {
 ```ts
 jest.mock("@/repositories", () => ({
   eventRepository: {
-    list: jest
-      .fn()
-      .mockResolvedValue({
-        items: [],
-        total: 0,
-        page: 1,
-        pageSize: 25,
-        totalPages: 0,
-        hasMore: false,
-      }),
+    list: jest.fn().mockResolvedValue({
+      items: [],
+      total: 0,
+      page: 1,
+      pageSize: 25,
+      totalPages: 0,
+      hasMore: false,
+    }),
     findById: jest.fn().mockResolvedValue(null),
     create: jest.fn().mockResolvedValue({ id: "evt_1" }),
     update: jest.fn().mockResolvedValue(undefined),
@@ -541,5 +541,229 @@ it("renders EventsView", () => {
 
 **Execution order:** 19.1 19.2 19.3 19.4 19.5 19.6 19.7 19.8 19.9 19.10  
 Each sub-phase is independently committable. Run `npx tsc --noEmit && npx jest --passWithNoTests` after each.
+
+---
+
+---
+
+### Phase 46 — Admin Feature View Rule 20 Compliance
+
+**Goal:** Eliminate all `apiClient` direct calls from the 13 admin feature view components in `src/features/admin/components/`. These were built during Phases 22–37 before the service layer was fully established and were never migrated. This phase completes Rule 20 compliance across the **entire codebase** (not just pages, but all feature components too).
+
+**Rule 20 violation inventory:**
+All 13 files import `apiClient` directly:
+`AdminAnalyticsView`, `AdminBidsView`, `AdminBlogView`, `AdminCarouselView`, `AdminCategoriesView`, `AdminCouponsView`, `AdminFaqsView`, `AdminNewsletterView`, `AdminPayoutsView`, `AdminProductsView`, `AdminReviewsView`, `AdminSectionsView`, `AdminUsersView`
+
+**Additional gaps discovered:**
+
+- `couponService` does not exist in `src/services/` — `AdminCouponsView` has no service to delegate to
+- `adminService` has only 5 methods; 13 admin views need ~18 additional methods
+- `blogService` only has `list` + `getBySlug`; no admin CRUD
+
+**Execution order:** 46.1 46.2 46.3 46.4 46.5 46.6  
+Run `npx tsc --noEmit` after each sub-phase. Commit each sub-phase independently.
+
+---
+
+#### 46.1 — Expand `adminService`
+
+**File:** `src/services/admin.service.ts`
+
+Add the following methods (all use existing `API_ENDPOINTS` constants):
+
+```ts
+// Analytics
+getAnalytics: () =>
+  apiClient.get(API_ENDPOINTS.ADMIN.ANALYTICS),
+
+// Users
+listUsers: (params?: string) =>
+  apiClient.get(`${API_ENDPOINTS.ADMIN.USERS}${params ? `?${params}` : ''}`),
+updateUser: (uid: string, data: unknown) =>
+  apiClient.patch(API_ENDPOINTS.ADMIN.USER_BY_ID(uid), data),
+deleteUser: (uid: string) =>
+  apiClient.delete(API_ENDPOINTS.ADMIN.USER_BY_ID(uid)),
+
+// Bids (admin — all bids, not per-product)
+listBids: (params?: string) =>
+  apiClient.get(`${API_ENDPOINTS.ADMIN.BIDS}${params ? `?${params}` : ''}`),
+
+// Blog (admin endpoints)
+listBlog: (params?: string) =>
+  apiClient.get(`${API_ENDPOINTS.ADMIN.BLOG}${params ? `?${params}` : ''}`),
+createBlogPost: (data: unknown) =>
+  apiClient.post(API_ENDPOINTS.ADMIN.BLOG, data),
+updateBlogPost: (id: string, data: unknown) =>
+  apiClient.patch(API_ENDPOINTS.ADMIN.BLOG_BY_ID(id), data),
+deleteBlogPost: (id: string) =>
+  apiClient.delete(API_ENDPOINTS.ADMIN.BLOG_BY_ID(id)),
+
+// Newsletter (admin)
+listNewsletter: (params?: string) =>
+  apiClient.get(`${API_ENDPOINTS.ADMIN.NEWSLETTER}${params ? `?${params}` : ''}`),
+updateNewsletterEntry: (id: string, data: unknown) =>
+  apiClient.patch(API_ENDPOINTS.ADMIN.NEWSLETTER_BY_ID(id), data),
+deleteNewsletterEntry: (id: string) =>
+  apiClient.delete(API_ENDPOINTS.ADMIN.NEWSLETTER_BY_ID(id)),
+
+// Payouts (admin)
+listPayouts: (params?: string) =>
+  apiClient.get(`${API_ENDPOINTS.ADMIN.PAYOUTS}${params ? `?${params}` : ''}`),
+updatePayout: (id: string, data: unknown) =>
+  apiClient.patch(API_ENDPOINTS.ADMIN.PAYOUT_BY_ID(id), data),
+
+// Products (admin — full access, not seller-scoped)
+listAdminProducts: (params?: string) =>
+  apiClient.get(`${API_ENDPOINTS.ADMIN.PRODUCTS}${params ? `?${params}` : ''}`),
+createAdminProduct: (data: unknown) =>
+  apiClient.post(API_ENDPOINTS.ADMIN.PRODUCTS, data),
+updateAdminProduct: (id: string, data: unknown) =>
+  apiClient.patch(API_ENDPOINTS.ADMIN.PRODUCT_BY_ID(id), data),
+deleteAdminProduct: (id: string) =>
+  apiClient.delete(API_ENDPOINTS.ADMIN.PRODUCT_BY_ID(id)),
+```
+
+**TS check:** `npx tsc --noEmit src/services/admin.service.ts`
+
+---
+
+#### 46.2 — Create `couponService`
+
+**File to create:** `src/services/coupon.service.ts`
+
+```ts
+/**
+ * Coupon Service
+ * Pure async functions for coupon/promo-code API calls.
+ * Import via `@/services` barrel — NEVER call apiClient directly in components.
+ */
+import { apiClient } from "@/lib/api-client";
+import { API_ENDPOINTS } from "@/constants";
+
+export const couponService = {
+  /** List coupons with optional Sieve params (admin only) */
+  list: (params?: string) =>
+    apiClient.get(
+      `${API_ENDPOINTS.ADMIN.COUPONS}${params ? `?${params}` : ""}`,
+    ),
+
+  /** Create a coupon (admin only) */
+  create: (data: unknown) => apiClient.post(API_ENDPOINTS.ADMIN.COUPONS, data),
+
+  /** Update a coupon by ID (admin only) */
+  update: (id: string, data: unknown) =>
+    apiClient.patch(API_ENDPOINTS.ADMIN.COUPON_BY_ID(id), data),
+
+  /** Delete a coupon by ID (admin only) */
+  delete: (id: string) =>
+    apiClient.delete(API_ENDPOINTS.ADMIN.COUPON_BY_ID(id)),
+
+  /** Validate a promo code at checkout */
+  validate: (code: string, orderTotal: number) =>
+    apiClient.post(API_ENDPOINTS.COUPONS.VALIDATE, { code, orderTotal }),
+};
+```
+
+Then add to `src/services/index.ts`:
+
+```ts
+export * from "./coupon.service";
+```
+
+---
+
+#### 46.3 — Migrate Views Where Services Already Exist
+
+Services already have all required methods. Just replace `apiClient` imports and calls with the service:
+
+| Component                 | Replace with                                                                         |
+| ------------------------- | ------------------------------------------------------------------------------------ |
+| `AdminCarouselView.tsx`   | `carouselService.list()`, `.create()`, `.update(id, data)`, `.delete(id)`            |
+| `AdminCategoriesView.tsx` | `categoryService.list('view=tree')`, `.create()`, `.update(id, data)`, `.delete(id)` |
+| `AdminFaqsView.tsx`       | `faqService.list(params)`, `.create()`, `.update(id, data)`, `.delete(id)`           |
+| `AdminReviewsView.tsx`    | `reviewService.list(params)`, `.update(id, data)`, `.delete(id)`                     |
+| `AdminSectionsView.tsx`   | `homepageSectionsService.list()`, `.create()`, `.update(id, data)`, `.delete(id)`    |
+
+**Pattern per view:**
+
+```tsx
+// BEFORE
+import { apiClient } from '@/lib/api-client';
+queryFn: () => apiClient.get(API_ENDPOINTS.CAROUSEL.LIST),
+
+// AFTER
+import { carouselService } from '@/services';
+queryFn: () => carouselService.list(),
+```
+
+Remove `import { apiClient }` and `import { API_ENDPOINTS }` lines from each file after migration (if they become unused).
+
+---
+
+#### 46.4 — Migrate Views Using Expanded `adminService`
+
+| Component                 | Replace with                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `AdminAnalyticsView.tsx`  | `adminService.getAnalytics()`                                                                           |
+| `AdminBidsView.tsx`       | `adminService.listBids(params)`                                                                         |
+| `AdminNewsletterView.tsx` | `adminService.listNewsletter(params)`, `.updateNewsletterEntry(id, data)`, `.deleteNewsletterEntry(id)` |
+| `AdminPayoutsView.tsx`    | `adminService.listPayouts(params)`, `.updatePayout(id, data)`                                           |
+| `AdminUsersView.tsx`      | `adminService.listUsers(params)`, `.updateUser(uid, data)`, `.deleteUser(uid)`                          |
+
+---
+
+#### 46.5 — Migrate Blog + Products Views
+
+**`AdminBlogView.tsx`** use new `adminService` blog methods:
+
+- `queryFn: () => adminService.listBlog(params)`
+- `mutationFn: (data) => adminService.createBlogPost(data)`
+- `mutationFn: ({ id, data }) => adminService.updateBlogPost(id, data)`
+- `mutationFn: (id) => adminService.deleteBlogPost(id)`
+
+**`AdminProductsView.tsx`** use new `adminService` product methods:
+
+- `queryFn: () => adminService.listAdminProducts(params)`
+- `mutationFn: (data) => adminService.createAdminProduct(data)`
+- `mutationFn: ({ id, data }) => adminService.updateAdminProduct(id, data)`
+- `mutationFn: (id) => adminService.deleteAdminProduct(id)`
+
+---
+
+#### 46.6 — Migrate Coupons View
+
+**`AdminCouponsView.tsx`** use new `couponService`:
+
+- `queryFn: () => couponService.list(params)`
+- `mutationFn: (data) => couponService.create(data)`
+- `mutationFn: ({ id, data }) => couponService.update(id, data)`
+- `mutationFn: (id) => couponService.delete(id)`
+
+---
+
+#### Phase 46 — Checklist
+
+After all 6 sub-phases:
+
+- [ ] `src/services/admin.service.ts` — 18 new methods added
+- [ ] `src/services/coupon.service.ts` — created with 5 methods
+- [ ] `src/services/index.ts` — `couponService` exported
+- [ ] `AdminAnalyticsView.tsx` — zero `apiClient` imports
+- [ ] `AdminBidsView.tsx` — zero `apiClient` imports
+- [ ] `AdminBlogView.tsx` — zero `apiClient` imports
+- [ ] `AdminCarouselView.tsx` — zero `apiClient` imports
+- [ ] `AdminCategoriesView.tsx` — zero `apiClient` imports
+- [ ] `AdminCouponsView.tsx` — zero `apiClient` imports
+- [ ] `AdminFaqsView.tsx` — zero `apiClient` imports
+- [ ] `AdminNewsletterView.tsx` — zero `apiClient` imports
+- [ ] `AdminPayoutsView.tsx` — zero `apiClient` imports
+- [ ] `AdminProductsView.tsx` — zero `apiClient` imports
+- [ ] `AdminReviewsView.tsx` — zero `apiClient` imports
+- [ ] `AdminSectionsView.tsx` — zero `apiClient` imports
+- [ ] `AdminUsersView.tsx` — zero `apiClient` imports
+- [ ] `npx tsc --noEmit` passes with 0 errors
+- [ ] All existing test suites still green
+
+**Note:** Phase 19 service tests (19.1) should be updated to include the new `adminService` methods and `couponService` after this phase completes.
 
 ---

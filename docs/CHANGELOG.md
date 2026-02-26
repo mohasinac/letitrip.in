@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation Cleanup Pass 2 (2026-02-26)
+
+#### Changed
+
+- **`docs/IMPLEMENTATION_PLAN.md`** — Added detailed Phase 46 plan (Admin Feature View Rule 20 Compliance); updated Phase 19 description to note it should follow Phase 46's service work; Phase Overview and Progress Tracker rows updated.
+- **`docs/README.md`** — Updated IMPLEMENTATION_PLAN.md description to reflect Phase 19 + 46 as pending.
+
+#### Deleted
+
+- **`docs/FRONTEND_REFACTOR_PLAN.md`** — All 25 implementation sections complete; source document no longer needed.
+
+#### Audit Findings
+
+- All 13 `Admin*View.tsx` feature components (`src/features/admin/components/`) call `apiClient` directly — Rule 20 violation in feature layer (not just `page.tsx`). Phase 46 addresses this.
+- `couponService` missing from `src/services/` — `AdminCouponsView` has no service to delegate to.
+- `adminService` missing ~18 methods needed by admin views (analytics, users, bids, blog CRUD, newsletter, payouts, products, reviews).
+- `blogService` only has `list` + `getBySlug` — no admin CRUD methods.
+
+---
+
 ### Documentation Cleanup (2026-02-26)
 
 #### Changed
