@@ -9,11 +9,7 @@ export function HomepageSkeleton() {
   return (
     <div className="w-full overflow-hidden">
       {/* Hero Carousel skeleton */}
-      <div
-        className={`${skeleton.card} w-full`}
-        style={{ height: "28rem" }}
-        aria-hidden="true"
-      />
+      <div className={`${skeleton.card} w-full h-[28rem]`} aria-hidden="true" />
 
       {/* Trust Features skeleton — 4 cards */}
       <section
@@ -23,8 +19,7 @@ export function HomepageSkeleton() {
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className={`${skeleton.card} flex flex-col items-center gap-3 p-6`}
-              style={{ height: "9rem" }}
+              className={`${skeleton.card} flex flex-col items-center gap-3 p-6 h-[9rem]`}
             />
           ))}
         </div>
@@ -37,11 +32,7 @@ export function HomepageSkeleton() {
         <div className={`${skeleton.heading} w-48 mx-auto mb-6`} />
         <div className="grid grid-cols-2 sm:grid-cols-4 2xl:grid-cols-6 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className={`${skeleton.card}`}
-              style={{ height: "8rem" }}
-            />
+            <div key={i} className={`${skeleton.card} h-[8rem]`} />
           ))}
         </div>
       </section>
@@ -57,10 +48,7 @@ export function HomepageSkeleton() {
         <div className="grid grid-cols-3 lg:grid-cols-5 gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex flex-col gap-2">
-              <div
-                className={`${skeleton.image} w-full`}
-                style={{ paddingBottom: "100%" }}
-              />
+              <div className={`${skeleton.image} w-full pb-[100%]`} />
               <div className={`${skeleton.text} w-3/4`} />
               <div className={`${skeleton.text} w-1/2`} />
             </div>
@@ -79,10 +67,7 @@ export function HomepageSkeleton() {
         <div className="grid grid-cols-3 lg:grid-cols-5 gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex flex-col gap-2">
-              <div
-                className={`${skeleton.image} w-full`}
-                style={{ paddingBottom: "100%" }}
-              />
+              <div className={`${skeleton.image} w-full pb-[100%]`} />
               <div className={`${skeleton.text} w-3/4`} />
               <div className={`${skeleton.text} w-1/2`} />
             </div>
@@ -95,8 +80,7 @@ export function HomepageSkeleton() {
         className={`${spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
       >
         <div
-          className={`${skeleton.card} ${borderRadius["2xl"]} max-w-2xl mx-auto`}
-          style={{ height: "16rem" }}
+          className={`${skeleton.card} ${borderRadius["2xl"]} max-w-2xl mx-auto h-[16rem]`}
         />
       </section>
     </div>

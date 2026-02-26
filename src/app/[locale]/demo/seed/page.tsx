@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Card, Alert } from "@/components";
+import { Button, Card, Alert, ConfirmDeleteModal } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 type CollectionName =
@@ -37,6 +37,9 @@ export default function DemoSeedPage() {
   const [selectedCollections, setSelectedCollections] = useState<
     CollectionName[]
   >([]);
+  const [confirmPending, setConfirmPending] = useState<
+    "deleteAll" | "deleteSelected" | null
+  >(null);
 
   const allCollections: CollectionName[] = [
     "users",
@@ -243,15 +246,7 @@ export default function DemoSeedPage() {
             {/* Delete All */}
             <div className="space-y-2">
               <Button
-                onClick={() => {
-                  if (
-                    confirm(
-                      "Are you sure you want to delete all seed data? This cannot be undone.",
-                    )
-                  ) {
-                    handleSeedData("delete");
-                  }
-                }}
+                onClick={() => setConfirmPending("deleteAll")}
                 disabled={loading}
                 className="w-full bg-red-600 hover:bg-red-700 text-white"
               >
@@ -265,15 +260,7 @@ export default function DemoSeedPage() {
             {/* Delete Selected */}
             <div className="space-y-2">
               <Button
-                onClick={() => {
-                  if (
-                    confirm(
-                      `Delete seed data from ${selectedCollections.length} collections?`,
-                    )
-                  ) {
-                    handleSeedData("delete", selectedCollections);
-                  }
-                }}
+                onClick={() => setConfirmPending("deleteSelected")}
                 disabled={loading || selectedCollections.length === 0}
                 className="w-full bg-orange-600 hover:bg-orange-700 text-white"
               >
@@ -389,6 +376,31 @@ export default function DemoSeedPage() {
           </ul>
         </Card>
       </div>
+
+      <ConfirmDeleteModal
+        isOpen={confirmPending !== null}
+        onClose={() => setConfirmPending(null)}
+        onConfirm={() => {
+          if (confirmPending === "deleteAll") {
+            handleSeedData("delete");
+          } else if (confirmPending === "deleteSelected") {
+            handleSeedData("delete", selectedCollections);
+          }
+          setConfirmPending(null);
+        }}
+        title={
+          confirmPending === "deleteAll"
+            ? "Delete All Seed Data?"
+            : `Delete Selected Seed Data?`
+        }
+        message={
+          confirmPending === "deleteAll"
+            ? "Are you sure you want to delete all seed data? This cannot be undone."
+            : `Delete seed data from ${selectedCollections.length} collection${selectedCollections.length !== 1 ? "s" : ""}?`
+        }
+        confirmText="Delete"
+        isDeleting={loading}
+      />
     </div>
   );
 }

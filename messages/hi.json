@@ -1265,6 +1265,19 @@
     "wasThisHelpful": "क्या यह मददगार था?",
     "thanksForFeedback": "आपकी प्रतिक्रिया के लिए धन्यवाद!"
   },
+  "avatar": {
+    "altText": "प्रोफ़ाइल अवतार",
+    "defaultInitial": "U",
+    "fallbackUser": "उपयोगकर्ता",
+    "uploading": "अपलोड हो रहा है...",
+    "saving": "सहेजा जा रहा है...",
+    "readyToSave": "अपनी नई प्रोफ़ाइल तस्वीर लगाने के लिए अवतार सहेजें पर क्लिक करें।",
+    "saveAvatar": "अवतार सहेजें",
+    "cancelChange": "रद्द करें",
+    "changePhoto": "फ़ोटो बदलें",
+    "chooseImage": "छवि चुनें",
+    "removePhoto": "फ़ोटो हटाएं"
+  },
   "unsavedChanges": {
     "title": "सहेजे नहीं गए परिवर्तन",
     "message": "आपके पास सहेजे नहीं गए परिवर्तन हैं। क्या आप वाकई इस पृष्ठ को छोड़ना चाहते हैं?",

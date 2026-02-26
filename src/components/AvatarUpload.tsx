@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useRef, useEffect } from "react";
 import { useStorageUpload } from "@/hooks";
 import {
@@ -12,12 +13,7 @@ import {
   Text,
 } from "@/components";
 import type { ImageCropData } from "@/components";
-import {
-  THEME_CONSTANTS,
-  UI_LABELS,
-  UI_HELP_TEXT,
-  SUCCESS_MESSAGES,
-} from "@/constants";
+import { THEME_CONSTANTS, UI_HELP_TEXT, SUCCESS_MESSAGES } from "@/constants";
 
 interface AvatarUploadProps {
   currentPhotoURL?: string | null;
@@ -43,6 +39,7 @@ export function AvatarUpload({
   onSaveComplete,
   onPendingStateChange,
 }: AvatarUploadProps) {
+  const t = useTranslations("avatar");
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     currentPhotoURL || null,
   );
@@ -242,9 +239,9 @@ export function AvatarUpload({
                   showValue
                   label={
                     state.uploading
-                      ? UI_LABELS.AVATAR.UPLOADING
+                      ? t("uploading")
                       : state.saving
-                        ? UI_LABELS.AVATAR.SAVING
+                        ? t("saving")
                         : undefined
                   }
                 />
@@ -258,7 +255,7 @@ export function AvatarUpload({
                   variant="secondary"
                   className="text-xs text-blue-600 dark:text-blue-400"
                 >
-                  {UI_LABELS.AVATAR.READY_TO_SAVE}
+                  {t("readyToSave")}
                 </Text>
                 <div className="flex gap-3">
                   <Button
@@ -266,14 +263,14 @@ export function AvatarUpload({
                     variant="primary"
                     size="sm"
                   >
-                    {UI_LABELS.AVATAR.SAVE_AVATAR}
+                    {t("saveAvatar")}
                   </Button>
                   <Button
                     onClick={handleCancelPending}
                     variant="secondary"
                     size="sm"
                   >
-                    {UI_LABELS.AVATAR.CANCEL_CHANGE}
+                    {t("cancelChange")}
                   </Button>
                 </div>
               </div>
@@ -288,9 +285,7 @@ export function AvatarUpload({
                   variant="primary"
                   size="sm"
                 >
-                  {previewUrl
-                    ? UI_LABELS.AVATAR.CHANGE_PHOTO
-                    : UI_LABELS.AVATAR.CHOOSE_IMAGE}
+                  {previewUrl ? t("changePhoto") : t("chooseImage")}
                 </Button>
 
                 {previewUrl && (
@@ -300,7 +295,7 @@ export function AvatarUpload({
                     variant="secondary"
                     size="sm"
                   >
-                    {UI_LABELS.AVATAR.REMOVE_PHOTO}
+                    {t("removePhoto")}
                   </Button>
                 )}
               </div>
@@ -312,7 +307,7 @@ export function AvatarUpload({
               accept="image/jpeg,image/png,image/webp,image/gif"
               onChange={handleFileSelect}
               className="hidden"
-              aria-label={UI_LABELS.AVATAR.CHANGE_PHOTO}
+              aria-label={t("changePhoto")}
             />
           </div>
         </div>

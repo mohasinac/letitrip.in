@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phases 55–57 — Avatar i18n, HomepageSkeleton styles, demo/seed Rule 17 fix (2026-02-27)
+
+#### Changed (Phase 55 — Avatar components i18n)
+
+- **`src/components/AvatarDisplay.tsx`** — Replaced `UI_LABELS.AVATAR.*` with `useTranslations("avatar")`; `alt` default prop moved from default parameter to `resolvedAlt` constant inside function body.
+- **`src/components/AvatarUpload.tsx`** — Replaced all 10 `UI_LABELS.AVATAR.*` usages with `useTranslations("avatar")`; removed `UI_LABELS` from constants import.
+- **`messages/en.json`** + **`messages/hi.json`** — Added `avatar` namespace (11 keys: `altText`, `defaultInitial`, `fallbackUser`, `uploading`, `saving`, `readyToSave`, `saveAvatar`, `cancelChange`, `changePhoto`, `chooseImage`, `removePhoto`).
+
+#### Changed (Phase 56 — HomepageSkeleton inline styles)
+
+- **`src/components/homepage/HomepageSkeleton.tsx`** — Replaced 6 static `style={{ height/paddingBottom }}` props with Tailwind arbitrary values (`h-[28rem]`, `h-[9rem]`, `h-[8rem]`, `pb-[100%]` ×2, `h-[16rem]`). Zero `style={{}}` for static values remaining in this file.
+
+#### Fixed (Phase 57 — demo/seed Rule 17 violations)
+
+- **`src/app/[locale]/demo/seed/page.tsx`** — Replaced 2× `confirm()` (Rule 17 violation) with `ConfirmDeleteModal` component; added `confirmPending` state (`"deleteAll" | "deleteSelected" | null`); imported `ConfirmDeleteModal` from `@/components`.
+- **`src/app/[locale]/demo/seed/__tests__/page.test.tsx`** — Updated 4 test assertions to use the new modal confirm flow instead of `global.confirm` mock; removed `global.confirm` setup from `beforeEach`.
+
+---
+
 ### Phases 50–54 — Documentation Cleanup, Code Quality Audit, Homepage i18n Rule 2 Fix (2026-02-27)
 
 #### Changed (Phase 50 — GUIDE.md stale annotations cleanup)

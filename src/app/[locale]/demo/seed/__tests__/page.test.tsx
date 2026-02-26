@@ -265,12 +265,9 @@ describe("DemoSeedPage Component", () => {
   describe("Delete Actions", () => {
     beforeEach(() => {
       (process.env as any).NODE_ENV = "development";
-      global.confirm = jest.fn(() => true);
     });
 
-    it("should require confirmation for delete all", async () => {
-      global.confirm = jest.fn(() => false);
-
+    it("should show confirm modal before delete all", async () => {
       render(<DemoSeedPage />);
 
       const deleteAllButton = screen.getByRole("button", {
@@ -279,13 +276,14 @@ describe("DemoSeedPage Component", () => {
 
       fireEvent.click(deleteAllButton);
 
-      expect(global.confirm).toHaveBeenCalled();
+      // Modal should appear; fetch not yet called
+      expect(
+        screen.getAllByText(/Delete All Seed Data\?/i).length,
+      ).toBeGreaterThan(0);
       expect(mockFetch).not.toHaveBeenCalled();
     });
 
     it("should delete all seed data after confirmation", async () => {
-      global.confirm = jest.fn(() => true);
-
       render(<DemoSeedPage />);
 
       const deleteAllButton = screen.getByRole("button", {
@@ -293,6 +291,12 @@ describe("DemoSeedPage Component", () => {
       });
 
       fireEvent.click(deleteAllButton);
+
+      // Confirm in modal
+      const confirmButton = screen.getAllByRole("button", {
+        name: /^Delete$/i,
+      })[0];
+      fireEvent.click(confirmButton!);
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalled();
@@ -305,8 +309,6 @@ describe("DemoSeedPage Component", () => {
     });
 
     it("should delete selected collections only", async () => {
-      global.confirm = jest.fn(() => true);
-
       render(<DemoSeedPage />);
 
       // Select specific collections
@@ -318,6 +320,12 @@ describe("DemoSeedPage Component", () => {
       });
 
       fireEvent.click(deleteSelectedButton);
+
+      // Confirm in modal
+      const confirmButton = screen.getAllByRole("button", {
+        name: /^Delete$/i,
+      })[0];
+      fireEvent.click(confirmButton!);
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalled();
@@ -343,7 +351,6 @@ describe("DemoSeedPage Component", () => {
   describe("Response Display", () => {
     beforeEach(() => {
       (process.env as any).NODE_ENV = "development";
-      global.confirm = jest.fn(() => true);
     });
 
     it("should display success message", async () => {
@@ -491,6 +498,12 @@ describe("DemoSeedPage Component", () => {
         name: /Delete All Seed Data/i,
       });
       fireEvent.click(deleteAllButton);
+
+      // Confirm in modal
+      const confirmButton = screen.getAllByRole("button", {
+        name: /^Delete$/i,
+      })[0];
+      fireEvent.click(confirmButton!);
 
       await waitFor(() => {
         expect(screen.getByText(/Deleted.*100/i)).toBeInTheDocument();

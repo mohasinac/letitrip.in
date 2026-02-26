@@ -1271,5 +1271,18 @@
     "message": "You have unsaved changes. Are you sure you want to leave this page?",
     "stay": "Stay",
     "leave": "Leave"
+  },
+  "avatar": {
+    "altText": "Profile avatar",
+    "defaultInitial": "U",
+    "fallbackUser": "User",
+    "uploading": "Uploading...",
+    "saving": "Saving...",
+    "readyToSave": "Click Save Avatar to apply your new profile picture.",
+    "saveAvatar": "Save Avatar",
+    "cancelChange": "Cancel",
+    "changePhoto": "Change Photo",
+    "chooseImage": "Choose Image",
+    "removePhoto": "Remove Photo"
   }
 }

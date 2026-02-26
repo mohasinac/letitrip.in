@@ -1,7 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { ImageCropData } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 
 interface AvatarDisplayProps {
   cropData: ImageCropData | null;
@@ -39,10 +40,13 @@ export function AvatarDisplay({
   cropData,
   size = "md",
   className = "",
-  alt = UI_LABELS.AVATAR.ALT_TEXT,
+  alt,
   displayName,
   email,
 }: AvatarDisplayProps) {
+  const t = useTranslations("avatar");
+  const resolvedAlt = alt ?? t("altText");
+
   // Generate initials from displayName or email
   const getInitials = () => {
     if (displayName) {
@@ -55,12 +59,12 @@ export function AvatarDisplay({
     if (email) {
       return email.substring(0, 2).toUpperCase();
     }
-    return UI_LABELS.AVATAR.DEFAULT_INITIAL;
+    return t("defaultInitial");
   };
 
   // Generate consistent color based on name/email
   const getGradient = () => {
-    const text = displayName || email || UI_LABELS.AVATAR.FALLBACK_USER;
+    const text = displayName || email || t("fallbackUser");
     const colors = [
       "from-blue-500 to-blue-600",
       "from-purple-500 to-purple-600",
@@ -89,7 +93,7 @@ export function AvatarDisplay({
       <div
         className={`${sizeClasses[size]} ${className} rounded-full bg-gradient-to-br ${getGradient()} flex items-center justify-center overflow-hidden`}
         role="img"
-        aria-label={alt}
+        aria-label={resolvedAlt}
       >
         <span
           className={`${textSizes[size]} font-semibold text-white select-none`}
@@ -106,7 +110,7 @@ export function AvatarDisplay({
     >
       <img
         src={cropData.url}
-        alt={alt}
+        alt={resolvedAlt}
         className="absolute w-full h-full object-cover select-none -translate-x-1/2 -translate-y-1/2"
         style={{
           width: `${(cropData.zoom || 1) * 100}%`,
