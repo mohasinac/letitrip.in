@@ -5,6 +5,7 @@ import { FeaturedAuctionsSection } from "../FeaturedAuctionsSection";
 const mockUseApiQuery = jest.fn();
 jest.mock("@/hooks", () => ({
   useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
+  useFeaturedAuctions: (...args: unknown[]) => mockUseApiQuery(...args),
 }));
 
 // Mock Button component

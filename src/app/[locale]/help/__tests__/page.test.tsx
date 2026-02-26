@@ -51,23 +51,23 @@ jest.mock("@/constants", () => ({
 import HelpPage from "../page";
 
 describe("HelpPage", () => {
-  it("renders without crashing", () => {
-    render(<HelpPage />);
+  it("renders without crashing", async () => {
+    render(await HelpPage());
     expect(document.body).toBeInTheDocument();
   });
 
-  it("renders the main heading", () => {
-    render(<HelpPage />);
+  it("renders the main heading", async () => {
+    render(await HelpPage());
     expect(screen.getByText("Help Center")).toBeInTheDocument();
   });
 
-  it("renders at least one help topic heading", () => {
-    render(<HelpPage />);
+  it("renders at least one help topic heading", async () => {
+    render(await HelpPage());
     expect(screen.getByText("Orders & Shipping")).toBeInTheDocument();
   });
 
-  it("renders link to FAQs page", () => {
-    render(<HelpPage />);
+  it("renders link to FAQs page", async () => {
+    render(await HelpPage());
     const faqLinks = screen.getAllByRole("link");
     const faqLink = faqLinks.find((l) => l.getAttribute("href") === "/faqs");
     expect(faqLink).toBeDefined();

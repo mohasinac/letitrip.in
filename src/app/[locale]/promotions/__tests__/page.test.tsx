@@ -128,6 +128,8 @@ describe("PromotionsPage", () => {
       error: null,
     });
     render(<PromotionsPage />);
-    expect(screen.getByText("No Promotions Active")).toBeInTheDocument();
+    expect(
+      screen.getByText("No deals available right now"),
+    ).toBeInTheDocument();
   });
 });

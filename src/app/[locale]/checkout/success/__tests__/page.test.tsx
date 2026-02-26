@@ -135,6 +135,6 @@ describe("Checkout Success Page", () => {
       refetch: jest.fn(),
     } as any);
     render(<OrderSuccessPage />);
-    expect(screen.getByText("Order Received")).toBeInTheDocument();
+    expect(screen.getByText("Order Placed!")).toBeInTheDocument();
   });
 });

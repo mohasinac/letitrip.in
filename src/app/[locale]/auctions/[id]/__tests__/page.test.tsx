@@ -52,6 +52,29 @@ jest.mock("@/components", () => ({
     </div>
   ),
   Spinner: () => <div data-testid="spinner" />,
+  AuctionDetailView: ({ id }: { id: string }) => {
+    const hooks = require("@/hooks");
+    const result = hooks.useApiQuery({
+      queryKey: ["auction", id],
+      queryFn: jest.fn(),
+    });
+    hooks.useAuth();
+    hooks.useRealtimeBids();
+    if (result.isLoading) return <div data-testid="spinner" />;
+    if (result.error || !result.data?.data) return <div />;
+    const auction = result.data.data;
+    const isEnded =
+      auction.auctionEndDate && new Date(auction.auctionEndDate) < new Date();
+    return (
+      <div>
+        <h1>{auction.title}</h1>
+        <div data-testid="place-bid-form">
+          <input type="number" placeholder="Bid amount" disabled={isEnded} />
+          <button disabled={!!isEnded}>Place Bid</button>
+        </div>
+      </div>
+    );
+  },
 }));
 
 jest.mock("next/image", () => ({

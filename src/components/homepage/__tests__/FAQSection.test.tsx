@@ -5,6 +5,7 @@ import { FAQSection } from "../FAQSection";
 const mockUseApiQuery = jest.fn();
 jest.mock("@/hooks", () => ({
   useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
+  usePublicFaqs: (...args: unknown[]) => mockUseApiQuery(...args),
 }));
 
 const mockFaqs = [

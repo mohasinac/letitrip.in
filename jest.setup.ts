@@ -350,7 +350,7 @@ jest.mock("next-intl/server", () => {
   }
   return {
     getTranslations:
-      (ns?: string) => async (key: string, params?: Record<string, unknown>) =>
+      async (ns?: string) => (key: string, params?: Record<string, unknown>) =>
         _res(ns, key, params),
     getMessages: async () => {
       try {

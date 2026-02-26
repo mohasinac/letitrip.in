@@ -121,7 +121,7 @@ describe("FAQHelpfulButtons", () => {
       });
 
       expect(mockApiPost).toHaveBeenCalledWith("/api/faqs/faq-123/vote", {
-        isHelpful: true,
+        vote: "helpful",
       });
     });
 
@@ -224,7 +224,7 @@ describe("FAQHelpfulButtons", () => {
       });
 
       expect(mockApiPost).toHaveBeenCalledWith("/api/faqs/faq-456/vote", {
-        isHelpful: false,
+        vote: "not-helpful",
       });
     });
 
@@ -356,7 +356,7 @@ describe("FAQHelpfulButtons", () => {
       // API should only be called once
       expect(mockApiPost).toHaveBeenCalledTimes(1);
       expect(mockApiPost).toHaveBeenCalledWith("/api/faqs/faq-1/vote", {
-        isHelpful: true,
+        vote: "helpful",
       });
     });
 

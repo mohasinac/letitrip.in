@@ -149,13 +149,25 @@ describe("GET /api/admin/payouts", () => {
     jest.clearAllMocks();
     (global as any).__mockAdminPayoutsUser = mockAdminUser();
     mockPayoutFindAll.mockResolvedValue(mockPayouts);
-    mockPayoutList.mockResolvedValue({
-      items: mockPayouts,
-      total: 3,
-      page: 1,
-      pageSize: 50,
-      totalPages: 1,
-      hasMore: false,
+    mockPayoutList.mockImplementation((model: any = {}) => {
+      const { filters } = model;
+      let items = [...mockPayouts];
+      if (filters === "status==pending")
+        items = items.filter((p: any) => p.status === "pending");
+      else if (filters === "status==processing")
+        items = items.filter((p: any) => p.status === "processing");
+      else if (filters === "status==completed")
+        items = items.filter((p: any) => p.status === "completed");
+      else if (filters === "status==failed")
+        items = items.filter((p: any) => p.status === "failed");
+      return Promise.resolve({
+        items,
+        total: items.length,
+        page: 1,
+        pageSize: 50,
+        totalPages: 1,
+        hasMore: false,
+      });
     });
   });
 

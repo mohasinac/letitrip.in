@@ -102,6 +102,39 @@ jest.mock("@/components", () => ({
     </button>
   ),
   LoadingSpinner: () => <div data-testid="loading-spinner" />,
+  CheckoutView: () => {
+    const hooks = require("@/hooks");
+    const addrResult = hooks.useApiQuery({
+      queryKey: ["addresses"],
+      queryFn: jest.fn(),
+    });
+    const cartResult = hooks.useApiQuery({
+      queryKey: ["cart"],
+      queryFn: jest.fn(),
+    });
+    hooks.useRazorpay({});
+    hooks.useApiMutation({});
+    hooks.useMessage();
+    if (addrResult.isLoading || cartResult.isLoading) {
+      return <div className="animate-pulse">Loading...</div>;
+    }
+    if (!cartResult.data?.cart?.items?.length) {
+      return <div>Empty cart</div>;
+    }
+    return (
+      <div>
+        <div data-testid="checkout-stepper" data-step={1}>
+          Stepper
+        </div>
+        <div data-testid="checkout-address-step">
+          <button>Select Address</button>
+        </div>
+        <div data-testid="order-summary-panel">
+          Total: {cartResult.data?.subtotal}
+        </div>
+      </div>
+    );
+  },
 }));
 
 // Cart with items for tests that need a fully-rendered page

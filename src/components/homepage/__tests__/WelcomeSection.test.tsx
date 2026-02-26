@@ -5,6 +5,8 @@ import { WelcomeSection } from "../WelcomeSection";
 const mockUseApiQuery = jest.fn();
 jest.mock("@/hooks", () => ({
   useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
+  useHomepageSections: (...args: unknown[]) => mockUseApiQuery(...args),
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
 }));
 
 // Mock Button component

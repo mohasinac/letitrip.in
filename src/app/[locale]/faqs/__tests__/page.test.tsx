@@ -297,10 +297,12 @@ describe("FAQ Page", () => {
     it("should fetch FAQs with correct query params", () => {
       render(<FAQPage />);
 
-      expect(mockUseApiQuery).toHaveBeenCalledWith({
-        queryKey: ["/api/faqs"],
-        queryFn: expect.any(Function),
-      });
+      expect(mockUseApiQuery).toHaveBeenCalledWith(
+        expect.objectContaining({
+          queryKey: ["faqs", "public"],
+          queryFn: expect.any(Function),
+        }),
+      );
     });
 
     it("should handle API errors gracefully", () => {

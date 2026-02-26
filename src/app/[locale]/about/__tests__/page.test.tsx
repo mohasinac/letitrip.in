@@ -63,23 +63,23 @@ jest.mock("@/constants", () => ({
 import AboutPage from "../page";
 
 describe("AboutPage", () => {
-  it("renders without crashing", () => {
-    render(<AboutPage />);
+  it("renders without crashing", async () => {
+    render(await AboutPage());
     expect(document.body).toBeInTheDocument();
   });
 
-  it("renders the main heading", () => {
-    render(<AboutPage />);
-    expect(screen.getByText("About Us")).toBeInTheDocument();
+  it("renders the main heading", async () => {
+    render(await AboutPage());
+    expect(screen.getByText("About LetItRip")).toBeInTheDocument();
   });
 
-  it("renders the values section", () => {
-    render(<AboutPage />);
+  it("renders the values section", async () => {
+    render(await AboutPage());
     expect(screen.getByText("Our Values")).toBeInTheDocument();
   });
 
-  it("renders mission section", () => {
-    render(<AboutPage />);
+  it("renders mission section", async () => {
+    render(await AboutPage());
     expect(screen.getByText("Our Mission")).toBeInTheDocument();
   });
 });

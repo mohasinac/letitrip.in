@@ -55,6 +55,21 @@ const mockUseApiQuery: jest.Mock = jest.fn(() => ({
 
 jest.mock("@/hooks", () => ({
   useApiQuery: (...args: any[]) => (mockUseApiQuery as any)(...args),
+  useSellerStorefront: (sellerId: string) => {
+    const result = (mockUseApiQuery as any)({
+      queryKey: ["sellerStorefront", sellerId],
+      queryFn: jest.fn(),
+    });
+    return {
+      seller: result.data?.user ?? null,
+      loading: result.isLoading,
+      profileError: result.data?.user === null ? "Seller not found" : null,
+      productsData: null,
+      productsLoading: false,
+      reviewsData: null,
+      reviewsLoading: false,
+    };
+  },
 }));
 
 jest.mock("@/utils", () => ({
@@ -153,6 +168,13 @@ jest.mock("@/components", () => ({
   Alert: ({ children, type }: any) => (
     <div data-testid="alert" data-type={type}>
       {children}
+    </div>
+  ),
+  SellerStorefrontView: ({ seller }: any) => (
+    <div>
+      <div data-testid="seller-avatar" data-name={seller?.displayName} />
+      <h2>{seller?.displayName}</h2>
+      <p>{seller?.publicProfile?.bio}</p>
     </div>
   ),
 }));

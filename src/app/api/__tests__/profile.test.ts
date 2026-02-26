@@ -197,6 +197,7 @@ function setupFirestoreDoc(data: any = null) {
 }
 
 function setupAuthenticatedUser(user: any = null) {
+  mockGetRequiredSessionCookie.mockReset();
   if (user) {
     mockGetRequiredSessionCookie.mockReturnValue("test-session");
     mockVerifySessionCookie.mockResolvedValue({
@@ -342,6 +343,7 @@ describe("Profile API - GET /api/profile/[userId]", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockFindById.mockResolvedValue(publicUserData);
   });
 
   // Helper to call the dynamic route handler with params
@@ -382,6 +384,7 @@ describe("Profile API - GET /api/profile/[userId]", () => {
 
   it("returns 404 for non-existent user", async () => {
     setupFirestoreDoc(null);
+    mockFindById.mockResolvedValue(null);
 
     const res = await callProfileGET("nonexistent");
     const { status } = await parseResponse(res);
@@ -390,10 +393,12 @@ describe("Profile API - GET /api/profile/[userId]", () => {
   });
 
   it("returns 403 for private profile", async () => {
-    setupFirestoreDoc({
+    const privateUserData = {
       ...publicUserData,
       publicProfile: { isPublic: false },
-    });
+    };
+    setupFirestoreDoc(privateUserData);
+    mockFindById.mockResolvedValue(privateUserData);
 
     const res = await callProfileGET("user-priv-001");
     const { status } = await parseResponse(res);

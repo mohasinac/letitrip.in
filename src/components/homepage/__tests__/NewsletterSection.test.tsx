@@ -14,6 +14,7 @@ const mockUseMessage = jest.fn();
 
 jest.mock("@/hooks", () => ({
   useApiMutation: (...args: unknown[]) => mockUseApiMutation(...args),
+  useNewsletterSubscribe: (...args: unknown[]) => mockUseApiMutation(...args),
   useMessage: () => mockUseMessage(),
 }));
 

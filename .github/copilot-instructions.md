@@ -3,6 +3,26 @@
 > **These are MANDATORY rules. Every line of code you write MUST comply.**
 > For detailed codebase reference, see `docs/GUIDE.md`.
 
+---
+
+## Developer Environment
+
+**OS**: Windows 11  
+**Shell**: PowerShell  
+**Language**: English  
+**Workspace root**: `D:\proj\letitrip.in`
+
+### Copilot Behaviour Guidelines (Context Optimization)
+
+- **Keep responses concise** — skip preamble/postamble; answer directly.
+- **Avoid large file reads** — use targeted `grep_search` or line-range reads; never read a whole file when a search suffices.
+- **Prefer targeted searches** — use specific glob patterns and focused queries; avoid broad workspace scans.
+- **Minimize parallel tool calls** — run only the tools necessary for the current step; avoid speculative reads.
+- **Windows paths** — always use backslash-compatible absolute paths (`D:\proj\letitrip.in\...`) in terminal commands; use forward slashes only in import statements.
+- **PowerShell syntax** — use `;` to chain commands, never `&&`; use `Get-ChildItem`, `Test-Path`, etc. instead of Unix aliases.
+
+---
+
 ## Stack
 
 Next.js 16.1.1 (App Router) | TypeScript | Tailwind CSS | Firebase (Auth, Firestore, Storage, Realtime DB) | Resend (email) | React Context + hooks

@@ -55,7 +55,7 @@ jest.mock("@/constants", () => ({
     seo: { siteName: "LetItRip" },
   },
   ROUTES: {
-    AUTH: { REGISTER: "/auth/register" },
+    AUTH: { REGISTER: "/auth/register", LOGIN: "/auth/login" },
     SELLER: { DASHBOARD: "/seller/dashboard" },
   },
   THEME_CONSTANTS: {
@@ -87,17 +87,66 @@ jest.mock("@/constants", () => ({
   },
 }));
 
+// Override next-intl/server to return values matching test expectations
+jest.mock("next-intl/server", () => ({
+  getTranslations: jest.fn().mockImplementation(async () => {
+    const map: Record<string, string> = {
+      title: "Become a Seller",
+      subtitle: "Start selling with us today",
+      heroCta: "Start Selling Now",
+      heroSecondary: "Learn How It Works",
+      whyTitle: "Why Sell with Us?",
+      benefitReach: "Wide Reach",
+      benefitReachText: "Access millions of buyers",
+      benefitTools: "Seller Tools",
+      benefitToolsText: "Powerful management tools",
+      benefitTrust: "Trusted Platform",
+      benefitTrustText: "Secure transactions",
+      benefitFees: "Low Fees",
+      benefitFeesText: "Competitive commission rates",
+      howTitle: "How It Works",
+      step1Title: "Create an Account",
+      step1Text: "Sign up as a seller",
+      step2Title: "List Your Products",
+      step2Text: "Add your products",
+      step3Title: "Start Earning",
+      step3Text: "Get paid",
+      faqTitle: "Frequently Asked Questions",
+      faq1Q: "How do I start selling?",
+      faq1A: "Sign up and list your products.",
+      faq2Q: "When do I get paid?",
+      faq2A: "Payments are processed weekly.",
+      faq3Q: "What are the fees?",
+      faq3A: "We charge a small commission.",
+      ctaTitle: "Ready to Start?",
+      ctaButton: "Join as Seller",
+      signInPrompt: "Already a seller?",
+      signInLink: "Sign in",
+      statSellersLabel: "Active Sellers",
+      statSellersValue: "5,000+",
+      statProductsLabel: "Products Listed",
+      statProductsValue: "50,000+",
+      statBuyersLabel: "Happy Buyers",
+      statBuyersValue: "100,000+",
+      statCommissionLabel: "Commission",
+      statCommissionValue: "Low fees",
+      testimonialsTitle: "What Sellers Say",
+    };
+    return (key: string) => map[key] ?? key;
+  }),
+}));
+
 describe("Sellers (Become a Seller) Page", () => {
-  it("renders the main heading", () => {
-    render(<SellersPage />);
+  it("renders the main heading", async () => {
+    render(await SellersPage());
     // "Become a Seller" appears in h1 - use role-based query
     const heading = screen.getByRole("heading", { level: 1 });
     expect(heading).toBeInTheDocument();
     expect(heading.textContent).toContain("Become a Seller");
   });
 
-  it("renders hero CTA linking to register", () => {
-    render(<SellersPage />);
+  it("renders hero CTA linking to register", async () => {
+    render(await SellersPage());
     // Both HERO_CTA ("Start Selling Now") and CTA_BTN ("Join as Seller") use AUTH.REGISTER route
     const links = screen.getAllByText(
       (content) =>
@@ -107,23 +156,23 @@ describe("Sellers (Become a Seller) Page", () => {
     expect(links.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("renders benefits section", () => {
-    render(<SellersPage />);
+  it("renders benefits section", async () => {
+    render(await SellersPage());
     expect(screen.getByText("Wide Reach")).toBeInTheDocument();
     expect(screen.getByText("Seller Tools")).toBeInTheDocument();
     expect(screen.getByText("Trusted Platform")).toBeInTheDocument();
     expect(screen.getByText("Low Fees")).toBeInTheDocument();
   });
 
-  it("renders how-it-works steps", () => {
-    render(<SellersPage />);
+  it("renders how-it-works steps", async () => {
+    render(await SellersPage());
     expect(screen.getByText("Create an Account")).toBeInTheDocument();
     expect(screen.getByText("List Your Products")).toBeInTheDocument();
     expect(screen.getByText("Start Earning")).toBeInTheDocument();
   });
 
-  it("renders FAQ section with questions", () => {
-    render(<SellersPage />);
+  it("renders FAQ section with questions", async () => {
+    render(await SellersPage());
     expect(screen.getByText("How do I start selling?")).toBeInTheDocument();
     expect(screen.getByText("When do I get paid?")).toBeInTheDocument();
     expect(screen.getByText("What are the fees?")).toBeInTheDocument();

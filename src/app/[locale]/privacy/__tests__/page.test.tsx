@@ -63,19 +63,19 @@ jest.mock("@/constants", () => ({
 import PrivacyPage from "../page";
 
 describe("PrivacyPage", () => {
-  it("renders without crashing", () => {
-    render(<PrivacyPage />);
+  it("renders without crashing", async () => {
+    render(await PrivacyPage());
     expect(document.body).toBeInTheDocument();
   });
 
-  it("page title contains 'Privacy'", () => {
-    render(<PrivacyPage />);
+  it("page title contains 'Privacy'", async () => {
+    render(await PrivacyPage());
     expect(screen.getByText("Privacy Policy")).toBeInTheDocument();
   });
 
-  it("renders privacy sections", () => {
-    render(<PrivacyPage />);
+  it("renders privacy sections", async () => {
+    render(await PrivacyPage());
     expect(screen.getByText("Introduction")).toBeInTheDocument();
-    expect(screen.getByText("What We Collect")).toBeInTheDocument();
+    expect(screen.getByText("1. Information We Collect")).toBeInTheDocument();
   });
 });

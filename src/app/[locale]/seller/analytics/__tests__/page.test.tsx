@@ -110,7 +110,7 @@ describe("SellerAnalyticsPage", () => {
       error: null,
     });
     render(<SellerAnalyticsPage />);
-    expect(screen.getByText("Loading analytics...")).toBeInTheDocument();
+    expect(screen.getByText("Loading your analytics...")).toBeInTheDocument();
   });
 
   it("renders analytics stats after data loads", () => {
@@ -144,6 +144,6 @@ describe("SellerAnalyticsPage", () => {
       error: null,
     });
     render(<SellerAnalyticsPage />);
-    expect(screen.getByText("No analytics data yet")).toBeInTheDocument();
+    expect(screen.getByText("No sales data yet")).toBeInTheDocument();
   });
 });

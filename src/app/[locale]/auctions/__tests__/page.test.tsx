@@ -25,7 +25,7 @@ jest.mock("@/hooks", () => ({
     setMany: jest.fn(),
     setPage: mockSetPage,
     setPageSize: jest.fn(),
-    setSort: jest.fn(),
+    setSort: jest.fn().mockImplementation((v: string) => mockSet("sort", v)),
     clear: jest.fn(),
     params: new URLSearchParams(),
   }),
@@ -83,6 +83,19 @@ jest.mock("@/components", () => ({
         </button>
       ))}
     </div>
+  ),
+  SortDropdown: ({ value, options, onChange }: any) => (
+    <select
+      data-testid="sort-dropdown"
+      value={value ?? ""}
+      onChange={(e) => onChange(e.target.value)}
+    >
+      {(options ?? []).map((o: any) => (
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
+      ))}
+    </select>
   ),
 }));
 

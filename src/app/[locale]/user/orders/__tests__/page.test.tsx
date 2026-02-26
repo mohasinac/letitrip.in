@@ -54,7 +54,7 @@ describe("User Orders Page", () => {
     expect(screen.getByText(UI_LABELS.USER.ORDERS.TITLE)).toBeInTheDocument();
     expect(
       screen.getByRole("button", {
-        name: UI_LABELS.USER.ORDERS.BROWSE_PRODUCTS,
+        name: /browse products/i,
       }),
     ).toBeInTheDocument();
   });

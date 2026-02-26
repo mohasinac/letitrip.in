@@ -5,6 +5,7 @@ import { TopCategoriesSection } from "../TopCategoriesSection";
 const mockUseApiQuery = jest.fn();
 jest.mock("@/hooks", () => ({
   useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
+  useTopCategories: (...args: unknown[]) => mockUseApiQuery(...args),
 }));
 
 // Mock Button component

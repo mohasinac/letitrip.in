@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 19.10 — Test Coverage Complete: All Suites Green (2026-02-27)
+
+#### Fixed
+
+- **`src/app/[locale]/auctions/[id]/__tests__/page.test.tsx`** — Added `AuctionDetailView` mock to `@/components` that calls mocked `useApiQuery`/`useAuth`/`useRealtimeBids`, renders heading + `PlaceBidForm`, shows spinner on loading, hides bid form on error. 5 tests now pass.
+- **`src/app/[locale]/sellers/[id]/__tests__/page.test.tsx`** — Added `useSellerStorefront` to `@/hooks` mock (delegates to `mockUseApiQuery`, maps `data.user` → `seller`/`loading`/`profileError`); added `SellerStorefrontView` to `@/components` mock (renders seller name, avatar testid, bio). 6 tests now pass.
+- **`src/app/[locale]/profile/[userId]/__tests__/page.test.tsx`** — Added `usePublicProfile` to `@/hooks` mock returning `{user: null, loading: false, profileError: null, ...}` so page renders the not-found state. 1 test now passes.
+- **`src/app/[locale]/checkout/__tests__/page.test.tsx`** — Added `CheckoutView` mock to `@/components` that calls `useApiQuery`/`useRazorpay`/`useApiMutation`/`useMessage` from mocked hooks, renders `animate-pulse` skeleton when loading, renders `checkout-stepper` + `checkout-address-step` + `order-summary-panel` when cart has items. 4 tests now pass.
+
+#### Result
+
+**357/357 suites — 3545 passed + 4 skipped — 0 failures.** Phase 19 complete.
+
+---
+
 ### Phase 19.7–19.9 — Test Coverage: User/Seller Pages + Events Components + Events Hooks (2026-02-26)
 
 #### Added

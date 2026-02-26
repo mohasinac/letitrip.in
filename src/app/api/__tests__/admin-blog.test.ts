@@ -199,7 +199,24 @@ describe("GET /api/admin/blog", () => {
     jest.clearAllMocks();
     (global as any).__mockAdminBlogUser = mockAdminUser();
     mockBlogFindAll.mockResolvedValue(allPosts);
-    mockBlogListAll.mockResolvedValue(sieveResult);
+    mockBlogListAll.mockImplementation((model: any = {}) => {
+      const { filters } = model;
+      let items = [...allPosts];
+      if (filters === "status==published")
+        items = items.filter((p: any) => p.status === "published");
+      else if (filters === "status==draft")
+        items = items.filter((p: any) => p.status === "draft");
+      else if (filters === "isFeatured==true")
+        items = items.filter((p: any) => p.isFeatured === true);
+      return Promise.resolve({
+        items,
+        total: items.length,
+        page: 1,
+        pageSize: 50,
+        totalPages: 1,
+        hasMore: false,
+      });
+    });
   });
 
   afterEach(() => {

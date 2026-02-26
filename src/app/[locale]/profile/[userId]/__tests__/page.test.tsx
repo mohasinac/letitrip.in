@@ -33,6 +33,16 @@ jest.mock("@/hooks", () => ({
     error: null,
     refetch: jest.fn(),
   }),
+  usePublicProfile: () => ({
+    user: null,
+    loading: false,
+    profileError: null,
+    isSeller: false,
+    productsData: null,
+    productsLoading: false,
+    reviewsData: null,
+    reviewsLoading: false,
+  }),
 }));
 
 jest.mock("@/components", () => ({

@@ -61,19 +61,19 @@ jest.mock("@/constants", () => ({
 import TermsPage from "../page";
 
 describe("TermsPage", () => {
-  it("renders without crashing", () => {
-    render(<TermsPage />);
+  it("renders without crashing", async () => {
+    render(await TermsPage());
     expect(document.body).toBeInTheDocument();
   });
 
-  it("page title contains 'Terms'", () => {
-    render(<TermsPage />);
+  it("page title contains 'Terms'", async () => {
+    render(await TermsPage());
     expect(screen.getByText("Terms & Conditions")).toBeInTheDocument();
   });
 
-  it("renders terms sections", () => {
-    render(<TermsPage />);
-    expect(screen.getByText("Acceptance of Terms")).toBeInTheDocument();
-    expect(screen.getByText("Sellers")).toBeInTheDocument();
+  it("renders terms sections", async () => {
+    render(await TermsPage());
+    expect(screen.getByText("1. Acceptance of Terms")).toBeInTheDocument();
+    expect(screen.getByText("4. Seller Responsibilities")).toBeInTheDocument();
   });
 });
