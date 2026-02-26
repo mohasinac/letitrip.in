@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 19.4–19.6 — Test Coverage: Missing API Routes + Events Pages (2026-02-28)
+
+#### Added
+
+- **`src/app/api/__tests__/cart.test.ts`** — 16 tests: `GET /api/cart` (auth guard), `POST /api/cart` (add item, product not found, out of stock, missing productId → 400), `DELETE /api/cart` full clear, `PATCH /api/cart/[itemId]` (update quantity, invalid qty → 400, not found), `DELETE /api/cart/[itemId]` (remove item, not found).
+- **`src/app/api/__tests__/checkout.test.ts`** — 8 tests: `POST /api/checkout` (auth guard, empty cart error, missing addressId → 400, address not found, product unavailable, happy path order creation).
+- **`src/app/api/__tests__/notifications.test.ts`** — 12 tests: `GET /api/notifications` (auth guard via `createApiHandler`), `PATCH /api/notifications/[id]` (mark read, 404 not found, 403 ownership), `PATCH /api/notifications/read-all`, `GET /api/notifications/unread-count`.
+- **`src/app/api/__tests__/promotions.test.ts`** — 6 tests: `GET /api/promotions` (no auth required, returns promoted products + active coupons, filters out non-published products and expired coupons).
+- **`src/app/[locale]/events/__tests__/page.test.tsx`** — 4 tests: renders without crashing, shows loading spinner, shows empty state, renders EventCard list.
+- **`src/app/[locale]/events/[id]/__tests__/page.test.tsx`** — 4 tests: renders without crashing, loading spinner, not-found empty state, event content rendered.
+- **`src/app/[locale]/events/[id]/participate/__tests__/page.test.tsx`** — 3 tests: renders without crashing, loading spinner, renders participation form for survey-type event with `surveyConfig`.
+- **`src/app/[locale]/admin/events/__tests__/page.test.tsx`** — 5 tests: renders without crashing, AdminPageHeader present, DataTable rendered, pagination displayed, loading state.
+- **`src/app/[locale]/admin/events/[id]/entries/__tests__/page.test.tsx`** — 6 tests: renders without crashing, page header with event id, DataTable rendered, EventStatsBanner present, pagination, loading state.
+
+---
+
 ### Phase 19.1–19.3 — Test Coverage: Service Layer + Events API Routes (2026-02-28)
 
 #### Added
