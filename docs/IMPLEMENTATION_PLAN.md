@@ -6192,3 +6192,83 @@ export function MyComponent() {
 - [x] No `apiClient` direct calls in `SellerOrdersView.tsx`
 - [x] No circular imports in `SellerProductsView.tsx`
 - [x] `npx tsc --noEmit` passes with 0 errors
+
+---
+
+## Phase 40 — apiClient Elimination: Seller Dashboard Pages Done
+
+**Goal:** Replace all direct `apiClient` calls in seller dashboard pages with service functions.
+
+### Phase 40 — Files Modified
+
+| File                                         | Change                                                                                      |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `src/services/seller.service.ts`             | MODIFIED — added `listProducts(uid)`                                                        |
+| `src/app/[locale]/seller/analytics/page.tsx` | MODIFIED — `apiClient.get()` `sellerService.getAnalytics()`                                 |
+| `src/app/[locale]/seller/payouts/page.tsx`   | MODIFIED — `apiClient.get/post()` `sellerService.listPayouts/requestPayout()`               |
+| `src/app/[locale]/seller/page.tsx`           | MODIFIED — `apiClient.get()` + `useMemo` URL builder `sellerService.listProducts(user.uid)` |
+
+### Phase 40 — Completion Criteria
+
+- [x] No `apiClient` direct calls in seller dashboard page files
+- [x] `npx tsc --noEmit` passes with 0 errors
+
+---
+
+## Phase 41 — apiClient Elimination: Admin Pages Done
+
+**Goal:** Replace all direct `apiClient` calls in admin pages with service functions.
+
+### Phase 41 — Files Modified
+
+| File                                                   | Change                                                                     |
+| ------------------------------------------------------ | -------------------------------------------------------------------------- |
+| `src/services/admin.service.ts`                        | MODIFIED — added `listOrders(sieveQuery)` and `updateOrder(id, data)`      |
+| `src/app/[locale]/admin/media/page.tsx`                | MODIFIED — `apiClient.post()` `mediaService.crop/trim()`                   |
+| `src/app/[locale]/admin/site/page.tsx`                 | MODIFIED — `apiClient.get/patch()` `siteSettingsService.get/update()`      |
+| `src/app/[locale]/admin/orders/[[...action]]/page.tsx` | MODIFIED — `apiClient.get/patch()` `adminService.listOrders/updateOrder()` |
+
+### Phase 41 — Completion Criteria
+
+- [x] No `apiClient` direct calls in admin page files
+- [x] `npx tsc --noEmit` passes with 0 errors
+
+---
+
+## Phase 42 — apiClient Elimination: User Address + Order Track Pages Done
+
+**Goal:** Replace all direct `apiClient` calls in user address and order-track pages.
+
+### Phase 42 — Files Modified
+
+| File                                                 | Change                                                                             |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `src/app/[locale]/user/addresses/add/page.tsx`       | MODIFIED — `apiClient.post()` `addressService.create()`                            |
+| `src/app/[locale]/user/addresses/edit/[id]/page.tsx` | MODIFIED — `apiClient.get/patch/delete()` `addressService.getById/update/delete()` |
+| `src/app/[locale]/user/orders/[id]/track/page.tsx`   | MODIFIED — `apiClient.get()` `orderService.getById()`                              |
+
+### Phase 42 — Completion Criteria
+
+- [x] No `apiClient` direct calls in target page files
+- [x] `npx tsc --noEmit` passes with 0 errors
+
+---
+
+## Phase 43 — apiClient Elimination: User Profile, Wishlist + Promotions Pages Done
+
+**Goal:** Replace all direct `apiClient` calls in user/profile, user/wishlist, and promotions pages.
+
+### Phase 43 — Files Created/Modified
+
+| File                                      | Change                                                                          |
+| ----------------------------------------- | ------------------------------------------------------------------------------- |
+| `src/services/promotions.service.ts`      | NEW — `promotionsService.list()`                                                |
+| `src/services/index.ts`                   | MODIFIED — added `promotions.service` export                                    |
+| `src/app/[locale]/user/profile/page.tsx`  | MODIFIED — `apiClient.get()` x2 `orderService.list()` / `addressService.list()` |
+| `src/app/[locale]/user/wishlist/page.tsx` | MODIFIED — `apiClient.get()` `wishlistService.list()`                           |
+| `src/app/[locale]/promotions/page.tsx`    | MODIFIED — `apiClient.get()` `promotionsService.list()`                         |
+
+### Phase 43 — Completion Criteria
+
+- [x] No `apiClient` direct calls in target page files
+- [x] `npx tsc --noEmit` passes with 0 errors

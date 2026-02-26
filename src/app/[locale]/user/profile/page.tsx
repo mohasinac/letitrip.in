@@ -8,11 +8,11 @@ import {
   ProfileHeader,
   ProfileStatsGrid,
 } from "@/components";
-import { THEME_CONSTANTS, ROUTES, API_ENDPOINTS } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { apiClient } from "@/lib/api-client";
+import { orderService, addressService } from "@/services";
 
 export default function UserProfilePage() {
   const { user, loading } = useAuth();
@@ -23,13 +23,13 @@ export default function UserProfilePage() {
 
   const { data: ordersData } = useApiQuery<{ data: { total: number } }>({
     queryKey: ["user-orders-count"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.ORDERS.LIST),
+    queryFn: () => orderService.list(),
     enabled: !!user,
   });
 
   const { data: addressesData } = useApiQuery<{ data: unknown[] }>({
     queryKey: ["user-addresses-count"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.ADDRESSES.LIST),
+    queryFn: () => addressService.list(),
     enabled: !!user,
   });
 

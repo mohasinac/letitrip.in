@@ -1,8 +1,8 @@
 "use client";
 
 import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
+import { promotionsService } from "@/services";
 import { useTranslations } from "next-intl";
 import { Spinner, CouponCard, ProductSection } from "@/components";
 import type { ProductDocument, CouponDocument } from "@/db/schema";
@@ -21,7 +21,7 @@ export default function PromotionsPage() {
 
   const { data, isLoading, error } = useApiQuery<PromotionsData>({
     queryKey: ["promotions"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.PROMOTIONS.LIST),
+    queryFn: () => promotionsService.list(),
   });
 
   const promotedProducts = data?.promotedProducts || [];

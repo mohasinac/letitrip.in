@@ -13,11 +13,10 @@ import {
 } from "@/components";
 import type { AddressFormData } from "@/hooks";
 import { useRouter, useParams } from "next/navigation";
-import { apiClient } from "@/lib/api-client";
+import { addressService } from "@/services";
 import {
   THEME_CONSTANTS,
   ROUTES,
-  API_ENDPOINTS,
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
 } from "@/constants";
@@ -44,10 +43,7 @@ export default function EditAddressPage() {
     error: addressError,
   } = useApiQuery<AddressFormData>({
     queryKey: ["address", addressId],
-    queryFn: () =>
-      apiClient.get<AddressFormData>(
-        API_ENDPOINTS.ADDRESSES.GET_BY_ID(addressId),
-      ),
+    queryFn: () => addressService.getById(addressId),
     enabled: !!user && !!addressId,
   });
 
@@ -68,7 +64,7 @@ export default function EditAddressPage() {
     setSaving(true);
 
     try {
-      await apiClient.patch(API_ENDPOINTS.ADDRESSES.UPDATE(addressId), data);
+      await addressService.update(addressId, data);
       showToast(SUCCESS_MESSAGES.ADDRESS.UPDATED, "success");
       router.push(ROUTES.USER.ADDRESSES);
     } catch (error) {
@@ -87,7 +83,7 @@ export default function EditAddressPage() {
     setDeleting(true);
 
     try {
-      await apiClient.delete(API_ENDPOINTS.ADDRESSES.DELETE(addressId));
+      await addressService.delete(addressId);
       showToast(SUCCESS_MESSAGES.ADDRESS.DELETED, "success");
       router.push(ROUTES.USER.ADDRESSES);
     } catch (error) {

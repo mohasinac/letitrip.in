@@ -3,13 +3,8 @@
 import { useState, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import {
-  API_ENDPOINTS,
-  ROUTES,
-  ERROR_MESSAGES,
-  SUCCESS_MESSAGES,
-} from "@/constants";
+import { adminService } from "@/services";
+import { ROUTES, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -53,17 +48,14 @@ export default function AdminOrdersPage({ params }: PageProps) {
   }>({
     queryKey: ["admin", "orders", table.params.toString()],
     queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.ADMIN.ORDERS}${table.buildSieveParams(filtersParam ?? "")}`,
-      ),
+      adminService.listOrders(table.buildSieveParams(filtersParam ?? "")),
   });
 
   const updateMutation = useApiMutation<
     any,
     { id: string; data: OrderStatusFormState }
   >({
-    mutationFn: ({ id, data: update }) =>
-      apiClient.patch(API_ENDPOINTS.ADMIN.ORDER_BY_ID(id), update),
+    mutationFn: ({ id, data: update }) => adminService.updateOrder(id, update),
   });
 
   const orders = data?.orders || [];

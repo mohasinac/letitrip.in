@@ -9,7 +9,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   Button,
@@ -19,7 +19,7 @@ import {
 } from "@/components";
 import { useToast } from "@/components";
 import { useApiQuery, useApiMutation } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { siteSettingsService } from "@/services";
 import {
   SiteBasicInfoForm,
   SiteContactForm,
@@ -37,12 +37,11 @@ export default function AdminSiteSettings() {
     data: SiteSettingsDocument;
   }>({
     queryKey: ["site-settings"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.SITE_SETTINGS.GET),
+    queryFn: () => siteSettingsService.get(),
   });
 
   const updateMutation = useApiMutation<any, Partial<SiteSettingsDocument>>({
-    mutationFn: (data) =>
-      apiClient.patch(API_ENDPOINTS.SITE_SETTINGS.UPDATE, data),
+    mutationFn: (data) => siteSettingsService.update(data),
   });
 
   const [settings, setSettings] = useState<Partial<SiteSettingsDocument>>({

@@ -11,10 +11,10 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth, useApiQuery } from "@/hooks";
 import { Spinner, EmptyState, ProductGrid, WishlistButton } from "@/components";
-import { ROUTES, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { ProductDocument } from "@/db/schema";
-import { apiClient } from "@/lib/api-client";
+import { wishlistService } from "@/services";
 
 const { themed, typography, spacing } = THEME_CONSTANTS;
 
@@ -44,8 +44,7 @@ export default function UserWishlistPage() {
 
   const { data, isLoading } = useApiQuery<WishlistResponse>({
     queryKey: ["user", "wishlist"],
-    queryFn: () =>
-      apiClient.get<WishlistResponse>(API_ENDPOINTS.USER.WISHLIST.LIST),
+    queryFn: () => wishlistService.list(),
     enabled: !!user,
   });
 

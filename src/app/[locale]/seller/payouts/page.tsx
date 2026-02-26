@@ -15,10 +15,10 @@ import {
   SellerPayoutHistoryTable,
 } from "@/components";
 import type { PayoutSummary, PayoutRecord } from "@/components";
-import { THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { sellerService } from "@/services";
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
 
@@ -40,7 +40,7 @@ export default function SellerPayoutsPage() {
 
   const { data, isLoading, refetch } = useApiQuery<PayoutsResponse>({
     queryKey: ["seller-payouts", user?.uid ?? ""],
-    queryFn: () => apiClient.get<PayoutsResponse>(API_ENDPOINTS.SELLER.PAYOUTS),
+    queryFn: () => sellerService.listPayouts(),
     enabled: !!user,
     cacheTTL: 0,
   });
@@ -49,8 +49,7 @@ export default function SellerPayoutsPage() {
     unknown,
     Record<string, unknown>
   >({
-    mutationFn: (payload) =>
-      apiClient.post(API_ENDPOINTS.SELLER.PAYOUTS, payload),
+    mutationFn: (payload) => sellerService.requestPayout(payload),
   });
 
   if (authLoading || !user) {

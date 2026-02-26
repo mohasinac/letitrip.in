@@ -20,10 +20,10 @@ import type {
   MonthEntry,
   TopProduct,
 } from "@/components";
-import { THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useAuth, useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { sellerService } from "@/services";
 import { hasAnyRole } from "@/helpers";
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
@@ -50,8 +50,7 @@ export default function SellerAnalyticsPage() {
 
   const { data, isLoading } = useApiQuery<AnalyticsResponse>({
     queryKey: ["seller-analytics", user?.uid ?? ""],
-    queryFn: () =>
-      apiClient.get<AnalyticsResponse>(API_ENDPOINTS.SELLER.ANALYTICS),
+    queryFn: () => sellerService.getAnalytics(),
     enabled: !!user && hasAnyRole(user.role, ["seller", "admin"]),
     cacheTTL: 5 * 60 * 1000,
   });

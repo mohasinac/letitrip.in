@@ -21,8 +21,8 @@ import {
   SellerRecentListings,
 } from "@/components";
 import { useAuth, useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { ROUTES, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { sellerService } from "@/services";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { ProductDocument } from "@/db/schema";
 
@@ -51,17 +51,11 @@ export default function SellerDashboardPage() {
     }
   }, [user, authLoading, router]);
 
-  const productsUrl = useMemo(() => {
-    if (!user?.uid) return null;
-    const filters = encodeURIComponent(`sellerId==${user.uid}`);
-    return `${API_ENDPOINTS.PRODUCTS.LIST}?filters=${filters}&pageSize=200`;
-  }, [user?.uid]);
-
   const { data: productsData, isLoading: productsLoading } =
     useApiQuery<ProductsResponse>({
       queryKey: ["seller-products", user?.uid ?? ""],
-      queryFn: () => apiClient.get<ProductsResponse>(productsUrl!),
-      enabled: !!productsUrl,
+      queryFn: () => sellerService.listProducts(user!.uid),
+      enabled: !!user?.uid,
     });
 
   const stats = useMemo(() => {

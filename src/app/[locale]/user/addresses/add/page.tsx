@@ -6,11 +6,10 @@ import { Card, Heading, Spinner, AddressForm, useToast } from "@/components";
 import type { AddressFormData } from "@/hooks";
 import { useRouter } from "next/navigation";
 import { logger } from "@/classes";
-import { apiClient } from "@/lib/api-client";
+import { addressService } from "@/services";
 import {
   THEME_CONSTANTS,
   ROUTES,
-  API_ENDPOINTS,
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
 } from "@/constants";
@@ -35,7 +34,7 @@ export default function AddAddressPage() {
     setSaving(true);
 
     try {
-      await apiClient.post(API_ENDPOINTS.ADDRESSES.CREATE, data);
+      await addressService.create(data);
 
       showToast(SUCCESS_MESSAGES.ADDRESS.CREATED, "success");
       router.push(ROUTES.USER.ADDRESSES);

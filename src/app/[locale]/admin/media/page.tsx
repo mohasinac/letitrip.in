@@ -3,8 +3,8 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useApiMutation } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, ROUTES } from "@/constants";
+import { mediaService } from "@/services";
+import { ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -28,11 +28,11 @@ export default function AdminMediaPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const cropMutation = useApiMutation({
-    mutationFn: (data) => apiClient.post(API_ENDPOINTS.MEDIA.CROP, data),
+    mutationFn: (data) => mediaService.crop(data),
   });
 
   const trimMutation = useApiMutation({
-    mutationFn: (data) => apiClient.post(API_ENDPOINTS.MEDIA.TRIM, data),
+    mutationFn: (data) => mediaService.trim(data),
   });
 
   const handleCropSubmit = useCallback(

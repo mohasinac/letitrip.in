@@ -24,4 +24,12 @@ export const adminService = {
   /** POST — revoke all sessions for a specific user (admin) */
   revokeUserSessions: (userId: string) =>
     apiClient.post(API_ENDPOINTS.ADMIN.REVOKE_USER_SESSIONS, { userId }),
+
+  /** GET — list all orders with optional Sieve query string (admin) */
+  listOrders: (sieveQuery?: string) =>
+    apiClient.get(`${API_ENDPOINTS.ADMIN.ORDERS}${sieveQuery ?? ""}`),
+
+  /** PATCH — update order status/tracking (admin) */
+  updateOrder: (id: string, data: unknown) =>
+    apiClient.patch(API_ENDPOINTS.ADMIN.ORDER_BY_ID(id), data),
 };

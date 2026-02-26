@@ -26,4 +26,10 @@ export const sellerService = {
   /** Request a new payout */
   requestPayout: (data: unknown) =>
     apiClient.post(API_ENDPOINTS.SELLER.PAYOUTS, data),
+
+  /** List products owned by a specific seller (dashboard overview) */
+  listProducts: (uid: string) =>
+    apiClient.get(
+      `${API_ENDPOINTS.PRODUCTS.LIST}?filters=${encodeURIComponent(`sellerId==${uid}`)}&pageSize=200`,
+    ),
 };

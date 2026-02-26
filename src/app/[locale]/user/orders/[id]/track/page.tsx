@@ -10,8 +10,8 @@
 import { useRouter, useParams } from "next/navigation";
 import { useAuth, useApiQuery } from "@/hooks";
 import { Spinner, Button, EmptyState, OrderTrackingView } from "@/components";
-import { ROUTES, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
-import { apiClient } from "@/lib/api-client";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { orderService } from "@/services";
 import { useTranslations } from "next-intl";
 import type { OrderDocument } from "@/db/schema";
 
@@ -24,7 +24,7 @@ export default function OrderTrackPage() {
 
   const { data, isLoading, error } = useApiQuery<{ data: OrderDocument }>({
     queryKey: ["order-track", orderId],
-    queryFn: () => apiClient.get(API_ENDPOINTS.ORDERS.GET_BY_ID(orderId)),
+    queryFn: () => orderService.getById(orderId),
     enabled: !!user && !authLoading && !!orderId,
     cacheTTL: 30000,
   });

@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phases 40–43 — apiClient Elimination: Seller, Admin, User Pages (2026-02-28)
+
+#### Added
+
+- **`src/services/seller.service.ts`** — Added `listProducts(uid)` method.
+- **`src/services/admin.service.ts`** — Added `listOrders(sieveQuery)` and `updateOrder(id, data)` methods.
+- **`src/services/promotions.service.ts`** — New service: `promotionsService.list()`. Exported from `@/services`.
+
+#### Changed
+
+- **`src/app/[locale]/seller/analytics/page.tsx`** — `apiClient.get()` → `sellerService.getAnalytics()`.
+- **`src/app/[locale]/seller/payouts/page.tsx`** — `apiClient.get/post()` → `sellerService.listPayouts()`, `sellerService.requestPayout()`.
+- **`src/app/[locale]/seller/page.tsx`** — `apiClient.get()` + `useMemo` URL builder → `sellerService.listProducts(user.uid)`. Removed `API_ENDPOINTS` import.
+- **`src/app/[locale]/admin/media/page.tsx`** — `apiClient.post()` → `mediaService.crop()` / `mediaService.trim()`.
+- **`src/app/[locale]/admin/site/page.tsx`** — `apiClient.get/patch()` → `siteSettingsService.get()` / `siteSettingsService.update()`.
+- **`src/app/[locale]/admin/orders/[[...action]]/page.tsx`** — `apiClient.get/patch()` → `adminService.listOrders()` / `adminService.updateOrder()`.
+- **`src/app/[locale]/user/addresses/add/page.tsx`** — `apiClient.post()` → `addressService.create()`.
+- **`src/app/[locale]/user/addresses/edit/[id]/page.tsx`** — `apiClient.get/patch/delete()` → `addressService.getById()` / `addressService.update()` / `addressService.delete()`.
+- **`src/app/[locale]/user/orders/[id]/track/page.tsx`** — `apiClient.get()` → `orderService.getById()`.
+- **`src/app/[locale]/user/profile/page.tsx`** — `apiClient.get()` × 2 → `orderService.list()` / `addressService.list()`.
+- **`src/app/[locale]/user/wishlist/page.tsx`** — `apiClient.get()` → `wishlistService.list()`.
+- **`src/app/[locale]/promotions/page.tsx`** — `apiClient.get()` → `promotionsService.list()`.
+
+---
+
 ### Phases 38–39 — Service + Page Extraction: Blog, Auctions, User/Seller Orders & Products (2026-02-27)
 
 #### Added
