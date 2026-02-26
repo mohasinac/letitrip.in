@@ -136,3 +136,5 @@ export { useWishlistToggle } from "./useWishlistToggle";
 export { useNotifications } from "./useNotifications";
 export { useCategorySelector } from "./useCategorySelector";
 export { usePublicEvents } from "./usePublicEvents";
+export { useCountdown } from "./useCountdown";
+export type { CountdownRemaining } from "./useCountdown";

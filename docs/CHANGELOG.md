@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 37.14 — Oversized Pages Batch 3 (2026-02-26)
+
+#### Added
+
+- **`src/features/admin/components/AdminCategoriesView.tsx`** — Extracted all category management state, tree/table view toggle, URL-driven drawer routing, and CRUD mutations from `admin/categories/[[...action]]/page.tsx` (325→15 lines).
+- **`src/features/admin/components/AdminFaqsView.tsx`** — Extracted all FAQ management state, search filter, URL-driven drawer routing, and CRUD mutations from `admin/faqs/[[...action]]/page.tsx` (309→15 lines).
+- **`src/hooks/useCountdown.ts`** — New reusable countdown hook (`CountdownRemaining` type). Extracted from inline function in `auctions/[id]/page.tsx`. Exported via `@/hooks` barrel.
+- **`src/components/auctions/AuctionDetailView.tsx`** — Extracted full auction detail + bidding UI (image, bid summary, countdown, `PlaceBidForm`, description, `BidHistory`) from `auctions/[id]/page.tsx` (305→15 lines). Uses `useCountdown` from `@/hooks`. Fixes Rule 19: raw `fetch()` → `apiClient.get()`.
+
+#### Changed
+
+- **`src/features/admin/index.ts`** — Added exports: `AdminCategoriesView`, `AdminFaqsView`.
+- **`src/hooks/index.ts`** — Added exports: `useCountdown`, `CountdownRemaining`.
+- **`src/components/auctions/index.ts`** — Added `AuctionDetailView` export.
+- **`src/app/[locale]/admin/categories/[[...action]]/page.tsx`** — 325 → 15 lines. Thin server component: `use(params)` → `<AdminCategoriesView>`.
+- **`src/app/[locale]/admin/faqs/[[...action]]/page.tsx`** — 309 → 15 lines. Thin server component: `use(params)` → `<AdminFaqsView>`.
+- **`src/app/[locale]/auctions/[id]/page.tsx`** — 305 → 15 lines. Thin server component: `use(params)` → `<AuctionDetailView>`.
+
+---
+
 ### Phase 37.14 — Oversized Pages Batch 2 (2026-02-26)
 
 #### Added

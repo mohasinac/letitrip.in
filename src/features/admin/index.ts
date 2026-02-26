@@ -7,3 +7,5 @@
 
 export { AdminReviewsView } from "./components/AdminReviewsView";
 export { AdminProductsView } from "./components/AdminProductsView";
+export { AdminCategoriesView } from "./components/AdminCategoriesView";
+export { AdminFaqsView } from "./components/AdminFaqsView";
