@@ -1,8 +1,8 @@
 "use client";
 import { Suspense } from "react";
 import { useApiQuery, useUrlTable } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, THEME_CONSTANTS } from "@/constants";
+import { blogService } from "@/services";
+import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   Spinner,
@@ -23,16 +23,19 @@ function BlogPageContent() {
   const page = table.getNumber("page", 1);
   const pageSize = 9;
 
-  const apiUrl =
-    `${API_ENDPOINTS.BLOG.LIST}?page=${page}&pageSize=${pageSize}` +
-    (activeCategory ? `&category=${activeCategory}` : "");
-
   const { data, isLoading, error } = useApiQuery<{
     posts: BlogPostDocument[];
     meta: { total: number; page: number; pageSize: number; totalPages: number };
   }>({
     queryKey: ["blog", table.params.toString()],
-    queryFn: () => apiClient.get(apiUrl),
+    queryFn: () => {
+      const params = new URLSearchParams({
+        page: String(page),
+        pageSize: String(pageSize),
+      });
+      if (activeCategory) params.set("category", activeCategory);
+      return blogService.list(params.toString());
+    },
   });
 
   const posts = data?.posts || [];

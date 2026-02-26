@@ -29,6 +29,12 @@ export const productService = {
       `${API_ENDPOINTS.PRODUCTS.LIST}?filters=type==auction,status==published&sorts=auctionEndDate&pageSize=6`,
     ),
 
+  /** List live auctions with optional Sieve filter/sort/pagination query string */
+  listAuctions: (params?: string) =>
+    apiClient.get(
+      `${API_ENDPOINTS.PRODUCTS.LIST}${params ? `?${params}` : "?filters=isAuction==true,status==published&sorts=auctionEndDate"}`,
+    ),
+
   /** Related products by category, excluding a given product ID */
   getRelated: (categoryId: string, excludeId: string, limit = 6) =>
     apiClient.get(

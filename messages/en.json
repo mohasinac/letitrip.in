@@ -525,7 +525,13 @@
     "stepReturnedDesc": "This order has been returned.",
     "empty": "No orders yet",
     "emptySubtitle": "Start shopping to see your orders here",
-    "contactSupport": "Contact Support"
+    "contactSupport": "Contact Support",
+    "tabAll": "All",
+    "tabPending": "Pending",
+    "tabConfirmed": "Confirmed",
+    "tabShipped": "Shipped",
+    "tabDelivered": "Delivered",
+    "tabCancelled": "Cancelled"
   },
   "checkout": {
     "title": "Checkout",

@@ -9,6 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phases 38–39 — Service + Page Extraction: Blog, Auctions, User/Seller Orders & Products (2026-02-27)
+
+#### Added
+
+- **`src/services/blog.service.ts`** — New service: `blogService.list()`, `blogService.getBySlug()`. Exported from `@/services`.
+- **`src/services/seller.service.ts`** — New service: `sellerService.listOrders()`, `getAnalytics()`, `listPayouts()`, `requestPayout()`. Exported from `@/services`.
+- **`src/services/product.service.ts`** — Added `listAuctions()` method (Sieve-style URL with `isAuction==true` filter).
+- **`src/features/products/components/AuctionsView.tsx`** — Extracted full auctions listing (sort, bid-range filter chips, `DataTable`, `TablePagination`) from `auctions/page.tsx` (192→13 lines). Replaced raw `fetch()` with `productService.listAuctions()`. Replaced `<select>` with `<SortDropdown>`.
+- **`src/features/user/components/UserOrdersView.tsx`** — Extracted user orders listing (status tabs, `DataTable`, `TablePagination`) from `user/orders/page.tsx` (206→13 lines). Replaced `apiClient.get()` with `orderService.list()`. STATUS_TABS labels use `useTranslations("orders")`.
+- **`src/features/seller/components/SellerOrdersView.tsx`** — Extracted seller orders page (stats cards, status tabs, `DataTable`, revenue summary) from `seller/orders/page.tsx` (215→5 lines). Replaced `apiClient.get()` + `useMemo` URL builder with `sellerService.listOrders(params)`.
+- **`src/features/seller/components/SellerProductsView.tsx`** — Extracted seller products CRUD page (filter bar, `DataTable` with view-toggle, create/edit `SideDrawer`, `ConfirmDeleteModal`) from `seller/products/page.tsx` (326→5 lines). Fixed circular import using relative paths `../hooks` + `./SellerProductCard`.
+
+#### Changed
+
+- **`src/app/[locale]/blog/page.tsx`** — Replaced inline `apiClient.get(apiUrl)` in `queryFn` with `blogService.list(params.toString())`.
+- **`src/app/[locale]/auctions/page.tsx`** — 192 → 13 lines. `<AuctionsView />`.
+- **`src/app/[locale]/user/orders/page.tsx`** — 206 → 13 lines. `<UserOrdersView />`.
+- **`src/app/[locale]/seller/orders/page.tsx`** — 215 → 5 lines. `<SellerOrdersView />`.
+- **`src/app/[locale]/seller/products/page.tsx`** — 326 → 5 lines. `<SellerProductsView />`.
+- **`src/features/products/components/index.ts`** — Added `AuctionsView` export.
+- **`src/features/user/components/index.ts`** — Added `UserOrdersView` export.
+- **`src/features/seller/components/index.ts`** — Added `SellerOrdersView` and `SellerProductsView` exports.
+
+#### Added (messages/en.json + messages/hi.json)
+
+- `orders.tabAll` / `tabPending` / `tabConfirmed` / `tabShipped` / `tabDelivered` / `tabCancelled` — Status tab labels for user orders view (6 keys, both languages)
+
+---
+
 ### Phases 32–34 — i18n Gap Fixes (2026-02-26)
 
 #### Changed

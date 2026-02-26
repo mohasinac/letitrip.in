@@ -524,7 +524,13 @@
     "stepReturnedDesc": "इस ऑर्डर को वापस कर दिया गया है।",
     "empty": "अभी कोई ऑर्डर नहीं",
     "emptySubtitle": "अपने ऑर्डर देखने के लिए खरीदारी शुरू करें",
-    "contactSupport": "सहायता से संपर्क करें"
+    "contactSupport": "सहायता से संपर्क करें",
+    "tabAll": "सभी",
+    "tabPending": "लंबित",
+    "tabConfirmed": "पुष्टि हुई",
+    "tabShipped": "शिप हुई",
+    "tabDelivered": "डिलीवर हुई",
+    "tabCancelled": "रद्द"
   },
   "checkout": {
     "title": "चेकआउट",
