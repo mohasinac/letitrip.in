@@ -3,14 +3,18 @@
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Card, Alert, Text, PublicProfileView } from "@/components";
-import { UI_LABELS, ERROR_MESSAGES, ROUTES } from "@/constants";
+import { ERROR_MESSAGES, ROUTES } from "@/constants";
 import { formatMonthYear } from "@/utils";
 import { usePublicProfile } from "@/hooks";
 import type { ImageCropData } from "@/components";
+import { useTranslations } from "next-intl";
 
 export default function PublicProfilePage() {
   const params = useParams();
   const userId = params?.userId as string;
+  const tLoading = useTranslations("loading");
+  const tActions = useTranslations("actions");
+  const tProfile = useTranslations("profile");
 
   const {
     user,
@@ -28,7 +32,7 @@ export default function PublicProfilePage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <Text>{UI_LABELS.LOADING.DEFAULT}</Text>
+          <Text>{tLoading("default")}</Text>
         </div>
       </div>
     );
@@ -38,15 +42,13 @@ export default function PublicProfilePage() {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
-          <Alert variant="error">
-            {profileError || ERROR_MESSAGES.USER.NOT_FOUND}
-          </Alert>
+          <Alert variant="error">{profileError || tProfile("notFound")}</Alert>
           <div className="mt-4">
             <Link
               href={ROUTES.HOME}
               className="text-primary-600 hover:underline"
             >
-              {UI_LABELS.ACTIONS.GO_HOME}
+              {tActions("goHome")}
             </Link>
           </div>
         </Card>

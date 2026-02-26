@@ -350,7 +350,8 @@
     "noReviews": "No reviews yet",
     "noReviewsDesc": "This seller hasn't received any reviews yet.",
     "viewProduct": "View Product",
-    "verifiedPurchase": "Verified Purchase"
+    "verifiedPurchase": "Verified Purchase",
+    "notFound": "User not found"
   },
   "wishlist": {
     "title": "My Wishlist",

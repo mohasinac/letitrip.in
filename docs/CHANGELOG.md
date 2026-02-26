@@ -9,6 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 19.1–19.3 — Test Coverage: Service Layer + Events API Routes (2026-02-28)
+
+#### Added
+
+- **`src/services/__tests__/address.service.test.ts`** — 6 tests: `list`, `getById`, `create`, `update`, `delete`, `setDefault`.
+- **`src/services/__tests__/admin.service.test.ts`** — 25 tests: all `adminService` methods including dashboard, sessions, orders, analytics, users, bids, blog, newsletter, payouts, products.
+- **`src/services/__tests__/auth.service.test.ts`** — 8 tests: `login`, `register`, `logout`, `sendVerification`, `verifyEmail`, `forgotPassword`, `resetPassword`, `changePassword`.
+- **`src/services/__tests__/bid.service.test.ts`** — 4 tests: `create`, `listByProduct` (no params + with params), `getById`.
+- **`src/services/__tests__/blog.service.test.ts`** — 3 tests: `list` (no params + with params), `getBySlug`.
+- **`src/services/__tests__/carousel.service.test.ts`** — 7 tests: `list`, `getActive`, `getById`, `create`, `update`, `delete`, `reorder`.
+- **`src/services/__tests__/cart.service.test.ts`** — 5 tests: `get`, `addItem`, `updateItem`, `removeItem`, `clear`.
+- **`src/services/__tests__/category.service.test.ts`** — 8 tests: `list`, `listTopLevel`, `getById`, `create`, `update`, `delete`.
+- **`src/services/__tests__/checkout.service.test.ts`** — 3 tests: `placeOrder`, `createPaymentOrder`, `verifyPayment`.
+- **`src/services/__tests__/contact.service.test.ts`** — 1 test: `send`.
+- **`src/services/__tests__/coupon.service.test.ts`** — 7 tests: `list`, `create`, `update`, `delete`, `validate`.
+- **`src/services/__tests__/event.service.test.ts`** — 5 tests: `list`, `getById`, `enter`, `getLeaderboard` (publicEventService).
+- **`src/services/__tests__/faq.service.test.ts`** — 10 tests: `list`, `listPublic`, `getById`, `create`, `update`, `delete`, `vote`.
+- **`src/services/__tests__/homepage-sections.service.test.ts`** — 8 tests: `list`, `listEnabled`, `getById`, `create`, `update`, `delete`, `reorder`.
+- **`src/services/__tests__/media.service.test.ts`** — 3 tests: `upload`, `crop`, `trim`.
+- **`src/services/__tests__/newsletter.service.test.ts`** — 7 tests: `subscribe`, `list`, `getById`, `update`, `delete`.
+- **`src/services/__tests__/notification.service.test.ts`** — 6 tests: `list`, `getUnreadCount`, `markRead`, `markAllRead`, `delete`.
+- **`src/services/__tests__/order.service.test.ts`** — 5 tests: `list`, `getById`, `track`, `cancel`.
+- **`src/services/__tests__/product.service.test.ts`** — 13 tests: `list`, `getById`, `getFeatured`, `getFeaturedAuctions`, `listAuctions`, `getRelated`, `getBySeller`, `create`, `update`, `delete`.
+- **`src/services/__tests__/profile.service.test.ts`** — 4 tests: `getById`, `getSellerReviews`, `getSellerProducts`, `update`.
+- **`src/services/__tests__/promotions.service.test.ts`** — 1 test: `list`.
+- **`src/services/__tests__/review.service.test.ts`** — 14 tests: `list`, `listAdmin`, `listByProduct`, `listBySeller`, `getHomepageReviews`, `getById`, `create`, `update`, `delete`, `vote`.
+- **`src/services/__tests__/search.service.test.ts`** — 2 tests: `query`.
+- **`src/services/__tests__/seller.service.test.ts`** — 7 tests: `listOrders`, `getAnalytics`, `listPayouts`, `requestPayout`, `listProducts`.
+- **`src/services/__tests__/session.service.test.ts`** — 8 tests: `create`, `destroy`, `getProfile`, `recordActivity`, `validate`, `listMySessions`, `revokeSession`.
+- **`src/services/__tests__/site-settings.service.test.ts`** — 2 tests: `get`, `update`.
+- **`src/services/__tests__/wishlist.service.test.ts`** — 4 tests: `list`, `add`, `remove`, `check`.
+- **`src/app/api/__tests__/admin-events.test.ts`** — 24 tests: admin events list (GET+auth+Sieve), create (POST+validation), get/update/delete by ID, status transition (valid + invalid), stats aggregation.
+- **`src/app/api/__tests__/public-events.test.ts`** — 15 tests: public list, detail (active vs draft 404), enter (deadline/validation/auth guards), leaderboard (wrong type 400, survey 200).
+
+**Total: 215 new tests across 29 new files. All 276+ existing suites still green.**
+
+---
+
 ### Phase 46 — Admin Feature View Rule 20 Compliance (2026-02-26)
 
 #### Added

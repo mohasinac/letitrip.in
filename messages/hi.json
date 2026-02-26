@@ -350,7 +350,8 @@
     "noReviews": "अभी तक कोई समीक्षा नहीं",
     "noReviewsDesc": "इस विक्रेता को अभी तक कोई समीक्षा नहीं मिली है।",
     "viewProduct": "उत्पाद देखें",
-    "verifiedPurchase": "सत्यापित खरीद"
+    "verifiedPurchase": "सत्यापित खरीद",
+    "notFound": "उपयोगकर्ता नहीं मिला"
   },
   "wishlist": {
     "title": "मेरी विशलिस्ट",

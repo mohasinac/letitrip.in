@@ -122,7 +122,7 @@ export default function UserAddressesPage() {
         {/* Error State */}
         {error && (
           <div className="text-red-600 dark:text-red-400">
-            {ERROR_MESSAGES.GENERIC.INTERNAL_ERROR}
+            {tLoading("failed")}
           </div>
         )}
 
