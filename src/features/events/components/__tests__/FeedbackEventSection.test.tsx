@@ -34,6 +34,7 @@ jest.mock("@/constants", () => ({
 }));
 
 const mockFeedbackConfig = {
+  anonymous: false,
   formFields: [
     {
       id: "f1",

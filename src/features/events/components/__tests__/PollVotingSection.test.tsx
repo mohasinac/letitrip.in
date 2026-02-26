@@ -34,6 +34,7 @@ const mockPollConfig = {
   allowMultiSelect: false,
   allowComment: false,
   maxSelections: 1,
+  resultsVisibility: "always" as const,
 };
 
 describe("PollVotingSection", () => {
