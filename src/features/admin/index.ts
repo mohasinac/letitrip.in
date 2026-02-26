@@ -11,3 +11,6 @@ export { AdminCategoriesView } from "./components/AdminCategoriesView";
 export { AdminFaqsView } from "./components/AdminFaqsView";
 export { AdminAnalyticsView } from "./components/AdminAnalyticsView";
 export { AdminBlogView } from "./components/AdminBlogView";
+export { AdminSectionsView } from "./components/AdminSectionsView";
+export { AdminUsersView } from "./components/AdminUsersView";
+export { AdminCouponsView } from "./components/AdminCouponsView";

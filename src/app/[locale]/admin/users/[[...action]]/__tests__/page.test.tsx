@@ -1,16 +1,10 @@
-import { render, screen } from "@testing-library/react";
-import { Suspense } from "react";
+﻿import { render, screen } from "@testing-library/react";
 import type React from "react";
-import AdminUsersPage from "../page";
+import { AdminUsersView } from "@/features/admin";
 import { UI_LABELS } from "@/constants";
 
 const mockPush = jest.fn();
 const mockReplace = jest.fn();
-
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  use: (promise: Promise<any>) => ({}),
-}));
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush, replace: mockReplace }),
@@ -62,19 +56,9 @@ jest.mock("@/components", () => ({
   UserDetailDrawer: () => <div data-testid="user-drawer" />,
 }));
 
-jest.mock("@/components/admin/users", () => ({
-  UserFilters: () => <div data-testid="user-filters" />,
-  getUserTableColumns: () => ({ columns: [], actions: [] }),
-  UserDetailDrawer: () => <div data-testid="user-drawer" />,
-}));
-
 describe("Admin Users Page", () => {
   it("renders users page content", async () => {
-    render(
-      <Suspense fallback={<div>Loading...</div>}>
-        <AdminUsersPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
+    render(<AdminUsersView />);
 
     expect(
       await screen.findByText(UI_LABELS.ADMIN.USERS.TITLE),

@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 37.14 — Oversized Pages Batch 5 (2026-02-26)
+
+#### Added
+
+- **`src/features/admin/components/AdminSectionsView.tsx`** — Extracted all homepage-section management state, URL-driven drawer (create/edit/delete modes), and mutations from `admin/sections/[[...action]]/page.tsx` (269→18 lines). Accepts `action?: string[]` prop for URL routing.
+- **`src/features/admin/components/AdminUsersView.tsx`** — Extracted full user management UI (search, role/status filter tabs, DataTable, Sieve pagination, ban/role-change/delete confirmation modals, `UserDetailDrawer`) from `admin/users/[[...action]]/page.tsx` (268→18 lines). Accepts `action?: string[]` prop.
+- **`src/features/admin/components/AdminCouponsView.tsx`** — Extracted coupon CRUD state, URL-driven drawer, search filter, Sieve pagination, and delete confirmation from `admin/coupons/[[...action]]/page.tsx` (266→18 lines). Accepts `action?: string[]` prop.
+
+#### Changed
+
+- **`src/features/admin/index.ts`** — Added exports: `AdminSectionsView`, `AdminUsersView`, `AdminCouponsView`.
+- **`src/app/[locale]/admin/sections/[[...action]]/page.tsx`** — 269 → 18 lines. Thin wrapper: `use(params)` → `<AdminSectionsView action={action} />`.
+- **`src/app/[locale]/admin/users/[[...action]]/page.tsx`** — 268 → 18 lines. Thin wrapper: `use(params)` → `<AdminUsersView action={action} />`.
+- **`src/app/[locale]/admin/coupons/[[...action]]/page.tsx`** — 266 → 18 lines. Thin wrapper: `use(params)` → `<AdminCouponsView action={action} />`.
+
+#### Fixed
+
+- **`admin/sections/__tests__/page.test.tsx`**, **`admin/users/__tests__/page.test.tsx`**, **`admin/coupons/__tests__/page.test.tsx`** — Updated to import and render view components directly (removed `params` prop, `Suspense` wrapper, and stale `jest.mock("react")`).
+
+---
+
 ### Phase 37.14 — Oversized Pages Batch 4 (2026-02-26)
 
 #### Added

@@ -1,14 +1,8 @@
-import { render, screen } from "@testing-library/react";
+﻿import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import type React from "react";
-import { Suspense } from "react";
-import AdminCouponsPage from "../page";
+import { AdminCouponsView } from "@/features/admin";
 import { UI_LABELS } from "@/constants";
-
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  use: (_: Promise<any>) => ({ action: undefined }),
-}));
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
@@ -89,50 +83,30 @@ describe("Admin Coupons Page", () => {
   beforeEach(() => jest.clearAllMocks());
 
   it("renders the coupons page title", async () => {
-    render(
-      <Suspense fallback={null}>
-        <AdminCouponsPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
+    render(<AdminCouponsView />);
     expect(
       await screen.findByText(UI_LABELS.ADMIN.COUPONS.TITLE),
     ).toBeInTheDocument();
   });
 
   it("renders DataTable component", async () => {
-    render(
-      <Suspense fallback={null}>
-        <AdminCouponsPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
+    render(<AdminCouponsView />);
     expect(await screen.findByTestId("data-table")).toBeInTheDocument();
   });
 
   it("renders TablePagination component", async () => {
-    render(
-      <Suspense fallback={null}>
-        <AdminCouponsPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
+    render(<AdminCouponsView />);
     expect(await screen.findByTestId("table-pagination")).toBeInTheDocument();
   });
 
   it("renders search input in filter bar (sends code@=* Sieve filter)", async () => {
-    render(
-      <Suspense fallback={null}>
-        <AdminCouponsPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
+    render(<AdminCouponsView />);
     expect(await screen.findByTestId("admin-filter-bar")).toBeInTheDocument();
   });
 
   it("uses useUrlTable for state management", async () => {
     const { useUrlTable } = require("@/hooks");
-    render(
-      <Suspense fallback={null}>
-        <AdminCouponsPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
+    render(<AdminCouponsView />);
     await screen.findByTestId("data-table");
     expect(useUrlTable).toHaveBeenCalled();
     const defaults = useUrlTable.mock.calls[0][0]?.defaults ?? {};
@@ -140,11 +114,7 @@ describe("Admin Coupons Page", () => {
   });
 
   it("includes create coupon button", async () => {
-    render(
-      <Suspense fallback={null}>
-        <AdminCouponsPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
+    render(<AdminCouponsView />);
     expect(
       await screen.findByText(UI_LABELS.ADMIN.COUPONS.CREATE),
     ).toBeInTheDocument();
