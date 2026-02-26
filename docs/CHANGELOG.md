@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 37.14 — Oversized Pages Batch 7 (2026-02-26)
+
+#### Added
+
+- **`src/features/search/components/SearchView.tsx`** — Extracted full search page (debounced input, `FilterDrawer`/`ActiveFilterChips`/`FilterFacetSection`, `SearchResultsSection`, `EmptyState`) from `search/page.tsx` (252→9 lines). Wraps in `Suspense` for `useSearchParams`. No props (uses `useUrlTable` internally). Migrated raw `apiClient` calls to `searchService.query()` and `categoryService.list()`.
+- **`src/features/products/components/ProductsView.tsx`** — Extracted product listing page (sidebar filters, mobile `FilterDrawer`, `ActiveFilterChips`, `ProductSortBar`, `ProductGrid`, `Pagination`) from `products/page.tsx` (245→9 lines). No props. Migrated raw `apiClient` calls to `productService.list()`.
+- **`src/features/user/components/OrderDetailView.tsx`** — Extracted order detail page (order header, items, summary, shipping/payment info, track button) from `user/orders/view/[id]/page.tsx` (235→4 lines). Uses `useParams()` internally. Migrated raw `apiClient.get()` to `orderService.getById()`.
+- **`src/features/search/`**, **`src/features/products/`**, **`src/features/user/`** — Three new feature modules with `components/index.ts` + `index.ts` barrel exports.
+
+#### Changed
+
+- **`src/app/[locale]/search/page.tsx`** — 252 → 9 lines. `<Suspense><SearchView /></Suspense>`.
+- **`src/app/[locale]/products/page.tsx`** — 245 → 9 lines. `<Suspense><ProductsView /></Suspense>`.
+- **`src/app/[locale]/user/orders/view/[id]/page.tsx`** — 235 → 4 lines. `<OrderDetailView />`.
+- No test file changes needed — all 3 tests continue to render the page component which now delegates to the view.
+
+---
+
 ### Phase 37.14 — Oversized Pages Batch 6 (2026-02-26)
 
 #### Added
