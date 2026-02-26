@@ -9,3 +9,5 @@ export { AdminReviewsView } from "./components/AdminReviewsView";
 export { AdminProductsView } from "./components/AdminProductsView";
 export { AdminCategoriesView } from "./components/AdminCategoriesView";
 export { AdminFaqsView } from "./components/AdminFaqsView";
+export { AdminAnalyticsView } from "./components/AdminAnalyticsView";
+export { AdminBlogView } from "./components/AdminBlogView";

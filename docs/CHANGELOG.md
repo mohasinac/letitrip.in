@@ -9,6 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 37.14 — Oversized Pages Batch 4 (2026-02-26)
+
+#### Added
+
+- **`src/features/admin/components/AdminAnalyticsView.tsx`** — Extracted all analytics UI (recharts AreaChart/BarChart, stat cards, top-products list) from `admin/analytics/page.tsx` (301→12 lines). Fixes Rule 19: raw `fetch()` → `apiClient.get()`.
+- **`src/features/admin/components/AdminBlogView.tsx`** — Extracted all blog CRUD state, URL-driven drawer routing, status filter tabs, DataTable, and mutations from `admin/blog/[[...action]]/page.tsx` (292→12 lines).
+- **`src/components/checkout/CheckoutView.tsx`** — Extracted full two-step checkout flow (address selection, order review, COD + Razorpay payment) from `checkout/page.tsx` (287→12 lines). Uses relative imports within the checkout barrel to avoid circular re-exports.
+
+#### Changed
+
+- **`src/features/admin/index.ts`** — Added exports: `AdminAnalyticsView`, `AdminBlogView`.
+- **`src/components/checkout/index.ts`** — Added `CheckoutView` export.
+- **`src/app/[locale]/admin/analytics/page.tsx`** — 301 → 12 lines. Thin server component: `<AdminAnalyticsView />`.
+- **`src/app/[locale]/admin/blog/[[...action]]/page.tsx`** — 292 → 12 lines. Thin server component: `<AdminBlogView />`.
+- **`src/app/[locale]/checkout/page.tsx`** — 287 → 12 lines. Thin server component: `<CheckoutView />`.
+
+#### Fixed
+
+- **`src/app/[locale]/admin/blog/[[...action]]/__tests__/page.test.tsx`** — Updated tests to import and render `AdminBlogView` directly (removed obsolete `params` prop and `Suspense` wrapper).
+
+---
+
 ### Phase 37.14 — Oversized Pages Batch 3 (2026-02-26)
 
 #### Added

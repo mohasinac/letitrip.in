@@ -1,14 +1,8 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+﻿import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import type React from "react";
-import { Suspense } from "react";
-import AdminBlogPage from "../page";
+import { AdminBlogView } from "@/features/admin";
 import { UI_LABELS } from "@/constants";
-
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  use: (_: Promise<any>) => ({ action: undefined }),
-}));
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
@@ -98,38 +92,22 @@ describe("Admin Blog Page", () => {
   beforeEach(() => jest.clearAllMocks());
 
   it("renders the blog page title", async () => {
-    render(
-      <Suspense fallback={null}>
-        <AdminBlogPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
+    render(<AdminBlogView />);
     expect(await screen.findByText(LABELS.TITLE)).toBeInTheDocument();
   });
 
   it("renders the DataTable", async () => {
-    render(
-      <Suspense fallback={null}>
-        <AdminBlogPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
+    render(<AdminBlogView />);
     expect(await screen.findByTestId("data-table")).toBeInTheDocument();
   });
 
   it("renders New Post action button", async () => {
-    render(
-      <Suspense fallback={null}>
-        <AdminBlogPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
+    render(<AdminBlogView />);
     expect(await screen.findByTestId("page-action-btn")).toBeInTheDocument();
   });
 
   it("clicking New Post button opens SideDrawer in create mode", async () => {
-    render(
-      <Suspense fallback={null}>
-        <AdminBlogPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
+    render(<AdminBlogView />);
     const btn = await screen.findByTestId("page-action-btn");
     fireEvent.click(btn);
     expect(await screen.findByTestId("side-drawer")).toBeInTheDocument();
@@ -137,11 +115,7 @@ describe("Admin Blog Page", () => {
   });
 
   it("status filter tabs render All, Drafts, Published, Archived", async () => {
-    render(
-      <Suspense fallback={null}>
-        <AdminBlogPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
+    render(<AdminBlogView />);
     expect(await screen.findByText(LABELS.FILTER_ALL)).toBeInTheDocument();
     // FILTER_DRAFT may appear in both tab buttons and stat cards, so we check at least one
     expect(
