@@ -4,14 +4,13 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   THEME_CONSTANTS,
-  API_ENDPOINTS,
   UI_LABELS,
   ROUTES,
   FAQ_CATEGORIES,
 } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
 import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { faqService } from "@/services";
 import { FAQCategorySidebar } from "./FAQCategorySidebar";
 import { FAQSearchBar } from "./FAQSearchBar";
 import { FAQSortDropdown } from "./FAQSortDropdown";
@@ -37,9 +36,8 @@ export function FAQPageContent({
 
   // Fetch all FAQs
   const { data: faqsData, isLoading } = useApiQuery<FAQDocument[]>({
-    queryKey: [API_ENDPOINTS.FAQS.LIST],
-    queryFn: () =>
-      apiClient.get<FAQDocument[]>(`${API_ENDPOINTS.FAQS.LIST}?isActive=true`),
+    queryKey: ["faqs", "public"],
+    queryFn: () => faqService.list("isActive=true"),
   });
 
   const allFAQs = faqsData || [];

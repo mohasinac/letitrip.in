@@ -460,7 +460,12 @@
     "remove": "हटाएं",
     "quantity": "मात्रा",
     "items": "आइटम",
-    "orderSummary": "ऑर्डर सारांश"
+    "orderSummary": "ऑर्डर सारांश",
+    "promoInvalid": "अमान्य प्रोमो कोड",
+    "promoCode": "प्रोमो कोड",
+    "promoApply": "लागू करें",
+    "promoRemove": "हटाएं",
+    "promoPlaceholder": "कोड दर्ज करें"
   },
   "orders": {
     "title": "मेरे ऑर्डर",
@@ -584,7 +589,12 @@
     "totalBids": "{count, plural, one {# बोली} other {# बोलियां}}",
     "description": "विवरण",
     "filterBidRange": "बोली सीमा",
-    "endingSoon": "जल्द समाप्त"
+    "endingSoon": "जल्द समाप्त",
+    "minimumBidError": "न्यूनतम बोली: {amount}",
+    "bidFailed": "बोली लगाने में विफल",
+    "auctionEndedInfo": "यह नीलामी समाप्त हो गई है और अब बोली स्वीकार नहीं कर रही",
+    "loginToBid": "बोली लगाने के लिए लॉगइन करें",
+    "yourBidLabel": "आपकी बोली राशि"
   },
   "search": {
     "title": "खोज",
@@ -705,7 +715,19 @@
   },
   "contact": {
     "title": "हमसे संपर्क करें",
-    "subtitle": "हम आपसे सुनना पसंद करेंगे — कोई भी प्रश्न या फीडबैक के साथ संपर्क करें"
+    "subtitle": "हम आपसे सुनना पसंद करेंगे — कोई भी प्रश्न या फीडबैक के साथ संपर्क करें",
+    "formTitle": "संदेश भेजें",
+    "formName": "आपका नाम",
+    "formEmail": "ईमेल पता",
+    "formSubject": "विषय",
+    "formMessage": "संदेश",
+    "formSend": "संदेश भेजें",
+    "formSending": "भेजा जा रहा है...",
+    "formSuccess": "आपका संदेश भेज दिया गया है! हम जल्द ही जवाब देंगे।",
+    "namePlaceholder": "अपना नाम दर्ज करें",
+    "emailPlaceholder": "अपना ईमेल पता दर्ज करें",
+    "subjectPlaceholder": "विषय दर्ज करें",
+    "messagePlaceholder": "अपना संदेश दर्ज करें"
   },
   "events": {
     "currentEvents": "वर्तमान इवेंट",
@@ -1219,6 +1241,10 @@
     "visitProfile": "पूरी प्रोफ़ाइल देखें",
     "auctionBadge": "नीलामी",
     "verifiedPurchase": "सत्यापित"
+  },
+  "faq": {
+    "wasThisHelpful": "क्या यह मददगार था?",
+    "thanksForFeedback": "आपकी प्रतिक्रिया के लिए धन्यवाद!"
   },
   "unsavedChanges": {
     "title": "सहेजे नहीं गए परिवर्तन",

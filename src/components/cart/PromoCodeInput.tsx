@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
-import { apiClient } from "@/lib/api-client";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
+import { couponService } from "@/services";
 import { formatCurrency } from "@/utils";
 
 const { themed, input } = THEME_CONSTANTS;
@@ -29,6 +30,7 @@ export function PromoCodeInput({
   onRemove,
   disabled = false,
 }: PromoCodeInputProps) {
+  const t = useTranslations("cart");
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [appliedCode, setAppliedCode] = useState<string | null>(null);
@@ -41,20 +43,20 @@ export function PromoCodeInput({
     setLoading(true);
     setErrorMsg(null);
     try {
-      const res = await apiClient.post<CouponValidateResponse>(
-        API_ENDPOINTS.COUPONS.VALIDATE,
-        { code: trimmed, orderTotal: subtotal },
-      );
+      const res = (await couponService.validate({
+        code: trimmed,
+        orderTotal: subtotal,
+      })) as CouponValidateResponse;
       if (res.valid) {
         setAppliedCode(trimmed);
         setDiscountAmount(res.discountAmount);
         setCode("");
         onApply?.(res.discountAmount, trimmed);
       } else {
-        setErrorMsg(res.error ?? UI_LABELS.CART.PROMO_INVALID);
+        setErrorMsg(res.error ?? t("promoInvalid"));
       }
     } catch {
-      setErrorMsg(UI_LABELS.CART.PROMO_INVALID);
+      setErrorMsg(t("promoInvalid"));
     } finally {
       setLoading(false);
     }
@@ -74,7 +76,7 @@ export function PromoCodeInput({
         <label
           className={`block text-xs font-medium mb-1.5 ${themed.textSecondary}`}
         >
-          {UI_LABELS.CART.PROMO_CODE}
+          {t("promoCode")}
         </label>
         <div className="flex items-center gap-2">
           <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20">
@@ -102,7 +104,7 @@ export function PromoCodeInput({
             onClick={handleRemove}
             className="text-xs text-gray-500 hover:text-red-500 transition-colors"
           >
-            {UI_LABELS.CART.PROMO_REMOVE}
+            {t("promoRemove")}
           </button>
         </div>
       </div>
@@ -114,7 +116,7 @@ export function PromoCodeInput({
       <label
         className={`block text-xs font-medium mb-1.5 ${themed.textSecondary}`}
       >
-        {UI_LABELS.CART.PROMO_CODE}
+        {t("promoCode")}
       </label>
       <div className="flex gap-2">
         <input
@@ -124,7 +126,7 @@ export function PromoCodeInput({
             setCode(e.target.value.toUpperCase());
             setErrorMsg(null);
           }}
-          placeholder={UI_LABELS.CART.PROMO_PLACEHOLDER}
+          placeholder={t("promoPlaceholder")}
           disabled={disabled || loading}
           className={`flex-1 text-sm ${input.base} ${themed.bgPrimary} ${themed.textPrimary}`}
           onKeyDown={(e) => e.key === "Enter" && handleApply()}
@@ -134,7 +136,7 @@ export function PromoCodeInput({
           disabled={disabled || loading || !code.trim()}
           className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors"
         >
-          {loading ? "…" : UI_LABELS.CART.PROMO_APPLY}
+          {loading ? "\u2026" : t("promoApply")}
         </button>
       </div>
       {errorMsg && <p className="mt-1.5 text-xs text-red-500">{errorMsg}</p>}

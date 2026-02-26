@@ -46,6 +46,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### Phase 37 — Service Layer Migration Complete (2026-02-26)
+
+#### Added
+
+- **`src/services/bid.service.ts`** — New service: `bidService.create()`, `listByProduct()`, `getById()`. Exported from `@/services`.
+- **`src/services/contact.service.ts`** — New service: `contactService.send()`. Exported from `@/services`.
+- **`src/services/media.service.ts`** — New service: `mediaService.upload()`, `crop()`, `trim()`. Exported from `@/services`.
+- **`messages/en.json` + `messages/hi.json`** — 28 new i18n keys:
+  - `auctions`: `minimumBidError`, `bidFailed`, `auctionEndedInfo`, `loginToBid`, `yourBidLabel`
+  - `cart`: `promoInvalid`, `promoCode`, `promoApply`, `promoRemove`, `promoPlaceholder`
+  - `faq`: new namespace — `wasThisHelpful`, `thanksForFeedback`
+  - `contact`: `formTitle`, `formName`, `formEmail`, `formSubject`, `formMessage`, `formSend`, `formSending`, `formSuccess`, plus 4 placeholder keys
+
+#### Changed
+
+- **`src/components/layout/Sidebar.tsx`** — `apiClient.post(AUTH.LOGOUT)` → `authService.logout()`.
+- **`src/components/faq/FAQPageContent.tsx`** — `apiClient.get()` → `faqService.list("isActive=true")`.
+- **`src/components/faq/FAQHelpfulButtons.tsx`** — `apiClient.post(FAQS.VOTE, { isHelpful })` → `faqService.vote(id, { vote: "helpful" | "not-helpful" })`; `UI_LABELS.FAQ.*` / `UI_LABELS.ACTIONS.YES/NO` → `useTranslations("faq")` + `useTranslations("actions")`.
+- **`src/components/cart/PromoCodeInput.tsx`** — `apiClient.post(COUPONS.VALIDATE)` → `couponService.validate()`; all `UI_LABELS.CART.*` → `useTranslations("cart")`.
+- **`src/components/auctions/PlaceBidForm.tsx`** — `apiClient.post(BIDS.CREATE)` → `bidService.create()`; all `UI_LABELS.AUCTIONS_PAGE.*` / `UI_LABELS.LOADING.*` / `UI_LABELS.ACTIONS.*` → `useTranslations("auctions"/"actions"/"loading")`.
+- **`src/components/auctions/AuctionDetailView.tsx`** — `apiClient.get(PRODUCTS.GET_BY_ID)` → `productService.getById()`; `apiClient.get(BIDS.LIST)` → `bidService.listByProduct()`.
+- **`src/components/contact/ContactForm.tsx`** — `apiClient.post(CONTACT.SEND)` → `contactService.send()`; `UI_LABELS.CONTACT_PAGE.*` / `UI_PLACEHOLDERS.*` → `useTranslations("contact")`.
+- **`src/components/checkout/CheckoutView.tsx`** — 5 raw `apiClient.*` calls replaced with `addressService.list()`, `cartService.get()`, `checkoutService.placeOrder()`, `checkoutService.createPaymentOrder()`, `checkoutService.verifyPayment()`.
+- **`src/components/admin/ImageUpload.tsx`** — `apiClient.upload()` → `mediaService.upload()`.
+- **`src/app/[locale]/user/notifications/page.tsx`** — 4 raw `apiClient.*` calls replaced with `notificationService.list()`, `.markRead()`, `.delete()`, `.markAllRead()`.
+- **`src/app/[locale]/user/settings/page.tsx`** — 2 `apiClient.patch(USER.PROFILE)` calls → `profileService.update()`.
+- **`src/services/faq.service.ts`** — Fixed `vote()` signature: `{ helpful: boolean }` → `{ vote: "helpful" | "not-helpful" }`.
+- **`src/services/checkout.service.ts`** — Fixed `couponService.validate()` param: `total` → `orderTotal`.
+- All `page.tsx` files confirmed ≤ 150 lines. 0 TS errors.
+
+---
+
 ### Phase 37.14 — Oversized Pages Batch 7 (2026-02-26)
 
 #### Added

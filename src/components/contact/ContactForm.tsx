@@ -1,22 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import {
-  UI_LABELS,
-  THEME_CONSTANTS,
-  API_ENDPOINTS,
-  ERROR_MESSAGES,
-  SUCCESS_MESSAGES,
-  UI_PLACEHOLDERS,
-} from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { Button } from "@/components/ui";
 import { FormField } from "@/components/FormField";
 import { Alert } from "@/components/feedback";
 import { useMessage } from "@/hooks";
 import { isValidEmail, isRequired } from "@/utils";
-import { apiClient } from "@/lib/api-client";
-
-const LABELS = UI_LABELS.CONTACT_PAGE;
+import { contactService } from "@/services";
 const { typography, themed, spacing } = THEME_CONSTANTS;
 
 interface ContactFormData {
@@ -35,6 +27,7 @@ const INITIAL_FORM: ContactFormData = {
 
 export function ContactForm() {
   const { showSuccess, showError } = useMessage();
+  const t = useTranslations("contact");
   const [form, setForm] = useState<ContactFormData>(INITIAL_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -60,7 +53,7 @@ export function ContactForm() {
 
     setIsSubmitting(true);
     try {
-      await apiClient.post(API_ENDPOINTS.CONTACT.SEND, form);
+      await contactService.send(form);
       setSubmitted(true);
       setForm(INITIAL_FORM);
       showSuccess(SUCCESS_MESSAGES.CONTACT.SENT);
@@ -74,57 +67,57 @@ export function ContactForm() {
   return (
     <div className="md:col-span-3">
       <h2 className={`${typography.h3} ${themed.textPrimary} mb-6`}>
-        {LABELS.FORM_TITLE}
+        {t("formTitle")}
       </h2>
 
       {submitted && (
         <Alert variant="success" className="mb-6">
-          {LABELS.FORM_SUCCESS}
+          {t("formSuccess")}
         </Alert>
       )}
 
       <form onSubmit={handleSubmit} className={spacing.stack}>
         <FormField
           name="name"
-          label={LABELS.FORM_NAME}
+          label={t("formName")}
           type="text"
           value={form.name}
           onChange={(value: string) => setForm((f) => ({ ...f, name: value }))}
-          placeholder={UI_PLACEHOLDERS.NAME}
+          placeholder={t("namePlaceholder")}
           error={errors.name}
           required
         />
         <FormField
           name="email"
-          label={LABELS.FORM_EMAIL}
+          label={t("formEmail")}
           type="email"
           value={form.email}
           onChange={(value: string) => setForm((f) => ({ ...f, email: value }))}
-          placeholder={UI_PLACEHOLDERS.EMAIL}
+          placeholder={t("emailPlaceholder")}
           error={errors.email}
           required
         />
         <FormField
           name="subject"
-          label={LABELS.FORM_SUBJECT}
+          label={t("formSubject")}
           type="text"
           value={form.subject}
           onChange={(value: string) =>
             setForm((f) => ({ ...f, subject: value }))
           }
-          placeholder={UI_PLACEHOLDERS.TITLE}
+          placeholder={t("subjectPlaceholder")}
           error={errors.subject}
           required
         />
         <FormField
           name="message"
-          label={LABELS.FORM_MESSAGE}
+          label={t("formMessage")}
           type="textarea"
           value={form.message}
           onChange={(value: string) =>
             setForm((f) => ({ ...f, message: value }))
           }
-          placeholder={UI_PLACEHOLDERS.MESSAGE}
+          placeholder={t("messagePlaceholder")}
           error={errors.message}
           required
         />
@@ -134,7 +127,7 @@ export function ContactForm() {
           disabled={isSubmitting}
           className="w-full"
         >
-          {isSubmitting ? LABELS.FORM_SENDING : LABELS.FORM_SEND}
+          {isSubmitting ? t("formSending") : t("formSend")}
         </Button>
       </form>
     </div>

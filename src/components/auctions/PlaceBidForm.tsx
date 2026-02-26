@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { UI_LABELS, THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
-import { apiClient } from "@/lib/api-client";
+import { bidService } from "@/services";
 import type { BidDocument } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;
@@ -27,6 +28,9 @@ export function PlaceBidForm({
   onBidPlaced,
 }: PlaceBidFormProps) {
   const router = useRouter();
+  const t = useTranslations("auctions");
+  const tActions = useTranslations("actions");
+  const tLoading = useTranslations("loading");
   const [bidAmount, setBidAmount] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,17 +46,17 @@ export function PlaceBidForm({
     const amount = Number(bidAmount);
     if (!amount || amount < minimumRequired) {
       setError(
-        `${UI_LABELS.AUCTIONS_PAGE.MINIMUM_BID(formatCurrency(minimumRequired))}`,
+        t("minimumBidError", { amount: formatCurrency(minimumRequired) }),
       );
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const bid = await apiClient.post<BidDocument>(API_ENDPOINTS.BIDS.CREATE, {
+      const bid = (await bidService.create({
         productId,
         bidAmount: amount,
-      });
+      })) as BidDocument;
 
       setSuccess(true);
       setBidAmount("");
@@ -60,8 +64,7 @@ export function PlaceBidForm({
       // Refresh to show updated bid
       router.refresh();
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to place bid";
+      const message = err instanceof Error ? err.message : t("bidFailed");
       setError(message);
     } finally {
       setIsSubmitting(false);
@@ -74,7 +77,7 @@ export function PlaceBidForm({
       <div
         className={`rounded-xl border ${themed.border} p-4 text-center ${themed.textSecondary} text-sm`}
       >
-        {UI_LABELS.AUCTIONS_PAGE.AUCTION_ENDED_INFO}
+        {t("auctionEndedInfo")}
       </div>
     );
   }
@@ -84,13 +87,13 @@ export function PlaceBidForm({
     return (
       <div className={`rounded-xl border ${themed.border} p-4 text-center`}>
         <p className={`text-sm ${themed.textSecondary} mb-3`}>
-          {UI_LABELS.AUCTIONS_PAGE.LOGIN_TO_BID}
+          {t("loginToBid")}
         </p>
         <button
           onClick={() => router.push(ROUTES.AUTH.LOGIN)}
           className="px-6 py-2 rounded-lg bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition-colors"
         >
-          {UI_LABELS.ACTIONS.SUBMIT}
+          {tActions("submit")}
         </button>
       </div>
     );
@@ -106,10 +109,10 @@ export function PlaceBidForm({
           htmlFor="bid-amount"
           className={`block text-sm font-medium ${themed.textPrimary} mb-1`}
         >
-          {UI_LABELS.AUCTIONS_PAGE.YOUR_BID_LABEL}
+          {t("yourBidLabel")}
         </label>
         <p className={`text-xs ${themed.textSecondary} mb-2`}>
-          {UI_LABELS.AUCTIONS_PAGE.MINIMUM_BID(formatCurrency(minimumRequired))}
+          {t("minimumBidError", { amount: formatCurrency(minimumRequired) })}
         </p>
         <div className="flex items-center gap-2">
           <span className={`text-sm font-medium ${themed.textSecondary}`}>
@@ -134,9 +137,7 @@ export function PlaceBidForm({
             disabled={isSubmitting}
             className="h-10 px-5 rounded-lg bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 disabled:opacity-60 transition-colors whitespace-nowrap"
           >
-            {isSubmitting
-              ? UI_LABELS.LOADING.DEFAULT
-              : UI_LABELS.AUCTIONS_PAGE.PLACE_BID}
+            {isSubmitting ? tLoading("default") : t("placeBid")}
           </button>
         </div>
       </div>
@@ -149,7 +150,7 @@ export function PlaceBidForm({
       {/* Success */}
       {success && (
         <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
-          {UI_LABELS.AUCTIONS_PAGE.BID_PLACED}
+          {t("bidPlaced")}
         </p>
       )}
     </form>

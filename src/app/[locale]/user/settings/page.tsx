@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth, useChangePassword, useResendVerification } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { profileService } from "@/services";
 import {
   Heading,
   Alert,
@@ -21,7 +21,6 @@ import {
   THEME_CONSTANTS,
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
-  API_ENDPOINTS,
   ROUTES,
 } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -80,7 +79,7 @@ export default function UserSettingsPage() {
     setMessage(null);
 
     try {
-      await apiClient.patch(API_ENDPOINTS.USER.PROFILE, {
+      await profileService.update({
         displayName: data.displayName,
         phoneNumber: data.phone,
       });
@@ -105,7 +104,7 @@ export default function UserSettingsPage() {
     if (!profile?.uid) return;
 
     try {
-      await apiClient.patch(API_ENDPOINTS.USER.PROFILE, { photoURL: url });
+      await profileService.update({ photoURL: url });
 
       showToast(SUCCESS_MESSAGES.USER.SETTINGS_SAVED, "success");
     } catch (error) {

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef, ChangeEvent } from "react";
-import { API_ENDPOINTS, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
-import { apiClient } from "@/lib/api-client";
+import { ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
+import { mediaService } from "@/services";
 import { ValidationError } from "@/lib/errors";
 
 interface ImageUploadProps {
@@ -77,10 +77,7 @@ export function ImageUpload({
 
       setProgress(30);
 
-      const data = await apiClient.upload<{ url: string }>(
-        API_ENDPOINTS.MEDIA.UPLOAD,
-        formData,
-      );
+      const data = await mediaService.upload<{ url: string }>(formData);
       setProgress(70);
       setProgress(100);
 

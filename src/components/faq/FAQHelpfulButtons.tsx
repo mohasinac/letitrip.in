@@ -1,14 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import {
-  THEME_CONSTANTS,
-  UI_LABELS,
-  API_ENDPOINTS,
-  ERROR_MESSAGES,
-} from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { logger } from "@/classes";
-import { apiClient } from "@/lib/api-client";
+import { faqService } from "@/services";
 
 interface FAQHelpfulButtonsProps {
   faqId: string;
@@ -21,6 +17,8 @@ export function FAQHelpfulButtons({
   initialHelpful,
   initialNotHelpful,
 }: FAQHelpfulButtonsProps) {
+  const t = useTranslations("faq");
+  const tActions = useTranslations("actions");
   const [helpful, setHelpful] = useState(initialHelpful);
   const [notHelpful, setNotHelpful] = useState(initialNotHelpful);
   const [userVote, setUserVote] = useState<"helpful" | "not-helpful" | null>(
@@ -34,8 +32,8 @@ export function FAQHelpfulButtons({
     setIsSubmitting(true);
 
     try {
-      await apiClient.post(API_ENDPOINTS.FAQS.VOTE(faqId), {
-        isHelpful,
+      await faqService.vote(faqId, {
+        vote: isHelpful ? "helpful" : "not-helpful",
       });
 
       // Update local state
@@ -60,9 +58,7 @@ export function FAQHelpfulButtons({
       <p
         className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary} mb-3`}
       >
-        {userVote
-          ? "Thanks for your feedback!"
-          : UI_LABELS.FAQ.WAS_THIS_HELPFUL}
+        {userVote ? t("thanksForFeedback") : t("wasThisHelpful")}
       </p>
 
       <div className="flex gap-3">
@@ -92,7 +88,7 @@ export function FAQHelpfulButtons({
             />
           </svg>
           <span className={`${THEME_CONSTANTS.typography.body} text-sm`}>
-            {UI_LABELS.ACTIONS.YES}
+            {tActions("yes")}
           </span>
           <span
             className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
@@ -127,7 +123,7 @@ export function FAQHelpfulButtons({
             />
           </svg>
           <span className={`${THEME_CONSTANTS.typography.body} text-sm`}>
-            {UI_LABELS.ACTIONS.NO}
+            {tActions("no")}
           </span>
           <span
             className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary}`}

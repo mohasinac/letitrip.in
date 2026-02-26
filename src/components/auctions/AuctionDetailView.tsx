@@ -11,12 +11,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
 import { BidHistory, PlaceBidForm, Spinner } from "@/components";
-import { THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useApiQuery, useAuth, useRealtimeBids, useCountdown } from "@/hooks";
 import { formatCurrency } from "@/utils";
 import type { ProductDocument, BidDocument } from "@/db/schema";
-import { apiClient } from "@/lib/api-client";
+import { productService, bidService } from "@/services";
 
 const { themed, typography, spacing } = THEME_CONSTANTS;
 
@@ -58,17 +58,14 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
   const { data: productData, isLoading: productLoading } =
     useApiQuery<ProductResponse>({
       queryKey: ["product", id],
-      queryFn: () => apiClient.get(API_ENDPOINTS.PRODUCTS.GET_BY_ID(id)),
+      queryFn: () => productService.getById(id),
     });
 
   const product = productData?.data ?? null;
 
   const { data: bidsData, refetch: refetchBids } = useApiQuery<BidsResponse>({
     queryKey: ["bids", id],
-    queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.BIDS.LIST}?productId=${encodeURIComponent(id)}`,
-      ),
+    queryFn: () => bidService.listByProduct(id),
     enabled: !!product?.isAuction,
     refetchInterval: 60000,
   });

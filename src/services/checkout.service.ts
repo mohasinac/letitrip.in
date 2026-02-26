@@ -23,6 +23,6 @@ export const checkoutService = {
 
 export const couponService = {
   /** Validate a coupon code against a cart total */
-  validate: (data: { code: string; total?: number }) =>
+  validate: (data: { code: string; orderTotal?: number }) =>
     apiClient.post(API_ENDPOINTS.COUPONS.VALIDATE, data),
 };

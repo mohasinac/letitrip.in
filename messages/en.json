@@ -460,7 +460,12 @@
     "remove": "Remove",
     "quantity": "Quantity",
     "items": "items",
-    "orderSummary": "Order Summary"
+    "orderSummary": "Order Summary",
+    "promoInvalid": "Invalid promo code",
+    "promoCode": "Promo Code",
+    "promoApply": "Apply",
+    "promoRemove": "Remove",
+    "promoPlaceholder": "Enter code"
   },
   "orders": {
     "title": "My Orders",
@@ -585,7 +590,12 @@
     "totalBids": "{count, plural, one {# bid} other {# bids}}",
     "description": "Description",
     "filterBidRange": "Bid Range",
-    "endingSoon": "Ending Soon"
+    "endingSoon": "Ending Soon",
+    "minimumBidError": "Minimum bid: {amount}",
+    "bidFailed": "Failed to place bid",
+    "auctionEndedInfo": "This auction has ended and is no longer accepting bids",
+    "loginToBid": "Login to place a bid",
+    "yourBidLabel": "Your Bid Amount"
   },
   "search": {
     "title": "Search",
@@ -706,7 +716,19 @@
   },
   "contact": {
     "title": "Contact Us",
-    "subtitle": "We'd love to hear from you — reach out with any questions or feedback"
+    "subtitle": "We'd love to hear from you — reach out with any questions or feedback",
+    "formTitle": "Send a Message",
+    "formName": "Your Name",
+    "formEmail": "Email Address",
+    "formSubject": "Subject",
+    "formMessage": "Message",
+    "formSend": "Send Message",
+    "formSending": "Sending...",
+    "formSuccess": "Your message has been sent! We'll get back to you shortly.",
+    "namePlaceholder": "Enter your name",
+    "emailPlaceholder": "Enter your email address",
+    "subjectPlaceholder": "Enter subject",
+    "messagePlaceholder": "Enter your message"
   },
   "events": {
     "currentEvents": "Current Events",
@@ -1220,6 +1242,10 @@
     "visitProfile": "View Full Profile",
     "auctionBadge": "Auction",
     "verifiedPurchase": "Verified"
+  },
+  "faq": {
+    "wasThisHelpful": "Was this helpful?",
+    "thanksForFeedback": "Thanks for your feedback!"
   },
   "unsavedChanges": {
     "title": "Unsaved Changes",

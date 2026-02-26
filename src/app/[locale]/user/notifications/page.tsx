@@ -10,10 +10,10 @@
 
 import { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ROUTES, THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";
 import { useTranslations } from "next-intl";
-import { apiClient } from "@/lib/api-client";
+import { notificationService } from "@/services";
 import { Spinner, EmptyState } from "@/components";
 import { NotificationItem, NotificationsBulkActions } from "@/components";
 import type { NotificationDocument } from "@/db/schema";
@@ -53,29 +53,24 @@ export default function UserNotificationsPage() {
 
   const { data, isLoading, refetch } = useApiQuery<NotificationsResponse>({
     queryKey: ["notifications", "page"],
-    queryFn: () =>
-      apiClient.get<NotificationsResponse>(
-        API_ENDPOINTS.NOTIFICATIONS.LIST + "?limit=50",
-      ),
+    queryFn: () => notificationService.list("limit=50"),
     enabled: !!user,
     cacheTTL: 0,
   });
 
   const { mutate: markRead } = useApiMutation<unknown, string>({
-    mutationFn: (id: string) =>
-      apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.MARK_READ(id), {}),
+    mutationFn: (id: string) => notificationService.markRead(id),
   });
 
   const { mutate: deleteOne } = useApiMutation<unknown, string>({
-    mutationFn: (id: string) =>
-      apiClient.delete(API_ENDPOINTS.NOTIFICATIONS.DELETE(id)),
+    mutationFn: (id: string) => notificationService.delete(id),
   });
 
   const { mutate: markAllRead, isLoading: isMarkingAll } = useApiMutation<
     unknown,
     void
   >({
-    mutationFn: () => apiClient.patch(API_ENDPOINTS.NOTIFICATIONS.READ_ALL, {}),
+    mutationFn: () => notificationService.markAllRead(),
   });
 
   const handleMarkRead = useCallback(

@@ -15,13 +15,8 @@ import { CheckoutAddressStep } from "./CheckoutAddressStep";
 import { CheckoutOrderReview } from "./CheckoutOrderReview";
 import { OrderSummaryPanel } from "./OrderSummaryPanel";
 import { useApiQuery, useApiMutation, useMessage, useRazorpay } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import {
-  API_ENDPOINTS,
-  ROUTES,
-  THEME_CONSTANTS,
-  ERROR_MESSAGES,
-} from "@/constants";
+import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
+import { addressService, cartService, checkoutService } from "@/services";
 import { useTranslations } from "next-intl";
 
 const { themed, typography } = THEME_CONSTANTS;
@@ -103,14 +98,14 @@ export function CheckoutView() {
   const { data: addrData, isLoading: addrLoading } =
     useApiQuery<AddressListResponse>({
       queryKey: ["addresses"],
-      queryFn: () => apiClient.get(API_ENDPOINTS.ADDRESSES.LIST),
+      queryFn: () => addressService.list(),
     });
 
   // Fetch cart
   const { data: cartData, isLoading: cartLoading } =
     useApiQuery<CartApiResponse>({
       queryKey: ["cart"],
-      queryFn: () => apiClient.get(API_ENDPOINTS.CART.GET),
+      queryFn: () => cartService.get(),
     });
 
   // COD: place order mutation
@@ -118,8 +113,7 @@ export function CheckoutView() {
     PlaceOrderResponse,
     { addressId: string; paymentMethod: "cod" | "online" }
   >({
-    mutationFn: (data) =>
-      apiClient.post(API_ENDPOINTS.CHECKOUT.PLACE_ORDER, data),
+    mutationFn: (data) => checkoutService.placeOrder(data),
     onSuccess: (result) => {
       const primaryOrderId = result?.orderIds?.[0] ?? "";
       router.push(`${ROUTES.USER.CHECKOUT_SUCCESS}?orderId=${primaryOrderId}`);
@@ -170,10 +164,10 @@ export function CheckoutView() {
       // Online: Razorpay flow
       try {
         // 1. Create Razorpay order on backend
-        const rzpOrder = await apiClient.post<CreateRazorpayOrderResponse>(
-          API_ENDPOINTS.PAYMENT.CREATE_ORDER,
-          { amount: subtotal, currency: "INR" },
-        );
+        const rzpOrder = (await checkoutService.createPaymentOrder({
+          amount: subtotal,
+          currency: "INR",
+        })) as CreateRazorpayOrderResponse;
 
         // 2. Open Razorpay checkout modal
         const paymentResult = await openRazorpay({
@@ -188,15 +182,12 @@ export function CheckoutView() {
         });
 
         // 3. Verify payment & create orders
-        const verifyResult = await apiClient.post<PlaceOrderResponse>(
-          API_ENDPOINTS.PAYMENT.VERIFY,
-          {
-            razorpay_order_id: paymentResult.razorpay_order_id,
-            razorpay_payment_id: paymentResult.razorpay_payment_id,
-            razorpay_signature: paymentResult.razorpay_signature,
-            addressId: selectedAddressId,
-          },
-        );
+        const verifyResult = (await checkoutService.verifyPayment({
+          razorpay_order_id: paymentResult.razorpay_order_id,
+          razorpay_payment_id: paymentResult.razorpay_payment_id,
+          razorpay_signature: paymentResult.razorpay_signature,
+          addressId: selectedAddressId,
+        })) as PlaceOrderResponse;
 
         const primaryOrderId = verifyResult?.orderIds?.[0] ?? "";
         router.push(

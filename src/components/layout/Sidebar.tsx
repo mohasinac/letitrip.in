@@ -4,18 +4,13 @@ import { useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import {
-  THEME_CONSTANTS,
-  ROUTES,
-  API_ENDPOINTS,
-  ERROR_MESSAGES,
-} from "@/constants";
+import { THEME_CONSTANTS, ROUTES, ERROR_MESSAGES } from "@/constants";
 import { useSwipe, useAuth } from "@/hooks";
 import { logger } from "@/classes";
 import { AvatarDisplay } from "@/components";
 import { preventBodyScroll } from "@/utils";
 import { hasAnyRole } from "@/helpers";
-import { apiClient } from "@/lib/api-client";
+import { authService } from "@/services";
 
 /**
  * Sidebar Component
@@ -59,7 +54,7 @@ export default function Sidebar({
   const handleSignOut = async () => {
     try {
       // Backend logout - clears session cookie and revokes tokens
-      await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT, {});
+      await authService.logout();
 
       // Close sidebar first for better UX
       onClose();
