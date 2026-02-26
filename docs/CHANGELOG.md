@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 19.7–19.9 — Test Coverage: User/Seller Pages + Events Components + Events Hooks (2026-02-26)
+
+#### Added
+
+- **`src/app/[locale]/user/notifications/__tests__/page.test.tsx`** — 4 tests: renders without crashing, loading spinner, empty state when no notifications, notification items rendered with count.
+- **`src/app/[locale]/user/orders/[id]/track/__tests__/page.test.tsx`** — 4 tests: renders without crashing, loading spinner, empty state on fetch error, OrderTrackingView rendered when order loaded.
+- **`src/app/[locale]/seller/products/[id]/edit/__tests__/page.test.tsx`** — 4 tests: renders without crashing, loading spinner while product loading, error alert when product not found, ProductForm rendered for owned product.
+- **`src/features/events/components/__tests__/EventCard.test.tsx`** — 6 tests: renders without crashing, title visible, status badge shown, link renders, gradient placeholder when no cover image, cover image shown when URL provided.
+- **`src/features/events/components/__tests__/EventStatusBadge.test.tsx`** — 4 tests: active→success, draft→secondary, paused→warning, ended→danger variant.
+- **`src/features/events/components/__tests__/EventLeaderboard.test.tsx`** — 5 tests: renders without crashing, loading spinner, empty state text, ranked entries rendered, current user row highlighted.
+- **`src/features/events/components/__tests__/PollVotingSection.test.tsx`** — 4 tests: renders without crashing, poll options displayed, voted state hides submit, selecting option enables submit.
+- **`src/features/events/components/__tests__/FeedbackEventSection.test.tsx`** — 3 tests: renders without crashing, form fields from feedbackConfig rendered, submit button present.
+- **`src/features/events/components/__tests__/SurveyEventSection.test.tsx`** — 5 tests: renders without crashing, login prompt for unauthenticated, pending/approved alerts, participate link rendered.
+- **`src/features/events/components/__tests__/EventsTable.test.tsx`** — 4 tests: columns array returned, includes title/status/type columns.
+- **`src/features/events/components/__tests__/EventStatsBanner.test.tsx`** — 5 tests: renders without crashing, total/approved/pending counts shown, 4 stat cards rendered.
+- **`src/features/events/components/__tests__/EventEntriesTable.test.tsx`** — 3 tests: columns array returned, includes userId/reviewStatus columns.
+- **`src/features/events/components/__tests__/EntryReviewDrawer.test.tsx`** — 3 tests: hidden when closed, sidebar rendered when open, approve/flag buttons present.
+- **`src/features/events/components/__tests__/SurveyFieldBuilder.test.tsx`** — 5 tests: renders without crashing, empty state message, add field button, onChange called on click, existing fields rendered.
+- **`src/features/events/hooks/__tests__/useEvents.test.ts`** — 3 tests: calls `adminList`, correct queryKey, default empty values.
+- **`src/features/events/hooks/__tests__/useEvent.test.ts`** — 4 tests: calls `adminGetById`, correct queryKey, null event when no data, disabled when id empty.
+- **`src/features/events/hooks/__tests__/usePublicEvents.test.ts`** — 3 tests: calls `list` with params, correct queryKey, default empty values.
+- **`src/features/events/hooks/__tests__/useEventStats.test.ts`** — 3 tests: calls `adminGetStats`, correct queryKey, null stats when loading.
+- **`src/features/events/hooks/__tests__/useEventMutations.test.ts`** — 4 tests: `useCreateEvent`/`useUpdateEvent`/`useDeleteEvent`/`useChangeEventStatus` each call correct service method.
+- **`src/features/events/hooks/__tests__/useEventEntries.test.ts`** — 4 tests: calls `adminGetEntries` with params, correct queryKey, default empty values, disabled when eventId empty.
+- **`src/features/events/hooks/__tests__/useEventLeaderboard.test.ts`** — 3 tests: calls `getLeaderboard`, correct queryKey, default empty leaderboard.
+
+---
+
 ### Phase 19.4–19.6 — Test Coverage: Missing API Routes + Events Pages (2026-02-28)
 
 #### Added
