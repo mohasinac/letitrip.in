@@ -9,6 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 37.14 — Oversized Pages Batch 6 (2026-02-26)
+
+#### Added
+
+- **`src/features/admin/components/AdminCarouselView.tsx`** — Extracted full carousel slide management (create/edit/delete URL-driven drawer, `useCallback`/`useMemo`/`useRef` dirty-state tracking, auto-open from URL) from `admin/carousel/[[...action]]/page.tsx` (261→12 lines). Accepts `action?: string[]` prop.
+- **`src/features/admin/components/AdminBidsView.tsx`** — Extracted bid list UI (summary stat cards, status filter tabs, DataTable with Sieve pagination, read-only bid detail drawer) from `admin/bids/[[...action]]/page.tsx` (254→12 lines). Accepts `action?: string[]` prop.
+- **`src/features/categories/`** — New feature module. Added `src/features/categories/components/CategoryProductsView.tsx`: extracted full category-products page (breadcrumb, header, `FilterDrawer`/`ActiveFilterChips`, `ProductSortBar`, `ProductGrid`, `Pagination`) from `categories/[slug]/page.tsx` (260→12 lines). Accepts `slug: string` prop.
+- **`src/features/categories/components/index.ts`** and **`src/features/categories/index.ts`** — Barrel exports for the new categories feature module.
+
+#### Changed
+
+- **`src/features/admin/index.ts`** — Added exports: `AdminCarouselView`, `AdminBidsView` (11 views total).
+- **`src/app/[locale]/admin/carousel/[[...action]]/page.tsx`** — 261 → 12 lines. Thin wrapper: `use(params)` → `<AdminCarouselView action={action} />`.
+- **`src/app/[locale]/admin/bids/[[...action]]/page.tsx`** — 254 → 12 lines. Thin wrapper: `use(params)` → `<AdminBidsView action={action} />`.
+- **`src/app/[locale]/categories/[slug]/page.tsx`** — 260 → 12 lines. Thin wrapper: `use(params)` → `<CategoryProductsView slug={slug} />`.
+- **`categories/[slug]/CategoryProductsView`** — Migrated raw `fetch()` calls to `categoryService.list()` and `productService.list()` (Rule 19 compliance).
+
+#### Fixed
+
+- **`admin/carousel/__tests__/page.test.tsx`**, **`admin/bids/__tests__/page.test.tsx`**, **`categories/[slug]/__tests__/page.test.tsx`** — Updated to import and render view components directly (removed `params` prop, `Suspense` wrapper, and stale `jest.mock("react")`). Categories test migrated mock from raw `fetch` to `@/services` barrel.
+
+---
+
 ### Phase 37.14 — Oversized Pages Batch 5 (2026-02-26)
 
 #### Added

@@ -1,16 +1,10 @@
-import { render, screen } from "@testing-library/react";
-import { Suspense } from "react";
+﻿import { render, screen } from "@testing-library/react";
 import type React from "react";
-import AdminCarouselPage from "../page";
+import { AdminCarouselView } from "@/features/admin";
 import { UI_LABELS } from "@/constants";
 
 const mockPush = jest.fn();
 const mockReplace = jest.fn();
-
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  use: (promise: Promise<any>) => ({}),
-}));
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush, replace: mockReplace }),
@@ -53,12 +47,7 @@ jest.mock("@/components", () => ({
 
 describe("Admin Carousel Page", () => {
   it("renders carousel content", async () => {
-    render(
-      <Suspense fallback={<div>Loading...</div>}>
-        <AdminCarouselPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
-
+    render(<AdminCarouselView />);
     expect(
       await screen.findByText(UI_LABELS.ADMIN.CAROUSEL.TITLE),
     ).toBeInTheDocument();

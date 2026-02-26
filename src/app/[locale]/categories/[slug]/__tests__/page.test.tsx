@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+﻿import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import type React from "react";
 
@@ -6,12 +6,6 @@ const mockApiQuery = jest.fn();
 const mockSet = jest.fn();
 const mockGet = jest.fn().mockReturnValue("");
 const mockGetNumber = jest.fn().mockReturnValue(1);
-
-// Mock React.use() to synchronously return resolved params
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  use: jest.fn().mockReturnValue({ slug: "electronics" }),
-}));
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ replace: jest.fn(), push: jest.fn() }),
@@ -32,6 +26,11 @@ jest.mock("@/hooks", () => ({
     clear: jest.fn(),
     params: new URLSearchParams(),
   }),
+}));
+
+jest.mock("@/services", () => ({
+  categoryService: { list: jest.fn() },
+  productService: { list: jest.fn() },
 }));
 
 jest.mock("@/components", () => ({
@@ -99,7 +98,7 @@ jest.mock("@/components", () => ({
     <div data-testid="active-filter-chips">
       {filters.map((f: any) => (
         <button key={f.key} onClick={() => onRemove(f.key)}>
-          {f.label}: {f.value} ×
+          {f.label}: {f.value} x
         </button>
       ))}
     </div>
@@ -118,7 +117,7 @@ jest.mock("next/link", () => ({
   }) => <a href={href}>{children}</a>,
 }));
 
-import CategoryProductsPage from "../page";
+import { CategoryProductsView } from "@/features/categories";
 
 describe("CategoryProductsPage", () => {
   const mockCategory = {
@@ -180,39 +179,23 @@ describe("CategoryProductsPage", () => {
         isLoading: false,
         error: null,
       });
-    render(
-      <CategoryProductsPage
-        params={Promise.resolve({ slug: "electronics" })}
-      />,
-    );
+    render(<CategoryProductsView slug="electronics" />);
     expect(screen.getByTestId("product-grid")).toBeInTheDocument();
     expect(screen.getByText("Product p1")).toBeInTheDocument();
   });
 
   it("renders category name as page heading", () => {
-    render(
-      <CategoryProductsPage
-        params={Promise.resolve({ slug: "electronics" })}
-      />,
-    );
+    render(<CategoryProductsView slug="electronics" />);
     expect(screen.getAllByText("Electronics")[0]).toBeInTheDocument();
   });
 
   it("FilterDrawer trigger visible", () => {
-    render(
-      <CategoryProductsPage
-        params={Promise.resolve({ slug: "electronics" })}
-      />,
-    );
+    render(<CategoryProductsView slug="electronics" />);
     expect(screen.getByTestId("filter-drawer")).toBeInTheDocument();
   });
 
   it("switching sort calls table.set with sort key", () => {
-    render(
-      <CategoryProductsPage
-        params={Promise.resolve({ slug: "electronics" })}
-      />,
-    );
+    render(<CategoryProductsView slug="electronics" />);
     fireEvent.click(screen.getByRole("button", { name: "Sort by Price" }));
     expect(mockSet).toHaveBeenCalledWith("sort", "-price");
   });
@@ -233,11 +216,7 @@ describe("CategoryProductsPage", () => {
         isLoading: false,
         error: null,
       });
-    render(
-      <CategoryProductsPage
-        params={Promise.resolve({ slug: "electronics" })}
-      />,
-    );
+    render(<CategoryProductsView slug="electronics" />);
     expect(screen.getByTestId("pagination")).toBeInTheDocument();
   });
 
@@ -257,11 +236,7 @@ describe("CategoryProductsPage", () => {
         isLoading: false,
         error: null,
       });
-    render(
-      <CategoryProductsPage
-        params={Promise.resolve({ slug: "nonexistent" })}
-      />,
-    );
+    render(<CategoryProductsView slug="nonexistent" />);
     // Category name heading should not show valid category name
     expect(screen.queryByText("Electronics")).not.toBeInTheDocument();
   });

@@ -1,14 +1,8 @@
-import { render, screen } from "@testing-library/react";
+﻿import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import type React from "react";
-import { Suspense } from "react";
-import AdminBidsPage from "../page";
+import { AdminBidsView } from "@/features/admin";
 import { UI_LABELS } from "@/constants";
-
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  use: (_: Promise<any>) => ({ action: undefined }),
-}));
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
@@ -46,8 +40,8 @@ jest.mock("@/lib/api-client", () => ({
 }));
 
 jest.mock("@/utils", () => ({
-  formatCurrency: (v: number) => `₹${v}`,
-  formatDate: (d: any) => "Jan 1, 2025",
+  formatCurrency: (v: number) => `${v}`,
+  formatDate: (_d: any) => "Jan 1, 2025",
 }));
 
 jest.mock("@/components", () => ({
@@ -62,62 +56,39 @@ jest.mock("@/components", () => ({
     <h1 data-testid="page-header">{title}</h1>
   ),
   TablePagination: () => <div data-testid="table-pagination" />,
-  getBidTableColumns: () => [],
+  getBidTableColumns: () => ({ columns: [], actions: [] }),
 }));
 
 describe("Admin Bids Page", () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it("renders the bids page title", async () => {
-    render(
-      <Suspense fallback={null}>
-        <AdminBidsPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
-    expect(
-      await screen.findByText(UI_LABELS.ADMIN.BIDS.TITLE),
-    ).toBeInTheDocument();
+  it("renders the bids page title", () => {
+    render(<AdminBidsView />);
+    expect(screen.getByText(UI_LABELS.ADMIN.BIDS.TITLE)).toBeInTheDocument();
   });
 
-  it("renders DataTable", async () => {
-    render(
-      <Suspense fallback={null}>
-        <AdminBidsPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
-    expect(await screen.findByTestId("data-table")).toBeInTheDocument();
+  it("renders DataTable", () => {
+    render(<AdminBidsView />);
+    expect(screen.getByTestId("data-table")).toBeInTheDocument();
   });
 
-  it("renders TablePagination", async () => {
-    render(
-      <Suspense fallback={null}>
-        <AdminBidsPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
-    expect(await screen.findByTestId("table-pagination")).toBeInTheDocument();
+  it("renders TablePagination", () => {
+    render(<AdminBidsView />);
+    expect(screen.getByTestId("table-pagination")).toBeInTheDocument();
   });
 
-  it("uses useUrlTable with default sort -bidDate", async () => {
+  it("uses useUrlTable with default sort -bidDate", () => {
     const { useUrlTable } = require("@/hooks");
-    render(
-      <Suspense fallback={null}>
-        <AdminBidsPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
-    await screen.findByTestId("data-table");
+    render(<AdminBidsView />);
     const calls = useUrlTable.mock.calls;
     expect(calls.length).toBeGreaterThan(0);
     expect(calls[0][0]).toMatchObject({ defaults: { sort: "-bidDate" } });
   });
 
-  it("renders status filter tabs including All Bids", async () => {
-    render(
-      <Suspense fallback={null}>
-        <AdminBidsPage params={Promise.resolve({})} />
-      </Suspense>,
-    );
+  it("renders status filter tabs including All Bids", () => {
+    render(<AdminBidsView />);
     expect(
-      await screen.findByText(UI_LABELS.ADMIN.BIDS.FILTER_ALL),
+      screen.getByText(UI_LABELS.ADMIN.BIDS.FILTER_ALL),
     ).toBeInTheDocument();
   });
 });

@@ -1,0 +1,1 @@
+export { CategoryProductsView } from "./CategoryProductsView";
