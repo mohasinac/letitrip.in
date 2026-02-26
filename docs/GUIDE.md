@@ -2,7 +2,7 @@
 
 > **Complete Index of All Code, Snippets, Functions, Classes, Hooks, Components, and Database Schemas**
 
-**Last Updated**: February 21, 2026  
+**Last Updated**: February 26, 2026  
 **Status**: Comprehensive Reference for LetItRip.in Project
 
 ---
@@ -24,6 +24,7 @@
 12. [Types](#12-types)
 13. [API Endpoints](#13-api-endpoints)
 14. [Lib Modules](#14-lib-modules)
+15. [Client Service Layer (`@/services`)](#15-client-service-layer-services)
 
 ---
 
@@ -3796,6 +3797,44 @@ export * from "./constants";
 
 ---
 
+## 15. Client Service Layer (`@/services`)
+
+**Location**: `src/services/`  
+**Import**: `import { productService, cartService, ... } from '@/services'`  
+**Rule**: Never call `apiClient` directly in components -- always go through a service function (Rule 20).
+
+| Service                   | Key Methods                                                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `addressService`          | `list()`, `getById(id)`, `create(data)`, `update(id,data)`, `delete(id)`                                                  |
+| `adminService`            | `getDashboardStats()`, `listSessions(params?)`, `listOrders(sieveQuery?)`, `updateOrder(id,data)`                         |
+| `authService`             | `login(email,pw)`, `register(data)`, `logout()`                                                                           |
+| `bidService`              | `create(data)`, `listByProduct(productId)`, `getById(id)`                                                                 |
+| `blogService`             | `list(params?)`, `getBySlug(slug)`                                                                                        |
+| `carouselService`         | `list()`, `create(data)`, `update(id,data)`, `delete(id)`                                                                 |
+| `cartService`             | `get()`, `addItem(data)`, `removeItem(itemId)`, `updateItem(itemId,data)`                                                 |
+| `categoryService`         | `list(params?)`, `getBySlug(slug)`, `create(data)`, `update(id,data)`, `delete(id)`                                       |
+| `checkoutService`         | `placeOrder(data)`, `createPaymentOrder(data)`, `verifyPayment(data)`                                                     |
+| `contactService`          | `send(data)`                                                                                                              |
+| `couponService`           | `list(params?)`, `validate(code,orderTotal)`, `create(data)`, `update(id,data)`, `delete(id)`                             |
+| `eventService`            | `list(params?)`, `getById(id)`, `enter(id,data)`, `leaderboard(id)`                                                       |
+| `faqService`              | `list(params?)`, `vote(id,data)`, `create(data)`, `update(id,data)`, `delete(id)`                                         |
+| `homepageSectionsService` | `list()`, `update(id,data)`                                                                                               |
+| `mediaService`            | `upload(formData)`, `crop(data)`, `trim(data)`                                                                            |
+| `newsletterService`       | `subscribe(email)`, `list(params?)`, `unsubscribe(id)`, `delete(id)`                                                      |
+| `notificationService`     | `list(params?)`, `markRead(id)`, `markAllRead()`, `delete(id)`, `getUnreadCount()`                                        |
+| `orderService`            | `list(params?)`, `getById(id)`                                                                                            |
+| `productService`          | `list(params?)`, `getById(id)`, `getFeatured()`, `listAuctions(params?)`, `create(data)`, `update(id,data)`, `delete(id)` |
+| `profileService`          | `get()`, `update(data)`, `getPublic(userId)`                                                                              |
+| `promotionsService`       | `list()`                                                                                                                  |
+| `reviewService`           | `list(params?)`, `getByProduct(productId)`, `create(data)`, `delete(id)`                                                  |
+| `searchService`           | `query(params)`                                                                                                           |
+| `sellerService`           | `getAnalytics()`, `listProducts(uid)`, `listOrders(params?)`, `listPayouts(params?)`, `requestPayout(data)`               |
+| `sessionService`          | `list()`, `revoke(id)`, `revokeAll()`                                                                                     |
+| `siteSettingsService`     | `get()`, `update(data)`                                                                                                   |
+| `wishlistService`         | `list()`, `add(productId)`, `remove(productId)`, `check(productId)`                                                       |
+
+---
+
 ## � In-Folder Documentation
 
 For detailed documentation with usage examples, best practices, and contribution guidelines, see the comprehensive README files in each directory:
@@ -3860,6 +3899,7 @@ This guide provides a complete reference for:
 - ✅ **35+ Pages** - Public, Auth, User, Admin, Demo routes
 - ✅ **Multiple Type Definitions** - Auth, API, Database types
 - ✅ **50+ API Endpoints** - RESTful API with authentication (incl. demo seed, phone, sessions)
+- ✅ **26 Client Services** - One service per domain (`@/services`) — `productService`, `cartService`, `orderService`, `adminService`, `sellerService`, etc.
 - ✅ **20+ Lib Modules** - API client, Email, Firebase, Security, Validation, Errors, Monitoring
 
 ---

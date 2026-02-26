@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation Cleanup (2026-02-26)
+
+#### Changed
+
+- **`docs/GUIDE.md`** — Added Section 15: Client Service Layer (`@/services`) documenting all 26 domain services; updated TOC and Summary; bumped Last Updated date.
+- **`docs/IMPLEMENTATION_PLAN.md`** — Removed all detailed phase descriptions (Phases 1–45 fully complete); retained only Phase Overview table and Progress Tracker.
+- **`docs/README.md`** — Replaced stale `ROADMAP.md` link with `IMPLEMENTATION_PLAN.md`.
+
+#### Deleted
+
+- **`docs/TECH_DEBT.md`** — All items resolved or externally blocked; doc no longer needed.
+- **`docs/ROADMAP.md`** — All routes, APIs, components, and schemas implemented; doc no longer needed.
+
+---
+
 ### Phases 44–45 — apiClient Elimination: Blog, Products, Seller Edit, Cart + Events Pages (2026-02-28)
 
 #### Changed

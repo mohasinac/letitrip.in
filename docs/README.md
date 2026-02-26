@@ -6,7 +6,7 @@ This repository now keeps a smaller, core set of documentation files.
 
 - [GUIDE.md](./GUIDE.md) - Complete codebase reference
 - [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Common patterns and shortcuts
-- [ROADMAP.md](./ROADMAP.md) - Feature roadmap, dead link tracker, and phased build plan
+- [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) - Phase overview and completion tracker (Phases 1–45 all done)
 - [CHANGELOG.md](./CHANGELOG.md) - Project history and updates
 - [SECURITY.md](./SECURITY.md) - Security practices and policy
 - [RBAC.md](./RBAC.md) - Role-based access control
