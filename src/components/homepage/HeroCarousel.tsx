@@ -2,13 +2,16 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useHeroCarousel, useSwipe, useMediaQuery } from "@/hooks";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
 import type { CarouselSlideDocument, GridCard } from "@/db/schema";
 
 export function HeroCarousel() {
+  const tLoading = useTranslations("loading");
+  const tA11y = useTranslations("accessibility");
   const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
@@ -63,7 +66,7 @@ export function HeroCarousel() {
       >
         <div className="absolute inset-0 flex items-center justify-center">
           <p className={THEME_CONSTANTS.themed.textSecondary}>
-            {UI_LABELS.LOADING.DEFAULT}
+            {tLoading("default")}
           </p>
         </div>
       </div>
@@ -120,7 +123,7 @@ export function HeroCarousel() {
       ref={sectionRef}
       className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden"
       aria-roledescription="carousel"
-      aria-label={UI_LABELS.HERO_CAROUSEL.ARIA_LABEL}
+      aria-label={tA11y("heroCarouselAriaLabel")}
       onKeyDown={handleKeyDown}
       onFocus={() => setIsPaused(true)}
       onBlur={() => setIsPaused(false)}
@@ -128,7 +131,10 @@ export function HeroCarousel() {
     >
       {/* Screen-reader live region — announces slide changes */}
       <div aria-live="polite" aria-atomic="true" className="sr-only">
-        {UI_LABELS.HERO_CAROUSEL.SLIDE_OF(currentSlide + 1, slides.length)}
+        {tA11y("heroCarouselSlideOf", {
+          current: currentSlide + 1,
+          total: slides.length,
+        })}
       </div>
       {/* Background Media */}
       <div className="absolute inset-0">
@@ -270,7 +276,7 @@ export function HeroCarousel() {
                   : "bg-white/50 hover:bg-white/75"
               }`}
               onClick={() => setCurrentSlide(index)}
-              aria-label={UI_LABELS.HERO_CAROUSEL.GO_TO_SLIDE(index + 1)}
+              aria-label={tA11y("heroCarouselGoToSlide", { number: index + 1 })}
             />
           ))}
         </div>
@@ -282,7 +288,7 @@ export function HeroCarousel() {
           <button
             className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-lg transition-all z-10"
             onClick={goPrev}
-            aria-label={UI_LABELS.HERO_CAROUSEL.PREV_SLIDE}
+            aria-label={tA11y("heroCarouselPrevSlide")}
           >
             <svg
               className="w-6 h-6"
@@ -301,7 +307,7 @@ export function HeroCarousel() {
           <button
             className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-lg transition-all z-10"
             onClick={goNext}
-            aria-label={UI_LABELS.HERO_CAROUSEL.NEXT_SLIDE}
+            aria-label={tA11y("heroCarouselNextSlide")}
           >
             <svg
               className="w-6 h-6"

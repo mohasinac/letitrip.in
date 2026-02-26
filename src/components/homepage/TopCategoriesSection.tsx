@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import {
   Tag,
   ShoppingBag,
@@ -15,7 +16,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useTopCategories } from "@/hooks";
-import { THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import type { CategoryDocument } from "@/db/schema";
 
 /** Lucide icon fallback mapped from category slug keywords */
@@ -59,6 +60,8 @@ function CategoryIcon({
 }
 
 export function TopCategoriesSection() {
+  const t = useTranslations("homepage");
+  const tActions = useTranslations("actions");
   const { data, isLoading } = useTopCategories(12);
 
   const categories = data || [];
@@ -99,13 +102,13 @@ export function TopCategoriesSection() {
           <h2
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary}`}
           >
-            {UI_LABELS.HOMEPAGE.CATEGORIES.TITLE}
+            {t("categoriesTitle")}
           </h2>
           <Link
             href={ROUTES.PUBLIC.CATEGORIES}
             className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
           >
-            {UI_LABELS.ACTIONS.VIEW_ALL_ARROW}
+            {tActions("viewAllArrow")}
           </Link>
         </div>
 

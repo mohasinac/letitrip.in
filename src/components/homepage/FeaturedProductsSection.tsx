@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useFeaturedProducts } from "@/hooks";
-import { THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
 
 export function FeaturedProductsSection() {
+  const t = useTranslations("homepage");
+  const tActions = useTranslations("actions");
   const { data, isLoading } = useFeaturedProducts();
 
   if (isLoading) {
@@ -65,19 +68,19 @@ export function FeaturedProductsSection() {
             <h2
               className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-1`}
             >
-              {UI_LABELS.HOMEPAGE.FEATURED_PRODUCTS.TITLE}
+              {t("featuredProducts")}
             </h2>
             <p
               className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
             >
-              {UI_LABELS.HOMEPAGE.FEATURED_PRODUCTS.SUBTITLE}
+              {t("featuredProductsSubtitle")}
             </p>
           </div>
           <Link
             href={ROUTES.PUBLIC.PRODUCTS}
             className={`text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hidden sm:block`}
           >
-            {UI_LABELS.ACTIONS.VIEW_ALL_ARROW}
+            {tActions("viewAllArrow")}
           </Link>
         </div>
 
@@ -116,7 +119,7 @@ export function FeaturedProductsSection() {
             href={ROUTES.PUBLIC.PRODUCTS}
             className="text-sm font-medium text-indigo-600 dark:text-indigo-400"
           >
-            {UI_LABELS.ACTIONS.VIEW_ALL_ARROW}
+            {tActions("viewAllArrow")}
           </Link>
         </div>
       </div>

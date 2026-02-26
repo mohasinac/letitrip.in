@@ -1,8 +1,10 @@
 "use client";
 
-import { THEME_CONSTANTS, SITE_FEATURES, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS, SITE_FEATURES } from "@/constants";
 
 export function SiteFeaturesSection() {
+  const t = useTranslations("homepage");
   return (
     <section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
@@ -13,12 +15,12 @@ export function SiteFeaturesSection() {
           <h2
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
           >
-            {UI_LABELS.HOMEPAGE.FEATURES.TITLE}
+            {t("featuresTitle")}
           </h2>
           <p
             className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.container["2xl"]} mx-auto`}
           >
-            {UI_LABELS.HOMEPAGE.FEATURES.SUBTITLE}
+            {t("featuresSubtitle")}
           </p>
         </div>
 

@@ -1180,7 +1180,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
 **Gesture Types**: `tap`, `doubleTap`, `longPress`, `swipe`, `pinch`
 
-#### useLongPress _(planned — Phase 10)_
+#### useLongPress
 
 **File**: `useLongPress.ts`  
 **Purpose**: Fire a callback after pointer is held for a configurable duration; does NOT fire on quick tap  
@@ -1188,7 +1188,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 **Options**: `delay` (ms, default 500), `moveThreshold` (px, default 10)  
 **Returns**: `{ onPointerDown, onPointerUp, onPointerLeave }`
 
-#### usePullToRefresh _(planned — Phase 10)_
+#### usePullToRefresh
 
 **File**: `usePullToRefresh.ts`  
 **Purpose**: Detect downward overscroll pull gesture and trigger a refresh callback  
@@ -1200,7 +1200,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
 ### URL Table State Hook
 
-#### useUrlTable _(planned — Phase 2)_
+#### useUrlTable
 
 **File**: `useUrlTable.ts`  
 **Purpose**: Manage all list/table state (filters, sort, pagination) via URL query params — bookmark-safe, shareable, history-friendly. Replaces local `useState` for any page that filters or paginates.  
@@ -2907,13 +2907,13 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 **Props**: `columns`, `data`, `loading`, `striped`, `stickyHeader`, `mobileCardRender`, `externalPagination`, `showViewToggle`, `viewMode`, `defaultViewMode`, `onViewModeChange`  
 **Deprecated** (will remove after full migration): `showPagination`, `pageSize`
 
-#### TablePagination _(planned — Phase 2)_
+#### TablePagination
 
 **File**: `src/components/ui/TablePagination.tsx`  
 **Purpose**: Standalone pagination control with "Showing X–Y of Z results", per-page selector, and page-number strip. Decoupled from DataTable so it can sit anywhere in the layout. Usable by admin, public, seller, and user pages.  
 **Props**: `total`, `page`, `pageSize`, `onPageChange`, `onPageSizeChange`, `pageSizeOptions`
 
-#### SortDropdown _(planned — Phase 2)_
+#### SortDropdown
 
 **File**: `src/components/ui/SortDropdown.tsx`  
 **Purpose**: `<label>` + `<select>` sort control for any list page (admin, public, seller, user). Human-readable labels; options from a constant array. Used inside `AdminFilterBar`.  
@@ -2951,14 +2951,13 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 
 ---
 
-### Filter & Pagination Components _(planned — Phase 2)_
+### Filter & Pagination Components
 
-> These components are part of the frontend refactor (Phase 2). They replace the ad-hoc filter
-> implementations across admin, seller, public and search pages with shared, accessible primitives.
+> Shared primitives (Tier 1) — replace ad-hoc filter implementations across admin, seller, public and search pages.
 
 #### FilterFacetSection
 
-**File**: `src/components/ui/FilterFacetSection.tsx` _(planned — Phase 2)_  
+**File**: `src/components/ui/FilterFacetSection.tsx`  
 **Tier**: 1 — Shared primitive. Not admin-specific.  
 **Purpose**: A single collapsible filter group (e.g. "Category", "Brand", "Price range") that renders a list of checkboxes, virtualises long lists with a "Load more" button, and includes an inline search input. Selected values are passed to `ActiveFilterChips` by the parent.  
 **Used by**: `FilterDrawer` (as children), `products/page.tsx`, `search/page.tsx`, `categories/[slug]/page.tsx`, `auctions/page.tsx`, `seller/products/page.tsx`, and any admin page that adopts the drawer filter pattern.  
@@ -2966,7 +2965,7 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 
 #### FilterDrawer
 
-**File**: `src/components/ui/FilterDrawer.tsx` _(planned — Phase 2)_  
+**File**: `src/components/ui/FilterDrawer.tsx`  
 **Tier**: 1 — Shared primitive. Not admin-specific.  
 **Purpose**: Toggleable left slide-in filter panel (uses `SideDrawer` with `side="left"`). Wraps one or more `FilterFacetSection` groups. Has a "Clear All" + "Apply" footer and shows an active-count badge on the trigger button. Replaces always-open filter sidebars on mobile and wherever screen space is limited.  
 **Used by**: `products/page.tsx` (mobile only; lg+ keeps `ProductFilters` as a left sidebar), `search/page.tsx`, `categories/[slug]/page.tsx`, `auctions/page.tsx`, `seller/products/page.tsx`.  
@@ -2974,7 +2973,7 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 
 #### ActiveFilterChips
 
-**File**: `src/components/ui/ActiveFilterChips.tsx` _(planned — Phase 2)_  
+**File**: `src/components/ui/ActiveFilterChips.tsx`  
 **Tier**: 1 — Shared primitive. Not admin-specific.  
 **Purpose**: Row of dismissible chips showing every currently-active filter. "Clear all" link when two or more filters are set. Hidden when none are active. Renders below the `FilterDrawer` trigger or inline `AdminFilterBar` on any list page — public, seller, or admin.  
 **Used by**: `products/page.tsx`, `search/page.tsx`, `categories/[slug]/page.tsx`, `auctions/page.tsx`, `seller/products/page.tsx`, admin list pages.  
@@ -3493,8 +3492,8 @@ export * from "./constants";
 ### Media API
 
 - `POST /api/media/upload` - Upload file to Firebase Cloud Storage (authenticated)
-- `POST /api/media/crop` - Crop an image (authenticated, not yet implemented)
-- `POST /api/media/trim` - Trim a video (authenticated, not yet implemented)
+- `POST /api/media/crop` - Crop an image using `sharp` (authenticated)
+- `POST /api/media/trim` - Trim a video using `ffmpeg` (authenticated)
 
 ### Session API
 

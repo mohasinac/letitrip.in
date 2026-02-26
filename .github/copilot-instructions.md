@@ -460,8 +460,8 @@ const { spacing, themed, typography, borderRadius } = THEME_CONSTANTS;
 | Click outside | `useClickOutside(ref, handler)` |
 | Keyboard shortcuts | `useKeyPress(key, handler)` |
 | Swipe gestures | `useSwipe(options)` |
-| Long-press gesture | `useLongPress(callback, options)` — fires after hold; no-op on quick tap _(planned Phase 10)_ |
-| Pull-to-refresh | `usePullToRefresh(onRefresh, options)` — overscroll detection _(planned Phase 10)_ |
+| Long-press gesture | `useLongPress(callback, options)` — fires after hold; no-op on quick tap |
+| Pull-to-refresh | `usePullToRefresh(onRefresh, options)` — overscroll detection |
 | Unsaved changes | `useUnsavedChanges(isDirty)` |
 | Toast/messages | `useMessage()` |
 | Admin stats | `useAdminStats()` |
@@ -503,7 +503,7 @@ table.buildSearchParams()
 - Filter/sort changes **always reset page to 1** — automatic inside `set()` / `setMany()`.
 - **`view` param changes do NOT reset page** — `'view'` is excluded from the page-reset guard alongside `'page'` and `'pageSize'`.
 
-**View toggle integration** _(planned Phase 2)_: pages that use `DataTable` with `showViewToggle` pass view mode through `useUrlTable`. Re-use the existing `mobileCardRender` prop as the card renderer — no separate prop needed:
+**View toggle integration**: pages that use `DataTable` with `showViewToggle` pass view mode through `useUrlTable`. Re-use the existing `mobileCardRender` prop as the card renderer — no separate prop needed:
 ```tsx
 const table = useUrlTable({ defaults: { view: 'grid', pageSize: '24' } });
 <DataTable
@@ -543,14 +543,14 @@ Key available components:
 
 **UI**: `Button`, `Card`, `Badge`, `Input`, `Select`, `Textarea`, `Checkbox`, `Toggle`, `Alert`, `Modal`, `ConfirmDeleteModal`, `ImageCropModal`, `FormField`, `Slider`, `Progress`, `Tabs`, `Accordion`, `Tooltip`, `Search`, `BackToTop`, `LoadingSpinner`, `ErrorBoundary`, `AvatarDisplay`, `AvatarUpload`, `PasswordStrengthIndicator`, `Text`, `DataTable`, `SideDrawer`, `RichTextEditor`, `Sidebar`, `Header`, `Footer`, `SectionTabs`, `StatusBadge`, `RoleBadge`, `EmptyState`, `ResponsiveView`.
 
-**Filter / Facet / Pagination** — Tier 1 shared primitives, used on **public, seller, and admin pages** alike _(planned Phase 2)_:
+**Filter / Facet / Pagination** — Tier 1 shared primitives, used on **public, seller, and admin pages** alike:
 - `FilterFacetSection` — collapsible filter group (checkboxes + inline search + load-more). Compose inside `FilterDrawer` or inline.
 - `FilterDrawer` — toggleable left slide-in filter panel. Replaces always-open filter sidebars on mobile and space-constrained pages. Used on products, search, categories, auctions, seller/products, and admin list pages.
 - `ActiveFilterChips` — dismissible chips row for every active filter + "Clear all". Appears below the `FilterDrawer` trigger or inline `AdminFilterBar` on any list page.
 - `SortDropdown` — sort label + select control for any list page.
 - `TablePagination` — result count + per-page selector + `Pagination` for any paginated list.
 
-**Admin**: `AdminPageHeader`, `AdminFilterBar` (use `withCard={false}` for public/seller pages — no separate `FilterBar` needed), `DrawerFormFooter` _(planned Phase 2)_.
+**Admin**: `AdminPageHeader`, `AdminFilterBar` (use `withCard={false}` for public/seller pages — no separate `FilterBar` needed), `DrawerFormFooter`.
 
 **User**: `AddressForm`, `AddressCard`, `ProfileHeader`, `ProfileStatsGrid`, `EmailVerificationCard`, `PhoneVerificationCard`, `ProfileInfoForm`, `PasswordChangeForm`, `AccountInfoCard`.
 

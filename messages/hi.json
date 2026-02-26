@@ -656,13 +656,20 @@
     "trendingNow": "ट्रेंडिंग",
     "whyChooseUs": "हमें क्यों चुनें",
     "customerReviews": "ग्राहक समीक्षाएं",
+    "categoriesTitle": "श्रेणी के अनुसार खरीदारी करें",
+    "featuredProductsSubtitle": "आपके लिए चुने गए विशेष उत्पाद",
+    "blogTitle": "हमारे ब्लॉग से",
+    "blogSubtitle": "समुदाय से टिप्स, कहानियां और अंतर्दृष्टि",
+    "featuresTitle": "हमारे साथ क्यों खरीदारी करें?",
+    "featuresSubtitle": "आपकी संतुष्टि हमारी प्राथमिकता है। हम बेजोड़ सुविधाओं के साथ एक निर्बाध खरीदारी अनुभव प्रदान करते हैं",
     "newsletter": {
       "title": "अपडेट रहें",
       "subtitle": "नवीनतम डील और ऑफर पाने के लिए सब्सक्राइब करें",
       "placeholder": "अपना ईमेल दर्ज करें",
       "subscribe": "सब्सक्राइब करें",
       "success": "सफलतापूर्वक सब्सक्राइब किया!",
-      "alreadySubscribed": "आप पहले से सब्सक्राइब हैं।"
+      "alreadySubscribed": "आप पहले से सब्सक्राइब हैं।",
+      "privacyNote": "हम आपकी गोपनीयता का सम्मान करते हैं। कभी भी अनसब्सक्राइब करें। पढ़ें"
     }
   },
   "footer": {
@@ -697,7 +704,12 @@
     "searchIcon": "खोज आइकन",
     "cartIcon": "कार्ट आइकन",
     "userIcon": "उपयोगकर्ता आइकन",
-    "logoAlt": "साइट लोगो"
+    "logoAlt": "साइट लोगो",
+    "heroCarouselAriaLabel": "विशेष प्रचार कैरोसेल",
+    "heroCarouselSlideOf": "स्लाइड {current} / {total}",
+    "heroCarouselGoToSlide": "स्लाइड {number} पर जाएं",
+    "heroCarouselPrevSlide": "पिछली स्लाइड",
+    "heroCarouselNextSlide": "अगली स्लाइड"
   },
   "locale": {
     "label": "भाषा",

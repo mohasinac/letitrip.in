@@ -9,6 +9,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phases 50–54 — Documentation Cleanup, Code Quality Audit, Homepage i18n Rule 2 Fix (2026-02-27)
+
+#### Changed (Phase 50 — GUIDE.md stale annotations cleanup)
+
+- **`docs/GUIDE.md`** — Removed 9 stale `_(planned — Phase X)_` labels from: `useLongPress`, `usePullToRefresh`, `useUrlTable`, `TablePagination`, `SortDropdown`, `FilterFacetSection`, `FilterDrawer`, `ActiveFilterChips`, and the `Filter & Pagination Components` section heading + its intro paragraph.
+- **`docs/GUIDE.md`** — Removed `not yet implemented` qualifier from `POST /api/media/crop` and `POST /api/media/trim`; updated descriptions to note `sharp` and `ffmpeg` implementations respectively.
+
+#### Changed (Phase 51 — copilot-instructions.md stale annotations cleanup)
+
+- **`.github/copilot-instructions.md`** — Removed `_(planned Phase 10)_` from `useLongPress` and `usePullToRefresh` hook table rows.
+- **`.github/copilot-instructions.md`** — Removed `_(planned Phase 2)_` from view toggle integration paragraph, Filter/Facet/Pagination component group, and `DrawerFormFooter` component listing.
+
+#### Audited (Phase 52 — code quality sweep)
+
+- Confirmed 0 barrel import violations across `src/app/[locale]/`, `src/components/`, and `src/features/`.
+- Confirmed 0 direct `apiClient` calls in any `page.tsx` or component file.
+- Confirmed 0 module-level `useTranslations()` calls (all inside component function bodies).
+- **Found**: 7 homepage client components using `UI_LABELS` in JSX — Rule 2 violations addressed in Phases 53–54.
+
+#### Fixed (Phase 53 — homepage i18n Rule 2 batch 1)
+
+- **`src/components/homepage/WelcomeSection.tsx`** — Removed unused `UI_LABELS` import (all text comes from DB `config` object, not UI_LABELS). No JSX change needed.
+- **`src/components/homepage/TopCategoriesSection.tsx`** — Replaced `UI_LABELS.HOMEPAGE.CATEGORIES.TITLE` → `t("categoriesTitle")` and `UI_LABELS.ACTIONS.VIEW_ALL_ARROW` → `tActions("viewAllArrow")`. Added `useTranslations("homepage")` + `useTranslations("actions")`.
+- **`src/components/homepage/SiteFeaturesSection.tsx`** — Replaced `UI_LABELS.HOMEPAGE.FEATURES.TITLE` and `...SUBTITLE` → `t("featuresTitle")` / `t("featuresSubtitle")`. Added `useTranslations("homepage")`.
+- **`src/components/homepage/BlogArticlesSection.tsx`** — Replaced `UI_LABELS.HOMEPAGE.BLOG.TITLE/SUBTITLE` and `UI_LABELS.ACTIONS.VIEW_ALL` (×2) → `t("blogTitle")`, `t("blogSubtitle")`, `tActions("viewAll")`. Added `useTranslations("homepage")` + `useTranslations("actions")`.
+- **`messages/en.json`** — Added 7 new keys to `homepage` namespace: `categoriesTitle`, `featuredProductsSubtitle`, `blogTitle`, `blogSubtitle`, `featuresTitle`, `featuresSubtitle`, `newsletter.privacyNote`.
+- **`messages/hi.json`** — Same 7 keys added with Hindi translations.
+
+#### Fixed (Phase 54 — homepage i18n Rule 2 batch 2)
+
+- **`src/components/homepage/FeaturedProductsSection.tsx`** — Replaced `UI_LABELS.HOMEPAGE.FEATURED_PRODUCTS.*` and `UI_LABELS.ACTIONS.VIEW_ALL_ARROW` (×2) → `t("featuredProducts")`, `t("featuredProductsSubtitle")`, `tActions("viewAllArrow")`. Added `useTranslations("homepage")` + `useTranslations("actions")`.
+- **`src/components/homepage/NewsletterSection.tsx`** — Replaced all 6 `UI_LABELS`/`UI_PLACEHOLDERS` usages → `t("newsletter.*")`, `tLoading("default")`, `tActions("subscribe")`, `tFooter("privacyPolicy")`. Added 4 `useTranslations` calls; removed `UI_LABELS` + `UI_PLACEHOLDERS` from imports.
+- **`src/components/homepage/HeroCarousel.tsx`** — Replaced `UI_LABELS.LOADING.DEFAULT`, `UI_LABELS.HERO_CAROUSEL.*` (5 usages) → `tLoading("default")`, `tA11y("heroCarouselAriaLabel/SlideOf/GoToSlide/PrevSlide/NextSlide")` with ICU interpolation (`{current}`, `{total}`, `{number}`). Added `useTranslations("loading")` + `useTranslations("accessibility")`.
+- **`messages/en.json`** — Added 5 new keys to `accessibility` namespace: `heroCarouselAriaLabel`, `heroCarouselSlideOf`, `heroCarouselGoToSlide`, `heroCarouselPrevSlide`, `heroCarouselNextSlide`.
+- **`messages/hi.json`** — Same 5 keys added with Hindi translations.
+
+#### Result
+
+All 7 homepage client components fully Rule 2 compliant — zero `UI_LABELS` in JSX. 0 TS errors. 357/357 suites green.
+
+---
+
 ### Phase 47-49 — Test Mock Type Safety, Service Coverage Confirmed, i18n Audit (2026-02-28)
 
 #### Fixed

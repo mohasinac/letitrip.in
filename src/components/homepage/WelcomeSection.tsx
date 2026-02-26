@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useHomepageSections } from "@/hooks";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
 import type {
   HomepageSectionDocument,

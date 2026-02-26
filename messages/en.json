@@ -657,13 +657,20 @@
     "trendingNow": "Trending Now",
     "whyChooseUs": "Why Choose Us",
     "customerReviews": "Customer Reviews",
+    "categoriesTitle": "Shop by Category",
+    "featuredProductsSubtitle": "Handpicked items just for you",
+    "blogTitle": "From Our Blog",
+    "blogSubtitle": "Tips, stories, and insights from the community",
+    "featuresTitle": "Why Shop With Us?",
+    "featuresSubtitle": "Your satisfaction is our priority. We provide a seamless shopping experience with unmatched features",
     "newsletter": {
       "title": "Stay Updated",
       "subtitle": "Subscribe to get the latest deals and offers",
       "placeholder": "Enter your email",
       "subscribe": "Subscribe",
       "success": "Successfully subscribed!",
-      "alreadySubscribed": "You are already subscribed."
+      "alreadySubscribed": "You are already subscribed.",
+      "privacyNote": "We respect your privacy. Unsubscribe at any time. Read our"
     }
   },
   "footer": {
@@ -698,7 +705,12 @@
     "searchIcon": "Search icon",
     "cartIcon": "Cart icon",
     "userIcon": "User icon",
-    "logoAlt": "Site logo"
+    "logoAlt": "Site logo",
+    "heroCarouselAriaLabel": "Featured promotions carousel",
+    "heroCarouselSlideOf": "Slide {current} of {total}",
+    "heroCarouselGoToSlide": "Go to slide {number}",
+    "heroCarouselPrevSlide": "Previous slide",
+    "heroCarouselNextSlide": "Next slide"
   },
   "locale": {
     "label": "Language",

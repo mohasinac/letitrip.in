@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Mail } from "lucide-react";
 import {
   THEME_CONSTANTS,
-  UI_LABELS,
-  UI_PLACEHOLDERS,
   ROUTES,
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
@@ -15,6 +14,10 @@ import { Button, Input } from "@/components";
 import { useNewsletterSubscribe, useMessage } from "@/hooks";
 
 export function NewsletterSection() {
+  const t = useTranslations("homepage");
+  const tActions = useTranslations("actions");
+  const tLoading = useTranslations("loading");
+  const tFooter = useTranslations("footer");
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const { message, showSuccess, showError } = useMessage();
@@ -56,12 +59,12 @@ export function NewsletterSection() {
           <h2
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
           >
-            {UI_LABELS.HOMEPAGE.NEWSLETTER.TITLE}
+            {t("newsletter.title")}
           </h2>
           <p
             className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.container.xl} mx-auto mb-8`}
           >
-            {UI_LABELS.HOMEPAGE.NEWSLETTER.SUBTITLE}
+            {t("newsletter.subtitle")}
           </p>
 
           {/* Success State */}
@@ -81,14 +84,12 @@ export function NewsletterSection() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder={UI_PLACEHOLDERS.EMAIL}
+                  placeholder={t("newsletter.placeholder")}
                   className="flex-1"
                   disabled={isLoading}
                 />
                 <Button type="submit" variant="primary" disabled={isLoading}>
-                  {isLoading
-                    ? UI_LABELS.LOADING.DEFAULT
-                    : UI_LABELS.ACTIONS.SUBSCRIBE}
+                  {isLoading ? tLoading("default") : tActions("subscribe")}
                 </Button>
               </div>
 
@@ -111,12 +112,12 @@ export function NewsletterSection() {
           <p
             className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mt-6`}
           >
-            {UI_LABELS.HOMEPAGE.NEWSLETTER.PRIVACY_NOTE}{" "}
+            {t("newsletter.privacyNote")}{" "}
             <Link
               href={ROUTES.PUBLIC.PRIVACY}
               className="text-blue-600 dark:text-blue-400 hover:underline"
             >
-              {UI_LABELS.FOOTER.PRIVACY_POLICY}
+              {tFooter("privacyPolicy")}
             </Link>
           </p>
         </div>

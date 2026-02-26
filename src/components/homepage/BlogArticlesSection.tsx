@@ -2,15 +2,13 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import {
-  THEME_CONSTANTS,
-  ROUTES,
-  UI_LABELS,
-  MOCK_BLOG_ARTICLES,
-} from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS, ROUTES, MOCK_BLOG_ARTICLES } from "@/constants";
 import { formatDate } from "@/utils";
 
 export function BlogArticlesSection() {
+  const t = useTranslations("homepage");
+  const tActions = useTranslations("actions");
   const router = useRouter();
   // NOTE: Using mock data until /api/blog route is implemented (blog feature not yet built)
   // Replace with: const { data, isLoading } = useApiQuery('/api/blog?limit=4')
@@ -32,19 +30,19 @@ export function BlogArticlesSection() {
             <h2
               className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
             >
-              {UI_LABELS.HOMEPAGE.BLOG.TITLE}
+              {t("blogTitle")}
             </h2>
             <p
               className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
             >
-              {UI_LABELS.HOMEPAGE.BLOG.SUBTITLE}
+              {t("blogSubtitle")}
             </p>
           </div>
           <button
             className={`${THEME_CONSTANTS.typography.body} text-blue-600 dark:text-blue-400 font-medium hover:underline hidden md:block`}
             onClick={() => router.push(ROUTES.PUBLIC.BLOG)}
           >
-            {UI_LABELS.ACTIONS.VIEW_ALL} →
+            {tActions("viewAll")} →
           </button>
         </div>
 
@@ -134,7 +132,7 @@ export function BlogArticlesSection() {
             className={`${THEME_CONSTANTS.typography.body} text-blue-600 dark:text-blue-400 font-medium hover:underline`}
             onClick={() => router.push(ROUTES.PUBLIC.BLOG)}
           >
-            {UI_LABELS.ACTIONS.VIEW_ALL} →
+            {tActions("viewAll")} →
           </button>
         </div>
       </div>
