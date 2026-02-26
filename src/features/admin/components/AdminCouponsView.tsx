@@ -11,13 +11,8 @@
 import { useState, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import {
-  API_ENDPOINTS,
-  ROUTES,
-  ERROR_MESSAGES,
-  SUCCESS_MESSAGES,
-} from "@/constants";
+import { couponService } from "@/services";
+import { ROUTES, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -74,23 +69,19 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
   }>({
     queryKey: ["admin", "coupons", table.params.toString()],
     queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.ADMIN.COUPONS}${table.buildSieveParams(filtersArr.join(","))}`,
-      ),
+      couponService.list(table.buildSieveParams(filtersArr.join(","))),
   });
 
   const createMutation = useApiMutation<any, any>({
-    mutationFn: (payload) =>
-      apiClient.post(API_ENDPOINTS.ADMIN.COUPONS, payload),
+    mutationFn: (payload) => couponService.create(payload),
   });
 
   const updateMutation = useApiMutation<any, { id: string; data: any }>({
-    mutationFn: ({ id, data: update }) =>
-      apiClient.patch(API_ENDPOINTS.ADMIN.COUPON_BY_ID(id), update),
+    mutationFn: ({ id, data: update }) => couponService.update(id, update),
   });
 
   const deleteMutation = useApiMutation<any, string>({
-    mutationFn: (id) => apiClient.delete(API_ENDPOINTS.ADMIN.COUPON_BY_ID(id)),
+    mutationFn: (id) => couponService.delete(id),
   });
 
   const coupons = data?.coupons || [];

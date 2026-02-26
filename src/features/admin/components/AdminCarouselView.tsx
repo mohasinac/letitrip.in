@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, ROUTES } from "@/constants";
+import { ROUTES } from "@/constants";
+import { carouselService } from "@/services";
 import { useTranslations } from "next-intl";
 import {
   DataTable,
@@ -34,21 +34,19 @@ export function AdminCarouselView({ action }: Props) {
     slides: CarouselSlide[];
   }>({
     queryKey: ["carousel", "list"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.CAROUSEL.LIST),
+    queryFn: () => carouselService.list(),
   });
 
   const createMutation = useApiMutation<any, any>({
-    mutationFn: (data) => apiClient.post(API_ENDPOINTS.CAROUSEL.LIST, data),
+    mutationFn: (data) => carouselService.create(data),
   });
 
   const updateMutation = useApiMutation<any, { id: string; data: any }>({
-    mutationFn: ({ id, data }) =>
-      apiClient.patch(`${API_ENDPOINTS.CAROUSEL.LIST}/${id}`, data),
+    mutationFn: ({ id, data }) => carouselService.update(id, data),
   });
 
   const deleteMutation = useApiMutation<any, string>({
-    mutationFn: (id) =>
-      apiClient.delete(`${API_ENDPOINTS.CAROUSEL.LIST}/${id}`),
+    mutationFn: (id) => carouselService.delete(id),
   });
 
   const [editingSlide, setEditingSlide] = useState<CarouselSlide | null>(null);

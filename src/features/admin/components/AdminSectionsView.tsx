@@ -10,8 +10,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, ROUTES } from "@/constants";
+import { ROUTES } from "@/constants";
+import { homepageSectionsService } from "@/services";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -41,22 +41,19 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
     sections: HomepageSection[];
   }>({
     queryKey: ["homepage-sections", "list"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.HOMEPAGE_SECTIONS.LIST),
+    queryFn: () => homepageSectionsService.list(),
   });
 
   const createMutation = useApiMutation<any, any>({
-    mutationFn: (data) =>
-      apiClient.post(API_ENDPOINTS.HOMEPAGE_SECTIONS.LIST, data),
+    mutationFn: (data) => homepageSectionsService.create(data),
   });
 
   const updateMutation = useApiMutation<any, { id: string; data: any }>({
-    mutationFn: ({ id, data }) =>
-      apiClient.patch(`${API_ENDPOINTS.HOMEPAGE_SECTIONS.LIST}/${id}`, data),
+    mutationFn: ({ id, data }) => homepageSectionsService.update(id, data),
   });
 
   const deleteMutation = useApiMutation<any, string>({
-    mutationFn: (id) =>
-      apiClient.delete(`${API_ENDPOINTS.HOMEPAGE_SECTIONS.LIST}/${id}`),
+    mutationFn: (id) => homepageSectionsService.delete(id),
   });
 
   const [editingSection, setEditingSection] = useState<HomepageSection | null>(

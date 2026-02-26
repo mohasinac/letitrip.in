@@ -11,8 +11,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation, useUrlTable } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { THEME_CONSTANTS, ROUTES, API_ENDPOINTS } from "@/constants";
+import { adminService } from "@/services";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -69,19 +69,15 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
     meta: { page: number; limit: number; total: number; totalPages: number };
   }>({
     queryKey: ["admin", "users", table.params.toString()],
-    queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.ADMIN.USERS}${table.buildSieveParams(filtersParam)}`,
-      ),
+    queryFn: () => adminService.listUsers(table.buildSieveParams(filtersParam)),
   });
 
   const updateUserMutation = useApiMutation<any, { uid: string; data: any }>({
-    mutationFn: ({ uid, data }) =>
-      apiClient.patch(API_ENDPOINTS.ADMIN.USER_BY_ID(uid), data),
+    mutationFn: ({ uid, data }) => adminService.updateUser(uid, data),
   });
 
   const deleteUserMutation = useApiMutation<any, string>({
-    mutationFn: (uid) => apiClient.delete(API_ENDPOINTS.ADMIN.USER_BY_ID(uid)),
+    mutationFn: (uid) => adminService.deleteUser(uid),
   });
 
   const users = data?.users || [];

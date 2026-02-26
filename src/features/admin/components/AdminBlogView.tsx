@@ -10,13 +10,8 @@
 import { useState, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import {
-  API_ENDPOINTS,
-  ROUTES,
-  SUCCESS_MESSAGES,
-  THEME_CONSTANTS,
-} from "@/constants";
+import { adminService } from "@/services";
+import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -80,24 +75,23 @@ export function AdminBlogView() {
       const filtersParam = statusFilter
         ? `?filters=${encodeURIComponent(`status==${statusFilter}`)}&pageSize=200`
         : "?pageSize=200";
-      return apiClient.get(`${API_ENDPOINTS.ADMIN.BLOG}${filtersParam}`);
+      return adminService.listBlog(filtersParam);
     },
   });
 
   const createMutation = useApiMutation<BlogPostDocument, BlogFormData>({
-    mutationFn: (data) => apiClient.post(API_ENDPOINTS.ADMIN.BLOG, data),
+    mutationFn: (data) => adminService.createBlogPost(data),
   });
 
   const updateMutation = useApiMutation<
     BlogPostDocument,
     { id: string; data: BlogFormData }
   >({
-    mutationFn: ({ id, data }) =>
-      apiClient.patch(API_ENDPOINTS.ADMIN.BLOG_BY_ID(id), data),
+    mutationFn: ({ id, data }) => adminService.updateBlogPost(id, data),
   });
 
   const deleteMutation = useApiMutation<void, string>({
-    mutationFn: (id) => apiClient.delete(API_ENDPOINTS.ADMIN.BLOG_BY_ID(id)),
+    mutationFn: (id) => adminService.deleteBlogPost(id),
   });
 
   const allPosts: BlogPostDocument[] = data?.posts || [];

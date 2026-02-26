@@ -10,8 +10,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, ROUTES } from "@/constants";
+import { ROUTES } from "@/constants";
+import { faqService } from "@/services";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -62,7 +62,7 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
       params.set("page", table.get("page") || "1");
       params.set("pageSize", table.get("pageSize") || "50");
       if (searchTerm) params.set("search", searchTerm);
-      return apiClient.get(`${API_ENDPOINTS.FAQS.LIST}?${params.toString()}`);
+      return faqService.list(params.toString());
     },
   });
 
@@ -72,16 +72,15 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
   const faqMeta = Array.isArray(data) ? null : (data as FAQsListResponse);
 
   const createMutation = useApiMutation<any, any>({
-    mutationFn: (data) => apiClient.post(API_ENDPOINTS.FAQS.LIST, data),
+    mutationFn: (data) => faqService.create(data),
   });
 
   const updateMutation = useApiMutation<any, { id: string; data: any }>({
-    mutationFn: ({ id, data }) =>
-      apiClient.patch(`${API_ENDPOINTS.FAQS.LIST}/${id}`, data),
+    mutationFn: ({ id, data }) => faqService.update(id, data),
   });
 
   const deleteMutation = useApiMutation<any, string>({
-    mutationFn: (id) => apiClient.delete(`${API_ENDPOINTS.FAQS.LIST}/${id}`),
+    mutationFn: (id) => faqService.delete(id),
   });
 
   const [editingFAQ, setEditingFAQ] = useState<Partial<FAQ> | null>(null);

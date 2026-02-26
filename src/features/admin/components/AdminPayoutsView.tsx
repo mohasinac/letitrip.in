@@ -2,13 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import {
-  API_ENDPOINTS,
-  ERROR_MESSAGES,
-  SUCCESS_MESSAGES,
-  THEME_CONSTANTS,
-} from "@/constants";
+import { adminService } from "@/services";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -55,8 +50,10 @@ export function AdminPayoutsView() {
   const { data, isLoading, error, refetch } = useApiQuery<PayoutsResponse>({
     queryKey,
     queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.ADMIN.PAYOUTS}${statusFilter ? `?filters=${encodeURIComponent(`status==${statusFilter}`)}` : ""}`,
+      adminService.listPayouts(
+        statusFilter
+          ? `?filters=${encodeURIComponent(`status==${statusFilter}`)}`
+          : "",
       ),
   });
 
@@ -64,8 +61,7 @@ export function AdminPayoutsView() {
     unknown,
     { id: string; data: PayoutStatusFormState }
   >({
-    mutationFn: ({ id, data: update }) =>
-      apiClient.patch(API_ENDPOINTS.ADMIN.PAYOUT_BY_ID(id), update),
+    mutationFn: ({ id, data: update }) => adminService.updatePayout(id, update),
   });
 
   const payouts = data?.payouts ?? [];

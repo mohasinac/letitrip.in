@@ -12,6 +12,10 @@ export const reviewService = {
   list: (params?: string) =>
     apiClient.get(`${API_ENDPOINTS.REVIEWS.LIST}${params ? `?${params}` : ""}`),
 
+  /** List all reviews (admin endpoint — all products and tenants) */
+  listAdmin: (sieveQuery?: string) =>
+    apiClient.get(`${API_ENDPOINTS.ADMIN.REVIEWS}${sieveQuery ?? ""}`),
+
   /** List reviews for a specific product ID */
   listByProduct: (productId: string, page = 1, pageSize = 10) =>
     apiClient.get(

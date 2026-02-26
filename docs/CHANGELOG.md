@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 46 — Admin Feature View Rule 20 Compliance (2026-02-26)
+
+#### Added
+
+- **`src/services/coupon.service.ts`** — New service with `list(sieveQuery?)`, `create(data)`, `update(id, data)`, `delete(id)`, `validate(data)`. Consolidates the previously split `couponService` that existed in `checkout.service.ts`.
+- **`src/services/index.ts`** — `couponService` exported from barrel.
+- **`src/services/admin.service.ts`** — 18 new methods: `getAnalytics()`, `listUsers(sieveQuery?)`, `updateUser(uid, data)`, `deleteUser(uid)`, `listBids(sieveQuery?)`, `listBlog(query?)`, `createBlogPost(data)`, `updateBlogPost(id, data)`, `deleteBlogPost(id)`, `listNewsletter(query?)`, `updateNewsletterEntry(id, data)`, `deleteNewsletterEntry(id)`, `listPayouts(query?)`, `updatePayout(id, data)`, `listAdminProducts(sieveQuery?)`, `createAdminProduct(data)`, `updateAdminProduct(id, data)`, `deleteAdminProduct(id)`.
+- **`src/services/review.service.ts`** — `listAdmin(sieveQuery?)` method for admin-scoped `/api/admin/reviews` endpoint.
+
+#### Changed
+
+- **`src/services/checkout.service.ts`** — Removed the duplicate `couponService` export (now in `coupon.service.ts`).
+- **`src/features/admin/components/AdminCarouselView.tsx`** — `apiClient` removed; `carouselService.list/create/update/delete` used.
+- **`src/features/admin/components/AdminCategoriesView.tsx`** — `apiClient` removed; `categoryService.list/create/update/delete` used.
+- **`src/features/admin/components/AdminFaqsView.tsx`** — `apiClient` removed; `faqService.list/create/update/delete` used.
+- **`src/features/admin/components/AdminReviewsView.tsx`** — `apiClient` removed; `reviewService.listAdmin/update/delete` used.
+- **`src/features/admin/components/AdminSectionsView.tsx`** — `apiClient` removed; `homepageSectionsService.list/create/update/delete` used.
+- **`src/features/admin/components/AdminAnalyticsView.tsx`** — `apiClient` removed; `adminService.getAnalytics()` used.
+- **`src/features/admin/components/AdminBidsView.tsx`** — `apiClient` removed; `adminService.listBids()` used.
+- **`src/features/admin/components/AdminNewsletterView.tsx`** — `apiClient` removed; `adminService.listNewsletter/updateNewsletterEntry/deleteNewsletterEntry` used.
+- **`src/features/admin/components/AdminPayoutsView.tsx`** — `apiClient` removed; `adminService.listPayouts/updatePayout` used.
+- **`src/features/admin/components/AdminUsersView.tsx`** — `apiClient` removed; `adminService.listUsers/updateUser/deleteUser` used.
+- **`src/features/admin/components/AdminBlogView.tsx`** — `apiClient` removed; `adminService.listBlog/createBlogPost/updateBlogPost/deleteBlogPost` used.
+- **`src/features/admin/components/AdminProductsView.tsx`** — `apiClient` removed; `adminService.listAdminProducts/createAdminProduct/updateAdminProduct/deleteAdminProduct` used.
+- **`src/features/admin/components/AdminCouponsView.tsx`** — `apiClient` removed; `couponService.list/create/update/delete` used.
+
+---
+
 ### Documentation Cleanup Pass 2 (2026-02-26)
 
 #### Changed

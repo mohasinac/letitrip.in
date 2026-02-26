@@ -10,8 +10,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import { categoryService } from "@/services";
 import { useTranslations } from "next-intl";
 import {
   CategoryTreeView,
@@ -43,21 +43,19 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
     categories: Category[];
   }>({
     queryKey: ["categories", "tree"],
-    queryFn: () => apiClient.get(`${API_ENDPOINTS.CATEGORIES.LIST}?view=tree`),
+    queryFn: () => categoryService.list("view=tree"),
   });
 
   const createMutation = useApiMutation<any, any>({
-    mutationFn: (data) => apiClient.post(API_ENDPOINTS.CATEGORIES.LIST, data),
+    mutationFn: (data) => categoryService.create(data),
   });
 
   const updateMutation = useApiMutation<any, { id: string; data: any }>({
-    mutationFn: ({ id, data }) =>
-      apiClient.patch(`${API_ENDPOINTS.CATEGORIES.LIST}/${id}`, data),
+    mutationFn: ({ id, data }) => categoryService.update(id, data),
   });
 
   const deleteMutation = useApiMutation<any, string>({
-    mutationFn: (id) =>
-      apiClient.delete(`${API_ENDPOINTS.CATEGORIES.LIST}/${id}`),
+    mutationFn: (id) => categoryService.delete(id),
   });
 
   const [editingCategory, setEditingCategory] =

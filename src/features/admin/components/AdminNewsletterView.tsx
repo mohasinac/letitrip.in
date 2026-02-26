@@ -2,13 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import {
-  API_ENDPOINTS,
-  ERROR_MESSAGES,
-  SUCCESS_MESSAGES,
-  THEME_CONSTANTS,
-} from "@/constants";
+import { adminService } from "@/services";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -63,7 +58,7 @@ export function AdminNewsletterView() {
         sorts: "-createdAt",
       });
       if (statusFilter) params.set("filters", `status==${statusFilter}`);
-      return apiClient.get(`${API_ENDPOINTS.ADMIN.NEWSLETTER}?${params}`);
+      return adminService.listNewsletter(`?${params}`);
     },
   });
 
@@ -72,12 +67,11 @@ export function AdminNewsletterView() {
     { id: string; status: "active" | "unsubscribed" }
   >({
     mutationFn: ({ id, status }) =>
-      apiClient.patch(API_ENDPOINTS.ADMIN.NEWSLETTER_BY_ID(id), { status }),
+      adminService.updateNewsletterEntry(id, { status }),
   });
 
   const deleteMutation = useApiMutation<unknown, string>({
-    mutationFn: (id) =>
-      apiClient.delete(API_ENDPOINTS.ADMIN.NEWSLETTER_BY_ID(id)),
+    mutationFn: (id) => adminService.deleteNewsletterEntry(id),
   });
 
   const subscribers = data?.subscribers ?? [];

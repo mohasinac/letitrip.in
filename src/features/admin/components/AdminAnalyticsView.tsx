@@ -10,10 +10,10 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { AdminPageHeader } from "@/components";
-import { THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useApiQuery } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
+import { adminService } from "@/services";
 import { formatCurrency } from "@/utils";
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
@@ -113,7 +113,7 @@ function StatCard({
 export function AdminAnalyticsView() {
   const { data, isLoading } = useApiQuery<AnalyticsResponse>({
     queryKey: ["admin-analytics"],
-    queryFn: () => apiClient.get(API_ENDPOINTS.ADMIN.ANALYTICS),
+    queryFn: () => adminService.getAnalytics(),
     cacheTTL: 5 * 60 * 1000, // 5-minute cache
   });
 

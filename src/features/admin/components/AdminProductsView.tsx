@@ -10,8 +10,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, ROUTES } from "@/constants";
+import { adminService } from "@/services";
+import { ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -55,22 +55,21 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
   }>({
     queryKey: ["admin", "products", table.params.toString()],
     queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.ADMIN.PRODUCTS}${table.buildSieveParams(filtersArr.join(","))}`,
+      adminService.listAdminProducts(
+        table.buildSieveParams(filtersArr.join(",")),
       ),
   });
 
   const createMutation = useApiMutation<any, any>({
-    mutationFn: (data) => apiClient.post(API_ENDPOINTS.ADMIN.PRODUCTS, data),
+    mutationFn: (data) => adminService.createAdminProduct(data),
   });
 
   const updateMutation = useApiMutation<any, { id: string; data: any }>({
-    mutationFn: ({ id, data }) =>
-      apiClient.patch(API_ENDPOINTS.ADMIN.PRODUCT_BY_ID(id), data),
+    mutationFn: ({ id, data }) => adminService.updateAdminProduct(id, data),
   });
 
   const deleteMutation = useApiMutation<any, string>({
-    mutationFn: (id) => apiClient.delete(API_ENDPOINTS.ADMIN.PRODUCT_BY_ID(id)),
+    mutationFn: (id) => adminService.deleteAdminProduct(id),
   });
 
   const [editingProduct, setEditingProduct] =

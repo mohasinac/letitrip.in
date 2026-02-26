@@ -41,3 +41,4 @@ export * from "./media.service";
 export * from "./blog.service";
 export * from "./seller.service";
 export * from "./promotions.service";
+export * from "./coupon.service";

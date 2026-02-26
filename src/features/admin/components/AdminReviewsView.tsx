@@ -10,8 +10,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useApiMutation, useUrlTable } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS, THEME_CONSTANTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import { reviewService } from "@/services";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -69,18 +69,15 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
   }>({
     queryKey: ["admin", "reviews", table.params.toString()],
     queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.ADMIN.REVIEWS}${table.buildSieveParams(filtersParam)}`,
-      ),
+      reviewService.listAdmin(table.buildSieveParams(filtersParam)),
   });
 
   const updateStatusMutation = useApiMutation<any, { id: string; data: any }>({
-    mutationFn: ({ id, data }) =>
-      apiClient.patch(`${API_ENDPOINTS.REVIEWS.LIST}/${id}`, data),
+    mutationFn: ({ id, data }) => reviewService.update(id, data),
   });
 
   const deleteMutation = useApiMutation<any, string>({
-    mutationFn: (id) => apiClient.delete(`${API_ENDPOINTS.REVIEWS.LIST}/${id}`),
+    mutationFn: (id) => reviewService.delete(id),
   });
 
   const reviews = data?.reviews || [];

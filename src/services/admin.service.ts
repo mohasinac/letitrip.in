@@ -32,4 +32,75 @@ export const adminService = {
   /** PATCH — update order status/tracking (admin) */
   updateOrder: (id: string, data: unknown) =>
     apiClient.patch(API_ENDPOINTS.ADMIN.ORDER_BY_ID(id), data),
+
+  /** GET — analytics data (revenue + orders charts, top products) */
+  getAnalytics: () => apiClient.get(API_ENDPOINTS.ADMIN.ANALYTICS),
+
+  /** GET — list all users with optional Sieve query string */
+  listUsers: (sieveQuery?: string) =>
+    apiClient.get(`${API_ENDPOINTS.ADMIN.USERS}${sieveQuery ?? ""}`),
+
+  /** PATCH — update a user (role, status, etc.) */
+  updateUser: (uid: string, data: unknown) =>
+    apiClient.patch(API_ENDPOINTS.ADMIN.USER_BY_ID(uid), data),
+
+  /** DELETE — delete a user account */
+  deleteUser: (uid: string) =>
+    apiClient.delete(API_ENDPOINTS.ADMIN.USER_BY_ID(uid)),
+
+  /** GET — list all bids with optional Sieve query string */
+  listBids: (sieveQuery?: string) =>
+    apiClient.get(`${API_ENDPOINTS.ADMIN.BIDS}${sieveQuery ?? ""}`),
+
+  /** GET — list blog posts (admin: all statuses) */
+  listBlog: (query?: string) =>
+    apiClient.get(`${API_ENDPOINTS.ADMIN.BLOG}${query ?? ""}`),
+
+  /** POST — create a blog post */
+  createBlogPost: (data: unknown) =>
+    apiClient.post(API_ENDPOINTS.ADMIN.BLOG, data),
+
+  /** PATCH — update a blog post */
+  updateBlogPost: (id: string, data: unknown) =>
+    apiClient.patch(API_ENDPOINTS.ADMIN.BLOG_BY_ID(id), data),
+
+  /** DELETE — delete a blog post */
+  deleteBlogPost: (id: string) =>
+    apiClient.delete(API_ENDPOINTS.ADMIN.BLOG_BY_ID(id)),
+
+  /** GET — list newsletter subscribers */
+  listNewsletter: (query?: string) =>
+    apiClient.get(`${API_ENDPOINTS.ADMIN.NEWSLETTER}${query ?? ""}`),
+
+  /** PATCH — update newsletter subscriber entry (subscribe/unsubscribe) */
+  updateNewsletterEntry: (id: string, data: unknown) =>
+    apiClient.patch(API_ENDPOINTS.ADMIN.NEWSLETTER_BY_ID(id), data),
+
+  /** DELETE — remove a newsletter subscriber */
+  deleteNewsletterEntry: (id: string) =>
+    apiClient.delete(API_ENDPOINTS.ADMIN.NEWSLETTER_BY_ID(id)),
+
+  /** GET — list payouts */
+  listPayouts: (query?: string) =>
+    apiClient.get(`${API_ENDPOINTS.ADMIN.PAYOUTS}${query ?? ""}`),
+
+  /** PATCH — update payout status */
+  updatePayout: (id: string, data: unknown) =>
+    apiClient.patch(API_ENDPOINTS.ADMIN.PAYOUT_BY_ID(id), data),
+
+  /** GET — list all products (admin, unrestricted by seller) */
+  listAdminProducts: (sieveQuery?: string) =>
+    apiClient.get(`${API_ENDPOINTS.ADMIN.PRODUCTS}${sieveQuery ?? ""}`),
+
+  /** POST — create a product (admin) */
+  createAdminProduct: (data: unknown) =>
+    apiClient.post(API_ENDPOINTS.ADMIN.PRODUCTS, data),
+
+  /** PATCH — update any product (admin) */
+  updateAdminProduct: (id: string, data: unknown) =>
+    apiClient.patch(API_ENDPOINTS.ADMIN.PRODUCT_BY_ID(id), data),
+
+  /** DELETE — delete any product (admin) */
+  deleteAdminProduct: (id: string) =>
+    apiClient.delete(API_ENDPOINTS.ADMIN.PRODUCT_BY_ID(id)),
 };

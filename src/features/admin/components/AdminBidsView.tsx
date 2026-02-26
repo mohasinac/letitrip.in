@@ -3,13 +3,8 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useApiQuery, useUrlTable } from "@/hooks";
-import { apiClient } from "@/lib/api-client";
-import {
-  ROUTES,
-  ERROR_MESSAGES,
-  THEME_CONSTANTS,
-  API_ENDPOINTS,
-} from "@/constants";
+import { adminService } from "@/services";
+import { ROUTES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -54,9 +49,7 @@ export function AdminBidsView({ action }: Props) {
   }>({
     queryKey: ["admin", "bids", table.params.toString()],
     queryFn: () =>
-      apiClient.get(
-        `${API_ENDPOINTS.ADMIN.BIDS}${table.buildSieveParams(filtersParam ?? "")}`,
-      ),
+      adminService.listBids(table.buildSieveParams(filtersParam ?? "")),
   });
 
   const bids = data?.bids || [];

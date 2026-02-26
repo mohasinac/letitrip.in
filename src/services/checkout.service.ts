@@ -20,9 +20,3 @@ export const checkoutService = {
   verifyPayment: (data: unknown) =>
     apiClient.post(API_ENDPOINTS.PAYMENT.VERIFY, data),
 };
-
-export const couponService = {
-  /** Validate a coupon code against a cart total */
-  validate: (data: { code: string; orderTotal?: number }) =>
-    apiClient.post(API_ENDPOINTS.COUPONS.VALIDATE, data),
-};
