@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 58 planning — Service → Hook migration tasks added (2026-02-27)
+
+#### Docs
+
+- **`docs/IMPLEMENTATION_PLAN.md`** — Added Phase 58 (Service → Hook migration, strict Rule 20 compliance) with 9 sub-phases: 58.1 public page hooks (`useBlogPosts`, `usePromotions`), 58.2 product/category feature hooks, 58.3 user portal hooks, 58.4 seller hook, 58.5 search hook, 58.6 event component hooks, 58.7 shared component hooks, 58.8 admin view hooks batch 1, 58.9 admin view hooks batch 2. Completion criteria: zero `@/services` imports in any `"use client"` file. ~56 files total.
+
+---
+
 ### Phases 55–57 — Avatar i18n, HomepageSkeleton styles, demo/seed Rule 17 fix (2026-02-27)
 
 #### Changed (Phase 55 — Avatar components i18n)

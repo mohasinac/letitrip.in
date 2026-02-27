@@ -20,33 +20,12 @@ import {
 import type { ActiveFilter } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useApiQuery, useUrlTable } from "@/hooks";
-import { productService } from "@/services";
-import type { ProductDocument } from "@/db/schema";
+import { useUrlTable } from "@/hooks";
+import { useAuctions } from "../hooks";
 
 const { themed, typography, spacing } = THEME_CONSTANTS;
 
 const PAGE_SIZE = 24;
-
-type AuctionItem = Pick<
-  ProductDocument,
-  | "id"
-  | "title"
-  | "price"
-  | "currency"
-  | "mainImage"
-  | "isAuction"
-  | "auctionEndDate"
-  | "startingBid"
-  | "currentBid"
-  | "bidCount"
-  | "featured"
->;
-
-interface ProductsResponse {
-  data: AuctionItem[];
-  meta: { page: number; limit: number; total: number; totalPages: number };
-}
 
 const PRICE_BUCKETS = [
   { value: "0-1000", label: "Under ₹1,000" },
@@ -80,20 +59,14 @@ function AuctionsContent() {
     return [parts[0] ?? "", parts[1] ?? ""];
   }, [priceRange]);
 
-  const { data, isLoading } = useApiQuery<ProductsResponse>({
-    queryKey: ["auctions", table.params.toString()],
-    queryFn: () => {
-      const filterParts = ["isAuction==true", "status==published"];
-      if (minBid) filterParts.push(`currentBid>=${minBid}`);
-      if (maxBid) filterParts.push(`currentBid<=${maxBid}`);
-      const params = `filters=${encodeURIComponent(filterParts.join(","))}&sorts=${encodeURIComponent(sort)}&page=${page}&pageSize=${PAGE_SIZE}`;
-      return productService.listAuctions(params);
-    },
-  });
+  const auctionParams = useMemo(() => {
+    const filterParts = ["isAuction==true", "status==published"];
+    if (minBid) filterParts.push(`currentBid>=${minBid}`);
+    if (maxBid) filterParts.push(`currentBid<=${maxBid}`);
+    return `filters=${encodeURIComponent(filterParts.join(","))}&sorts=${encodeURIComponent(sort)}&page=${page}&pageSize=${PAGE_SIZE}`;
+  }, [minBid, maxBid, sort, page]);
 
-  const auctions = useMemo(() => data?.data ?? [], [data]);
-  const total = data?.meta?.total ?? 0;
-  const totalPages = data?.meta?.totalPages ?? 1;
+  const { auctions, total, totalPages, isLoading } = useAuctions(auctionParams);
 
   const activeFilters = useMemo<ActiveFilter[]>(() => {
     if (!priceRange) return [];

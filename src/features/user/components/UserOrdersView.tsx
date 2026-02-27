@@ -8,9 +8,10 @@
 
 "use client";
 
-import { Suspense, useMemo } from "react";
+import { Suspense } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth, useApiQuery, useUrlTable } from "@/hooks";
+import { useAuth, useUrlTable } from "@/hooks";
+import { useUserOrders } from "../hooks";
 import {
   Heading,
   Spinner,
@@ -23,10 +24,7 @@ import {
 } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
-import { orderService } from "@/services";
 import { useTranslations } from "next-intl";
-import type { OrderDocument } from "@/db/schema";
-
 const STATUS_MAP: Record<
   string,
   "pending" | "info" | "active" | "success" | "danger"
@@ -59,26 +57,20 @@ function UserOrdersContent() {
     { key: "cancelled", label: tOrders("tabCancelled") },
   ];
 
-  const { data, isLoading } = useApiQuery<{
-    orders: OrderDocument[];
-    total: number;
-    page: number;
-    totalPages: number;
-  }>({
-    queryKey: ["user-orders", table.params.toString()],
-    queryFn: () => {
-      const params = new URLSearchParams();
-      if (statusFilter) params.set("status", statusFilter);
-      params.set("page", String(page));
-      params.set("pageSize", String(pageSize));
-      return orderService.list(params.toString());
-    },
-    enabled: !!user && !loading,
-  });
+  const ordersParams = (() => {
+    const p = new URLSearchParams();
+    if (statusFilter) p.set("status", statusFilter);
+    p.set("page", String(page));
+    p.set("pageSize", String(pageSize));
+    return p.toString();
+  })();
 
-  const orders: OrderDocument[] = data?.orders ?? [];
-  const totalPages = data?.totalPages ?? 1;
-  const totalOrders = data?.total ?? 0;
+  const {
+    orders,
+    totalPages,
+    total: totalOrders,
+    isLoading,
+  } = useUserOrders(ordersParams);
 
   if (loading || isLoading) {
     return (

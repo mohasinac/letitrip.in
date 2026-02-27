@@ -13,6 +13,21 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("@/hooks", () => ({
   useApiQuery: (...args: any[]) => mockUseApiQuery(...args),
+  usePromotions: () => {
+    const result = mockUseApiQuery({
+      queryKey: ["promotions"],
+      queryFn: () => {},
+    });
+    return {
+      data: result?.data,
+      promotedProducts: result?.data?.promotedProducts ?? [],
+      featuredProducts: result?.data?.featuredProducts ?? [],
+      activeCoupons: result?.data?.activeCoupons ?? [],
+      isLoading: result?.isLoading ?? false,
+      error: result?.error ?? null,
+      refetch: jest.fn(),
+    };
+  },
 }));
 
 jest.mock("@/lib/api-client", () => ({

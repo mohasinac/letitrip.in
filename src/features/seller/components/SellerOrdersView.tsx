@@ -18,25 +18,14 @@ import {
   Text,
   getOrderTableColumns,
 } from "@/components";
-import { useAuth, useApiQuery, useUrlTable } from "@/hooks";
-import { sellerService } from "@/services";
+import { useAuth, useUrlTable } from "@/hooks";
+import { useSellerOrders } from "@/features/seller";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { OrderDocument } from "@/db/schema";
 import { formatCurrency } from "@/utils";
 
 const { themed, spacing } = THEME_CONSTANTS;
-
-interface OrdersRaw {
-  orders: OrderDocument[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasMore: boolean;
-  };
-}
 
 function SellerOrdersContent() {
   const router = useRouter();
@@ -63,19 +52,17 @@ function SellerOrdersContent() {
     }
   }, [user, authLoading, router]);
 
-  const { data, isLoading } = useApiQuery<OrdersRaw>({
-    queryKey: ["seller-orders", table.params.toString()],
-    queryFn: () => {
-      const params = new URLSearchParams({
-        sorts: "-orderDate",
-        page: String(page),
-        pageSize: String(PAGE_SIZE),
-      });
-      if (statusFilter) params.set("filters", `status==${statusFilter}`);
-      return sellerService.listOrders(params.toString());
-    },
-    enabled: !!user,
-  });
+  const orderParams = useMemo(() => {
+    const p = new URLSearchParams({
+      sorts: "-orderDate",
+      page: String(page),
+      pageSize: String(PAGE_SIZE),
+    });
+    if (statusFilter) p.set("filters", `status==${statusFilter}`);
+    return p.toString();
+  }, [page, statusFilter]);
+
+  const { orders, meta, isLoading } = useSellerOrders(orderParams);
 
   const { columns } = useMemo(
     () =>
@@ -94,9 +81,6 @@ function SellerOrdersContent() {
   }
 
   if (!user) return null;
-
-  const orders = data?.orders ?? [];
-  const meta = data?.meta;
 
   return (
     <div className={spacing.stack}>

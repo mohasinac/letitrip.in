@@ -15,9 +15,8 @@ import {
 import type { ActiveFilter } from "@/components";
 import { THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useApiQuery, useUrlTable } from "@/hooks";
-import { categoryService, productService } from "@/services";
-import type { CategoryDocument, ProductDocument } from "@/db/schema";
+import { useUrlTable } from "@/hooks";
+import { useCategoryProducts } from "../hooks";
 import type { ProductSortValue } from "@/components";
 
 const { themed, typography, spacing } = THEME_CONSTANTS;
@@ -30,29 +29,6 @@ const PRICE_BUCKETS = [
   { value: "2000-10000", label: "₹2,000 – ₹10,000" },
   { value: "10000+", label: "Over ₹10,000" },
 ];
-
-type ProductCardData = Pick<
-  ProductDocument,
-  | "id"
-  | "title"
-  | "price"
-  | "currency"
-  | "mainImage"
-  | "status"
-  | "featured"
-  | "isAuction"
-  | "currentBid"
-  | "isPromoted"
->;
-
-interface ProductsResponse {
-  data: ProductCardData[];
-  meta: { page: number; limit: number; total: number; totalPages: number };
-}
-
-interface CategoriesResponse {
-  data: CategoryDocument[];
-}
 
 interface Props {
   slug: string;
@@ -67,49 +43,21 @@ export function CategoryProductsView({ slug }: Props) {
     PRODUCT_SORT_VALUES.NEWEST) as ProductSortValue;
   const page = table.getNumber("page", 1);
   const priceRange = table.get("priceRange");
-  const [minPrice, maxPrice] = useMemo(() => {
-    if (!priceRange) return ["", ""];
-    if (priceRange.endsWith("+")) return [priceRange.replace("+", ""), ""];
-    const parts = priceRange.split("-");
-    return [parts[0] ?? "", parts[1] ?? ""];
-  }, [priceRange]);
 
-  /* ---- Fetch all categories (flat) to resolve slug → category doc ---- */
-  const { data: catData, isLoading: catLoading } =
-    useApiQuery<CategoriesResponse>({
-      queryKey: ["categories", "flat"],
-      queryFn: () => categoryService.list("flat=true"),
-    });
-
-  const category = useMemo(
-    () => (catData?.data ?? []).find((c) => c.slug === slug),
-    [catData, slug],
-  );
-
-  /* ---- Fetch products filtered by category id ---- */
-  const productsParams = useMemo(() => {
-    if (!category) return null;
-    const filterParts = ["status==published", `category==${category.id}`];
-    if (minPrice) filterParts.push(`price>=${minPrice}`);
-    if (maxPrice) filterParts.push(`price<=${maxPrice}`);
-    return `filters=${encodeURIComponent(filterParts.join(","))}&sorts=${encodeURIComponent(sort)}&page=${String(page)}&pageSize=${String(PAGE_SIZE)}`;
-  }, [category, sort, page, minPrice, maxPrice]);
-
-  const { data: prodData, isLoading: prodLoading } =
-    useApiQuery<ProductsResponse>({
-      queryKey: [
-        "products",
-        "by-category",
-        category?.id ?? "",
-        table.params.toString(),
-      ],
-      queryFn: () => productService.list(productsParams!),
-      enabled: !!productsParams,
-    });
-
-  const products = useMemo(() => prodData?.data ?? [], [prodData]);
-  const totalProducts = prodData?.meta?.total ?? 0;
-  const totalPages = prodData?.meta?.totalPages ?? 1;
+  const {
+    category,
+    products,
+    totalProducts,
+    totalPages,
+    catLoading,
+    prodLoading,
+  } = useCategoryProducts(slug, {
+    sort,
+    page,
+    pageSize: PAGE_SIZE,
+    priceRange,
+    cacheKey: table.params.toString(),
+  });
 
   const activeFilters = useMemo<ActiveFilter[]>(() => {
     if (!priceRange) return [];

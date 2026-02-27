@@ -24,6 +24,8 @@ export {
   useChangeEventStatus,
   useReviewEntry,
 } from "./hooks/useEventMutations";
+export { usePollVote } from "./hooks/usePollVote";
+export { useFeedbackSubmit } from "./hooks/useFeedbackSubmit";
 
 // Components
 export { EventStatusBadge } from "./components/EventStatusBadge";

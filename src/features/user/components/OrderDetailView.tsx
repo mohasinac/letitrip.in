@@ -1,6 +1,7 @@
 "use client";
 
-import { useAuth, useApiQuery } from "@/hooks";
+import { useAuth } from "@/hooks";
+import { useOrderDetail } from "../hooks";
 import {
   Card,
   Heading,
@@ -13,9 +14,7 @@ import {
 import { useRouter, useParams } from "next/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
-import { orderService } from "@/services";
 import { useTranslations } from "next-intl";
-import type { OrderDocument } from "@/db/schema";
 
 const STATUS_MAP: Record<
   string,
@@ -47,13 +46,7 @@ export function OrderDetailView() {
   const tOrders = useTranslations("orders");
   const tLoading = useTranslations("loading");
 
-  const { data, isLoading, error } = useApiQuery<{ data: OrderDocument }>({
-    queryKey: ["user-order", orderId],
-    queryFn: () => orderService.getById(orderId),
-    enabled: !!user && !loading && !!orderId,
-  });
-
-  const order: OrderDocument | null = data?.data ?? null;
+  const { order, isLoading, error } = useOrderDetail(orderId);
 
   if (loading || isLoading) {
     return (

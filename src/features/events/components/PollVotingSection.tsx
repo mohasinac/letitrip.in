@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { eventService } from "../services/event.service";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useMessage, useAuth } from "@/hooks";
-import { useApiMutation } from "@/hooks";
+import { usePollVote } from "../hooks/usePollVote";
 import type { PollConfig } from "@/db/schema";
 
 interface PollVotingSectionProps {
@@ -13,11 +12,6 @@ interface PollVotingSectionProps {
   pollConfig: PollConfig;
   /** IDs already voted by the current user (pre-fetched server-side) */
   existingVotes?: string[];
-}
-
-interface EnterEventPayload {
-  pollVotes: string[];
-  pollComment?: string;
 }
 
 export function PollVotingSection({
@@ -34,8 +28,7 @@ export function PollVotingSection({
   const [comment, setComment] = useState("");
   const [voted, setVoted] = useState(existingVotes.length > 0);
 
-  const mutation = useApiMutation<void, EnterEventPayload>({
-    mutationFn: (data) => eventService.enter(eventId, data),
+  const mutation = usePollVote(eventId, {
     onSuccess: () => {
       showSuccess(SUCCESS_MESSAGES.EVENT.VOTE_SUBMITTED);
       setVoted(true);

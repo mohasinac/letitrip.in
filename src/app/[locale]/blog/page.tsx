@@ -1,7 +1,6 @@
 "use client";
 import { Suspense } from "react";
-import { useApiQuery, useUrlTable } from "@/hooks";
-import { blogService } from "@/services";
+import { useUrlTable, useBlogPosts } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
@@ -12,7 +11,7 @@ import {
   BlogCategoryTabs,
   EmptyState,
 } from "@/components";
-import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
+import type { BlogPostCategory } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;
 
@@ -23,20 +22,16 @@ function BlogPageContent() {
   const page = table.getNumber("page", 1);
   const pageSize = 9;
 
-  const { data, isLoading, error } = useApiQuery<{
-    posts: BlogPostDocument[];
-    meta: { total: number; page: number; pageSize: number; totalPages: number };
-  }>({
-    queryKey: ["blog", table.params.toString()],
-    queryFn: () => {
-      const params = new URLSearchParams({
-        page: String(page),
-        pageSize: String(pageSize),
-      });
-      if (activeCategory) params.set("category", activeCategory);
-      return blogService.list(params.toString());
-    },
-  });
+  const queryParams = (() => {
+    const p = new URLSearchParams({
+      page: String(page),
+      pageSize: String(pageSize),
+    });
+    if (activeCategory) p.set("category", activeCategory);
+    return p.toString();
+  })();
+
+  const { data, isLoading, error } = useBlogPosts(queryParams);
 
   const posts = data?.posts || [];
   const totalPages = data?.meta.totalPages ?? 1;

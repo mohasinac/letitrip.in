@@ -18,6 +18,20 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("@/hooks", () => ({
   useApiQuery: (...args: any[]) => mockUseApiQuery(...args),
+  useBlogPosts: (params: string) => {
+    const result = mockUseApiQuery({
+      queryKey: ["blog", params ?? ""],
+      queryFn: () => {},
+    });
+    return {
+      data: result?.data,
+      posts: result?.data?.posts ?? [],
+      meta: result?.data?.meta,
+      isLoading: result?.isLoading ?? false,
+      error: result?.error ?? null,
+      refetch: jest.fn(),
+    };
+  },
   useUrlTable: () => ({
     get: mockGet,
     getNumber: mockGetNumber,

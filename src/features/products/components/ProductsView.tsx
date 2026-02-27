@@ -15,37 +15,12 @@ import {
 import type { ActiveFilter } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useApiQuery, useUrlTable } from "@/hooks";
-import { productService } from "@/services";
-import type { ProductDocument } from "@/db/schema";
+import { useUrlTable } from "@/hooks";
+import { useProducts } from "../hooks";
 
 const { themed } = THEME_CONSTANTS;
 
 const PAGE_SIZE = 24;
-
-type ProductItem = Pick<
-  ProductDocument,
-  | "id"
-  | "title"
-  | "price"
-  | "currency"
-  | "mainImage"
-  | "status"
-  | "featured"
-  | "isAuction"
-  | "currentBid"
-  | "isPromoted"
-  | "category"
->;
-
-interface ProductsResponse {
-  items: ProductItem[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-}
 
 export function ProductsView() {
   const t = useTranslations("products");
@@ -77,14 +52,12 @@ export function ProductsView() {
     return params.toString();
   }, [filtersStr, sortParam, pageParam]);
 
-  const { data, isLoading } = useApiQuery<ProductsResponse>({
-    queryKey: ["products", table.params.toString()],
-    queryFn: () => productService.list(apiParams),
-  });
-
-  const products = data?.items ?? [];
-  const totalItems = data?.total ?? 0;
-  const totalPages = data?.totalPages ?? 1;
+  const {
+    products,
+    total: totalItems,
+    totalPages,
+    isLoading,
+  } = useProducts(apiParams);
 
   const allCategoriesFromData = useMemo(() => {
     if (!products.length) return [];

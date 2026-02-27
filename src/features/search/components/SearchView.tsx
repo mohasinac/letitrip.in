@@ -11,43 +11,17 @@ import {
   EmptyState,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
-import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useApiQuery, useUrlTable } from "@/hooks";
-import { searchService, categoryService } from "@/services";
+import { useUrlTable } from "@/hooks";
+import { useSearch } from "@/features/search";
 import { debounce } from "@/utils";
-import type { CategoryDocument, ProductDocument } from "@/db/schema";
 import type { ProductSortValue } from "@/components";
 
 const { themed, typography, spacing } = THEME_CONSTANTS;
 
 const PAGE_SIZE = 24;
 const DEBOUNCE_MS = 400;
-
-type ProductCardData = Pick<
-  ProductDocument,
-  | "id"
-  | "title"
-  | "price"
-  | "currency"
-  | "mainImage"
-  | "status"
-  | "featured"
-  | "isAuction"
-  | "currentBid"
-  | "isPromoted"
->;
-
-interface SearchResponse {
-  items: ProductCardData[];
-  q: string;
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-  backend: "algolia" | "in-memory";
-}
 
 export function SearchView() {
   const t = useTranslations("search");
@@ -80,16 +54,6 @@ export function SearchView() {
     debouncedSetQ(val);
   };
 
-  const { data: catData } = useApiQuery<CategoryDocument[]>({
-    queryKey: ["categories", "flat"],
-    queryFn: () => categoryService.list("flat=true"),
-  });
-
-  const topCategories = useMemo(
-    () => (catData ?? []).filter((c) => c.tier === 1),
-    [catData],
-  );
-
   const searchParams = useMemo(() => {
     const params = new URLSearchParams();
     if (urlQ) params.set("q", urlQ);
@@ -102,14 +66,13 @@ export function SearchView() {
     return params.toString();
   }, [urlQ, urlCategory, urlMinPrice, urlMaxPrice, urlSort, urlPage]);
 
-  const { data: searchData, isLoading } = useApiQuery<SearchResponse>({
-    queryKey: ["search", table.params.toString()],
-    queryFn: () => searchService.query(searchParams),
-  });
+  const { catData, products, total, totalPages, isLoading } =
+    useSearch(searchParams);
 
-  const products = useMemo(() => searchData?.items ?? [], [searchData]);
-  const total = searchData?.total ?? 0;
-  const totalPages = searchData?.totalPages ?? 1;
+  const topCategories = useMemo(
+    () => catData.filter((c) => c.tier === 1),
+    [catData],
+  );
 
   const categoryOptions = useMemo(
     () => topCategories.map((c) => ({ value: c.id, label: c.name })),

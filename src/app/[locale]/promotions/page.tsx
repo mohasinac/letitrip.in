@@ -1,32 +1,24 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { usePromotions } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
-import { promotionsService } from "@/services";
 import { useTranslations } from "next-intl";
 import { Spinner, CouponCard, ProductSection } from "@/components";
-import type { ProductDocument, CouponDocument } from "@/db/schema";
 
 const { themed, typography, spacing } = THEME_CONSTANTS;
-
-interface PromotionsData {
-  promotedProducts: ProductDocument[];
-  featuredProducts: ProductDocument[];
-  activeCoupons: CouponDocument[];
-}
 
 export default function PromotionsPage() {
   const t = useTranslations("promotions");
   const tLoading = useTranslations("loading");
 
-  const { data, isLoading, error } = useApiQuery<PromotionsData>({
-    queryKey: ["promotions"],
-    queryFn: () => promotionsService.list(),
-  });
+  const {
+    promotedProducts,
+    featuredProducts,
+    activeCoupons,
+    isLoading,
+    error,
+  } = usePromotions();
 
-  const promotedProducts = data?.promotedProducts || [];
-  const featuredProducts = data?.featuredProducts || [];
-  const activeCoupons = data?.activeCoupons || [];
   const hasContent =
     promotedProducts.length > 0 ||
     featuredProducts.length > 0 ||
