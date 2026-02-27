@@ -39,6 +39,10 @@ jest.mock("@/hooks", () => ({
     loading: false,
   }),
   useSwipe: () => undefined,
+  useLogout: () => ({
+    mutate: jest.fn(),
+    isLoading: false,
+  }),
 }));
 
 describe("Sidebar", () => {

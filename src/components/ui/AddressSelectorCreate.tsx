@@ -22,8 +22,7 @@
  */
 
 import { useState, useCallback } from "react";
-import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { addressService } from "@/services";
+import { useAddressSelector, useMessage } from "@/hooks";
 import { SideDrawer, Button, AddressForm } from "@/components";
 import type { AddressFormData } from "@/hooks";
 import {
@@ -42,17 +41,6 @@ interface SavedAddress {
   city: string;
   fullName?: string;
   state?: string;
-}
-
-interface AddressesApiResponse {
-  success?: boolean;
-  data?: SavedAddress[];
-  items?: SavedAddress[];
-}
-
-interface CreateAddressApiResponse {
-  success: boolean;
-  data?: SavedAddress;
 }
 
 export interface AddressSelectorCreateProps {
@@ -74,28 +62,17 @@ export function AddressSelectorCreate({
   const { showSuccess, showError } = useMessage();
 
   const {
-    data: raw,
+    addresses,
     isLoading,
-    refetch,
-  } = useApiQuery<AddressesApiResponse>({
-    queryKey: ["user-addresses"],
-    queryFn: () => addressService.list(),
-  });
-
-  const addresses: SavedAddress[] = raw?.data ?? raw?.items ?? [];
-
-  const { mutate, isLoading: isSaving } = useApiMutation<
-    CreateAddressApiResponse,
-    AddressFormData
-  >({
-    mutationFn: (data) => addressService.create(data),
-    onSuccess: (res) => {
+    createAddress: mutate,
+    isSaving,
+  } = useAddressSelector({
+    onCreated: (id) => {
       showSuccess(SUCCESS_MESSAGES.ADDRESS.CREATED);
       setDrawerOpen(false);
-      refetch();
-      if (res.data?.id) onChange(res.data.id);
+      onChange(id);
     },
-    onError: () => showError(ERROR_MESSAGES.ADDRESS.CREATE_FAILED),
+    onCreateError: () => showError(ERROR_MESSAGES.ADDRESS.CREATE_FAILED),
   });
 
   const handleAddressSubmit = useCallback(

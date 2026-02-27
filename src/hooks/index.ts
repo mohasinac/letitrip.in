@@ -154,3 +154,12 @@ export type {
 } from "./useCheckout";
 export { useCouponValidate } from "./useCouponValidate";
 export { useMediaUpload } from "./useMediaUpload";
+
+// Phase 59: Rule 20 completion — shared Tier 1 component hooks
+export { useAllFaqs } from "./usePublicFaqs";
+export { useFaqVote } from "./useFaqVote";
+export { useAuctionDetail } from "./useAuctionDetail";
+export { usePlaceBid } from "./usePlaceBid";
+export { useLogout } from "./useLogout";
+export { useCategories, useCreateCategory } from "./useCategorySelector";
+export { useAddressSelector } from "./useAddressSelector";

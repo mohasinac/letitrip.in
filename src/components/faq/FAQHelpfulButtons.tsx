@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { logger } from "@/classes";
-import { faqService } from "@/services";
+import { useFaqVote } from "@/hooks";
 
 interface FAQHelpfulButtonsProps {
   faqId: string;
@@ -24,15 +24,15 @@ export function FAQHelpfulButtons({
   const [userVote, setUserVote] = useState<"helpful" | "not-helpful" | null>(
     null,
   );
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const mutation = useFaqVote();
 
   const handleVote = async (isHelpful: boolean) => {
-    if (isSubmitting || userVote) return;
-
-    setIsSubmitting(true);
+    if (mutation.isLoading || userVote) return;
 
     try {
-      await faqService.vote(faqId, {
+      await mutation.mutate({
+        faqId,
         vote: isHelpful ? "helpful" : "not-helpful",
       });
 
@@ -46,8 +46,6 @@ export function FAQHelpfulButtons({
       }
     } catch (error) {
       logger.error(ERROR_MESSAGES.FAQ.VOTE_FAILED, error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -65,7 +63,7 @@ export function FAQHelpfulButtons({
         {/* Helpful Button */}
         <button
           onClick={() => handleVote(true)}
-          disabled={isSubmitting || userVote !== null}
+          disabled={mutation.isLoading || userVote !== null}
           className={`flex-1 flex items-center justify-center gap-2 ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} transition-all ${
             userVote === "helpful"
               ? "bg-green-600 text-white"
@@ -100,7 +98,7 @@ export function FAQHelpfulButtons({
         {/* Not Helpful Button */}
         <button
           onClick={() => handleVote(false)}
-          disabled={isSubmitting || userVote !== null}
+          disabled={mutation.isLoading || userVote !== null}
           className={`flex-1 flex items-center justify-center gap-2 ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} transition-all ${
             userVote === "not-helpful"
               ? "bg-red-600 text-white"

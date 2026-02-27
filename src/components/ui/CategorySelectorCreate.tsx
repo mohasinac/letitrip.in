@@ -21,8 +21,7 @@
  */
 
 import { useState, useCallback } from "react";
-import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { categoryService } from "@/services";
+import { useCategories, useCreateCategory, useMessage } from "@/hooks";
 import {
   SideDrawer,
   Button,
@@ -39,17 +38,6 @@ import {
 } from "@/constants";
 
 const { typography, input } = THEME_CONSTANTS;
-
-interface ApiSuccessCategory {
-  success: boolean;
-  data?: Category;
-}
-
-interface CategoriesApiResponse {
-  success?: boolean;
-  data?: Category[];
-  items?: Category[];
-}
 
 export interface CategorySelectorCreateProps {
   /** Currently selected category ID */
@@ -78,11 +66,7 @@ function CreateCategoryContent({
     order: 0,
   });
 
-  const { mutate, isLoading } = useApiMutation<
-    ApiSuccessCategory,
-    Partial<Category>
-  >({
-    mutationFn: (data) => categoryService.create(data),
+  const { mutate, isLoading } = useCreateCategory({
     onSuccess: (res) => {
       showSuccess(SUCCESS_MESSAGES.CATEGORY.CREATED);
       onSuccess(res.data?.id ?? "");
@@ -120,16 +104,8 @@ export function CategorySelectorCreate({
 }: CategorySelectorCreateProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const {
-    data: raw,
-    isLoading,
-    refetch,
-  } = useApiQuery<CategoriesApiResponse>({
-    queryKey: ["categories"],
-    queryFn: () => categoryService.list(),
-  });
-
-  const categories: Category[] = raw?.data ?? raw?.items ?? [];
+  const { categories: rawCategories, isLoading, refetch } = useCategories();
+  const categories = rawCategories as unknown as Category[];
   const flat = flattenCategories(categories);
 
   const handleSuccess = useCallback(

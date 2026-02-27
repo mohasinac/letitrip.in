@@ -9,27 +9,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo } from "react";
 import { BidHistory, PlaceBidForm, Spinner } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useApiQuery, useAuth, useRealtimeBids, useCountdown } from "@/hooks";
+import {
+  useAuth,
+  useRealtimeBids,
+  useCountdown,
+  useAuctionDetail,
+} from "@/hooks";
 import { formatCurrency } from "@/utils";
-import type { ProductDocument, BidDocument } from "@/db/schema";
-import { productService, bidService } from "@/services";
 
 const { themed, typography, spacing } = THEME_CONSTANTS;
-
-type AuctionProduct = ProductDocument;
-
-interface ProductResponse {
-  data: AuctionProduct;
-}
-
-interface BidsResponse {
-  data: BidDocument[];
-  meta: { total: number };
-}
 
 interface AuctionDetailViewProps {
   id: string;
@@ -55,22 +46,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
   const tProducts = useTranslations("products");
   const tActions = useTranslations("actions");
 
-  const { data: productData, isLoading: productLoading } =
-    useApiQuery<ProductResponse>({
-      queryKey: ["product", id],
-      queryFn: () => productService.getById(id),
-    });
-
-  const product = productData?.data ?? null;
-
-  const { data: bidsData, refetch: refetchBids } = useApiQuery<BidsResponse>({
-    queryKey: ["bids", id],
-    queryFn: () => bidService.listByProduct(id),
-    enabled: !!product?.isAuction,
-    refetchInterval: 60000,
-  });
-
-  const bids = useMemo(() => bidsData?.data ?? [], [bidsData]);
+  const { productQuery, product, bidsQuery, bids } = useAuctionDetail(id);
 
   const {
     currentBid: rtdbBid,
@@ -93,7 +69,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
   const hasCurrentBid = currentBid > 0;
   const liveBidCount = rtdbBidCount ?? bids.length;
 
-  if (productLoading) {
+  if (productQuery.isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Spinner size="lg" />
@@ -241,7 +217,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
             currency={product.currency}
             isEnded={isEnded}
             isAuthenticated={!!user}
-            onBidPlaced={() => refetchBids()}
+            onBidPlaced={() => bidsQuery.refetch()}
           />
 
           {/* Description */}

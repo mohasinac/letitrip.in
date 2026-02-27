@@ -76,10 +76,11 @@ jest.mock("@/components/faq/ContactCTA", () => ({
   ContactCTA: () => <div data-testid="contact-cta">Contact Support</div>,
 }));
 
-// Mock useApiQuery hook
+// Mock useAllFaqs hook
 const mockUseApiQuery = jest.fn();
 jest.mock("@/hooks", () => ({
-  useApiQuery: (options: any) => mockUseApiQuery(options),
+  useAllFaqs: () => mockUseApiQuery(),
+  useFaqVote: () => ({ mutate: jest.fn(), isLoading: false }),
 }));
 
 // Mock next/navigation
@@ -297,12 +298,8 @@ describe("FAQ Page", () => {
     it("should fetch FAQs with correct query params", () => {
       render(<FAQPage />);
 
-      expect(mockUseApiQuery).toHaveBeenCalledWith(
-        expect.objectContaining({
-          queryKey: ["faqs", "public"],
-          queryFn: expect.any(Function),
-        }),
-      );
+      // useAllFaqs is called by FAQPageContent to load all active FAQs
+      expect(mockUseApiQuery).toHaveBeenCalled();
     });
 
     it("should handle API errors gracefully", () => {

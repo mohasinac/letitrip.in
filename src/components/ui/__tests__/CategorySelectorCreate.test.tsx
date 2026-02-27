@@ -8,17 +8,17 @@ import "@testing-library/jest-dom";
 
 // --- Mocks ---
 
-let mockQueryData: Record<string, unknown> = {};
+let mockCategories: Record<string, unknown>[] = [];
 const mockRefetch = jest.fn();
 const mockMutate = jest.fn();
 
 jest.mock("@/hooks", () => ({
-  useApiQuery: jest.fn(() => ({
-    data: mockQueryData,
+  useCategories: jest.fn(() => ({
+    categories: mockCategories,
     isLoading: false,
     refetch: mockRefetch,
   })),
-  useApiMutation: jest.fn(() => ({
+  useCreateCategory: jest.fn(() => ({
     mutate: mockMutate,
     isLoading: false,
   })),
@@ -105,12 +105,10 @@ import { CategorySelectorCreate } from "../CategorySelectorCreate";
 describe("CategorySelectorCreate", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockQueryData = {
-      data: [
-        { id: "cat-1", name: "Electronics", tier: 0, children: [] },
-        { id: "cat-2", name: "Phones", tier: 1, children: [] },
-      ],
-    };
+    mockCategories = [
+      { id: "cat-1", name: "Electronics", tier: 0, children: [] },
+      { id: "cat-2", name: "Phones", tier: 1, children: [] },
+    ];
   });
 
   it("populates dropdown with categories from the API", () => {
@@ -149,9 +147,9 @@ describe("CategorySelectorCreate", () => {
   });
 
   it("closes drawer and calls onChange when category creation succeeds", () => {
-    const { useApiMutation } = jest.requireMock("@/hooks");
+    const { useCreateCategory } = jest.requireMock("@/hooks");
     let capturedOnSuccess: ((res: unknown) => void) | undefined;
-    useApiMutation.mockImplementation(
+    useCreateCategory.mockImplementation(
       (opts: { onSuccess: (res: unknown) => void }) => {
         capturedOnSuccess = opts.onSuccess;
         return { mutate: mockMutate, isLoading: false };

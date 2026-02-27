@@ -19,3 +19,15 @@ export function usePublicFaqs(category?: string, limit = 6) {
     cacheTTL: 10 * 60 * 1000, // 10 minutes
   });
 }
+
+/**
+ * useAllFaqs
+ * Fetches ALL active FAQs for the full FAQ page (FAQPageContent).
+ * Client-side filtering/search/sort is applied on top of this full list.
+ */
+export function useAllFaqs() {
+  return useApiQuery<FAQDocument[]>({
+    queryKey: ["faqs", "public"],
+    queryFn: () => faqService.list("isActive=true"),
+  });
+}

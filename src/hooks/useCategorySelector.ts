@@ -50,3 +50,37 @@ export function useCategorySelector(options?: {
 
   return { categories, isLoading, refetch, createCategory, isCreating };
 }
+
+/**
+ * useCategories
+ * Query-only hook: fetches the full category list.
+ * Used by the outer CategorySelectorCreate component (display + selection).
+ */
+export function useCategories() {
+  const {
+    data: raw,
+    isLoading,
+    refetch,
+  } = useApiQuery<CategoriesResponse>({
+    queryKey: ["categories"],
+    queryFn: () => categoryService.list(),
+  });
+  const categories: CategoryDocument[] = raw?.data ?? raw?.items ?? [];
+  return { categories, isLoading, refetch };
+}
+
+/**
+ * useCreateCategory
+ * Mutation-only hook: creates a new category.
+ * Used by the inner CreateCategoryContent sub-component.
+ */
+export function useCreateCategory(options?: {
+  onSuccess?: (res: { data?: { id?: string }; id?: string }) => void;
+  onError?: (err: Error) => void;
+}) {
+  return useApiMutation<{ data?: { id?: string }; id?: string }, unknown>({
+    mutationFn: (data) => categoryService.create(data),
+    onSuccess: options?.onSuccess,
+    onError: options?.onError,
+  });
+}

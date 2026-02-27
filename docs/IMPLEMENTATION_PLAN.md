@@ -7,66 +7,67 @@
 
 ## Phase Overview
 
-| Phase  | Name                                            | Scope                                                                             | Risk                           | ~Files |
-| ------ | ----------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------ | ------ |
-| **1**  | Foundation — deps, constants, schema + cleanup  | F1, G, C4, G-remaining                                                            | Zero breaking                  | ~12    |
-| **2**  | Shared UI primitives                            | B1–B5, A1–A3                                                                      | Additive only                  | ~18    |
-| **3**  | Infrastructure wiring                           | A4–A5, barrel exports                                                             | Minor API change               | ~8     |
-| **4**  | Admin pages                                     | A (admin)                                                                         | Admin-only impact              | ~14    |
-| **5**  | Public list pages                               | A+B (public)                                                                      | User-facing                    | ~10    |
-| **6**  | Seller & user pages + CRUD drawers              | A+B+D (seller/user)                                                               | Seller-facing                  | ~10    |
-| **7**  | FAQ routes + homepage tabs                      | E                                                                                 | New routes                     | ~8     |
-| **8**  | Footer & navigation rewrite                     | F2–F5                                                                             | Visual, site-wide              | ~8     |
-| **9**  | Inline create drawers                           | C1–C3                                                                             | Schema change                  | ~10    |
-| **10** | Gestures + accessibility                        | H                                                                                 | Cross-cutting                  | ~22    |
-| **11** | Homepage sections                               | I                                                                                 | Public-facing                  | ~20    |
-| **12** | Dashboard page styling                          | J                                                                                 | Internal-facing                | ~16    |
-| **13** | Non-tech friendly UX                            | K                                                                                 | User-facing, site-wide         | ~28    |
-| **14** | Code deduplication                              | L                                                                                 | Minor breaking (route renames) | ~12    |
-| **15** | SEO — full-stack coverage                       | M                                                                                 | Additive + schema change       | ~30    |
-| **16** | Newsletter admin management                     | N                                                                                 | Additive                       | ~8     |
-| **17** | Next.js 16 compatibility — async params         | Maintenance                                                                       | Zero breaking                  | ~5     |
-| **18** | Dedicated test phase                            | All phases 1–17                                                                   | Non-breaking (tests only)      | ~90    |
-| **19** | Test coverage for Phases 22–45                  | Services, Events, views, pages                                                    | Non-breaking (tests only)      | ~79    |
-| **20** | Standards gap-fix sweep                         | All phases 1–18                                                                   | ⚠️ Cross-cutting               | ~45    |
-| **21** | Code-reuse & fetch() violation sweep            | All phases 1–18                                                                   | ⚠️ Cross-cutting               | ~40    |
-| **22** | Event management system                         | Schema, API, Admin UI, Public UI                                                  | ⚡ New vertical feature        | ~65    |
-| **23** | Integration hardening & tech-debt cleanup       | Maintenance sweep                                                                 | ⚡ Additive                    | ~15    |
-| **24** | Styling constants cleanup                       | THEME_CONSTANTS gap-fix                                                           | ⚡ Additive                    | ~10    |
-| **25** | i18n infrastructure & message files             | next-intl install + routing                                                       | ⚡ Additive                    | ~8     |
-| **26** | `[locale]` route migration                      | All `src/app/` pages moved                                                        | ⚠️ Cross-cutting               | ~35    |
-| **27** | Zod error map + locale switcher UI              | Zod v4 map, LocaleSwitcher                                                        | ⚡ Additive                    | ~8     |
-| **28** | Nav/Layout i18n wiring                          | TitleBar, Sidebar aria-labels                                                     | ⚡ Additive                    | ~5     |
-| **29** | Auth pages i18n wiring                          | LoginForm, RegisterForm, auth pages                                               | ⚡ Additive                    | ~12    |
-| **30** | Public pages i18n wiring                        | cart, wishlist, settings pages                                                    | ⚡ Additive                    | ~6     |
-| **31** | User portal pages i18n wiring                   | dashboard, orders, profile, etc.                                                  | ⚡ Additive                    | ~8     |
-| **32** | Products/checkout/search/auctions i18n wiring   | 9 pages, ICU plurals                                                              | ⚡ Additive                    | ~9     |
-| **33** | Static/content pages i18n wiring                | about, terms, privacy, sellers, etc.                                              | ⚡ Additive                    | ~9     |
-| **34** | Seller portal pages i18n wiring                 | 7 seller pages                                                                    | ⚡ Additive                    | ~7     |
-| **35** | Admin pages i18n wiring (batch 1)               | dashboard, analytics, media, etc.                                                 | ⚡ Additive                    | ~6     |
-| **36** | Admin pages i18n wiring (batch 2)               | users, products, orders, etc.                                                     | ⚡ Additive                    | ~13    |
-| **37** | Service layer migration                         | All API-calling components, contexts                                              | ⚠️ Cross-cutting               | ~32    |
-| **38** | Page extraction batch 1                         | blog, auctions, user/orders                                                       | ⚡ Additive                    | ~5     |
-| **39** | Page extraction batch 2                         | seller/orders, seller/products                                                    | ⚡ Additive                    | ~4     |
-| **40** | apiClient elimination — seller pages            | analytics, payouts, seller/page                                                   | ⚡ Additive                    | ~3     |
-| **41** | apiClient elimination — admin pages             | media, site, orders                                                               | ⚡ Additive                    | ~3     |
-| **42** | apiClient elimination — user address+track      | addresses/add, edit, track                                                        | ⚡ Additive                    | ~3     |
-| **43** | apiClient elimination — user profile+promotions | profile, wishlist, promotions                                                     | ⚡ Additive                    | ~4     |
-| **44** | apiClient elimination — blog, products, edit    | blog/[slug], products/[slug], edit                                                | ⚡ Additive                    | ~3     |
-| **45** | apiClient elimination — cart + events           | cart, events, Rule 20 complete                                                    | ⚡ Additive                    | ~4     |
-| **46** | Admin feature view Rule 20 compliance           | `src/features/admin/components/`                                                  | ⚠️ Cross-cutting               | ~30    |
-| **47** | Test mock type safety fix                       | Event component test mocks                                                        | Non-breaking (tests only)      | ~2     |
-| **48** | Phase 46 service test coverage gap              | `couponService` + new `adminService` methods                                      | Non-breaking (tests only)      | ~4     |
-| **49** | i18n completeness audit                         | All `useTranslations` namespaces                                                  | ⚡ Additive                    | ~2     |
-| **50** | GUIDE.md stale annotations cleanup              | Remove `planned` labels + fix API docs                                            | ⚡ Additive (docs only)        | ~1     |
-| **51** | copilot-instructions.md stale cleanup           | Remove `planned Phase X` annotations                                              | ⚡ Additive (docs only)        | ~1     |
-| **52** | Code quality audit sweep                        | Rule violations across codebase                                                   | ⚡ Audit                       | ~0     |
-| **53** | Homepage i18n Rule 2 fix batch 1                | 4 homepage components (WelcomeSection, TopCategories, SiteFeatures, BlogArticles) | ⚡ Additive                    | ~6     |
-| **54** | Homepage i18n Rule 2 fix batch 2                | 3 homepage components (FeaturedProducts, Newsletter, HeroCarousel)                | ⚡ Additive                    | ~5     |
-| **55** | Avatar components i18n                          | AvatarDisplay + AvatarUpload → useTranslations("avatar")                          | ⚡ Additive                    | ~4     |
-| **56** | HomepageSkeleton inline styles                  | Replace static `style={{}}` with Tailwind arbitrary values                        | ⚡ Additive                    | ~1     |
-| **57** | demo/seed Rule 17 fix                           | Replace `confirm()` × 2 with `ConfirmDeleteModal`; update tests                   | ⚡ Additive                    | ~2     |
-| **58** | Service → Hook migration (Rule 20 completion)   | Named hooks for every component that inlines `service.*` inside `useApiQuery`     | ⚠️ Cross-cutting               | ~56    |
+| Phase  | Name                                            | Scope                                                                                 | Risk                           | ~Files |
+| ------ | ----------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------ | ------ |
+| **1**  | Foundation — deps, constants, schema + cleanup  | F1, G, C4, G-remaining                                                                | Zero breaking                  | ~12    |
+| **2**  | Shared UI primitives                            | B1–B5, A1–A3                                                                          | Additive only                  | ~18    |
+| **3**  | Infrastructure wiring                           | A4–A5, barrel exports                                                                 | Minor API change               | ~8     |
+| **4**  | Admin pages                                     | A (admin)                                                                             | Admin-only impact              | ~14    |
+| **5**  | Public list pages                               | A+B (public)                                                                          | User-facing                    | ~10    |
+| **6**  | Seller & user pages + CRUD drawers              | A+B+D (seller/user)                                                                   | Seller-facing                  | ~10    |
+| **7**  | FAQ routes + homepage tabs                      | E                                                                                     | New routes                     | ~8     |
+| **8**  | Footer & navigation rewrite                     | F2–F5                                                                                 | Visual, site-wide              | ~8     |
+| **9**  | Inline create drawers                           | C1–C3                                                                                 | Schema change                  | ~10    |
+| **10** | Gestures + accessibility                        | H                                                                                     | Cross-cutting                  | ~22    |
+| **11** | Homepage sections                               | I                                                                                     | Public-facing                  | ~20    |
+| **12** | Dashboard page styling                          | J                                                                                     | Internal-facing                | ~16    |
+| **13** | Non-tech friendly UX                            | K                                                                                     | User-facing, site-wide         | ~28    |
+| **14** | Code deduplication                              | L                                                                                     | Minor breaking (route renames) | ~12    |
+| **15** | SEO — full-stack coverage                       | M                                                                                     | Additive + schema change       | ~30    |
+| **16** | Newsletter admin management                     | N                                                                                     | Additive                       | ~8     |
+| **17** | Next.js 16 compatibility — async params         | Maintenance                                                                           | Zero breaking                  | ~5     |
+| **18** | Dedicated test phase                            | All phases 1–17                                                                       | Non-breaking (tests only)      | ~90    |
+| **19** | Test coverage for Phases 22–45                  | Services, Events, views, pages                                                        | Non-breaking (tests only)      | ~79    |
+| **20** | Standards gap-fix sweep                         | All phases 1–18                                                                       | ⚠️ Cross-cutting               | ~45    |
+| **21** | Code-reuse & fetch() violation sweep            | All phases 1–18                                                                       | ⚠️ Cross-cutting               | ~40    |
+| **22** | Event management system                         | Schema, API, Admin UI, Public UI                                                      | ⚡ New vertical feature        | ~65    |
+| **23** | Integration hardening & tech-debt cleanup       | Maintenance sweep                                                                     | ⚡ Additive                    | ~15    |
+| **24** | Styling constants cleanup                       | THEME_CONSTANTS gap-fix                                                               | ⚡ Additive                    | ~10    |
+| **25** | i18n infrastructure & message files             | next-intl install + routing                                                           | ⚡ Additive                    | ~8     |
+| **26** | `[locale]` route migration                      | All `src/app/` pages moved                                                            | ⚠️ Cross-cutting               | ~35    |
+| **27** | Zod error map + locale switcher UI              | Zod v4 map, LocaleSwitcher                                                            | ⚡ Additive                    | ~8     |
+| **28** | Nav/Layout i18n wiring                          | TitleBar, Sidebar aria-labels                                                         | ⚡ Additive                    | ~5     |
+| **29** | Auth pages i18n wiring                          | LoginForm, RegisterForm, auth pages                                                   | ⚡ Additive                    | ~12    |
+| **30** | Public pages i18n wiring                        | cart, wishlist, settings pages                                                        | ⚡ Additive                    | ~6     |
+| **31** | User portal pages i18n wiring                   | dashboard, orders, profile, etc.                                                      | ⚡ Additive                    | ~8     |
+| **32** | Products/checkout/search/auctions i18n wiring   | 9 pages, ICU plurals                                                                  | ⚡ Additive                    | ~9     |
+| **33** | Static/content pages i18n wiring                | about, terms, privacy, sellers, etc.                                                  | ⚡ Additive                    | ~9     |
+| **34** | Seller portal pages i18n wiring                 | 7 seller pages                                                                        | ⚡ Additive                    | ~7     |
+| **35** | Admin pages i18n wiring (batch 1)               | dashboard, analytics, media, etc.                                                     | ⚡ Additive                    | ~6     |
+| **36** | Admin pages i18n wiring (batch 2)               | users, products, orders, etc.                                                         | ⚡ Additive                    | ~13    |
+| **37** | Service layer migration                         | All API-calling components, contexts                                                  | ⚠️ Cross-cutting               | ~32    |
+| **38** | Page extraction batch 1                         | blog, auctions, user/orders                                                           | ⚡ Additive                    | ~5     |
+| **39** | Page extraction batch 2                         | seller/orders, seller/products                                                        | ⚡ Additive                    | ~4     |
+| **40** | apiClient elimination — seller pages            | analytics, payouts, seller/page                                                       | ⚡ Additive                    | ~3     |
+| **41** | apiClient elimination — admin pages             | media, site, orders                                                                   | ⚡ Additive                    | ~3     |
+| **42** | apiClient elimination — user address+track      | addresses/add, edit, track                                                            | ⚡ Additive                    | ~3     |
+| **43** | apiClient elimination — user profile+promotions | profile, wishlist, promotions                                                         | ⚡ Additive                    | ~4     |
+| **44** | apiClient elimination — blog, products, edit    | blog/[slug], products/[slug], edit                                                    | ⚡ Additive                    | ~3     |
+| **45** | apiClient elimination — cart + events           | cart, events, Rule 20 complete                                                        | ⚡ Additive                    | ~4     |
+| **46** | Admin feature view Rule 20 compliance           | `src/features/admin/components/`                                                      | ⚠️ Cross-cutting               | ~30    |
+| **47** | Test mock type safety fix                       | Event component test mocks                                                            | Non-breaking (tests only)      | ~2     |
+| **48** | Phase 46 service test coverage gap              | `couponService` + new `adminService` methods                                          | Non-breaking (tests only)      | ~4     |
+| **49** | i18n completeness audit                         | All `useTranslations` namespaces                                                      | ⚡ Additive                    | ~2     |
+| **50** | GUIDE.md stale annotations cleanup              | Remove `planned` labels + fix API docs                                                | ⚡ Additive (docs only)        | ~1     |
+| **51** | copilot-instructions.md stale cleanup           | Remove `planned Phase X` annotations                                                  | ⚡ Additive (docs only)        | ~1     |
+| **52** | Code quality audit sweep                        | Rule violations across codebase                                                       | ⚡ Audit                       | ~0     |
+| **53** | Homepage i18n Rule 2 fix batch 1                | 4 homepage components (WelcomeSection, TopCategories, SiteFeatures, BlogArticles)     | ⚡ Additive                    | ~6     |
+| **54** | Homepage i18n Rule 2 fix batch 2                | 3 homepage components (FeaturedProducts, Newsletter, HeroCarousel)                    | ⚡ Additive                    | ~5     |
+| **55** | Avatar components i18n                          | AvatarDisplay + AvatarUpload → useTranslations("avatar")                              | ⚡ Additive                    | ~4     |
+| **56** | HomepageSkeleton inline styles                  | Replace static `style={{}}` with Tailwind arbitrary values                            | ⚡ Additive                    | ~1     |
+| **57** | demo/seed Rule 17 fix                           | Replace `confirm()` × 2 with `ConfirmDeleteModal`; update tests                       | ⚡ Additive                    | ~2     |
+| **58** | Service → Hook migration (Rule 20 completion)   | Named hooks for every component that inlines `service.*` inside `useApiQuery`         | ⚠️ Cross-cutting               | ~56    |
+| **59** | Rule 20 completion — shared Tier 1 components   | 7 remaining `"use client"` components in `src/components/**` that import `@/services` | ⚠️ Cross-cutting               | ~16    |
 
 ---
 
@@ -136,6 +137,7 @@
 | **56** | ✅ Done | 2026-02-27 | 2026-02-27 | HomepageSkeleton inline styles — 6 static `style={{ height/paddingBottom }}` replaced with Tailwind arbitrary values (`h-[28rem]`, `h-[9rem]`, `h-[8rem]`, `pb-[100%]`, `h-[16rem]`). 0 TS errors.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | **57** | ✅ Done | 2026-02-27 | 2026-02-27 | demo/seed Rule 17 fix — 2× `confirm()` replaced with `ConfirmDeleteModal` (state: `confirmPending`); `ConfirmDeleteModal` added to imports; 4 test assertions updated to use modal confirm flow; `global.confirm` mock removed from tests. 0 TS errors. 357/357 suites green.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | **58** | ✅ Done | 2026-02-27 | 2026-02-27 | Service → Hook migration — strict Rule 20 compliance. **58.1 ✅** `useBlogPosts` + `usePromotions` (public hooks); blog/page + promotions/page migrated. **58.2 ✅** `useProducts`, `useAuctions`, `useCategoryProducts` feature hooks; ProductsView/AuctionsView/CategoryProductsView migrated. **58.3 ✅** `useUserOrders`, `useOrderDetail` user portal hooks; UserOrdersView/OrderDetailView migrated. **58.4 ✅** `useSellerOrders` seller feature hook; SellerOrdersView migrated. **58.5 ✅** `useSearch` search feature hook (wraps searchService + categoryService for facets); SearchView migrated. **58.6 ✅** `usePollVote` + `useFeedbackSubmit` event component hooks; PollVotingSection/FeedbackEventSection migrated. **58.7 ✅** `useContactSubmit`, `useCheckout`, `useCouponValidate`, `useMediaUpload`; ContactForm/CheckoutView/PromoCodeInput/ImageUpload migrated. **58.8 ✅** `useAdminAnalytics`, `useAdminBids`, `useAdminNewsletter`, `useAdminPayouts`, `useAdminUsers`; 5 admin views migrated. **58.9 ✅** `useAdminProducts`, `useAdminReviews`, `useAdminCoupons`, `useAdminCategories`, `useAdminFaqs`, `useAdminCarousel`, `useAdminSections`, `useAdminBlog`; 8 admin views migrated. All admin hooks in `src/features/admin/hooks/`; admin views import from `@/features/admin/hooks` sub-barrel (not full barrel) to avoid Jest circular init. `src/features/**` = 0 Rule 20 violations. 0 TS errors — 357/357 suites green. |
+| **59** | ✅ Done | 2026-02-27 | 2026-02-27 | Rule 20 completion — 7 remaining `"use client"` Tier 1 components in `src/components/**` that import `@/services`. **59.1 ✅** FAQ hooks (`useAllFaqs` added to `usePublicFaqs.ts`, `useFaqVote.ts`); FAQPageContent + FAQHelpfulButtons migrated. **59.2 ✅** Auction hooks (`useAuctionDetail.ts`, `usePlaceBid.ts`); AuctionDetailView + PlaceBidForm migrated. **59.3 ✅** Sidebar + selector hooks (`useLogout.ts`, `useCategories`/`useCreateCategory` in `useCategorySelector.ts`, `useAddressSelector.ts`); Sidebar + CategorySelectorCreate + AddressSelectorCreate migrated. `src/components/**` = 0 Rule 20 violations. 4 test files updated to mock new hooks. 0 TS errors — 357/357 suites green.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
 ---
 
@@ -167,7 +169,7 @@ Every component and page **must work correctly at all three viewport classes.**
 
 ## Phase Details
 
-> Phases 1–58 are complete. See the Progress Tracker above for per-phase notes.
+> Phases 1–59 are complete. See the Progress Tracker above for per-phase notes.
 
 ---
 
@@ -306,5 +308,67 @@ Create `src/features/admin/hooks/` directory. Each hook wraps all `useApiQuery`/
 
 - `grep -r "from '@/services'" src/features src/components src/app` returns **zero matches** in any `"use client"` file.
 - `grep -r "from '../services/` within `src/features/*/components/` returns **zero matches**.
+- All existing tests remain green.
+- `npx tsc --noEmit` passes with 0 errors.
+
+---
+
+## Phase 59 — Rule 20 Completion: Remaining Tier 1 Component Hooks
+
+**Goal:** Eliminate all remaining `@/services` imports from `"use client"` files in `src/components/**`. After this phase, `grep -r "from '@/services'" src/components` returns zero matches in any client component.
+
+**7 files remaining:**
+
+| File                                            | Service used                                              | Fix                                       |
+| ----------------------------------------------- | --------------------------------------------------------- | ----------------------------------------- |
+| `src/components/layout/Sidebar.tsx`             | `authService.logout()`                                    | `useLogout()`                             |
+| `src/components/faq/FAQPageContent.tsx`         | `faqService.list()`                                       | `usePublicFaqs()`                         |
+| `src/components/faq/FAQHelpfulButtons.tsx`      | `faqService.vote()`                                       | `useFaqVote()`                            |
+| `src/components/auctions/AuctionDetailView.tsx` | `productService.getById()` + `bidService.listByProduct()` | `useAuctionDetail(id)`                    |
+| `src/components/auctions/PlaceBidForm.tsx`      | `bidService.create()`                                     | `usePlaceBid()`                           |
+| `src/components/ui/CategorySelectorCreate.tsx`  | `categoryService.list()` + `categoryService.create()`     | `useCategories()` + `useCreateCategory()` |
+| `src/components/ui/AddressSelectorCreate.tsx`   | `addressService.list()` + `addressService.create()`       | `useAddressSelector()`                    |
+
+### Sub-phase 59.1 — FAQ component hooks `~4 files`
+
+| Hook to create    | File                         | Wraps                                       | Consumed by             |
+| ----------------- | ---------------------------- | ------------------------------------------- | ----------------------- |
+| `usePublicFaqs()` | `src/hooks/usePublicFaqs.ts` | `faqService.list("isActive=true")`          | `FAQPageContent.tsx`    |
+| `useFaqVote()`    | `src/hooks/useFaqVote.ts`    | `faqService.vote(faqId, { vote })` mutation | `FAQHelpfulButtons.tsx` |
+
+- Export both from `src/hooks/index.ts`.
+- `FAQPageContent.tsx`: remove `faqService` import; replace inline `useApiQuery` with `usePublicFaqs()`.
+- `FAQHelpfulButtons.tsx`: remove `faqService` import; replace manual `isSubmitting` + try/catch with `useFaqVote()` mutation.
+- 0 TS errors.
+
+### Sub-phase 59.2 — Auction component hooks `~4 files`
+
+| Hook to create         | File                            | Wraps                                                                 | Consumed by             |
+| ---------------------- | ------------------------------- | --------------------------------------------------------------------- | ----------------------- |
+| `useAuctionDetail(id)` | `src/hooks/useAuctionDetail.ts` | `productService.getById(id)` + `bidService.listByProduct(id)` queries | `AuctionDetailView.tsx` |
+| `usePlaceBid()`        | `src/hooks/usePlaceBid.ts`      | `bidService.create()` mutation                                        | `PlaceBidForm.tsx`      |
+
+- Export both from `src/hooks/index.ts`.
+- `AuctionDetailView.tsx`: remove `productService`/`bidService`; use `useAuctionDetail(id)`.
+- `PlaceBidForm.tsx`: remove `bidService`; use `usePlaceBid()`; replace manual `isSubmitting` state with `mutation.isLoading`.
+- 0 TS errors.
+
+### Sub-phase 59.3 — Sidebar + selector hooks `~5 files`
+
+| Hook/function to create                           | File                               | Wraps                                                                                              | Consumed by                  |
+| ------------------------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------- |
+| `useLogout(options?)`                             | `src/hooks/useLogout.ts`           | `authService.logout()` mutation                                                                    | `Sidebar.tsx`                |
+| `useCategories()` + `useCreateCategory(options?)` | `src/hooks/useCategorySelector.ts` | `categoryService.list()` query + `categoryService.create()` mutation                               | `CategorySelectorCreate.tsx` |
+| `useAddressSelector(options?)`                    | `src/hooks/useAddressSelector.ts`  | `addressService.list()` query (queryKey `["user-addresses"]`) + `addressService.create()` mutation | `AddressSelectorCreate.tsx`  |
+
+- Export all from `src/hooks/index.ts`.
+- `Sidebar.tsx`: remove `authService`; use `useLogout({ onSuccess, onError })`.
+- `CategorySelectorCreate.tsx`: remove `categoryService`; inner `CreateCategoryContent` uses `useCreateCategory()`; outer `CategorySelectorCreate` uses `useCategories()`.
+- `AddressSelectorCreate.tsx`: remove `addressService`; use `useAddressSelector({ onSuccess, onError })`.
+- 0 TS errors.
+
+### Completion criteria for Phase 59
+
+- `grep -r "from '@/services'" src/components` returns **zero matches** in any `"use client"` file.
 - All existing tests remain green.
 - `npx tsc --noEmit` passes with 0 errors.

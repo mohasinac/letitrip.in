@@ -9,8 +9,7 @@ import {
   FAQ_CATEGORIES,
 } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
-import { useApiQuery } from "@/hooks";
-import { faqService } from "@/services";
+import { useAllFaqs } from "@/hooks";
 import { FAQCategorySidebar } from "./FAQCategorySidebar";
 import { FAQSearchBar } from "./FAQSearchBar";
 import { FAQSortDropdown } from "./FAQSortDropdown";
@@ -35,10 +34,7 @@ export function FAQPageContent({
   const [sortOption, setSortOption] = useState<FAQSortOption>("helpful");
 
   // Fetch all FAQs
-  const { data: faqsData, isLoading } = useApiQuery<FAQDocument[]>({
-    queryKey: ["faqs", "public"],
-    queryFn: () => faqService.list("isActive=true"),
-  });
+  const { data: faqsData, isLoading } = useAllFaqs();
 
   const allFAQs = faqsData || [];
 

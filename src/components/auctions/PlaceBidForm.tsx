@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
-import { bidService } from "@/services";
+import { usePlaceBid } from "@/hooks";
 import type { BidDocument } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;
@@ -32,7 +32,7 @@ export function PlaceBidForm({
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
   const [bidAmount, setBidAmount] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { mutate: placeBidMutation, isLoading: isSubmitting } = usePlaceBid();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
@@ -51,12 +51,11 @@ export function PlaceBidForm({
       return;
     }
 
-    setIsSubmitting(true);
     try {
-      const bid = (await bidService.create({
+      const bid = await placeBidMutation({
         productId,
         bidAmount: amount,
-      })) as BidDocument;
+      });
 
       setSuccess(true);
       setBidAmount("");
@@ -66,8 +65,6 @@ export function PlaceBidForm({
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : t("bidFailed");
       setError(message);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

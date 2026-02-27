@@ -5,12 +5,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES, ERROR_MESSAGES } from "@/constants";
-import { useSwipe, useAuth } from "@/hooks";
+import { useSwipe, useAuth, useLogout } from "@/hooks";
 import { logger } from "@/classes";
 import { AvatarDisplay } from "@/components";
 import { preventBodyScroll } from "@/utils";
 import { hasAnyRole } from "@/helpers";
-import { authService } from "@/services";
 
 /**
  * Sidebar Component
@@ -50,11 +49,12 @@ export default function Sidebar({
   const isAuthenticated = !!user && !loading;
   const sidebarRef = useRef<HTMLElement>(null);
   const tNav = useTranslations("nav");
+  const logoutMutation = useLogout();
 
   const handleSignOut = async () => {
     try {
       // Backend logout - clears session cookie and revokes tokens
-      await authService.logout();
+      await logoutMutation.mutate();
 
       // Close sidebar first for better UX
       onClose();

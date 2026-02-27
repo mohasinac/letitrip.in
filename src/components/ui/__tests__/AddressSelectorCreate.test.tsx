@@ -8,19 +8,17 @@ import "@testing-library/jest-dom";
 
 // --- Mocks ---
 
-let mockQueryData: Record<string, unknown> = {};
+let mockAddresses: Record<string, unknown>[] = [];
 const mockRefetch = jest.fn();
 const mockMutate = jest.fn();
 
 jest.mock("@/hooks", () => ({
-  useApiQuery: jest.fn(() => ({
-    data: mockQueryData,
+  useAddressSelector: jest.fn(() => ({
+    addresses: mockAddresses,
     isLoading: false,
     refetch: mockRefetch,
-  })),
-  useApiMutation: jest.fn(() => ({
-    mutate: mockMutate,
-    isLoading: false,
+    createAddress: mockMutate,
+    isSaving: false,
   })),
   useMessage: jest.fn(() => ({
     showSuccess: jest.fn(),
@@ -104,12 +102,10 @@ import { AddressSelectorCreate } from "../AddressSelectorCreate";
 describe("AddressSelectorCreate", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockQueryData = {
-      data: [
-        { id: "addr-1", label: "Home", city: "Mumbai", state: "MH" },
-        { id: "addr-2", label: "Office", city: "Pune", state: "MH" },
-      ],
-    };
+    mockAddresses = [
+      { id: "addr-1", label: "Home", city: "Mumbai", state: "MH" },
+      { id: "addr-2", label: "Office", city: "Pune", state: "MH" },
+    ];
   });
 
   it("populates dropdown with existing addresses", () => {
@@ -146,12 +142,18 @@ describe("AddressSelectorCreate", () => {
   });
 
   it("closes drawer and calls onChange when address creation succeeds", () => {
-    const { useApiMutation } = jest.requireMock("@/hooks");
-    let capturedOnSuccess: ((res: unknown) => void) | undefined;
-    useApiMutation.mockImplementation(
-      (opts: { onSuccess: (res: unknown) => void }) => {
-        capturedOnSuccess = opts.onSuccess;
-        return { mutate: mockMutate, isLoading: false };
+    const { useAddressSelector } = jest.requireMock("@/hooks");
+    let capturedOnCreated: ((id: string) => void) | undefined;
+    useAddressSelector.mockImplementation(
+      (opts: { onCreated: (id: string) => void }) => {
+        capturedOnCreated = opts?.onCreated;
+        return {
+          addresses: mockAddresses,
+          isLoading: false,
+          refetch: mockRefetch,
+          createAddress: mockMutate,
+          isSaving: false,
+        };
       },
     );
 
@@ -162,11 +164,10 @@ describe("AddressSelectorCreate", () => {
     fireEvent.click(screen.getByRole("button", { name: /Add new address/i }));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
 
-    // Simulate successful creation
-    capturedOnSuccess?.({ success: true, data: { id: "addr-new" } });
+    // Simulate successful creation via hook's onCreated callback
+    capturedOnCreated?.("addr-new");
 
-    // Refetch called and onChange called with new address ID
-    expect(mockRefetch).toHaveBeenCalled();
+    // onChange called with new address ID
     expect(onChange).toHaveBeenCalledWith("addr-new");
   });
 

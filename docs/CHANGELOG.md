@@ -9,6 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 59 — Rule 20 Final Compliance: Shared Tier 1 Component Hooks (2026-02-27)
+
+#### Added
+
+- **`src/hooks/useLogout.ts`** — `useApiMutation<void, void>` wrapping `authService.logout()`. Accepts optional `onSuccess`/`onError` callbacks.
+- **`src/hooks/useFaqVote.ts`** — `useApiMutation<void, { faqId: string; vote: "helpful" | "not-helpful" }>` wrapping `faqService.vote()`.
+- **`src/hooks/useAuctionDetail.ts`** — Bundles two queries: `productService.getById(id)` + `bidService.listByProduct(id)` (refetchInterval 60s). Returns `{ productQuery, product, bidsQuery, bids }`.
+- **`src/hooks/usePlaceBid.ts`** — `useApiMutation<BidDocument, { productId: string; bidAmount: number }>` wrapping `bidService.create()`.
+- **`src/hooks/useAddressSelector.ts`** — Bundles address list query (`queryKey: ["user-addresses"]`) + address create mutation. Accepts `{ onCreated, onCreateError }` callbacks; calls `refetch()` internally before `onCreated`. Returns `{ addresses, isLoading, refetch, createAddress, isSaving }`.
+
+#### Modified
+
+- **`src/hooks/usePublicFaqs.ts`** — Added `useAllFaqs()` export: `useApiQuery` wrapping `faqService.list("isActive=true")` for the FAQ page (distinct from `usePublicFaqs` which uses `listPublic` for the homepage widget).
+- **`src/hooks/useCategorySelector.ts`** — Added `useCategories()` (list query) and `useCreateCategory(options?)` (create mutation, payload typed `unknown` for compatibility with both `Category` and `CategoryDocument` shapes) exports alongside the existing `useCategorySelector` composite hook.
+- **`src/hooks/index.ts`** — Exported all Phase 59 hooks: `useAllFaqs`, `useFaqVote`, `useAuctionDetail`, `usePlaceBid`, `useLogout`, `useCategories`, `useCreateCategory`, `useAddressSelector`.
+- **`src/components/faq/FAQPageContent.tsx`** — Replaced inline `useApiQuery` + `faqService` → `useAllFaqs()`.
+- **`src/components/faq/FAQHelpfulButtons.tsx`** — Replaced manual `isSubmitting` state + `faqService.vote()` → `useFaqVote()` mutation.
+- **`src/components/auctions/AuctionDetailView.tsx`** — Replaced two `useApiQuery` calls + `productService`/`bidService` → `useAuctionDetail(id)`. Removed local `AuctionProduct`/`ProductResponse`/`BidsResponse` interfaces.
+- **`src/components/auctions/PlaceBidForm.tsx`** — Replaced `bidService.create()` + `isSubmitting` state → `usePlaceBid()`.
+- **`src/components/layout/Sidebar.tsx`** — Replaced `authService.logout()` → `useLogout()` mutation.
+- **`src/components/ui/CategorySelectorCreate.tsx`** — Replaced `useApiQuery`/`useApiMutation` + `categoryService` → `useCategories()` + `useCreateCategory()`. Removed local `ApiSuccessCategory`/`CategoriesApiResponse` interfaces.
+- **`src/components/ui/AddressSelectorCreate.tsx`** — Replaced `useApiQuery`/`useApiMutation` + `addressService` → `useAddressSelector()`. Removed local `AddressesApiResponse`/`CreateAddressApiResponse` interfaces.
+- **4 test files** updated to mock new hooks instead of `useApiQuery`/`useApiMutation`/`authService`: `AddressSelectorCreate.test.tsx`, `CategorySelectorCreate.test.tsx`, `Sidebar.test.tsx`, `faqs/page.test.tsx`.
+
+#### Result
+
+`src/components/**` — **0 Rule 20 violations** (`grep -r "from '@/services'" src/components` = no matches in any `"use client"` file). 0 TS errors. 357/357 test suites green.
+
+---
+
 ### Phase 58.7–58.9 — Shared component + all admin view hooks (Rule 20) (2026-02-27)
 
 #### Added
