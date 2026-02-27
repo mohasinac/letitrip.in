@@ -111,9 +111,9 @@ describe("Token Helper", () => {
       expect(isTokenExpired(future)).toBe(false);
     });
 
-    it("should handle edge case at exact expiry", () => {
-      const now = new Date();
-      expect(isTokenExpired(now)).toBe(false);
+    it("should return false for token expiring in the near future", () => {
+      const nearFuture = new Date(Date.now() + 100);
+      expect(isTokenExpired(nearFuture)).toBe(false);
     });
   });
 

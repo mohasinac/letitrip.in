@@ -9,6 +9,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 63 — Test Coverage: Admin Hooks (2026-02-27)
+
+#### Added
+
+- **`src/features/admin/hooks/__tests__/useAdminAnalytics.test.ts`** — 2 tests.
+- **`src/features/admin/hooks/__tests__/useAdminBids.test.ts`** — 2 tests.
+- **`src/features/admin/hooks/__tests__/useAdminBlog.test.ts`** — 4 tests (list query + create/delete mutations).
+- **`src/features/admin/hooks/__tests__/useAdminCarousel.test.ts`** — 4 tests.
+- **`src/features/admin/hooks/__tests__/useAdminCategories.test.ts`** — 4 tests.
+- **`src/features/admin/hooks/__tests__/useAdminCoupons.test.ts`** — 4 tests.
+- **`src/features/admin/hooks/__tests__/useAdminFaqs.test.ts`** — 4 tests.
+- **`src/features/admin/hooks/__tests__/useAdminNewsletter.test.ts`** — 4 tests (toggle + delete mutations).
+- **`src/features/admin/hooks/__tests__/useAdminPayouts.test.ts`** — 3 tests.
+- **`src/features/admin/hooks/__tests__/useAdminProducts.test.ts`** — 4 tests.
+- **`src/features/admin/hooks/__tests__/useAdminReviews.test.ts`** — 4 tests.
+- **`src/features/admin/hooks/__tests__/useAdminSections.test.ts`** — 4 tests.
+- **`src/features/admin/hooks/__tests__/useAdminUsers.test.ts`** — 4 tests (updateUserMutation + deleteUserMutation). Total: **47 new tests**. 392/392 suites green — 3712 tests.
+
+---
+
+### Phase 62 — Test Coverage: Phase 59 + 58.2–58.6 Feature Hooks (2026-02-27)
+
+#### Added
+
+- **`src/hooks/__tests__/useLogout.test.ts`** — 4 tests.
+- **`src/hooks/__tests__/useFaqVote.test.ts`** — 3 tests.
+- **`src/hooks/__tests__/useAuctionDetail.test.ts`** — 7 tests.
+- **`src/hooks/__tests__/usePlaceBid.test.ts`** — 3 tests.
+- **`src/hooks/__tests__/useAddressSelector.test.ts`** — 6 tests.
+- **`src/hooks/__tests__/useCategorySelector.test.ts`** — 9 tests (covers `useCategories`, `useCreateCategory`, `useCategorySelector`).
+- **`src/hooks/__tests__/usePublicFaqs.test.ts`** — 6 tests (covers `usePublicFaqs` + `useAllFaqs`).
+- **`src/features/products/hooks/__tests__/useProducts.test.ts`** — 5 tests.
+- **`src/features/products/hooks/__tests__/useAuctions.test.ts`** — 5 tests.
+- **`src/features/categories/hooks/__tests__/useCategoryProducts.test.ts`** — 4 tests.
+- **`src/features/user/hooks/__tests__/useUserOrders.test.ts`** — 6 tests.
+- **`src/features/user/hooks/__tests__/useOrderDetail.test.ts`** — 6 tests.
+- **`src/features/seller/hooks/__tests__/useSellerOrders.test.ts`** — 6 tests.
+- **`src/features/search/hooks/__tests__/useSearch.test.ts`** — 6 tests.
+- **`src/features/events/hooks/__tests__/usePollVote.test.ts`** — 3 tests.
+- **`src/features/events/hooks/__tests__/useFeedbackSubmit.test.ts`** — 3 tests.
+
+---
+
+### Phase 61 — Test Coverage: Phase 58.1+58.7 Tier-1 Shared Hooks (2026-02-27)
+
+#### Added
+
+- **`src/hooks/__tests__/useBlogPosts.test.ts`** — 7 tests.
+- **`src/hooks/__tests__/usePromotions.test.ts`** — 5 tests.
+- **`src/hooks/__tests__/useContactSubmit.test.ts`** — 3 tests.
+- **`src/hooks/__tests__/useCheckout.test.ts`** — 8 tests.
+- **`src/hooks/__tests__/useCouponValidate.test.ts`** — 4 tests.
+- **`src/hooks/__tests__/useMediaUpload.test.ts`** — 4 tests. Total: **33 new tests**. 363/363 suites green.
+
+---
+
+### Phase 60 — Test Fix: `isTokenExpired` Race Condition (2026-02-27)
+
+#### Fixed
+
+- **`src/helpers/auth/__tests__/token.helper.test.ts`** — Renamed `"should handle edge case at exact expiry"` → `"should return false for token expiring in the near future"` and changed `new Date()` → `new Date(Date.now() + 100)` to eliminate a race condition where the `Date.now()` call inside `isTokenExpired` would advance past the boundary before comparison.
+
+---
+
 ### Phase 59 — Rule 20 Final Compliance: Shared Tier 1 Component Hooks (2026-02-27)
 
 #### Added
