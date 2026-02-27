@@ -747,7 +747,15 @@
     "namePlaceholder": "Enter your name",
     "emailPlaceholder": "Enter your email address",
     "subjectPlaceholder": "Enter subject",
-    "messagePlaceholder": "Enter your message"
+    "messagePlaceholder": "Enter your message",
+    "infoGetInTouch": "Get in Touch",
+    "infoEmailLabel": "Email",
+    "infoPhoneLabel": "Phone",
+    "infoAddressLabel": "Address",
+    "infoHoursLabel": "Support Hours",
+    "infoHoursValue": "Monday \u2013 Friday, 9 AM \u2013 6 PM IST",
+    "faqLink": "Check our FAQ page for quick answers",
+    "faqsLinkText": "FAQs"
   },
   "events": {
     "currentEvents": "Current Events",

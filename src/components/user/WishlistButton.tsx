@@ -13,7 +13,8 @@
 import { useCallback } from "react";
 import { useAuth } from "@/hooks";
 import { useRouter } from "next/navigation";
-import { ROUTES, UI_LABELS } from "@/constants";
+import { ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useWishlistToggle } from "@/hooks";
 
 interface WishlistButtonProps {
@@ -63,9 +64,8 @@ export function WishlistButton({
     [user, router, toggle],
   );
 
-  const label = inWishlist
-    ? UI_LABELS.USER.WISHLIST.REMOVE
-    : UI_LABELS.WISHLIST.ADD_TO_WISHLIST;
+  const t = useTranslations("wishlist");
+  const label = inWishlist ? t("removeFromWishlist") : t("addToWishlist");
 
   return (
     <button

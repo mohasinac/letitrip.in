@@ -1,39 +1,41 @@
 "use client";
 
-import { ROUTES, UI_LABELS, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
+import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
-const LABELS = UI_LABELS.CONTACT_PAGE;
 const { themed, typography, spacing } = THEME_CONSTANTS;
 
-const INFO_ITEMS = [
-  {
-    icon: "✉️",
-    label: LABELS.INFO_EMAIL_LABEL,
-    value: SITE_CONFIG.contact.email,
-  },
-  {
-    icon: "📞",
-    label: LABELS.INFO_PHONE_LABEL,
-    value: SITE_CONFIG.contact.phone,
-  },
-  {
-    icon: "📍",
-    label: LABELS.INFO_ADDRESS_LABEL,
-    value: SITE_CONFIG.contact.address,
-  },
-  {
-    icon: "🕐",
-    label: LABELS.INFO_HOURS_LABEL,
-    value: LABELS.INFO_HOURS_VALUE,
-  },
-];
-
 export function ContactInfoSidebar() {
+  const t = useTranslations("contact");
+
+  const INFO_ITEMS = [
+    {
+      icon: "✉️",
+      label: t("infoEmailLabel"),
+      value: SITE_CONFIG.contact.email,
+    },
+    {
+      icon: "📞",
+      label: t("infoPhoneLabel"),
+      value: SITE_CONFIG.contact.phone,
+    },
+    {
+      icon: "📍",
+      label: t("infoAddressLabel"),
+      value: SITE_CONFIG.contact.address,
+    },
+    {
+      icon: "🕐",
+      label: t("infoHoursLabel"),
+      value: t("infoHoursValue"),
+    },
+  ];
+
   return (
     <aside className="md:col-span-2">
       <h2 className={`${typography.h3} ${themed.textPrimary} mb-6`}>
-        {LABELS.INFO_TITLE}
+        {t("infoGetInTouch")}
       </h2>
       <div className={spacing.stack}>
         {INFO_ITEMS.map(({ icon, label, value }) => (
@@ -55,12 +57,12 @@ export function ContactInfoSidebar() {
         className={`mt-8 p-4 rounded-xl ${themed.bgSecondary} border ${themed.border}`}
       >
         <p className={`text-sm ${themed.textSecondary}`}>
-          {LABELS.FAQ_LINK}{" "}
+          {t("faqLink")}{" "}
           <Link
             href={ROUTES.PUBLIC.FAQS}
             className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
           >
-            {UI_LABELS.FOOTER.FAQS}
+            {t("faqsLinkText")}
           </Link>
         </p>
       </div>

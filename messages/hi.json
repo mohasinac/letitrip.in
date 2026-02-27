@@ -746,7 +746,15 @@
     "namePlaceholder": "अपना नाम दर्ज करें",
     "emailPlaceholder": "अपना ईमेल पता दर्ज करें",
     "subjectPlaceholder": "विषय दर्ज करें",
-    "messagePlaceholder": "अपना संदेश दर्ज करें"
+    "messagePlaceholder": "अपना संदेश दर्ज करें",
+    "infoGetInTouch": "संपर्क करें",
+    "infoEmailLabel": "ईमेल",
+    "infoPhoneLabel": "फ़ोन",
+    "infoAddressLabel": "पता",
+    "infoHoursLabel": "सपोर्ट के घंटे",
+    "infoHoursValue": "सोमवार – शुक्रवार, सुबह 9 बजे – शाम 6 बजे IST",
+    "faqLink": "त्वरित उत्तरों के लिए हमारा FAQ पेज देखें",
+    "faqsLinkText": "FAQs"
   },
   "events": {
     "currentEvents": "वर्तमान इवेंट",

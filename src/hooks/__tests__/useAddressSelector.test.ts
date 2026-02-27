@@ -100,12 +100,13 @@ describe("useAddressSelector", () => {
   it("calls addressService.create when createAddress is invoked", () => {
     const { result } = renderHook(() => useAddressSelector());
     const payload = {
+      label: "Home",
       fullName: "Alice",
       phone: "9876543210",
-      line1: "123 Main St",
+      addressLine1: "123 Main St",
       city: "Delhi",
       state: "DL",
-      pincode: "110001",
+      postalCode: "110001",
       country: "IN",
     };
     result.current.createAddress(payload);

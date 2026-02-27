@@ -9,6 +9,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 66 — Final Regression + Git Sync (2026-02-27)
+
+#### Verified
+
+- `npx tsc --noEmit` → 0 `src/` errors.
+- `npm test` → 392/392 suites green — 3712 tests (4 skipped, 3708 passed).
+- Committed and pushed phases 64–66.
+
+---
+
+### Phase 65 — Rule 2 Fix: ContactInfoSidebar + WishlistButton (2026-02-27)
+
+#### Changed
+
+- **`src/components/contact/ContactInfoSidebar.tsx`** — removed module-level `UI_LABELS.CONTACT_PAGE` constant and `INFO_ITEMS` array (Rule 2 violation). Moved `INFO_ITEMS` construction inside component function body; added `useTranslations("contact")` and replaced all `LABELS.*` / `UI_LABELS.FOOTER.FAQS` strings with `t("key")` calls. Removed `UI_LABELS` from imports.
+- **`src/components/user/WishlistButton.tsx`** — replaced `UI_LABELS.USER.WISHLIST.REMOVE` and `UI_LABELS.WISHLIST.ADD_TO_WISHLIST` (used for `aria-label`/`title`) with `useTranslations("wishlist")` calls `t("removeFromWishlist")` / `t("addToWishlist")`. Removed `UI_LABELS` from imports.
+
+#### Added
+
+- **`messages/en.json`** — 8 new keys in `contact` namespace: `infoGetInTouch`, `infoEmailLabel`, `infoPhoneLabel`, `infoAddressLabel`, `infoHoursLabel`, `infoHoursValue`, `faqLink`, `faqsLinkText`.
+- **`messages/hi.json`** — same 8 keys with Hindi translations.
+
+---
+
+### Phase 64 — TS Error Fix: useAddressSelector Test (2026-02-27)
+
+#### Fixed
+
+- **`src/hooks/__tests__/useAddressSelector.test.ts`** (line 111) — test payload used stale field names (`line1`, `pincode`) that no longer match `AddressFormData` interface. Replaced with `addressLine1`, `postalCode`; added required `label: "Home"` field. Eliminated the 1 TypeScript error found by `npx tsc --noEmit`.
+
+---
+
 ### Phase 63 — Test Coverage: Admin Hooks (2026-02-27)
 
 #### Added
