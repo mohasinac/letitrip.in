@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, MAIN_NAV_ITEMS } from "@/constants";
 import NavItem from "./NavItem";
 
@@ -21,6 +22,14 @@ import NavItem from "./NavItem";
 export default function MainNavbar() {
   const { layout, zIndex } = THEME_CONSTANTS;
   const pathname = usePathname();
+  const t = useTranslations("nav");
+  const navTranslationKeys = [
+    "home",
+    "products",
+    "auctions",
+    "sellers",
+    "promotions",
+  ] as const;
 
   return (
     <nav
@@ -33,11 +42,11 @@ export default function MainNavbar() {
         <ul
           className={`flex items-center justify-start gap-1 lg:gap-2 ${layout.navbarHeight}`}
         >
-          {MAIN_NAV_ITEMS.map((item) => (
+          {MAIN_NAV_ITEMS.map((item, i) => (
             <li key={item.href}>
               <NavItem
                 href={item.href}
-                label={item.label}
+                label={t(navTranslationKeys[i])}
                 icon={item.icon}
                 isActive={pathname === item.href}
                 variant="horizontal"

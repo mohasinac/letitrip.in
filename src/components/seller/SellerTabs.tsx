@@ -1,7 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { SectionTabs } from "@/components";
-import { SELLER_TAB_ITEMS } from "@/constants";
+import { ROUTES } from "@/constants";
 
 /**
  * SellerTabs Component
@@ -18,5 +19,12 @@ import { SELLER_TAB_ITEMS } from "@/constants";
  * ```
  */
 export default function SellerTabs() {
-  return <SectionTabs tabs={SELLER_TAB_ITEMS} variant="admin" />;
+  const t = useTranslations("nav");
+  const tabs = [
+    { href: ROUTES.SELLER.DASHBOARD, label: t("dashboard") },
+    { href: ROUTES.SELLER.PRODUCTS, label: t("myProducts") },
+    { href: ROUTES.SELLER.AUCTIONS, label: t("myAuctions") },
+    { href: ROUTES.SELLER.ORDERS, label: t("mySales") },
+  ];
+  return <SectionTabs tabs={tabs} variant="admin" />;
 }

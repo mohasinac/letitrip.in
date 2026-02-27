@@ -64,14 +64,7 @@ export type {
 } from "./seo";
 
 // Navigation constants
-export {
-  MAIN_NAV_ITEMS,
-  SIDEBAR_NAV_GROUPS,
-  ADMIN_TAB_ITEMS,
-  USER_TAB_ITEMS,
-  SELLER_TAB_ITEMS,
-} from "./navigation";
-export type { NavGroup } from "./navigation";
+export { MAIN_NAV_ITEMS } from "./navigation";
 // Note: NavItem type not exported to avoid conflict with NavItem component in @/components/layout
 export type { NavItem as NavigationItem } from "./navigation";
 

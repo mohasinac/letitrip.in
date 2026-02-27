@@ -49,6 +49,7 @@ export default function Sidebar({
   const isAuthenticated = !!user && !loading;
   const sidebarRef = useRef<HTMLElement>(null);
   const tNav = useTranslations("nav");
+  const tA = useTranslations("accessibility");
   const logoutMutation = useLogout();
 
   const handleSignOut = async () => {
@@ -87,7 +88,7 @@ export default function Sidebar({
     <aside
       ref={sidebarRef}
       id="secondary-sidebar"
-      aria-label="Site navigation"
+      aria-label={tA("sideNavigation")}
       className={`
         fixed inset-y-0 right-0
         ${THEME_CONSTANTS.layout.sidebarWidth}
@@ -158,7 +159,7 @@ export default function Sidebar({
             <button
               onClick={onClose}
               className={`p-2.5 rounded-full transition-all duration-200 flex-shrink-0 hover:rotate-90 ${THEME_CONSTANTS.colors.iconButton.onLight}`}
-              aria-label="Close sidebar"
+              aria-label={tA("closeSidebar")}
             >
               <svg
                 className="w-5 h-5"
@@ -182,7 +183,7 @@ export default function Sidebar({
               <button
                 onClick={onClose}
                 className={`p-2.5 rounded-full transition-all duration-200 hover:rotate-90 ${THEME_CONSTANTS.colors.iconButton.onLight}`}
-                aria-label="Close sidebar"
+                aria-label={tA("closeSidebar")}
               >
                 <svg
                   className="w-5 h-5"
@@ -701,7 +702,7 @@ export default function Sidebar({
                 transition-all duration-200 group
                 ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.hoverCard}
               `}
-              aria-label="Toggle theme"
+              aria-label={tA("toggleTheme")}
             >
               <div
                 className={`

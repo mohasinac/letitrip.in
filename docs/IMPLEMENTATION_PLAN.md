@@ -7,7 +7,7 @@
 
 ## Status
 
-**All 66 phases complete** (Phases 1–66, 2026-02-21 → 2026-02-27). See `docs/CHANGELOG.md` for per-phase notes.
+**All 67 phases complete** (Phases 1–67, 2026-02-21 → 2026-02-28). See `docs/CHANGELOG.md` for per-phase notes.
 
 ---
 

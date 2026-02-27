@@ -1,7 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { SectionTabs } from "@/components";
-import { USER_TAB_ITEMS } from "@/constants";
+import { ROUTES } from "@/constants";
 
 /**
  * UserTabs Component
@@ -18,5 +19,13 @@ import { USER_TAB_ITEMS } from "@/constants";
  * ```
  */
 export default function UserTabs() {
-  return <SectionTabs tabs={USER_TAB_ITEMS} variant="user" />;
+  const t = useTranslations("nav");
+  const tabs = [
+    { href: ROUTES.USER.PROFILE, label: t("myProfile") },
+    { href: ROUTES.USER.ORDERS, label: t("myOrders") },
+    { href: ROUTES.USER.WISHLIST, label: t("myWishlist") },
+    { href: ROUTES.USER.ADDRESSES, label: t("myAddresses") },
+    { href: ROUTES.USER.SETTINGS, label: t("settings") },
+  ];
+  return <SectionTabs tabs={tabs} variant="user" />;
 }

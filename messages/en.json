@@ -219,7 +219,9 @@
     "blogAdmin": "Blog",
     "payoutsAdmin": "Payouts",
     "newsletterAdmin": "Newsletter",
-    "eventsAdmin": "Events"
+    "eventsAdmin": "Events",
+    "myWishlist": "My Wishlist",
+    "myAddresses": "My Addresses"
   },
   "auth": {
     "login": {
@@ -710,7 +712,9 @@
     "heroCarouselSlideOf": "Slide {current} of {total}",
     "heroCarouselGoToSlide": "Go to slide {number}",
     "heroCarouselPrevSlide": "Previous slide",
-    "heroCarouselNextSlide": "Next slide"
+    "heroCarouselNextSlide": "Next slide",
+    "closeSidebar": "Close sidebar",
+    "sideNavigation": "Site navigation"
   },
   "locale": {
     "label": "Language",

@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 67 — Nav/Layout i18n Rule 2 Audit (2026-02-28)
+
+#### Changed
+
+- `src/constants/navigation.tsx` — removed `label` from `NavItem` interface and all 5 nav constants; deleted `SIDEBAR_NAV_GROUPS`, `ADMIN_TAB_ITEMS`, `USER_TAB_ITEMS`, `SELLER_TAB_ITEMS` (replaced by inline `useTranslations` in each component); removed `UI_LABELS` and unused lucide icon imports.
+- `src/constants/index.ts` — removed now-deleted constant exports (`SIDEBAR_NAV_GROUPS`, `ADMIN_TAB_ITEMS`, `USER_TAB_ITEMS`, `SELLER_TAB_ITEMS`, `NavGroup` type).
+- `src/components/layout/MainNavbar.tsx` — added `useTranslations("nav")` + `navTranslationKeys` array; labels now resolved via `t()` instead of `item.label`.
+- `src/components/layout/Sidebar.tsx` — added `useTranslations("accessibility")`; fixed 4 hardcoded `aria-label` attributes: `"Site navigation"`, `"Close sidebar"` (×2), `"Toggle theme"`.
+- `src/components/admin/AdminTabs.tsx` — replaced `ADMIN_TAB_ITEMS` import with inline 15-tab array using `useTranslations("nav")`.
+- `src/components/user/UserTabs.tsx` — replaced `USER_TAB_ITEMS` import with inline 5-tab array using `useTranslations("nav")`.
+- `src/components/seller/SellerTabs.tsx` — replaced `SELLER_TAB_ITEMS` import with inline 4-tab array using `useTranslations("nav")`.
+- `messages/en.json` — added `nav.myWishlist`, `nav.myAddresses`, `accessibility.closeSidebar`, `accessibility.sideNavigation`.
+- `messages/hi.json` — same 4 keys in Hindi.
+
+#### Tests
+
+- `src/components/admin/__tests__/AdminTabs.test.tsx` — removed `ADMIN_TAB_ITEMS` import; updated assertion to `screen.getAllByText("Dashboard")`.
+
+---
+
 ### Phase 66 — Final Regression + Git Sync (2026-02-27)
 
 #### Verified

@@ -219,7 +219,9 @@
     "blogAdmin": "ब्लॉग",
     "payoutsAdmin": "भुगतान",
     "newsletterAdmin": "न्यूज़लेटर",
-    "eventsAdmin": "इवेंट्स"
+    "eventsAdmin": "इवेंट्स",
+    "myWishlist": "मेरी विशलिस्ट",
+    "myAddresses": "मेरे पते"
   },
   "auth": {
     "login": {
@@ -709,7 +711,9 @@
     "heroCarouselSlideOf": "स्लाइड {current} / {total}",
     "heroCarouselGoToSlide": "स्लाइड {number} पर जाएं",
     "heroCarouselPrevSlide": "पिछली स्लाइड",
-    "heroCarouselNextSlide": "अगली स्लाइड"
+    "heroCarouselNextSlide": "अगली स्लाइड",
+    "closeSidebar": "साइडबार बंद करें",
+    "sideNavigation": "साइट नेविगेशन"
   },
   "locale": {
     "label": "भाषा",
