@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { adminService } from "@/services";
+import { useMessage } from "@/hooks";
+import { useAdminNewsletter } from "@/features/admin/hooks";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
@@ -50,29 +50,8 @@ export function AdminNewsletterView() {
     useState<NewsletterSubscriberDocument | null>(null);
 
   const queryKey = ["admin", "newsletter", statusFilter];
-  const { data, isLoading, error, refetch } = useApiQuery<NewsletterResponse>({
-    queryKey,
-    queryFn: () => {
-      const params = new URLSearchParams({
-        pageSize: "200",
-        sorts: "-createdAt",
-      });
-      if (statusFilter) params.set("filters", `status==${statusFilter}`);
-      return adminService.listNewsletter(`?${params}`);
-    },
-  });
-
-  const toggleMutation = useApiMutation<
-    unknown,
-    { id: string; status: "active" | "unsubscribed" }
-  >({
-    mutationFn: ({ id, status }) =>
-      adminService.updateNewsletterEntry(id, { status }),
-  });
-
-  const deleteMutation = useApiMutation<unknown, string>({
-    mutationFn: (id) => adminService.deleteNewsletterEntry(id),
-  });
+  const { data, isLoading, error, refetch, toggleMutation, deleteMutation } =
+    useAdminNewsletter(statusFilter);
 
   const subscribers = data?.subscribers ?? [];
   const stats = data?.stats;

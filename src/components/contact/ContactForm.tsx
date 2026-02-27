@@ -6,9 +6,8 @@ import { THEME_CONSTANTS, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { Button } from "@/components/ui";
 import { FormField } from "@/components/FormField";
 import { Alert } from "@/components/feedback";
-import { useMessage } from "@/hooks";
+import { useMessage, useContactSubmit } from "@/hooks";
 import { isValidEmail, isRequired } from "@/utils";
-import { contactService } from "@/services";
 const { typography, themed, spacing } = THEME_CONSTANTS;
 
 interface ContactFormData {
@@ -27,6 +26,7 @@ const INITIAL_FORM: ContactFormData = {
 
 export function ContactForm() {
   const { showSuccess, showError } = useMessage();
+  const mutation = useContactSubmit();
   const t = useTranslations("contact");
   const [form, setForm] = useState<ContactFormData>(INITIAL_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,7 +53,7 @@ export function ContactForm() {
 
     setIsSubmitting(true);
     try {
-      await contactService.send(form);
+      await mutation.mutate(form);
       setSubmitted(true);
       setForm(INITIAL_FORM);
       showSuccess(SUCCESS_MESSAGES.CONTACT.SENT);

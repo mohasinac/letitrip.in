@@ -9,9 +9,8 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { categoryService } from "@/services";
+import { useAdminCategories } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
   CategoryTreeView,
@@ -39,24 +38,15 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
 
-  const { data, isLoading, error, refetch } = useApiQuery<{
-    categories: Category[];
-  }>({
-    queryKey: ["categories", "tree"],
-    queryFn: () => categoryService.list("view=tree"),
-  });
-
-  const createMutation = useApiMutation<any, any>({
-    mutationFn: (data) => categoryService.create(data),
-  });
-
-  const updateMutation = useApiMutation<any, { id: string; data: any }>({
-    mutationFn: ({ id, data }) => categoryService.update(id, data),
-  });
-
-  const deleteMutation = useApiMutation<any, string>({
-    mutationFn: (id) => categoryService.delete(id),
-  });
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    createMutation,
+    updateMutation,
+    deleteMutation,
+  } = useAdminCategories();
 
   const [editingCategory, setEditingCategory] =
     useState<Partial<Category> | null>(null);

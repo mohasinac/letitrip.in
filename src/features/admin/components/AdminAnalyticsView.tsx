@@ -12,8 +12,7 @@ import Link from "next/link";
 import { AdminPageHeader } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useApiQuery } from "@/hooks";
-import { adminService } from "@/services";
+import { useAdminAnalytics } from "@/features/admin/hooks";
 import { formatCurrency } from "@/utils";
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
@@ -111,11 +110,7 @@ function StatCard({
 }
 
 export function AdminAnalyticsView() {
-  const { data, isLoading } = useApiQuery<AnalyticsResponse>({
-    queryKey: ["admin-analytics"],
-    queryFn: () => adminService.getAnalytics(),
-    cacheTTL: 5 * 60 * 1000, // 5-minute cache
-  });
+  const { data, isLoading } = useAdminAnalytics();
 
   const summary = data?.data?.summary;
   const ordersByMonth = data?.data?.ordersByMonth ?? [];

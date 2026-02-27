@@ -142,3 +142,15 @@ export type { CountdownRemaining } from "./useCountdown";
 // Phase 58.1: Public page hooks
 export { useBlogPosts } from "./useBlogPosts";
 export { usePromotions } from "./usePromotions";
+
+// Phase 58.7: Shared component hooks
+export { useContactSubmit } from "./useContactSubmit";
+export { useCheckout } from "./useCheckout";
+export type {
+  AddressListResponse,
+  CartApiResponse,
+  PlaceOrderResponse,
+  CreateRazorpayOrderResponse,
+} from "./useCheckout";
+export { useCouponValidate } from "./useCouponValidate";
+export { useMediaUpload } from "./useMediaUpload";

@@ -2,7 +2,7 @@
 
 import { useState, useRef, ChangeEvent } from "react";
 import { ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
-import { mediaService } from "@/services";
+import { useMediaUpload } from "@/hooks";
 import { ValidationError } from "@/lib/errors";
 
 interface ImageUploadProps {
@@ -27,6 +27,7 @@ export function ImageUpload({
   helperText,
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const uploadMutation = useMediaUpload();
   const [preview, setPreview] = useState<string>(currentImage || "");
   const [error, setError] = useState<string>("");
   const [progress, setProgress] = useState<number>(0);
@@ -77,7 +78,7 @@ export function ImageUpload({
 
       setProgress(30);
 
-      const data = await mediaService.upload<{ url: string }>(formData);
+      const data = await uploadMutation.mutate(formData);
       setProgress(70);
       setProgress(100);
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { adminService } from "@/services";
+import { useMessage } from "@/hooks";
+import { useAdminPayouts } from "@/features/admin/hooks";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
@@ -46,23 +46,8 @@ export function AdminPayoutsView() {
     null,
   );
 
-  const queryKey = ["admin", "payouts", statusFilter];
-  const { data, isLoading, error, refetch } = useApiQuery<PayoutsResponse>({
-    queryKey,
-    queryFn: () =>
-      adminService.listPayouts(
-        statusFilter
-          ? `?filters=${encodeURIComponent(`status==${statusFilter}`)}`
-          : "",
-      ),
-  });
-
-  const updateMutation = useApiMutation<
-    unknown,
-    { id: string; data: PayoutStatusFormState }
-  >({
-    mutationFn: ({ id, data: update }) => adminService.updatePayout(id, update),
-  });
+  const { data, isLoading, error, refetch, updateMutation } =
+    useAdminPayouts(statusFilter);
 
   const payouts = data?.payouts ?? [];
 

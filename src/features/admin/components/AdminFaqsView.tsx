@@ -9,9 +9,9 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
+import { useMessage, useUrlTable } from "@/hooks";
 import { ROUTES } from "@/constants";
-import { faqService } from "@/services";
+import { useAdminFaqs } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -51,37 +51,26 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
   });
   const searchTerm = table.get("q");
 
-  const { data, isLoading, error, refetch } = useApiQuery<
-    FAQsListResponse | FAQ[]
-  >({
-    queryKey: ["faqs", "list", table.params.toString()],
-    queryFn: () => {
-      const params = new URLSearchParams();
-      const sort = table.get("sort") || "-priority,order";
-      params.set("sorts", sort);
-      params.set("page", table.get("page") || "1");
-      params.set("pageSize", table.get("pageSize") || "50");
-      if (searchTerm) params.set("search", searchTerm);
-      return faqService.list(params.toString());
-    },
-  });
+  const faqsParams = new URLSearchParams();
+  faqsParams.set("sorts", table.get("sort") || "-priority,order");
+  faqsParams.set("page", table.get("page") || "1");
+  faqsParams.set("pageSize", table.get("pageSize") || "50");
+  if (searchTerm) faqsParams.set("search", searchTerm);
+
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    createMutation,
+    updateMutation,
+    deleteMutation,
+  } = useAdminFaqs(faqsParams.toString());
 
   const faqs = Array.isArray(data)
-    ? data
+    ? (data as FAQ[])
     : ((data as FAQsListResponse)?.items ?? []);
   const faqMeta = Array.isArray(data) ? null : (data as FAQsListResponse);
-
-  const createMutation = useApiMutation<any, any>({
-    mutationFn: (data) => faqService.create(data),
-  });
-
-  const updateMutation = useApiMutation<any, { id: string; data: any }>({
-    mutationFn: ({ id, data }) => faqService.update(id, data),
-  });
-
-  const deleteMutation = useApiMutation<any, string>({
-    mutationFn: (id) => faqService.delete(id),
-  });
 
   const [editingFAQ, setEditingFAQ] = useState<Partial<FAQ> | null>(null);
   const [drawerMode, setDrawerMode] = useState<FaqDrawerMode>(null);

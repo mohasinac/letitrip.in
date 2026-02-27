@@ -9,9 +9,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation, useUrlTable } from "@/hooks";
+import { useUrlTable } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { reviewService } from "@/services";
+import { useAdminReviews } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -63,22 +63,14 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
   if (searchTerm) filtersArr.push(`(userName|userEmail)@=*${searchTerm}`);
   const filtersParam = filtersArr.join(",");
 
-  const { data, isLoading, error, refetch } = useApiQuery<{
-    reviews: Review[];
-    meta: { total: number; page: number; pageSize: number; totalPages: number };
-  }>({
-    queryKey: ["admin", "reviews", table.params.toString()],
-    queryFn: () =>
-      reviewService.listAdmin(table.buildSieveParams(filtersParam)),
-  });
-
-  const updateStatusMutation = useApiMutation<any, { id: string; data: any }>({
-    mutationFn: ({ id, data }) => reviewService.update(id, data),
-  });
-
-  const deleteMutation = useApiMutation<any, string>({
-    mutationFn: (id) => reviewService.delete(id),
-  });
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    updateMutation: updateStatusMutation,
+    deleteMutation,
+  } = useAdminReviews(table.buildSieveParams(filtersParam));
 
   const reviews = data?.reviews || [];
   const total = data?.meta?.total || 0;

@@ -9,8 +9,8 @@
 
 import { useState, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { adminService } from "@/services";
+import { useMessage } from "@/hooks";
+import { useAdminBlog } from "@/features/admin/hooks";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
@@ -56,43 +56,15 @@ export function AdminBlogView() {
   );
   const initialFormRef = useRef<string>("");
 
-  const { data, isLoading, error, refetch } = useApiQuery<{
-    posts: BlogPostDocument[];
-    meta: {
-      total: number;
-      published: number;
-      drafts: number;
-      featured: number;
-      filteredTotal: number;
-      page: number;
-      pageSize: number;
-      totalPages: number;
-      hasMore: boolean;
-    };
-  }>({
-    queryKey: ["admin", "blog", statusFilter],
-    queryFn: () => {
-      const filtersParam = statusFilter
-        ? `?filters=${encodeURIComponent(`status==${statusFilter}`)}&pageSize=200`
-        : "?pageSize=200";
-      return adminService.listBlog(filtersParam);
-    },
-  });
-
-  const createMutation = useApiMutation<BlogPostDocument, BlogFormData>({
-    mutationFn: (data) => adminService.createBlogPost(data),
-  });
-
-  const updateMutation = useApiMutation<
-    BlogPostDocument,
-    { id: string; data: BlogFormData }
-  >({
-    mutationFn: ({ id, data }) => adminService.updateBlogPost(id, data),
-  });
-
-  const deleteMutation = useApiMutation<void, string>({
-    mutationFn: (id) => adminService.deleteBlogPost(id),
-  });
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    createMutation,
+    updateMutation,
+    deleteMutation,
+  } = useAdminBlog(statusFilter);
 
   const allPosts: BlogPostDocument[] = data?.posts || [];
 

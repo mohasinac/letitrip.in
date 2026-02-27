@@ -9,9 +9,8 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation } from "@/hooks";
 import { ROUTES } from "@/constants";
-import { homepageSectionsService } from "@/services";
+import { useAdminSections } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -37,24 +36,15 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
 
-  const { data, isLoading, error, refetch } = useApiQuery<{
-    sections: HomepageSection[];
-  }>({
-    queryKey: ["homepage-sections", "list"],
-    queryFn: () => homepageSectionsService.list(),
-  });
-
-  const createMutation = useApiMutation<any, any>({
-    mutationFn: (data) => homepageSectionsService.create(data),
-  });
-
-  const updateMutation = useApiMutation<any, { id: string; data: any }>({
-    mutationFn: ({ id, data }) => homepageSectionsService.update(id, data),
-  });
-
-  const deleteMutation = useApiMutation<any, string>({
-    mutationFn: (id) => homepageSectionsService.delete(id),
-  });
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    createMutation,
+    updateMutation,
+    deleteMutation,
+  } = useAdminSections();
 
   const [editingSection, setEditingSection] = useState<HomepageSection | null>(
     null,

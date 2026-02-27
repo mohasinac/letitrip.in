@@ -9,8 +9,8 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
-import { adminService } from "@/services";
+import { useMessage, useUrlTable } from "@/hooks";
+import { useAdminProducts } from "@/features/admin/hooks";
 import { ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
@@ -49,28 +49,15 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
   if (searchTerm) filtersArr.push(`title@=*${searchTerm}`);
   if (statusFilter) filtersArr.push(`status==${statusFilter}`);
 
-  const { data, isLoading, error, refetch } = useApiQuery<{
-    products: AdminProduct[];
-    meta: { page: number; limit: number; total: number; totalPages: number };
-  }>({
-    queryKey: ["admin", "products", table.params.toString()],
-    queryFn: () =>
-      adminService.listAdminProducts(
-        table.buildSieveParams(filtersArr.join(",")),
-      ),
-  });
-
-  const createMutation = useApiMutation<any, any>({
-    mutationFn: (data) => adminService.createAdminProduct(data),
-  });
-
-  const updateMutation = useApiMutation<any, { id: string; data: any }>({
-    mutationFn: ({ id, data }) => adminService.updateAdminProduct(id, data),
-  });
-
-  const deleteMutation = useApiMutation<any, string>({
-    mutationFn: (id) => adminService.deleteAdminProduct(id),
-  });
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    createMutation,
+    updateMutation,
+    deleteMutation,
+  } = useAdminProducts(table.buildSieveParams(filtersArr.join(",")));
 
   const [editingProduct, setEditingProduct] =
     useState<Partial<AdminProduct> | null>(null);

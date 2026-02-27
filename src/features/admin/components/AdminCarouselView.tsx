@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation } from "@/hooks";
 import { ROUTES } from "@/constants";
-import { carouselService } from "@/services";
+import { useAdminCarousel } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
   DataTable,
@@ -30,24 +29,15 @@ export function AdminCarouselView({ action }: Props) {
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
 
-  const { data, isLoading, error, refetch } = useApiQuery<{
-    slides: CarouselSlide[];
-  }>({
-    queryKey: ["carousel", "list"],
-    queryFn: () => carouselService.list(),
-  });
-
-  const createMutation = useApiMutation<any, any>({
-    mutationFn: (data) => carouselService.create(data),
-  });
-
-  const updateMutation = useApiMutation<any, { id: string; data: any }>({
-    mutationFn: ({ id, data }) => carouselService.update(id, data),
-  });
-
-  const deleteMutation = useApiMutation<any, string>({
-    mutationFn: (id) => carouselService.delete(id),
-  });
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    createMutation,
+    updateMutation,
+    deleteMutation,
+  } = useAdminCarousel();
 
   const [editingSlide, setEditingSlide] = useState<CarouselSlide | null>(null);
   const [drawerMode, setDrawerMode] = useState<DrawerMode>(null);

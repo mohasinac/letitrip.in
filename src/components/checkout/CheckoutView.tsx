@@ -9,29 +9,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { AddressDocument, CartDocument } from "@/db/schema";
 import { CheckoutStepper } from "./CheckoutStepper";
 import { CheckoutAddressStep } from "./CheckoutAddressStep";
 import { CheckoutOrderReview } from "./CheckoutOrderReview";
 import { OrderSummaryPanel } from "./OrderSummaryPanel";
-import { useApiQuery, useApiMutation, useMessage, useRazorpay } from "@/hooks";
+import { useCheckout, useMessage, useRazorpay } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
-import { addressService, cartService, checkoutService } from "@/services";
 import { useTranslations } from "next-intl";
 
 const { themed, typography } = THEME_CONSTANTS;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-
-interface AddressListResponse {
-  data: AddressDocument[];
-}
-
-interface CartApiResponse {
-  cart: CartDocument;
-  itemCount: number;
-  subtotal: number;
-}
 
 interface PlaceOrderResponse {
   orderIds: string[];
@@ -94,31 +82,18 @@ export function CheckoutView() {
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "online">("cod");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
-  // Fetch addresses
-  const { data: addrData, isLoading: addrLoading } =
-    useApiQuery<AddressListResponse>({
-      queryKey: ["addresses"],
-      queryFn: () => addressService.list(),
-    });
-
-  // Fetch cart
-  const { data: cartData, isLoading: cartLoading } =
-    useApiQuery<CartApiResponse>({
-      queryKey: ["cart"],
-      queryFn: () => cartService.get(),
-    });
-
-  // COD: place order mutation
-  const { mutate: placeCodOrder } = useApiMutation<
-    PlaceOrderResponse,
-    { addressId: string; paymentMethod: "cod" | "online" }
-  >({
-    mutationFn: (data) => checkoutService.placeOrder(data),
-    onSuccess: (result) => {
+  const {
+    addressQuery: { data: addrData, isLoading: addrLoading },
+    cartQuery: { data: cartData, isLoading: cartLoading },
+    placeCodOrderMutation: { mutate: placeCodOrder },
+    createPaymentOrder,
+    verifyPayment,
+  } = useCheckout({
+    onPlaceCodOrderSuccess: (result) => {
       const primaryOrderId = result?.orderIds?.[0] ?? "";
       router.push(`${ROUTES.USER.CHECKOUT_SUCCESS}?orderId=${primaryOrderId}`);
     },
-    onError: () => {
+    onPlaceCodOrderError: () => {
       showError(ERROR_MESSAGES.CHECKOUT.FAILED);
       setIsPlacingOrder(false);
     },
@@ -164,7 +139,7 @@ export function CheckoutView() {
       // Online: Razorpay flow
       try {
         // 1. Create Razorpay order on backend
-        const rzpOrder = (await checkoutService.createPaymentOrder({
+        const rzpOrder = (await createPaymentOrder({
           amount: subtotal,
           currency: "INR",
         })) as CreateRazorpayOrderResponse;
@@ -182,7 +157,7 @@ export function CheckoutView() {
         });
 
         // 3. Verify payment & create orders
-        const verifyResult = (await checkoutService.verifyPayment({
+        const verifyResult = (await verifyPayment({
           razorpay_order_id: paymentResult.razorpay_order_id,
           razorpay_payment_id: paymentResult.razorpay_payment_id,
           razorpay_signature: paymentResult.razorpay_signature,

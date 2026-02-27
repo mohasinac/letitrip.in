@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { couponService } from "@/services";
+import { useCouponValidate } from "@/hooks";
 import { formatCurrency } from "@/utils";
 
 const { themed, input } = THEME_CONSTANTS;
@@ -31,6 +31,7 @@ export function PromoCodeInput({
   disabled = false,
 }: PromoCodeInputProps) {
   const t = useTranslations("cart");
+  const mutation = useCouponValidate();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [appliedCode, setAppliedCode] = useState<string | null>(null);
@@ -43,7 +44,7 @@ export function PromoCodeInput({
     setLoading(true);
     setErrorMsg(null);
     try {
-      const res = (await couponService.validate({
+      const res = (await mutation.mutate({
         code: trimmed,
         orderTotal: subtotal,
       })) as CouponValidateResponse;

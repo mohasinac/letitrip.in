@@ -2,8 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useUrlTable } from "@/hooks";
-import { adminService } from "@/services";
+import { useUrlTable } from "@/hooks";
+import { useAdminBids } from "@/features/admin/hooks";
 import { ROUTES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
@@ -43,14 +43,9 @@ export function AdminBidsView({ action }: Props) {
 
   const filtersParam = statusFilter ? `status==${statusFilter}` : undefined;
 
-  const { data, isLoading, error } = useApiQuery<{
-    bids: BidDocument[];
-    meta: { total: number; page: number; pageSize: number; totalPages: number };
-  }>({
-    queryKey: ["admin", "bids", table.params.toString()],
-    queryFn: () =>
-      adminService.listBids(table.buildSieveParams(filtersParam ?? "")),
-  });
+  const { data, isLoading, error } = useAdminBids(
+    table.buildSieveParams(filtersParam ?? ""),
+  );
 
   const bids = data?.bids || [];
 

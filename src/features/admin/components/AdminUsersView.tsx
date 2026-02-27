@@ -10,8 +10,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation, useUrlTable } from "@/hooks";
-import { adminService } from "@/services";
+import { useUrlTable } from "@/hooks";
+import { useAdminUsers } from "@/features/admin/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
@@ -64,21 +64,14 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
   if (searchTerm) filtersArr.push(`(displayName|email)@=*${searchTerm}`);
   const filtersParam = filtersArr.join(",");
 
-  const { data, isLoading, error, refetch } = useApiQuery<{
-    users: AdminUser[];
-    meta: { page: number; limit: number; total: number; totalPages: number };
-  }>({
-    queryKey: ["admin", "users", table.params.toString()],
-    queryFn: () => adminService.listUsers(table.buildSieveParams(filtersParam)),
-  });
-
-  const updateUserMutation = useApiMutation<any, { uid: string; data: any }>({
-    mutationFn: ({ uid, data }) => adminService.updateUser(uid, data),
-  });
-
-  const deleteUserMutation = useApiMutation<any, string>({
-    mutationFn: (uid) => adminService.deleteUser(uid),
-  });
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    updateUserMutation,
+    deleteUserMutation,
+  } = useAdminUsers(table.buildSieveParams(filtersParam));
 
   const users = data?.users || [];
   const total = data?.meta?.total ?? users.length;

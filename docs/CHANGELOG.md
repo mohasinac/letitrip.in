@@ -9,6 +9,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Phase 58.7–58.9 — Shared component + all admin view hooks (Rule 20) (2026-02-27)
+
+#### Added
+
+- **`src/hooks/useContactSubmit.ts`** — `useApiMutation<void, ContactFormData>` wrapping `contactService.send()`.
+- **`src/hooks/useCheckout.ts`** — Bundles address query, cart query, COD order mutation; exposes `createPaymentOrder` and `verifyPayment` passthrough bound functions. Accepts `onPlaceCodOrderSuccess`/`onPlaceCodOrderError` callbacks.
+- **`src/hooks/useCouponValidate.ts`** — `useApiMutation` wrapping `couponService.validate()`.
+- **`src/hooks/useMediaUpload.ts`** — `useApiMutation<{ url: string }, FormData>` wrapping `mediaService.upload()`.
+- **`src/features/admin/hooks/` (new directory)** — 13 admin view hooks:
+  - `useAdminAnalytics.ts` — analytics query with 5-minute cache TTL.
+  - `useAdminBids.ts` — accepts `sieveParams: string`.
+  - `useAdminNewsletter.ts` — accepts `statusFilter: string`; returns query + `toggleMutation` + `deleteMutation`.
+  - `useAdminPayouts.ts` — accepts `statusFilter: string`; returns query + `updateMutation`.
+  - `useAdminUsers.ts` — accepts `sieveParams: string`; returns query + `updateUserMutation` + `deleteUserMutation`.
+  - `useAdminProducts.ts` — accepts `sieveParams: string`; returns query + `createMutation` + `updateMutation` + `deleteMutation`.
+  - `useAdminReviews.ts` — accepts `sieveParams: string`; returns query + `updateMutation` + `deleteMutation`.
+  - `useAdminCoupons.ts` — accepts `sieveParams: string`; returns query + mutations.
+  - `useAdminCategories.ts` — no params; returns query + mutations.
+  - `useAdminFaqs.ts` — accepts `paramsString: string`; returns query + mutations.
+  - `useAdminCarousel.ts` — no params; returns query + mutations.
+  - `useAdminSections.ts` — no params; returns query + mutations.
+  - `useAdminBlog.ts` — accepts `statusFilter: string`; returns query + mutations.
+- **`src/features/admin/hooks/index.ts`** — new barrel exporting all 13 admin hooks.
+
+#### Changed
+
+- **`src/hooks/index.ts`** — Added exports for `useContactSubmit`, `useCheckout` (+ 4 type exports), `useCouponValidate`, `useMediaUpload`.
+- **`src/features/admin/index.ts`** — Added `export * from "./hooks"`.
+- **`src/components/contact/ContactForm.tsx`** — Removed `contactService`; uses `useContactSubmit`.
+- **`src/components/cart/PromoCodeInput.tsx`** — Removed `couponService`; uses `useCouponValidate`.
+- **`src/components/admin/ImageUpload.tsx`** — Removed `mediaService`; uses `useMediaUpload`.
+- **`src/components/checkout/CheckoutView.tsx`** — Removed `addressService`, `cartService`, `checkoutService` + 3 inline hooks; uses `useCheckout()`.
+- **`src/features/admin/components/AdminAnalyticsView.tsx`** — Removed `adminService`/`useApiQuery`; uses `useAdminAnalytics()`.
+- **`src/features/admin/components/AdminBidsView.tsx`** — Uses `useAdminBids(table.buildSieveParams(...))`.
+- **`src/features/admin/components/AdminNewsletterView.tsx`** — Uses `useAdminNewsletter(statusFilter)`.
+- **`src/features/admin/components/AdminPayoutsView.tsx`** — Uses `useAdminPayouts(statusFilter)`.
+- **`src/features/admin/components/AdminUsersView.tsx`** — Uses `useAdminUsers(table.buildSieveParams(...))`.
+- **`src/features/admin/components/AdminProductsView.tsx`** — Uses `useAdminProducts(table.buildSieveParams(...))`.
+- **`src/features/admin/components/AdminReviewsView.tsx`** — Uses `useAdminReviews(table.buildSieveParams(...))`.
+- **`src/features/admin/components/AdminCouponsView.tsx`** — Uses `useAdminCoupons(table.buildSieveParams(...))`.
+- **`src/features/admin/components/AdminCategoriesView.tsx`** — Uses `useAdminCategories()`.
+- **`src/features/admin/components/AdminFaqsView.tsx`** — Builds `faqsParams` URLSearchParams before hook; uses `useAdminFaqs(faqsParams.toString())`.
+- **`src/features/admin/components/AdminCarouselView.tsx`** — Uses `useAdminCarousel()`.
+- **`src/features/admin/components/AdminSectionsView.tsx`** — Uses `useAdminSections()`.
+- **`src/features/admin/components/AdminBlogView.tsx`** — Uses `useAdminBlog(statusFilter)`.
+- **All 13 admin views** — Import hooks from `@/features/admin/hooks` sub-barrel (not full barrel) to avoid Jest circular initialization failures.
+- **`docs/IMPLEMENTATION_PLAN.md`** — Phase 58 marked ✅ Done; phases 1–58 complete.
+
+---
+
 ### Phase 58 planning — Service → Hook migration tasks added (2026-02-27)
 
 #### Docs

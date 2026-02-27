@@ -10,8 +10,8 @@
 
 import { useState, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useApiQuery, useApiMutation, useMessage, useUrlTable } from "@/hooks";
-import { couponService } from "@/services";
+import { useMessage, useUrlTable } from "@/hooks";
+import { useAdminCoupons } from "@/features/admin/hooks";
 import { ROUTES, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
@@ -63,26 +63,15 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
 
   const initialFormRef = useRef<string>("");
 
-  const { data, isLoading, error, refetch } = useApiQuery<{
-    coupons: CouponDocument[];
-    meta: { total: number; page: number; pageSize: number; totalPages: number };
-  }>({
-    queryKey: ["admin", "coupons", table.params.toString()],
-    queryFn: () =>
-      couponService.list(table.buildSieveParams(filtersArr.join(","))),
-  });
-
-  const createMutation = useApiMutation<any, any>({
-    mutationFn: (payload) => couponService.create(payload),
-  });
-
-  const updateMutation = useApiMutation<any, { id: string; data: any }>({
-    mutationFn: ({ id, data: update }) => couponService.update(id, update),
-  });
-
-  const deleteMutation = useApiMutation<any, string>({
-    mutationFn: (id) => couponService.delete(id),
-  });
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    createMutation,
+    updateMutation,
+    deleteMutation,
+  } = useAdminCoupons(table.buildSieveParams(filtersArr.join(",")));
 
   const coupons = data?.coupons || [];
 
