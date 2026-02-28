@@ -11,7 +11,7 @@ jest.mock("@/hooks", () => ({
   }),
 }));
 
-jest.mock("../../services/event.service", () => ({
+jest.mock("@/services", () => ({
   eventService: {
     adminGetStats: jest.fn().mockResolvedValue({
       totalEntries: 10,
@@ -23,7 +23,7 @@ jest.mock("../../services/event.service", () => ({
 }));
 
 const { useApiQuery } = require("@/hooks");
-const { eventService } = require("../../services/event.service");
+const { eventService } = require("@/services");
 
 describe("useEventStats", () => {
   beforeEach(() => {

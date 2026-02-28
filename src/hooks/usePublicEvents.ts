@@ -1,7 +1,7 @@
 "use client";
 
 import { useApiQuery } from "@/hooks/useApiQuery";
-import { publicEventService } from "@/services";
+import { eventService } from "@/services";
 import type { EventDocument } from "@/db/schema";
 
 interface EventsListResult {
@@ -22,8 +22,8 @@ interface UsePublicEventsOptions {
 /**
  * usePublicEvents  (Tier 1 — shared hook)
  * Fetches public-facing events with optional filtering.
- * Uses the Tier 1 publicEventService so it can be consumed by Tier 1 components
- * (e.g. EventBanner in src/components/ui/).
+ * Uses the Tier 1 eventService (TASK-27: consolidated from Tier-2 duplicate).
+ *
  *
  * @example
  * const { events } = usePublicEvents({ params: 'types=sale,offer&status=active&pageSize=1' });

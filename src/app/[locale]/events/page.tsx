@@ -4,7 +4,8 @@ import { useApiQuery } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { EmptyState, Spinner } from "@/components";
-import { EventCard, eventService } from "@/features/events";
+import { EventCard } from "@/features/events";
+import { eventService } from "@/services";
 import type { EventDocument } from "@/db/schema";
 
 interface EventsListResponse {

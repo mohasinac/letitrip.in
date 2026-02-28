@@ -9,15 +9,17 @@
 
 import {
   FormField,
+  Checkbox,
   CategorySelectorCreate,
   AddressSelectorCreate,
+  ImageUpload,
 } from "@/components";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import type { AdminProduct } from "./types";
 import { PRODUCT_STATUS_OPTIONS } from "./types";
 
-const { spacing, themed } = THEME_CONSTANTS;
-const LABELS = UI_LABELS.ADMIN.PRODUCTS;
+const { spacing } = THEME_CONSTANTS;
 
 interface ProductFormProps {
   product: Partial<AdminProduct>;
@@ -30,6 +32,7 @@ export function ProductForm({
   onChange,
   isReadonly = false,
 }: ProductFormProps) {
+  const t = useTranslations("adminProducts");
   const update = (partial: Partial<AdminProduct>) => {
     onChange({ ...product, ...partial });
   };
@@ -39,7 +42,7 @@ export function ProductForm({
       {/* Basic Info */}
       <FormField
         name="title"
-        label={LABELS.TITLE_LABEL}
+        label={t("formTitle")}
         type="text"
         value={product.title || ""}
         onChange={(value) => update({ title: value })}
@@ -49,7 +52,7 @@ export function ProductForm({
 
       <FormField
         name="description"
-        label={LABELS.DESCRIPTION_LABEL}
+        label={t("formDescription")}
         type="textarea"
         value={product.description || ""}
         onChange={(value) => update({ description: value })}
@@ -59,14 +62,14 @@ export function ProductForm({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <CategorySelectorCreate
-          label={LABELS.CATEGORY_LABEL}
+          label={t("formCategory")}
           value={product.categoryId || product.category || ""}
           onChange={(id) => update({ categoryId: id, category: id })}
           disabled={isReadonly}
         />
         <FormField
           name="subcategory"
-          label={LABELS.SUBCATEGORY_LABEL}
+          label={t("formSubcategory")}
           type="text"
           value={product.subcategory || ""}
           onChange={(value) => update({ subcategory: value })}
@@ -78,7 +81,7 @@ export function ProductForm({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField
           name="brand"
-          label={LABELS.BRAND_LABEL}
+          label={t("formBrand")}
           type="text"
           value={product.brand || ""}
           onChange={(value) => update({ brand: value })}
@@ -87,7 +90,7 @@ export function ProductForm({
         />
         <FormField
           name="status"
-          label={LABELS.STATUS_LABEL}
+          label={t("formStatus")}
           type="select"
           value={product.status || "draft"}
           onChange={(value) =>
@@ -102,7 +105,7 @@ export function ProductForm({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField
           name="price"
-          label={LABELS.PRICE_LABEL}
+          label={t("formPrice")}
           type="number"
           value={String(product.price ?? "")}
           onChange={(value) => update({ price: Number(value) })}
@@ -111,7 +114,7 @@ export function ProductForm({
         />
         <FormField
           name="stockQuantity"
-          label={LABELS.STOCK_LABEL}
+          label={t("formStock")}
           type="number"
           value={String(product.stockQuantity ?? "")}
           onChange={(value) => update({ stockQuantity: Number(value) })}
@@ -121,81 +124,73 @@ export function ProductForm({
       </div>
 
       {/* Media */}
-      <FormField
-        name="mainImage"
-        label={LABELS.MAIN_IMAGE_LABEL}
-        type="text"
-        value={product.mainImage || ""}
-        onChange={(value) => update({ mainImage: value })}
-        disabled={isReadonly}
-        placeholder="https://..."
-      />
+      {!isReadonly && (
+        <ImageUpload
+          currentImage={product.mainImage}
+          onUpload={(url) => update({ mainImage: url })}
+          folder="products"
+          label={t("formMainImage")}
+          helperText="Recommended: 800x800px (1:1)"
+        />
+      )}
+      {isReadonly && product.mainImage && (
+        <FormField
+          name="mainImage"
+          label={t("formMainImage")}
+          type="text"
+          value={product.mainImage}
+          onChange={() => {}}
+          disabled
+        />
+      )}
 
       {/* Tags */}
       <FormField
         name="tags"
-        label={LABELS.TAGS_LABEL}
+        label={t("formTags")}
         type="text"
         value={(product.tags || []).join(", ")}
         onChange={(value) =>
           update({
             tags: value
               .split(",")
-              .map((t) => t.trim())
+              .map((tag) => tag.trim())
               .filter(Boolean),
           })
         }
         disabled={isReadonly}
-        placeholder={LABELS.TAGS_PLACEHOLDER}
+        placeholder={t("formTagsPlaceholder")}
       />
 
       {/* Toggles */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={!!product.featured}
-            onChange={(e) => update({ featured: e.target.checked })}
-            disabled={isReadonly}
-            className="w-4 h-4 rounded border-gray-300"
-          />
-          <span className={`text-sm ${themed.textPrimary}`}>
-            {LABELS.FEATURED_LABEL}
-          </span>
-        </label>
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={!!product.isPromoted}
-            onChange={(e) => update({ isPromoted: e.target.checked })}
-            disabled={isReadonly}
-            className="w-4 h-4 rounded border-gray-300"
-          />
-          <span className={`text-sm ${themed.textPrimary}`}>
-            {LABELS.IS_PROMOTED_LABEL}
-          </span>
-        </label>
+        <Checkbox
+          label={t("formFeatured")}
+          checked={!!product.featured}
+          onChange={(e) => update({ featured: e.target.checked })}
+          disabled={isReadonly}
+        />
+        <Checkbox
+          label={t("formIsPromoted")}
+          checked={!!product.isPromoted}
+          onChange={(e) => update({ isPromoted: e.target.checked })}
+          disabled={isReadonly}
+        />
       </div>
 
       {/* Auction fields */}
-      <label className="flex items-center gap-3 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={!!product.isAuction}
-          onChange={(e) => update({ isAuction: e.target.checked })}
-          disabled={isReadonly}
-          className="w-4 h-4 rounded border-gray-300"
-        />
-        <span className={`text-sm ${themed.textPrimary}`}>
-          {LABELS.IS_AUCTION_LABEL}
-        </span>
-      </label>
+      <Checkbox
+        label={t("formIsAuction")}
+        checked={!!product.isAuction}
+        onChange={(e) => update({ isAuction: e.target.checked })}
+        disabled={isReadonly}
+      />
 
       {product.isAuction && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField
             name="startingBid"
-            label={LABELS.STARTING_BID_LABEL}
+            label={t("formStartingBid")}
             type="number"
             value={String(product.startingBid ?? "")}
             onChange={(value) => update({ startingBid: Number(value) })}
@@ -204,7 +199,7 @@ export function ProductForm({
           />
           <FormField
             name="auctionEndDate"
-            label={LABELS.AUCTION_END_DATE_LABEL}
+            label={t("formAuctionEndDate")}
             type="text"
             value={product.auctionEndDate || ""}
             onChange={(value) => update({ auctionEndDate: value })}
@@ -216,7 +211,7 @@ export function ProductForm({
 
       {/* Shipping & Returns */}
       <AddressSelectorCreate
-        label={LABELS.PICKUP_ADDRESS}
+        label={t("formPickupAddress")}
         value={product.pickupAddressId || ""}
         onChange={(id) => update({ pickupAddressId: id })}
         disabled={isReadonly}
@@ -224,7 +219,7 @@ export function ProductForm({
 
       <FormField
         name="shippingInfo"
-        label={LABELS.SHIPPING_LABEL}
+        label={t("formShipping")}
         type="textarea"
         value={product.shippingInfo || ""}
         onChange={(value) => update({ shippingInfo: value })}
@@ -234,7 +229,7 @@ export function ProductForm({
 
       <FormField
         name="returnPolicy"
-        label={LABELS.RETURN_POLICY_LABEL}
+        label={t("formReturnPolicy")}
         type="textarea"
         value={product.returnPolicy || ""}
         onChange={(value) => update({ returnPolicy: value })}
@@ -246,7 +241,7 @@ export function ProductForm({
       {product.sellerName && (
         <FormField
           name="sellerName"
-          label={LABELS.SELLER_LABEL}
+          label={t("formSeller")}
           type="text"
           value={product.sellerName}
           onChange={() => {}}

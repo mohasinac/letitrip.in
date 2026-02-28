@@ -10,8 +10,8 @@ import {
   SurveyEventSection,
   FeedbackEventSection,
   EventLeaderboard,
-  eventService,
 } from "@/features/events";
+import { eventService } from "@/services";
 import { formatDate } from "@/utils";
 import type { EventDocument } from "@/db/schema";
 

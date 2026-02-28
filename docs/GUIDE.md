@@ -2,7 +2,7 @@
 
 > **Complete Index of All Code, Snippets, Functions, Classes, Hooks, Components, and Database Schemas**
 
-**Last Updated**: February 26, 2026  
+**Last Updated**: February 28, 2026  
 **Status**: Comprehensive Reference for LetItRip.in Project
 
 ---
@@ -2736,11 +2736,28 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 
 ### Upload Components
 
+#### MediaUploadField
+
+**File**: `src/components/admin/MediaUploadField.tsx`  
+**Purpose**: Embeddable file/video upload field for any form. Supports any MIME type and shows type-appropriate previews (video player, image thumbnail, or filename link).  
+**Props**: `label` (required), `value: string`, `onChange: (url: string) => void`, `accept?`, `maxSizeMB?`, `folder?`, `disabled?`, `helperText?`  
+**Upload path**: `useMediaUpload` → `POST /api/media/upload` (Firebase Admin SDK).  
+**When to use**: Video fields, PDF attachments, or any non-image file. For image-only fields, prefer `<ImageUpload>`.
+
+#### ImageUpload
+
+**File**: `src/components/admin/ImageUpload.tsx`  
+**Purpose**: Canonical content image upload for all form fields — products, blog, categories, carousel, and any other content image.  
+**Props**: `currentImage?`, `onUpload: (url: string) => void`, `folder?`, `label?`, `helperText?`, `accept?`, `maxSizeMB?`, `isPublic?`  
+**Upload path**: `useMediaUpload` → `POST /api/media/upload` (Firebase Admin SDK). Never uses Storage client SDK.  
+**When to use**: Any form field that produces an image URL. Do NOT use for profile avatars (see `AvatarUpload`).
+
 #### AvatarUpload
 
 **File**: `AvatarUpload.tsx`  
-**Purpose**: Profile photo upload with cropping  
-**Props**: `value`, `onChange`, `size`, `allowEdit`
+**Purpose**: Profile photo upload with crop + zoom, for user / seller / brand avatars.  
+**Props**: `value`, `onChange`, `size`, `allowEdit`  
+**Upload path (current)**: `useStorageUpload` → Firebase Storage client SDK. ⚠️ TASK-20 will migrate this to `/api/media/upload`.
 
 #### AvatarDisplay
 

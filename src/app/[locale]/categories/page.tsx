@@ -9,9 +9,10 @@
 
 import { useMemo, useState } from "react";
 import { CategoryGrid, Spinner, Input } from "@/components";
-import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useApiQuery } from "@/hooks";
+import { categoryService } from "@/services";
 import type { CategoryDocument } from "@/db/schema";
 
 const { themed, typography, spacing } = THEME_CONSTANTS;
@@ -27,8 +28,7 @@ export default function CategoriesPage() {
 
   const { data, isLoading, error } = useApiQuery<CategoriesApiResponse>({
     queryKey: ["categories", "flat"],
-    queryFn: () =>
-      fetch(`${API_ENDPOINTS.CATEGORIES.LIST}?flat=true`).then((r) => r.json()),
+    queryFn: () => categoryService.list("flat=true"),
   });
 
   const allCategories = useMemo(() => data?.data ?? [], [data]);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useApiQuery } from "@/hooks";
-import { eventService } from "../services/event.service";
+import { eventService } from "@/services";
 import type { EventEntryDocument } from "@/db/schema";
 
 interface EventEntriesResult {

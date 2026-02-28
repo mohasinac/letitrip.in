@@ -1,7 +1,7 @@
 "use client";
 
 import { useApiMutation } from "@/hooks";
-import { eventService } from "../services/event.service";
+import { eventService } from "@/services";
 import type {
   EventDocument,
   EventCreateInput,

@@ -22,11 +22,12 @@ import React, {
   useRef,
   useMemo,
 } from "react";
+import type { User } from "firebase/auth";
 import {
-  User,
-  onAuthStateChanged as firebaseOnAuthStateChanged,
-} from "firebase/auth";
-import { auth } from "@/lib/firebase/config";
+  onAuthStateChanged,
+  getCurrentUser,
+  signOut as firebaseSignOut,
+} from "@/lib/firebase/auth-helpers";
 import { ERROR_MESSAGES } from "@/constants";
 import { getCookie, hasCookie, deleteCookie } from "@/utils";
 import { logger } from "@/classes";
@@ -217,7 +218,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
 
   // Refresh user data
   const refreshUser = useCallback(async () => {
-    const currentAuth = auth.currentUser;
+    const currentAuth = getCurrentUser();
     if (currentAuth) {
       const userData = await fetchUserProfile(currentAuth);
       setUser(userData);
@@ -242,7 +243,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
   const signOut = useCallback(async () => {
     try {
       // Sign out from Firebase first
-      await auth.signOut();
+      await firebaseSignOut();
 
       // Clear session on server (with cookies)
       try {
@@ -282,7 +283,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
   useEffect(() => {
     let authVersion = 0;
 
-    const unsubscribe = firebaseOnAuthStateChanged(auth, async (authUser) => {
+    const unsubscribe = onAuthStateChanged(async (authUser) => {
       const thisVersion = ++authVersion;
 
       if (authUser) {

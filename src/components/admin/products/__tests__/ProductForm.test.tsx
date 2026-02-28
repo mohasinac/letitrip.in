@@ -9,6 +9,10 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => key,
+}));
+
 // --- Mocks ---
 
 jest.mock("@/hooks", () => ({
@@ -99,38 +103,54 @@ jest.mock("@/components", () => ({
       </select>
     </div>
   ),
+  Checkbox: ({
+    label,
+    checked,
+    onChange,
+    disabled,
+  }: {
+    label?: string;
+    checked?: boolean;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    disabled?: boolean;
+  }) => (
+    <label>
+      <input
+        type="checkbox"
+        checked={!!checked}
+        onChange={onChange}
+        disabled={disabled}
+        data-testid={`checkbox-${label?.toLowerCase().replace(/\s+/g, "-")}`}
+      />
+      {label}
+    </label>
+  ),
+  ImageUpload: ({
+    currentImage,
+    onUpload,
+    label,
+  }: {
+    currentImage?: string;
+    onUpload: (url: string) => void;
+    folder?: string;
+    label?: string;
+    helperText?: string;
+  }) => (
+    <div data-testid="image-upload">
+      {label && <span>{label}</span>}
+      <input
+        data-testid="image-upload-input"
+        defaultValue={currentImage}
+        onChange={(e) => onUpload(e.target.value)}
+      />
+    </div>
+  ),
 }));
 
 jest.mock("@/constants", () => ({
   THEME_CONSTANTS: {
     spacing: { stack: "space-y-4" },
     themed: { textPrimary: "text-gray-900" },
-  },
-  UI_LABELS: {
-    ADMIN: {
-      PRODUCTS: {
-        TITLE_LABEL: "Title",
-        DESCRIPTION_LABEL: "Description",
-        CATEGORY_LABEL: "Category",
-        SUBCATEGORY_LABEL: "Subcategory",
-        BRAND_LABEL: "Brand",
-        STATUS_LABEL: "Status",
-        PRICE_LABEL: "Price",
-        STOCK_LABEL: "Stock",
-        MAIN_IMAGE_LABEL: "Main Image",
-        TAGS_LABEL: "Tags",
-        TAGS_PLACEHOLDER: "e.g., red, sale",
-        FEATURED_LABEL: "Featured",
-        IS_PROMOTED_LABEL: "Promoted",
-        IS_AUCTION_LABEL: "Auction",
-        STARTING_BID_LABEL: "Starting Bid",
-        AUCTION_END_DATE_LABEL: "Auction End Date",
-        SHIPPING_LABEL: "Shipping Info",
-        RETURN_POLICY_LABEL: "Return Policy",
-        SELLER_LABEL: "Seller",
-        PICKUP_ADDRESS: "Pickup Address",
-      },
-    },
   },
 }));
 
@@ -195,5 +215,48 @@ describe("ProductForm", () => {
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({ pickupAddressId: "addr-1" }),
     );
+  });
+
+  it("renders Checkbox components for featured, isPromoted, isAuction", () => {
+    render(<ProductForm product={baseProduct} onChange={jest.fn()} />);
+    expect(screen.getByText("formFeatured")).toBeInTheDocument();
+    expect(screen.getByText("formIsPromoted")).toBeInTheDocument();
+    expect(screen.getByText("formIsAuction")).toBeInTheDocument();
+    // No raw input[type=checkbox] outside the Checkbox mock
+    const checkboxes = screen.getAllByRole("checkbox");
+    expect(checkboxes.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it("Checkbox onChange updates featured state", () => {
+    const onChange = jest.fn();
+    render(<ProductForm product={baseProduct} onChange={onChange} />);
+    const featuredCheckbox = screen.getByTestId("checkbox-formfeatured");
+    fireEvent.click(featuredCheckbox);
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({ featured: true }),
+    );
+  });
+
+  it("renders ImageUpload for mainImage in edit mode", () => {
+    render(<ProductForm product={baseProduct} onChange={jest.fn()} />);
+    expect(screen.getByTestId("image-upload")).toBeInTheDocument();
+  });
+
+  it("hides ImageUpload and shows readonly field when isReadonly", () => {
+    const productWithImage = {
+      ...baseProduct,
+      mainImage: "https://example.com/img.jpg",
+    };
+    render(
+      <ProductForm
+        product={productWithImage}
+        onChange={jest.fn()}
+        isReadonly
+      />,
+    );
+    expect(screen.queryByTestId("image-upload")).not.toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue("https://example.com/img.jpg"),
+    ).toBeInTheDocument();
   });
 });

@@ -1,6 +1,3 @@
-// Services
-export { eventService } from "./services/event.service";
-
 // Types
 export * from "./types";
 
@@ -47,3 +44,4 @@ export { PollVotingSection } from "./components/PollVotingSection";
 export { SurveyEventSection } from "./components/SurveyEventSection";
 export { FeedbackEventSection } from "./components/FeedbackEventSection";
 export { EventLeaderboard } from "./components/EventLeaderboard";
+export { EventParticipateView } from "./components/EventParticipateView";

@@ -4,9 +4,10 @@ This repository now keeps a smaller, core set of documentation files.
 
 ## Core Docs
 
+- [APPLICATION_GRAPH.md](./APPLICATION_GRAPH.md) - Full application page/component/hook/API dependency map
+- [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) - Ordered implementation tasks derived from APPLICATION_GRAPH gaps
 - [GUIDE.md](./GUIDE.md) - Complete codebase reference
 - [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Common patterns and shortcuts
-- [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) - Phase overview and completion tracker (Phases 1–18, 20–45 done; Phase 19 + Phase 46 pending)
 - [CHANGELOG.md](./CHANGELOG.md) - Project history and updates
 - [SECURITY.md](./SECURITY.md) - Security practices and policy
 - [RBAC.md](./RBAC.md) - Role-based access control

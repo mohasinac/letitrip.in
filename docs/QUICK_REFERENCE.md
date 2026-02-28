@@ -2,7 +2,7 @@
 
 > Canonical patterns. Every snippet here complies with the mandatory rules in
 > [`.github/copilot-instructions.md`](../.github/copilot-instructions.md).  
-> **Last Updated**: February 21, 2026
+> **Last Updated**: February 28, 2026
 
 ---
 

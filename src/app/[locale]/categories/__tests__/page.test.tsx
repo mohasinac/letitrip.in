@@ -4,6 +4,7 @@ import type React from "react";
 import CategoriesPage from "../page";
 
 const mockUseApiQuery = jest.fn();
+const mockCategoryServiceList = jest.fn();
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ push: jest.fn() }),
@@ -13,6 +14,12 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("@/hooks", () => ({
   useApiQuery: (...args: any[]) => mockUseApiQuery(...args),
+}));
+
+jest.mock("@/services", () => ({
+  categoryService: {
+    list: (...args: any[]) => mockCategoryServiceList(...args),
+  },
 }));
 
 jest.mock("@/components", () => ({
@@ -66,6 +73,16 @@ describe("CategoriesPage", () => {
       isLoading: false,
       error: null,
     });
+  });
+
+  it("passes categoryService.list as queryFn (not raw fetch)", () => {
+    mockCategoryServiceList.mockResolvedValue({ data: [], meta: { total: 0 } });
+    render(<CategoriesPage />);
+    const callArgs = mockUseApiQuery.mock.calls[0][0];
+    expect(callArgs.queryFn).toBeDefined();
+    // Invoke queryFn to ensure it calls categoryService.list, not fetch
+    callArgs.queryFn();
+    expect(mockCategoryServiceList).toHaveBeenCalledWith("flat=true");
   });
 
   it("renders loading spinner when isLoading", () => {

@@ -777,7 +777,11 @@
     "reviewPending": "आपकी प्रविष्टि समीक्षाधीन है",
     "entryApproved": "आपकी प्रविष्टि स्वीकृत हुई",
     "entryFlagged": "आपकी प्रविष्टि चिह्नित हुई",
-    "submit": "प्रविष्टि सबमिट करें"
+    "submit": "प्रविष्टि सबमिट करें",
+    "entriesClosed": "इस इवेंट के लिए प्रविष्टियाँ बंद हैं।",
+    "selectOption": "एक विकल्प चुनें",
+    "fillInRequired": "कृपया भरें: {fields}",
+    "notSurveyEvent": "इस इवेंट में भागीदारी फ़ॉर्म नहीं है।"
   },
   "eventTypes": {
     "sale": "सेल",
@@ -1102,7 +1106,27 @@
     "deleteFailed": "उत्पाद हटाने में विफल",
     "searchPlaceholder": "उत्पाद खोजें...",
     "filterAll": "सभी स्थितियां",
-    "confirmDelete": "क्या आप इस उत्पाद को हटाना चाहते हैं? यह पूर्ववत नहीं हो सकता।"
+    "confirmDelete": "क्या आप इस उत्पाद को हटाना चाहते हैं? यह पूर्ववत नहीं हो सकता।",
+    "formTitle": "शीर्षक",
+    "formDescription": "विवरण",
+    "formCategory": "श्रेणी",
+    "formSubcategory": "उपश्रेणी",
+    "formBrand": "ब्रांड",
+    "formPrice": "मूल्य (₹)",
+    "formStock": "स्टॉक मात्रा",
+    "formStatus": "स्थिति",
+    "formMainImage": "मुख्य छवि",
+    "formTags": "टैग (अल्पविराम से अलग)",
+    "formTagsPlaceholder": "जैसे इलेक्ट्रॉनिक्स, गैजेट्स, सेल",
+    "formFeatured": "फ़ीचर्ड",
+    "formIsPromoted": "प्रमोटेड है",
+    "formIsAuction": "नीलामी है",
+    "formStartingBid": "शुरुआती बोली (₹)",
+    "formAuctionEndDate": "नीलामी समाप्ति तिथि",
+    "formShipping": "शिपिंग जानकारी",
+    "formReturnPolicy": "वापसी नीति",
+    "formSeller": "विक्रेता",
+    "formPickupAddress": "पिकअप पता"
   },
   "adminOrders": {
     "title": "ऑर्डर",
@@ -1171,7 +1195,17 @@
     "totalPosts": "कुल पोस्ट",
     "publishedPosts": "प्रकाशित",
     "draftPosts": "ड्राफ्ट",
-    "featuredPosts": "फ़ीचर्ड"
+    "featuredPosts": "फ़ीचर्ड",
+    "formTitle": "शीर्षक",
+    "formSlug": "स्लग",
+    "formExcerpt": "सारांश",
+    "formContent": "सामग्री",
+    "formCover": "कवर छवि",
+    "formCategory": "श्रेणी",
+    "formStatus": "स्थिति",
+    "formTags": "टैग (अल्पविराम से अलग)",
+    "formReadTime": "पढ़ने का समय (मिनट)",
+    "formFeatured": "फ़ीचर्ड पोस्ट"
   },
   "adminCategories": {
     "title": "श्रेणियां",

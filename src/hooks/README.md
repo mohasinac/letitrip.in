@@ -200,39 +200,6 @@ function Dropdown() {
 
 ---
 
-### 📤 Storage Upload Hook
-
-| Hook                 | Purpose                          | Returns                                       |
-| -------------------- | -------------------------------- | --------------------------------------------- |
-| `useStorageUpload()` | Upload files to Firebase Storage | `{ upload, uploading, progress, error, url }` |
-
-**Options:**
-
-- `maxSize` - Maximum file size in bytes
-- `allowedTypes` - Array of allowed MIME types
-- `path` - Storage path for upload
-- `generateThumbnail` - Whether to generate thumbnail
-
-**Example:**
-
-```typescript
-import { useStorageUpload } from "@/hooks";
-
-function AvatarUpload() {
-  const { upload, uploading, progress, url } = useStorageUpload();
-
-  const handleFileSelect = async (file: File) => {
-    await upload(file, {
-      maxSize: 5 * 1024 * 1024, // 5MB
-      allowedTypes: ["image/jpeg", "image/png"],
-      path: "avatars/",
-    });
-  };
-}
-```
-
----
-
 ### 💬 Message Hook
 
 | Hook           | Purpose                     | Returns                                                          |

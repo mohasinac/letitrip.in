@@ -11,14 +11,14 @@ jest.mock("@/hooks", () => ({
   }),
 }));
 
-jest.mock("../../services/event.service", () => ({
+jest.mock("@/services", () => ({
   eventService: {
     adminGetById: jest.fn().mockResolvedValue({ id: "evt-1", title: "Test" }),
   },
 }));
 
 const { useApiQuery } = require("@/hooks");
-const { eventService } = require("../../services/event.service");
+const { eventService } = require("@/services");
 
 describe("useEvent", () => {
   beforeEach(() => {

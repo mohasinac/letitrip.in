@@ -1,8 +1,19 @@
+/**
+ * AvatarUpload — Profile avatar upload component.
+ *
+ * SCOPE: Use ONLY for user / seller / brand profile avatar uploads.
+ * Features crop, zoom, and circular-preview UX specific to avatars.
+ *
+ * UPLOAD PATH: useMediaUpload → POST /api/media/upload (Firebase Admin SDK).
+ * Complies with Rule 11 — no Firebase Storage client SDK in frontend.
+ *
+ * For ALL other image fields (products, blog, categories, carousel),
+ * use <ImageUpload> (src/components/admin/ImageUpload.tsx) instead.
+ */
 "use client";
-
 import { useTranslations } from "next-intl";
 import { useState, useRef, useEffect } from "react";
-import { useStorageUpload } from "@/hooks";
+import { useMediaUpload } from "@/hooks";
 import {
   Button,
   Alert,
@@ -55,56 +66,16 @@ export function AvatarUpload({
     null,
   );
   const [pendingUploadFile, setPendingUploadFile] = useState<File | null>(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showToast } = useToast();
 
-  const { upload, cancel, cleanup, state, isProcessing } = useStorageUpload({
-    maxSize: 5 * 1024 * 1024,
-    allowedTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
-    onUploadSuccess: async (downloadURL) => {
-      setUploadProgress(70);
-      // Call the parent's onUploadSuccess with URL and crop data
-      if (onUploadSuccess && pendingCropData) {
-        await onUploadSuccess(downloadURL, pendingCropData);
-      }
-      setUploadProgress(100);
-      setPreviewUrl(downloadURL);
-      setCropData(pendingCropData);
-
-      // Clear pending state
-      setPendingCropData(null);
-      setPendingUploadFile(null);
-
-      // Show success toast
-      showToast(SUCCESS_MESSAGES.UPLOAD.AVATAR_UPLOADED, "success");
-
-      // Notify parent to refresh user data
-      onSaveComplete?.();
-
-      // Reset progress after a brief moment
-      setTimeout(() => setUploadProgress(0), 1000);
-    },
-    onUploadError: (error) => {
-      onUploadError?.(error);
-      setUploadProgress(0);
-      // Revert to current saved state (don't clear pending so user can retry)
-    },
-    onSaveError: (error) => {
-      onUploadError?.(error);
-      setUploadProgress(0);
-      setPreviewUrl(currentPhotoURL || null);
-      setCropData(currentCropData || null);
-    },
-  });
-
-  // Cleanup on unmount if upload incomplete
-  useEffect(() => {
-    return () => {
-      cleanup();
-    };
-  }, [cleanup]);
+  const {
+    mutate: uploadMedia,
+    isLoading: isUploading,
+    error: uploadApiError,
+    reset: resetUpload,
+  } = useMediaUpload();
 
   // Notify parent when pending state changes
   useEffect(() => {
@@ -140,25 +111,64 @@ export function AvatarUpload({
     setShowCropModal(false);
   };
 
-  // User explicitly clicks "Save Avatar" — now upload + save
+  // User explicitly clicks "Save Avatar" — build FormData, POST to /api/media/upload
   const handleConfirmSave = async () => {
     if (!pendingUploadFile || !pendingCropData) return;
 
-    setUploadProgress(10);
+    const formData = new FormData();
+    formData.append("file", pendingUploadFile);
+    formData.append(
+      "metadata",
+      JSON.stringify({
+        cropX: 0,
+        cropY: 0,
+        cropWidth: 400,
+        cropHeight: 400,
+        zoom: pendingCropData.zoom ?? 1,
+        focalX: (pendingCropData.position?.x ?? 50) / 100,
+        focalY: (pendingCropData.position?.y ?? 50) / 100,
+        aspectRatio: "1:1",
+        objectFit: "cover",
+        displayMode: "avatar",
+        originalWidth: 400,
+        originalHeight: 400,
+        mimeType: pendingUploadFile.type,
+        fileSize: pendingUploadFile.size,
+        alt: `${userId} profile avatar`,
+        seoContext: {
+          domain: "user",
+          slug: userId,
+          mediaType: "avatar",
+          index: 1,
+        },
+      }),
+    );
 
-    const fileExtension = pendingUploadFile.name.split(".").pop();
-    const fileName = `avatar.${fileExtension}`;
-    const storagePath = `users/${userId}/profile/${fileName}`;
+    try {
+      const result = await uploadMedia(formData);
+      const downloadURL = result.url;
 
-    setUploadProgress(30);
-    await upload(pendingUploadFile, storagePath, currentPhotoURL || undefined);
+      if (onUploadSuccess && pendingCropData) {
+        await onUploadSuccess(downloadURL, pendingCropData);
+      }
+
+      setPreviewUrl(downloadURL);
+      setCropData(pendingCropData);
+      setPendingCropData(null);
+      setPendingUploadFile(null);
+
+      showToast(SUCCESS_MESSAGES.UPLOAD.AVATAR_UPLOADED, "success");
+      onSaveComplete?.();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Upload failed";
+      onUploadError?.(errorMessage);
+    }
   };
 
   // User cancels the pending avatar change
   const handleCancelPending = () => {
     setPendingCropData(null);
     setPendingUploadFile(null);
-    setUploadProgress(0);
   };
 
   const handleCropCancel = () => {
@@ -203,7 +213,7 @@ export function AvatarUpload({
 
   const hasPendingChange =
     pendingCropData !== null && pendingUploadFile !== null;
-  const isBusy = isProcessing || uploadProgress > 0;
+  const isBusy = isUploading;
 
   return (
     <>
@@ -229,21 +239,14 @@ export function AvatarUpload({
               </Text>
             </div>
 
-            {/* Progress Bar — visible during upload/save */}
+            {/* Progress Bar — visible during upload */}
             {isBusy && (
               <div className="space-y-1">
                 <Progress
-                  value={uploadProgress}
-                  variant={uploadProgress >= 100 ? "success" : "primary"}
+                  value={50}
+                  variant="primary"
                   size="sm"
-                  showValue
-                  label={
-                    state.uploading
-                      ? t("uploading")
-                      : state.saving
-                        ? t("saving")
-                        : undefined
-                  }
+                  label={t("uploading")}
                 />
               </div>
             )}
@@ -281,7 +284,7 @@ export function AvatarUpload({
               <div className="flex gap-3">
                 <Button
                   onClick={handleButtonClick}
-                  disabled={isProcessing}
+                  disabled={isUploading}
                   variant="primary"
                   size="sm"
                 >
@@ -291,7 +294,7 @@ export function AvatarUpload({
                 {previewUrl && (
                   <Button
                     onClick={handleRemovePhoto}
-                    disabled={isProcessing}
+                    disabled={isUploading}
                     variant="secondary"
                     size="sm"
                   >
@@ -312,9 +315,9 @@ export function AvatarUpload({
           </div>
         </div>
 
-        {state.error && (
-          <Alert variant="error" onClose={() => cancel()}>
-            {state.error}
+        {uploadApiError && (
+          <Alert variant="error" onClose={() => resetUpload()}>
+            {uploadApiError.message}
           </Alert>
         )}
       </div>

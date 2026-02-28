@@ -7,16 +7,16 @@
 
 "use client";
 
-import { FormField } from "@/components";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { FormField, Checkbox, RichTextEditor, ImageUpload } from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
 import type {
   BlogPostDocument,
   BlogPostCategory,
   BlogPostStatus,
 } from "@/db/schema";
 
-const LABELS = UI_LABELS.ADMIN.BLOG;
-const { spacing } = THEME_CONSTANTS;
+const { spacing, typography, themed } = THEME_CONSTANTS;
 
 export type BlogFormData = Partial<
   Omit<BlogPostDocument, "id" | "createdAt" | "updatedAt" | "views">
@@ -47,6 +47,7 @@ export function BlogForm({
   onChange,
   isReadonly = false,
 }: BlogFormProps) {
+  const t = useTranslations("adminBlog");
   const update = (partial: BlogFormData) => onChange({ ...post, ...partial });
 
   const handleTitleChange = (value: string) => {
@@ -64,7 +65,7 @@ export function BlogForm({
       {/* Title — auto-generates slug */}
       <FormField
         name="title"
-        label={LABELS.FORM_TITLE}
+        label={t("formTitle")}
         type="text"
         value={post.title || ""}
         onChange={handleTitleChange}
@@ -74,7 +75,7 @@ export function BlogForm({
 
       <FormField
         name="slug"
-        label={LABELS.FORM_SLUG}
+        label={t("formSlug")}
         type="text"
         value={post.slug || ""}
         onChange={(value) => update({ slug: value })}
@@ -84,7 +85,7 @@ export function BlogForm({
 
       <FormField
         name="excerpt"
-        label={LABELS.FORM_EXCERPT}
+        label={t("formExcerpt")}
         type="textarea"
         rows={3}
         value={post.excerpt || ""}
@@ -93,29 +94,55 @@ export function BlogForm({
         required
       />
 
-      <FormField
-        name="content"
-        label={LABELS.FORM_CONTENT}
-        type="textarea"
-        rows={8}
-        value={post.content || ""}
-        onChange={(value) => update({ content: value })}
-        disabled={isReadonly}
-        required
-      />
+      {/* Content — rich text editor */}
+      <div>
+        <label
+          className={`block text-sm font-medium ${themed.textSecondary} mb-1`}
+        >
+          {t("formContent")}
+          <span className="text-red-500 ml-1">*</span>
+        </label>
+        {isReadonly ? (
+          <div
+            className="min-h-[200px] border rounded-md p-3 opacity-60 prose dark:prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: post.content || "" }}
+          />
+        ) : (
+          <RichTextEditor
+            content={post.content || ""}
+            onChange={(content) => update({ content })}
+            placeholder="Write your blog post content..."
+            minHeight="300px"
+          />
+        )}
+      </div>
 
-      <FormField
-        name="coverImage"
-        label={LABELS.FORM_COVER}
-        type="text"
-        value={post.coverImage || ""}
-        onChange={(value) => update({ coverImage: value })}
-        disabled={isReadonly}
-      />
+      {/* Cover image upload */}
+      {!isReadonly && (
+        <ImageUpload
+          currentImage={post.coverImage}
+          onUpload={(url) => update({ coverImage: url })}
+          folder="blog"
+          label={t("formCover")}
+          helperText="Recommended: 1200x630px (16:9)"
+        />
+      )}
+      {isReadonly && post.coverImage && (
+        <div>
+          <label
+            className={`block text-sm font-medium ${themed.textSecondary} mb-1`}
+          >
+            {t("formCover")}
+          </label>
+          <p className={`text-sm ${themed.textSecondary} truncate`}>
+            {post.coverImage}
+          </p>
+        </div>
+      )}
 
       <FormField
         name="category"
-        label={LABELS.FORM_CATEGORY}
+        label={t("formCategory")}
         type="select"
         value={post.category || "news"}
         onChange={(value) => update({ category: value as BlogPostCategory })}
@@ -126,7 +153,7 @@ export function BlogForm({
 
       <FormField
         name="status"
-        label={LABELS.FORM_STATUS}
+        label={t("formStatus")}
         type="select"
         value={post.status || "draft"}
         onChange={(value) => update({ status: value as BlogPostStatus })}
@@ -137,14 +164,14 @@ export function BlogForm({
 
       <FormField
         name="tags"
-        label={LABELS.FORM_TAGS}
+        label={t("formTags")}
         type="text"
         value={(post.tags || []).join(", ")}
         onChange={(value) =>
           update({
             tags: value
               .split(",")
-              .map((t) => t.trim())
+              .map((tag) => tag.trim())
               .filter(Boolean),
           })
         }
@@ -153,7 +180,7 @@ export function BlogForm({
 
       <FormField
         name="readTimeMinutes"
-        label={LABELS.READ_TIME}
+        label={t("formReadTime")}
         type="number"
         value={String(post.readTimeMinutes ?? 5)}
         onChange={(value) =>
@@ -162,18 +189,12 @@ export function BlogForm({
         disabled={isReadonly}
       />
 
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={post.isFeatured || false}
-          onChange={(e) => update({ isFeatured: e.target.checked })}
-          disabled={isReadonly}
-          className="w-4 h-4 text-indigo-600 rounded"
-        />
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          {LABELS.FORM_FEATURED}
-        </span>
-      </label>
+      <Checkbox
+        label={t("formFeatured")}
+        checked={post.isFeatured || false}
+        onChange={(e) => update({ isFeatured: e.target.checked })}
+        disabled={isReadonly}
+      />
     </div>
   );
 }

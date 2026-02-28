@@ -11,7 +11,7 @@ jest.mock("@/hooks/useApiQuery", () => ({
   }),
 }));
 
-jest.mock("../../services/event.service", () => ({
+jest.mock("@/services", () => ({
   eventService: {
     list: jest.fn().mockResolvedValue({
       items: [],
@@ -25,7 +25,7 @@ jest.mock("../../services/event.service", () => ({
 }));
 
 const { useApiQuery } = require("@/hooks/useApiQuery");
-const { eventService } = require("../../services/event.service");
+const { eventService } = require("@/services");
 
 describe("usePublicEvents", () => {
   beforeEach(() => {

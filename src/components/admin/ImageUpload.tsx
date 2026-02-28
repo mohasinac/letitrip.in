@@ -1,3 +1,20 @@
+/**
+ * ImageUpload — Canonical image upload component for all content images.
+ *
+ * SCOPE: Use for ANY form field that produces an image URL:
+ *   - Product main image / gallery images
+ *   - Blog post cover image
+ *   - Category thumbnail / banner
+ *   - Carousel slide image
+ *   - Any other content image
+ *
+ * UPLOAD PATH: Stages locally → submits via /api/media/upload (Firebase Admin SDK).
+ * Never calls Firebase Storage client SDK. Uses useMediaUpload hook.
+ *
+ * For PROFILE AVATARS specifically, use <AvatarUpload> (src/components/AvatarUpload.tsx).
+ * AvatarUpload supports crop, zoom, and avatar-specific UX but must be migrated
+ * to /api/media/upload as part of TASK-20.
+ */
 "use client";
 
 import { useState, useRef, ChangeEvent } from "react";

@@ -778,7 +778,11 @@
     "reviewPending": "Your entry is under review",
     "entryApproved": "Your entry has been approved",
     "entryFlagged": "Your entry has been flagged",
-    "submit": "Submit Entry"
+    "submit": "Submit Entry",
+    "entriesClosed": "Entries for this event are closed.",
+    "selectOption": "Select an option",
+    "fillInRequired": "Please fill in: {fields}",
+    "notSurveyEvent": "This event does not have a participation form."
   },
   "eventTypes": {
     "sale": "Sale",
@@ -1103,7 +1107,27 @@
     "deleteFailed": "Failed to delete product",
     "searchPlaceholder": "Search products...",
     "filterAll": "All Statuses",
-    "confirmDelete": "Are you sure you want to delete this product? This cannot be undone."
+    "confirmDelete": "Are you sure you want to delete this product? This cannot be undone.",
+    "formTitle": "Title",
+    "formDescription": "Description",
+    "formCategory": "Category",
+    "formSubcategory": "Subcategory",
+    "formBrand": "Brand",
+    "formPrice": "Price (\u20b9)",
+    "formStock": "Stock Quantity",
+    "formStatus": "Status",
+    "formMainImage": "Main Image",
+    "formTags": "Tags (comma-separated)",
+    "formTagsPlaceholder": "e.g. electronics, gadgets, sale",
+    "formFeatured": "Featured",
+    "formIsPromoted": "Is Promoted",
+    "formIsAuction": "Is Auction",
+    "formStartingBid": "Starting Bid (\u20b9)",
+    "formAuctionEndDate": "Auction End Date",
+    "formShipping": "Shipping Info",
+    "formReturnPolicy": "Return Policy",
+    "formSeller": "Seller",
+    "formPickupAddress": "Pickup Address"
   },
   "adminOrders": {
     "title": "Orders",
@@ -1172,7 +1196,17 @@
     "totalPosts": "Total Posts",
     "publishedPosts": "Published",
     "draftPosts": "Drafts",
-    "featuredPosts": "Featured"
+    "featuredPosts": "Featured",
+    "formTitle": "Title",
+    "formSlug": "Slug",
+    "formExcerpt": "Excerpt",
+    "formContent": "Content",
+    "formCover": "Cover Image",
+    "formCategory": "Category",
+    "formStatus": "Status",
+    "formTags": "Tags (comma-separated)",
+    "formReadTime": "Read Time (minutes)",
+    "formFeatured": "Featured Post"
   },
   "adminCategories": {
     "title": "Categories",

@@ -28,9 +28,8 @@ import {
   resetPassword as firebaseResetPassword,
   applyEmailVerificationCode,
   getCurrentUser,
+  signInWithEmail,
 } from "@/lib/firebase/auth-helpers";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase/config";
 
 // ============================================================================
 // Types
@@ -91,11 +90,7 @@ export function useLogin(options?: {
       });
 
       // 2. Sync client-side Firebase SDK so onAuthStateChanged fires
-      await signInWithEmailAndPassword(
-        auth,
-        credentials.email.trim(),
-        credentials.password,
-      );
+      await signInWithEmail(credentials.email.trim(), credentials.password);
 
       return { success: true };
     },

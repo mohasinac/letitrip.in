@@ -18,7 +18,7 @@ jest.mock("@/hooks", () => ({
   })),
 }));
 
-jest.mock("../../services/event.service", () => ({
+jest.mock("@/services", () => ({
   eventService: {
     adminCreate: jest.fn().mockResolvedValue({ id: "evt-new" }),
     adminUpdate: jest.fn().mockResolvedValue({ id: "evt-1" }),
@@ -30,7 +30,7 @@ jest.mock("../../services/event.service", () => ({
 }));
 
 const { useApiMutation } = require("@/hooks");
-const { eventService } = require("../../services/event.service");
+const { eventService } = require("@/services");
 
 describe("useEventMutations", () => {
   beforeEach(() => {

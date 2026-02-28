@@ -19,14 +19,14 @@ jest.mock("@/hooks", () => ({
   })),
 }));
 
-jest.mock("../../services/event.service", () => ({
+jest.mock("@/services", () => ({
   eventService: {
     enter: jest.fn().mockResolvedValue({ success: true }),
   },
 }));
 
 const { useApiMutation } = require("@/hooks");
-const { eventService } = require("../../services/event.service");
+const { eventService } = require("@/services");
 
 describe("useFeedbackSubmit", () => {
   beforeEach(() => {
