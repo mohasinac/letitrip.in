@@ -14,6 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### TASK-38 — Add missing `coupons: type+createdAt` Firestore composite index (2026-02-28)
+
+#### Added
+
+- **`firestore.indexes.json`** — Added composite index `{ collectionGroup: "coupons", fields: [type ASC, createdAt DESC] }`. This was the only index identified in the D.2 audit table not covered by TASK-30–33.
+
+#### Changed
+
+- **`docs/APPLICATION_GRAPH.md`** — D.2 section header updated to include TASK-38; coupons row `type+createdAt` moved from "Missing" → "Defined" column; status updated to ✅.
+
+---
+
 ### TASK-37 — Migrate `EmailVerificationCard` + `PhoneVerificationCard` to `useTranslations` (2026-02-28)
 
 #### Changed

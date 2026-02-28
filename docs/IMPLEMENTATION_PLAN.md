@@ -1099,7 +1099,7 @@ firebase deploy --only database:rules
 
 ---
 
-### TASK-38 · Add missing `coupons: type+createdAt` Firestore composite index · P1
+### ✅ TASK-38 · Add missing `coupons: type+createdAt` Firestore composite index · P1 · DONE 2026-02-28
 
 **File:** `firestore.indexes.json`
 **Why:** The D.2 index coverage table identified `type+createdAt` as missing for the `coupons` collection. TASK-31/32/33 did not include this entry.
