@@ -1206,7 +1206,10 @@
     "formStatus": "Status",
     "formTags": "Tags (comma-separated)",
     "formReadTime": "Read Time (minutes)",
-    "formFeatured": "Featured Post"
+    "formFeatured": "Featured Post",
+    "views": "Views",
+    "author": "Author",
+    "publishedOn": "Published on"
   },
   "adminCategories": {
     "title": "Categories",
@@ -1288,6 +1291,20 @@
     "active": "Active",
     "paused": "Paused",
     "ended": "Ended"
+  },
+  "formFieldTypes": {
+    "text": "Short text",
+    "textarea": "Long text",
+    "email": "Email",
+    "phone": "Phone",
+    "number": "Number",
+    "select": "Dropdown",
+    "multiselect": "Multi-select",
+    "checkbox": "Checkboxes",
+    "radio": "Radio buttons",
+    "date": "Date",
+    "rating": "Rating (1\u20135)",
+    "file": "File upload"
   },
   "sellerStorefront": {
     "back": "Back to Sellers",

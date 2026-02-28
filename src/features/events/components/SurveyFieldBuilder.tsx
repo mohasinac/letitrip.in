@@ -2,7 +2,7 @@
 
 import { Button } from "@/components";
 import { useTranslations } from "next-intl";
-import { FORM_FIELD_TYPE_OPTIONS } from "../constants/FORM_FIELD_TYPE_OPTIONS";
+import { FORM_FIELD_TYPE_VALUES } from "../constants/FORM_FIELD_TYPE_OPTIONS";
 import type { SurveyFormField, FormFieldType } from "@/db/schema";
 
 interface SurveyFieldBuilderProps {
@@ -30,6 +30,7 @@ export function SurveyFieldBuilder({
 }: SurveyFieldBuilderProps) {
   const t = useTranslations("adminEvents");
   const tActions = useTranslations("actions");
+  const tFieldTypes = useTranslations("formFieldTypes");
   const addField = () => onChange([...fields, emptyField(fields.length)]);
 
   const updateField = (id: string, patch: Partial<SurveyFormField>) =>
@@ -91,9 +92,9 @@ export function SurveyFieldBuilder({
                 }
                 className="rounded-md border border-gray-300 dark:border-gray-600 px-2 py-1.5 text-sm"
               >
-                {FORM_FIELD_TYPE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
+                {FORM_FIELD_TYPE_VALUES.map((value) => (
+                  <option key={value} value={value}>
+                    {tFieldTypes(value)}
                   </option>
                 ))}
               </select>

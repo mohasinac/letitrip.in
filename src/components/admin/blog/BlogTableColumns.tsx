@@ -3,16 +3,17 @@
  * Path: src/components/admin/blog/BlogTableColumns.tsx
  *
  * Column definitions for the admin Blog DataTable.
+ * Uses useTranslations (next-intl) — no UI_LABELS in JSX (Rule 2).
  */
 
 "use client";
 
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { Button } from "@/components";
+import { useTranslations } from "next-intl";
 import type { BlogPostDocument } from "@/db/schema";
 
-const LABELS = UI_LABELS.ADMIN.BLOG;
 const { themed } = THEME_CONSTANTS;
 
 const STATUS_STYLES: Record<string, string> = {
@@ -34,15 +35,18 @@ const CATEGORY_STYLES: Record<string, string> = {
     "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300",
 };
 
-export function getBlogTableColumns(
+export function useBlogTableColumns(
   onEdit: (post: BlogPostDocument) => void,
   onDelete: (post: BlogPostDocument) => void,
 ) {
+  const t = useTranslations("adminBlog");
+  const tActions = useTranslations("actions");
+
   return {
     columns: [
       {
         key: "title",
-        header: LABELS.FORM_TITLE,
+        header: t("formTitle"),
         sortable: true,
         width: "30%",
         render: (post: BlogPostDocument) => (
@@ -58,7 +62,7 @@ export function getBlogTableColumns(
       },
       {
         key: "category",
-        header: LABELS.FORM_CATEGORY,
+        header: t("formCategory"),
         sortable: true,
         width: "12%",
         render: (post: BlogPostDocument) => (
@@ -71,7 +75,7 @@ export function getBlogTableColumns(
       },
       {
         key: "status",
-        header: LABELS.FORM_STATUS,
+        header: t("formStatus"),
         sortable: true,
         width: "12%",
         render: (post: BlogPostDocument) => (
@@ -84,7 +88,7 @@ export function getBlogTableColumns(
       },
       {
         key: "isFeatured",
-        header: LABELS.FORM_FEATURED,
+        header: t("formFeatured"),
         width: "8%",
         render: (post: BlogPostDocument) =>
           post.isFeatured ? (
@@ -95,7 +99,7 @@ export function getBlogTableColumns(
       },
       {
         key: "authorName",
-        header: LABELS.AUTHOR,
+        header: t("author"),
         width: "14%",
         render: (post: BlogPostDocument) => (
           <p
@@ -107,7 +111,7 @@ export function getBlogTableColumns(
       },
       {
         key: "publishedAt",
-        header: LABELS.PUBLISHED_ON,
+        header: t("publishedOn"),
         sortable: true,
         width: "12%",
         render: (post: BlogPostDocument) => (
@@ -118,7 +122,7 @@ export function getBlogTableColumns(
       },
       {
         key: "views",
-        header: LABELS.VIEWS,
+        header: t("views"),
         sortable: true,
         width: "8%",
         render: (post: BlogPostDocument) => (
@@ -136,14 +140,14 @@ export function getBlogTableColumns(
               onClick={() => onEdit(post)}
               className="text-xs px-2 py-1 h-auto"
             >
-              {UI_LABELS.ACTIONS.EDIT}
+              {tActions("edit")}
             </Button>
             <Button
               variant="ghost"
               onClick={() => onDelete(post)}
               className="text-xs px-2 py-1 h-auto text-red-600 hover:text-red-700 dark:text-red-400"
             >
-              {UI_LABELS.ACTIONS.DELETE}
+              {tActions("delete")}
             </Button>
           </div>
         ),

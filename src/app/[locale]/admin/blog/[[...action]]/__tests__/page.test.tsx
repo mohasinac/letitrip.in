@@ -82,7 +82,7 @@ jest.mock("@/components", () => ({
         <button onClick={onCancel}>Cancel</button>
       </div>
     ) : null,
-  getBlogTableColumns: () => [],
+  useBlogTableColumns: () => ({ columns: [] }),
   BlogForm: () => <div data-testid="blog-form" />,
 }));
 

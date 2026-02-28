@@ -9,8 +9,9 @@
 "use client";
 
 import { SideDrawer, Button, RoleBadge, StatusBadge } from "@/components";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatDateTime } from "@/utils";
+import { useTranslations } from "next-intl";
 import type { AdminUser } from "./types";
 
 const { spacing, themed, typography } = THEME_CONSTANTS;
@@ -34,13 +35,14 @@ export function UserDetailDrawer({
   onToggleBan,
   onDelete,
 }: UserDetailDrawerProps) {
+  const t = useTranslations("adminUsers");
   if (!user) return null;
 
   return (
     <SideDrawer
       isOpen={isOpen}
       onClose={onClose}
-      title={UI_LABELS.ADMIN.USERS.DETAIL}
+      title={t("detail")}
       mode="view"
       side="right"
     >
@@ -68,11 +70,7 @@ export function UserDetailDrawer({
               <RoleBadge role={user.role} />
               <StatusBadge
                 status={user.disabled ? "danger" : "active"}
-                label={
-                  user.disabled
-                    ? UI_LABELS.ADMIN.USERS.BANNED
-                    : UI_LABELS.ADMIN.USERS.ACTIVE
-                }
+                label={user.disabled ? t("banned") : t("active")}
               />
               {!user.emailVerified && (
                 <StatusBadge status="warning" label="Email Not Verified" />
@@ -114,7 +112,7 @@ export function UserDetailDrawer({
         {/* Role Change */}
         <div className={`pt-4 border-t ${themed.border}`}>
           <label className={`block ${typography.label} mb-2`}>
-            {UI_LABELS.ADMIN.USERS.CHANGE_ROLE}
+            {t("changeRole")}
           </label>
           <div className="flex gap-2 flex-wrap">
             {ROLES.map((role) => (
@@ -141,16 +139,14 @@ export function UserDetailDrawer({
             variant="secondary"
             className={user.disabled ? "text-emerald-600" : "text-orange-600"}
           >
-            {user.disabled
-              ? UI_LABELS.ADMIN.USERS.UNBAN_USER
-              : UI_LABELS.ADMIN.USERS.BAN_USER}
+            {user.disabled ? t("unbanUser") : t("banUser")}
           </Button>
           <Button
             onClick={() => onDelete(user)}
             variant="secondary"
             className="text-red-600 hover:text-red-700"
           >
-            {UI_LABELS.ADMIN.USERS.DELETE_USER}
+            {t("deleteUser")}
           </Button>
         </div>
       </div>

@@ -609,7 +609,9 @@ Note: Both files currently also have raw `<input type="checkbox">` elements — 
 
 ---
 
-### TASK-24 · Migrate admin `UserDetailDrawer`, `UserFilters`, `BlogTableColumns` `UI_LABELS` → `useTranslations` · P0
+### ✅ TASK-24 · Migrate admin `UserDetailDrawer`, `UserFilters`, `BlogTableColumns` `UI_LABELS` → `useTranslations` · P0 · DONE
+
+**Completed 2026-02-28.** `UserDetailDrawer.tsx` migrated to `useTranslations('adminUsers')`. `UserFilters.tsx` migrated — TABS and ROLE_OPTIONS moved inside component function, using `useTranslations('adminUsers')`, `useTranslations('roles')`, `useTranslations('actions')`, `useTranslations('form')`. `getBlogTableColumns` converted to `useBlogTableColumns` hook using `useTranslations('adminBlog')` + `useTranslations('actions')`; missing keys (`views`, `author`, `publishedOn`) added to en.json + hi.json. `AdminBlogView` + barrel exports updated. 16 tests pass.
 
 **Rule violated:** Rule 2 (no `UI_LABELS` in JSX client components)
 **Files:**
@@ -636,54 +638,9 @@ Note: Both files currently also have raw `<input type="checkbox">` elements — 
 
 ---
 
-### TASK-25 · Migrate `features/events/constants/` option arrays from `UI_LABELS` to translation-safe values · P0
+### ✅ DONE — TASK-25 · Migrate `features/events/constants/` option arrays from `UI_LABELS` to translation-safe values · P0
 
-**Rule violated:** Rule 2 (no `UI_LABELS` in JSX — labels from these arrays end up in `<select>` option text rendered as JSX)
-**Files:**
-
-- `src/features/events/constants/EVENT_TYPE_OPTIONS.ts`
-- `src/features/events/constants/EVENT_STATUS_OPTIONS.ts`
-- `src/features/events/constants/FORM_FIELD_TYPE_OPTIONS.ts`
-
-**Issue:** These constants export arrays of `{ value, label }` objects where `label` is taken from `UI_LABELS.*`. The arrays are passed as `options` prop to `<FormField type="select">` components, which renders the label text as JSX — violating Rule 2.
-
-**What to do:**
-
-1. Convert each constant to a value-only array:
-
-   ```ts
-   // Before
-   export const EVENT_TYPE_OPTIONS = [
-     { value: "poll", label: UI_LABELS.EVENT_TYPES.POLL },
-   ];
-
-   // After
-   export const EVENT_TYPE_VALUES = [
-     "sale",
-     "offer",
-     "poll",
-     "survey",
-     "feedback",
-   ] as const;
-   export type EventTypeValue = (typeof EVENT_TYPE_VALUES)[number];
-   ```
-
-2. In the consuming components (`EventFormDrawer`, `SurveyFieldBuilder`, etc.), build the `options` array inline using `useTranslations('events')`:
-   ```tsx
-   const t = useTranslations("events");
-   const typeOptions = EVENT_TYPE_VALUES.map((v) => ({
-     value: v,
-     label: t(`types.${v}`),
-   }));
-   ```
-3. Add the required translation keys to `messages/en.json` and `messages/hi.json`.
-4. Remove `UI_LABELS` imports from all three constant files.
-5. Run `npx tsc --noEmit` on affected files + build.
-6. Update any tests for the consuming components.
-
-**Effort:** S (30–90 min)
-
----
+**Completed:** Converted `EVENT_TYPE_OPTIONS`, `EVENT_STATUS_OPTIONS`, and `FORM_FIELD_TYPE_OPTIONS` to values-only arrays (`EVENT_TYPE_VALUES`, `EVENT_STATUS_VALUES`, `FORM_FIELD_TYPE_VALUES`). Updated `EventFormDrawer` to use `useTranslations("eventTypes")` and `SurveyFieldBuilder` to use `useTranslations("formFieldTypes")`. Added `formFieldTypes` namespace to both `en.json` and `hi.json`. Updated barrel exports and all test mocks. Created `EventFormDrawer.test.tsx` (4 tests). 100/100 events tests passing.
 
 ### ✅ DONE — TASK-26 · Extract `events/[id]/participate/page.tsx` to `EventParticipateView` feature component · P2
 

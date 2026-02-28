@@ -21,7 +21,7 @@ import {
   AdminPageHeader,
   DrawerFormFooter,
   ConfirmDeleteModal,
-  getBlogTableColumns,
+  useBlogTableColumns,
   BlogForm,
 } from "@/components";
 import type { BlogPostDocument } from "@/db/schema";
@@ -161,7 +161,7 @@ export function AdminBlogView() {
 
   const drawerTitle = editingPost ? t("edit") : t("create");
 
-  const { columns } = getBlogTableColumns(openEdit, (post) =>
+  const { columns } = useBlogTableColumns(openEdit, (post) =>
     setDeleteTarget(post),
   );
 

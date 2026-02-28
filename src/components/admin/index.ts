@@ -77,7 +77,7 @@ export type { OrderStatusFormState } from "./orders";
 export { getBidTableColumns } from "./bids";
 
 // Phase 8: Admin Blog
-export { getBlogTableColumns, BlogForm } from "./blog";
+export { useBlogTableColumns, BlogForm } from "./blog";
 export type { BlogFormData } from "./blog";
 
 // Phase 6: Admin Coupons

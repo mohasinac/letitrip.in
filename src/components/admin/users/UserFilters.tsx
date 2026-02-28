@@ -9,7 +9,8 @@
 "use client";
 
 import { AdminFilterBar, FormField } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import type { UserTab } from "./types";
 
 const { themed } = THEME_CONSTANTS;
@@ -24,21 +25,6 @@ interface UserFiltersProps {
   isAdminsTab: boolean;
 }
 
-const TABS: { key: UserTab; label: string }[] = [
-  { key: "all", label: UI_LABELS.ADMIN.USERS.ALL },
-  { key: "active", label: UI_LABELS.ADMIN.USERS.ACTIVE },
-  { key: "banned", label: UI_LABELS.ADMIN.USERS.BANNED },
-  { key: "admins", label: UI_LABELS.ADMIN.USERS.ADMINS },
-];
-
-const ROLE_OPTIONS = [
-  { value: "all", label: UI_LABELS.ROLES.ALL },
-  { value: "user", label: UI_LABELS.ROLES.USER },
-  { value: "seller", label: UI_LABELS.ROLES.SELLER },
-  { value: "moderator", label: UI_LABELS.ROLES.MODERATOR },
-  { value: "admin", label: UI_LABELS.ROLES.ADMIN },
-];
-
 export function UserFilters({
   activeTab,
   onTabChange,
@@ -48,6 +34,26 @@ export function UserFilters({
   onRoleFilterChange,
   isAdminsTab,
 }: UserFiltersProps) {
+  const t = useTranslations("adminUsers");
+  const tRoles = useTranslations("roles");
+  const tActions = useTranslations("actions");
+  const tForm = useTranslations("form");
+
+  const TABS: { key: UserTab; label: string }[] = [
+    { key: "all", label: t("all") },
+    { key: "active", label: t("active") },
+    { key: "banned", label: t("banned") },
+    { key: "admins", label: t("admins") },
+  ];
+
+  const ROLE_OPTIONS = [
+    { value: "all", label: tRoles("all") },
+    { value: "user", label: tRoles("user") },
+    { value: "seller", label: tRoles("seller") },
+    { value: "moderator", label: tRoles("moderator") },
+    { value: "admin", label: tRoles("admin") },
+  ];
+
   return (
     <>
       {/* Status Tab Bar */}
@@ -73,15 +79,15 @@ export function UserFilters({
       <AdminFilterBar columns={2}>
         <FormField
           name="userSearch"
-          label={UI_LABELS.ACTIONS.SEARCH}
+          label={tActions("search")}
           type="text"
           value={searchTerm}
           onChange={onSearchChange}
-          placeholder={UI_LABELS.ADMIN.USERS.SEARCH_PLACEHOLDER}
+          placeholder={t("searchPlaceholder")}
         />
         <FormField
           name="roleFilter"
-          label={UI_LABELS.FORM.ROLE_FILTER}
+          label={tForm("roleFilter")}
           type="select"
           value={roleFilter}
           onChange={onRoleFilterChange}

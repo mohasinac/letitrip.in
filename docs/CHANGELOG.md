@@ -14,6 +14,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### Ninth Implementation Pass — UI_LABELS → useTranslations Migration (2026-03-01)
+
+#### Added
+
+- **TASK-24 (P0):** Added `next-intl` `useTranslations` to three admin components that were using `UI_LABELS` in JSX, violating Rule 2.
+  - `src/components/admin/users/__tests__/UserDetailDrawer.test.tsx` — NEW — 6 tests covering render, role display, action buttons. All pass.
+  - `src/components/admin/blog/__tests__/BlogTableColumns.test.tsx` — NEW — 2 tests covering hook behaviour. All pass.
+- **TASK-25 (P0):** Added `formFieldTypes` i18n namespace to `messages/en.json` and `messages/hi.json` (12 form field type labels).
+  - `src/features/events/components/__tests__/EventFormDrawer.test.tsx` — NEW — 4 tests covering render, drawer visibility, event type options. All pass.
+
+#### Changed
+
+- **TASK-24 (P0):** `src/components/admin/users/UserDetailDrawer.tsx` — removed `UI_LABELS` import; added `useTranslations("adminUsers")` inside component; all JSX labels now translation-aware.
+- **TASK-24 (P0):** `src/components/admin/users/UserFilters.tsx` — removed `UI_LABELS` import; moved `TABS` and `ROLE_OPTIONS` arrays inside component function; added `useTranslations` calls for `adminUsers`, `roles`, `actions`, `form` namespaces.
+- **TASK-24 (P0):** `src/components/admin/blog/BlogTableColumns.tsx` — converted `getBlogTableColumns` factory function to `useBlogTableColumns` hook; added `useTranslations("adminBlog")` and `useTranslations("actions")`; removed `UI_LABELS` import.
+- **TASK-24 (P0):** `src/features/admin/components/AdminBlogView.tsx` — updated to call `useBlogTableColumns` hook instead of `getBlogTableColumns` factory.
+- **TASK-24 (P0):** `src/components/admin/blog/index.ts`, `src/components/admin/index.ts` — renamed export from `getBlogTableColumns` to `useBlogTableColumns`.
+- **TASK-24 (P0):** `src/components/admin/users/__tests__/UserFilters.test.tsx` — fully rewritten with `useTranslations` mocks; 8 tests.
+- **TASK-25 (P0):** `src/features/events/constants/EVENT_TYPE_OPTIONS.ts` — replaced `UI_LABELS`-dependent `EVENT_TYPE_OPTIONS` with values-only `EVENT_TYPE_VALUES` array + `EventTypeValue` type.
+- **TASK-25 (P0):** `src/features/events/constants/EVENT_STATUS_OPTIONS.ts` — replaced `UI_LABELS`-dependent `EVENT_STATUS_OPTIONS` with values-only `EVENT_STATUS_VALUES` array + `EventStatusFilterValue` type.
+- **TASK-25 (P0):** `src/features/events/constants/FORM_FIELD_TYPE_OPTIONS.ts` — replaced `UI_LABELS`-dependent `FORM_FIELD_TYPE_OPTIONS` with values-only `FORM_FIELD_TYPE_VALUES` array + `FormFieldTypeValue` type.
+- **TASK-25 (P0):** `src/features/events/components/EventFormDrawer.tsx` — import changed to `EVENT_TYPE_VALUES`; added `useTranslations("eventTypes")`; options now rendered as `tEventTypes(value)`.
+- **TASK-25 (P0):** `src/features/events/components/SurveyFieldBuilder.tsx` — import changed to `FORM_FIELD_TYPE_VALUES`; added `useTranslations("formFieldTypes")`; options now rendered as `tFieldTypes(value)`.
+- **TASK-25 (P0):** `src/features/events/index.ts` — updated barrel exports: `EVENT_TYPE_OPTIONS` → `EVENT_TYPE_VALUES`, `EVENT_STATUS_OPTIONS` → `EVENT_STATUS_VALUES`, `FORM_FIELD_TYPE_OPTIONS` → `FORM_FIELD_TYPE_VALUES`.
+- **TASK-25 (P0):** `src/features/events/components/__tests__/SurveyFieldBuilder.test.tsx` — updated mock to `FORM_FIELD_TYPE_VALUES`; added `next-intl` mock.
+- **TASK-25 (P0):** `src/app/[locale]/admin/events/__tests__/page.test.tsx` — updated mock to use `EVENT_TYPE_VALUES` and `EVENT_STATUS_VALUES`.
+- `messages/en.json`, `messages/hi.json` — added `views`, `author`, `publishedOn` keys to `adminBlog` namespace (TASK-24); added `formFieldTypes` namespace (TASK-25).
+
+---
+
 ### Eighth Implementation Pass — Page Thickness Cleanup: Auth Views (2026-02-28)
 
 #### Added

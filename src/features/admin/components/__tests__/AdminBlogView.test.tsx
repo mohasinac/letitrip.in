@@ -53,7 +53,7 @@ jest.mock("@/components", () => ({
   DrawerFormFooter: () => <div data-testid="drawer-footer" />,
   ConfirmDeleteModal: ({ isOpen }: any) =>
     isOpen ? <div data-testid="confirm-delete" /> : null,
-  getBlogTableColumns: () => [{ key: "title", header: "Title" }],
+  useBlogTableColumns: () => ({ columns: [{ key: "title", header: "Title" }] }),
   BlogForm: () => <div data-testid="blog-form" />,
   useToast: () => ({ showToast: jest.fn() }),
 }));

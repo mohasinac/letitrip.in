@@ -1205,7 +1205,10 @@
     "formStatus": "स्थिति",
     "formTags": "टैग (अल्पविराम से अलग)",
     "formReadTime": "पढ़ने का समय (मिनट)",
-    "formFeatured": "फ़ीचर्ड पोस्ट"
+    "formFeatured": "फ़ीचर्ड पोस्ट",
+    "views": "दृश्य",
+    "author": "लेखक",
+    "publishedOn": "प्रकाशित"
   },
   "adminCategories": {
     "title": "श्रेणियां",
@@ -1287,6 +1290,20 @@
     "active": "सक्रिय",
     "paused": "रुका हुआ",
     "ended": "समाप्त"
+  },
+  "formFieldTypes": {
+    "text": "छोटा पाठ",
+    "textarea": "लंबा पाठ",
+    "email": "ईमेल",
+    "phone": "फ़ोन",
+    "number": "नंबर",
+    "select": "ड्रॉपडाउन",
+    "multiselect": "मल्टी-सेलेक्ट",
+    "checkbox": "चेकबॉक्स",
+    "radio": "रेडियो बटन",
+    "date": "तारीख",
+    "rating": "रेटिंग (1\u20135)",
+    "file": "फ़ाइल अपलोड"
   },
   "sellerStorefront": {
     "back": "विक्रेताओं पर वापस",

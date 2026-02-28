@@ -1,9 +1,14 @@
-import { UI_LABELS } from "@/constants";
-
-export const EVENT_STATUS_OPTIONS = [
-  { value: "", label: "All Statuses" },
-  { value: "draft", label: UI_LABELS.EVENT_STATUS.DRAFT },
-  { value: "active", label: UI_LABELS.EVENT_STATUS.ACTIVE },
-  { value: "paused", label: UI_LABELS.EVENT_STATUS.PAUSED },
-  { value: "ended", label: UI_LABELS.EVENT_STATUS.ENDED },
+/**
+ * Event status filter values for use with useTranslations("eventStatus").
+ * The empty string "" represents "All" — handle separately in consuming components.
+ * Keys in the `eventStatus` namespace match the non-empty values exactly.
+ */
+export const EVENT_STATUS_VALUES = [
+  "",
+  "draft",
+  "active",
+  "paused",
+  "ended",
 ] as const;
+
+export type EventStatusFilterValue = (typeof EVENT_STATUS_VALUES)[number];

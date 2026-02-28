@@ -1,16 +1,21 @@
-import { UI_LABELS } from "@/constants";
-
-export const FORM_FIELD_TYPE_OPTIONS = [
-  { value: "text", label: UI_LABELS.FORM_FIELD_TYPES.TEXT },
-  { value: "textarea", label: UI_LABELS.FORM_FIELD_TYPES.TEXTAREA },
-  { value: "email", label: UI_LABELS.FORM_FIELD_TYPES.EMAIL },
-  { value: "phone", label: UI_LABELS.FORM_FIELD_TYPES.PHONE },
-  { value: "number", label: UI_LABELS.FORM_FIELD_TYPES.NUMBER },
-  { value: "select", label: UI_LABELS.FORM_FIELD_TYPES.SELECT },
-  { value: "multiselect", label: UI_LABELS.FORM_FIELD_TYPES.MULTISELECT },
-  { value: "checkbox", label: UI_LABELS.FORM_FIELD_TYPES.CHECKBOX },
-  { value: "radio", label: UI_LABELS.FORM_FIELD_TYPES.RADIO },
-  { value: "date", label: UI_LABELS.FORM_FIELD_TYPES.DATE },
-  { value: "rating", label: UI_LABELS.FORM_FIELD_TYPES.RATING },
-  { value: "file", label: UI_LABELS.FORM_FIELD_TYPES.FILE },
+/**
+ * Form field type values for use with useTranslations("formFieldTypes").
+ * Keys in the `formFieldTypes` namespace match these values exactly.
+ * Consumers must call t(value) to get the translated label.
+ */
+export const FORM_FIELD_TYPE_VALUES = [
+  "text",
+  "textarea",
+  "email",
+  "phone",
+  "number",
+  "select",
+  "multiselect",
+  "checkbox",
+  "radio",
+  "date",
+  "rating",
+  "file",
 ] as const;
+
+export type FormFieldTypeValue = (typeof FORM_FIELD_TYPE_VALUES)[number];

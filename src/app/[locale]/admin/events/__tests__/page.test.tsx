@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+﻿import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import type React from "react";
 import AdminEventsPage from "../page";
@@ -104,12 +104,8 @@ jest.mock("@/features/events", () => ({
     mutate: jest.fn(),
     isLoading: false,
   })),
-  EVENT_STATUS_OPTIONS: [
-    { value: "active", label: "Active" },
-    { value: "draft", label: "Draft" },
-    { value: "ended", label: "Ended" },
-  ],
-  EVENT_TYPE_OPTIONS: [{ value: "poll", label: "Poll" }],
+  EVENT_STATUS_VALUES: ["", "active", "draft", "paused", "ended"],
+  EVENT_TYPE_VALUES: ["poll", "sale", "offer", "survey", "feedback"],
   EVENT_SORT_OPTIONS: [{ value: "-createdAt", label: "Newest" }],
 }));
 

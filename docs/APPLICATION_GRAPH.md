@@ -987,12 +987,12 @@ All admin pages require authentication + admin role (`👑🔒`). Protected by m
 **Route constant:** `ROUTES.ADMIN.BLOG`
 **Summary:** Blog post CRUD with rich text editor. Delegates entirely to `AdminBlogView`.
 
-| Layer              | Items                                                                                                                                                    |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Feature**        | `@/features/admin` → `AdminBlogView`                                                                                                                     |
-| **Inside feature** | `useAdminBlog`, `DataTable`, `AdminPageHeader`, `BlogForm`, `BlogTableColumns`, `SideDrawer`, `DrawerFormFooter`, `RichTextEditor`, `ConfirmDeleteModal` |
-| **Services**       | `blogService`                                                                                                                                            |
-| **API Endpoints**  | `API_ENDPOINTS.ADMIN.BLOG`, `API_ENDPOINTS.ADMIN.BLOG_BY_ID(id)`                                                                                         |
+| Layer              | Items                                                                                                                                                       |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Feature**        | `@/features/admin` → `AdminBlogView`                                                                                                                        |
+| **Inside feature** | `useAdminBlog`, `DataTable`, `AdminPageHeader`, `BlogForm`, `useBlogTableColumns`, `SideDrawer`, `DrawerFormFooter`, `RichTextEditor`, `ConfirmDeleteModal` |
+| **Services**       | `blogService`                                                                                                                                               |
+| **API Endpoints**  | `API_ENDPOINTS.ADMIN.BLOG`, `API_ENDPOINTS.ADMIN.BLOG_BY_ID(id)`                                                                                            |
 
 ---
 
@@ -1139,9 +1139,9 @@ src/features/
 │   │                      usePollVote, usePublicEvents
 │   ├── services/          event.service.ts  (Tier-2 service)
 │   │                      ⚠️ CONFLICT: src/services/event.service.ts also exists (Tier 1 duplicate — see TASK-27)
-│   ├── constants/         EVENT_SORT_OPTIONS, EVENT_STATUS_OPTIONS, EVENT_TYPE_OPTIONS,
-│   │                      FORM_FIELD_TYPE_OPTIONS
-│   │                      ⚠️ VIOLATION: option labels sourced from UI_LABELS (Rule 2) — see TASK-25
+│   ├── constants/         EVENT_SORT_OPTIONS, EVENT_STATUS_VALUES, EVENT_TYPE_VALUES,
+│   │                      FORM_FIELD_TYPE_VALUES
+│   │                      ✅ TASK-25 resolved — values-only arrays; labels via useTranslations("eventTypes"), useTranslations("formFieldTypes")
 │   ├── types/             index.ts
 │   └── index.ts
 ├── products/
@@ -2048,23 +2048,21 @@ import { auth } from "@/lib/firebase/config";
 
 **Issue:** Several admin components not in the TASK-18 Groups A–E also use `UI_LABELS` in rendered JSX:
 
-| File                                              | UI_LABELS keys used in JSX                                                 |
-| ------------------------------------------------- | -------------------------------------------------------------------------- |
-| `src/components/admin/blog/BlogForm.tsx`          | `UI_LABELS.ADMIN.BLOG.*` (all form labels)                                 |
-| `src/components/admin/products/ProductForm.tsx`   | `UI_LABELS.ADMIN.PRODUCTS.*` (all form labels)                             |
-| `src/components/admin/blog/BlogTableColumns.tsx`  | `UI_LABELS.ACTIONS.EDIT`, `UI_LABELS.ACTIONS.DELETE`                       |
-| `src/components/admin/users/UserDetailDrawer.tsx` | `UI_LABELS.ADMIN.USERS.*` (title, status, action buttons)                  |
-| `src/components/admin/users/UserFilters.tsx`      | `UI_LABELS.ADMIN.USERS.*`, `UI_LABELS.ROLES.*`, `UI_LABELS.ACTIONS.SEARCH` |
+| File                                                  | UI_LABELS keys used in JSX                                                             |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `src/components/admin/blog/BlogForm.tsx`              | `UI_LABELS.ADMIN.BLOG.*` (all form labels)                                             |
+| `src/components/admin/products/ProductForm.tsx`       | `UI_LABELS.ADMIN.PRODUCTS.*` (all form labels)                                         |
+| ~~`src/components/admin/blog/BlogTableColumns.tsx`~~  | ✅ RESOLVED (TASK-24) — converted to `useBlogTableColumns` hook with `useTranslations` |
+| ~~`src/components/admin/users/UserDetailDrawer.tsx`~~ | ✅ RESOLVED (TASK-24) — `useTranslations("adminUsers")` applied                        |
+| ~~`src/components/admin/users/UserFilters.tsx`~~      | ✅ RESOLVED (TASK-24) — `useTranslations` applied for all namespaces                   |
 
-**Fix:** Each file needs `useTranslations('admin')` called inside the component, corresponding keys added to `messages/en.json` / `messages/hi.json`, and `UI_LABELS.*` JSX references replaced with `t('key')` calls.
+**Fix:** `BlogForm.tsx` and `ProductForm.tsx` still need `useTranslations` applied.
 
 ---
 
-#### 14. `features/events/constants/` option arrays embed `UI_LABELS` display strings (Rule 2)
+#### ~~14. `features/events/constants/` option arrays embed `UI_LABELS` display strings (Rule 2)~~ ✅ RESOLVED (TASK-25)
 
-**Issue:** `EVENT_TYPE_OPTIONS.ts`, `EVENT_STATUS_OPTIONS.ts`, and `FORM_FIELD_TYPE_OPTIONS.ts` build option arrays using `UI_LABELS.*` as the `label` field. These arrays are passed as props to `<FormField type="select">` components, placing `UI_LABELS` strings in rendered JSX — a Rule 2 violation.
-
-**Fix:** The event form components that consume these arrays should call `useTranslations()` themselves to build the options inline, or the constants should export value-only arrays and the consuming components add the translated labels.
+**Resolved 2026-03-01.** `EVENT_TYPE_OPTIONS`, `EVENT_STATUS_OPTIONS`, and `FORM_FIELD_TYPE_OPTIONS` replaced with values-only arrays (`EVENT_TYPE_VALUES`, `EVENT_STATUS_VALUES`, `FORM_FIELD_TYPE_VALUES`). Consuming components (`EventFormDrawer`, `SurveyFieldBuilder`) now use `useTranslations("eventTypes")` and `useTranslations("formFieldTypes")` respectively. `formFieldTypes` namespace added to `en.json` and `hi.json`.
 
 ---
 

@@ -1,9 +1,14 @@
-import { UI_LABELS } from "@/constants";
-
-export const EVENT_TYPE_OPTIONS = [
-  { value: "sale", label: UI_LABELS.EVENT_TYPES.SALE },
-  { value: "offer", label: UI_LABELS.EVENT_TYPES.OFFER },
-  { value: "poll", label: UI_LABELS.EVENT_TYPES.POLL },
-  { value: "survey", label: UI_LABELS.EVENT_TYPES.SURVEY },
-  { value: "feedback", label: UI_LABELS.EVENT_TYPES.FEEDBACK },
+/**
+ * Event type values for use with useTranslations("eventTypes").
+ * Keys in the `eventTypes` namespace match these values exactly.
+ * Consumers must call t(value) to get the translated label.
+ */
+export const EVENT_TYPE_VALUES = [
+  "sale",
+  "offer",
+  "poll",
+  "survey",
+  "feedback",
 ] as const;
+
+export type EventTypeValue = (typeof EVENT_TYPE_VALUES)[number];

@@ -6,11 +6,12 @@ import "@testing-library/jest-dom";
 import type React from "react";
 import { SurveyFieldBuilder } from "../SurveyFieldBuilder";
 
+jest.mock("next-intl", () => ({
+  useTranslations: (_ns: string) => (key: string) => key,
+}));
+
 jest.mock("../../constants/FORM_FIELD_TYPE_OPTIONS", () => ({
-  FORM_FIELD_TYPE_OPTIONS: [
-    { value: "text", label: "Text" },
-    { value: "textarea", label: "Textarea" },
-  ],
+  FORM_FIELD_TYPE_VALUES: ["text", "textarea"],
 }));
 
 jest.mock("@/components", () => ({

@@ -6,7 +6,7 @@ import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useMessage } from "@/hooks";
 import { useCreateEvent, useUpdateEvent } from "../hooks/useEventMutations";
-import { EVENT_TYPE_OPTIONS } from "../constants/EVENT_TYPE_OPTIONS";
+import { EVENT_TYPE_VALUES } from "../constants/EVENT_TYPE_OPTIONS";
 import { SaleConfigForm } from "./EventTypeConfig/SaleConfigForm";
 import { OfferConfigForm } from "./EventTypeConfig/OfferConfigForm";
 import { PollConfigForm } from "./EventTypeConfig/PollConfigForm";
@@ -126,6 +126,7 @@ export function EventFormDrawer({
   const { showSuccess, showError } = useMessage();
   const t = useTranslations("adminEvents");
   const tActions = useTranslations("actions");
+  const tEventTypes = useTranslations("eventTypes");
 
   // Reset/populate form on open
   useEffect(() => {
@@ -284,9 +285,9 @@ export function EventFormDrawer({
             disabled={isEdit}
             className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm disabled:opacity-50"
           >
-            {EVENT_TYPE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
+            {EVENT_TYPE_VALUES.map((value) => (
+              <option key={value} value={value}>
+                {tEventTypes(value)}
               </option>
             ))}
           </select>
