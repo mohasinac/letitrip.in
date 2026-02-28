@@ -960,6 +960,44 @@ import { INDIAN_STATES, ADDRESS_TYPES } from "@/constants";
 **Purpose**: Access authentication state  
 **Returns**: `{ user, loading, logout }`
 
+#### useGoogleLogin
+
+**File**: `useAuth.ts`  
+**Purpose**: Sign in with Google OAuth popup (Firebase client SDK)  
+**Parameters**: `(options?: { onSuccess?: () => void; onError?: (error: any) => void })`  
+**Returns**: `{ mutate, loading, error }` — `mutate()` triggers the Google popup
+
+**Example**:
+
+```tsx
+import { useGoogleLogin } from "@/hooks";
+const { mutate: loginWithGoogle, loading } = useGoogleLogin({
+  onSuccess: () => router.push(ROUTES.HOME),
+});
+<Button onClick={() => loginWithGoogle()} loading={loading}>
+  Sign in with Google
+</Button>;
+```
+
+#### useAppleLogin
+
+**File**: `useAuth.ts`  
+**Purpose**: Sign in with Apple OAuth popup (Firebase client SDK)  
+**Parameters**: `(options?: { onSuccess?: () => void; onError?: (error: any) => void })`  
+**Returns**: `{ mutate, loading, error }` — `mutate()` triggers the Apple popup
+
+**Example**:
+
+```tsx
+import { useAppleLogin } from "@/hooks";
+const { mutate: loginWithApple, loading } = useAppleLogin({
+  onSuccess: () => router.push(ROUTES.HOME),
+});
+<Button onClick={() => loginWithApple()} loading={loading}>
+  Sign in with Apple
+</Button>;
+```
+
 ---
 
 ### API Hooks
@@ -991,8 +1029,49 @@ import { INDIAN_STATES, ADDRESS_TYPES } from "@/constants";
 #### useAddresses
 
 **File**: `useAddresses.ts`  
-**Purpose**: Manage user addresses  
-**Returns**: `{ addresses, addAddress, updateAddress, deleteAddress, setDefaultAddress, loading }`
+**Purpose**: Fetch the list of the current user's addresses  
+**Returns**: `{ data: Address[], loading, error, refetch }` — wraps `addressService.list()` with `useApiQuery`
+
+#### useAddress
+
+**File**: `useAddresses.ts`  
+**Purpose**: Fetch a single address by ID  
+**Parameters**: `(id: string, options?: { enabled?: boolean })`  
+**Returns**: `{ data: Address, loading, error }` — enabled only when `id` is non-empty
+
+**Example**:
+
+```tsx
+import { useAddress } from "@/hooks";
+const { data: address, loading } = useAddress(addressId);
+```
+
+#### useCreateAddress
+
+**File**: `useAddresses.ts`  
+**Purpose**: Create a new address  
+**Parameters**: `(options?: { onSuccess?: (address: Address) => void; onError?: (error: any) => void })`  
+**Returns**: `{ mutate, loading, error }` — `mutate(AddressFormData)` posts to `/api/user/addresses`
+
+#### useUpdateAddress
+
+**File**: `useAddresses.ts`  
+**Purpose**: Update an existing address by ID  
+**Parameters**: `(id: string, options?: { onSuccess?: (address: Address) => void; onError?: (error: any) => void })`  
+**Returns**: `{ mutate, loading, error }` — `mutate(AddressFormData)` patches to `/api/user/addresses/{id}`
+
+#### useDeleteAddress
+
+**File**: `useAddresses.ts`  
+**Purpose**: Delete an address by ID  
+**Parameters**: `(options?: { onSuccess?: () => void; onError?: (error: any) => void })`  
+**Returns**: `{ mutate, loading, error }` — `mutate({ id })` deletes the specified address
+
+#### useSetDefaultAddress
+
+**File**: `useAddresses.ts`  
+**Purpose**: Mark an address as the default shipping/billing address  
+**Returns**: `{ mutate, loading, error }` — `mutate({ addressId })` posts to `/api/user/addresses/{id}/default`
 
 ---
 
@@ -1258,15 +1337,26 @@ table.clear(keys?)    // remove one/all params
 
 ---
 
-### Storage Upload Hook
+### Media Upload Hook
 
-#### useStorageUpload
+#### useMediaUpload
 
-**File**: `useStorageUpload.ts`  
-**Purpose**: Upload files to Firebase Storage  
-**Returns**: `{ upload, uploading, progress, error, url }`
+**File**: `useMediaUpload.ts`  
+**Purpose**: Upload a file to the backend `/api/media/upload` route (Firebase Storage via Admin SDK). Used internally by `ImageUpload` and `AvatarUpload` components — prefer those components over calling this hook directly.  
+**Returns**: `{ mutate, loading, error }` — `mutate(FormData)` where `FormData` has a `file` field and an optional `metadata` JSON string.
 
-**Options**: `maxSize`, `allowedTypes`, `path`, `generateThumbnail`
+**Example** (direct use):
+
+```tsx
+import { useMediaUpload } from "@/hooks";
+const { mutate: upload, loading } = useMediaUpload();
+// Inside a submit handler:
+const form = new FormData();
+form.append("file", stagedFile);
+await upload(form);
+```
+
+> **Important**: Never call this hook to upload files eagerly on change. Stage the file locally, then upload on form submit. See Rule 11 for the canonical three-phase upload flow.
 
 ---
 
@@ -1290,6 +1380,71 @@ table.clear(keys?)    // remove one/all params
 **Returns**: `{ showWarning, confirmNavigation }`
 
 **Options**: `message`, `enablePrompt`
+
+---
+
+### FAQ Data Hooks
+
+#### usePublicFaqs
+
+**File**: `usePublicFaqs.ts`  
+**Purpose**: Fetch public FAQs for homepage/public FAQ sections, optionally filtered by category.  
+**Parameters**: `(category?: string, limit?: number)` — limit defaults to `6`  
+**Returns**: `{ data: FAQDocument[], loading, error }` — cached for 10 minutes
+
+**Example**:
+
+```tsx
+import { usePublicFaqs } from "@/hooks";
+const { data: faqs, loading } = usePublicFaqs("shipping", 4);
+```
+
+#### useAllFaqs
+
+**File**: `usePublicFaqs.ts`  
+**Purpose**: Fetch ALL active FAQs for the full FAQ page (`FAQPageContent`). Client-side filtering, search, and sort are applied on the complete list.  
+**Returns**: `{ data: FAQDocument[], loading, error }`
+
+**Example**:
+
+```tsx
+import { useAllFaqs } from "@/hooks";
+const { data: faqs, loading } = useAllFaqs();
+```
+
+---
+
+### Category Hooks
+
+#### useCategories
+
+**File**: `useCategorySelector.ts`  
+**Purpose**: Query-only hook that fetches the full active category list. Used by `CategorySelectorCreate` for display and selection. Also reusable in any component that needs a flat categories array.  
+**Returns**: `{ categories: CategoryDocument[], isLoading, refetch }`
+
+**Example**:
+
+```tsx
+import { useCategories } from "@/hooks";
+const { categories, isLoading } = useCategories();
+```
+
+#### useCreateCategory
+
+**File**: `useCategorySelector.ts`  
+**Purpose**: Mutation-only hook that creates a new category. Used by the inner `CreateCategoryContent` sub-component within `CategorySelectorCreate`.  
+**Parameters**: `(options?: { onSuccess?: (res: { id?: string }) => void; onError?: (err: Error) => void })`  
+**Returns**: `{ mutate, loading, error }` — `mutate(categoryData)` posts to `/api/admin/categories`
+
+**Example**:
+
+```tsx
+import { useCreateCategory } from "@/hooks";
+const { mutate: create, loading } = useCreateCategory({
+  onSuccess: () => refetch(),
+});
+await create({ name: "Electronics", slug: "electronics", tier: 1 });
+```
 
 ---
 

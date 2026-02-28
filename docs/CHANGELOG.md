@@ -14,6 +14,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### TASK-29 — Document 17 Undocumented Hooks in GUIDE.md and QUICK_REFERENCE.md (2026-02-28)
+
+#### Added
+
+- **TASK-29 (P2):** `docs/GUIDE.md` — added `useGoogleLogin` and `useAppleLogin` to Authentication Hooks section with full signature, return type, and examples.
+- **TASK-29 (P2):** `docs/GUIDE.md` — expanded Profile Hooks section with individual entries for `useAddress(id)`, `useCreateAddress`, `useUpdateAddress`, `useDeleteAddress`, `useSetDefaultAddress`; each includes file reference, purpose, parameters, and return types.
+- **TASK-29 (P2):** `docs/GUIDE.md` — added new **FAQ Data Hooks** section with `usePublicFaqs` and `useAllFaqs` entries.
+- **TASK-29 (P2):** `docs/GUIDE.md` — added new **Category Hooks** section with `useCategories` and `useCreateCategory` entries, each with usage example.
+- **TASK-29 (P2):** `docs/QUICK_REFERENCE.md` — added new **Hooks Quick Lookup** section with seven category tables (Authentication, Session Management, RBAC, User Data, Content Data, Gestures & UX, Uploads & Media) covering all 17 previously undocumented hooks plus existing hooks for completeness.
+
+#### Changed
+
+- **TASK-29 (P2):** `docs/GUIDE.md` — replaced stale `useStorageUpload` section (hook deleted in TASK-20) with `useMediaUpload` documenting the canonical backend-upload hook.
+- **TASK-29 (P2):** `docs/QUICK_REFERENCE.md` — expanded hooks line in Key File Locations to enumerate newly documented hooks by name.
+- **TASK-29 (P2):** `docs/APPLICATION_GRAPH.md` — marked Mandatory Improvement #18 (undocumented hooks) as ✅ RESOLVED.
+- **TASK-29 (P2):** `docs/IMPLEMENTATION_PLAN.md` — marked TASK-29 as ✅ DONE.
+
+#### Summary
+
+All 17 hooks listed in the TASK-29 audit are now fully documented in both GUIDE.md and QUICK_REFERENCE.md. No code changes were needed — this was a documentation-only task.
+
+---
+
 ### TASK-18 — Systemic UI_LABELS Migration to useTranslations (2026-02-28)
 
 #### Changed

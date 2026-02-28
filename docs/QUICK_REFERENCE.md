@@ -376,13 +376,94 @@ Never use `console.log` in production code.
 
 ---
 
+## Hooks Quick Lookup
+
+> All hooks import from `@/hooks` (barrel). Never import from the individual file.
+
+### Authentication
+
+| Hook                    | Parameters | Returns                      | Notes                                         |
+| ----------------------- | ---------- | ---------------------------- | --------------------------------------------- |
+| `useLogin`              | `options?` | `{ mutate, loading, error }` | Email + password login via `/api/auth/login`  |
+| `useGoogleLogin`        | `options?` | `{ mutate, loading, error }` | Google OAuth popup; `mutate()` triggers popup |
+| `useAppleLogin`         | `options?` | `{ mutate, loading, error }` | Apple OAuth popup; `mutate()` triggers popup  |
+| `useRegister`           | `options?` | `{ mutate, loading, error }` | Server-side user registration via Admin SDK   |
+| `useVerifyEmail`        | `options?` | `{ mutate, loading, error }` | Apply Firebase email verification action code |
+| `useResendVerification` | `options?` | `{ mutate, loading, error }` | Re-send verification email                    |
+| `useForgotPassword`     | `options?` | `{ mutate, loading, error }` | Request password-reset link                   |
+| `useResetPassword`      | `options?` | `{ mutate, loading, error }` | Reset password with token                     |
+
+### Session Management
+
+| Hook                    | Parameters | Returns                      | Notes                                                        |
+| ----------------------- | ---------- | ---------------------------- | ------------------------------------------------------------ |
+| `useAdminSessions`      | `limit?`   | `{ data, loading, error }`   | All active sessions (admin only) — auto-refreshes every 30 s |
+| `useUserSessions`       | `userId`   | `{ data, loading, error }`   | Sessions for a specific user (admin only)                    |
+| `useMySessions`         | —          | `{ data, loading, error }`   | Current user's own sessions                                  |
+| `useRevokeSession`      | —          | `{ mutate, loading, error }` | Revoke a session by ID (admin)                               |
+| `useRevokeMySession`    | —          | `{ mutate, loading, error }` | Revoke own session by ID                                     |
+| `useRevokeUserSessions` | —          | `{ mutate, loading, error }` | Revoke all sessions for a user (admin)                       |
+
+### RBAC
+
+| Hook             | Parameters                     | Returns                                                              | Notes                        |
+| ---------------- | ------------------------------ | -------------------------------------------------------------------- | ---------------------------- |
+| `useHasRole`     | `role: UserRole \| UserRole[]` | `boolean`                                                            | Respects role hierarchy      |
+| `useIsAdmin`     | —                              | `boolean`                                                            |                              |
+| `useIsModerator` | —                              | `boolean`                                                            | True for moderator AND admin |
+| `useIsSeller`    | —                              | `boolean`                                                            | True for seller AND above    |
+| `useIsOwner`     | `resourceOwnerId`              | `boolean`                                                            | Admins always return `true`  |
+| `useRoleChecks`  | —                              | `{ isAuthenticated, isAdmin, isModerator, isSeller, role, hasRole }` | All checks in one object     |
+| `useCanAccess`   | `path: string`                 | `{ allowed, reason?, redirectTo? }`                                  | Route-level RBAC guard       |
+| `useRequireAuth` | —                              | `{ user, loading }`                                                  | Throws if unauthenticated    |
+| `useRequireRole` | `role`                         | `{ user, loading }`                                                  | Throws if insufficient role  |
+
+### User Data
+
+| Hook                   | Parameters     | Returns                                                    | Notes                                        |
+| ---------------------- | -------------- | ---------------------------------------------------------- | -------------------------------------------- |
+| `useProfile`           | —              | `{ profile, updateProfile, updateAvatar, loading, error }` |                                              |
+| `useProfileStats`      | —              | `{ orderCount, addressCount, isLoading }`                  | Profile page stat counts                     |
+| `useAddresses`         | `options?`     | `{ data: Address[], loading, error, refetch }`             | Full list                                    |
+| `useAddress`           | `id: string`   | `{ data: Address, loading, error }`                        | Single address — disabled when `id` is empty |
+| `useCreateAddress`     | `options?`     | `{ mutate, loading, error }`                               | POST `/api/user/addresses`                   |
+| `useUpdateAddress`     | `id, options?` | `{ mutate, loading, error }`                               | PATCH `/api/user/addresses/{id}`             |
+| `useDeleteAddress`     | `options?`     | `{ mutate, loading, error }`                               | DELETE `/api/user/addresses/{id}`            |
+| `useSetDefaultAddress` | `options?`     | `{ mutate, loading, error }`                               | Mark address as default                      |
+
+### Content Data
+
+| Hook                | Parameters          | Returns                                                  | Notes                             |
+| ------------------- | ------------------- | -------------------------------------------------------- | --------------------------------- |
+| `useAllFaqs`        | —                   | `{ data: FAQDocument[], loading, error }`                | Full active FAQ list for FAQ page |
+| `usePublicFaqs`     | `category?, limit?` | `{ data: FAQDocument[], loading, error }`                | Filtered FAQ list; 10-min cache   |
+| `useCategories`     | —                   | `{ categories: CategoryDocument[], isLoading, refetch }` | Full category list                |
+| `useCreateCategory` | `options?`          | `{ mutate, loading, error }`                             | POST `/api/admin/categories`      |
+
+### Gestures & UX
+
+| Hook               | Parameters                  | Returns                                          | Notes                                           |
+| ------------------ | --------------------------- | ------------------------------------------------ | ----------------------------------------------- |
+| `useGesture`       | `(ref, options)`            | `void`                                           | tap, doubletap, pinch, rotate on touch elements |
+| `useSwipe`         | `(ref, callbacks, options)` | `{ isSwiping, direction }`                       | Swipe detection                                 |
+| `useLongPress`     | `(callback, options)`       | `{ onPointerDown, onPointerUp, onPointerLeave }` | Fires after hold; no-op on quick tap            |
+| `usePullToRefresh` | `(onRefresh, options)`      | `{ isPulling, pullDistance, isRefreshing }`      | Overscroll pull-to-refresh                      |
+
+### Uploads & Media
+
+| Hook             | Parameters | Returns                      | Notes                                                                                    |
+| ---------------- | ---------- | ---------------------------- | ---------------------------------------------------------------------------------------- |
+| `useMediaUpload` | —          | `{ mutate, loading, error }` | `mutate(FormData)` → POST `/api/media/upload`. Prefer `<ImageUpload>` component instead. |
+
+---
+
 ## Key File Locations
 
 ```
 constants/              src/constants/          (ui.ts, messages.ts, routes.ts, api-endpoints.ts, theme.ts)
 db schemas              src/db/schema/          (users.ts, products.ts, orders.ts, …)
 repositories            src/repositories/       (*.repository.ts)
-hooks                   src/hooks/              (useApiQuery, useApiMutation, useUrlTable, useAuth, …)
+hooks                   src/hooks/              (useApiQuery, useApiMutation, useUrlTable, useAuth, useGoogleLogin, useAppleLogin, useAdminSessions, useRevokeSession, useRoleChecks, useIsOwner, useAddress, useCreateAddress, useUpdateAddress, useAllFaqs, useCategories, useCreateCategory, useGesture, useMediaUpload, …)
 utils                   src/utils/              (formatters, validators, converters, events)
 helpers                 src/helpers/            (auth, data, ui)
 classes                 src/classes/            (CacheManager, Logger, EventBus, StorageManager, Queue)

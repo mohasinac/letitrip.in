@@ -2048,31 +2048,9 @@ import { auth } from "@/lib/firebase/config";
 
 ---
 
-#### 18. Multiple hooks undocumented in `GUIDE.md` and `QUICK_REFERENCE.md`
+#### ~~18. Multiple hooks undocumented in `GUIDE.md` and `QUICK_REFERENCE.md`~~ ✅ RESOLVED (TASK-29)
 
-**Issue:** The following hooks exist in `src/hooks/` and are exported from `src/hooks/index.ts` but are not documented in `docs/GUIDE.md` or `docs/QUICK_REFERENCE.md`:
-
-| Hook                         | File                     | Gap                                                     |
-| ---------------------------- | ------------------------ | ------------------------------------------------------- |
-| `useGesture(opts)`           | `useGesture.ts`          | Missing from GUIDE.md and APPLICATION_GRAPH hooks table |
-| `useGoogleLogin()`           | `useAuth.ts`             | Missing from all docs                                   |
-| `useAppleLogin()`            | `useAuth.ts`             | Missing from all docs                                   |
-| `useAdminSessions()`         | `useSessions.ts`         | Missing from docs                                       |
-| `useUserSessions(uid)`       | `useSessions.ts`         | Missing from docs                                       |
-| `useRevokeSession(id)`       | `useSessions.ts`         | Missing from docs                                       |
-| `useRevokeMySession(id)`     | `useSessions.ts`         | Missing from docs                                       |
-| `useRevokeUserSessions(uid)` | `useSessions.ts`         | Missing from docs                                       |
-| `useIsOwner()`               | `useRBAC.ts`             | Not in RBAC hook docs                                   |
-| `useIsModerator()`           | `useRBAC.ts`             | Not in RBAC hook docs                                   |
-| `useRoleChecks()`            | `useRBAC.ts`             | Not in RBAC hook docs                                   |
-| `useAddress(id)`             | `useAddresses.ts`        | Missing from docs                                       |
-| `useCreateAddress()`         | `useAddresses.ts`        | Missing from docs                                       |
-| `useUpdateAddress()`         | `useAddresses.ts`        | Missing from docs                                       |
-| `useAllFaqs(opts)`           | `usePublicFaqs.ts`       | Missing from docs                                       |
-| `useCategories()`            | `useCategorySelector.ts` | Missing from docs                                       |
-| `useCreateCategory()`        | `useCategorySelector.ts` | Missing from docs                                       |
-
-**Fix:** Update `docs/GUIDE.md` hooks section + `docs/QUICK_REFERENCE.md` with descriptions and usage examples for each. No code changes needed. See **TASK-29**.
+**Completed 2026-02-28:** All 17 undocumented hooks now documented. Added `useGoogleLogin`, `useAppleLogin` to Authentication Hooks in GUIDE.md; expanded Profile Hooks with `useAddress`, `useCreateAddress`, `useUpdateAddress`, `useDeleteAddress`, `useSetDefaultAddress`; replaced stale `useStorageUpload` with `useMediaUpload`; added FAQ Data Hooks section (`usePublicFaqs`, `useAllFaqs`); added Category Hooks section (`useCategories`, `useCreateCategory`). Added comprehensive "Hooks Quick Lookup" section to `QUICK_REFERENCE.md` with tables for Auth, Sessions, RBAC, User Data, Content Data, Gestures, and Uploads categories.
 
 ---
 

@@ -648,7 +648,9 @@ Note: Both files currently also have raw `<input type="checkbox">` elements — 
 
 ---
 
-### TASK-29 · Document 17 undocumented hooks in `GUIDE.md` and `QUICK_REFERENCE.md` · P2
+### ✅ DONE — TASK-29 · Document 17 undocumented hooks in `GUIDE.md` and `QUICK_REFERENCE.md` · P2
+
+**Completed 2026-02-28.** Added `useGoogleLogin`, `useAppleLogin` to Authentication Hooks section; expanded Profile Hooks with `useAddress`, `useCreateAddress`, `useUpdateAddress`, `useDeleteAddress`, `useSetDefaultAddress`; replaced stale `useStorageUpload` section with `useMediaUpload`; added FAQ Data Hooks section (`usePublicFaqs`, `useAllFaqs`); added Category Hooks section (`useCategories`, `useCreateCategory`). Added comprehensive "Hooks Quick Lookup" tables to `QUICK_REFERENCE.md` covering Auth, Sessions, RBAC, User Data, Content Data, Gestures, and Uploads. Updated hooks line in Key File Locations.
 
 **Rule violated:** None (docs-only gap — no code changes needed)
 **Scope:** The following 17 hooks exist in `src/hooks/` but are absent from the GUIDE and Quick Reference:
