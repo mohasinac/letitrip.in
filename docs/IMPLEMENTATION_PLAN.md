@@ -632,63 +632,19 @@ Note: Both files currently also have raw `<input type="checkbox">` elements — 
 
 ---
 
-### TASK-28 · Add `/seller/products/add` page + `SellerCreateProductView` + `POST /api/seller/products` · P1
+### TASK-28 · Add `/seller/products/new` page + `SellerCreateProductView` + `POST /api/seller/products` · P1 ✅ DONE
 
-**Rule violated:** Functional gap — sellers currently have no mechanism to create new product listings.
-**Missing files:**
+**Completed:**
 
-- `src/app/[locale]/seller/products/add/page.tsx`
-- `src/features/seller/components/SellerCreateProductView.tsx`
-- `src/app/api/seller/products/route.ts` (or extend existing if the file exists but lacks `POST`)
-
-**What to do:**
-
-**Step 1 — API route**
-
-1. Check `src/app/api/seller/products/route.ts`. If it exists but only has `GET`, add `POST` handler. If it does not exist, create it.
-2. The `POST` handler must:
-   - Verify session cookie → extract `uid`.
-   - Validate request body with Zod schema (title, description, price, categoryId, images[], status).
-   - Use `productRepository.create({ ...data, sellerId: uid, status: 'draft' })`.
-   - Return `successResponse(newProduct, SUCCESS_MESSAGES.PRODUCT.CREATED)`.
-   - Wrap in `handleApiError`.
-3. Add `API_ENDPOINTS.SELLER.PRODUCTS_CREATE` to `src/constants/api-endpoints.ts` (or confirm `API_ENDPOINTS.SELLER.PRODUCTS` already covers `POST` by convention).
-4. Add `sellerService.createProduct(data)` method to `src/services/seller.service.ts` (or `src/features/seller/services/`).
-5. Export through the appropriate barrel.
-
-**Step 2 — Feature view component**
-
-1. Create `src/features/seller/components/SellerCreateProductView.tsx`.
-2. Reuse the existing `ProductForm` component (check `src/components/products/` or `src/features/admin/components/` for the form). If it already accepts a `mode="create" | "edit"` prop, consume it directly.
-3. On submit: call `sellerService.createProduct(formData)` via `useApiMutation`. On success, redirect to `/seller/products`.
-4. Use `useTranslations('seller')` for all JSX text (Rule 2).
-5. Use `THEME_CONSTANTS` for all repeated Tailwind classes (Rule 4).
-6. Export from `src/features/seller/components/index.ts` and `src/features/seller/index.ts`.
-
-**Step 3 — Page**
-
-1. Create `src/app/[locale]/seller/products/add/page.tsx` as a thin shell (≤ 30 lines):
-   ```tsx
-   import { SellerCreateProductView } from "@/features/seller";
-   export default function SellerAddProductPage() {
-     return <SellerCreateProductView />;
-   }
-   ```
-2. Protect the route — ensure `RBAC_CONFIG` in `src/constants/rbac.ts` has an entry for `/seller/products/add` with `allowedRoles: ['seller', 'admin']`.
-3. Add `ROUTES.SELLER.PRODUCTS_ADD` to `src/constants/routes.ts` if not present.
-
-**Step 4 — Tests**
-
-1. Write `src/features/seller/components/__tests__/SellerCreateProductView.test.tsx`.
-2. Write `src/app/api/seller/products/__tests__/route.test.ts` (or add `POST` cases to existing test file).
-3. Run `npm test -- --testPathPattern=SellerCreateProductView` before handing back.
-
-**Step 5 — Verification**
-
-1. `npx tsc --noEmit` on all new/changed files.
-2. `npm run build` must pass.
-
-**Effort:** M (90–180 min)
+1. ✅ `src/app/api/seller/products/route.ts` — NEW — `GET` (list seller's products with Sieve) + `POST` (create product, forces `status: 'draft'`, sets `sellerId/sellerName/sellerEmail` from session).
+2. ✅ `API_ENDPOINTS.SELLER.PRODUCTS` added to `src/constants/api-endpoints.ts`.
+3. ✅ `sellerService.createProduct(data)` and `sellerService.listMyProducts(params?)` added to `src/services/seller.service.ts`.
+4. ✅ `src/features/seller/components/SellerCreateProductView.tsx` — NEW — uses `ProductForm`, `AdminPageHeader`, `useApiMutation`, `useTranslations('sellerProducts')`, redirects to `ROUTES.SELLER.PRODUCTS` on success.
+5. ✅ `src/features/seller/components/index.ts` — added `SellerCreateProductView` export.
+6. ✅ `src/app/[locale]/seller/products/new/page.tsx` — new thin shell (5 lines) at `ROUTES.SELLER.PRODUCTS_NEW`.
+7. ✅ `src/constants/rbac.ts` — added `ROUTES.SELLER.DASHBOARD` entry (prefix match covers all `/seller/*` routes).
+8. ✅ `messages/en.json` + `messages/hi.json` — added `createProductSubtitle`, `createSuccess`, `cancel` keys to `sellerProducts` namespace.
+9. ✅ Tests: 10/10 pass (`SellerCreateProductView.test.tsx` × 6, `route.test.ts` × 3, `page.test.tsx` × 1).
 
 ---
 

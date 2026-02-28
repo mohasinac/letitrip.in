@@ -186,6 +186,17 @@ export const RBAC_CONFIG: Record<string, RouteAccessConfig> = {
   // NOTE: /events and /events/[id] are public (no RBAC entry).
   // /events/[id]/participate requires auth — enforced at the page level via ProtectedRoute
   // since the middleware prefix-match cannot distinguish /events/:id from /events/:id/participate.
+
+  // ============================================================================
+  // Seller Routes - Require seller or admin role (prefix match covers sub-routes)
+  // ============================================================================
+  [ROUTES.SELLER.DASHBOARD]: {
+    path: ROUTES.SELLER.DASHBOARD,
+    allowedRoles: ["seller", "admin", "moderator"],
+    requireEmailVerified: true,
+    requireActiveAccount: true,
+    redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
+  },
 };
 
 /**

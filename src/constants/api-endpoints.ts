@@ -257,6 +257,7 @@ export const API_ENDPOINTS = {
     ORDERS: "/api/seller/orders", // GET - List seller's orders (auth: seller)
     ANALYTICS: "/api/seller/analytics", // GET - Seller analytics stats (auth: seller)
     PAYOUTS: "/api/seller/payouts", // GET/POST - List/request payouts (auth: seller)
+    PRODUCTS: "/api/seller/products", // GET/POST - List/create seller's products (auth: seller)
   },
 
   // Blog endpoints — public

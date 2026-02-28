@@ -33,6 +33,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### Fifteenth Implementation Pass — Seller Product Creation Flow (2026-02-28)
+
+#### Added
+
+- **TASK-28 (P1):** `src/app/api/seller/products/route.ts` — NEW — `GET` (list seller's own products, Sieve-filtered by `sellerId`) + `POST` (create product with `status: 'draft'`, sellerInfo from session).
+- **TASK-28 (P1):** `src/features/seller/components/SellerCreateProductView.tsx` — NEW — full-page product creation form using `ProductForm`, `AdminPageHeader`, `useApiMutation(sellerService.createProduct)`, `useTranslations('sellerProducts')`, redirects on success.
+- **TASK-28 (P1):** `src/app/[locale]/seller/products/new/page.tsx` — NEW — 5-line thin shell at `ROUTES.SELLER.PRODUCTS_NEW`.
+- **TASK-28 (P1):** `src/features/seller/components/__tests__/SellerCreateProductView.test.tsx` — NEW — 6 tests.
+- **TASK-28 (P1):** `src/app/api/seller/products/__tests__/route.test.ts` — NEW — 3 tests (GET filters, POST creates, POST 400 validation).
+- **TASK-28 (P1):** `src/app/[locale]/seller/products/new/__tests__/page.test.tsx` — NEW — 1 test.
+
+#### Changed
+
+- **TASK-28 (P1):** `src/constants/api-endpoints.ts` — added `SELLER.PRODUCTS: "/api/seller/products"`.
+- **TASK-28 (P1):** `src/services/seller.service.ts` — added `sellerService.createProduct(data)` and `sellerService.listMyProducts(params?)`.
+- **TASK-28 (P1):** `src/features/seller/components/index.ts` — added `SellerCreateProductView` export.
+- **TASK-28 (P1):** `src/constants/rbac.ts` — added `ROUTES.SELLER.DASHBOARD` RBAC entry (prefix match covers all `/seller/*` sub-routes).
+- **TASK-28 (P1):** `messages/en.json` + `messages/hi.json` — added `createProductSubtitle`, `createSuccess`, `cancel` keys to `sellerProducts` namespace.
+
+---
+
 ### Fourteenth Implementation Pass — CheckoutSuccessView Extraction (2026-02-28)
 
 #### Added

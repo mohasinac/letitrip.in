@@ -32,4 +32,14 @@ export const sellerService = {
     apiClient.get(
       `${API_ENDPOINTS.PRODUCTS.LIST}?filters=${encodeURIComponent(`sellerId==${uid}`)}&pageSize=200`,
     ),
+
+  /** List seller's own products via seller API (paginated, Sieve) */
+  listMyProducts: (params?: string) =>
+    apiClient.get(
+      `${API_ENDPOINTS.SELLER.PRODUCTS}${params ? `?${params}` : ""}`,
+    ),
+
+  /** Create a new product listing for the authenticated seller */
+  createProduct: (data: unknown) =>
+    apiClient.post(API_ENDPOINTS.SELLER.PRODUCTS, data),
 };

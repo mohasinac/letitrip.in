@@ -772,6 +772,22 @@ All seller pages require authentication + seller/admin role (`🏪🔒`). Protec
 
 ---
 
+#### `/seller/products/new` — Create Seller Product ✅🏪🔒
+
+**Route constant:** `ROUTES.SELLER.PRODUCTS_NEW`
+**Summary:** Seller new-product creation form. Thin shell at 5 lines; all logic in `SellerCreateProductView`.
+
+| Layer             | Items                                                         |
+| ----------------- | ------------------------------------------------------------- |
+| **Feature**       | `@/features/seller` → `SellerCreateProductView`               |
+| **Components**    | `AdminPageHeader`, `Button`, `ProductForm`                    |
+| **Hooks**         | `useApiMutation`, `useMessage`                                |
+| **Services**      | `sellerService.createProduct()` → `POST /api/seller/products` |
+| **API Endpoints** | `API_ENDPOINTS.SELLER.PRODUCTS`                               |
+| **Constants**     | `ROUTES`, `THEME_CONSTANTS`                                   |
+
+---
+
 #### `/seller/products/[id]/edit` — Edit Seller Product 🟡🏪🔒
 
 **Route constant:** `ROUTES.SELLER.PRODUCTS_EDIT(id)`
@@ -2074,11 +2090,11 @@ import { auth } from "@/lib/firebase/config";
 
 ---
 
-#### 17. Seller panel has no product creation page — sellers cannot list new products
+#### ~~17. Seller panel has no product creation page — sellers cannot list new products~~ ✅ RESOLVED (TASK-28)
 
-**Issue:** `/seller/products` lists a seller's existing products and `/seller/products/[id]/edit` allows editing, but there is no page or route to **create** a new product from the seller panel. Sellers who wish to list a new product must contact an admin. This is a functional gap.
+~~**Issue:** `/seller/products` lists a seller's existing products and `/seller/products/[id]/edit` allows editing, but there is no page or route to **create** a new product from the seller panel. Sellers who wish to list a new product must contact an admin. This is a functional gap.~~
 
-**Fix:** Add `/seller/products/add` page + `SellerCreateProductView` in `@/features/seller/components/`. Reuse `ProductForm` (same form used in admin product creation). Add the `API_ENDPOINTS.SELLER.PRODUCTS_CREATE` endpoint and a `POST /api/seller/products` API route that scopes the product to the authenticated seller. See **TASK-28**.
+**Resolution:** `/seller/products/new` page + `SellerCreateProductView` + `POST /api/seller/products` added. `API_ENDPOINTS.SELLER.PRODUCTS` added. `sellerService.createProduct()` added. Seller product creation is now fully functional.
 
 ---
 
