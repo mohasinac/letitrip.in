@@ -347,11 +347,14 @@ export default function Sidebar({
                           }
                         `}
                         >
-                          <span
-                            className={`flex items-center ${isActive ? "text-primary-600 dark:text-primary-400" : THEME_CONSTANTS.themed.textMuted}`}
+                          <svg
+                            className={`w-5 h-5 ${isActive ? "text-primary-600 dark:text-primary-400" : THEME_CONSTANTS.themed.textMuted}`}
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
                           >
                             {item.icon}
-                          </span>
+                          </svg>
                         </div>
                         <span
                           className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}

@@ -51,7 +51,7 @@ export function FeaturedProductsSection() {
     );
   }
 
-  const products = data || [];
+  const products = data?.items || [];
 
   if (products.length === 0) {
     return null;
