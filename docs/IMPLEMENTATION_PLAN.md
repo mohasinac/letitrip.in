@@ -1041,6 +1041,88 @@ firebase deploy --only database:rules
 
 ---
 
+## Sixth Audit Pass — New Tasks (2026-02-28)
+
+> Tasks TASK-36 → TASK-38 identified in sixth audit pass on 2026-02-28. Root cause: TASK-15 moved `SellerQuickActions` and `SellerRecentListings` from `src/components/seller/` to `src/features/seller/components/`, but TASK-18-D ran against the old paths — the moved files still had `UI_LABELS` violations. Also found: `EmailVerificationCard` and `PhoneVerificationCard` import `UI_LABELS` but render hardcoded strings instead. Missing `coupons` index not covered by TASK-31/32/33.
+
+---
+
+### ✅ TASK-36 · Migrate `SellerQuickActions` + `SellerRecentListings` from `UI_LABELS` to `useTranslations` · P0 · DONE 2026-02-28
+
+**Rule violated:** Rule 2 (no `UI_LABELS` in JSX client components)
+**Files:**
+
+- `src/features/seller/components/SellerQuickActions.tsx`
+- `src/features/seller/components/SellerRecentListings.tsx`
+
+**Root cause:** These files were moved from `src/components/seller/` to `src/features/seller/components/` by TASK-15. TASK-18-D targeted the old `src/components/seller/` paths — the new locations were not migrated.
+
+**What to do:**
+
+1. Add missing keys to `messages/en.json` under `sellerDashboard`:
+   - `quickActions`, `viewProducts`, `viewAuctions`, `viewSales`, `recentListings`, `viewAll`
+2. Add same keys (Hindi stubs) to `messages/hi.json`.
+3. Migrate `SellerQuickActions.tsx`:
+   - Add `const t = useTranslations('sellerDashboard')` inside component.
+   - Replace all `UI_LABELS.SELLER_PAGE.*` with `t('key')`.
+   - Remove `UI_LABELS` import.
+4. Migrate `SellerRecentListings.tsx`:
+   - Use `const t = useTranslations('sellerDashboard')` for `RECENT_LISTINGS`.
+   - Use `const tActions = useTranslations('actions')` for `VIEW_ALL`.
+   - Remove `UI_LABELS` import.
+5. Run `npx tsc --noEmit` on changed files.
+6. Update/create tests for both components.
+
+**Effort:** S (30–90 min)
+
+---
+
+### TASK-37 · Migrate `EmailVerificationCard` + `PhoneVerificationCard` from hardcoded strings to `useTranslations` · P0
+
+**Rule violated:** Rule 2 (no hardcoded strings in JSX) + unused `UI_LABELS` import
+**Files:**
+
+- `src/components/user/settings/EmailVerificationCard.tsx`
+- `src/components/user/settings/PhoneVerificationCard.tsx`
+
+**Issue:** Both files import `UI_LABELS` but render hardcoded English strings ("Email Verification", "Verified", "Not Verified", "Resend Verification Email", etc.).
+
+**What to do:**
+
+1. Add missing keys to `messages/en.json` under `userSettings`:
+   - `emailVerificationTitle`, `phoneVerificationTitle`, `verified`, `notVerified`, `resendVerification`, `sending`, `verifiedMessage`, `notVerifiedMessage`, `addPhone`, `phoneNotAdded`, `verify`, `phoneVerifiedMessage`, `phoneNotVerifiedMessage`
+2. Add same keys to `messages/hi.json`.
+3. Migrate both files: add `const t = useTranslations('userSettings')`, replace hardcoded strings, remove `UI_LABELS` import.
+4. Type-check + update tests.
+
+**Effort:** S (30–90 min)
+
+---
+
+### TASK-38 · Add missing `coupons: type+createdAt` Firestore composite index · P1
+
+**File:** `firestore.indexes.json`
+**Why:** The D.2 index coverage table identified `type+createdAt` as missing for the `coupons` collection. TASK-31/32/33 did not include this entry.
+
+**What to do:**
+
+1. Add to `firestore.indexes.json`:
+   ```json
+   {
+     "collectionGroup": "coupons",
+     "queryScope": "COLLECTION",
+     "fields": [
+       { "fieldPath": "type", "order": "ASCENDING" },
+       { "fieldPath": "createdAt", "order": "DESCENDING" }
+     ]
+   }
+   ```
+2. Deploy: `firebase deploy --only firestore:indexes`
+
+**Effort:** XS (< 30 min)
+
+---
+
 ## Dependency Map
 
 Tasks that should be done in order due to shared files:

@@ -1027,7 +1027,13 @@
     "draftProducts": "Draft Products",
     "noProducts": "No products yet",
     "noProductsSubtitle": "Start by adding your first listing",
-    "addProduct": "Add New Listing"
+    "addProduct": "Add New Listing",
+    "quickActions": "Quick Actions",
+    "viewProducts": "View All Products",
+    "viewAuctions": "View Auctions",
+    "viewSales": "View Sales",
+    "recentListings": "Recent Listings",
+    "viewAll": "View All"
   },
   "sellerOrders": {
     "title": "My Sales",

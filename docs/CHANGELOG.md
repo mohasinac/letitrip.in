@@ -14,6 +14,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### TASK-36 — Migrate `SellerQuickActions` + `SellerRecentListings` to `useTranslations` (2026-02-28)
+
+#### Changed
+
+- **`src/features/seller/components/SellerQuickActions.tsx`** — Removed `UI_LABELS` import; added `useTranslations('sellerDashboard')`; replaced all `UI_LABELS.SELLER_PAGE.*` references with `t('key')`; fixed "Add Product" navigation to correctly route to `ROUTES.SELLER.PRODUCTS_NEW` (was incorrectly pointing to `ROUTES.SELLER.PRODUCTS`).
+- **`src/features/seller/components/SellerRecentListings.tsx`** — Removed `UI_LABELS` import; added `useTranslations('sellerDashboard')`; replaced `UI_LABELS.SELLER_PAGE.RECENT_LISTINGS` → `t('recentListings')` and `UI_LABELS.ACTIONS.VIEW_ALL` → `t('viewAll')`.
+- **`messages/en.json`** — Extended `sellerDashboard` namespace with 6 new keys: `quickActions`, `viewProducts`, `viewAuctions`, `viewSales`, `recentListings`, `viewAll`.
+- **`messages/hi.json`** — Added same 6 keys with Hindi translations.
+
+#### Added
+
+- **`src/features/seller/components/__tests__/SellerQuickActions.test.tsx`** — 6 new tests: heading renders, all 4 action buttons render with correct `useTranslations` keys, navigation verified for each button.
+- **`src/features/seller/components/__tests__/SellerRecentListings.test.tsx`** — 6 new tests: null render when loading, null render when empty, heading and view-all button render, product titles shown, view-all navigates to `/seller/products`, max-5-item limit enforced.
+
+---
+
 ### DOCS — APPLICATION_GRAPH.md stale reference cleanup (2026-02-28)
 
 #### Changed

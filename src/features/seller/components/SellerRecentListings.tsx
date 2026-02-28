@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Card, Button } from "@/components/ui";
 import { Heading, Text } from "@/components/typography";
-import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { ProductDocument } from "@/db/schema";
 
 const { themed, spacing } = THEME_CONSTANTS;
@@ -23,6 +24,7 @@ export function SellerRecentListings({
   loading,
 }: SellerRecentListingsProps) {
   const router = useRouter();
+  const t = useTranslations("sellerDashboard");
 
   if (loading || products.length === 0) return null;
 
@@ -30,14 +32,14 @@ export function SellerRecentListings({
     <Card className="p-5">
       <div className="flex items-center justify-between mb-4">
         <Heading level={4} variant="primary">
-          {UI_LABELS.SELLER_PAGE.RECENT_LISTINGS}
+          {t("recentListings")}
         </Heading>
         <Button
           variant="ghost"
           size="sm"
           onClick={() => router.push(ROUTES.SELLER.PRODUCTS)}
         >
-          {UI_LABELS.ACTIONS.VIEW_ALL}
+          {t("viewAll")}
         </Button>
       </div>
       <div className={spacing.stack}>

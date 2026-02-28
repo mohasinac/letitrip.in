@@ -1026,7 +1026,13 @@
     "draftProducts": "ड्राफ्ट उत्पाद",
     "noProducts": "अभी तक कोई उत्पाद नहीं",
     "noProductsSubtitle": "अपनी पहली लिस्टिंग जोड़कर शुरुआत करें",
-    "addProduct": "नई लिस्टिंग जोड़ें"
+    "addProduct": "नई लिस्टिंग जोड़ें",
+    "quickActions": "त्वरित क्रियाएँ",
+    "viewProducts": "सभी उत्पाद देखें",
+    "viewAuctions": "नीलामी देखें",
+    "viewSales": "बिक्री देखें",
+    "recentListings": "हाल की लिस्टिंग",
+    "viewAll": "सभी देखें"
   },
   "sellerOrders": {
     "title": "मेरी बिक्री",
