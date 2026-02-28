@@ -269,37 +269,15 @@ Create `src/components/admin/__tests__/MediaUploadField.test.tsx`.
 
 ---
 
-### TASK-11 · `auth/forgot-password/page.tsx` — extract to `ForgotPasswordView` feature component · P2
+### ✅ TASK-11 · `auth/forgot-password/page.tsx` — extract to `ForgotPasswordView` feature component · P2 · DONE
 
-**File:** `src/app/[locale]/auth/forgot-password/page.tsx`
-**Target:** `src/features/auth/components/ForgotPasswordView.tsx`
-
-**What to do:**
-
-1. Create `src/features/auth/components/ForgotPasswordView.tsx` — move all JSX, `useState`, `useRouter`, `useForgotPassword` logic into this component.
-2. Reduce the page to:
-   ```tsx
-   import { ForgotPasswordView } from "@/features/auth";
-   export default function Page() {
-     return <ForgotPasswordView />;
-   }
-   ```
-3. Export `ForgotPasswordView` from `src/features/auth/index.ts` and `src/features/auth/components/index.ts`.
-4. Write `src/features/auth/components/__tests__/ForgotPasswordView.test.tsx`.
-5. Type-check + build.
+**Completed 2026-02-28.** Created `ForgotPasswordView.tsx`, page reduced to 5-line thin shell, barrel exports updated, 17 tests pass.
 
 ---
 
-### TASK-12 · `auth/verify-email/page.tsx` — extract to `VerifyEmailView` feature component · P2
+### ✅ TASK-12 · `auth/verify-email/page.tsx` — extract to `VerifyEmailView` feature component · P2 · DONE
 
-**File:** `src/app/[locale]/auth/verify-email/page.tsx`
-**Target:** `src/features/auth/components/VerifyEmailView.tsx`
-
-**What to do:** Same pattern as TASK-11.
-
-1. Move all `useEffect`, `useState`, `useSearchParams`, `useVerifyEmail` logic into `VerifyEmailView`.
-2. Reduce the page to a single-line render.
-3. Export, test, type-check, build.
+**Completed 2026-02-28.** Created `src/features/auth/components/VerifyEmailView.tsx` (includes inner `VerifyEmailContent` + Suspense wrapper). Page reduced to 5-line thin shell. Barrel export added. 8 tests pass.
 
 ---
 

@@ -14,6 +14,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### Eighth Implementation Pass — Page Thickness Cleanup: Auth Views (2026-02-28)
+
+#### Added
+
+- **TASK-11 (P2):** Created `src/features/auth/components/ForgotPasswordView.tsx` — all form logic, state, and API calls extracted from `forgot-password/page.tsx`. Page reduced to 5-line thin shell. Added to feature barrel.
+  - `src/features/auth/components/__tests__/ForgotPasswordView.test.tsx` — 17 tests covering render, input, loading, error, success, navigation. All pass.
+- **TASK-12 (P2):** Created `src/features/auth/components/VerifyEmailView.tsx` — `VerifyEmailContent` (token handling, `useEffect`, `useVerifyEmail` callback, loading/success/error states) + Suspense wrapper. Page reduced to 5-line thin shell. Added to feature barrel.
+  - `src/features/auth/components/__tests__/VerifyEmailView.test.tsx` — 8 tests covering loading state, token-on-mount call, no-token error, success navigation, API error display, home-navigation. All pass.
+
+#### Changed
+
+- **TASK-11 (P2):** `src/app/[locale]/auth/forgot-password/page.tsx` — reduced from 170-line fat page to 5-line thin shell delegating to `ForgotPasswordView`.
+- **TASK-12 (P2):** `src/app/[locale]/auth/verify-email/page.tsx` — reduced from 168-line fat page to 5-line thin shell delegating to `VerifyEmailView`.
+- `src/features/auth/components/index.ts` — added `ForgotPasswordView` and `VerifyEmailView` exports.
+
+#### Documentation Updated
+
+- `docs/IMPLEMENTATION_PLAN.md`: Marked TASK-11 and TASK-12 as ✅ DONE.
+
+---
+
 ### Seventh Implementation Pass — Rule 11 Upload Violations + Rule 2 String Cleanup (2026-02-28)
 
 #### Removed
