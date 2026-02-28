@@ -1,6 +1,7 @@
 "use client";
 
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 
 export interface ActiveFilter {
   /** Unique key for this filter (e.g. "status", "category") */
@@ -49,6 +50,7 @@ export function ActiveFilterChips({
   if (filters.length === 0) return null;
 
   const { themed, borderRadius, spacing } = THEME_CONSTANTS;
+  const tActions = useTranslations("actions");
 
   return (
     <div
@@ -96,7 +98,7 @@ export function ActiveFilterChips({
         onClick={onClearAll}
         className={`text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline ${spacing.padding.xs}`}
       >
-        {UI_LABELS.ACTIONS.CLEAR_ALL}
+        {tActions("clearAll")}
       </button>
     </div>
   );

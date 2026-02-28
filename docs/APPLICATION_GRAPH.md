@@ -1961,65 +1961,15 @@ Pages that can be made smaller or must be fixed by using existing components/uti
 **Issue:** `MediaOperationForm` (upload + crop + trim) is used exclusively on the `/admin/media` standalone page. There is no way to attach/upload a video directly inside `ProductForm`, `BlogForm`, or any event form. Sellers and admins must navigate away to upload, then copy the URL back.
 **Fix:** Either embed a lighter `MediaUploadField` component (wrapping `useMediaUpload`) that can be dropped into any form as a field, or add an `accept` prop to `ImageUpload` so it can handle video files and return a URL.
 
-#### 8. Systemic `UI_LABELS` in JSX — ~35 client components violate Rule 2 across all feature domains
+#### ~~8. Systemic `UI_LABELS` in JSX — ~35 client components violate Rule 2 across all feature domains~~ ✅ RESOLVED (TASK-18)
 
-**Issue:** Rule 2 mandates `useTranslations()` (next-intl) for ALL JSX text in client components. `UI_LABELS` is only allowed in API routes and non-JSX server utilities. The following components all render JSX and use `UI_LABELS` directly — this breaks i18n and violates the mandatory rule:
+**Resolved 2026-02-28.** All 35 client components (Groups A–E) migrated from `UI_LABELS` to `useTranslations()`. Translation keys added to `messages/en.json` and `messages/hi.json`. New test files added for each group. Final count: 115+ tests covering all migrated components.
 
-**Shared UI primitives (Tier 1):**
-
-- `src/components/ui/SideDrawer.tsx`
-- `src/components/ui/FilterDrawer.tsx`
-- `src/components/ui/FilterFacetSection.tsx`
-- `src/components/ui/TablePagination.tsx`
-- `src/components/ui/SortDropdown.tsx`
-- `src/components/ui/ActiveFilterChips.tsx`
-- `src/components/ui/NotificationBell.tsx`
-- `src/components/ui/EventBanner.tsx`
-- `src/components/ui/CategorySelectorCreate.tsx`
-- `src/components/ui/AddressSelectorCreate.tsx`
-
-**Homepage sections:**
-
-- `src/components/homepage/FeaturedAuctionsSection.tsx`
-- `src/components/homepage/CustomerReviewsSection.tsx`
-- `src/components/homepage/FAQSection.tsx`
-
-**User domain components:**
-
-- `src/components/user/settings/ProfileInfoForm.tsx`
-- `src/components/user/settings/PasswordChangeForm.tsx`
-- `src/components/user/addresses/AddressCard.tsx`
-- `src/components/user/addresses/AddressForm.tsx`
-- `src/components/user/notifications/NotificationsBulkActions.tsx`
-- `src/components/user/notifications/NotificationItem.tsx`
-- `src/components/user/profile/PublicProfileView.tsx`
-
-**Seller domain components:**
-
-- `src/components/seller/SellerAnalyticsStats.tsx`
-- `src/components/seller/SellerPayoutRequestForm.tsx`
-- `src/components/seller/SellerPayoutStats.tsx`
-- `src/components/seller/SellerQuickActions.tsx`
-- `src/components/seller/SellerRecentListings.tsx`
-- `src/components/seller/SellerRevenueChart.tsx`
-- `src/components/seller/SellerPayoutHistoryTable.tsx`
-- `src/components/seller/SellerTopProducts.tsx`
-
-**Admin components:**
-
-- `src/components/admin/AdminSessionsManager.tsx`
-- `src/components/admin/RichTextEditor.tsx`
-
-**Other:**
-
-- `src/components/categories/CategoryGrid.tsx`
-- `src/components/checkout/OrderSuccessHero.tsx`, `OrderSummaryPanel.tsx`, `OrderSuccessCard.tsx`
-- `src/components/products/AddToCartButton.tsx`
-- `src/components/promotions/CouponCard.tsx`
-- `src/components/search/SearchResultsSection.tsx`, `SearchFiltersRow.tsx`
-- `src/components/ErrorBoundary.tsx`
-
-**Fix:** For each component, call `useTranslations()` inside the component function body, add the translation keys to `messages/en.json` and `messages/hi.json`, and replace all `UI_LABELS.*` JSX references with `t('key')` calls.
+- Groups A–D completed in prior sessions
+- Group E (10 files) completed this session: `AdminSessionsManager`, `RichTextEditor`, `OrderSuccessHero`, `OrderSuccessCard`, `OrderSummaryPanel`, `AddToCartButton`, `CouponCard`, `SearchResultsSection`, `SearchFiltersRow`, `ErrorBoundary` (extracted `ErrorFallbackView` functional component for hook access)
+- New test files: `CouponCard.test.tsx` (8 tests), `AddToCartButton.test.tsx` (4 tests), `SearchFiltersRow.test.tsx` (6 tests)
+- `messages/en.json` + `messages/hi.json`: added `checkout`, `orderSuccess`, `cart`, `search`, `promotions` keys and new `adminSessions` namespace
+- Duplicate `sellerAnalytics`/`sellerPayouts` JSON keys removed
 
 #### ~~9. `FAQPageContent` — sort state in `useState` instead of `useUrlTable`~~ ✅ RESOLVED (TASK-19)
 

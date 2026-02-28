@@ -353,7 +353,12 @@
     "noReviewsDesc": "This seller hasn't received any reviews yet.",
     "viewProduct": "View Product",
     "verifiedPurchase": "Verified Purchase",
-    "notFound": "User not found"
+    "notFound": "User not found",
+    "memberSince": "Member since",
+    "statOrders": "Orders",
+    "statAuctionsWon": "Auctions Won",
+    "statItemsSold": "Items Sold",
+    "statReviews": "Reviews"
   },
   "wishlist": {
     "title": "My Wishlist",
@@ -395,8 +400,20 @@
     "empty": "No notifications yet",
     "emptyDesc": "We'll notify you about orders, bids, and promotions.",
     "markAllRead": "Mark all as read",
+    "markRead": "Mark as read",
+    "unread": "Unread",
     "deleted": "Delete notification",
+    "newBadge": "New",
     "error": "Failed to load notifications"
+  },
+  "filters": {
+    "title": "Filters",
+    "activeCount": "Filters ({count})",
+    "searchIn": "Search {section}..."
+  },
+  "eventBanner": {
+    "saleBanner": "Up to {pct}% Off \u2014 Limited Time!",
+    "offerBanner": "Use code {code} at checkout"
   },
   "table": {
     "actions": "Actions",
@@ -468,7 +485,9 @@
     "promoCode": "Promo Code",
     "promoApply": "Apply",
     "promoRemove": "Remove",
-    "promoPlaceholder": "Enter code"
+    "promoPlaceholder": "Enter code",
+    "itemCount": "{count, plural, one {# item} other {# items}}",
+    "shippingFree": "Free"
   },
   "orders": {
     "title": "My Orders",
@@ -557,14 +576,28 @@
     "stepAddress": "Shipping Address",
     "stepReview": "Review Order",
     "backToCart": "Back to Cart",
-    "placingOrder": "Placing Order..."
+    "placingOrder": "Placing Order...",
+    "orderTotal": "Order Total",
+    "taxIncluded": "Inclusive of taxes",
+    "shippingFree": "Free"
   },
   "orderSuccess": {
     "fallbackTitle": "Order Placed!",
     "fallbackSubtitle": "A confirmation email is on its way to you.",
     "fallbackConfirmed": "Order Confirmed",
     "continueShopping": "Continue Shopping",
-    "viewOrders": "My Orders"
+    "viewOrders": "My Orders",
+    "title": "Order Confirmed!",
+    "subtitle": "Thank you for your purchase. Your order has been placed successfully.",
+    "emailSent": "A confirmation email has been sent to your registered email address.",
+    "orderDetails": "Order Details",
+    "orderId": "Order ID",
+    "qtyLabel": "Qty",
+    "paymentMethod": "Payment Method",
+    "cod": "Cash on Delivery",
+    "onlinePayment": "Online Payment",
+    "shippingTo": "Shipping To",
+    "viewOrder": "View Order Details"
   },
   "auctions": {
     "title": "Live Auctions",
@@ -618,7 +651,15 @@
     "searchPlaceholder": "What are you looking for?",
     "subtitle": "Find products across the store",
     "emptyQuery": "Start typing to search for products",
-    "searchInputPlaceholder": "Search for products..."
+    "searchInputPlaceholder": "Search for products...",
+    "noResultsTitle": "No results found",
+    "noResultsSubtitle": "We couldn't find anything matching \"{q}\". Try a different search term.",
+    "clearFilters": "Clear Filters",
+    "priceRange": "Price Range",
+    "minPrice": "Min price",
+    "maxPrice": "Max price",
+    "categoryFilter": "Category",
+    "allCategories": "All Categories"
   },
   "categories": {
     "title": "Categories",
@@ -627,6 +668,7 @@
     "allCategoriesCount": "{count} categories",
     "filteredCategoriesCount": "{shown} of {total} categories",
     "noCategories": "No categories found",
+    "noCategoriesSubtitle": "Check back soon for new categories",
     "backToCategories": "Back to Categories",
     "noProductsIn": "No products found in {name}",
     "searchPlaceholder": "Search categories\u2026"
@@ -648,6 +690,56 @@
     "joinedOn": "Joined on",
     "verifiedSeller": "Verified Seller"
   },
+  "sellerAnalytics": {
+    "pageTitle": "Your Analytics",
+    "pageSubtitle": "Sales performance and revenue overview",
+    "totalRevenue": "Total Revenue",
+    "totalOrders": "Total Orders",
+    "totalProducts": "Products Listed",
+    "publishedProducts": "Published Products",
+    "revenueChartTitle": "Revenue Last 6 Months",
+    "topProductsTitle": "Top Products by Revenue",
+    "loading": "Loading your analytics...",
+    "noData": "No sales data yet",
+    "noDataDesc": "Start selling to see your analytics here",
+    "monthLabel": "Month",
+    "revenueLabel": "Revenue",
+    "ordersLabel": "Orders",
+    "viewProducts": "View Products"
+  },
+  "sellerPayouts": {
+    "pageTitle": "Payouts",
+    "pageSubtitle": "Manage your earnings and payout requests",
+    "availableEarnings": "Available Earnings",
+    "totalPaid": "Total Paid Out",
+    "pendingPayout": "Pending Payout",
+    "requestPayout": "Request Payout",
+    "historyTitle": "Payout History",
+    "noPayouts": "No payouts yet",
+    "noPayoutsDesc": "Request a payout once you have delivered orders",
+    "statusPending": "Pending",
+    "statusProcessing": "Processing",
+    "statusCompleted": "Completed",
+    "statusFailed": "Failed",
+    "paymentMethodBank": "Bank Transfer",
+    "paymentMethodUpi": "UPI",
+    "platformFee": "Platform fee: {rate}%",
+    "grossAmount": "Gross Amount",
+    "netAmount": "Net Payout",
+    "platformFeeLabel": "Platform Fee",
+    "paymentMethodLabel": "Payment Method",
+    "bankHolderName": "Account Holder Name",
+    "bankAccountNumber": "Account Number",
+    "bankIfsc": "IFSC Code",
+    "bankName": "Bank Name",
+    "upiIdLabel": "UPI ID",
+    "notesLabel": "Notes (optional)",
+    "loading": "Loading payouts...",
+    "alreadyPending": "You have a pending payout request",
+    "noEarnings": "No available earnings to withdraw",
+    "status": "Status",
+    "requested": "Requested"
+  },
   "homepage": {
     "heroTitle": "Discover Amazing Products",
     "heroSubtitle": "Shop from thousands of sellers across India",
@@ -665,6 +757,11 @@
     "blogSubtitle": "Tips, stories, and insights from the community",
     "featuresTitle": "Why Shop With Us?",
     "featuresSubtitle": "Your satisfaction is our priority. We provide a seamless shopping experience with unmatched features",
+    "auctionsSubtitle": "Bid on exclusive items",
+    "currentBid": "Current Bid",
+    "whatOurCustomersSay": "What Our Customers Say",
+    "reviewsSubtitle": "Read reviews from satisfied customers",
+    "seeAllReviews": "See all reviews \u2192",
     "newsletter": {
       "title": "Stay Updated",
       "subtitle": "Subscribe to get the latest deals and offers",
@@ -932,19 +1029,6 @@
     "noProductsSubtitle": "Start by adding your first listing",
     "addProduct": "Add New Listing"
   },
-  "sellerAnalytics": {
-    "pageTitle": "Your Analytics",
-    "pageSubtitle": "Sales performance and revenue overview",
-    "loading": "Loading your analytics...",
-    "noData": "No sales data yet",
-    "noDataDesc": "Start selling to see your analytics here"
-  },
-  "sellerPayouts": {
-    "pageTitle": "Payouts",
-    "pageSubtitle": "Manage your earnings and payout requests",
-    "statusPending": "Payout request submitted",
-    "noEarnings": "No available earnings to withdraw"
-  },
   "sellerOrders": {
     "title": "My Sales",
     "subtitle": "Orders placed for your products",
@@ -1008,7 +1092,22 @@
     "couponsSubtitle": "Use these codes at checkout to save on your order",
     "emptyDeals": "No deals available right now",
     "checkBack": "Check back soon for new promotions!",
-    "emptyCoupons": "No active coupons at this time"
+    "emptyCoupons": "No active coupons at this time",
+    "copyCode": "Copy Code",
+    "copied": "Copied!",
+    "validUntil": "Valid until",
+    "off": "off",
+    "flatOff": "flat off",
+    "freeShipping": "Free shipping",
+    "buyXGetY": "Buy X Get Y",
+    "specialOffer": "Special Offer",
+    "statusActive": "Active"
+  },
+  "adminSessions": {
+    "confirmRevoke": "Revoke Session",
+    "confirmRevokeMessage": "Are you sure you want to revoke this session? The user will be logged out.",
+    "confirmRevokeAll": "Revoke All Sessions",
+    "confirmRevokeAllMessage": "Are you sure you want to revoke ALL sessions for {userEmail}? They will be logged out from all devices."
   },
   "adminDashboard": {
     "title": "Dashboard Overview",
@@ -1330,6 +1429,9 @@
     "verifiedPurchase": "Verified"
   },
   "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to common questions about our platform, products, shipping, and more.",
+    "viewAll": "View All FAQs",
     "wasThisHelpful": "Was this helpful?",
     "thanksForFeedback": "Thanks for your feedback!"
   },

@@ -1,10 +1,10 @@
 import React from "react";
 import { Badge } from "@/components/ui";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { OrderDocument } from "@/db/schema";
 
-const LABELS = UI_LABELS.ORDER_SUCCESS_PAGE;
 const { themed, spacing, typography, borderRadius } = THEME_CONSTANTS;
 
 function orderStatusVariant(
@@ -38,12 +38,13 @@ interface OrderSuccessCardProps {
 }
 
 export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
+  const t = useTranslations("orderSuccess");
   return (
     <div
       className={`${themed.bgSecondary} ${borderRadius.xl} p-6 ${spacing.stack} mb-6`}
     >
       <h2 className={`${typography.h4} ${themed.textPrimary}`}>
-        {LABELS.ORDER_DETAILS}
+        {t("orderDetails")}
       </h2>
 
       <div className="flex items-start justify-between gap-4">
@@ -51,7 +52,7 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
           <p
             className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary}`}
           >
-            {LABELS.ORDER_ID_LABEL}
+            {t("orderId")}
           </p>
           <p
             className={`font-mono text-sm font-semibold ${themed.textPrimary}`}
@@ -76,7 +77,7 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
             {order.productTitle}
           </p>
           <p className={`text-sm ${themed.textSecondary}`}>
-            {LABELS.QTY_LABEL}: {order.quantity} ×{" "}
+            {t("qtyLabel")}: {order.quantity} ×{" "}
             {formatCurrency(order.unitPrice, order.currency, "en-IN")}
           </p>
         </div>
@@ -93,12 +94,10 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
           <p
             className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary}`}
           >
-            {LABELS.PAYMENT_METHOD_LABEL}
+            {t("paymentMethod")}
           </p>
           <p className={`font-medium capitalize ${themed.textPrimary}`}>
-            {order.paymentMethod === "cod"
-              ? LABELS.COD_LABEL
-              : LABELS.ONLINE_PAYMENT_LABEL}
+            {order.paymentMethod === "cod" ? t("cod") : t("onlinePayment")}
           </p>
           <Badge
             variant={paymentStatusVariant(order.paymentStatus)}
@@ -113,7 +112,7 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
           <p
             className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary}`}
           >
-            {LABELS.SHIPPING_TO_LABEL}
+            {t("shippingTo")}
           </p>
           <p className={`text-sm ${themed.textPrimary}`}>
             {order.shippingAddress}

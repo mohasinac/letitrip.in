@@ -1,6 +1,7 @@
 "use client";
 
-import { UI_LABELS, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { useTranslations } from "next-intl";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { useAddToCart, useMessage } from "@/hooks";
 
 interface AddToCartButtonProps {
@@ -19,6 +20,9 @@ export function AddToCartButton({
   className = "",
 }: AddToCartButtonProps) {
   const { showSuccess, showError } = useMessage();
+  const tProducts = useTranslations("products");
+  const tAuctions = useTranslations("auctions");
+  const tLoading = useTranslations("loading");
 
   const { mutate, isLoading } = useAddToCart({
     onSuccess: () => showSuccess(SUCCESS_MESSAGES.CART.ITEM_ADDED),
@@ -31,10 +35,10 @@ export function AddToCartButton({
   };
 
   const label = isAuction
-    ? UI_LABELS.PRODUCT_DETAIL.PLACE_BID
+    ? tAuctions("placeBid")
     : isLoading
-      ? UI_LABELS.LOADING.DEFAULT
-      : UI_LABELS.PRODUCT_DETAIL.ADD_TO_CART;
+      ? tLoading("default")
+      : tProducts("addToCart");
 
   return (
     <button

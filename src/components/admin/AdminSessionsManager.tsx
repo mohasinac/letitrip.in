@@ -14,7 +14,8 @@ import {
 } from "@/hooks";
 import { Card, Button, Alert, Badge, ConfirmDeleteModal } from "@/components";
 import { useToast } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { formatRelativeTime, formatDate } from "@/utils";
 import { useState } from "react";
 
@@ -40,6 +41,8 @@ export function AdminSessionsManager() {
   const revokeSession = useRevokeSession();
   const revokeUserSessions = useRevokeUserSessions();
   const { showToast } = useToast();
+  const t = useTranslations("adminSessions");
+  const tLoading = useTranslations("loading");
 
   const [confirmModal, setConfirmModal] = useState<{
     open: boolean;
@@ -51,10 +54,8 @@ export function AdminSessionsManager() {
   const handleRevokeSession = async (sessionId: string) => {
     setConfirmModal({
       open: true,
-      title: UI_LABELS.ADMIN.SESSIONS?.CONFIRM_REVOKE || "Revoke Session",
-      message:
-        UI_LABELS.ADMIN.SESSIONS?.CONFIRM_REVOKE ||
-        "Are you sure you want to revoke this session? The user will be logged out.",
+      title: t("confirmRevoke"),
+      message: t("confirmRevokeMessage"),
       onConfirm: async () => {
         try {
           await revokeSession.mutate({ sessionId });
@@ -73,11 +74,8 @@ export function AdminSessionsManager() {
   ) => {
     setConfirmModal({
       open: true,
-      title:
-        UI_LABELS.ADMIN.SESSIONS?.CONFIRM_REVOKE_ALL || "Revoke All Sessions",
-      message:
-        UI_LABELS.ADMIN.SESSIONS?.CONFIRM_REVOKE_ALL ||
-        `Are you sure you want to revoke ALL sessions for ${userEmail}? They will be logged out from all devices.`,
+      title: t("confirmRevokeAll"),
+      message: t("confirmRevokeAllMessage", { userEmail }),
       onConfirm: async () => {
         try {
           await revokeUserSessions.mutate({ userId });
@@ -96,7 +94,7 @@ export function AdminSessionsManager() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className={THEME_CONSTANTS.themed.textSecondary}>
-            {UI_LABELS.LOADING.DEFAULT}
+            {tLoading("default")}
           </p>
         </div>
       </div>

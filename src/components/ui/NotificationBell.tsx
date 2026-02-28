@@ -16,7 +16,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useNotifications, useMessage } from "@/hooks";
 import { NotificationDocument } from "@/db/schema";
 import { formatRelativeTime } from "@/utils";
@@ -45,6 +46,9 @@ export default function NotificationBell() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { showSuccess, showError } = useMessage();
   const { colors } = THEME_CONSTANTS;
+  const t = useTranslations("notifications");
+  const tActions = useTranslations("actions");
+  const tLoading = useTranslations("loading");
 
   const {
     notifications,
@@ -91,9 +95,9 @@ export default function NotificationBell() {
     try {
       await markAllRead(undefined);
       refetch();
-      showSuccess(UI_LABELS.NOTIFICATIONS.MARK_ALL_READ);
+      showSuccess(t("markAllRead"));
     } catch {
-      showError(UI_LABELS.NOTIFICATIONS.ERROR);
+      showError(t("error"));
     }
   }, [markAllRead, refetch, showSuccess, showError]);
 
@@ -103,7 +107,7 @@ export default function NotificationBell() {
       <button
         onClick={handleToggle}
         className={`hidden md:flex p-2.5 md:p-3 rounded-xl transition-colors relative ${colors.iconButton.onLight}`}
-        aria-label={UI_LABELS.NOTIFICATIONS.TITLE}
+        aria-label={t("title")}
         aria-expanded={isOpen}
       >
         {/* Bell SVG */}
@@ -144,10 +148,10 @@ export default function NotificationBell() {
             <h3
               className={`font-semibold ${THEME_CONSTANTS.themed.textPrimary}`}
             >
-              {UI_LABELS.NOTIFICATIONS.TITLE}
+              {t("title")}
               {unreadCount > 0 && (
                 <span className="ml-2 text-xs bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-2 py-0.5 rounded-full font-medium">
-                  {unreadCount} {UI_LABELS.NOTIFICATIONS.UNREAD}
+                  {unreadCount} {t("unread")}
                 </span>
               )}
             </h3>
@@ -157,9 +161,7 @@ export default function NotificationBell() {
                 disabled={isMarkingAll}
                 className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium disabled:opacity-50"
               >
-                {isMarkingAll
-                  ? UI_LABELS.LOADING.DEFAULT
-                  : UI_LABELS.NOTIFICATIONS.MARK_ALL_READ}
+                {isMarkingAll ? tLoading("default") : t("markAllRead")}
               </button>
             )}
           </div>
@@ -188,12 +190,12 @@ export default function NotificationBell() {
                 <p
                   className={`font-medium ${THEME_CONSTANTS.themed.textPrimary}`}
                 >
-                  {UI_LABELS.NOTIFICATIONS.NO_NOTIFICATIONS}
+                  {t("empty")}
                 </p>
                 <p
                   className={`text-sm mt-1 ${THEME_CONSTANTS.themed.textSecondary}`}
                 >
-                  {UI_LABELS.NOTIFICATIONS.NO_NOTIFICATIONS_DESC}
+                  {t("emptyDesc")}
                 </p>
               </div>
             ) : (
@@ -243,7 +245,7 @@ export default function NotificationBell() {
                             }}
                             className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
                           >
-                            {n.actionLabel ?? UI_LABELS.ACTIONS.VIEW}
+                            {n.actionLabel ?? tActions("view")}
                           </Link>
                         )}
                         {!n.isRead && (
@@ -251,7 +253,7 @@ export default function NotificationBell() {
                             onClick={() => handleMarkRead(n.id)}
                             className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:underline"
                           >
-                            {UI_LABELS.NOTIFICATIONS.MARK_READ}
+                            {t("markRead")}
                           </button>
                         )}
                       </div>
@@ -271,7 +273,7 @@ export default function NotificationBell() {
               onClick={() => setIsOpen(false)}
               className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
             >
-              {UI_LABELS.NOTIFICATIONS.VIEW_ALL}
+              {t("viewAll")}
             </Link>
           </div>
         </div>

@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { Card } from "@/components/ui";
-import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
-const LABELS = UI_LABELS.SELLER_ANALYTICS;
 
 export interface TopProduct {
   productId: string;
@@ -21,11 +21,12 @@ interface SellerTopProductsProps {
 }
 
 export function SellerTopProducts({ products }: SellerTopProductsProps) {
+  const t = useTranslations("sellerAnalytics");
   return (
     <Card className="p-6">
       <div className={spacing.stack}>
         <h2 className={`${typography.h4} ${themed.textPrimary}`}>
-          {LABELS.TOP_PRODUCTS_TITLE}
+          {t("topProductsTitle")}
         </h2>
         {products.length > 0 ? (
           <div className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -43,7 +44,7 @@ export function SellerTopProducts({ products }: SellerTopProductsProps) {
                     {p.title}
                   </p>
                   <p className={`text-xs ${themed.textSecondary}`}>
-                    {p.orders} {LABELS.ORDERS_LABEL}
+                    {p.orders} {t("ordersLabel")}
                   </p>
                 </div>
                 <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
@@ -55,16 +56,16 @@ export function SellerTopProducts({ products }: SellerTopProductsProps) {
         ) : (
           <div className={`text-center py-8 ${spacing.stack}`}>
             <p className={`text-sm font-medium ${themed.textPrimary}`}>
-              {LABELS.NO_DATA}
+              {t("noData")}
             </p>
             <p className={`text-xs ${themed.textSecondary}`}>
-              {LABELS.NO_DATA_DESC}
+              {t("noDataDesc")}
             </p>
             <Link
               href={ROUTES.SELLER.PRODUCTS}
               className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
             >
-              {LABELS.VIEW_PRODUCTS}
+              {t("viewProducts")}
             </Link>
           </div>
         )}

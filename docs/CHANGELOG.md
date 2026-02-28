@@ -14,7 +14,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-### Twelfth Implementation Pass — Seller Dashboard Decomposition (2026-02-28)
+### TASK-18 — Systemic UI_LABELS Migration to useTranslations (2026-02-28)
+
+#### Changed
+
+- **TASK-18-E (P0):** `src/components/promotions/CouponCard.tsx` — removed `UI_LABELS` import; added `useTranslations("promotions")`; moved `getDiscountLabel` helper inside the component to access the hook.
+- **TASK-18-E (P0):** `src/components/admin/AdminSessionsManager.tsx` — removed `UI_LABELS` import; added `useTranslations("adminSessions")` and `useTranslations("loading")`; replaced all `UI_LABELS.ADMIN.SESSIONS.*` and `UI_LABELS.LOADING.DEFAULT` usages.
+- **TASK-18-E (P0):** `src/components/ErrorBoundary.tsx` — extracted `ErrorFallbackView` functional component to use `useTranslations("errorPages")` and `useTranslations("actions")`; `ErrorBoundary.render()` now delegates to `<ErrorFallbackView />`; removed `UI_LABELS` import.
+- **TASK-18-E (P0):** `src/components/admin/RichTextEditor.tsx`, `src/components/checkout/OrderSuccessHero.tsx`, `src/components/checkout/OrderSuccessCard.tsx`, `src/components/checkout/OrderSummaryPanel.tsx`, `src/components/products/AddToCartButton.tsx`, `src/components/search/SearchResultsSection.tsx`, `src/components/search/SearchFiltersRow.tsx` — all migrated from `UI_LABELS` to `useTranslations` (completed this session).
+- **messages/en.json, messages/hi.json** — added new keys to `checkout` (`orderTotal`, `taxIncluded`, `shippingFree`), `orderSuccess` (full namespace), `cart` (`itemCount`, `shippingFree`), `search` (`noResultsTitle`, `noResultsSubtitle`, `clearFilters`, `priceRange`, `minPrice`, `maxPrice`, `categoryFilter`, `allCategories`), `promotions` (`copyCode`, `copied`, `validUntil`, `off`, `flatOff`, `freeShipping`, `buyXGetY`, `specialOffer`, `statusActive`), and new namespace `adminSessions` (`confirmRevoke`, `confirmRevokeMessage`, `confirmRevokeAll`, `confirmRevokeAllMessage`).
+- **messages/en.json, messages/hi.json** — removed duplicate `sellerAnalytics` and `sellerPayouts` keys (second shorter occurrences were overriding the first full versions).
+
+#### Added
+
+- **TASK-18-E (P0):** `src/components/promotions/__tests__/CouponCard.test.tsx` — NEW — 8 tests covering discount labels, active badge, copy button, and valid-until date.
+- **TASK-18-E (P0):** `src/components/products/__tests__/AddToCartButton.test.tsx` — NEW — 4 tests covering default label, auction label, loading label, disabled state.
+- **TASK-18-E (P0):** `src/components/search/__tests__/SearchFiltersRow.test.tsx` — NEW — 6 tests covering category filter, price range, clear filters visibility.
+
+#### Summary
+
+TASK-18 is now fully complete. All 35 client components that used `UI_LABELS` in JSX have been migrated to `useTranslations()` (next-intl). Groups A–E all done. Total new/updated tests for this task: 115+.
 
 #### Added
 

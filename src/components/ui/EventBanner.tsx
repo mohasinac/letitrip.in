@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { usePublicEvents } from "@/hooks";
-import { ROUTES, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { ROUTES } from "@/constants";
 import Link from "next/link";
 
 /**
@@ -14,6 +15,7 @@ import Link from "next/link";
 export function EventBanner() {
   const [dismissedIds, setDismissedIds] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
+  const t = useTranslations("eventBanner");
 
   useEffect(() => {
     try {
@@ -55,8 +57,8 @@ export function EventBanner() {
   const offerCode = event.offerConfig?.displayCode ?? "";
 
   const bannerText = isSale
-    ? UI_LABELS.EVENTS.SALE_BANNER(discountPct)
-    : UI_LABELS.EVENTS.OFFER_BANNER(offerCode);
+    ? t("saleBanner", { pct: discountPct })
+    : t("offerBanner", { code: offerCode });
 
   const bgClass = isSale
     ? "bg-gradient-to-r from-indigo-600 to-purple-600"

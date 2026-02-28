@@ -2,11 +2,11 @@
 
 import { Card } from "@/components/ui";
 import { Text } from "@/components/typography";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 
 const { themed } = THEME_CONSTANTS;
-const LABELS = UI_LABELS.SELLER_ANALYTICS;
 
 export interface SellerAnalyticsSummary {
   totalOrders: number;
@@ -51,28 +51,29 @@ interface SellerAnalyticsStatsProps {
 }
 
 export function SellerAnalyticsStats({ summary }: SellerAnalyticsStatsProps) {
+  const t = useTranslations("sellerAnalytics");
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <StatCard
-        label={LABELS.TOTAL_REVENUE}
+        label={t("totalRevenue")}
         value={formatCurrency(summary.totalRevenue)}
         icon="💰"
         colorClass="text-emerald-600 dark:text-emerald-400"
       />
       <StatCard
-        label={LABELS.TOTAL_ORDERS}
+        label={t("totalOrders")}
         value={String(summary.totalOrders)}
         icon="📦"
         colorClass="text-indigo-600 dark:text-indigo-400"
       />
       <StatCard
-        label={LABELS.TOTAL_PRODUCTS}
+        label={t("totalProducts")}
         value={String(summary.totalProducts)}
         icon="🛍️"
         colorClass="text-violet-600 dark:text-violet-400"
       />
       <StatCard
-        label={LABELS.PUBLISHED_PRODUCTS}
+        label={t("publishedProducts")}
         value={String(summary.publishedProducts)}
         icon="✅"
         colorClass="text-amber-600 dark:text-amber-400"

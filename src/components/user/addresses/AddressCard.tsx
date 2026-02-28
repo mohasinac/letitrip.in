@@ -1,7 +1,8 @@
 "use client";
 
 import { Card, Badge, Button } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * AddressCard Component
@@ -50,6 +51,7 @@ export function AddressCard({
   className = "",
 }: AddressCardProps) {
   const { spacing, themed } = THEME_CONSTANTS;
+  const t = useTranslations("actions");
 
   return (
     <Card
@@ -76,7 +78,7 @@ export function AddressCard({
               onClick={onEdit}
               className="text-sm"
             >
-              {UI_LABELS.ACTIONS.EDIT}
+              {t("edit")}
             </Button>
             <Button
               variant="ghost"
@@ -84,7 +86,7 @@ export function AddressCard({
               onClick={onDelete}
               className="text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
             >
-              {UI_LABELS.ACTIONS.DELETE}
+              {t("delete")}
             </Button>
           </div>
         </div>

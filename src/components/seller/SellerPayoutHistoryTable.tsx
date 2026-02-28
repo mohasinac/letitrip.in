@@ -1,11 +1,11 @@
 "use client";
 
 import { Card, Badge } from "@/components/ui";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
-const LABELS = UI_LABELS.SELLER_PAYOUTS;
 
 export interface PayoutRecord {
   id: string;
@@ -30,22 +30,6 @@ const STATUS_VARIANT: Record<
   failed: "danger",
 };
 
-const STATUS_LABEL: Record<PayoutRecord["status"], string> = {
-  pending: LABELS.STATUS_PENDING,
-  processing: LABELS.STATUS_PROCESSING,
-  completed: LABELS.STATUS_COMPLETED,
-  failed: LABELS.STATUS_FAILED,
-};
-
-const TABLE_HEADERS = [
-  LABELS.GROSS_AMOUNT,
-  LABELS.PLATFORM_FEE_LABEL,
-  LABELS.NET_AMOUNT,
-  LABELS.PAYMENT_METHOD_LABEL,
-  "Status",
-  "Requested",
-];
-
 interface SellerPayoutHistoryTableProps {
   payouts: PayoutRecord[];
   isLoading: boolean;
@@ -55,21 +39,36 @@ export function SellerPayoutHistoryTable({
   payouts,
   isLoading,
 }: SellerPayoutHistoryTableProps) {
+  const t = useTranslations("sellerPayouts");
+  const STATUS_LABEL: Record<PayoutRecord["status"], string> = {
+    pending: t("statusPending"),
+    processing: t("statusProcessing"),
+    completed: t("statusCompleted"),
+    failed: t("statusFailed"),
+  };
+  const TABLE_HEADERS = [
+    t("grossAmount"),
+    t("platformFeeLabel"),
+    t("netAmount"),
+    t("paymentMethodLabel"),
+    t("status"),
+    t("requested"),
+  ];
   return (
     <div>
       <h2 className={`${typography.h3} ${themed.textPrimary} mb-4`}>
-        {LABELS.HISTORY_TITLE}
+        {t("historyTitle")}
       </h2>
 
       {isLoading ? (
-        <p className={themed.textSecondary}>{LABELS.LOADING}</p>
+        <p className={themed.textSecondary}>{t("loading")}</p>
       ) : payouts.length === 0 ? (
         <Card className={`${spacing.padding.lg} text-center`}>
           <p className={`${themed.textSecondary} font-medium`}>
-            {LABELS.NO_PAYOUTS}
+            {t("noPayouts")}
           </p>
           <p className={`text-sm ${themed.textSecondary} mt-1`}>
-            {LABELS.NO_PAYOUTS_DESC}
+            {t("noPayoutsDesc")}
           </p>
         </Card>
       ) : (
@@ -106,8 +105,8 @@ export function SellerPayoutHistoryTable({
                   </td>
                   <td className={`px-4 py-3 ${themed.textSecondary}`}>
                     {p.paymentMethod === "bank_transfer"
-                      ? LABELS.PAYMENT_METHOD_BANK
-                      : LABELS.PAYMENT_METHOD_UPI}
+                      ? t("paymentMethodBank")
+                      : t("paymentMethodUpi")}
                   </td>
                   <td className="px-4 py-3">
                     <Badge variant={STATUS_VARIANT[p.status]}>

@@ -3,12 +3,15 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useFeaturedAuctions } from "@/hooks";
-import { THEME_CONSTANTS, ROUTES, UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
 
 export function FeaturedAuctionsSection() {
+  const t = useTranslations("homepage");
+  const tActions = useTranslations("actions");
   const { data, isLoading } = useFeaturedAuctions();
 
   if (isLoading) {
@@ -66,19 +69,19 @@ export function FeaturedAuctionsSection() {
             <h2
               className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-1`}
             >
-              {UI_LABELS.HOMEPAGE.AUCTIONS.TITLE}
+              {t("liveAuctions")}
             </h2>
             <p
               className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
             >
-              {UI_LABELS.HOMEPAGE.AUCTIONS.SUBTITLE}
+              {t("auctionsSubtitle")}
             </p>
           </div>
           <Link
             href={ROUTES.PUBLIC.AUCTIONS}
             className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hidden sm:block"
           >
-            {UI_LABELS.ACTIONS.VIEW_ALL_ARROW}
+            {tActions("viewAllArrow")}
           </Link>
         </div>
 
@@ -117,7 +120,7 @@ export function FeaturedAuctionsSection() {
             href={ROUTES.PUBLIC.AUCTIONS}
             className="text-sm font-medium text-indigo-600 dark:text-indigo-400"
           >
-            {UI_LABELS.ACTIONS.VIEW_ALL_ARROW}
+            {tActions("viewAllArrow")}
           </Link>
         </div>
       </div>
@@ -132,6 +135,7 @@ function AuctionCardContent({
   auction: ProductDocument;
   sizes: string;
 }) {
+  const t = useTranslations("homepage");
   const [timeLeft, setTimeLeft] = useState("");
 
   useEffect(() => {
@@ -207,7 +211,7 @@ function AuctionCardContent({
             <span
               className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary}`}
             >
-              {UI_LABELS.HOMEPAGE.AUCTIONS.CURRENT_BID}
+              {t("currentBid")}
             </span>
             <span
               className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-bold`}

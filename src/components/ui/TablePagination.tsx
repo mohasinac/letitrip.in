@@ -1,7 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Pagination } from "@/components";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [10, 25, 50, 100] as const;
 
@@ -51,6 +52,7 @@ export function TablePagination({
   className = "",
 }: TablePaginationProps) {
   const { themed, spacing } = THEME_CONSTANTS;
+  const t = useTranslations("table");
 
   const from = total === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const to = Math.min(currentPage * pageSize, total);
@@ -58,20 +60,20 @@ export function TablePagination({
   return (
     <div
       role="navigation"
-      aria-label={UI_LABELS.TABLE.PAGINATION_LABEL}
+      aria-label={t("paginationLabel")}
       className={`flex flex-col sm:flex-row items-center justify-between gap-4 ${spacing.padding.md} border-t ${themed.border} ${className}`}
     >
       {/* Result count */}
       <p className={`text-sm ${themed.textSecondary} tabular-nums`}>
-        {UI_LABELS.TABLE.SHOWING}{" "}
+        {t("showing")}{" "}
         <span className={`font-medium ${themed.textPrimary}`}>
           {from}–{to}
         </span>{" "}
-        {UI_LABELS.TABLE.OF}{" "}
+        {t("of")}{" "}
         <span className={`font-medium ${themed.textPrimary}`}>
           {total.toLocaleString()}
         </span>{" "}
-        {UI_LABELS.TABLE.RESULTS}
+        {t("results")}
       </p>
 
       <div className="flex items-center gap-4">
@@ -90,14 +92,14 @@ export function TablePagination({
               htmlFor="page-size-select"
               className={`text-sm ${themed.textSecondary} whitespace-nowrap`}
             >
-              {UI_LABELS.TABLE.PER_PAGE}
+              {t("perPage")}
             </label>
             <select
               id="page-size-select"
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
               disabled={isLoading}
-              aria-label={UI_LABELS.TABLE.PER_PAGE}
+              aria-label={t("perPage")}
               className={`text-sm ${THEME_CONSTANTS.input.base}`}
             >
               {pageSizeOptions.map((size) => (

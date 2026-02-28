@@ -2,30 +2,31 @@
 
 import { useState } from "react";
 import { Card, Button } from "@/components/ui";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 import type { CouponDocument } from "@/db/schema";
 
-const LABELS = UI_LABELS.PROMOTIONS_PAGE;
 const { themed } = THEME_CONSTANTS;
 
-function getDiscountLabel(coupon: CouponDocument): string {
-  switch (coupon.type) {
-    case "percentage":
-      return `${coupon.discount.value}% ${LABELS.OFF}`;
-    case "fixed":
-      return `${formatCurrency(coupon.discount.value)} ${LABELS.FLAT_OFF}`;
-    case "free_shipping":
-      return LABELS.FREE_SHIPPING;
-    case "buy_x_get_y":
-      return LABELS.BUY_X_GET_Y;
-    default:
-      return LABELS.SPECIAL_OFFER;
-  }
-}
-
 export function CouponCard({ coupon }: { coupon: CouponDocument }) {
+  const t = useTranslations("promotions");
   const [copied, setCopied] = useState(false);
+
+  function getDiscountLabel(c: CouponDocument): string {
+    switch (c.type) {
+      case "percentage":
+        return `${c.discount.value}% ${t("off")}`;
+      case "fixed":
+        return `${formatCurrency(c.discount.value)} ${t("flatOff")}`;
+      case "free_shipping":
+        return t("freeShipping");
+      case "buy_x_get_y":
+        return t("buyXGetY");
+      default:
+        return t("specialOffer");
+    }
+  }
 
   const handleCopy = async () => {
     try {
@@ -49,7 +50,7 @@ export function CouponCard({ coupon }: { coupon: CouponDocument }) {
           </p>
         </div>
         <span className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 px-2 py-0.5 rounded-full text-xs font-medium">
-          {UI_LABELS.STATUS.ACTIVE}
+          {t("statusActive")}
         </span>
       </div>
 
@@ -76,13 +77,13 @@ export function CouponCard({ coupon }: { coupon: CouponDocument }) {
           onClick={handleCopy}
           className="shrink-0 text-sm px-3 py-2"
         >
-          {copied ? LABELS.COPIED : LABELS.COPY_CODE}
+          {copied ? t("copied") : t("copyCode")}
         </Button>
       </div>
 
       {coupon.validity.endDate && (
         <p className={`text-xs ${themed.textSecondary} mt-2 text-right`}>
-          {LABELS.VALID_UNTIL} {formatDate(coupon.validity.endDate)}
+          {t("validUntil")} {formatDate(coupon.validity.endDate)}
         </p>
       )}
     </Card>

@@ -2,12 +2,12 @@
 
 import dynamic from "next/dynamic";
 import { Card } from "@/components/ui";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { useTheme } from "@/contexts";
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
-const LABELS = UI_LABELS.SELLER_ANALYTICS;
 
 // Lazy-load recharts to avoid SSR issues
 const BarChart = dynamic(() => import("recharts").then((m) => m.BarChart), {
@@ -45,13 +45,14 @@ interface SellerRevenueChartProps {
 }
 
 export function SellerRevenueChart({ data }: SellerRevenueChartProps) {
+  const t = useTranslations("sellerAnalytics");
   const { theme } = useTheme();
   const tickFill = theme === "dark" ? "#9ca3af" : "#6b7280";
   return (
     <Card className="p-6">
       <div className={spacing.stack}>
         <h2 className={`${typography.h4} ${themed.textPrimary}`}>
-          {LABELS.REVENUE_CHART_TITLE}
+          {t("revenueChartTitle")}
         </h2>
         {data.some((m) => m.revenue > 0) ? (
           <div className={THEME_CONSTANTS.chart.height}>
@@ -73,7 +74,7 @@ export function SellerRevenueChart({ data }: SellerRevenueChartProps) {
                 <Tooltip
                   formatter={(value) => [
                     formatCurrency(Number(value)),
-                    LABELS.REVENUE_LABEL,
+                    t("revenueLabel"),
                   ]}
                 />
                 <Bar dataKey="revenue" fill="#6366f1" radius={[4, 4, 0, 0]} />
@@ -82,7 +83,7 @@ export function SellerRevenueChart({ data }: SellerRevenueChartProps) {
           </div>
         ) : (
           <p className={`text-sm ${themed.textSecondary} text-center py-8`}>
-            {LABELS.NO_DATA}
+            {t("noData")}
           </p>
         )}
       </div>

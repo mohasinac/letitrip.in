@@ -2,17 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { usePublicFaqs } from "@/hooks";
-import {
-  THEME_CONSTANTS,
-  ROUTES,
-  UI_LABELS,
-  FAQ_CATEGORIES,
-} from "@/constants";
+import { THEME_CONSTANTS, ROUTES, FAQ_CATEGORIES } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
 import type { FAQDocument } from "@/db/schema";
 
 export function FAQSection() {
+  const t = useTranslations("faq");
+  const tEmpty = useTranslations("empty");
+  const tActions = useTranslations("actions");
   const [activeCategory, setActiveCategory] =
     useState<FAQCategoryKey>("general");
   const [openFaqId, setOpenFaqId] = useState<string | null>(null);
@@ -60,12 +59,12 @@ export function FAQSection() {
           <h2
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
           >
-            {UI_LABELS.FAQ.TITLE}
+            {t("title")}
           </h2>
           <p
             className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
           >
-            {UI_LABELS.FAQ.SUBTITLE}
+            {t("subtitle")}
           </p>
         </div>
 
@@ -98,7 +97,7 @@ export function FAQSection() {
             <p
               className={`text-center py-8 ${THEME_CONSTANTS.themed.textSecondary}`}
             >
-              {UI_LABELS.EMPTY.NO_DATA}
+              {tEmpty("noData")}
             </p>
           )}
           {faqs.map((faq) => (
@@ -157,7 +156,7 @@ export function FAQSection() {
             href={ROUTES.PUBLIC.FAQ_CATEGORY(activeCategory)}
             className={`${THEME_CONSTANTS.typography.body} text-blue-600 dark:text-blue-400 font-medium hover:underline`}
           >
-            {UI_LABELS.ACTIONS.VIEW_ALL_ARROW}
+            {tActions("viewAllArrow")}
           </Link>
         </div>
       </div>

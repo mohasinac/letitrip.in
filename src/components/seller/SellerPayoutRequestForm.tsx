@@ -4,12 +4,12 @@ import { useState } from "react";
 import { Card, Button } from "@/components/ui";
 import { Alert } from "@/components/feedback";
 import { FormField } from "@/components/FormField";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { PayoutSummary } from "./SellerPayoutStats";
 
 const { themed, spacing, typography } = THEME_CONSTANTS;
-const LABELS = UI_LABELS.SELLER_PAYOUTS;
 
 interface SellerPayoutRequestFormProps {
   summary: PayoutSummary;
@@ -22,6 +22,9 @@ export function SellerPayoutRequestForm({
   submitting,
   onSubmit,
 }: SellerPayoutRequestFormProps) {
+  const t = useTranslations("sellerPayouts");
+  const tActions = useTranslations("actions");
+  const tLoading = useTranslations("loading");
   const [paymentMethod, setPaymentMethod] = useState<"bank_transfer" | "upi">(
     "bank_transfer",
   );
@@ -52,7 +55,7 @@ export function SellerPayoutRequestForm({
   if (summary.hasPendingPayout) {
     return (
       <Card className={`${spacing.padding.lg} mb-8`}>
-        <Alert variant="info">{LABELS.ALREADY_PENDING}</Alert>
+        <Alert variant="info">{t("alreadyPending")}</Alert>
       </Card>
     );
   }
@@ -60,7 +63,7 @@ export function SellerPayoutRequestForm({
   if (summary.availableEarnings <= 0) {
     return (
       <Card className={`${spacing.padding.lg} mb-8`}>
-        <Alert variant="info">{LABELS.NO_EARNINGS}</Alert>
+        <Alert variant="info">{t("noEarnings")}</Alert>
       </Card>
     );
   }
@@ -70,18 +73,17 @@ export function SellerPayoutRequestForm({
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className={`${typography.h4} ${themed.textPrimary}`}>
-            {LABELS.REQUEST_PAYOUT}
+            {t("requestPayout")}
           </h2>
           <p className={`text-sm ${themed.textSecondary} mt-1`}>
-            {LABELS.PLATFORM_FEE(summary.platformFeeRate)} &middot;{" "}
-            {LABELS.GROSS_AMOUNT}: {formatCurrency(summary.grossEarnings)}{" "}
-            &middot; {LABELS.NET_AMOUNT}:{" "}
-            {formatCurrency(summary.availableEarnings)}
+            {t("platformFee", { rate: summary.platformFeeRate * 100 })} &middot;{" "}
+            {t("grossAmount")}: {formatCurrency(summary.grossEarnings)} &middot;{" "}
+            {t("netAmount")}: {formatCurrency(summary.availableEarnings)}
           </p>
         </div>
         {!showForm && (
           <Button variant="primary" onClick={() => setShowForm(true)}>
-            {LABELS.REQUEST_PAYOUT}
+            {t("requestPayout")}
           </Button>
         )}
       </div>
@@ -91,12 +93,12 @@ export function SellerPayoutRequestForm({
           <FormField
             type="select"
             name="paymentMethod"
-            label={LABELS.PAYMENT_METHOD_LABEL}
+            label={t("paymentMethodLabel")}
             value={paymentMethod}
             onChange={(v) => setPaymentMethod(v as "bank_transfer" | "upi")}
             options={[
-              { value: "bank_transfer", label: LABELS.PAYMENT_METHOD_BANK },
-              { value: "upi", label: LABELS.PAYMENT_METHOD_UPI },
+              { value: "bank_transfer", label: t("paymentMethodBank") },
+              { value: "upi", label: t("paymentMethodUpi") },
             ]}
           />
 
@@ -104,7 +106,7 @@ export function SellerPayoutRequestForm({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 name="accountHolderName"
-                label={LABELS.BANK_HOLDER_NAME}
+                label={t("bankHolderName")}
                 value={bankForm.accountHolderName}
                 onChange={(v) =>
                   setBankForm((f) => ({ ...f, accountHolderName: v }))
@@ -112,7 +114,7 @@ export function SellerPayoutRequestForm({
               />
               <FormField
                 name="accountNumberMasked"
-                label={LABELS.BANK_ACCOUNT_NUMBER}
+                label={t("bankAccountNumber")}
                 value={bankForm.accountNumberMasked}
                 onChange={(v) =>
                   setBankForm((f) => ({ ...f, accountNumberMasked: v }))
@@ -120,13 +122,13 @@ export function SellerPayoutRequestForm({
               />
               <FormField
                 name="ifscCode"
-                label={LABELS.BANK_IFSC}
+                label={t("bankIfsc")}
                 value={bankForm.ifscCode}
                 onChange={(v) => setBankForm((f) => ({ ...f, ifscCode: v }))}
               />
               <FormField
                 name="bankName"
-                label={LABELS.BANK_NAME}
+                label={t("bankName")}
                 value={bankForm.bankName}
                 onChange={(v) => setBankForm((f) => ({ ...f, bankName: v }))}
               />
@@ -134,7 +136,7 @@ export function SellerPayoutRequestForm({
           ) : (
             <FormField
               name="upiId"
-              label={LABELS.UPI_ID_LABEL}
+              label={t("upiIdLabel")}
               value={upiId}
               onChange={(v) => setUpiId(v)}
             />
@@ -142,23 +144,21 @@ export function SellerPayoutRequestForm({
 
           <FormField
             name="notes"
-            label={LABELS.NOTES_LABEL}
+            label={t("notesLabel")}
             value={notes}
             onChange={(v) => setNotes(v)}
           />
 
           <div className="flex gap-3 justify-end">
             <Button variant="secondary" onClick={() => setShowForm(false)}>
-              {UI_LABELS.ACTIONS.CANCEL}
+              {tActions("cancel")}
             </Button>
             <Button
               variant="primary"
               onClick={handleSubmit}
               disabled={submitting}
             >
-              {submitting
-                ? UI_LABELS.LOADING.DEFAULT
-                : UI_LABELS.ACTIONS.SUBMIT}
+              {submitting ? tLoading("default") : tActions("submit")}
             </Button>
           </div>
         </div>

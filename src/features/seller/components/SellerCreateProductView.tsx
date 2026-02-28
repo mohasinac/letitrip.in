@@ -41,24 +41,24 @@ const EMPTY_PRODUCT: Partial<AdminProduct> = {
 export function SellerCreateProductView() {
   const router = useRouter();
   const t = useTranslations("sellerProducts");
-  const { showMessage } = useMessage();
+  const { showSuccess, showError } = useMessage();
   const [product, setProduct] = useState<Partial<AdminProduct>>(EMPTY_PRODUCT);
 
   const { mutate: createProduct, isLoading } = useApiMutation({
     mutationFn: () => sellerService.createProduct(product),
     onSuccess: () => {
-      showMessage(t("createSuccess"), "success");
+      showSuccess(t("createSuccess"));
       router.push(ROUTES.SELLER.PRODUCTS);
     },
     onError: () => {
-      showMessage(t("saveFailed"), "error");
+      showError(t("saveFailed"));
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!product.title) return;
-    createProduct();
+    createProduct(undefined);
   };
 
   return (

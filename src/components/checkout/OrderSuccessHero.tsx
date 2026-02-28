@@ -1,9 +1,10 @@
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 
-const LABELS = UI_LABELS.ORDER_SUCCESS_PAGE;
 const { themed, spacing, typography, borderRadius } = THEME_CONSTANTS;
 
 export function OrderSuccessHero() {
+  const t = useTranslations("orderSuccess");
   return (
     <div
       className={`${themed.bgSecondary} ${borderRadius.xl} p-8 text-center ${spacing.stack} mb-6`}
@@ -23,11 +24,9 @@ export function OrderSuccessHero() {
           />
         </svg>
       </div>
-      <h1 className={`${typography.h2} ${themed.textPrimary}`}>
-        {LABELS.TITLE}
-      </h1>
-      <p className={themed.textSecondary}>{LABELS.SUBTITLE}</p>
-      <p className={`text-sm ${themed.textSecondary}`}>{LABELS.EMAIL_SENT}</p>
+      <h1 className={`${typography.h2} ${themed.textPrimary}`}>{t("title")}</h1>
+      <p className={themed.textSecondary}>{t("subtitle")}</p>
+      <p className={`text-sm ${themed.textSecondary}`}>{t("emailSent")}</p>
     </div>
   );
 }

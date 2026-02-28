@@ -4,11 +4,13 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useHomepageReviews, useSwipe } from "@/hooks";
-import { THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import type { ReviewDocument } from "@/db/schema";
 
 export function CustomerReviewsSection() {
+  const t = useTranslations("homepage");
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const { data, isLoading } = useHomepageReviews();
@@ -64,12 +66,12 @@ export function CustomerReviewsSection() {
           <h2
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
           >
-            {UI_LABELS.HOMEPAGE.REVIEWS.TITLE}
+            {t("whatOurCustomersSay")}
           </h2>
           <p
             className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
           >
-            {UI_LABELS.HOMEPAGE.REVIEWS.SUBTITLE}
+            {t("reviewsSubtitle")}
           </p>
         </div>
 
@@ -161,7 +163,7 @@ export function CustomerReviewsSection() {
             href={ROUTES.PUBLIC.PRODUCTS}
             className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
           >
-            {UI_LABELS.HOMEPAGE.REVIEWS.SEE_ALL}
+            {t("seeAllReviews")}
           </Link>
         </div>
       </div>

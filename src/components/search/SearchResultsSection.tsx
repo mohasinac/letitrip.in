@@ -2,11 +2,9 @@
 
 import { Pagination, EmptyState } from "@/components/ui";
 import { ProductGrid, ProductSortBar } from "@/components/products";
-import { UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
 import type { ProductSortValue } from "@/components/products";
 import type { ProductDocument } from "@/db/schema";
-
-const LABELS = UI_LABELS.SEARCH_PAGE;
 
 const PAGE_SIZE = 24;
 
@@ -47,6 +45,7 @@ export function SearchResultsSection({
   onSortChange,
   onPageChange,
 }: SearchResultsSectionProps) {
+  const t = useTranslations("search");
   return (
     <>
       <ProductSortBar
@@ -60,8 +59,8 @@ export function SearchResultsSection({
         <ProductGrid products={[]} loading skeletonCount={PAGE_SIZE} />
       ) : products.length === 0 ? (
         <EmptyState
-          title={LABELS.NO_RESULTS}
-          description={urlQ ? LABELS.NO_RESULTS_SUBTITLE(urlQ) : undefined}
+          title={t("noResultsTitle")}
+          description={urlQ ? t("noResultsSubtitle", { q: urlQ }) : undefined}
         />
       ) : (
         <ProductGrid products={products} />

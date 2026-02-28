@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, ReactNode, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Button, Heading } from "@/components";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { useSwipe } from "@/hooks";
 
 type DrawerMode = "create" | "edit" | "delete" | "view";
@@ -42,6 +43,8 @@ export default function SideDrawer({
 }: SideDrawerProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
+  const tActions = useTranslations("actions");
+  const tConfirm = useTranslations("confirm");
   // Store the element that was focused before the drawer opened so we can
   // restore focus when it closes (WCAG 2.4.3 focus order requirement).
   const triggerRef = useRef<Element | null>(null);
@@ -182,7 +185,7 @@ export default function SideDrawer({
             <button
               onClick={attemptClose}
               className={`flex-shrink-0 p-2 ${themed.textSecondary} ${borderRadius.lg} ${themed.hover} transition-colors ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-gray-300 dark:hover:ring-gray-600`}
-              aria-label={UI_LABELS.ACTIONS.CLOSE}
+              aria-label={tActions("close")}
             >
               <svg
                 className="w-5 h-5"
@@ -204,7 +207,7 @@ export default function SideDrawer({
           </div>
           {mode === "delete" && (
             <span className="flex-shrink-0 px-2.5 py-1 text-xs font-semibold rounded bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300">
-              {UI_LABELS.ACTIONS.DELETE}
+              {tActions("delete")}
             </span>
           )}
         </div>
@@ -252,19 +255,19 @@ export default function SideDrawer({
               </div>
               <div>
                 <h4 className={`text-base font-semibold ${themed.textPrimary}`}>
-                  {UI_LABELS.CONFIRM.DISCARD}
+                  {tConfirm("discard")}
                 </h4>
                 <p className={`text-sm ${themed.textSecondary} mt-1`}>
-                  {UI_LABELS.CONFIRM.UNSAVED_CHANGES}
+                  {tConfirm("unsavedChanges")}
                 </p>
               </div>
             </div>
             <div className="flex gap-3 justify-end">
               <Button onClick={cancelClose} variant="secondary" size="sm">
-                {UI_LABELS.ACTIONS.CANCEL}
+                {tActions("cancel")}
               </Button>
               <Button onClick={confirmClose} variant="danger" size="sm">
-                {UI_LABELS.ACTIONS.DISCARD}
+                {tActions("discard")}
               </Button>
             </div>
           </div>

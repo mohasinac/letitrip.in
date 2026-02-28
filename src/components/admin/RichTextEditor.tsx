@@ -6,7 +6,8 @@ import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useCallback, useState, useRef, useEffect } from "react";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 
 interface RichTextEditorProps {
   content: string;
@@ -30,6 +31,7 @@ function UrlInputPopover({
   onClose: () => void;
   label: string;
 }) {
+  const t = useTranslations("actions");
   const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState("");
 
@@ -71,14 +73,14 @@ function UrlInputPopover({
           }}
           className="px-2 py-1 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700"
         >
-          {UI_LABELS.ACTIONS.CONFIRM}
+          {t("confirm")}
         </button>
         <button
           type="button"
           onClick={onClose}
           className="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300"
         >
-          {UI_LABELS.ACTIONS.CANCEL}
+          {t("cancel")}
         </button>
       </div>
     </div>

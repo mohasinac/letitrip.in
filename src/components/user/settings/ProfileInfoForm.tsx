@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { FormField, Button, AvatarUpload, Card } from "@/components";
 import type { ImageCropData } from "@/components";
-import { UI_LABELS, UI_PLACEHOLDERS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { UI_PLACEHOLDERS, THEME_CONSTANTS } from "@/constants";
 
 /**
  * ProfileInfoForm Component
@@ -48,6 +49,10 @@ export function ProfileInfoForm({
   onRefresh,
   isLoading = false,
 }: ProfileInfoFormProps) {
+  const tProfile = useTranslations("profile");
+  const tForm = useTranslations("form");
+  const tLoading = useTranslations("loading");
+  const tActions = useTranslations("actions");
   const [formData, setFormData] = useState<ProfileInfoData>(initialData);
 
   useEffect(() => {
@@ -79,7 +84,7 @@ export function ProfileInfoForm({
     <Card className={spacing.cardPadding}>
       <div className={spacing.stack}>
         <h3 className={typography.cardTitle}>
-          {UI_LABELS.PROFILE.PROFILE_INFORMATION}
+          {tProfile("profileInformation")}
         </h3>
 
         <form onSubmit={handleSubmit} className={spacing.stack}>
@@ -95,7 +100,7 @@ export function ProfileInfoForm({
 
           {/* Display Name */}
           <FormField
-            label={UI_LABELS.FORM.DISPLAY_NAME}
+            label={tForm("displayName")}
             name="displayName"
             type="text"
             value={formData.displayName}
@@ -105,7 +110,7 @@ export function ProfileInfoForm({
 
           {/* Phone */}
           <FormField
-            label={UI_LABELS.FORM.PHONE}
+            label={tForm("phone")}
             name="phone"
             type="tel"
             value={formData.phone}
@@ -116,7 +121,7 @@ export function ProfileInfoForm({
           {/* Submit Button */}
           <div className="flex justify-end pt-4">
             <Button type="submit" variant="primary" disabled={isLoading}>
-              {isLoading ? UI_LABELS.LOADING.DEFAULT : UI_LABELS.ACTIONS.SAVE}
+              {isLoading ? tLoading("default") : tActions("save")}
             </Button>
           </div>
         </form>

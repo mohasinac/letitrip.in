@@ -22,11 +22,11 @@
  */
 
 import { useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { useAddressSelector, useMessage } from "@/hooks";
 import { SideDrawer, Button, AddressForm } from "@/components";
 import type { AddressFormData } from "@/hooks";
 import {
-  UI_LABELS,
   UI_PLACEHOLDERS,
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
@@ -60,6 +60,8 @@ export function AddressSelectorCreate({
 }: AddressSelectorCreateProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { showSuccess, showError } = useMessage();
+  const tForm = useTranslations("form");
+  const tActions = useTranslations("actions");
 
   const {
     addresses,
@@ -102,7 +104,7 @@ export function AddressSelectorCreate({
             onChange={(e) => onChange(e.target.value)}
             disabled={disabled || isLoading}
             className={`flex-1 ${input.base}`}
-            aria-label={label ?? UI_LABELS.FORM.PICKUP_ADDRESS}
+            aria-label={label ?? tForm("pickupAddress")}
           >
             <option value="">{UI_PLACEHOLDERS.SELECT_ADDRESS}</option>
             {addresses.map((addr) => (
@@ -120,7 +122,7 @@ export function AddressSelectorCreate({
               onClick={() => setDrawerOpen(true)}
               aria-haspopup="dialog"
             >
-              + {UI_LABELS.ACTIONS.ADD_ADDRESS}
+              + {tActions("addAddress")}
             </Button>
           )}
         </div>
@@ -129,14 +131,14 @@ export function AddressSelectorCreate({
       <SideDrawer
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        title={UI_LABELS.ACTIONS.ADD_ADDRESS}
+        title={tActions("addAddress")}
         mode="create"
       >
         <AddressForm
           onSubmit={handleAddressSubmit}
           onCancel={() => setDrawerOpen(false)}
           isLoading={isSaving}
-          submitLabel={UI_LABELS.ACTIONS.SAVE}
+          submitLabel={tActions("save")}
         />
       </SideDrawer>
     </>

@@ -6,8 +6,9 @@
 
 "use client";
 
+import { useTranslations } from "next-intl";
 import { CategoryDocument } from "@/db/schema";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { CategoryCard } from "./CategoryCard";
 
 const { spacing } = THEME_CONSTANTS;
@@ -21,15 +22,16 @@ export function CategoryGrid({
   categories,
   className = "",
 }: CategoryGridProps) {
+  const t = useTranslations("categories");
   if (categories.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <span className="text-6xl mb-4">🗂️</span>
         <p className="text-lg font-medium text-gray-900 dark:text-white">
-          {UI_LABELS.CATEGORIES_PAGE.NO_CATEGORIES}
+          {t("noCategories")}
         </p>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          {UI_LABELS.CATEGORIES_PAGE.NO_CATEGORIES_SUBTITLE}
+          {t("noCategoriesSubtitle")}
         </p>
       </div>
     );

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { Card, Badge, Text, AvatarDisplay, EmptyState } from "@/components";
-import { THEME_CONSTANTS, UI_LABELS, ROUTES } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { UserDocument, ProductDocument } from "@/db/schema";
 import type { ImageCropData } from "@/components";
@@ -51,10 +52,11 @@ function SellerProductsSection({
   productsData?: ProductsApiResponse;
   productsLoading: boolean;
 }) {
+  const tProfile = useTranslations("profile");
   return (
     <Card className="mb-6">
       <h2 className={`${THEME_CONSTANTS.typography.h4} mb-4`}>
-        {UI_LABELS.PROFILE.SELLER_PRODUCTS_TITLE}
+        {tProfile("sellerProductsTitle")}
       </h2>
       {productsLoading ? (
         <div className="flex justify-center py-8">
@@ -100,8 +102,8 @@ function SellerProductsSection({
         </div>
       ) : (
         <EmptyState
-          title={UI_LABELS.PROFILE.NO_PRODUCTS}
-          description={UI_LABELS.PROFILE.NO_PRODUCTS_DESC}
+          title={tProfile("noProducts")}
+          description={tProfile("noProductsDesc")}
         />
       )}
     </Card>
@@ -115,11 +117,12 @@ function SellerReviewsSection({
   reviewsData?: SellerReviewsData;
   reviewsLoading: boolean;
 }) {
+  const tProfile = useTranslations("profile");
   return (
     <Card className="mb-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className={THEME_CONSTANTS.typography.h4}>
-          {UI_LABELS.PROFILE.SELLER_REVIEWS_TITLE}
+          {tProfile("sellerReviewsTitle")}
         </h2>
         {reviewsData && reviewsData.totalReviews > 0 && (
           <div className="flex items-center gap-2">
@@ -158,7 +161,7 @@ function SellerReviewsSection({
                     </Text>
                     {review.verified && (
                       <Badge variant="success" className="text-xs">
-                        {UI_LABELS.PROFILE.VERIFIED_PURCHASE}
+                        {tProfile("verifiedPurchase")}
                       </Badge>
                     )}
                   </div>
@@ -186,8 +189,8 @@ function SellerReviewsSection({
         </div>
       ) : (
         <EmptyState
-          title={UI_LABELS.PROFILE.NO_REVIEWS}
-          description={UI_LABELS.PROFILE.NO_REVIEWS_DESC}
+          title={tProfile("noReviews")}
+          description={tProfile("noReviewsDesc")}
         />
       )}
     </Card>
@@ -205,6 +208,8 @@ export function PublicProfileView({
   reviewsData,
   reviewsLoading,
 }: PublicProfileViewProps) {
+  const tProfile = useTranslations("profile");
+  const tRoles = useTranslations("roles");
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
       {/* Header Banner */}
@@ -232,11 +237,7 @@ export function PublicProfileView({
                     : "secondary"
               }
             >
-              {
-                UI_LABELS.ROLES[
-                  user.role.toUpperCase() as keyof typeof UI_LABELS.ROLES
-                ]
-              }
+              {tRoles(user.role.toLowerCase())}
             </Badge>
 
             {user.publicProfile?.bio && (
@@ -367,7 +368,7 @@ export function PublicProfileView({
             </div>
 
             <Text variant="secondary" className="text-xs mt-4">
-              {UI_LABELS.PROFILE.MEMBER_SINCE} {memberSince}
+              {tProfile("memberSince")} {memberSince}
             </Text>
           </div>
         </Card>
@@ -381,7 +382,7 @@ export function PublicProfileView({
                   {user.stats.totalOrders}
                 </div>
                 <Text variant="secondary" className="text-sm mt-1">
-                  {UI_LABELS.PROFILE.STAT_ORDERS}
+                  {tProfile("statOrders")}
                 </Text>
               </div>
             </Card>
@@ -391,7 +392,7 @@ export function PublicProfileView({
                   {user.stats.auctionsWon}
                 </div>
                 <Text variant="secondary" className="text-sm mt-1">
-                  {UI_LABELS.PROFILE.STAT_AUCTIONS_WON}
+                  {tProfile("statAuctionsWon")}
                 </Text>
               </div>
             </Card>
@@ -401,7 +402,7 @@ export function PublicProfileView({
                   {user.stats.itemsSold}
                 </div>
                 <Text variant="secondary" className="text-sm mt-1">
-                  {UI_LABELS.PROFILE.STAT_ITEMS_SOLD}
+                  {tProfile("statItemsSold")}
                 </Text>
               </div>
             </Card>
@@ -411,7 +412,7 @@ export function PublicProfileView({
                   {user.stats.reviewsCount}
                 </div>
                 <Text variant="secondary" className="text-sm mt-1">
-                  {UI_LABELS.PROFILE.STAT_REVIEWS}
+                  {tProfile("statReviews")}
                 </Text>
               </div>
             </Card>
@@ -430,7 +431,7 @@ export function PublicProfileView({
               </Text>
               <Text variant="secondary" className="text-sm">
                 ({user.stats.reviewsCount}{" "}
-                {UI_LABELS.PROFILE.STAT_REVIEWS.toLowerCase()})
+                {tProfile("statReviews").toLowerCase()})
               </Text>
             </div>
           </Card>

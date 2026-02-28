@@ -353,7 +353,12 @@
     "noReviewsDesc": "इस विक्रेता को अभी तक कोई समीक्षा नहीं मिली है।",
     "viewProduct": "उत्पाद देखें",
     "verifiedPurchase": "सत्यापित खरीद",
-    "notFound": "उपयोगकर्ता नहीं मिला"
+    "notFound": "उपयोगकर्ता नहीं मिला",
+    "memberSince": "सदस्य बने",
+    "statOrders": "ऑर्डर",
+    "statAuctionsWon": "जीती हुई नीलामियां",
+    "statItemsSold": "बेची गई वस्तुएं",
+    "statReviews": "समीक्षाएं"
   },
   "wishlist": {
     "title": "मेरी विशलिस्ट",
@@ -395,8 +400,20 @@
     "empty": "अभी कोई सूचना नहीं",
     "emptyDesc": "हम आपको ऑर्डर, बोली और प्रमोशन के बारे में सूचित करेंगे।",
     "markAllRead": "सभी पढ़ा हुआ चिह्नित करें",
+    "markRead": "पढ़ा हुआ चिह्नित करें",
+    "unread": "अपठित",
     "deleted": "सूचना हटाएं",
+    "newBadge": "नया",
     "error": "सूचनाएं लोड करने में विफल"
+  },
+  "filters": {
+    "title": "फ़िल्टर",
+    "activeCount": "फ़िल्टर ({count})",
+    "searchIn": "{section} में खोजें..."
+  },
+  "eventBanner": {
+    "saleBanner": "{pct}% तक छूट — सीमित समय!",
+    "offerBanner": "चेकआउट पर कोड {code} का उपयोग करें"
   },
   "table": {
     "actions": "कार्रवाई",
@@ -468,7 +485,9 @@
     "promoCode": "प्रोमो कोड",
     "promoApply": "लागू करें",
     "promoRemove": "हटाएं",
-    "promoPlaceholder": "कोड दर्ज करें"
+    "promoPlaceholder": "कोड दर्ज करें",
+    "itemCount": "{count, plural, one {# आइटम} other {# आइटम}}",
+    "shippingFree": "मुफ़्त"
   },
   "orders": {
     "title": "मेरे ऑर्डर",
@@ -556,14 +575,28 @@
     "stepAddress": "शिपिंग पता",
     "stepReview": "ऑर्डर समीक्षा",
     "backToCart": "कार्ट पर वापस जाएं",
-    "placingOrder": "ऑर्डर दे रहे हैं..."
+    "placingOrder": "ऑर्डर दे रहे हैं...",
+    "orderTotal": "कुल ऑर्डर",
+    "taxIncluded": "कर सहित",
+    "shippingFree": "मुफ़्त"
   },
   "orderSuccess": {
     "fallbackTitle": "ऑर्डर हो गया!",
     "fallbackSubtitle": "एक पुष्टि ईमेल आपके पास आने वाला है।",
     "fallbackConfirmed": "ऑर्डर की पुष्टि हुई",
     "continueShopping": "खरीदारी जारी रखें",
-    "viewOrders": "मेरे ऑर्डर"
+    "viewOrders": "मेरे ऑर्डर",
+    "title": "ऑर्डर की पुष्टि हो गई!",
+    "subtitle": "आपकी खरीदारी के लिए धन्यवाद। आपका ऑर्डर सफलतापूर्वक दे दिया गया है।",
+    "emailSent": "एक पुष्टि ईमेल आपके पंजीकृत ईमेल पते पर भेजी गई है।",
+    "orderDetails": "ऑर्डर विवरण",
+    "orderId": "ऑर्डर आईडी",
+    "qtyLabel": "मात्रा",
+    "paymentMethod": "भुगतान का तरीका",
+    "cod": "कैश ऑन डिलीवरी",
+    "onlinePayment": "ऑनलाइन भुगतान",
+    "shippingTo": "यहाँ भेजा जाएगा",
+    "viewOrder": "ऑर्डर विवरण देखें"
   },
   "auctions": {
     "title": "लाइव नीलामी",
@@ -617,7 +650,15 @@
     "searchPlaceholder": "आप क्या ढूंढ रहे हैं?",
     "subtitle": "स्टोर में उत्पाद खोजें",
     "emptyQuery": "उत्पाद खोजने के लिए टाइप करना शुरू करें",
-    "searchInputPlaceholder": "उत्पाद खोजें..."
+    "searchInputPlaceholder": "उत्पाद खोजें...",
+    "noResultsTitle": "कोई परिणाम नहीं मिला",
+    "noResultsSubtitle": "हमें \"{q}\" से मेल खाने वाला कुछ नहीं मिला। कोई अलग शब्द आज़माएं।",
+    "clearFilters": "फ़िल्टर साफ़ करें",
+    "priceRange": "मूल्य सीमा",
+    "minPrice": "न्यूनतम कीमत",
+    "maxPrice": "अधिकतम कीमत",
+    "categoryFilter": "श्रेणी",
+    "allCategories": "सभी श्रेणियां"
   },
   "categories": {
     "title": "श्रेणियां",
@@ -626,6 +667,7 @@
     "allCategoriesCount": "{count} श्रेणियां",
     "filteredCategoriesCount": "{total} में से {shown} श्रेणियां",
     "noCategories": "कोई श्रेणी नहीं मिली",
+    "noCategoriesSubtitle": "नई श्रेणियों के लिए जल्द वापस जांचें",
     "backToCategories": "श्रेणियों पर वापस जाएं",
     "noProductsIn": "{name} में कोई उत्पाद नहीं मिला",
     "searchPlaceholder": "श्रेणियां खोजें…"
@@ -647,6 +689,56 @@
     "joinedOn": "जुड़े",
     "verifiedSeller": "सत्यापित विक्रेता"
   },
+  "sellerAnalytics": {
+    "pageTitle": "आपकी एनालिटिक्स",
+    "pageSubtitle": "बिक्री प्रदर्शन और राजस्व अवलोकन",
+    "totalRevenue": "कुल राजस्व",
+    "totalOrders": "कुल ऑर्डर",
+    "totalProducts": "सूचीबद्ध उत्पाद",
+    "publishedProducts": "प्रकाशित उत्पाद",
+    "revenueChartTitle": "पिछले 6 महीनों का राजस्व",
+    "topProductsTitle": "राजस्व के आधार पर शीर्ष उत्पाद",
+    "loading": "आपकी एनालिटिक्स लोड हो रही है...",
+    "noData": "अभी तक कोई बिक्री डेटा नहीं",
+    "noDataDesc": "अपनी एनालिटिक्स देखने के लिए बेचना शुरू करें",
+    "monthLabel": "महीना",
+    "revenueLabel": "राजस्व",
+    "ordersLabel": "ऑर्डर",
+    "viewProducts": "उत्पाद देखें"
+  },
+  "sellerPayouts": {
+    "pageTitle": "भुगतान",
+    "pageSubtitle": "अपनी कमाई और भुगतान अनुरोध प्रबंधित करें",
+    "availableEarnings": "उपलब्ध कमाई",
+    "totalPaid": "कुल भुगतान किया",
+    "pendingPayout": "लंबित भुगतान",
+    "requestPayout": "भुगतान का अनुरोध करें",
+    "historyTitle": "भुगतान इतिहास",
+    "noPayouts": "अभी तक कोई भुगतान नहीं",
+    "noPayoutsDesc": "भुगतान अनुरोध करें जब आपके पास डिलीवर किए गए ऑर्डर हों",
+    "statusPending": "लंबित",
+    "statusProcessing": "प्रक्रियाधीन",
+    "statusCompleted": "पूर्ण",
+    "statusFailed": "विफल",
+    "paymentMethodBank": "बैंक ट्रांसफर",
+    "paymentMethodUpi": "UPI",
+    "platformFee": "प्लेटफॉर्म शुल्क: {rate}%",
+    "grossAmount": "सकल राशि",
+    "netAmount": "शुद्ध भुगतान",
+    "platformFeeLabel": "प्लेटफॉर्म शुल्क",
+    "paymentMethodLabel": "भुगतान विधि",
+    "bankHolderName": "खाताधारक का नाम",
+    "bankAccountNumber": "खाता संख्या",
+    "bankIfsc": "IFSC कोड",
+    "bankName": "बैंक का नाम",
+    "upiIdLabel": "UPI ID",
+    "notesLabel": "नोट्स (वैकल्पिक)",
+    "loading": "भुगतान लोड हो रहे हैं...",
+    "alreadyPending": "आपके पास एक लंबित भुगतान अनुरोध है",
+    "noEarnings": "निकालने के लिए कोई उपलब्ध कमाई नहीं",
+    "status": "स्थिति",
+    "requested": "अनुरोधित"
+  },
   "homepage": {
     "heroTitle": "अद्भुत उत्पाद खोजें",
     "heroSubtitle": "पूरे भारत में हजारों विक्रेताओं से खरीदारी करें",
@@ -664,6 +756,11 @@
     "blogSubtitle": "समुदाय से टिप्स, कहानियां और अंतर्दृष्टि",
     "featuresTitle": "हमारे साथ क्यों खरीदारी करें?",
     "featuresSubtitle": "आपकी संतुष्टि हमारी प्राथमिकता है। हम बेजोड़ सुविधाओं के साथ एक निर्बाध खरीदारी अनुभव प्रदान करते हैं",
+    "auctionsSubtitle": "विशेष वस्तुओं पर बोली लगाएं",
+    "currentBid": "वर्तमान बोली",
+    "whatOurCustomersSay": "हमारे ग्राहक क्या कहते हैं",
+    "reviewsSubtitle": "संतुष्ट ग्राहकों की समीक्षाएं पढ़ें",
+    "seeAllReviews": "सभी समीक्षाएं देखें \u2192",
     "newsletter": {
       "title": "अपडेट रहें",
       "subtitle": "नवीनतम डील और ऑफर पाने के लिए सब्सक्राइब करें",
@@ -931,19 +1028,6 @@
     "noProductsSubtitle": "अपनी पहली लिस्टिंग जोड़कर शुरुआत करें",
     "addProduct": "नई लिस्टिंग जोड़ें"
   },
-  "sellerAnalytics": {
-    "pageTitle": "आपका विश्लेषण",
-    "pageSubtitle": "बिक्री प्रदर्शन और राजस्व अवलोकन",
-    "loading": "आपका विश्लेषण लोड हो रहा है...",
-    "noData": "अभी तक कोई बिक्री डेटा नहीं",
-    "noDataDesc": "यहाँ अपना विश्लेषण देखने के लिए बेचना शुरू करें"
-  },
-  "sellerPayouts": {
-    "pageTitle": "भुगतान",
-    "pageSubtitle": "अपनी कमाई और भुगतान अनुरोध प्रबंधित करें",
-    "statusPending": "भुगतान अनुरोध जमा किया गया",
-    "noEarnings": "निकासी के लिए कोई उपलब्ध कमाई नहीं"
-  },
   "sellerOrders": {
     "title": "मेरी बिक्री",
     "subtitle": "आपके उत्पादों के लिए दिए गए ऑर्डर",
@@ -1007,7 +1091,22 @@
     "couponsSubtitle": "अपने ऑर्डर पर बचत के लिए चेकआउट में इन कोड का उपयोग करें",
     "emptyDeals": "अभी कोई डील उपलब्ध नहीं",
     "checkBack": "नए प्रमोशन के लिए जल्द वापस आएं!",
-    "emptyCoupons": "इस समय कोई सक्रिय कूपन नहीं"
+    "emptyCoupons": "इस समय कोई सक्रिय कूपन नहीं",
+    "copyCode": "कोड कॉपी करें",
+    "copied": "कॉपी हो गया!",
+    "validUntil": "तक वैध",
+    "off": "छूट",
+    "flatOff": "फ्लैट छूट",
+    "freeShipping": "मुफ़्त शिपिंग",
+    "buyXGetY": "X खरीदें Y पाएं",
+    "specialOffer": "विशेष ऑफ़र",
+    "statusActive": "सक्रिय"
+  },
+  "adminSessions": {
+    "confirmRevoke": "सत्र रद्द करें",
+    "confirmRevokeMessage": "क्या आप वाकई इस सत्र को रद्द करना चाहते हैं? उपयोगकर्ता लॉग आउट हो जाएगा।",
+    "confirmRevokeAll": "सभी सत्र रद्द करें",
+    "confirmRevokeAllMessage": "क्या आप वाकई {userEmail} के सभी सत्र रद्द करना चाहते हैं? वे सभी डिवाइस से लॉग आउट हो जाएंगे।"
   },
   "adminDashboard": {
     "title": "डैशबोर्ड अवलोकन",
@@ -1329,6 +1428,9 @@
     "verifiedPurchase": "सत्यापित"
   },
   "faq": {
+    "title": "अक्सर पूछे जाने वाले प्रश्न",
+    "subtitle": "हमारे प्लेटफ़ॉर्म, उत्पादों, शिपिंग और अधिक के बारे में सामान्य प्रश्नों के उत्तर खोजें।",
+    "viewAll": "सभी FAQs देखें",
     "wasThisHelpful": "क्या यह मददगार था?",
     "thanksForFeedback": "आपकी प्रतिक्रिया के लिए धन्यवाद!"
   },

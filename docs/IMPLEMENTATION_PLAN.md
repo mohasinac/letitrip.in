@@ -364,7 +364,7 @@ Create `src/components/admin/__tests__/MediaUploadField.test.tsx`.
 
 ---
 
-### TASK-18 · Systemic `UI_LABELS` in JSX — migrate ~35 client components to `useTranslations` · P0
+### ✅ TASK-18 · Systemic `UI_LABELS` in JSX — migrate ~35 client components to `useTranslations` · P0 · DONE
 
 **Rule violated:** Rule 2 (no `UI_LABELS` in JSX client components — use `useTranslations`)
 **Scope:** ~35 files across `src/components/ui/`, `src/components/homepage/`, `src/components/user/`, `src/components/seller/`, `src/components/admin/`, `src/components/checkout/`, `src/components/products/`, `src/components/search/`, `src/components/promotions/`
@@ -373,7 +373,7 @@ Create `src/components/admin/__tests__/MediaUploadField.test.tsx`.
 
 **Recommended batching strategy** — tackle one group per PR to keep each reviewable:
 
-#### Group A — Shared UI primitives (highest impact; these feed every page)
+#### ✅ Group A — Shared UI primitives (DONE — all 10 files already using useTranslations)
 
 | File                                           | UI_LABELS keys used                                                      |
 | ---------------------------------------------- | ------------------------------------------------------------------------ |
@@ -388,7 +388,7 @@ Create `src/components/admin/__tests__/MediaUploadField.test.tsx`.
 | `src/components/ui/CategorySelectorCreate.tsx` | `FORM.CATEGORY`, `ACTIONS.ADD_CATEGORY`                                  |
 | `src/components/ui/AddressSelectorCreate.tsx`  | `FORM.PICKUP_ADDRESS`, `ACTIONS.ADD_ADDRESS/SAVE`                        |
 
-#### Group B — Homepage sections
+#### ✅ Group B — Homepage sections (DONE — FeaturedAuctionsSection, CustomerReviewsSection, FAQSection, CategoryGrid migrated)
 
 | File                                                  | UI_LABELS keys used                                             |
 | ----------------------------------------------------- | --------------------------------------------------------------- |
@@ -397,7 +397,7 @@ Create `src/components/admin/__tests__/MediaUploadField.test.tsx`.
 | `src/components/homepage/FAQSection.tsx`              | `FAQ.TITLE/SUBTITLE`, `EMPTY.NO_DATA`, `ACTIONS.VIEW_ALL_ARROW` |
 | `src/components/categories/CategoryGrid.tsx`          | `CATEGORIES_PAGE.NO_CATEGORIES/NO_CATEGORIES_SUBTITLE`          |
 
-#### Group C — User domain components
+#### ✅ Group C — User domain components (DONE — all 7 files migrated, 21 tests pass)
 
 | File                                                             | UI_LABELS keys used                                      |
 | ---------------------------------------------------------------- | -------------------------------------------------------- |
@@ -409,7 +409,7 @@ Create `src/components/admin/__tests__/MediaUploadField.test.tsx`.
 | `src/components/user/notifications/NotificationItem.tsx`         | `NOTIFICATIONS.*`, `ACTIONS.VIEW`                        |
 | `src/components/user/profile/PublicProfileView.tsx`              | `PROFILE.*`, `ROLES.*`                                   |
 
-#### Group D — Seller components
+#### ✅ Group D — Seller components (DONE — all 8 files migrated, 17 tests pass)
 
 | File                                                 | Notes                                                          |
 | ---------------------------------------------------- | -------------------------------------------------------------- |
@@ -422,7 +422,7 @@ Create `src/components/admin/__tests__/MediaUploadField.test.tsx`.
 | `src/components/seller/SellerRevenueChart.tsx`       | `SELLER_ANALYTICS` namespace                                   |
 | `src/components/seller/SellerTopProducts.tsx`        | `SELLER_ANALYTICS` namespace                                   |
 
-#### Group E — Admin, checkout, other
+#### ✅ Group E — Admin, checkout, other (DONE — all 10 files migrated, 46 tests pass)
 
 | File                                             | Notes                                        |
 | ------------------------------------------------ | -------------------------------------------- |

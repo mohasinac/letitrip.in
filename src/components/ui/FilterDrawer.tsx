@@ -1,9 +1,10 @@
 "use client";
 
 import { ReactNode, useState } from "react";
+import { useTranslations } from "next-intl";
 import { SideDrawer } from "@/components";
 import { DrawerFormFooter } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 
 interface FilterDrawerProps {
   /** FilterFacetSection nodes or any filter content */
@@ -51,14 +52,14 @@ export function FilterDrawer({
   triggerClassName = "",
 }: FilterDrawerProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const t = useTranslations("filters");
+  const tActions = useTranslations("actions");
 
   const { themed, borderRadius, spacing } = THEME_CONSTANTS;
 
   const drawerTitle =
     title ??
-    (activeCount > 0
-      ? UI_LABELS.FILTERS.ACTIVE_COUNT(activeCount)
-      : UI_LABELS.FILTERS.TITLE);
+    (activeCount > 0 ? t("activeCount", { count: activeCount }) : t("title"));
 
   const handleApply = () => {
     onApply?.();
@@ -73,8 +74,8 @@ export function FilterDrawer({
     <DrawerFormFooter
       onCancel={handleClearAll}
       onSubmit={handleApply}
-      cancelLabel={UI_LABELS.ACTIONS.CLEAR_ALL}
-      submitLabel={UI_LABELS.ACTIONS.APPLY_FILTERS}
+      cancelLabel={tActions("clearAll")}
+      submitLabel={tActions("applyFilters")}
     />
   );
 
@@ -84,7 +85,7 @@ export function FilterDrawer({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        aria-label={triggerLabel ?? UI_LABELS.FILTERS.TITLE}
+        aria-label={triggerLabel ?? t("title")}
         className={`inline-flex items-center gap-2 text-sm font-medium ${themed.textPrimary} ${borderRadius.lg} border ${themed.border} ${spacing.padding.xs} px-3 hover:${themed.bgSecondary} transition-colors ${triggerClassName}`}
       >
         {/* Filter icon */}
@@ -102,11 +103,11 @@ export function FilterDrawer({
             d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"
           />
         </svg>
-        {UI_LABELS.FILTERS.TITLE}
+        {t("title")}
         {activeCount > 0 && (
           <span
             className={`inline-flex items-center justify-center w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
-            aria-label={UI_LABELS.FILTERS.ACTIVE_COUNT(activeCount)}
+            aria-label={t("activeCount", { count: activeCount })}
           >
             {activeCount}
           </span>

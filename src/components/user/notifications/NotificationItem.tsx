@@ -1,7 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/ui";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatRelativeTime } from "@/utils";
 import type { NotificationDocument } from "@/db/schema";
 
@@ -36,6 +37,8 @@ export function NotificationItem({
   onMarkRead,
   onDelete,
 }: NotificationItemProps) {
+  const tNotifications = useTranslations("notifications");
+  const tActions = useTranslations("actions");
   return (
     <div
       className={`flex items-start gap-4 p-4 transition-colors ${
@@ -56,9 +59,7 @@ export function NotificationItem({
                 {n.title}
               </p>
               {!n.isRead && (
-                <Badge variant="info">
-                  {UI_LABELS.NOTIFICATIONS.NEW_BADGE}
-                </Badge>
+                <Badge variant="info">{tNotifications("newBadge")}</Badge>
               )}
             </div>
             <p className={`text-sm mt-0.5 ${themed.textSecondary}`}>
@@ -74,8 +75,8 @@ export function NotificationItem({
             {!n.isRead && (
               <button
                 onClick={() => onMarkRead(n.id)}
-                title={UI_LABELS.NOTIFICATIONS.MARK_READ}
-                aria-label={UI_LABELS.NOTIFICATIONS.MARK_READ}
+                title={tNotifications("markRead")}
+                aria-label={tNotifications("markRead")}
                 className="p-1.5 rounded-lg text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors"
               >
                 <svg
@@ -95,8 +96,8 @@ export function NotificationItem({
             )}
             <button
               onClick={() => onDelete(n.id)}
-              title={UI_LABELS.NOTIFICATIONS.DELETE}
-              aria-label={UI_LABELS.NOTIFICATIONS.DELETE}
+              title={tNotifications("deleted")}
+              aria-label={tNotifications("deleted")}
               className={`p-1.5 rounded-lg ${themed.textSecondary} hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors`}
             >
               <svg
@@ -125,7 +126,7 @@ export function NotificationItem({
             }}
             className="inline-block mt-2 text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
           >
-            {n.actionLabel ?? UI_LABELS.ACTIONS.VIEW} →
+            {n.actionLabel ?? tActions("view")} →
           </a>
         )}
       </div>

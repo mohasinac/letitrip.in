@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 
 interface FacetOption {
   value: string;
@@ -56,6 +57,8 @@ export function FilterFacetSection({
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const { themed, borderRadius, spacing } = THEME_CONSTANTS;
+  const t = useTranslations("filters");
+  const tTable = useTranslations("table");
 
   const filteredOptions = searchQuery
     ? options.filter((opt) =>
@@ -144,9 +147,9 @@ export function FilterFacetSection({
                   setSearchQuery(e.target.value);
                   setVisibleCount(pageSize);
                 }}
-                placeholder={UI_LABELS.FILTERS.SEARCH_IN(title)}
+                placeholder={t("searchIn", { section: title })}
                 className={`w-full text-xs ${THEME_CONSTANTS.input.base}`}
-                aria-label={UI_LABELS.FILTERS.SEARCH_IN(title)}
+                aria-label={t("searchIn", { section: title })}
               />
             </div>
           )}
@@ -154,7 +157,7 @@ export function FilterFacetSection({
           {/* Options */}
           {visibleOptions.length === 0 ? (
             <p className={`text-xs ${themed.textSecondary} py-1`}>
-              {UI_LABELS.TABLE.NO_RESULTS}
+              {tTable("noResults")}
             </p>
           ) : (
             visibleOptions.map((opt) => {
@@ -193,7 +196,7 @@ export function FilterFacetSection({
               onClick={() => setVisibleCount((c) => c + pageSize)}
               className={`mt-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline`}
             >
-              {UI_LABELS.TABLE.LOAD_MORE}
+              {tTable("loadMore")}
             </button>
           )}
         </div>

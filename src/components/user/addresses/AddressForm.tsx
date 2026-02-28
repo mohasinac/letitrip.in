@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { FormField, Button } from "@/components";
-import { UI_LABELS, UI_PLACEHOLDERS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { UI_PLACEHOLDERS, THEME_CONSTANTS } from "@/constants";
 
 /**
  * AddressForm Component
@@ -51,8 +52,11 @@ export function AddressForm({
   onSubmit,
   onCancel,
   isLoading = false,
-  submitLabel = UI_LABELS.ACTIONS.SAVE,
+  submitLabel,
 }: AddressFormProps) {
+  const tActions = useTranslations("actions");
+  const tLoading = useTranslations("loading");
+  const effectiveLabel = submitLabel ?? tActions("save");
   const [formData, setFormData] = useState<AddressFormData>({
     label: initialData?.label || "",
     fullName: initialData?.fullName || "",
@@ -199,11 +203,11 @@ export function AddressForm({
           onClick={onCancel}
           disabled={isLoading}
         >
-          {UI_LABELS.ACTIONS.CANCEL}
+          {tActions("cancel")}
         </Button>
 
         <Button type="submit" variant="primary" disabled={isLoading}>
-          {isLoading ? UI_LABELS.LOADING.DEFAULT : submitLabel}
+          {isLoading ? tLoading("default") : effectiveLabel}
         </Button>
       </div>
     </form>

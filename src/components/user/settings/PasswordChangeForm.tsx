@@ -2,12 +2,8 @@
 
 import { useState } from "react";
 import { FormField, Button, PasswordStrengthIndicator } from "@/components";
-import {
-  UI_LABELS,
-  UI_PLACEHOLDERS,
-  THEME_CONSTANTS,
-  ERROR_MESSAGES,
-} from "@/constants";
+import { useTranslations } from "next-intl";
+import { UI_PLACEHOLDERS, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { calculatePasswordStrength } from "@/utils";
 
 /**
@@ -37,6 +33,9 @@ export function PasswordChangeForm({
   onSubmit,
   isLoading = false,
 }: PasswordChangeFormProps) {
+  const tForm = useTranslations("form");
+  const tLoading = useTranslations("loading");
+  const tActions = useTranslations("actions");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -79,7 +78,7 @@ export function PasswordChangeForm({
     <form onSubmit={handleSubmit} className={spacing.stack}>
       {/* Current Password */}
       <FormField
-        label={UI_LABELS.FORM.CURRENT_PASSWORD}
+        label={tForm("currentPassword")}
         name="currentPassword"
         type="password"
         value={currentPassword}
@@ -91,7 +90,7 @@ export function PasswordChangeForm({
       {/* New Password */}
       <div>
         <FormField
-          label={UI_LABELS.FORM.NEW_PASSWORD}
+          label={tForm("newPassword")}
           name="newPassword"
           type="password"
           value={newPassword}
@@ -108,7 +107,7 @@ export function PasswordChangeForm({
 
       {/* Confirm New Password */}
       <FormField
-        label={UI_LABELS.FORM.CONFIRM_PASSWORD}
+        label={tForm("confirmPassword")}
         name="confirmPassword"
         type="password"
         value={confirmPassword}
@@ -136,9 +135,7 @@ export function PasswordChangeForm({
             isLoading || !currentPassword || !newPassword || !confirmPassword
           }
         >
-          {isLoading
-            ? UI_LABELS.LOADING.DEFAULT
-            : UI_LABELS.ACTIONS.CHANGE_PASSWORD}
+          {isLoading ? tLoading("default") : tActions("changePassword")}
         </Button>
       </div>
     </form>

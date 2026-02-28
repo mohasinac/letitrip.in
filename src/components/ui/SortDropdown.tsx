@@ -1,6 +1,7 @@
 "use client";
 
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 
 interface SortOption {
   value: string;
@@ -46,7 +47,8 @@ export function SortDropdown({
   label,
   className = "",
 }: SortDropdownProps) {
-  const displayLabel = label ?? UI_LABELS.TABLE.SORT_BY;
+  const t = useTranslations("table");
+  const displayLabel = label ?? t("sortBy");
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>

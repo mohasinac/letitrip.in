@@ -21,6 +21,7 @@
  */
 
 import { useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { useCategories, useCreateCategory, useMessage } from "@/hooks";
 import {
   SideDrawer,
@@ -31,7 +32,6 @@ import {
 } from "@/components";
 import type { Category } from "@/components";
 import {
-  UI_LABELS,
   UI_PLACEHOLDERS,
   SUCCESS_MESSAGES,
   THEME_CONSTANTS,
@@ -103,6 +103,8 @@ export function CategorySelectorCreate({
   label,
 }: CategorySelectorCreateProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const tForm = useTranslations("form");
+  const tActions = useTranslations("actions");
 
   const { categories: rawCategories, isLoading, refetch } = useCategories();
   const categories = rawCategories as unknown as Category[];
@@ -129,7 +131,7 @@ export function CategorySelectorCreate({
             onChange={(e) => onChange(e.target.value)}
             disabled={disabled || isLoading}
             className={`flex-1 ${input.base}`}
-            aria-label={label ?? UI_LABELS.FORM.CATEGORY}
+            aria-label={label ?? tForm("category")}
           >
             <option value="">{UI_PLACEHOLDERS.SELECT_CATEGORY}</option>
             {flat.map((cat) => (
@@ -148,7 +150,7 @@ export function CategorySelectorCreate({
               onClick={() => setDrawerOpen(true)}
               aria-haspopup="dialog"
             >
-              + {UI_LABELS.ACTIONS.ADD_CATEGORY}
+              + {tActions("addCategory")}
             </Button>
           )}
         </div>
@@ -157,7 +159,7 @@ export function CategorySelectorCreate({
       <SideDrawer
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        title={UI_LABELS.ACTIONS.ADD_CATEGORY}
+        title={tActions("addCategory")}
         mode="create"
       >
         <CreateCategoryContent
