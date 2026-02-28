@@ -6,7 +6,7 @@ import "@testing-library/jest-dom";
 import type React from "react";
 import { FeedbackEventSection } from "../FeedbackEventSection";
 
-jest.mock("../../services/event.service", () => ({
+jest.mock("@/services", () => ({
   eventService: { enter: jest.fn() },
 }));
 

@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **TASK-20 (P0):** Deleted `src/hooks/useStorageUpload.ts` and `src/hooks/__tests__/useStorageUpload.test.ts` — hook imported Firebase Storage client SDK (`ref`, `uploadBytes`, `getDownloadURL`, `deleteObject` from `firebase/storage`) in violation of Rule 11.
   - Removed `useStorageUpload` and `UploadOptions`/`UploadState` exports from `src/hooks/index.ts`.
   - Removed `useStorageUpload` section from `src/hooks/README.md`.
+- **TASK-27 (P0):** Deleted Tier-2 `src/features/events/services/event.service.ts` — Rule 21 mandates one service per domain; Tier-1 `src/services/event.service.ts` is the single source of truth.
 
 #### Changed
 
@@ -30,6 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Error display sourced from `uploadApiError` returned by `useMediaUpload`.
   - Alert `onClose` now calls `resetUpload()` to clear API error state.
   - `AvatarUpload.test.tsx` fully rewritten: 17 tests, mocking `useMediaUpload`. All pass.
+- **TASK-27 (P0):** Fixed 3 test files broken by Tier-2 service deletion:
+  - `FeedbackEventSection.test.tsx` + `PollVotingSection.test.tsx`: updated `jest.mock` path from `../../services/event.service` → `@/services`.
+  - `events/[id]/participate/__tests__/page.test.tsx`: added `EventParticipateView` to `@/features/events` mock; updated tests to match thin-shell page.
 
 #### Fixed
 

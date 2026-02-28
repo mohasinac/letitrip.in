@@ -1445,7 +1445,7 @@ src/features/
 
 All services in `src/services/` use `apiClient` — never raw `fetch()`.
 
-> **Service Tier Warning:** `event.service.ts` exists at **both** `src/services/event.service.ts` (Tier 1, exported from `@/services`) **and** `src/features/events/services/event.service.ts` (Tier 2, exported from `@/features/events`). Rule 21 states each service domain should have exactly one service object. This duplicate must be resolved — see **TASK-27**.
+> **TASK-27 ✅ RESOLVED:** `event.service.ts` Tier-2 duplicate deleted. Single source of truth: `src/services/event.service.ts` (Tier 1, `@/services`).
 
 | Service                   | Key Methods                                                                                                                                            | API Route Group                                |
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
@@ -2074,11 +2074,9 @@ import { auth } from "@/lib/firebase/config";
 
 ---
 
-#### 16. `event.service.ts` — Rule 21 dual presence (Tier 1 and Tier 2 simultaneously)
+#### ~~16. `event.service.ts` — Rule 21 dual presence (Tier 1 and Tier 2 simultaneously)~~ ✅ RESOLVED (TASK-27)
 
-**Issue:** `src/services/event.service.ts` (Tier 1) and `src/features/events/services/event.service.ts` (Tier 2) both exist and both export an `eventService`. Rule 21 mandates one service object per domain. Having two means consumers may accidentally import from the wrong barrel, and changes to event API call patterns must be made in two places.
-
-**Fix:** Decide canonical location (recommended: Tier 2 only, `src/features/events/services/`), then delete the Tier-1 copy and update `src/services/index.ts` to remove the export. Any Tier-1 hooks that call `eventService` should import from `@/features/events` — since hooks themselves are Tier 1, they should not import from Tier-2 features. If hook–event–service integration is needed at Tier 1, consider elevating the event service to Tier 1 and removing the Tier-2 copy. See **TASK-27**.
+**Completed 2026-02-28:** Tier-2 `src/features/events/services/event.service.ts` deleted. Tier-1 `src/services/event.service.ts` is canonical. All events hooks import from `@/services`. Three tests updated.
 
 ---
 

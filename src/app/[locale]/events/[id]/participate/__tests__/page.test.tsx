@@ -101,6 +101,9 @@ jest.mock("@/components", () => ({
 }));
 
 jest.mock("@/features/events", () => ({
+  EventParticipateView: ({ id }: any) => (
+    <div data-testid="event-participate-view">{id}</div>
+  ),
   eventService: { getById: jest.fn(), enter: jest.fn() },
 }));
 
@@ -133,7 +136,7 @@ describe("Event Participate Page (/events/[id]/participate)", () => {
     ).not.toThrow();
   });
 
-  it("shows loading spinner while fetching event data", () => {
+  it("renders EventParticipateView with correct id (loading state)", () => {
     (useApiQuery as jest.Mock).mockReturnValue({
       data: null,
       isLoading: true,
@@ -141,31 +144,19 @@ describe("Event Participate Page (/events/[id]/participate)", () => {
       refetch: jest.fn(),
     });
     render(<EventParticipatePage params={Promise.resolve({ id: "evt-1" })} />);
-    expect(screen.getByTestId("spinner")).toBeInTheDocument();
+    expect(screen.getByTestId("event-participate-view")).toBeInTheDocument();
   });
 
-  it("renders participation form when event data is loaded", () => {
-    const mockEvent = {
-      id: "evt-1",
-      title: "Survey Event",
-      type: "survey",
-      status: "active",
-      endsAt: new Date(Date.now() + 86400000).toISOString(),
-      surveyConfig: {
-        formFields: [
-          { id: "q1", label: "Question 1", type: "text", required: true },
-        ],
-        hasLeaderboard: false,
-      },
-    };
+  it("renders EventParticipateView with the resolved event id", () => {
     (useApiQuery as jest.Mock).mockReturnValue({
-      data: mockEvent,
+      data: { id: "evt-1", title: "Survey Event", type: "survey" },
       isLoading: false,
       error: null,
       refetch: jest.fn(),
     });
     render(<EventParticipatePage params={Promise.resolve({ id: "evt-1" })} />);
-    // Page title or event title should be visible
-    expect(screen.getByText("Survey Event")).toBeInTheDocument();
+    expect(screen.getByTestId("event-participate-view")).toHaveTextContent(
+      "evt-1",
+    );
   });
 });

@@ -715,25 +715,9 @@ Note: Both files currently also have raw `<input type="checkbox">` elements — 
 
 ---
 
-### TASK-27 · Resolve `event.service.ts` Rule 21 dual-presence — consolidate to one tier · P0
+### ✅ TASK-27 · Resolve `event.service.ts` Rule 21 dual-presence — consolidate to one tier · P0 · DONE
 
-**Rule violated:** Rule 21 (one service per domain; no dual implementations)
-**Conflict:** `src/services/event.service.ts` (Tier 1) AND `src/features/events/services/event.service.ts` (Tier 2) both exist simultaneously.
-**Decision:** Keep Tier 1 (`src/services/event.service.ts`) as the single source of truth. Remove the Tier-2 copy.
-
-**Why Tier 1?** Other features (e.g. admin, homepage) may surface events. A Tier-1 service allows any feature to consume it without cross-feature imports. The Tier-2 copy is redundant.
-
-**What to do:**
-
-1. Delete `src/features/events/services/event.service.ts`.
-2. Open `src/features/events/index.ts` — remove any re-export of the Tier-2 service (e.g. `export * from './services/event.service'`).
-3. Open `src/features/events/services/index.ts` (if it exists) — remove the service export or delete the file if it becomes empty.
-4. Search for all import paths that reference `@/features/events` or `../services/event.service` in events feature components/hooks — replace with `import { eventService } from '@/services'`.
-5. Ensure `src/services/index.ts` already exports `eventService`; add it if missing.
-6. Run `npx tsc --noEmit` on all affected files.
-7. `npm run build` must pass.
-
-**Effort:** S (30–90 min)
+**Completed 2026-02-28.** Tier-2 `src/features/events/services/event.service.ts` deleted. Tier-1 `src/services/event.service.ts` is single source of truth. Fixed 3 broken test files: updated `PollVotingSection.test.tsx` and `FeedbackEventSection.test.tsx` mocks from deleted relative path → `@/services` barrel; updated `participate/page.test.tsx` to reflect thin-shell page (renders `EventParticipateView`). All 10 tests pass.
 
 ---
 
