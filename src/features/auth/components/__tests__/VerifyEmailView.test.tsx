@@ -70,9 +70,7 @@ import * as hooks from "@/hooks";
 
 describe("VerifyEmailView", () => {
   const mockMutate = jest.fn();
-  const mockUseVerifyEmail = hooks.useVerifyEmail as jest.MockedFunction<
-    typeof hooks.useVerifyEmail
-  >;
+  const mockUseVerifyEmail = hooks.useVerifyEmail as jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();

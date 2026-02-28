@@ -118,7 +118,9 @@ export function BlogArticlesSection() {
                 <div
                   className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} flex items-center justify-between pt-3 border-t ${THEME_CONSTANTS.themed.border}`}
                 >
-                  <span>{formatDate(article.publishedAt)}</span>
+                  <span>
+                    {article.publishedAt ? formatDate(article.publishedAt) : ""}
+                  </span>
                   <span className="flex items-center gap-1">
                     <svg
                       className="w-4 h-4"

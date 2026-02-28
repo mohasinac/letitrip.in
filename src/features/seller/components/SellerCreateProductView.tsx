@@ -66,7 +66,7 @@ export function SellerCreateProductView() {
       <AdminPageHeader
         title={t("createProduct")}
         subtitle={t("createProductSubtitle")}
-        backHref={ROUTES.SELLER.PRODUCTS}
+        breadcrumb={[{ label: t("products"), href: ROUTES.SELLER.PRODUCTS }]}
       />
 
       <div className={`max-w-3xl mx-auto px-4 pb-12 ${spacing.stack}`}>

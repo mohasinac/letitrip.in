@@ -27,6 +27,13 @@ import {
   siteSettingsSeedData,
   faqSeedData,
   newsletterSeedData,
+  blogPostsSeedData,
+  eventsSeedData,
+  eventEntriesSeedData,
+  notificationsSeedData,
+  payoutsSeedData,
+  sessionsSeedData,
+  cartsSeedData,
 } from "./seed-data";
 import {
   USER_COLLECTION,
@@ -41,6 +48,13 @@ import {
   SITE_SETTINGS_COLLECTION,
   FAQS_COLLECTION,
   NEWSLETTER_COLLECTION,
+  BLOG_POSTS_COLLECTION,
+  EVENTS_COLLECTION,
+  EVENT_ENTRIES_COLLECTION,
+  NOTIFICATIONS_COLLECTION,
+  PAYOUT_COLLECTION,
+  SESSION_COLLECTION,
+  CART_COLLECTION,
 } from "@/db/schema";
 
 interface SeedOptions {
@@ -323,6 +337,13 @@ async function seedAllData(options: SeedOptions) {
     "siteSettings",
     "faqs",
     "newsletter",
+    "blogPosts",
+    "events",
+    "eventEntries",
+    "notifications",
+    "payouts",
+    "sessions",
+    "carts",
   ];
 
   const collectionsToSeed =
@@ -410,6 +431,49 @@ async function seedAllData(options: SeedOptions) {
     // Seed Newsletter Subscribers
     if (collectionsToSeed.includes("newsletter")) {
       await seedCollection(NEWSLETTER_COLLECTION, newsletterSeedData, options);
+    }
+
+    // Seed Blog Posts
+    if (collectionsToSeed.includes("blogPosts")) {
+      await seedCollection(BLOG_POSTS_COLLECTION, blogPostsSeedData, options);
+    }
+
+    // Seed Events
+    if (collectionsToSeed.includes("events")) {
+      await seedCollection(EVENTS_COLLECTION, eventsSeedData, options);
+    }
+
+    // Seed Event Entries
+    if (collectionsToSeed.includes("eventEntries")) {
+      await seedCollection(
+        EVENT_ENTRIES_COLLECTION,
+        eventEntriesSeedData,
+        options,
+      );
+    }
+
+    // Seed Notifications
+    if (collectionsToSeed.includes("notifications")) {
+      await seedCollection(
+        NOTIFICATIONS_COLLECTION,
+        notificationsSeedData,
+        options,
+      );
+    }
+
+    // Seed Payouts
+    if (collectionsToSeed.includes("payouts")) {
+      await seedCollection(PAYOUT_COLLECTION, payoutsSeedData, options);
+    }
+
+    // Seed Sessions
+    if (collectionsToSeed.includes("sessions")) {
+      await seedCollection(SESSION_COLLECTION, sessionsSeedData, options);
+    }
+
+    // Seed Carts (document ID = userId)
+    if (collectionsToSeed.includes("carts")) {
+      await seedCollection(CART_COLLECTION, cartsSeedData, options);
     }
 
     console.log("\n✅ Database seeding completed successfully!\n");

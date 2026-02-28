@@ -78,9 +78,7 @@ import * as hooks from "@/hooks";
 
 describe("ForgotPasswordView", () => {
   const mockMutate = jest.fn();
-  const mockUseForgotPassword = hooks.useForgotPassword as jest.MockedFunction<
-    typeof hooks.useForgotPassword
-  >;
+  const mockUseForgotPassword = hooks.useForgotPassword as jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();

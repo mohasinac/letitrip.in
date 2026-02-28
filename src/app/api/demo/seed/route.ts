@@ -14,6 +14,14 @@ import {
   homepageSectionsSeedData,
   siteSettingsSeedData,
   faqSeedData,
+  notificationsSeedData,
+  payoutsSeedData,
+  blogPostsSeedData,
+  eventsSeedData,
+  eventEntriesSeedData,
+  newsletterSeedData,
+  sessionsSeedData,
+  cartsSeedData,
 } from "../../../../../scripts/seed-data";
 import {
   USER_COLLECTION,
@@ -27,6 +35,14 @@ import {
   SITE_SETTINGS_COLLECTION,
   FAQS_COLLECTION,
   CATEGORIES_COLLECTION,
+  NOTIFICATIONS_COLLECTION,
+  PAYOUT_COLLECTION,
+  BLOG_POSTS_COLLECTION,
+  EVENTS_COLLECTION,
+  EVENT_ENTRIES_COLLECTION,
+  NEWSLETTER_COLLECTION,
+  SESSION_COLLECTION,
+  CART_COLLECTION,
 } from "@/db/schema";
 
 type CollectionName =
@@ -41,7 +57,15 @@ type CollectionName =
   | "carouselSlides"
   | "homepageSections"
   | "siteSettings"
-  | "faqs";
+  | "faqs"
+  | "notifications"
+  | "payouts"
+  | "blogPosts"
+  | "events"
+  | "eventEntries"
+  | "newsletter"
+  | "sessions"
+  | "carts";
 
 interface SeedRequest {
   action: "load" | "delete";
@@ -61,6 +85,14 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   homepageSections: HOMEPAGE_SECTIONS_COLLECTION,
   siteSettings: SITE_SETTINGS_COLLECTION,
   faqs: FAQS_COLLECTION,
+  notifications: NOTIFICATIONS_COLLECTION,
+  payouts: PAYOUT_COLLECTION,
+  blogPosts: BLOG_POSTS_COLLECTION,
+  events: EVENTS_COLLECTION,
+  eventEntries: EVENT_ENTRIES_COLLECTION,
+  newsletter: NEWSLETTER_COLLECTION,
+  sessions: SESSION_COLLECTION,
+  carts: CART_COLLECTION,
 };
 
 const SEED_DATA_MAP: Record<CollectionName, any[]> = {
@@ -76,6 +108,14 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   homepageSections: homepageSectionsSeedData,
   siteSettings: [siteSettingsSeedData], // Wrap singleton in array
   faqs: faqSeedData,
+  notifications: notificationsSeedData,
+  payouts: payoutsSeedData,
+  blogPosts: blogPostsSeedData,
+  events: eventsSeedData,
+  eventEntries: eventEntriesSeedData,
+  newsletter: newsletterSeedData,
+  sessions: sessionsSeedData,
+  carts: cartsSeedData,
 };
 
 export async function POST(request: NextRequest) {

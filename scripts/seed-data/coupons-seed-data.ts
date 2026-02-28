@@ -373,4 +373,40 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       totalDiscount: 201000,
     },
   },
+
+  // Holi Special coupon — linked to the Holi Offer event
+  {
+    id: "coupon-HOLI15",
+    code: "HOLI15",
+    name: "Holi Special Discount",
+    description: "Extra 15% off for Holi — valid on orders over ₹999",
+    type: "percentage",
+    discount: {
+      value: 15,
+      maxDiscount: 1500,
+      minPurchase: 999,
+    },
+    usage: {
+      totalLimit: 5000,
+      perUserLimit: 1,
+      currentUsage: 0,
+    },
+    validity: {
+      startDate: new Date("2026-03-01T00:00:00Z"),
+      endDate: new Date("2026-03-15T23:59:59Z"),
+      isActive: true,
+    },
+    restrictions: {
+      firstTimeUserOnly: false,
+      combineWithSellerCoupons: false,
+    },
+    createdBy: "user-admin-user-admin",
+    createdAt: new Date("2026-02-22T10:00:00Z"),
+    updatedAt: new Date("2026-02-22T10:00:00Z"),
+    stats: {
+      totalUses: 0,
+      totalRevenue: 0,
+      totalDiscount: 0,
+    },
+  },
 ];

@@ -14,6 +14,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### Seed Data Expansion — blogPosts, events, eventEntries, notifications, payouts (2026-02-28)
+
+#### Added
+
+- **`scripts/seed-data/blog-posts-seed-data.ts`** — 8 blog posts (6 published, 1 draft, 1 archived) spanning all `BlogPostCategory` values (`guides`, `tips`, `news`, `updates`, `community`). Two posts marked `isFeatured: true`.
+- **`scripts/seed-data/events-seed-data.ts`** — 5 events covering every `EventType` (`sale`, `offer`, `poll`, `survey`, `feedback`) with appropriate `saleConfig` / `offerConfig` / `pollConfig` / `surveyConfig` / `feedbackConfig` blocks. 8 event entries (`EventEntryDocument`) exercising all `EntryReviewStatus` values including one flagged entry.
+- **`scripts/seed-data/notifications-seed-data.ts`** — 16 in-app notifications distributed across 5 users, covering all 15 `NotificationType` values (`welcome`, `order_placed`, `order_shipped`, `order_delivered`, `order_confirmed`, `bid_placed`, `bid_outbid`, `bid_won`, `bid_lost`, `review_approved`, `product_available`, `promotion`, `system`). Mix of read and unread.
+- **`scripts/seed-data/payouts-seed-data.ts`** — 7 payout records across 4 sellers, covering all 4 `PayoutStatus` values (`pending`, `processing`, `completed`, `failed`). Includes both `bank_transfer` and `upi` payment methods with masked bank details.
+- **`coupon-HOLI15`** added to `scripts/seed-data/coupons-seed-data.ts` — required FK for `event-holi-offer-2026-offer.offerConfig.couponId`.
+
+#### Changed
+
+- **`scripts/seed-data/index.ts`** — Added exports for `blogPostsSeedData`, `eventsSeedData`, `eventEntriesSeedData`, `notificationsSeedData`, `payoutsSeedData`.
+- **`scripts/seed-all-data.ts`** — Added imports for all 5 new data arrays and 5 new collection constants (`BLOG_POSTS_COLLECTION`, `EVENTS_COLLECTION`, `EVENT_ENTRIES_COLLECTION`, `NOTIFICATIONS_COLLECTION`, `PAYOUT_COLLECTION`). Added seeding blocks for each collection. Updated `allCollections` array.
+- **`scripts/seed-data/RELATIONSHIPS.md`** — Updated statistics summary; added FK consistency tables and seeding order for all new collections.
+
+---
+
 ### TASK-46 — Wire BlogArticlesSection to live API; hide when no featured posts (2026-02-28)
 
 #### Changed

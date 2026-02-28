@@ -61,8 +61,18 @@ jest.mock("@/constants", () => ({
 }));
 
 import { SellerRecentListings } from "../SellerRecentListings";
+import type { ProductStatus } from "@/db/schema";
 
-const mockProducts = [
+type MockProduct = {
+  id: string;
+  title: string;
+  status: ProductStatus;
+  isAuction: boolean;
+  price: number;
+  mainImage: string;
+};
+
+const mockProducts: MockProduct[] = [
   {
     id: "p1",
     title: "Trek Himalaya Red",
@@ -82,7 +92,7 @@ const mockProducts = [
   {
     id: "p3",
     title: "Road Bike Pro",
-    status: "archived",
+    status: "discontinued",
     isAuction: false,
     price: 8000,
     mainImage: "",
@@ -127,7 +137,7 @@ describe("SellerRecentListings", () => {
   });
 
   it("limits display to 5 products", () => {
-    const manyProducts = Array.from({ length: 8 }, (_, i) => ({
+    const manyProducts: MockProduct[] = Array.from({ length: 8 }, (_, i) => ({
       id: `p${i}`,
       title: `Product ${i}`,
       status: "published",

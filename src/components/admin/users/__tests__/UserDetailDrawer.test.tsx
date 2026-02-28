@@ -39,14 +39,15 @@ jest.mock("@/components", () => ({
 }));
 
 const mockUser = {
+  id: "u1",
   uid: "u1",
   email: "test@example.com",
   displayName: "Test User",
   role: "user" as const,
   disabled: false,
   emailVerified: true,
-  createdAt: new Date("2025-01-01"),
-  lastLoginAt: new Date("2025-06-01"),
+  createdAt: "2025-01-01T00:00:00.000Z",
+  lastLoginAt: "2025-06-01T00:00:00.000Z",
   photoURL: null,
   metadata: { loginCount: 3 },
 };

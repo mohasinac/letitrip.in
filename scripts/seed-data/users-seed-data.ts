@@ -539,4 +539,76 @@ export const usersSeedData: Partial<UserDocument>[] = [
       loginCount: 41,
     },
   },
+
+  // ── Unverified User — registered but email not yet confirmed ──────────────
+  // Tests: email verification flow, /api/auth/verify-email, re-send verification,
+  //        locked pages that require emailVerified: true, header badge UI
+  {
+    uid: "user-unverified-new-user",
+    email: "newuser.unverified@example.com",
+    phoneNumber: null,
+    phoneVerified: false,
+    displayName: "New User",
+    photoURL: null,
+    avatarMetadata: null,
+    role: "user",
+    emailVerified: false, // ← critical: email NOT verified
+    disabled: false,
+    createdAt: new Date("2026-02-28T20:00:00Z"),
+    updatedAt: new Date("2026-02-28T20:00:00Z"),
+    publicProfile: {
+      isPublic: true,
+      showEmail: false,
+      showPhone: false,
+      showOrders: true,
+      showWishlist: true,
+    },
+    stats: {
+      totalOrders: 0,
+      auctionsWon: 0,
+      itemsSold: 0,
+      reviewsCount: 0,
+    },
+    metadata: {
+      lastSignInTime: new Date("2026-02-28T20:00:00Z"),
+      creationTime: new Date("2026-02-28T20:00:00Z").toISOString(),
+      loginCount: 1,
+    },
+  },
+
+  // ── Phone-Only User — signed up via phone OTP, no email ───────────────────
+  // Tests: phone auth flow, profile completion prompt (missing email),
+  //        checkout flow without email address
+  {
+    uid: "user-phone-only-phoneuser",
+    email: null, // ← no email address
+    phoneNumber: "+919988776655",
+    phoneVerified: true,
+    displayName: "Phone User",
+    photoURL: null,
+    avatarMetadata: null,
+    role: "user",
+    emailVerified: false,
+    disabled: false,
+    createdAt: new Date("2026-02-20T10:00:00Z"),
+    updatedAt: new Date("2026-02-20T10:00:00Z"),
+    publicProfile: {
+      isPublic: true,
+      showEmail: false,
+      showPhone: false,
+      showOrders: true,
+      showWishlist: true,
+    },
+    stats: {
+      totalOrders: 0,
+      auctionsWon: 0,
+      itemsSold: 0,
+      reviewsCount: 0,
+    },
+    metadata: {
+      lastSignInTime: new Date("2026-02-20T10:00:00Z"),
+      creationTime: new Date("2026-02-20T10:00:00Z").toISOString(),
+      loginCount: 3,
+    },
+  },
 ];

@@ -23,7 +23,7 @@ const baseProduct = {
   status: "published" as const,
   featured: false,
   isAuction: false,
-  currentBid: null,
+  currentBid: undefined,
   isPromoted: false,
   slug: "trek-boots",
 };

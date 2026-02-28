@@ -520,4 +520,22 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     createdAt: new Date("2026-02-19T07:45:00Z"),
     updatedAt: new Date("2026-02-19T07:45:00Z"),
   },
+
+  // ── CANCELLED bid — user withdrew before auction ended ───────────────────
+  // Tests: cancel bid API, bid list filtered by status, refund-on-cancel flow
+  {
+    id: "bid-jordan-chicago-raj-cancelled-20260215-x9z1a4",
+    productId: "product-limited-air-jordan-sneakers-auction-artisan-1",
+    productTitle: "Nike Air Jordan 1 Retro High OG 'Chicago' — AUCTION",
+    userId: "user-raj-patel-rajpatel",
+    userName: "Raj Patel",
+    userEmail: "raj.patel@example.com",
+    bidAmount: 26000,
+    currency: "INR",
+    status: "cancelled", // ← user cancelled this bid before being outbid
+    isWinning: false,
+    bidDate: new Date("2026-02-12T10:00:00Z"),
+    createdAt: new Date("2026-02-12T10:00:00Z"),
+    updatedAt: new Date("2026-02-12T11:30:00Z"), // cancellation time
+  },
 ];

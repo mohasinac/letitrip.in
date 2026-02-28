@@ -35,7 +35,7 @@ export function usePublicEvents({
 }: UsePublicEventsOptions = {}) {
   const { data, isLoading, error, refetch } = useApiQuery<EventsListResult>({
     queryKey: ["public-events", params],
-    queryFn: () => publicEventService.list(params),
+    queryFn: () => eventService.list(params),
     enabled,
     cacheTTL,
   });

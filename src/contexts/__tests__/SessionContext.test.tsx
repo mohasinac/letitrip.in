@@ -15,7 +15,7 @@ const mockOnAuthStateChanged = jest.fn((cb: (user: null) => void) => {
 });
 
 jest.mock("@/lib/firebase/auth-helpers", () => ({
-  onAuthStateChanged: (...args: any[]) => mockOnAuthStateChanged(...args),
+  onAuthStateChanged: (cb: any) => mockOnAuthStateChanged(cb),
   signInWithEmail: jest.fn(),
   signInWithGoogle: jest.fn(),
   signInWithApple: jest.fn(),

@@ -344,11 +344,161 @@ npx ts-node scripts/seed-all-data.ts -v
 
 ## Statistics Summary
 
-- **Total Users**: 8 (1 admin, 3 customers, 3 sellers, 1 disabled)
-- **Total Products**: 10 (9 regular, 1 auction)
-- **Total Orders**: 12 (3 delivered, 2 shipped, 2 confirmed, 2 pending, 2 cancelled, 1 returned)
-- **Total Reviews**: 15 (12 approved, 2 pending, 1 rejected)
-- **Total Bids**: 8 (all for one auction, 1 winning)
+- **Total Users**: 17 (1 admin, 1 moderator, 7 customers, 5 sellers, 1 disabled, 1 unverified, 1 phone-only)
+- **Total Products**: 33 (published, out_of_stock, draft, discontinued, sold + auction items)
+- **Total Orders**: 20+ with all statuses (pending/confirmed/shipped/delivered/cancelled/returned) and all payment statuses (pending/paid/failed/refunded)
+- **Total Reviews**: 26+ (approved, pending, rejected)
+- **Total Bids**: 32+ covering all bid statuses (active, outbid, won, lost, **cancelled**)
 - **Total Categories**: 13 (4 root, 9 children)
-- **Total Coupons**: 10
-- **Active Auctions**: 1 (ends Feb 20, 2026)
+- **Total Coupons**: 11 (including HOLI15 linked to Holi event)
+- **Total Blog Posts**: 8 (6 published, 1 draft, 1 archived)
+- **Total Events**: 5 (1 sale ended, 1 offer active, 1 poll active, 1 survey ended, 1 feedback active)
+- **Total Event Entries**: 8 (poll votes, survey responses, feedback submissions)
+- **Total Notifications**: 19+ covering all 15 `NotificationType` values
+- **Total Payouts**: 8 (completed, processing, pending, failed across 4 sellers)
+- **Active Auctions**: 3 (Canon AE-1, MacBook Pro M3, Leica M6, Air Jordan Chicago)
+- **Total Sessions**: 12 (active, expired, user-revoked, admin-revoked)
+- **Total Carts**: 5 (multi-item, single-item, auction-item, qty>1, empty)
+
+## New Collections (Added Mar 2026)
+
+### Sessions (`sessions`)
+
+12 session documents covering every session lifecycle state.
+
+| ID                                         | User      | Device                      | State                                         |
+| ------------------------------------------ | --------- | --------------------------- | --------------------------------------------- |
+| session-admin-chrome-desktop-001           | admin     | Chrome/Windows Desktop      | active ✅                                     |
+| session-john-chrome-desktop-001            | john      | Chrome/Windows Desktop      | active ✅                                     |
+| session-john-chrome-android-002            | john      | Chrome/Android Mobile       | active ✅ (multi-device)                      |
+| session-jane-safari-ios-001                | jane      | Safari/iOS Mobile           | active ✅                                     |
+| session-techhub-chrome-mac-001             | techhub   | Chrome/macOS Desktop        | active ✅                                     |
+| session-moderator-firefox-linux-001        | moderator | Firefox/Ubuntu Desktop      | active ✅                                     |
+| session-priya-chrome-ipad-001              | priya     | Chrome/iOS Tablet           | active ✅                                     |
+| session-artisan-edge-win-001               | artisan   | Edge/Windows Desktop        | active ✅                                     |
+| session-mike-safari-mac-expired-001        | mike      | Safari/macOS                | **expired** (isActive: false, past expiresAt) |
+| session-raj-chrome-android-expired-001     | raj       | Chrome/Android              | **expired** (isActive: false)                 |
+| session-raj-chrome-desktop-revoked-001     | raj       | Chrome/Windows              | **revoked by user** (revokedBy: userId)       |
+| session-meera-suspicious-revoked-admin-001 | meera     | Chrome/Android (suspicious) | **revoked by admin** (unexpected location)    |
+
+**FK consistency:**
+
+- All `userId` values reference existing users ✅
+- Multi-device test: `user-john-doe-johndoe` has 2 active sessions ✅
+- Admin-revoked: `revokedBy: "admin"` ✅
+- User-revoked: `revokedBy: userId` ✅
+
+### Carts (`carts`)
+
+5 cart documents. Document ID = `userId` (O(1) lookup by design).
+
+| Cart ID (= userId)         | Items                              | Notes                           |
+| -------------------------- | ---------------------------------- | ------------------------------- |
+| user-john-doe-johndoe      | 3 (iPhone + Yoga Mat + 2× Charger) | Cross-seller cart, qty > 1 item |
+| user-jane-smith-janes      | 1 (Anarkali Kurta)                 | Single-item cart                |
+| user-mike-johnson-mikejohn | 2 (Air Jordan AUCTION + Cookware)  | Mixed auction + regular         |
+| user-priya-sharma-priya    | 2 (3× Shirt + 1× Charger)          | Quantity > 1                    |
+| user-raj-patel-rajpatel    | 0                                  | Empty cart state                |
+
+**FK consistency:**
+
+- All `userId` values reference existing users ✅
+- All `items[].productId` values reference existing products ✅
+- All `items[].sellerId` values reference existing seller users ✅
+- Auction item (`product-limited-air-jordan-sneakers-auction-artisan-1`) correctly has `isAuction: true` ✅
+- Price captured at add-time (snapshot) ✅
+
+## Updated Seeding Order
+
+1. **Users** — no dependencies
+2. **Categories** — no dependencies
+3. **Coupons** — depends on: Users (createdBy), Categories (optional)
+4. **Products** — depends on: Categories, Users (sellers)
+5. **Orders** — depends on: Products, Users
+6. **Reviews** — depends on: Products, Users, Orders
+7. **Bids** — depends on: Products (auction), Users
+8. **Events** — depends on: Coupons (offerConfig.couponId), Users (createdBy)
+9. **Event Entries** — depends on: Events, Users
+10. **Notifications** — depends on: Users, Orders, Products, Bids, Reviews
+11. **Payouts** — depends on: Users (sellers), Orders
+12. **Blog Posts** — depends on: Users (authorId)
+13. **Sessions** — depends on: Users
+14. **Carts** — depends on: Users, Products (sellers)
+15. **Site Settings, Carousel, Homepage, FAQs, Newsletter** — independent
+
+## New Collections (Added Feb 2026)
+
+### Blog Posts (`blogPosts`)
+
+8 posts seeded across all categories (`guides`, `tips`, `news`, `updates`, `community`).
+
+| ID                                                  | Category  | Status       | Featured | Author |
+| --------------------------------------------------- | --------- | ------------ | -------- | ------ |
+| blog-top-trekking-destinations-india-2026-guides    | guides    | published    | ✅       | admin  |
+| blog-how-to-choose-trekking-gear-beginners-tips     | tips      | published    | ✅       | admin  |
+| blog-letitrip-launches-auction-feature-news         | news      | published    | ❌       | admin  |
+| blog-buyer-seller-protection-policy-updates-updates | updates   | published    | ❌       | admin  |
+| blog-seller-tips-better-product-photos-tips         | tips      | published    | ❌       | admin  |
+| blog-community-spotlight-jan-2026-community         | community | published    | ❌       | admin  |
+| blog-camping-checklist-essentials-2026-guides-draft | guides    | **draft**    | ❌       | admin  |
+| blog-festive-sale-dec-2025-recap-community-archived | community | **archived** | ❌       | admin  |
+
+- All authorId → `user-admin-user-admin` ✅
+
+### Events (`events`) & Event Entries (`eventEntries`)
+
+5 events covering every `EventType` value:
+
+| ID                                           | Type     | Status | Entries             |
+| -------------------------------------------- | -------- | ------ | ------------------- |
+| event-republic-day-sale-2026-sale            | sale     | ended  | 0                   |
+| event-holi-offer-2026-offer                  | offer    | active | 0                   |
+| event-community-poll-gear-2026-poll          | poll     | active | 3                   |
+| event-platform-experience-survey-2026-survey | survey   | ended  | 2418 (2 seeded)     |
+| event-seller-feedback-form-2026-feedback     | feedback | active | 3 (incl. 1 flagged) |
+
+**Event Entry FK consistency:**
+
+- `entry-poll-gear-john-camping` → `user-john-doe-johndoe` ✅
+- `entry-poll-gear-jane-climbing` → `user-jane-smith-janes` ✅
+- `entry-poll-gear-mike-cycling` → `user-mike-johnson-mikejohn` ✅
+- `event-holi-offer-2026-offer.offerConfig.couponId` → `coupon-HOLI15` ✅ (added to coupons)
+- `entry-feedback-seller-anon-flagged.reviewedBy` → `user-admin-user-admin` ✅
+
+### Notifications (`notifications`)
+
+16 notifications distributed across 5 users covering every `NotificationType`:
+
+| User                              | Count | Types covered                                                                                 |
+| --------------------------------- | ----- | --------------------------------------------------------------------------------------------- |
+| user-john-doe-johndoe             | 6     | welcome, order_placed, order_shipped, order_delivered, review_approved, bid_outbid, promotion |
+| user-jane-smith-janes             | 3     | welcome, order_delivered, bid_won                                                             |
+| user-mike-johnson-mikejohn        | 3     | welcome, bid_lost, system                                                                     |
+| user-techhub-electronics-electron | 1     | order_confirmed                                                                               |
+| user-priya-sharma-priya           | 1     | product_available                                                                             |
+
+**FK consistency:**
+
+- All `relatedId` values reference existing orders, products, bids, or events ✅
+- All `userId` values reference existing users ✅
+
+### Payouts (`payouts`)
+
+6 payouts across 4 sellers, covering all `PayoutStatus` values:
+
+| ID                                        | Seller              | Status     | Amount    | Method        |
+| ----------------------------------------- | ------------------- | ---------- | --------- | ------------- |
+| payout-techhub-jan-2026-completed         | TechHub Electronics | completed  | ₹2,47,521 | bank_transfer |
+| payout-techhub-feb-2026-processing        | TechHub Electronics | processing | ₹75,619   | bank_transfer |
+| payout-fashionboutique-jan-2026-completed | Fashion Boutique    | completed  | ₹13,491   | upi           |
+| payout-fashionboutique-feb-2026-pending   | Fashion Boutique    | pending    | ₹85,465   | upi           |
+| payout-homeessentials-jan-2026-failed     | Home Essentials     | failed     | ₹47,975   | bank_transfer |
+| payout-homeessentials-feb-2026-pending    | Home Essentials     | pending    | ₹47,975   | bank_transfer |
+| payout-sportszone-jan-2026-completed      | Sports Zone         | completed  | ₹22,610   | upi           |
+
+**FK consistency:**
+
+- All `sellerId` values reference existing seller users ✅
+- All `orderIds[]` values reference existing orders ✅
+- `platformFee = grossAmount × 0.05` (DEFAULT_PLATFORM_FEE_RATE) ✅
+- `amount = grossAmount − platformFee` ✅

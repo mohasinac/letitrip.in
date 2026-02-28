@@ -1215,4 +1215,150 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     createdAt: new Date("2026-02-08T00:00:00Z"),
     updatedAt: new Date("2026-02-19T00:00:00Z"),
   },
+
+  // ── DRAFT: Trail Running Shoes ──────────────────────────────────────────────
+  // Tests: seller create draft, admin cannot see in public listing API,
+  //        seller publish flow, seller CRUD on own draft products
+  {
+    id: "product-trail-running-shoes-sports-draft-sportszone-1",
+    title: "Trailblazer Pro Trail Running Shoes",
+    description:
+      "High-grip trail running shoes with waterproof Gore-Tex upper, Vibram outsole, and responsive EVA midsole. Suitable for technical terrain and long-distance trail runs.",
+    category: "category-sports-outdoors",
+    subcategory: "Running Shoes",
+    brand: "Trailblazer",
+    price: 8999,
+    currency: "INR",
+    stockQuantity: 50,
+    availableQuantity: 50,
+    mainImage:
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=800&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&h=800&fit=crop",
+    ],
+    status: "draft", // ← seller is still setting up the listing
+    sellerId: "user-sports-zone-sportszone",
+    sellerName: "Sports Zone India",
+    sellerEmail: "sports.zone@example.com",
+    featured: false,
+    tags: ["trail", "running", "shoes", "waterproof", "vibram", "gore-tex"],
+    specifications: [
+      { name: "Upper", value: "Gore-Tex Waterproof" },
+      { name: "Outsole", value: "Vibram Megagrip" },
+      { name: "Weight", value: "320", unit: "g" },
+    ],
+    features: [
+      "Gore-Tex waterproof membrane",
+      "Vibram® Megagrip outsole for technical terrain",
+      "Responsive EVA midsole",
+    ],
+    shippingInfo: "Ships within 3–5 business days.",
+    returnPolicy: "7-day return policy. Unused items only.",
+    isAuction: false,
+    isPromoted: false,
+    createdAt: new Date("2026-02-28T12:00:00Z"),
+    updatedAt: new Date("2026-02-28T12:00:00Z"),
+  },
+
+  // ── DISCONTINUED: Wired Earphones (old model replaced by wireless) ─────────
+  // Tests: admin discontinue product action, discontinued badge in listings,
+  //        search filter excludes discontinued, SEO canonical redirect
+  {
+    id: "product-wired-earphones-electronics-discontinued-techhub-1",
+    title: "Sony MDR-EX15AP Wired In-Ear Earphones",
+    description:
+      "Sony MDR-EX15AP wired earphones with built-in microphone and remote. 9mm drivers, 1.2m tangle-free cable. This model has been discontinued and replaced by the newer wireless range.",
+    category: "category-audio-electronics",
+    subcategory: "Wired Earphones",
+    brand: "Sony",
+    price: 799,
+    currency: "INR",
+    stockQuantity: 0,
+    availableQuantity: 0,
+    mainImage:
+      "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&h=800&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=1200&h=800&fit=crop",
+    ],
+    status: "discontinued", // ← admin marked discontinued; no new orders possible
+    sellerId: "user-techhub-electronics-electron",
+    sellerName: "TechHub Electronics",
+    sellerEmail: "electronics.store@example.com",
+    featured: false,
+    tags: [
+      "sony",
+      "earphones",
+      "wired",
+      "in-ear",
+      "microphone",
+      "discontinued",
+    ],
+    specifications: [
+      { name: "Driver", value: "9mm" },
+      { name: "Cable Length", value: "1.2", unit: "m" },
+      { name: "Impedance", value: "16", unit: "Ω" },
+    ],
+    features: [
+      "Built-in microphone & one-button remote",
+      "Tangle-free cable",
+      "Compatible with Android & iOS",
+    ],
+    shippingInfo: "N/A — product discontinued.",
+    returnPolicy: "N/A — product discontinued.",
+    isAuction: false,
+    isPromoted: false,
+    createdAt: new Date("2024-06-01T00:00:00Z"),
+    updatedAt: new Date("2026-01-15T00:00:00Z"), // date admin set discontinued
+  },
+
+  // ── SOLD: Vintage Handcrafted Leather Journal ──────────────────────────────
+  // Tests: sold status badge, add-to-cart blocked for sold items,
+  //        seller sold inventory UI, "notify me" waitlist CTA
+  {
+    id: "product-vintage-leather-journal-sold-artisan-1",
+    title: "Handcrafted Vintage Leather Journal — A5 Refillable",
+    description:
+      "Hand-stitched genuine buffalo leather journal. A5 format, 200 acid-free pages, refillable. Each journal is unique — slight variations in grain and color are part of the character.",
+    category: "category-home-kitchen",
+    subcategory: "Stationery",
+    brand: "Artisan Crafts Co.",
+    price: 3500,
+    currency: "INR",
+    stockQuantity: 1,
+    availableQuantity: 0,
+    mainImage:
+      "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&h=800&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=1200&h=800&fit=crop",
+    ],
+    status: "sold", // ← single unit, sold to a buyer (non-auction)
+    sellerId: "user-artisan-crafts-artisan",
+    sellerName: "Artisan Crafts Co.",
+    sellerEmail: "artisan.crafts@example.com",
+    featured: false,
+    tags: [
+      "leather",
+      "journal",
+      "handcrafted",
+      "vintage",
+      "stationery",
+      "gift",
+    ],
+    specifications: [
+      { name: "Material", value: "Genuine Buffalo Leather" },
+      { name: "Format", value: "A5 (14.8 × 21 cm)" },
+      { name: "Pages", value: "200 acid-free ruled" },
+    ],
+    features: [
+      "Hand-stitched binding",
+      "Refillable — replaceable inner paper block",
+      "Includes bookmark ribbon and pen loop",
+    ],
+    shippingInfo: "Sold — no longer available.",
+    returnPolicy: "N/A — item sold.",
+    isAuction: false,
+    isPromoted: false,
+    createdAt: new Date("2026-01-20T10:00:00Z"),
+    updatedAt: new Date("2026-02-15T12:00:00Z"), // date item was sold
+  },
 ];
