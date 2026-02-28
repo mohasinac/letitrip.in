@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { CartItemDocument } from "@/db/schema";
 
@@ -21,6 +22,7 @@ export function CartItemRow({
   onRemove,
   isUpdating = false,
 }: CartItemRowProps) {
+  const t = useTranslations("cart");
   const lineTotal = item.price * item.quantity;
 
   return (
@@ -93,7 +95,7 @@ export function CartItemRow({
             disabled={isUpdating}
             className="text-xs text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 disabled:opacity-40 transition-colors font-medium"
           >
-            {UI_LABELS.CART.REMOVE}
+            {t("remove")}
           </button>
         </div>
       </div>

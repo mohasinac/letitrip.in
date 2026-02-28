@@ -1257,6 +1257,26 @@ Convert each to a hook `useXTableColumns(onX, onY)` that calls `useTranslations(
 
 ---
 
+### ✅ TASK-44 · Migrate cart and checkout components from `UI_LABELS` to `useTranslations` · DONE
+
+**Rule violated:** Rule 2 (no `UI_LABELS` in JSX client components)
+**Files:** `CartItemList.tsx`, `CartItemRow.tsx`, `CartSummary.tsx` (cart/), `CheckoutAddressStep.tsx`, `CheckoutOrderReview.tsx`, `OrderSuccessActions.tsx` (checkout/)
+
+**What was done:**
+
+1. Added `useTranslations("cart")` to `CartItemList`, `CartItemRow`, `CartSummary`; removed `UI_LABELS` imports.
+2. Added `useTranslations("loading")` to `CartSummary` for loading spinner text alongside cart translations.
+3. Added `useTranslations("checkout")` to `CheckoutAddressStep`, `CheckoutOrderReview`; removed `UI_LABELS` imports.
+4. Added `useTranslations("cart")` to `CheckoutOrderReview` for `CART.QUANTITY` reference.
+5. Added `"use client"` directive to `OrderSuccessActions` (previously server component); removed module-level `const LABELS = UI_LABELS.ORDER_SUCCESS_PAGE`; added `useTranslations("orderSuccess")` + `useTranslations("orders")`.
+6. Added 5 new keys to `messages/en.json` + `messages/hi.json` under `cart` namespace: `startShopping`, `itemsSubtotal`, `discount`, `shippingCalculated`, `taxCalculated`.
+7. Added 5 new keys to `messages/en.json` + `messages/hi.json` under `checkout` namespace: `noAddresses`, `shippingTo`, `changeAddress`, `orderItems`, `paymentOnDelivery`.
+8. Created 6 new test files (36 tests, all passing).
+
+**Effort:** M (2–4 h)
+
+---
+
 ## Dependency Map
 
 Tasks that should be done in order due to shared files:

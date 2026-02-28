@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import type { CartItemDocument, AddressDocument } from "@/db/schema";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 
 const { themed } = THEME_CONSTANTS;
@@ -24,6 +25,8 @@ export function CheckoutOrderReview({
   onPaymentMethodChange,
   onChangeAddress,
 }: CheckoutOrderReviewProps) {
+  const t = useTranslations("checkout");
+  const tCart = useTranslations("cart");
   return (
     <div className="space-y-6">
       {/* Shipping address */}
@@ -32,13 +35,13 @@ export function CheckoutOrderReview({
       >
         <div className="flex items-center justify-between mb-3">
           <h3 className={`font-semibold ${themed.textPrimary}`}>
-            {UI_LABELS.CHECKOUT.SHIPPING_TO}
+            {t("shippingTo")}
           </h3>
           <button
             onClick={onChangeAddress}
             className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
           >
-            {UI_LABELS.CHECKOUT.CHANGE_ADDRESS}
+            {t("changeAddress")}
           </button>
         </div>
         <p className={`text-sm font-medium ${themed.textPrimary}`}>
@@ -57,7 +60,7 @@ export function CheckoutOrderReview({
       {/* Order items */}
       <div>
         <h3 className={`font-semibold mb-3 ${themed.textPrimary}`}>
-          {UI_LABELS.CHECKOUT.ORDER_ITEMS}
+          {t("orderItems")}
         </h3>
         <div className={`rounded-xl border divide-y ${themed.border}`}>
           {items.map((item) => (
@@ -84,7 +87,7 @@ export function CheckoutOrderReview({
                   {item.productTitle}
                 </p>
                 <p className={`text-xs ${themed.textSecondary}`}>
-                  {UI_LABELS.CART.QUANTITY} × {item.quantity}
+                  {tCart("quantity")} × {item.quantity}
                 </p>
               </div>
               <p
@@ -100,7 +103,7 @@ export function CheckoutOrderReview({
       {/* Payment method */}
       <div>
         <h3 className={`font-semibold mb-3 ${themed.textPrimary}`}>
-          {UI_LABELS.CHECKOUT.PAYMENT_METHOD}
+          {t("paymentMethod")}
         </h3>
         <div className="space-y-2">
           {/* Cash on Delivery */}
@@ -124,10 +127,10 @@ export function CheckoutOrderReview({
               </div>
               <div>
                 <p className={`text-sm font-medium ${themed.textPrimary}`}>
-                  {UI_LABELS.CHECKOUT.COD}
+                  {t("cod")}
                 </p>
                 <p className={`text-xs ${themed.textSecondary}`}>
-                  {UI_LABELS.CHECKOUT.PAYMENT_ON_DELIVERY}
+                  {t("paymentOnDelivery")}
                 </p>
               </div>
             </div>
@@ -156,7 +159,7 @@ export function CheckoutOrderReview({
               </div>
               <div>
                 <p className={`text-sm font-medium ${themed.textPrimary}`}>
-                  {UI_LABELS.CHECKOUT.ONLINE_PAYMENT}
+                  {t("online")}
                 </p>
                 <p className="text-xs text-emerald-600">Powered by Razorpay</p>
               </div>
@@ -170,7 +173,7 @@ export function CheckoutOrderReview({
         className={`flex items-center justify-between pt-4 border-t ${themed.border}`}
       >
         <span className={`font-semibold ${themed.textPrimary}`}>
-          {UI_LABELS.CHECKOUT.ORDER_TOTAL}
+          {t("orderTotal")}
         </span>
         <span className={`text-xl font-bold ${themed.textPrimary}`}>
           {formatCurrency(subtotal)}

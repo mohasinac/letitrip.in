@@ -515,7 +515,12 @@
     "promoRemove": "हटाएं",
     "promoPlaceholder": "कोड दर्ज करें",
     "itemCount": "{count, plural, one {# आइटम} other {# आइटम}}",
-    "shippingFree": "मुफ़्त"
+    "shippingFree": "मुफ़्त",
+    "startShopping": "खरीदारी शुरू करें",
+    "itemsSubtotal": "वस्तुओं का उप-योग",
+    "discount": "छूट",
+    "shippingCalculated": "चेकआउट पर गणना",
+    "taxCalculated": "चेकआउट पर गणना"
   },
   "orders": {
     "title": "मेरे ऑर्डर",
@@ -606,7 +611,12 @@
     "placingOrder": "ऑर्डर दे रहे हैं...",
     "orderTotal": "कुल ऑर्डर",
     "taxIncluded": "कर सहित",
-    "shippingFree": "मुफ़्त"
+    "shippingFree": "मुफ़्त",
+    "noAddresses": "कोई सहेजे गए पते नहीं",
+    "shippingTo": "शिपिंग पता",
+    "changeAddress": "बदलें",
+    "orderItems": "ऑर्डर के आइटम",
+    "paymentOnDelivery": "डिलीवरी पर भुगतान करेंगे"
   },
   "orderSuccess": {
     "fallbackTitle": "ऑर्डर हो गया!",

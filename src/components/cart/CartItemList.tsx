@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { CartItemRow } from "./CartItemRow";
 import type { CartItemDocument } from "@/db/schema";
 
@@ -20,21 +21,22 @@ export function CartItemList({
   onUpdateQuantity,
   onRemove,
 }: CartItemListProps) {
+  const t = useTranslations("cart");
   if (items.length === 0) {
     return (
       <div className="text-center py-20">
         <span className="text-6xl mb-4 block">🛒</span>
         <h2 className={`text-xl font-bold mb-2 ${themed.textPrimary}`}>
-          {UI_LABELS.CART.EMPTY}
+          {t("empty")}
         </h2>
         <p className={`text-sm mb-6 ${themed.textSecondary}`}>
-          {UI_LABELS.CART.EMPTY_SUBTITLE}
+          {t("emptyDesc")}
         </p>
         <Link
           href={ROUTES.PUBLIC.PRODUCTS}
           className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors text-sm"
         >
-          {UI_LABELS.CART.START_SHOPPING}
+          {t("startShopping")}
         </Link>
       </div>
     );

@@ -14,6 +14,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### TASK-44 — Migrate cart and checkout components from `UI_LABELS` to `useTranslations` (2026-02-28)
+
+#### Changed
+
+- **`src/components/cart/CartItemList.tsx`** — Replaced `UI_LABELS` with `useTranslations("cart")`; empty state text and "Start Shopping" link now use `t()`.
+- **`src/components/cart/CartItemRow.tsx`** — Replaced `UI_LABELS` with `useTranslations("cart")`; remove button label now uses `t("remove")`.
+- **`src/components/cart/CartSummary.tsx`** — Replaced `UI_LABELS` with `useTranslations("cart")` + `useTranslations("loading")`; all 12 label refs (order summary, subtotal, item count, discount, shipping, tax, total, loading, checkout, continue shopping) use `t()`.
+- **`src/components/checkout/CheckoutAddressStep.tsx`** — Replaced `UI_LABELS` with `useTranslations("checkout")`; select-address heading, no-addresses, and add-address labels use `t()`.
+- **`src/components/checkout/CheckoutOrderReview.tsx`** — Replaced `UI_LABELS` with `useTranslations("checkout")` + `useTranslations("cart")`; shipping address, order items, payment method, and total labels use `t()`.
+- **`src/components/checkout/OrderSuccessActions.tsx`** — Added `"use client"` directive (was server component); removed module-level `const LABELS = UI_LABELS.ORDER_SUCCESS_PAGE`; replaced with `useTranslations("orderSuccess")` + `useTranslations("orders")`.
+- **`messages/en.json`** — Added 5 keys to `cart` namespace: `startShopping`, `itemsSubtotal`, `discount`, `shippingCalculated`, `taxCalculated`.
+- **`messages/en.json`** — Added 5 keys to `checkout` namespace: `noAddresses`, `shippingTo`, `changeAddress`, `orderItems`, `paymentOnDelivery`.
+- **`messages/hi.json`** — Same 10 keys added with Hindi translations.
+
+#### Tests
+
+- **`src/components/cart/__tests__/CartItemList.test.tsx`** — New; 3 tests covering empty state, items list, and conditional empty-state rendering.
+- **`src/components/cart/__tests__/CartItemRow.test.tsx`** — New; 3 tests covering product title, remove label, and updating opacity.
+- **`src/components/cart/__tests__/CartSummary.test.tsx`** — New; 8 tests covering order summary heading, total, checkout/continue-shopping buttons, loading state, discount row, click handler, disabled state.
+- **`src/components/checkout/__tests__/CheckoutAddressStep.test.tsx`** — New; 5 tests covering heading, no-addresses state, add-address button (empty and non-empty), and address rendering.
+- **`src/components/checkout/__tests__/CheckoutOrderReview.test.tsx`** — New; 7 tests covering shipping label, change-address, order items heading, quantity label, payment method, cod text, and total.
+- **`src/components/checkout/__tests__/OrderSuccessActions.test.tsx`** — New; 4 tests covering view-order, continue-shopping, orders title, and link rendering.
+
+---
+
 ### TASK-43 — Migrate 7 product display components from `UI_LABELS` to `useTranslations` (2026-02-28)
 
 #### Changed

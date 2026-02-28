@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import type { AddressDocument } from "@/db/schema";
-import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 const { themed, borderRadius } = THEME_CONSTANTS;
 
@@ -17,24 +18,23 @@ export function CheckoutAddressStep({
   selectedAddressId,
   onSelect,
 }: CheckoutAddressStepProps) {
+  const t = useTranslations("checkout");
   return (
     <div>
       <h2 className={`text-lg font-semibold mb-4 ${themed.textPrimary}`}>
-        {UI_LABELS.CHECKOUT.SELECT_ADDRESS}
+        {t("selectAddress")}
       </h2>
 
       {addresses.length === 0 ? (
         <div
           className={`p-6 rounded-xl border ${themed.bgSecondary} ${themed.border} text-center`}
         >
-          <p className={`mb-4 ${themed.textSecondary}`}>
-            {UI_LABELS.CHECKOUT.NO_ADDRESSES}
-          </p>
+          <p className={`mb-4 ${themed.textSecondary}`}>{t("noAddresses")}</p>
           <Link
             href={ROUTES.USER.ADDRESSES_ADD}
             className="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"
           >
-            {UI_LABELS.CHECKOUT.ADD_ADDRESS}
+            {t("addNewAddress")}
           </Link>
         </div>
       ) : (
@@ -113,7 +113,7 @@ export function CheckoutAddressStep({
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            {UI_LABELS.CHECKOUT.ADD_ADDRESS}
+            {t("addNewAddress")}
           </Link>
         </div>
       )}

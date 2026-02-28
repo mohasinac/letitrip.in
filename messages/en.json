@@ -515,7 +515,12 @@
     "promoRemove": "Remove",
     "promoPlaceholder": "Enter code",
     "itemCount": "{count, plural, one {# item} other {# items}}",
-    "shippingFree": "Free"
+    "shippingFree": "Free",
+    "startShopping": "Start Shopping",
+    "itemsSubtotal": "Items Subtotal",
+    "discount": "Discount",
+    "shippingCalculated": "Calculated at checkout",
+    "taxCalculated": "Calculated at checkout"
   },
   "orders": {
     "title": "My Orders",
@@ -607,7 +612,12 @@
     "placingOrder": "Placing Order...",
     "orderTotal": "Order Total",
     "taxIncluded": "Inclusive of taxes",
-    "shippingFree": "Free"
+    "shippingFree": "Free",
+    "noAddresses": "No saved addresses",
+    "shippingTo": "Shipping To",
+    "changeAddress": "Change",
+    "orderItems": "Order Items",
+    "paymentOnDelivery": "You will pay on delivery"
   },
   "orderSuccess": {
     "fallbackTitle": "Order Placed!",
