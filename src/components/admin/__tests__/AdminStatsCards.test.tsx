@@ -1,38 +1,28 @@
 import { render, screen } from "@testing-library/react";
 import type React from "react";
+
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => key,
+}));
+
 import { AdminStatsCards } from "@/components";
-import { UI_LABELS } from "@/constants";
+
+const defaultStats = {
+  users: { total: 10, active: 8, new: 2, disabled: 0 },
+  products: { total: 5 },
+  orders: { total: 3 },
+};
 
 describe("AdminStatsCards", () => {
-  it("renders all six stat cards with correct labels", () => {
-    render(
-      <AdminStatsCards
-        stats={{
-          users: { total: 10, active: 8, new: 2, disabled: 0 },
-          products: { total: 5 },
-          orders: { total: 3 },
-        }}
-      />,
-    );
+  it("renders all six stat cards with translation keys", () => {
+    render(<AdminStatsCards stats={defaultStats} />);
 
-    expect(
-      screen.getByText(UI_LABELS.ADMIN.STATS.TOTAL_USERS),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(UI_LABELS.ADMIN.STATS.ACTIVE_USERS),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(UI_LABELS.ADMIN.STATS.NEW_USERS),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(UI_LABELS.ADMIN.STATS.DISABLED_USERS),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(UI_LABELS.ADMIN.STATS.TOTAL_PRODUCTS),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(UI_LABELS.ADMIN.STATS.TOTAL_ORDERS),
-    ).toBeInTheDocument();
+    expect(screen.getByText("totalUsers")).toBeInTheDocument();
+    expect(screen.getByText("activeUsers")).toBeInTheDocument();
+    expect(screen.getByText("newUsers")).toBeInTheDocument();
+    expect(screen.getByText("disabledUsers")).toBeInTheDocument();
+    expect(screen.getByText("totalProducts")).toBeInTheDocument();
+    expect(screen.getByText("totalOrders")).toBeInTheDocument();
   });
 
   it("renders stat values correctly", () => {

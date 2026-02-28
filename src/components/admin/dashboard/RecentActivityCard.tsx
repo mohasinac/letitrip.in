@@ -3,14 +3,15 @@
  * Path: src/components/admin/dashboard/RecentActivityCard.tsx
  *
  * Displays recent activity items on the admin dashboard.
- * Uses UI_LABELS and THEME_CONSTANTS from @/constants.
+ * Uses useTranslations (next-intl) for all labels.
  */
 
 "use client";
 
 import { UserPlus, Activity } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Card, Heading, Text } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 
 const { themed, spacing, enhancedCard } = THEME_CONSTANTS;
 
@@ -23,11 +24,12 @@ interface RecentActivityCardProps {
 }
 
 export function RecentActivityCard({ stats }: RecentActivityCardProps) {
+  const t = useTranslations("adminDashboard");
   return (
     <Card className={enhancedCard.base}>
       <div className={spacing.cardPadding}>
         <Heading level={3} variant="primary" className="mb-4">
-          {UI_LABELS.ADMIN.DASHBOARD.RECENT_ACTIVITY}
+          {t("recentActivity")}
         </Heading>
         <div className={spacing.stackSmall}>
           {stats.users.new > 0 && (
@@ -36,13 +38,9 @@ export function RecentActivityCard({ stats }: RecentActivityCardProps) {
                 <UserPlus className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div className="flex-1">
-                <Text className="font-medium">
-                  {UI_LABELS.ADMIN.DASHBOARD.NEW_USERS}
-                </Text>
+                <Text className="font-medium">{t("newUsers")}</Text>
                 <Text className={`${themed.textSecondary} text-sm`}>
-                  {UI_LABELS.ADMIN.DASHBOARD.NEW_USERS_REGISTERED(
-                    stats.users.new,
-                  )}
+                  {t("newUsersRegistered", { count: stats.users.new })}
                 </Text>
               </div>
             </div>
@@ -52,11 +50,9 @@ export function RecentActivityCard({ stats }: RecentActivityCardProps) {
               <Activity className="w-5 h-5 text-sky-600 dark:text-sky-400" />
             </div>
             <div className="flex-1">
-              <Text className="font-medium">
-                {UI_LABELS.ADMIN.DASHBOARD.SYSTEM_STATUS}
-              </Text>
+              <Text className="font-medium">{t("systemStatus")}</Text>
               <Text className={`${themed.textSecondary} text-sm`}>
-                {UI_LABELS.ADMIN.DASHBOARD.ALL_SYSTEMS_OPERATIONAL}
+                {t("allSystemsOperational")}
               </Text>
             </div>
           </div>

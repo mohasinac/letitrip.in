@@ -14,6 +14,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### TASK-39 — Migrate admin dashboard components to `useTranslations` (2026-02-28)
+
+#### Changed
+
+- **`src/components/admin/dashboard/QuickActionsGrid.tsx`** — Removed `UI_LABELS` import; added `useTranslations('adminDashboard')`; moved `QUICK_ACTIONS` array inside component function so `t()` is accessible; replaced 4 hardcoded strings (`quickActions`, `manageUsers`, `reviewDisabled`, `manageContent`).
+- **`src/components/admin/dashboard/RecentActivityCard.tsx`** — Added `"use client"` directive; added `useTranslations('adminDashboard')`; replaced 5 hardcoded strings (`recentActivity`, `newUsers`, `newUsersRegistered` with ICU plural, `systemStatus`, `allSystemsOperational`).
+- **`src/components/admin/AdminStatsCards.tsx`** — Added `"use client"` directive; removed `UI_LABELS` import; added `useTranslations('adminStats')`; moved `STAT_CARDS` array builder inside component; replaced 6 stat-card labels (`totalUsers`, `activeUsers`, `newUsers`, `disabledUsers`, `totalProducts`, `totalOrders`).
+- **`messages/en.json`** — Added `adminDashboard` namespace (9 keys: `quickActions`, `manageUsers`, `reviewDisabled`, `manageContent`, `recentActivity`, `newUsers`, `newUsersRegistered`, `systemStatus`, `allSystemsOperational`) and `adminStats` namespace (6 keys: `totalUsers`, `activeUsers`, `newUsers`, `disabledUsers`, `totalProducts`, `totalOrders`).
+- **`messages/hi.json`** — Added matching Hindi translations for `adminDashboard` and `adminStats` namespaces.
+
+#### Tests
+
+- **`src/components/admin/dashboard/__tests__/QuickActionsGrid.test.tsx`** — Created; 5 tests covering renders, quick-action links, and heading.
+- **`src/components/admin/dashboard/__tests__/RecentActivityCard.test.tsx`** — Created; 6 tests covering stats display, activity section, and system status.
+- **`src/components/admin/__tests__/AdminStatsCards.test.tsx`** — Updated to use next-intl mock and translation key assertions (removed `UI_LABELS` references).
+
+---
+
 ### TASK-38 — Add missing `coupons: type+createdAt` Firestore composite index (2026-02-28)
 
 #### Added

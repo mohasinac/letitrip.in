@@ -1460,6 +1460,25 @@
     "chooseImage": "Choose Image",
     "removePhoto": "Remove Photo"
   },
+  "adminDashboard": {
+    "quickActions": "Quick Actions",
+    "recentActivity": "Recent Activity",
+    "manageUsers": "Manage Users",
+    "reviewDisabled": "Review Disabled Accounts",
+    "manageContent": "Manage Content",
+    "newUsers": "New Users",
+    "systemStatus": "System Status",
+    "allSystemsOperational": "All systems operational",
+    "newUsersRegistered": "{count, plural, one {1 new user registered in the last 30 days} other {# new users registered in the last 30 days}}"
+  },
+  "adminStats": {
+    "totalUsers": "Total Users",
+    "activeUsers": "Active Users",
+    "newUsers": "New Users",
+    "disabledUsers": "Disabled Accounts",
+    "totalProducts": "Total Products",
+    "totalOrders": "Total Orders"
+  },
   "userSettings": {
     "emailVerificationTitle": "Email Verification",
     "phoneVerificationTitle": "Phone Verification",

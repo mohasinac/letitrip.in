@@ -1459,6 +1459,25 @@
     "stay": "रहें",
     "leave": "छोड़ें"
   },
+  "adminDashboard": {
+    "quickActions": "त्वरित क्रियाएँ",
+    "recentActivity": "हाल की गतिविधि",
+    "manageUsers": "उपयोगकर्ता प्रबंधन",
+    "reviewDisabled": "अक्षम खातों की समीक्षा करें",
+    "manageContent": "सामग्री प्रबंधन",
+    "newUsers": "नए उपयोगकर्ता",
+    "systemStatus": "सिस्टम स्थिति",
+    "allSystemsOperational": "सभी सिस्टम सामान्य चल रहे हैं",
+    "newUsersRegistered": "{count, plural, one {पिछले 30 दिनों में 1 नया उपयोगकर्ता पंजीकृत हुआ} other {पिछले 30 दिनों में # नए उपयोगकर्ता पंजीकृत हुए}}"
+  },
+  "adminStats": {
+    "totalUsers": "कुल उपयोगकर्ता",
+    "activeUsers": "सक्रिय उपयोगकर्ता",
+    "newUsers": "नए उपयोगकर्ता",
+    "disabledUsers": "अक्षम खाते",
+    "totalProducts": "कुल उत्पाद",
+    "totalOrders": "कुल ऑर्डर"
+  },
   "userSettings": {
     "emailVerificationTitle": "ईमेल सत्यापन",
     "phoneVerificationTitle": "फ़ोन सत्यापन",

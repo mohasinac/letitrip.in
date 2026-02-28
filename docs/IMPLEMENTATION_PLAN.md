@@ -1123,6 +1123,23 @@ firebase deploy --only database:rules
 
 ---
 
+### ✅ TASK-39 · Migrate admin dashboard components to `useTranslations` · P2 · DONE 2026-02-28
+
+**Files:** `src/components/admin/dashboard/QuickActionsGrid.tsx`, `src/components/admin/dashboard/RecentActivityCard.tsx`, `src/components/admin/AdminStatsCards.tsx`
+**Why:** Audit found these components still using hardcoded English strings or `UI_LABELS` in rendered JSX, violating Rule 3 (ZERO Hardcoded Strings) and the i18n rule.
+
+**Sub-tasks:**
+
+- [x] Migrate `QuickActionsGrid.tsx` — remove `UI_LABELS`, add `useTranslations('adminDashboard')`, move `QUICK_ACTIONS` inside component
+- [x] Migrate `RecentActivityCard.tsx` — add `"use client"`, add `useTranslations('adminDashboard')`
+- [x] Migrate `AdminStatsCards.tsx` — add `"use client"`, add `useTranslations('adminStats')`
+- [x] Add `adminDashboard` (9 keys) and `adminStats` (6 keys) namespaces to `messages/en.json` and `messages/hi.json`
+- [x] Create / update tests for all three components
+
+**Effort:** S (1–2 h)
+
+---
+
 ## Dependency Map
 
 Tasks that should be done in order due to shared files:

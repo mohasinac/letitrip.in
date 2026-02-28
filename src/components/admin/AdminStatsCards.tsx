@@ -2,8 +2,10 @@
  * Admin Stats Cards Component
  *
  * Displays key admin statistics using THEME_CONSTANTS.enhancedCard.stat tokens
- * and lucide-react icons. No hardcoded strings — all labels from UI_LABELS.
+ * and lucide-react icons. All labels via useTranslations('adminStats').
  */
+
+"use client";
 
 import {
   Users,
@@ -13,7 +15,8 @@ import {
   Package,
   ShoppingCart,
 } from "lucide-react";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 
 interface StatsCardsProps {
   stats: {
@@ -25,53 +28,53 @@ interface StatsCardsProps {
 
 const { enhancedCard, spacing } = THEME_CONSTANTS;
 
-const STAT_CARDS = (stats: StatsCardsProps["stats"]) => [
-  {
-    label: UI_LABELS.ADMIN.STATS.TOTAL_USERS,
-    value: stats.users.total,
-    cardClass: enhancedCard.stat.indigo,
-    iconClass: "text-indigo-600 dark:text-indigo-400",
-    Icon: Users,
-  },
-  {
-    label: UI_LABELS.ADMIN.STATS.ACTIVE_USERS,
-    value: stats.users.active,
-    cardClass: enhancedCard.stat.emerald,
-    iconClass: "text-emerald-600 dark:text-emerald-400",
-    Icon: UserCheck,
-  },
-  {
-    label: UI_LABELS.ADMIN.STATS.NEW_USERS,
-    value: stats.users.new,
-    cardClass: enhancedCard.stat.teal,
-    iconClass: "text-teal-600 dark:text-teal-400",
-    Icon: UserPlus,
-  },
-  {
-    label: UI_LABELS.ADMIN.STATS.DISABLED_USERS,
-    value: stats.users.disabled,
-    cardClass: enhancedCard.stat.rose,
-    iconClass: "text-rose-600 dark:text-rose-400",
-    Icon: UserX,
-  },
-  {
-    label: UI_LABELS.ADMIN.STATS.TOTAL_PRODUCTS,
-    value: stats.products.total,
-    cardClass: enhancedCard.stat.amber,
-    iconClass: "text-amber-600 dark:text-amber-400",
-    Icon: Package,
-  },
-  {
-    label: UI_LABELS.ADMIN.STATS.TOTAL_ORDERS,
-    value: stats.orders.total,
-    cardClass: enhancedCard.stat.indigo,
-    iconClass: "text-indigo-600 dark:text-indigo-400",
-    Icon: ShoppingCart,
-  },
-];
-
 export function AdminStatsCards({ stats }: StatsCardsProps) {
-  const cards = STAT_CARDS(stats);
+  const t = useTranslations("adminStats");
+
+  const cards = [
+    {
+      label: t("totalUsers"),
+      value: stats.users.total,
+      cardClass: enhancedCard.stat.indigo,
+      iconClass: "text-indigo-600 dark:text-indigo-400",
+      Icon: Users,
+    },
+    {
+      label: t("activeUsers"),
+      value: stats.users.active,
+      cardClass: enhancedCard.stat.emerald,
+      iconClass: "text-emerald-600 dark:text-emerald-400",
+      Icon: UserCheck,
+    },
+    {
+      label: t("newUsers"),
+      value: stats.users.new,
+      cardClass: enhancedCard.stat.teal,
+      iconClass: "text-teal-600 dark:text-teal-400",
+      Icon: UserPlus,
+    },
+    {
+      label: t("disabledUsers"),
+      value: stats.users.disabled,
+      cardClass: enhancedCard.stat.rose,
+      iconClass: "text-rose-600 dark:text-rose-400",
+      Icon: UserX,
+    },
+    {
+      label: t("totalProducts"),
+      value: stats.products.total,
+      cardClass: enhancedCard.stat.amber,
+      iconClass: "text-amber-600 dark:text-amber-400",
+      Icon: Package,
+    },
+    {
+      label: t("totalOrders"),
+      value: stats.orders.total,
+      cardClass: enhancedCard.stat.indigo,
+      iconClass: "text-indigo-600 dark:text-indigo-400",
+      Icon: ShoppingCart,
+    },
+  ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
