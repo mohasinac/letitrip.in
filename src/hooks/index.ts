@@ -19,6 +19,7 @@ export type { UseGestureOptions, GestureType } from "./useGesture";
 export { useApiQuery } from "./useApiQuery";
 export { useApiMutation } from "./useApiMutation";
 export { useProfile } from "./useProfile";
+export { useProfileStats } from "./useProfileStats";
 export { usePublicProfile } from "./usePublicProfile";
 export type {
   SellerReviewsData,

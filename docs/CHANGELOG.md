@@ -14,14 +14,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### Eleventh Implementation Pass — Profile Stats Hook Extraction (2026-03-01)
+
+#### Added
+
+- **TASK-14 (P2):** `src/hooks/useProfileStats.ts` — NEW — encapsulates the two `useApiQuery` calls (orders count + addresses count) from the user profile page; returns `{ orderCount, addressCount, isLoading }`.
+- **TASK-14 (P2):** `src/hooks/__tests__/useProfileStats.test.ts` — NEW — 5 tests. All pass.
+
+#### Changed
+
+- **TASK-14 (P2):** `src/app/[locale]/user/profile/page.tsx` — replaced inline `useApiQuery` calls and manual stat derivation with `useProfileStats(!!user)`; removed `orderService` + `addressService` direct imports from the page.
+- **TASK-14 (P2):** `src/hooks/index.ts` — added `export { useProfileStats } from "./useProfileStats"`.
+
+---
+
 ### Tenth Implementation Pass — URL-Driven Sort State + Orders View Extraction (2026-03-01)
 
 #### Added
 
+- **TASK-13 (P2):** `src/features/admin/hooks/useAdminOrders.ts` — NEW — data layer hook wrapping `useApiQuery` + `useApiMutation` for the admin orders list and update operations; follows `useAdminBlog` / `useAdminUsers` pattern.
+- **TASK-13 (P2):** `src/features/admin/components/AdminOrdersView.tsx` — NEW — extracted orders CRUD view including `useUrlTable` filter/sort state, `SideDrawer` for order-status editing, `DataTable`, `TablePagination`, and `AdminPageHeader`; last admin page to be extracted.
+- **TASK-13 (P2):** `src/features/admin/hooks/__tests__/useAdminOrders.test.ts` — NEW — 5 tests. All pass.
+- **TASK-13 (P2):** `src/features/admin/components/__tests__/AdminOrdersView.test.tsx` — NEW — 6 tests. All pass.
 - **TASK-19 (P1):** `src/components/faq/__tests__/FAQPageContent.test.tsx` — NEW — 8 tests covering render, FAQ display, sort change via `table.setSort`, `useUrlTable` usage verification. All pass.
 
 #### Changed
 
+- **TASK-13 (P2):** `src/app/[locale]/admin/orders/[[...action]]/page.tsx` — reduced to 12-line thin shell delegating to `<AdminOrdersView action={action} />`; all state, hooks, and JSX moved to `AdminOrdersView`.
+- **TASK-13 (P2):** `src/features/admin/hooks/index.ts` — added `export * from "./useAdminOrders"`.
+- **TASK-13 (P2):** `src/features/admin/index.ts` — added `export { AdminOrdersView } from "./components/AdminOrdersView"`.
+- **TASK-13 (P2):** `messages/en.json` + `messages/hi.json` — added `adminOrders.noOrders` translation key (was hardcoded `"No orders found"`).
 - **TASK-19 (P1):** `src/components/faq/FAQPageContent.tsx` — replaced `const [sortOption, setSortOption] = useState<FAQSortOption>("helpful")` with `useUrlTable({ defaults: { sort: "helpful" } })`; sort selection is now URL-driven and bookmarkable. `onSortChange` calls `table.setSort(sort)` instead of `setSortOption`.
 
 ---

@@ -281,7 +281,7 @@ Create `src/components/admin/__tests__/MediaUploadField.test.tsx`.
 
 ---
 
-### TASK-13 · `admin/orders/page.tsx` — extract to `AdminOrdersView` feature component · P2
+### ✅ DONE — TASK-13 · `admin/orders/page.tsx` — extract to `AdminOrdersView` feature component · P2
 
 **File:** `src/app/[locale]/admin/orders/[[...action]]/page.tsx`
 **Target:** `src/features/admin/components/AdminOrdersView.tsx`
@@ -304,7 +304,7 @@ Create `src/components/admin/__tests__/MediaUploadField.test.tsx`.
 
 ---
 
-### TASK-14 · `user/profile/page.tsx` — extract stat logic + delegate rendering · P2
+### ✅ DONE — TASK-14 · `user/profile/page.tsx` — extract stat logic + delegate rendering · P2
 
 **File:** `src/app/[locale]/user/profile/page.tsx`
 

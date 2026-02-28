@@ -535,14 +535,12 @@ All user pages require authentication (`🔒`). Protected by middleware RBAC.
 #### `/user/profile` — User Profile 🔴🔒
 
 **Route constant:** `ROUTES.USER.PROFILE`
-**Summary:** Displays the authenticated user's profile with stats (orders, addresses). Has inline redirect logic when not authenticated.
-
-> ⚠️ Inline page with `useAuth`, `useApiQuery`, and manual stat computation — should delegate to a `UserProfileDashboard` feature component or at minimum extract local data logic into `useProfile`.
+**Summary:** Displays the authenticated user's profile with stats (orders, addresses). Stat queries extracted to `useProfileStats` hook (TASK-14 ✅).
 
 | Layer             | Items                                                               |
 | ----------------- | ------------------------------------------------------------------- |
 | **Components**    | `Heading`, `Button`, `Spinner`, `ProfileHeader`, `ProfileStatsGrid` |
-| **Hooks**         | `useAuth`, `useApiQuery`                                            |
+| **Hooks**         | `useAuth`, `useProfileStats`                                        |
 | **Services**      | `orderService.list()`, `addressService.list()`                      |
 | **API Endpoints** | `API_ENDPOINTS.ORDERS.LIST`, `API_ENDPOINTS.ADDRESSES.LIST`         |
 | **Constants**     | `THEME_CONSTANTS`, `ROUTES`                                         |
@@ -869,9 +867,7 @@ All admin pages require authentication + admin role (`👑🔒`). Protected by m
 #### `/admin/orders` — Admin Orders 🟡👑🔒
 
 **Route constant:** `ROUTES.ADMIN.ORDERS`
-**Summary:** All-orders management with status update actions. Has inline page logic instead of delegating to feature.
-
-> ⚠️ This page has substantial inline logic (hooks, state, drawer) — candidate for extraction to `AdminOrdersView` in `@/features/admin`.
+**Summary:** All-orders management with status update actions. Thin shell delegating to `AdminOrdersView` in `@/features/admin` (TASK-13 ✅).
 
 | Layer             | Items                                                                                                                                         |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1106,16 +1102,14 @@ src/features/
 ├── admin/
 │   ├── components/        AdminAnalyticsView, AdminBidsView, AdminBlogView,
 │   │                      AdminCarouselView, AdminCategoriesView, AdminCouponsView,
-│   │                      AdminFaqsView, AdminNewsletterView, AdminPayoutsView,
-│   │                      AdminProductsView, AdminReviewsView, AdminSectionsView,
-│   │                      AdminUsersView
-│   │                      ⚠️ MISSING: AdminOrdersView (see TASK-13)
+│   │                      AdminFaqsView, AdminNewsletterView, AdminOrdersView,
+│   │                      AdminPayoutsView, AdminProductsView, AdminReviewsView,
+│   │                      AdminSectionsView, AdminUsersView
 │   ├── hooks/             useAdminAnalytics, useAdminBids, useAdminBlog,
 │   │                      useAdminCarousel, useAdminCategories, useAdminCoupons,
-│   │                      useAdminFaqs, useAdminNewsletter, useAdminPayouts,
-│   │                      useAdminProducts, useAdminReviews, useAdminSections,
-│   │                      useAdminUsers
-│   │                      ⚠️ MISSING: useAdminOrders (see TASK-13)
+│   │                      useAdminFaqs, useAdminNewsletter, useAdminOrders,
+│   │                      useAdminPayouts, useAdminProducts, useAdminReviews,
+│   │                      useAdminSections, useAdminUsers
 │   └── index.ts
 ├── auth/
 │   ├── components/        LoginForm, RegisterForm, ResetPasswordView, AuthSocialButtons
@@ -2115,19 +2109,19 @@ import { auth } from "@/lib/firebase/config";
 
 ### 🟡 Refactoring Opportunities (improve page thickness)
 
-| Page                                   | Issue                                                                                             | Recommended Action                                                                            |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `auth/forgot-password/page.tsx`        | ~80 lines of inline logic                                                                         | Extract to `ForgotPasswordView` in `@/features/auth`                                          |
-| `auth/verify-email/page.tsx`           | ~100 lines of inline logic                                                                        | Extract to `VerifyEmailView` in `@/features/auth`                                             |
-| `user/profile/page.tsx`                | Inline `useApiQuery` calls for stat counting                                                      | Create `useProfileStats()` hook; delegate rendering to a feature view                         |
-| `admin/orders/page.tsx`                | Inline drawer state + data mutation                                                               | Extract to `AdminOrdersView` in `@/features/admin` (matches pattern of all other admin views) |
-| `seller/page.tsx`                      | Raw `lucide-react` icon imports + inline stat rendering                                           | Use `AdminStatsCards` or a shared `StatsGrid`; remove direct icon imports                     |
-| `sellers/page.tsx`                     | Heavy raw HTML server component                                                                   | Add `Card`, `Text`, `Button` primitives to avoid duplicating structure styles                 |
-| `help/page.tsx`                        | Heavy raw HTML server component                                                                   | Same as above                                                                                 |
-| `user/addresses/add/page.tsx`          | Calls `addressService.create()` directly without `useApiMutation`                                 | Wrap in `useAddressForm()` or `useApiMutation` for consistent error handling                  |
-| `user/addresses/edit/[id]/page.tsx`    | Same as above for update/delete                                                                   | Same fix                                                                                      |
-| `checkout/success/page.tsx`            | Inline `useApiQuery` + redirect logic                                                             | Extract to `CheckoutSuccessView` in `@/features/user` or `@/components/checkout`              |
-| ~~`events/[id]/participate/page.tsx`~~ | ~~**185 lines — violates Rule 10 (150 max)**; inline state, auth, data fetching, form rendering~~ | ✅ RESOLVED (TASK-26) — extracted to `EventParticipateView`, page is now 11 lines             |
+| Page                                   | Issue                                                                                             | Recommended Action                                                                |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `auth/forgot-password/page.tsx`        | ~80 lines of inline logic                                                                         | Extract to `ForgotPasswordView` in `@/features/auth`                              |
+| `auth/verify-email/page.tsx`           | ~100 lines of inline logic                                                                        | Extract to `VerifyEmailView` in `@/features/auth`                                 |
+| `user/profile/page.tsx`                | ✅ TASK-14 complete — stat queries extracted to `useProfileStats` hook in `@/hooks`               | —                                                                                 |
+| `admin/orders/page.tsx`                | ✅ TASK-13 complete — extracted to `AdminOrdersView` + `useAdminOrders`                           | —                                                                                 |
+| `seller/page.tsx`                      | Raw `lucide-react` icon imports + inline stat rendering                                           | Use `AdminStatsCards` or a shared `StatsGrid`; remove direct icon imports         |
+| `sellers/page.tsx`                     | Heavy raw HTML server component                                                                   | Add `Card`, `Text`, `Button` primitives to avoid duplicating structure styles     |
+| `help/page.tsx`                        | Heavy raw HTML server component                                                                   | Same as above                                                                     |
+| `user/addresses/add/page.tsx`          | Calls `addressService.create()` directly without `useApiMutation`                                 | Wrap in `useAddressForm()` or `useApiMutation` for consistent error handling      |
+| `user/addresses/edit/[id]/page.tsx`    | Same as above for update/delete                                                                   | Same fix                                                                          |
+| `checkout/success/page.tsx`            | Inline `useApiQuery` + redirect logic                                                             | Extract to `CheckoutSuccessView` in `@/features/user` or `@/components/checkout`  |
+| ~~`events/[id]/participate/page.tsx`~~ | ~~**185 lines — violates Rule 10 (150 max)**; inline state, auth, data fetching, form rendering~~ | ✅ RESOLVED (TASK-26) — extracted to `EventParticipateView`, page is now 11 lines |
 
 ---
 

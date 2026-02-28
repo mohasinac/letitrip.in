@@ -1138,7 +1138,8 @@
     "filterConfirmed": "पुष्टि",
     "filterShipped": "भेजा गया",
     "filterDelivered": "वितरित",
-    "filterCancelled": "रद्द"
+    "filterCancelled": "रद्द",
+    "noOrders": "कोई ऑर्डर नहीं मिला"
   },
   "adminReviews": {
     "title": "समीक्षाएं",

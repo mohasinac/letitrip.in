@@ -1,6 +1,7 @@
 "use client";
 
-import { useAuth, useApiQuery } from "@/hooks";
+import { useAuth } from "@/hooks";
+import { useProfileStats } from "@/hooks";
 import {
   Heading,
   Button,
@@ -12,7 +13,6 @@ import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { orderService, addressService } from "@/services";
 
 export default function UserProfilePage() {
   const { user, loading } = useAuth();
@@ -21,17 +21,7 @@ export default function UserProfilePage() {
   const tLoading = useTranslations("loading");
   const tActions = useTranslations("actions");
 
-  const { data: ordersData } = useApiQuery<{ data: { total: number } }>({
-    queryKey: ["user-orders-count"],
-    queryFn: () => orderService.list(),
-    enabled: !!user,
-  });
-
-  const { data: addressesData } = useApiQuery<{ data: unknown[] }>({
-    queryKey: ["user-addresses-count"],
-    queryFn: () => addressService.list(),
-    enabled: !!user,
-  });
+  const { orderCount, addressCount } = useProfileStats(!!user);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -54,11 +44,9 @@ export default function UserProfilePage() {
   const { spacing } = THEME_CONSTANTS;
 
   const stats = {
-    orders: ordersData?.data?.total ?? 0,
+    orders: orderCount,
     wishlist: 0,
-    addresses: Array.isArray(addressesData?.data)
-      ? addressesData.data.length
-      : 0,
+    addresses: addressCount,
   };
 
   return (
