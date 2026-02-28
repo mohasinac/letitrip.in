@@ -12,6 +12,7 @@ import {
 } from "@/constants";
 import type { FAQCategoryKey, StaticFAQItem } from "@/constants";
 import { useUrlTable } from "@/hooks";
+import { HorizontalScroller } from "@/components";
 import { FAQCategorySidebar } from "./FAQCategorySidebar";
 import { FAQSearchBar } from "./FAQSearchBar";
 import { FAQSortDropdown } from "./FAQSortDropdown";
@@ -111,10 +112,66 @@ export function FAQPageContent({
       </div>
 
       {/* Search Bar */}
-      <div className="mb-8">
+      <div className="mb-6">
         <FAQSearchBar
           onSearch={setSearchQuery}
           placeholder={UI_LABELS.FAQ.SEARCH_PLACEHOLDER}
+        />
+      </div>
+
+      {/* Mobile category pill strip — hidden on large screens (sidebar takes over) */}
+      <div className="lg:hidden mb-6">
+        <HorizontalScroller
+          items={[
+            {
+              key: "all" as const,
+              label: "All FAQs",
+              icon: "📚",
+              count: categoryCounts
+                ? Object.values(categoryCounts).reduce((s, c) => s + c, 0)
+                : 0,
+            },
+            ...Object.entries(FAQ_CATEGORIES).map(([k, cat]) => ({
+              key: k as FAQCategoryKey,
+              label: cat.label,
+              icon: cat.icon,
+              count: categoryCounts[k as FAQCategoryKey] ?? 0,
+            })),
+          ]}
+          renderItem={(pill) => {
+            const isActive = selectedCategory === pill.key;
+            return (
+              <button
+                onClick={() =>
+                  handleCategorySelect(pill.key as FAQCategoryKey | "all")
+                }
+                className={[
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-150 border",
+                  isActive
+                    ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
+                    : `${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.border} hover:border-indigo-400`,
+                ].join(" ")}
+              >
+                <span>{pill.icon}</span>
+                <span>{pill.label}</span>
+                <span
+                  className={`text-xs px-1.5 py-0.5 rounded-full ${
+                    isActive
+                      ? "bg-white/20 text-white"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                  }`}
+                >
+                  {pill.count}
+                </span>
+              </button>
+            );
+          }}
+          keyExtractor={(pill) => String(pill.key)}
+          gap={8}
+          autoScroll={false}
+          showScrollbar
+          showArrows={false}
+          className="px-1"
         />
       </div>
 
@@ -122,8 +179,8 @@ export function FAQPageContent({
       <div
         className={`grid grid-cols-1 lg:grid-cols-12 ${THEME_CONSTANTS.spacing.gap.lg}`}
       >
-        {/* Sidebar (30% on desktop) */}
-        <div className="lg:col-span-4 xl:col-span-3">
+        {/* Sidebar (desktop only — 30% width) */}
+        <div className="hidden lg:block lg:col-span-4 xl:col-span-3">
           <FAQCategorySidebar
             selectedCategory={selectedCategory}
             onCategorySelect={handleCategorySelect}
@@ -131,8 +188,8 @@ export function FAQPageContent({
           />
         </div>
 
-        {/* Main Content (70% on desktop) */}
-        <div className="lg:col-span-8 xl:col-span-9">
+        {/* Main Content (full width on mobile, 70% on desktop) */}
+        <div className="col-span-1 lg:col-span-8 xl:col-span-9">
           {/* Sort & Results Count */}
           <div className="flex items-center justify-between mb-6">
             <p

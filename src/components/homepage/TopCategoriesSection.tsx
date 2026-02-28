@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useTopCategories } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import type { CategoryDocument } from "@/db/schema";
+import { HorizontalScroller } from "@/components";
 
 /** Lucide icon fallback mapped from category slug keywords */
 function CategoryIcon({
@@ -112,8 +112,50 @@ export function TopCategoriesSection() {
           </Link>
         </div>
 
-        {/* Responsive grid: 2-col mobile Â· 4-col desktop Â· 6-col widescreen */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4">
+        {/* Mobile: horizontal scroller */}
+        <div className="sm:hidden">
+          <HorizontalScroller
+            items={categories.slice(0, 12)}
+            renderItem={(category) => (
+              <Link
+                href={`/categories/${category.slug}`}
+                className={`relative block w-28 aspect-square ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} overflow-hidden group hover:scale-105 hover:shadow-xl transition-all duration-300`}
+              >
+                {category.display?.coverImage ? (
+                  <Image
+                    src={category.display.coverImage}
+                    alt={category.name}
+                    fill
+                    className="object-cover"
+                    sizes="112px"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                    <CategoryIcon
+                      slug={category.slug}
+                      className="w-10 h-10 text-white/80"
+                    />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <div className="absolute inset-0 p-2 flex flex-col justify-end">
+                  <h3 className="text-white text-xs font-semibold line-clamp-2">
+                    {category.name}
+                  </h3>
+                </div>
+              </Link>
+            )}
+            keyExtractor={(c) => c.id ?? c.slug}
+            itemWidth={112}
+            gap={12}
+            autoScroll={false}
+            showScrollbar
+            showArrows={false}
+          />
+        </div>
+
+        {/* Tablet / Desktop: responsive grid */}
+        <div className="hidden sm:grid sm:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4">
           {categories.slice(0, 12).map((category, index) => (
             <Link
               key={category.id ?? category.slug ?? index}

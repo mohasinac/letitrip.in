@@ -49,7 +49,7 @@ export default function TitleBar({
       className={`sticky top-0 ${zIndex.titleBar} ${layout.titleBarBg} border-b ${THEME_CONSTANTS.themed.border} backdrop-blur-lg bg-white/90 dark:bg-gray-900/90`}
     >
       <div
-        className={`container mx-auto ${layout.navPadding} ${layout.containerWidth} py-3 md:py-4 flex items-center justify-between`}
+        className={`container mx-auto ${layout.navPadding} ${layout.containerWidth} py-2 md:py-2.5 flex items-center justify-between`}
       >
         {/* Logo - Modern design with gradient */}
         <Link
@@ -57,12 +57,12 @@ export default function TitleBar({
           className="flex items-center gap-3 group"
         >
           <div
-            className={`w-10 h-10 md:w-12 md:h-12 ${colors.brand.logo} rounded-xl flex items-center justify-center ${colors.brand.logoText} font-bold text-xl md:text-2xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105`}
+            className={`w-8 h-8 md:w-10 md:h-10 ${colors.brand.logo} rounded-xl flex items-center justify-center ${colors.brand.logoText} font-bold text-lg md:text-xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105`}
           >
             {SITE_CONFIG.brand.shortName}
           </div>
           <span
-            className={`text-xl md:text-2xl font-bold hidden sm:block ${THEME_CONSTANTS.themed.textPrimary} group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300`}
+            className={`text-lg md:text-xl font-bold hidden sm:block ${THEME_CONSTANTS.themed.textPrimary} group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300`}
           >
             {SITE_CONFIG.brand.name}
           </span>
@@ -73,11 +73,11 @@ export default function TitleBar({
           {/* Cart */}
           <Link
             href={SITE_CONFIG.account.cart}
-            className={`p-2.5 md:p-3 rounded-xl transition-colors relative ${THEME_CONSTANTS.colors.iconButton.onLight}`}
+            className={`p-2 md:p-2.5 rounded-xl transition-colors relative ${THEME_CONSTANTS.colors.iconButton.onLight}`}
             aria-label={tA("cartIcon")}
           >
             <svg
-              className={`w-6 h-6 md:w-7 md:h-7 ${THEME_CONSTANTS.colors.icon.titleBar}`}
+              className={`w-5 h-5 md:w-6 md:h-6 ${THEME_CONSTANTS.colors.icon.titleBar}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -99,11 +99,11 @@ export default function TitleBar({
           {/* Search - Hidden on mobile (available in bottom nav) */}
           <button
             onClick={onSearchToggle}
-            className={`hidden md:flex p-2.5 md:p-3 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onLight}`}
+            className={`hidden md:flex p-2 md:p-2.5 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onLight}`}
             aria-label={tA("searchIcon")}
           >
             <svg
-              className={`w-6 h-6 md:w-7 md:h-7 ${THEME_CONSTANTS.colors.icon.titleBar}`}
+              className={`w-5 h-5 md:w-6 md:h-6 ${THEME_CONSTANTS.colors.icon.titleBar}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -126,7 +126,7 @@ export default function TitleBar({
           {/* User Profile - Hidden on mobile (available in bottom nav) */}
           <Link
             href={SITE_CONFIG.account.profile}
-            className={`hidden md:flex items-center justify-center rounded-xl transition-colors ${user ? "" : `p-2.5 md:p-3 ${THEME_CONSTANTS.colors.iconButton.onLight}`}`}
+            className={`hidden md:flex items-center justify-center rounded-xl transition-colors ${user ? "" : `p-2 md:p-2.5 ${THEME_CONSTANTS.colors.iconButton.onLight}`}`}
             aria-label={tA("userIcon")}
           >
             {user ? (
@@ -158,7 +158,7 @@ export default function TitleBar({
               </div>
             ) : (
               <svg
-                className={`w-6 h-6 md:w-7 md:h-7 ${THEME_CONSTANTS.colors.icon.titleBar}`}
+                className={`w-5 h-5 md:w-6 md:h-6 ${THEME_CONSTANTS.colors.icon.titleBar}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -176,11 +176,11 @@ export default function TitleBar({
           {/* Hamburger Menu */}
           <button
             onClick={onToggleSidebar}
-            className={`p-2.5 md:p-3 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onLight}`}
+            className={`p-2 md:p-2.5 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onLight}`}
             aria-label={sidebarOpen ? tA("closeMenu") : tA("openMenu")}
           >
             <svg
-              className={`w-6 h-6 md:w-7 md:h-7 ${THEME_CONSTANTS.colors.icon.titleBar}`}
+              className={`w-5 h-5 md:w-6 md:h-6 ${THEME_CONSTANTS.colors.icon.titleBar}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

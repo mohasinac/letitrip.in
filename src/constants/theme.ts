@@ -120,10 +120,10 @@ export const THEME_CONSTANTS = {
    */
   // Layout constants
   layout: {
-    titleBarHeight: "h-14",
-    navbarHeight: "h-12 md:h-14",
+    titleBarHeight: "h-12",
+    navbarHeight: "h-10 md:h-12",
     sidebarWidth: "w-80",
-    bottomNavHeight: "h-16",
+    bottomNavHeight: "h-14",
     // Content width - consistent across all sections
     maxContentWidth: "max-w-7xl",
     // Container for header/nav elements - matches content width

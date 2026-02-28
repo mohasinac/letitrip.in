@@ -73,8 +73,8 @@ export default function Page() {
   return (
     <div className="w-full space-y-0">
       {/* Homepage Sections - Rendered in Order */}
-      <HeroCarousel />
       <WelcomeSection />
+      <HeroCarousel />
       <TrustFeaturesSection />
       <TopCategoriesSection />
       <FeaturedProductsSection />

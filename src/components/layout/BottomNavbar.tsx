@@ -33,7 +33,7 @@ interface BottomNavLink {
 }
 
 export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
-  const { layout, zIndex, themed, typography } = THEME_CONSTANTS;
+  const { layout, zIndex, themed, typography, utilities } = THEME_CONSTANTS;
   const pathname = usePathname();
   const { user } = useAuth();
   const isSeller = user?.role === "seller" || user?.role === "admin";
@@ -108,10 +108,10 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
       className={`fixed bottom-0 left-0 right-0 md:hidden ${zIndex.bottomNav} ${layout.bottomNavBg} border-t ${themed.border} backdrop-blur-lg bg-white/95 dark:bg-gray-900/95 shadow-2xl`}
     >
       <ul
-        className={`flex justify-around items-center ${layout.bottomNavHeight} px-2`}
+        className={`flex items-stretch ${layout.bottomNavHeight} overflow-x-auto ${utilities.scrollbarHide}`}
       >
         {bottomNavLinks.map((link) => (
-          <li key={link.href} className="flex-1">
+          <li key={link.href} className="flex-none w-16 min-w-[56px]">
             <NavItem
               href={link.href}
               label={link.label}
@@ -123,7 +123,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
         ))}
         {/* Seller Dashboard - visible for seller/admin users only */}
         {isSeller && (
-          <li className="flex-1">
+          <li className="flex-none w-16 min-w-[56px]">
             <NavItem
               href={ROUTES.SELLER.DASHBOARD}
               label={t("seller")}
@@ -149,7 +149,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
           </li>
         )}
         {/* Search Button */}
-        <li className="flex-1">
+        <li className="flex-none w-16 min-w-[56px]">
           <button
             onClick={onSearchToggle}
             className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-colors duration-200 ${themed.textSecondary} hover:${themed.textPrimary}`}
@@ -174,7 +174,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
         </li>
 
         {/* Profile Link - last position */}
-        <li className="flex-1">
+        <li className="flex-none w-16 min-w-[56px]">
           {user ? (
             <a
               href={ROUTES.USER.PROFILE}

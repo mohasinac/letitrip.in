@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { THEME_CONSTANTS } from "@/constants";
 import { HorizontalScroller } from "./HorizontalScroller";
@@ -8,20 +8,9 @@ import { HorizontalScroller } from "./HorizontalScroller";
 /**
  * SectionTabs Component
  *
- * Unified navigation tabs component for admin and user sections.
- * - Desktop: Renders full horizontal tab bar with all tabs visible
- * - Mobile: Renders styled dropdown select with current tab shown
- *
- * Uses ROUTES constants for hrefs and UI_LABELS for labels (Phase 1).
- * Uses THEME_CONSTANTS for styling (Phase 2).
- *
- * @example
- * ```tsx
- * import { SectionTabs } from '@/components';
- * import { ADMIN_TAB_ITEMS } from '@/constants';
- *
- * <SectionTabs tabs={ADMIN_TAB_ITEMS} variant="admin" />
- * ```
+ * Unified navigation tabs component for admin, user, seller, and public sections.
+ * - Mobile: Scrollable horizontal tab strip (no arrows, shows scrollbar)
+ * - Desktop: Scrollable tab bar with arrow navigation and scrollbar
  */
 
 export interface SectionTab {
@@ -42,7 +31,6 @@ export function SectionTabs({
   className = "",
 }: SectionTabsProps) {
   const pathname = usePathname();
-  const router = useRouter();
 
   const isActiveTab = (href: string) => {
     // Exact match for dashboard/root pages
@@ -65,23 +53,15 @@ export function SectionTabs({
     }
   };
 
-  // Get active tab for mobile dropdown
-  const activeTab = tabs.find((tab) => isActiveTab(tab.href));
-  const activeValue = activeTab?.href || "";
-
-  const handleMobileChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    router.push(e.target.value);
-  };
-
-  const { themed, input } = THEME_CONSTANTS;
+  const { themed } = THEME_CONSTANTS;
 
   return (
     <div
-      className={`sticky top-[104px] md:top-[112px] z-10 ${themed.bgSecondary} border-b ${themed.border} shadow-sm ${getVariantGradient()} ${className}`}
+      className={`sticky top-12 md:top-[108px] z-10 ${themed.bgSecondary} border-b ${themed.border} shadow-sm ${getVariantGradient()} ${className}`}
     >
-      <div className="container mx-auto px-4 md:px-6 max-w-7xl">
-        {/* Desktop: scrollable tab bar with optional arrow navigation */}
-        <nav className="hidden md:block">
+      <div className="container mx-auto px-2 md:px-6 max-w-7xl">
+        {/* Unified scrollable tab bar — mobile: no arrows · desktop: with arrows */}
+        <nav>
           <HorizontalScroller
             items={Array.from(tabs)}
             renderItem={(tab) => {
@@ -89,16 +69,40 @@ export function SectionTabs({
               return (
                 <Link
                   href={tab.href}
-                  className={`
-                    flex-shrink-0 px-4 md:px-6 py-4 text-sm md:text-base font-medium transition-all duration-200
-                    border-b-2 whitespace-nowrap
-                    inline-flex items-center gap-2
-                    ${
-                      isActive
-                        ? "text-primary-600 dark:text-primary-400 border-primary-500"
-                        : `${themed.textSecondary} border-transparent hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600`
-                    }
-                  `}
+                  className={[
+                    "flex-shrink-0 px-3 md:px-5 py-3 md:py-3.5 text-sm font-medium transition-all duration-200",
+                    "border-b-2 whitespace-nowrap inline-flex items-center gap-1.5",
+                    isActive
+                      ? "text-primary-600 dark:text-primary-400 border-primary-500"
+                      : `${themed.textSecondary} border-transparent hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600`,
+                  ].join(" ")}
+                >
+                  {tab.icon && <span className="w-4 h-4">{tab.icon}</span>}
+                  {tab.label}
+                </Link>
+              );
+            }}
+            keyExtractor={(tab) => tab.href}
+            gap={0}
+            autoScroll={false}
+            showScrollbar
+            showArrows={false}
+            className="outline-none md:hidden"
+          />
+          <HorizontalScroller
+            items={Array.from(tabs)}
+            renderItem={(tab) => {
+              const isActive = isActiveTab(tab.href);
+              return (
+                <Link
+                  href={tab.href}
+                  className={[
+                    "flex-shrink-0 px-5 py-3.5 text-sm md:text-base font-medium transition-all duration-200",
+                    "border-b-2 whitespace-nowrap inline-flex items-center gap-2",
+                    isActive
+                      ? "text-primary-600 dark:text-primary-400 border-primary-500"
+                      : `${themed.textSecondary} border-transparent hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600`,
+                  ].join(" ")}
                 >
                   {tab.icon}
                   {tab.label}
@@ -109,24 +113,9 @@ export function SectionTabs({
             gap={0}
             autoScroll={false}
             showScrollbar
-            className="outline-none"
+            className="outline-none hidden md:block"
           />
         </nav>
-
-        {/* Mobile: Native select dropdown */}
-        <div className="md:hidden py-3">
-          <select
-            value={activeValue}
-            onChange={handleMobileChange}
-            className={`w-full ${input.base}`}
-          >
-            {tabs.map((tab) => (
-              <option key={tab.href} value={tab.href}>
-                {tab.label}
-              </option>
-            ))}
-          </select>
-        </div>
       </div>
     </div>
   );

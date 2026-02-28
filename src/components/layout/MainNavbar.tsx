@@ -40,7 +40,7 @@ export default function MainNavbar() {
         className={`container mx-auto ${layout.navPadding} ${layout.containerWidth}`}
       >
         <ul
-          className={`flex items-center justify-start gap-1 lg:gap-2 ${layout.navbarHeight}`}
+          className={`flex items-center justify-start gap-0.5 lg:gap-1 ${layout.navbarHeight}`}
         >
           {MAIN_NAV_ITEMS.map((item, i) => (
             <li key={item.href}>
