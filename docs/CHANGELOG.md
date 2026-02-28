@@ -14,7 +14,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-### Eleventh Implementation Pass — Profile Stats Hook Extraction (2026-03-01)
+### Twelfth Implementation Pass — Seller Dashboard Decomposition (2026-02-28)
+
+#### Added
+
+- **TASK-15 (P2):** `src/features/seller/components/SellerDashboardView.tsx` — NEW — feature view component containing all seller dashboard logic (auth guard, product fetch, stats derivation, JSX); moved from fat page to feature module.
+- **TASK-15 (P2):** `src/features/seller/components/__tests__/SellerDashboardView.test.tsx` — NEW — 6 tests. All pass.
+- **TASK-15 (P2):** `src/features/seller/components/SellerStatCard.tsx` — MOVED from `src/components/seller/SellerStatCard.tsx`; this component was only used on the seller dashboard page.
+- **TASK-15 (P2):** `src/features/seller/components/SellerQuickActions.tsx` — MOVED from `src/components/seller/SellerQuickActions.tsx`.
+- **TASK-15 (P2):** `src/features/seller/components/SellerRecentListings.tsx` — MOVED from `src/components/seller/SellerRecentListings.tsx`.
+
+#### Changed
+
+- **TASK-15 (P2):** `src/app/[locale]/seller/page.tsx` — reduced from 144-line fat page to a 10-line thin shell that renders `<SellerDashboardView />`.
+- **TASK-15 (P2):** `src/features/seller/components/index.ts` — added exports for `SellerDashboardView`, `SellerStatCard`, `SellerQuickActions`, `SellerRecentListings`.
+- **TASK-15 (P2):** `src/components/seller/index.ts` — removed exports for `SellerStatCard`, `SellerQuickActions`, `SellerRecentListings` (now in features/seller).
+- **TASK-15 (P2):** `src/app/[locale]/seller/__tests__/page.test.tsx` — rewritten for thin-shell assertion (1 test).
+
+---
+
+### Thirteenth Implementation Pass — Address Pages useApiMutation Migration (2026-02-28)
+
+#### Changed
+
+- **TASK-16 (P2):** `src/app/[locale]/user/addresses/add/page.tsx` — replaced `useState(saving)` + manual `addressService.create()` try/catch + `logger` with `useCreateAddress({ onSuccess, onError })` from `@/hooks`; removed `addressService` and `logger` imports from the page.
+- **TASK-16 (P2):** `src/app/[locale]/user/addresses/edit/[id]/page.tsx` — replaced `useState(saving/deleting)` + manual `addressService.update/delete()` try/catch with `useUpdateAddress(id, {...})` + `useDeleteAddress({...})`; migrated `useApiQuery({ queryKey: ['address', id] })` to `useAddress(id)` hook.
+- **TASK-16 (P2):** `src/app/[locale]/user/addresses/add/__tests__/page.test.tsx` — updated mocks to reflect `useCreateAddress` usage; removed `UI_LABELS` dependency.
+- **TASK-16 (P2):** `src/app/[locale]/user/addresses/edit/[id]/__tests__/page.test.tsx` — updated mocks to reflect `useAddress`, `useUpdateAddress`, `useDeleteAddress` usage; removed `UI_LABELS` dependency.
+
+---
 
 #### Added
 

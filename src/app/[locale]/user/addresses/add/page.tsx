@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks";
+import { useEffect } from "react";
+import { useAuth, useCreateAddress } from "@/hooks";
 import { Card, Heading, Spinner, AddressForm, useToast } from "@/components";
 import type { AddressFormData } from "@/hooks";
 import { useRouter } from "next/navigation";
-import { logger } from "@/classes";
-import { addressService } from "@/services";
 import {
   THEME_CONSTANTS,
   ROUTES,
@@ -19,7 +17,6 @@ export default function AddAddressPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const { showToast } = useToast();
-  const [saving, setSaving] = useState(false);
   const tAddresses = useTranslations("addresses");
   const tLoading = useTranslations("loading");
   const tActions = useTranslations("actions");
@@ -30,25 +27,21 @@ export default function AddAddressPage() {
     }
   }, [user, loading, router]);
 
-  const handleSubmit = async (data: AddressFormData) => {
-    setSaving(true);
-
-    try {
-      await addressService.create(data);
-
+  const { mutate: createAddress, isLoading: saving } = useCreateAddress({
+    onSuccess: () => {
       showToast(SUCCESS_MESSAGES.ADDRESS.CREATED, "success");
       router.push(ROUTES.USER.ADDRESSES);
-    } catch (error) {
-      logger.error("Error saving address:", error);
+    },
+    onError: (error: any) => {
       showToast(
-        error instanceof Error
-          ? error.message
-          : ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
+        error?.message ?? ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
         "error",
       );
-    } finally {
-      setSaving(false);
-    }
+    },
+  });
+
+  const handleSubmit = (data: AddressFormData) => {
+    createAddress(data);
   };
 
   const handleCancel = () => {

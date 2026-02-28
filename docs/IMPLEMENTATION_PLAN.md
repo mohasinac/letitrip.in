@@ -317,7 +317,9 @@ Create `src/components/admin/__tests__/MediaUploadField.test.tsx`.
 
 ---
 
-### TASK-15 · `seller/page.tsx` — use `AdminStatsCards` instead of inline stat rendering · P2
+### ✅ TASK-15 · `seller/page.tsx` — use `AdminStatsCards` instead of inline stat rendering · P2 · DONE
+
+**Completed 2026-02-28.** Moved `SellerStatCard`, `SellerQuickActions`, `SellerRecentListings` from `src/components/seller/` to `src/features/seller/components/`. Created `SellerDashboardView` feature component containing all dashboard logic. Reduced `seller/page.tsx` to a 10-line thin shell. Updated `src/components/seller/index.ts` (removed moved exports) and `src/features/seller/components/index.ts` (added 4 new exports). Page test rewritten for thin shell (1/1). `SellerDashboardView.test.tsx` created (6/6 passing).
 
 **File:** `src/app/[locale]/seller/page.tsx`
 
@@ -330,7 +332,9 @@ Create `src/components/admin/__tests__/MediaUploadField.test.tsx`.
 
 ---
 
-### TASK-16 · `user/addresses/add` + `edit` pages — use `useApiMutation` instead of direct service calls · P2
+### ✅ TASK-16 · `user/addresses/add` + `edit` pages — use `useApiMutation` instead of direct service calls · P2 · DONE
+
+**Completed 2026-02-28.** `add/page.tsx` migrated: removed `useState(saving)` + `localStorage`/`logger` + `addressService.create()` try/catch; replaced with `useCreateAddress({ onSuccess, onError })`. `edit/[id]/page.tsx` migrated: removed `useState(saving/deleting)` + manual try/catch around `addressService.update/delete`; replaced with `useUpdateAddress(addressId, {...})` and `useDeleteAddress({...})`; also migrated `useApiQuery` → `useAddress(id)` hook. Both page tests updated (3 tests each). All 29 address tests pass.
 
 **Files:**
 

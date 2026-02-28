@@ -742,16 +742,17 @@ All seller pages require authentication + seller/admin role (`🏪🔒`). Protec
 **Route constant:** `ROUTES.SELLER.DASHBOARD`
 **Summary:** Seller overview with stat cards (products, orders, revenue, bids) and recent listings.
 
-> ⚠️ Imports icon components directly from `lucide-react` — icons should be wrapped via Tailwind or use a shared icon pattern.
-> ⚠️ Inline stat-card rendering — could use `AdminStatsCards` or a generic `StatsGrid` component.
+> ✅ TASK-15 complete — extracted to `SellerDashboardView` in `@/features/seller`. Page is now a 10-line thin shell.
+> `SellerStatCard`, `SellerQuickActions`, `SellerRecentListings` moved to `src/features/seller/components/`.
 
-| Layer             | Items                                                                                                      |
-| ----------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Components**    | `Spinner`, `EmptyState`, `Heading`, `Text`, `SellerStatCard`, `SellerQuickActions`, `SellerRecentListings` |
-| **Hooks**         | `useAuth`, `useApiQuery`                                                                                   |
-| **Services**      | `sellerService.getDashboard()`                                                                             |
-| **API Endpoints** | `API_ENDPOINTS.SELLER.ANALYTICS`                                                                           |
-| **Constants**     | `ROUTES`, `THEME_CONSTANTS`                                                                                |
+| Layer             | Items                                                                                                                                   |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Feature View**  | `SellerDashboardView` (`@/features/seller`)                                                                                             |
+| **Components**    | `Spinner`, `EmptyState`, `Heading`, `Text`, `SellerStatCard`, `SellerQuickActions`, `SellerRecentListings` (all in `@/features/seller`) |
+| **Hooks**         | `useAuth`, `useApiQuery`                                                                                                                |
+| **Services**      | `sellerService.listProducts(uid)`                                                                                                       |
+| **API Endpoints** | `API_ENDPOINTS.SELLER.ANALYTICS`                                                                                                        |
+| **Constants**     | `ROUTES`, `THEME_CONSTANTS`                                                                                                             |
 
 ---
 
@@ -2109,19 +2110,19 @@ import { auth } from "@/lib/firebase/config";
 
 ### 🟡 Refactoring Opportunities (improve page thickness)
 
-| Page                                   | Issue                                                                                             | Recommended Action                                                                |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `auth/forgot-password/page.tsx`        | ~80 lines of inline logic                                                                         | Extract to `ForgotPasswordView` in `@/features/auth`                              |
-| `auth/verify-email/page.tsx`           | ~100 lines of inline logic                                                                        | Extract to `VerifyEmailView` in `@/features/auth`                                 |
-| `user/profile/page.tsx`                | ✅ TASK-14 complete — stat queries extracted to `useProfileStats` hook in `@/hooks`               | —                                                                                 |
-| `admin/orders/page.tsx`                | ✅ TASK-13 complete — extracted to `AdminOrdersView` + `useAdminOrders`                           | —                                                                                 |
-| `seller/page.tsx`                      | Raw `lucide-react` icon imports + inline stat rendering                                           | Use `AdminStatsCards` or a shared `StatsGrid`; remove direct icon imports         |
-| `sellers/page.tsx`                     | Heavy raw HTML server component                                                                   | Add `Card`, `Text`, `Button` primitives to avoid duplicating structure styles     |
-| `help/page.tsx`                        | Heavy raw HTML server component                                                                   | Same as above                                                                     |
-| `user/addresses/add/page.tsx`          | Calls `addressService.create()` directly without `useApiMutation`                                 | Wrap in `useAddressForm()` or `useApiMutation` for consistent error handling      |
-| `user/addresses/edit/[id]/page.tsx`    | Same as above for update/delete                                                                   | Same fix                                                                          |
-| `checkout/success/page.tsx`            | Inline `useApiQuery` + redirect logic                                                             | Extract to `CheckoutSuccessView` in `@/features/user` or `@/components/checkout`  |
-| ~~`events/[id]/participate/page.tsx`~~ | ~~**185 lines — violates Rule 10 (150 max)**; inline state, auth, data fetching, form rendering~~ | ✅ RESOLVED (TASK-26) — extracted to `EventParticipateView`, page is now 11 lines |
+| Page                                    | Issue                                                                                             | Recommended Action                                                                                      |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `auth/forgot-password/page.tsx`         | ~80 lines of inline logic                                                                         | Extract to `ForgotPasswordView` in `@/features/auth`                                                    |
+| `auth/verify-email/page.tsx`            | ~100 lines of inline logic                                                                        | Extract to `VerifyEmailView` in `@/features/auth`                                                       |
+| `user/profile/page.tsx`                 | ✅ TASK-14 complete — stat queries extracted to `useProfileStats` hook in `@/hooks`               | —                                                                                                       |
+| `admin/orders/page.tsx`                 | ✅ TASK-13 complete — extracted to `AdminOrdersView` + `useAdminOrders`                           | —                                                                                                       |
+| ~~`seller/page.tsx`~~                   | ~~Raw `lucide-react` icon imports + inline stat rendering~~                                       | ✅ RESOLVED (TASK-15) — extracted to `SellerDashboardView` in `@/features/seller`, page is now 10 lines |
+| `sellers/page.tsx`                      | Heavy raw HTML server component                                                                   | Add `Card`, `Text`, `Button` primitives to avoid duplicating structure styles                           |
+| `help/page.tsx`                         | Heavy raw HTML server component                                                                   | Same as above                                                                                           |
+| ~~`user/addresses/add/page.tsx`~~       | ~~Calls `addressService.create()` directly without `useApiMutation`~~                             | ✅ RESOLVED (TASK-16) — migrated to `useCreateAddress({ onSuccess, onError })`                          |
+| ~~`user/addresses/edit/[id]/page.tsx`~~ | ~~Same as above for update/delete~~                                                               | ✅ RESOLVED (TASK-16) — migrated to `useUpdateAddress` + `useDeleteAddress` + `useAddress`              |
+| `checkout/success/page.tsx`             | Inline `useApiQuery` + redirect logic                                                             | Extract to `CheckoutSuccessView` in `@/features/user` or `@/components/checkout`                        |
+| ~~`events/[id]/participate/page.tsx`~~  | ~~**185 lines — violates Rule 10 (150 max)**; inline state, auth, data fetching, form rendering~~ | ✅ RESOLVED (TASK-26) — extracted to `EventParticipateView`, page is now 11 lines                       |
 
 ---
 

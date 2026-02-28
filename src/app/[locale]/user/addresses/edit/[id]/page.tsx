@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth, useApiQuery } from "@/hooks";
+import {
+  useAuth,
+  useAddress,
+  useUpdateAddress,
+  useDeleteAddress,
+} from "@/hooks";
 import {
   Card,
   Heading,
@@ -13,7 +18,6 @@ import {
 } from "@/components";
 import type { AddressFormData } from "@/hooks";
 import { useRouter, useParams } from "next/navigation";
-import { addressService } from "@/services";
 import {
   THEME_CONSTANTS,
   ROUTES,
@@ -29,9 +33,7 @@ export default function EditAddressPage() {
   const addressId = params?.id as string;
   const { showToast } = useToast();
 
-  const [saving, setSaving] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const tAddresses = useTranslations("addresses");
   const tLoading = useTranslations("loading");
   const tActions = useTranslations("actions");
@@ -41,11 +43,7 @@ export default function EditAddressPage() {
     data: address,
     isLoading: loadingAddress,
     error: addressError,
-  } = useApiQuery<AddressFormData>({
-    queryKey: ["address", addressId],
-    queryFn: () => addressService.getById(addressId),
-    enabled: !!user && !!addressId,
-  });
+  } = useAddress(addressId, { enabled: !!user && !!addressId });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -60,43 +58,42 @@ export default function EditAddressPage() {
     }
   }, [addressError, router, showToast]);
 
-  const handleSubmit = async (data: AddressFormData) => {
-    setSaving(true);
+  const { mutate: updateAddress, isLoading: saving } = useUpdateAddress(
+    addressId,
+    {
+      onSuccess: () => {
+        showToast(SUCCESS_MESSAGES.ADDRESS.UPDATED, "success");
+        router.push(ROUTES.USER.ADDRESSES);
+      },
+      onError: (error: any) => {
+        showToast(
+          error?.message ?? ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
+          "error",
+        );
+      },
+    },
+  );
 
-    try {
-      await addressService.update(addressId, data);
-      showToast(SUCCESS_MESSAGES.ADDRESS.UPDATED, "success");
-      router.push(ROUTES.USER.ADDRESSES);
-    } catch (error) {
-      showToast(
-        error instanceof Error
-          ? error.message
-          : ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
-        "error",
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    setDeleting(true);
-
-    try {
-      await addressService.delete(addressId);
+  const { mutate: deleteAddress, isLoading: deleting } = useDeleteAddress({
+    onSuccess: () => {
       showToast(SUCCESS_MESSAGES.ADDRESS.DELETED, "success");
       router.push(ROUTES.USER.ADDRESSES);
-    } catch (error) {
+    },
+    onError: (error: any) => {
       showToast(
-        error instanceof Error
-          ? error.message
-          : ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
+        error?.message ?? ERROR_MESSAGES.GENERIC.INTERNAL_ERROR,
         "error",
       );
-    } finally {
-      setDeleting(false);
       setShowDeleteModal(false);
-    }
+    },
+  });
+
+  const handleSubmit = (data: AddressFormData) => {
+    updateAddress(data);
+  };
+
+  const handleDelete = () => {
+    deleteAddress({ id: addressId });
   };
 
   const handleCancel = () => {
