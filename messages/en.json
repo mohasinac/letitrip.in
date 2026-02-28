@@ -1039,7 +1039,9 @@
     "faq3A": "Listing is free. We charge a small commission only when you make a sale.",
     "ctaTitle": "Ready to start selling?",
     "ctaButton": "Create Seller Account",
-    "testimonialsTitle": "What Our Sellers Say"
+    "testimonialsTitle": "What Our Sellers Say",
+    "signInPrompt": "Already have an account?",
+    "signInLink": "Sign in"
   },
   "help": {
     "title": "Help Center",
