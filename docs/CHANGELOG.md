@@ -14,6 +14,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### DOCS — APPLICATION_GRAPH.md stale reference cleanup (2026-02-28)
+
+#### Changed
+
+- **APPLICATION_GRAPH.md** — Feature module tree: removed stale `⚠️ MISSING: ForgotPasswordView` and `⚠️ MISSING: VerifyEmailView` warnings from `auth/components/`; both views were created in TASK-11 and TASK-12 and are now listed as present.
+- **APPLICATION_GRAPH.md** — Feature module tree: removed `⚠️ CONFLICT` warning for `events/services/event.service.ts`; Tier-2 duplicate was deleted in TASK-27. Updated to show resolution.
+- **APPLICATION_GRAPH.md** — Feature module tree: removed `⚠️ MISSING: SellerCreateProductView` warning from `seller/components/`; component was created in TASK-28. Added `SellerCreateProductView ✅ (TASK-28)` and `SellerDashboardView ✅ (TASK-15)` to the listing.
+- **APPLICATION_GRAPH.md** — Mandatory Improvements item 7 (MediaUploadField): marked ✅ RESOLVED via TASK-10; `MediaUploadField.tsx` exists at `src/components/admin/MediaUploadField.tsx`.
+- **APPLICATION_GRAPH.md** — Mandatory Improvements item 11 (`useAuth.ts` Firebase SDK): marked ✅ RESOLVED via TASK-21; `signInWithEmail` wrapper added to `auth-helpers.ts`, direct Firebase imports removed.
+- **APPLICATION_GRAPH.md** — Mandatory Improvements item 12 (`SessionContext.tsx` Firebase SDK): marked ✅ RESOLVED via TASK-22; `subscribeToAuthState` wrapper added, only `import type { User }` remains (type-only, no runtime dependency).
+- **APPLICATION_GRAPH.md** — Mandatory Improvements item 13 (`BlogForm`/`ProductForm` `UI_LABELS`): marked ✅ RESOLVED via TASK-23 and TASK-24; all admin components now use `useTranslations`.
+- **APPLICATION_GRAPH.md** — Refactoring Opportunities table: `auth/forgot-password/page.tsx` and `auth/verify-email/page.tsx` rows updated to show ✅ RESOLVED (TASK-11/12).
+- **APPLICATION_GRAPH.md** — D.2 index coverage table: added resolved banner above the table noting all ⚠️/❌ entries were fixed by TASK-30–33.
+
+#### Summary
+
+All 9 stale warning references in `APPLICATION_GRAPH.md` (from TASK-11, 12, 21, 22, 23, 27, 28 and index tasks) are now updated to reflect their resolved state. The living document accurately reflects the current codebase state.
+
+---
+
 ### TASK-29 — Document 17 Undocumented Hooks in GUIDE.md and QUICK_REFERENCE.md (2026-02-28)
 
 #### Added

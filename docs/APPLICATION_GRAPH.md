@@ -1131,9 +1131,8 @@ src/features/
 │   │                      useAdminSections, useAdminUsers
 │   └── index.ts
 ├── auth/
-│   ├── components/        LoginForm, RegisterForm, ResetPasswordView, AuthSocialButtons
-│   │                      ⚠️ MISSING: ForgotPasswordView (see TASK-11)
-│   │                      ⚠️ MISSING: VerifyEmailView (see TASK-12)
+│   ├── components/        LoginForm, RegisterForm, ResetPasswordView, AuthSocialButtons,
+│   │                      ForgotPasswordView ✅ (TASK-11), VerifyEmailView ✅ (TASK-12)
 │   └── index.ts
 ├── categories/
 │   ├── components/        CategoryProductsView
@@ -1150,8 +1149,7 @@ src/features/
 │   ├── hooks/             useEvent, useEvents, useEventEntries, useEventLeaderboard,
 │   │                      useEventMutations, useEventStats, useFeedbackSubmit,
 │   │                      usePollVote, usePublicEvents
-│   ├── services/          event.service.ts  (Tier-2 service)
-│   │                      ⚠️ CONFLICT: src/services/event.service.ts also exists (Tier 1 duplicate — see TASK-27)
+│   ├── services/          ✅ RESOLVED (TASK-27) — Tier-2 service deleted; `src/services/event.service.ts` (Tier 1) is canonical
 │   ├── constants/         EVENT_SORT_OPTIONS, EVENT_STATUS_VALUES, EVENT_TYPE_VALUES,
 │   │                      FORM_FIELD_TYPE_VALUES
 │   │                      ✅ TASK-25 resolved — values-only arrays; labels via useTranslations("eventTypes"), useTranslations("formFieldTypes")
@@ -1166,9 +1164,8 @@ src/features/
 │   ├── hooks/             useSearch
 │   └── index.ts
 ├── seller/
-│   ├── components/        SellerProductsView, SellerOrdersView, SellerProductCard
-│   │                      ⚠️ MISSING: SellerCreateProductView — sellers have no way to create new products
-│   │                      (see TASK-28)
+│   ├── components/        SellerProductsView, SellerOrdersView, SellerProductCard,
+│   │                      SellerCreateProductView ✅ (TASK-28), SellerDashboardView ✅ (TASK-15)
 │   ├── hooks/             useSellerProducts, useSellerOrders
 │   └── index.ts
 └── user/
@@ -1845,7 +1842,9 @@ These two indexes are deployed to a `posts` collection that **does not exist**. 
 
 ---
 
-##### D.2 — Index coverage by collection
+##### D.2 — ✅ Index coverage by collection (all gaps resolved — TASK-30, TASK-31, TASK-32, TASK-33)
+
+> **All ⚠️ and ❌ statuses below have been resolved.** This table reflects the state _before_ TASK-30–33 were applied. It is kept for historical reference. The `firestore.indexes.json` now includes all 27 missing/corrected entries.
 
 | Collection                | Defined indexes (correct)                                                                                                                                                                            | Missing indexes                                                                                                                                                               | Status |
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
@@ -1956,10 +1955,9 @@ Pages that can be made smaller or must be fixed by using existing components/uti
 
 **Fix:** ✅ All resolved. TASK-07/08 (ProductForm/BlogForm), TASK-09 (canonical docs), TASK-20 (AvatarUpload → useMediaUpload) all done.
 
-#### 7. Video/media upload — only accessible from `/admin/media`, not embedded in forms
+#### ~~7. Video/media upload — only accessible from `/admin/media`, not embedded in forms~~ ✅ RESOLVED (TASK-10)
 
-**Issue:** `MediaOperationForm` (upload + crop + trim) is used exclusively on the `/admin/media` standalone page. There is no way to attach/upload a video directly inside `ProductForm`, `BlogForm`, or any event form. Sellers and admins must navigate away to upload, then copy the URL back.
-**Fix:** Either embed a lighter `MediaUploadField` component (wrapping `useMediaUpload`) that can be dropped into any form as a field, or add an `accept` prop to `ImageUpload` so it can handle video files and return a URL.
+**Resolved 2026-02-28.** `MediaUploadField` component created at `src/components/admin/MediaUploadField.tsx`. Wraps `useMediaUpload` → `POST /api/media/upload`. Accept any MIME type, returns URL on success. Exported from `@/components`. Tests: `MediaUploadField.test.tsx` created.
 
 #### ~~8. Systemic `UI_LABELS` in JSX — ~35 client components violate Rule 2 across all feature domains~~ ✅ RESOLVED (TASK-18)
 
@@ -1983,42 +1981,21 @@ Pages that can be made smaller or must be fixed by using existing components/uti
 
 ---
 
-#### 11. `useAuth.ts` — imports Firebase Auth client SDK directly (Rule 11 Critical)
+#### ~~11. `useAuth.ts` — imports Firebase Auth client SDK directly (Rule 11 Critical)~~ ✅ RESOLVED (TASK-21)
 
-**Issue:** `src/hooks/useAuth.ts` imports `signInWithEmailAndPassword` from `firebase/auth` and `auth` from `@/lib/firebase/config`. Rule 11 explicitly prohibits importing `@/lib/firebase/config` in `src/hooks/`. The actual SDK interaction belongs exclusively in `src/lib/firebase/auth-helpers.ts`.
-
-**Current (wrong):**
-
-```ts
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase/config";
-```
-
-**Fix:** Add `signInWithEmail(email, password)` to `src/lib/firebase/auth-helpers.ts` if not present, then remove the direct `firebase/auth` and `@/lib/firebase/config` imports from `useAuth.ts`. The hook should only import from `@/lib/firebase/auth-helpers`.
+**Resolved 2026-02-28.** `signInWithEmail(email, password)` added to `auth-helpers.ts`. All direct `firebase/auth` and `@/lib/firebase/config` imports removed from `useAuth.ts`. Hook now imports only from `@/lib/firebase/auth-helpers`. Tests updated.
 
 ---
 
-#### 12. `SessionContext.tsx` — imports Firebase Auth client SDK directly (Rule 11 Critical)
+#### ~~12. `SessionContext.tsx` — imports Firebase Auth client SDK directly (Rule 11 Critical)~~ ✅ RESOLVED (TASK-22)
 
-**Issue:** `src/contexts/SessionContext.tsx` imports `User`, `onAuthStateChanged` from `firebase/auth` and `auth` from `@/lib/firebase/config`. Rule 11 prohibits `@/lib/firebase/config` in `src/contexts/`. The auth state subscription must go through a wrapper function in `src/lib/firebase/auth-helpers.ts`.
-
-**Fix:** Add `subscribeToAuthState(callback: (user: User | null) => void): () => void` to `auth-helpers.ts`, then replace the direct Firebase imports in `SessionContext.tsx` with a call to that wrapper.
+**Resolved 2026-02-28.** `subscribeToAuthState(callback)` added to `auth-helpers.ts`. `SessionContext.tsx` now only has `import type { User } from "firebase/auth"` (type-only, erased at compile time) and imports the `onAuthStateChanged` wrapper from `@/lib/firebase/auth-helpers`. All `@/lib/firebase/config` imports removed. Tests updated.
 
 ---
 
-#### 13. Admin client components still using `UI_LABELS` in JSX — additional Rule 2 violations beyond TASK-18
+#### ~~13. Admin client components still using `UI_LABELS` in JSX — additional Rule 2 violations beyond TASK-18~~ ✅ RESOLVED (TASK-23 + TASK-24)
 
-**Issue:** Several admin components not in the TASK-18 Groups A–E also use `UI_LABELS` in rendered JSX:
-
-| File                                                  | UI_LABELS keys used in JSX                                                             |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `src/components/admin/blog/BlogForm.tsx`              | `UI_LABELS.ADMIN.BLOG.*` (all form labels)                                             |
-| `src/components/admin/products/ProductForm.tsx`       | `UI_LABELS.ADMIN.PRODUCTS.*` (all form labels)                                         |
-| ~~`src/components/admin/blog/BlogTableColumns.tsx`~~  | ✅ RESOLVED (TASK-24) — converted to `useBlogTableColumns` hook with `useTranslations` |
-| ~~`src/components/admin/users/UserDetailDrawer.tsx`~~ | ✅ RESOLVED (TASK-24) — `useTranslations("adminUsers")` applied                        |
-| ~~`src/components/admin/users/UserFilters.tsx`~~      | ✅ RESOLVED (TASK-24) — `useTranslations` applied for all namespaces                   |
-
-**Fix:** `BlogForm.tsx` and `ProductForm.tsx` still need `useTranslations` applied.
+**Resolved 2026-02-28.** `BlogForm.tsx` uses `useTranslations('adminBlog')` — no `UI_LABELS` imports remain. `ProductForm.tsx` had its unused `const LABELS = UI_LABELS.ADMIN.PRODUCTS` declaration removed (TASK-23). `BlogTableColumns.tsx` converted to `useBlogTableColumns` hook, `UserDetailDrawer.tsx` and `UserFilters.tsx` all use `useTranslations` (TASK-24). All Rule 2 violations resolved across all admin components.
 
 ---
 
@@ -2058,8 +2035,8 @@ import { auth } from "@/lib/firebase/config";
 
 | Page                                    | Issue                                                                                             | Recommended Action                                                                                      |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `auth/forgot-password/page.tsx`         | ~80 lines of inline logic                                                                         | Extract to `ForgotPasswordView` in `@/features/auth`                                                    |
-| `auth/verify-email/page.tsx`            | ~100 lines of inline logic                                                                        | Extract to `VerifyEmailView` in `@/features/auth`                                                       |
+| ~~`auth/forgot-password/page.tsx`~~     | ~~80 lines of inline logic~~                                                                      | ✅ RESOLVED (TASK-11) — extracted to `ForgotPasswordView` in `@/features/auth`, page is now 5 lines     |
+| ~~`auth/verify-email/page.tsx`~~        | ~~100 lines of inline logic~~                                                                     | ✅ RESOLVED (TASK-12) — extracted to `VerifyEmailView` in `@/features/auth`, page is now 5 lines        |
 | `user/profile/page.tsx`                 | ✅ TASK-14 complete — stat queries extracted to `useProfileStats` hook in `@/hooks`               | —                                                                                                       |
 | `admin/orders/page.tsx`                 | ✅ TASK-13 complete — extracted to `AdminOrdersView` + `useAdminOrders`                           | —                                                                                                       |
 | ~~`seller/page.tsx`~~                   | ~~Raw `lucide-react` icon imports + inline stat rendering~~                                       | ✅ RESOLVED (TASK-15) — extracted to `SellerDashboardView` in `@/features/seller`, page is now 10 lines |
