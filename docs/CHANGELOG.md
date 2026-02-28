@@ -14,6 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### Tenth Implementation Pass — URL-Driven Sort State + Orders View Extraction (2026-03-01)
+
+#### Added
+
+- **TASK-19 (P1):** `src/components/faq/__tests__/FAQPageContent.test.tsx` — NEW — 8 tests covering render, FAQ display, sort change via `table.setSort`, `useUrlTable` usage verification. All pass.
+
+#### Changed
+
+- **TASK-19 (P1):** `src/components/faq/FAQPageContent.tsx` — replaced `const [sortOption, setSortOption] = useState<FAQSortOption>("helpful")` with `useUrlTable({ defaults: { sort: "helpful" } })`; sort selection is now URL-driven and bookmarkable. `onSortChange` calls `table.setSort(sort)` instead of `setSortOption`.
+
+---
+
 ### Ninth Implementation Pass — UI_LABELS → useTranslations Migration (2026-03-01)
 
 #### Added

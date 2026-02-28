@@ -452,28 +452,9 @@ Create `src/components/admin/__tests__/MediaUploadField.test.tsx`.
 
 ---
 
-### TASK-19 · `FAQPageContent` — replace `useState` sort with `useUrlTable` · P1
+### ✅ DONE — TASK-19 · `FAQPageContent` — replace `useState` sort with `useUrlTable` · P1
 
-**Rule violated:** `useUrlTable` is mandatory for any list with filter/sort controls (per Rule 5 docs)
-**File:** `src/components/faq/FAQPageContent.tsx`
-
-**Issue:** Sort selection (`helpful`, `recent`, `alphabetical`) is stored in a local `useState`, so it resets on navigation and is not bookmarkable.
-
-**What to do:**
-
-1. Import `useUrlTable` from `@/hooks`.
-2. Replace:
-   ```tsx
-   const [sortOption, setSortOption] = useState<FAQSortOption>("helpful");
-   ```
-   with:
-   ```tsx
-   const table = useUrlTable({ defaults: { sort: "helpful" } });
-   const sortOption = (table.get("sort") || "helpful") as FAQSortOption;
-   ```
-3. Replace `setSortOption(value)` with `table.setSort(value)`.
-4. Run type-check + build.
-5. Update `src/components/faq/__tests__/FAQPageContent.test.tsx`.
+**Completed:** Added `useUrlTable` import from `@/hooks` in `FAQPageContent.tsx`. Removed `const [sortOption, setSortOption] = useState<FAQSortOption>("helpful")` and replaced with `useUrlTable({ defaults: { sort: "helpful" } })`. Sort is now URL-driven and bookmarkable. `onSortChange` now calls `table.setSort(sort)`. Created `src/components/faq/__tests__/FAQPageContent.test.tsx` with 8 tests. All pass.
 
 ---
 

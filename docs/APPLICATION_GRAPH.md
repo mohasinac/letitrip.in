@@ -2008,10 +2008,9 @@ Pages that can be made smaller or must be fixed by using existing components/uti
 
 **Fix:** For each component, call `useTranslations()` inside the component function body, add the translation keys to `messages/en.json` and `messages/hi.json`, and replace all `UI_LABELS.*` JSX references with `t('key')` calls.
 
-#### 9. `FAQPageContent` — sort state in `useState` instead of `useUrlTable`
+#### ~~9. `FAQPageContent` — sort state in `useState` instead of `useUrlTable`~~ ✅ RESOLVED (TASK-19)
 
-**Issue:** `src/components/faq/FAQPageContent.tsx` manages `sortOption` with a local `useState`. Any sort selection is lost on navigation/refresh. `useUrlTable` already handles URL-driven list state (filter, sort, page) and is the mandated hook for any list that has sort/filter controls.
-**Fix:** Replace `const [sortOption, setSortOption] = useState<FAQSortOption>("helpful")` with `useUrlTable({ defaults: { sort: 'helpful' } })` and read/write sort via `table.get('sort')` / `table.setSort(value)`.
+**Resolved 2026-03-01.** `FAQPageContent.tsx` now uses `useUrlTable({ defaults: { sort: "helpful" } })`. Sort is URL-driven and bookmarkable. `onSortChange` calls `table.setSort(sort)`.
 
 ---
 

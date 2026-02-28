@@ -9,7 +9,7 @@ import {
   FAQ_CATEGORIES,
 } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
-import { useAllFaqs } from "@/hooks";
+import { useAllFaqs, useUrlTable } from "@/hooks";
 import { FAQCategorySidebar } from "./FAQCategorySidebar";
 import { FAQSearchBar } from "./FAQSearchBar";
 import { FAQSortDropdown } from "./FAQSortDropdown";
@@ -31,7 +31,9 @@ export function FAQPageContent({
     FAQCategoryKey | "all"
   >(initialCategory);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOption, setSortOption] = useState<FAQSortOption>("helpful");
+
+  const table = useUrlTable({ defaults: { sort: "helpful" } });
+  const sortOption = (table.get("sort") || "helpful") as FAQSortOption;
 
   // Fetch all FAQs
   const { data: faqsData, isLoading } = useAllFaqs();
@@ -167,7 +169,7 @@ export function FAQPageContent({
             </p>
             <FAQSortDropdown
               selectedSort={sortOption}
-              onSortChange={setSortOption}
+              onSortChange={(sort) => table.setSort(sort)}
             />
           </div>
 
