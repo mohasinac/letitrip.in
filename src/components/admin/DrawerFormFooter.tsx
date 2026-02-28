@@ -1,8 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { UI_LABELS } from "@/constants";
 
 /**
  * DrawerFormFooter Component
@@ -47,14 +47,20 @@ export function DrawerFormFooter({
   onCancel,
   onSubmit,
   onDelete,
-  submitLabel = UI_LABELS.ACTIONS.SAVE,
-  deleteLabel = UI_LABELS.ACTIONS.DELETE,
-  cancelLabel = UI_LABELS.ACTIONS.CANCEL,
+  submitLabel,
+  deleteLabel,
+  cancelLabel,
   isLoading = false,
   isSubmitDisabled = false,
   className = "",
 }: DrawerFormFooterProps) {
-  const { spacing, themed } = THEME_CONSTANTS;
+  const t = useTranslations("actions");
+  const tLoading = useTranslations("loading");
+  const { themed } = THEME_CONSTANTS;
+
+  const resolvedSubmitLabel = submitLabel ?? t("save");
+  const resolvedDeleteLabel = deleteLabel ?? t("delete");
+  const resolvedCancelLabel = cancelLabel ?? t("cancel");
 
   return (
     <div
@@ -72,7 +78,7 @@ export function DrawerFormFooter({
             disabled={isLoading}
             size="md"
           >
-            {deleteLabel}
+            {resolvedDeleteLabel}
           </Button>
         )}
       </div>
@@ -84,7 +90,7 @@ export function DrawerFormFooter({
           disabled={isLoading}
           size="md"
         >
-          {cancelLabel}
+          {resolvedCancelLabel}
         </Button>
 
         <Button
@@ -93,7 +99,7 @@ export function DrawerFormFooter({
           disabled={isLoading || isSubmitDisabled}
           size="md"
         >
-          {isLoading ? UI_LABELS.LOADING.SAVING : submitLabel}
+          {isLoading ? tLoading("saving") : resolvedSubmitLabel}
         </Button>
       </div>
     </div>

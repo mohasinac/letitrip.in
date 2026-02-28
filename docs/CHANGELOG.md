@@ -14,6 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### TASK-42 — Migrate `DrawerFormFooter.tsx` default prop values from `UI_LABELS` to `useTranslations` (2026-02-28)
+
+#### Changed
+
+- **`src/components/admin/DrawerFormFooter.tsx`** — Removed `UI_LABELS` import; added `useTranslations("actions")` and `useTranslations("loading")`; changed default prop values (`submitLabel`, `deleteLabel`, `cancelLabel`) from `UI_LABELS.ACTIONS.*` constants to `undefined`; resolved defaults inside function body via `submitLabel ?? t("save")` etc.; replaced `UI_LABELS.LOADING.SAVING` in JSX with `tLoading("saving")`.
+
+#### Tests
+
+- **`src/components/admin/__tests__/DrawerFormFooter.test.tsx`** — Rewritten; removed `UI_LABELS` import; added `next-intl` mock; 5 tests covering default translation keys, custom label props, loading state, callback handlers, and conditional delete button.
+
+---
+
 ### TASK-41 — Convert 5 admin table column files from `UI_LABELS` to `useTranslations` hooks (2026-02-28)
 
 #### Changed

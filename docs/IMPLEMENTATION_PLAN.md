@@ -1209,7 +1209,7 @@ Convert each to a hook `useXTableColumns(onX, onY)` that calls `useTranslations(
 
 ---
 
-### TASK-42 · Migrate `DrawerFormFooter.tsx` default prop values from `UI_LABELS` to `useTranslations` · P0
+### ✅ TASK-42 · Migrate `DrawerFormFooter.tsx` default prop values from `UI_LABELS` to `useTranslations` · DONE
 
 **Rule violated:** Rule 2 (no `UI_LABELS` in JSX components — defaults rendered as JSX text)
 **File:** `src/components/admin/DrawerFormFooter.tsx`
