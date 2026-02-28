@@ -33,6 +33,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### Fourteenth Implementation Pass — CheckoutSuccessView Extraction (2026-02-28)
+
+#### Added
+
+- **TASK-17 (P2):** `src/components/checkout/CheckoutSuccessView.tsx` — NEW — extracted from `checkout/success/page.tsx`; contains `useSearchParams`, `useEffect` redirect guard, `useApiQuery` order fetch, loading/error/fallback/success JSX.
+- **TASK-17 (P2):** `src/components/checkout/__tests__/CheckoutSuccessView.test.tsx` — NEW — 6 tests covering: null/redirect when no orderId, spinner, fallback UI on error, orderId shown in fallback, success render, no redirect when orderId present.
+
+#### Changed
+
+- **TASK-17 (P2):** `src/app/[locale]/checkout/success/page.tsx` — reduced from ~100 lines to 9-line thin shell: `<Suspense><CheckoutSuccessView /></Suspense>`.
+- **TASK-17 (P2):** `src/components/checkout/index.ts` — added `CheckoutSuccessView` export.
+- **TASK-17 (P2):** `src/app/[locale]/checkout/success/__tests__/page.test.tsx` — rewritten as thin-shell test (1 test).
+
+---
+
 ### Thirteenth Implementation Pass — Address Pages useApiMutation Migration (2026-02-28)
 
 #### Changed

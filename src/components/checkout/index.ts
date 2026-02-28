@@ -6,3 +6,4 @@ export { OrderSuccessHero } from "./OrderSuccessHero";
 export { OrderSuccessCard } from "./OrderSuccessCard";
 export { OrderSuccessActions } from "./OrderSuccessActions";
 export { CheckoutView } from "./CheckoutView";
+export { CheckoutSuccessView } from "./CheckoutSuccessView";

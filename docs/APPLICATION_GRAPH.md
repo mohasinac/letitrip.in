@@ -715,19 +715,21 @@ All user pages require authentication (`🔒`). Protected by middleware RBAC.
 
 ---
 
-#### `/checkout/success` — Order Success 🟡🔒
+#### `/checkout/success` — Order Success ✅🔒
 
 **Route constant:** `ROUTES.USER.CHECKOUT_SUCCESS`
-**Summary:** Post-payment success screen showing order confirmation details.
+**Summary:** Post-payment success screen showing order confirmation details. Page is thin shell; logic in `CheckoutSuccessView`.
 
-| Layer             | Items                                                                    |
-| ----------------- | ------------------------------------------------------------------------ |
-| **Components**    | `Spinner`, `OrderSuccessHero`, `OrderSuccessCard`, `OrderSuccessActions` |
-| **Hooks**         | `useApiQuery`                                                            |
-| **Services**      | `orderService.getById()`                                                 |
-| **API Endpoints** | `API_ENDPOINTS.ORDERS.GET_BY_ID(id)`                                     |
-| **Constants**     | `ROUTES`, `THEME_CONSTANTS`                                              |
-| **Schema Types**  | `OrderDocument`                                                          |
+| Layer             | Items                                                                                   |
+| ----------------- | --------------------------------------------------------------------------------------- |
+| **Page**          | `checkout/success/page.tsx` — `<Suspense><CheckoutSuccessView /></Suspense>` (9 lines)  |
+| **View**          | `CheckoutSuccessView` (`src/components/checkout/`) — all logic extracted here (TASK-17) |
+| **Components**    | `Spinner`, `OrderSuccessHero`, `OrderSuccessCard`, `OrderSuccessActions`                |
+| **Hooks**         | `useApiQuery`                                                                           |
+| **Services**      | `orderService.getById()`                                                                |
+| **API Endpoints** | `API_ENDPOINTS.ORDERS.GET_BY_ID(id)`                                                    |
+| **Constants**     | `ROUTES`, `THEME_CONSTANTS`                                                             |
+| **Schema Types**  | `OrderDocument`                                                                         |
 
 ---
 
@@ -2121,7 +2123,7 @@ import { auth } from "@/lib/firebase/config";
 | `help/page.tsx`                         | Heavy raw HTML server component                                                                   | Same as above                                                                                           |
 | ~~`user/addresses/add/page.tsx`~~       | ~~Calls `addressService.create()` directly without `useApiMutation`~~                             | ✅ RESOLVED (TASK-16) — migrated to `useCreateAddress({ onSuccess, onError })`                          |
 | ~~`user/addresses/edit/[id]/page.tsx`~~ | ~~Same as above for update/delete~~                                                               | ✅ RESOLVED (TASK-16) — migrated to `useUpdateAddress` + `useDeleteAddress` + `useAddress`              |
-| `checkout/success/page.tsx`             | Inline `useApiQuery` + redirect logic                                                             | Extract to `CheckoutSuccessView` in `@/features/user` or `@/components/checkout`                        |
+| ~~`checkout/success/page.tsx`~~         | ~~Inline `useApiQuery` + redirect logic~~                                                         | ✅ RESOLVED (TASK-17) — extracted to `CheckoutSuccessView` in `@/components/checkout`                   |
 | ~~`events/[id]/participate/page.tsx`~~  | ~~**185 lines — violates Rule 10 (150 max)**; inline state, auth, data fetching, form rendering~~ | ✅ RESOLVED (TASK-26) — extracted to `EventParticipateView`, page is now 11 lines                       |
 
 ---

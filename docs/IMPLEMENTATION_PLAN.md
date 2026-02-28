@@ -350,26 +350,17 @@ Create `src/components/admin/__tests__/MediaUploadField.test.tsx`.
 
 ---
 
-### TASK-17 · `checkout/success/page.tsx` — extract to `CheckoutSuccessView` · P2
+### TASK-17 · `checkout/success/page.tsx` — extract to `CheckoutSuccessView` · P2 ✅ DONE
 
 **File:** `src/app/[locale]/checkout/success/page.tsx`
 
-**What to do:**
+**Completed:**
 
-1. Create `src/components/checkout/CheckoutSuccessView.tsx` — move `useSearchParams`, `useEffect` redirect logic, `useApiQuery` order fetch, and JSX into this component.
-2. Reduce page to:
-   ```tsx
-   import { CheckoutSuccessView } from "@/components";
-   export default function Page() {
-     return (
-       <Suspense>
-         <CheckoutSuccessView />
-       </Suspense>
-     );
-   }
-   ```
-3. Write `src/components/checkout/__tests__/CheckoutSuccessView.test.tsx`.
-4. Type-check + build.
+1. ✅ Created `src/components/checkout/CheckoutSuccessView.tsx` — moved all logic (useSearchParams, useEffect redirect, useApiQuery fetch, loading/error/success JSX).
+2. ✅ Page reduced to 9-line thin shell (`<Suspense><CheckoutSuccessView /></Suspense>`).
+3. ✅ Exported from `src/components/checkout/index.ts`.
+4. ✅ `src/components/checkout/__tests__/CheckoutSuccessView.test.tsx` — 6 tests pass.
+5. ✅ `src/app/[locale]/checkout/success/__tests__/page.test.tsx` — 1 test (thin shell).
 
 ---
 
