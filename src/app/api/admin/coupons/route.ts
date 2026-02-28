@@ -91,8 +91,8 @@ export const GET = createApiHandler({
     const sieveResult = await couponsRepository.list({
       filters,
       sorts,
-      page,
-      pageSize,
+      page: String(page),
+      pageSize: String(pageSize),
     });
 
     return successResponse({

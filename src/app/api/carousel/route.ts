@@ -63,7 +63,13 @@ export async function GET(request: NextRequest) {
 
     // Query carousel slides from repository
     const slides = includeInactive
-      ? await carouselRepository.findAll()
+      ? (
+          await carouselRepository.list({
+            sorts: "order",
+            page: "1",
+            pageSize: "100",
+          })
+        ).items
       : await carouselRepository.getActiveSlides();
 
     // Sort by order field

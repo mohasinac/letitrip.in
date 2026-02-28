@@ -14,7 +14,13 @@ import {
   SectionType,
   createHomepageSectionId,
 } from "@/db/schema/homepage-sections";
+import { HOMEPAGE_SECTION_FIELDS } from "@/db/schema";
 import { DatabaseError } from "@/lib/errors";
+import type {
+  SieveModel,
+  FirebaseSieveFields,
+  FirebaseSieveResult,
+} from "@/lib/query";
 
 /**
  * Repository for homepage section management
@@ -22,6 +28,29 @@ import { DatabaseError } from "@/lib/errors";
 class HomepageSectionsRepository extends BaseRepository<HomepageSectionDocument> {
   constructor() {
     super(HOMEPAGE_SECTIONS_COLLECTION);
+  }
+
+  /**
+   * Sieve field definitions for admin paginated/filtered listing
+   */
+  static readonly SIEVE_FIELDS: FirebaseSieveFields = {
+    type: { canFilter: true, canSort: false },
+    enabled: { canFilter: true, canSort: false },
+    order: { canFilter: true, canSort: true },
+    createdAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Paginated homepage sections list for admin.
+   */
+  async list(
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<HomepageSectionDocument>> {
+    return this.sieveQuery<HomepageSectionDocument>(
+      model,
+      HomepageSectionsRepository.SIEVE_FIELDS,
+      { defaultPageSize: 50, maxPageSize: 200 },
+    );
   }
 
   /**

@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
     // Query sections from repository
     const sections = includeDisabled
       ? await homepageSectionsRepository.findAll()
-      : (await homepageSectionsRepository.findAll()).filter((s) => s.enabled);
+      : await homepageSectionsRepository.getEnabledSections();
 
     // Sort by order field (ascending - top to bottom)
     sections.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));

@@ -14,10 +14,57 @@ import {
 } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import type {
+  SieveModel,
+  FirebaseSieveFields,
+  FirebaseSieveResult,
+} from "@/lib/query";
 
 class NotificationRepository extends BaseRepository<NotificationDocument> {
   constructor() {
     super(NOTIFICATIONS_COLLECTION);
+  }
+
+  /**
+   * Sieve field definitions for admin/user paginated listing
+   */
+  static readonly SIEVE_FIELDS: FirebaseSieveFields = {
+    userId: { canFilter: true, canSort: false },
+    type: { canFilter: true, canSort: false },
+    isRead: { canFilter: true, canSort: false },
+    createdAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Admin-level paginated notification list (all users).
+   */
+  async list(
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<NotificationDocument>> {
+    return this.sieveQuery<NotificationDocument>(
+      model,
+      NotificationRepository.SIEVE_FIELDS,
+    );
+  }
+
+  /**
+   * User-scoped paginated notification list.
+   */
+  async listForUser(
+    userId: string,
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<NotificationDocument>> {
+    return this.sieveQuery<NotificationDocument>(
+      model,
+      NotificationRepository.SIEVE_FIELDS,
+      {
+        baseQuery: this.getCollection().where(
+          NOTIFICATION_FIELDS.USER_ID,
+          "==",
+          userId,
+        ),
+      },
+    );
   }
 
   /**

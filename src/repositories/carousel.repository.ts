@@ -17,6 +17,11 @@ import {
 } from "@/db/schema/carousel-slides";
 import { DatabaseError } from "@/lib/errors";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import type {
+  SieveModel,
+  FirebaseSieveFields,
+  FirebaseSieveResult,
+} from "@/lib/query";
 
 /**
  * Repository for carousel slide management
@@ -24,6 +29,31 @@ import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 class CarouselRepository extends BaseRepository<CarouselSlideDocument> {
   constructor() {
     super(CAROUSEL_SLIDES_COLLECTION);
+  }
+
+  /**
+   * Sieve field definitions for admin paginated/filtered listing
+   */
+  static readonly SIEVE_FIELDS: FirebaseSieveFields = {
+    id: { canFilter: true, canSort: false },
+    title: { canFilter: true, canSort: true },
+    active: { canFilter: true, canSort: false },
+    order: { canFilter: true, canSort: true },
+    createdAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Paginated carousel slide list for admin.
+   * Use `?filters=active==true&sorts=order&pageSize=20` query params.
+   */
+  async list(
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<CarouselSlideDocument>> {
+    return this.sieveQuery<CarouselSlideDocument>(
+      model,
+      CarouselRepository.SIEVE_FIELDS,
+      { defaultPageSize: 20, maxPageSize: 100 },
+    );
   }
 
   /**

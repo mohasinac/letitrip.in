@@ -232,21 +232,35 @@ class NewsletterRepository extends BaseRepository<NewsletterSubscriberDocument> 
     sources: Record<string, number>;
   }> {
     try {
-      const snapshot = await this.getCollection().get();
-      const docs = snapshot.docs.map((d) => ({
-        ...(d.data() as NewsletterSubscriberDocument),
-        id: d.id,
-      }));
+      // Use Firestore count() aggregation for scalable total/active counts
+      const [totalSnap, activeSnap, sourceSnap] = await Promise.all([
+        this.getCollection().count().get(),
+        this.getCollection()
+          .where(
+            NEWSLETTER_FIELDS.STATUS,
+            "==",
+            NEWSLETTER_FIELDS.STATUS_VALUES.ACTIVE,
+          )
+          .count()
+          .get(),
+        // Fetch only active subscribers for source breakdown
+        this.getCollection()
+          .where(
+            NEWSLETTER_FIELDS.STATUS,
+            "==",
+            NEWSLETTER_FIELDS.STATUS_VALUES.ACTIVE,
+          )
+          .select(NEWSLETTER_FIELDS.SOURCE)
+          .get(),
+      ]);
 
-      const total = docs.length;
-      const active = docs.filter(
-        (d) => d.status === NEWSLETTER_FIELDS.STATUS_VALUES.ACTIVE,
-      ).length;
+      const total = totalSnap.data().count;
+      const active = activeSnap.data().count;
       const unsubscribed = total - active;
 
       const sources: Record<string, number> = {};
-      for (const doc of docs) {
-        const src = doc.source ?? "unknown";
+      for (const doc of sourceSnap.docs) {
+        const src = (doc.data() as { source?: string }).source ?? "unknown";
         sources[src] = (sources[src] ?? 0) + 1;
       }
 

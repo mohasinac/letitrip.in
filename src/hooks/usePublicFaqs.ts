@@ -28,6 +28,7 @@ export function usePublicFaqs(category?: string, limit = 6) {
 export function useAllFaqs() {
   return useApiQuery<FAQDocument[]>({
     queryKey: ["faqs", "public"],
-    queryFn: () => faqService.list("isActive=true"),
+    queryFn: () =>
+      faqService.list("filters=isActive==true&sorts=-priority,order"),
   });
 }

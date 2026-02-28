@@ -295,9 +295,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Auto-assign order (always compute from existing FAQs)
-    const allFAQs = await faqsRepository.findAll();
-    const maxOrder = Math.max(...allFAQs.map((f) => f.order || 0), 0);
+    // Auto-assign order — single Firestore query, avoids full collection load
+    const latestFAQ = await faqsRepository.list({
+      sorts: "-order",
+      page: "1",
+      pageSize: "1",
+    });
+    const maxOrder = latestFAQ.items[0]?.order ?? 0;
     const order = maxOrder + 1;
 
     // Create FAQ with admin as creator and SEO slug derived from the question

@@ -96,17 +96,18 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
   async getActiveCoupons(): Promise<CouponDocument[]> {
     try {
       const now = new Date();
+      // Firestore-native compound filter. Requires composite index:
+      // validity.isActive ASC + validity.endDate ASC (see firestore.indexes.json)
       const snapshot = await this.db
         .collection(this.collection)
-        .where("validity.isActive", "==", true)
+        .where(COUPON_FIELDS.VALIDITY_FIELDS.IS_ACTIVE, "==", true)
+        .where(COUPON_FIELDS.VALIDITY_FIELDS.END_DATE, ">=", now)
+        .orderBy(COUPON_FIELDS.VALIDITY_FIELDS.END_DATE, "asc")
         .get();
 
-      // Filter by date range (Firestore doesn't support compound queries on nested fields)
-      const coupons = snapshot.docs
+      return snapshot.docs
         .map((doc) => ({ id: doc.id, ...doc.data() }) as CouponDocument)
-        .filter((coupon) => isCouponValid(coupon));
-
-      return coupons;
+        .filter((coupon) => isCouponValid(coupon)); // still checks startDate + usage
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve active coupons: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -173,20 +174,18 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
       const now = new Date();
       const futureDate = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
 
+      // Firestore-native range filter — reuses the same composite index as getActiveCoupons()
       const snapshot = await this.db
         .collection(this.collection)
-        .where("validity.isActive", "==", true)
+        .where(COUPON_FIELDS.VALIDITY_FIELDS.IS_ACTIVE, "==", true)
+        .where(COUPON_FIELDS.VALIDITY_FIELDS.END_DATE, ">", now)
+        .where(COUPON_FIELDS.VALIDITY_FIELDS.END_DATE, "<=", futureDate)
+        .orderBy(COUPON_FIELDS.VALIDITY_FIELDS.END_DATE, "asc")
         .get();
 
-      // Filter by expiration date
-      const coupons = snapshot.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }) as CouponDocument)
-        .filter((coupon) => {
-          const endDate = coupon.validity.endDate;
-          return endDate && endDate > now && endDate <= futureDate;
-        });
-
-      return coupons;
+      return snapshot.docs.map(
+        (doc) => ({ id: doc.id, ...doc.data() }) as CouponDocument,
+      );
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve expiring coupons: ${error instanceof Error ? error.message : "Unknown error"}`,

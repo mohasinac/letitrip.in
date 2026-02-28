@@ -3,19 +3,32 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { THEME_CONSTANTS, ROUTES, MOCK_BLOG_ARTICLES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatDate } from "@/utils";
+import { useApiQuery } from "@/hooks";
+import { blogService } from "@/services";
+import type { BlogPostDocument } from "@/db/schema";
+
+interface FeaturedBlogResult {
+  posts: BlogPostDocument[];
+  meta: { total: number; page: number; pageSize: number };
+}
 
 export function BlogArticlesSection() {
   const t = useTranslations("homepage");
   const tActions = useTranslations("actions");
   const router = useRouter();
-  // NOTE: Using mock data until /api/blog route is implemented (blog feature not yet built)
-  // Replace with: const { data, isLoading } = useApiQuery('/api/blog?limit=4')
-  // when the blog feature is added.
-  const articles = MOCK_BLOG_ARTICLES;
 
-  if (articles.length === 0) {
+  const { data, isLoading } = useApiQuery<FeaturedBlogResult>({
+    queryKey: ["blog", "featured"],
+    queryFn: () => blogService.getFeatured(4),
+    cacheTTL: 5 * 60 * 1000,
+  });
+
+  const articles = data?.posts ?? [];
+
+  // Don't render while loading or when there are no featured posts
+  if (isLoading || articles.length === 0) {
     return null;
   }
 
@@ -56,9 +69,9 @@ export function BlogArticlesSection() {
             >
               {/* Thumbnail */}
               <div className="relative aspect-video overflow-hidden bg-gray-200 dark:bg-gray-700">
-                {article.thumbnail ? (
+                {article.coverImage ? (
                   <Image
-                    src={article.thumbnail}
+                    src={article.coverImage}
                     alt={article.title}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -118,7 +131,7 @@ export function BlogArticlesSection() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    {article.readTime} min
+                    {article.readTimeMinutes} min
                   </span>
                 </div>
               </div>

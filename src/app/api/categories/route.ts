@@ -68,11 +68,8 @@ export async function GET(request: NextRequest) {
     let categories;
 
     if (parentId) {
-      // Get children of specific parent
-      const allCategories = await categoriesRepository.findAll();
-      categories = allCategories.filter(
-        (cat) => cat.parentIds[cat.parentIds.length - 1] === parentId,
-      );
+      // Get direct children of specific parent — Firestore-native
+      categories = await categoriesRepository.getChildren(parentId);
     } else if (featured) {
       // Get featured categories
       categories = await categoriesRepository.findBy("isFeatured", true);
@@ -80,8 +77,8 @@ export async function GET(request: NextRequest) {
       // Get categories by root ID
       categories = await categoriesRepository.getCategoriesByRootId(rootId);
     } else {
-      // Get all categories
-      categories = await categoriesRepository.findAll();
+      // For flat requests load all; for tree requests, buildTree fetches its own data
+      categories = flat ? await categoriesRepository.findAll() : [];
     }
 
     // Sort by order
@@ -106,7 +103,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Build tree structure
+    // Build tree structure — buildTree fetches its own optimised query
     const tree = await categoriesRepository.buildTree(rootId);
 
     return NextResponse.json(
@@ -114,7 +111,9 @@ export async function GET(request: NextRequest) {
         success: true,
         data: tree,
         meta: {
-          total: categories.length,
+          // When a parentId/rootId/featured filter is active, categories holds
+          // the filtered set. For the default (no filter) tree path, use tree.length.
+          total: categories.length > 0 ? categories.length : tree.length,
         },
       },
       {

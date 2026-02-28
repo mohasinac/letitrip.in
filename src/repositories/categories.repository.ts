@@ -24,6 +24,11 @@ import { CATEGORY_FIELDS } from "@/db/schema";
 import { DatabaseError } from "@/lib/errors";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import { FieldValue } from "firebase-admin/firestore";
+import type {
+  SieveModel,
+  FirebaseSieveFields,
+  FirebaseSieveResult,
+} from "@/lib/query";
 
 /**
  * Repository for category management with hierarchy logic
@@ -31,6 +36,32 @@ import { FieldValue } from "firebase-admin/firestore";
 class CategoriesRepository extends BaseRepository<CategoryDocument> {
   constructor() {
     super(CATEGORIES_COLLECTION);
+  }
+
+  /**
+   * Sieve field definitions for admin paginated/filtered listing
+   */
+  static readonly SIEVE_FIELDS: FirebaseSieveFields = {
+    name: { canFilter: true, canSort: true },
+    slug: { canFilter: true, canSort: false },
+    tier: { canFilter: true, canSort: true },
+    isActive: { canFilter: true, canSort: false },
+    isFeatured: { canFilter: true, canSort: false },
+    parentId: { canFilter: true, canSort: false },
+    createdAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Paginated flat category list for admin (Sieve-powered).
+   * For the public tree use buildTree() instead.
+   */
+  async list(
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<CategoryDocument>> {
+    return this.sieveQuery<CategoryDocument>(
+      model,
+      CategoriesRepository.SIEVE_FIELDS,
+    );
   }
 
   /**
@@ -126,7 +157,7 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
     try {
       const snapshot = await this.db
         .collection(this.collection)
-        .where("slug", "==", slug)
+        .where(CATEGORY_FIELDS.SLUG, "==", slug)
         .limit(1)
         .get();
 
@@ -459,7 +490,16 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
       if (rootId) {
         categories = await this.getCategoriesByRootId(rootId);
       } else {
-        categories = await this.findAll();
+        // Fetch only active categories ordered for tree building — avoids loading
+        // soft-deleted / inactive nodes and reduces the read size
+        const snapshot = await this.getCollection()
+          .where(CATEGORY_FIELDS.IS_ACTIVE, "==", true)
+          .orderBy(CATEGORY_FIELDS.TIER, "asc")
+          .orderBy(CATEGORY_FIELDS.ORDER, "asc")
+          .get();
+        categories = snapshot.docs.map(
+          (doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument,
+        );
       }
 
       return buildCategoryTree(categories, rootId);

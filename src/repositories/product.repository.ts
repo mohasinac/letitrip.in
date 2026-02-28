@@ -96,13 +96,6 @@ class ProductRepository extends BaseRepository<ProductDocument> {
   }
 
   /**
-   * Find published products
-   */
-  async findPublished(): Promise<ProductDocument[]> {
-    return this.findBy(PRODUCT_FIELDS.STATUS, "published");
-  }
-
-  /**
    * Find featured products
    */
   async findFeatured(): Promise<ProductDocument[]> {

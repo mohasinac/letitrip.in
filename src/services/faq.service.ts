@@ -15,7 +15,7 @@ export const faqService = {
   /** List public FAQs for the homepage FAQ section */
   listPublic: (category?: string, limit = 8) =>
     apiClient.get(
-      `${API_ENDPOINTS.FAQS.LIST}?filters=published==true${category ? `,category==${category}` : ""}&sorts=order&pageSize=${limit}`,
+      `${API_ENDPOINTS.FAQS.LIST}?filters=isActive==true${category ? `,category==${category}` : ""}&sorts=order&pageSize=${limit}`,
     ),
 
   /** Get a single FAQ by ID */

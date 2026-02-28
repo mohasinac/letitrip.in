@@ -18,10 +18,55 @@ import {
 } from "@/db/schema";
 import { DatabaseError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
+import type {
+  SieveModel,
+  FirebaseSieveFields,
+  FirebaseSieveResult,
+} from "@/lib/query";
 
 export class SessionRepository extends BaseRepository<SessionDocument> {
   constructor() {
     super(SESSION_COLLECTION);
+  }
+
+  /**
+   * Sieve field definitions for admin/user paginated listing
+   */
+  static readonly SIEVE_FIELDS: FirebaseSieveFields = {
+    userId: { canFilter: true, canSort: false },
+    isActive: { canFilter: true, canSort: false },
+    lastActivity: { canFilter: true, canSort: true },
+    createdAt: { canFilter: true, canSort: true },
+  };
+
+  /**
+   * Admin-level paginated session list (all users, Sieve-powered).
+   */
+  async list(model: SieveModel): Promise<FirebaseSieveResult<SessionDocument>> {
+    return this.sieveQuery<SessionDocument>(
+      model,
+      SessionRepository.SIEVE_FIELDS,
+    );
+  }
+
+  /**
+   * User-scoped paginated session list (Sieve-powered).
+   */
+  async listForUser(
+    userId: string,
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<SessionDocument>> {
+    return this.sieveQuery<SessionDocument>(
+      model,
+      SessionRepository.SIEVE_FIELDS,
+      {
+        baseQuery: this.getCollection().where(
+          SESSION_FIELDS.USER_ID,
+          "==",
+          userId,
+        ),
+      },
+    );
   }
 
   /**
@@ -101,8 +146,8 @@ export class SessionRepository extends BaseRepository<SessionDocument> {
         .where(SESSION_FIELDS.USER_ID, "==", userId)
         .where(SESSION_FIELDS.IS_ACTIVE, "==", true)
         .where(SESSION_FIELDS.EXPIRES_AT, ">", now)
-        .orderBy("expiresAt", "desc")
-        .orderBy("lastActivity", "desc")
+        .orderBy(SESSION_FIELDS.EXPIRES_AT, "desc")
+        .orderBy(SESSION_FIELDS.LAST_ACTIVITY, "desc")
         .get();
 
       return snapshot.docs.map((doc) => ({
@@ -237,7 +282,7 @@ export class SessionRepository extends BaseRepository<SessionDocument> {
       // Count expired
       const now = new Date();
       const expiredSnapshot = await this.getCollection()
-        .where("expiresAt", "<=", now)
+        .where(SESSION_FIELDS.EXPIRES_AT, "<=", now)
         .limit(1000)
         .get();
 
@@ -275,10 +320,17 @@ export class SessionRepository extends BaseRepository<SessionDocument> {
     };
   }> {
     try {
-      let query = this.getCollection().orderBy("lastActivity", "desc");
+      let query = this.getCollection().orderBy(
+        SESSION_FIELDS.LAST_ACTIVITY,
+        "desc",
+      );
 
       if (options?.userId) {
-        query = query.where("userId", "==", options.userId) as any;
+        query = query.where(
+          SESSION_FIELDS.USER_ID,
+          "==",
+          options.userId,
+        ) as any;
       }
 
       if (options?.limit && options.limit > 0) {

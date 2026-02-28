@@ -68,18 +68,16 @@ export { MAIN_NAV_ITEMS } from "./navigation";
 // Note: NavItem type not exported to avoid conflict with NavItem component in @/components/layout
 export type { NavItem as NavigationItem } from "./navigation";
 
-// Homepage data constants (trust indicators, features, blog articles)
+// Homepage data constants (trust indicators, features)
 export {
   TRUST_INDICATORS,
   TRUST_FEATURES,
   SITE_FEATURES,
-  MOCK_BLOG_ARTICLES,
 } from "./homepage-data";
 export type {
   TrustIndicator,
   TrustFeatureItem,
   SiteFeature,
-  BlogArticle,
 } from "./homepage-data";
 
 // FAQ category constants

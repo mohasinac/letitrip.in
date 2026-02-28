@@ -37,7 +37,11 @@ class FAQsRepository extends BaseRepository<FAQDocument> {
     question: { canFilter: true, canSort: true },
     category: { canFilter: true, canSort: false },
     isActive: { canFilter: true, canSort: false },
-    helpful: { canFilter: false, canSort: true },
+    "stats.helpful": {
+      path: FAQ_FIELDS.STAT.HELPFUL,
+      canFilter: false,
+      canSort: true,
+    },
     createdAt: { canFilter: true, canSort: true },
   };
 

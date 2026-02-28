@@ -14,6 +14,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### TASK-46 — Wire BlogArticlesSection to live API; hide when no featured posts (2026-02-28)
+
+#### Changed
+
+- **`src/components/homepage/BlogArticlesSection.tsx`** — Replaced hardcoded `MOCK_BLOG_ARTICLES` with `useApiQuery` + `blogService.getFeatured(4)`. Section now renders only when the API returns ≥ 1 featured post (`isFeatured: true`) and stays hidden while loading or when the result is empty. Field references updated: `thumbnail` → `coverImage`, `readTime` → `readTimeMinutes` to match `BlogPostDocument`.
+- **`src/services/blog.service.ts`** — Added `getFeatured(count?: number)` — calls `GET /api/blog?featured=true&pageSize={count}&sorts=-publishedAt`.
+- **`src/components/homepage/__tests__/BlogArticlesSection.test.tsx`** — Rewritten to mock `useApiQuery`; covers loading (returns null), empty (returns null), data-present, image fallback, and accessibility cases.
+- **`src/services/__tests__/blog.service.test.ts`** — Added two test cases for `getFeatured()` (default count and custom count).
+
+#### Removed
+
+- **`src/constants/homepage-data.ts`** — Deleted `BlogArticle` interface and `MOCK_BLOG_ARTICLES` constant — no callers remain now that the component uses the live API.
+- **`src/constants/index.ts`** — Removed `MOCK_BLOG_ARTICLES` and `BlogArticle` type re-exports.
+
+---
+
+### TASK-45 — Comprehensive Sieve compliance & schema field constant audit (2026-03-01)
+
+#### Fixed
+
+- **`src/repositories/faqs.repository.ts`** — `SIEVE_FIELDS` key `helpful` corrected to `"stats.helpful"` with `path: FAQ_FIELDS.STAT.HELPFUL` so the nested field resolves correctly in Firestore queries.
+- **`src/services/faq.service.ts`** — `listPublic` Sieve filter changed from `published==true` (non-existent field) to `isActive==true`.
+- **`src/hooks/usePublicFaqs.ts`** — `useAllFaqs` query fixed from `faqService.list("isActive=true")` (invalid raw param) to `faqService.list("filters=isActive==true&sorts=-priority,order")` (correct Sieve DSL).
+- **`src/app/api/categories/route.ts`** — `parentId` branch: replaced `findAll().filter(...)` with `getChildren(parentId)` (Firestore-native). Default path no longer double-loads the collection; tree branch uses `tree.length` for result meta.
+- **`src/repositories/categories.repository.ts`** — `getCategoryBySlug()` hardcoded `"slug"` → `CATEGORY_FIELDS.SLUG`. `buildTree()` default path replaced `findAll()` with a targeted Firestore query (`IS_ACTIVE==true`, ordered by `TIER` + `ORDER`). Added `SIEVE_FIELDS` + `list(SieveModel)` for admin flat listing.
+- **`src/repositories/carousel.repository.ts`** — Added `SIEVE_FIELDS` + `list(SieveModel)` for admin paginated listing.
+- **`src/app/api/carousel/route.ts`** — Admin path `findAll()` replaced with `(await carouselRepository.list({sorts:"order", page:"1", pageSize:"100"})).items`.
+- **`src/app/api/homepage-sections/route.ts`** — `findAll().filter(s => s.enabled)` replaced with `getEnabledSections()` (Firestore-native).
+- **`src/app/api/faqs/route.ts`** — POST handler's `findAll()` used to compute `maxOrder` replaced with a single-document Sieve query `{sorts:"-order", page:"1", pageSize:"1"}`.
+- **`src/app/api/admin/coupons/route.ts`** — `page` / `pageSize` (numbers from `getNumberParam`) wrapped with `String()` before passing to `couponsRepository.list()` to satisfy `SieveModel` string types.
+- **`src/repositories/session.repository.ts`** — Four hardcoded Firestore field strings (`"userId"`, `"lastActivity"`, `"expiresAt"`) replaced with `SESSION_FIELDS.*` constants. Added `SIEVE_FIELDS` + `list(SieveModel)` + `listForUser(userId, SieveModel)`.
+- **`src/repositories/coupons.repository.ts`** — `getActiveCoupons()` and `getCouponsExpiringSoon()` replaced in-memory date filtering with Firestore-native range queries on `COUPON_FIELDS.VALIDITY_FIELDS.IS_ACTIVE` + `VALIDITY_FIELDS.END_DATE`. Relies on existing composite index in `firestore.indexes.json`.
+- **`src/repositories/newsletter.repository.ts`** — `getStats()` replaced full-collection scan with `count()` aggregations (parallel) + `.select(NEWSLETTER_FIELDS.SOURCE)` scoped to active subscribers for source breakdown.
+- **`src/repositories/homepage-sections.repository.ts`** — Added `HOMEPAGE_SECTION_FIELDS` import, `SIEVE_FIELDS`, and `list(SieveModel)` method.
+- **`src/repositories/notification.repository.ts`** — Added `SIEVE_FIELDS`, `list(SieveModel)`, and `listForUser(userId, SieveModel)` methods.
+
+#### Removed
+
+- **`src/repositories/blog.repository.ts`** — Deleted legacy `findPublished()` (in-memory pagination), `findAllPublished()`, and `findAll()` methods — all superseded by the existing Sieve-based `listPublished()` and `listAll()`. No external callers existed.
+- **`src/repositories/product.repository.ts`** — Deleted unused `findPublished()` shorthand — no callers; superseded by `list(SieveModel)`.
+
+---
+
 ### TASK-44 — Migrate cart and checkout components from `UI_LABELS` to `useTranslations` (2026-02-28)
 
 #### Changed
