@@ -1201,7 +1201,15 @@
     "confirmBan": "क्या आप इस उपयोगकर्ता को प्रतिबंधित करना चाहते हैं?",
     "confirmUnban": "क्या आप इस उपयोगकर्ता का प्रतिबंध हटाना चाहते हैं?",
     "confirmDelete": "इस उपयोगकर्ता को स्थायी रूप से हटाएं? यह क्रिया पूर्ववत नहीं हो सकती।",
-    "typeDeleteConfirm": "पुष्टि करने के लिए \"DELETE\" टाइप करें:"
+    "typeDeleteConfirm": "पुष्टि करने के लिए \"DELETE\" टाइप करें:",
+    "colName": "नाम",
+    "colEmail": "ईमेल",
+    "colRole": "भूमिका",
+    "colStatus": "स्थिति",
+    "colJoined": "शामिल हुए",
+    "colLastLogin": "अंतिम लॉगिन",
+    "emailNotVerified": "ईमेल सत्यापित नहीं",
+    "never": "कभी नहीं"
   },
   "adminProducts": {
     "title": "उत्पाद",
@@ -1247,7 +1255,14 @@
     "filterShipped": "भेजा गया",
     "filterDelivered": "वितरित",
     "filterCancelled": "रद्द",
-    "noOrders": "कोई ऑर्डर नहीं मिला"
+    "noOrders": "कोई ऑर्डर नहीं मिला",
+    "colOrderId": "ऑर्डर आईडी",
+    "colProduct": "उत्पाद",
+    "colCustomer": "ग्राहक",
+    "colAmount": "राशि",
+    "colStatus": "स्थिति",
+    "colPayment": "भुगतान",
+    "colDetails": "ऑर्डर विवरण"
   },
   "adminReviews": {
     "title": "समीक्षाएं",
@@ -1287,7 +1302,8 @@
     "bidAmount": "बोली राशि",
     "bidDate": "बोली तारीख",
     "winning": "जीत रहे",
-    "viewProduct": "उत्पाद देखें"
+    "viewProduct": "उत्पाद देखें",
+    "status": "स्थिति"
   },
   "adminBlog": {
     "title": "ब्लॉग पोस्ट",
@@ -1366,7 +1382,19 @@
     "deleteSection": "सेक्शन हटाएं",
     "noSections": "कोई सेक्शन नहीं मिला",
     "saveFailed": "सेक्शन सहेजने में विफल",
-    "deleteFailed": "सेक्शन हटाने में विफल"
+    "deleteFailed": "सेक्शन हटाने में विफल",
+    "sectionType": "सेक्शन प्रकार",
+    "formTitle": "शीर्षक",
+    "formDescription": "विवरण",
+    "formOrder": "क्रम",
+    "enabled": "सक्षम",
+    "descriptionPlaceholder": "सेक्शन विवरण दर्ज करें...",
+    "configuration": "कॉन्फ़िगरेशन (JSON)",
+    "colStatus": "स्थिति",
+    "statusActive": "सक्रिय",
+    "statusInactive": "निष्क्रिय",
+    "colOrder": "क्रम",
+    "colTitle": "शीर्षक"
   },
   "adminCoupons": {
     "title": "कूपन",

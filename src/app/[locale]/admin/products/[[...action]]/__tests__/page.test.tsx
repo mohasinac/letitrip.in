@@ -72,7 +72,7 @@ jest.mock("@/components", () => ({
   FormField: ({ label, onChange }: any) => (
     <input aria-label={label} onChange={onChange} />
   ),
-  getProductTableColumns: () => [],
+  useProductTableColumns: () => [],
   ProductForm: () => <div data-testid="product-form" />,
   ConfirmDeleteModal: () => <div />,
 }));

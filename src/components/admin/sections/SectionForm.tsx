@@ -8,13 +8,13 @@
 
 "use client";
 
-import { FormField, RichTextEditor } from "@/components";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { Checkbox, FormField, RichTextEditor } from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import type { HomepageSection } from "./types";
 import { SECTION_TYPES } from "./types";
 
-const { spacing, themed, typography } = THEME_CONSTANTS;
-const LABELS = UI_LABELS.ADMIN.SECTIONS;
+const { spacing, typography } = THEME_CONSTANTS;
 
 interface SectionFormProps {
   section: HomepageSection;
@@ -29,6 +29,8 @@ export function SectionForm({
   isReadonly = false,
   isCreate = false,
 }: SectionFormProps) {
+  const t = useTranslations("adminSections");
+
   const update = (partial: Partial<HomepageSection>) => {
     onChange({ ...section, ...partial });
   };
@@ -37,20 +39,20 @@ export function SectionForm({
     <div className={spacing.stack}>
       <FormField
         name="type"
-        label={LABELS.SECTION_TYPE}
+        label={t("sectionType")}
         type="select"
         value={section.type}
         onChange={(value) => update({ type: value })}
         disabled={!isCreate}
-        options={SECTION_TYPES.map((t) => ({
-          value: t.value,
-          label: t.label,
+        options={SECTION_TYPES.map((st) => ({
+          value: st.value,
+          label: st.label,
         }))}
       />
 
       <FormField
         name="title"
-        label="Title"
+        label={t("formTitle")}
         type="text"
         value={section.title}
         onChange={(value) => update({ title: value })}
@@ -58,7 +60,9 @@ export function SectionForm({
       />
 
       <div>
-        <label className={`block ${typography.label} mb-2`}>Description</label>
+        <label className={`block ${typography.label} mb-2`}>
+          {t("formDescription")}
+        </label>
         {isReadonly ? (
           <div
             className={`${THEME_CONSTANTS.patterns.adminInput} opacity-60 min-h-[100px]`}
@@ -68,7 +72,7 @@ export function SectionForm({
           <RichTextEditor
             content={section.description || ""}
             onChange={(content) => update({ description: content })}
-            placeholder="Enter section description..."
+            placeholder={t("descriptionPlaceholder")}
             minHeight="150px"
           />
         )}
@@ -77,7 +81,7 @@ export function SectionForm({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField
           name="order"
-          label="Order"
+          label={t("formOrder")}
           type="number"
           value={String(section.order)}
           onChange={(value) => update({ order: parseInt(value) || 0 })}
@@ -85,24 +89,18 @@ export function SectionForm({
         />
 
         <div className="flex items-end">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={section.enabled}
-              onChange={(e) => update({ enabled: e.target.checked })}
-              disabled={isReadonly}
-              className="w-4 h-4 text-indigo-600 rounded"
-            />
-            <span className={typography.label}>
-              {UI_LABELS.ADMIN.CATEGORIES.ENABLED}
-            </span>
-          </label>
+          <Checkbox
+            label={t("enabled")}
+            checked={section.enabled}
+            onChange={(e) => update({ enabled: e.target.checked })}
+            disabled={isReadonly}
+          />
         </div>
       </div>
 
       <div>
         <label className={`block ${typography.label} mb-2`}>
-          {LABELS.CONFIGURATION}
+          {t("configuration")}
         </label>
         <textarea
           value={JSON.stringify(section.config, null, 2)}

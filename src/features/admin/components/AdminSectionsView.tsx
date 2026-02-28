@@ -19,7 +19,7 @@ import {
   SideDrawer,
   AdminPageHeader,
   DrawerFormFooter,
-  getSectionTableColumns,
+  useSectionTableColumns,
   SectionForm,
   useToast,
 } from "@/components";
@@ -190,7 +190,7 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
         ? t("deleteSection")
         : t("editSection");
 
-  const { columns, actions } = getSectionTableColumns(
+  const { columns, actions } = useSectionTableColumns(
     handleEdit,
     handleDeleteDrawer,
   );

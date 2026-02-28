@@ -57,7 +57,7 @@ jest.mock("@/components", () => ({
   DrawerFormFooter: () => <div data-testid="drawer-footer" />,
   TablePagination: () => <div data-testid="table-pagination" />,
   OrderStatusForm: () => <div data-testid="order-status-form" />,
-  getOrderTableColumns: () => ({ columns: [] }),
+  useOrderTableColumns: () => ({ columns: [] }),
 }));
 
 jest.mock("@/constants", () => ({

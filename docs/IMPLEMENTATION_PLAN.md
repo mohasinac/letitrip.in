@@ -1140,6 +1140,105 @@ firebase deploy --only database:rules
 
 ---
 
+## Seventh Audit Pass — New Tasks (2026-02-28)
+
+> Tasks TASK-40 → TASK-42 identified in seventh audit pass on 2026-02-28. Remaining UI_LABELS violations found in admin table column definitions and `SectionForm` / `DrawerFormFooter`.
+
+---
+
+### ✅ TASK-40 · Migrate `SectionForm.tsx` — `UI_LABELS` + hardcoded strings + raw `<input type="checkbox">` → `useTranslations` + `Checkbox` · DONE
+
+**Rule violated:** Rule 2 (no `UI_LABELS` in JSX), Rule 3 (no hardcoded strings), Rule 7 (use `Checkbox` component)
+**File:** `src/components/admin/sections/SectionForm.tsx`
+
+**Violations found:**
+
+- `const LABELS = UI_LABELS.ADMIN.SECTIONS` used in JSX
+- `{UI_LABELS.ADMIN.CATEGORIES.ENABLED}` in JSX
+- Hardcoded strings: `"Title"`, `"Description"`, `"Order"`, `"Enter section description..."`
+- Raw `<input type="checkbox">` instead of `<Checkbox>`
+
+**What to do:**
+
+1. Add `const t = useTranslations('adminSections')` inside the component function body.
+2. Add keys to `messages/en.json` under `adminSections`: `sectionType`, `title`, `description`, `order`, `enabled`, `descriptionPlaceholder`, `configuration`.
+3. Add same keys to `messages/hi.json`.
+4. Replace `LABELS.*` and hardcoded strings with `t('key')`.
+5. Import `Checkbox` from `@/components` and replace raw `<input type="checkbox">` block.
+6. Remove `const LABELS = UI_LABELS.ADMIN.SECTIONS` and `UI_LABELS` import.
+7. Run `npx tsc --noEmit src/components/admin/sections/SectionForm.tsx`.
+8. Update `src/components/admin/sections/__tests__/SectionForm.test.tsx`.
+
+**Effort:** S (30–90 min)
+
+---
+
+### ✅ TASK-41 · Convert remaining admin table column files from `UI_LABELS` to `useTranslations` hooks · DONE
+
+**Rule violated:** Rule 2 (no `UI_LABELS` in JSX client components)
+**Files:** (all contain UI_LABELS in rendered JSX column cells)
+
+- `src/components/admin/products/ProductTableColumns.tsx` → `useProductTableColumns`
+- `src/components/admin/orders/OrderTableColumns.tsx` → `useOrderTableColumns`
+- `src/components/admin/bids/BidTableColumns.tsx` → `useBidTableColumns`
+- `src/components/admin/users/UserTableColumns.tsx` → `useUserTableColumns`
+- `src/components/admin/sections/SectionTableColumns.tsx` → `useSectionTableColumns`
+
+**Pattern (following `useBlogTableColumns` from TASK-24):**
+
+Each file is a function `getXTableColumns(onX, onY) → { columns }`.  
+Convert each to a hook `useXTableColumns(onX, onY)` that calls `useTranslations('adminX')` internally.
+
+**What to do:**
+
+1. For each file:
+   - Add `"use client"` directive at the top.
+   - Add `import { useTranslations } from 'next-intl'`.
+   - Rename `getXTableColumns(...)` → `useXTableColumns(...)`.
+   - Add `const t = useTranslations('adminX')` inside the hook body.
+   - Replace all `LABELS.*` and `UI_LABELS.*` references with `t('key')`.
+   - Remove the `UI_LABELS` import and `const LABELS = ...` line.
+2. Add corresponding translation keys to `messages/en.json` and `messages/hi.json`.
+3. Find all call sites of `getXTableColumns(...)` and update them to `useXTableColumns(...)` (call inside component bodies).
+4. Run `npx tsc --noEmit` for each file.
+5. Update tests for each table columns file.
+
+**Namespaces:** `adminProducts`, `adminOrders`, `adminBids`, `adminUsers`, `adminSections`
+
+**Effort:** M (90–180 min)
+
+---
+
+### TASK-42 · Migrate `DrawerFormFooter.tsx` default prop values from `UI_LABELS` to `useTranslations` · P0
+
+**Rule violated:** Rule 2 (no `UI_LABELS` in JSX components — defaults rendered as JSX text)
+**File:** `src/components/admin/DrawerFormFooter.tsx`
+
+**Violations found:**
+
+- `submitLabel = UI_LABELS.ACTIONS.SAVE` (default prop rendered as button text)
+- `deleteLabel = UI_LABELS.ACTIONS.DELETE` (default prop rendered as button text)
+- `cancelLabel = UI_LABELS.ACTIONS.CANCEL` (default prop rendered as button text)
+- `{isLoading ? UI_LABELS.LOADING.SAVING : submitLabel}` (direct JSX usage)
+
+**What to do:**
+
+1. Add `const t = useTranslations('actions')` inside the component function body.
+2. Change default prop values to `undefined` (or remove defaults from destructuring) and resolve inside the function body:
+   ```tsx
+   const resolvedSubmitLabel = submitLabel ?? t("save");
+   const resolvedDeleteLabel = deleteLabel ?? t("delete");
+   const resolvedCancelLabel = cancelLabel ?? t("cancel");
+   ```
+3. Add `const tLoading = useTranslations('loading')` for `UI_LABELS.LOADING.SAVING`.
+4. Replace all `UI_LABELS.*` references in JSX with translation calls.
+5. Run `npx tsc --noEmit src/components/admin/DrawerFormFooter.tsx`.
+6. Update `src/components/admin/__tests__/DrawerFormFooter.test.tsx`.
+
+**Effort:** S (30–90 min)
+
+---
+
 ## Dependency Map
 
 Tasks that should be done in order due to shared files:

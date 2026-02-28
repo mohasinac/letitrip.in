@@ -874,12 +874,12 @@ All admin pages require authentication + admin role (`👑🔒`). Protected by m
 **Route constant:** `ROUTES.ADMIN.PRODUCTS`
 **Summary:** Full product CRUD — list, create, edit, delete. Delegates entirely to `AdminProductsView`.
 
-| Layer              | Items                                                                                                                                                                                                |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Feature**        | `@/features/admin` → `AdminProductsView`                                                                                                                                                             |
-| **Inside feature** | `useAdminProducts`, `useUrlTable`, `DataTable`, `AdminPageHeader`, `AdminFilterBar`, `SideDrawer`, `ProductForm`, `DrawerFormFooter`, `ProductTableColumns`, `TablePagination`, `ConfirmDeleteModal` |
-| **Services**       | `adminService` product methods                                                                                                                                                                       |
-| **API Endpoints**  | `API_ENDPOINTS.ADMIN.PRODUCTS`, `API_ENDPOINTS.ADMIN.PRODUCT_BY_ID(id)`                                                                                                                              |
+| Layer              | Items                                                                                                                                                                                                   |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Feature**        | `@/features/admin` → `AdminProductsView`                                                                                                                                                                |
+| **Inside feature** | `useAdminProducts`, `useUrlTable`, `DataTable`, `AdminPageHeader`, `AdminFilterBar`, `SideDrawer`, `ProductForm`, `DrawerFormFooter`, `useProductTableColumns`, `TablePagination`, `ConfirmDeleteModal` |
+| **Services**       | `adminService` product methods                                                                                                                                                                          |
+| **API Endpoints**  | `API_ENDPOINTS.ADMIN.PRODUCTS`, `API_ENDPOINTS.ADMIN.PRODUCT_BY_ID(id)`                                                                                                                                 |
 
 ---
 
@@ -888,14 +888,14 @@ All admin pages require authentication + admin role (`👑🔒`). Protected by m
 **Route constant:** `ROUTES.ADMIN.ORDERS`
 **Summary:** All-orders management with status update actions. Thin shell delegating to `AdminOrdersView` in `@/features/admin` (TASK-13 ✅).
 
-| Layer             | Items                                                                                                                                         |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Components**    | `Card`, `Button`, `SideDrawer`, `DataTable`, `AdminPageHeader`, `DrawerFormFooter`, `OrderTableColumns`, `OrderStatusForm`, `TablePagination` |
-| **Hooks**         | `useApiQuery`, `useApiMutation`, `useMessage`, `useUrlTable`                                                                                  |
-| **Services**      | `adminService.listOrders()`, `adminService.updateOrder()`                                                                                     |
-| **API Endpoints** | `API_ENDPOINTS.ADMIN.ORDERS`, `API_ENDPOINTS.ADMIN.ORDER_BY_ID(id)`                                                                           |
-| **Constants**     | `ROUTES`, `ERROR_MESSAGES`, `SUCCESS_MESSAGES`                                                                                                |
-| **Schema Types**  | `OrderDocument`                                                                                                                               |
+| Layer             | Items                                                                                                                                            |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Components**    | `Card`, `Button`, `SideDrawer`, `DataTable`, `AdminPageHeader`, `DrawerFormFooter`, `useOrderTableColumns`, `OrderStatusForm`, `TablePagination` |
+| **Hooks**         | `useApiQuery`, `useApiMutation`, `useMessage`, `useUrlTable`                                                                                     |
+| **Services**      | `adminService.listOrders()`, `adminService.updateOrder()`                                                                                        |
+| **API Endpoints** | `API_ENDPOINTS.ADMIN.ORDERS`, `API_ENDPOINTS.ADMIN.ORDER_BY_ID(id)`                                                                              |
+| **Constants**     | `ROUTES`, `ERROR_MESSAGES`, `SUCCESS_MESSAGES`                                                                                                   |
+| **Schema Types**  | `OrderDocument`                                                                                                                                  |
 
 ---
 
@@ -974,12 +974,12 @@ All admin pages require authentication + admin role (`👑🔒`). Protected by m
 **Route constant:** `ROUTES.ADMIN.SECTIONS`
 **Summary:** Homepage section visibility and ordering. Delegates entirely to `AdminSectionsView`.
 
-| Layer              | Items                                                                                                                      |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| **Feature**        | `@/features/admin` → `AdminSectionsView`                                                                                   |
-| **Inside feature** | `useAdminSections`, `DataTable`, `AdminPageHeader`, `SectionForm`, `SectionTableColumns`, `SideDrawer`, `DrawerFormFooter` |
-| **Services**       | `homepageSectionsService`                                                                                                  |
-| **API Endpoints**  | `API_ENDPOINTS.HOMEPAGE_SECTIONS.LIST`, `API_ENDPOINTS.HOMEPAGE_SECTIONS.REORDER`                                          |
+| Layer              | Items                                                                                                                         |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Feature**        | `@/features/admin` → `AdminSectionsView`                                                                                      |
+| **Inside feature** | `useAdminSections`, `DataTable`, `AdminPageHeader`, `SectionForm`, `useSectionTableColumns`, `SideDrawer`, `DrawerFormFooter` |
+| **Services**       | `homepageSectionsService`                                                                                                     |
+| **API Endpoints**  | `API_ENDPOINTS.HOMEPAGE_SECTIONS.LIST`, `API_ENDPOINTS.HOMEPAGE_SECTIONS.REORDER`                                             |
 
 ---
 

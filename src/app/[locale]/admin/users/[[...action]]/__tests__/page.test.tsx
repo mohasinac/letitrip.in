@@ -52,7 +52,7 @@ jest.mock("@/components", () => ({
   TablePagination: () => <div data-testid="table-pagination" />,
   useToast: () => ({ showToast: jest.fn() }),
   UserFilters: () => <div data-testid="user-filters" />,
-  getUserTableColumns: () => ({ columns: [], actions: [] }),
+  useUserTableColumns: () => ({ columns: [], actions: [] }),
   UserDetailDrawer: () => <div data-testid="user-drawer" />,
 }));
 

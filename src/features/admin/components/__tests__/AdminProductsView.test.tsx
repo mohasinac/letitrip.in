@@ -65,7 +65,7 @@ jest.mock("@/components", () => ({
     <div data-testid="filter-bar">{children}</div>
   ),
   FormField: ({ label }: any) => <div data-testid="form-field">{label}</div>,
-  getProductTableColumns: () => [
+  useProductTableColumns: () => [
     { key: "title", header: "Title" },
     { key: "price", header: "Price" },
     { key: "status", header: "Status" },

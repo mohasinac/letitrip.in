@@ -1,1 +1,1 @@
-export { getBidTableColumns } from "./BidTableColumns";
+export { useBidTableColumns } from "./BidTableColumns";

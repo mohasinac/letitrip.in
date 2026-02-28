@@ -67,7 +67,7 @@ jest.mock("@/components", () => ({
   AdminPageHeader: ({ title }: any) => <h1>{title}</h1>,
   TablePagination: () => <div data-testid="table-pagination" />,
   Text: ({ children }: any) => <span>{children}</span>,
-  getOrderTableColumns: () => [],
+  useOrderTableColumns: () => [],
 }));
 
 describe("Seller Orders Page", () => {

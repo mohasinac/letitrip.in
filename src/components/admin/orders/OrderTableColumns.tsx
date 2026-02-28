@@ -1,15 +1,15 @@
+"use client";
+
 /**
- * OrderTableColumns
+ * useOrderTableColumns
  * Path: src/components/admin/orders/OrderTableColumns.tsx
  *
- * Column definitions for the admin Orders DataTable.
+ * Column definitions hook for the admin Orders DataTable.
  */
 
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import type { OrderDocument } from "@/db/schema";
-
-const LABELS = UI_LABELS.ADMIN.ORDERS;
-const { themed } = THEME_CONSTANTS;
 
 const ORDER_STATUS_STYLES: Record<string, string> = {
   pending:
@@ -33,12 +33,16 @@ const PAYMENT_STATUS_STYLES: Record<string, string> = {
     "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300",
 };
 
-export function getOrderTableColumns(onView: (order: OrderDocument) => void) {
+export function useOrderTableColumns(onView: (order: OrderDocument) => void) {
+  const t = useTranslations("adminOrders");
+  const tActions = useTranslations("actions");
+  const { themed } = THEME_CONSTANTS;
+
   return {
     columns: [
       {
         key: "id",
-        header: "Order ID",
+        header: t("colOrderId"),
         width: "18%",
         render: (order: OrderDocument) => (
           <span className="font-mono text-xs font-medium truncate max-w-[140px] block">
@@ -48,7 +52,7 @@ export function getOrderTableColumns(onView: (order: OrderDocument) => void) {
       },
       {
         key: "productTitle",
-        header: "Product",
+        header: t("colProduct"),
         sortable: true,
         width: "22%",
         render: (order: OrderDocument) => (
@@ -64,7 +68,7 @@ export function getOrderTableColumns(onView: (order: OrderDocument) => void) {
       },
       {
         key: "userEmail",
-        header: "Customer",
+        header: t("colCustomer"),
         sortable: true,
         width: "20%",
         render: (order: OrderDocument) => (
@@ -82,7 +86,7 @@ export function getOrderTableColumns(onView: (order: OrderDocument) => void) {
       },
       {
         key: "totalPrice",
-        header: "Amount",
+        header: t("colAmount"),
         sortable: true,
         width: "10%",
         render: (order: OrderDocument) => (
@@ -97,7 +101,7 @@ export function getOrderTableColumns(onView: (order: OrderDocument) => void) {
       },
       {
         key: "status",
-        header: "Status",
+        header: t("colStatus"),
         sortable: true,
         width: "11%",
         render: (order: OrderDocument) => (
@@ -113,7 +117,7 @@ export function getOrderTableColumns(onView: (order: OrderDocument) => void) {
       },
       {
         key: "paymentStatus",
-        header: "Payment",
+        header: t("colPayment"),
         sortable: true,
         width: "10%",
         render: (order: OrderDocument) => (
@@ -129,14 +133,14 @@ export function getOrderTableColumns(onView: (order: OrderDocument) => void) {
       },
       {
         key: "actions",
-        header: LABELS.DETAILS,
+        header: t("colDetails"),
         width: "9%",
         render: (order: OrderDocument) => (
           <button
             onClick={() => onView(order)}
             className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium"
           >
-            {LABELS.VIEW}
+            {tActions("view")}
           </button>
         ),
       },

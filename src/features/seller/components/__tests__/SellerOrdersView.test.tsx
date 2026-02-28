@@ -47,7 +47,7 @@ jest.mock("@/components", () => ({
   TablePagination: () => <div data-testid="table-pagination" />,
   Text: ({ children }: any) => <span>{children}</span>,
   Spinner: () => <div data-testid="spinner" />,
-  getOrderTableColumns: () => [
+  useOrderTableColumns: () => [
     { key: "id", header: "Order ID" },
     { key: "total", header: "Total" },
   ],

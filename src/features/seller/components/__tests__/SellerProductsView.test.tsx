@@ -84,7 +84,7 @@ jest.mock("@/components", () => ({
   ),
   ActiveFilterChips: () => <div data-testid="active-chips" />,
   Spinner: () => <div data-testid="spinner" />,
-  getProductTableColumns: () => [{ key: "title", header: "Title" }],
+  useProductTableColumns: () => [{ key: "title", header: "Title" }],
 }));
 
 jest.mock("@/constants", () => ({

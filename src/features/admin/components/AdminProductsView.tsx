@@ -20,7 +20,7 @@ import {
   DataTable,
   AdminPageHeader,
   DrawerFormFooter,
-  getProductTableColumns,
+  useProductTableColumns,
   ProductForm,
   TablePagination,
   AdminFilterBar,
@@ -209,7 +209,7 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
         ? t("deleteProduct")
         : t("editProduct");
 
-  const { columns, actions } = getProductTableColumns(
+  const { columns, actions } = useProductTableColumns(
     handleEdit,
     handleDeleteDrawer,
   );

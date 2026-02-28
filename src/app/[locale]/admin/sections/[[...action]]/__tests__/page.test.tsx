@@ -40,7 +40,7 @@ jest.mock("@/components", () => ({
   ),
   AdminPageHeader: ({ title }: { title: string }) => <h1>{title}</h1>,
   DrawerFormFooter: () => <div data-testid="drawer-footer" />,
-  getSectionTableColumns: () => ({ columns: [], actions: [] }),
+  useSectionTableColumns: () => ({ columns: [], actions: [] }),
   SectionForm: () => <div data-testid="section-form" />,
   useToast: () => ({ showToast: jest.fn() }),
 }));

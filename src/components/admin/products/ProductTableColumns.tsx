@@ -1,15 +1,15 @@
+"use client";
+
 /**
- * ProductTableColumns
+ * useProductTableColumns
  * Path: src/components/admin/products/ProductTableColumns.tsx
  *
- * Column definitions for the admin Products DataTable.
+ * Column definitions hook for the admin Products DataTable.
  */
 
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import type { AdminProduct } from "./types";
-
-const LABELS = UI_LABELS.ADMIN.PRODUCTS;
-const { themed } = THEME_CONSTANTS;
 
 const STATUS_STYLES: Record<string, string> = {
   published:
@@ -21,15 +21,19 @@ const STATUS_STYLES: Record<string, string> = {
   sold: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
 };
 
-export function getProductTableColumns(
+export function useProductTableColumns(
   onEdit: (product: AdminProduct) => void,
   onDelete: (product: AdminProduct) => void,
 ) {
+  const t = useTranslations("adminProducts");
+  const tActions = useTranslations("actions");
+  const { themed } = THEME_CONSTANTS;
+
   return {
     columns: [
       {
         key: "title",
-        header: LABELS.TITLE_LABEL,
+        header: t("formTitle"),
         sortable: true,
         width: "25%",
         render: (product: AdminProduct) => (
@@ -52,13 +56,13 @@ export function getProductTableColumns(
       },
       {
         key: "category",
-        header: LABELS.CATEGORY_LABEL,
+        header: t("formCategory"),
         sortable: true,
         width: "12%",
       },
       {
         key: "price",
-        header: LABELS.PRICE_LABEL,
+        header: t("formPrice"),
         sortable: true,
         width: "10%",
         render: (product: AdminProduct) => (
@@ -67,13 +71,13 @@ export function getProductTableColumns(
       },
       {
         key: "stockQuantity",
-        header: LABELS.STOCK_LABEL,
+        header: t("formStock"),
         sortable: true,
         width: "10%",
       },
       {
         key: "status",
-        header: LABELS.STATUS_LABEL,
+        header: t("formStatus"),
         sortable: true,
         width: "12%",
         render: (product: AdminProduct) => (
@@ -89,7 +93,7 @@ export function getProductTableColumns(
       },
       {
         key: "sellerName",
-        header: LABELS.SELLER_LABEL,
+        header: t("formSeller"),
         sortable: true,
         width: "15%",
         render: (product: AdminProduct) => (
@@ -100,7 +104,7 @@ export function getProductTableColumns(
       },
       {
         key: "featured",
-        header: LABELS.FEATURED_LABEL,
+        header: t("formFeatured"),
         sortable: true,
         width: "8%",
         render: (product: AdminProduct) => (
@@ -111,7 +115,7 @@ export function getProductTableColumns(
                 : `${themed.bgTertiary} ${themed.textSecondary}`
             }`}
           >
-            {product.featured ? UI_LABELS.ACTIONS.YES : UI_LABELS.ACTIONS.NO}
+            {product.featured ? tActions("yes") : tActions("no")}
           </span>
         ),
       },
@@ -125,7 +129,7 @@ export function getProductTableColumns(
           }}
           className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
         >
-          {UI_LABELS.ACTIONS.EDIT}
+          {tActions("edit")}
         </button>
         <button
           onClick={(e) => {
@@ -134,7 +138,7 @@ export function getProductTableColumns(
           }}
           className="text-red-600 hover:text-red-800 dark:text-red-400"
         >
-          {UI_LABELS.ACTIONS.DELETE}
+          {tActions("delete")}
         </button>
       </div>
     ),

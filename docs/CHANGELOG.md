@@ -14,6 +14,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### TASK-41 — Convert 5 admin table column files from `UI_LABELS` to `useTranslations` hooks (2026-02-28)
+
+#### Changed
+
+- **`src/components/admin/products/ProductTableColumns.tsx`** — Added `"use client"` + `useTranslations("adminProducts")` + `useTranslations("actions")`; renamed `getProductTableColumns` → `useProductTableColumns`; replaced all `LABELS.*` + `UI_LABELS.ACTIONS.*` with translation keys.
+- **`src/components/admin/orders/OrderTableColumns.tsx`** — Added `"use client"` + `useTranslations("adminOrders")` + `useTranslations("actions")`; renamed `getOrderTableColumns` → `useOrderTableColumns`; replaced hardcoded column headers (`"Order ID"`, `"Product"`, `"Customer"`, `"Amount"`, `"Status"`, `"Payment"`) with `t()` calls.
+- **`src/components/admin/bids/BidTableColumns.tsx`** — Added `"use client"` + `useTranslations("adminBids")` + `useTranslations("actions")`; renamed `getBidTableColumns` → `useBidTableColumns`; replaced all `LABELS.*` references.
+- **`src/components/admin/users/UserTableColumns.tsx`** — Added `"use client"` + `useTranslations("adminUsers")` + `useTranslations("actions")`; renamed `getUserTableColumns` → `useUserTableColumns`; replaced `UI_LABELS.TABLE.*`, `UI_LABELS.FORM.*`, `UI_LABELS.STATUS.*`, `UI_LABELS.ADMIN.USERS.*` with translation keys; added `colName`, `colEmail`, `colRole`, `colStatus`, `colJoined`, `colLastLogin`, `emailNotVerified`, `never` keys.
+- **`src/components/admin/sections/SectionTableColumns.tsx`** — Added `"use client"` + `useTranslations("adminSections")` + `useTranslations("actions")`; renamed `getSectionTableColumns` → `useSectionTableColumns`; replaced hardcoded `"Order"`, `"Title"`, `UI_LABELS.TABLE.STATUS`, `UI_LABELS.STATUS.ACTIVE/INACTIVE` with translation keys; renamed loop var `t` → `st` to avoid shadowing.
+- **`src/components/admin/products/index.ts`**, **`src/components/admin/orders/index.ts`**, **`src/components/admin/bids/index.ts`**, **`src/components/admin/users/index.ts`**, **`src/components/admin/sections/index.ts`**, **`src/components/admin/index.ts`** — Updated barrel exports for all renamed hook functions.
+- **`src/features/admin/components/AdminProductsView.tsx`**, **`AdminOrdersView.tsx`**, **`AdminBidsView.tsx`**, **`AdminUsersView.tsx`**, **`AdminSectionsView.tsx`** — Updated imports and call sites from `getX` → `useX`.
+- **`src/features/seller/components/SellerProductsView.tsx`**, **`SellerOrdersView.tsx`** — Updated to `useProductTableColumns` / `useOrderTableColumns`; removed `useMemo` wrappers (hooks cannot be called inside `useMemo`).
+- **`messages/en.json`** — Added `colOrderId`, `colProduct`, `colCustomer`, `colAmount`, `colStatus`, `colPayment`, `colDetails` to `adminOrders`; `status` to `adminBids`; `colName`, `colEmail`, `colRole`, `colStatus`, `colJoined`, `colLastLogin`, `emailNotVerified`, `never` to `adminUsers`; `colStatus`, `statusActive`, `statusInactive`, `colOrder`, `colTitle` to `adminSections`.
+- **`messages/hi.json`** — Added matching Hindi translations for all new keys.
+- **`docs/APPLICATION_GRAPH.md`** — Updated component references from `ProductTableColumns` → `useProductTableColumns`, `OrderTableColumns` → `useOrderTableColumns`, `SectionTableColumns` → `useSectionTableColumns`.
+
+#### Tests
+
+- **`src/components/admin/products/__tests__/ProductTableColumns.test.tsx`** — Created; 3 tests for hook structure and action callbacks.
+- **`src/components/admin/orders/__tests__/OrderTableColumns.test.tsx`** — Created; 2 tests for hook structure and view callback.
+- **`src/components/admin/bids/__tests__/BidTableColumns.test.tsx`** — Created; 2 tests for hook structure and view callback.
+- **`src/components/admin/users/__tests__/UserTableColumns.test.tsx`** — Created; 4 tests for hook structure, ban and unban callbacks.
+- **`src/components/admin/sections/__tests__/SectionTableColumns.test.tsx`** — Rewritten for hook pattern; 3 tests for structure and action callbacks.
+- 14 view/page test mock files updated to reference `useX` hook names instead of `getX` function names.
+
+---
+
+### TASK-40 — Migrate `SectionForm.tsx` to `useTranslations` + `Checkbox` component (2026-02-28)
+
+#### Changed
+
+- **`src/components/admin/sections/SectionForm.tsx`** — Added `"use client"` + `useTranslations("adminSections")`; replaced `const LABELS = UI_LABELS.ADMIN.SECTIONS` and all `LABELS.*` references with `t()` calls; replaced `UI_LABELS.ADMIN.CATEGORIES.ENABLED` with `t("enabled")`; replaced hardcoded `"Title"`, `"Description"`, `"Order"`, `"Enter section description..."` with translation keys; replaced raw `<input type="checkbox">` block with `<Checkbox>` component from `@/components`; removed `UI_LABELS` import.
+- **`messages/en.json`** — Added `sectionType`, `title`, `description`, `order`, `enabled`, `descriptionPlaceholder`, `configuration` keys to `adminSections` namespace.
+- **`messages/hi.json`** — Added matching Hindi translations for new `adminSections` keys.
+
+#### Tests
+
+- **`src/components/admin/sections/__tests__/SectionForm.test.tsx`** — Updated to use `next-intl` mock (`useTranslations: () => (key) => key`); updated assertions to use translation key strings instead of `UI_LABELS` values; all 4 tests pass.
+
+---
+
 ### TASK-39 — Migrate admin dashboard components to `useTranslations` (2026-02-28)
 
 #### Changed

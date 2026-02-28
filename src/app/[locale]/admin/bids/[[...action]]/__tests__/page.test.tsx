@@ -56,7 +56,7 @@ jest.mock("@/components", () => ({
     <h1 data-testid="page-header">{title}</h1>
   ),
   TablePagination: () => <div data-testid="table-pagination" />,
-  getBidTableColumns: () => ({ columns: [], actions: [] }),
+  useBidTableColumns: () => ({ columns: [], actions: [] }),
 }));
 
 describe("Admin Bids Page", () => {

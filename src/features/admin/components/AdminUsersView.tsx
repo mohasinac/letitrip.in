@@ -23,7 +23,7 @@ import {
   TablePagination,
   useToast,
   UserFilters,
-  getUserTableColumns,
+  useUserTableColumns,
   UserDetailDrawer,
 } from "@/components";
 import type { AdminUser, UserTab } from "@/components";
@@ -178,7 +178,7 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
     });
   };
 
-  const { columns, actions } = getUserTableColumns(
+  const { columns, actions } = useUserTableColumns(
     handleViewUser,
     handleToggleBan,
   );

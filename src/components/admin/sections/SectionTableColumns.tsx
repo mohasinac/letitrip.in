@@ -1,57 +1,58 @@
+"use client";
+
 /**
- * SectionTableColumns
+ * useSectionTableColumns
  * Path: src/components/admin/sections/SectionTableColumns.tsx
  *
- * Column definitions for the admin homepage sections DataTable.
+ * Column definitions hook for the admin homepage sections DataTable.
  */
 
 import { StatusBadge } from "@/components";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import type { HomepageSection } from "./types";
 import { SECTION_TYPES } from "./types";
 
-const { themed } = THEME_CONSTANTS;
-
-export function getSectionTableColumns(
+export function useSectionTableColumns(
   onEdit: (section: HomepageSection) => void,
   onDelete: (section: HomepageSection) => void,
 ) {
+  const t = useTranslations("adminSections");
+  const tActions = useTranslations("actions");
+  const { themed } = THEME_CONSTANTS;
+
   return {
     columns: [
       {
         key: "order",
-        header: "Order",
+        header: t("colOrder"),
         sortable: true,
         width: "80px",
       },
       {
         key: "title",
-        header: "Title",
+        header: t("colTitle"),
         sortable: true,
       },
       {
         key: "type",
-        header: UI_LABELS.ADMIN.SECTIONS.SECTION_TYPE,
+        header: t("sectionType"),
         sortable: true,
         render: (section: HomepageSection) => (
           <span className={`text-sm ${themed.textSecondary}`}>
-            {SECTION_TYPES.find((t) => t.value === section.type)?.label ||
+            {SECTION_TYPES.find((st) => st.value === section.type)?.label ||
               section.type}
           </span>
         ),
       },
       {
         key: "enabled",
-        header: UI_LABELS.TABLE.STATUS,
+        header: t("colStatus"),
         sortable: true,
         render: (section: HomepageSection) => (
           <StatusBadge
             status={section.enabled ? "active" : "inactive"}
-            label={
-              section.enabled
-                ? UI_LABELS.STATUS.ACTIVE
-                : UI_LABELS.STATUS.INACTIVE
-            }
+            label={section.enabled ? t("statusActive") : t("statusInactive")}
           />
         ),
       },
@@ -65,7 +66,7 @@ export function getSectionTableColumns(
           }}
           className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
         >
-          {UI_LABELS.ACTIONS.EDIT}
+          {tActions("edit")}
         </button>
         <button
           onClick={(e) => {
@@ -74,7 +75,7 @@ export function getSectionTableColumns(
           }}
           className="text-red-600 hover:text-red-800 dark:text-red-400"
         >
-          {UI_LABELS.ACTIONS.DELETE}
+          {tActions("delete")}
         </button>
       </div>
     ),

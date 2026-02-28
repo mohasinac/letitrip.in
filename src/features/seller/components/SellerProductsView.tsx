@@ -18,7 +18,7 @@ import {
   SideDrawer,
   ConfirmDeleteModal,
   ProductForm,
-  getProductTableColumns,
+  useProductTableColumns,
   EmptyState,
   FilterDrawer,
   FilterFacetSection,
@@ -147,10 +147,8 @@ function SellerProductsContent() {
     }
   };
 
-  const { columns, actions } = useMemo(
-    () => getProductTableColumns(openEdit, (p) => setDeleteTarget(p)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+  const { columns, actions } = useProductTableColumns(openEdit, (p) =>
+    setDeleteTarget(p),
   );
 
   if (authLoading)

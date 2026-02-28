@@ -1,25 +1,30 @@
+"use client";
+
 /**
- * UserTableColumns
+ * useUserTableColumns
  * Path: src/components/admin/users/UserTableColumns.tsx
  *
- * Column definitions for the admin users DataTable.
+ * Column definitions hook for the admin users DataTable.
  * Uses RoleBadge, StatusBadge from @/components and formatDate from @/utils.
  */
 
 import { RoleBadge, StatusBadge } from "@/components";
-import { UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { formatDate } from "@/utils";
 import type { AdminUser } from "./types";
 
-export function getUserTableColumns(
+export function useUserTableColumns(
   onView: (user: AdminUser) => void,
   onToggleBan: (user: AdminUser) => void,
 ) {
+  const t = useTranslations("adminUsers");
+  const tActions = useTranslations("actions");
+
   return {
     columns: [
       {
         key: "displayName",
-        header: UI_LABELS.TABLE.NAME,
+        header: t("colName"),
         sortable: true,
         width: "20%",
         render: (user: AdminUser) => (
@@ -44,7 +49,7 @@ export function getUserTableColumns(
       },
       {
         key: "email",
-        header: UI_LABELS.FORM.EMAIL,
+        header: t("colEmail"),
         sortable: true,
         width: "25%",
         render: (user: AdminUser) => (
@@ -52,7 +57,7 @@ export function getUserTableColumns(
             <div>{user.email}</div>
             {!user.emailVerified && (
               <span className="text-xs text-orange-600 dark:text-orange-400">
-                {UI_LABELS.STATUS.EMAIL_NOT_VERIFIED}
+                {t("emailNotVerified")}
               </span>
             )}
           </div>
@@ -60,40 +65,36 @@ export function getUserTableColumns(
       },
       {
         key: "role",
-        header: "Role",
+        header: t("colRole"),
         sortable: true,
         width: "15%",
         render: (user: AdminUser) => <RoleBadge role={user.role} />,
       },
       {
         key: "disabled",
-        header: UI_LABELS.TABLE.STATUS,
+        header: t("colStatus"),
         sortable: true,
         width: "12%",
         render: (user: AdminUser) => (
           <StatusBadge
             status={user.disabled ? "danger" : "active"}
-            label={
-              user.disabled
-                ? UI_LABELS.ADMIN.USERS.BANNED
-                : UI_LABELS.ADMIN.USERS.ACTIVE
-            }
+            label={user.disabled ? t("banned") : t("active")}
           />
         ),
       },
       {
         key: "createdAt",
-        header: "Joined",
+        header: t("colJoined"),
         sortable: true,
         width: "15%",
         render: (user: AdminUser) => formatDate(user.createdAt),
       },
       {
         key: "lastLoginAt",
-        header: "Last Login",
+        header: t("colLastLogin"),
         width: "13%",
         render: (user: AdminUser) =>
-          user.lastLoginAt ? formatDate(user.lastLoginAt) : "Never",
+          user.lastLoginAt ? formatDate(user.lastLoginAt) : t("never"),
       },
     ],
     actions: (user: AdminUser) => (
@@ -105,7 +106,7 @@ export function getUserTableColumns(
           }}
           className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 text-sm"
         >
-          {UI_LABELS.ACTIONS.VIEW}
+          {tActions("view")}
         </button>
         <button
           onClick={(e) => {
@@ -118,9 +119,7 @@ export function getUserTableColumns(
               : "text-orange-600 hover:text-orange-800 dark:text-orange-400"
           } text-sm`}
         >
-          {user.disabled
-            ? UI_LABELS.ADMIN.USERS.UNBAN_USER
-            : UI_LABELS.ADMIN.USERS.BAN_USER}
+          {user.disabled ? t("unbanUser") : t("banUser")}
         </button>
       </div>
     ),

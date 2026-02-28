@@ -46,7 +46,7 @@ jest.mock("@/components", () => ({
     </div>
   ),
   TablePagination: () => <div data-testid="table-pagination" />,
-  getBidTableColumns: () => [{ key: "bidAmount", header: "Bid Amount" }],
+  useBidTableColumns: () => [{ key: "bidAmount", header: "Bid Amount" }],
 }));
 
 jest.mock("@/constants", () => ({

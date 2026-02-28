@@ -133,7 +133,7 @@ jest.mock("@/components", () => ({
   ConfirmDeleteModal: ({ isOpen }: any) =>
     isOpen ? <div data-testid="confirm-delete-modal" /> : null,
   ProductForm: () => <div data-testid="product-form" />,
-  getProductTableColumns: () => [],
+  useProductTableColumns: () => [],
   EmptyState: ({ title }: any) => <div data-testid="empty-state">{title}</div>,
   Badge: ({ children }: any) => <span>{children}</span>,
   FilterDrawer: ({ children, activeCount }: any) => (

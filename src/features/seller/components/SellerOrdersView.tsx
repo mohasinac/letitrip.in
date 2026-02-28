@@ -16,7 +16,7 @@ import {
   AdminPageHeader,
   TablePagination,
   Text,
-  getOrderTableColumns,
+  useOrderTableColumns,
 } from "@/components";
 import { useAuth, useUrlTable } from "@/hooks";
 import { useSellerOrders } from "@/features/seller";
@@ -64,13 +64,9 @@ function SellerOrdersContent() {
 
   const { orders, meta, isLoading } = useSellerOrders(orderParams);
 
-  const { columns } = useMemo(
-    () =>
-      getOrderTableColumns(() => {
-        /* view only — no drawer needed */
-      }),
-    [],
-  );
+  const { columns } = useOrderTableColumns(() => {
+    /* view only — no drawer needed */
+  });
 
   if (authLoading) {
     return (

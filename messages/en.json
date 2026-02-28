@@ -1202,7 +1202,15 @@
     "confirmBan": "Are you sure you want to ban this user?",
     "confirmUnban": "Are you sure you want to unban this user?",
     "confirmDelete": "PERMANENTLY DELETE this user? This action cannot be undone.",
-    "typeDeleteConfirm": "Type \"DELETE\" to confirm:"
+    "typeDeleteConfirm": "Type \"DELETE\" to confirm:",
+    "colName": "Name",
+    "colEmail": "Email",
+    "colRole": "Role",
+    "colStatus": "Status",
+    "colJoined": "Joined",
+    "colLastLogin": "Last Login",
+    "emailNotVerified": "Email Not Verified",
+    "never": "Never"
   },
   "adminProducts": {
     "title": "Products",
@@ -1248,7 +1256,14 @@
     "filterShipped": "Shipped",
     "filterDelivered": "Delivered",
     "filterCancelled": "Cancelled",
-    "noOrders": "No orders found"
+    "noOrders": "No orders found",
+    "colOrderId": "Order ID",
+    "colProduct": "Product",
+    "colCustomer": "Customer",
+    "colAmount": "Amount",
+    "colStatus": "Status",
+    "colPayment": "Payment",
+    "colDetails": "Order Details"
   },
   "adminReviews": {
     "title": "Reviews",
@@ -1288,7 +1303,8 @@
     "bidAmount": "Bid Amount",
     "bidDate": "Bid Date",
     "winning": "Winning",
-    "viewProduct": "View Product"
+    "viewProduct": "View Product",
+    "status": "Status"
   },
   "adminBlog": {
     "title": "Blog Posts",
@@ -1367,7 +1383,19 @@
     "deleteSection": "Delete Section",
     "noSections": "No sections found",
     "saveFailed": "Failed to save section",
-    "deleteFailed": "Failed to delete section"
+    "deleteFailed": "Failed to delete section",
+    "sectionType": "Section Type",
+    "formTitle": "Title",
+    "formDescription": "Description",
+    "formOrder": "Order",
+    "enabled": "Enabled",
+    "descriptionPlaceholder": "Enter section description...",
+    "configuration": "Configuration (JSON)",
+    "colStatus": "Status",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "colOrder": "Order",
+    "colTitle": "Title"
   },
   "adminCoupons": {
     "title": "Coupons",

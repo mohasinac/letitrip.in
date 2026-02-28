@@ -29,7 +29,7 @@ export {
 } from "./site";
 
 // Phase 4: Admin Users
-export { UserFilters, getUserTableColumns, UserDetailDrawer } from "./users";
+export { UserFilters, useUserTableColumns, UserDetailDrawer } from "./users";
 export type { AdminUser, UserTab } from "./users";
 
 // Phase 4: Admin Carousel
@@ -49,7 +49,7 @@ export { getFaqTableColumns, FaqForm } from "./faqs";
 export type { FAQ, FaqDrawerMode } from "./faqs";
 
 // Phase 4: Admin Sections
-export { getSectionTableColumns, SectionForm } from "./sections";
+export { useSectionTableColumns, SectionForm } from "./sections";
 export type { HomepageSection, SectionDrawerMode } from "./sections";
 
 // Phase 4: Admin Reviews
@@ -66,15 +66,15 @@ export { MediaOperationForm, getMediaTableColumns } from "./media";
 export type { MediaOperation } from "./media";
 
 // Phase 5: Admin Products
-export { ProductForm, getProductTableColumns } from "./products";
+export { ProductForm, useProductTableColumns } from "./products";
 export type { AdminProduct, ProductDrawerMode } from "./products";
 
 // Phase 6: Admin Orders
-export { getOrderTableColumns, OrderStatusForm } from "./orders";
+export { useOrderTableColumns, OrderStatusForm } from "./orders";
 export type { OrderStatusFormState } from "./orders";
 
 // Phase 7: Admin Bids/Auctions
-export { getBidTableColumns } from "./bids";
+export { useBidTableColumns } from "./bids";
 
 // Phase 8: Admin Blog
 export { useBlogTableColumns, BlogForm } from "./blog";

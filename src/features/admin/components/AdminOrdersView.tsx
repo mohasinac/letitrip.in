@@ -21,7 +21,7 @@ import {
   DataTable,
   AdminPageHeader,
   DrawerFormFooter,
-  getOrderTableColumns,
+  useOrderTableColumns,
   OrderStatusForm,
   TablePagination,
 } from "@/components";
@@ -116,7 +116,7 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
     { key: "cancelled", label: t("filterCancelled") },
   ];
 
-  const { columns } = getOrderTableColumns(handleView);
+  const { columns } = useOrderTableColumns(handleView);
 
   return (
     <div className="space-y-6">

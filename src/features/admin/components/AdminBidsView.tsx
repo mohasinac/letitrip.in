@@ -12,7 +12,7 @@ import {
   SideDrawer,
   DataTable,
   AdminPageHeader,
-  getBidTableColumns,
+  useBidTableColumns,
   TablePagination,
 } from "@/components";
 import { formatCurrency, formatDate } from "@/utils";
@@ -72,7 +72,7 @@ export function AdminBidsView({ action }: Props) {
   const wonBids = bids.filter((b) => b.status === "won").length;
   const totalValue = bids.reduce((sum, b) => sum + b.bidAmount, 0);
 
-  const { columns } = getBidTableColumns(handleView);
+  const { columns } = useBidTableColumns(handleView);
 
   return (
     <div className="space-y-6">

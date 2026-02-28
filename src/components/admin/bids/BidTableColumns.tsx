@@ -1,16 +1,16 @@
+"use client";
+
 /**
- * BidTableColumns
+ * useBidTableColumns
  * Path: src/components/admin/bids/BidTableColumns.tsx
  *
- * Column definitions for the admin Bids/Auctions DataTable.
+ * Column definitions hook for the admin Bids/Auctions DataTable.
  */
 
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
+import { useTranslations } from "next-intl";
 import type { BidDocument } from "@/db/schema";
-
-const LABELS = UI_LABELS.ADMIN.BIDS;
-const { themed } = THEME_CONSTANTS;
 
 const BID_STATUS_STYLES: Record<string, string> = {
   active:
@@ -22,12 +22,16 @@ const BID_STATUS_STYLES: Record<string, string> = {
   cancelled: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
 };
 
-export function getBidTableColumns(onView: (bid: BidDocument) => void) {
+export function useBidTableColumns(onView: (bid: BidDocument) => void) {
+  const t = useTranslations("adminBids");
+  const tActions = useTranslations("actions");
+  const { themed } = THEME_CONSTANTS;
+
   return {
     columns: [
       {
         key: "productTitle",
-        header: LABELS.PRODUCT,
+        header: t("product"),
         sortable: true,
         width: "22%",
         render: (bid: BidDocument) => (
@@ -43,7 +47,7 @@ export function getBidTableColumns(onView: (bid: BidDocument) => void) {
       },
       {
         key: "userName",
-        header: LABELS.BIDDER,
+        header: t("bidder"),
         sortable: true,
         width: "20%",
         render: (bid: BidDocument) => (
@@ -61,7 +65,7 @@ export function getBidTableColumns(onView: (bid: BidDocument) => void) {
       },
       {
         key: "bidAmount",
-        header: LABELS.BID_AMOUNT,
+        header: t("bidAmount"),
         sortable: true,
         width: "12%",
         render: (bid: BidDocument) => (
@@ -79,7 +83,7 @@ export function getBidTableColumns(onView: (bid: BidDocument) => void) {
       },
       {
         key: "bidDate",
-        header: LABELS.BID_DATE,
+        header: t("bidDate"),
         sortable: true,
         width: "14%",
         render: (bid: BidDocument) => (
@@ -90,7 +94,7 @@ export function getBidTableColumns(onView: (bid: BidDocument) => void) {
       },
       {
         key: "status",
-        header: LABELS.STATUS,
+        header: t("status"),
         sortable: true,
         width: "12%",
         render: (bid: BidDocument) => (
@@ -106,14 +110,14 @@ export function getBidTableColumns(onView: (bid: BidDocument) => void) {
       },
       {
         key: "actions",
-        header: LABELS.VIEW_PRODUCT,
+        header: t("viewProduct"),
         width: "10%",
         render: (bid: BidDocument) => (
           <button
             onClick={() => onView(bid)}
             className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium"
           >
-            {UI_LABELS.ACTIONS.VIEW}
+            {tActions("view")}
           </button>
         ),
       },

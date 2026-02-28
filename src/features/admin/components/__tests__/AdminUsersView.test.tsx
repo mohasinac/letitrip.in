@@ -60,7 +60,7 @@ jest.mock("@/components", () => ({
       />
     </div>
   ),
-  getUserTableColumns: () => [
+  useUserTableColumns: () => [
     { key: "email", header: "Email" },
     { key: "role", header: "Role" },
   ],

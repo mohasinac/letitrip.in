@@ -69,7 +69,7 @@ jest.mock("@/components", () => ({
     </div>
   ),
   TablePagination: () => <div data-testid="table-pagination" />,
-  getOrderTableColumns: () => [],
+  useOrderTableColumns: () => [],
   OrderStatusForm: () => <div data-testid="order-status-form" />,
 }));
 
