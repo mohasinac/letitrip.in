@@ -531,6 +531,9 @@ export const THEME_CONSTANTS = {
       "scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
     scrollbarThin:
       "scrollbar-thin [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-primary-400 [&::-webkit-scrollbar-thumb]:to-primary-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:from-primary-500 [&::-webkit-scrollbar-thumb:hover]:to-primary-600",
+    /** Thin horizontal scrollbar for HorizontalScroller and tab strips */
+    scrollbarThinX:
+      "[&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb:hover]:bg-gray-500",
     safeAreaBottom: "pb-[env(safe-area-inset-bottom)]",
     gradientText:
       "bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent",

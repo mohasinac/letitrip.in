@@ -3,10 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { usePublicFaqs } from "@/hooks";
-import { THEME_CONSTANTS, ROUTES, FAQ_CATEGORIES } from "@/constants";
-import type { FAQCategoryKey } from "@/constants";
-import type { FAQDocument } from "@/db/schema";
+import {
+  THEME_CONSTANTS,
+  ROUTES,
+  FAQ_CATEGORIES,
+  getStaticFaqsByCategory,
+  getStaticFaqCategoryCounts,
+} from "@/constants";
+import type { FAQCategoryKey, StaticFAQItem } from "@/constants";
 
 export function FAQSection() {
   const t = useTranslations("faq");
@@ -16,34 +20,15 @@ export function FAQSection() {
     useState<FAQCategoryKey>("general");
   const [openFaqId, setOpenFaqId] = useState<string | null>(null);
 
-  const { data, isLoading } = usePublicFaqs(activeCategory, 6);
+  const categoryCounts = getStaticFaqCategoryCounts();
+  const faqs: StaticFAQItem[] = getStaticFaqsByCategory(activeCategory, 10);
+  const totalInCategory = categoryCounts[activeCategory] ?? 0;
+  const hasMore = totalInCategory > faqs.length;
 
   const handleCategoryChange = (cat: FAQCategoryKey) => {
     setActiveCategory(cat);
     setOpenFaqId(null);
   };
-
-  if (isLoading) {
-    return (
-      <section
-        className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
-      >
-        <div className="w-full">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg mb-8 max-w-xs mx-auto animate-pulse" />
-          <div className={THEME_CONSTANTS.spacing.stack}>
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="h-16 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  const faqs = data || [];
 
   const toggleFaq = (faqId: string) => {
     setOpenFaqId(openFaqId === faqId ? null : faqId);
@@ -137,12 +122,7 @@ export function FAQSection() {
                 <div className={`${THEME_CONSTANTS.spacing.padding.lg} pt-0`}>
                   <div
                     className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.borderRadius.md} ${THEME_CONSTANTS.themed.bgTertiary} p-4`}
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        typeof faq.answer === "string"
-                          ? faq.answer
-                          : faq.answer?.text || "",
-                    }}
+                    dangerouslySetInnerHTML={{ __html: faq.answer }}
                   />
                 </div>
               )}
@@ -150,13 +130,18 @@ export function FAQSection() {
           ))}
         </div>
 
-        {/* View All Link */}
+        {/* View More / View All Link */}
         <div className="text-center mt-8">
           <Link
             href={ROUTES.PUBLIC.FAQ_CATEGORY(activeCategory)}
-            className={`${THEME_CONSTANTS.typography.body} text-blue-600 dark:text-blue-400 font-medium hover:underline`}
+            className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors`}
           >
             {tActions("viewAllArrow")}
+            {hasMore && (
+              <span className="bg-blue-500 dark:bg-blue-400 text-white text-xs px-2 py-0.5 rounded-full">
+                +{totalInCategory - faqs.length}
+              </span>
+            )}
           </Link>
         </div>
       </div>

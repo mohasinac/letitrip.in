@@ -28,7 +28,6 @@ export * from "./faq.service";
 export * from "./cart.service";
 export * from "./wishlist.service";
 export * from "./notification.service";
-export * from "./newsletter.service";
 export * from "./site-settings.service";
 export * from "./homepage-sections.service";
 export * from "./search.service";

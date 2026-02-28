@@ -64,7 +64,6 @@ import { faqsRepository } from "./faqs.repository";
 import { wishlistRepository } from "./wishlist.repository";
 import { blogRepository } from "./blog.repository";
 import { payoutRepository } from "./payout.repository";
-import { newsletterRepository } from "./newsletter.repository";
 import { notificationRepository } from "./notification.repository";
 
 class UnitOfWork {
@@ -133,9 +132,6 @@ class UnitOfWork {
   }
   get payouts() {
     return payoutRepository;
-  }
-  get newsletters() {
-    return newsletterRepository;
   }
   get notifications() {
     return notificationRepository;

@@ -1156,7 +1156,16 @@
   },
   "adminDashboard": {
     "title": "डैशबोर्ड अवलोकन",
-    "subtitle": "सिस्टम आंकड़े और त्वरित क्रियाएं"
+    "subtitle": "सिस्टम आंकड़े और त्वरित क्रियाएं",
+    "quickActions": "त्वरित क्रियाएँ",
+    "recentActivity": "हाल की गतिविधि",
+    "manageUsers": "उपयोगकर्ता प्रबंधन",
+    "reviewDisabled": "अक्षम खातों की समीक्षा करें",
+    "manageContent": "सामग्री प्रबंधन",
+    "newUsers": "नए उपयोगकर्ता",
+    "systemStatus": "सिस्टम स्थिति",
+    "allSystemsOperational": "सभी सिस्टम सामान्य चल रहे हैं",
+    "newUsersRegistered": "{count, plural, one {पिछले 30 दिनों में 1 नया उपयोगकर्ता पंजीकृत हुआ} other {पिछले 30 दिनों में # नए उपयोगकर्ता पंजीकृत हुए}}"
   },
   "adminAnalytics": {
     "pageTitle": "बिक्री विश्लेषण",
@@ -1526,17 +1535,6 @@
     "message": "आपके पास सहेजे नहीं गए परिवर्तन हैं। क्या आप वाकई इस पृष्ठ को छोड़ना चाहते हैं?",
     "stay": "रहें",
     "leave": "छोड़ें"
-  },
-  "adminDashboard": {
-    "quickActions": "त्वरित क्रियाएँ",
-    "recentActivity": "हाल की गतिविधि",
-    "manageUsers": "उपयोगकर्ता प्रबंधन",
-    "reviewDisabled": "अक्षम खातों की समीक्षा करें",
-    "manageContent": "सामग्री प्रबंधन",
-    "newUsers": "नए उपयोगकर्ता",
-    "systemStatus": "सिस्टम स्थिति",
-    "allSystemsOperational": "सभी सिस्टम सामान्य चल रहे हैं",
-    "newUsersRegistered": "{count, plural, one {पिछले 30 दिनों में 1 नया उपयोगकर्ता पंजीकृत हुआ} other {पिछले 30 दिनों में # नए उपयोगकर्ता पंजीकृत हुए}}"
   },
   "adminStats": {
     "totalUsers": "कुल उपयोगकर्ता",

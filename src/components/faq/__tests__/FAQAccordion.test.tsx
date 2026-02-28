@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { FAQAccordion } from "../FAQAccordion";
-import type { FAQDocument } from "@/db/schema/faqs";
+import type { StaticFAQItem } from "@/constants";
 
 // Mock child components
 jest.mock("../FAQHelpfulButtons", () => ({
@@ -21,87 +21,40 @@ jest.mock("../RelatedFAQs", () => ({
 }));
 
 describe("FAQAccordion", () => {
-  const mockFAQs: FAQDocument[] = [
+  const mockFAQs: StaticFAQItem[] = [
     {
       id: "faq-1",
       question: "What is your return policy?",
-      answer: {
-        text: "<p>You can return items within <strong>30 days</strong> of purchase.</p>",
-        format: "html" as const,
-      },
-      category: "returns_refunds",
+      answer:
+        "<p>You can return items within <strong>30 days</strong> of purchase.</p>",
+      category: "returns",
       tags: ["returns", "refunds", "30-day"],
       priority: 5,
       order: 1,
-      showOnHomepage: true,
-      showInFooter: false,
       isPinned: false,
-      relatedFAQs: [],
-      useSiteSettings: false,
       stats: { helpful: 25, notHelpful: 3, views: 150 },
-      seo: {
-        slug: "return-policy",
-        metaTitle: "Return Policy",
-        metaDescription: "Return policy FAQ",
-      },
-      isActive: true,
-      createdBy: "admin",
-      createdAt: new Date("2026-01-01"),
-      updatedAt: new Date("2026-01-01"),
     },
     {
       id: "faq-2",
       question: "How long does shipping take?",
-      answer: {
-        text: "Shipping typically takes 3-5 business days for domestic orders.",
-        format: "plain" as const,
-      },
-      category: "shipping_delivery",
+      answer: "Shipping typically takes 3-5 business days for domestic orders.",
+      category: "shipping",
       tags: ["shipping", "delivery", "timeline"],
       priority: 8,
       order: 2,
-      showOnHomepage: false,
-      showInFooter: true,
       isPinned: false,
-      relatedFAQs: [],
-      useSiteSettings: false,
       stats: { helpful: 40, notHelpful: 2, views: 200 },
-      seo: {
-        slug: "shipping-time",
-        metaTitle: "Shipping Time",
-        metaDescription: "Shipping FAQ",
-      },
-      isActive: true,
-      createdBy: "admin",
-      createdAt: new Date("2026-01-02"),
-      updatedAt: new Date("2026-01-02"),
     },
     {
       id: "faq-3",
       question: "Do you ship internationally?",
-      answer: {
-        text: "Yes, we ship to over 50 countries worldwide.",
-        format: "plain" as const,
-      },
-      category: "shipping_delivery",
+      answer: "Yes, we ship to over 50 countries worldwide.",
+      category: "shipping",
       tags: ["shipping", "international"],
       priority: 6,
       order: 3,
-      showOnHomepage: false,
-      showInFooter: false,
       isPinned: false,
-      relatedFAQs: [],
-      useSiteSettings: false,
       stats: { helpful: 15, notHelpful: 5, views: 100 },
-      seo: {
-        slug: "international-shipping",
-        metaTitle: "International Shipping",
-        metaDescription: "International FAQ",
-      },
-      isActive: true,
-      createdBy: "admin",
-      createdAt: new Date("2026-01-03"),
-      updatedAt: new Date("2026-01-03"),
     },
   ];
 
@@ -420,13 +373,10 @@ describe("FAQAccordion", () => {
     it("should handle FAQ with very long answer", () => {
       const longAnswerFAQ = {
         ...mockFAQs[0],
-        answer: {
-          text:
-            "<p>" +
-            "This is a very long answer with lots of detail. ".repeat(100) +
-            "</p>",
-          format: "html" as const,
-        },
+        answer:
+          "<p>" +
+          "This is a very long answer with lots of detail. ".repeat(100) +
+          "</p>",
       };
 
       render(<FAQAccordion faqs={[longAnswerFAQ]} />);

@@ -154,7 +154,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
     async (authUser: User): Promise<SessionUser> => {
       try {
         // Use session service (apiClient with credentials) instead of raw fetch
-        const { data } = await sessionService.getProfile();
+        const data = await sessionService.getProfile();
         const currentSessionId = getSessionIdFromCookie();
 
         // Return session user with data from API

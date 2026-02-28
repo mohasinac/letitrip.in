@@ -8,6 +8,7 @@ import { useFeaturedAuctions } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
+import { HorizontalScroller } from "@/components/ui";
 
 export function FeaturedAuctionsSection() {
   const t = useTranslations("homepage");
@@ -52,7 +53,9 @@ export function FeaturedAuctionsSection() {
     );
   }
 
-  const auctions = data || [];
+  const auctions: ProductDocument[] = Array.isArray(data)
+    ? data
+    : ((data as any)?.items ?? []);
 
   if (auctions.length === 0) {
     return null;
@@ -79,49 +82,54 @@ export function FeaturedAuctionsSection() {
           </div>
           <Link
             href={ROUTES.PUBLIC.AUCTIONS}
-            className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hidden sm:block"
+            className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
           >
             {tActions("viewAllArrow")}
           </Link>
         </div>
 
-        {/* Mobile: horizontal snap-scroll carousel */}
-        <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 md:hidden scrollbar-none">
-          {auctions.slice(0, 18).map((auction) => (
-            <Link
-              key={auction.id}
-              href={`/auctions/${auction.id}`}
-              className={`group flex-none w-40 snap-start ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
-            >
-              <AuctionCardContent auction={auction} sizes="160px" />
-            </Link>
-          ))}
+        {/* Mobile: single-row circular carousel */}
+        <div className="md:hidden">
+          <HorizontalScroller
+            items={auctions.slice(0, 20)}
+            renderItem={(auction) => (
+              <Link
+                href={`/auctions/${auction.id}`}
+                className={`group block ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
+              >
+                <AuctionCardContent auction={auction} sizes="160px" />
+              </Link>
+            )}
+            itemWidth={160}
+            gap={12}
+            autoScroll
+            keyExtractor={(a) => a.id}
+            className="px-5"
+          />
         </div>
 
-        {/* Desktop: grid */}
-        <div className="hidden md:grid grid-cols-3 lg:grid-cols-5 gap-3 lg:gap-4">
-          {auctions.slice(0, 10).map((auction) => (
-            <Link
-              key={auction.id}
-              href={`/auctions/${auction.id}`}
-              className={`group ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
-            >
-              <AuctionCardContent
-                auction={auction}
-                sizes="(max-width: 1024px) 33vw, 20vw"
-              />
-            </Link>
-          ))}
-        </div>
-
-        {/* Mobile "View all" link */}
-        <div className="mt-4 text-center sm:hidden">
-          <Link
-            href={ROUTES.PUBLIC.AUCTIONS}
-            className="text-sm font-medium text-indigo-600 dark:text-indigo-400"
-          >
-            {tActions("viewAllArrow")}
-          </Link>
+        {/* Desktop: 3-row grid scroller with visible scrollbar */}
+        <div className="hidden md:block">
+          <HorizontalScroller
+            items={auctions.slice(0, 30)}
+            renderItem={(auction) => (
+              <Link
+                href={`/auctions/${auction.id}`}
+                className={`group block ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
+              >
+                <AuctionCardContent
+                  auction={auction}
+                  sizes="(max-width: 1280px) 20vw, 160px"
+                />
+              </Link>
+            )}
+            itemWidth={160}
+            rows={3}
+            gap={12}
+            showScrollbar
+            keyExtractor={(a) => a.id}
+            className="px-5 pb-1"
+          />
         </div>
       </div>
     </section>

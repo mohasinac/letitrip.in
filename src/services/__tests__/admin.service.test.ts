@@ -141,29 +141,6 @@ describe("adminService", () => {
     );
   });
 
-  it("listNewsletter() calls GET newsletter without params", async () => {
-    mockGet.mockResolvedValueOnce([] as never);
-    await adminService.listNewsletter();
-    expect(mockGet).toHaveBeenCalledWith(API_ENDPOINTS.ADMIN.NEWSLETTER);
-  });
-
-  it("updateNewsletterEntry() calls PATCH with id and data", async () => {
-    mockPatch.mockResolvedValueOnce({} as never);
-    await adminService.updateNewsletterEntry("sub_1", { subscribed: false });
-    expect(mockPatch).toHaveBeenCalledWith(
-      API_ENDPOINTS.ADMIN.NEWSLETTER_BY_ID("sub_1"),
-      { subscribed: false },
-    );
-  });
-
-  it("deleteNewsletterEntry() calls DELETE with subscriber URL", async () => {
-    mockDelete.mockResolvedValueOnce({} as never);
-    await adminService.deleteNewsletterEntry("sub_1");
-    expect(mockDelete).toHaveBeenCalledWith(
-      API_ENDPOINTS.ADMIN.NEWSLETTER_BY_ID("sub_1"),
-    );
-  });
-
   it("listPayouts() calls GET payouts without params", async () => {
     mockGet.mockResolvedValueOnce([] as never);
     await adminService.listPayouts();

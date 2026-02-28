@@ -29,7 +29,7 @@ export function AdvertisementBanner() {
   const bannerSection = data?.[0];
   const banner = bannerSection?.config as BannerSectionConfig | undefined;
 
-  if (!bannerSection || !banner) {
+  if (!bannerSection || !banner || !banner.content) {
     return null;
   }
 

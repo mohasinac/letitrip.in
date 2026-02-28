@@ -26,7 +26,6 @@ import {
   homepageSectionsSeedData,
   siteSettingsSeedData,
   faqSeedData,
-  newsletterSeedData,
   blogPostsSeedData,
   eventsSeedData,
   eventEntriesSeedData,
@@ -47,7 +46,6 @@ import {
   HOMEPAGE_SECTIONS_COLLECTION,
   SITE_SETTINGS_COLLECTION,
   FAQS_COLLECTION,
-  NEWSLETTER_COLLECTION,
   BLOG_POSTS_COLLECTION,
   EVENTS_COLLECTION,
   EVENT_ENTRIES_COLLECTION,
@@ -336,7 +334,6 @@ async function seedAllData(options: SeedOptions) {
     "homepageSections",
     "siteSettings",
     "faqs",
-    "newsletter",
     "blogPosts",
     "events",
     "eventEntries",
@@ -426,11 +423,6 @@ async function seedAllData(options: SeedOptions) {
     // Seed FAQs
     if (collectionsToSeed.includes("faqs")) {
       await seedCollection(FAQS_COLLECTION, faqSeedData, options);
-    }
-
-    // Seed Newsletter Subscribers
-    if (collectionsToSeed.includes("newsletter")) {
-      await seedCollection(NEWSLETTER_COLLECTION, newsletterSeedData, options);
     }
 
     // Seed Blog Posts

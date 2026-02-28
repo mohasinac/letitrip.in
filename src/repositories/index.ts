@@ -22,7 +22,6 @@ export type { UnitOfWork } from "./unit-of-work";
 // Core repositories
 export * from "./user.repository";
 export * from "./address.repository";
-export * from "./newsletter.repository";
 export * from "./token.repository";
 export * from "./product.repository";
 export * from "./order.repository";
@@ -62,7 +61,6 @@ export { categoriesRepository } from "./categories.repository";
 export { couponsRepository } from "./coupons.repository";
 export { faqsRepository } from "./faqs.repository";
 export { addressRepository } from "./address.repository";
-export { newsletterRepository } from "./newsletter.repository";
 export { wishlistRepository } from "./wishlist.repository";
 export { blogRepository } from "./blog.repository";
 export type { WishlistItem } from "./wishlist.repository";

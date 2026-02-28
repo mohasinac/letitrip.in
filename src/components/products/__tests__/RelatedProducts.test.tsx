@@ -40,7 +40,7 @@ describe("RelatedProducts", () => {
 
   it("renders related products heading when products are loaded", () => {
     (useRelatedProducts as jest.Mock).mockReturnValue({
-      data: { data: [mockProduct] },
+      data: { items: [mockProduct] },
       isLoading: false,
     });
     render(<RelatedProducts category="camping" excludeId="p99" />);
@@ -61,7 +61,7 @@ describe("RelatedProducts", () => {
 
   it("renders nothing when no products", () => {
     (useRelatedProducts as jest.Mock).mockReturnValue({
-      data: { data: [] },
+      data: { items: [] },
       isLoading: false,
     });
     const { container } = render(

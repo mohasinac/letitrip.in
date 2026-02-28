@@ -27,7 +27,7 @@ function CategoryIcon({
   slug: string;
   className?: string;
 }) {
-  const s = slug.toLowerCase();
+  const s = (slug ?? "").toLowerCase();
   if (
     s.includes("cloth") ||
     s.includes("fashion") ||
@@ -114,9 +114,9 @@ export function TopCategoriesSection() {
 
         {/* Responsive grid: 2-col mobile Â· 4-col desktop Â· 6-col widescreen */}
         <div className="grid grid-cols-2 sm:grid-cols-4 2xl:grid-cols-6 gap-3 md:gap-4">
-          {categories.slice(0, 12).map((category) => (
+          {categories.slice(0, 12).map((category, index) => (
             <Link
-              key={category.id}
+              key={category.id ?? category.slug ?? index}
               href={`/categories/${category.slug}`}
               className={`relative aspect-square ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} overflow-hidden group
                 hover:scale-105 hover:shadow-xl transition-all duration-300`}

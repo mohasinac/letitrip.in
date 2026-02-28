@@ -13,5 +13,4 @@ export { CustomerReviewsSection } from "./CustomerReviewsSection";
 export { WhatsAppCommunitySection } from "./WhatsAppCommunitySection";
 export { FAQSection } from "./FAQSection";
 export { BlogArticlesSection } from "./BlogArticlesSection";
-export { NewsletterSection } from "./NewsletterSection";
 export { HomepageSkeleton } from "./HomepageSkeleton";

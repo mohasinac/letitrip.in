@@ -38,7 +38,7 @@ export function RelatedProducts({ category, excludeId }: RelatedProductsProps) {
   const { data, isLoading } = useRelatedProducts(category, excludeId, 8);
 
   const products =
-    data?.data?.filter((p: RelatedProduct) => p.id !== excludeId) ?? [];
+    data?.items?.filter((p: RelatedProduct) => p.id !== excludeId) ?? [];
 
   if (!isLoading && products.length === 0) return null;
 

@@ -20,8 +20,12 @@ type RelatedProduct = Pick<
 >;
 
 interface RelatedProductsResponse {
-  data: RelatedProduct[];
-  meta: { total: number };
+  items: RelatedProduct[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
 }
 
 /**

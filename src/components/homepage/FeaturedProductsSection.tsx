@@ -7,6 +7,7 @@ import { useFeaturedProducts } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
+import { HorizontalScroller } from "@/components/ui";
 
 export function FeaturedProductsSection() {
   const t = useTranslations("homepage");
@@ -78,49 +79,54 @@ export function FeaturedProductsSection() {
           </div>
           <Link
             href={ROUTES.PUBLIC.PRODUCTS}
-            className={`text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hidden sm:block`}
+            className={`text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300`}
           >
             {tActions("viewAllArrow")}
           </Link>
         </div>
 
-        {/* Mobile: horizontal snap-scroll carousel */}
-        <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 md:hidden scrollbar-none">
-          {products.slice(0, 18).map((product) => (
-            <Link
-              key={product.id}
-              href={`/products/${product.id}`}
-              className={`group flex-none w-40 snap-start ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
-            >
-              <ProductCardContent product={product} sizes="160px" />
-            </Link>
-          ))}
+        {/* Mobile: single-row circular carousel */}
+        <div className="md:hidden">
+          <HorizontalScroller
+            items={products.slice(0, 20)}
+            renderItem={(product) => (
+              <Link
+                href={`/products/${product.id}`}
+                className={`group block ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
+              >
+                <ProductCardContent product={product} sizes="160px" />
+              </Link>
+            )}
+            itemWidth={160}
+            gap={12}
+            autoScroll
+            keyExtractor={(p) => p.id}
+            className="px-5"
+          />
         </div>
 
-        {/* Desktop: 2-row grid */}
-        <div className="hidden md:grid grid-cols-3 lg:grid-cols-5 gap-3 lg:gap-4">
-          {products.slice(0, 10).map((product) => (
-            <Link
-              key={product.id}
-              href={`/products/${product.id}`}
-              className={`group ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
-            >
-              <ProductCardContent
-                product={product}
-                sizes="(max-width: 1024px) 33vw, 20vw"
-              />
-            </Link>
-          ))}
-        </div>
-
-        {/* Mobile "View all" link */}
-        <div className="mt-4 text-center sm:hidden">
-          <Link
-            href={ROUTES.PUBLIC.PRODUCTS}
-            className="text-sm font-medium text-indigo-600 dark:text-indigo-400"
-          >
-            {tActions("viewAllArrow")}
-          </Link>
+        {/* Desktop: 3-row grid scroller with visible scrollbar */}
+        <div className="hidden md:block">
+          <HorizontalScroller
+            items={products.slice(0, 30)}
+            renderItem={(product) => (
+              <Link
+                href={`/products/${product.id}`}
+                className={`group block ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
+              >
+                <ProductCardContent
+                  product={product}
+                  sizes="(max-width: 1280px) 20vw, 160px"
+                />
+              </Link>
+            )}
+            itemWidth={160}
+            rows={3}
+            gap={12}
+            showScrollbar
+            keyExtractor={(p) => p.id}
+            className="px-5 pb-1"
+          />
         </div>
       </div>
     </section>

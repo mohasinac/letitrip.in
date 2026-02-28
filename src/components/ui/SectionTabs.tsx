@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { THEME_CONSTANTS } from "@/constants";
+import { HorizontalScroller } from "./HorizontalScroller";
 
 /**
  * SectionTabs Component
@@ -79,31 +80,37 @@ export function SectionTabs({
       className={`sticky top-[104px] md:top-[112px] z-10 ${themed.bgSecondary} border-b ${themed.border} shadow-sm ${getVariantGradient()} ${className}`}
     >
       <div className="container mx-auto px-4 md:px-6 max-w-7xl">
-        {/* Desktop: Full horizontal tab bar */}
-        <nav className="hidden md:flex overflow-x-auto scrollbar-hide">
-          {tabs.map((tab) => {
-            const isActive = isActiveTab(tab.href);
-
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={`
-                  flex-shrink-0 px-4 md:px-6 py-4 text-sm md:text-base font-medium transition-all duration-200
-                  border-b-2 whitespace-nowrap
-                  inline-flex items-center gap-2
-                  ${
-                    isActive
-                      ? "text-primary-600 dark:text-primary-400 border-primary-500"
-                      : `${themed.textSecondary} border-transparent hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600`
-                  }
-                `}
-              >
-                {tab.icon}
-                {tab.label}
-              </Link>
-            );
-          })}
+        {/* Desktop: scrollable tab bar with optional arrow navigation */}
+        <nav className="hidden md:block">
+          <HorizontalScroller
+            items={Array.from(tabs)}
+            renderItem={(tab) => {
+              const isActive = isActiveTab(tab.href);
+              return (
+                <Link
+                  href={tab.href}
+                  className={`
+                    flex-shrink-0 px-4 md:px-6 py-4 text-sm md:text-base font-medium transition-all duration-200
+                    border-b-2 whitespace-nowrap
+                    inline-flex items-center gap-2
+                    ${
+                      isActive
+                        ? "text-primary-600 dark:text-primary-400 border-primary-500"
+                        : `${themed.textSecondary} border-transparent hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600`
+                    }
+                  `}
+                >
+                  {tab.icon}
+                  {tab.label}
+                </Link>
+              );
+            }}
+            keyExtractor={(tab) => tab.href}
+            gap={0}
+            autoScroll={false}
+            showScrollbar
+            className="outline-none"
+          />
         </nav>
 
         {/* Mobile: Native select dropdown */}

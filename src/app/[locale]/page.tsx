@@ -69,14 +69,6 @@ const BlogArticlesSection = dynamic(
     })),
   { ssr: true },
 );
-const NewsletterSection = dynamic(
-  () =>
-    import("@/components/homepage").then((m) => ({
-      default: m.NewsletterSection,
-    })),
-  { ssr: true },
-);
-
 export default function Page() {
   return (
     <div className="w-full space-y-0">
@@ -92,7 +84,6 @@ export default function Page() {
       <WhatsAppCommunitySection />
       <FAQSection />
       <BlogArticlesSection />
-      <NewsletterSection />
     </div>
   );
 }

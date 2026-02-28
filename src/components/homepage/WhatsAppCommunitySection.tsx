@@ -33,7 +33,7 @@ export function WhatsAppCommunitySection() {
     return null;
   }
 
-  const benefits = config.benefits;
+  const benefits = config.benefits ?? [];
 
   return (
     <section

@@ -5,7 +5,6 @@ export * from "./useAdminCarousel";
 export * from "./useAdminCategories";
 export * from "./useAdminCoupons";
 export * from "./useAdminFaqs";
-export * from "./useAdminNewsletter";
 export * from "./useAdminOrders";
 export * from "./useAdminPayouts";
 export * from "./useAdminProducts";

@@ -15,7 +15,6 @@ export { carouselSlidesSeedData } from "./carousel-slides-seed-data";
 export { homepageSectionsSeedData } from "./homepage-sections-seed-data";
 export { siteSettingsSeedData } from "./site-settings-seed-data";
 export { faqSeedData } from "./faq-seed-data";
-export { newsletterSeedData } from "./newsletter-seed-data";
 export { blogPostsSeedData } from "./blog-posts-seed-data";
 export { eventsSeedData, eventEntriesSeedData } from "./events-seed-data";
 export { notificationsSeedData } from "./notifications-seed-data";

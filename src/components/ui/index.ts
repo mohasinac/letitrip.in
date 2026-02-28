@@ -66,3 +66,7 @@ export { AddressSelectorCreate } from "./AddressSelectorCreate";
 export type { AddressSelectorCreateProps } from "./AddressSelectorCreate";
 export { default as NotificationBell } from "./NotificationBell";
 export { EventBanner } from "./EventBanner";
+
+// Horizontal scroll container with arrows, auto-scroll, and circular mode
+export { HorizontalScroller } from "./HorizontalScroller";
+export type { HorizontalScrollerProps } from "./HorizontalScroller";

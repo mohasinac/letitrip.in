@@ -29,7 +29,6 @@ type CollectionName =
   | "blogPosts"
   | "events"
   | "eventEntries"
-  | "newsletter"
   | "sessions"
   | "carts";
 
@@ -104,7 +103,6 @@ const COLLECTION_GROUPS: CollectionGroup[] = [
       "events",
       "eventEntries",
       "faqs",
-      "newsletter",
       "notifications",
     ],
   },
@@ -146,7 +144,6 @@ const COLLECTION_LABELS: Record<CollectionName, string> = {
   events: "Events",
   eventEntries: "Event Entries",
   faqs: "FAQs",
-  newsletter: "Newsletter",
   notifications: "Notifications",
   categories: "Categories",
   carouselSlides: "Carousel",

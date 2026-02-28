@@ -118,11 +118,9 @@ export { useHeroCarousel } from "./useHeroCarousel";
 export { useFeaturedProducts } from "./useFeaturedProducts";
 export { useFeaturedAuctions } from "./useFeaturedAuctions";
 export { useHomepageReviews } from "./useHomepageReviews";
-export { usePublicFaqs } from "./usePublicFaqs";
 export { useTopCategories } from "./useTopCategories";
 export { useSiteSettings } from "./useSiteSettings";
 export { useHomepageSections } from "./useHomepageSections";
-export { useNewsletterSubscribe } from "./useNewsletterSubscribe";
 
 // Phase 37: Service layer — product hooks
 export { useProductReviews } from "./useProductReviews";
@@ -154,7 +152,6 @@ export { useCouponValidate } from "./useCouponValidate";
 export { useMediaUpload } from "./useMediaUpload";
 
 // Phase 59: Rule 20 completion — shared Tier 1 component hooks
-export { useAllFaqs } from "./usePublicFaqs";
 export { useFaqVote } from "./useFaqVote";
 export { useAuctionDetail } from "./useAuctionDetail";
 export { usePlaceBid } from "./usePlaceBid";

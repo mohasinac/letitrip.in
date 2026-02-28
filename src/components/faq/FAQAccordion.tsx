@@ -4,10 +4,10 @@ import { useState } from "react";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { useMessage } from "@/hooks";
 import { FAQHelpfulButtons } from "./FAQHelpfulButtons";
-import type { FAQDocument } from "@/db/schema";
+import type { StaticFAQItem } from "@/constants";
 
 interface FAQAccordionProps {
-  faqs: FAQDocument[];
+  faqs: StaticFAQItem[];
   expandedByDefault?: boolean;
 }
 
@@ -16,7 +16,9 @@ export function FAQAccordion({
   expandedByDefault = false,
 }: FAQAccordionProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(
-    expandedByDefault ? new Set(faqs.map((faq) => faq.id)) : new Set(),
+    expandedByDefault
+      ? new Set(faqs.map((faq: StaticFAQItem) => faq.id))
+      : new Set(),
   );
   const { showSuccess } = useMessage();
 
@@ -114,12 +116,7 @@ export function FAQAccordion({
                 {/* Answer Text */}
                 <div
                   className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} mb-6 prose dark:prose-invert max-w-none`}
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      typeof faq.answer === "string"
-                        ? faq.answer
-                        : faq.answer?.text || "",
-                  }}
+                  dangerouslySetInnerHTML={{ __html: faq.answer }}
                 />
 
                 {/* Actions Row */}

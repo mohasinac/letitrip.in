@@ -33,7 +33,6 @@ jest.mock("@/components/homepage", () => ({
   WhatsAppCommunitySection: () => <div data-testid="whatsapp-community" />,
   FAQSection: () => <div data-testid="faq-section" />,
   BlogArticlesSection: () => <div data-testid="blog-articles" />,
-  NewsletterSection: () => <div data-testid="newsletter" />,
 }));
 
 describe("Home Page", () => {
@@ -55,6 +54,5 @@ describe("Home Page", () => {
     expect(await screen.findByTestId("whatsapp-community")).toBeInTheDocument();
     expect(await screen.findByTestId("faq-section")).toBeInTheDocument();
     expect(await screen.findByTestId("blog-articles")).toBeInTheDocument();
-    expect(await screen.findByTestId("newsletter")).toBeInTheDocument();
   });
 });

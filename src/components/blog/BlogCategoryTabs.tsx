@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui";
+import { Button, HorizontalScroller } from "@/components/ui";
 import type { BlogPostCategory } from "@/db/schema";
 
 export const BLOG_CATEGORY_TABS: {
@@ -25,17 +25,22 @@ export function BlogCategoryTabs({
   onChange,
 }: BlogCategoryTabsProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-2 mb-8 scrollbar-hide -mx-1 px-1">
-      {BLOG_CATEGORY_TABS.map((tab) => (
+    <HorizontalScroller
+      items={BLOG_CATEGORY_TABS}
+      renderItem={(tab) => (
         <Button
-          key={tab.key}
           variant={activeCategory === tab.key ? "primary" : "outline"}
           onClick={() => onChange(tab.key)}
-          className="text-sm whitespace-nowrap flex-shrink-0"
+          className="text-sm whitespace-nowrap"
         >
           {tab.label}
         </Button>
-      ))}
-    </div>
+      )}
+      keyExtractor={(tab) => tab.key}
+      gap={8}
+      autoScroll={false}
+      showScrollbar
+      className="mb-8 px-5"
+    />
   );
 }

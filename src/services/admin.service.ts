@@ -68,18 +68,6 @@ export const adminService = {
   deleteBlogPost: (id: string) =>
     apiClient.delete(API_ENDPOINTS.ADMIN.BLOG_BY_ID(id)),
 
-  /** GET — list newsletter subscribers */
-  listNewsletter: (query?: string) =>
-    apiClient.get(`${API_ENDPOINTS.ADMIN.NEWSLETTER}${query ?? ""}`),
-
-  /** PATCH — update newsletter subscriber entry (subscribe/unsubscribe) */
-  updateNewsletterEntry: (id: string, data: unknown) =>
-    apiClient.patch(API_ENDPOINTS.ADMIN.NEWSLETTER_BY_ID(id), data),
-
-  /** DELETE — remove a newsletter subscriber */
-  deleteNewsletterEntry: (id: string) =>
-    apiClient.delete(API_ENDPOINTS.ADMIN.NEWSLETTER_BY_ID(id)),
-
   /** GET — list payouts */
   listPayouts: (query?: string) =>
     apiClient.get(`${API_ENDPOINTS.ADMIN.PAYOUTS}${query ?? ""}`),

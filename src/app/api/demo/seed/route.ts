@@ -19,7 +19,6 @@ import {
   blogPostsSeedData,
   eventsSeedData,
   eventEntriesSeedData,
-  newsletterSeedData,
   sessionsSeedData,
   cartsSeedData,
 } from "../../../../../scripts/seed-data";
@@ -40,7 +39,6 @@ import {
   BLOG_POSTS_COLLECTION,
   EVENTS_COLLECTION,
   EVENT_ENTRIES_COLLECTION,
-  NEWSLETTER_COLLECTION,
   SESSION_COLLECTION,
   CART_COLLECTION,
 } from "@/db/schema";
@@ -63,7 +61,6 @@ type CollectionName =
   | "blogPosts"
   | "events"
   | "eventEntries"
-  | "newsletter"
   | "sessions"
   | "carts";
 
@@ -90,7 +87,6 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   blogPosts: BLOG_POSTS_COLLECTION,
   events: EVENTS_COLLECTION,
   eventEntries: EVENT_ENTRIES_COLLECTION,
-  newsletter: NEWSLETTER_COLLECTION,
   sessions: SESSION_COLLECTION,
   carts: CART_COLLECTION,
 };
@@ -113,7 +109,6 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   blogPosts: blogPostsSeedData,
   events: eventsSeedData,
   eventEntries: eventEntriesSeedData,
-  newsletter: newsletterSeedData,
   sessions: sessionsSeedData,
   carts: cartsSeedData,
 };

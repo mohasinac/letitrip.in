@@ -10,7 +10,159 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 > Development phases (Phases 1–67) completed between 2026-01-01 and 2026-02-28.
-> All 392 test suites green — 3,712 tests (3,708 passed, 4 skipped). 0 TypeScript errors.
+
+---
+
+### HorizontalScroller — Generic Horizontal Scroll Container (2026-03-01)
+
+#### Added
+
+- `src/components/ui/HorizontalScroller.tsx` — generic `HorizontalScroller<T>` component with two layout modes:
+  - **`rows=1` (default)** — single-row flex carousel with optional thin scrollbar below
+  - **`rows>1`** — CSS `grid-auto-flow:column` multi-row grid scroller (items fill top→bottom per column), scrollbar below:
+    ```
+    <| col1r1  col2r1  col3r1  … |>
+       col1r2  col2r2  col3r2
+       col1r3  col2r3  col3r3
+       ════scrollbar════
+    ```
+  - Height driven by item content — no hardcoded height
+  - Auto-computed visible column count (`⌊containerWidth ÷ (itemWidth + gap)⌋`) when `count` omitted
+  - Left / right arrow buttons paging by `count` columns; only shown when overflow exists
+  - `ArrowLeft` / `ArrowRight` keyboard navigation (`enableKeyboard` prop, default `true`)
+  - Circular seamless auto-scroll (single-row only) via tripled items array; position-reset debounced 350 ms after scroll settles
+  - `showScrollbar` prop — shows `scrollbarThinX` horizontal scrollbar at bottom (default `false`)
+  - `rows`, `pauseOnHover`, `showArrows`, `showScrollbar`, `enableKeyboard`, `itemWidth`, `gap`, `autoScrollInterval`, `keyExtractor`, `className`, `scrollerClassName` props
+  - Exported as `HorizontalScroller` + `HorizontalScrollerProps` from `@/components/ui` and `@/components`
+
+#### Changed
+
+- `FeaturedProductsSection` — **mobile** (`md:hidden`): single-row circular `autoScroll` carousel; **desktop** (`hidden md:block`): `rows={3}` grid with `showScrollbar`, up to 30 products
+- `FeaturedAuctionsSection` — same responsive split; `rows={3}` + `showScrollbar` on desktop
+- `BlogCategoryTabs` — replaced `overflow-x-auto` flex div with `HorizontalScroller` (`autoScroll={false}`, `showScrollbar`, `gap={8}`)
+- `SectionTabs` — desktop nav replaced with `HorizontalScroller` (`gap={0}`, `autoScroll={false}`, `showScrollbar`); arrows appear when tab list overflows
+
+---
+
+### Static FAQs + Newsletter Removal (2026-03-15)
+
+#### Added
+
+- `src/constants/faq-data.ts` — 102 static FAQ entries (`StaticFAQItem[]`) across 7 categories; exported helper functions `getStaticFaqsByCategory`, `getAllStaticFaqs`, `getStaticFaqCategoryCounts`
+- `StaticFAQItem` type exported from `@/constants`
+
+#### Changed
+
+- `FAQSection` (homepage) — now reads from static constants (`getStaticFaqsByCategory`); shows **10 FAQs per category** (up from 6) with a "View All →" button that includes a `+N` count badge when more FAQs exist; no loading skeleton or API calls
+- `FAQPageContent` — replaced `useAllFaqs()` API hook with direct `STATIC_FAQS` constant; removed `isLoading` skeleton; removed "newest" sort option (no `createdAt` on static data)
+- `FAQAccordion` — type changed from `FAQDocument[]` to `StaticFAQItem[]`; `answer` field simplified to `string`
+- `src/constants/index.ts` — exports `STATIC_FAQS`, `getStaticFaqsByCategory`, `getAllStaticFaqs`, `getStaticFaqCategoryCounts`, `StaticFAQItem`
+
+#### Removed
+
+- **Newsletter feature** entirely from the UI and all supporting layers:
+  - Pages: `/admin/newsletter`, `/api/newsletter/subscribe`, `/api/admin/newsletter`, `/api/admin/newsletter/[id]`
+  - Components: `NewsletterSection`, `AdminNewsletterView`, `NewsletterTableColumns`
+  - Hooks: `useNewsletterSubscribe`, `useAdminNewsletter`, `usePublicFaqs`, `useAllFaqs`
+  - Services: `newsletter.service.ts`
+  - Repository: `newsletter.repository.ts`
+  - Schema: `newsletter.ts`
+  - Seed data: `scripts/seed-data/newsletter-seed-data.ts`
+  - Admin nav tab for Newsletter removed from `AdminTabs`
+  - `<NewsletterSection />` removed from homepage
+
+---
+
+### Firebase Cloud Functions — Scheduled Jobs + Firestore Triggers (2026-03-01)
+
+#### Added
+
+- **`functions/`** — new standalone Firebase Functions package (Node 20, TypeScript, 2nd-gen / Cloud Run).
+- **`functions/src/config/firebase-admin.ts`** — shared Admin SDK init (no explicit credential; uses ADC in production).
+- **`functions/src/config/constants.ts`** — centralised `SCHEDULES`, `REGION` (`asia-south1`), `BATCH_LIMIT`, business timeouts, and all Firestore collection names.
+- **`functions/src/utils/logger.ts`** — `logInfo` / `logError` / `logWarn` wrappers over `firebase-functions/v2` logger.
+- **`functions/src/utils/batchHelper.ts`** — `batchDelete` and `batchUpdate` utilities that auto-split operations at the 400-doc limit.
+
+**Scheduled jobs** (all 2nd-gen `onSchedule`, `asia-south1` region):
+
+| Export                  | Schedule         | What it does                                                                                   |
+| ----------------------- | ---------------- | ---------------------------------------------------------------------------------------------- |
+| `auctionSettlement`     | every 5 min      | Settles expired auctions — marks bids `won`/`lost`, creates winner Order, pushes notifications |
+| `pendingOrderTimeout`   | every 60 min     | Cancels orders unpaid for > 24 h, sends `order_cancelled` notification                         |
+| `couponExpiry`          | 00:05 UTC daily  | Deactivates coupons whose `validity.endDate` has passed                                        |
+| `expiredTokenCleanup`   | 03:00 UTC daily  | Deletes expired email-verification and password-reset tokens                                   |
+| `expiredSessionCleanup` | 02:00 UTC daily  | Deletes expired session documents                                                              |
+| `payoutBatch`           | 06:00 UTC daily  | Sweeps pending payouts → Razorpay Payouts API; retries up to 3× then marks `failed`            |
+| `productStatsSync`      | 01:00 UTC daily  | Recomputes `avgRating` + `reviewCount` on all published products from approved reviews         |
+| `cartPrune`             | Sunday 04:00 UTC | Deletes carts idle for > 30 days                                                               |
+| `notificationPrune`     | Monday 01:00 UTC | Deletes read notifications older than 90 days                                                  |
+
+**Firestore triggers**:
+
+| Export                | Trigger                     | What it does                                                                                                                  |
+| --------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `onBidPlaced`         | `bids/{bidId}` onCreate     | Demotes previous winner to `outbid`, updates product `currentBid`/`bidCount`, sends Firestore notification + Realtime DB push |
+| `onOrderStatusChange` | `orders/{orderId}` onUpdate | On status change: writes typed notification, Realtime DB push, and transactional Resend email (confirmed/shipped/delivered)   |
+
+- **`functions/src/index.ts`** — entry point exporting all 11 functions.
+- **`functions/package.json`** — dependencies: `firebase-admin ^13`, `firebase-functions ^6`.
+- **`functions/tsconfig.json`** — targets `es2020`, `commonjs`, strict mode.
+- **`functions/.env.example`** — documents required secrets: `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_ACCOUNT_NUMBER`, `RESEND_API_KEY`.
+- **`functions/.gitignore`** — excludes `lib/`, `node_modules/`, `.env`.
+- **`firebase.json`** — added `functions` codebase config and `emulators.functions` (port 5001).
+- **`scripts/deploy-functions.ps1`** — PowerShell script to `npm ci` + `tsc` + `firebase deploy --only functions`; supports `-FunctionName` for single-function deploys and `-OnlyBuild` for dry runs.
+
+#### Notes
+
+- All jobs use the `batchDelete` / `batchUpdate` helpers to stay under the 500-op Firestore batch ceiling.
+- `payoutBatch` calls Razorpay via native `fetch`; credentials must be set as Firebase Secrets before deploying.
+- `onOrderStatusChange` sends Resend emails only for `confirmed`, `shipped`, and `delivered` transitions; credentials are environment-injected.
+- `onBidPlaced` writes to `auction_bids/{productId}` in Realtime DB for live auction UI updates.
+
+---
+
+### Bug Fixes — AdvertisementBanner null guard + Missing Firestore indexes (2026-03-01)
+
+#### Fixed
+
+- **`src/components/homepage/AdvertisementBanner.tsx`** — added `!banner.content` to the early-return guard. The component crashed with `TypeError: can't access property "title", banner.content is undefined` when a homepage section document existed but its `config.content` field was absent.
+- **`firestore.indexes.json`** — added three composite indexes that were missing and causing `FAILED_PRECONDITION` (HTTP 500) on the homepage:
+  - `products`: `isAuction ASC` + `createdAt DESC` — required by `/api/products?isAuction=true&...&sorts=-createdAt`
+  - `categories`: `isActive ASC` + `tier ASC` + `order ASC` — required by `CategoriesRepository.buildTree`
+  - `blogPosts`: `isFeatured ASC` + `status ASC` + `publishedAt DESC` — required by `BlogRepository.listPublished` with `?featured=true&sorts=-publishedAt`
+- Indexes deployed to Firebase (`firebase deploy --only firestore:indexes`).
+
+---
+
+### Firebase Functions — Coding Rules Compliance Refactor (2026-03-01)
+
+#### Changed
+
+- **`functions/src/lib/errors.ts`** _(new)_ — Typed error classes mirroring the main app's `src/lib/errors/`: `FnError` (base), `ConfigurationError`, `NotFoundError`, `IntegrationError` (with `service` + `statusCode` fields), `DatabaseError`, `ValidationError`. No raw `throw new Error()` anywhere in the functions package.
+- **`functions/src/constants/messages.ts`** _(new)_ — All notification titles, message templates, email subjects, and system error strings as typed constants (`AUCTION_MESSAGES`, `BID_MESSAGES`, `ORDER_MESSAGES`, `EMAIL_SUBJECTS`, `FN_ERROR_MESSAGES`). Eliminates all hardcoded strings from jobs and triggers (RULE 3).
+- **`functions/src/repositories/`** _(new — 10 files + barrel)_ — Repository pattern for all Firestore access (RULE 12). Jobs and triggers never call `db.collection()` directly.
+
+| Repository               | Key methods                                                                                 |
+| ------------------------ | ------------------------------------------------------------------------------------------- |
+| `productRepository`      | `getExpiredAuctions`, `getPublishedIds`, `updateStats`, `incrementBidCount`, `updateStatus` |
+| `bidRepository`          | `getActiveByProduct`, `getWinningBid`, `markWon/Lost/Outbid/Winning`                        |
+| `orderRepository`        | `getTimedOutPending`, `cancelInBatch`, `createFromAuction`                                  |
+| `sessionRepository`      | `getExpiredRefs`                                                                            |
+| `tokenRepository`        | `getExpiredEmailVerificationRefs`, `getExpiredPasswordResetRefs`                            |
+| `couponRepository`       | `getExpiredActiveRefs`, `deactivateInBatch`                                                 |
+| `cartRepository`         | `getStaleRefs`                                                                              |
+| `payoutRepository`       | `getPending`, `markProcessing`, `recordSuccess`, `recordFailure`                            |
+| `notificationRepository` | `getOldReadRefs`, `createInBatch`, `create`                                                 |
+| `reviewRepository`       | `getApprovedRatingAggregate`                                                                |
+
+- **All 9 job files** — Replaced `db.collection(COLLECTIONS.*)` queries with repository calls; replaced `throw new Error(...)` with typed error classes; replaced hardcoded notification strings with `ORDER_MESSAGES.*` / `AUCTION_MESSAGES.*` constants.
+- **`functions/src/triggers/onBidPlaced.ts`** — Replaced direct Firestore reads/writes with `bidRepository`, `productRepository`, `notificationRepository`; replaced hardcoded notification title/message with `BID_MESSAGES.*`.
+- **`functions/src/triggers/onOrderStatusChange.ts`** — Replaced `STATUS_CONFIG` hardcoded strings with `ORDER_MESSAGES.*`; replaced `subjectMap` with `EMAIL_SUBJECTS.*`; replaced Resend error throw with `IntegrationError`; replaced direct Firestore notification write with `notificationRepository.create()`.
+
+#### Build verification
+
+- `npx tsc --noEmit` → **0 errors**
+- `npm run build` → **exit 0**
 
 ---
 

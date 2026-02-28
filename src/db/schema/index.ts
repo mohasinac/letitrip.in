@@ -25,7 +25,6 @@ export * from "./homepage-sections";
 export * from "./categories";
 export * from "./coupons";
 export * from "./faqs";
-export * from "./newsletter";
 export * from "./blog-posts";
 export * from "./notifications";
 export * from "./payouts";

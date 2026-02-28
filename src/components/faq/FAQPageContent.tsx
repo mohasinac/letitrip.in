@@ -7,16 +7,17 @@ import {
   UI_LABELS,
   ROUTES,
   FAQ_CATEGORIES,
+  STATIC_FAQS,
+  getStaticFaqCategoryCounts,
 } from "@/constants";
-import type { FAQCategoryKey } from "@/constants";
-import { useAllFaqs, useUrlTable } from "@/hooks";
+import type { FAQCategoryKey, StaticFAQItem } from "@/constants";
+import { useUrlTable } from "@/hooks";
 import { FAQCategorySidebar } from "./FAQCategorySidebar";
 import { FAQSearchBar } from "./FAQSearchBar";
 import { FAQSortDropdown } from "./FAQSortDropdown";
 import { FAQAccordion } from "./FAQAccordion";
 import { ContactCTA } from "./ContactCTA";
 import type { FAQSortOption } from "./FAQSortDropdown";
-import type { FAQDocument } from "@/db/schema";
 
 interface FAQPageContentProps {
   initialCategory?: FAQCategoryKey | "all";
@@ -35,31 +36,11 @@ export function FAQPageContent({
   const table = useUrlTable({ defaults: { sort: "helpful" } });
   const sortOption = (table.get("sort") || "helpful") as FAQSortOption;
 
-  // Fetch all FAQs
-  const { data: faqsData, isLoading } = useAllFaqs();
+  // Use static data — no API calls needed
+  const allFAQs: StaticFAQItem[] = STATIC_FAQS;
 
-  const allFAQs = faqsData || [];
-
-  // Calculate category counts
-  const categoryCounts = useMemo(() => {
-    const counts: Record<FAQCategoryKey, number> = {
-      general: 0,
-      products: 0,
-      shipping: 0,
-      returns: 0,
-      payment: 0,
-      account: 0,
-      sellers: 0,
-    };
-
-    allFAQs.forEach((faq) => {
-      if (faq.category && faq.category in counts) {
-        counts[faq.category as FAQCategoryKey]++;
-      }
-    });
-
-    return counts;
-  }, [allFAQs]);
+  // Calculate category counts from static data
+  const categoryCounts = useMemo(() => getStaticFaqCategoryCounts(), []);
 
   // Filter and sort FAQs
   const filteredAndSortedFAQs = useMemo(() => {
@@ -72,10 +53,9 @@ export function FAQPageContent({
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter((faq) => {
-        const answerText = typeof faq.answer === "string" ? faq.answer : "";
         return (
           faq.question.toLowerCase().includes(query) ||
-          answerText.toLowerCase().includes(query) ||
+          faq.answer.toLowerCase().includes(query) ||
           faq.tags?.some((tag) => tag.toLowerCase().includes(query))
         );
       });
@@ -90,15 +70,13 @@ export function FAQPageContent({
         const bRatio =
           (b.stats?.helpful || 0) /
           ((b.stats?.helpful || 0) + (b.stats?.notHelpful || 0) + 1);
-        return bRatio - aRatio;
+        return bRatio - aRatio || a.order - b.order;
       });
-    } else if (sortOption === "newest") {
-      sorted.sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
     } else if (sortOption === "alphabetical") {
       sorted.sort((a, b) => a.question.localeCompare(b.question));
+    } else {
+      // default: priority then order
+      sorted.sort((a, b) => b.priority - a.priority || a.order - b.order);
     }
 
     return sorted;
@@ -173,23 +151,11 @@ export function FAQPageContent({
             />
           </div>
 
-          {/* Loading State */}
-          {isLoading && (
-            <div className={THEME_CONSTANTS.spacing.stack}>
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className={`h-24 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} animate-pulse`}
-                />
-              ))}
-            </div>
-          )}
-
           {/* FAQ Accordion */}
-          {!isLoading && <FAQAccordion faqs={filteredAndSortedFAQs} />}
+          <FAQAccordion faqs={filteredAndSortedFAQs} />
 
           {/* Contact CTA */}
-          {!isLoading && filteredAndSortedFAQs.length > 0 && (
+          {filteredAndSortedFAQs.length > 0 && (
             <div className="mt-12">
               <ContactCTA />
             </div>

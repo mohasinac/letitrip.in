@@ -34,7 +34,7 @@ export default function AdminTabs() {
     { href: ROUTES.ADMIN.BIDS, label: t("bidsAdmin") },
     { href: ROUTES.ADMIN.BLOG, label: t("blogAdmin") },
     { href: ROUTES.ADMIN.PAYOUTS, label: t("payoutsAdmin") },
-    { href: ROUTES.ADMIN.NEWSLETTER, label: t("newsletterAdmin") },
+
     { href: ROUTES.ADMIN.EVENTS, label: t("eventsAdmin") },
   ];
   return <SectionTabs tabs={tabs} variant="admin" />;

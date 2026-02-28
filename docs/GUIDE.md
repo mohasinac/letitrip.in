@@ -1383,33 +1383,32 @@ await upload(form);
 
 ---
 
-### FAQ Data Hooks
+### FAQ Data — Static (No API)
 
-#### usePublicFaqs
+FAQs are **static** — no API calls, no Firestore queries. All 102 FAQs live in `src/constants/faq-data.ts` and are accessed via helper functions exported from `@/constants`.
 
-**File**: `usePublicFaqs.ts`  
-**Purpose**: Fetch public FAQs for homepage/public FAQ sections, optionally filtered by category.  
-**Parameters**: `(category?: string, limit?: number)` — limit defaults to `6`  
-**Returns**: `{ data: FAQDocument[], loading, error }` — cached for 10 minutes
+| Helper                       | Signature                                                     | Purpose                                                  |
+| ---------------------------- | ------------------------------------------------------------- | -------------------------------------------------------- |
+| `getStaticFaqsByCategory`    | `(category: FAQCategoryKey, limit?: number): StaticFAQItem[]` | Returns up to `limit` FAQs for a category (default: all) |
+| `getAllStaticFaqs`           | `(limit?: number): StaticFAQItem[]`                           | Returns all FAQs, optionally capped                      |
+| `getStaticFaqCategoryCounts` | `(): Record<FAQCategoryKey, number>`                          | Count of FAQs in each category                           |
 
-**Example**:
+**`StaticFAQItem` type**: `{ id, question, answer: string, category: FAQCategoryKey, tags: string[], isPinned: boolean, priority: number, order: number, stats: { views, helpful, notHelpful } }`
 
-```tsx
-import { usePublicFaqs } from "@/hooks";
-const { data: faqs, loading } = usePublicFaqs("shipping", 4);
-```
+**FAQ categories**: `general`(20), `shipping`(15), `returns`(12), `payment`(18), `account`(10), `products`(15), `sellers`(12)
 
-#### useAllFaqs
-
-**File**: `usePublicFaqs.ts`  
-**Purpose**: Fetch ALL active FAQs for the full FAQ page (`FAQPageContent`). Client-side filtering, search, and sort are applied on the complete list.  
-**Returns**: `{ data: FAQDocument[], loading, error }`
+**Homepage** (`FAQSection`) shows 10 per active category with a "View All →" button showing the remaining count badge.  
+**FAQ page** (`FAQPageContent`) loads all 102 and filters client-side with search + category tabs.
 
 **Example**:
 
 ```tsx
-import { useAllFaqs } from "@/hooks";
-const { data: faqs, loading } = useAllFaqs();
+import {
+  getStaticFaqsByCategory,
+  getStaticFaqCategoryCounts,
+} from "@/constants";
+import type { StaticFAQItem } from "@/constants";
+const faqs: StaticFAQItem[] = getStaticFaqsByCategory("shipping", 10);
 ```
 
 ---
@@ -2691,6 +2690,53 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 - Escape key handling, body scroll lock, backdrop click close
 - Delete mode shows red header accent with DELETE badge
 - Customizable footer slot for action buttons
+
+#### HorizontalScroller
+
+**File**: `HorizontalScroller.tsx`  
+**Purpose**: Generic horizontal-scroll container with arrow navigation, keyboard support, and optional circular auto-scroll  
+**Import**: `import { HorizontalScroller } from '@/components';` (or `'@/components/ui'` inside `src/components/**`)
+
+**Props**:
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `items` | `T[]` | required | Items to render |
+| `renderItem` | `(item: T, index: number) => ReactNode` | required | Item renderer |
+| `itemWidth` | `number` | auto-detect | Item width in px; used for step and count calculation |
+| `count` | `number` | auto-compute | Visible items at once (`⌊containerWidth ÷ (itemWidth + gap)⌋` when omitted) |
+| `gap` | `number` | `12` | Gap between items in px |
+| `autoScroll` | `boolean` | `false` | Circular seamless auto-scroll (tripled items, debounced reset) |
+| `autoScrollInterval` | `number` | `3500` | ms between auto-scroll steps |
+| `pauseOnHover` | `boolean` | `true` | Pause auto-scroll on pointer enter |
+| `showArrows` | `boolean` | `true` | Show prev/next buttons (hidden when no overflow) |
+| `className` | `string` | `""` | Extra classes on outer wrapper |
+| `scrollerClassName` | `string` | `""` | Extra classes on inner flex scroll div |
+| `keyExtractor` | `(item, index) => string` | — | Key for list rendering |
+
+**Circular auto-scroll**: items array is tripled internally. After each scroll settles (350 ms debounce) the position is silently snapped back to the equivalent position in the center copy — no visible jump.
+
+**Keyboard**: focus the container (or any child), then `ArrowLeft` / `ArrowRight` to page-scroll.
+
+```tsx
+// Featured carousel (circular auto-scroll)
+<HorizontalScroller
+  items={products}
+  renderItem={(p) => <ProductCard product={p} />}
+  itemWidth={160}
+  gap={12}
+  autoScroll
+  keyExtractor={(p) => p.id}
+  className="px-5"
+/>
+
+// Tab strip (no auto-scroll, natural item widths)
+<HorizontalScroller
+  items={CATEGORIES}
+  renderItem={(c) => <CategoryChip category={c} />}
+  autoScroll={false}
+  gap={8}
+/>
+```
 
 #### SectionTabs
 
@@ -3974,35 +4020,34 @@ export * from "./constants";
 **Import**: `import { productService, cartService, ... } from '@/services'`  
 **Rule**: Never call `apiClient` directly in components -- always go through a service function (Rule 20).
 
-| Service                   | Key Methods                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `addressService`          | `list()`, `getById(id)`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `adminService`            | `getDashboardStats()`, `listSessions(q?)`, `listOrders(q?)`, `updateOrder(id,data)`, `getAnalytics()`, `listUsers(q?)`, `updateUser(uid,data)`, `deleteUser(uid)`, `listBids(q?)`, `listBlog(q?)`, `createBlogPost(data)`, `updateBlogPost(id,data)`, `deleteBlogPost(id)`, `listNewsletter(q?)`, `updateNewsletterEntry(id,data)`, `deleteNewsletterEntry(id)`, `listPayouts(q?)`, `updatePayout(id,data)`, `listAdminProducts(q?)`, `createAdminProduct(data)`, `updateAdminProduct(id,data)`, `deleteAdminProduct(id)` |
-| `authService`             | `login(email,pw)`, `register(data)`, `logout()`                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `bidService`              | `create(data)`, `listByProduct(productId)`, `getById(id)`                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `blogService`             | `list(params?)`, `getBySlug(slug)`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `carouselService`         | `list()`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `cartService`             | `get()`, `addItem(data)`, `removeItem(itemId)`, `updateItem(itemId,data)`                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `categoryService`         | `list(params?)`, `getBySlug(slug)`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `checkoutService`         | `placeOrder(data)`, `createPaymentOrder(data)`, `verifyPayment(data)`                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `contactService`          | `send(data)`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `couponService`           | `list(sieveQuery?)`, `create(data)`, `update(id,data)`, `delete(id)`, `validate({code,orderTotal?})`                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `eventService`            | `list(params?)`, `getById(id)`, `enter(id,data)`, `leaderboard(id)`                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `faqService`              | `list(params?)`, `vote(id,data)`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `homepageSectionsService` | `list()`, `update(id,data)`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `mediaService`            | `upload(formData)`, `crop(data)`, `trim(data)`                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `newsletterService`       | `subscribe(email)`, `list(params?)`, `unsubscribe(id)`, `delete(id)`                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `notificationService`     | `list(params?)`, `markRead(id)`, `markAllRead()`, `delete(id)`, `getUnreadCount()`                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `orderService`            | `list(params?)`, `getById(id)`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `productService`          | `list(params?)`, `getById(id)`, `getFeatured()`, `listAuctions(params?)`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `profileService`          | `get()`, `update(data)`, `getPublic(userId)`                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `promotionsService`       | `list()`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `reviewService`           | `list(params?)`, `listAdmin(sieveQuery?)`, `getByProduct(productId)`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `searchService`           | `query(params)`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `sellerService`           | `getAnalytics()`, `listProducts(uid)`, `listOrders(params?)`, `listPayouts(params?)`, `requestPayout(data)`                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `sessionService`          | `list()`, `revoke(id)`, `revokeAll()`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `siteSettingsService`     | `get()`, `update(data)`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `wishlistService`         | `list()`, `add(productId)`, `remove(productId)`, `check(productId)`                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Service                   | Key Methods                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `addressService`          | `list()`, `getById(id)`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                                                                             |
+| `adminService`            | `getDashboardStats()`, `listSessions(q?)`, `listOrders(q?)`, `updateOrder(id,data)`, `getAnalytics()`, `listUsers(q?)`, `updateUser(uid,data)`, `deleteUser(uid)`, `listBids(q?)`, `listBlog(q?)`, `createBlogPost(data)`, `updateBlogPost(id,data)`, `deleteBlogPost(id)`, `listPayouts(q?)`, `updatePayout(id,data)`, `listAdminProducts(q?)`, `createAdminProduct(data)`, `updateAdminProduct(id,data)`, `deleteAdminProduct(id)` |
+| `authService`             | `login(email,pw)`, `register(data)`, `logout()`                                                                                                                                                                                                                                                                                                                                                                                      |
+| `bidService`              | `create(data)`, `listByProduct(productId)`, `getById(id)`                                                                                                                                                                                                                                                                                                                                                                            |
+| `blogService`             | `list(params?)`, `getBySlug(slug)`                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `carouselService`         | `list()`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                                                                                            |
+| `cartService`             | `get()`, `addItem(data)`, `removeItem(itemId)`, `updateItem(itemId,data)`                                                                                                                                                                                                                                                                                                                                                            |
+| `categoryService`         | `list(params?)`, `getBySlug(slug)`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                                                                  |
+| `checkoutService`         | `placeOrder(data)`, `createPaymentOrder(data)`, `verifyPayment(data)`                                                                                                                                                                                                                                                                                                                                                                |
+| `contactService`          | `send(data)`                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `couponService`           | `list(sieveQuery?)`, `create(data)`, `update(id,data)`, `delete(id)`, `validate({code,orderTotal?})`                                                                                                                                                                                                                                                                                                                                 |
+| `eventService`            | `list(params?)`, `getById(id)`, `enter(id,data)`, `leaderboard(id)`                                                                                                                                                                                                                                                                                                                                                                  |
+| `faqService`              | `list(params?)`, `vote(id,data)`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                                                                    |
+| `homepageSectionsService` | `list()`, `update(id,data)`                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `mediaService`            | `upload(formData)`, `crop(data)`, `trim(data)`                                                                                                                                                                                                                                                                                                                                                                                       |
+| `notificationService`     | `list(params?)`, `markRead(id)`, `markAllRead()`, `delete(id)`, `getUnreadCount()`                                                                                                                                                                                                                                                                                                                                                   |
+| `orderService`            | `list(params?)`, `getById(id)`                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `productService`          | `list(params?)`, `getById(id)`, `getFeatured()`, `listAuctions(params?)`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                            |
+| `profileService`          | `get()`, `update(data)`, `getPublic(userId)`                                                                                                                                                                                                                                                                                                                                                                                         |
+| `promotionsService`       | `list()`                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `reviewService`           | `list(params?)`, `listAdmin(sieveQuery?)`, `getByProduct(productId)`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                                |
+| `searchService`           | `query(params)`                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `sellerService`           | `getAnalytics()`, `listProducts(uid)`, `listOrders(params?)`, `listPayouts(params?)`, `requestPayout(data)`                                                                                                                                                                                                                                                                                                                          |
+| `sessionService`          | `list()`, `revoke(id)`, `revokeAll()`                                                                                                                                                                                                                                                                                                                                                                                                |
+| `siteSettingsService`     | `get()`, `update(data)`                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `wishlistService`         | `list()`, `add(productId)`, `remove(productId)`, `check(productId)`                                                                                                                                                                                                                                                                                                                                                                  |
 
 ---
 
