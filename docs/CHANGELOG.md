@@ -14,6 +14,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### TASK-43 — Migrate 7 product display components from `UI_LABELS` to `useTranslations` (2026-02-28)
+
+#### Changed
+
+- **`src/components/products/ProductCard.tsx`** — Replaced `UI_LABELS` with `useTranslations("products")`; `featured`, `auction`, `promoted`, `sold`, `outOfStock` badges now use `t()`.
+- **`src/components/products/ProductFilters.tsx`** — Replaced `UI_LABELS` + `UI_PLACEHOLDERS` with `useTranslations("products")`; all filter labels and placeholders now use `t()`.
+- **`src/components/products/ProductGrid.tsx`** — Replaced `UI_LABELS` with `useTranslations("products")`; empty-state messages now use `t()`.
+- **`src/components/products/ProductSortBar.tsx`** — Replaced `UI_LABELS` with `useTranslations("products")`; moved module-level `SORT_OPTIONS` array inside component function body; sort options and count text use `t()`.
+- **`src/components/products/ProductInfo.tsx`** — Replaced `UI_LABELS` with `useTranslations("products")` + `useTranslations("loading")`; all 20 label references replaced.
+- **`src/components/products/ProductReviews.tsx`** — Replaced `UI_LABELS` with `useTranslations("products")` + `useTranslations("actions")`; reviews heading, empty state, verified badge, helpful count, and pagination buttons use `t()`.
+- **`src/components/products/RelatedProducts.tsx`** — Replaced `UI_LABELS` with `useTranslations("products")`; section title uses `t("relatedTitle")`.
+- **`messages/en.json`** — Added 31 new keys to `products` namespace: `featured`, `auction`, `promoted`, `filters`, `clearFilters`, `filterCategory`, `filterAllCategories`, `filterPriceRange`, `filterMinPrice`, `filterMaxPrice`, `showing`, `sortBy`, `sortNewest`, `sortOldest`, `sortPriceLow`, `sortPriceHigh`, `sortNameAZ`, `sortNameZA`, `currentBid`, `startingBid`, `totalBids`, `auctionEnds`, `availableStock`, `placeBid`, `reviewsTitle`, `reviewsNone`, `reviewsBeFirst`, `verifiedPurchase`, `helpful`, `relatedTitle`, `features`, `shipping`, `returnPolicy`.
+- **`messages/hi.json`** — Same 31 keys added with Hindi translations.
+
+#### Tests
+
+- **`src/components/products/__tests__/ProductCard.test.tsx`** — New; 6 tests covering badge rendering for featured, auction, promoted, sold, outOfStock.
+- **`src/components/products/__tests__/ProductFilters.test.tsx`** — New; 5 tests covering filter labels and conditional clearFilters button.
+- **`src/components/products/__tests__/ProductGrid.test.tsx`** — New; 3 tests covering product rendering, empty state, loading skeletons.
+- **`src/components/products/__tests__/ProductSortBar.test.tsx`** — New; 4 tests covering sort label, count display, and sort dropdown.
+- **`src/components/products/__tests__/ProductInfo.test.tsx`** — New; 8 tests covering product title, badges, description, action button, sold/outOfStock states.
+- **`src/components/products/__tests__/ProductReviews.test.tsx`** — New; 7 tests covering empty state, review rendering, verified badge, helpful count, loading skeletons, pagination.
+- **`src/components/products/__tests__/RelatedProducts.test.tsx`** — New; 3 tests covering heading rendering, loading skeletons, empty state.
+
+---
+
 ### TASK-42 — Migrate `DrawerFormFooter.tsx` default prop values from `UI_LABELS` to `useTranslations` (2026-02-28)
 
 #### Changed

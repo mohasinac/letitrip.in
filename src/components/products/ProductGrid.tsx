@@ -1,6 +1,7 @@
 "use client";
 
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import { ProductCard } from "./ProductCard";
 import type { ProductDocument } from "@/db/schema";
 
@@ -46,6 +47,7 @@ export function ProductGrid({
   loading = false,
   skeletonCount = 24,
 }: ProductGridProps) {
+  const t = useTranslations("products");
   if (loading) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
@@ -61,10 +63,10 @@ export function ProductGrid({
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <span className="text-6xl mb-4">🔍</span>
         <h3 className={`text-xl font-semibold mb-2 ${themed.textPrimary}`}>
-          {UI_LABELS.PRODUCTS_PAGE.NO_PRODUCTS}
+          {t("noProductsFound")}
         </h3>
         <p className={`text-sm ${themed.textSecondary}`}>
-          {UI_LABELS.PRODUCTS_PAGE.NO_PRODUCTS_SUBTITLE}
+          {t("noProductsSubtitle")}
         </p>
       </div>
     );

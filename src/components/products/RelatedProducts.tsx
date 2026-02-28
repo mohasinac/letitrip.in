@@ -1,6 +1,7 @@
 "use client";
 
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import { useRelatedProducts } from "@/hooks";
 import { ProductCard } from "./ProductCard";
 import type { ProductDocument } from "@/db/schema";
@@ -33,6 +34,7 @@ interface RelatedProductsProps {
 }
 
 export function RelatedProducts({ category, excludeId }: RelatedProductsProps) {
+  const t = useTranslations("products");
   const { data, isLoading } = useRelatedProducts(category, excludeId, 8);
 
   const products =
@@ -43,7 +45,7 @@ export function RelatedProducts({ category, excludeId }: RelatedProductsProps) {
   return (
     <section className="mt-10">
       <h2 className={`text-xl font-bold mb-4 ${themed.textPrimary}`}>
-        {UI_LABELS.PRODUCT_DETAIL.RELATED_TITLE}
+        {t("relatedTitle")}
       </h2>
 
       {isLoading ? (

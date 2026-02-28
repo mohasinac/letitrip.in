@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatRelativeTime } from "@/utils";
 import { useProductReviews } from "@/hooks";
 import type { ReviewDocument } from "@/db/schema";
@@ -72,6 +73,8 @@ function RatingBar({
 }
 
 export function ProductReviews({ productId }: ProductReviewsProps) {
+  const t = useTranslations("products");
+  const tActions = useTranslations("actions");
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -86,7 +89,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
   return (
     <section>
       <h2 className={`text-xl font-bold mb-4 ${themed.textPrimary}`}>
-        {UI_LABELS.PRODUCT_DETAIL.REVIEWS_TITLE}
+        {t("reviewsTitle")}
       </h2>
 
       {/* Rating summary */}
@@ -139,10 +142,10 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
       {!isLoading && reviews.length === 0 && (
         <div className="text-center py-12">
           <p className={`font-medium ${themed.textPrimary}`}>
-            {UI_LABELS.PRODUCT_DETAIL.REVIEWS_NONE}
+            {t("reviewsNone")}
           </p>
           <p className={`text-sm mt-1 ${themed.textSecondary}`}>
-            {UI_LABELS.PRODUCT_DETAIL.REVIEWS_BE_FIRST}
+            {t("reviewsBeFirst")}
           </p>
         </div>
       )}
@@ -183,7 +186,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                       <StarRating rating={review.rating} />
                       {review.verified && (
                         <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                          {UI_LABELS.PRODUCT_DETAIL.VERIFIED_PURCHASE}
+                          {t("verifiedPurchase")}
                         </span>
                       )}
                     </div>
@@ -227,7 +230,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
               {/* Helpful */}
               {review.helpfulCount > 0 && (
                 <p className={`text-xs ${themed.textSecondary}`}>
-                  {UI_LABELS.PRODUCT_DETAIL.HELPFUL(review.helpfulCount)}
+                  {t("helpful", { count: review.helpfulCount })}
                 </p>
               )}
             </div>
@@ -241,7 +244,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                 disabled={page <= 1}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${themed.bgPrimary} ${themed.textPrimary} border ${themed.border}`}
               >
-                {UI_LABELS.ACTIONS.BACK}
+                {tActions("back")}
               </button>
               <span className={`text-sm ${themed.textSecondary}`}>
                 {page} / {meta.totalPages}
@@ -251,7 +254,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                 disabled={!meta.hasMore}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${themed.bgPrimary} ${themed.textPrimary} border ${themed.border}`}
               >
-                {UI_LABELS.ACTIONS.NEXT}
+                {tActions("next")}
               </button>
             </div>
           )}

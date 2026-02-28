@@ -1,6 +1,7 @@
 "use client";
 
-import { UI_LABELS, UI_PLACEHOLDERS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 
 const { themed, borderRadius, input } = THEME_CONSTANTS;
 
@@ -27,19 +28,20 @@ export function ProductFilters({
   onClear,
   hasActiveFilters,
 }: ProductFiltersProps) {
+  const t = useTranslations("products");
   return (
     <aside className="space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className={`font-semibold text-base ${themed.textPrimary}`}>
-          {UI_LABELS.PRODUCTS_PAGE.FILTERS}
+          {t("filters")}
         </h2>
         {hasActiveFilters && (
           <button
             onClick={onClear}
             className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
           >
-            {UI_LABELS.PRODUCTS_PAGE.CLEAR_FILTERS}
+            {t("clearFilters")}
           </button>
         )}
       </div>
@@ -49,16 +51,14 @@ export function ProductFilters({
         <label
           className={`block text-xs font-medium mb-1.5 ${themed.textSecondary}`}
         >
-          {UI_LABELS.PRODUCTS_PAGE.FILTER_CATEGORY}
+          {t("filterCategory")}
         </label>
         <select
           value={category}
           onChange={(e) => onCategoryChange(e.target.value)}
           className={`w-full text-sm ${input.base} ${themed.bgPrimary} ${themed.textPrimary}`}
         >
-          <option value="">
-            {UI_LABELS.PRODUCTS_PAGE.FILTER_ALL_CATEGORIES}
-          </option>
+          <option value="">{t("filterAllCategories")}</option>
           {categories.map((cat) => (
             <option key={cat} value={cat}>
               {cat}
@@ -72,7 +72,7 @@ export function ProductFilters({
         <label
           className={`block text-xs font-medium mb-1.5 ${themed.textSecondary}`}
         >
-          {UI_LABELS.PRODUCTS_PAGE.FILTER_PRICE_RANGE}
+          {t("filterPriceRange")}
         </label>
         <div className="flex items-center gap-2">
           <input
@@ -80,7 +80,7 @@ export function ProductFilters({
             min={0}
             value={minPrice}
             onChange={(e) => onMinPriceChange(e.target.value)}
-            placeholder={UI_LABELS.PRODUCTS_PAGE.FILTER_MIN_PRICE}
+            placeholder={t("filterMinPrice")}
             className={`w-full text-sm ${input.base} ${themed.bgPrimary} ${themed.textPrimary}`}
           />
           <span className={`text-xs ${themed.textSecondary} shrink-0`}>to</span>
@@ -89,7 +89,7 @@ export function ProductFilters({
             min={0}
             value={maxPrice}
             onChange={(e) => onMaxPriceChange(e.target.value)}
-            placeholder={UI_LABELS.PRODUCTS_PAGE.FILTER_MAX_PRICE}
+            placeholder={t("filterMaxPrice")}
             className={`w-full text-sm ${input.base} ${themed.bgPrimary} ${themed.textPrimary}`}
           />
         </div>

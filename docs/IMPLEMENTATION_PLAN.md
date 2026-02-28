@@ -1239,6 +1239,24 @@ Convert each to a hook `useXTableColumns(onX, onY)` that calls `useTranslations(
 
 ---
 
+### ✅ TASK-43 · Migrate product display components from `UI_LABELS` to `useTranslations` · DONE
+
+**Rule violated:** Rule 2 (no `UI_LABELS` in JSX client components)
+**Files:** `ProductCard.tsx`, `ProductFilters.tsx`, `ProductGrid.tsx`, `ProductSortBar.tsx`, `ProductInfo.tsx`, `ProductReviews.tsx`, `RelatedProducts.tsx` (all in `src/components/products/`)
+
+**What was done:**
+
+1. Added `useTranslations("products")` to all 7 components; removed `UI_LABELS` / `UI_PLACEHOLDERS` imports.
+2. Added `useTranslations("loading")` to `ProductInfo.tsx` for loading-spinner text.
+3. Added `useTranslations("actions")` to `ProductReviews.tsx` for Back/Next pagination buttons.
+4. Moved module-level `SORT_OPTIONS` array inside `ProductSortBar` function body (was referencing `UI_LABELS` at module scope).
+5. Added 31 new keys to `messages/en.json` and `messages/hi.json` under the `products` namespace.
+6. Created 6 new test files (`ProductCard`, `ProductFilters`, `ProductGrid`, `ProductSortBar`, `ProductInfo`, `ProductReviews`, `RelatedProducts`) — 40 tests, all passing.
+
+**Effort:** M (2–4 h)
+
+---
+
 ## Dependency Map
 
 Tasks that should be done in order due to shared files:

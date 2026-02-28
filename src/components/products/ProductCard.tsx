@@ -1,8 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
-import { ROUTES, THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
 
@@ -27,6 +28,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className = "" }: ProductCardProps) {
+  const t = useTranslations("products");
   const isOutOfStock =
     product.status === "out_of_stock" || product.status === "sold";
   const displayPrice = product.isAuction
@@ -58,17 +60,17 @@ export function ProductCard({ product, className = "" }: ProductCardProps) {
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {product.featured && (
             <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-              {UI_LABELS.PRODUCTS_PAGE.FEATURED_BADGE}
+              {t("featured")}
             </span>
           )}
           {product.isAuction && (
             <span className="bg-indigo-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-              {UI_LABELS.PRODUCTS_PAGE.AUCTION}
+              {t("auction")}
             </span>
           )}
           {product.isPromoted && !product.isAuction && (
             <span className="bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-              {UI_LABELS.PRODUCTS_PAGE.PROMOTED_BADGE}
+              {t("promoted")}
             </span>
           )}
         </div>
@@ -77,9 +79,7 @@ export function ProductCard({ product, className = "" }: ProductCardProps) {
         {isOutOfStock && (
           <div className="absolute inset-0 bg-black/40 flex items-end justify-center pb-3">
             <span className="bg-black/70 text-white text-xs font-medium px-3 py-1 rounded-full">
-              {product.status === "sold"
-                ? UI_LABELS.PRODUCTS_PAGE.SOLD
-                : UI_LABELS.PRODUCTS_PAGE.OUT_OF_STOCK}
+              {product.status === "sold" ? t("sold") : t("outOfStock")}
             </span>
           </div>
         )}

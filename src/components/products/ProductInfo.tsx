@@ -1,6 +1,7 @@
 "use client";
 
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 import { Badge } from "@/components";
 import type { ProductDocument } from "@/db/schema";
@@ -60,6 +61,8 @@ export function ProductInfo({
   onAddToCart,
   isAddingToCart = false,
 }: ProductInfoProps) {
+  const t = useTranslations("products");
+  const tLoading = useTranslations("loading");
   const isOutOfStock =
     status === "out_of_stock" || status === "sold" || availableQuantity === 0;
   const displayPrice = isAuction ? (currentBid ?? startingBid ?? price) : price;
@@ -69,14 +72,8 @@ export function ProductInfo({
       {/* Title + badges */}
       <div>
         <div className="flex flex-wrap items-center gap-2 mb-2">
-          {featured && (
-            <Badge variant="warning">
-              {UI_LABELS.PRODUCTS_PAGE.FEATURED_BADGE}
-            </Badge>
-          )}
-          {isAuction && (
-            <Badge variant="info">{UI_LABELS.PRODUCTS_PAGE.AUCTION}</Badge>
-          )}
+          {featured && <Badge variant="warning">{t("featured")}</Badge>}
+          {isAuction && <Badge variant="info">{t("auction")}</Badge>}
         </div>
         <h1 className={`text-2xl font-bold ${themed.textPrimary}`}>{title}</h1>
       </div>
@@ -86,21 +83,19 @@ export function ProductInfo({
         {isAuction ? (
           <div className="space-y-0.5">
             <p className={`text-sm ${themed.textSecondary}`}>
-              {currentBid
-                ? UI_LABELS.PRODUCT_DETAIL.CURRENT_BID
-                : UI_LABELS.PRODUCT_DETAIL.STARTING_BID}
+              {currentBid ? t("currentBid") : t("startingBid")}
             </p>
             <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
               {formatCurrency(displayPrice ?? price)}
             </p>
             {bidCount !== undefined && (
               <p className={`text-sm ${themed.textSecondary}`}>
-                {UI_LABELS.PRODUCT_DETAIL.TOTAL_BIDS(bidCount)}
+                {t("totalBids", { count: bidCount })}
               </p>
             )}
             {auctionEndDate && (
               <p className={`text-sm ${themed.textSecondary}`}>
-                {UI_LABELS.PRODUCT_DETAIL.AUCTION_ENDS}{" "}
+                {t("auctionEnds")}{" "}
                 <span className={themed.textPrimary}>
                   {formatDate(auctionEndDate)}
                 </span>
@@ -119,7 +114,7 @@ export function ProductInfo({
         <p
           className={`text-sm text-emerald-600 dark:text-emerald-400 font-medium`}
         >
-          {UI_LABELS.PRODUCT_DETAIL.AVAILABLE_STOCK(availableQuantity)}
+          {t("availableStock", { qty: availableQuantity })}
         </p>
       )}
 
@@ -129,26 +124,18 @@ export function ProductInfo({
       >
         {brand && (
           <span>
-            <span className="font-medium">
-              {UI_LABELS.PRODUCT_DETAIL.BRAND}:
-            </span>{" "}
-            {brand}
+            <span className="font-medium">{t("brand")}:</span> {brand}
           </span>
         )}
         {category && (
           <span>
-            <span className="font-medium">
-              {UI_LABELS.PRODUCT_DETAIL.CATEGORY}:
-            </span>{" "}
+            <span className="font-medium">{t("category")}:</span>{" "}
             {subcategory ? `${category} › ${subcategory}` : category}
           </span>
         )}
         {sellerName && (
           <span>
-            <span className="font-medium">
-              {UI_LABELS.PRODUCT_DETAIL.SELLER}:
-            </span>{" "}
-            {sellerName}
+            <span className="font-medium">{t("seller")}:</span> {sellerName}
           </span>
         )}
       </div>
@@ -158,9 +145,7 @@ export function ProductInfo({
         <div className="pt-1">
           {isOutOfStock ? (
             <div className="w-full py-3 px-6 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-xl text-center font-medium text-sm cursor-not-allowed">
-              {status === "sold"
-                ? UI_LABELS.PRODUCTS_PAGE.SOLD
-                : UI_LABELS.PRODUCTS_PAGE.OUT_OF_STOCK}
+              {status === "sold" ? t("sold") : t("outOfStock")}
             </div>
           ) : isAuction ? (
             <button
@@ -168,7 +153,7 @@ export function ProductInfo({
               disabled={isAddingToCart}
               className="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white rounded-xl font-semibold transition-colors"
             >
-              {UI_LABELS.PRODUCT_DETAIL.PLACE_BID}
+              {t("placeBid")}
             </button>
           ) : (
             <button
@@ -176,9 +161,7 @@ export function ProductInfo({
               disabled={isAddingToCart}
               className="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white rounded-xl font-semibold transition-colors"
             >
-              {isAddingToCart
-                ? UI_LABELS.LOADING.DEFAULT
-                : UI_LABELS.PRODUCT_DETAIL.ADD_TO_CART}
+              {isAddingToCart ? tLoading("default") : t("addToCart")}
             </button>
           )}
         </div>
@@ -188,7 +171,7 @@ export function ProductInfo({
       {description && (
         <div>
           <h2 className={`font-semibold mb-2 ${themed.textPrimary}`}>
-            {UI_LABELS.PRODUCT_DETAIL.DESCRIPTION}
+            {t("description")}
           </h2>
           <p className={`text-sm leading-relaxed ${themed.textSecondary}`}>
             {description}
@@ -200,7 +183,7 @@ export function ProductInfo({
       {features && features.length > 0 && (
         <div>
           <h2 className={`font-semibold mb-2 ${themed.textPrimary}`}>
-            {UI_LABELS.PRODUCT_DETAIL.FEATURES}
+            {t("features")}
           </h2>
           <ul className="list-disc list-inside space-y-1">
             {features.map((f, idx) => (
@@ -216,7 +199,7 @@ export function ProductInfo({
       {specifications && specifications.length > 0 && (
         <div>
           <h2 className={`font-semibold mb-2 ${themed.textPrimary}`}>
-            {UI_LABELS.PRODUCT_DETAIL.SPECIFICATIONS}
+            {t("specifications")}
           </h2>
           <div
             className={`rounded-xl border ${themed.border} divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden`}
@@ -244,7 +227,7 @@ export function ProductInfo({
           {shippingInfo && (
             <div>
               <h2 className={`font-semibold mb-1 ${themed.textPrimary}`}>
-                {UI_LABELS.PRODUCT_DETAIL.SHIPPING}
+                {t("shipping")}
               </h2>
               <p className={`text-sm ${themed.textSecondary}`}>
                 {shippingInfo}
@@ -254,7 +237,7 @@ export function ProductInfo({
           {returnPolicy && (
             <div>
               <h2 className={`font-semibold mb-1 ${themed.textPrimary}`}>
-                {UI_LABELS.PRODUCT_DETAIL.RETURN_POLICY}
+                {t("returnPolicy")}
               </h2>
               <p className={`text-sm ${themed.textSecondary}`}>
                 {returnPolicy}
