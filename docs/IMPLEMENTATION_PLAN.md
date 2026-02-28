@@ -1077,7 +1077,7 @@ firebase deploy --only database:rules
 
 ---
 
-### TASK-37 · Migrate `EmailVerificationCard` + `PhoneVerificationCard` from hardcoded strings to `useTranslations` · P0
+### ✅ TASK-37 · Migrate `EmailVerificationCard` + `PhoneVerificationCard` from hardcoded strings to `useTranslations` · P0 · DONE 2026-02-28
 
 **Rule violated:** Rule 2 (no hardcoded strings in JSX) + unused `UI_LABELS` import
 **Files:**

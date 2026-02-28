@@ -1459,5 +1459,20 @@
     "changePhoto": "Change Photo",
     "chooseImage": "Choose Image",
     "removePhoto": "Remove Photo"
+  },
+  "userSettings": {
+    "emailVerificationTitle": "Email Verification",
+    "phoneVerificationTitle": "Phone Verification",
+    "verified": "Verified",
+    "notVerified": "Not Verified",
+    "verifiedMessage": "Your email address has been verified.",
+    "notVerifiedMessage": "Please verify your email address to access all features.",
+    "sending": "Sending...",
+    "resendVerification": "Resend Verification Email",
+    "phoneNotAdded": "Add a phone number to enable SMS notifications and two-factor authentication.",
+    "phoneVerifiedMessage": "Your phone number has been verified.",
+    "phoneNotVerifiedMessage": "Verify your phone number to enable SMS notifications.",
+    "verifying": "Verifying...",
+    "verify": "Verify Phone Number"
   }
 }

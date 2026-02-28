@@ -14,6 +14,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### TASK-37 — Migrate `EmailVerificationCard` + `PhoneVerificationCard` to `useTranslations` (2026-02-28)
+
+#### Changed
+
+- **`src/components/user/settings/EmailVerificationCard.tsx`** — Removed unused `UI_LABELS` import; added `useTranslations('userSettings')`; replaced all 7 hardcoded English strings with `t('key')` calls (`emailVerificationTitle`, `verified`, `notVerified`, `verifiedMessage`, `notVerifiedMessage`, `sending`, `resendVerification`).
+- **`src/components/user/settings/PhoneVerificationCard.tsx`** — Removed unused `UI_LABELS` import; added `useTranslations('userSettings')`; replaced all 7 hardcoded English strings (`phoneVerificationTitle`, `verified`, `notVerified`, `phoneNotAdded`, `phoneVerifiedMessage`, `phoneNotVerifiedMessage`, `verifying`, `verify`).
+- **`messages/en.json`** — Added new `userSettings` namespace with 13 keys: `emailVerificationTitle`, `phoneVerificationTitle`, `verified`, `notVerified`, `verifiedMessage`, `notVerifiedMessage`, `sending`, `resendVerification`, `phoneNotAdded`, `phoneVerifiedMessage`, `phoneNotVerifiedMessage`, `verifying`, `verify`.
+- **`messages/hi.json`** — Same 13 keys added with Hindi translations.
+
+#### Updated
+
+- **`src/components/user/settings/__tests__/EmailVerificationCard.test.tsx`** — Added `next-intl` mock + 7 new tests covering translation key rendering, badge variants, loading states.
+- **`src/components/user/settings/__tests__/PhoneVerificationCard.test.tsx`** — Added `next-intl` mock + 8 new tests covering phone absent/present states, verification badges, loading labels.
+
+---
+
 ### TASK-36 — Migrate `SellerQuickActions` + `SellerRecentListings` to `useTranslations` (2026-02-28)
 
 #### Changed

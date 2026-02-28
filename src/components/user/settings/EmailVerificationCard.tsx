@@ -1,7 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Card, Button, Badge, Text } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * EmailVerificationCard Component
@@ -35,6 +36,7 @@ export function EmailVerificationCard({
   isLoading = false,
   className = "",
 }: EmailVerificationCardProps) {
+  const t = useTranslations("userSettings");
   const { spacing, typography } = THEME_CONSTANTS;
 
   const cardVariant = isVerified ? "gradient-teal" : "gradient-amber";
@@ -48,20 +50,20 @@ export function EmailVerificationCard({
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className={typography.cardTitle}>Email Verification</h3>
+            <h3 className={typography.cardTitle}>
+              {t("emailVerificationTitle")}
+            </h3>
             <Text className={`${typography.cardBody} mt-1`}>{email}</Text>
           </div>
 
           <Badge variant={isVerified ? "success" : "warning"}>
-            {isVerified ? "Verified" : "Not Verified"}
+            {isVerified ? t("verified") : t("notVerified")}
           </Badge>
         </div>
 
         {/* Status Message */}
         <Text className={typography.cardBody}>
-          {isVerified
-            ? "Your email address has been verified."
-            : "Please verify your email address to access all features."}
+          {isVerified ? t("verifiedMessage") : t("notVerifiedMessage")}
         </Text>
 
         {/* Resend Button */}
@@ -73,7 +75,7 @@ export function EmailVerificationCard({
             disabled={isLoading}
             className="self-start"
           >
-            {isLoading ? "Sending..." : "Resend Verification Email"}
+            {isLoading ? t("sending") : t("resendVerification")}
           </Button>
         )}
       </div>

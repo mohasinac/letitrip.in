@@ -1,7 +1,8 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Card, Button, Badge, Text } from "@/components";
-import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 
 /**
  * PhoneVerificationCard Component
@@ -35,6 +36,7 @@ export function PhoneVerificationCard({
   isLoading = false,
   className = "",
 }: PhoneVerificationCardProps) {
+  const t = useTranslations("userSettings");
   const { spacing, typography } = THEME_CONSTANTS;
 
   const cardVariant = isVerified
@@ -53,7 +55,9 @@ export function PhoneVerificationCard({
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className={typography.cardTitle}>Phone Verification</h3>
+            <h3 className={typography.cardTitle}>
+              {t("phoneVerificationTitle")}
+            </h3>
             {hasPhone && (
               <Text className={`${typography.cardBody} mt-1`}>{phone}</Text>
             )}
@@ -61,7 +65,7 @@ export function PhoneVerificationCard({
 
           {hasPhone && (
             <Badge variant={isVerified ? "success" : "warning"}>
-              {isVerified ? "Verified" : "Not Verified"}
+              {isVerified ? t("verified") : t("notVerified")}
             </Badge>
           )}
         </div>
@@ -69,10 +73,10 @@ export function PhoneVerificationCard({
         {/* Status Message */}
         <Text className={typography.cardBody}>
           {!hasPhone
-            ? "Add a phone number to enable SMS notifications and two-factor authentication."
+            ? t("phoneNotAdded")
             : isVerified
-              ? "Your phone number has been verified."
-              : "Verify your phone number to enable SMS notifications."}
+              ? t("phoneVerifiedMessage")
+              : t("phoneNotVerifiedMessage")}
         </Text>
 
         {/* Verify Button */}
@@ -84,7 +88,7 @@ export function PhoneVerificationCard({
             disabled={isLoading}
             className="self-start"
           >
-            {isLoading ? "Verifying..." : "Verify Phone Number"}
+            {isLoading ? t("verifying") : t("verify")}
           </Button>
         )}
       </div>
