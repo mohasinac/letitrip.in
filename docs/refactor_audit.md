@@ -1411,31 +1411,31 @@ export default function XxxPage() {
 Extract to `src/features/admin/components/DemoSeedView.tsx`.  
 Inside `DemoSeedView`, replace the direct `fetch('/api/demo/seed', ...)` call with `demoService.seed(payload)` (created in task 07).
 
-- [ ] Create `DemoSeedView.tsx`; gut page; export from `src/features/admin/index.ts`; create `__tests__/DemoSeedView.test.tsx`
+- [x] Create `DemoSeedView.tsx`; gut page; export from `src/features/admin/index.ts`; create `__tests__/DemoSeedView.test.tsx`
 
 ### 81 � `src/app/[locale]/user/settings/page.tsx` � 211 lines
 
 Extract to `src/features/user/components/UserSettingsView.tsx`
 
-- [ ] Create view; gut page; export from `src/features/user/index.ts`; create `__tests__`
+- [x] Create view; gut page; export from `src/features/user/index.ts`; create `__tests__`
 
 ### 82 � `src/app/[locale]/blog/[slug]/page.tsx` � 210 lines
 
 Extract to `src/features/blog/components/BlogPostView.tsx`
 
-- [ ] Create view; gut page; export from `src/features/blog/index.ts`; create `__tests__`
+- [x] Create view; gut page; export from `src/features/blog/index.ts`; create `__tests__`
 
 ### 83 � `src/app/[locale]/seller/products/[id]/edit/page.tsx` � 202 lines
 
 Extract to `src/features/seller/components/SellerEditProductView.tsx`
 
-- [ ] Create view; gut page; export from `src/features/seller/index.ts`; create `__tests__`
+- [x] Create view; gut page; export from `src/features/seller/index.ts`; create `__tests__`
 
 ### 84 � `src/app/[locale]/user/addresses/page.tsx` � 189 lines
 
 Extract to `src/features/user/components/UserAddressesView.tsx`
 
-- [ ] Create view; gut page; export from `src/features/user/index.ts`; create `__tests__`
+- [x] Create view; gut page; export from `src/features/user/index.ts`; create `__tests__`
 
 ### 85 � `src/app/[locale]/products/[slug]/page.tsx` � 179 lines
 
