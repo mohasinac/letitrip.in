@@ -24,7 +24,7 @@
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useAddressSelector, useMessage } from "@/hooks";
-import { SideDrawer, Button, AddressForm } from "@/components";
+import { SideDrawer, Button, AddressForm, Label } from "@/components";
 import type { AddressFormData } from "@/hooks";
 import {
   UI_PLACEHOLDERS,
@@ -33,7 +33,7 @@ import {
   THEME_CONSTANTS,
 } from "@/constants";
 
-const { typography, input } = THEME_CONSTANTS;
+const { input } = THEME_CONSTANTS;
 
 interface SavedAddress {
   id: string;
@@ -95,9 +95,7 @@ export function AddressSelectorCreate({
   return (
     <>
       <div>
-        {label && (
-          <label className={`block ${typography.label} mb-1`}>{label}</label>
-        )}
+        {label && <Label className="mb-1">{label}</Label>}
         <div className="flex gap-2 items-center">
           <select
             value={value}

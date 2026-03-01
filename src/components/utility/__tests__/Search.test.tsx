@@ -1,6 +1,18 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
+
+jest.mock("@/components", () => ({
+  ...jest.requireActual("@/components"),
+  Text: ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) => <p className={className}>{children}</p>,
+}));
+
 import { Search } from "@/components";
 
 describe("Search", () => {

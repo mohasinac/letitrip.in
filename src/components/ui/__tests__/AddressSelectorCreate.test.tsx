@@ -75,6 +75,13 @@ jest.mock("@/components", () => ({
       </button>
     </div>
   ),
+  Label: ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) => <label className={className}>{children}</label>,
 }));
 
 jest.mock("@/constants", () => ({

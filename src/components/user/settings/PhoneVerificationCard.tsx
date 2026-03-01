@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Card, Button, Badge, Text } from "@/components";
+import { Card, Button, Badge, Text, Heading } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 /**
@@ -55,9 +55,7 @@ export function PhoneVerificationCard({
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className={typography.cardTitle}>
-              {t("phoneVerificationTitle")}
-            </h3>
+            <Heading level={3}>{t("phoneVerificationTitle")}</Heading>
             {hasPhone && (
               <Text className={`${typography.cardBody} mt-1`}>{phone}</Text>
             )}

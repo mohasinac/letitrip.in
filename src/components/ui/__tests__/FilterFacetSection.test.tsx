@@ -46,6 +46,17 @@ jest.mock("@/utils", () => ({
   formatNumber: (n: number) => n.toString(),
 }));
 
+// Mock @/components to provide Text used for noResults message
+jest.mock("@/components", () => ({
+  Text: ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) => <p className={className}>{children}</p>,
+}));
+
 import { FilterFacetSection } from "../FilterFacetSection";
 
 const makeOptions = (count: number) =>

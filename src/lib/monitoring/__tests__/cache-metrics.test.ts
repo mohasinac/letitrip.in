@@ -21,13 +21,12 @@ jest.mock("@/classes", () => ({
 jest.mock("../analytics", () => ({ trackEvent: jest.fn() }));
 
 const mockFormatNumber = jest.fn((v: number) => `${v.toFixed(2)}`);
-const mockFormatDateTime = jest.fn(() => "1 Jan 2025, 12:00");
+const mockFormatDateTime = jest.fn((_v: unknown) => "1 Jan 2025, 12:00");
 const mockNowISO = jest.fn(() => "2025-01-01T12:00:00.000Z");
 const mockNowMs = jest.fn(() => 1_000_000);
 
 jest.mock("@/utils", () => ({
-  formatNumber: (...args: unknown[]) =>
-    mockFormatNumber(args[0] as number, ...args.slice(1)),
+  formatNumber: (num: number) => mockFormatNumber(num),
   formatDateTime: (v: unknown) => mockFormatDateTime(v),
   nowISO: () => mockNowISO(),
   nowMs: () => mockNowMs(),

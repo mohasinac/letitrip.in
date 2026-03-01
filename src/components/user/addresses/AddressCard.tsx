@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Badge, Button } from "@/components";
+import { Card, Badge, Button, Heading, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 
@@ -62,7 +62,7 @@ export function AddressCard({
         {/* Header: Label + Default Badge */}
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-lg font-semibold">{address.label}</h3>
+            <Heading level={3}>{address.label}</Heading>
             {address.isDefault && (
               <Badge variant="info" className="mt-1">
                 Default
@@ -92,19 +92,27 @@ export function AddressCard({
         </div>
 
         {/* Address Details */}
-        <div
-          className={`${themed.textSecondary} text-sm ${spacing.stackSmall}`}
-        >
-          <p className="font-medium text-gray-900 dark:text-gray-100">
+        <div className={spacing.stackSmall}>
+          <Text size="sm" weight="medium">
             {address.fullName}
-          </p>
-          <p>{address.phone}</p>
-          <p>{address.addressLine1}</p>
-          {address.addressLine2 && <p>{address.addressLine2}</p>}
-          <p>
+          </Text>
+          <Text size="sm" variant="secondary">
+            {address.phone}
+          </Text>
+          <Text size="sm" variant="secondary">
+            {address.addressLine1}
+          </Text>
+          {address.addressLine2 && (
+            <Text size="sm" variant="secondary">
+              {address.addressLine2}
+            </Text>
+          )}
+          <Text size="sm" variant="secondary">
             {address.city}, {address.state} {address.postalCode}
-          </p>
-          <p>{address.country}</p>
+          </Text>
+          <Text size="sm" variant="secondary">
+            {address.country}
+          </Text>
         </div>
 
         {/* Set Default Button */}

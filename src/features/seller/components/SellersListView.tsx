@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { getTranslations } from "next-intl/server";
+import { Heading, Text } from "@/components";
 
-const { themed, typography, spacing, button } = THEME_CONSTANTS;
+const { themed, spacing, button } = THEME_CONSTANTS;
 
 export async function SellersListView() {
   const t = await getTranslations("sellersPage");
@@ -31,10 +32,12 @@ export async function SellersListView() {
       {/* Hero */}
       <section className="bg-gradient-to-br from-emerald-600 via-green-600 to-teal-700 text-white py-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">{t("title")}</h1>
-          <p className="text-xl text-green-100 mb-10 max-w-2xl mx-auto">
+          <Heading level={1} className="text-4xl md:text-6xl font-bold mb-6">
+            {t("title")}
+          </Heading>
+          <Text className="text-xl text-green-100 mb-10 max-w-2xl mx-auto">
             {t("subtitle")}
-          </p>
+          </Text>
           <div className="flex justify-center gap-4 flex-wrap">
             <Link href={ROUTES.AUTH.REGISTER} className={button.ctaPrimary}>
               {t("heroCta")}
@@ -59,8 +62,8 @@ export async function SellersListView() {
             },
           ].map(({ label, value }) => (
             <div key={label} className="text-center">
-              <p className="text-2xl font-bold">{value}</p>
-              <p className="text-emerald-200 text-sm">{label}</p>
+              <Text className="text-2xl font-bold">{value}</Text>
+              <Text className="text-emerald-200 text-sm">{label}</Text>
             </div>
           ))}
         </div>
@@ -69,11 +72,9 @@ export async function SellersListView() {
       <div className="max-w-5xl mx-auto px-4 py-20 space-y-24">
         {/* Benefits */}
         <section>
-          <h2
-            className={`${typography.h2} ${themed.textPrimary} text-center mb-12`}
-          >
+          <Heading level={2} className="text-center mb-12">
             {t("whyTitle")}
-          </h2>
+          </Heading>
           <div className="grid md:grid-cols-2 gap-6">
             {BENEFITS.map(({ title, text, icon }) => (
               <div
@@ -82,14 +83,16 @@ export async function SellersListView() {
               >
                 <div className="text-4xl shrink-0">{icon}</div>
                 <div>
-                  <h3 className={`${typography.h4} ${themed.textPrimary} mb-2`}>
+                  <Heading level={3} className="mb-2">
                     {title}
-                  </h3>
-                  <p
-                    className={`text-sm ${themed.textSecondary} leading-relaxed`}
+                  </Heading>
+                  <Text
+                    size="sm"
+                    variant="secondary"
+                    className="leading-relaxed"
                   >
                     {text}
-                  </p>
+                  </Text>
                 </div>
               </div>
             ))}
@@ -98,21 +101,21 @@ export async function SellersListView() {
 
         {/* How it works */}
         <section id="how-it-works">
-          <h2
-            className={`${typography.h2} ${themed.textPrimary} text-center mb-12`}
-          >
+          <Heading level={2} className="text-center mb-12">
             {t("howTitle")}
-          </h2>
+          </Heading>
           <div className="grid md:grid-cols-3 gap-8">
             {STEPS.map(({ step, title, text }) => (
               <div key={step} className="text-center">
                 <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-2xl font-bold flex items-center justify-center mx-auto mb-4">
                   {step}
                 </div>
-                <h3 className={`${typography.h4} ${themed.textPrimary} mb-2`}>
+                <Heading level={3} className="mb-2">
                   {title}
-                </h3>
-                <p className={`text-sm ${themed.textSecondary}`}>{text}</p>
+                </Heading>
+                <Text size="sm" variant="secondary">
+                  {text}
+                </Text>
               </div>
             ))}
           </div>
@@ -120,21 +123,21 @@ export async function SellersListView() {
 
         {/* FAQs */}
         <section>
-          <h2
-            className={`${typography.h2} ${themed.textPrimary} text-center mb-10`}
-          >
+          <Heading level={2} className="text-center mb-10">
             {t("faqTitle")}
-          </h2>
+          </Heading>
           <div className={`${spacing.stack} max-w-2xl mx-auto`}>
             {FAQS.map(({ q, a }) => (
               <div
                 key={q}
                 className={`${themed.bgSecondary} border ${themed.border} rounded-xl p-6`}
               >
-                <h3 className={`font-semibold ${themed.textPrimary} mb-2`}>
+                <Heading level={3} className="font-semibold mb-2">
                   {q}
-                </h3>
-                <p className={`text-sm ${themed.textSecondary}`}>{a}</p>
+                </Heading>
+                <Text size="sm" variant="secondary">
+                  {a}
+                </Text>
               </div>
             ))}
           </div>
@@ -142,19 +145,21 @@ export async function SellersListView() {
 
         {/* Final CTA */}
         <section className="text-center bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-12 text-white">
-          <h2 className="text-3xl font-bold mb-4">{t("ctaTitle")}</h2>
+          <Heading level={2} className="text-3xl font-bold mb-4">
+            {t("ctaTitle")}
+          </Heading>
           <Link
             href={ROUTES.AUTH.REGISTER}
             className={`inline-block mt-4 ${button.ctaPrimary}`}
           >
             {t("ctaButton")}
           </Link>
-          <p className="mt-4 text-emerald-100 text-sm">
+          <Text className="mt-4 text-emerald-100 text-sm">
             {t("signInPrompt")}{" "}
             <Link href={ROUTES.AUTH.LOGIN} className="underline font-medium">
               {t("signInLink")}
             </Link>
-          </p>
+          </Text>
         </section>
       </div>
     </div>

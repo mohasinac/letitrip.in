@@ -78,4 +78,11 @@ describe("PhoneVerificationCard", () => {
     );
     expect(screen.getByText("verifying")).toBeInTheDocument();
   });
+
+  it("renders phoneVerificationTitle inside an h3 element (Heading level={3})", () => {
+    const { container } = render(<PhoneVerificationCard isVerified={false} />);
+    const heading = container.querySelector("h3");
+    expect(heading).toBeInTheDocument();
+    expect(heading).toHaveTextContent("phoneVerificationTitle");
+  });
 });

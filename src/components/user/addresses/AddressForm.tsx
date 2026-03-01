@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FormField, Button } from "@/components";
+import { FormField, Button, Checkbox } from "@/components";
 import { useTranslations } from "next-intl";
 import { UI_PLACEHOLDERS, THEME_CONSTANTS } from "@/constants";
 
@@ -56,6 +56,7 @@ export function AddressForm({
 }: AddressFormProps) {
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
+  const tAddresses = useTranslations("addresses");
   const effectiveLabel = submitLabel ?? tActions("save");
   const [formData, setFormData] = useState<AddressFormData>({
     label: initialData?.label || "",
@@ -185,15 +186,11 @@ export function AddressForm({
       />
 
       {/* Default Address Checkbox */}
-      <label className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          checked={formData.isDefault}
-          onChange={(e) => handleChange("isDefault", e.target.checked)}
-          className="rounded border-gray-300 dark:border-gray-600"
-        />
-        <span className="text-sm">Set as default address</span>
-      </label>
+      <Checkbox
+        checked={formData.isDefault}
+        onChange={(e) => handleChange("isDefault", e.target.checked)}
+        label={tAddresses("setDefault")}
+      />
 
       {/* Form Actions */}
       <div className="flex items-center justify-end gap-3 pt-4">

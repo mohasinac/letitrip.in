@@ -12,4 +12,15 @@ describe("ProfileStatsGrid", () => {
     expect(screen.getByText("Wishlist")).toBeInTheDocument();
     expect(screen.getByText("Addresses")).toBeInTheDocument();
   });
+
+  it("renders stat values via Text component (renders as p)", () => {
+    render(
+      <ProfileStatsGrid stats={{ orders: 5, wishlist: 0, addresses: 2 }} />,
+    );
+
+    // Text renders numeric values as paragraph elements
+    expect(screen.getByText("5")).toBeInTheDocument();
+    expect(screen.getByText("0")).toBeInTheDocument();
+    expect(screen.getByText("2")).toBeInTheDocument();
+  });
 });

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Text } from "@/components";
 import Button from "../ui/Button";
 
 /**
@@ -139,9 +140,9 @@ export default function Search({ isOpen, onClose, onSearch }: SearchProps) {
             <div
               className={`mt-4 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.border} rounded-xl p-4 max-h-96 overflow-y-auto`}
             >
-              <p className={`${THEME_CONSTANTS.themed.textSecondary} text-sm`}>
+              <Text variant="secondary" size="sm">
                 Searching for "{query}"...
-              </p>
+              </Text>
               {/* Add your search results here */}
             </div>
           )}

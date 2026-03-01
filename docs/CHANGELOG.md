@@ -13,6 +13,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-03-03] — Refactor Audit WAVE 5 Complete (tasks 94–105)
+
+### Fixed
+
+- **Typography violations — Rules 7, 31** (tasks 94–105) — eliminated all 12 remaining raw-tag violations found in audit re-run #4:
+  - `AddressCard` — `h3` → `Heading level={3}`; 6 `p` → `Text` (size/variant props) (task 94)
+  - `SellersListView` — `h1`/`h2`×4/`h3`×3 → `Heading`; 6 `p` → `Text` (task 95)
+  - `OrderTrackingView` — `h1`, `h2` → `Heading`; `p` → `Text variant="secondary"` (task 96)
+  - `NotificationItem` — 3 `p` → `Text` (weight/size/variant); fixed barrel import (`@/components/ui` → `@/components`) (task 97)
+  - `ProductDetailView` — `h1` → `Heading level={1}`; `p` → `Text variant="secondary"` (task 98)
+  - `AddressForm` — raw `label + input[checkbox]` block → `Checkbox` from `@/components` (task 99)
+  - `ProfileStatsGrid` — `p` → `Text className="text-3xl font-bold"` (task 100)
+  - `EmailVerificationCard` — `h3` → `Heading level={3}` (task 101)
+  - `PhoneVerificationCard` — `h3` → `Heading level={3}` (task 102)
+  - `AddressSelectorCreate` — `label` → `Label`; removed unused `typography` from `THEME_CONSTANTS` destructure (task 103)
+  - `Search` — `p` → `Text variant="secondary" size="sm"` (task 104)
+  - `FilterFacetSection` — `p` → `Text size="xs" variant="secondary"` (task 105)
+- **Tests updated** — all 12 source files have corresponding test additions/updates.
+- **TypeScript** — fixed `Text size="3xl"` (invalid enum value) → `className="text-3xl"`; fixed `import type React` → `import React` in test; added missing `OrderDocument`/`NotificationDocument` required fields in test fixtures.
+- **`docs/refactor_audit.md`** — all 12 subtask checkboxes marked `[x]`; WAVE 5 fully complete.
+
+---
+
+## [2026-03-02] — Refactor Audit Re-run #4
+
+### Fixed
+
+- **TypeScript errors** — `SurveyConfigForm.test.tsx`: added missing `order` field to `SurveyFormField` mock object; `cache-metrics.test.ts`: corrected `mockFormatDateTime` signature (accept 1 arg) and simplified `formatNumber` mock to avoid spreading `unknown[]`.
+- **Wave 4 page decompositions** (tasks 80–89) — confirmed all done: every page is under 15 lines and delegates to its view component (`DemoSeedView`, `UserSettingsView`, `BlogPostView`, `SellerEditProductView`, `UserAddressesView`, `ProductDetailView`, `SellersListView`, `AboutView`, `AdminMediaView`, `CartView`).
+
+### Added
+
+- **`docs/refactor_audit.md`** — audit re-run #4 (2026-03-02): marked tasks 80–93 as done; added Wave 5 (tasks 94–105) with 12 newly discovered Rules 7/8/31 typography violations in `AddressCard`, `SellersListView`, `OrderTrackingView`, `NotificationItem`, `ProductDetailView`, `AddressForm`, `ProfileStatsGrid`, `EmailVerificationCard`, `PhoneVerificationCard`, `AddressSelectorCreate`, `Search`, and `FilterFacetSection`; updated Summary table to 105 total tasks.
+
+---
+
 ### Refactor Audit Wave 4 — Page Decompositions (Tasks 90–93) (2026-03-02)
 
 #### Refactored

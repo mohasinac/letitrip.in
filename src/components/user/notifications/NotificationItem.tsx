@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "@/components/ui";
+import { Badge, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatRelativeTime } from "@/utils";
@@ -55,19 +55,19 @@ export function NotificationItem({
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <p className={`font-semibold text-sm ${themed.textPrimary}`}>
+              <Text weight="semibold" size="sm">
                 {n.title}
-              </p>
+              </Text>
               {!n.isRead && (
                 <Badge variant="info">{tNotifications("newBadge")}</Badge>
               )}
             </div>
-            <p className={`text-sm mt-0.5 ${themed.textSecondary}`}>
+            <Text size="sm" variant="secondary" className="mt-0.5">
               {n.message}
-            </p>
-            <p className={`text-xs mt-1.5 ${themed.textSecondary}`}>
+            </Text>
+            <Text size="xs" variant="secondary" className="mt-1.5">
               {formatRelativeTime(n.createdAt)}
-            </p>
+            </Text>
           </div>
 
           {/* Actions */}

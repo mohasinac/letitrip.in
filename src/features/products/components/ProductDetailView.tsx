@@ -7,6 +7,8 @@ import {
   ProductReviews,
   AddToCartButton,
   RelatedProducts,
+  Heading,
+  Text,
 } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -63,12 +65,12 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
       >
         <div className="text-center py-16 px-4">
           <span className="text-6xl mb-4 block">🔍</span>
-          <h1 className={`text-2xl font-bold mb-2 ${themed.textPrimary}`}>
+          <Heading level={1} className="text-2xl font-bold mb-2">
             {t("productNotFound")}
-          </h1>
-          <p className={`text-sm mb-6 ${themed.textSecondary}`}>
+          </Heading>
+          <Text variant="secondary" size="sm" className="mb-6">
             {t("productNotFoundSubtitle")}
-          </p>
+          </Text>
           <Link
             href={ROUTES.PUBLIC.PRODUCTS}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors text-sm"

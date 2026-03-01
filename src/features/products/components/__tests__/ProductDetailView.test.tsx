@@ -16,6 +16,14 @@ jest.mock("@/components", () => ({
   ProductReviews: () => <div data-testid="reviews" />,
   AddToCartButton: () => <button data-testid="add-to-cart" />,
   RelatedProducts: () => <div data-testid="related" />,
+  Heading: ({
+    children,
+    level,
+  }: {
+    children: React.ReactNode;
+    level?: number;
+  }) => React.createElement(`h${level ?? 2}`, {}, children),
+  Text: ({ children }: { children: React.ReactNode }) => <p>{children}</p>,
 }));
 
 jest.mock("@/constants", () => ({

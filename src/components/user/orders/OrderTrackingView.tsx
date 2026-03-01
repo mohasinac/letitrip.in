@@ -10,12 +10,12 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Card, Button } from "@/components";
+import { Card, Button, Heading, Text } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatDate, formatRelativeTime } from "@/utils";
 import type { OrderDocument, OrderStatus } from "@/db/schema";
 
-const { themed, typography, spacing } = THEME_CONSTANTS;
+const { themed, spacing } = THEME_CONSTANTS;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -253,14 +253,12 @@ export function OrderTrackingView({ order, orderId }: OrderTrackingViewProps) {
 
       {/* Header */}
       <div>
-        <h1 className={`${typography.h2} ${themed.textPrimary}`}>
-          {tOrders("trackTitle")}
-        </h1>
-        <p className={`mt-1 text-sm ${themed.textSecondary}`}>
+        <Heading level={1}>{tOrders("trackTitle")}</Heading>
+        <Text size="sm" variant="secondary" className="mt-1">
           {tOrders("orderNumber")} #{order.id.slice(0, 8).toUpperCase()}
           {" · "}
           {tOrders("placedOn")} {formatDate(order.orderDate)}
-        </p>
+        </Text>
       </div>
 
       {/* Tracking number */}
@@ -290,9 +288,9 @@ export function OrderTrackingView({ order, orderId }: OrderTrackingViewProps) {
 
       {/* Timeline */}
       <Card className={THEME_CONSTANTS.spacing.cardPadding}>
-        <h2 className={`${typography.h4} ${themed.textPrimary} mb-6`}>
+        <Heading level={2} className="mb-6">
           {tOrders("trackSubtitle")}
-        </h2>
+        </Heading>
         <div className="relative">
           {steps.map((step, idx) => (
             <div key={step.key}>

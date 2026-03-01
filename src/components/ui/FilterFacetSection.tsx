@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { formatNumber } from "@/utils";
+import { Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface FacetOption {
@@ -157,9 +158,9 @@ export function FilterFacetSection({
 
           {/* Options */}
           {visibleOptions.length === 0 ? (
-            <p className={`text-xs ${themed.textSecondary} py-1`}>
+            <Text size="xs" variant="secondary" className="py-1">
               {tTable("noResults")}
-            </p>
+            </Text>
           ) : (
             visibleOptions.map((opt) => {
               const isChecked = selected.includes(opt.value);

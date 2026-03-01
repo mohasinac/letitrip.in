@@ -1,7 +1,7 @@
-# Implementation Plan � Rules Compliance Refactor
+﻿# Implementation Plan ï¿½ Rules Compliance Refactor
 
-> **Scope**: `src/` � 843 source files  
-> **Last audit**: 2026-03-01 (re-run #3)  
+> **Scope**: `src/` ï¿½ 843 source files  
+> **Last audit**: 2026-03-02 (re-run #4)  
 > **Scan strategy**: Every file appears exactly once. Open it, fix every violation listed, close it. Do not revisit.  
 > **Policy**: No backward-compat shims. No `@deprecated` stubs. No dual implementations. Delete old code in the same commit as new code.
 
@@ -9,106 +9,120 @@
 
 ## Scan Order Overview
 
-| #                                                                                                    | File                                                  | Rules                                                                       | Violations                                                         |
-| ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| **WAVE 0 � Prerequisites** (nothing else can proceed without these)                                  |                                                       |                                                                             |
-| ~~01~~                                                                                               | ~~`src/utils/formatters/date.formatter.ts`~~          | 5                                                                           | ? DONE � Added `nowMs`, `isSameMonth`, `currentYear`, `nowISO`     |
-| ~~02~~                                                                                               | ~~`src/utils/index.ts`~~                              | 5                                                                           | ? DONE � Already barrel-exported via formatters                    |
-| ~~03~~                                                                                               | ~~`src/utils/formatters/number.formatter.ts`~~        | 5                                                                           | ? DONE � `formatNumber` extended with `decimals` option            |
-| ~~04~~                                                                                               | ~~`src/constants/api-endpoints.ts`~~                  | 19,20                                                                       | ? DONE � Added `REALTIME.TOKEN` (DEMO.SEED already existed)        |
-| ~~05~~                                                                                               | ~~`src/constants/messages.ts`~~                       | 13                                                                          | ? DONE � Added `AUTH.INVALID_SIGNATURE`, `VALIDATION.INVALID_JSON` |
-| ~~06~~                                                                                               | ~~`src/constants/index.ts`~~                          | 13                                                                          | ? DONE � `ERROR_MESSAGES` already exported                         |
-| ~~07~~                                                                                               | ~~`src/services/demo.service.ts`~~                    | 20,21                                                                       | ? DONE � Created service                                           |
-| ~~08~~                                                                                               | ~~`src/services/realtime-token.service.ts`~~          | 11,21                                                                       | ? DONE � Created service                                           |
-| ~~09~~                                                                                               | ~~`src/services/index.ts`~~                           | 20,21                                                                       | ? DONE � Exported both new services                                |
-| ~~10~~                                                                                               | ~~`src/components/admin/SessionTableColumns.ts`~~     | 8,32                                                                        | ? DONE � Created `SessionTableColumns.tsx`                         |
-| ~~11~~                                                                                               | ~~`src/components/seller/PayoutTableColumns.ts`~~     | 8,32                                                                        | ? DONE � Created `PayoutTableColumns.tsx`                          |
-| **WAVE 1 � Tier 1 Primitives** (used everywhere � fix before any feature code)                       |                                                       |                                                                             |
-| ~~12~~                                                                                               | ~~`src/components/ui/SideDrawer.tsx`~~                | 7,31                                                                        | ~~L263 h4?Heading � L266 p?Text~~ ? DONE                           |
-| ~~13~~                                                                                               | ~~`src/components/ui/FilterFacetSection.tsx`~~        | 5                                                                           | ~~L184 toLocaleString?formatNumber~~ ? DONE                        |
-| ~~14~~                                                                                               | ~~`src/components/ui/TablePagination.tsx`~~           | 5                                                                           | ~~L74 toLocaleString?formatNumber~~ ? DONE                         |
-| ~~15~~                                                                                               | ~~`src/components/ui/CategorySelectorCreate.tsx`~~    | 7,31                                                                        | ~~L126 label?Label~~ ? DONE                                        |
-| ~~16~~                                                                                               | ~~`src/components/ui/ImageGallery.tsx`~~              | 32                                                                          | ~~L277 overflow-x-auto?HorizontalScroller~~ ? DONE                 |
-| **WAVE 2 � Multi-violation files** (all violations in a file fixed in one pass, highest count first) |                                                       |                                                                             |
-| ~~17~~ `src/components/products/ProductReviews.tsx`                                                  | 5,7,31,32                                             | L91 h2 � L103 toFixed � L144,147,182,202,206,232 p�6 � L212 overflow-x-auto |
-| ~~18~~ `src/components/admin/AdminSessionsManager.tsx`                                               | 5,8,32                                                | L24,L279 new Date() � L167�295 raw table                                    |
-| ~~19~~ `src/features/events/components/EventFormDrawer.tsx`                                          | 7,31                                                  | L281,304,313,333 label�4 � L295,347 p�2                                     |
-| ~~20~~ `src/features/events/components/SurveyFieldBuilder.tsx`                                       | 7,31                                                  | L53,72,108,129 label�4 � L60 p                                              |
-| ~~21~~ `src/features/events/components/EventTypeConfig/PollConfigForm.tsx`                           | 7,31                                                  | L47,82,94,99 label�4                                                        |
-| ~~22~~ `src/features/events/components/EventParticipateView.tsx`                                     | 7,31                                                  | L76 h2 � L202 h1 � L142,166 label�2                                         |
-| ~~23~~ `src/features/admin/components/AdminReviewsView.tsx`                                          | 7,31                                                  | L227,247,267 label�3                                                        |
-| ~~24~~ `src/components/user/settings/AccountInfoCard.tsx`                                            | 7,31                                                  | L48 h3 � L53,56,61,64,69,72,77,80 p�8                                       |
-| ~~25~~ `src/components/seller/SellerStorefrontView.tsx`                                              | 5,7,31                                                | L87 h1 � L177,235 h2�2 � L129,244 toFixed�2                                 |
-| ~~26~~ `src/components/user/profile/PublicProfileView.tsx`                                           | 5,7,31                                                | L58 h1 � L124,230 h2�2 � L133,430 toFixed�2                                 |
-| ~~27~~ `src/features/admin/components/AdminAnalyticsView.tsx`                                        | 7,31                                                  | L165,218,248 h2�3 � L103,268 p�2                                            |
-| ~~28~~ `src/components/promotions/CouponCard.tsx`                                                    | 7,31                                                  | L45 h3 � L48,58,64,85 p�4                                                   |
-| ~~29~~ `src/features/categories/components/CategoryProductsView.tsx`                                 | 7,31                                                  | L126 h1 � L91,130,171 p�3                                                   |
-| ~~30~~ `src/features/events/components/FeedbackEventSection.tsx`                                     | 7,31                                                  | L37,38 p�2 � L59 label                                                      |
-| ~~31~~ `src/features/events/components/PollVotingSection.tsx`                                        | 7,31                                                  | L63,95 p�2 � L105 label                                                     |
-| ~~32~~ `src/lib/monitoring/cache-metrics.ts`                                                         | 5                                                     | L183,205 toFixed � L188,212 toLocaleString                                  |
-| ~~33~~ `src/components/seller/SellerPayoutHistoryTable.tsx`                                          | 7,8,31,32                                             | L59�61 h2 � L76�120 raw table                                               |
-| ~~34~~ `src/features/seller/components/SellerOrdersView.tsx`                                         | 7,31,32                                               | L113,172 p�2 � L124 overflow-x-auto                                         |
-| ~~35~~ `src/features/auth/components/LoginForm.tsx`                                                  | 7,31                                                  | L100 p � L158 label                                                         |
-| ~~36~~ `src/features/auth/components/RegisterForm.tsx`                                               | 7,31                                                  | L162 p � L259 label                                                         |
-| ~~37~~ `src/app/global-error.tsx`                                                                    | 7,31                                                  | L66 h1 � L71 p                                                              |
-| ~~38~~ `src/components/promotions/ProductSection.tsx`                                                | 7,31                                                  | L23 h2 � L24 p                                                              |
-| ~~39~~ `src/features/events/components/EventTypeConfig/SurveyConfigForm.tsx`                         | 7,31                                                  | L24,38 label�2                                                              |
-| **WAVE 3 � Single-violation files**                                                                  |                                                       |                                                                             |
-| ~~40~~ `src/features/search/components/SearchView.tsx`                                               | 7,31                                                  | L122 h1 � L125 p                                                            |
-| ~~41~~ `src/features/products/components/AuctionsView.tsx`                                           | 7,31                                                  | L91 h1 � L94 p                                                              |
-| ~~42~~ `src/features/products/components/ProductsView.tsx`                                           | 7,31                                                  | L123 h1 � L126 p                                                            |
-| ~~43~~ `src/components/seller/SellerTopProducts.tsx`                                                 | 7,31                                                  | L28�30 h2                                                                   |
-| ~~44~~ `src/components/seller/SellerPayoutRequestForm.tsx`                                           | 7,31                                                  | L75�77 h2                                                                   |
-| ~~45~~ `src/components/seller/SellerRevenueChart.tsx`                                                | 7,31                                                  | L54�56 h2                                                                   |
-| ~~46~~ `src/components/user/profile/ProfileHeader.tsx`                                               | 7,31                                                  | L62 h1                                                                      |
-| ~~47~~ `src/components/user/settings/ProfileInfoForm.tsx`                                            | 7,31                                                  | L86 h3                                                                      |
-| ~~48~~ `src/components/user/addresses/AddressForm.tsx`                                               | 7,31                                                  | L188 label                                                                  |
-| ~~49~~ `src/components/user/notifications/NotificationsBulkActions.tsx`                              | 7,31                                                  | L24 h1                                                                      |
-| ~~50~~ `src/features/seller/components/SellerStatCard.tsx`                                           | 7,31                                                  | L45 p                                                                       |
-| ~~51~~ `src/features/seller/components/SellerProductCard.tsx`                                        | 7,31                                                  | L42,46 p�2                                                                  |
-| ~~52~~ `src/features/events/components/SurveyEventSection.tsx`                                       | 7,31                                                  | L49 p                                                                       |
-| ~~53~~ `src/features/events/components/EventTypeConfig/FeedbackConfigForm.tsx`                       | 7,31                                                  | L25 label                                                                   |
-| ~~54~~ `src/components/admin/products/ProductTableColumns.tsx`                                       | 5                                                     | L69 toLocaleString?formatCurrency                                           |
-| ~~55~~ `src/components/admin/coupons/CouponTableColumns.tsx`                                         | 5                                                     | L88 toLocaleString?formatCurrency                                           |
-| ~~56~~ `src/components/admin/AdminStatsCards.tsx`                                                    | 5                                                     | L92 toLocaleString?formatNumber                                             |
-| ~~57~~ `src/components/homepage/TopCategoriesSection.tsx`                                            | 5                                                     | L148 toLocaleString?formatNumber                                            |
-| ~~58~~ `src/components/homepage/WhatsAppCommunitySection.tsx`                                        | 5                                                     | L86 toLocaleString?formatNumber                                             |
-| ~~59~~ `src/components/faq/FAQAccordion.tsx`                                                         | 5                                                     | L150 toLocaleString?formatNumber                                            |
-| ~~60~~ `src/components/admin/ImageUpload.tsx`                                                        | 5                                                     | L65 toFixed?formatNumber                                                    |
-| ~~61~~ `src/components/modals/ImageCropModal.tsx`                                                    | 5                                                     | L218,342,343 toFixed?Math.round                                             |
-| ~~62~~ `src/features/admin/components/AdminPayoutsView.tsx`                                          | 5                                                     | L61,68 new Date()?isSameMonth/nowMs                                         |
-| ~~63~~ `src/components/homepage/FeaturedAuctionsSection.tsx`                                         | 5                                                     | L165 new Date()?nowMs                                                       |
-| ~~64~~ `src/components/auctions/AuctionCard.tsx`                                                     | 5                                                     | L35 Date.now()?nowMs                                                        |
-| ~~65~~ `src/components/layout/Footer.tsx`                                                            | 5                                                     | L206 getFullYear()?currentYear                                              |
-| ~~66~~ `src/components/feedback/Toast.tsx`                                                           | 5                                                     | L72 Date.now()?nowMs                                                        |
-| ~~67~~ `src/components/ErrorBoundary.tsx`                                                            | 5                                                     | L115 toISOString()?nowISO                                                   |
-| ~~68~~ `src/lib/email.ts`                                                                            | 5                                                     | L350,397 toLocaleString?formatDateTime                                      |
-| ~~69~~ `src/features/user/components/UserOrdersView.tsx`                                             | 32                                                    | L94 overflow-x-auto?Tabs                                                    |
-| ~~70~~ `src/components/homepage/FAQSection.tsx`                                                      | 32                                                    | L58 overflow-x-auto?Tabs                                                    |
-| ~~71~~ `src/components/products/ProductImageGallery.tsx`                                             | 32                                                    | L48 overflow-x-auto?HorizontalScroller                                      |
-| ~~72~~ `src/components/homepage/HeroCarousel.tsx`                                                    | 32                                                    | L155 overflow-x-auto?HorizontalScroller                                     |
-| ~~73~~ `src/components/layout/BottomNavbar.tsx`                                                      | 32                                                    | L111 overflow-x-auto � remove or HorizontalScroller                         |
-| ~~74~~ `src/app/api/payment/webhook/route.ts`                                                        | 13                                                    | L48,56 raw error strings?error classes                                      |
-| ~~75~~ `src/app/api/auth/login/route.ts`                                                             | 12                                                    | L61 direct Firestore?userRepository                                         |
-| ~~76~~ `src/app/api/auth/register/route.ts`                                                          | 12                                                    | L76 direct Firestore?userRepository                                         |
-| ~~77~~ `src/app/api/auth/session/route.ts`                                                           | 12                                                    | L49 direct Firestore?sessionRepository                                      |
-| ~~78~~ `src/hooks/useRealtimeBids.ts`                                                                | 11                                                    | L17 wrong Firebase import?realtimeApp + custom token                        |
-| ~~79~~ `src/contexts/SessionContext.tsx`                                                             | 11                                                    | L25 Firebase type?AuthUser                                                  |
-| **WAVE 4 � Page decompositions** (largest first)                                                     |                                                       |                                                                             |
-| 80                                                                                                   | `src/app/[locale]/demo/seed/page.tsx`                 | 10,20                                                                       | 648 lines ? DemoSeedView (+ fixes Rule 20 fetch())                 |
-| 81                                                                                                   | `src/app/[locale]/user/settings/page.tsx`             | 10                                                                          | 211 lines ? UserSettingsView                                       |
-| 82                                                                                                   | `src/app/[locale]/blog/[slug]/page.tsx`               | 10                                                                          | 210 lines ? BlogPostView                                           |
-| 83                                                                                                   | `src/app/[locale]/seller/products/[id]/edit/page.tsx` | 10                                                                          | 202 lines ? SellerEditProductView                                  |
-| 84                                                                                                   | `src/app/[locale]/user/addresses/page.tsx`            | 10                                                                          | 189 lines ? UserAddressesView                                      |
-| 85                                                                                                   | `src/app/[locale]/products/[slug]/page.tsx`           | 10                                                                          | 179 lines ? ProductDetailView                                      |
-| 86                                                                                                   | `src/app/[locale]/sellers/page.tsx`                   | 10                                                                          | 179 lines ? SellersListView                                        |
-| 87                                                                                                   | `src/app/[locale]/about/page.tsx`                     | 10                                                                          | 177 lines ? AboutView                                              |
-| 88                                                                                                   | `src/app/[locale]/admin/media/page.tsx`               | 10                                                                          | 174 lines ? AdminMediaView                                         |
-| 89                                                                                                   | `src/app/[locale]/cart/page.tsx`                      | 10                                                                          | 164 lines ? CartView                                               |
-| ~~90~~                                                                                               | `src/app/[locale]/admin/site/page.tsx`                | 10                                                                          | 162 lines ? AdminSiteView                                          |
-| ~~91~~                                                                                               | `src/app/[locale]/user/notifications/page.tsx`        | 10                                                                          | 156 lines ? UserNotificationsView                                  |
-| ~~92~~                                                                                               | `src/app/[locale]/admin/events/page.tsx`              | 10                                                                          | 153 lines ? AdminEventsView                                        |
-| ~~93~~                                                                                               | `src/app/[locale]/user/addresses/edit/[id]/page.tsx`  | 10                                                                          | 150 lines ? UserEditAddressView                                    |
+| #                                                                                                      | File                                                      | Rules                                                                               | Violations                                                                                |
+| ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **WAVE 0 ï¿½ Prerequisites** (nothing else can proceed without these)                                  |                                                           |                                                                                     |
+| ~~01~~                                                                                                 | ~~`src/utils/formatters/date.formatter.ts`~~              | 5                                                                                   | ? DONE ï¿½ Added `nowMs`, `isSameMonth`, `currentYear`, `nowISO`                          |
+| ~~02~~                                                                                                 | ~~`src/utils/index.ts`~~                                  | 5                                                                                   | ? DONE ï¿½ Already barrel-exported via formatters                                         |
+| ~~03~~                                                                                                 | ~~`src/utils/formatters/number.formatter.ts`~~            | 5                                                                                   | ? DONE ï¿½ `formatNumber` extended with `decimals` option                                 |
+| ~~04~~                                                                                                 | ~~`src/constants/api-endpoints.ts`~~                      | 19,20                                                                               | ? DONE ï¿½ Added `REALTIME.TOKEN` (DEMO.SEED already existed)                             |
+| ~~05~~                                                                                                 | ~~`src/constants/messages.ts`~~                           | 13                                                                                  | ? DONE ï¿½ Added `AUTH.INVALID_SIGNATURE`, `VALIDATION.INVALID_JSON`                      |
+| ~~06~~                                                                                                 | ~~`src/constants/index.ts`~~                              | 13                                                                                  | ? DONE ï¿½ `ERROR_MESSAGES` already exported                                              |
+| ~~07~~                                                                                                 | ~~`src/services/demo.service.ts`~~                        | 20,21                                                                               | ? DONE ï¿½ Created service                                                                |
+| ~~08~~                                                                                                 | ~~`src/services/realtime-token.service.ts`~~              | 11,21                                                                               | ? DONE ï¿½ Created service                                                                |
+| ~~09~~                                                                                                 | ~~`src/services/index.ts`~~                               | 20,21                                                                               | ? DONE ï¿½ Exported both new services                                                     |
+| ~~10~~                                                                                                 | ~~`src/components/admin/SessionTableColumns.ts`~~         | 8,32                                                                                | ? DONE ï¿½ Created `SessionTableColumns.tsx`                                              |
+| ~~11~~                                                                                                 | ~~`src/components/seller/PayoutTableColumns.ts`~~         | 8,32                                                                                | ? DONE ï¿½ Created `PayoutTableColumns.tsx`                                               |
+| **WAVE 1 ï¿½ Tier 1 Primitives** (used everywhere ï¿½ fix before any feature code)                     |                                                           |                                                                                     |
+| ~~12~~                                                                                                 | ~~`src/components/ui/SideDrawer.tsx`~~                    | 7,31                                                                                | ~~L263 h4?Heading ï¿½ L266 p?Text~~ ? DONE                                                |
+| ~~13~~                                                                                                 | ~~`src/components/ui/FilterFacetSection.tsx`~~            | 5                                                                                   | ~~L184 toLocaleString?formatNumber~~ ? DONE                                               |
+| ~~14~~                                                                                                 | ~~`src/components/ui/TablePagination.tsx`~~               | 5                                                                                   | ~~L74 toLocaleString?formatNumber~~ ? DONE                                                |
+| ~~15~~                                                                                                 | ~~`src/components/ui/CategorySelectorCreate.tsx`~~        | 7,31                                                                                | ~~L126 label?Label~~ ? DONE                                                               |
+| ~~16~~                                                                                                 | ~~`src/components/ui/ImageGallery.tsx`~~                  | 32                                                                                  | ~~L277 overflow-x-auto?HorizontalScroller~~ ? DONE                                        |
+| **WAVE 2 ï¿½ Multi-violation files** (all violations in a file fixed in one pass, highest count first) |                                                           |                                                                                     |
+| ~~17~~ `src/components/products/ProductReviews.tsx`                                                    | 5,7,31,32                                                 | L91 h2 ï¿½ L103 toFixed ï¿½ L144,147,182,202,206,232 pï¿½6 ï¿½ L212 overflow-x-auto |
+| ~~18~~ `src/components/admin/AdminSessionsManager.tsx`                                                 | 5,8,32                                                    | L24,L279 new Date() ï¿½ L167ï¿½295 raw table                                        |
+| ~~19~~ `src/features/events/components/EventFormDrawer.tsx`                                            | 7,31                                                      | L281,304,313,333 labelï¿½4 ï¿½ L295,347 pï¿½2                                       |
+| ~~20~~ `src/features/events/components/SurveyFieldBuilder.tsx`                                         | 7,31                                                      | L53,72,108,129 labelï¿½4 ï¿½ L60 p                                                  |
+| ~~21~~ `src/features/events/components/EventTypeConfig/PollConfigForm.tsx`                             | 7,31                                                      | L47,82,94,99 labelï¿½4                                                              |
+| ~~22~~ `src/features/events/components/EventParticipateView.tsx`                                       | 7,31                                                      | L76 h2 ï¿½ L202 h1 ï¿½ L142,166 labelï¿½2                                           |
+| ~~23~~ `src/features/admin/components/AdminReviewsView.tsx`                                            | 7,31                                                      | L227,247,267 labelï¿½3                                                              |
+| ~~24~~ `src/components/user/settings/AccountInfoCard.tsx`                                              | 7,31                                                      | L48 h3 ï¿½ L53,56,61,64,69,72,77,80 pï¿½8                                           |
+| ~~25~~ `src/components/seller/SellerStorefrontView.tsx`                                                | 5,7,31                                                    | L87 h1 ï¿½ L177,235 h2ï¿½2 ï¿½ L129,244 toFixedï¿½2                                 |
+| ~~26~~ `src/components/user/profile/PublicProfileView.tsx`                                             | 5,7,31                                                    | L58 h1 ï¿½ L124,230 h2ï¿½2 ï¿½ L133,430 toFixedï¿½2                                 |
+| ~~27~~ `src/features/admin/components/AdminAnalyticsView.tsx`                                          | 7,31                                                      | L165,218,248 h2ï¿½3 ï¿½ L103,268 pï¿½2                                              |
+| ~~28~~ `src/components/promotions/CouponCard.tsx`                                                      | 7,31                                                      | L45 h3 ï¿½ L48,58,64,85 pï¿½4                                                       |
+| ~~29~~ `src/features/categories/components/CategoryProductsView.tsx`                                   | 7,31                                                      | L126 h1 ï¿½ L91,130,171 pï¿½3                                                       |
+| ~~30~~ `src/features/events/components/FeedbackEventSection.tsx`                                       | 7,31                                                      | L37,38 pï¿½2 ï¿½ L59 label                                                          |
+| ~~31~~ `src/features/events/components/PollVotingSection.tsx`                                          | 7,31                                                      | L63,95 pï¿½2 ï¿½ L105 label                                                         |
+| ~~32~~ `src/lib/monitoring/cache-metrics.ts`                                                           | 5                                                         | L183,205 toFixed ï¿½ L188,212 toLocaleString                                        |
+| ~~33~~ `src/components/seller/SellerPayoutHistoryTable.tsx`                                            | 7,8,31,32                                                 | L59ï¿½61 h2 ï¿½ L76ï¿½120 raw table                                                 |
+| ~~34~~ `src/features/seller/components/SellerOrdersView.tsx`                                           | 7,31,32                                                   | L113,172 pï¿½2 ï¿½ L124 overflow-x-auto                                             |
+| ~~35~~ `src/features/auth/components/LoginForm.tsx`                                                    | 7,31                                                      | L100 p ï¿½ L158 label                                                               |
+| ~~36~~ `src/features/auth/components/RegisterForm.tsx`                                                 | 7,31                                                      | L162 p ï¿½ L259 label                                                               |
+| ~~37~~ `src/app/global-error.tsx`                                                                      | 7,31                                                      | L66 h1 ï¿½ L71 p                                                                    |
+| ~~38~~ `src/components/promotions/ProductSection.tsx`                                                  | 7,31                                                      | L23 h2 ï¿½ L24 p                                                                    |
+| ~~39~~ `src/features/events/components/EventTypeConfig/SurveyConfigForm.tsx`                           | 7,31                                                      | L24,38 labelï¿½2                                                                    |
+| **WAVE 3 ï¿½ Single-violation files**                                                                  |                                                           |                                                                                     |
+| ~~40~~ `src/features/search/components/SearchView.tsx`                                                 | 7,31                                                      | L122 h1 ï¿½ L125 p                                                                  |
+| ~~41~~ `src/features/products/components/AuctionsView.tsx`                                             | 7,31                                                      | L91 h1 ï¿½ L94 p                                                                    |
+| ~~42~~ `src/features/products/components/ProductsView.tsx`                                             | 7,31                                                      | L123 h1 ï¿½ L126 p                                                                  |
+| ~~43~~ `src/components/seller/SellerTopProducts.tsx`                                                   | 7,31                                                      | L28ï¿½30 h2                                                                         |
+| ~~44~~ `src/components/seller/SellerPayoutRequestForm.tsx`                                             | 7,31                                                      | L75ï¿½77 h2                                                                         |
+| ~~45~~ `src/components/seller/SellerRevenueChart.tsx`                                                  | 7,31                                                      | L54ï¿½56 h2                                                                         |
+| ~~46~~ `src/components/user/profile/ProfileHeader.tsx`                                                 | 7,31                                                      | L62 h1                                                                              |
+| ~~47~~ `src/components/user/settings/ProfileInfoForm.tsx`                                              | 7,31                                                      | L86 h3                                                                              |
+| ~~48~~ `src/components/user/addresses/AddressForm.tsx`                                                 | 7,31                                                      | L188 label                                                                          |
+| ~~49~~ `src/components/user/notifications/NotificationsBulkActions.tsx`                                | 7,31                                                      | L24 h1                                                                              |
+| ~~50~~ `src/features/seller/components/SellerStatCard.tsx`                                             | 7,31                                                      | L45 p                                                                               |
+| ~~51~~ `src/features/seller/components/SellerProductCard.tsx`                                          | 7,31                                                      | L42,46 pï¿½2                                                                        |
+| ~~52~~ `src/features/events/components/SurveyEventSection.tsx`                                         | 7,31                                                      | L49 p                                                                               |
+| ~~53~~ `src/features/events/components/EventTypeConfig/FeedbackConfigForm.tsx`                         | 7,31                                                      | L25 label                                                                           |
+| ~~54~~ `src/components/admin/products/ProductTableColumns.tsx`                                         | 5                                                         | L69 toLocaleString?formatCurrency                                                   |
+| ~~55~~ `src/components/admin/coupons/CouponTableColumns.tsx`                                           | 5                                                         | L88 toLocaleString?formatCurrency                                                   |
+| ~~56~~ `src/components/admin/AdminStatsCards.tsx`                                                      | 5                                                         | L92 toLocaleString?formatNumber                                                     |
+| ~~57~~ `src/components/homepage/TopCategoriesSection.tsx`                                              | 5                                                         | L148 toLocaleString?formatNumber                                                    |
+| ~~58~~ `src/components/homepage/WhatsAppCommunitySection.tsx`                                          | 5                                                         | L86 toLocaleString?formatNumber                                                     |
+| ~~59~~ `src/components/faq/FAQAccordion.tsx`                                                           | 5                                                         | L150 toLocaleString?formatNumber                                                    |
+| ~~60~~ `src/components/admin/ImageUpload.tsx`                                                          | 5                                                         | L65 toFixed?formatNumber                                                            |
+| ~~61~~ `src/components/modals/ImageCropModal.tsx`                                                      | 5                                                         | L218,342,343 toFixed?Math.round                                                     |
+| ~~62~~ `src/features/admin/components/AdminPayoutsView.tsx`                                            | 5                                                         | L61,68 new Date()?isSameMonth/nowMs                                                 |
+| ~~63~~ `src/components/homepage/FeaturedAuctionsSection.tsx`                                           | 5                                                         | L165 new Date()?nowMs                                                               |
+| ~~64~~ `src/components/auctions/AuctionCard.tsx`                                                       | 5                                                         | L35 Date.now()?nowMs                                                                |
+| ~~65~~ `src/components/layout/Footer.tsx`                                                              | 5                                                         | L206 getFullYear()?currentYear                                                      |
+| ~~66~~ `src/components/feedback/Toast.tsx`                                                             | 5                                                         | L72 Date.now()?nowMs                                                                |
+| ~~67~~ `src/components/ErrorBoundary.tsx`                                                              | 5                                                         | L115 toISOString()?nowISO                                                           |
+| ~~68~~ `src/lib/email.ts`                                                                              | 5                                                         | L350,397 toLocaleString?formatDateTime                                              |
+| ~~69~~ `src/features/user/components/UserOrdersView.tsx`                                               | 32                                                        | L94 overflow-x-auto?Tabs                                                            |
+| ~~70~~ `src/components/homepage/FAQSection.tsx`                                                        | 32                                                        | L58 overflow-x-auto?Tabs                                                            |
+| ~~71~~ `src/components/products/ProductImageGallery.tsx`                                               | 32                                                        | L48 overflow-x-auto?HorizontalScroller                                              |
+| ~~72~~ `src/components/homepage/HeroCarousel.tsx`                                                      | 32                                                        | L155 overflow-x-auto?HorizontalScroller                                             |
+| ~~73~~ `src/components/layout/BottomNavbar.tsx`                                                        | 32                                                        | L111 overflow-x-auto ï¿½ remove or HorizontalScroller                               |
+| ~~74~~ `src/app/api/payment/webhook/route.ts`                                                          | 13                                                        | L48,56 raw error strings?error classes                                              |
+| ~~75~~ `src/app/api/auth/login/route.ts`                                                               | 12                                                        | L61 direct Firestore?userRepository                                                 |
+| ~~76~~ `src/app/api/auth/register/route.ts`                                                            | 12                                                        | L76 direct Firestore?userRepository                                                 |
+| ~~77~~ `src/app/api/auth/session/route.ts`                                                             | 12                                                        | L49 direct Firestore?sessionRepository                                              |
+| ~~78~~ `src/hooks/useRealtimeBids.ts`                                                                  | 11                                                        | L17 wrong Firebase import?realtimeApp + custom token                                |
+| ~~79~~ `src/contexts/SessionContext.tsx`                                                               | 11                                                        | L25 Firebase type?AuthUser                                                          |
+| **WAVE 4 ï¿½ Page decompositions** (largest first)                                                     |                                                           |                                                                                     |
+| ~~80~~                                                                                                 | ~~`src/app/[locale]/demo/seed/page.tsx`~~                 | 10,20                                                                               | DONE — 4 lines, DemoSeedView (Rule 20 fixed via demoService)                              |
+| ~~81~~                                                                                                 | ~~`src/app/[locale]/user/settings/page.tsx`~~             | 10                                                                                  | DONE — 4 lines, UserSettingsView                                                          |
+| ~~82~~                                                                                                 | ~~`src/app/[locale]/blog/[slug]/page.tsx`~~               | 10                                                                                  | DONE — 10 lines, BlogPostView                                                             |
+| ~~83~~                                                                                                 | ~~`src/app/[locale]/seller/products/[id]/edit/page.tsx`~~ | 10                                                                                  | DONE — 14 lines, SellerEditProductView                                                    |
+| ~~84~~                                                                                                 | ~~`src/app/[locale]/user/addresses/page.tsx`~~            | 10                                                                                  | DONE — 4 lines, UserAddressesView                                                         |
+| ~~85~~                                                                                                 | ~~`src/app/[locale]/products/[slug]/page.tsx`~~           | 10                                                                                  | DONE — 10 lines, ProductDetailView (view has violations, see W5)                          |
+| ~~86~~                                                                                                 | ~~`src/app/[locale]/sellers/page.tsx`~~                   | 10                                                                                  | DONE — 13 lines, SellersListView (view has violations, see W5)                            |
+| ~~87~~                                                                                                 | ~~`src/app/[locale]/about/page.tsx`~~                     | 10                                                                                  | DONE — 13 lines, AboutView                                                                |
+| ~~88~~                                                                                                 | ~~`src/app/[locale]/admin/media/page.tsx`~~               | 10                                                                                  | DONE — 4 lines, AdminMediaView                                                            |
+| ~~89~~                                                                                                 | ~~`src/app/[locale]/cart/page.tsx`~~                      | 10                                                                                  | DONE — 4 lines, CartView                                                                  |
+| ~~90~~                                                                                                 | `src/app/[locale]/admin/site/page.tsx`                    | 10                                                                                  | 162 lines ? AdminSiteView                                                                 |
+| ~~91~~                                                                                                 | `src/app/[locale]/user/notifications/page.tsx`            | 10                                                                                  | 156 lines ? UserNotificationsView                                                         |
+| ~~92~~                                                                                                 | `src/app/[locale]/admin/events/page.tsx`                  | 10                                                                                  | 153 lines ? AdminEventsView                                                               |
+| ~~93~~                                                                                                 | `src/app/[locale]/user/addresses/edit/[id]/page.tsx`      | 10                                                                                  | 150 lines ? UserEditAddressView                                                           |
+| **WAVE 5 — Newly discovered violations** (re-run #4 audit, 2026-03-02)                                 |                                                           |                                                                                     |
+| 94                                                                                                     | `src/components/user/addresses/AddressCard.tsx`           | 7,31                                                                                | L65 h3, L98,101,102,103,104,107 p×6 → Heading/Text                                        |
+| 95                                                                                                     | `src/features/seller/components/SellersListView.tsx`      | 7,31                                                                                | L34 h1, L35,62,63,115,137,152 p×6, L72,101,123,145 h2×4, L85,112,134 h3×3                 |
+| 96                                                                                                     | `src/components/user/orders/OrderTrackingView.tsx`        | 7,31                                                                                | L256 h1, L259 p, L293 h2 → Heading/Text                                                   |
+| 97                                                                                                     | `src/components/user/notifications/NotificationItem.tsx`  | 7,31                                                                                | L58,65,68 p×3 → Text                                                                      |
+| 98                                                                                                     | `src/features/products/components/ProductDetailView.tsx`  | 7,31                                                                                | L66 h1, L69 p → Heading/Text                                                              |
+| 99                                                                                                     | `src/components/user/addresses/AddressForm.tsx`           | 7,8,31                                                                              | L188 label + L189 input[checkbox] → Checkbox from @/components                            |
+| 100                                                                                                    | `src/components/user/profile/ProfileStatsGrid.tsx`        | 7,31                                                                                | L127 p → Text                                                                             |
+| 101                                                                                                    | `src/components/user/settings/EmailVerificationCard.tsx`  | 7,31                                                                                | L53 h3 → Heading(3)                                                                       |
+| 102                                                                                                    | `src/components/user/settings/PhoneVerificationCard.tsx`  | 7,31                                                                                | L58 h3 → Heading(3)                                                                       |
+| 103                                                                                                    | `src/components/ui/AddressSelectorCreate.tsx`             | 7,31                                                                                | L99 raw label → Label                                                                     |
+| 104                                                                                                    | `src/components/utility/Search.tsx`                       | 7,31                                                                                | L142 p → Text                                                                             |
+| 105                                                                                                    | `src/components/ui/FilterFacetSection.tsx`                | 7,31                                                                                | L160 p → Text (missed in task 13)                                                         |
+| ~~TS~~                                                                                                 | ~~test files~~                                            | —                                                                                   | DONE — SurveyConfigForm.test.tsx missing `order`, cache-metrics.test.ts spread/arg errors |
 
 ---
 
@@ -137,16 +151,16 @@ Each task requires:
 
 ---
 
-## WAVE 0 � Detailed Tasks
+## WAVE 0 ï¿½ Detailed Tasks
 
 ---
 
-### 01 � `src/utils/formatters/date.formatter.ts`
+### 01 ï¿½ `src/utils/formatters/date.formatter.ts`
 
-**Rule 5** � Add three missing utility functions. These are referenced by tasks 18, 29, 62�67.
+**Rule 5** ï¿½ Add three missing utility functions. These are referenced by tasks 18, 29, 62ï¿½67.
 
 ```ts
-// ADD � after existing exports
+// ADD ï¿½ after existing exports
 
 /** True when two dates fall in the same calendar month and year. */
 export function isSameMonth(a: Date | number, b: Date | number): boolean {
@@ -173,9 +187,9 @@ export function nowISO(): string {
 
 ---
 
-### 02 � `src/utils/index.ts`
+### 02 ï¿½ `src/utils/index.ts`
 
-**Rule 5** � Re-export the three new date functions.
+**Rule 5** ï¿½ Re-export the three new date functions.
 
 ```ts
 // ADD to the date-formatter export line (or add individually)
@@ -186,9 +200,9 @@ export { isSameMonth, currentYear, nowISO } from "./formatters/date.formatter";
 
 ---
 
-### 03 � `src/utils/formatters/number.formatter.ts`
+### 03 ï¿½ `src/utils/formatters/number.formatter.ts`
 
-**Rule 5** � Extend `formatNumber` in-place with a `decimals` option. Do not create a new function.
+**Rule 5** ï¿½ Extend `formatNumber` in-place with a `decimals` option. Do not create a new function.
 
 ```ts
 // BEFORE (example signature)
@@ -196,7 +210,7 @@ export function formatNumber(num: number, locale: string = "en-US"): string {
   return new Intl.NumberFormat(locale).format(num);
 }
 
-// AFTER � extend, do not duplicate
+// AFTER ï¿½ extend, do not duplicate
 export function formatNumber(
   num: number,
   locale: string = "en-US",
@@ -214,9 +228,9 @@ export function formatNumber(
 
 ---
 
-### 04 � `src/constants/api-endpoints.ts`
+### 04 ï¿½ `src/constants/api-endpoints.ts`
 
-**Rules 19, 20** � Add two missing endpoint constants.
+**Rules 19, 20** ï¿½ Add two missing endpoint constants.
 
 ```ts
 // ADD inside the exported API_ENDPOINTS object
@@ -232,9 +246,9 @@ REALTIME: {
 
 ---
 
-### 05 � `src/constants/messages.ts`
+### 05 ï¿½ `src/constants/messages.ts`
 
-**Rule 13** � Add two missing error message constants.
+**Rule 13** ï¿½ Add two missing error message constants.
 
 ```ts
 // ADD inside ERROR_MESSAGES.AUTH
@@ -248,17 +262,17 @@ INVALID_JSON: 'Request body contains invalid JSON.',
 
 ---
 
-### 06 � `src/constants/index.ts`
+### 06 ï¿½ `src/constants/index.ts`
 
-**Rule 13** � Confirm `ERROR_MESSAGES` is re-exported (no change needed if already barrel-exported).
+**Rule 13** ï¿½ Confirm `ERROR_MESSAGES` is re-exported (no change needed if already barrel-exported).
 
 - [x] Verify `ERROR_MESSAGES` is exported; add re-export if absent
 
 ---
 
-### 07 � `src/services/demo.service.ts`
+### 07 ï¿½ `src/services/demo.service.ts`
 
-**Rules 20, 21** � New service file. Delete the direct `fetch()` in the page when task 80 runs.
+**Rules 20, 21** ï¿½ New service file. Delete the direct `fetch()` in the page when task 80 runs.
 
 ```ts
 import { apiClient } from "@/lib/api-client";
@@ -274,9 +288,9 @@ export const demoService = {
 
 ---
 
-### 08 � `src/services/realtime-token.service.ts`
+### 08 ï¿½ `src/services/realtime-token.service.ts`
 
-**Rules 11, 21** � New service file.
+**Rules 11, 21** ï¿½ New service file.
 
 ```ts
 import { apiClient } from "@/lib/api-client";
@@ -296,9 +310,9 @@ export const realtimeTokenService = {
 
 ---
 
-### 09 � `src/services/index.ts`
+### 09 ï¿½ `src/services/index.ts`
 
-**Rules 20, 21** � Export both new services.
+**Rules 20, 21** ï¿½ Export both new services.
 
 ```ts
 // ADD
@@ -310,9 +324,9 @@ export * from "./realtime-token.service";
 
 ---
 
-### 10 � `src/components/admin/SessionTableColumns.ts`
+### 10 ï¿½ `src/components/admin/SessionTableColumns.ts`
 
-**Rules 8, 32** � New column definitions file required before task 18.
+**Rules 8, 32** ï¿½ New column definitions file required before task 18.
 
 ```ts
 import type { ColumnDef } from '@/components';
@@ -322,7 +336,7 @@ import { formatDateTime, isFuture } from '@/utils';
 import { StatusBadge } from '@/components';
 
 export const SESSION_TABLE_COLUMNS: ColumnDef<Session>[] = [
-  { key: 'device', header: 'Device', render: (s) => <Text size="sm">{s.device?.browser ?? '�'}</Text> },
+  { key: 'device', header: 'Device', render: (s) => <Text size="sm">{s.device?.browser ?? 'ï¿½'}</Text> },
   { key: 'ip', header: 'IP', render: (s) => <Caption>{s.ipAddress}</Caption> },
   { key: 'lastActivity', header: 'Last Active', render: (s) => <Caption>{formatDateTime(s.lastActivity)}</Caption> },
   { key: 'expires', header: 'Status', render: (s) => <StatusBadge active={isFuture(s.expiresAt)} /> },
@@ -336,9 +350,9 @@ Adjust field names to match the actual `Session` type in the codebase.
 
 ---
 
-### 11 � `src/components/seller/PayoutTableColumns.ts`
+### 11 ï¿½ `src/components/seller/PayoutTableColumns.ts`
 
-**Rules 8, 32** � New column definitions file required before task 33.
+**Rules 8, 32** ï¿½ New column definitions file required before task 33.
 
 ```ts
 import type { ColumnDef } from '@/components';
@@ -350,7 +364,7 @@ import { StatusBadge } from '@/components';
 export const PAYOUT_TABLE_COLUMNS: ColumnDef<Payout>[] = [
   { key: 'amount', header: 'Amount', render: (p) => <Text weight="medium">{formatCurrency(p.amount, 'INR', 'en-IN')}</Text> },
   { key: 'status', header: 'Status', render: (p) => <StatusBadge active={p.status === 'paid'} /> },
-  { key: 'processedAt', header: 'Processed', render: (p) => <Caption>{p.processedAt ? formatDateTime(p.processedAt) : '�'}</Caption> },
+  { key: 'processedAt', header: 'Processed', render: (p) => <Caption>{p.processedAt ? formatDateTime(p.processedAt) : 'ï¿½'}</Caption> },
 ];
 ```
 
@@ -361,13 +375,13 @@ Adjust field names to match the actual `Payout` type.
 
 ---
 
-## WAVE 1 � Detailed Tasks
+## WAVE 1 ï¿½ Detailed Tasks
 
 Typography fix pattern used throughout:
 
 ```tsx
 import { Heading, Text, Label } from "@/components";
-// h1�h6 ? <Heading level={n}>
+// h1ï¿½h6 ? <Heading level={n}>
 // p     ? <Text variant="secondary"?> (match the semantic intent)
 // label ? <Label required?={...}>
 // After: delete unused THEME_CONSTANTS.typography / themed destructures
@@ -375,7 +389,7 @@ import { Heading, Text, Label } from "@/components";
 
 ---
 
-### 12 � `src/components/ui/SideDrawer.tsx` L263, L266
+### 12 ï¿½ `src/components/ui/SideDrawer.tsx` L263, L266
 
 **Rules 7, 31** ?? Tier 1
 
@@ -395,7 +409,7 @@ import { Heading, Text, Label } from "@/components";
 
 ---
 
-### 13 � `src/components/ui/FilterFacetSection.tsx` L184
+### 13 ï¿½ `src/components/ui/FilterFacetSection.tsx` L184
 
 **Rule 5** ?? Tier 1
 
@@ -415,7 +429,7 @@ import { formatNumber } from "@/utils";
 
 ---
 
-### 14 � `src/components/ui/TablePagination.tsx` L74
+### 14 ï¿½ `src/components/ui/TablePagination.tsx` L74
 
 **Rule 5** ?? Tier 1
 
@@ -435,7 +449,7 @@ import { formatNumber } from "@/utils";
 
 ---
 
-### 15 � `src/components/ui/CategorySelectorCreate.tsx` L126
+### 15 ï¿½ `src/components/ui/CategorySelectorCreate.tsx` L126
 
 **Rules 7, 31** ?? Tier 1
 
@@ -451,7 +465,7 @@ import { Label } from '@/components';
 
 ---
 
-### 16 � `src/components/ui/ImageGallery.tsx` L277
+### 16 ï¿½ `src/components/ui/ImageGallery.tsx` L277
 
 **Rule 32** ?? Tier 1
 
@@ -471,13 +485,13 @@ import { HorizontalScroller } from "@/components";
 
 ---
 
-## WAVE 2 � Detailed Tasks
+## WAVE 2 ï¿½ Detailed Tasks
 
 ---
 
-### 17 � `src/components/products/ProductReviews.tsx`
+### 17 ï¿½ `src/components/products/ProductReviews.tsx`
 
-**Rules 5, 7, 31, 32** � 9 violations; fix all in one pass.
+**Rules 5, 7, 31, 32** ï¿½ 9 violations; fix all in one pass.
 
 ```tsx
 // L91: h2 ? Heading
@@ -499,9 +513,9 @@ import { HorizontalScroller } from '@/components';
 
 ---
 
-### 18 � `src/components/admin/AdminSessionsManager.tsx`
+### 18 ï¿½ `src/components/admin/AdminSessionsManager.tsx`
 
-**Rules 5, 8, 32** � date violations + raw table; fix all in one pass.
+**Rules 5, 8, 32** ï¿½ date violations + raw table; fix all in one pass.
 
 ```tsx
 // L24: raw new Date()
@@ -511,7 +525,7 @@ const now = nowMs(); // replace const now = new Date();
 // L279: date comparison
 isFuture(session.expiresAt); // replace: new Date(session.expiresAt) > new Date()
 
-// L167�295: delete entire <table>...</table> block
+// L167ï¿½295: delete entire <table>...</table> block
 // REPLACE with DataTable using columns from task 10
 import { DataTable } from "@/components";
 import { SESSION_TABLE_COLUMNS } from "./SessionTableColumns";
@@ -520,34 +534,34 @@ import { SESSION_TABLE_COLUMNS } from "./SessionTableColumns";
 
 Delete all `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>`, `<td>` tags and their enclosing divs.
 
-- [x] Fix dates L24, L279; replace raw table L167�295 with DataTable; update `__tests__/AdminSessionsManager.test.tsx`
+- [x] Fix dates L24, L279; replace raw table L167ï¿½295 with DataTable; update `__tests__/AdminSessionsManager.test.tsx`
 
 ---
 
-### 19 � `src/features/events/components/EventFormDrawer.tsx`
+### 19 ï¿½ `src/features/events/components/EventFormDrawer.tsx`
 
-**Rules 7, 31** � 6 violations.
+**Rules 7, 31** ï¿½ 6 violations.
 
 ```tsx
 // L281, 304, 313, 333: label ? Label
 import { Label } from '@/components';
-<Label>{...}</Label>   // �4
+<Label>{...}</Label>   // ï¿½4
 
 // L295, 347: p ? Text
 import { Text } from '@/components';
-<Text size="xs" variant="secondary">{...}</Text>  // �2
+<Text size="xs" variant="secondary">{...}</Text>  // ï¿½2
 ```
 
 - [x] Fix all 6; update `__tests__/EventFormDrawer.test.tsx`
 
 ---
 
-### 20 � `src/features/events/components/SurveyFieldBuilder.tsx`
+### 20 ï¿½ `src/features/events/components/SurveyFieldBuilder.tsx`
 
-**Rules 7, 31** � 5 violations.
+**Rules 7, 31** ï¿½ 5 violations.
 
 ```tsx
-// L53, 72, 108, 129: label ? Label  (�4)
+// L53, 72, 108, 129: label ? Label  (ï¿½4)
 <Label>{...}</Label>
 
 // L60: p ? Text
@@ -558,12 +572,12 @@ import { Text } from '@/components';
 
 ---
 
-### 21 � `src/features/events/components/EventTypeConfig/PollConfigForm.tsx`
+### 21 ï¿½ `src/features/events/components/EventTypeConfig/PollConfigForm.tsx`
 
-**Rules 7, 31** � 4 label violations.
+**Rules 7, 31** ï¿½ 4 label violations.
 
 ```tsx
-// L47, 82, 94, 99: label ? Label  (�4)
+// L47, 82, 94, 99: label ? Label  (ï¿½4)
 import { Label } from '@/components';
 <Label>{...}</Label>
 ```
@@ -572,14 +586,14 @@ import { Label } from '@/components';
 
 ---
 
-### 22 � `src/features/events/components/EventParticipateView.tsx`
+### 22 ï¿½ `src/features/events/components/EventParticipateView.tsx`
 
-**Rules 7, 31** � 4 violations.
+**Rules 7, 31** ï¿½ 4 violations.
 
 ```tsx
 // L76: h2 ? Heading(2)
 // L202: h1 ? Heading(1)
-// L142, 166: label ? Label  (�2)
+// L142, 166: label ? Label  (ï¿½2)
 import { Heading, Label } from "@/components";
 ```
 
@@ -587,12 +601,12 @@ import { Heading, Label } from "@/components";
 
 ---
 
-### 23 � `src/features/admin/components/AdminReviewsView.tsx`
+### 23 ï¿½ `src/features/admin/components/AdminReviewsView.tsx`
 
-**Rules 7, 31** � 3 label violations.
+**Rules 7, 31** ï¿½ 3 label violations.
 
 ```tsx
-// L227, 247, 267: label ? Label  (�3)
+// L227, 247, 267: label ? Label  (ï¿½3)
 import { Label } from '@/components';
 <Label>{...}</Label>
 ```
@@ -601,16 +615,16 @@ import { Label } from '@/components';
 
 ---
 
-### 24 � `src/components/user/settings/AccountInfoCard.tsx`
+### 24 ï¿½ `src/components/user/settings/AccountInfoCard.tsx`
 
-**Rules 7, 31** � 9 violations.
+**Rules 7, 31** ï¿½ 9 violations.
 
 ```tsx
 // L48: h3 ? Heading(3)
 import { Heading, Text } from '@/components';
 <Heading level={3}>{...}</Heading>
 
-// L53, 56, 61, 64, 69, 72, 77, 80: p ? Text  (�8)
+// L53, 56, 61, 64, 69, 72, 77, 80: p ? Text  (ï¿½8)
 <Text size="sm" variant="secondary">{...}</Text>
 ```
 
@@ -618,16 +632,16 @@ import { Heading, Text } from '@/components';
 
 ---
 
-### 25 � `src/components/seller/SellerStorefrontView.tsx`
+### 25 ï¿½ `src/components/seller/SellerStorefrontView.tsx`
 
-**Rules 5, 7, 31** � 5 violations.
+**Rules 5, 7, 31** ï¿½ 5 violations.
 
 ```tsx
 // L87: h1 ? Heading(1)
-// L177, 235: h2 ? Heading(2)  (�2)
+// L177, 235: h2 ? Heading(2)  (ï¿½2)
 import { Heading } from "@/components";
 
-// L129, 244: toFixed(1) ? formatNumber  (�2)
+// L129, 244: toFixed(1) ? formatNumber  (ï¿½2)
 import { formatNumber } from "@/utils";
 {
   formatNumber(reviewsData.averageRating, "en-US", { decimals: 1 });
@@ -638,16 +652,16 @@ import { formatNumber } from "@/utils";
 
 ---
 
-### 26 � `src/components/user/profile/PublicProfileView.tsx`
+### 26 ï¿½ `src/components/user/profile/PublicProfileView.tsx`
 
-**Rules 5, 7, 31** � 5 violations.
+**Rules 5, 7, 31** ï¿½ 5 violations.
 
 ```tsx
 // L58: h1 ? Heading(1)
-// L124, 230: h2 ? Heading(2)  (�2)
+// L124, 230: h2 ? Heading(2)  (ï¿½2)
 import { Heading } from "@/components";
 
-// L133, 430: toFixed(1) ? formatNumber  (�2)
+// L133, 430: toFixed(1) ? formatNumber  (ï¿½2)
 import { formatNumber } from "@/utils";
 {
   formatNumber(value, "en-US", { decimals: 1 });
@@ -658,16 +672,16 @@ import { formatNumber } from "@/utils";
 
 ---
 
-### 27 � `src/features/admin/components/AdminAnalyticsView.tsx`
+### 27 ï¿½ `src/features/admin/components/AdminAnalyticsView.tsx`
 
-**Rules 7, 31** � 5 violations.
+**Rules 7, 31** ï¿½ 5 violations.
 
 ```tsx
-// L165, 218, 248: h2 ? Heading(2)  (�3)
+// L165, 218, 248: h2 ? Heading(2)  (ï¿½3)
 import { Heading, Text } from '@/components';
 <Heading level={2}>{...}</Heading>
 
-// L103, 268: p ? Text  (�2)
+// L103, 268: p ? Text  (ï¿½2)
 <Text size="sm" variant="secondary">{...}</Text>
 ```
 
@@ -675,16 +689,16 @@ import { Heading, Text } from '@/components';
 
 ---
 
-### 28 � `src/components/promotions/CouponCard.tsx`
+### 28 ï¿½ `src/components/promotions/CouponCard.tsx`
 
-**Rules 7, 31** � 5 violations.
+**Rules 7, 31** ï¿½ 5 violations.
 
 ```tsx
 // L45: h3 ? Heading(3)
 import { Heading, Text } from '@/components';
 <Heading level={3}>{...}</Heading>
 
-// L48, 58, 64, 85: p ? Text  (�4)
+// L48, 58, 64, 85: p ? Text  (ï¿½4)
 <Text size="sm">{...}</Text>
 ```
 
@@ -692,16 +706,16 @@ import { Heading, Text } from '@/components';
 
 ---
 
-### 29 � `src/features/categories/components/CategoryProductsView.tsx`
+### 29 ï¿½ `src/features/categories/components/CategoryProductsView.tsx`
 
-**Rules 7, 31** � 4 violations.
+**Rules 7, 31** ï¿½ 4 violations.
 
 ```tsx
 // L126: h1 ? Heading(1)
 import { Heading, Text } from '@/components';
 <Heading level={1}>{...}</Heading>
 
-// L91, 130, 171: p ? Text  (�3)
+// L91, 130, 171: p ? Text  (ï¿½3)
 <Text variant="secondary" size="sm">{...}</Text>
 ```
 
@@ -709,12 +723,12 @@ import { Heading, Text } from '@/components';
 
 ---
 
-### 30 � `src/features/events/components/FeedbackEventSection.tsx`
+### 30 ï¿½ `src/features/events/components/FeedbackEventSection.tsx`
 
-**Rules 7, 31** � 3 violations.
+**Rules 7, 31** ï¿½ 3 violations.
 
 ```tsx
-// L37, 38: p ? Text  (�2)
+// L37, 38: p ? Text  (ï¿½2)
 import { Text, Label } from '@/components';
 <Text weight="medium">{...}</Text>
 <Text size="sm">{...}</Text>
@@ -727,12 +741,12 @@ import { Text, Label } from '@/components';
 
 ---
 
-### 31 � `src/features/events/components/PollVotingSection.tsx`
+### 31 ï¿½ `src/features/events/components/PollVotingSection.tsx`
 
-**Rules 7, 31** � 3 violations.
+**Rules 7, 31** ï¿½ 3 violations.
 
 ```tsx
-// L63, 95: p ? Text  (�2)
+// L63, 95: p ? Text  (ï¿½2)
 import { Text, Label } from '@/components';
 <Text size="sm">{...}</Text>
 
@@ -744,9 +758,9 @@ import { Text, Label } from '@/components';
 
 ---
 
-### 32 � `src/lib/monitoring/cache-metrics.ts`
+### 32 ï¿½ `src/lib/monitoring/cache-metrics.ts`
 
-**Rule 5** � 4 violations; all number/date formatting.
+**Rule 5** ï¿½ 4 violations; all number/date formatting.
 
 ```ts
 // L183: hitRate.toFixed(2)
@@ -768,16 +782,16 @@ formatDateTime(value);
 
 ---
 
-### 33 � `src/components/seller/SellerPayoutHistoryTable.tsx`
+### 33 ï¿½ `src/components/seller/SellerPayoutHistoryTable.tsx`
 
-**Rules 7, 8, 31, 32** � heading + raw table; fix both in one pass.
+**Rules 7, 8, 31, 32** ï¿½ heading + raw table; fix both in one pass.
 
 ```tsx
-// L59�61: h2 ? Heading(2)
+// L59ï¿½61: h2 ? Heading(2)
 import { Heading } from '@/components';
 <Heading level={2}>{...}</Heading>
 
-// L76�120: delete entire <table>...</table> block
+// L76ï¿½120: delete entire <table>...</table> block
 // REPLACE with DataTable using columns from task 11
 import { DataTable } from '@/components';
 import { PAYOUT_TABLE_COLUMNS } from './PayoutTableColumns';
@@ -788,12 +802,12 @@ import { PAYOUT_TABLE_COLUMNS } from './PayoutTableColumns';
 
 ---
 
-### 34 � `src/features/seller/components/SellerOrdersView.tsx`
+### 34 ï¿½ `src/features/seller/components/SellerOrdersView.tsx`
 
-**Rules 7, 31, 32** � 3 violations.
+**Rules 7, 31, 32** ï¿½ 3 violations.
 
 ```tsx
-// L113, 172: p ? Text  (�2)
+// L113, 172: p ? Text  (ï¿½2)
 import { Text } from '@/components';
 <Text size="sm">{...}</Text>
 
@@ -813,9 +827,9 @@ import { Tabs } from '@/components';
 
 ---
 
-### 35 � `src/features/auth/components/LoginForm.tsx`
+### 35 ï¿½ `src/features/auth/components/LoginForm.tsx`
 
-**Rules 7, 31** � 2 violations.
+**Rules 7, 31** ï¿½ 2 violations.
 
 ```tsx
 // L100: p ? Text
@@ -830,9 +844,9 @@ import { Text, Label } from '@/components';
 
 ---
 
-### 36 � `src/features/auth/components/RegisterForm.tsx`
+### 36 ï¿½ `src/features/auth/components/RegisterForm.tsx`
 
-**Rules 7, 31** � 2 violations.
+**Rules 7, 31** ï¿½ 2 violations.
 
 ```tsx
 // L162: p ? Text
@@ -846,9 +860,9 @@ import { Text, Label } from '@/components';
 
 ---
 
-### 37 � `src/app/global-error.tsx`
+### 37 ï¿½ `src/app/global-error.tsx`
 
-**Rules 7, 31** � 2 violations.
+**Rules 7, 31** ï¿½ 2 violations.
 
 ```tsx
 // L66: h1 ? Heading(1)
@@ -863,9 +877,9 @@ import { Heading, Text } from '@/components';
 
 ---
 
-### 38 � `src/components/promotions/ProductSection.tsx`
+### 38 ï¿½ `src/components/promotions/ProductSection.tsx`
 
-**Rules 7, 31** � 2 violations.
+**Rules 7, 31** ï¿½ 2 violations.
 
 ```tsx
 // L23: h2 ? Heading(2)
@@ -880,12 +894,12 @@ import { Heading, Text } from '@/components';
 
 ---
 
-### 39 � `src/features/events/components/EventTypeConfig/SurveyConfigForm.tsx`
+### 39 ï¿½ `src/features/events/components/EventTypeConfig/SurveyConfigForm.tsx`
 
-**Rules 7, 31** � 2 label violations.
+**Rules 7, 31** ï¿½ 2 label violations.
 
 ```tsx
-// L24, 38: label ? Label  (�2)
+// L24, 38: label ? Label  (ï¿½2)
 import { Label } from '@/components';
 <Label>{...}</Label>
 ```
@@ -894,91 +908,91 @@ import { Label } from '@/components';
 
 ---
 
-## WAVE 3 � Detailed Tasks
+## WAVE 3 ï¿½ Detailed Tasks
 
 All typography fixes use the same pattern: import `Heading`/`Text`/`Label` from `@/components`, replace raw tag, delete unused Tailwind class string variables.
 
 ---
 
-### 40 � `src/features/search/components/SearchView.tsx` L122, L125
+### 40 ï¿½ `src/features/search/components/SearchView.tsx` L122, L125
 
-`<h1>` ? `<Heading level={1}>` � `<p>` ? `<Text>`
+`<h1>` ? `<Heading level={1}>` ï¿½ `<p>` ? `<Text>`
 
 - [x] Fix; update `__tests__/SearchView.test.tsx`
 
-### 41 � `src/features/products/components/AuctionsView.tsx` L91, L94
+### 41 ï¿½ `src/features/products/components/AuctionsView.tsx` L91, L94
 
-`<h1>` ? `<Heading level={1}>` � `<p>` ? `<Text>`
+`<h1>` ? `<Heading level={1}>` ï¿½ `<p>` ? `<Text>`
 
 - [x] Fix; update `__tests__/AuctionsView.test.tsx`
 
-### 42 � `src/features/products/components/ProductsView.tsx` L123, L126
+### 42 ï¿½ `src/features/products/components/ProductsView.tsx` L123, L126
 
-`<h1>` ? `<Heading level={1}>` � `<p>` ? `<Text>`
+`<h1>` ? `<Heading level={1}>` ï¿½ `<p>` ? `<Text>`
 
 - [x] Fix; update `__tests__/ProductsView.test.tsx`
 
-### 43 � `src/components/seller/SellerTopProducts.tsx` L28�30
+### 43 ï¿½ `src/components/seller/SellerTopProducts.tsx` L28ï¿½30
 
 `<h2>` ? `<Heading level={2}>`
 
 - [x] Fix; update `__tests__/SellerTopProducts.test.tsx`
 
-### 44 � `src/components/seller/SellerPayoutRequestForm.tsx` L75�77
+### 44 ï¿½ `src/components/seller/SellerPayoutRequestForm.tsx` L75ï¿½77
 
 `<h2>` ? `<Heading level={2}>`
 
 - [x] Fix; update `__tests__/SellerPayoutRequestForm.test.tsx`
 
-### 45 � `src/components/seller/SellerRevenueChart.tsx` L54�56
+### 45 ï¿½ `src/components/seller/SellerRevenueChart.tsx` L54ï¿½56
 
 `<h2>` ? `<Heading level={2}>`
 
 - [x] Fix; update `__tests__/SellerRevenueChart.test.tsx`
 
-### 46 � `src/components/user/profile/ProfileHeader.tsx` L62
+### 46 ï¿½ `src/components/user/profile/ProfileHeader.tsx` L62
 
 `<h1>` ? `<Heading level={1}>`
 
 - [x] Fix; update `__tests__/ProfileHeader.test.tsx`
 
-### 47 � `src/components/user/settings/ProfileInfoForm.tsx` L86
+### 47 ï¿½ `src/components/user/settings/ProfileInfoForm.tsx` L86
 
 `<h3>` ? `<Heading level={3}>`
 
 - [x] Fix; update `__tests__/ProfileInfoForm.test.tsx`
 
-### 48 � `src/components/user/addresses/AddressForm.tsx` L188
+### 48 ï¿½ `src/components/user/addresses/AddressForm.tsx` L188
 
 `<label>` ? `<Label>`
 
 - [x] Fix; update `__tests__/AddressForm.test.tsx`
 
-### 49 � `src/components/user/notifications/NotificationsBulkActions.tsx` L24
+### 49 ï¿½ `src/components/user/notifications/NotificationsBulkActions.tsx` L24
 
 `<h1>` ? `<Heading level={1}>`
 
 - [x] Fix; update `__tests__/NotificationsBulkActions.test.tsx`
 
-### 50 � `src/features/seller/components/SellerStatCard.tsx` L45
+### 50 ï¿½ `src/features/seller/components/SellerStatCard.tsx` L45
 
 `<p>` ? `<Text size="3xl" weight="bold">` (preserve the large bold stat style via props, not class string)
 
 - [x] Fix; update `__tests__/SellerStatCard.test.tsx`
 
-### 51 � `src/features/seller/components/SellerProductCard.tsx` L42, L46
+### 51 ï¿½ `src/features/seller/components/SellerProductCard.tsx` L42, L46
 
-`<p>` ? `<Text>` �2
+`<p>` ? `<Text>` ï¿½2
 
 - [x] Fix; update `__tests__/SellerProductCard.test.tsx`
 
-### 52 � `src/features/events/components/SurveyEventSection.tsx` L49
+### 52 ï¿½ `src/features/events/components/SurveyEventSection.tsx` L49
 
 `<p>` ? `<Text size="sm" variant="secondary">`
 
 - [x] Fix; update `__tests__/SurveyEventSection.test.tsx`
 
-### 53 � `src/features/events/components/EventTypeConfig/FeedbackConfigForm.tsx` L25
+### 53 ï¿½ `src/features/events/components/EventTypeConfig/FeedbackConfigForm.tsx` L25
 
 `<label>` ? `<Label>`
 
@@ -986,7 +1000,7 @@ All typography fixes use the same pattern: import `Heading`/`Text`/`Label` from 
 
 ---
 
-### 54 � `src/components/admin/products/ProductTableColumns.tsx` L69
+### 54 ï¿½ `src/components/admin/products/ProductTableColumns.tsx` L69
 
 **Rule 5**
 
@@ -1001,7 +1015,7 @@ import { formatCurrency } from "@/utils";
 
 - [x] Fix; update `__tests__/ProductTableColumns.test.tsx`
 
-### 55 � `src/components/admin/coupons/CouponTableColumns.tsx` L88
+### 55 ï¿½ `src/components/admin/coupons/CouponTableColumns.tsx` L88
 
 **Rule 5**
 
@@ -1015,7 +1029,7 @@ import { formatCurrency } from "@/utils";
 
 - [x] Fix; update `__tests__/CouponTableColumns.test.tsx`
 
-### 56 � `src/components/admin/AdminStatsCards.tsx` L92
+### 56 ï¿½ `src/components/admin/AdminStatsCards.tsx` L92
 
 **Rule 5**
 
@@ -1029,7 +1043,7 @@ import { formatCurrency } from "@/utils";
 
 - [x] Fix; update `__tests__/AdminStatsCards.test.tsx`
 
-### 57 � `src/components/homepage/TopCategoriesSection.tsx` L148
+### 57 ï¿½ `src/components/homepage/TopCategoriesSection.tsx` L148
 
 **Rule 5**
 
@@ -1043,7 +1057,7 @@ import { formatCurrency } from "@/utils";
 
 - [x] Fix; update `__tests__/TopCategoriesSection.test.tsx`
 
-### 58 � `src/components/homepage/WhatsAppCommunitySection.tsx` L86
+### 58 ï¿½ `src/components/homepage/WhatsAppCommunitySection.tsx` L86
 
 **Rule 5**
 
@@ -1060,7 +1074,7 @@ import { formatCurrency } from "@/utils";
 
 - [x] Fix; update `__tests__/WhatsAppCommunitySection.test.tsx`
 
-### 59 � `src/components/faq/FAQAccordion.tsx` L150
+### 59 ï¿½ `src/components/faq/FAQAccordion.tsx` L150
 
 **Rule 5**
 
@@ -1077,7 +1091,7 @@ import { formatCurrency } from "@/utils";
 
 - [x] Fix; update `__tests__/FAQAccordion.test.tsx`
 
-### 60 � `src/components/admin/ImageUpload.tsx` L65
+### 60 ï¿½ `src/components/admin/ImageUpload.tsx` L65
 
 **Rule 5**
 
@@ -1089,12 +1103,12 @@ import { formatCurrency } from "@/utils";
 
 - [x] Fix; update `__tests__/ImageUpload.test.tsx`
 
-### 61 � `src/components/modals/ImageCropModal.tsx` L218, L342, L343
+### 61 ï¿½ `src/components/modals/ImageCropModal.tsx` L218, L342, L343
 
 **Rule 5**
 
 ```tsx
-// DELETE all .toFixed(0) calls � they are already integer values
+// DELETE all .toFixed(0) calls ï¿½ they are already integer values
 // L218:
 {Math.round(zoom * 100)}%               // was: {Math.round(zoom * 100).toFixed(0)}%
 // L342:
@@ -1107,7 +1121,7 @@ import { formatCurrency } from "@/utils";
 
 ---
 
-### 62 � `src/features/admin/components/AdminPayoutsView.tsx` L61, L68
+### 62 ï¿½ `src/features/admin/components/AdminPayoutsView.tsx` L61, L68
 
 **Rule 5**
 
@@ -1120,7 +1134,7 @@ isSameMonth(p.processedAt, nowMs());
 
 - [x] Fix both lines; update `__tests__/AdminPayoutsView.test.tsx`
 
-### 63 � `src/components/homepage/FeaturedAuctionsSection.tsx` L165
+### 63 ï¿½ `src/components/homepage/FeaturedAuctionsSection.tsx` L165
 
 **Rule 5**
 
@@ -1132,7 +1146,7 @@ const now = nowMs();
 
 - [x] Fix; update `__tests__/FeaturedAuctionsSection.test.tsx`
 
-### 64 � `src/components/auctions/AuctionCard.tsx` L35
+### 64 ï¿½ `src/components/auctions/AuctionCard.tsx` L35
 
 **Rule 5**
 
@@ -1144,7 +1158,7 @@ const diff = end.getTime() - nowMs();
 
 - [x] Fix; update `__tests__/AuctionCard.test.tsx`
 
-### 65 � `src/components/layout/Footer.tsx` L206
+### 65 ï¿½ `src/components/layout/Footer.tsx` L206
 
 **Rule 5**
 
@@ -1156,7 +1170,7 @@ year: currentYear();
 
 - [x] Fix; update `__tests__/Footer.test.tsx`
 
-### 66 � `src/components/feedback/Toast.tsx` L72
+### 66 ï¿½ `src/components/feedback/Toast.tsx` L72
 
 **Rule 5**
 
@@ -1168,7 +1182,7 @@ const id = nowMs().toString();
 
 - [x] Fix; update `__tests__/Toast.test.tsx`
 
-### 67 � `src/components/ErrorBoundary.tsx` L115
+### 67 ï¿½ `src/components/ErrorBoundary.tsx` L115
 
 **Rule 5**
 
@@ -1180,7 +1194,7 @@ timestamp: nowISO();
 
 - [x] Fix; update `__tests__/ErrorBoundary.test.tsx`
 
-### 68 � `src/lib/email.ts` L350, L397
+### 68 ï¿½ `src/lib/email.ts` L350, L397
 
 **Rule 5**
 
@@ -1198,7 +1212,7 @@ formatDateTime(nowMs());
 
 ---
 
-### 69 � `src/features/user/components/UserOrdersView.tsx` L94
+### 69 ï¿½ `src/features/user/components/UserOrdersView.tsx` L94
 
 **Rule 32**
 
@@ -1216,7 +1230,7 @@ import { Tabs } from "@/components";
 
 - [x] Fix; update `__tests__/UserOrdersView.test.tsx`
 
-### 70 � `src/components/homepage/FAQSection.tsx` L58
+### 70 ï¿½ `src/components/homepage/FAQSection.tsx` L58
 
 **Rule 32**
 
@@ -1234,7 +1248,7 @@ import { Tabs } from "@/components";
 
 - [x] Fix; update `__tests__/FAQSection.test.tsx`
 
-### 71 � `src/components/products/ProductImageGallery.tsx` L48
+### 71 ï¿½ `src/components/products/ProductImageGallery.tsx` L48
 
 **Rule 32**
 
@@ -1247,7 +1261,7 @@ import { HorizontalScroller } from '@/components';
 
 - [x] Fix; update `__tests__/ProductImageGallery.test.tsx`
 
-### 72 � `src/components/homepage/HeroCarousel.tsx` L155
+### 72 ï¿½ `src/components/homepage/HeroCarousel.tsx` L155
 
 **Rule 32**
 
@@ -1260,9 +1274,9 @@ import { HorizontalScroller } from '@/components';
 
 - [x] Fix; update `__tests__/HeroCarousel.test.tsx`
 
-### 73 � `src/components/layout/BottomNavbar.tsx` L111
+### 73 ï¿½ `src/components/layout/BottomNavbar.tsx` L111
 
-**Rule 32** � Preferred fix: remove scroll; fallback: HorizontalScroller.
+**Rule 32** ï¿½ Preferred fix: remove scroll; fallback: HorizontalScroller.
 
 ```tsx
 // AUDIT FIRST: count nav items, measure at 375 px
@@ -1278,7 +1292,7 @@ import { HorizontalScroller } from '@/components';
 
 ---
 
-### 74 � `src/app/api/payment/webhook/route.ts` L48, L56
+### 74 ï¿½ `src/app/api/payment/webhook/route.ts` L48, L56
 
 **Rule 13**
 
@@ -1287,7 +1301,7 @@ import { HorizontalScroller } from '@/components';
 return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
 return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
 
-// REPLACE � throw inside try, caught by handleApiError:
+// REPLACE ï¿½ throw inside try, caught by handleApiError:
 import { AuthenticationError, ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 throw new AuthenticationError(ERROR_MESSAGES.AUTH.INVALID_SIGNATURE);
@@ -1299,7 +1313,7 @@ throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_JSON);
 
 ---
 
-### 75 � `src/app/api/auth/login/route.ts` L61
+### 75 ï¿½ `src/app/api/auth/login/route.ts` L61
 
 **Rule 12**
 
@@ -1317,7 +1331,7 @@ Delete unused `getFirestore`, `getAdminApp` imports.
 
 - [x] Refactor; update `__tests__/route.test.ts`
 
-### 76 � `src/app/api/auth/register/route.ts` L76
+### 76 ï¿½ `src/app/api/auth/register/route.ts` L76
 
 **Rule 12**
 
@@ -1330,7 +1344,7 @@ await userRepository.create(newUserData);
 
 - [x] Refactor; update `__tests__/route.test.ts`
 
-### 77 � `src/app/api/auth/session/route.ts` L49
+### 77 ï¿½ `src/app/api/auth/session/route.ts` L49
 
 **Rule 12**
 
@@ -1344,7 +1358,7 @@ await sessionRepository.create(sessionData);
 
 ---
 
-### 78 � `src/hooks/useRealtimeBids.ts` L17
+### 78 ï¿½ `src/hooks/useRealtimeBids.ts` L17
 
 **Rule 11**
 
@@ -1366,7 +1380,7 @@ const db = getDatabase(realtimeApp);
 
 - [x] Fix; update `__tests__/useRealtimeBids.test.ts`
 
-### 79 � `src/contexts/SessionContext.tsx` L25
+### 79 ï¿½ `src/contexts/SessionContext.tsx` L25
 
 **Rule 11**
 
@@ -1378,13 +1392,13 @@ import type { User } from "firebase/auth";
 import type { AuthUser } from "@/types/auth";
 ```
 
-Replace all uses of `User` in the file with `AuthUser`. Add missing fields to `src/types/auth/index.ts` if needed � do not keep `User` as a fallback.
+Replace all uses of `User` in the file with `AuthUser`. Add missing fields to `src/types/auth/index.ts` if needed ï¿½ do not keep `User` as a fallback.
 
 - [x] Fix; update `src/types/auth/index.ts` if needed; update `__tests__/SessionContext.test.tsx`
 
 ---
 
-## WAVE 4 � Page Decompositions
+## WAVE 4 ï¿½ Page Decompositions
 
 **Pattern for every page**:
 
@@ -1404,7 +1418,7 @@ export default function XxxPage() {
 
 ---
 
-### 80 � `src/app/[locale]/demo/seed/page.tsx` � 648 lines
+### 80 ï¿½ `src/app/[locale]/demo/seed/page.tsx` ï¿½ 648 lines
 
 **Rules 10, 20**
 
@@ -1413,83 +1427,283 @@ Inside `DemoSeedView`, replace the direct `fetch('/api/demo/seed', ...)` call wi
 
 - [x] Create `DemoSeedView.tsx`; gut page; export from `src/features/admin/index.ts`; create `__tests__/DemoSeedView.test.tsx`
 
-### 81 � `src/app/[locale]/user/settings/page.tsx` � 211 lines
+### 81 ï¿½ `src/app/[locale]/user/settings/page.tsx` ï¿½ 211 lines
 
 Extract to `src/features/user/components/UserSettingsView.tsx`
 
 - [x] Create view; gut page; export from `src/features/user/index.ts`; create `__tests__`
 
-### 82 � `src/app/[locale]/blog/[slug]/page.tsx` � 210 lines
+### 82 ï¿½ `src/app/[locale]/blog/[slug]/page.tsx` ï¿½ 210 lines
 
 Extract to `src/features/blog/components/BlogPostView.tsx`
 
 - [x] Create view; gut page; export from `src/features/blog/index.ts`; create `__tests__`
 
-### 83 � `src/app/[locale]/seller/products/[id]/edit/page.tsx` � 202 lines
+### 83 ï¿½ `src/app/[locale]/seller/products/[id]/edit/page.tsx` ï¿½ 202 lines
 
 Extract to `src/features/seller/components/SellerEditProductView.tsx`
 
 - [x] Create view; gut page; export from `src/features/seller/index.ts`; create `__tests__`
 
-### 84 � `src/app/[locale]/user/addresses/page.tsx` � 189 lines
+### 84 ï¿½ `src/app/[locale]/user/addresses/page.tsx` ï¿½ 189 lines
 
 Extract to `src/features/user/components/UserAddressesView.tsx`
 
 - [x] Create view; gut page; export from `src/features/user/index.ts`; create `__tests__`
 
-### 85 � `src/app/[locale]/products/[slug]/page.tsx` � 179 lines
+### 85 ï¿½ `src/app/[locale]/products/[slug]/page.tsx` ï¿½ 179 lines
 
 Extract to `src/features/products/components/ProductDetailView.tsx`
 
 - [x] Create view; gut page; export from `src/features/products/index.ts`; create `__tests__`
 
-### 86 � `src/app/[locale]/sellers/page.tsx` � 179 lines
+### 86 ï¿½ `src/app/[locale]/sellers/page.tsx` ï¿½ 179 lines
 
 Extract to `src/features/seller/components/SellersListView.tsx`
 
 - [x] Create view; gut page; export from `src/features/seller/index.ts`; create `__tests__`
 
-### 87 � `src/app/[locale]/about/page.tsx` � 177 lines
+### 87 ï¿½ `src/app/[locale]/about/page.tsx` ï¿½ 177 lines
 
 Extract to `src/components/about/AboutView.tsx`
 
 - [x] Create view; gut page; create `__tests__`
 
-### 88 � `src/app/[locale]/admin/media/page.tsx` � 174 lines
+### 88 ï¿½ `src/app/[locale]/admin/media/page.tsx` ï¿½ 174 lines
 
 Extract to `src/features/admin/components/AdminMediaView.tsx`
 
 - [x] Create view; gut page; export from `src/features/admin/index.ts`; create `__tests__`
 
-### 89 � `src/app/[locale]/cart/page.tsx` � 164 lines
+### 89 ï¿½ `src/app/[locale]/cart/page.tsx` ï¿½ 164 lines
 
 Extract to `src/features/cart/components/CartView.tsx`
 
 - [x] Create view; gut page; export from `src/features/cart/index.ts`; create `__tests__`
 
-### 90 � `src/app/[locale]/admin/site/page.tsx` � 162 lines
+### 90 ï¿½ `src/app/[locale]/admin/site/page.tsx` ï¿½ 162 lines
 
 Extract to `src/features/admin/components/AdminSiteView.tsx`
 
 - [x] Create view; gut page; export from `src/features/admin/index.ts`; create `__tests__`
 
-### 91 � `src/app/[locale]/user/notifications/page.tsx` � 156 lines
+### 91 ï¿½ `src/app/[locale]/user/notifications/page.tsx` ï¿½ 156 lines
 
 Extract to `src/features/user/components/UserNotificationsView.tsx`
 
 - [x] Create view; gut page; export from `src/features/user/index.ts`; create `__tests__`
 
-### 92 � `src/app/[locale]/admin/events/page.tsx` � 153 lines
+### 92 ï¿½ `src/app/[locale]/admin/events/page.tsx` ï¿½ 153 lines
 
 Extract to `src/features/admin/components/AdminEventsView.tsx`
 
 - [x] Create view; gut page; export from `src/features/admin/index.ts`; create `__tests__`
 
-### 93 � `src/app/[locale]/user/addresses/edit/[id]/page.tsx` � 150 lines
+### 93 ï¿½ `src/app/[locale]/user/addresses/edit/[id]/page.tsx` ï¿½ 150 lines
 
 Extract to `src/features/user/components/UserEditAddressView.tsx`
 
 - [x] Create view; gut page; export from `src/features/user/index.ts`; create `__tests__`
+
+---
+
+## WAVE 5 — Newly Discovered Violations (re-run #4, 2026-03-02)
+
+All typography fixes follow the same pattern: import `Heading`/`Text`/`Label` from `@/components`, replace raw tag, delete unused class variables.
+
+---
+
+### 94 — `src/components/user/addresses/AddressCard.tsx`
+
+**Rules 7, 31** — 7 violations.
+
+```tsx
+// L65: h3 → Heading(3)
+import { Heading, Text } from '@/components';
+<Heading level={3}>{address.label}</Heading>
+
+// L98, 101, 102, 103, 104, 107: p → Text  (×6)
+<Text size="sm" weight="medium">{address.recipientName}</Text>
+<Text size="sm">{address.phone}</Text>
+<Text size="sm">{address.addressLine1}</Text>
+{address.addressLine2 && <Text size="sm">{address.addressLine2}</Text>}
+<Text size="sm">{...}</Text>
+<Text size="sm">{address.country}</Text>
+```
+
+- [x] Fix all 7; update `__tests__/AddressCard.test.tsx`
+
+---
+
+### 95 — `src/features/seller/components/SellersListView.tsx`
+
+**Rules 7, 31** — 13 violations.
+
+```tsx
+import { Heading, Text } from "@/components";
+// L34: h1 → Heading(1)
+// L72, 101, 123, 145: h2 → Heading(2)  (×4)
+// L85, 112, 134: h3 → Heading(3)  (×3)
+// L35, 62, 63, 115, 137, 152: p → Text  (×6) — match colour variants to context
+```
+
+- [x] Fix all 13; update `__tests__/SellersListView.test.tsx`
+
+---
+
+### 96 — `src/components/user/orders/OrderTrackingView.tsx`
+
+**Rules 7, 31** — 3 violations.
+
+```tsx
+import { Heading, Text } from "@/components";
+// L256: h1 → Heading(1)
+// L259: p → Text variant="secondary" size="sm"
+// L293: h2 → Heading(2)
+```
+
+- [x] Fix all 3; update `__tests__/OrderTrackingView.test.tsx`
+
+---
+
+### 97 — `src/components/user/notifications/NotificationItem.tsx`
+
+**Rules 7, 31** — 3 violations.
+
+```tsx
+import { Text } from "@/components";
+// L58: p font-semibold → Text weight="semibold" size="sm"
+// L65: p → Text size="sm" variant="secondary"
+// L68: p → Text size="xs" variant="secondary"
+```
+
+- [x] Fix all 3; update `__tests__/NotificationItem.test.tsx`
+
+---
+
+### 98 — `src/features/products/components/ProductDetailView.tsx`
+
+**Rules 7, 31** — 2 violations (in "not found" state block).
+
+```tsx
+import { Heading, Text } from "@/components";
+// L66: h1 → Heading(1)
+// L69: p → Text variant="secondary" size="sm"
+```
+
+- [x] Fix both; update `__tests__/ProductDetailView.test.tsx`
+
+---
+
+### 99 — `src/components/user/addresses/AddressForm.tsx`
+
+**Rules 7, 8, 31** — checkbox wrapper uses raw `<label>` + `<input type="checkbox">`. Replace the entire block with `<Checkbox>` from `@/components`.
+
+```tsx
+// DELETE L188–196:
+<label className="flex items-center gap-2">
+  <input type="checkbox" checked={formData.isDefault} onChange={...} className="..." />
+  <span className="text-sm">Set as default address</span>
+</label>
+
+// REPLACE:
+import { Checkbox } from '@/components';
+<Checkbox
+  checked={formData.isDefault}
+  onChange={(checked) => handleChange('isDefault', checked)}
+  label={t('form.setAsDefault')}
+/>
+```
+
+- [x] Fix; add translation key `form.setAsDefault`; update `__tests__/AddressForm.test.tsx`
+
+---
+
+### 100 — `src/components/user/profile/ProfileStatsGrid.tsx`
+
+**Rules 7, 31** — 1 violation.
+
+```tsx
+// L127: <p className="text-3xl font-bold mt-1">{stat.value}</p>
+import { Text } from "@/components";
+<Text size="3xl" weight="bold" className="mt-1">
+  {stat.value}
+</Text>;
+```
+
+- [x] Fix; update `__tests__/ProfileStatsGrid.test.tsx`
+
+---
+
+### 101 — `src/components/user/settings/EmailVerificationCard.tsx`
+
+**Rules 7, 31** — 1 violation.
+
+```tsx
+// L53: <h3 className={typography.cardTitle}>
+import { Heading } from '@/components';
+<Heading level={3}>{...}</Heading>
+```
+
+- [x] Fix; update `__tests__/EmailVerificationCard.test.tsx`
+
+---
+
+### 102 — `src/components/user/settings/PhoneVerificationCard.tsx`
+
+**Rules 7, 31** — 1 violation.
+
+```tsx
+// L58: <h3 className={typography.cardTitle}>
+import { Heading } from '@/components';
+<Heading level={3}>{...}</Heading>
+```
+
+- [x] Fix; update `__tests__/PhoneVerificationCard.test.tsx`
+
+---
+
+### 103 — `src/components/ui/AddressSelectorCreate.tsx`
+
+**Rules 7, 31** — 1 violation.
+
+```tsx
+// L99: <label className={`block ${typography.label} mb-1`}>{label}</label>
+import { Label } from "@/components";
+<Label className="mb-1">{label}</Label>;
+```
+
+- [x] Fix; update `__tests__/AddressSelectorCreate.test.tsx`
+
+---
+
+### 104 — `src/components/utility/Search.tsx`
+
+**Rules 7, 31** — 1 violation.
+
+```tsx
+// L142: <p className={`${THEME_CONSTANTS.themed.textSecondary} text-sm`}>
+import { Text } from '@/components';
+<Text variant="secondary" size="sm">{...}</Text>
+```
+
+- [x] Fix; update `__tests__/Search.test.tsx`
+
+---
+
+### 105 — `src/components/ui/FilterFacetSection.tsx`
+
+**Rules 7, 31** — 1 violation (missed in task 13).
+
+```tsx
+// L160: <p className={`text-xs ${themed.textSecondary} py-1`}>
+import { Text } from "@/components";
+<Text size="xs" variant="secondary" className="py-1">
+  {tTable("noResults")}
+</Text>;
+```
+
+- [x] Fix; update `__tests__/FilterFacetSection.test.tsx`
 
 ---
 
@@ -1508,11 +1722,12 @@ Then re-run the audit to confirm zero remaining violations.
 
 ## Summary
 
-| Wave                       | Tasks  | Files touched           | Violations cleared                 |
-| -------------------------- | ------ | ----------------------- | ---------------------------------- |
-| 0 � Prerequisites          | 11     | 9 new + 2 modified      | Unblocks everything                |
-| 1 � Tier 1 Primitives      | 5      | 5                       | 5 (propagates to entire app)       |
-| 2 � Multi-violation files  | 23     | 23                      | ~70 individual violations          |
-| 3 � Single-violation files | 40     | 40                      | ~50 individual violations          |
-| 4 � Page decompositions    | 14     | 14 pages + 14 new views | 14 Rule 10 violations              |
-| **Total**                  | **93** | **107 files**           | **All audit re-run #3 violations** |
+| Wave                       | Tasks   | Files touched           | Violations cleared                       |
+| -------------------------- | ------- | ----------------------- | ---------------------------------------- |
+| 0 — Prerequisites          | 11      | 9 new + 2 modified      | Unblocks everything                      |
+| 1 — Tier 1 Primitives      | 5       | 5                       | 5 (propagates to entire app)             |
+| 2 — Multi-violation files  | 23      | 23                      | ~70 individual violations                |
+| 3 — Single-violation files | 40      | 40                      | ~50 individual violations                |
+| 4 — Page decompositions    | 14      | 14 pages + 14 new views | 14 Rule 10 violations                    |
+| 5 — Newly discovered       | 12      | 12                      | ~30 Typography (Rules 7,8,31) violations |
+| **Total**                  | **105** | **117 files**           | **All audit re-run #4 violations**       |

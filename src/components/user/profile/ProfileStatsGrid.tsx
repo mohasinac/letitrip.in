@@ -124,7 +124,7 @@ export function ProfileStatsGrid({
               >
                 {stat.label}
               </Text>
-              <p className="text-3xl font-bold mt-1">{stat.value}</p>
+              <Text className="text-3xl font-bold mt-1">{stat.value}</Text>
             </div>
             <div className="text-gray-400 dark:text-gray-500">{stat.icon}</div>
           </div>

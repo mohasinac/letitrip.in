@@ -84,7 +84,13 @@ describe("SurveyConfigForm", () => {
       <SurveyConfigForm
         value={{
           formFields: [
-            { id: "f1", type: "text", label: "Name", required: false },
+            {
+              id: "f1",
+              type: "text",
+              label: "Name",
+              required: false,
+              order: 0,
+            },
           ],
         }}
         onChange={jest.fn()}

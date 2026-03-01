@@ -83,4 +83,13 @@ describe("EmailVerificationCard", () => {
     );
     expect(screen.getByText("sending")).toBeInTheDocument();
   });
+
+  it("renders emailVerificationTitle inside an h3 element (Heading level={3})", () => {
+    const { container } = render(
+      <EmailVerificationCard email="user@example.com" isVerified={false} />,
+    );
+    const heading = container.querySelector("h3");
+    expect(heading).toBeInTheDocument();
+    expect(heading).toHaveTextContent("emailVerificationTitle");
+  });
 });
