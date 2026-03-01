@@ -105,10 +105,10 @@
 | 87                                                                                                   | `src/app/[locale]/about/page.tsx`                     | 10                                                                          | 177 lines ? AboutView                                              |
 | 88                                                                                                   | `src/app/[locale]/admin/media/page.tsx`               | 10                                                                          | 174 lines ? AdminMediaView                                         |
 | 89                                                                                                   | `src/app/[locale]/cart/page.tsx`                      | 10                                                                          | 164 lines ? CartView                                               |
-| 90                                                                                                   | `src/app/[locale]/admin/site/page.tsx`                | 10                                                                          | 162 lines ? AdminSiteView                                          |
-| 91                                                                                                   | `src/app/[locale]/user/notifications/page.tsx`        | 10                                                                          | 156 lines ? UserNotificationsView                                  |
-| 92                                                                                                   | `src/app/[locale]/admin/events/page.tsx`              | 10                                                                          | 153 lines ? AdminEventsView                                        |
-| 93                                                                                                   | `src/app/[locale]/user/addresses/edit/[id]/page.tsx`  | 10                                                                          | 150 lines ? UserEditAddressView                                    |
+| ~~90~~                                                                                               | `src/app/[locale]/admin/site/page.tsx`                | 10                                                                          | 162 lines ? AdminSiteView                                          |
+| ~~91~~                                                                                               | `src/app/[locale]/user/notifications/page.tsx`        | 10                                                                          | 156 lines ? UserNotificationsView                                  |
+| ~~92~~                                                                                               | `src/app/[locale]/admin/events/page.tsx`              | 10                                                                          | 153 lines ? AdminEventsView                                        |
+| ~~93~~                                                                                               | `src/app/[locale]/user/addresses/edit/[id]/page.tsx`  | 10                                                                          | 150 lines ? UserEditAddressView                                    |
 
 ---
 
@@ -1471,25 +1471,25 @@ Extract to `src/features/cart/components/CartView.tsx`
 
 Extract to `src/features/admin/components/AdminSiteView.tsx`
 
-- [ ] Create view; gut page; export from `src/features/admin/index.ts`; create `__tests__`
+- [x] Create view; gut page; export from `src/features/admin/index.ts`; create `__tests__`
 
 ### 91 � `src/app/[locale]/user/notifications/page.tsx` � 156 lines
 
 Extract to `src/features/user/components/UserNotificationsView.tsx`
 
-- [ ] Create view; gut page; export from `src/features/user/index.ts`; create `__tests__`
+- [x] Create view; gut page; export from `src/features/user/index.ts`; create `__tests__`
 
 ### 92 � `src/app/[locale]/admin/events/page.tsx` � 153 lines
 
 Extract to `src/features/admin/components/AdminEventsView.tsx`
 
-- [ ] Create view; gut page; export from `src/features/admin/index.ts`; create `__tests__`
+- [x] Create view; gut page; export from `src/features/admin/index.ts`; create `__tests__`
 
 ### 93 � `src/app/[locale]/user/addresses/edit/[id]/page.tsx` � 150 lines
 
 Extract to `src/features/user/components/UserEditAddressView.tsx`
 
-- [ ] Create view; gut page; export from `src/features/user/index.ts`; create `__tests__`
+- [x] Create view; gut page; export from `src/features/user/index.ts`; create `__tests__`
 
 ---
 

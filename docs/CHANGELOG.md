@@ -13,6 +13,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### Refactor Audit Wave 4 — Page Decompositions (Tasks 90–93) (2026-03-02)
+
+#### Refactored
+
+- **`src/app/[locale]/admin/site/page.tsx`** — Extracted 162-line page into `AdminSiteView` feature component (Rule 10). Page is now a 5-line shell.
+- **`src/app/[locale]/user/notifications/page.tsx`** — Extracted 156-line page into `UserNotificationsView` feature component (Rule 10). Page is now a 5-line shell.
+- **`src/app/[locale]/admin/events/page.tsx`** — Extracted 153-line page into `AdminEventsView` feature component (Rule 10). Page is now a 5-line shell.
+- **`src/app/[locale]/user/addresses/edit/[id]/page.tsx`** — Extracted 150-line page into `UserEditAddressView` feature component (Rule 10). Page is now a 5-line shell.
+
+#### Added
+
+- **`src/features/admin/components/AdminSiteView.tsx`** — New feature view component for admin site settings management.
+- **`src/features/user/components/UserNotificationsView.tsx`** — New feature view component for user notifications page.
+- **`src/features/admin/components/AdminEventsView.tsx`** — New feature view component for admin events list management.
+- **`src/features/user/components/UserEditAddressView.tsx`** — New feature view component for editing a user's saved address.
+- Test files created for all four new view components.
+
+#### Exports
+
+- `src/features/admin/index.ts` — Added `AdminSiteView`, `AdminEventsView` exports.
+- `src/features/user/components/index.ts` — Added `UserNotificationsView`, `UserEditAddressView` exports.
+
+---
+
 ### Refactor Audit Wave 3 — Single-Violation Files (2026-03-03)
 
 #### Changed
