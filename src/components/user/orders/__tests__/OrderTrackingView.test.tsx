@@ -37,6 +37,9 @@ jest.mock("@/components", () => ({
     level?: number;
   }) => React.createElement(`h${level ?? 2}`, {}, children),
   Text: ({ children }: { children: React.ReactNode }) => <p>{children}</p>,
+  Caption: ({ children }: { children: React.ReactNode }) => (
+    <span>{children}</span>
+  ),
 }));
 
 jest.mock("@/constants", () => ({

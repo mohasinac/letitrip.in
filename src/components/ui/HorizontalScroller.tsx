@@ -550,9 +550,11 @@ export function HorizontalScroller<T = unknown>({
           {displayItems.map((item, i) => {
             const baseIndex = i % items.length;
             const copyIndex = Math.floor(i / items.length);
-            const key = keyExtractor
-              ? `${keyExtractor(item, baseIndex)}_c${copyIndex}`
-              : `${i}`;
+            const extractedKey = keyExtractor
+              ? keyExtractor(item, baseIndex)
+              : undefined;
+            const key =
+              extractedKey != null ? `${extractedKey}_c${copyIndex}` : `${i}`;
 
             const itemStyle: React.CSSProperties | undefined =
               resolvedIW && !isGrid

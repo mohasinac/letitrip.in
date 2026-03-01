@@ -36,6 +36,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-03-02] — Refactor Audit WAVE 5 task 96 completion
+
+### Fixed
+
+- **`OrderTrackingView`** — fixed 4 additional raw `<p>` tags missed in previous pass: tracking-number label → `Caption`, tracking-number value → `Text`, timeline step label → `Text` (variant driven by step state), timeline step description → `Text` (variant driven by step state); added `Caption` to component mock in test file (task 96).
+
+---
+
 ## [2026-03-02] — Refactor Audit Re-run #4
 
 ### Fixed

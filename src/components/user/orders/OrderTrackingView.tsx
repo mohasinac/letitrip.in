@@ -10,7 +10,7 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Card, Button, Heading, Text } from "@/components";
+import { Card, Button, Heading, Text, Caption } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatDate, formatRelativeTime } from "@/utils";
 import type { OrderDocument, OrderStatus } from "@/db/schema";
@@ -266,16 +266,12 @@ export function OrderTrackingView({ order, orderId }: OrderTrackingViewProps) {
         <Card className={THEME_CONSTANTS.spacing.cardPadding}>
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
-              <p
-                className={`text-xs font-semibold uppercase tracking-wider ${themed.textSecondary}`}
-              >
+              <Caption className="uppercase tracking-wider font-semibold">
                 {tOrders("trackingNumberLabel")}
-              </p>
-              <p
-                className={`mt-1 font-mono font-semibold text-lg ${themed.textPrimary}`}
-              >
+              </Caption>
+              <Text weight="semibold" size="lg" className="mt-1 font-mono">
                 {order.trackingNumber}
-              </p>
+              </Text>
             </div>
             <Button variant="secondary" size="sm" onClick={handleCopyTracking}>
               {copied
@@ -298,15 +294,16 @@ export function OrderTrackingView({ order, orderId }: OrderTrackingViewProps) {
                 <StepIcon state={step.state} />
                 <div className="flex-1 min-w-0 pb-2">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <p
-                      className={`font-semibold text-sm leading-tight ${
-                        step.state === "pending"
-                          ? themed.textSecondary
-                          : themed.textPrimary
-                      }`}
+                    <Text
+                      weight="semibold"
+                      size="sm"
+                      variant={
+                        step.state === "pending" ? "secondary" : "primary"
+                      }
+                      className="leading-tight"
                     >
                       {step.label}
-                    </p>
+                    </Text>
                     {step.date && (
                       <span className={`text-xs ${themed.textSecondary}`}>
                         {formatDate(step.date)}
@@ -315,15 +312,13 @@ export function OrderTrackingView({ order, orderId }: OrderTrackingViewProps) {
                       </span>
                     )}
                   </div>
-                  <p
-                    className={`text-sm mt-0.5 ${
-                      step.state === "pending"
-                        ? "text-gray-400 dark:text-gray-600"
-                        : themed.textSecondary
-                    }`}
+                  <Text
+                    size="sm"
+                    variant={step.state === "pending" ? "muted" : "secondary"}
+                    className="mt-0.5"
                   >
                     {step.description}
-                  </p>
+                  </Text>
                 </div>
               </div>
               {idx < steps.length - 1 && <Connector state={step.state} />}
