@@ -10,4 +10,6 @@ export { SellerPayoutRequestForm } from "./SellerPayoutRequestForm";
 export { SellerPayoutHistoryTable } from "./SellerPayoutHistoryTable";
 export type { PayoutSummary } from "./SellerPayoutStats";
 export type { PayoutRecord } from "./SellerPayoutHistoryTable";
+export { PAYOUT_TABLE_COLUMNS } from "./PayoutTableColumns";
+export type { PayoutStatus, PayoutMethod } from "./PayoutTableColumns";
 export { SellerStorefrontView } from "./SellerStorefrontView";

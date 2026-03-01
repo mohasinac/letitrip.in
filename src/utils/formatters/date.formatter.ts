@@ -325,3 +325,66 @@ export function isFuture(date: Date | string): boolean {
   const dateObj = typeof date === "string" ? new Date(date) : date;
   return dateObj.getTime() > Date.now();
 }
+
+/**
+ * Returns the current UTC epoch in milliseconds.
+ *
+ * @returns Current timestamp in ms (equivalent to Date.now())
+ *
+ * @example
+ * ```typescript
+ * const ts = nowMs(); // e.g. 1740000000000
+ * ```
+ */
+export function nowMs(): number {
+  return Date.now();
+}
+
+/**
+ * Checks whether two dates fall in the same calendar month and year.
+ *
+ * @param a - First date (Date object or numeric timestamp)
+ * @param b - Second date (Date object or numeric timestamp)
+ * @returns True when both dates share the same month and year
+ *
+ * @example
+ * ```typescript
+ * isSameMonth(new Date('2026-03-01'), new Date('2026-03-31')); // true
+ * isSameMonth(new Date('2026-03-01'), new Date('2026-04-01')); // false
+ * ```
+ */
+export function isSameMonth(a: Date | number, b: Date | number): boolean {
+  const da = new Date(a);
+  const db = new Date(b);
+  return (
+    da.getFullYear() === db.getFullYear() && da.getMonth() === db.getMonth()
+  );
+}
+
+/**
+ * Returns the current four-digit year as a string.
+ *
+ * @returns Current year, e.g. "2026"
+ *
+ * @example
+ * ```typescript
+ * currentYear(); // '2026'
+ * ```
+ */
+export function currentYear(): string {
+  return new Date(nowMs()).getFullYear().toString();
+}
+
+/**
+ * Returns the current instant as an ISO 8601 string.
+ *
+ * @returns ISO 8601 timestamp string, e.g. "2026-03-01T12:00:00.000Z"
+ *
+ * @example
+ * ```typescript
+ * nowISO(); // '2026-03-01T12:00:00.000Z'
+ * ```
+ */
+export function nowISO(): string {
+  return new Date(nowMs()).toISOString();
+}

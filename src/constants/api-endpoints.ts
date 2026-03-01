@@ -284,6 +284,11 @@ export const API_ENDPOINTS = {
     LEADERBOARD: (id: string) => `/api/events/${id}/leaderboard`,
   },
 
+  // Realtime DB custom token
+  REALTIME: {
+    TOKEN: "/api/realtime/token", // POST - Get Firebase custom token for Realtime DB
+  },
+
   // Notifications endpoints
   NOTIFICATIONS: {
     LIST: "/api/notifications", // GET - User's notifications (paginated)

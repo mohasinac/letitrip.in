@@ -13,6 +13,7 @@ export { AdminSessionsManager } from "./AdminSessionsManager";
 export { AdminPageHeader } from "./AdminPageHeader";
 export { AdminFilterBar } from "./AdminFilterBar";
 export { DrawerFormFooter } from "./DrawerFormFooter";
+export { SESSION_TABLE_COLUMNS } from "./SessionTableColumns";
 
 // Phase 4: Admin Dashboard
 export {

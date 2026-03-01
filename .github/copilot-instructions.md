@@ -1,6 +1,6 @@
 # LetItRip Copilot Instructions
 
-> **These are MANDATORY rules. Every line of code you write MUST comply.**
+> **These are MANDATORY rules. Every line of code you write MUST comply — across every tier, every component, every sub-component, every feature, every hook, and every utility. No file is exempt, regardless of where it lives in the codebase.**
 > For detailed codebase reference, see `docs/GUIDE.md`.
 
 ---
@@ -423,6 +423,47 @@ const { spacing, themed, typography, borderRadius } = THEME_CONSTANTS;
 | Ordinal suffix (1st, 2nd…) | `formatOrdinal(n)` | Custom switch/if |
 | Clamp to range | `clamp(value, min, max)` | `Math.min(Math.max(...))` inline |
 
+### Date Utilities (from `@/utils`)
+
+**NEVER use `new Date()`, `Date.now()`, `toLocaleDateString()`, `toLocaleTimeString()`, manual timestamp arithmetic, or raw `Intl.DateTimeFormat` calls outside `@/utils`. Every date operation MUST go through the central date utilities.**
+
+| Need | Use | NOT |
+|------|-----|-----|
+| Display a date (e.g. "Mar 1, 2026") | `formatDate(date)` | `date.toLocaleDateString(...)` |
+| Display a time (e.g. "14:30") | `formatTime(date)` | `date.toLocaleTimeString(...)` |
+| Display date + time | `formatDateTime(date)` | Manual template literal |
+| Relative time ("3 days ago", "in 2 hours") | `formatRelativeTime(date)` | `Intl.RelativeTimeFormat` manual |
+| Format a date range ("Mar 1 – Mar 5") | `formatDateRange(start, end)` | Manual two-call concat |
+| Human-friendly duration ("2h 30m") | `formatDuration(ms)` | Manual floor/modulo chain |
+| Countdown string ("3d 4h 12m 5s") | `formatCountdown(targetDate)` | Manual diff calculation |
+| Check if date is today | `isToday(date)` | Manual `getDate()` comparison |
+| Check if date is in the past | `isPast(date)` | `date < new Date()` |
+| Check if date is in the future | `isFuture(date)` | `date > new Date()` |
+| Check if two dates are the same day | `isSameDay(a, b)` | Manual date string comparison |
+| Start of a day (midnight) | `startOfDay(date)` | Manual `setHours(0,0,0,0)` |
+| End of a day (23:59:59.999) | `endOfDay(date)` | Manual `setHours(23,59,59,999)` |
+| Add N days to a date | `addDays(date, n)` | Manual `getDate() + n` |
+| Subtract N days from a date | `subtractDays(date, n)` | Manual `getDate() - n` |
+| Safe parse a date string | `parseDate(str)` | `new Date(str)` (silently produces Invalid Date) |
+| Firestore Timestamp → JS Date | `fromFirestoreTimestamp(ts)` | `ts.toDate()` inline |
+| JS Date → Firestore Timestamp | `toFirestoreTimestamp(date)` | `admin.firestore.Timestamp.fromDate(date)` inline |
+| Get current UTC epoch (ms) | `nowMs()` | `Date.now()` |
+
+```ts
+// WRONG — scattered date logic
+const label = new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+const isExpired = new Date() > new Date(coupon.expiresAt);
+const diff = Math.floor((Date.now() - date.getTime()) / 86400000);
+
+// RIGHT — central date utils
+import { formatDate, isPast, formatRelativeTime } from '@/utils';
+const label    = formatDate(order.createdAt);
+const isExpired = isPast(coupon.expiresAt);
+const diff     = formatRelativeTime(date);
+```
+
+**If a date util doesn't exist yet:** add it to `src/utils/formatters/date.formatter.ts` and export via `src/utils/index.ts`. Do NOT implement inline.
+
 ### Converter Utilities (from `@/utils`)
 
 | Need | Use | NOT |
@@ -610,6 +651,119 @@ import { Heading, Text, Label, Caption } from '@/components';
 
 **When a variant or size you need doesn’t exist yet**: add it inside `src/components/typography/Typography.tsx` following the existing pattern — then use it. Do not compensate with ad-hoc Tailwind on the element.
 
+### Typography in Context — Cards, Sections, Modals, Tables, Alerts, Feature Components
+
+**These rules apply to ALL components at ALL tiers** — Tier 1 primitives, Tier 2 feature components, sub-components, and pages alike. A `ProductCard` inside `src/features/products/components/` has exactly the same typography obligations as a Tier 1 `Card` component.
+
+#### Cards
+
+```tsx
+// WRONG
+<div className="p-4 rounded-xl border">
+  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{product.title}</h3>
+  <p className="text-sm text-gray-500 mt-1">{product.description}</p>
+  <span className="text-xs text-gray-400">{formatDate(product.createdAt)}</span>
+</div>
+
+// RIGHT
+import { Heading, Text, Caption } from '@/components';
+<div className={`${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.xl} border`}>
+  <Heading level={3}>{product.title}</Heading>
+  <Text variant="secondary" size="sm" className="mt-1">{product.description}</Text>
+  <Caption>{formatDate(product.createdAt)}</Caption>
+</div>
+```
+
+#### Sections (page sections, feature sections)
+
+```tsx
+// WRONG
+<section>
+  <h2 className="text-2xl font-bold mb-2">Featured Products</h2>
+  <p className="text-gray-600 mb-6">Hand-picked items for you</p>
+</section>
+
+// RIGHT
+<section>
+  <Heading level={2} className="mb-2">{t('sections.featuredProducts')}</Heading>
+  <Text variant="secondary" className="mb-6">{t('sections.featuredProductsSubtitle')}</Text>
+</section>
+```
+
+#### Modals
+
+```tsx
+// WRONG
+<Modal>
+  <h2 className="text-xl font-bold text-gray-900">Confirm Delete</h2>
+  <p className="text-sm text-gray-600 mt-2">Are you sure? This action is irreversible.</p>
+</Modal>
+
+// RIGHT
+<Modal>
+  <Heading level={2}>{t('modal.confirmDeleteTitle')}</Heading>
+  <Text variant="secondary" size="sm" className="mt-2">{t('modal.confirmDeleteBody')}</Text>
+</Modal>
+```
+
+#### Tables / DataTable cell renderers
+
+```tsx
+// WRONG (custom cell renderer)
+{
+  key: 'title',
+  render: (row) => <span className="font-medium text-gray-900">{row.title}</span>,
+}
+
+// RIGHT
+{
+  key: 'title',
+  render: (row) => <Text weight="medium">{row.title}</Text>,
+}
+```
+
+#### Alerts & Notifications
+
+```tsx
+// WRONG — ad-hoc alert layout with raw tags
+<div className="bg-yellow-50 border border-yellow-300 p-3 rounded">
+  <p className="text-sm font-medium text-yellow-800">Upload failed</p>
+  <p className="text-xs text-yellow-700 mt-1">Please try again.</p>
+</div>
+
+// RIGHT — use the Alert component
+import { Alert } from '@/components';
+<Alert variant="warning" title={t('alerts.uploadFailed')} description={t('alerts.uploadFailedBody')} />
+```
+
+#### Feature Components & Sub-Components (non-negotiable)
+
+Typography rules apply inside **every** feature component at any nesting depth:
+
+```tsx
+// src/features/products/components/ProductCard.tsx — WRONG
+export function ProductCard({ product }: Props) {
+  return (
+    <div>
+      <h3 className="text-lg font-bold">{product.title}</h3>          {/* ❌ raw tag */}
+      <p className="text-sm text-gray-500">{product.description}</p>   {/* ❌ raw tag */}
+      <span className="text-xs">{formatDate(product.createdAt)}</span>  {/* ❌ raw tag */}
+    </div>
+  );
+}
+
+// src/features/products/components/ProductCard.tsx — RIGHT
+export function ProductCard({ product }: Props) {
+  return (
+    <div>
+      <Heading level={3}>{product.title}</Heading>                            {/* ✅ */}
+      <Text variant="secondary" size="sm">{product.description}</Text>        {/* ✅ */}
+      <Caption>{formatDate(product.createdAt)}</Caption>                      {/* ✅ */}
+    </div>
+  );
+}
+```
+
 ### Form Input and Button Primitives — Mandatory for ALL Form Controls
 
 **NEVER write bare `<input>`, `<textarea>`, `<select>`, or `<button>` elements.** All form controls live in `src/components/forms/` and are exported from `@/components`.
@@ -685,22 +839,44 @@ This rule exists because repeated audits show that new code keeps re-implementin
 | `<select>` | `FormField type="select"` or `Select` from `@/components` |
 | `<input type="checkbox">` | `Checkbox` from `@/components` |
 | `<input type="radio">` | `FormField type="radio"` from `@/components` |
+| `<input type="range">` | `Slider` from `@/components` |
 | Image URL `<input type="text">` | `ImageUpload` from `@/components` (server-side, via `/api/media/upload`) |
 | Multi-line rich content field | `RichTextEditor` from `@/components` |
 | Video / file URL field | `MediaUploadField` from `@/components` (create if missing — see TASK-10) |
 | Profile avatar upload | `AvatarUpload` from `@/components` (local crop → FormData → `/api/media/upload` via backend) |
 | Toggle switch | `Toggle` from `@/components` |
-| Star or numeric rating display | look in `@/components` for existing rating component |
-| Loading spinner / skeleton | `LoadingSpinner` from `@/components` |
-| Empty state placeholder | `EmptyState` from `@/components` |
-| Confirmation / destructive dialog | `ConfirmDeleteModal` from `@/components` |
-| Slide-in panel / form drawer | `SideDrawer` from `@/components` |
-| Filter sidebar on mobile | `FilterDrawer` from `@/components` |
-| Paginated result count + per-page | `TablePagination` from `@/components` |
-| Sort control | `SortDropdown` from `@/components` |
-| Active filter chip row | `ActiveFilterChips` from `@/components` |
+| Star or numeric rating display | `RatingDisplay` from `@/components` |
+| Progress bar / completion indicator | `Progress` from `@/components` |
+| Inline info / warning / error banner | `Alert variant="..."` from `@/components` |
+| Modal / dialog / overlay | `Modal` from `@/components` |
+| Destructive confirmation dialog | `ConfirmDeleteModal` from `@/components` |
+| Image crop dialog | `ImageCropModal` from `@/components` |
+| Hover tooltip | `Tooltip` from `@/components` |
+| Generic bordered container / surface | `Card` from `@/components` |
+| Coloured label / pill / tag | `Badge` from `@/components` |
 | Status text badge | `StatusBadge` from `@/components` |
 | Role label badge | `RoleBadge` from `@/components` |
+| Horizontal rule / visual separator | `Divider` from `@/components` |
+| Loading spinner | `LoadingSpinner` from `@/components` |
+| Loading skeleton placeholder | `Skeleton` from `@/components` |
+| Empty state placeholder | `EmptyState` from `@/components` |
+| Slide-in panel / form drawer | `SideDrawer` from `@/components` |
+| Back-to-top floating button | `BackToTop` from `@/components` |
+| User / seller avatar display (read-only) | `AvatarDisplay` from `@/components` |
+| Password strength meter | `PasswordStrengthIndicator` from `@/components` |
+| React error boundary wrapper | `ErrorBoundary` from `@/components` |
+| Mobile vs desktop layout switch | `ResponsiveView` from `@/components` |
+| Any list of data (table or card grid) | `DataTable` from `@/components` (Rule 32) |
+| Search input of any kind | `Search` from `@/components` (Rule 32) |
+| Tab navigation / section switcher | `Tabs` or `SectionTabs` from `@/components` (Rule 32) |
+| Collapsible section / FAQ item | `Accordion` from `@/components` (Rule 32) |
+| Horizontal scroll container | `HorizontalScroller` from `@/components` (Rule 32) |
+| Filter group (checkboxes) | `FilterFacetSection` from `@/components` (Rule 32) |
+| Top-of-list filter toolbar | `AdminFilterBar` (+ `withCard={false}` for public/seller) from `@/components` (Rule 32) |
+| Filter sidebar on mobile | `FilterDrawer` from `@/components` (Rule 32) |
+| Paginated result count + per-page | `TablePagination` from `@/components` (Rule 32) |
+| Sort control | `SortDropdown` from `@/components` (Rule 32) |
+| Active filter chip row | `ActiveFilterChips` from `@/components` (Rule 32) |
 | Page header with breadcrumb (admin) | `AdminPageHeader` from `@/components` |
 | Filter bar at top of list (admin/seller) | `AdminFilterBar` from `@/components` |
 | Drawer submit/cancel/delete footer | `DrawerFormFooter` from `@/components` |
@@ -708,6 +884,23 @@ This rule exists because repeated audits show that new code keeps re-implementin
 | Display a video asset | `MediaVideo` from `@/components` |
 | Display a user / seller / brand avatar | `MediaAvatar` from `@/components` |
 | Display a multi-image set / gallery | `MediaGallery` from `@/components` |
+| Address entry / edit form | `AddressForm` from `@/components` |
+| Address display card | `AddressCard` from `@/components` |
+| User profile header section | `ProfileHeader` from `@/components` |
+| Profile stats grid | `ProfileStatsGrid` from `@/components` |
+| Email verification UI card | `EmailVerificationCard` from `@/components` |
+| Phone verification UI card | `PhoneVerificationCard` from `@/components` |
+| **Conditional CSS classes** | `cn(...)` or `classNames(...)` from `@/helpers` — never template literal conditionals |
+| **Pagination math** (offset, total pages) | `calculatePagination(opts)` from `@/helpers` — never manual arithmetic |
+| **User initials** | `generateInitials(name)` from `@/helpers` — never `name.split(' ').map(...)` |
+| **Click-outside detection** | `useClickOutside(ref, handler)` from `@/hooks` — never manual `document.addEventListener` |
+| **Keyboard shortcut / key listener** | `useKeyPress(key, handler)` from `@/hooks` — never raw `window.addEventListener('keydown')` |
+| **Viewport breakdown / responsive JS** | `useBreakpoint()` or `useMediaQuery(query)` from `@/hooks` — never `window.innerWidth` inline |
+| **Toast / success / error message** | `useMessage()` from `@/hooks` — never `alert()` or custom toast state |
+| **Unsaved-changes guard** | `useUnsavedChanges(isDirty)` from `@/hooks` — never manual `beforeunload` handler |
+| **Countdown timer** | `useCountdown(targetDate)` from `@/hooks` — never manual `setInterval` diff |
+| **Wishlist toggle button** | `useWishlistToggle(productId)` from `@/hooks` — never inline wishlist state |
+| **Filter / sort / page URL state** | `useUrlTable(options)` from `@/hooks` (Rule 32) — never `useState` for list state |
 
 ### Image upload canonical paths
 
@@ -2100,9 +2293,11 @@ Every change that touches `src/db/schema/`, `firestore.rules`, `storage.rules`, 
 
 ## Styling Standards
 
+> **These standards apply universally — Tier 1 or Tier 2, page or sub-component, feature or primitive. No component is exempt.**
+
 1. Use `THEME_CONSTANTS` (Rule 4) for all repeated Tailwind patterns
 2. Use `ThemeContext` (`useTheme()`) only for conditional light/dark logic
-3. Use existing components (Rule 7) and Typography primitives (Rule 31) — no raw `<input>`, `<button>`, `<h1>`–`<h6>`, `<p>`, `<label>`, or content `<span>` elements
+3. Use existing components (Rule 7) and Typography primitives (Rule 31) — no raw `<input>`, `<button>`, `<h1>`–`<h6>`, `<p>`, `<label>`, or content `<span>` elements — applies to **every** component at **every** tier including feature sub-components, modal internals, card bodies, table cells, and alert layouts
 4. No inline `style={{}}` except for dynamic calculated values
 5. No CSS modules
 6. Mobile-first — write base styles for 375 px, extend upward with `sm:` → `2xl:` (Rule 25)
@@ -2304,6 +2499,272 @@ Create a new primitive **only** when:
 
 ---
 
+## RULE 32: Mandatory Use of Data Display, List, Search, Filter & Navigation Primitives
+
+**NEVER build a custom table, filter panel, search input, sort dropdown, pagination bar, tab bar, accordion, or horizontal scroller. ALWAYS use the existing Tier 1 primitives.** These rules apply to every page, feature component, admin view, seller view, and user view — no exceptions.
+
+> All filter/sort/page state MUST live in URL query params via `useUrlTable`. Using `useState` for filter, sort, or pagination state is a violation.
+
+### DataTable — mandatory for ALL tabular and grid data
+
+**Never build a custom `<table>`, `<ul>` grid, or hand-rolled card grid when `DataTable` covers the need.**
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `columns` | `ColumnDef[]` | Column definitions with `key`, `header`, `render`, `sortable`, `width` |
+| `data` | `T[]` | Row data array |
+| `loading` | `boolean` | Shows skeleton rows while fetching |
+| `emptyState` | `ReactNode` | Shown when `data` is empty; default uses `EmptyState` |
+| `showViewToggle` | `boolean` | Renders table / grid / list toggle buttons |
+| `viewMode` | `'table' \| 'grid' \| 'list'` | Controlled view — read from `useUrlTable` |
+| `onViewModeChange` | `(mode) => void` | Write back to `useUrlTable` |
+| `mobileCardRender` | `(item: T) => ReactNode` | Card renderer for grid + list views and mobile breakpoints |
+| `onRowClick` | `(item: T) => void` | Row click handler; adds hover cursor |
+| `selectable` | `boolean` | Enables row checkboxes for bulk actions |
+| `selectedIds` | `string[]` | Controlled selection state |
+| `onSelectionChange` | `(ids: string[]) => void` | Fires on checkbox change |
+| `actions` | `ActionDef[]` | Per-row action menu (edit, delete, view…) |
+| `stickyHeader` | `boolean` | Keeps header visible on scroll |
+| `className` | `string` | Additional wrapper classes |
+
+```tsx
+// WRONG — custom table markup
+<table className="w-full border">
+  <thead><tr><th>Name</th><th>Status</th></tr></thead>
+  <tbody>{items.map(i => <tr key={i.id}><td>{i.name}</td><td>{i.status}</td></tr>)}</tbody>
+</table>
+
+// WRONG — custom card grid
+<div className="grid grid-cols-3 gap-4">
+  {items.map(i => <div key={i.id} className="p-4 border rounded">{i.name}</div>)}
+</div>
+
+// RIGHT
+import { DataTable } from '@/components';
+<DataTable
+  columns={columns}
+  data={items}
+  loading={loading}
+  viewMode={(table.get('view') || 'table') as 'table' | 'grid' | 'list'}
+  onViewModeChange={(m) => table.set('view', m)}
+  showViewToggle
+  mobileCardRender={(item) => <ProductCard product={item} />}
+/>
+```
+
+### Search — mandatory for ALL search inputs
+
+**Never use `<input type="search">`, `<Input type="search">`, or a raw `<input>` as a search field.**
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `value` | `string` | Controlled value — read from `useUrlTable` |
+| `onChange` | `(v: string) => void` | Write back to `useUrlTable` via `table.set('q', v)` |
+| `placeholder` | `string` | Use `UI_PLACEHOLDERS.SEARCH` |
+| `debounceMs` | `number` | Default 300 ms — avoids API call on every keystroke |
+| `onClear` | `() => void` | Clears value and resets page |
+| `className` | `string` | Wrapper classes |
+
+```tsx
+// WRONG
+<input type="search" value={q} onChange={e => setQ(e.target.value)} />
+
+// RIGHT
+import { Search } from '@/components';
+<Search
+  value={table.get('q')}
+  onChange={(v) => table.set('q', v)}
+  placeholder={UI_PLACEHOLDERS.SEARCH}
+/>
+```
+
+### FilterDrawer — mandatory for mobile/sidebar filter panels
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `open` | `boolean` | Controlled open state |
+| `onClose` | `() => void` | Close handler |
+| `onApply` | `() => void` | Apply button handler |
+| `onReset` | `() => void` | Reset all filters |
+| `activeCount` | `number` | Badge on the filter trigger button |
+| `children` | `ReactNode` | `FilterFacetSection` groups go here |
+| `withCard` | `boolean` | `false` for public/seller pages (no admin card shell) |
+
+### FilterFacetSection — mandatory for every filter group inside a drawer or sidebar
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `title` | `string` | Section heading (e.g. "Category", "Price") |
+| `options` | `{ label, value, count? }[]` | Checkbox options |
+| `selected` | `string[]` | Controlled selected values |
+| `onChange` | `(values: string[]) => void` | Selection change handler |
+| `collapsible` | `boolean` | Collapse toggle; default `true` |
+| `searchable` | `boolean` | Inline search box inside the section |
+| `showMoreThreshold` | `number` | How many options before "Show more"; default 5 |
+
+### AdminFilterBar — mandatory for all list-page filter toolbars
+
+**Never build a custom row of filter controls above a list. Always use `AdminFilterBar`.**  
+For public and seller pages, pass `withCard={false}`.
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `search` | `ReactNode` | `<Search />` component slot |
+| `filters` | `ReactNode` | Any `<Select>` / `<Toggle>` filter controls |
+| `actions` | `ReactNode` | Right-side action buttons (Create, Export…) |
+| `withCard` | `boolean` | `true` = admin card shell; `false` = public/seller flat layout |
+
+### ActiveFilterChips — mandatory whenever active filters can be dismissed
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `filters` | `{ label, key, value }[]` | Active filter list to render as chips |
+| `onRemove` | `(key, value) => void` | Remove one chip — calls `table.set(key, '')` |
+| `onClearAll` | `() => void` | Clears all filters — calls `table.setMany({...})` |
+
+```tsx
+// WRONG — custom chip list
+{activeFilters.map(f => (
+  <span key={f.key} className="bg-gray-100 px-2 py-1 rounded text-sm">
+    {f.label} <button onClick={() => removeFilter(f.key)}>×</button>
+  </span>
+))}
+
+// RIGHT
+import { ActiveFilterChips } from '@/components';
+<ActiveFilterChips
+  filters={activeFilters}
+  onRemove={(key) => table.set(key, '')}
+  onClearAll={() => table.setMany({ status: '', category: '', q: '' })}
+/>
+```
+
+### SortDropdown — mandatory for all sort controls
+
+**Never use a raw `<select>` or `<Select>` for sorting.**
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `value` | `string` | Controlled sort value — read from `table.get('sorts')` |
+| `onChange` | `(v: string) => void` | Write via `table.setSort(v)` |
+| `options` | `{ label, value }[]` | Use a domain constant (e.g. `PRODUCT_SORT_OPTIONS`) |
+
+### TablePagination — mandatory for all paginated result counts
+
+**Never build a custom page count / per-page selector.**
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `total` | `number` | Total record count from API |
+| `page` | `number` | Current page — from `table.getNumber('page', 1)` |
+| `pageSize` | `number` | Current page size — from `table.getNumber('pageSize', 25)` |
+| `onPageChange` | `(p: number) => void` | Calls `table.setPage(p)` |
+| `onPageSizeChange` | `(n: number) => void` | Calls `table.set('pageSize', String(n))` |
+| `pageSizeOptions` | `number[]` | Default `[10, 25, 50, 100]` |
+
+### Tabs / SectionTabs — mandatory for tab navigation
+
+**Never build custom tab markup with conditional rendering.**
+
+| Component | Use for |
+|-----------|--------|
+| `Tabs` | General in-page tabbed sections (product details, user settings…) |
+| `SectionTabs` | Page-level section navigation (admin nav, user account nav) |
+
+`Tabs` props:
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `items` | `{ id, label, content }[]` | Tab definitions |
+| `activeId` | `string` | Controlled active tab — read from `useUrlTable` or `useState` |
+| `onChange` | `(id: string) => void` | Tab change handler |
+| `variant` | `'line' \| 'pill' \| 'boxed'` | Visual style |
+
+```tsx
+// WRONG — conditional render with manual active state
+<div className="flex border-b">
+  {['Info','Reviews','Shipping'].map(t => (
+    <button key={t} onClick={() => setTab(t)} className={tab===t ? 'border-b-2' : ''}>{t}</button>
+  ))}
+</div>
+{tab === 'Info' && <InfoPanel />}
+
+// RIGHT
+import { Tabs } from '@/components';
+<Tabs
+  variant="line"
+  activeId={table.get('tab') || 'info'}
+  onChange={(id) => table.set('tab', id)}
+  items={[
+    { id: 'info',     label: t('tabs.info'),     content: <InfoPanel /> },
+    { id: 'reviews',  label: t('tabs.reviews'),  content: <ReviewsPanel /> },
+    { id: 'shipping', label: t('tabs.shipping'), content: <ShippingPanel /> },
+  ]}
+/>
+```
+
+### Accordion — mandatory for collapsible content sections
+
+**Never manage `open` state manually for collapsible sections.**
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `items` | `{ id, title, content }[]` | Section definitions |
+| `allowMultiple` | `boolean` | Allow more than one section open at once |
+| `defaultOpenIds` | `string[]` | Pre-opened sections on mount |
+
+### HorizontalScroller — mandatory for horizontal scroll containers
+
+**Never use `overflow-x-auto` directly on a wrapper div to create horizontal scroll; use `HorizontalScroller`.**
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `showArrows` | `boolean` | Left/right scroll arrow buttons |
+| `snapToItems` | `boolean` | CSS scroll-snap per item |
+| `className` | `string` | Wrapper classes |
+
+### useUrlTable — mandatory for ALL filter/sort/page state
+
+**Never use `useState` or `useReducer` to manage filter, sort, or pagination state on any list page.**  
+All such state lives in URL query params via `useUrlTable` so it is bookmark-able and history-safe.
+
+```tsx
+// WRONG
+const [status, setStatus] = useState('');
+const [sort, setSort] = useState('-createdAt');
+const [page, setPage] = useState(1);
+
+// RIGHT
+const table = useUrlTable({ defaults: { pageSize: '25', sorts: '-createdAt' } });
+// table.get('status'), table.setSort('-price'), table.setPage(2)
+```
+
+### Violation examples — never do these
+
+```tsx
+// ❌ Custom table
+<table><thead>...</thead><tbody>{rows.map(...)}</tbody></table>
+
+// ❌ Custom search input
+<input type="text" placeholder="Search..." onChange={e => setQuery(e.target.value)} />
+
+// ❌ Manual filter chips
+{filters.map(f => <span key={f}>{f} <button onClick={...}>×</button></span>)}
+
+// ❌ Raw sort select
+<select value={sort} onChange={e => setSort(e.target.value)}>
+  {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+</select>
+
+// ❌ Manual pagination
+<div>{page} of {totalPages} <button onClick={() => setPage(p => p+1)}>Next</button></div>
+
+// ❌ Custom tabs
+<div className="flex">{tabs.map(t => <button key={t} onClick={() => setTab(t)}>{t}</button>)}</div>
+```
+
+---
+
 ## Development Commands
 
 ### Build & Test
@@ -2424,13 +2885,58 @@ Before writing ANY code, verify:
 - [ ] Have I run `npx tsc --noEmit` on changed files and resolved all TS errors? (Rule 26)
 - [ ] Has `npm run build` completed with 0 errors? (Rule 26)
 - [ ] Have I written or updated tests for every file I changed? (Rule 27)
-- [ ] Am I writing any `<h1>`–`<h6>`, `<p>`, content `<span>`, or `<label>` tag? → use `Heading`, `Text`, `Caption`, or `Label` from `@/components` (Rule 31)
+- [ ] Am I writing any `<h1>`–`<h6>`, `<p>`, content `<span>`, or `<label>` tag? → use `Heading`, `Text`, `Caption`, or `Label` from `@/components` — **this applies inside feature components, modals, cards, table cells, alerts, and sub-components too, not just pages** (Rule 7, Rule 31)
 - [ ] Am I writing a raw `<button>` element anywhere? → use `Button` with the correct `variant` from `@/components` (Rule 31)
+- [ ] Am I rendering text inside a card, section, modal, table cell, or alert? → use the contextual Typography pattern (`Heading`/`Text`/`Caption`/`Label`) — no ad-hoc Tailwind on raw tags (Rule 7 — Typography in Context)
 - [ ] Before writing any `<input>`, `<textarea>`, `<select>`, `<button>`, or checkbox — did I check if the purpose-built component already exists in `@/components`? (Rule 8)
 - [ ] Before making an image/video URL text field — am I using `ImageUpload` / `MediaUploadField`? (Rule 8)
 - [ ] Before writing rich text — am I using `RichTextEditor`? (Rule 8)
+- [ ] Am I using a raw `<input type="range">`? → use `Slider` from `@/components` (Rule 8)
+- [ ] Am I writing a progress bar or completion indicator? → use `Progress` from `@/components` (Rule 8)
+- [ ] Am I writing an inline info / warning / error banner with raw divs? → use `Alert variant="..."` from `@/components` (Rule 8)
+- [ ] Am I building a modal / overlay with raw div + state? → use `Modal` from `@/components` (Rule 8)
+- [ ] Am I building a destructive confirmation dialog? → use `ConfirmDeleteModal` from `@/components` (Rule 8)
+- [ ] Am I building an image crop dialog? → use `ImageCropModal` from `@/components` (Rule 8)
+- [ ] Am I adding a hover tooltip with raw CSS? → use `Tooltip` from `@/components` (Rule 8)
+- [ ] Am I writing a bordered container / surface card? → use `Card` from `@/components` (Rule 8)
+- [ ] Am I creating a coloured pill, label, or tag? → use `Badge` from `@/components` (Rule 8)
+- [ ] Am I writing a `<hr>` or manual divider line? → use `Divider` from `@/components` (Rule 8)
+- [ ] Am I writing a loading skeleton with raw divs? → use `Skeleton` from `@/components` (Rule 8)
+- [ ] Am I building a back-to-top button? → use `BackToTop` from `@/components` (Rule 8)
+- [ ] Am I displaying a user/seller avatar (read-only)? → use `AvatarDisplay` from `@/components` (Rule 8)
+- [ ] Am I building a password strength meter? → use `PasswordStrengthIndicator` from `@/components` (Rule 8)
+- [ ] Am I wrapping a subtree in try/catch for render errors? → use `ErrorBoundary` from `@/components` (Rule 8)
+- [ ] Am I conditionally rendering different layouts for mobile vs desktop? → use `ResponsiveView` from `@/components` (Rule 8)
+- [ ] Am I building an address form or address display card? → use `AddressForm` / `AddressCard` from `@/components` (Rule 8)
+- [ ] Am I building a user profile header or profile stats grid? → use `ProfileHeader` / `ProfileStatsGrid` from `@/components` (Rule 8)
+- [ ] Am I building email or phone verification UI? → use `EmailVerificationCard` / `PhoneVerificationCard` from `@/components` (Rule 8)
+- [ ] Am I writing conditional className logic with template literals (`` `${a} ${b ? c : d}` ``)? → use `cn(...)` or `classNames(...)` from `@/helpers` (Rule 8)
+- [ ] Am I manually calculating pagination offset, total pages, or page count? → use `calculatePagination(opts)` from `@/helpers` (Rule 8)
+- [ ] Am I deriving user initials from a name string? → use `generateInitials(name)` from `@/helpers` (Rule 8)
+- [ ] Am I using `document.addEventListener('click', ...)` for outside-click detection? → use `useClickOutside(ref, handler)` from `@/hooks` (Rule 8)
+- [ ] Am I using `window.addEventListener('keydown', ...)` for key handling? → use `useKeyPress(key, handler)` from `@/hooks` (Rule 8)
+- [ ] Am I reading `window.innerWidth` or `window.matchMedia(...)` directly in a component? → use `useBreakpoint()` or `useMediaQuery(query)` from `@/hooks` (Rule 8)
+- [ ] Am I calling `alert()`, `confirm()`, or showing a custom toast with local state? → use `useMessage()` from `@/hooks` (Rule 8)
+- [ ] Am I writing a `beforeunload` handler or custom dirty-state guard? → use `useUnsavedChanges(isDirty)` from `@/hooks` (Rule 8)
+- [ ] Am I building a countdown timer with `setInterval` + manual diff? → use `useCountdown(targetDate)` from `@/hooks` (Rule 8)
+- [ ] Am I managing wishlist add/remove state inline in a component? → use `useWishlistToggle(productId)` from `@/hooks` (Rule 8)
 - [ ] Does this `page.tsx` stay under 150 lines after my change? If not, decompose to a feature view. (Rule 10)
 - [ ] Is my page a thin shell — no inline forms, no domain state, no direct API calls? (Rule 10)
+- [ ] Am I rendering tabular data or a card grid? → use `DataTable` — never a custom `<table>` or manual grid (Rule 32)
+- [ ] Am I building a search input? → use `Search` from `@/components` — never a raw `<input>` (Rule 32)
+- [ ] Am I building filter controls above a list? → use `AdminFilterBar` (with `withCard={false}` for public/seller) (Rule 32)
+- [ ] Am I building a filter drawer/panel? → use `FilterDrawer` + `FilterFacetSection` (Rule 32)
+- [ ] Am I rendering active filter chips? → use `ActiveFilterChips` (Rule 32)
+- [ ] Am I building a sort control? → use `SortDropdown` — never a raw `<select>` (Rule 32)
+- [ ] Am I building pagination? → use `TablePagination` (Rule 32)
+- [ ] Am I managing filter, sort, or page state with `useState`/`useReducer`? → use `useUrlTable` instead (Rule 32)
+- [ ] Am I building tab navigation? → use `Tabs` or `SectionTabs` — never custom tab markup (Rule 32)
+- [ ] Am I building a collapsible section? → use `Accordion` — never manual open/close state (Rule 32)
+- [ ] Am I wrapping a horizontal scroll container? → use `HorizontalScroller` — never raw `overflow-x-auto` div (Rule 32)
+- [ ] Am I formatting any date or time for display? → use `formatDate`, `formatTime`, `formatDateTime`, `formatRelativeTime`, `formatDuration`, `formatCountdown`, or `formatDateRange` from `@/utils` (Rule 5 — Date Utilities)
+- [ ] Am I doing a date comparison or predicate check? → use `isToday`, `isPast`, `isFuture`, `isSameDay` from `@/utils` (Rule 5 — Date Utilities)
+- [ ] Am I doing date arithmetic (add/subtract days, start/end of day)? → use `addDays`, `subtractDays`, `startOfDay`, `endOfDay` from `@/utils` (Rule 5 — Date Utilities)
+- [ ] Am I converting between Firestore Timestamps and JS Dates? → use `fromFirestoreTimestamp` / `toFirestoreTimestamp` from `@/utils` (Rule 5 — Date Utilities)
 - [ ] Did I write base styles for mobile first, then layer `sm:` → `xl:` → `2xl:`? (Rule 25)
 - [ ] Does every grid/flex layout include explicit `xl:` and `2xl:` column classes? (Rule 25)
 - [ ] Are all touch targets at least 44×44 px (`min-h-11 min-w-11`)? (Rule 25)

@@ -7,6 +7,10 @@ import {
   formatDateTime,
   formatRelativeTime,
   formatDateRange,
+  nowMs,
+  isSameMonth,
+  currentYear,
+  nowISO,
 } from "../date.formatter";
 
 describe("Date Formatter", () => {
@@ -136,6 +140,63 @@ describe("Date Formatter", () => {
     it("should handle string dates", () => {
       const formatted = formatDateRange("2026-02-07", "2026-02-15");
       expect(formatted).toContain("2026");
+    });
+  });
+
+  describe("nowMs", () => {
+    it("returns a number close to Date.now()", () => {
+      const before = Date.now();
+      const result = nowMs();
+      const after = Date.now();
+      expect(result).toBeGreaterThanOrEqual(before);
+      expect(result).toBeLessThanOrEqual(after);
+    });
+  });
+
+  describe("isSameMonth", () => {
+    it("returns true for dates in the same month and year", () => {
+      expect(isSameMonth(new Date("2026-03-01"), new Date("2026-03-31"))).toBe(
+        true,
+      );
+    });
+
+    it("returns false for dates in different months", () => {
+      expect(isSameMonth(new Date("2026-03-01"), new Date("2026-04-01"))).toBe(
+        false,
+      );
+    });
+
+    it("returns false for same month different year", () => {
+      expect(isSameMonth(new Date("2025-03-01"), new Date("2026-03-01"))).toBe(
+        false,
+      );
+    });
+
+    it("accepts numeric timestamps", () => {
+      const a = new Date("2026-03-15").getTime();
+      const b = new Date("2026-03-20").getTime();
+      expect(isSameMonth(a, b)).toBe(true);
+    });
+  });
+
+  describe("currentYear", () => {
+    it("returns the current 4-digit year as a string", () => {
+      const year = currentYear();
+      expect(year).toMatch(/^\d{4}$/);
+      expect(year).toBe(new Date().getFullYear().toString());
+    });
+  });
+
+  describe("nowISO", () => {
+    it("returns an ISO 8601 string", () => {
+      const iso = nowISO();
+      expect(iso).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+    });
+
+    it("is close to current time", () => {
+      const before = new Date().toISOString();
+      const iso = nowISO();
+      expect(iso >= before).toBe(true);
     });
   });
 });

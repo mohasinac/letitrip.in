@@ -63,6 +63,12 @@ describe("Number Formatter", () => {
     it("should handle zero", () => {
       expect(formatNumber(0, "en-US")).toBe("0");
     });
+
+    it("should format with fixed decimals via options", () => {
+      expect(formatNumber(1234.5, "en-US", { decimals: 2 })).toBe("1,234.50");
+      expect(formatNumber(1234, "en-US", { decimals: 1 })).toBe("1,234.0");
+      expect(formatNumber(1234.567, "en-US", { decimals: 0 })).toBe("1,235");
+    });
   });
 
   describe("formatPercentage", () => {

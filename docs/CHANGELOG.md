@@ -13,9 +13,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-### HorizontalScroller: Full rewrite — split hooks, momentum drag, fade edges (2026-03-02)
+### Refactor Audit Wave 0 — Prerequisites (2026-03-01)
 
 #### Added
+
+- **`src/utils/formatters/date.formatter.ts`** — Added `nowMs()`, `isSameMonth()`, `currentYear()`, `nowISO()` utilities (Rule 5).
+- **`src/constants/api-endpoints.ts`** — Added `REALTIME.TOKEN` endpoint constant (Rules 19, 20).
+- **`src/constants/error-messages.ts`** — Added `AUTH.INVALID_SIGNATURE` and `VALIDATION.INVALID_JSON` message constants (Rule 13).
+- **`src/services/demo.service.ts`** — New service for demo/seed API calls (Rules 20, 21).
+- **`src/services/realtime-token.service.ts`** — New service for Realtime DB custom token (Rules 11, 21).
+- **`src/components/admin/SessionTableColumns.tsx`** — Static column definitions for the Admin Sessions DataTable (Rules 8, 32).
+- **`src/components/seller/PayoutTableColumns.tsx`** — Static column definitions for the Seller Payout History DataTable (Rules 8, 32).
+
+#### Changed
+
+- **`src/utils/formatters/number.formatter.ts`** — `formatNumber` extended in-place with optional `decimals` option (Rule 5).
+- **`src/services/index.ts`** — Exported `demoService` and `realtimeTokenService`.
+- **`src/components/admin/index.ts`** — Exported `SESSION_TABLE_COLUMNS`.
+- **`src/components/seller/index.ts`** — Exported `PAYOUT_TABLE_COLUMNS`, `PayoutStatus`, `PayoutMethod`.
+
+---
 
 - **`src/components/ui/useHorizontalScrollDrag.ts`** — New dedicated hook. Handles mouse/pen drag-to-scroll with velocity-sampled inertia momentum (rAF exponential decay at 0.94/frame, stops at 0.5 px/frame). Touch devices fall back to native scroll. Exposes `{ isDragging, cancelMomentum, cursorClass, style, handlers }`. Click suppression when drag > 5 px. Uses `optionsRef` to keep `onDragStart`/`onDragEnd` callbacks fresh without recreating handlers.
 - **`src/components/ui/useHorizontalAutoScroll.ts`** — New dedicated hook. Encapsulates `setInterval` timer lifecycle. Stable `pause()`/`resume()`/`stop()` controls. `onTickRef` pattern avoids stale closures. Starts/restarts cleanly when `enabled`, `interval`, or `onTick` changes.

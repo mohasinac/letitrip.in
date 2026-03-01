@@ -42,8 +42,15 @@ export function formatCurrency(
  * console.log(result); // '1,234,567'
  * ```
  */
-export function formatNumber(num: number, locale: string = "en-US"): string {
-  return new Intl.NumberFormat(locale).format(num);
+export function formatNumber(
+  num: number,
+  locale: string = "en-US",
+  options?: { decimals?: number },
+): string {
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: options?.decimals,
+    maximumFractionDigits: options?.decimals,
+  }).format(num);
 }
 
 /**

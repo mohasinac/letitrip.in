@@ -29,6 +29,7 @@ export const ERROR_MESSAGES = {
     ADMIN_ACCESS_REQUIRED: "Admin access required",
     WRONG_PASSWORD: "Incorrect email or password. Please try again.",
     EMAIL_IN_USE: "An account with this email already exists. Try signing in.",
+    INVALID_SIGNATURE: "Invalid webhook signature.",
   },
 
   // Validation Errors
@@ -53,6 +54,7 @@ export const ERROR_MESSAGES = {
     VERIFICATION_CODE_FORMAT: "Verification code must be 6 digits",
     PRODUCT_ID_REQUIRED: "productId is required",
     INVALID_TIME_RANGE: "Invalid time range",
+    INVALID_JSON: "Request body contains invalid JSON.",
   },
 
   // User/Profile Errors
