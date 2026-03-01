@@ -1548,6 +1548,7 @@ await create({ name: "Electronics", slug: "electronics", tier: 1 });
 - `isEmptyString(str: string | null | undefined): boolean` - Check if empty
 - `wordCount(str: string): number` - Count words
 - `reverse(str: string): string` - Reverse string
+- `proseMirrorToHtml(value: string): string` - Convert a ProseMirror / TipTap JSON document string to HTML. Passes plain HTML strings through unchanged (safe for mixed content). Supports: paragraph, text, heading, bulletList, orderedList, listItem, blockquote, codeBlock, hardBreak, horizontalRule, and marks (bold, italic, underline, strike, code, link).
 
 ---
 
@@ -2693,36 +2694,44 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 
 #### HorizontalScroller
 
-**File**: `HorizontalScroller.tsx`  
-**Purpose**: Generic horizontal-scroll container with arrow navigation, keyboard support, and optional circular auto-scroll  
-**Import**: `import { HorizontalScroller } from '@/components';` (or `'@/components/ui'` inside `src/components/**`)
+**Files**: `HorizontalScroller.tsx`, `useHorizontalScrollDrag.ts`, `useHorizontalAutoScroll.ts`  
+**Purpose**: Generic horizontal-scroll container with arrow navigation, momentum drag-to-scroll (mouse + stylus), keyboard support, fade-edge indicators, and optional circular auto-scroll  
+**Import**: `import { HorizontalScroller } from '@/components';` (or `'@/components/ui'` inside `src/components/**`)  
+**Type import**: `import type { PerViewConfig } from '@/components';`
 
 **Props**:
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `items` | `T[]` | required | Items to render |
 | `renderItem` | `(item: T, index: number) => ReactNode` | required | Item renderer |
-| `itemWidth` | `number` | auto-detect | Item width in px; used for step and count calculation |
-| `count` | `number` | auto-compute | Visible items at once (`⌊containerWidth ÷ (itemWidth + gap)⌋` when omitted) |
+| `rows` | `number` | `1` | Number of rows; > 1 switches to column-flow CSS grid |
+| `perView` | `PerViewConfig` | — | Responsive items-per-view map `{ base, sm?, md?, lg?, xl?, '2xl'? }` — item width auto-computed |
+| `itemWidth` | `number` | auto-detect | Fixed item width in px; takes precedence over `perView` |
 | `gap` | `number` | `12` | Gap between items in px |
 | `autoScroll` | `boolean` | `false` | Circular seamless auto-scroll (tripled items, debounced reset) |
 | `autoScrollInterval` | `number` | `3500` | ms between auto-scroll steps |
 | `pauseOnHover` | `boolean` | `true` | Pause auto-scroll on pointer enter |
-| `showArrows` | `boolean` | `true` | Show prev/next buttons (hidden when no overflow) |
+| `showArrows` | `boolean` | `true` | Show always-visible prev/next buttons |
+| `showFadeEdges` | `boolean` | `true` | Gradient fade overlays on scroll edges that appear/hide based on scroll position |
+| `enableKeyboard` | `boolean` | `true` | Arrow-key scroll on focus |
 | `className` | `string` | `""` | Extra classes on outer wrapper |
-| `scrollerClassName` | `string` | `""` | Extra classes on inner flex scroll div |
+| `scrollerClassName` | `string` | `""` | Extra classes on inner scroll div |
 | `keyExtractor` | `(item, index) => string` | — | Key for list rendering |
 
-**Circular auto-scroll**: items array is tripled internally. After each scroll settles (350 ms debounce) the position is silently snapped back to the equivalent position in the center copy — no visible jump.
+**Drag-to-scroll** (`useHorizontalScrollDrag`): mouse and stylus only — touch devices use native scroll for better iOS momentum. Velocity sampled over last N pointer-move events → rAF-based exponential decay momentum after release (decay 0.94/frame, stops at 0.5 px/frame). Drag > 5 px suppresses child click events to prevent accidental activation.
+
+**Auto-scroll** (`useHorizontalAutoScroll`): `setInterval` timer with stable `pause()`/`resume()` refs. Hover-pause and drag-pause are independent flags — timer only resumes when both clear simultaneously.
+
+**Circular auto-scroll**: items array is tripled internally. After each scroll settles (350 ms debounce) the position is silently snapped back to the equivalent center copy — no visible jump. `cancelMomentum()` is called before the snap to prevent the inertia animation fighting the new position.
 
 **Keyboard**: focus the container (or any child), then `ArrowLeft` / `ArrowRight` to page-scroll.
 
 ```tsx
-// Featured carousel (circular auto-scroll)
+// Featured carousel with responsive perView + circular auto-scroll
 <HorizontalScroller
   items={products}
   renderItem={(p) => <ProductCard product={p} />}
-  itemWidth={160}
+  perView={{ base: 2, sm: 3, lg: 4, xl: 5, "2xl": 6 }}
   gap={12}
   autoScroll
   keyExtractor={(p) => p.id}

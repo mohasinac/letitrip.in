@@ -25,16 +25,16 @@ export default async function TermsPage() {
   ];
 
   return (
-    <div className={`${themed.bgPrimary} min-h-screen`}>
+    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}
-      <section className="bg-gradient-to-br from-slate-700 to-slate-900 text-white py-16 px-4">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold mb-3">{t("title")}</h1>
+      <section className="bg-gradient-to-br from-slate-700 to-slate-900 text-white py-14 md:py-16 lg:py-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl md:text-4xl font-bold mb-3">{t("title")}</h1>
           <p className="text-slate-300">{t("lastUpdated")}</p>
         </div>
       </section>
 
-      <div className="max-w-3xl mx-auto px-4 py-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12 lg:py-16">
         <p className={`text-lg ${themed.textSecondary} mb-10`}>
           {t("subtitle")}
         </p>

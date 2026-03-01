@@ -13,6 +13,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### HorizontalScroller: Full rewrite — split hooks, momentum drag, fade edges (2026-03-02)
+
+#### Added
+
+- **`src/components/ui/useHorizontalScrollDrag.ts`** — New dedicated hook. Handles mouse/pen drag-to-scroll with velocity-sampled inertia momentum (rAF exponential decay at 0.94/frame, stops at 0.5 px/frame). Touch devices fall back to native scroll. Exposes `{ isDragging, cancelMomentum, cursorClass, style, handlers }`. Click suppression when drag > 5 px. Uses `optionsRef` to keep `onDragStart`/`onDragEnd` callbacks fresh without recreating handlers.
+- **`src/components/ui/useHorizontalAutoScroll.ts`** — New dedicated hook. Encapsulates `setInterval` timer lifecycle. Stable `pause()`/`resume()`/`stop()` controls. `onTickRef` pattern avoids stale closures. Starts/restarts cleanly when `enabled`, `interval`, or `onTick` changes.
+- **`HorizontalScrollerProps.showFadeEdges`** (`boolean`, default `true`) — Renders subtle gradient-fade overlays on the left and right edges that appear/disappear with CSS `opacity` transitions as scroll position changes, signalling that more content is available in each direction.
+- **`PerViewConfig`** exported from `src/components/ui/index.ts` barrel — consumers can now import the responsive breakpoint type directly.
+
+#### Changed
+
+- **`src/components/ui/HorizontalScroller.tsx`** — Complete rewrite of component function body:
+  - Old inline drag state (`isDraggingRef`, `dragStartXRef`, etc.) and four pointer handlers replaced by `useHorizontalScrollDrag` hook.
+  - Old manual `setInterval`/`isPausedRef`/`startTimer`/`stopTimer` replaced by `useHorizontalAutoScroll` hook.
+  - Auto-scroll pause now coordinated via two independent ref flags (`isHoverPausedRef`, `isDragPausedRef`) — `resumeAutoScroll` only fires when both are clear, preventing premature resume when hover and drag overlap.
+  - `updateArrows` (no-op stub) replaced by `updateScrollEdges` — reads scroll position and updates `canScrollLeft`/`canScrollRight` state used by the fade overlays.
+  - `isGrid` computation moved to the top of the function body (before hooks) so it can be used in hook options.
+  - `checkCircularReset` calls `drag.cancelMomentum()` before instant `scrollLeft` correction to prevent the momentum animation fighting the new position.
+  - Scroll viewport container gets `relative` positioning class to anchor the absolute-positioned fade overlay divs.
+  - `scrollBy` helper extracted; `scrollRight`/`scrollLeft`/`autoAdvance` delegate to it — eliminates duplicate `scrollRef.current?.scrollBy(...)` calls.
+  - `effectivePV` alias removed; `perViewProp` used directly throughout.
+
+---
+
+### HorizontalScroller: Drag-to-scroll, always-visible arrows, remove deprecated props (2026-03-01)
+
+#### Changed
+
+- **`src/components/ui/HorizontalScroller.tsx`** — Removed deprecated `snapCount`, `count`, and `showScrollbar` props entirely (Rule 24 — no backward compatibility). Removed `disabled` state from `ArrowButton`; arrows are now always fully visible at both scroll edges. Added unified pointer-event drag-to-scroll (`onPointerDown` / `onPointerMove` / `onPointerUp`) that works identically on mouse and touch — cursor changes to `cursor-grab` on hover and `cursor-grabbing` while dragging. Click events within the scroll area are suppressed after a drag of more than 5 px to prevent accidental item activation. Removed `scroll-smooth` from the inner container class (smooth scroll is still applied via `scrollBy({ behavior: "smooth" })` from arrow/keyboard actions). Auto-scroll pauses during a drag and resumes on pointer release.
+- **`src/components/homepage/FeaturedProductsSection.tsx`** — Migrated `snapCount` → `perView`.
+- **`src/components/homepage/FeaturedAuctionsSection.tsx`** — Migrated `snapCount` → `perView`.
+- **`src/components/homepage/TopCategoriesSection.tsx`** — Migrated `snapCount` → `perView`; removed `showScrollbar`.
+- **`src/components/faq/FAQPageContent.tsx`** — Removed `showScrollbar`.
+- **`src/components/blog/BlogCategoryTabs.tsx`** — Removed `showScrollbar`.
+- **`src/components/ui/SectionTabs.tsx`** — Removed `showScrollbar` from both `HorizontalScroller` instances.
+
+---
+
+### WelcomeSection: Fix raw JSON description rendering (2026-03-01)
+
+#### Fixed
+
+- **`src/components/homepage/WelcomeSection.tsx`** — Description field was displaying raw ProseMirror / TipTap JSON (e.g. `{"type":"doc",...}`) instead of rendered HTML. Now passes `config.description` through `proseMirrorToHtml()` before `dangerouslySetInnerHTML`.
+- **`src/components/homepage/WhatsAppCommunitySection.tsx`** — `config.description` was rendered as raw text (including JSON). Now converted via `proseMirrorToHtml()` and rendered via `dangerouslySetInnerHTML`. Member count moved to its own `<p>` element.
+
+#### Added
+
+- **`src/utils/formatters/string.formatter.ts`** — New `proseMirrorToHtml(value: string): string` utility. Converts a ProseMirror / TipTap JSON document string to HTML. Plain HTML strings are passed through unchanged, so the function is safe for mixed content (legacy plain-HTML values and new JSON values). Supports: `paragraph`, `text`, `heading`, `bulletList`, `orderedList`, `listItem`, `blockquote`, `codeBlock`, `hardBreak`, `horizontalRule`, and text marks (`bold`, `italic`, `underline`, `strike`, `code`, `link`).
+- **`src/utils/formatters/__tests__/string.formatter.test.ts`** — 7 new test cases covering `proseMirrorToHtml`: paragraph conversion, plain HTML passthrough, invalid JSON passthrough, bold mark, heading, bullet list, and empty string.
+
+---
+
+### Global Styling & Responsive Grid Overhaul (2026-03-02)
+
+#### Fixed
+
+- **`src/app/globals.css`** — Removed destructive `* { @apply m-0 p-0; }` wildcard reset that broke form elements, lists, and prose spacing. Replaced with targeted reset (`h1–h6, p, figure, blockquote, dl, dd { margin: 0; }`).
+- **Static pages** (`about`, `privacy`, `terms`, `help`, `contact`) — Applied negative-margin breakout (`-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10`) so hero sections extend full-width instead of being double-padded inside LayoutClient's container. Inner content areas retain proper `px-4 sm:px-6 lg:px-8` padding.
+- **`src/components/layout/AutoBreadcrumbs.tsx`** — Locale codes (`en`, `hi`, et al.) no longer appear as breadcrumb segments. Locale prefix is preserved in all generated hrefs.
+- **`src/components/layout/Sidebar.tsx`** — Added `bg-black/40 backdrop-blur-[2px]` overlay when sidebar is open on mobile; clicking it closes the sidebar.
+- **`src/components/layout/BottomNavbar.tsx`** — Added `${utilities.safeAreaBottom}` (`pb-[env(safe-area-inset-bottom)]`) to the fixed nav element for proper iPhone notch support.
+
+#### Changed (Rule 25 — Explicit xl:/2xl: Breakpoints)
+
+Added missing `xl:` and `2xl:` grid column declarations to:
+
+- **Homepage**: `HomepageSkeleton`, `FeaturedProductsSection`, `FeaturedAuctionsSection`, `BlogArticlesSection`, `TrustIndicatorsSection`, `TrustFeaturesSection`, `SiteFeaturesSection`, `CustomerReviewsSection`
+- **Admin features**: `AdminBlogView`, `AdminBidsView`, `AdminPayoutsView`, `AdminReviewsView`, `AdminAnalyticsView`, `AdminSessionsManager`
+- **Seller components**: `SellerOrdersView`, `SellerStorefrontView`, `SellerPayoutStats`, `SellerAnalyticsStats`
+- **User/profile**: `OrderDetailView`, `ProfileStatsGrid`, `PublicProfileView`
+- **Products/categories**: `RelatedProducts`, `ProductSection`, `CategoryGrid`
+- **Events/misc**: `EventStatsBanner`, `ContactCTA`, `ReviewDetailView`
+
+---
+
 ### HorizontalScroller — Generic Horizontal Scroll Container (2026-03-01)
 
 #### Added

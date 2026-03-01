@@ -23,7 +23,7 @@ export function ProductSection({
         <h2 className={`${typography.h3} ${themed.textPrimary}`}>{title}</h2>
         <p className={`mt-1 ${themed.textSecondary}`}>{subtitle}</p>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
         {products.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

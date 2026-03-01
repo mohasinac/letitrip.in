@@ -49,7 +49,7 @@ export function RelatedProducts({ category, excludeId }: RelatedProductsProps) {
       </h2>
 
       {isLoading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-3 md:gap-4">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
@@ -64,7 +64,7 @@ export function RelatedProducts({ category, excludeId }: RelatedProductsProps) {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-3 md:gap-4">
           {products.slice(0, 4).map((product: RelatedProduct) => (
             <ProductCard key={product.id} product={product} />
           ))}

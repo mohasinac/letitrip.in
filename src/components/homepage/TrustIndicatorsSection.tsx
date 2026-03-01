@@ -8,7 +8,7 @@ export function TrustIndicatorsSection() {
       className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
       <div className="w-full">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4 md:gap-8">
           {TRUST_INDICATORS.map((indicator, index) => (
             <div
               key={index}

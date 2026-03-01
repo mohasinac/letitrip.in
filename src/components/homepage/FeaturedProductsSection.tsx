@@ -36,7 +36,7 @@ export function FeaturedProductsSection() {
             ))}
           </div>
           {/* Desktop: grid skeleton */}
-          <div className="hidden md:grid grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="hidden md:grid grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
             {[...Array(10)].map((_, i) => (
               <div key={i} className="space-y-2">
                 <div
@@ -94,10 +94,13 @@ export function FeaturedProductsSection() {
                 href={`/products/${product.id}`}
                 className={`group block ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
               >
-                <ProductCardContent product={product} sizes="160px" />
+                <ProductCardContent
+                  product={product}
+                  sizes="(max-width: 640px) 50vw, 33vw"
+                />
               </Link>
             )}
-            itemWidth={160}
+            perView={{ base: 2, sm: 3 }}
             gap={12}
             autoScroll
             keyExtractor={(p) => p.id}
@@ -105,7 +108,7 @@ export function FeaturedProductsSection() {
           />
         </div>
 
-        {/* Desktop: 3-row grid scroller with visible scrollbar */}
+        {/* Desktop: 2-row grid scroller with auto scroll */}
         <div className="hidden md:block">
           <HorizontalScroller
             items={products.slice(0, 30)}
@@ -116,14 +119,15 @@ export function FeaturedProductsSection() {
               >
                 <ProductCardContent
                   product={product}
-                  sizes="(max-width: 1280px) 20vw, 160px"
+                  sizes="(max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
                 />
               </Link>
             )}
-            itemWidth={160}
-            rows={3}
+            perView={{ base: 3, lg: 4, xl: 5, "2xl": 6 }}
+            rows={2}
             gap={12}
-            showScrollbar
+            autoScroll
+            autoScrollInterval={2500}
             keyExtractor={(p) => p.id}
             className="px-5 pb-1"
           />

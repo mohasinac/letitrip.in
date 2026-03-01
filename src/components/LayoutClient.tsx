@@ -9,7 +9,6 @@ import Search from "./utility/Search";
 import BackToTop from "./utility/BackToTop";
 import AutoBreadcrumbs from "./layout/AutoBreadcrumbs";
 import { BackgroundRenderer } from "./utility";
-import { classNames } from "@/helpers";
 import { logger } from "@/classes";
 import { useSiteSettings } from "@/hooks";
 import { EventBanner } from "./ui/EventBanner";
@@ -145,13 +144,7 @@ export default function LayoutClient({
         />
 
         {/* Main Content - modern spacing and transitions */}
-        <main
-          id="main-content"
-          className={classNames(
-            "flex-1 mb-16 md:mb-0 transition-all duration-300 ease-in-out w-full",
-            sidebarOpen ? "md:mr-80" : "md:mr-0",
-          )}
-        >
+        <main id="main-content" className="flex-1 mb-16 md:mb-0 w-full">
           <div
             className={`container mx-auto ${THEME_CONSTANTS.layout.contentPadding} ${THEME_CONSTANTS.layout.maxContentWidth} ${THEME_CONSTANTS.spacing.pageY} w-full`}
           >

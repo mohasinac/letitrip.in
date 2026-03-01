@@ -69,4 +69,7 @@ export { EventBanner } from "./EventBanner";
 
 // Horizontal scroll container with arrows, auto-scroll, and circular mode
 export { HorizontalScroller } from "./HorizontalScroller";
-export type { HorizontalScrollerProps } from "./HorizontalScroller";
+export type {
+  HorizontalScrollerProps,
+  PerViewConfig,
+} from "./HorizontalScroller";

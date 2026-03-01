@@ -105,7 +105,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
   return (
     <nav
       id="bottom-navbar"
-      className={`fixed bottom-0 left-0 right-0 md:hidden ${zIndex.bottomNav} ${layout.bottomNavBg} border-t ${themed.border} backdrop-blur-lg bg-white/95 dark:bg-gray-900/95 shadow-2xl`}
+      className={`fixed bottom-0 left-0 right-0 md:hidden ${zIndex.bottomNav} ${layout.bottomNavBg} border-t ${themed.border} backdrop-blur-lg bg-white/95 dark:bg-gray-900/95 shadow-2xl ${utilities.safeAreaBottom}`}
     >
       <ul
         className={`flex items-stretch ${layout.bottomNavHeight} overflow-x-auto ${utilities.scrollbarHide}`}

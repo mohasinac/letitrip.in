@@ -94,9 +94,7 @@ export function FAQPageContent({
   };
 
   return (
-    <div
-      className={`${THEME_CONSTANTS.container["2xl"]} mx-auto ${THEME_CONSTANTS.spacing.padding.xl} py-12`}
-    >
+    <div className="py-12">
       {/* Page Header */}
       <div className="text-center mb-12">
         <h1
@@ -112,7 +110,7 @@ export function FAQPageContent({
       </div>
 
       {/* Search Bar */}
-      <div className="mb-6">
+      <div className="mb-8">
         <FAQSearchBar
           onSearch={setSearchQuery}
           placeholder={UI_LABELS.FAQ.SEARCH_PLACEHOLDER}
@@ -120,7 +118,7 @@ export function FAQPageContent({
       </div>
 
       {/* Mobile category pill strip — hidden on large screens (sidebar takes over) */}
-      <div className="lg:hidden mb-6">
+      <div className="lg:hidden mb-8">
         <HorizontalScroller
           items={[
             {
@@ -169,7 +167,6 @@ export function FAQPageContent({
           keyExtractor={(pill) => String(pill.key)}
           gap={8}
           autoScroll={false}
-          showScrollbar
           showArrows={false}
           className="px-1"
         />
@@ -177,7 +174,7 @@ export function FAQPageContent({
 
       {/* Main Content Grid */}
       <div
-        className={`grid grid-cols-1 lg:grid-cols-12 ${THEME_CONSTANTS.spacing.gap.lg}`}
+        className={`grid grid-cols-1 lg:grid-cols-12 ${THEME_CONSTANTS.spacing.gap.xl}`}
       >
         {/* Sidebar (desktop only — 30% width) */}
         <div className="hidden lg:block lg:col-span-4 xl:col-span-3">
@@ -191,7 +188,7 @@ export function FAQPageContent({
         {/* Main Content (full width on mobile, 70% on desktop) */}
         <div className="col-span-1 lg:col-span-8 xl:col-span-9">
           {/* Sort & Results Count */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-8">
             <p
               className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
             >

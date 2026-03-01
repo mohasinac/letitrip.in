@@ -30,7 +30,7 @@ export function FAQCategorySidebar({
     >
       {/* Title */}
       <h2
-        className={`${THEME_CONSTANTS.typography.h3} ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
+        className={`${THEME_CONSTANTS.typography.h3} ${THEME_CONSTANTS.themed.textPrimary} mb-6`}
       >
         Categories
       </h2>
@@ -39,7 +39,7 @@ export function FAQCategorySidebar({
       <Link
         href={ROUTES.PUBLIC.FAQS}
         onClick={() => onCategorySelect?.("all")}
-        className={`block w-full text-left ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} mb-2 transition-colors ${
+        className={`block w-full text-left ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} mb-3 transition-colors ${
           selectedCategory === "all"
             ? `${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.themed.textPrimary} font-medium`
             : `${THEME_CONSTANTS.themed.textSecondary} hover:${THEME_CONSTANTS.themed.bgTertiary}`
@@ -59,7 +59,7 @@ export function FAQCategorySidebar({
       </Link>
 
       {/* Category List */}
-      <div className="pt-3 mt-2 border-t ${THEME_CONSTANTS.themed.border}">
+      <div className={`pt-6 mt-4 border-t ${THEME_CONSTANTS.themed.border}`}>
         {Object.entries(FAQ_CATEGORIES).map(([key, category]) => {
           const isSelected = selectedCategory === key;
           const count = categoryCounts[key as FAQCategoryKey] || 0;
@@ -69,7 +69,7 @@ export function FAQCategorySidebar({
               key={key}
               href={ROUTES.PUBLIC.FAQ_CATEGORY(key)}
               onClick={() => onCategorySelect?.(key as FAQCategoryKey)}
-              className={`block w-full text-left ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} mb-2 transition-colors ${
+              className={`block w-full text-left ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} mb-3 transition-colors ${
                 isSelected
                   ? `${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.themed.textPrimary} font-medium`
                   : `${THEME_CONSTANTS.themed.textSecondary} hover:${THEME_CONSTANTS.themed.bgTertiary}`
@@ -101,7 +101,7 @@ export function FAQCategorySidebar({
       </div>
 
       {/* Contact Support CTA */}
-      <div className="pt-6 border-t ${THEME_CONSTANTS.themed.border}">
+      <div className={`pt-6 border-t ${THEME_CONSTANTS.themed.border}`}>
         <p
           className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary} mb-3`}
         >

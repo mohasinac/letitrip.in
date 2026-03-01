@@ -15,10 +15,10 @@ export async function generateMetadata() {
 export default async function AboutPage() {
   const t = await getTranslations("about");
   return (
-    <div className={`${themed.bgPrimary} min-h-screen`}>
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-white py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
+    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
+      {/* Hero — full-bleed within the content container */}
+      <section className="bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-white py-16 md:py-20 lg:py-24">
+        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">{t("title")}</h1>
           <p className="text-xl text-indigo-100 max-w-2xl mx-auto">
             {t("subtitle")}
@@ -26,7 +26,7 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <div className="max-w-5xl mx-auto px-4 py-16 space-y-20">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 space-y-16 md:space-y-20">
         {/* Mission */}
         <section className="text-center max-w-3xl mx-auto">
           <h2 className={`${typography.h2} ${themed.textPrimary} mb-4`}>
@@ -44,7 +44,7 @@ export default async function AboutPage() {
           >
             {t("howItWorksTitle")}
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 xl:grid-cols-3 gap-6 md:gap-8 xl:gap-10">
             {[
               {
                 title: t("howBuyersTitle"),
@@ -93,7 +93,7 @@ export default async function AboutPage() {
           >
             {t("valuesTitle")}
           </h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 xl:grid-cols-3 gap-5 md:gap-6 xl:gap-8">
             {[
               {
                 title: t("valuesTrust"),
@@ -154,9 +154,9 @@ export default async function AboutPage() {
         </section>
 
         {/* CTA */}
-        <section className="text-center bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-12 text-white">
+        <section className="text-center bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 md:p-12 xl:p-16 text-white">
           <h2 className="text-3xl font-bold mb-8">{t("ctaTitle")}</h2>
-          <div className="flex justify-center gap-4 flex-wrap">
+          <div className="flex justify-center gap-3 md:gap-4 flex-wrap">
             <Link
               href={ROUTES.AUTH.REGISTER}
               className="bg-white text-indigo-600 font-semibold px-8 py-3 rounded-full hover:bg-indigo-50 transition-colors"

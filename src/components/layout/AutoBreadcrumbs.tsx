@@ -49,19 +49,59 @@ const pathLabels: Record<string, string> = {
 export default function AutoBreadcrumbs() {
   const pathname = usePathname();
 
-  // Don't show breadcrumbs on home page
-  if (pathname === "/") {
+  // Locale codes (2-letter ISO 639-1 + common variants) — filtered from path segments
+  const LOCALE_CODES = new Set([
+    "en",
+    "hi",
+    "fr",
+    "de",
+    "es",
+    "pt",
+    "zh",
+    "ja",
+    "ko",
+    "ar",
+    "ru",
+    "it",
+    "nl",
+    "sv",
+    "pl",
+    "tr",
+    "vi",
+    "th",
+    "uk",
+    "cs",
+    "ro",
+    "hu",
+  ]);
+
+  /** Returns true if the segment looks like a locale shortcode. */
+  const isLocale = (s: string) =>
+    LOCALE_CODES.has(s) || /^[a-z]{2}-[A-Z]{2}$/.test(s);
+
+  // Don't show breadcrumbs on home page (any locale variant)
+  const pathWithoutLocale = pathname
+    .split("/")
+    .filter((s) => s && !isLocale(s))
+    .join("/");
+
+  if (!pathWithoutLocale) {
     return null;
   }
 
-  // Split pathname into segments and filter out empty strings
-  const segments = pathname.split("/").filter(Boolean);
+  // Split pathname into segments and filter out empty strings and locale codes
+  const segments = pathname.split("/").filter((s) => s && !isLocale(s));
 
-  // Build breadcrumb items
+  // Extract locale prefix from the original pathname (e.g. "en" from "/en/admin/products")
+  const pathParts = pathname.split("/").filter(Boolean);
+  const localePrefix =
+    pathParts.length > 0 && isLocale(pathParts[0]) ? `/${pathParts[0]}` : "";
+
+  // Build breadcrumb items — hrefs include the locale prefix
   const breadcrumbs = [
-    { label: "Home", href: "/" },
+    { label: "Home", href: localePrefix || "/" },
     ...segments.map((segment, index) => {
-      const href = "/" + segments.slice(0, index + 1).join("/");
+      const href = localePrefix + "/" + segments.slice(0, index + 1).join("/");
       const label =
         pathLabels[segment] ||
         segment.charAt(0).toUpperCase() + segment.slice(1);

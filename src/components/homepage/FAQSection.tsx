@@ -53,8 +53,10 @@ export function FAQSection() {
           </p>
         </div>
 
-        {/* Category Tabs */}
-        <div className="flex flex-wrap gap-2 justify-center mb-8">
+        {/* Category Tabs — single horizontal scrollable row, nav-item style */}
+        <div
+          className={`flex gap-1 overflow-x-auto ${THEME_CONSTANTS.utilities.scrollbarThinX} pb-1 mb-8 border-b ${THEME_CONSTANTS.themed.border}`}
+        >
           {(
             Object.entries(FAQ_CATEGORIES) as [
               FAQCategoryKey,
@@ -64,13 +66,13 @@ export function FAQSection() {
             <button
               key={key}
               onClick={() => handleCategoryChange(key)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`flex-none flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors whitespace-nowrap border-b-2 -mb-px ${
                 activeCategory === key
-                  ? "bg-blue-600 text-white dark:bg-blue-500"
-                  : `${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.themed.textSecondary} hover:bg-gray-100 dark:hover:bg-gray-700`
+                  ? `border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400`
+                  : `border-transparent ${THEME_CONSTANTS.themed.textSecondary} hover:${THEME_CONSTANTS.themed.textPrimary} hover:border-gray-300 dark:hover:border-gray-600`
               }`}
             >
-              <span className="mr-1">{category.icon}</span>
+              <span>{category.icon}</span>
               {category.label}
             </button>
           ))}

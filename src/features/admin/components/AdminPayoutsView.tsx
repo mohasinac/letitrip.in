@@ -114,7 +114,7 @@ export function AdminPayoutsView() {
 
       {/* Stats row */}
       {!statusFilter && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
           <Card className="p-4">
             <p
               className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary} mb-1`}

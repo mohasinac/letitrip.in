@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useHomepageSections } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
+import { proseMirrorToHtml } from "@/utils";
 import type {
   HomepageSectionDocument,
   WelcomeSectionConfig,
@@ -63,7 +64,9 @@ export function WelcomeSection() {
         {config.description && (
           <div
             className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} max-w-4xl mx-auto mb-8 prose prose-lg dark:prose-invert`}
-            dangerouslySetInnerHTML={{ __html: config.description }}
+            dangerouslySetInnerHTML={{
+              __html: proseMirrorToHtml(config.description),
+            }}
           />
         )}
 

@@ -19,6 +19,7 @@ import {
   isEmptyString,
   wordCount,
   reverse,
+  proseMirrorToHtml,
 } from "../string.formatter";
 
 describe("String Formatter", () => {
@@ -359,6 +360,91 @@ describe("String Formatter", () => {
 
     it("should handle palindromes", () => {
       expect(reverse("racecar")).toBe("racecar");
+    });
+  });
+
+  describe("proseMirrorToHtml", () => {
+    it("converts a simple paragraph doc to <p> HTML", () => {
+      const json = JSON.stringify({
+        type: "doc",
+        content: [
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "Hello world" }],
+          },
+        ],
+      });
+      expect(proseMirrorToHtml(json)).toBe("<p>Hello world</p>");
+    });
+
+    it("passes plain HTML strings through unchanged", () => {
+      expect(proseMirrorToHtml("<p>Already HTML</p>")).toBe(
+        "<p>Already HTML</p>",
+      );
+    });
+
+    it("passes invalid JSON through unchanged", () => {
+      expect(proseMirrorToHtml("not json at all")).toBe("not json at all");
+    });
+
+    it("applies bold mark", () => {
+      const json = JSON.stringify({
+        type: "doc",
+        content: [
+          {
+            type: "paragraph",
+            content: [
+              {
+                type: "text",
+                text: "Bold",
+                marks: [{ type: "bold" }],
+              },
+            ],
+          },
+        ],
+      });
+      expect(proseMirrorToHtml(json)).toBe("<p><strong>Bold</strong></p>");
+    });
+
+    it("converts heading nodes", () => {
+      const json = JSON.stringify({
+        type: "doc",
+        content: [
+          {
+            type: "heading",
+            attrs: { level: 2 },
+            content: [{ type: "text", text: "Title" }],
+          },
+        ],
+      });
+      expect(proseMirrorToHtml(json)).toBe("<h2>Title</h2>");
+    });
+
+    it("converts bullet list nodes", () => {
+      const json = JSON.stringify({
+        type: "doc",
+        content: [
+          {
+            type: "bulletList",
+            content: [
+              {
+                type: "listItem",
+                content: [
+                  {
+                    type: "paragraph",
+                    content: [{ type: "text", text: "Item" }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      expect(proseMirrorToHtml(json)).toBe("<ul><li><p>Item</p></li></ul>");
+    });
+
+    it("returns empty string for empty input", () => {
+      expect(proseMirrorToHtml("")).toBe("");
     });
   });
 });

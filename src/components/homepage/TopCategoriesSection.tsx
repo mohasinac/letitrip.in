@@ -75,12 +75,13 @@ export function TopCategoriesSection() {
           <div
             className={`h-8 ${THEME_CONSTANTS.skeleton.base} mb-8 max-w-xs`}
           />
-          <div className="grid grid-cols-2 sm:grid-cols-4 2xl:grid-cols-6 gap-4">
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className={`aspect-square ${THEME_CONSTANTS.skeleton.image}`}
-              />
+          <div className="flex gap-3 overflow-hidden">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="flex-none w-40">
+                <div
+                  className={`aspect-square ${THEME_CONSTANTS.skeleton.image}`}
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -112,94 +113,50 @@ export function TopCategoriesSection() {
           </Link>
         </div>
 
-        {/* Mobile: horizontal scroller */}
-        <div className="sm:hidden">
-          <HorizontalScroller
-            items={categories.slice(0, 12)}
-            renderItem={(category) => (
-              <Link
-                href={`/categories/${category.slug}`}
-                className={`relative block w-28 aspect-square ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} overflow-hidden group hover:scale-105 hover:shadow-xl transition-all duration-300`}
-              >
-                {category.display?.coverImage ? (
-                  <Image
-                    src={category.display.coverImage}
-                    alt={category.name}
-                    fill
-                    className="object-cover"
-                    sizes="112px"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                    <CategoryIcon
-                      slug={category.slug}
-                      className="w-10 h-10 text-white/80"
-                    />
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute inset-0 p-2 flex flex-col justify-end">
-                  <h3 className="text-white text-xs font-semibold line-clamp-2">
-                    {category.name}
-                  </h3>
-                </div>
-              </Link>
-            )}
-            keyExtractor={(c) => c.id ?? c.slug}
-            itemWidth={112}
-            gap={12}
-            autoScroll={false}
-            showScrollbar
-            showArrows={false}
-          />
-        </div>
-
-        {/* Tablet / Desktop: responsive grid */}
-        <div className="hidden sm:grid sm:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4">
-          {categories.slice(0, 12).map((category, index) => (
+        {/* All screen sizes: unified horizontal scroller */}
+        <HorizontalScroller
+          items={categories.slice(0, 12)}
+          renderItem={(category) => (
             <Link
-              key={category.id ?? category.slug ?? index}
               href={`/categories/${category.slug}`}
-              className={`relative aspect-square ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} overflow-hidden group
-                hover:scale-105 hover:shadow-xl transition-all duration-300`}
+              className={`relative block aspect-square ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} overflow-hidden group hover:scale-105 hover:shadow-xl transition-all duration-300`}
             >
-              {/* Background Image or gradient fallback */}
               {category.display?.coverImage ? (
                 <Image
                   src={category.display.coverImage}
                   alt={category.name}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1536px) 25vw, 17vw"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
                 />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                   <CategoryIcon
                     slug={category.slug}
-                    className="w-12 h-12 text-white/80"
+                    className="w-10 h-10 text-white/80"
                   />
                 </div>
               )}
-
-              {/* Dark overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-
-              {/* Content */}
-              <div className="absolute inset-0 p-3 md:p-4 flex flex-col justify-end">
+              <div className="absolute inset-0 p-3 flex flex-col justify-end">
                 <h3
                   className={`${THEME_CONSTANTS.typography.h6} text-white mb-1 line-clamp-2`}
                 >
                   {category.name}
                 </h3>
-                {/* Product count badge */}
                 <span className="inline-block self-start bg-white/20 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded-full">
                   {(category.metrics?.totalItemCount ?? 0).toLocaleString()}{" "}
                   products
                 </span>
               </div>
             </Link>
-          ))}
-        </div>
+          )}
+          keyExtractor={(c) => c.id ?? c.slug}
+          perView={{ base: 2, sm: 3, lg: 4, xl: 5, "2xl": 6 }}
+          gap={12}
+          autoScroll={false}
+          className="px-5 pb-1"
+        />
       </div>
     </section>
   );

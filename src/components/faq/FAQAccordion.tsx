@@ -55,7 +55,7 @@ export function FAQAccordion({
   }
 
   return (
-    <div className={THEME_CONSTANTS.spacing.stack}>
+    <div className="space-y-5">
       {faqs.map((faq) => {
         const isExpanded = expandedIds.has(faq.id);
 
@@ -72,7 +72,7 @@ export function FAQAccordion({
             >
               <div className="flex-1">
                 <h3
-                  className={`${THEME_CONSTANTS.typography.h4} ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+                  className={`${THEME_CONSTANTS.typography.h4} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
                 >
                   {faq.question}
                 </h3>

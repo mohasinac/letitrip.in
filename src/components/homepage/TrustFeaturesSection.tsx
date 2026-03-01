@@ -86,7 +86,7 @@ export function TrustFeaturesSection() {
       className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
       <div className="w-full">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4 md:gap-6">
           {TRUST_FEATURES.map((item, index) => (
             <TrustFeatureCard
               key={item.iconName}

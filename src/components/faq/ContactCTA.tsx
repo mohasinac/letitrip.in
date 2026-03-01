@@ -45,7 +45,7 @@ export function ContactCTA() {
       </p>
 
       {/* Contact Options */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-4 mb-8">
         {/* Email */}
         <a
           href={`mailto:${SITE_CONFIG.contact.email}`}

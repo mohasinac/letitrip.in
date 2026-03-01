@@ -339,3 +339,99 @@ export function wordCount(str: string): number {
 export function reverse(str: string): string {
   return str.split("").reverse().join("");
 }
+
+// ============================================
+// ProseMirror / TipTap JSON → HTML
+// ============================================
+
+interface ProseMirrorMark {
+  type: string;
+  attrs?: Record<string, string | number | boolean | null>;
+}
+
+interface ProseMirrorNode {
+  type: string;
+  text?: string;
+  attrs?: Record<string, string | number | boolean | null>;
+  marks?: ProseMirrorMark[];
+  content?: ProseMirrorNode[];
+}
+
+function renderProseMirrorNodes(nodes: ProseMirrorNode[]): string {
+  return nodes.map(renderProseMirrorNode).join("");
+}
+
+function renderProseMirrorNode(node: ProseMirrorNode): string {
+  switch (node.type) {
+    case "doc":
+      return renderProseMirrorNodes(node.content ?? []);
+    case "paragraph": {
+      const inner = renderProseMirrorNodes(node.content ?? []);
+      return inner ? `<p>${inner}</p>` : "<p></p>";
+    }
+    case "text": {
+      let text = node.text ?? "";
+      if (node.marks) {
+        for (const mark of node.marks) {
+          if (mark.type === "bold") text = `<strong>${text}</strong>`;
+          else if (mark.type === "italic") text = `<em>${text}</em>`;
+          else if (mark.type === "underline") text = `<u>${text}</u>`;
+          else if (mark.type === "strike") text = `<s>${text}</s>`;
+          else if (mark.type === "code") text = `<code>${text}</code>`;
+          else if (mark.type === "link") {
+            const href = mark.attrs?.href ?? "#";
+            text = `<a href="${href}">${text}</a>`;
+          }
+        }
+      }
+      return text;
+    }
+    case "heading": {
+      const level = (node.attrs?.level as number) ?? 2;
+      return `<h${level}>${renderProseMirrorNodes(node.content ?? [])}</h${level}>`;
+    }
+    case "bulletList":
+      return `<ul>${renderProseMirrorNodes(node.content ?? [])}</ul>`;
+    case "orderedList":
+      return `<ol>${renderProseMirrorNodes(node.content ?? [])}</ol>`;
+    case "listItem":
+      return `<li>${renderProseMirrorNodes(node.content ?? [])}</li>`;
+    case "blockquote":
+      return `<blockquote>${renderProseMirrorNodes(node.content ?? [])}</blockquote>`;
+    case "codeBlock":
+      return `<pre><code>${renderProseMirrorNodes(node.content ?? [])}</code></pre>`;
+    case "hardBreak":
+      return "<br>";
+    case "horizontalRule":
+      return "<hr>";
+    default:
+      return renderProseMirrorNodes(node.content ?? []);
+  }
+}
+
+/**
+ * Converts a ProseMirror / TipTap JSON document string to HTML.
+ *
+ * If the input is not valid JSON or is not a ProseMirror doc, it is returned
+ * unchanged so that plain HTML strings continue to work without modification.
+ *
+ * @example
+ * proseMirrorToHtml('{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Hello"}]}]}')
+ * // → "<p>Hello</p>"
+ *
+ * @example
+ * proseMirrorToHtml("<p>Already HTML</p>")
+ * // → "<p>Already HTML</p>"
+ */
+export function proseMirrorToHtml(value: string): string {
+  if (!value) return value;
+  try {
+    const parsed = JSON.parse(value) as ProseMirrorNode;
+    if (parsed?.type === "doc") {
+      return renderProseMirrorNodes(parsed.content ?? []);
+    }
+    return value;
+  } catch {
+    return value; // already plain HTML or plain text
+  }
+}

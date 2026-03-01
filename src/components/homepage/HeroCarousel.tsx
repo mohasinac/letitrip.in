@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useHeroCarousel, useSwipe, useMediaQuery } from "@/hooks";
+import { useHeroCarousel, useMediaQuery } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
 import type { CarouselSlideDocument, GridCard } from "@/db/schema";
@@ -17,6 +17,8 @@ export function HeroCarousel() {
   const [isMobile, setIsMobile] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const slidesRef = useRef<HTMLDivElement>(null);
+  const isScrollingRef = useRef(false);
   const prefersReducedMotion = useMediaQuery(
     "(prefers-reduced-motion: reduce)",
   );
@@ -34,15 +36,34 @@ export function HeroCarousel() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const goToSlide = useCallback((index: number) => {
+    const el = slidesRef.current;
+    if (!el) return;
+    setCurrentSlide(index);
+    isScrollingRef.current = true;
+    el.scrollTo({ left: index * el.offsetWidth, behavior: "smooth" });
+    setTimeout(() => {
+      isScrollingRef.current = false;
+    }, 600);
+  }, []);
+
   const goNext = useCallback(
-    () => setCurrentSlide((prev) => (prev + 1) % slides.length),
-    [slides.length],
+    () => goToSlide((currentSlide + 1) % slides.length),
+    [currentSlide, slides.length, goToSlide],
   );
 
   const goPrev = useCallback(
-    () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length),
-    [slides.length],
+    () => goToSlide((currentSlide - 1 + slides.length) % slides.length),
+    [currentSlide, slides.length, goToSlide],
   );
+
+  const handleSlidesScroll = useCallback(() => {
+    if (isScrollingRef.current) return;
+    const el = slidesRef.current;
+    if (!el || el.offsetWidth === 0) return;
+    const idx = Math.round(el.scrollLeft / el.offsetWidth);
+    if (idx >= 0 && idx < slides.length) setCurrentSlide(idx);
+  }, [slides.length]);
 
   // Auto-advance carousel (pause on focus/hover and when prefers-reduced-motion)
   useEffect(() => {
@@ -51,13 +72,6 @@ export function HeroCarousel() {
     const interval = setInterval(goNext, 5000);
     return () => clearInterval(interval);
   }, [slides.length, isPaused, prefersReducedMotion, goNext]);
-
-  // Swipe gestures
-  useSwipe(sectionRef, {
-    onSwipeLeft: goNext,
-    onSwipeRight: goPrev,
-    minSwipeDistance: 60,
-  });
 
   if (isLoading) {
     return (
@@ -76,8 +90,6 @@ export function HeroCarousel() {
   if (!slides || slides.length === 0) {
     return null; // Hide carousel if no slides
   }
-
-  const slide = slides[currentSlide];
 
   const getBackgroundStyle = (card: GridCard) => {
     const { type, value } = card.background;
@@ -121,7 +133,7 @@ export function HeroCarousel() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden"
+      className="relative w-full aspect-[16/9] md:aspect-[21/9]"
       aria-roledescription="carousel"
       aria-label={tA11y("heroCarouselAriaLabel")}
       onKeyDown={handleKeyDown}
@@ -136,132 +148,144 @@ export function HeroCarousel() {
           total: slides.length,
         })}
       </div>
-      {/* Background Media */}
-      <div className="absolute inset-0">
-        {slide.media.type === "image" ? (
-          <Image
-            src={
-              isMobile && slide.mobileMedia
-                ? slide.mobileMedia.url
-                : slide.media.url
-            }
-            alt={slide.media.alt}
-            fill
-            className="object-cover"
-            sizes="100vw"
-            priority
-          />
-        ) : (
-          <video
-            src={
-              isMobile && slide.mobileMedia
-                ? slide.mobileMedia.url
-                : slide.media.url
-            }
-            poster={slide.media.thumbnail}
-            className="w-full h-full object-cover"
-            autoPlay
-            loop
-            muted
-            playsInline
-          />
-        )}
-        {/* Overlay for better card visibility */}
-        <div className="absolute inset-0 bg-black/10" />
-      </div>
-
-      {/* Grid Overlay with Cards */}
+      {/* Snap Scroll Rail — all slides side by side */}
       <div
-        className="absolute inset-0 grid gap-2 md:gap-4 p-4 md:p-8"
-        style={{
-          gridTemplateRows: `repeat(${isMobile ? 2 : 3}, 1fr)`,
-          gridTemplateColumns: `repeat(${isMobile ? 2 : 3}, 1fr)`,
-        }}
+        ref={slidesRef}
+        onScroll={handleSlidesScroll}
+        className={`absolute inset-0 flex overflow-x-auto snap-x snap-mandatory ${THEME_CONSTANTS.utilities.scrollbarThinX}`}
       >
-        {slide.cards.map((card) => {
-          const hideText = isMobile && card.mobileHideText;
+        {slides.map((slide, slideIndex) => (
+          <div
+            key={slide.id}
+            className="snap-start flex-none w-full h-full relative"
+          >
+            {/* Background Media */}
+            <div className="absolute inset-0">
+              {slide.media.type === "image" ? (
+                <Image
+                  src={
+                    isMobile && slide.mobileMedia
+                      ? slide.mobileMedia.url
+                      : slide.media.url
+                  }
+                  alt={slide.media.alt}
+                  fill
+                  className="object-cover"
+                  sizes="100vw"
+                  priority={slideIndex === 0}
+                  loading={slideIndex === 0 ? "eager" : "lazy"}
+                />
+              ) : (
+                <video
+                  src={
+                    isMobile && slide.mobileMedia
+                      ? slide.mobileMedia.url
+                      : slide.media.url
+                  }
+                  poster={slide.media.thumbnail}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
+              )}
+              <div className="absolute inset-0 bg-black/10" />
+            </div>
 
-          return (
+            {/* Grid Overlay with Cards */}
             <div
-              key={card.id}
-              className="relative rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105"
+              className="absolute inset-0 grid gap-2 md:gap-4 p-4 md:p-8"
               style={{
-                ...getGridPosition(card),
-                ...getBackgroundStyle(card),
+                gridTemplateRows: `repeat(${isMobile ? 2 : 3}, 1fr)`,
+                gridTemplateColumns: `repeat(${isMobile ? 2 : 3}, 1fr)`,
               }}
             >
-              {/* Card Content */}
-              {!card.isButtonOnly && (
-                <div className="absolute inset-0 p-4 md:p-6 flex flex-col justify-end bg-gradient-to-t from-black/60 to-transparent">
-                  {!hideText && (
-                    <>
-                      {card.content.subtitle && (
-                        <p className="text-xs md:text-sm text-white/90 mb-1 md:mb-2">
-                          {card.content.subtitle}
-                        </p>
-                      )}
-                      {card.content.title && (
-                        <h3 className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-2 md:mb-3 line-clamp-2">
-                          {card.content.title}
-                        </h3>
-                      )}
-                      {card.content.description && (
-                        <p className="text-xs md:text-sm lg:text-base text-white/80 mb-3 md:mb-4 line-clamp-1 md:line-clamp-2">
-                          {card.content.description}
-                        </p>
-                      )}
-                    </>
-                  )}
-
-                  {/* Card Buttons */}
-                  {card.buttons.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {card.buttons.map((btn) => (
-                        <Button
-                          key={btn.id}
-                          variant={btn.variant}
-                          size={isMobile ? "sm" : "md"}
-                          onClick={() => {
-                            if (btn.openInNewTab) {
-                              window.open(
-                                btn.link,
-                                "_blank",
-                                "noopener,noreferrer",
-                              );
-                            } else {
-                              router.push(btn.link);
-                            }
-                          }}
-                        >
-                          {btn.text}
-                        </Button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Button-Only Card (entire card is clickable) */}
-              {card.isButtonOnly && card.buttons[0] && (
-                <button
-                  className="absolute inset-0 flex items-center justify-center font-semibold text-white hover:bg-black/20 transition-colors"
-                  onClick={() => {
-                    const btn = card.buttons[0];
-                    if (btn.openInNewTab) {
-                      window.open(btn.link, "_blank", "noopener,noreferrer");
-                    } else {
-                      router.push(btn.link);
-                    }
-                  }}
-                >
-                  <span className="text-lg md:text-2xl">
-                    {card.buttons[0].text}
-                  </span>
-                </button>
-              )}
+              {slide.cards.map((card) => {
+                const hideText = isMobile && card.mobileHideText;
+                return (
+                  <div
+                    key={card.id}
+                    className="relative rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105"
+                    style={{
+                      ...getGridPosition(card),
+                      ...getBackgroundStyle(card),
+                    }}
+                  >
+                    {!card.isButtonOnly && (
+                      <div className="absolute inset-0 p-4 md:p-6 flex flex-col justify-end bg-gradient-to-t from-black/60 to-transparent">
+                        {!hideText && (
+                          <>
+                            {card.content.subtitle && (
+                              <p className="text-xs md:text-sm text-white/90 mb-1 md:mb-2">
+                                {card.content.subtitle}
+                              </p>
+                            )}
+                            {card.content.title && (
+                              <h3 className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-2 md:mb-3 line-clamp-2">
+                                {card.content.title}
+                              </h3>
+                            )}
+                            {card.content.description && (
+                              <p className="text-xs md:text-sm lg:text-base text-white/80 mb-3 md:mb-4 line-clamp-1 md:line-clamp-2">
+                                {card.content.description}
+                              </p>
+                            )}
+                          </>
+                        )}
+                        {card.buttons.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {card.buttons.map((btn) => (
+                              <Button
+                                key={btn.id}
+                                variant={btn.variant}
+                                size={isMobile ? "sm" : "md"}
+                                onClick={() => {
+                                  if (btn.openInNewTab) {
+                                    window.open(
+                                      btn.link,
+                                      "_blank",
+                                      "noopener,noreferrer",
+                                    );
+                                  } else {
+                                    router.push(btn.link);
+                                  }
+                                }}
+                              >
+                                {btn.text}
+                              </Button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {card.isButtonOnly && card.buttons[0] && (
+                      <button
+                        className="absolute inset-0 flex items-center justify-center font-semibold text-white hover:bg-black/20 transition-colors"
+                        onClick={() => {
+                          const btn = card.buttons[0];
+                          if (btn.openInNewTab) {
+                            window.open(
+                              btn.link,
+                              "_blank",
+                              "noopener,noreferrer",
+                            );
+                          } else {
+                            router.push(btn.link);
+                          }
+                        }}
+                      >
+                        <span className="text-lg md:text-2xl">
+                          {card.buttons[0].text}
+                        </span>
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
       {/* Navigation Dots */}
@@ -275,7 +299,7 @@ export function HeroCarousel() {
                   ? "bg-white w-6 md:w-8"
                   : "bg-white/50 hover:bg-white/75"
               }`}
-              onClick={() => setCurrentSlide(index)}
+              onClick={() => goToSlide(index)}
               aria-label={tA11y("heroCarouselGoToSlide", { number: index + 1 })}
             />
           ))}

@@ -63,7 +63,7 @@ function SellerProductsSection({
           <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : productsData?.data && productsData.data.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
           {productsData.data.map((product: ProductDocument) => (
             <Link
               key={product.id}
@@ -375,7 +375,7 @@ export function PublicProfileView({
 
         {/* Stats Grid */}
         {user.publicProfile?.showOrders && user.stats && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mb-6">
             <Card>
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary-600">

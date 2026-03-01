@@ -28,9 +28,9 @@ export default async function HelpPage() {
   ];
 
   return (
-    <div className={`${themed.bgPrimary} min-h-screen`}>
-      <section className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white py-16 px-4">
-        <div className="max-w-3xl mx-auto text-center">
+    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
+      <section className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white py-14 md:py-16 lg:py-20">
+        <div className="max-w-3xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold mb-4">{t("title")}</h1>
           <p className="text-blue-100 text-lg mb-8">{t("subtitle")}</p>
           <Link
@@ -42,14 +42,14 @@ export default async function HelpPage() {
         </div>
       </section>
 
-      <div className="max-w-5xl mx-auto px-4 py-16 space-y-16">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16 space-y-14 md:space-y-16">
         <section>
           <h2
             className={`${typography.h2} ${themed.textPrimary} text-center mb-10`}
           >
             {t("browseTitle")}
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-5 gap-3 md:gap-4">
             {TOPICS.map(({ key, label, q }) => (
               <Link
                 key={key}

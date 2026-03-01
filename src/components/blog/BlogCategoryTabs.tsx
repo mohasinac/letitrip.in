@@ -39,7 +39,6 @@ export function BlogCategoryTabs({
       keyExtractor={(tab) => tab.key}
       gap={8}
       autoScroll={false}
-      showScrollbar
       className="mb-8 px-5"
     />
   );

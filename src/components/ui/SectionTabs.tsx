@@ -85,7 +85,6 @@ export function SectionTabs({
             keyExtractor={(tab) => tab.href}
             gap={0}
             autoScroll={false}
-            showScrollbar
             showArrows={false}
             className="outline-none md:hidden"
           />
@@ -112,7 +111,6 @@ export function SectionTabs({
             keyExtractor={(tab) => tab.href}
             gap={0}
             autoScroll={false}
-            showScrollbar
             className="outline-none hidden md:block"
           />
         </nav>

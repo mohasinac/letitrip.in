@@ -1,104 +1,140 @@
-"use client";
+﻿"use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { useHorizontalScrollDrag } from "./useHorizontalScrollDrag";
+import { useHorizontalAutoScroll } from "./useHorizontalAutoScroll";
+
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
- * HorizontalScroller
+ * Responsive items-per-view map.
+ * The component measures the container width each render tick and picks the
+ * highest-matching breakpoint value.
  *
- * Two layout modes selected via the `rows` prop:
+ * item width = (availableWidth - (n-1) Ã— gap) / n
  *
- * ┌─ rows = 1 (default) — flex carousel  ─────────────────────────────────────
- * │  <| {item1} {item2} {item3} {item4} |>
- * │     ══════════  (scrollbar when showScrollbar=true)
- * └────────────────────────────────────────────────────────────────────────────
- *
- * ┌─ rows > 1 — CSS-grid multi-row scroller  ──────────────────────────────────
- * │  <| {item1} {item4} {item7} |>
- * │     {item2} {item5} {item8}
- * │     {item3} {item6} {item9}
- * │     ══════════════  (scrollbar when showScrollbar=true)
- * └────────────────────────────────────────────────────────────────────────────
- *
- * Features:
- * - Height driven entirely by item content
- * - Auto-computed visible column count (⌊containerWidth ÷ (itemWidth + gap)⌋)
- *   when `count` is omitted; explicit `count` overrides this
- * - Left / right arrows scroll by one "page" (count columns × itemWidth)
- * - ArrowLeft / ArrowRight keyboard navigation (opt-in, on by default)
- * - Circular auto-scroll for single-row carousels — items array tripled,
- *   seamless wrap via debounced position-reset after scroll settles
- * - Optional thin horizontal scrollbar at the bottom
- * - Width fills parent; viewport-capped via `w-full`
- *
- * @example Multi-row grid scroller (featured products / auctions)
- * ```tsx
- * <HorizontalScroller
- *   items={products}
- *   renderItem={(p) => <ProductCard product={p} />}
- *   itemWidth={160}
- *   rows={2}
- *   showScrollbar
- *   keyExtractor={(p) => p.id}
- * />
- * ```
- *
- * @example Single-row auto-scroll carousel (mobile)
- * ```tsx
- * <HorizontalScroller
- *   items={products}
- *   renderItem={(p) => <ProductCard product={p} />}
- *   itemWidth={160}
- *   autoScroll
- * />
- * ```
- *
- * @example Tab strip
- * ```tsx
- * <HorizontalScroller
- *   items={TABS}
- *   renderItem={(t) => <TabChip tab={t} />}
- *   gap={8}
- *   showScrollbar
- *   autoScroll={false}
- * />
- * ```
+ * @example { base: 1, sm: 2, md: 3, lg: 4, '2xl': 5 }
  */
+export interface PerViewConfig {
+  base: number;
+  sm?: number; // >= 640 px
+  md?: number; // >= 768 px
+  lg?: number; // >= 1024 px
+  xl?: number; // >= 1280 px
+  "2xl"?: number; // >= 1536 px
+}
+
+function resolvePerView(cfg: PerViewConfig, containerWidth: number): number {
+  let n = cfg.base;
+  if (cfg.sm !== undefined && containerWidth >= 640) n = cfg.sm;
+  if (cfg.md !== undefined && containerWidth >= 768) n = cfg.md;
+  if (cfg.lg !== undefined && containerWidth >= 1024) n = cfg.lg;
+  if (cfg.xl !== undefined && containerWidth >= 1280) n = cfg.xl;
+  if (cfg["2xl"] !== undefined && containerWidth >= 1536) n = cfg["2xl"];
+  return Math.max(1, n);
+}
+
+// â”€â”€â”€ Arrow button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+interface ArrowButtonProps {
+  direction: "left" | "right";
+  onClick: () => void;
+}
+
+function ArrowButton({ direction, onClick }: ArrowButtonProps) {
+  const { themed } = THEME_CONSTANTS;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={direction === "left" ? "Scroll left" : "Scroll right"}
+      className={[
+        "flex-shrink-0 self-stretch",
+        "flex items-center justify-center",
+        "w-8",
+        "border rounded-lg",
+        themed.border,
+        themed.bgPrimary,
+        "hover:bg-gray-100 dark:hover:bg-gray-700",
+        "active:scale-95",
+        "transition-all duration-150",
+        "cursor-pointer",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
+      ].join(" ")}
+    >
+      {direction === "left" ? (
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={themed.textPrimary}
+          aria-hidden
+        >
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      ) : (
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={themed.textPrimary}
+          aria-hidden
+        >
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
+// â”€â”€â”€ Props â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
 export interface HorizontalScrollerProps<T = unknown> {
   /** Array of items to render */
   items: T[];
 
-  /** Render function invoked with (item, originalIndex) */
+  /** Render function called with (item, originalIndex) */
   renderItem: (item: T, index: number) => React.ReactNode;
 
   /**
    * Number of rows. Default: 1 (flex carousel).
-   * When > 1 the inner container switches to CSS grid with
-   * `grid-auto-flow: column` so items fill column-by-column.
+   * When > 1 the inner container switches to a column-flow CSS grid.
    * Auto-scroll is disabled when rows > 1.
    */
   rows?: number;
 
   /**
-   * Explicit item width in px.
-   * When omitted the component auto-detects the first child's offsetWidth.
-   * Providing it avoids a one-frame layout read and enables precise page steps.
+   * Responsive items-per-view config.
+   * Item width is computed as `(containerWidth - (n-1) Ã— gap) / n`.
+
+   *
+   * @example { base: 1, sm: 2, md: 3, lg: 4, '2xl': 5 }
    */
-  itemWidth?: number;
+  perView?: PerViewConfig;
 
   /**
-   * How many columns to show at once.
-   * Omit to let the component compute: ⌊containerWidth ÷ (itemWidth + gap)⌋.
-   * Minimum 1.
+   * Explicit item width in px.
+   * Falls back to auto-detection when omitted and `perView` is not set.
    */
-  count?: number;
+  itemWidth?: number;
 
   /** Gap between items in px. Default: 12 */
   gap?: number;
 
   /**
-   * Enable circular auto-scroll (single-row only; ignored when rows > 1).
-   * Items array is tripled internally — wrapping is seamless.
+   * Enable circular auto-scroll (single-row only).
+   * Items array is tripled internally â€” wrapping is seamless.
    * Default: false
    */
   autoScroll?: boolean;
@@ -112,14 +148,15 @@ export interface HorizontalScrollerProps<T = unknown> {
    */
   pauseOnHover?: boolean;
 
-  /** Show left / right arrow buttons. Default: true */
+  /** Show full-height arrow buttons. Default: true */
   showArrows?: boolean;
 
   /**
-   * Show a thin horizontal scrollbar at the bottom of the scroll area.
-   * Default: false
+   * Show subtle gradient fade overlays on the left/right edges to signal
+   * that more content is available in that direction.
+   * Default: true
    */
-  showScrollbar?: boolean;
+  showFadeEdges?: boolean;
 
   /**
    * Whether ArrowLeft / ArrowRight keyboard events scroll this component.
@@ -127,31 +164,30 @@ export interface HorizontalScrollerProps<T = unknown> {
    */
   enableKeyboard?: boolean;
 
-  /** Extra CSS class(es) on the outer wrapper div */
+  /** Extra CSS class(es) on the outer wrapper */
   className?: string;
 
-  /** Extra CSS class(es) on the inner overflowing container */
+  /** Extra CSS class(es) on the inner scroll container */
   scrollerClassName?: string;
 
-  /**
-   * Key extractor for list rendering.
-   * Falls back to the item's position index when omitted.
-   */
+  /** Key extractor â€” falls back to position index when omitted */
   keyExtractor?: (item: T, index: number) => string;
 }
+
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function HorizontalScroller<T = unknown>({
   items,
   renderItem,
   rows = 1,
-  itemWidth,
-  count,
+  perView: perViewProp,
+  itemWidth: itemWidthProp,
   gap = 12,
   autoScroll = false,
   autoScrollInterval = 3500,
   pauseOnHover = true,
   showArrows = true,
-  showScrollbar = false,
+  showFadeEdges = true,
   enableKeyboard = true,
   className = "",
   scrollerClassName = "",
@@ -160,56 +196,53 @@ export function HorizontalScroller<T = unknown>({
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // ─── Drag-to-scroll state ────────────────────────────────────────────────────
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-  const [detectedItemWidth, setDetectedItemWidth] = useState(itemWidth ?? 0);
 
-  const isPausedRef = useRef(false);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const resetDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const resettingRef = useRef(false);
-  const initializingRef = useRef(false);
+  /**
+   * Resolved item width in px.
+   * - perView:    computed as (availableWidth âˆ’ (nâˆ’1)Â·gap) / n
+   * - itemWidth:  fixed prop
+   * - neither:    auto-detected from first child (variable-width / pill mode)
+   */
+  const [resolvedIW, setResolvedIW] = useState<number>(itemWidthProp ?? 0);
+  const resolvedIWRef = useRef<number>(itemWidthProp ?? 0);
 
-  // Auto-scroll only for single-row mode
-  const circularScroll = autoScroll && rows === 1;
-
-  // Triple items for circular mode
+  const isGrid = rows > 1;
+  const circularScroll = autoScroll && !isGrid;
+  const simpleAutoScroll = autoScroll && isGrid;
   const displayItems = circularScroll ? [...items, ...items, ...items] : items;
 
-  // ─── Resolved item width ──────────────────────────────────────────────────
+  // â”€â”€â”€ Arrow visibility â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  const resolvedItemWidth = useCallback((): number => {
-    return itemWidth ?? detectedItemWidth;
-  }, [itemWidth, detectedItemWidth]);
-
-  // ─── Page step ────────────────────────────────────────────────────────────
-
-  const getPageStep = useCallback((): number => {
-    const iw = resolvedItemWidth();
-    if (!iw) return containerRef.current?.offsetWidth ?? 300;
-    const containerWidth = containerRef.current?.offsetWidth ?? iw + gap;
-    const visibleCols =
-      count ?? Math.max(1, Math.floor(containerWidth / (iw + gap)));
-    return visibleCols * (iw + gap);
-  }, [resolvedItemWidth, count, gap]);
-
-  // ─── Single-step for auto-advance ─────────────────────────────────────────
-
-  const getSingleStep = useCallback((): number => {
-    const iw = resolvedItemWidth();
-    return iw ? iw + gap : (containerRef.current?.offsetWidth ?? 200);
-  }, [resolvedItemWidth, gap]);
-
-  // ─── Arrow visibility ─────────────────────────────────────────────────────
-
-  const updateArrows = useCallback(() => {
+  const updateScrollEdges = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 2);
-    setCanScrollRight(el.scrollLeft + el.offsetWidth < el.scrollWidth - 2);
+    setCanScrollLeft(el.scrollLeft > 1);
+    setCanScrollRight(el.scrollLeft + el.offsetWidth < el.scrollWidth - 1);
   }, []);
 
-  // ─── Circular position reset ──────────────────────────────────────────────
+  // â”€â”€â”€ Page step â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+  const getPageStep = useCallback((): number => {
+    const iw = resolvedIWRef.current;
+    if (!iw) return containerRef.current?.offsetWidth ?? 300;
+    const cw = containerRef.current?.offsetWidth ?? iw + gap;
+    const cols = Math.max(1, Math.floor(cw / (iw + gap)));
+    return cols * (iw + gap);
+  }, [gap]);
+
+  const getSingleStep = useCallback((): number => {
+    const iw = resolvedIWRef.current;
+    return iw ? iw + gap : (containerRef.current?.offsetWidth ?? 200);
+  }, [gap]);
+
+  // â”€â”€â”€ Circular scroll helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+  const resettingRef = useRef(false);
+  const initializingRef = useRef(false);
+  const resetDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const checkCircularReset = useCallback(() => {
     const el = scrollRef.current;
@@ -220,70 +253,102 @@ export function HorizontalScroller<T = unknown>({
       el.scrollLeft += el.scrollLeft < third ? third : -third;
       setTimeout(() => {
         resettingRef.current = false;
-        updateArrows();
+        updateScrollEdges();
       }, 50);
     } else {
-      updateArrows();
+      updateScrollEdges();
     }
-  }, [circularScroll, items.length, updateArrows]);
-
-  // ─── Scroll handler ───────────────────────────────────────────────────────
+  }, [circularScroll, items.length, updateScrollEdges]);
 
   const handleScroll = useCallback(() => {
     if (resettingRef.current || initializingRef.current) return;
-    updateArrows();
+    updateScrollEdges();
     if (!circularScroll) return;
     if (resetDebounceRef.current) clearTimeout(resetDebounceRef.current);
     resetDebounceRef.current = setTimeout(checkCircularReset, 350);
-  }, [updateArrows, circularScroll, checkCircularReset]);
+  }, [updateScrollEdges, circularScroll, checkCircularReset]);
 
-  // ─── Arrow actions ────────────────────────────────────────────────────────
+  useEffect(
+    () => () => {
+      if (resetDebounceRef.current) clearTimeout(resetDebounceRef.current);
+    },
+    [],
+  );
 
-  const scrollRight = useCallback(() => {
-    scrollRef.current?.scrollBy({ left: getPageStep(), behavior: "smooth" });
-  }, [getPageStep]);
+  // â”€â”€â”€ Arrow / auto-advance actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  const scrollLeft = useCallback(() => {
-    scrollRef.current?.scrollBy({ left: -getPageStep(), behavior: "smooth" });
-  }, [getPageStep]);
-
-  const autoAdvance = useCallback(() => {
-    scrollRef.current?.scrollBy({ left: getSingleStep(), behavior: "smooth" });
-  }, [getSingleStep]);
-
-  // ─── Auto-scroll timer ────────────────────────────────────────────────────
-
-  const stopTimer = useCallback(() => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
+  const scrollBy = useCallback((px: number) => {
+    scrollRef.current?.scrollBy({ left: px, behavior: "smooth" });
   }, []);
+  const scrollRight = useCallback(
+    () => scrollBy(getPageStep()),
+    [scrollBy, getPageStep],
+  );
+  const scrollLeft = useCallback(
+    () => scrollBy(-getPageStep()),
+    [scrollBy, getPageStep],
+  );
+  const autoAdvance = useCallback(
+    () => scrollBy(getSingleStep()),
+    [scrollBy, getSingleStep],
+  );
 
-  const startTimer = useCallback(() => {
-    if (!circularScroll) return;
-    stopTimer();
-    timerRef.current = setInterval(() => {
-      if (!isPausedRef.current) autoAdvance();
-    }, autoScrollInterval);
-  }, [circularScroll, autoScrollInterval, autoAdvance, stopTimer]);
+  // â”€â”€â”€ Auto-scroll timer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  useEffect(() => {
-    startTimer();
-    return stopTimer;
-  }, [startTimer, stopTimer]);
+  const isHoverPausedRef = useRef(false);
+  const isDragPausedRef = useRef(false);
 
-  // ─── Hover pause ──────────────────────────────────────────────────────────
+  const onAutoScrollTick = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    if (simpleAutoScroll) {
+      if (el.scrollLeft + el.offsetWidth >= el.scrollWidth - 2) {
+        el.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        autoAdvance();
+      }
+    } else {
+      autoAdvance();
+    }
+  }, [simpleAutoScroll, autoAdvance]);
+
+  const autoScrollCtrl = useHorizontalAutoScroll({
+    enabled: autoScroll,
+    interval: autoScrollInterval,
+    onTick: onAutoScrollTick,
+  });
+
+  const pauseAutoScroll = useCallback(() => {
+    autoScrollCtrl.pause();
+  }, [autoScrollCtrl]);
+  const resumeAutoScroll = useCallback(() => {
+    if (!isHoverPausedRef.current && !isDragPausedRef.current)
+      autoScrollCtrl.resume();
+  }, [autoScrollCtrl]);
+
+  const drag = useHorizontalScrollDrag(scrollRef, {
+    onDragStart: () => {
+      isDragPausedRef.current = true;
+      pauseAutoScroll();
+    },
+    onDragEnd: () => {
+      isDragPausedRef.current = false;
+      resumeAutoScroll();
+    },
+  });
 
   const handleMouseEnter = useCallback(() => {
-    if (pauseOnHover) isPausedRef.current = true;
-  }, [pauseOnHover]);
+    if (!pauseOnHover) return;
+    isHoverPausedRef.current = true;
+    pauseAutoScroll();
+  }, [pauseOnHover, pauseAutoScroll]);
 
   const handleMouseLeave = useCallback(() => {
-    isPausedRef.current = false;
-  }, []);
+    isHoverPausedRef.current = false;
+    resumeAutoScroll();
+  }, [resumeAutoScroll]);
 
-  // ─── Initial circular position ────────────────────────────────────────────
+  // â”€â”€â”€ Initial circular position â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   useEffect(() => {
     if (!circularScroll || items.length === 0) return;
@@ -292,7 +357,7 @@ export function HorizontalScroller<T = unknown>({
     initializingRef.current = true;
     requestAnimationFrame(() => {
       el.scrollLeft = el.scrollWidth / 3;
-      updateArrows();
+      updateScrollEdges();
       setTimeout(() => {
         initializingRef.current = false;
       }, 100);
@@ -300,27 +365,53 @@ export function HorizontalScroller<T = unknown>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circularScroll, items.length]);
 
-  // ─── Auto-detect item width from first child ──────────────────────────────
+  // â”€â”€â”€ Auto-detect width from first child (variable-width / pill mode) â”€â”€â”€â”€â”€
 
   useEffect(() => {
-    if (itemWidth) return;
+    if (itemWidthProp || perViewProp) return;
     const el = scrollRef.current;
     if (!el) return;
     const first = el.firstElementChild as HTMLElement | null;
-    if (first && first.offsetWidth > 0) setDetectedItemWidth(first.offsetWidth);
+    if (first && first.offsetWidth > 0) {
+      resolvedIWRef.current = first.offsetWidth;
+      setResolvedIW(first.offsetWidth);
+    }
   });
 
-  // ─── ResizeObserver ───────────────────────────────────────────────────────
+  // â”€â”€â”€ ResizeObserver â€” recompute item width + arrow state on resize â”€â”€â”€â”€â”€â”€â”€â”€
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const ro = new ResizeObserver(updateArrows);
-    ro.observe(container);
-    return () => ro.disconnect();
-  }, [updateArrows]);
 
-  // ─── Keyboard navigation ──────────────────────────────────────────────────
+    const recompute = () => {
+      updateScrollEdges();
+      const available = container.clientWidth;
+
+      if (itemWidthProp) {
+        resolvedIWRef.current = itemWidthProp;
+        setResolvedIW(itemWidthProp);
+        return;
+      }
+
+      if (perViewProp) {
+        const n = resolvePerView(perViewProp, available);
+        const w = Math.floor((available - (n - 1) * gap) / n);
+        if (w > 0) {
+          resolvedIWRef.current = w;
+          setResolvedIW(w);
+        }
+      }
+    };
+
+    const ro = new ResizeObserver(recompute);
+    ro.observe(container);
+    recompute();
+    return () => ro.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateScrollEdges, perViewProp, itemWidthProp, gap]);
+
+  // â”€â”€â”€ Keyboard navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -328,7 +419,8 @@ export function HorizontalScroller<T = unknown>({
       if (e.key === "ArrowLeft") {
         e.preventDefault();
         scrollLeft();
-      } else if (e.key === "ArrowRight") {
+      }
+      if (e.key === "ArrowRight") {
         e.preventDefault();
         scrollRight();
       }
@@ -336,55 +428,38 @@ export function HorizontalScroller<T = unknown>({
     [enableKeyboard, scrollLeft, scrollRight],
   );
 
-  // ─── Styles ───────────────────────────────────────────────────────────────
+  // ─── Drag-to-scroll handlers (unified pointer events — mouse + touch) ─────────
 
-  const { themed, utilities } = THEME_CONSTANTS;
+  // â”€â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  const iw = resolvedItemWidth();
-  const isGrid = rows > 1;
+  const { utilities } = THEME_CONSTANTS;
 
-  const scrollbarClass = showScrollbar
-    ? utilities.scrollbarThinX
-    : utilities.scrollbarHide;
-
-  const arrowBtn = [
-    "absolute top-1/2 -translate-y-1/2 z-10",
-    "w-9 h-9 flex items-center justify-center rounded-full shadow-md border",
-    "text-xl font-bold leading-none select-none",
-    "transition-all duration-150 active:scale-90",
-    "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
-    themed.bgPrimary,
-    themed.border,
-    themed.textPrimary,
-    "hover:bg-gray-100 dark:hover:bg-gray-700",
-  ].join(" ");
-
-  const innerStyle: React.CSSProperties = isGrid
-    ? {
-        display: "grid",
-        gridTemplateRows: `repeat(${rows}, minmax(0, auto))`,
-        gridAutoFlow: "column",
-        gridAutoColumns: iw ? `${iw}px` : "max-content",
-        gap: `${gap}px`,
-        paddingBottom: showScrollbar ? "4px" : undefined,
-      }
-    : { gap: `${gap}px` };
+  const innerStyle: React.CSSProperties = {
+    ...(isGrid
+      ? {
+          display: "grid",
+          gridTemplateRows: `repeat(${rows}, minmax(0, auto))`,
+          gridAutoFlow: "column",
+          gridAutoColumns: resolvedIW ? `${resolvedIW}px` : "max-content",
+          gap: `${gap}px`,
+        }
+      : { gap: `${gap}px` }),
+    ...drag.style,
+  };
 
   const innerClassName = [
-    "overflow-x-auto scroll-smooth",
-    isGrid ? "" : "flex snap-x snap-mandatory",
-    scrollbarClass,
+    "overflow-x-auto",
+    isGrid ? "" : "flex",
+    utilities.scrollbarHide,
+    drag.cursorClass,
     scrollerClassName,
   ]
     .filter(Boolean)
     .join(" ");
 
-  // ─── Render ───────────────────────────────────────────────────────────────
-
   return (
     <div
-      ref={containerRef}
-      className={`relative w-full ${className}`}
+      className={`flex items-stretch gap-1.5 w-full ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onKeyDown={handleKeyDown}
@@ -392,57 +467,76 @@ export function HorizontalScroller<T = unknown>({
       role="region"
       aria-label="Scrollable content"
     >
-      {/* ── Left arrow ─────────────────────────────────────────────────── */}
-      {showArrows && canScrollLeft && (
-        <button
-          type="button"
-          onClick={scrollLeft}
-          className={`${arrowBtn} -left-4 sm:-left-5`}
-          aria-label="Scroll left"
-        >
-          ‹
-        </button>
-      )}
+      {/* â”€â”€ Left arrow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {showArrows && <ArrowButton direction="left" onClick={scrollLeft} />}
 
-      {/* ── Scroll container ───────────────────────────────────────────── */}
+      {/* â”€â”€ Scroll viewport â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div
-        ref={scrollRef}
-        onScroll={handleScroll}
-        className={innerClassName}
-        style={innerStyle}
+        ref={containerRef}
+        className="relative flex-1 overflow-hidden min-w-0"
       >
-        {displayItems.map((item, i) => {
-          const baseIndex = i % items.length;
-          const copyIndex = Math.floor(i / items.length);
-          const key = keyExtractor
-            ? `${keyExtractor(item, baseIndex)}_c${copyIndex}`
-            : `${i}`;
+        {showFadeEdges && (
+          <div
+            aria-hidden
+            className={[
+              "absolute inset-y-0 left-0 w-10 pointer-events-none z-10",
+              "bg-gradient-to-r from-white/75 dark:from-gray-900/75 to-transparent",
+              "transition-opacity duration-200",
+              canScrollLeft ? "opacity-100" : "opacity-0",
+            ].join(" ")}
+          />
+        )}
 
-          return isGrid ? (
-            <div key={key}>{renderItem(item, baseIndex)}</div>
-          ) : (
-            <div
-              key={key}
-              className="flex-none snap-start"
-              style={iw ? { width: `${iw}px` } : undefined}
-            >
-              {renderItem(item, baseIndex)}
-            </div>
-          );
-        })}
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          {...drag.handlers}
+          className={innerClassName}
+          style={innerStyle}
+        >
+          {displayItems.map((item, i) => {
+            const baseIndex = i % items.length;
+            const copyIndex = Math.floor(i / items.length);
+            const key = keyExtractor
+              ? `${keyExtractor(item, baseIndex)}_c${copyIndex}`
+              : `${i}`;
+
+            const itemStyle: React.CSSProperties | undefined =
+              resolvedIW && !isGrid
+                ? {
+                    width: `${resolvedIW}px`,
+                    flexShrink: 0,
+                    transition: "width 300ms ease-in-out",
+                  }
+                : isGrid
+                  ? undefined
+                  : { flexShrink: 0 };
+
+            return isGrid ? (
+              <div key={key}>{renderItem(item, baseIndex)}</div>
+            ) : (
+              <div key={key} style={itemStyle}>
+                {renderItem(item, baseIndex)}
+              </div>
+            );
+          })}
+        </div>
+
+        {showFadeEdges && (
+          <div
+            aria-hidden
+            className={[
+              "absolute inset-y-0 right-0 w-10 pointer-events-none z-10",
+              "bg-gradient-to-l from-white/75 dark:from-gray-900/75 to-transparent",
+              "transition-opacity duration-200",
+              canScrollRight ? "opacity-100" : "opacity-0",
+            ].join(" ")}
+          />
+        )}
       </div>
 
-      {/* ── Right arrow ────────────────────────────────────────────────── */}
-      {showArrows && canScrollRight && (
-        <button
-          type="button"
-          onClick={scrollRight}
-          className={`${arrowBtn} -right-4 sm:-right-5`}
-          aria-label="Scroll right"
-        >
-          ›
-        </button>
-      )}
+      {/* â”€â”€ Right arrow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {showArrows && <ArrowButton direction="right" onClick={scrollRight} />}
     </div>
   );
 }

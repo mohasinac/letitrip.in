@@ -182,7 +182,7 @@ export function OrderDetailView() {
       </Card>
 
       <div
-        className={`grid grid-cols-1 md:grid-cols-2 ${THEME_CONSTANTS.spacing.gap.lg}`}
+        className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 ${THEME_CONSTANTS.spacing.gap.lg}`}
       >
         {/* Shipping Address */}
         <Card className={THEME_CONSTANTS.spacing.cardPadding}>

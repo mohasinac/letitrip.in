@@ -84,7 +84,7 @@ function SellerOrdersContent() {
 
       {/* Summary Stats */}
       {!isLoading && orders.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
           {(
             [
               {
