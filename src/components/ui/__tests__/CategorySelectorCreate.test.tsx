@@ -81,6 +81,13 @@ jest.mock("@/components", () => ({
     </div>
   ),
   flattenCategories: (cats: unknown[]) => cats,
+  Label: ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) => <label className={className}>{children}</label>,
 }));
 
 jest.mock("@/constants", () => ({

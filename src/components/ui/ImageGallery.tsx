@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useSwipe, useGesture } from "@/hooks";
+import { HorizontalScroller } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 /**
@@ -274,7 +275,7 @@ export default function ImageGallery({
 
       {/* Thumbnails */}
       {showThumbnails && images.length > 1 && (
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory touch-pan-x">
+        <HorizontalScroller snapToItems className="mt-4 pb-2">
           {images.map((image, index) => (
             <button
               key={index}
@@ -298,7 +299,7 @@ export default function ImageGallery({
               />
             </button>
           ))}
-        </div>
+        </HorizontalScroller>
       )}
 
       {/* Mobile Help Text */}

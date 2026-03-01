@@ -2706,8 +2706,8 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 **Props**:
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `items` | `T[]` | required | Items to render |
-| `renderItem` | `(item: T, index: number) => ReactNode` | required | Item renderer |
+| `items` | `T[]` | `[]` | Items to render (omit when using `children` mode) |
+| `renderItem` | `(item: T, index: number) => ReactNode` | — | Item renderer (omit when using `children` mode) |
 | `rows` | `number` | `1` | Number of rows; > 1 switches to column-flow CSS grid |
 | `perView` | `PerViewConfig` | — | Responsive items-per-view map `{ base, sm?, md?, lg?, xl?, '2xl'? }` — item width auto-computed |
 | `itemWidth` | `number` | auto-detect | Fixed item width in px; takes precedence over `perView` |
@@ -2721,6 +2721,8 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 | `className` | `string` | `""` | Extra classes on outer wrapper |
 | `scrollerClassName` | `string` | `""` | Extra classes on inner scroll div |
 | `keyExtractor` | `(item, index) => string` | — | Key for list rendering |
+| `snapToItems` | `boolean` | `false` | Adds `snap-x snap-mandatory` to the scroll container and `snap-center` to each item wrapper |
+| `children` | `ReactNode` | — | **Children passthrough mode** — renders children directly in a simple flex-scroll container (no arrows, no fade-edges, no auto-scroll). Ignores `items` / `renderItem` when set. |
 
 **Drag-to-scroll** (`useHorizontalScrollDrag`): mouse and stylus only — touch devices use native scroll for better iOS momentum. Velocity sampled over last N pointer-move events → rAF-based exponential decay momentum after release (decay 0.94/frame, stops at 0.5 px/frame). Drag > 5 px suppresses child click events to prevent accidental activation.
 
@@ -2749,6 +2751,15 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
   autoScroll={false}
   gap={8}
 />
+
+// Children passthrough mode — simple snap thumbnail strip
+<HorizontalScroller snapToItems className="mt-4 pb-2">
+  {images.map((img, i) => (
+    <button key={i} className="flex-shrink-0 w-16 h-16 snap-center">
+      <img src={img.thumbnail} alt={img.alt} className="w-full h-full object-cover" />
+    </button>
+  ))}
+</HorizontalScroller>
 ```
 
 #### SectionTabs

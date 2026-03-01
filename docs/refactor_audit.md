@@ -24,11 +24,11 @@
 | ~~10~~                                                                                               | ~~`src/components/admin/SessionTableColumns.ts`~~                       | 8,32      | ✅ DONE — Created `SessionTableColumns.tsx`                                 |
 | ~~11~~                                                                                               | ~~`src/components/seller/PayoutTableColumns.ts`~~                       | 8,32      | ✅ DONE — Created `PayoutTableColumns.tsx`                                  |
 | **WAVE 1 — Tier 1 Primitives** (used everywhere — fix before any feature code)                       |                                                                         |           |
-| 12                                                                                                   | `src/components/ui/SideDrawer.tsx`                                      | 7,31      | L263 h4→Heading · L266 p→Text                                               |
-| 13                                                                                                   | `src/components/ui/FilterFacetSection.tsx`                              | 5         | L184 toLocaleString→formatNumber                                            |
-| 14                                                                                                   | `src/components/ui/TablePagination.tsx`                                 | 5         | L74 toLocaleString→formatNumber                                             |
-| 15                                                                                                   | `src/components/ui/CategorySelectorCreate.tsx`                          | 7,31      | L126 label→Label                                                            |
-| 16                                                                                                   | `src/components/ui/ImageGallery.tsx`                                    | 32        | L277 overflow-x-auto→HorizontalScroller                                     |
+| ~~12~~                                                                                               | ~~`src/components/ui/SideDrawer.tsx`~~                                  | 7,31      | ~~L263 h4→Heading · L266 p→Text~~ ✅ DONE                                   |
+| ~~13~~                                                                                               | ~~`src/components/ui/FilterFacetSection.tsx`~~                          | 5         | ~~L184 toLocaleString→formatNumber~~ ✅ DONE                                |
+| ~~14~~                                                                                               | ~~`src/components/ui/TablePagination.tsx`~~                             | 5         | ~~L74 toLocaleString→formatNumber~~ ✅ DONE                                 |
+| ~~15~~                                                                                               | ~~`src/components/ui/CategorySelectorCreate.tsx`~~                      | 7,31      | ~~L126 label→Label~~ ✅ DONE                                                |
+| ~~16~~                                                                                               | ~~`src/components/ui/ImageGallery.tsx`~~                                | 32        | ~~L277 overflow-x-auto→HorizontalScroller~~ ✅ DONE                         |
 | **WAVE 2 — Multi-violation files** (all violations in a file fixed in one pass, highest count first) |                                                                         |           |
 | 17                                                                                                   | `src/components/products/ProductReviews.tsx`                            | 5,7,31,32 | L91 h2 · L103 toFixed · L144,147,182,202,206,232 p×6 · L212 overflow-x-auto |
 | 18                                                                                                   | `src/components/admin/AdminSessionsManager.tsx`                         | 5,8,32    | L24,L279 new Date() · L167–295 raw table                                    |
@@ -391,7 +391,7 @@ import { Heading, Text, Label } from "@/components";
 <Text variant="secondary" size="sm">{description}</Text>
 ```
 
-- [ ] Fix L263, L266; remove dead `typography`/`themed` imports; update `__tests__/SideDrawer.test.tsx`
+- [x] Fix L263, L266; remove dead `typography`/`themed` imports; update `__tests__/SideDrawer.test.tsx`
 
 ---
 
@@ -411,7 +411,7 @@ import { formatNumber } from "@/utils";
 }
 ```
 
-- [ ] Fix L184; update `__tests__/FilterFacetSection.test.tsx`
+- [x] Fix L184; update `__tests__/FilterFacetSection.test.tsx`
 
 ---
 
@@ -431,7 +431,7 @@ import { formatNumber } from "@/utils";
 }
 ```
 
-- [ ] Fix L74; update `__tests__/TablePagination.test.tsx`
+- [x] Fix L74; update `__tests__/TablePagination.test.tsx`
 
 ---
 
@@ -447,7 +447,7 @@ import { Label } from '@/components';
 <Label>{...}</Label>
 ```
 
-- [ ] Fix L126; update `__tests__/CategorySelectorCreate.test.tsx`
+- [x] Fix L126; update `__tests__/CategorySelectorCreate.test.tsx`
 
 ---
 
@@ -467,7 +467,7 @@ import { HorizontalScroller } from "@/components";
 </HorizontalScroller>;
 ```
 
-- [ ] Fix L277; update `__tests__/ImageGallery.test.tsx`
+- [x] Fix L277; update `__tests__/ImageGallery.test.tsx`
 
 ---
 

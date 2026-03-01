@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, ReactNode, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Button, Heading } from "@/components";
+import { Button, Heading, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useSwipe } from "@/hooks";
 
@@ -260,12 +260,10 @@ export default function SideDrawer({
                 </svg>
               </div>
               <div>
-                <h4 className={`text-base font-semibold ${themed.textPrimary}`}>
-                  {tConfirm("discard")}
-                </h4>
-                <p className={`text-sm ${themed.textSecondary} mt-1`}>
+                <Heading level={4}>{tConfirm("discard")}</Heading>
+                <Text variant="secondary" size="sm" className="mt-1">
                   {tConfirm("unsavedChanges")}
-                </p>
+                </Text>
               </div>
             </div>
             <div className="flex gap-3 justify-end">

@@ -101,11 +101,11 @@ function ArrowButton({ direction, onClick }: ArrowButtonProps) {
 // â”€â”€â”€ Props â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface HorizontalScrollerProps<T = unknown> {
-  /** Array of items to render */
-  items: T[];
+  /** Array of items to render — required when `children` is not provided */
+  items?: T[];
 
-  /** Render function called with (item, originalIndex) */
-  renderItem: (item: T, index: number) => React.ReactNode;
+  /** Render function called with (item, originalIndex) — required when `children` is not provided */
+  renderItem?: (item: T, index: number) => React.ReactNode;
 
   /**
    * Number of rows. Default: 1 (flex carousel).
@@ -172,13 +172,28 @@ export interface HorizontalScrollerProps<T = unknown> {
 
   /** Key extractor â€” falls back to position index when omitted */
   keyExtractor?: (item: T, index: number) => string;
+  /**
+   * Enable CSS scroll-snap per child item.
+   * Adds `snap-x snap-mandatory` to the scroll container (children passthrough
+   * mode) or `snap-center` to each item wrapper (items mode).
+   * Default: false
+   */
+  snapToItems?: boolean;
+
+  /**
+   * Simple children passthrough mode — renders `children` directly inside a
+   * scrollable flex container without carousel machinery (no arrows, no
+   * auto-scroll, no fade edges).
+   * When this is provided, `items` / `renderItem` are ignored.
+   */
+  children?: React.ReactNode;
 }
 
 // â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function HorizontalScroller<T = unknown>({
-  items,
-  renderItem,
+  items = [] as T[],
+  renderItem = () => null,
   rows = 1,
   perView: perViewProp,
   itemWidth: itemWidthProp,
@@ -192,6 +207,8 @@ export function HorizontalScroller<T = unknown>({
   className = "",
   scrollerClassName = "",
   keyExtractor,
+  snapToItems = false,
+  children,
 }: HorizontalScrollerProps<T>) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -434,6 +451,24 @@ export function HorizontalScroller<T = unknown>({
 
   const { utilities } = THEME_CONSTANTS;
 
+  // ─── Children passthrough mode ─────────────────────────────────────────────
+  if (children !== undefined) {
+    return (
+      <div
+        className={[
+          "flex gap-2 overflow-x-auto touch-pan-x",
+          snapToItems ? "snap-x snap-mandatory" : "",
+          utilities.scrollbarHide,
+          className,
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        {children}
+      </div>
+    );
+  }
+
   const innerStyle: React.CSSProperties = {
     ...(isGrid
       ? {
@@ -450,6 +485,7 @@ export function HorizontalScroller<T = unknown>({
   const innerClassName = [
     "overflow-x-auto",
     isGrid ? "" : "flex",
+    snapToItems ? "snap-x snap-mandatory" : "",
     utilities.scrollbarHide,
     drag.cursorClass,
     scrollerClassName,
@@ -515,7 +551,11 @@ export function HorizontalScroller<T = unknown>({
             return isGrid ? (
               <div key={key}>{renderItem(item, baseIndex)}</div>
             ) : (
-              <div key={key} style={itemStyle}>
+              <div
+                key={key}
+                style={itemStyle}
+                className={snapToItems ? "snap-center" : undefined}
+              >
                 {renderItem(item, baseIndex)}
               </div>
             );

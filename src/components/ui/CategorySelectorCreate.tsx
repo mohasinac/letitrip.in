@@ -28,6 +28,7 @@ import {
   Button,
   CategoryForm,
   DrawerFormFooter,
+  Label,
   flattenCategories,
 } from "@/components";
 import type { Category } from "@/components";
@@ -37,7 +38,7 @@ import {
   THEME_CONSTANTS,
 } from "@/constants";
 
-const { typography, input } = THEME_CONSTANTS;
+const { input } = THEME_CONSTANTS;
 
 export interface CategorySelectorCreateProps {
   /** Currently selected category ID */
@@ -122,9 +123,7 @@ export function CategorySelectorCreate({
   return (
     <>
       <div>
-        {label && (
-          <label className={`block ${typography.label} mb-1`}>{label}</label>
-        )}
+        {label && <Label className="mb-1">{label}</Label>}
         <div className="flex gap-2 items-center">
           <select
             value={value}

@@ -23,6 +23,11 @@ jest.mock("@/constants", () => {
   };
 });
 
+// Mock @/utils to provide formatNumber
+jest.mock("@/utils", () => ({
+  formatNumber: (n: number) => n.toLocaleString("en-US"),
+}));
+
 // Mock Pagination to avoid deep rendering
 jest.mock("@/components", () => ({
   Pagination: ({

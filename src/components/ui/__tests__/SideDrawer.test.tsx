@@ -45,7 +45,7 @@ jest.mock("@/constants", () => {
   };
 });
 
-// Mock @/components to only provide Button and Heading
+// Mock @/components to only provide Button, Heading, and Text
 jest.mock("@/components", () => ({
   Button: ({
     children,
@@ -57,6 +57,14 @@ jest.mock("@/components", () => ({
   Heading: ({ children }: { children: React.ReactNode; level?: number }) => (
     <div role="heading">{children}</div>
   ),
+  Text: ({
+    children,
+  }: {
+    children: React.ReactNode;
+    variant?: string;
+    size?: string;
+    className?: string;
+  }) => <span>{children}</span>,
 }));
 
 import SideDrawer from "../SideDrawer";

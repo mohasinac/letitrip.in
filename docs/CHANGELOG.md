@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### Refactor Audit Wave 1 — Tier 1 Primitives (2026-03-01)
+
+#### Changed
+
+- **`src/components/ui/SideDrawer.tsx`** — Replaced raw `<h4>` + `<p>` tags in the "unsaved changes" confirmation panel with `<Heading level={4}>` and `<Text variant="secondary" size="sm">` (Rules 7, 31). Added `Text` import via `@/components` barrel.
+- **`src/components/ui/FilterFacetSection.tsx`** — Replaced `opt.count.toLocaleString()` with `formatNumber(opt.count)` from `@/utils` (Rule 5).
+- **`src/components/ui/TablePagination.tsx`** — Replaced `total.toLocaleString()` with `formatNumber(total)` from `@/utils` (Rule 5).
+- **`src/components/ui/CategorySelectorCreate.tsx`** — Replaced raw `<label className="block ...">` with `<Label>` from `@/components`. Removed now-unused `typography` destructure from `THEME_CONSTANTS` (Rules 7, 31).
+- **`src/components/ui/ImageGallery.tsx`** — Replaced the thumbnail strip `<div className="... overflow-x-auto ...">` with `<HorizontalScroller snapToItems>` (Rule 32).
+- **`src/components/ui/HorizontalScroller.tsx`** — Extended with `snapToItems?: boolean` and `children?: ReactNode` props. When `children` is provided the component renders a simple flex scroll container (no carousel machinery, no arrows). `snapToItems` adds `snap-x snap-mandatory` to the scroll container and `snap-center` to each item wrapper.
+
+---
+
 ### Refactor Audit Wave 0 — Prerequisites (2026-03-01)
 
 #### Added

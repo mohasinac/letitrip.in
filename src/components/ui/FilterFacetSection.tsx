@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useTranslations } from "next-intl";
+import { formatNumber } from "@/utils";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface FacetOption {
@@ -181,7 +182,7 @@ export function FilterFacetSection({
                     <span
                       className={`text-xs ${themed.textSecondary} tabular-nums`}
                     >
-                      {opt.count.toLocaleString()}
+                      {formatNumber(opt.count)}
                     </span>
                   )}
                 </label>

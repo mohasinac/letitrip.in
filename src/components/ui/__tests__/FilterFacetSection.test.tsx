@@ -41,6 +41,11 @@ jest.mock("@/constants", () => {
   };
 });
 
+// Mock @/utils to provide formatNumber
+jest.mock("@/utils", () => ({
+  formatNumber: (n: number) => n.toString(),
+}));
+
 import { FilterFacetSection } from "../FilterFacetSection";
 
 const makeOptions = (count: number) =>

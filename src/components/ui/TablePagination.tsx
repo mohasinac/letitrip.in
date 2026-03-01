@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { formatNumber } from "@/utils";
 import { Pagination } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
@@ -71,7 +72,7 @@ export function TablePagination({
         </span>{" "}
         {t("of")}{" "}
         <span className={`font-medium ${themed.textPrimary}`}>
-          {total.toLocaleString()}
+          {formatNumber(total)}
         </span>{" "}
         {t("results")}
       </p>
