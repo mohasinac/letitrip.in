@@ -19,5 +19,6 @@ export { AdminBidsView } from "./components/AdminBidsView";
 export { AdminPayoutsView } from "./components/AdminPayoutsView";
 export { AdminOrdersView } from "./components/AdminOrdersView";
 export { DemoSeedView } from "./components/DemoSeedView";
+export { AdminMediaView } from "./components/AdminMediaView";
 
 export * from "./hooks";

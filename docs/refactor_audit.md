@@ -1441,31 +1441,31 @@ Extract to `src/features/user/components/UserAddressesView.tsx`
 
 Extract to `src/features/products/components/ProductDetailView.tsx`
 
-- [ ] Create view; gut page; export from `src/features/products/index.ts`; create `__tests__`
+- [x] Create view; gut page; export from `src/features/products/index.ts`; create `__tests__`
 
 ### 86 � `src/app/[locale]/sellers/page.tsx` � 179 lines
 
 Extract to `src/features/seller/components/SellersListView.tsx`
 
-- [ ] Create view; gut page; export from `src/features/seller/index.ts`; create `__tests__`
+- [x] Create view; gut page; export from `src/features/seller/index.ts`; create `__tests__`
 
 ### 87 � `src/app/[locale]/about/page.tsx` � 177 lines
 
 Extract to `src/components/about/AboutView.tsx`
 
-- [ ] Create view; gut page; create `__tests__`
+- [x] Create view; gut page; create `__tests__`
 
 ### 88 � `src/app/[locale]/admin/media/page.tsx` � 174 lines
 
 Extract to `src/features/admin/components/AdminMediaView.tsx`
 
-- [ ] Create view; gut page; export from `src/features/admin/index.ts`; create `__tests__`
+- [x] Create view; gut page; export from `src/features/admin/index.ts`; create `__tests__`
 
 ### 89 � `src/app/[locale]/cart/page.tsx` � 164 lines
 
 Extract to `src/features/cart/components/CartView.tsx`
 
-- [ ] Create view; gut page; export from `src/features/cart/index.ts`; create `__tests__`
+- [x] Create view; gut page; export from `src/features/cart/index.ts`; create `__tests__`
 
 ### 90 � `src/app/[locale]/admin/site/page.tsx` � 162 lines
 

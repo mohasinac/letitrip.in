@@ -1,0 +1,164 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import { useApiMutation } from "@/hooks";
+import { mediaService } from "@/services";
+import { useTranslations } from "next-intl";
+import {
+  Card,
+  AdminPageHeader,
+  MediaOperationForm,
+  DataTable,
+  getMediaTableColumns,
+  useToast,
+} from "@/components";
+import type { MediaOperation } from "@/components";
+
+export function AdminMediaView() {
+  const { showToast } = useToast();
+  const t = useTranslations("adminMedia");
+  const [operationType, setOperationType] = useState<"crop" | "trim">("crop");
+  const [recentOperations, setRecentOperations] = useState<MediaOperation[]>(
+    [],
+  );
+  const [isLoading, setIsLoading] = useState(false);
+
+  const cropMutation = useApiMutation({
+    mutationFn: (data) => mediaService.crop(data),
+  });
+
+  const trimMutation = useApiMutation({
+    mutationFn: (data) => mediaService.trim(data),
+  });
+
+  const handleCropSubmit = useCallback(
+    async (data: any) => {
+      setIsLoading(true);
+      try {
+        const result = await cropMutation.mutate(data);
+        const newOp: MediaOperation = {
+          id: Math.random().toString(36).substr(2, 9),
+          type: "crop",
+          sourceUrl: data.sourceUrl,
+          status: "completed",
+          outputUrl: result.data.url,
+          format: data.outputFormat || "jpeg",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        setRecentOperations((prev) => [newOp, ...prev.slice(0, 9)]);
+        showToast(t("cropSuccess"), "success");
+      } catch (error: any) {
+        showToast(error.message || t("cropError"), "error");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [cropMutation, showToast, t],
+  );
+
+  const handleTrimSubmit = useCallback(
+    async (data: any) => {
+      setIsLoading(true);
+      try {
+        const result = await trimMutation.mutate(data);
+        const newOp: MediaOperation = {
+          id: Math.random().toString(36).substr(2, 9),
+          type: "trim",
+          sourceUrl: data.sourceUrl,
+          status: "completed",
+          outputUrl: result.data.url,
+          format: data.outputFormat || "mp4",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        setRecentOperations((prev) => [newOp, ...prev.slice(0, 9)]);
+        showToast(t("trimSuccess"), "success");
+      } catch (error: any) {
+        showToast(error.message || t("trimError"), "error");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [trimMutation, showToast, t],
+  );
+
+  const handleDownload = (operation: MediaOperation) => {
+    if (operation.outputUrl) {
+      const link = document.createElement("a");
+      link.href = operation.outputUrl;
+      link.download = `media-${operation.type}.${operation.format}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  const tableColumns = getMediaTableColumns(handleDownload);
+
+  return (
+    <div className="space-y-6">
+      <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
+
+      {/* Operation Type Selector */}
+      <Card className="p-4">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setOperationType("crop")}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              operationType === "crop"
+                ? "bg-primary text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            🖼️ {t("cropImage")}
+          </button>
+          <button
+            onClick={() => setOperationType("trim")}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              operationType === "trim"
+                ? "bg-primary text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            🎬 {t("trimVideo")}
+          </button>
+        </div>
+      </Card>
+
+      {/* Operation Form */}
+      <MediaOperationForm
+        operationType={operationType}
+        onSubmit={
+          operationType === "crop" ? handleCropSubmit : handleTrimSubmit
+        }
+        isLoading={isLoading}
+      />
+
+      {/* Recent Operations Table */}
+      {recentOperations.length > 0 && (
+        <Card className="p-6">
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold">{t("recentOperations")}</h2>
+            <p className="text-sm text-gray-600">
+              {t("lastNOperations", { count: recentOperations.length })}
+            </p>
+          </div>
+          <DataTable
+            columns={tableColumns}
+            data={recentOperations}
+            keyExtractor={(item) => item.id}
+            loading={false}
+          />
+        </Card>
+      )}
+
+      {/* Empty State */}
+      {recentOperations.length === 0 && (
+        <Card className="p-12 text-center">
+          <p className="text-gray-500">{t("noOperations")}</p>
+        </Card>
+      )}
+    </div>
+  );
+}
