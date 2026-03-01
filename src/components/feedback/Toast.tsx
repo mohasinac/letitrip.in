@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { nowMs } from "@/utils";
 
 /**
  * Toast Component
@@ -69,7 +70,7 @@ export function ToastProvider({
 
   const showToast = useCallback(
     (message: string, variant: Toast["variant"] = "info", duration = 5000) => {
-      const id = Date.now().toString();
+      const id = nowMs().toString();
       const toast: Toast = { id, message, variant, duration };
 
       setToasts((prev) => [...prev, toast]);

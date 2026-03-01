@@ -9,6 +9,7 @@
 
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
+import { formatCurrency } from "@/utils";
 import type { AdminProduct } from "./types";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -66,7 +67,7 @@ export function useProductTableColumns(
         sortable: true,
         width: "10%",
         render: (product: AdminProduct) => (
-          <span>₹{product.price?.toLocaleString("en-IN") ?? "0"}</span>
+          <span>{formatCurrency(product.price ?? 0, "INR", "en-IN")}</span>
         ),
       },
       {

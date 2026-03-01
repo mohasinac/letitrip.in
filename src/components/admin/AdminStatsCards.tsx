@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
+import { Text } from "@/components";
+import { formatNumber } from "@/utils";
 
 interface StatsCardsProps {
   stats: {
@@ -85,12 +87,17 @@ export function AdminStatsCards({ stats }: StatsCardsProps) {
         >
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+              <Text
+                size="sm"
+                weight="medium"
+                variant="secondary"
+                className="mb-1"
+              >
                 {card.label}
-              </p>
-              <p className={`text-3xl font-bold ${card.iconClass}`}>
-                {card.value.toLocaleString()}
-              </p>
+              </Text>
+              <Text weight="bold" className={`text-3xl ${card.iconClass}`}>
+                {formatNumber(card.value)}
+              </Text>
             </div>
             <div
               className={`p-2 rounded-lg bg-gray-50 dark:bg-gray-800 ${card.iconClass}`}

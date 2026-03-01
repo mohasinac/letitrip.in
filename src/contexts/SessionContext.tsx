@@ -22,7 +22,7 @@ import React, {
   useRef,
   useMemo,
 } from "react";
-import type { User } from "firebase/auth";
+import type { AuthUser } from "@/types/auth";
 import {
   onAuthStateChanged,
   getCurrentUser,
@@ -151,7 +151,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
 
   // Fetch user profile from API (not direct Firestore access)
   const fetchUserProfile = useCallback(
-    async (authUser: User): Promise<SessionUser> => {
+    async (authUser: AuthUser): Promise<SessionUser> => {
       try {
         // Use session service (apiClient with credentials) instead of raw fetch
         const data = await sessionService.getProfile();

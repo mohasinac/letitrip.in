@@ -42,7 +42,9 @@ export function SellerStatCard({
               <Spinner size="sm" variant="primary" />
             </div>
           ) : (
-            <p className={`mt-1 text-3xl font-bold ${iconClass}`}>{value}</p>
+            <Text weight="bold" className={`mt-1 text-3xl ${iconClass}`}>
+              {value}
+            </Text>
           )}
         </div>
         <div

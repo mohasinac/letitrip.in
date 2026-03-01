@@ -21,6 +21,7 @@ import { useState, useRef, ChangeEvent } from "react";
 import { ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useMediaUpload } from "@/hooks";
 import { ValidationError } from "@/lib/errors";
+import { formatFileSize } from "@/utils";
 
 interface ImageUploadProps {
   currentImage?: string;
@@ -62,7 +63,7 @@ export function ImageUpload({
     const fileSizeMB = file.size / 1024 / 1024;
     if (fileSizeMB > maxSizeMB) {
       setError(
-        `File size must be less than ${maxSizeMB}MB (current: ${fileSizeMB.toFixed(2)}MB)`,
+        `File size must be less than ${maxSizeMB}MB (current: ${formatFileSize(file.size)})`,
       );
       return;
     }

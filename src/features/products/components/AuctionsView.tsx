@@ -18,12 +18,13 @@ import {
   SortDropdown,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
+import { Heading, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable } from "@/hooks";
 import { useAuctions } from "../hooks";
 
-const { themed, typography, spacing } = THEME_CONSTANTS;
+const { themed, spacing } = THEME_CONSTANTS;
 
 const PAGE_SIZE = 24;
 
@@ -88,10 +89,10 @@ function AuctionsContent() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className={`${typography.h2} ${themed.textPrimary}`}>
-            {t("title")}
-          </h1>
-          <p className={`mt-1 ${themed.textSecondary}`}>{t("subtitle")}</p>
+          <Heading level={1}>{t("title")}</Heading>
+          <Text variant="secondary" className="mt-1">
+            {t("subtitle")}
+          </Text>
         </div>
 
         {/* Sort control */}

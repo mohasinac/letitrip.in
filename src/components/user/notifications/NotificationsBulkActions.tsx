@@ -1,9 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { THEME_CONSTANTS } from "@/constants";
-
-const { themed, typography } = THEME_CONSTANTS;
+import { Heading, Text } from "@/components";
 
 interface NotificationsBulkActionsProps {
   unreadCount: number;
@@ -21,14 +19,12 @@ export function NotificationsBulkActions({
   return (
     <div className="flex items-center justify-between">
       <div>
-        <h1 className={`${typography.h2} ${themed.textPrimary}`}>
-          {tNotifications("title")}
-        </h1>
+        <Heading level={1}>{tNotifications("title")}</Heading>
         {unreadCount > 0 && (
-          <p className={`mt-1 text-sm ${themed.textSecondary}`}>
+          <Text size="sm" variant="secondary" className="mt-1">
             {unreadCount} {tNotifications("unread").toLowerCase()} notification
             {unreadCount !== 1 ? "s" : ""}
-          </p>
+          </Text>
         )}
       </div>
       {unreadCount > 0 && (

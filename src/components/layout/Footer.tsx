@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, SITE_CONFIG, ROUTES } from "@/constants";
+import { currentYear } from "@/utils";
 
 export default function Footer() {
   const { colors, layout } = THEME_CONSTANTS;
@@ -203,7 +204,7 @@ export default function Footer() {
         >
           <span>
             {t("copyright", {
-              year: new Date().getFullYear().toString(),
+              year: currentYear(),
               brand: SITE_CONFIG.brand.name,
             })}
           </span>

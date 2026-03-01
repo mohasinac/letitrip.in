@@ -187,6 +187,18 @@ export interface HorizontalScrollerProps<T = unknown> {
    * When this is provided, `items` / `renderItem` are ignored.
    */
   children?: React.ReactNode;
+
+  /**
+   * External ref forwarded to the scroll container div.
+   * Only applies in children passthrough mode.
+   */
+  scrollContainerRef?: React.RefObject<HTMLDivElement | null>;
+
+  /**
+   * Scroll event handler forwarded to the scroll container div.
+   * Only applies in children passthrough mode.
+   */
+  onScroll?: React.UIEventHandler<HTMLDivElement>;
 }
 
 // â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -209,6 +221,8 @@ export function HorizontalScroller<T = unknown>({
   keyExtractor,
   snapToItems = false,
   children,
+  scrollContainerRef,
+  onScroll,
 }: HorizontalScrollerProps<T>) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -455,14 +469,17 @@ export function HorizontalScroller<T = unknown>({
   if (children !== undefined) {
     return (
       <div
+        ref={scrollContainerRef}
+        onScroll={onScroll}
         className={[
-          "flex gap-2 overflow-x-auto touch-pan-x",
+          "flex overflow-x-auto touch-pan-x",
           snapToItems ? "snap-x snap-mandatory" : "",
           utilities.scrollbarHide,
           className,
         ]
           .filter(Boolean)
           .join(" ")}
+        style={{ gap: `${gap}px` }}
       >
         {children}
       </div>

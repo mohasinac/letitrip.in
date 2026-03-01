@@ -14,17 +14,15 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
-import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import { getAdminApp } from "@/lib/firebase/admin";
 import {
-  USER_COLLECTION,
   DEFAULT_USER_DATA,
   SCHEMA_DEFAULTS,
   parseUserAgent,
 } from "@/db/schema";
 import type { UserRole } from "@/types/auth";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
-import { sessionRepository } from "@/repositories";
+import { sessionRepository, userRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
@@ -73,7 +71,6 @@ export async function POST(request: NextRequest) {
 
     // Get Firebase Admin instances
     const auth = getAuth(getAdminApp());
-    const db = getFirestore(getAdminApp());
 
     // Check if user already exists
     try {
@@ -101,28 +98,23 @@ export async function POST(request: NextRequest) {
       disabled: false,
     });
 
-    // Store user data in Firestore
-    await db
-      .collection(USER_COLLECTION)
-      .doc(userRecord.uid)
-      .set({
-        ...DEFAULT_USER_DATA,
-        uid: userRecord.uid,
-        email: userRecord.email,
-        displayName: userRecord.displayName,
-        photoURL: userRecord.photoURL || null,
-        role,
-        emailVerified: false,
-        phoneVerified: false,
-        disabled: false,
-        createdAt: FieldValue.serverTimestamp(),
-        updatedAt: FieldValue.serverTimestamp(),
-        metadata: {
-          creationTime: userRecord.metadata.creationTime,
-          lastSignInTime: null,
-          loginCount: 0,
-        },
-      });
+    // Store user data in Firestore via repository (auto-sets createdAt/updatedAt)
+    await userRepository.createWithId(userRecord.uid, {
+      ...DEFAULT_USER_DATA,
+      uid: userRecord.uid,
+      email: userRecord.email,
+      displayName: userRecord.displayName,
+      photoURL: userRecord.photoURL || null,
+      role,
+      emailVerified: false,
+      phoneVerified: false,
+      disabled: false,
+      metadata: {
+        creationTime: userRecord.metadata.creationTime,
+        lastSignInTime: undefined,
+        loginCount: 0,
+      },
+    });
 
     // Create custom token for the user
     const customToken = await auth.createCustomToken(userRecord.uid);

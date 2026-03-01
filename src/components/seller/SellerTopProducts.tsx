@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Card } from "@/components/ui";
+import { Card, Heading, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 
-const { themed, spacing, typography } = THEME_CONSTANTS;
+const { themed, spacing } = THEME_CONSTANTS;
 
 export interface TopProduct {
   productId: string;
@@ -25,9 +25,7 @@ export function SellerTopProducts({ products }: SellerTopProductsProps) {
   return (
     <Card className="p-6">
       <div className={spacing.stack}>
-        <h2 className={`${typography.h4} ${themed.textPrimary}`}>
-          {t("topProductsTitle")}
-        </h2>
+        <Heading level={2}>{t("topProductsTitle")}</Heading>
         {products.length > 0 ? (
           <div className="divide-y divide-gray-100 dark:divide-gray-800">
             {products.map((p, i) => (
@@ -38,14 +36,12 @@ export function SellerTopProducts({ products }: SellerTopProductsProps) {
                   {i + 1}.
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p
-                    className={`text-sm font-medium ${themed.textPrimary} truncate`}
-                  >
+                  <Text size="sm" weight="medium">
                     {p.title}
-                  </p>
-                  <p className={`text-xs ${themed.textSecondary}`}>
+                  </Text>
+                  <Text size="xs" variant="secondary">
                     {p.orders} {t("ordersLabel")}
-                  </p>
+                  </Text>
                 </div>
                 <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                   {formatCurrency(p.revenue)}
@@ -55,12 +51,12 @@ export function SellerTopProducts({ products }: SellerTopProductsProps) {
           </div>
         ) : (
           <div className={`text-center py-8 ${spacing.stack}`}>
-            <p className={`text-sm font-medium ${themed.textPrimary}`}>
+            <Text size="sm" weight="medium">
               {t("noData")}
-            </p>
-            <p className={`text-xs ${themed.textSecondary}`}>
+            </Text>
+            <Text size="xs" variant="secondary">
               {t("noDataDesc")}
-            </p>
+            </Text>
             <Link
               href={ROUTES.SELLER.PRODUCTS}
               className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"

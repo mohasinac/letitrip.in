@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Button } from "@/components/ui";
+import { Card, Button, Heading, Text } from "@/components";
 import { Alert } from "@/components/feedback";
 import { FormField } from "@/components/FormField";
 import { useTranslations } from "next-intl";
@@ -72,14 +72,12 @@ export function SellerPayoutRequestForm({
     <Card className={`${spacing.padding.lg} mb-8`}>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className={`${typography.h4} ${themed.textPrimary}`}>
-            {t("requestPayout")}
-          </h2>
-          <p className={`text-sm ${themed.textSecondary} mt-1`}>
+          <Heading level={2}>{t("requestPayout")}</Heading>
+          <Text size="sm" variant="secondary" className="mt-1">
             {t("platformFee", { rate: summary.platformFeeRate * 100 })} &middot;{" "}
             {t("grossAmount")}: {formatCurrency(summary.grossEarnings)} &middot;{" "}
             {t("netAmount")}: {formatCurrency(summary.availableEarnings)}
-          </p>
+          </Text>
         </div>
         {!showForm && (
           <Button variant="primary" onClick={() => setShowForm(true)}>

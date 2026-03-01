@@ -13,6 +13,7 @@ import {
   EmptyState,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
+import { Heading, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable } from "@/hooks";
@@ -120,12 +121,10 @@ export function ProductsView() {
       <div className={`max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8`}>
         {/* Page Header */}
         <div className="mb-6">
-          <h1 className={`text-2xl font-bold ${themed.textPrimary}`}>
-            {t("title")}
-          </h1>
-          <p className={`text-sm mt-1 ${themed.textSecondary}`}>
+          <Heading level={1}>{t("title")}</Heading>
+          <Text variant="secondary" size="sm" className="mt-1">
             {t("subtitle")}
-          </p>
+          </Text>
         </div>
 
         <div className="flex gap-6">

@@ -14,12 +14,11 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
-import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import { getAdminApp } from "@/lib/firebase/admin";
-import { USER_COLLECTION, USER_FIELDS, SCHEMA_DEFAULTS } from "@/db/schema";
+import { SCHEMA_DEFAULTS } from "@/db/schema";
 import { parseUserAgent } from "@/db/schema";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
-import { sessionRepository } from "@/repositories";
+import { sessionRepository, userRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { ValidationError, AuthenticationError, AppError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
@@ -58,7 +57,6 @@ export async function POST(request: NextRequest) {
 
     // Get Firebase Admin instances
     const auth = getAuth(getAdminApp());
-    const db = getFirestore(getAdminApp());
 
     // Verify user exists
     let userRecord;
@@ -109,21 +107,10 @@ export async function POST(request: NextRequest) {
     const idToken = verifyData.idToken;
 
     // Get user data from Firestore
-    const userDoc = await db
-      .collection(USER_COLLECTION)
-      .doc(userRecord.uid)
-      .get();
-    const userData = userDoc.data();
+    const userData = await userRepository.findById(userRecord.uid);
 
     // Update login metadata
-    await db
-      .collection(USER_COLLECTION)
-      .doc(userRecord.uid)
-      .update({
-        [USER_FIELDS.META.LAST_SIGN_IN_TIME]: FieldValue.serverTimestamp(),
-        [USER_FIELDS.META.LOGIN_COUNT]: FieldValue.increment(1),
-        [USER_FIELDS.UPDATED_AT]: FieldValue.serverTimestamp(),
-      });
+    await userRepository.updateLoginMetadata(userRecord.uid);
 
     // Create session cookie
     const sessionCookie = await createSessionCookie(idToken);

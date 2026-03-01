@@ -1,6 +1,6 @@
 "use client";
 
-import { AvatarDisplay, RoleBadge, Text } from "@/components";
+import { AvatarDisplay, Heading, RoleBadge, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import type { UserRole } from "@/types/auth";
 
@@ -59,7 +59,7 @@ export function ProfileHeader({
           className={`flex-1 text-center sm:text-left ${spacing.stackSmall}`}
         >
           <div className="flex flex-col sm:flex-row items-center sm:items-center gap-3">
-            <h1 className={typography.pageTitle}>{displayName}</h1>
+            <Heading level={1}>{displayName}</Heading>
             <RoleBadge role={role} />
           </div>
 

@@ -21,6 +21,9 @@ import {
   Text,
   StatusBadge,
   TablePagination,
+  Tabs,
+  TabsList,
+  TabsTrigger,
 } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
@@ -90,23 +93,19 @@ function UserOrdersContent() {
       <Heading level={3}>{tOrders("title")}</Heading>
 
       {/* Status filter tabs */}
-      <div
-        className={`flex gap-1 overflow-x-auto border-b ${THEME_CONSTANTS.themed.border} pb-0`}
+      <Tabs
+        variant="line"
+        value={statusFilter}
+        onChange={(v) => table.set("status", v)}
       >
-        {STATUS_TABS.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => table.set("status", tab.key)}
-            className={`px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-              statusFilter === tab.key
-                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400"
-                : `border-transparent ${THEME_CONSTANTS.themed.textSecondary} hover:text-gray-700 dark:hover:text-gray-300`
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+        <TabsList>
+          {STATUS_TABS.map((tab) => (
+            <TabsTrigger key={tab.key} value={tab.key}>
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       {orders.length === 0 ? (
         <EmptyState

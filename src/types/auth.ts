@@ -9,6 +9,19 @@ import type { AvatarMetadata } from "@/db/schema";
 
 export type UserRole = "user" | "seller" | "moderator" | "admin";
 
+/**
+ * Minimal Firebase Auth user shape used in client-side context.
+ * Avoids importing the full Firebase User type in non-auth modules.
+ */
+export interface AuthUser {
+  uid: string;
+  email: string | null;
+  emailVerified: boolean;
+  displayName: string | null;
+  photoURL: string | null;
+  phoneNumber: string | null;
+}
+
 export interface UserProfile {
   uid: string;
   email: string | null;

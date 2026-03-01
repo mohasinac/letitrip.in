@@ -18,6 +18,9 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/lib/payment/razorpay";
+import { handleApiError } from "@/lib/errors/error-handler";
+import { AuthenticationError, ValidationError } from "@/lib/errors";
+import { ERROR_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 
 export async function POST(request: NextRequest) {
@@ -35,17 +38,14 @@ export async function POST(request: NextRequest) {
       );
       // In development without a secret, allow through (remove in production)
       if (process.env.NODE_ENV === "production") {
-        return NextResponse.json(
-          { error: "Invalid signature" },
-          { status: 401 },
-        );
+        throw new AuthenticationError(ERROR_MESSAGES.AUTH.INVALID_SIGNATURE);
       }
       isValid = true;
     }
 
     if (!isValid) {
       serverLogger.warn("Razorpay webhook: invalid signature received");
-      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+      throw new AuthenticationError(ERROR_MESSAGES.AUTH.INVALID_SIGNATURE);
     }
 
     // Parse event
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     try {
       event = JSON.parse(rawBody);
     } catch {
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+      throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_JSON);
     }
 
     serverLogger.info(`Razorpay webhook event: ${event.event}`);
@@ -108,9 +108,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   } catch (error) {
     serverLogger.error("POST /api/payment/webhook error:", error);
-    return NextResponse.json(
-      { error: "Webhook processing failed" },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }

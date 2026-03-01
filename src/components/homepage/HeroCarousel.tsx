@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useHeroCarousel, useMediaQuery } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
-import { Button } from "@/components";
+import { Button, HorizontalScroller } from "@/components";
 import type { CarouselSlideDocument, GridCard } from "@/db/schema";
 
 export function HeroCarousel() {
@@ -149,10 +149,12 @@ export function HeroCarousel() {
         })}
       </div>
       {/* Snap Scroll Rail — all slides side by side */}
-      <div
-        ref={slidesRef}
+      <HorizontalScroller
+        snapToItems
+        gap={0}
+        scrollContainerRef={slidesRef}
         onScroll={handleSlidesScroll}
-        className={`absolute inset-0 flex overflow-x-auto snap-x snap-mandatory ${THEME_CONSTANTS.utilities.scrollbarThinX}`}
+        className={`absolute inset-0 ${THEME_CONSTANTS.utilities.scrollbarThinX}`}
       >
         {slides.map((slide, slideIndex) => (
           <div
@@ -286,7 +288,7 @@ export function HeroCarousel() {
             </div>
           </div>
         ))}
-      </div>
+      </HorizontalScroller>
 
       {/* Navigation Dots */}
       {slides.length > 1 && (

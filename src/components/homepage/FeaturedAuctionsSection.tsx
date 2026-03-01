@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useFeaturedAuctions } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { formatCurrency } from "@/utils";
+import { formatCurrency, nowMs } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
 import { HorizontalScroller } from "@/components/ui";
 
@@ -162,7 +162,7 @@ function AuctionCardContent({
           ? auction.auctionEndDate
           : new Date(auction.auctionEndDate as unknown as string);
       const endTime = endDate.getTime();
-      const now = new Date().getTime();
+      const now = nowMs();
       const distance = endTime - now;
 
       if (distance < 0) {

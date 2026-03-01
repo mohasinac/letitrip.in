@@ -13,6 +13,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### Refactor Audit Wave 3 — Single-Violation Files (2026-03-03)
+
+#### Changed
+
+**Typography (Tasks 40–53)**
+
+- **`src/features/search/components/SearchView.tsx`** — Replaced `<h1>` + `<p>` with `<Heading level={1}>` + `<Text variant="secondary">` (Rule 31).
+- **`src/features/products/components/AuctionsView.tsx`** — Replaced `<h1>` + `<p>` with `<Heading>` + `<Text>` (Rule 31).
+- **`src/features/products/components/ProductsView.tsx`** — Replaced `<h1>` + `<p>` with `<Heading>` + `<Text>` (Rule 31).
+- **`src/components/seller/SellerTopProducts.tsx`** — Replaced `<h2>` with `<Heading level={2}>` (Rule 31).
+- **`src/components/seller/SellerPayoutRequestForm.tsx`** — Replaced `<h2>` with `<Heading level={2}>` (Rule 31).
+- **`src/components/seller/SellerRevenueChart.tsx`** — Replaced `<h2>` with `<Heading level={2}>` (Rule 31).
+- **`src/components/user/profile/ProfileHeader.tsx`** — Replaced `<h1>` with `<Heading level={1}>` (Rule 31).
+- **`src/components/user/settings/ProfileInfoForm.tsx`** — Replaced `<h3>` with `<Heading level={3}>` (Rule 31).
+- **`src/components/user/addresses/AddressForm.tsx`** — Replaced raw `<label>` with `<Label>` (Rule 31).
+- **`src/components/user/notifications/NotificationsBulkActions.tsx`** — Replaced `<h1>` with `<Heading level={1}>` (Rule 31).
+- **`src/features/seller/components/SellerStatCard.tsx`** — Replaced `<p>` with `<Text>` (Rule 31).
+- **`src/features/seller/components/SellerProductCard.tsx`** — Replaced 2× `<p>` with `<Text>` (Rule 31).
+- **`src/features/events/components/SurveyEventSection.tsx`** — Replaced `<p>` with `<Text>` (Rule 31).
+- **`src/features/events/components/EventTypeConfig/FeedbackConfigForm.tsx`** — Replaced `<label>` with `<Label>` (Rule 31).
+
+**Number/Date formatting (Tasks 54–68)**
+
+- **`src/components/admin/products/ProductTableColumns.tsx`** — Replaced `price.toLocaleString("en-IN")` with `formatCurrency(price, 'INR', 'en-IN')` (Rule 5).
+- **`src/components/admin/coupons/CouponTableColumns.tsx`** — Replaced `discount.value.toLocaleString("en-IN")` with `formatCurrency(...)`; `new Date(endDate) < new Date()` with `isPast(endDate)`; raw `<p>` with `<Text>` (Rules 5, 31).
+- **`src/components/admin/AdminStatsCards.tsx`** — Replaced `value.toLocaleString()` with `formatNumber(value)`; raw `<p>` with `<Text>` (Rules 5, 31).
+- **`src/components/homepage/TopCategoriesSection.tsx`** — Replaced `totalItemCount.toLocaleString()` with `formatNumber(...)`; `<h3>` with `<Heading level={3}>` (Rules 5, 31).
+- **`src/components/homepage/WhatsAppCommunitySection.tsx`** — Replaced `memberCount.toLocaleString()` with `formatNumber(...)`; raw `<h2>` + `<p>` with `<Heading>` + `<Text>` (Rules 5, 31).
+- **`src/components/faq/FAQAccordion.tsx`** — Replaced `faq.stats.views.toLocaleString()` with `formatNumber(...)` (Rule 5).
+- **`src/components/admin/ImageUpload.tsx`** — Replaced manual `toFixed(2) MB` calculation with `formatFileSize(file.size)` (Rule 5).
+- **`src/components/modals/ImageCropModal.tsx`** — Replaced `.toFixed(0)` on display values with `Math.round(...)` (Rule 5).
+- **`src/features/admin/components/AdminPayoutsView.tsx`** — Replaced manual `new Date(...).getMonth() === new Date().getMonth()` comparisons with `isSameMonth(date, nowMs())` (Rule 5).
+- **`src/components/homepage/FeaturedAuctionsSection.tsx`** — Replaced `new Date().getTime()` with `nowMs()` (Rule 5).
+- **`src/components/auctions/AuctionCard.tsx`** — Replaced `Date.now()` with `nowMs()` (Rule 5).
+- **`src/components/layout/Footer.tsx`** — Replaced `new Date().getFullYear()` with `currentYear()` (Rule 5).
+- **`src/components/feedback/Toast.tsx`** — Replaced `Date.now().toString()` with `nowMs().toString()` (Rule 5).
+- **`src/components/ErrorBoundary.tsx`** — Replaced `new Date().toISOString()` with `nowISO()` (Rule 5).
+- **`src/lib/email.ts`** — Replaced 12× `new Date().getFullYear()` with `currentYear()` and 4× `toLocaleString()`/`toUTCString()` date calls with `formatDateTime(nowMs())` (Rule 5).
+- **`src/utils/formatters/date.formatter.ts`** — Extended `formatDateTime` to accept `number` (ms epoch) as first argument in addition to `Date | string` (Rule 31).
+
+**Overflow-x-auto → Primitives (Tasks 69–73)**
+
+- **`src/components/ui/Tabs.tsx`** — Extended with `variant='line'` (border-bottom underline tabs) flowing via React context through `TabsList` and `TabsTrigger` (Rule 31).
+- **`src/components/ui/HorizontalScroller.tsx`** — Extended children-passthrough mode with `scrollContainerRef?: RefObject<HTMLDivElement | null>`, `onScroll?`, and dynamic `gap` prop (Rule 31).
+- **`src/features/user/components/UserOrdersView.tsx`** — Replaced custom `overflow-x-auto` button tab row with `<Tabs variant="line">` (Rule 32).
+- **`src/components/homepage/FAQSection.tsx`** — Replaced custom `overflow-x-auto` button tab row with `<Tabs variant="line">` (Rule 32).
+- **`src/components/products/ProductImageGallery.tsx`** — Replaced `<div className="flex gap-2 overflow-x-auto">` with `<HorizontalScroller snapToItems gap={8}>` (Rule 32).
+- **`src/components/homepage/HeroCarousel.tsx`** — Replaced `<div ref={slidesRef} className="...overflow-x-auto...">` with `<HorizontalScroller snapToItems gap={0} scrollContainerRef={slidesRef} onScroll={...}>` (Rule 32).
+
+**API Routes — Firestore/Error class violations (Tasks 74–79)**
+
+- **`src/app/api/payment/webhook/route.ts`** — Replaced raw `NextResponse.json({error:...}, {status:401/400})` returns with `throw new AuthenticationError(...)` / `throw new ValidationError(...)`; outer catch updated to use `handleApiError` (Rules 13, 14).
+- **`src/app/api/auth/login/route.ts`** — Removed direct `getFirestore`/`FieldValue` usage; replaced `db.collection(USER_COLLECTION).doc(uid).get()` with `userRepository.findById(uid)` and inline `db.update(...)` with `userRepository.updateLoginMetadata(uid)` (Rule 12).
+- **`src/app/api/auth/register/route.ts`** — Removed direct `getFirestore`/`FieldValue` usage; replaced `db.collection(USER_COLLECTION).doc(uid).set({...})` with `userRepository.createWithId(uid, {...})` — `createWithId` auto-sets `createdAt`/`updatedAt` (Rule 12).
+- **`src/app/api/auth/session/route.ts`** — Removed direct `getFirestore`/`FieldValue` from OAuth profile creation; replaced with `userRepository.createWithId(uid, {...})` (Rule 12).
+- **`src/contexts/SessionContext.tsx`** — Replaced `import type { User } from "firebase/auth"` with `import type { AuthUser } from "@/types/auth"` (Rule 11).
+
+#### Added
+
+- **`src/repositories/user.repository.ts`** — New `updateLoginMetadata(uid)` method: uses `FieldValue.serverTimestamp()` + `FieldValue.increment(1)` to atomically update `metadata.lastSignInTime`, `metadata.loginCount`, and `updatedAt` on successful login (Rule 12).
+- **`src/types/auth.ts`** — New `AuthUser` interface (`uid`, `email`, `emailVerified`, `displayName`, `photoURL`, `phoneNumber`) that mirrors the minimal Firebase Auth user shape without importing Firebase types into UI modules (Rule 11).
+- **`src/utils/formatters/__tests__/date.formatter.test.ts`** — Added test for `formatDateTime` with numeric ms timestamp input.
+- **`src/components/ui/__tests__/HorizontalScroller.test.tsx`** — Added tests for `scrollContainerRef` forwarding and `onScroll` prop in children-passthrough mode.
+
+---
+
 ### Refactor Audit Wave 2 — Multi-Violation Files (2026-03-02)
 
 #### Changed

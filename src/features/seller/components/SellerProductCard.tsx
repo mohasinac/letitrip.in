@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Badge } from "@/components";
+import { Badge, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { AdminProduct } from "@/components";
@@ -39,13 +39,13 @@ export function SellerProductCard({
         </div>
       )}
       <div className="p-3 space-y-2">
-        <p className={`text-sm font-semibold truncate ${themed.textPrimary}`}>
+        <Text size="sm" weight="semibold" className="truncate">
           {product.title}
-        </p>
+        </Text>
         <div className="flex items-center justify-between gap-2">
-          <p className={`text-sm font-bold ${themed.textPrimary}`}>
+          <Text size="sm" weight="bold">
             {formatCurrency(product.price)}
-          </p>
+          </Text>
           <Badge
             variant={
               product.status === "published"

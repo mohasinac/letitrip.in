@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FormField, Button, AvatarUpload, Card } from "@/components";
+import { FormField, Button, AvatarUpload, Card, Heading } from "@/components";
 import type { ImageCropData } from "@/components";
 import { useTranslations } from "next-intl";
 import { UI_PLACEHOLDERS, THEME_CONSTANTS } from "@/constants";
@@ -78,14 +78,12 @@ export function ProfileInfoForm({
     await onSubmit(formData);
   };
 
-  const { spacing, typography } = THEME_CONSTANTS;
+  const { spacing } = THEME_CONSTANTS;
 
   return (
     <Card className={spacing.cardPadding}>
       <div className={spacing.stack}>
-        <h3 className={typography.cardTitle}>
-          {tProfile("profileInformation")}
-        </h3>
+        <Heading level={3}>{tProfile("profileInformation")}</Heading>
 
         <form onSubmit={handleSubmit} className={spacing.stack}>
           {/* Avatar Upload */}

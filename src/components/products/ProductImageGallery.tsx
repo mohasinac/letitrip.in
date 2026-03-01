@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { THEME_CONSTANTS } from "@/constants";
+import { HorizontalScroller } from "@/components";
 
 const { themed, borderRadius } = THEME_CONSTANTS;
 
@@ -45,7 +46,7 @@ export function ProductImageGallery({
 
       {/* Thumbnail strip (show if more than 1 image) */}
       {allImages.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <HorizontalScroller snapToItems gap={8} className="pb-1">
           {allImages.map((img, idx) => (
             <button
               key={idx}
@@ -65,7 +66,7 @@ export function ProductImageGallery({
               />
             </button>
           ))}
-        </div>
+        </HorizontalScroller>
       )}
     </div>
   );

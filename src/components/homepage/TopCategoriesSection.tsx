@@ -17,7 +17,8 @@ import {
 } from "lucide-react";
 import { useTopCategories } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { HorizontalScroller } from "@/components";
+import { HorizontalScroller, Heading } from "@/components";
+import { formatNumber } from "@/utils";
 
 /** Lucide icon fallback mapped from category slug keywords */
 function CategoryIcon({
@@ -139,14 +140,11 @@ export function TopCategoriesSection() {
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
               <div className="absolute inset-0 p-3 flex flex-col justify-end">
-                <h3
-                  className={`${THEME_CONSTANTS.typography.h6} text-white mb-1 line-clamp-2`}
-                >
+                <Heading level={3} className="text-white mb-1 line-clamp-2">
                   {category.name}
-                </h3>
+                </Heading>
                 <span className="inline-block self-start bg-white/20 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded-full">
-                  {(category.metrics?.totalItemCount ?? 0).toLocaleString()}{" "}
-                  products
+                  {formatNumber(category.metrics?.totalItemCount ?? 0)} products
                 </span>
               </div>
             </Link>

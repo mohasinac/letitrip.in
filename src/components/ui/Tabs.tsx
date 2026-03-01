@@ -26,6 +26,7 @@ import { THEME_CONSTANTS } from "@/constants";
 interface TabsContextValue {
   value: string;
   onChange: (value: string) => void;
+  variant: "default" | "line";
 }
 
 const TabsContext = createContext<TabsContextValue | undefined>(undefined);
@@ -43,6 +44,8 @@ interface TabsProps {
   defaultValue?: string;
   value?: string;
   onChange?: (value: string) => void;
+  /** 'default' = pill/box style (default); 'line' = border-bottom underline style */
+  variant?: "default" | "line";
   children: React.ReactNode;
   className?: string;
 }
@@ -51,6 +54,7 @@ export default function Tabs({
   defaultValue,
   value: controlledValue,
   onChange,
+  variant = "default",
   children,
   className = "",
 }: TabsProps) {
@@ -60,7 +64,7 @@ export default function Tabs({
   const handleChange = onChange || setInternalValue;
 
   return (
-    <TabsContext.Provider value={{ value, onChange: handleChange }}>
+    <TabsContext.Provider value={{ value, onChange: handleChange, variant }}>
       <div className={className}>{children}</div>
     </TabsContext.Provider>
   );
@@ -74,6 +78,7 @@ interface TabsListProps {
 
 export function TabsList({ children, className = "" }: TabsListProps) {
   const { themed } = THEME_CONSTANTS;
+  const { variant } = useTabsContext();
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
@@ -97,11 +102,11 @@ export function TabsList({ children, className = "" }: TabsListProps) {
     <div
       role="tablist"
       onKeyDown={handleKeyDown}
-      className={`
-        inline-flex items-center gap-1 p-1 rounded-lg
-        ${themed.bgSecondary}
-        ${className}
-      `}
+      className={
+        variant === "line"
+          ? `flex items-center overflow-x-auto border-b ${themed.border} ${className}`
+          : `inline-flex items-center gap-1 p-1 rounded-lg ${themed.bgSecondary} ${className}`
+      }
     >
       {children}
     </div>
@@ -122,9 +127,22 @@ export function TabsTrigger({
   disabled = false,
   className = "",
 }: TabsTriggerProps) {
-  const { value: selectedValue, onChange } = useTabsContext();
+  const { value: selectedValue, onChange, variant } = useTabsContext();
   const { themed } = THEME_CONSTANTS;
   const isSelected = value === selectedValue;
+
+  const baseClass =
+    variant === "line"
+      ? `px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed ${
+          isSelected
+            ? "border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400"
+            : `border-transparent ${themed.textSecondary} hover:text-gray-700 dark:hover:text-gray-300`
+        }`
+      : `px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+          isSelected
+            ? `${themed.bgPrimary} ${themed.textPrimary} shadow-sm`
+            : `${themed.textSecondary} hover:${themed.textPrimary}`
+        }`;
 
   return (
     <button
@@ -134,18 +152,7 @@ export function TabsTrigger({
       aria-controls={`tabpanel-${value}`}
       disabled={disabled}
       onClick={() => onChange(value)}
-      className={`
-        px-4 py-2 text-sm font-medium rounded-md
-        transition-all duration-200
-        focus:outline-none focus:ring-2 focus:ring-blue-500
-        disabled:opacity-50 disabled:cursor-not-allowed
-        ${
-          isSelected
-            ? `${themed.bgPrimary} ${themed.textPrimary} shadow-sm`
-            : `${themed.textSecondary} hover:${themed.textPrimary}`
-        }
-        ${className}
-      `}
+      className={`${baseClass} ${className}`}
     >
       {children}
     </button>

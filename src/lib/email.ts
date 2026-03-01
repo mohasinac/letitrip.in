@@ -6,6 +6,7 @@
 
 import { Resend } from "resend";
 import { serverLogger } from "@/lib/server-logger";
+import { formatDateTime, nowMs, currentYear } from "@/utils";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -86,7 +87,7 @@ export async function sendVerificationEmail(email: string, token: string) {
                   <tr>
                     <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #eeeeee;">
                       <p style="color: #999999; font-size: 12px; line-height: 1.6; margin: 0;">
-                        © ${new Date().getFullYear()} ${SITE_NAME}. All rights reserved.
+                        © ${currentYear()} ${SITE_NAME}. All rights reserved.
                       </p>
                     </td>
                   </tr>
@@ -108,7 +109,7 @@ This verification link will expire in 24 hours for security reasons.
 
 If you didn't create a ${SITE_NAME} account, you can safely ignore this email.
 
-© ${new Date().getFullYear()} ${SITE_NAME}. All rights reserved.
+© ${currentYear()} ${SITE_NAME}. All rights reserved.
       `.trim(),
     });
 
@@ -264,7 +265,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
                   <tr>
                     <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #eeeeee;">
                       <p style="color: #999999; font-size: 12px; line-height: 1.6; margin: 0;">
-                        © ${new Date().getFullYear()} ${SITE_NAME}. All rights reserved.
+                        © ${currentYear()} ${SITE_NAME}. All rights reserved.
                       </p>
                       <p style="color: #999999; font-size: 12px; line-height: 1.6; margin: 10px 0 0;">
                         This is an automated email. Please do not reply to this message.
@@ -291,7 +292,7 @@ If you didn't request a password reset, you can safely ignore this email. Your p
 
 For security reasons, we recommend choosing a strong password that you haven't used before.
 
-© ${new Date().getFullYear()} ${SITE_NAME}. All rights reserved.
+© ${currentYear()} ${SITE_NAME}. All rights reserved.
       `.trim(),
     });
 
@@ -347,7 +348,7 @@ export async function sendPasswordChangedEmail(email: string) {
                       
                       <div style="background-color: #d4edda; border-left: 4px solid #28a745; padding: 15px; margin: 30px 0; border-radius: 4px;">
                         <p style="color: #155724; font-size: 14px; line-height: 1.6; margin: 0;">
-                          <strong>✓ Confirmed:</strong> Your password was changed on ${new Date().toLocaleString("en-US", { dateStyle: "long", timeStyle: "short" })}.
+                          <strong>✓ Confirmed:</strong> Your password was changed on ${formatDateTime(nowMs())}.
                         </p>
                       </div>
                       
@@ -380,7 +381,7 @@ export async function sendPasswordChangedEmail(email: string) {
                   <tr>
                     <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #eeeeee;">
                       <p style="color: #999999; font-size: 12px; line-height: 1.6; margin: 0;">
-                        © ${new Date().getFullYear()} ${SITE_NAME}. All rights reserved.
+                        © ${currentYear()} ${SITE_NAME}. All rights reserved.
                       </p>
                     </td>
                   </tr>
@@ -394,7 +395,7 @@ export async function sendPasswordChangedEmail(email: string) {
       text: `
 Hello,
 
-This is a confirmation that the password for your ${SITE_NAME} account has been successfully changed on ${new Date().toLocaleString()}.
+This is a confirmation that the password for your ${SITE_NAME} account has been successfully changed on ${formatDateTime(nowMs())}.
 
 If you made this change, you can safely ignore this email.
 
@@ -402,7 +403,7 @@ If you made this change, you can safely ignore this email.
 If you didn't change your password, someone else may have accessed your account. Please reset your password immediately at:
 ${SITE_URL}/auth/forgot-password
 
-© ${new Date().getFullYear()} ${SITE_NAME}. All rights reserved.
+© ${currentYear()} ${SITE_NAME}. All rights reserved.
       `.trim(),
     });
 
@@ -538,7 +539,7 @@ export async function sendOrderConfirmationEmail(
                   <tr>
                     <td style="background-color: #f8f9fa; padding: 24px; text-align: center; border-top: 1px solid #eee;">
                       <p style="color: #999; font-size: 12px; margin: 0;">
-                        © ${new Date().getFullYear()} ${SITE_NAME}. All rights reserved.
+                        © ${currentYear()} ${SITE_NAME}. All rights reserved.
                       </p>
                     </td>
                   </tr>
@@ -549,7 +550,7 @@ export async function sendOrderConfirmationEmail(
         </body>
         </html>
       `,
-      text: `Hi ${userName},\n\nYour order ${orderId} has been confirmed!\n\nProduct: ${productTitle}\nQuantity: ${quantity}\nTotal: ${formattedTotal}\nPayment: ${paymentMethod === "cod" ? "Cash on Delivery" : "Online Payment"}\nShip to: ${shippingAddress}\n\nView your order: ${orderUrl}\n\n© ${new Date().getFullYear()} ${SITE_NAME}`,
+      text: `Hi ${userName},\n\nYour order ${orderId} has been confirmed!\n\nProduct: ${productTitle}\nQuantity: ${quantity}\nTotal: ${formattedTotal}\nPayment: ${paymentMethod === "cod" ? "Cash on Delivery" : "Online Payment"}\nShip to: ${shippingAddress}\n\nView your order: ${orderUrl}\n\n© ${currentYear()} ${SITE_NAME}`,
     });
 
     if (error) {
@@ -599,7 +600,7 @@ export async function sendContactEmail(params: {
               <p style="white-space: pre-wrap;">${message}</p>
             </td></tr>
             <tr><td style="background: #f9f9f9; padding: 16px; text-align: center; color: #888; font-size: 12px;">
-              © ${new Date().getFullYear()} ${SITE_NAME}
+              © ${currentYear()} ${SITE_NAME}
             </td></tr>
           </table>
         </body>
@@ -719,7 +720,7 @@ export async function sendNewProductSubmittedEmail(
                   <tr>
                     <td style="background-color: #f8f9fa; padding: 24px; text-align: center; border-top: 1px solid #eeeeee;">
                       <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-                        © ${new Date().getFullYear()} ${SITE_NAME}. This is an automated notification — do not reply.
+                        © ${currentYear()} ${SITE_NAME}. This is an automated notification — do not reply.
                       </p>
                     </td>
                   </tr>
@@ -836,7 +837,7 @@ export async function sendNewReviewNotificationEmail(params: {
                 </tr>
                 <tr>
                   <td style="background-color:#f8f9fa;padding:24px;text-align:center;border-top:1px solid #eeeeee;">
-                    <p style="color:#9ca3af;font-size:12px;margin:0;">© ${new Date().getFullYear()} ${SITE_NAME}. Automated notification — do not reply.</p>
+                    <p style="color:#9ca3af;font-size:12px;margin:0;">© ${currentYear()} ${SITE_NAME}. Automated notification — do not reply.</p>
                   </td>
                 </tr>
               </table>
@@ -896,7 +897,7 @@ export async function sendSiteSettingsChangedEmail(params: {
                   <td style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);padding:40px;text-align:center;">
                     <p style="font-size:48px;margin:0 0 12px;">⚙️</p>
                     <h1 style="color:#ffffff;margin:0;font-size:24px;font-weight:600;">Site Settings Changed</h1>
-                    <p style="color:#d1fae5;margin:8px 0 0;font-size:14px;">${new Date().toUTCString()}</p>
+                    <p style="color:#d1fae5;margin:8px 0 0;font-size:14px;">${formatDateTime(nowMs())}</p>
                   </td>
                 </tr>
                 <tr>
@@ -915,7 +916,7 @@ export async function sendSiteSettingsChangedEmail(params: {
                       </tr>
                       <tr>
                         <td style="color:#6b7280;font-size:13px;font-weight:600;text-transform:uppercase;">Timestamp</td>
-                        <td style="color:#111827;font-size:14px;">${new Date().toUTCString()}</td>
+                        <td style="color:#111827;font-size:14px;">${formatDateTime(nowMs())}</td>
                       </tr>
                     </table>
                     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
@@ -929,7 +930,7 @@ export async function sendSiteSettingsChangedEmail(params: {
                 </tr>
                 <tr>
                   <td style="background-color:#f8f9fa;padding:24px;text-align:center;border-top:1px solid #eeeeee;">
-                    <p style="color:#9ca3af;font-size:12px;margin:0;">© ${new Date().getFullYear()} ${SITE_NAME}. Automated notification — do not reply.</p>
+                    <p style="color:#9ca3af;font-size:12px;margin:0;">© ${currentYear()} ${SITE_NAME}. Automated notification — do not reply.</p>
                   </td>
                 </tr>
               </table>

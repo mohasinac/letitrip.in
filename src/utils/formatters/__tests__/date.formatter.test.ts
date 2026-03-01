@@ -72,6 +72,13 @@ describe("Date Formatter", () => {
       const formatted = formatDateTime("2026-02-07T15:45:30Z");
       expect(formatted).toContain("2026");
     });
+
+    it("should handle numeric timestamps (ms epoch)", () => {
+      const ts = new Date("2026-02-07T15:45:30Z").getTime();
+      const formatted = formatDateTime(ts);
+      expect(formatted).toContain("2026");
+      expect(formatted).toMatch(/\d{1,2}:\d{2}/);
+    });
   });
 
   describe("formatRelativeTime", () => {

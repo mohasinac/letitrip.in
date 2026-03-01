@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Alert } from "@/components";
+import { Alert, Text } from "@/components";
 import { ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/hooks";
@@ -46,10 +46,10 @@ export function SurveyEventSection({
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-600 dark:text-gray-400">
+      <Text size="sm" variant="secondary">
         Complete the survey to participate. Entries are reviewed before being
         counted.
-      </p>
+      </Text>
       <Link
         href={ROUTES.PUBLIC.EVENT_PARTICIPATE(event.id)}
         target="_blank"

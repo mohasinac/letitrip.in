@@ -16,7 +16,7 @@ import {
   PayoutStatusForm,
 } from "@/components";
 import type { PayoutStatusFormState } from "@/components";
-import { formatCurrency } from "@/utils";
+import { formatCurrency, isSameMonth, nowMs } from "@/utils";
 import type { PayoutDocument } from "@/db/schema";
 
 const { themed, spacing } = THEME_CONSTANTS;
@@ -58,14 +58,14 @@ export function AdminPayoutsView() {
     (p) =>
       p.status === "completed" &&
       p.processedAt &&
-      new Date(p.processedAt).getMonth() === new Date().getMonth(),
+      isSameMonth(p.processedAt, nowMs()),
   );
   const totalPaidMonth = completedThisMonth.reduce((s, p) => s + p.amount, 0);
   const failedThisMonth = payouts.filter(
     (p) =>
       p.status === "failed" &&
       p.processedAt &&
-      new Date(p.processedAt).getMonth() === new Date().getMonth(),
+      isSameMonth(p.processedAt, nowMs()),
   ).length;
 
   const handleView = useCallback((payout: PayoutDocument) => {

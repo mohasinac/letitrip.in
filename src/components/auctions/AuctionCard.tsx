@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { formatCurrency } from "@/utils";
+import { formatCurrency, nowMs } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
 
 const { themed, borderRadius } = THEME_CONSTANTS;
@@ -32,7 +32,7 @@ function useCountdown(endDate: Date | string | undefined) {
   const getRemaining = () => {
     if (!endDate) return null;
     const end = endDate instanceof Date ? endDate : new Date(endDate as string);
-    const diff = end.getTime() - Date.now();
+    const diff = end.getTime() - nowMs();
     if (diff <= 0) return null;
 
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));

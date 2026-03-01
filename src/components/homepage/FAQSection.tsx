@@ -11,6 +11,7 @@ import {
   getStaticFaqCategoryCounts,
 } from "@/constants";
 import type { FAQCategoryKey, StaticFAQItem } from "@/constants";
+import { Tabs, TabsList, TabsTrigger } from "@/components";
 
 export function FAQSection() {
   const t = useTranslations("faq");
@@ -54,29 +55,25 @@ export function FAQSection() {
         </div>
 
         {/* Category Tabs — single horizontal scrollable row, nav-item style */}
-        <div
-          className={`flex gap-1 overflow-x-auto ${THEME_CONSTANTS.utilities.scrollbarThinX} pb-1 mb-8 border-b ${THEME_CONSTANTS.themed.border}`}
+        <Tabs
+          variant="line"
+          value={activeCategory}
+          onChange={(v) => handleCategoryChange(v as FAQCategoryKey)}
         >
-          {(
-            Object.entries(FAQ_CATEGORIES) as [
-              FAQCategoryKey,
-              (typeof FAQ_CATEGORIES)[FAQCategoryKey],
-            ][]
-          ).map(([key, category]) => (
-            <button
-              key={key}
-              onClick={() => handleCategoryChange(key)}
-              className={`flex-none flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors whitespace-nowrap border-b-2 -mb-px ${
-                activeCategory === key
-                  ? `border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400`
-                  : `border-transparent ${THEME_CONSTANTS.themed.textSecondary} hover:${THEME_CONSTANTS.themed.textPrimary} hover:border-gray-300 dark:hover:border-gray-600`
-              }`}
-            >
-              <span>{category.icon}</span>
-              {category.label}
-            </button>
-          ))}
-        </div>
+          <TabsList className="pb-1 mb-8">
+            {(
+              Object.entries(FAQ_CATEGORIES) as [
+                FAQCategoryKey,
+                (typeof FAQ_CATEGORIES)[FAQCategoryKey],
+              ][]
+            ).map(([key, category]) => (
+              <TabsTrigger key={key} value={key}>
+                <span>{category.icon}</span>
+                {category.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
 
         {/* FAQ Accordion */}
         <div className={`${THEME_CONSTANTS.spacing.stack} max-w-3xl mx-auto`}>

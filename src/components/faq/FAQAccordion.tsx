@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { useMessage } from "@/hooks";
+import { formatNumber } from "@/utils";
 import { FAQHelpfulButtons } from "./FAQHelpfulButtons";
 import type { StaticFAQItem } from "@/constants";
 
@@ -147,7 +148,7 @@ export function FAQAccordion({
                     <span
                       className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary}`}
                     >
-                      {faq.stats.views.toLocaleString()} views
+                      {formatNumber(faq.stats.views)} views
                     </span>
                   )}
                 </div>

@@ -11,6 +11,7 @@ import { Button } from "@/components";
 import { ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { Logger } from "@/classes";
 import { useTranslations } from "next-intl";
+import { nowISO } from "@/utils";
 
 interface Props {
   children: ReactNode;
@@ -112,7 +113,7 @@ export class ErrorBoundary extends Component<Props, State> {
       error: error.message,
       stack: error.stack,
       componentStack: errorInfo.componentStack,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
     });
 
     if (this.props.onError) {

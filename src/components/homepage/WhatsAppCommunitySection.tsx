@@ -3,8 +3,8 @@
 import { MessageCircle } from "lucide-react";
 import { useHomepageSections } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
-import { Button } from "@/components";
-import { proseMirrorToHtml } from "@/utils";
+import { Button, Heading, Text } from "@/components";
+import { proseMirrorToHtml, formatNumber } from "@/utils";
 import type {
   HomepageSectionDocument,
   WhatsAppCommunitySectionConfig,
@@ -70,9 +70,9 @@ export function WhatsAppCommunitySection() {
             </div>
 
             {/* Heading */}
-            <h2 className={`${THEME_CONSTANTS.typography.h2} mb-3`}>
+            <Heading level={2} className="mb-3">
               {config.title}
-            </h2>
+            </Heading>
             {config.description && (
               <div
                 className="text-lg md:text-xl mb-2 opacity-90 prose prose-invert max-w-none"
@@ -82,9 +82,9 @@ export function WhatsAppCommunitySection() {
               />
             )}
             {config.memberCount ? (
-              <p className="text-base md:text-lg opacity-80 mb-2">
-                {config.memberCount.toLocaleString()} members
-              </p>
+              <Text className="text-base md:text-lg opacity-80 mb-2">
+                {formatNumber(config.memberCount)} members
+              </Text>
             ) : null}
 
             {/* Benefits */}

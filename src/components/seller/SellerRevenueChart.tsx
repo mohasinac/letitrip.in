@@ -1,13 +1,13 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Card } from "@/components/ui";
+import { Card, Heading, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { useTheme } from "@/contexts";
 
-const { themed, spacing, typography } = THEME_CONSTANTS;
+const { spacing } = THEME_CONSTANTS;
 
 // Lazy-load recharts to avoid SSR issues
 const BarChart = dynamic(() => import("recharts").then((m) => m.BarChart), {
@@ -51,9 +51,7 @@ export function SellerRevenueChart({ data }: SellerRevenueChartProps) {
   return (
     <Card className="p-6">
       <div className={spacing.stack}>
-        <h2 className={`${typography.h4} ${themed.textPrimary}`}>
-          {t("revenueChartTitle")}
-        </h2>
+        <Heading level={2}>{t("revenueChartTitle")}</Heading>
         {data.some((m) => m.revenue > 0) ? (
           <div className={THEME_CONSTANTS.chart.height}>
             <ResponsiveContainer width="100%" height="100%">
@@ -82,9 +80,9 @@ export function SellerRevenueChart({ data }: SellerRevenueChartProps) {
             </ResponsiveContainer>
           </div>
         ) : (
-          <p className={`text-sm ${themed.textSecondary} text-center py-8`}>
+          <Text size="sm" variant="secondary" className="text-center py-8">
             {t("noData")}
-          </p>
+          </Text>
         )}
       </div>
     </Card>

@@ -13,6 +13,7 @@
 
 import { BaseRepository } from "./base.repository";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { FieldValue } from "firebase-admin/firestore";
 import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 import {
   UserDocument,
@@ -270,6 +271,28 @@ export class UserRepository extends BaseRepository<UserDocument> {
       return snapshot.data().count;
     } catch (error) {
       throw new DatabaseError("Failed to count new users", error);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Login metadata
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Update login metadata after a successful sign-in.
+   * Uses FieldValue for atomic server-side lastSignInTime and loginCount increment.
+   */
+  async updateLoginMetadata(uid: string): Promise<void> {
+    try {
+      await this.getCollection()
+        .doc(uid)
+        .update({
+          [USER_FIELDS.META.LAST_SIGN_IN_TIME]: FieldValue.serverTimestamp(),
+          [USER_FIELDS.META.LOGIN_COUNT]: FieldValue.increment(1),
+          [USER_FIELDS.UPDATED_AT]: FieldValue.serverTimestamp(),
+        });
+    } catch (error) {
+      throw new DatabaseError("Failed to update login metadata", error);
     }
   }
 

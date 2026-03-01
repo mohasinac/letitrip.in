@@ -69,11 +69,16 @@ export function formatDate(
  * ```
  */
 export function formatDateTime(
-  date: Date | string,
+  date: Date | string | number,
   format: "short" | "medium" | "long" | "full" = "medium",
   locale: string = "en-US",
 ): string {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const dateObj =
+    typeof date === "string"
+      ? new Date(date)
+      : typeof date === "number"
+        ? new Date(date)
+        : date;
 
   const dateOptions: Intl.DateTimeFormatOptions = {};
   const timeOptions: Intl.DateTimeFormatOptions = {};

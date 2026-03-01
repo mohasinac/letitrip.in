@@ -215,7 +215,7 @@ export function ImageCropModal({
           <div className="flex items-center justify-between">
             <Text className="text-xs font-medium">{UI_LABELS.AVATAR.ZOOM}</Text>
             <Text className={`text-xs ${THEME_CONSTANTS.themed.textSecondary}`}>
-              {(zoom * 100).toFixed(0)}%
+              {Math.round(zoom * 100)}%
             </Text>
           </div>
 
@@ -339,8 +339,8 @@ export function ImageCropModal({
           className={`flex items-center justify-between text-xs ${THEME_CONSTANTS.themed.textSecondary}`}
         >
           <span>
-            {UI_LABELS.AVATAR.POSITION}: {position.x.toFixed(0)}%,{" "}
-            {position.y.toFixed(0)}%
+            {UI_LABELS.AVATAR.POSITION}: {Math.round(position.x)}%,{" "}
+            {Math.round(position.y)}%
           </span>
           <button
             type="button"

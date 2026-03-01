@@ -40,13 +40,9 @@ export async function POST(request: NextRequest) {
     // This will create a profile if one doesn't exist
     const { userRepository } = await import("@/repositories");
     const { getAuth } = await import("firebase-admin/auth");
-    const { getFirestore, FieldValue } =
-      await import("firebase-admin/firestore");
     const { getAdminApp } = await import("@/lib/firebase/admin");
-    const { USER_COLLECTION, DEFAULT_USER_DATA } =
-      await import("@/db/schema/users");
+    const { DEFAULT_USER_DATA } = await import("@/db/schema/users");
 
-    const db = getFirestore(getAdminApp());
     const auth = getAuth(getAdminApp());
 
     // Check if user profile exists
@@ -60,23 +56,18 @@ export async function POST(request: NextRequest) {
           ? "admin"
           : SCHEMA_DEFAULTS.USER_ROLE;
 
-      await db
-        .collection(USER_COLLECTION)
-        .doc(decodedToken.uid)
-        .set({
-          ...DEFAULT_USER_DATA,
-          uid: decodedToken.uid,
-          email: authUser.email,
-          displayName:
-            authUser.displayName ||
-            authUser.email?.split("@")[0] ||
-            SCHEMA_DEFAULTS.DEFAULT_DISPLAY_NAME,
-          photoURL: authUser.photoURL || null,
-          emailVerified: authUser.emailVerified,
-          role,
-          createdAt: FieldValue.serverTimestamp(),
-          updatedAt: FieldValue.serverTimestamp(),
-        });
+      await userRepository.createWithId(decodedToken.uid, {
+        ...DEFAULT_USER_DATA,
+        uid: decodedToken.uid,
+        email: authUser.email,
+        displayName:
+          authUser.displayName ||
+          authUser.email?.split("@")[0] ||
+          SCHEMA_DEFAULTS.DEFAULT_DISPLAY_NAME,
+        photoURL: authUser.photoURL || null,
+        emailVerified: authUser.emailVerified,
+        role,
+      });
     }
 
     // Create session cookie (5 days expiry)

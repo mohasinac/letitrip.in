@@ -7,6 +7,8 @@
 
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { CouponDocument } from "@/db/schema";
+import { formatCurrency, isPast } from "@/utils";
+import { Text } from "@/components";
 
 const LABELS = UI_LABELS.ADMIN.COUPONS;
 const { themed } = THEME_CONSTANTS;
@@ -47,14 +49,16 @@ export function getCouponTableColumns(
         width: "20%",
         render: (coupon: CouponDocument) => (
           <div>
-            <p className="font-medium text-sm truncate max-w-[150px]">
+            <Text weight="medium" size="sm" className="truncate max-w-[150px]">
               {coupon.name}
-            </p>
-            <p
-              className={`text-xs ${themed.textSecondary} truncate max-w-[150px]`}
+            </Text>
+            <Text
+              size="xs"
+              variant="secondary"
+              className="truncate max-w-[150px]"
             >
               {coupon.description}
-            </p>
+            </Text>
           </div>
         ),
       },
@@ -85,7 +89,7 @@ export function getCouponTableColumns(
           if (type === "fixed")
             return (
               <span className="font-semibold">
-                ₹{discount.value.toLocaleString("en-IN")}
+                {formatCurrency(discount.value, "INR", "en-IN")}
               </span>
             );
           if (type === "free_shipping")
@@ -113,8 +117,7 @@ export function getCouponTableColumns(
         render: (coupon: CouponDocument) => {
           const isActive = coupon.validity.isActive;
           const isExpired =
-            coupon.validity.endDate &&
-            new Date(coupon.validity.endDate) < new Date();
+            coupon.validity.endDate && isPast(coupon.validity.endDate);
           return (
             <span
               className={`px-2 py-1 text-xs font-medium rounded ${
