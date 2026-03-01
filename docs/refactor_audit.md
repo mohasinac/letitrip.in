@@ -495,7 +495,7 @@ import { HorizontalScroller } from '@/components';
 <HorizontalScroller className="pb-1 pt-1">{attachments}</HorizontalScroller>
 ```
 
-- [ ] Fix all 9 instances in one edit; update `__tests__/ProductReviews.test.tsx`
+- [x] Fix all 9 instances in one edit; update `__tests__/ProductReviews.test.tsx`
 
 ---
 
@@ -520,7 +520,7 @@ import { SESSION_TABLE_COLUMNS } from "./SessionTableColumns";
 
 Delete all `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>`, `<td>` tags and their enclosing divs.
 
-- [ ] Fix dates L24, L279; replace raw table L167–295 with DataTable; update `__tests__/AdminSessionsManager.test.tsx`
+- [x] Fix dates L24, L279; replace raw table L167–295 with DataTable; update `__tests__/AdminSessionsManager.test.tsx`
 
 ---
 
@@ -538,7 +538,7 @@ import { Text } from '@/components';
 <Text size="xs" variant="secondary">{...}</Text>  // ×2
 ```
 
-- [ ] Fix all 6; update `__tests__/EventFormDrawer.test.tsx`
+- [x] Fix all 6; update `__tests__/EventFormDrawer.test.tsx`
 
 ---
 
@@ -554,7 +554,7 @@ import { Text } from '@/components';
 <Text size="sm" variant="muted" className="italic">{...}</Text>
 ```
 
-- [ ] Fix all 5; update `__tests__/SurveyFieldBuilder.test.tsx`
+- [x] Fix all 5; update `__tests__/SurveyFieldBuilder.test.tsx`
 
 ---
 
@@ -568,7 +568,7 @@ import { Label } from '@/components';
 <Label>{...}</Label>
 ```
 
-- [ ] Fix all 4; update `__tests__/PollConfigForm.test.tsx`
+- [x] Fix all 4; update `__tests__/PollConfigForm.test.tsx`
 
 ---
 
@@ -583,7 +583,7 @@ import { Label } from '@/components';
 import { Heading, Label } from "@/components";
 ```
 
-- [ ] Fix all 4; update `__tests__/EventParticipateView.test.tsx`
+- [x] Fix all 4; update `__tests__/EventParticipateView.test.tsx`
 
 ---
 
@@ -597,7 +597,7 @@ import { Label } from '@/components';
 <Label>{...}</Label>
 ```
 
-- [ ] Fix all 3; update `__tests__/AdminReviewsView.test.tsx`
+- [x] Fix all 3; update `__tests__/AdminReviewsView.test.tsx`
 
 ---
 
@@ -614,7 +614,7 @@ import { Heading, Text } from '@/components';
 <Text size="sm" variant="secondary">{...}</Text>
 ```
 
-- [ ] Fix all 9; update `__tests__/AccountInfoCard.test.tsx`
+- [x] Fix all 9; update `__tests__/AccountInfoCard.test.tsx`
 
 ---
 
@@ -634,7 +634,7 @@ import { formatNumber } from "@/utils";
 }
 ```
 
-- [ ] Fix all 5; update `__tests__/SellerStorefrontView.test.tsx`
+- [x] Fix all 5; update `__tests__/SellerStorefrontView.test.tsx`
 
 ---
 
@@ -654,7 +654,7 @@ import { formatNumber } from "@/utils";
 }
 ```
 
-- [ ] Fix all 5; update `__tests__/PublicProfileView.test.tsx`
+- [x] Fix all 5; update `__tests__/PublicProfileView.test.tsx`
 
 ---
 
@@ -671,7 +671,7 @@ import { Heading, Text } from '@/components';
 <Text size="sm" variant="secondary">{...}</Text>
 ```
 
-- [ ] Fix all 5; update `__tests__/AdminAnalyticsView.test.tsx`
+- [x] Fix all 5; update `__tests__/AdminAnalyticsView.test.tsx`
 
 ---
 
@@ -688,7 +688,7 @@ import { Heading, Text } from '@/components';
 <Text size="sm">{...}</Text>
 ```
 
-- [ ] Fix all 5; update `__tests__/CouponCard.test.tsx`
+- [x] Fix all 5; update `__tests__/CouponCard.test.tsx`
 
 ---
 
@@ -705,7 +705,7 @@ import { Heading, Text } from '@/components';
 <Text variant="secondary" size="sm">{...}</Text>
 ```
 
-- [ ] Fix all 4; update `__tests__/CategoryProductsView.test.tsx`
+- [x] Fix all 4; update `__tests__/CategoryProductsView.test.tsx`
 
 ---
 
@@ -723,7 +723,7 @@ import { Text, Label } from '@/components';
 <Label>{...}</Label>
 ```
 
-- [ ] Fix all 3; update `__tests__/FeedbackEventSection.test.tsx`
+- [x] Fix all 3; update `__tests__/FeedbackEventSection.test.tsx`
 
 ---
 
@@ -740,7 +740,7 @@ import { Text, Label } from '@/components';
 <Label>{...}</Label>
 ```
 
-- [ ] Fix all 3; update `__tests__/PollVotingSection.test.tsx`
+- [x] Fix all 3; update `__tests__/PollVotingSection.test.tsx`
 
 ---
 
@@ -764,7 +764,7 @@ formatNumber(value, "en-US", { decimals: 2 });
 formatDateTime(value);
 ```
 
-- [ ] Fix all 4; update `__tests__/cache-metrics.test.ts`
+- [x] Fix all 4; update `__tests__/cache-metrics.test.ts`
 
 ---
 
@@ -784,7 +784,7 @@ import { PAYOUT_TABLE_COLUMNS } from './PayoutTableColumns';
 <DataTable columns={PAYOUT_TABLE_COLUMNS} data={payouts} loading={loading} />
 ```
 
-- [ ] Fix heading; replace raw table; update `__tests__/SellerPayoutHistoryTable.test.tsx`
+- [x] Fix heading; replace raw table; update `__tests__/SellerPayoutHistoryTable.test.tsx`
 
 ---
 
@@ -809,7 +809,7 @@ import { Tabs } from '@/components';
 />
 ```
 
-- [ ] Fix all 3; update `__tests__/SellerOrdersView.test.tsx`
+- [x] Fix all 3; update `__tests__/SellerOrdersView.test.tsx`
 
 ---
 
@@ -826,7 +826,7 @@ import { Text, Label } from '@/components';
 <Label>{...}</Label>
 ```
 
-- [ ] Fix both; update `__tests__/LoginForm.test.tsx`
+- [x] Fix both; update `__tests__/LoginForm.test.tsx`
 
 ---
 
@@ -842,7 +842,7 @@ import { Text, Label } from '@/components';
 <Label>{...}</Label>
 ```
 
-- [ ] Fix both; update `__tests__/RegisterForm.test.tsx`
+- [x] Fix both; update `__tests__/RegisterForm.test.tsx`
 
 ---
 
@@ -859,7 +859,7 @@ import { Heading, Text } from '@/components';
 <Text variant="secondary">{...}</Text>
 ```
 
-- [ ] Fix both; update `src/app/__tests__/global-error.test.tsx`
+- [x] Fix both; update `src/app/__tests__/global-error.test.tsx`
 
 ---
 
@@ -876,7 +876,7 @@ import { Heading, Text } from '@/components';
 <Text variant="secondary" className="mt-1">{...}</Text>
 ```
 
-- [ ] Fix both; update `__tests__/ProductSection.test.tsx`
+- [x] Fix both; update `__tests__/ProductSection.test.tsx`
 
 ---
 
@@ -890,7 +890,7 @@ import { Label } from '@/components';
 <Label>{...}</Label>
 ```
 
-- [ ] Fix both; update `__tests__/SurveyConfigForm.test.tsx`
+- [x] Fix both; update `__tests__/SurveyConfigForm.test.tsx`
 
 ---
 

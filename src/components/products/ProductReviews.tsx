@@ -4,7 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { formatRelativeTime } from "@/utils";
+import { formatRelativeTime, formatNumber } from "@/utils";
+import { Heading, Text, HorizontalScroller } from "@/components";
 import { useProductReviews } from "@/hooks";
 import type { ReviewDocument } from "@/db/schema";
 
@@ -88,9 +89,9 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
   return (
     <section>
-      <h2 className={`text-xl font-bold mb-4 ${themed.textPrimary}`}>
+      <Heading level={2} className="mb-4">
         {t("reviewsTitle")}
-      </h2>
+      </Heading>
 
       {/* Rating summary */}
       {totalReviews > 0 && (
@@ -100,7 +101,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
           {/* Average */}
           <div className="flex flex-col items-center justify-center sm:w-32 shrink-0">
             <span className={`text-5xl font-bold ${themed.textPrimary}`}>
-              {avgRating.toFixed(1)}
+              {formatNumber(avgRating, "en-US", { decimals: 1 })}
             </span>
             <StarRating rating={Math.round(avgRating)} size="md" />
             <span className={`text-xs mt-1 ${themed.textSecondary}`}>
@@ -141,12 +142,10 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
       {/* No reviews */}
       {!isLoading && reviews.length === 0 && (
         <div className="text-center py-12">
-          <p className={`font-medium ${themed.textPrimary}`}>
-            {t("reviewsNone")}
-          </p>
-          <p className={`text-sm mt-1 ${themed.textSecondary}`}>
+          <Text weight="medium">{t("reviewsNone")}</Text>
+          <Text size="sm" variant="secondary" className="mt-1">
             {t("reviewsBeFirst")}
-          </p>
+          </Text>
         </div>
       )}
 
@@ -179,9 +178,9 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                     </div>
                   )}
                   <div>
-                    <p className={`font-medium text-sm ${themed.textPrimary}`}>
+                    <Text weight="medium" size="sm">
                       {review.userName}
-                    </p>
+                    </Text>
                     <div className="flex items-center gap-2">
                       <StarRating rating={review.rating} />
                       {review.verified && (
@@ -199,17 +198,17 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
               {/* Content */}
               {review.title && (
-                <p className={`font-semibold text-sm ${themed.textPrimary}`}>
+                <Text weight="semibold" size="sm">
                   {review.title}
-                </p>
+                </Text>
               )}
-              <p className={`text-sm leading-relaxed ${themed.textSecondary}`}>
+              <Text size="sm" variant="secondary">
                 {review.comment}
-              </p>
+              </Text>
 
               {/* Images */}
               {review.images && review.images.length > 0 && (
-                <div className="flex gap-2 overflow-x-auto pb-1 pt-1">
+                <HorizontalScroller className="pb-1 pt-1">
                   {review.images.map((img, idx) => (
                     <div
                       key={idx}
@@ -224,14 +223,14 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                       />
                     </div>
                   ))}
-                </div>
+                </HorizontalScroller>
               )}
 
               {/* Helpful */}
               {review.helpfulCount > 0 && (
-                <p className={`text-xs ${themed.textSecondary}`}>
+                <Text size="xs" variant="secondary">
                   {t("helpful", { count: review.helpfulCount })}
-                </p>
+                </Text>
               )}
             </div>
           ))}

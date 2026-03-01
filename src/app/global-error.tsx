@@ -12,6 +12,8 @@
 import { useEffect } from "react";
 import { logger } from "@/classes";
 import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { Heading, Text } from "@/components";
+import { nowISO } from "@/utils";
 
 interface GlobalErrorProps {
   error: Error & { digest?: string };
@@ -25,7 +27,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
       message: error.message,
       stack: error.stack,
       digest: error.digest,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       type: "global-error",
     });
   }, [error]);
@@ -63,14 +65,14 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             </div>
 
             {/* Error Title */}
-            <h1 className={`${typography.h1} ${themed.textPrimary} mb-4`}>
+            <Heading level={1} className="mb-4">
               {UI_LABELS.ERROR_PAGES.CRITICAL_ERROR.TITLE}
-            </h1>
+            </Heading>
 
             {/* Error Description */}
-            <p className={`${typography.body} ${themed.textSecondary} mb-8`}>
+            <Text variant="secondary" className="mb-8">
               {UI_LABELS.ERROR_PAGES.CRITICAL_ERROR.DESCRIPTION}
-            </p>
+            </Text>
 
             {/* Error Details (Development Only) */}
             {process.env.NODE_ENV === "development" && error.message && (

@@ -13,6 +13,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+### Refactor Audit Wave 2 — Multi-Violation Files (2026-03-02)
+
+#### Changed
+
+- **`src/components/admin/AdminSessionsManager.tsx`** — Replaced raw `<p>` / `<h3>` tags with `<Text>` / `<Heading level={3}>` (Rules 7, 31). Raw table + date violations already fixed in Wave 1 work.
+- **`src/features/events/components/EventParticipateView.tsx`** — Replaced 3× `<p>` with `<Text>` (Rule 31).
+- **`src/features/admin/components/AdminReviewsView.tsx`** — Replaced error `<p>` with `<Text variant="error">` (Rule 31).
+- **`src/components/user/profile/PublicProfileView.tsx`** — Replaced `<h1>` / `<h2>` with `<Heading>` and `toFixed(1)` with `formatNumber(..., { decimals: 1 })` (Rules 5, 7, 31).
+- **`src/features/admin/components/AdminAnalyticsView.tsx`** — Replaced 3× `<h2>` with `<Heading level={2}>` and 4× `<p>` with `<Text>` (Rule 31).
+- **`src/components/promotions/CouponCard.tsx`** — Fixed barrel import (`@/components/ui` → `@/components`), replaced `<h3>` + 4× `<p>` with `<Heading>` + `<Text>` (Rules 2, 7, 31).
+- **`src/features/categories/components/CategoryProductsView.tsx`** — Added `Heading, Text` imports; replaced `<h1>` + 3× `<p>` with typography primitives (Rule 31).
+- **`src/features/events/components/FeedbackEventSection.tsx`** — Replaced 2× `<p>` + 1× `<label>` with `<Text>` + `<Label>` (Rule 31).
+- **`src/features/events/components/PollVotingSection.tsx`** — Replaced 2× `<p>` + 1× `<label>` with `<Text>` + `<Label>` (Rule 31).
+- **`src/lib/monitoring/cache-metrics.ts`** — Replaced `new Date().toISOString()` → `nowISO()`, `Date.now()` → `nowMs()`, `.toFixed(2)` → `formatNumber(..., { decimals: 2 })`, `.toLocaleString()` → `formatDateTime()` (Rule 5).
+- **`src/components/seller/SellerPayoutHistoryTable.tsx`** — Fixed barrel import; replaced `<h2>` + 3× `<p>` with typography primitives; replaced raw `<table>` with `<DataTable columns>` (Rules 2, 7, 31, 32).
+- **`src/features/seller/components/SellerOrdersView.tsx`** — Replaced 2× `<p>` with `<Text>`; replaced `overflow-x-auto` custom tab row with `<Tabs>` + `<TabsList>` + `<TabsTrigger>` compound components (Rules 7, 31, 32).
+- **`src/features/auth/components/LoginForm.tsx`** — Replaced `<p>` + `<label>` with `<Text>` + `<Label>` (Rule 31).
+- **`src/features/auth/components/RegisterForm.tsx`** — Replaced `<p>` + `<label>` with `<Text>` + `<Label>` (Rule 31).
+- **`src/app/global-error.tsx`** — Replaced `new Date().toISOString()` → `nowISO()`; replaced `<h1>` + `<p>` with `<Heading level={1}>` + `<Text variant="secondary">` (Rules 5, 7, 31).
+- **`src/components/promotions/ProductSection.tsx`** — Replaced `<h2>` + `<p>` with `<Heading level={2}>` + `<Text variant="secondary">` (Rule 31).
+- **`src/features/events/components/EventTypeConfig/SurveyConfigForm.tsx`** — Replaced 2× `<label>` with `<Label>` (Rule 31).
+
+#### Added (tests)
+
+- `src/components/promotions/__tests__/ProductSection.test.tsx` — render, empty-guard, and typography slot tests.
+- `src/components/seller/__tests__/SellerPayoutHistoryTable.test.tsx` — heading render, loading/empty/data states, DataTable delegation.
+- `src/features/events/components/EventTypeConfig/__tests__/SurveyConfigForm.test.tsx` — label renders, checkbox onChange handlers, SurveyFieldBuilder delegation.
+- `src/app/__tests__/global-error.test.tsx` — Heading + Text rendering, retry button, nowISO usage in logger.error.
+- `src/lib/monitoring/__tests__/cache-metrics.test.ts` — formatNumber/formatDateTime/nowISO call verification.
+- `src/components/user/profile/__tests__/PublicProfileView.test.tsx` — heading render, member-since text, formatNumber for rating.
+
+---
+
 ### Refactor Audit Wave 1 — Tier 1 Primitives (2026-03-01)
 
 #### Changed

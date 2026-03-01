@@ -6,6 +6,8 @@ import {
   ProductGrid,
   ProductSortBar,
   Pagination,
+  Heading,
+  Text,
   PRODUCT_SORT_VALUES,
   Spinner,
   FilterDrawer,
@@ -88,9 +90,9 @@ export function CategoryProductsView({ slug }: Props) {
       <div
         className={`max-w-7xl mx-auto px-4 py-20 text-center ${spacing.stack}`}
       >
-        <p className={`text-lg font-medium ${themed.textPrimary}`}>
+        <Text size="lg" weight="medium">
           {t("noCategories")}
-        </p>
+        </Text>
         <Link
           href={ROUTES.PUBLIC.CATEGORIES}
           className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
@@ -123,13 +125,11 @@ export function CategoryProductsView({ slug }: Props) {
           <span className="text-4xl">{category.display.icon}</span>
         )}
         <div>
-          <h1 className={`${typography.h2} ${themed.textPrimary}`}>
-            {category.name}
-          </h1>
+          <Heading level={1}>{category.name}</Heading>
           {category.description && (
-            <p className={`mt-1 ${themed.textSecondary}`}>
+            <Text variant="secondary" className="mt-1">
               {category.description}
-            </p>
+            </Text>
           )}
         </div>
       </div>
@@ -168,9 +168,9 @@ export function CategoryProductsView({ slug }: Props) {
         <ProductGrid products={[]} loading skeletonCount={PAGE_SIZE} />
       ) : products.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className={`text-lg font-medium ${themed.textPrimary}`}>
+          <Text size="lg" weight="medium">
             {t("noProductsIn", { name: category.name })}
-          </p>
+          </Text>
           <Link
             href={ROUTES.PUBLIC.CATEGORIES}
             className="mt-3 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"

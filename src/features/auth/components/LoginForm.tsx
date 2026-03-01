@@ -10,7 +10,15 @@
 import { useState, FormEvent, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Input, Button, Alert, Spinner, Checkbox } from "@/components";
+import {
+  Input,
+  Button,
+  Alert,
+  Spinner,
+  Checkbox,
+  Text,
+  Label,
+} from "@/components";
 import { ERROR_MESSAGES, ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useAuth, useLogin, useGoogleLogin, useAppleLogin } from "@/hooks";
@@ -97,7 +105,10 @@ export function LoginForm() {
           >
             {t("login.title")}
           </h1>
-          <p className={`mt-2 text-center text-sm ${themed.textSecondary}`}>
+          <Text
+            size="sm"
+            className={`mt-2 text-center ${themed.textSecondary}`}
+          >
             {t("login.or")}{" "}
             <Link
               href={ROUTES.AUTH.REGISTER}
@@ -105,7 +116,7 @@ export function LoginForm() {
             >
               {t("login.createAccountLink")}
             </Link>
-          </p>
+          </Text>
         </div>
 
         {/* Error Alert */}
@@ -155,12 +166,12 @@ export function LoginForm() {
                   setFormData({ ...formData, rememberMe: e.target.checked })
                 }
               />
-              <label
+              <Label
                 htmlFor="remember-me"
                 className={`ml-2 block text-sm ${themed.textPrimary}`}
               >
                 {t("login.rememberMe")}
-              </label>
+              </Label>
             </div>
             <div className="text-sm">
               <Link

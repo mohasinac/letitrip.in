@@ -7,6 +7,7 @@
 import { CacheManager } from "@/classes";
 import { trackEvent } from "./analytics";
 import { logger } from "@/classes";
+import { nowISO, nowMs, formatNumber, formatDateTime } from "@/utils";
 
 /**
  * Cache metrics storage
@@ -32,7 +33,7 @@ export const getCacheMetrics = (): CacheMetrics => {
       misses: 0,
       totalRequests: 0,
       hitRate: 0,
-      lastReset: new Date().toISOString(),
+      lastReset: nowISO(),
     };
   }
 
@@ -46,7 +47,7 @@ export const getCacheMetrics = (): CacheMetrics => {
 
     // Reset metrics after interval
     const lastReset = new Date(metrics.lastReset).getTime();
-    const now = Date.now();
+    const now = nowMs();
     if (now - lastReset > METRICS_RESET_INTERVAL) {
       return initializeCacheMetrics();
     }
@@ -66,7 +67,7 @@ const initializeCacheMetrics = (): CacheMetrics => {
     misses: 0,
     totalRequests: 0,
     hitRate: 0,
-    lastReset: new Date().toISOString(),
+    lastReset: nowISO(),
   };
 
   if (typeof window !== "undefined") {
@@ -180,12 +181,12 @@ export const getCacheDashboardData = () => {
   const stats = getCacheStatistics();
 
   return {
-    hitRate: `${stats.metrics.hitRate.toFixed(2)}%`,
+    hitRate: `${formatNumber(stats.metrics.hitRate, "en-US", { decimals: 2 })}%`,
     hits: stats.metrics.hits,
     misses: stats.metrics.misses,
     totalRequests: stats.metrics.totalRequests,
     cacheSize: stats.cacheSize,
-    lastReset: new Date(stats.metrics.lastReset).toLocaleString(),
+    lastReset: formatDateTime(stats.metrics.lastReset),
     status: stats.metrics.hitRate >= 70 ? "healthy" : "warning",
     recommendation:
       stats.metrics.hitRate < 70
@@ -202,14 +203,18 @@ export const monitorCachePerformance = (): void => {
   const hitRate = getCacheHitRate();
 
   if (hitRate < 50 && hitRate > 0) {
-    logger.warn(`Cache hit rate is critically low: ${hitRate.toFixed(2)}%`);
+    logger.warn(
+      `Cache hit rate is critically low: ${formatNumber(hitRate, "en-US", { decimals: 2 })}%`,
+    );
 
     trackEvent("cache_performance_alert", {
       hit_rate: hitRate,
       severity: "high",
     });
   } else if (hitRate < 70 && hitRate > 0) {
-    logger.warn(`Cache hit rate is below optimal: ${hitRate.toFixed(2)}%`);
+    logger.warn(
+      `Cache hit rate is below optimal: ${formatNumber(hitRate, "en-US", { decimals: 2 })}%`,
+    );
 
     trackEvent("cache_performance_alert", {
       hit_rate: hitRate,

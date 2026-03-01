@@ -24,7 +24,7 @@ import {
   TablePagination,
 } from "@/components";
 import { useToast } from "@/components";
-import { Modal, ConfirmDeleteModal } from "@/components";
+import { Modal, ConfirmDeleteModal, Label, Text } from "@/components";
 import type { Review, ReviewStatus } from "@/components";
 
 interface AdminReviewsViewProps {
@@ -224,11 +224,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
       <Card>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mb-4">
           <div>
-            <label
-              className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
-            >
-              {tTable("status")}
-            </label>
+            <Label className="mb-2">{tTable("status")}</Label>
             <select
               value={statusFilter}
               onChange={(e) =>
@@ -244,11 +240,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
           </div>
 
           <div>
-            <label
-              className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
-            >
-              {t("rating")}
-            </label>
+            <Label className="mb-2">{t("rating")}</Label>
             <select
               value={ratingFilter}
               onChange={(e) => table.set("rating", e.target.value)}
@@ -264,11 +256,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
           </div>
 
           <div>
-            <label
-              className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
-            >
-              {tActions("search")}
-            </label>
+            <Label className="mb-2">{tActions("search")}</Label>
             <input
               type="text"
               value={searchTerm}
@@ -287,7 +275,9 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
       ) : error ? (
         <Card>
           <div className="text-center py-8">
-            <p className="text-red-600 mb-4">{error.message}</p>
+            <Text variant="error" className="mb-4">
+              {error.message}
+            </Text>
             <Button onClick={() => refetch()}>{tActions("retry")}</Button>
           </div>
         </Card>

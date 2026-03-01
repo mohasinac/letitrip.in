@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components";
+import { Button, Label } from "@/components";
 import { useTranslations } from "next-intl";
 import type { PollConfig } from "@/db/schema";
 
@@ -44,7 +44,7 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <label className="text-sm font-medium">Poll Options</label>
+        <Label>Poll Options</Label>
         {options.map((opt, idx) => (
           <div key={opt.id} className="flex items-center gap-2">
             <div className="flex-1">
@@ -79,9 +79,7 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
           onChange={(e) => setField("allowMultiSelect", e.target.checked)}
           className="h-4 w-4 rounded border-gray-300"
         />
-        <label htmlFor="allowMultiSelect" className="text-sm">
-          Allow multiple selections
-        </label>
+        <Label htmlFor="allowMultiSelect">Allow multiple selections</Label>
       </div>
       <div className="flex items-center gap-2">
         <input
@@ -91,14 +89,10 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
           onChange={(e) => setField("allowComment", e.target.checked)}
           className="h-4 w-4 rounded border-gray-300"
         />
-        <label htmlFor="allowComment" className="text-sm">
-          Allow comments
-        </label>
+        <Label htmlFor="allowComment">Allow comments</Label>
       </div>
       <div>
-        <label className="text-sm font-medium block mb-1">
-          Results Visibility
-        </label>
+        <Label className="mb-1">Results Visibility</Label>
         <select
           value={value.resultsVisibility ?? "always"}
           onChange={(e) =>

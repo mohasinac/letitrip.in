@@ -44,6 +44,8 @@ jest.mock("@/hooks", () => ({
 jest.mock("@/utils", () => ({
   formatRelativeTime: () => "0",
   formatDate: () => "0",
+  nowMs: () => Date.now(),
+  isFuture: () => true,
 }));
 
 jest.mock("@/components/feedback/Toast", () => ({

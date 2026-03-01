@@ -17,6 +17,17 @@ jest.mock("@/hooks", () => ({
 }));
 jest.mock("@/utils", () => ({
   formatRelativeTime: () => "2 days ago",
+  formatNumber: (n: number) => n.toString(),
+}));
+jest.mock("@/components", () => ({
+  Heading: ({ children, level, className }: any) =>
+    React.createElement(`h${level}`, { className }, children),
+  Text: ({ children, className }: any) => (
+    <span className={className}>{children}</span>
+  ),
+  HorizontalScroller: ({ children, className }: any) => (
+    <div className={className}>{children}</div>
+  ),
 }));
 
 import { useProductReviews } from "@/hooks";

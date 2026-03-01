@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { SideDrawer, Button, FormField, Alert } from "@/components";
+import {
+  SideDrawer,
+  Button,
+  FormField,
+  Alert,
+  Label,
+  Text,
+} from "@/components";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useMessage } from "@/hooks";
@@ -278,7 +285,7 @@ export function EventFormDrawer({
 
         {/* Type selector */}
         <div>
-          <label className="block text-sm font-medium mb-1">Event Type</label>
+          <Label className="mb-1">Event Type</Label>
           <select
             value={form.type}
             onChange={(e) => set("type", e.target.value as EventType)}
@@ -292,16 +299,16 @@ export function EventFormDrawer({
             ))}
           </select>
           {isEdit && (
-            <p className="text-xs text-gray-500 mt-1">
+            <Text size="xs" variant="secondary" className="mt-1">
               Event type cannot be changed after creation.
-            </p>
+            </Text>
           )}
         </div>
 
         {/* Dates */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Starts At</label>
+            <Label className="mb-1">Starts At</Label>
             <input
               type="datetime-local"
               value={form.startsAt}
@@ -310,7 +317,7 @@ export function EventFormDrawer({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Ends At</label>
+            <Label className="mb-1">Ends At</Label>
             <input
               type="datetime-local"
               value={form.endsAt}
@@ -330,9 +337,7 @@ export function EventFormDrawer({
         />
 
         <div>
-          <label className="block text-sm font-medium mb-1">
-            Banner Image URL
-          </label>
+          <Label className="mb-1">Banner Image URL</Label>
           <input
             type="url"
             value={form.bannerImageUrl}
@@ -344,9 +349,9 @@ export function EventFormDrawer({
 
         {/* Separator */}
         <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-          <p className="text-sm font-semibold mb-3 capitalize">
+          <Text weight="semibold" size="sm" className="mb-3 capitalize">
             {form.type} Configuration
-          </p>
+          </Text>
           {typeConfigNode()}
         </div>
       </div>

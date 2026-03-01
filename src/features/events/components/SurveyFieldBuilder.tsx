@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components";
+import { Button, Label, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import { FORM_FIELD_TYPE_VALUES } from "../constants/FORM_FIELD_TYPE_OPTIONS";
 import type { SurveyFormField, FormFieldType } from "@/db/schema";
@@ -50,16 +50,16 @@ export function SurveyFieldBuilder({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium">Form Fields</label>
+        <Label>Form Fields</Label>
         <Button variant="outline" size="sm" onClick={addField} type="button">
           {t("addField")}
         </Button>
       </div>
 
       {fields.length === 0 && (
-        <p className="text-sm text-gray-500 italic">
+        <Text size="sm" variant="muted" className="italic">
           No fields yet. Add one above.
-        </p>
+        </Text>
       )}
 
       {fields.map((field, idx) => (
@@ -69,9 +69,7 @@ export function SurveyFieldBuilder({
         >
           <div className="flex items-center gap-2">
             <div className="flex-1">
-              <label className="block text-xs text-gray-500 mb-0.5">
-                Label
-              </label>
+              <Label className="mb-0.5">Label</Label>
               <input
                 type="text"
                 value={field.label}
@@ -105,9 +103,7 @@ export function SurveyFieldBuilder({
             field.type === "multiselect" ||
             field.type === "radio") && (
             <div>
-              <label className="block text-xs text-gray-500 mb-0.5">
-                Options (comma-separated)
-              </label>
+              <Label className="mb-0.5">Options (comma-separated)</Label>
               <input
                 type="text"
                 value={(field.options ?? []).join(", ")}
@@ -126,7 +122,7 @@ export function SurveyFieldBuilder({
           )}
 
           <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
+            <Label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={field.required ?? false}
@@ -136,7 +132,7 @@ export function SurveyFieldBuilder({
                 className="h-4 w-4 rounded border-gray-300"
               />
               Required
-            </label>
+            </Label>
             <div className="flex gap-1">
               <Button
                 variant="ghost"

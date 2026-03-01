@@ -1,10 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { Card, Badge, Text, AvatarDisplay, EmptyState } from "@/components";
+import {
+  Card,
+  Badge,
+  Text,
+  AvatarDisplay,
+  EmptyState,
+  Heading,
+} from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { formatCurrency } from "@/utils";
+import { formatCurrency, formatNumber } from "@/utils";
 import type { UserDocument, ProductDocument } from "@/db/schema";
 import type { ImageCropData } from "@/components";
 import type { SellerReviewsData, ProductsApiResponse } from "@/hooks";
@@ -55,9 +62,9 @@ function SellerProductsSection({
   const tProfile = useTranslations("profile");
   return (
     <Card className="mb-6">
-      <h2 className={`${THEME_CONSTANTS.typography.h4} mb-4`}>
+      <Heading level={2} className="mb-4">
         {tProfile("sellerProductsTitle")}
-      </h2>
+      </Heading>
       {productsLoading ? (
         <div className="flex justify-center py-8">
           <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
@@ -121,16 +128,16 @@ function SellerReviewsSection({
   return (
     <Card className="mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className={THEME_CONSTANTS.typography.h4}>
-          {tProfile("sellerReviewsTitle")}
-        </h2>
+        <Heading level={2}>{tProfile("sellerReviewsTitle")}</Heading>
         {reviewsData && reviewsData.totalReviews > 0 && (
           <div className="flex items-center gap-2">
             <div className="flex items-center">
               <StarIcons rating={reviewsData.averageRating} />
             </div>
             <Text className="text-sm font-semibold">
-              {reviewsData.averageRating.toFixed(1)}
+              {formatNumber(reviewsData.averageRating, "en-US", {
+                decimals: 1,
+              })}
             </Text>
             <Text variant="secondary" className="text-xs">
               ({reviewsData.totalReviews})
@@ -227,7 +234,9 @@ export function PublicProfileView({
               />
             </div>
 
-            <h1 className="text-3xl font-bold mb-2">{profileName}</h1>
+            <Heading level={1} className="mb-2">
+              {profileName}
+            </Heading>
             <Badge
               variant={
                 user.role === "admin"
@@ -427,7 +436,7 @@ export function PublicProfileView({
                 <StarIcons rating={Math.floor(user.stats.rating)} />
               </div>
               <Text className="font-semibold">
-                {user.stats.rating.toFixed(1)}
+                {formatNumber(user.stats.rating, "en-US", { decimals: 1 })}
               </Text>
               <Text variant="secondary" className="text-sm">
                 ({user.stats.reviewsCount}{" "}

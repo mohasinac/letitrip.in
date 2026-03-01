@@ -1,11 +1,11 @@
 "use client";
 
-import { Card, Badge } from "@/components/ui";
+import { Card, Badge, Heading, Text, DataTable } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 
-const { themed, spacing, typography } = THEME_CONSTANTS;
+const { themed, spacing } = THEME_CONSTANTS;
 
 export interface PayoutRecord {
   id: string;
@@ -46,81 +46,72 @@ export function SellerPayoutHistoryTable({
     completed: t("statusCompleted"),
     failed: t("statusFailed"),
   };
-  const TABLE_HEADERS = [
-    t("grossAmount"),
-    t("platformFeeLabel"),
-    t("netAmount"),
-    t("paymentMethodLabel"),
-    t("status"),
-    t("requested"),
+
+  const columns = [
+    {
+      key: "grossAmount" as const,
+      header: t("grossAmount"),
+      render: (p: PayoutRecord) => formatCurrency(p.grossAmount),
+    },
+    {
+      key: "platformFee" as const,
+      header: t("platformFeeLabel"),
+      render: (p: PayoutRecord) => formatCurrency(p.platformFee),
+    },
+    {
+      key: "amount" as const,
+      header: t("netAmount"),
+      render: (p: PayoutRecord) => (
+        <Text weight="semibold">{formatCurrency(p.amount)}</Text>
+      ),
+    },
+    {
+      key: "paymentMethod" as const,
+      header: t("paymentMethodLabel"),
+      render: (p: PayoutRecord) =>
+        p.paymentMethod === "bank_transfer"
+          ? t("paymentMethodBank")
+          : t("paymentMethodUpi"),
+    },
+    {
+      key: "status" as const,
+      header: t("status"),
+      render: (p: PayoutRecord) => (
+        <Badge variant={STATUS_VARIANT[p.status]}>
+          {STATUS_LABEL[p.status]}
+        </Badge>
+      ),
+    },
+    {
+      key: "requestedAt" as const,
+      header: t("requested"),
+      render: (p: PayoutRecord) => formatDate(new Date(p.requestedAt)),
+    },
   ];
   return (
     <div>
-      <h2 className={`${typography.h3} ${themed.textPrimary} mb-4`}>
+      <Heading level={2} className="mb-4">
         {t("historyTitle")}
-      </h2>
+      </Heading>
 
       {isLoading ? (
-        <p className={themed.textSecondary}>{t("loading")}</p>
+        <Text variant="secondary">{t("loading")}</Text>
       ) : payouts.length === 0 ? (
         <Card className={`${spacing.padding.lg} text-center`}>
-          <p className={`${themed.textSecondary} font-medium`}>
+          <Text variant="secondary" weight="medium">
             {t("noPayouts")}
-          </p>
-          <p className={`text-sm ${themed.textSecondary} mt-1`}>
+          </Text>
+          <Text size="sm" variant="secondary" className="mt-1">
             {t("noPayoutsDesc")}
-          </p>
+          </Text>
         </Card>
       ) : (
-        <div className={`overflow-x-auto rounded-xl border ${themed.border}`}>
-          <table className="w-full text-sm">
-            <thead className={themed.bgSecondary}>
-              <tr>
-                {TABLE_HEADERS.map((h) => (
-                  <th
-                    key={h}
-                    className={`px-4 py-3 text-left font-medium ${themed.textSecondary}`}
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {payouts.map((p) => (
-                <tr
-                  key={p.id}
-                  className={`${themed.bgPrimary} hover:${themed.bgSecondary}`}
-                >
-                  <td className={`px-4 py-3 ${themed.textPrimary}`}>
-                    {formatCurrency(p.grossAmount)}
-                  </td>
-                  <td className={`px-4 py-3 ${themed.textSecondary}`}>
-                    {formatCurrency(p.platformFee)}
-                  </td>
-                  <td
-                    className={`px-4 py-3 font-semibold ${themed.textPrimary}`}
-                  >
-                    {formatCurrency(p.amount)}
-                  </td>
-                  <td className={`px-4 py-3 ${themed.textSecondary}`}>
-                    {p.paymentMethod === "bank_transfer"
-                      ? t("paymentMethodBank")
-                      : t("paymentMethodUpi")}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={STATUS_VARIANT[p.status]}>
-                      {STATUS_LABEL[p.status]}
-                    </Badge>
-                  </td>
-                  <td className={`px-4 py-3 ${themed.textSecondary}`}>
-                    {formatDate(new Date(p.requestedAt))}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          columns={columns}
+          data={payouts}
+          loading={isLoading}
+          keyExtractor={(p) => p.id}
+        />
       )}
     </div>
   );

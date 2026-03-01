@@ -1,5 +1,6 @@
 "use client";
 
+import { Label } from "@/components";
 import { SurveyFieldBuilder } from "../SurveyFieldBuilder";
 import type { SurveyConfig } from "@/db/schema";
 
@@ -21,9 +22,7 @@ export function SurveyConfigForm({ value, onChange }: SurveyConfigFormProps) {
           }
           className="h-4 w-4 rounded border-gray-300"
         />
-        <label htmlFor="entryReview" className="text-sm">
-          Require admin review for each entry
-        </label>
+        <Label htmlFor="entryReview">Require admin review for each entry</Label>
       </div>
       <div className="flex items-center gap-2">
         <input
@@ -35,9 +34,7 @@ export function SurveyConfigForm({ value, onChange }: SurveyConfigFormProps) {
           }
           className="h-4 w-4 rounded border-gray-300"
         />
-        <label htmlFor="hasLeaderboard" className="text-sm">
-          Enable leaderboard
-        </label>
+        <Label htmlFor="hasLeaderboard">Enable leaderboard</Label>
       </div>
       <SurveyFieldBuilder
         fields={value.formFields ?? []}

@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useMessage, useAuth } from "@/hooks";
+import { Text, Label } from "@/components";
 import { usePollVote } from "../hooks/usePollVote";
 import type { PollConfig } from "@/db/schema";
 
@@ -60,9 +61,13 @@ export function PollVotingSection({
   if (voted) {
     return (
       <div className="space-y-4">
-        <p className="text-sm font-medium text-green-600 dark:text-green-400">
+        <Text
+          size="sm"
+          weight="medium"
+          className="text-green-600 dark:text-green-400"
+        >
           ✓ {tEvents("alreadyVoted")}
-        </p>
+        </Text>
         <div className="space-y-2">
           {pollConfig.options.map((opt) => {
             const isSelected =
@@ -92,19 +97,19 @@ export function PollVotingSection({
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-500">
+      <Text size="sm" variant="secondary">
         {pollConfig.allowMultiSelect
           ? "Select all that apply"
           : "Select one option"}
-      </p>
+      </Text>
 
       <div className="space-y-2">
         {pollConfig.options.map((opt) => {
           const isChecked = selected.includes(opt.id);
           return (
-            <label
+            <Label
               key={opt.id}
-              className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+              className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors mb-0 ${
                 isChecked
                   ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
                   : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
@@ -117,7 +122,7 @@ export function PollVotingSection({
                 className="h-4 w-4"
               />
               <span className="text-sm">{opt.label}</span>
-            </label>
+            </Label>
           );
         })}
       </div>

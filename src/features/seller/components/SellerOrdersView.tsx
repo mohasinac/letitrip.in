@@ -16,6 +16,9 @@ import {
   AdminPageHeader,
   TablePagination,
   Text,
+  Tabs,
+  TabsList,
+  TabsTrigger,
   useOrderTableColumns,
 } from "@/components";
 import { useAuth, useUrlTable } from "@/hooks";
@@ -110,7 +113,9 @@ function SellerOrdersContent() {
             ] as const
           ).map(({ label, count, color }) => (
             <Card key={label} className="p-4 text-center">
-              <p className={`text-2xl font-bold ${color}`}>{count}</p>
+              <Text weight="bold" className={`text-2xl ${color}`}>
+                {count}
+              </Text>
               <Text size="sm" className={themed.textSecondary}>
                 {label}
               </Text>
@@ -119,24 +124,15 @@ function SellerOrdersContent() {
         </div>
       )}
 
-      {/* Status Filter Tabs */}
-      <div
-        className={`flex gap-1 overflow-x-auto border-b ${themed.borderColor} pb-0`}
-      >
-        {STATUS_TABS.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => table.set("status", tab.key)}
-            className={`px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-              statusFilter === tab.key
-                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400"
-                : THEME_CONSTANTS.tab.inactive
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <Tabs value={statusFilter} onChange={(id) => table.set("status", id)}>
+        <TabsList>
+          {STATUS_TABS.map((tab) => (
+            <TabsTrigger key={tab.key} value={tab.key}>
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       {/* Orders Table */}
       <DataTable<OrderDocument>
@@ -169,11 +165,14 @@ function SellerOrdersContent() {
                 ? t("revenueFiltered", { status: statusFilter })
                 : t("revenueThisPage")}
             </Text>
-            <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+            <Text
+              weight="bold"
+              className="text-2xl text-indigo-600 dark:text-indigo-400"
+            >
               {formatCurrency(
                 orders.reduce((sum, o) => sum + (o.totalPrice ?? 0), 0),
               )}
-            </p>
+            </Text>
           </div>
         </Card>
       )}

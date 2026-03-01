@@ -15,6 +15,8 @@ import {
   Spinner,
   FormField,
   PasswordStrengthIndicator,
+  Text,
+  Label,
 } from "@/components";
 import {
   ERROR_MESSAGES,
@@ -159,7 +161,10 @@ export function RegisterForm() {
           >
             {t("register.title")}
           </h1>
-          <p className={`mt-2 text-center text-sm ${themed.textSecondary}`}>
+          <Text
+            size="sm"
+            className={`mt-2 text-center ${themed.textSecondary}`}
+          >
             {t("register.or")}{" "}
             <Link
               href={ROUTES.AUTH.LOGIN}
@@ -167,7 +172,7 @@ export function RegisterForm() {
             >
               {t("register.signInLink")}
             </Link>
-          </p>
+          </Text>
         </div>
 
         {/* Alert Messages */}
@@ -256,7 +261,7 @@ export function RegisterForm() {
                   setFormData({ ...formData, acceptTerms: e.target.checked })
                 }
               />
-              <label
+              <Label
                 htmlFor="acceptTerms"
                 className={`ml-2 text-sm ${themed.textSecondary}`}
               >
@@ -274,7 +279,7 @@ export function RegisterForm() {
                 >
                   {t("register.privacyPolicy")}
                 </Link>
-              </label>
+              </Label>
             </div>
           </div>
 

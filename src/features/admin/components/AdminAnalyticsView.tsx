@@ -9,7 +9,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { AdminPageHeader } from "@/components";
+import { AdminPageHeader, Heading, Text } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useAdminAnalytics } from "@/features/admin/hooks";
@@ -95,12 +95,17 @@ function StatCard({
       className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-5 flex items-center justify-between`}
     >
       <div>
-        <p
-          className={`text-sm font-medium ${themed.textSecondary} uppercase tracking-wide`}
+        <Text
+          size="sm"
+          weight="medium"
+          variant="secondary"
+          className="uppercase tracking-wide"
         >
           {label}
-        </p>
-        <p className={`mt-1 text-2xl font-bold ${colorClass}`}>{value}</p>
+        </Text>
+        <Text weight="bold" className={`text-2xl mt-1 ${colorClass}`}>
+          {value}
+        </Text>
       </div>
       <span className="text-3xl" aria-hidden>
         {icon}
@@ -162,9 +167,7 @@ export function AdminAnalyticsView() {
           <div
             className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-6 ${spacing.stack}`}
           >
-            <h2 className={`${typography.h4} ${themed.textPrimary}`}>
-              {t("revenueChartTitle")}
-            </h2>
+            <Heading level={2}>{t("revenueChartTitle")}</Heading>
             <div className={THEME_CONSTANTS.chart.heightMd}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={ordersByMonth}>
@@ -215,9 +218,7 @@ export function AdminAnalyticsView() {
           <div
             className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-6 ${spacing.stack}`}
           >
-            <h2 className={`${typography.h4} ${themed.textPrimary}`}>
-              {t("ordersChartTitle")}
-            </h2>
+            <Heading level={2}>{t("ordersChartTitle")}</Heading>
             <div className={THEME_CONSTANTS.chart.height}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={ordersByMonth}>
@@ -245,9 +246,7 @@ export function AdminAnalyticsView() {
             <div
               className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-6 ${spacing.stack}`}
             >
-              <h2 className={`${typography.h4} ${themed.textPrimary}`}>
-                {t("topProductsTitle")}
-              </h2>
+              <Heading level={2}>{t("topProductsTitle")}</Heading>
               <div className="divide-y divide-gray-100 dark:divide-gray-800">
                 {topProducts.map((p, i) => (
                   <div
@@ -260,14 +259,12 @@ export function AdminAnalyticsView() {
                       {i + 1}.
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p
-                        className={`text-sm font-medium ${themed.textPrimary} truncate`}
-                      >
+                      <Text size="sm" weight="medium" className="truncate">
                         {p.title}
-                      </p>
-                      <p className={`text-xs ${themed.textSecondary}`}>
+                      </Text>
+                      <Text size="xs" variant="secondary">
                         {p.orders} {t("ordersLabel")}
-                      </p>
+                      </Text>
                     </div>
                     <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                       {formatCurrency(p.revenue)}

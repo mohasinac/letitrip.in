@@ -11,7 +11,17 @@ import {
   ERROR_MESSAGES,
   THEME_CONSTANTS,
 } from "@/constants";
-import { Card, Spinner, Alert, FormField, Button, Input } from "@/components";
+import {
+  Card,
+  Spinner,
+  Alert,
+  FormField,
+  Button,
+  Input,
+  Heading,
+  Label,
+  Text,
+} from "@/components";
 import { formatDate } from "@/utils";
 import type { EventDocument, SurveyFormField } from "@/db/schema";
 
@@ -19,7 +29,7 @@ interface EventParticipateViewProps {
   id: string;
 }
 
-const { themed, spacing, typography } = THEME_CONSTANTS;
+const { themed, spacing } = THEME_CONSTANTS;
 
 export function EventParticipateView({ id }: EventParticipateViewProps) {
   const router = useRouter();
@@ -73,10 +83,10 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
   if (submitted) {
     return (
       <Card className="max-w-lg mx-auto p-8 text-center">
-        <h2 className={`${typography.h3} ${themed.textPrimary} mb-2`}>
+        <Heading level={2} className="mb-2">
           {t("thankYouTitle")}
-        </h2>
-        <p className={themed.textSecondary}>{t("thankYouDesc")}</p>
+        </Heading>
+        <Text variant="secondary">{t("thankYouDesc")}</Text>
       </Card>
     );
   }
@@ -139,13 +149,10 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
     if (field.type === "rating") {
       return (
         <div key={field.id} className="mb-4">
-          <label
-            htmlFor={`field-${field.id}`}
-            className={`block text-sm font-medium ${themed.textSecondary} mb-1`}
-          >
+          <Label htmlFor={`field-${field.id}`} className="mb-1">
             {field.label}
             {field.required && <span className="text-red-500 ml-1">*</span>}
-          </label>
+          </Label>
           <Input
             id={`field-${field.id}`}
             name={field.id}
@@ -163,13 +170,10 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
     if (field.type === "date") {
       return (
         <div key={field.id} className="mb-4">
-          <label
-            htmlFor={`field-${field.id}`}
-            className={`block text-sm font-medium ${themed.textSecondary} mb-1`}
-          >
+          <Label htmlFor={`field-${field.id}`} className="mb-1">
             {field.label}
             {field.required && <span className="text-red-500 ml-1">*</span>}
-          </label>
+          </Label>
           <Input
             id={`field-${field.id}`}
             name={field.id}
@@ -199,15 +203,15 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
   return (
     <div className={`max-w-2xl mx-auto ${spacing.stack}`}>
       <div>
-        <h1 className={`${typography.h2} ${themed.textPrimary}`}>
-          {event.title}
-        </h1>
+        <Heading level={1}>{event.title}</Heading>
         {event.endsAt && (
-          <p className={`text-sm mt-1 ${themed.textSecondary}`}>
+          <Text size="sm" variant="secondary" className="mt-1">
             {t("endsIn")}: {formatDate(event.endsAt as unknown as string)}
-          </p>
+          </Text>
         )}
-        <p className={`mt-2 ${themed.textSecondary}`}>{event.description}</p>
+        <Text variant="secondary" className="mt-2">
+          {event.description}
+        </Text>
       </div>
 
       <Card className="p-6 space-y-5">

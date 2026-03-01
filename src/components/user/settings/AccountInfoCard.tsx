@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Text } from "@/components";
+import { Card, Text, Heading } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 
@@ -35,7 +35,7 @@ export function AccountInfoCard({
   lastLoginAt,
   className = "",
 }: AccountInfoCardProps) {
-  const { spacing, typography, themed } = THEME_CONSTANTS;
+  const { spacing, themed } = THEME_CONSTANTS;
 
   const formatDateValue = (date: Date | string | null | undefined) => {
     if (!date) return "Never";
@@ -45,39 +45,47 @@ export function AccountInfoCard({
   return (
     <Card className={`${spacing.cardPadding} ${className}`}>
       <div className={spacing.stack}>
-        <h3 className={typography.cardTitle}>Account Information</h3>
+        <Heading level={3}>Account Information</Heading>
 
         <div className={`${spacing.stackSmall} ${themed.textSecondary}`}>
           {/* Email */}
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <Text size="xs" variant="secondary">
               Email Address
-            </p>
-            <p className="text-sm font-mono mt-1">{email}</p>
+            </Text>
+            <Text size="sm" className="font-mono mt-1">
+              {email}
+            </Text>
           </div>
 
           {/* User ID */}
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <Text size="xs" variant="secondary">
               User ID
-            </p>
-            <p className="text-sm font-mono mt-1 break-all">{uid}</p>
+            </Text>
+            <Text size="sm" className="font-mono mt-1 break-all">
+              {uid}
+            </Text>
           </div>
 
           {/* Account Created */}
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <Text size="xs" variant="secondary">
               Account Created
-            </p>
-            <p className="text-sm mt-1">{formatDateValue(createdAt)}</p>
+            </Text>
+            <Text size="sm" className="mt-1">
+              {formatDateValue(createdAt)}
+            </Text>
           </div>
 
           {/* Last Login */}
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <Text size="xs" variant="secondary">
               Last Login
-            </p>
-            <p className="text-sm mt-1">{formatDateValue(lastLoginAt)}</p>
+            </Text>
+            <Text size="sm" className="mt-1">
+              {formatDateValue(lastLoginAt)}
+            </Text>
           </div>
         </div>
       </div>

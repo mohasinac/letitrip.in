@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Alert } from "@/components";
+import { Alert, Text, Label } from "@/components";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useMessage } from "@/hooks";
@@ -34,8 +34,8 @@ export function FeedbackEventSection({
   if (submitted) {
     return (
       <Alert variant="success">
-        <p className="font-medium">{tEvents("thankYouTitle")}</p>
-        <p className="text-sm">{tEvents("thankYouDesc")}</p>
+        <Text weight="medium">{tEvents("thankYouTitle")}</Text>
+        <Text size="sm">{tEvents("thankYouDesc")}</Text>
       </Alert>
     );
   }
@@ -56,10 +56,10 @@ export function FeedbackEventSection({
     <div className="space-y-4">
       {feedbackConfig.formFields.map((field: SurveyFormField) => (
         <div key={field.id}>
-          <label className="block text-sm font-medium mb-1">
+          <Label className="block mb-1">
             {field.label}
             {field.required && <span className="text-red-500 ml-1">*</span>}
-          </label>
+          </Label>
           {field.type === "textarea" ? (
             <textarea
               value={responses[field.id] ?? ""}

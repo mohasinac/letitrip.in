@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Button } from "@/components/ui";
+import { Card, Button, Heading, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
@@ -42,12 +42,10 @@ export function CouponCard({ coupon }: { coupon: CouponDocument }) {
     <Card className="p-5 border-2 border-dashed border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-600 transition-colors">
       <div className="flex items-start justify-between mb-3">
         <div>
-          <h3 className={`font-semibold ${themed.textPrimary} text-base`}>
-            {coupon.name}
-          </h3>
-          <p className="text-indigo-600 dark:text-indigo-400 font-bold text-lg mt-0.5">
+          <Heading level={3}>{coupon.name}</Heading>
+          <Text className="text-indigo-600 dark:text-indigo-400 font-bold text-lg mt-0.5">
             {getDiscountLabel(coupon)}
-          </p>
+          </Text>
         </div>
         <span className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 px-2 py-0.5 rounded-full text-xs font-medium">
           {t("statusActive")}
@@ -55,15 +53,15 @@ export function CouponCard({ coupon }: { coupon: CouponDocument }) {
       </div>
 
       {coupon.description && (
-        <p className={`text-sm ${themed.textSecondary} mb-3`}>
+        <Text size="sm" variant="secondary" className="mb-3">
           {coupon.description}
-        </p>
+        </Text>
       )}
 
       {coupon.discount.minPurchase && (
-        <p className={`text-xs ${themed.textSecondary} mb-3`}>
+        <Text size="xs" variant="secondary" className="mb-3">
           Min. order: {formatCurrency(coupon.discount.minPurchase)}
-        </p>
+        </Text>
       )}
 
       <div className="flex items-center gap-2">
@@ -82,9 +80,9 @@ export function CouponCard({ coupon }: { coupon: CouponDocument }) {
       </div>
 
       {coupon.validity.endDate && (
-        <p className={`text-xs ${themed.textSecondary} mt-2 text-right`}>
+        <Text size="xs" variant="secondary" className="mt-2 text-right">
           {t("validUntil")} {formatDate(coupon.validity.endDate)}
-        </p>
+        </Text>
       )}
     </Card>
   );

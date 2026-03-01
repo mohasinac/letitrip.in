@@ -1,4 +1,5 @@
 import { ProductCard } from "@/components/products";
+import { Heading, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import type { ProductDocument } from "@/db/schema";
 
@@ -20,8 +21,10 @@ export function ProductSection({
   return (
     <section>
       <div className="mb-6">
-        <h2 className={`${typography.h3} ${themed.textPrimary}`}>{title}</h2>
-        <p className={`mt-1 ${themed.textSecondary}`}>{subtitle}</p>
+        <Heading level={2}>{title}</Heading>
+        <Text variant="secondary" className="mt-1">
+          {subtitle}
+        </Text>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
         {products.map((product) => (
