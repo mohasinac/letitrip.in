@@ -29,3 +29,6 @@ export * from "./blog-posts";
 export * from "./notifications";
 export * from "./payouts";
 export * from "./events";
+export * from "./ripcoins";
+export * from "./chat";
+export * from "./newsletter-subscribers";

@@ -296,6 +296,38 @@ export class UserRepository extends BaseRepository<UserDocument> {
     }
   }
 
+  /**
+   * Atomically adjust RipCoin balance fields.
+   * @param balanceDelta  — positive to credit, negative to debit
+   * @param engagedDelta  — positive to lock more coins, negative to release
+   */
+  async incrementRipCoinBalance(
+    uid: string,
+    balanceDelta: number,
+    engagedDelta: number = 0,
+  ): Promise<void> {
+    try {
+      const updateFields: Record<string, unknown> = {
+        [USER_FIELDS.UPDATED_AT]: FieldValue.serverTimestamp(),
+      };
+      if (balanceDelta !== 0) {
+        updateFields[USER_FIELDS.RIPCOIN_BALANCE] =
+          FieldValue.increment(balanceDelta);
+      }
+      if (engagedDelta !== 0) {
+        updateFields[USER_FIELDS.ENGAGED_RIPCOINS] =
+          FieldValue.increment(engagedDelta);
+      }
+
+      await this.getCollection().doc(uid).update(updateFields);
+    } catch (error) {
+      throw new DatabaseError(
+        `Failed to increment RipCoin balance for user: ${uid}`,
+        error,
+      );
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Sieve-powered list query
   // ---------------------------------------------------------------------------

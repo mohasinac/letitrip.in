@@ -3,10 +3,25 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { THEME_CONSTANTS } from "@/constants";
+import { useRouter } from "next/navigation";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatRelativeTime, formatNumber } from "@/utils";
-import { Heading, Text, HorizontalScroller } from "@/components";
-import { useProductReviews } from "@/hooks";
+import {
+  Heading,
+  Text,
+  Label,
+  Button,
+  Alert,
+  FormField,
+  HorizontalScroller,
+} from "@/components";
+import {
+  useProductReviews,
+  useAuth,
+  useApiMutation,
+  useMessage,
+} from "@/hooks";
+import { reviewService } from "@/services";
 import type { ReviewDocument } from "@/db/schema";
 
 const { themed, borderRadius, rating: ratingTokens } = THEME_CONSTANTS;
@@ -73,13 +88,197 @@ function RatingBar({
   );
 }
 
+// ---------------------------------------------------------------------------
+// Interactive star picker used inside WriteReviewForm
+// ---------------------------------------------------------------------------
+function StarPicker({
+  value,
+  onChange,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  const [hovered, setHovered] = useState(0);
+  return (
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
+          onClick={() => onChange(star)}
+          onMouseEnter={() => setHovered(star)}
+          onMouseLeave={() => setHovered(0)}
+          className="text-2xl transition-colors focus:outline-none"
+        >
+          <span
+            className={
+              star <= (hovered || value)
+                ? "text-amber-400"
+                : "text-gray-300 dark:text-gray-600"
+            }
+          >
+            ★
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// WriteReviewForm — integrated write-review form shown below the heading.
+// Requires auth; 403 → "purchase required", 400 → "already reviewed".
+// ---------------------------------------------------------------------------
+interface WriteReviewFormProps {
+  productId: string;
+  onSuccess: () => void;
+}
+
+function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
+  const t = useTranslations("products");
+  const tActions = useTranslations("actions");
+  const { user } = useAuth();
+  const router = useRouter();
+  const { message, showSuccess, showError } = useMessage();
+
+  const [rating, setRating] = useState(0);
+  const [title, setTitle] = useState("");
+  const [comment, setComment] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+
+  const { mutate, isLoading } = useApiMutation<
+    unknown,
+    {
+      productId: string;
+      rating: number;
+      title: string;
+      comment: string;
+    }
+  >({
+    mutationFn: (data) => reviewService.create(data),
+    onSuccess: () => {
+      setSubmitted(true);
+      showSuccess(t("reviewFormSuccess"));
+      onSuccess();
+    },
+    onError: (err) => {
+      if (err.status === 403) {
+        setFormError(t("reviewFormPurchaseRequired"));
+      } else if (err.status === 400) {
+        setFormError(t("reviewFormAlreadyReviewed"));
+      } else {
+        showError(err.message ?? tActions("retry"));
+      }
+    },
+  });
+
+  if (submitted) {
+    return (
+      <Alert variant="success" className="mb-6">
+        {t("reviewFormSuccess")}
+      </Alert>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div
+        className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 ${themed.bgSecondary} ${borderRadius.xl} mb-6`}
+      >
+        <Text size="sm" variant="secondary">
+          {t("reviewFormLoginRequired")}
+        </Text>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => router.push(ROUTES.AUTH.LOGIN)}
+        >
+          {t("reviewFormSignIn")}
+        </Button>
+      </div>
+    );
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+    if (rating === 0) {
+      setFormError(t("reviewFormRating") + " " + tActions("required"));
+      return;
+    }
+    mutate({ productId, rating, title, comment });
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className={`p-4 sm:p-6 ${themed.bgSecondary} ${borderRadius.xl} mb-6 space-y-4`}
+    >
+      <Heading level={4}>{t("reviewFormTitle")}</Heading>
+
+      {/* Rating picker */}
+      <div>
+        <Label required>{t("reviewFormRating")}</Label>
+        <StarPicker value={rating} onChange={setRating} />
+      </div>
+
+      {/* Title */}
+      <FormField
+        type="text"
+        name="review-title"
+        label={t("reviewFormTitleLabel")}
+        placeholder={t("reviewFormTitlePlaceholder")}
+        value={title}
+        onChange={(v) => setTitle(v)}
+      />
+
+      {/* Comment */}
+      <FormField
+        type="textarea"
+        name="review-comment"
+        label={t("reviewFormComment")}
+        placeholder={t("reviewFormCommentPlaceholder")}
+        value={comment}
+        onChange={(v) => setComment(v)}
+        required
+        rows={4}
+      />
+
+      {/* Form-level error */}
+      {formError && <Alert variant="error">{formError}</Alert>}
+
+      {/* Mutation-level message */}
+      {message && (
+        <Alert variant={message.type === "success" ? "success" : "error"}>
+          {message.text}
+        </Alert>
+      )}
+
+      <Button
+        type="submit"
+        variant="primary"
+        isLoading={isLoading}
+        disabled={isLoading}
+      >
+        {isLoading ? t("reviewFormSubmitting") : t("reviewFormSubmit")}
+      </Button>
+    </form>
+  );
+}
+
 export function ProductReviews({ productId }: ProductReviewsProps) {
   const t = useTranslations("products");
   const tActions = useTranslations("actions");
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  const { data, isLoading } = useProductReviews(productId, page, pageSize);
+  const { data, isLoading, refetch } = useProductReviews(
+    productId,
+    page,
+    pageSize,
+  );
 
   const reviews = data?.data ?? [];
   const meta = data?.meta;
@@ -88,10 +287,19 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
   const dist = meta?.ratingDistribution ?? {};
 
   return (
-    <section>
+    <section id="write-review">
       <Heading level={2} className="mb-4">
         {t("reviewsTitle")}
       </Heading>
+
+      {/* Write-review form */}
+      <WriteReviewForm
+        productId={productId}
+        onSuccess={() => {
+          refetch();
+          setPage(1);
+        }}
+      />
 
       {/* Rating summary */}
       {totalReviews > 0 && (

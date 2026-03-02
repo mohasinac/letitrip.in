@@ -49,4 +49,7 @@ export const sellerService = {
   /** Update the authenticated seller's store profile */
   updateStore: (data: unknown) =>
     apiClient.patch(API_ENDPOINTS.SELLER.STORE, data),
+
+  /** Apply to become a seller — upgrades role from "user" to "seller" with pending status */
+  becomeSeller: () => apiClient.post(API_ENDPOINTS.USER.BECOME_SELLER, {}),
 };

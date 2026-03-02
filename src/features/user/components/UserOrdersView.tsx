@@ -150,7 +150,7 @@ function UserOrdersContent() {
                   </Text>
                 </div>
                 <div
-                  className={`flex items-center ${THEME_CONSTANTS.spacing.gap.md}`}
+                  className={`flex items-center flex-wrap ${THEME_CONSTANTS.spacing.gap.md}`}
                 >
                   <Text className="font-semibold">
                     {formatCurrency(order.totalPrice, order.currency)}
@@ -162,6 +162,19 @@ function UserOrdersContent() {
                       order.status.slice(1)
                     }
                   />
+                  {order.status === "delivered" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        router.push(
+                          `${ROUTES.PUBLIC.PRODUCT_DETAIL(order.productId)}#write-review`,
+                        )
+                      }
+                    >
+                      {tOrders("writeReview")}
+                    </Button>
+                  )}
                   <Button
                     variant="secondary"
                     size="sm"

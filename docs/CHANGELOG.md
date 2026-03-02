@@ -13,6 +13,107 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-03-13] — Firebase Rules Audit & Newsletter Subscriber Feature
+
+### Fixed
+
+- **Rule 17 violation — `CHAT_ROOM_COLLECTION`**: `ChatRoomDocument` interface, `ChatRoomCreateInput` type, and `CHAT_ROOM_COLLECTION` constant were inlined in `src/repositories/chat.repository.ts`. Moved to a proper schema file (`src/db/schema/chat.ts`) and imported from `@/db/schema`. Backward-compatible re-exports preserved.
+
+### Added
+
+- **`src/db/schema/chat.ts`** — Full 6-section schema for the `chatRooms` Firestore collection. Exports `ChatRoomDocument`, `CHAT_ROOM_COLLECTION`, `CHAT_ROOM_INDEXED_FIELDS`, `CHAT_ROOM_FIELDS`, `ChatRoomCreateInput`, `ChatRoomUpdateInput`, `chatRoomQueryHelpers`.
+- **`src/db/schema/newsletter-subscribers.ts`** — Full 6-section schema for the `newsletterSubscribers` Firestore collection. Exports `NewsletterSubscriberDocument`, `NEWSLETTER_SUBSCRIBERS_COLLECTION`, `NEWSLETTER_SUBSCRIBER_INDEXED_FIELDS`, `NEWSLETTER_SUBSCRIBER_FIELDS` (with `STATUS_VALUES`, `SOURCE_VALUES`), `NewsletterSubscriberCreateInput`, `NewsletterSubscriberUpdateInput`, `NewsletterSubscriberSource`, `newsletterSubscriberQueryHelpers`.
+- **`src/repositories/newsletter.repository.ts`** — `NewsletterRepository` extending `BaseRepository`. Methods: `list(model)` (sieve-paginated), `findByEmail(email)`, `subscribe(input)`, `unsubscribe(id)`, `resubscribe(id)`, `updateSubscriber(id, input)`, `deleteById(id)`. Singleton `newsletterRepository` exported.
+- **`src/app/api/newsletter/subscribe/route.ts`** — `POST /api/newsletter/subscribe`. Rate-limited (`RateLimitPresets.STRICT`), validates email + optional source via zod, handles duplicate/re-subscribe gracefully.
+- **`src/app/api/admin/newsletter/route.ts`** — `GET /api/admin/newsletter`. Admin-only (role `admin`); sieve-paginated list with parallel stat counts (total / active / unsubscribed).
+- **`src/app/api/admin/newsletter/[id]/route.ts`** — `PATCH` and `DELETE` for a single subscriber. Admin-only.
+- **`src/services/newsletter.service.ts`** — `newsletterService.subscribe(data)` calling `API_ENDPOINTS.NEWSLETTER.SUBSCRIBE`.
+- **`src/hooks/useNewsletter.ts`** — `useNewsletter()` hook wrapping `newsletterService.subscribe` via `useApiMutation`.
+- **`SUCCESS_MESSAGES.NEWSLETTER.UPDATED`** — New success message constant for admin subscriber update responses.
+
+---
+
+## [2026-03-12] — Review Abuse Prevention & Write-Review Entry Points
+
+### Added
+
+- **Write-review form in `ProductReviews`** — `WriteReviewForm` and `StarPicker` sub-components added to `src/components/products/ProductReviews.tsx`. Renders between the section heading and the rating summary. Shows a sign-in prompt when unauthenticated; shows the star picker + title + comment fields when the user is logged in.
+- **Anchor target** — `<section id="write-review">` on the `ProductReviews` section so `#write-review` URL hash scrolls directly to the form.
+- **"Write a Review" buttons in order views** — `UserOrdersView` and `OrderDetailView` now show a `variant="outline"` `Button` labelled `orders.writeReview` for any order whose `status === "delivered"`. Clicking navigates to `ROUTES.PUBLIC.PRODUCT_DETAIL(order.productId) + "#write-review"`.
+- **Error states in UI** — the form surfaces API 403 (purchase required), API 400 (already reviewed), and generic errors via inline `<Alert variant="error">` messages; uses `useMessage().showError` for generic fallback.
+- **i18n keys** — 13 new keys added to the `products` namespace (`reviewFormTitle`, `reviewFormRating`, `reviewFormTitleLabel`, `reviewFormTitlePlaceholder`, `reviewFormComment`, `reviewFormCommentPlaceholder`, `reviewFormSubmit`, `reviewFormSubmitting`, `reviewFormSuccess`, `reviewFormPurchaseRequired`, `reviewFormAlreadyReviewed`, `reviewFormLoginRequired`, `reviewFormSignIn`) and `orders.writeReview` in `messages/en.json` and `messages/hi.json`.
+
+### Confirmed (Audit)
+
+- **Purchase gate** (`POST /api/reviews`) — already fully enforced via `orderRepository.hasUserPurchased(userId, productId)`. Returns HTTP 403 with `ERROR_MESSAGES.REVIEW.PURCHASE_REQUIRED` when the user has no confirmed/shipped/delivered order for the product. The submitted review automatically receives `verified: true` when the gate passes.
+
+### Tests
+
+- `src/components/products/__tests__/ProductReviews.test.tsx` — rewritten with full mock coverage for `useAuth`, `useApiMutation`, `useMessage`, `reviewService`, `ROUTES`, `next/navigation`. Covers: sign-in prompt, form rendering, star validation, successful submit (refetch + reset), 403 purchase-required error, 400 already-reviewed error. All 12 tests pass.
+
+---
+
+## [2026-03-11] — Become a Seller Feature
+
+### Added
+
+- **Route & API constant** — `ROUTES.USER.BECOME_SELLER = "/user/become-seller"` and `API_ENDPOINTS.USER.BECOME_SELLER = "/api/user/become-seller"` added to `src/constants/routes.ts` and `src/constants/api-endpoints.ts`.
+- **Messages** — `ERROR_MESSAGES.USER.ALREADY_A_SELLER`, `ERROR_MESSAGES.USER.SELLER_APPLICATION_FAILED`, and `SUCCESS_MESSAGES.USER.SELLER_APPLICATION_SUBMITTED` added.
+- **API route** `POST /api/user/become-seller` (`src/app/api/user/become-seller/route.ts`) — authenticates user, promotes `role` to `"seller"` and sets `storeStatus: "pending"` in Firestore; returns `{ alreadySeller: true }` if user is already a seller.
+- **`sellerService.becomeSeller()`** — new method in `src/services/seller.service.ts` calling the above endpoint.
+- **`useBecomeSeller` hook** (`src/hooks/useBecomeSeller.ts`) — `useApiMutation` wrapper; shows success / error toast automatically. Exported from `src/hooks/index.ts`.
+- **`BecomeSellerView`** (`src/features/user/components/BecomeSellerView.tsx`) — five-section seller guide with per-section acknowledgement checkboxes. Apply button unlocks once all five sections are read. On success shows a confirmation card. Existing sellers are redirected to `ROUTES.SELLER.DASHBOARD`. Exported from `src/features/user/components/index.ts`.
+- **Page** `src/app/[locale]/user/become-seller/page.tsx` — thin page shell rendering `BecomeSellerView`.
+- **`UserTabs`** — "Become a Seller" tab added for users with `role === "user"` only (between Messages and Settings).
+- **i18n** — `nav.becomeSeller` key and full `becomeSeller` namespace (guide sections, states, CTA copy) added to `messages/en.json` and `messages/hi.json`.
+
+### Fixed (Audit)
+
+- **API route type cast** (`src/app/api/user/become-seller/route.ts`) — replaced `as Parameters<typeof userRepository.update>[1]` with `as Partial<UserDocument>`; added missing `import type { UserDocument } from "@/db/schema"`.
+- **Seed data storeStatus coverage** (`scripts/seed-data/users-seed-data.ts`) — added two new seller seed users covering the missing `"pending"` (`uid: "user-pending-seller-pendingsl"`) and `"rejected"` (`uid: "user-rejected-seller-rejectsl"`) states, enabling full testing of the admin review queue and rejection flow.
+
+---
+
+## [2026-03-10] — RipCoins Wallet & In-App Chat
+
+### Added
+
+- **RipCoin schema** (`src/db/schema/ripcoins.ts`) — `RipCoinDocument` interface with fields for `userId`, `type` (purchase/engage/release/forfeit/return/refund/admin_credit/admin_debit), `coins`, `orderId`, `razorpayOrderId`, `razorpayPaymentId`, `razorpaySignature`, and `status`. Includes `RIPCOIN_COLLECTION`, `RIPCOIN_FIELDS`, and Sieve-ready index definitions.
+- **`ripcooinRepository`** (`src/repositories/ripcoin.repository.ts`) — `getBalance()`, `getHistory(userId, model)`, `creditCoins()`, `debitCoins()`, `engageCoins()`, `releaseCoins()`, `logTransaction()`.
+- **`GET /api/ripcoins/balance`** — Returns `{ available, engaged }` for the authenticated user.
+- **`GET /api/ripcoins/history`** — Returns paginated transaction log (Sieve-compatible).
+- **`POST /api/ripcoins/purchase`** — Creates a Razorpay order for coin packs (10 RC = ₹1; min 10 packs, max 500 packs). Returns `{ razorpayOrderId, razorpayKeyId, amountRs, coins }`.
+- **`POST /api/ripcoins/verify`** — Verifies Razorpay payment signature and credits coins to user wallet.
+- **`ripcoinService`** (`src/services/ripcoin.service.ts`) — `getBalance()`, `getHistory(params?)`, `purchaseCoins(packs)`, `verifyPurchase(data)`. Exported via `src/services/index.ts`.
+- **`useRipCoinBalance`**, **`usePurchaseRipCoins`**, **`useVerifyRipCoinPurchase`**, **`useRipCoinHistory`** hooks (`src/hooks/useRipCoins.ts`). Exported via `src/hooks/index.ts`.
+- **`RipCoinsWallet`** component (`src/features/user/components/RipCoinsWallet.tsx`) — Balance card with available/engaged display, transaction history `DataTable` with pagination, and "Buy RipCoins" trigger.
+- **`BuyRipCoinsModal`** (`src/features/user/components/BuyRipCoinsModal.tsx`) — Pack selector (`Slider`, 10–500 packs), running cost display, Razorpay checkout flow. Props: `open`, `onClose`, `onPurchaseSuccess?`.
+- **`/user/ripcoins`** page (`src/app/[locale]/user/ripcoins/page.tsx`) — Auth-gated page rendering `RipCoinsWallet`.
+- **`ROUTES.USER.RIPCOINS`** — New route constant.
+- **`API_ENDPOINTS.RIPCOINS.*`** — New API endpoint constants (BALANCE, HISTORY, PURCHASE, VERIFY).
+- **`ERROR_MESSAGES.RIPCOIN.*`** and **`SUCCESS_MESSAGES.RIPCOIN.*`** — New message constants.
+- **Chat schema** (`src/db/schema/chat.ts`) — `ChatRoomDocument` (buyerId, sellerId, orderId, lastMessage, updatedAt) and `CHAT_COLLECTION`, `CHAT_ROOM_FIELDS`. RTDB message path `chat/{chatId}/messages`.
+- **`chatRepository`** (`src/repositories/chat.repository.ts`) — `createOrGetRoom()`, `getRoomsForUser(uid)`, `getRoom(chatId)`.
+- **`GET /api/chat/rooms`** — Returns all chat rooms the authenticated user participates in (buyer or seller), ordered by `updatedAt`.
+- **`POST /api/chat/rooms`** — Creates or returns existing chat room for `{ buyerId, sellerId, orderId? }`.
+- **`POST /api/chat/[chatId]/messages`** — Writes a message to RTDB `/chat/{chatId}/messages` via Admin SDK (enforces server-side write).
+- **`GET /api/realtime/token`** — Issues a short-lived Firebase custom token encoding which chat rooms the user may read. Used by `useChat` to authenticate the RTDB listener.
+- **`chatService`** (`src/services/chat.service.ts`) — `getRooms()`, `createOrGetRoom(data)`, `sendMessage(chatId, text)`. Exported via `src/services/index.ts`.
+- **`realtimeTokenService`** (`src/services/realtime-token.service.ts`) — `getToken()` with 55-minute auto-refresh logic.
+- **`useChat(chatId)`** hook (`src/hooks/useChat.ts`) — Authenticates RTDB via custom token, subscribes to `/chat/{chatId}/messages` with `onValue`, exposes `{ messages, sendMessage, isConnected, isLoading, error }`.
+- **`useChatRooms`**, **`useCreateChatRoom`** hooks — Exported via `src/hooks/index.ts`.
+- **`ChatWindow`** component (`src/features/user/components/ChatWindow.tsx`) — Real-time message list with auto-scroll, send textarea (Enter to send), connection status dot, loading/error states.
+- **`ChatList`** component (`src/features/user/components/ChatList.tsx`) — Room list with last-message preview and timestamp; active room highlighted.
+- **`MessagesView`** component (`src/features/user/components/MessagesView.tsx`) — Two-pane responsive layout (ChatList + ChatWindow); mobile back-navigation between panes.
+- **`/user/messages`** page (`src/app/[locale]/user/messages/page.tsx`) — Auth-gated page wrapping `MessagesView` in `Suspense`; supports `?chatId=` query param to open a specific room.
+- **`ROUTES.USER.MESSAGES`** — New route constant.
+- **`API_ENDPOINTS.CHAT.*`** — New API endpoint constants.
+- **`UserTabs`** — Added "My RipCoins" and "Messages" tabs.
+- **i18n** (`messages/en.json`, `messages/hi.json`) — Added `ripcoinsWallet` and `chat` namespaces, plus nav keys `myRipCoins` and `myMessages`.
+- **`firestore.indexes.json`** — 4 new composite indexes: `ripcoins` (userId+createdAt, userId+type+createdAt), `chatRooms` (buyerId+updatedAt, sellerId+updatedAt).
+
+---
+
 ## [2026-03-05] — Admin Store Approval System
 
 ### Added

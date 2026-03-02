@@ -617,4 +617,80 @@ export const usersSeedData: Partial<UserDocument>[] = [
       loginCount: 3,
     },
   },
+
+  // ── Pending Seller — applied via BecomeSellerView, awaiting admin approval ──
+  // Tests: admin review queue (GET /api/admin/stores?storeStatus=pending),
+  //        BecomeSellerView success state, seller application flow
+  {
+    uid: "user-pending-seller-pendingsl",
+    email: "pending.seller@example.com",
+    phoneNumber: "+919876543280",
+    phoneVerified: true,
+    displayName: "Pending Seller",
+    photoURL: null,
+    avatarMetadata: null,
+    role: "seller",
+    emailVerified: true,
+    disabled: false,
+    storeStatus: "pending",
+    createdAt: new Date("2026-03-10T14:00:00Z"),
+    updatedAt: new Date("2026-03-11T09:00:00Z"),
+    publicProfile: {
+      isPublic: true,
+      showEmail: false,
+      showPhone: false,
+      showOrders: false,
+      showWishlist: false,
+      bio: "Aspiring seller of handmade crafts",
+      location: "Jaipur, India",
+    },
+    stats: {
+      totalOrders: 2,
+      auctionsWon: 0,
+      itemsSold: 0,
+      reviewsCount: 0,
+    },
+    metadata: {
+      lastSignInTime: new Date("2026-03-11T09:00:00Z"),
+      creationTime: new Date("2025-09-01T00:00:00Z").toISOString(),
+      loginCount: 12,
+    },
+  },
+
+  // ── Rejected Seller — application was rejected by admin ───────────────────
+  // Tests: admin rejection flow (PATCH /api/admin/stores/[uid] action:"reject"),
+  //        GET /api/admin/stores?storeStatus=rejected filter
+  {
+    uid: "user-rejected-seller-rejectsl",
+    email: "rejected.seller@example.com",
+    phoneNumber: "+919876543281",
+    phoneVerified: false,
+    displayName: "Rejected Seller",
+    photoURL: null,
+    avatarMetadata: null,
+    role: "seller",
+    emailVerified: true,
+    disabled: false,
+    storeStatus: "rejected",
+    createdAt: new Date("2026-02-01T10:00:00Z"),
+    updatedAt: new Date("2026-02-15T16:00:00Z"),
+    publicProfile: {
+      isPublic: false,
+      showEmail: false,
+      showPhone: false,
+      showOrders: false,
+      showWishlist: false,
+    },
+    stats: {
+      totalOrders: 0,
+      auctionsWon: 0,
+      itemsSold: 0,
+      reviewsCount: 0,
+    },
+    metadata: {
+      lastSignInTime: new Date("2026-02-15T16:00:00Z"),
+      creationTime: new Date("2026-02-01T10:00:00Z").toISOString(),
+      loginCount: 5,
+    },
+  },
 ];

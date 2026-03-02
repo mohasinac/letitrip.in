@@ -121,7 +121,7 @@ export function OrderDetailView() {
             </Text>
           </div>
           <div
-            className={`flex items-center ${THEME_CONSTANTS.spacing.inline}`}
+            className={`flex items-center flex-wrap ${THEME_CONSTANTS.spacing.inline}`}
           >
             <StatusBadge
               status={STATUS_MAP[order.status]}
@@ -137,6 +137,19 @@ export function OrderDetailView() {
                 onClick={() => router.push(ROUTES.USER.ORDER_TRACK(orderId))}
               >
                 {tOrders("trackOrder")}
+              </Button>
+            )}
+            {order.status === "delivered" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  router.push(
+                    `${ROUTES.PUBLIC.PRODUCT_DETAIL(order.productId)}#write-review`,
+                  )
+                }
+              >
+                {tOrders("writeReview")}
               </Button>
             )}
           </div>

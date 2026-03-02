@@ -1,0 +1,264 @@
+"use client";
+
+/**
+ * BecomeSellerView
+ *
+ * Multi-state view for the /user/become-seller page.
+ *
+ * States:
+ *  1. Guide — user with role="user" reads 5 sections, then applies
+ *  2. Success — just applied this session (pending admin review)
+ *  3. Already a seller / admin / moderator — redirect to seller dashboard
+ */
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import {
+  Card,
+  Heading,
+  Text,
+  Caption,
+  Button,
+  Badge,
+  Alert,
+  Spinner,
+  Divider,
+} from "@/components";
+import { useAuth, useBecomeSeller } from "@/hooks";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
+
+const { spacing, themed } = THEME_CONSTANTS;
+
+// ─── Section IDs ──────────────────────────────────────────────────────────────
+
+const SECTION_IDS = [
+  "howItWorks",
+  "fees",
+  "whatYouCanSell",
+  "auctions",
+  "responsibilities",
+] as const;
+
+type SectionId = (typeof SECTION_IDS)[number];
+
+// ─── Single guide section card ────────────────────────────────────────────────
+
+interface GuideSectionProps {
+  sectionIndex: number;
+  id: SectionId;
+  read: boolean;
+  onToggle: (id: SectionId, checked: boolean) => void;
+}
+
+function GuideSection({ sectionIndex, id, read, onToggle }: GuideSectionProps) {
+  const t = useTranslations("becomeSeller.guide");
+  const checkboxId = `guide-section-${id}`;
+
+  return (
+    <Card
+      className={`${spacing.padding.md} transition-colors ${
+        read
+          ? "border border-emerald-300 dark:border-emerald-700"
+          : "border border-transparent"
+      }`}
+    >
+      <div className="flex items-start gap-3">
+        {/* Step number */}
+        <div
+          aria-hidden="true"
+          className={`mt-0.5 w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold ${
+            read
+              ? "bg-emerald-500 text-white"
+              : "bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300"
+          }`}
+        >
+          {sectionIndex + 1}
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <Heading level={4} className="mb-2">
+            {t(`sections.${id}.title`)}
+          </Heading>
+          <Text variant="secondary" size="sm" className="mb-3">
+            {t(`sections.${id}.intro`)}
+          </Text>
+
+          {/* Bullet points */}
+          <ul className={`${spacing.stack} list-none mb-4`}>
+            {(t.raw(`sections.${id}.points`) as string[]).map((point, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0" />
+                <Text size="sm">{point}</Text>
+              </li>
+            ))}
+          </ul>
+
+          <Divider className="mb-4" />
+
+          {/* Read acknowledgement */}
+          <label
+            htmlFor={checkboxId}
+            className="flex items-center gap-2 cursor-pointer select-none"
+          >
+            <input
+              id={checkboxId}
+              type="checkbox"
+              checked={read}
+              onChange={(e) => onToggle(id, e.target.checked)}
+              className="w-4 h-4 rounded accent-indigo-600 cursor-pointer"
+            />
+            <Caption className="font-medium">{t("ackLabel")}</Caption>
+          </label>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+// ─── Post-apply success state ─────────────────────────────────────────────────
+
+function SuccessState() {
+  const t = useTranslations("becomeSeller.states.success");
+
+  return (
+    <Card className={`${spacing.padding.lg} text-center max-w-xl mx-auto`}>
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-3xl">
+          🎉
+        </div>
+        <Badge variant="success">{t("badge")}</Badge>
+        <Heading level={2}>{t("title")}</Heading>
+        <Text variant="secondary" className="max-w-md mx-auto">
+          {t("message")}
+        </Text>
+        <Alert variant="info">{t("note")}</Alert>
+      </div>
+    </Card>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
+export function BecomeSellerView() {
+  const t = useTranslations("becomeSeller");
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+
+  const { mutate: applyAsSeller, isLoading: isApplying } = useBecomeSeller();
+
+  // Track which guide sections have been read/acknowledged
+  const [readSections, setReadSections] = useState<Record<SectionId, boolean>>(
+    () =>
+      SECTION_IDS.reduce(
+        (acc, id) => ({ ...acc, [id]: false }),
+        {} as Record<SectionId, boolean>,
+      ),
+  );
+
+  // Local post-apply state — session isn't refreshed until re-login
+  const [justApplied, setJustApplied] = useState(false);
+
+  const allSectionsRead = SECTION_IDS.every((id) => readSections[id]);
+  const readCount = SECTION_IDS.filter((id) => readSections[id]).length;
+
+  // Users who are already sellers / admins / mods go straight to their dashboard
+  const isAlreadySeller =
+    user?.role === "seller" ||
+    user?.role === "admin" ||
+    user?.role === "moderator";
+
+  useEffect(() => {
+    if (!authLoading && isAlreadySeller) {
+      router.replace(ROUTES.SELLER.DASHBOARD);
+    }
+  }, [authLoading, isAlreadySeller, router]);
+
+  if (authLoading || isAlreadySeller) {
+    return (
+      <div className="flex justify-center py-16">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (justApplied) {
+    return <SuccessState />;
+  }
+
+  const handleToggle = (id: SectionId, checked: boolean) => {
+    setReadSections((prev) => ({ ...prev, [id]: checked }));
+  };
+
+  const handleApply = async () => {
+    try {
+      await applyAsSeller(undefined);
+      setJustApplied(true);
+    } catch {
+      // error toast already shown by useBecomeSeller's onError handler
+    }
+  };
+
+  return (
+    <div className={spacing.stack}>
+      {/* Page header */}
+      <div>
+        <Heading level={1}>{t("title")}</Heading>
+        <Text variant="secondary" className="mt-1">
+          {t("subtitle")}
+        </Text>
+      </div>
+
+      {/* Progress banner */}
+      <Alert
+        variant={allSectionsRead ? "success" : "info"}
+        title={t("guide.title")}
+      >
+        {allSectionsRead
+          ? t("guide.allReadMessage")
+          : t("guide.progress", { read: readCount, total: SECTION_IDS.length })}
+      </Alert>
+
+      {/* Guide section cards */}
+      <div className={spacing.stack}>
+        {SECTION_IDS.map((id, index) => (
+          <GuideSection
+            key={id}
+            id={id}
+            sectionIndex={index}
+            read={readSections[id]}
+            onToggle={handleToggle}
+          />
+        ))}
+      </div>
+
+      {/* Apply call-to-action */}
+      <div
+        className={`${themed.bgSecondary} rounded-2xl ${spacing.padding.lg} flex flex-col sm:flex-row items-center justify-between gap-4`}
+      >
+        <div>
+          <Heading level={3}>{t("applyTitle")}</Heading>
+          <Text variant="secondary" size="sm" className="mt-0.5">
+            {t("applySubtitle")}
+          </Text>
+        </div>
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={handleApply}
+          disabled={!allSectionsRead}
+          isLoading={isApplying}
+          className="sm:flex-shrink-0"
+        >
+          {t("applyButton")}
+        </Button>
+      </div>
+
+      {!allSectionsRead && (
+        <Caption className="text-center text-amber-600 dark:text-amber-400">
+          {t("guide.readAllHint")}
+        </Caption>
+      )}
+    </div>
+  );
+}

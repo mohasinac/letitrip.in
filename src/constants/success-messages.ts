@@ -26,6 +26,8 @@ export const SUCCESS_MESSAGES = {
     PHONE_VERIFIED: "Phone number verified successfully",
     ACCOUNT_DELETED: "User account deleted successfully",
     STORE_UPDATED: "Store settings saved successfully",
+    SELLER_APPLICATION_SUBMITTED:
+      "Your seller application has been submitted! An admin will review it shortly.",
   },
 
   // Upload Success
@@ -203,6 +205,7 @@ export const SUCCESS_MESSAGES = {
     SUBSCRIBED: "Thank you for subscribing! Check your email for confirmation.",
     UNSUBSCRIBED: "Subscriber unsubscribed successfully",
     RESUBSCRIBED: "Subscriber resubscribed successfully",
+    UPDATED: "Subscriber updated successfully",
     DELETED: "Subscriber deleted successfully",
   },
 
@@ -246,6 +249,21 @@ export const SUCCESS_MESSAGES = {
     ENTRY_APPROVED: "Entry approved",
     ENTRY_FLAGGED: "Entry flagged",
     STATUS_CHANGED: "Event status updated",
+  },
+
+  // RipCoin success messages
+  RIPCOIN: {
+    PURCHASE_INITIATED: "RipCoin purchase initiated",
+    PURCHASE_COMPLETE: "RipCoins added to your wallet!",
+    COINS_ENGAGED: "RipCoins locked for your bid",
+    COINS_RELEASED: "RipCoins returned to your wallet",
+    COINS_RETURNED: "RipCoins refunded after payment",
+  },
+
+  // Chat success messages
+  CHAT: {
+    MESSAGE_SENT: "Message sent",
+    ROOM_CREATED: "Chat opened",
   },
 } as const;
 

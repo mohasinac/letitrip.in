@@ -70,6 +70,9 @@ export const ERROR_MESSAGES = {
       "You do not have permission to assign this role",
     ACCOUNT_DISABLED: "Your account has been disabled",
     TERMS_NOT_ACCEPTED: "You must accept the terms and conditions to register",
+    ALREADY_A_SELLER: "You are already registered as a seller",
+    SELLER_APPLICATION_FAILED:
+      "Failed to submit seller application. Please try again.",
   },
 
   // Password Errors
@@ -442,5 +445,28 @@ export const ERROR_MESSAGES = {
     INVALID_TYPE: "Unknown event type",
     ENTRY_REVIEW_FAILED: "Failed to update entry review status",
     INVALID_STATUS_TRANSITION: "This status transition is not allowed",
+  },
+
+  // RipCoin errors
+  RIPCOIN: {
+    FETCH_FAILED: "Failed to fetch RipCoin balance",
+    PURCHASE_FAILED: "Failed to initiate coin purchase",
+    VERIFY_FAILED: "Failed to verify coin purchase payment",
+    INSUFFICIENT_COINS: "Insufficient RipCoins — please top up your wallet",
+    INVALID_PACK_COUNT:
+      "Invalid pack count — please select between 10 and 500 packs",
+    PAYMENT_ALREADY_USED: "This payment has already been applied",
+    TRANSACTION_FAILED: "RipCoin transaction failed",
+    HISTORY_FAILED: "Failed to fetch RipCoin transaction history",
+  },
+
+  // Chat errors
+  CHAT: {
+    FETCH_FAILED: "Failed to load chat",
+    SEND_FAILED: "Failed to send message",
+    ROOM_FAILED: "Failed to open chat room",
+    NOT_AUTHORIZED: "You are not a participant in this chat",
+    MESSAGE_TOO_LONG: "Message exceeds the 1000 character limit",
+    TOKEN_FAILED: "Failed to obtain realtime token",
   },
 } as const;

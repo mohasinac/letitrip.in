@@ -866,7 +866,7 @@ import { SectionTabs } from '@/components';
 - `SESSION` - Session success (ACTIVITY_UPDATED)
 - `MEDIA` - Media success (VIDEO_TRIMMED, IMAGE_CROPPED)
 - `LOGS` - Log success (WRITTEN)
-- `NEWSLETTER` - Newsletter success (SUBSCRIBED)
+- `NEWSLETTER` - Newsletter success (SUBSCRIBED, UNSUBSCRIBED, RESUBSCRIBED, UPDATED, DELETED)
 
 ---
 
@@ -3291,6 +3291,36 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 
 ---
 
+### Product Components (`src/components/products/`)
+
+#### ProductReviews
+
+**File**: `ProductReviews.tsx`  
+**Purpose**: Displays paginated product reviews, rating summary, and a write-review form for authenticated verified buyers.
+
+**Props**:
+
+| Prop        | Type     | Description                   |
+| ----------- | -------- | ----------------------------- |
+| `productId` | `string` | Firestore product document ID |
+
+**Sections rendered**:
+
+1. **WriteReviewForm** — sign-in prompt when unauthenticated; interactive star picker + title field + comment textarea when logged in. Submits via `reviewService.create()`. Surfaces inline `<Alert>` errors for:
+   - HTTP 403 → `products.reviewFormPurchaseRequired` (only verified buyers may review)
+   - HTTP 400 → `products.reviewFormAlreadyReviewed`
+   - Other → `useMessage().showError` toast
+2. **Rating summary** — average star rating + total count
+3. **Review list** — paginated list of approved reviews with verified-buyer badge, helpful vote count, and relative timestamp
+
+**Anchor**: `<section id="write-review">` — use `#write-review` hash in links/navigation to scroll directly to the form.
+
+**i18n namespace**: `products` (keys prefixed `reviewForm*`)
+
+**Purchase gate**: enforced server-side in `POST /api/reviews` via `orderRepository.hasUserPurchased()`. The UI surfaces the 403 response; no duplicate client-side check is needed.
+
+---
+
 ## 10. Feature Modules
 
 **Location**: `src/features/`  
@@ -4187,6 +4217,7 @@ All static pages follow the same pattern: hero gradient header → content secti
 | `homepageSectionsService` | `list()`, `update(id,data)`                                                                                                                                                                                                                                                                                                                                                                                                          |
 | `mediaService`            | `upload(formData)`, `crop(data)`, `trim(data)`                                                                                                                                                                                                                                                                                                                                                                                       |
 | `notificationService`     | `list(params?)`, `markRead(id)`, `markAllRead()`, `delete(id)`, `getUnreadCount()`                                                                                                                                                                                                                                                                                                                                                   |
+| `newsletterService`       | `subscribe(data)` — POST to `/api/newsletter/subscribe` with `{ email, source? }`                                                                                                                                                                                                                                                                                                                                                    |
 | `orderService`            | `list(params?)`, `getById(id)`                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `productService`          | `list(params?)`, `getById(id)`, `getFeatured()`, `listAuctions(params?)`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                            |
 | `profileService`          | `get()`, `update(data)`, `getPublic(userId)`                                                                                                                                                                                                                                                                                                                                                                                         |

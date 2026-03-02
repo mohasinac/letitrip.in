@@ -153,8 +153,25 @@ export { useMediaUpload } from "./useMediaUpload";
 
 // Phase 59: Rule 20 completion — shared Tier 1 component hooks
 export { useFaqVote } from "./useFaqVote";
+export { useNewsletter } from "./useNewsletter";
 export { useAuctionDetail } from "./useAuctionDetail";
 export { usePlaceBid } from "./usePlaceBid";
 export { useLogout } from "./useLogout";
 export { useCategories, useCreateCategory } from "./useCategorySelector";
 export { useAddressSelector } from "./useAddressSelector";
+
+// RipCoins hooks
+export {
+  useRipCoinBalance,
+  usePurchaseRipCoins,
+  useVerifyRipCoinPurchase,
+  useRipCoinHistory,
+} from "./useRipCoins";
+
+// Chat hooks
+export { useChat, useChatRooms, useCreateChatRoom } from "./useChat";
+export type { ChatMessage, UseChatReturn } from "./useChat";
+
+// Seller application
+export { useBecomeSeller } from "./useBecomeSeller";
+export type { BecomeSellerResult } from "./useBecomeSeller";

@@ -7,7 +7,13 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/firebase/auth-server";
-import { bidRepository, productRepository, unitOfWork } from "@/repositories";
+import {
+  bidRepository,
+  productRepository,
+  unitOfWork,
+  userRepository,
+  ripcoinRepository,
+} from "@/repositories";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, errorResponse } from "@/lib/api-response";
@@ -61,6 +67,7 @@ export async function GET(request: NextRequest) {
  * - bidAmount must exceed current highest bid (or starting bid)
  * - Cannot bid on own auction
  * - Auction must not have ended
+ * - User must have enough RipCoins (1 RipCoin = ₹1 bid value)
  */
 export async function POST(request: NextRequest) {
   try {
@@ -111,6 +118,20 @@ export async function POST(request: NextRequest) {
       return errorResponse(ERROR_MESSAGES.BID.BID_TOO_LOW, 400);
     }
 
+    // ── RipCoin balance check ──────────────────────────────────────────────
+    // 1 RipCoin = ₹1 bid value; user must hold at least bidAmount free coins.
+    const userDoc = await userRepository.findById(user.uid);
+    const freeCoins =
+      (userDoc?.ripcoinBalance ?? 0) - (userDoc?.engagedRipcoins ?? 0);
+    if (freeCoins < bidAmount) {
+      return errorResponse(ERROR_MESSAGES.RIPCOIN.INSUFFICIENT_COINS, 402);
+    }
+
+    // Find the user's existing active bid for this product (coins may need releasing)
+    const userPriorActiveBid = (
+      await bidRepository.findBy("productId", productId)
+    ).find((b) => b.userId === user.uid && b.status === "active");
+
     // Create the bid
     const bid = await bidRepository.create({
       productId,
@@ -121,12 +142,13 @@ export async function POST(request: NextRequest) {
       bidAmount,
       currency: product.currency || "INR",
       bidDate: new Date(),
+      engagedCoins: bidAmount,
+      coinsStatus: "engaged",
       ...(autoMaxBid ? { autoMaxBid } : {}),
     });
 
     // Atomically: mark all previous bids for this product as outbid,
     // set this bid as the winner, and update the product's currentBid/bidCount.
-    // (Replaces the separate setWinningBid + productRepository.update calls)
     const allBids = await bidRepository.findBy("productId", productId);
     await unitOfWork.runBatch((batch) => {
       for (const b of allBids) {
@@ -139,6 +161,58 @@ export async function POST(request: NextRequest) {
         currentBid: bidAmount,
         bidCount: (product.bidCount ?? 0) + 1,
       } as any);
+    });
+
+    // ── RipCoin atomic balance update ─────────────────────────────────────
+    // (a) Engage coins for the new bid: debit free balance, credit engaged pool
+    await userRepository.incrementRipCoinBalance(
+      user.uid,
+      -bidAmount,
+      bidAmount,
+    );
+
+    // (b) Release coins for any previous active bid from this user on this product
+    if (userPriorActiveBid?.engagedCoins) {
+      const released = userPriorActiveBid.engagedCoins;
+      await userRepository.incrementRipCoinBalance(
+        user.uid,
+        released,
+        -released,
+      );
+
+      // Update the outbid bid record and record ledger entry
+      await bidRepository.update(userPriorActiveBid.id, {
+        coinsStatus: "released",
+      } as any);
+
+      const priorUserDoc = await userRepository.findById(user.uid);
+      await ripcoinRepository.create({
+        userId: user.uid,
+        type: "release",
+        coins: released,
+        balanceBefore: (priorUserDoc?.ripcoinBalance ?? 0) - released,
+        balanceAfter: priorUserDoc?.ripcoinBalance ?? 0,
+        bidId: userPriorActiveBid.id,
+        productId,
+        productTitle: product.title,
+        bidAmount: userPriorActiveBid.bidAmount,
+        notes: "Outbid — coins released",
+      });
+    }
+
+    // Record "engage" transaction for the new bid
+    const freshUserDoc = await userRepository.findById(user.uid);
+    await ripcoinRepository.create({
+      userId: user.uid,
+      type: "engage",
+      coins: bidAmount,
+      balanceBefore: (freshUserDoc?.ripcoinBalance ?? 0) + bidAmount,
+      balanceAfter: freshUserDoc?.ripcoinBalance ?? 0,
+      bidId: bid.id,
+      productId,
+      productTitle: product.title,
+      bidAmount,
+      notes: "Coins locked for bid",
     });
 
     // Write to Realtime DB for live bid streaming
@@ -162,11 +236,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    serverLogger.info("Bid placed", {
+    serverLogger.info("Bid placed with RipCoins engaged", {
       bidId: bid.id,
       productId,
       userId: user.uid,
       bidAmount,
+      engagedCoins: bidAmount,
     });
 
     return successResponse(bid, SUCCESS_MESSAGES.BID.PLACED, 201);

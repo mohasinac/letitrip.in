@@ -223,7 +223,10 @@
     "eventsAdmin": "Events",
     "myWishlist": "My Wishlist",
     "myAddresses": "My Addresses",
-    "myStore": "My Store"
+    "myRipCoins": "My RipCoins",
+    "myMessages": "Messages",
+    "myStore": "My Store",
+    "becomeSeller": "Become a Seller"
   },
   "auth": {
     "login": {
@@ -495,7 +498,20 @@
     "relatedTitle": "You might also like",
     "features": "Features",
     "shipping": "Shipping",
-    "returnPolicy": "Return Policy"
+    "returnPolicy": "Return Policy",
+    "reviewFormTitle": "Write a Review",
+    "reviewFormRating": "Your Rating",
+    "reviewFormTitleLabel": "Review Title",
+    "reviewFormTitlePlaceholder": "Summarize your experience in a few words",
+    "reviewFormComment": "Your Review",
+    "reviewFormCommentPlaceholder": "What did you like or dislike? How was the quality, delivery, and overall value?",
+    "reviewFormSubmit": "Submit Review",
+    "reviewFormSubmitting": "Submitting…",
+    "reviewFormSuccess": "Thank you! Your review has been submitted and is pending moderation.",
+    "reviewFormPurchaseRequired": "Only verified buyers can review this product.",
+    "reviewFormAlreadyReviewed": "You have already reviewed this product.",
+    "reviewFormLoginRequired": "Sign in to write a review.",
+    "reviewFormSignIn": "Sign In to Review"
   },
   "cart": {
     "title": "Shopping Cart",
@@ -588,7 +604,8 @@
     "tabConfirmed": "Confirmed",
     "tabShipped": "Shipped",
     "tabDelivered": "Delivered",
-    "tabCancelled": "Cancelled"
+    "tabCancelled": "Cancelled",
+    "writeReview": "Write a Review"
   },
   "checkout": {
     "title": "Checkout",
@@ -1820,5 +1837,123 @@
     "needHelpText": "If your tracking number isn't updating or your order seems delayed, our support team is here to help.",
     "contactSupport": "Contact Support",
     "helpCenter": "Help Center"
+  },
+  "ripcoinsWallet": {
+    "available": "Available RipCoins",
+    "engaged": "Engaged RipCoins",
+    "engagedNote": "Locked in active bids",
+    "buyTitle": "Top Up RipCoins",
+    "buyNote": "10 RipCoins = ₹1. Use RipCoins to bid in auctions.",
+    "buyButton": "Buy RipCoins",
+    "history": {
+      "title": "Transaction History",
+      "type": "Type",
+      "coins": "Coins",
+      "description": "Description",
+      "date": "Date",
+      "empty": "No transactions yet",
+      "emptyDesc": "Your RipCoin transaction history will appear here."
+    },
+    "buy": {
+      "title": "Buy RipCoins",
+      "packsLabel": "Select packs",
+      "packs": "Packs",
+      "coins": "RipCoins",
+      "amount": "Amount",
+      "payButton": "Pay ₹{amount}",
+      "infoNote": "1 pack = 10 RipCoins = ₹1. You can use RipCoins to bid in auctions. Coins locked in active bids are released when outbid or the auction ends.",
+      "successMessage": "{coins} RipCoins credited! New balance: {balance} RC",
+      "errorMessage": "Payment failed. Please try again."
+    }
+  },
+  "chat": {
+    "title": "Messages",
+    "chat": "Chat",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "noMessages": "No messages yet",
+    "noRooms": "No conversations",
+    "noRoomsDesc": "Chat rooms will appear here once you start communicating with sellers or buyers.",
+    "selectRoom": "Select a conversation",
+    "inputPlaceholder": "Type a message…",
+    "send": "Send",
+    "backToList": "Back",
+    "seller": "Seller",
+    "buyer": "Buyer"
+  },
+  "becomeSeller": {
+    "title": "Become a Seller",
+    "subtitle": "Read through our seller guide and apply to start selling on LetItRip.",
+    "applyTitle": "Ready to apply?",
+    "applySubtitle": "Acknowledge all sections above to unlock your application.",
+    "applyButton": "Apply as Seller",
+    "guide": {
+      "title": "Seller's Guide",
+      "progress": "You have read {read} of {total} sections.",
+      "allReadMessage": "You've read all sections. You're ready to apply!",
+      "ackLabel": "I have read and understood this section.",
+      "readAllHint": "Please read and acknowledge all sections to enable the Apply button.",
+      "sections": {
+        "howItWorks": {
+          "title": "How LetItRip Works",
+          "intro": "LetItRip is a marketplace where sellers can list products for direct sale or auction. Here's what you need to know:",
+          "points": [
+            "Buyers browse and purchase products directly or place bids in auctions.",
+            "You manage your own listings, prices, and inventory.",
+            "Payments are processed securely and funds are released after delivery confirmation.",
+            "You'll get a dedicated seller store page visible to all buyers."
+          ]
+        },
+        "fees": {
+          "title": "Fees & Commission",
+          "intro": "We keep our fees simple and transparent:",
+          "points": [
+            "LetItRip charges a flat 5% commission on each completed sale.",
+            "No monthly subscription or listing fees — you only pay when you sell.",
+            "Payouts are processed within 3–5 business days after delivery confirmation.",
+            "Refunded or cancelled orders are not charged commission."
+          ]
+        },
+        "whatYouCanSell": {
+          "title": "What You Can Sell",
+          "intro": "You can sell most physical goods, but some categories are restricted:",
+          "points": [
+            "Permitted: electronics, fashion, home goods, collectibles, handmade items, and more.",
+            "Prohibited: weapons, illegal items, counterfeit goods, and adult content.",
+            "All listings must include accurate descriptions and real product images.",
+            "Misrepresentation of items may result in account suspension."
+          ]
+        },
+        "auctions": {
+          "title": "Auction Listings & RipCoins",
+          "intro": "LetItRip supports auction-style listings powered by our in-app currency — RipCoins:",
+          "points": [
+            "Create auction listings with a starting price and reserve (optional).",
+            "Buyers bid using RipCoins, which they purchase with real money.",
+            "Auctions run for a set duration; the highest bidder at close wins.",
+            "Winning bids are converted to INR and credited to your payout balance."
+          ]
+        },
+        "responsibilities": {
+          "title": "Seller Responsibilities",
+          "intro": "As a seller, you agree to the following obligations:",
+          "points": [
+            "Ship orders within the stated handling time and provide valid tracking.",
+            "Respond to buyer messages within 48 hours.",
+            "Accept returns for items that arrive damaged or significantly not as described.",
+            "Keep your listings up-to-date and remove items that are no longer available.",
+            "Comply with all applicable laws, including tax obligations in your jurisdiction."
+          ]
+        }
+      }
+    },
+    "states": {
+      "success": {
+        "badge": "Application Submitted",
+        "title": "You're on your way!",
+        "message": "Your seller application has been submitted and is now under review. An admin will evaluate your profile and get back to you soon.",
+        "note": "Your account role will be updated once approved. You may need to sign out and sign back in to access the seller portal."
+      }
+    }
   }
 }

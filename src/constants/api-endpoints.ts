@@ -26,6 +26,7 @@ export const API_ENDPOINTS = {
     CHANGE_PASSWORD: "/api/user/change-password",
     SESSIONS: "/api/user/sessions",
     REVOKE_SESSION: (id: string) => `/api/user/sessions/${id}`,
+    BECOME_SELLER: "/api/user/become-seller",
     WISHLIST: {
       LIST: "/api/user/wishlist",
       ADD: "/api/user/wishlist",
@@ -300,6 +301,21 @@ export const API_ENDPOINTS = {
   // Realtime DB custom token
   REALTIME: {
     TOKEN: "/api/realtime/token", // POST - Get Firebase custom token for Realtime DB
+  },
+
+  // RipCoins endpoints
+  RIPCOINS: {
+    BALANCE: "/api/ripcoins/balance", // GET  - Current balance + engaged coins
+    PURCHASE: "/api/ripcoins/purchase", // POST - Create Razorpay order for coin pack
+    VERIFY: "/api/ripcoins/purchase/verify", // POST - Verify payment and credit coins
+    HISTORY: "/api/ripcoins/history", // GET  - Transaction history
+  },
+
+  // Chat endpoints
+  CHAT: {
+    ROOMS: "/api/chat", // POST - Create or get chat room
+    ROOM: (chatId: string) => `/api/chat/${chatId}`, // GET  - Room metadata
+    MESSAGES: (chatId: string) => `/api/chat/${chatId}/messages`, // POST - Send a message
   },
 
   // Notifications endpoints

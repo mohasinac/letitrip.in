@@ -43,4 +43,7 @@ export * from "./seller.service";
 export * from "./promotions.service";
 export * from "./coupon.service";
 export * from "./demo.service";
+export * from "./newsletter.service";
 export * from "./realtime-token.service";
+export * from "./ripcoin.service";
+export * from "./chat.service";
