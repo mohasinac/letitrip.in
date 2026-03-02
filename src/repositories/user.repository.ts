@@ -306,6 +306,7 @@ export class UserRepository extends BaseRepository<UserDocument> {
     displayName: { canFilter: true, canSort: true },
     role: { canFilter: true, canSort: true },
     disabled: { canFilter: true, canSort: true },
+    storeStatus: { canFilter: true, canSort: false },
     createdAt: { canFilter: true, canSort: true },
   };
 
@@ -332,9 +333,37 @@ export class UserRepository extends BaseRepository<UserDocument> {
   }
 
   /**
+   * Update store approval status (admin-only action).
+   */
+  async updateStoreApproval(
+    uid: string,
+    storeStatus: "pending" | "approved" | "rejected",
+  ): Promise<UserDocument> {
+    return this.update(uid, {
+      storeStatus,
+    } as Partial<UserDocument>);
+  }
+
+  /**
    * Paginated list of all users with role = 'seller' (public store directory).
+   * Only returns approved stores (storeStatus = 'approved').
    */
   async listSellers(
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<UserDocument>> {
+    return this.sieveQuery<UserDocument>(model, UserRepository.SIEVE_FIELDS, {
+      baseQuery: this.getCollection()
+        .where(USER_FIELDS.ROLE, "==", "seller")
+        .where(USER_FIELDS.STORE_STATUS, "==", "approved"),
+      defaultPageSize: 24,
+      maxPageSize: 100,
+    });
+  }
+
+  /**
+   * Paginated list of sellers for admin — no approval filter, includes all statuses.
+   */
+  async listSellersForAdmin(
     model: SieveModel,
   ): Promise<FirebaseSieveResult<UserDocument>> {
     return this.sieveQuery<UserDocument>(model, UserRepository.SIEVE_FIELDS, {

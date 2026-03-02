@@ -108,6 +108,7 @@ export const ROUTES = {
     NEWSLETTER: "/admin/newsletter",
     EVENTS: "/admin/events",
     EVENT_ENTRIES: (id: string) => `/admin/events/${id}/entries`,
+    STORES: "/admin/stores",
   },
 
   // Demo Routes (dev-only)

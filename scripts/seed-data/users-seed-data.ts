@@ -167,6 +167,7 @@ export const usersSeedData: Partial<UserDocument>[] = [
     role: "seller",
     emailVerified: true,
     disabled: false,
+    storeStatus: "approved",
     createdAt: new Date("2024-01-15T00:00:00Z"),
     updatedAt: new Date("2026-02-09T08:00:00Z"),
     publicProfile: {
@@ -207,6 +208,7 @@ export const usersSeedData: Partial<UserDocument>[] = [
     role: "seller",
     emailVerified: true,
     disabled: false,
+    storeStatus: "approved",
     createdAt: new Date("2024-02-01T00:00:00Z"),
     updatedAt: new Date("2026-02-08T18:30:00Z"),
     publicProfile: {
@@ -243,6 +245,7 @@ export const usersSeedData: Partial<UserDocument>[] = [
     role: "seller",
     emailVerified: true,
     disabled: false,
+    storeStatus: "approved",
     createdAt: new Date("2024-03-01T00:00:00Z"),
     updatedAt: new Date("2026-02-08T16:00:00Z"),
     publicProfile: {
@@ -343,6 +346,7 @@ export const usersSeedData: Partial<UserDocument>[] = [
     role: "seller",
     emailVerified: true,
     disabled: false,
+    storeStatus: "approved",
     createdAt: new Date("2024-07-15T00:00:00Z"),
     updatedAt: new Date("2026-02-01T00:00:00Z"),
     publicProfile: {
@@ -378,6 +382,7 @@ export const usersSeedData: Partial<UserDocument>[] = [
     role: "seller",
     emailVerified: true,
     disabled: false,
+    storeStatus: "approved",
     createdAt: new Date("2024-09-01T00:00:00Z"),
     updatedAt: new Date("2026-02-05T00:00:00Z"),
     publicProfile: {
@@ -413,6 +418,7 @@ export const usersSeedData: Partial<UserDocument>[] = [
     role: "seller",
     emailVerified: true,
     disabled: false,
+    storeStatus: "approved",
     createdAt: new Date("2025-01-10T00:00:00Z"),
     updatedAt: new Date("2026-01-20T00:00:00Z"),
     publicProfile: {

@@ -11,3 +11,4 @@ export * from "./useAdminProducts";
 export * from "./useAdminReviews";
 export * from "./useAdminSections";
 export * from "./useAdminUsers";
+export * from "./useAdminStores";

@@ -1600,6 +1600,27 @@
     "noCoupons": "कोई कूपन नहीं मिला",
     "searchPlaceholder": "कोड या नाम से खोजें..."
   },
+  "adminStores": {
+    "title": "स्टोर",
+    "subtitle": "विक्रेता स्टोर की समीक्षा करें और स्वीकृत करें",
+    "total": "कुल",
+    "filterAll": "सभी स्टोर",
+    "filterPending": "लंबित",
+    "filterApproved": "स्वीकृत",
+    "filterRejected": "अस्वीकृत",
+    "colSeller": "विक्रेता",
+    "colSlug": "स्टोर स्लग",
+    "colStoreName": "स्टोर नाम",
+    "colStatus": "स्थिति",
+    "colCreated": "बनाया गया",
+    "approve": "स्वीकृत करें",
+    "reject": "अस्वीकृत करें",
+    "approveTitle": "स्टोर स्वीकृत करें",
+    "approveMessage": "{name} का स्टोर स्वीकृत करें? उनके उत्पाद सार्वजनिक रूप से दिखाई देंगे।",
+    "rejectTitle": "स्टोर अस्वीकृत करें",
+    "rejectMessage": "{name} का स्टोर अस्वीकृत करें? उनका स्टोर और उत्पाद सार्वजनिक दृष्टि से छुप जाएंगे।",
+    "noStores": "कोई स्टोर नहीं मिला"
+  },
   "adminEvents": {
     "title": "इवेंट",
     "subtitle": "बिक्री, ऑफर, पोल, सर्वेक्षण और फीडबैक अभियान प्रबंधित करें",

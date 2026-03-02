@@ -23,7 +23,11 @@ export async function GET(
 
     const user = await userRepository.findByStoreSlug(storeSlug);
 
-    if (!user || (user.role !== "seller" && user.role !== "admin")) {
+    if (
+      !user ||
+      (user.role !== "seller" && user.role !== "admin") ||
+      user.storeStatus !== "approved"
+    ) {
       throw new NotFoundError(ERROR_MESSAGES.USER.NOT_FOUND);
     }
 

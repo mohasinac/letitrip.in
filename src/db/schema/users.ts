@@ -34,6 +34,7 @@ export interface UserDocument {
 
   // Store identity (set when a user becomes a seller)
   storeSlug?: string; // Indexed, URL-safe slug — format: store-<storeName>-<sellerName>
+  storeStatus?: "pending" | "approved" | "rejected"; // Admin-controlled approval state — gates public store visibility
 
   // Public profile settings
   publicProfile?: {
@@ -118,6 +119,7 @@ export const USER_INDEXED_FIELDS = [
   "emailVerified",
   "phoneVerified",
   "storeSlug", // Indexed for /stores/[storeSlug] lookups
+  "storeStatus", // Indexed for admin store approval queries
 ] as const;
 
 /**

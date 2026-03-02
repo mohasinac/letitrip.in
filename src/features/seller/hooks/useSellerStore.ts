@@ -7,6 +7,7 @@ import type { UserDocument } from "@/db/schema";
 export interface SellerStoreData {
   uid: string;
   storeSlug: string | null;
+  storeStatus: "pending" | "approved" | "rejected";
   publicProfile: UserDocument["publicProfile"] | null;
 }
 
@@ -34,6 +35,7 @@ export function useSellerStore() {
   return {
     data,
     storeSlug: data?.storeSlug ?? null,
+    storeStatus: data?.storeStatus ?? "pending",
     publicProfile: data?.publicProfile ?? null,
     isLoading: authLoading || isLoading,
     isSaving,

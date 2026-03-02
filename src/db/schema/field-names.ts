@@ -34,6 +34,7 @@ export const USER_FIELDS = {
   UPDATED_AT: "updatedAt",
   // Store identity
   STORE_SLUG: "storeSlug",
+  STORE_STATUS: "storeStatus",
 
   // Avatar metadata sub-fields
   AVATAR: {

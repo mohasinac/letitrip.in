@@ -126,6 +126,9 @@ export const API_ENDPOINTS = {
         `/api/admin/events/${id}/entries/${entryId}`,
       STATS: (id: string) => `/api/admin/events/${id}/stats`,
     },
+    /** ✅ Admin stores — approve/reject seller store listing rights */
+    STORES: "/api/admin/stores",
+    STORE_BY_UID: (uid: string) => `/api/admin/stores/${uid}`,
   },
 
   // Product endpoints ✅ All routes exist

@@ -91,4 +91,12 @@ export const adminService = {
   /** DELETE — delete any product (admin) */
   deleteAdminProduct: (id: string) =>
     apiClient.delete(API_ENDPOINTS.ADMIN.PRODUCT_BY_ID(id)),
+
+  /** GET — paginated list of all sellers with store data (admin) */
+  listStores: (query?: string) =>
+    apiClient.get(`${API_ENDPOINTS.ADMIN.STORES}${query ?? ""}`),
+
+  /** PATCH — approve or reject a seller store */
+  updateStoreStatus: (uid: string, action: "approve" | "reject") =>
+    apiClient.patch(API_ENDPOINTS.ADMIN.STORE_BY_UID(uid), { action }),
 };

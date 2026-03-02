@@ -72,6 +72,8 @@ export const SUCCESS_MESSAGES = {
     SESSION_REVOKED: "Session revoked successfully",
     SESSIONS_REVOKED: "User sessions revoked successfully",
     ALGOLIA_SYNCED: "Products synced to Algolia successfully",
+    STORE_APPROVED: "Store approved successfully",
+    STORE_REJECTED: "Store application rejected",
   },
 
   // Review Success

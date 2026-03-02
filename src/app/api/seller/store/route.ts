@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
     return successResponse({
       uid: user.uid,
       storeSlug: user.storeSlug ?? null,
+      storeStatus: user.storeStatus ?? "pending",
       publicProfile: user.publicProfile ?? null,
     });
   } catch (error) {
@@ -145,9 +146,17 @@ export async function PATCH(request: NextRequest) {
       newStoreSlug = `store-${base}`.slice(0, 80);
     }
 
+    // Mark store as pending admin review if not already approved —
+    // approval status can only be set by an admin via /api/admin/stores/[uid]
+    const storeStatusUpdate =
+      user.storeStatus !== "approved"
+        ? { storeStatus: "pending" as const }
+        : {};
+
     const updatedUser = await userRepository.update(decodedToken.uid, {
       publicProfile: updatedProfile,
       ...(newStoreSlug ? { storeSlug: newStoreSlug } : {}),
+      ...storeStatusUpdate,
     } as any);
 
     serverLogger.info("Seller store updated", {

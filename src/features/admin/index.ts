@@ -22,5 +22,6 @@ export { DemoSeedView } from "./components/DemoSeedView";
 export { AdminMediaView } from "./components/AdminMediaView";
 export { AdminSiteView } from "./components/AdminSiteView";
 export { AdminEventsView } from "./components/AdminEventsView";
+export { AdminStoresView } from "./components/AdminStoresView";
 
 export * from "./hooks";

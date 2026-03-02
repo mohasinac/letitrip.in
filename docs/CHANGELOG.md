@@ -13,6 +13,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-03-05] — Admin Store Approval System
+
+### Added
+
+- **`storeStatus` field on `UserDocument`** — `storeStatus?: "pending" | "approved" | "rejected"` is the single gate that controls both admin review state and public visibility. Added to `USER_INDEXED_FIELDS` in `src/db/schema/users.ts`.
+- **`USER_FIELDS.STORE_STATUS`** — New field-name constant in `src/db/schema/field-names.ts`.
+- **`GET /api/admin/stores`** — Admin-only (admin/moderator) paginated list of sellers with `storeStatus` filter support (`?storeStatus=pending|approved|rejected|all`). Uses `userRepository.listSellersForAdmin()` + Sieve DSL.
+- **`PATCH /api/admin/stores/[uid]`** — Admin-only action endpoint. Accepts `{ action: "approve" | "reject" }`. Updates `storeStatus` via `userRepository.updateStoreApproval()`.
+- **`userRepository.updateStoreApproval(uid, storeStatus)`** — New method for store approval writes.
+- **`userRepository.listSellersForAdmin(model)`** — New method; lists all sellers regardless of `storeStatus` so admin can see pending/rejected stores.
+- **`userRepository.listSellers()`** (updated) — Now filters `storeStatus == "approved"` to ensure public-facing seller lists exclude unapproved stores.
+- **Public store guards** — All 5 storeSlug public routes (`/api/stores/[storeSlug]`, `.../products`, `.../auctions`, `.../reviews`) check `seller.storeStatus !== "approved"` and return 404 for non-approved stores.
+- **`adminService.listStores(query?)`** and **`adminService.updateStoreStatus(uid, action)`** — New service methods in `src/services/admin.service.ts`.
+- **`useAdminStores(sieveParams)`** — New hook at `src/features/admin/hooks/useAdminStores.ts`; queries `["admin", "stores", sieveParams]` + exposes `updateStoreMutation`.
+- **`AdminStoresView`** — New admin view at `src/features/admin/components/AdminStoresView.tsx`; tab-based status filter (All/Pending/Approved/Rejected), DataTable with approve/reject row actions, ConfirmDeleteModal for confirmations.
+- **`src/app/[locale]/admin/stores/page.tsx`** — Thin page shell rendering `AdminStoresView`.
+- **`ROUTES.ADMIN.STORES`** (`"/admin/stores"`) and **`API_ENDPOINTS.ADMIN.STORES`** + **`API_ENDPOINTS.ADMIN.STORE_BY_UID`** — New route/endpoint constants.
+- **`SUCCESS_MESSAGES.ADMIN.STORE_APPROVED/STORE_REJECTED`** — New success message constants.
+- **i18n**: Added `adminStores` namespace to `messages/en.json` and `messages/hi.json`.
+- **Firestore indexes**: Added `role+storeStatus+createdAt` composite index to `firestore.indexes.json`; deployed to `letitrip-in-app`.
+- **Seed data**: All 6 seller entries in `scripts/seed-data/users-seed-data.ts` now include `storeStatus: "approved"`.
+- **`useSellerStore` hook** — Extended `SellerStoreData` with `storeStatus`; `GET /api/seller/store` now returns the field; `PATCH /api/seller/store` sets `storeStatus: "pending"` when store is not already approved (re-submission flow).
+
+---
+
 ## [2026-03-04] — Seller Store Settings & Auctions Pages
 
 ### Added

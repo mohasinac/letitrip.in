@@ -1601,6 +1601,27 @@
     "noCoupons": "No coupons found",
     "searchPlaceholder": "Search by code or name..."
   },
+  "adminStores": {
+    "title": "Stores",
+    "subtitle": "Review and approve seller stores",
+    "total": "total",
+    "filterAll": "All Stores",
+    "filterPending": "Pending",
+    "filterApproved": "Approved",
+    "filterRejected": "Rejected",
+    "colSeller": "Seller",
+    "colSlug": "Store Slug",
+    "colStoreName": "Store Name",
+    "colStatus": "Status",
+    "colCreated": "Created",
+    "approve": "Approve",
+    "reject": "Reject",
+    "approveTitle": "Approve Store",
+    "approveMessage": "Approve the store for {name}? Their products will become publicly visible.",
+    "rejectTitle": "Reject Store",
+    "rejectMessage": "Reject the store for {name}? Their store and products will be hidden from public.",
+    "noStores": "No stores found"
+  },
   "adminEvents": {
     "title": "Events",
     "subtitle": "Manage sales, offers, polls, surveys, and feedback campaigns",
