@@ -19,6 +19,12 @@ export const ROUTES = {
     AUCTION_DETAIL: (id: string) => `/auctions/${id}`,
     SELLERS: "/sellers",
     SELLER_DETAIL: (id: string) => `/sellers/${id}`,
+    STORES: "/stores",
+    STORE_DETAIL: (storeSlug: string) => `/stores/${storeSlug}`,
+    STORE_PRODUCTS: (storeSlug: string) => `/stores/${storeSlug}/products`,
+    STORE_AUCTIONS: (storeSlug: string) => `/stores/${storeSlug}/auctions`,
+    STORE_REVIEWS: (storeSlug: string) => `/stores/${storeSlug}/reviews`,
+    STORE_ABOUT: (storeSlug: string) => `/stores/${storeSlug}/about`,
     CATEGORIES: "/categories",
     SEARCH: "/search",
     PROMOTIONS: "/promotions",
@@ -78,6 +84,7 @@ export const ROUTES = {
     AUCTIONS: "/seller/auctions",
     ANALYTICS: "/seller/analytics",
     PAYOUTS: "/seller/payouts",
+    STORE: "/seller/store",
   },
 
   // Admin Routes
@@ -124,6 +131,7 @@ export const PUBLIC_ROUTES = [
   ROUTES.PUBLIC.PRODUCTS,
   ROUTES.PUBLIC.AUCTIONS,
   ROUTES.PUBLIC.SELLERS,
+  ROUTES.PUBLIC.STORES,
   ROUTES.PUBLIC.CATEGORIES,
   ROUTES.PUBLIC.SEARCH,
   ROUTES.PUBLIC.PROMOTIONS,

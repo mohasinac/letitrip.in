@@ -2,7 +2,7 @@
 
 > **Complete Index of All Code, Snippets, Functions, Classes, Hooks, Components, and Database Schemas**
 
-**Last Updated**: February 28, 2026  
+**Last Updated**: March 4, 2026  
 **Status**: Comprehensive Reference for LetItRip.in Project
 
 ---
@@ -3324,9 +3324,10 @@ src/features/<name>/
 | `blog`       | `src/features/blog/`       | `BlogCard`, `BlogContent`                                                                                                                                                                                                                                                                                                                                             |
 | `categories` | `src/features/categories/` | `CategoryCard`, `CategoryBreadcrumb`                                                                                                                                                                                                                                                                                                                                  |
 | `admin`      | `src/features/admin/`      | `AdminPageHeader`, `AdminFilterBar`, `DataTable`, `useAdminStats`                                                                                                                                                                                                                                                                                                     |
-| `seller`     | `src/features/seller/`     | `SellerProductTable`, `SellerOrderTable`                                                                                                                                                                                                                                                                                                                              |
+| `seller`     | `src/features/seller/`     | `SellerProductTable`, `SellerOrderTable`, `SellerStoreView`, `SellerAuctionsView`, `useSellerStore`, `useSellerProducts`, `useSellerOrders`                                                                                                                                                                                                                           |
 | `user`       | `src/features/user/`       | `ProfileHeader`, `AddressCard`, `SessionItem`, `useProfile`, `useAddresses`                                                                                                                                                                                                                                                                                           |
 | `events`     | `src/features/events/`     | `EventCard`, `PollVotingSection`, `SurveyEventSection`, `FeedbackEventSection`, `EventLeaderboard`, `EventStatusBadge`, `EventStatsBanner`, `EventFormDrawer`, `EntryReviewDrawer`, `SurveyFieldBuilder`, `useEvents`, `useEvent`, `useEventEntries`, `useEventStats`, `useCreateEvent`, `useUpdateEvent`, `useDeleteEvent`, `useChangeEventStatus`, `useReviewEntry` |
+| `stores`     | `src/features/stores/`     | `StoreCard`, `StoresListView`, `StoreHeader`, `StoreNavTabs`, `StoreProductsView`, `StoreAuctionsView`, `StoreReviewsView`, `StoreAboutView`, `useStores`, `useStoreBySlug`, `useStoreProducts`, `useStoreAuctions`, `useStoreReviews`                                                                                                                                |
 
 > **Migration note**: During the gradual migration, some of the above components may still live under `src/components/<feature>/`. They are accessible from `@/components` until migrated to their feature module folder. New code always goes under `src/features/<name>/`.
 
@@ -3378,7 +3379,26 @@ export * from "./constants";
 
 ---
 
-### Authentication Pages
+### Static / Informational Pages
+
+All static pages follow the same pattern: hero gradient header → content sections → footer links. They are server components using `getTranslations()` from `next-intl`.
+
+| Route            | File                         | i18n namespace | Purpose                                     |
+| ---------------- | ---------------------------- | -------------- | ------------------------------------------- |
+| `/about`         | `app/about/page.tsx`         | `about`        | About LetItRip                              |
+| `/contact`       | `app/contact/page.tsx`       | `contact`      | Contact form                                |
+| `/help`          | `app/help/page.tsx`          | `help`         | Help centre overview                        |
+| `/faqs`          | `app/faqs/page.tsx`          | `faq`          | FAQ list                                    |
+| `/privacy`       | `app/privacy/page.tsx`       | `privacy`      | Privacy Policy                              |
+| `/terms`         | `app/terms/page.tsx`         | `terms`        | Terms & Conditions                          |
+| `/cookies`       | `app/cookies/page.tsx`       | `cookies`      | Cookie Policy                               |
+| `/refund-policy` | `app/refund-policy/page.tsx` | `refundPolicy` | Refund & Returns Policy                     |
+| `/seller-guide`  | `app/seller-guide/page.tsx`  | `sellerGuide`  | Seller onboarding guide                     |
+| `/track`         | `app/track/page.tsx`         | `trackOrder`   | Track Order (sign-in prompt + how-it-works) |
+| `/stores`        | `app/stores/page.tsx`        | `storesPage`   | Browse and explore seller storefronts       |
+| `/promotions`    | `app/promotions/page.tsx`    | `promotions`   | Active promotions                           |
+
+---
 
 #### Login
 
@@ -3527,6 +3547,97 @@ export * from "./constants";
 **Route**: `/admin/sessions`  
 **File**: `app/admin/sessions/page.tsx`  
 **Purpose**: View and revoke user sessions
+
+---
+
+### Seller Dashboard Pages
+
+#### Seller Analytics
+
+**Route**: `/seller`  
+**File**: `app/seller/page.tsx`  
+**Purpose**: Seller overview with sales analytics and quick links
+
+#### Seller Products
+
+**Route**: `/seller/products`  
+**File**: `app/seller/products/page.tsx`  
+**Purpose**: Manage seller's own product listings
+
+#### Seller Orders
+
+**Route**: `/seller/orders`  
+**File**: `app/seller/orders/page.tsx`  
+**Purpose**: View and manage orders for seller's products
+
+#### Seller Payouts
+
+**Route**: `/seller/payouts`  
+**File**: `app/seller/payouts/page.tsx`  
+**Purpose**: Payout history and request payouts
+
+#### Seller Store Settings
+
+**Route**: `/seller/store`  
+**File**: `app/seller/store/page.tsx`  
+**Purpose**: Manage public storefront profile — store name, description, category, logo, banner, return/shipping policy, vacation mode  
+**Component**: `SellerStoreView`  
+**Hook**: `useSellerStore()`  
+**API**: `GET/PATCH /api/seller/store`
+
+#### Seller Auctions
+
+**Route**: `/seller/auctions`  
+**File**: `app/seller/auctions/page.tsx`  
+**Purpose**: Browse and manage the seller's auction listings  
+**Component**: `SellerAuctionsView`
+
+---
+
+### Stores Directory Pages
+
+#### Stores Listing
+
+**Route**: `/stores`  
+**File**: `app/stores/page.tsx`  
+**Purpose**: Public directory of seller storefronts — search by name or category, paginated card grid  
+**Component**: `StoresListView`  
+**i18n**: `storesPage`
+
+#### Store Storefront (Layout)
+
+**Route**: `/stores/[storeSlug]`  
+**File**: `app/stores/[storeSlug]/layout.tsx`  
+**Purpose**: Shared layout wrapping all storefront sub-pages; renders `StoreHeader` and `StoreNavTabs`  
+**Redirect**: `/stores/[storeSlug]` (root) → `/stores/[storeSlug]/products`
+
+#### Store Products
+
+**Route**: `/stores/[storeSlug]/products`  
+**File**: `app/stores/[storeSlug]/products/page.tsx`  
+**Purpose**: Published product listings for the store  
+**Component**: `StoreProductsView`
+
+#### Store Auctions
+
+**Route**: `/stores/[storeSlug]/auctions`  
+**File**: `app/stores/[storeSlug]/auctions/page.tsx`  
+**Purpose**: Active auction listings for the store  
+**Component**: `StoreAuctionsView`
+
+#### Store Reviews
+
+**Route**: `/stores/[storeSlug]/reviews`  
+**File**: `app/stores/[storeSlug]/reviews/page.tsx`  
+**Purpose**: Aggregated buyer reviews with average rating and distribution  
+**Component**: `StoreReviewsView`
+
+#### Store About
+
+**Route**: `/stores/[storeSlug]/about`  
+**File**: `app/stores/[storeSlug]/about/page.tsx`  
+**Purpose**: Store description, category, policies, and seller info  
+**Component**: `StoreAboutView`
 
 ---
 
@@ -3748,6 +3859,19 @@ export * from "./constants";
 ### Upload API
 
 - `POST /api/upload` - Upload file to Firebase Storage
+
+### Seller Store API
+
+- `GET /api/seller/store` — Get the authenticated seller's store profile (auth: seller/admin)
+- `PATCH /api/seller/store` — Update store settings; auto-generates `storeSlug` from `storeName` when none exists (auth: seller/admin)
+
+### Stores API (Public Storefront Directory)
+
+- `GET /api/stores` — Paginated list of active seller storefronts; supports `q`, `sorts`, `page`, `pageSize`
+- `GET /api/stores/[storeSlug]` — Public store profile by slug
+- `GET /api/stores/[storeSlug]/products` — Published products for a store; supports `sorts`, `page`, `pageSize`
+- `GET /api/stores/[storeSlug]/auctions` — Active auctions for a store; supports `sorts`, `page`, `pageSize`
+- `GET /api/stores/[storeSlug]/reviews` — Aggregated reviews for a store with `averageRating`, `totalReviews`, `ratingDistribution`
 
 ### Demo API
 
@@ -4070,8 +4194,9 @@ export * from "./constants";
 | `realtimeTokenService`    | `getToken()` — fetches Firebase Realtime DB custom token from `/api/realtime/token`                                                                                                                                                                                                                                                                                                                                                  |
 | `reviewService`           | `list(params?)`, `listAdmin(sieveQuery?)`, `getByProduct(productId)`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                                |
 | `searchService`           | `query(params)`                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `sellerService`           | `getAnalytics()`, `listProducts(uid)`, `listOrders(params?)`, `listPayouts(params?)`, `requestPayout(data)`                                                                                                                                                                                                                                                                                                                          |
+| `sellerService`           | `getAnalytics()`, `listProducts(uid)`, `listOrders(params?)`, `listPayouts(params?)`, `requestPayout(data)`, `getStore()`, `updateStore(data)`                                                                                                                                                                                                                                                                                       |
 | `sessionService`          | `list()`, `revoke(id)`, `revokeAll()`                                                                                                                                                                                                                                                                                                                                                                                                |
+| `storeService`            | `listStores(params?)`, `getBySlug(slug)`, `getProducts(slug, params?)`, `getAuctions(slug, params?)`, `getReviews(slug)`                                                                                                                                                                                                                                                                                                             |
 | `siteSettingsService`     | `get()`, `update(data)`                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `wishlistService`         | `list()`, `add(productId)`, `remove(productId)`, `check(productId)`                                                                                                                                                                                                                                                                                                                                                                  |
 

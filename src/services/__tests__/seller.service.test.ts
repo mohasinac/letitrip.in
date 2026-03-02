@@ -9,6 +9,7 @@ jest.mock("@/lib/api-client");
 
 const mockGet = jest.mocked(apiClient.get);
 const mockPost = jest.mocked(apiClient.post);
+const mockPatch = jest.mocked(apiClient.patch);
 
 describe("sellerService", () => {
   beforeEach(() => jest.clearAllMocks());
@@ -60,5 +61,18 @@ describe("sellerService", () => {
     expect(mockGet).toHaveBeenCalledWith(
       `${API_ENDPOINTS.PRODUCTS.LIST}?filters=${encodeURIComponent("sellerId==uid_123")}&pageSize=200`,
     );
+  });
+
+  it("getStore() calls GET seller store endpoint", async () => {
+    mockGet.mockResolvedValueOnce({} as never);
+    await sellerService.getStore();
+    expect(mockGet).toHaveBeenCalledWith(API_ENDPOINTS.SELLER.STORE);
+  });
+
+  it("updateStore() calls PATCH with store data", async () => {
+    mockPatch.mockResolvedValueOnce({} as never);
+    const data = { storeName: "My Shop", isVacationMode: false };
+    await sellerService.updateStore(data);
+    expect(mockPatch).toHaveBeenCalledWith(API_ENDPOINTS.SELLER.STORE, data);
   });
 });

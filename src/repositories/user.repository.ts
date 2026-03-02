@@ -318,6 +318,31 @@ export class UserRepository extends BaseRepository<UserDocument> {
       maxPageSize: 500,
     });
   }
+
+  // ---------------------------------------------------------------------------
+  // Store / Storefront queries
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Find a seller by their store slug.
+   * Used by /api/stores/[storeSlug] to resolve the seller.
+   */
+  async findByStoreSlug(storeSlug: string): Promise<UserDocument | null> {
+    return this.findOneBy(USER_FIELDS.STORE_SLUG, storeSlug);
+  }
+
+  /**
+   * Paginated list of all users with role = 'seller' (public store directory).
+   */
+  async listSellers(
+    model: SieveModel,
+  ): Promise<FirebaseSieveResult<UserDocument>> {
+    return this.sieveQuery<UserDocument>(model, UserRepository.SIEVE_FIELDS, {
+      baseQuery: this.getCollection().where(USER_FIELDS.ROLE, "==", "seller"),
+      defaultPageSize: 24,
+      maxPageSize: 100,
+    });
+  }
 }
 
 // Export singleton instance

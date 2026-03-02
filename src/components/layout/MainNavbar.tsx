@@ -27,7 +27,7 @@ export default function MainNavbar() {
     "home",
     "products",
     "auctions",
-    "sellers",
+    "stores",
     "promotions",
   ] as const;
 

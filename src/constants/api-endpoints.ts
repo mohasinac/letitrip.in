@@ -258,6 +258,7 @@ export const API_ENDPOINTS = {
     ANALYTICS: "/api/seller/analytics", // GET - Seller analytics stats (auth: seller)
     PAYOUTS: "/api/seller/payouts", // GET/POST - List/request payouts (auth: seller)
     PRODUCTS: "/api/seller/products", // GET/POST - List/create seller's products (auth: seller)
+    STORE: "/api/seller/store", // GET/PATCH - Get & update store profile (auth: seller)
   },
 
   // Blog endpoints — public
@@ -274,6 +275,15 @@ export const API_ENDPOINTS = {
   // Contact endpoint
   CONTACT: {
     SEND: "/api/contact", // POST - Send a contact message
+  },
+
+  // Stores endpoints (public storefront directory)
+  STORES: {
+    LIST: "/api/stores", // GET - List all seller stores with pagination
+    GET_BY_SLUG: (storeSlug: string) => `/api/stores/${storeSlug}`, // GET - Store by slug
+    PRODUCTS: (storeSlug: string) => `/api/stores/${storeSlug}/products`, // GET - Store products
+    AUCTIONS: (storeSlug: string) => `/api/stores/${storeSlug}/auctions`, // GET - Store auctions
+    REVIEWS: (storeSlug: string) => `/api/stores/${storeSlug}/reviews`, // GET - Store reviews
   },
 
   // Events endpoints (public)

@@ -42,4 +42,11 @@ export const sellerService = {
   /** Create a new product listing for the authenticated seller */
   createProduct: (data: unknown) =>
     apiClient.post(API_ENDPOINTS.SELLER.PRODUCTS, data),
+
+  /** Get the authenticated seller's store profile */
+  getStore: () => apiClient.get(API_ENDPOINTS.SELLER.STORE),
+
+  /** Update the authenticated seller's store profile */
+  updateStore: (data: unknown) =>
+    apiClient.patch(API_ENDPOINTS.SELLER.STORE, data),
 };

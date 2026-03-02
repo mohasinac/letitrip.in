@@ -25,6 +25,7 @@ export default function SellerTabs() {
     { href: ROUTES.SELLER.PRODUCTS, label: t("myProducts") },
     { href: ROUTES.SELLER.AUCTIONS, label: t("myAuctions") },
     { href: ROUTES.SELLER.ORDERS, label: t("mySales") },
+    { href: ROUTES.SELLER.STORE, label: t("myStore") },
   ];
   return <SectionTabs tabs={tabs} variant="admin" />;
 }

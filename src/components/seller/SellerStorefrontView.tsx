@@ -318,7 +318,7 @@ export function SellerStorefrontView({
         {/* Back link */}
         <div className="text-center">
           <Link
-            href={ROUTES.PUBLIC.SELLERS}
+            href={ROUTES.PUBLIC.STORES}
             className="text-primary-600 hover:underline text-sm"
           >
             ← {tSf("back")}

@@ -182,6 +182,7 @@
     "products": "Products",
     "auctions": "Auctions",
     "sellers": "Sellers",
+    "stores": "Stores",
     "categories": "Categories",
     "promotions": "Promotions",
     "profile": "Profile",
@@ -221,7 +222,8 @@
     "newsletterAdmin": "Newsletter",
     "eventsAdmin": "Events",
     "myWishlist": "My Wishlist",
-    "myAddresses": "My Addresses"
+    "myAddresses": "My Addresses",
+    "myStore": "My Store"
   },
   "auth": {
     "login": {
@@ -1043,6 +1045,101 @@
     "signInPrompt": "Already have an account?",
     "signInLink": "Sign in"
   },
+  "storesPage": {
+    "metaTitle": "Stores — Browse Seller Storefronts",
+    "metaDescription": "Discover seller stores on LetItRip. Browse unique products, live auctions, and trusted sellers.",
+    "title": "Stores",
+    "subtitle": "Browse all seller stores — discover unique products and trusted sellers",
+    "searchPlaceholder": "Search stores...",
+    "noStores": "No stores found",
+    "noStoresSubtitle": "Try adjusting your search or check back soon",
+    "showingCount": "{count} stores",
+    "viewStore": "Visit Store",
+    "productCount": "{count} products",
+    "productsCount": "{count} products",
+    "memberSince": "Joined",
+    "sellerBadge": "Verified Seller",
+    "loading": "Loading stores...",
+    "becomeSeller": "Want to sell on LetItRip?",
+    "becomeSellerCta": "Start Selling",
+    "empty": {
+      "title": "No stores yet",
+      "description": "Sellers haven't set up their storefronts yet. Check back soon!"
+    },
+    "emptySearch": {
+      "title": "No stores found",
+      "description": "Try a different search term or browse all stores."
+    },
+    "error": {
+      "title": "Failed to load stores",
+      "description": "Something went wrong. Please refresh and try again."
+    }
+  },
+  "storePage": {
+    "tabs": {
+      "products": "Products",
+      "auctions": "Auctions",
+      "reviews": "Reviews",
+      "about": "About"
+    },
+    "loading": "Loading store...",
+    "notFound": "Store not found",
+    "notFoundDesc": "This store may no longer exist or the link is incorrect.",
+    "backToStores": "Back to Stores",
+    "memberSince": "Member since",
+    "totalProducts": "Products",
+    "totalSales": "Sales",
+    "totalReviews": "Reviews",
+    "rating": "Rating",
+    "visitProfile": "View Profile",
+    "reviewCount": "{count} reviews",
+    "productCount": "{count} products",
+    "noProducts": "No products yet",
+    "noProductsDesc": "This store hasn't listed any products yet.",
+    "noAuctions": "No active auctions",
+    "noAuctionsDesc": "This store has no live auctions at the moment.",
+    "noReviews": "No reviews yet",
+    "noReviewsDesc": "This store hasn't received any reviews yet.",
+    "auctionBadge": "Auction",
+    "verifiedPurchase": "Verified Purchase",
+    "storeDescription": "Store Description",
+    "storeCategory": "Category",
+    "contactSeller": "Contact Seller",
+    "allProductsLink": "See all products",
+    "allAuctionsLink": "See all auctions",
+    "filteredBy": "Filtered by seller",
+    "error": {
+      "title": "Something went wrong",
+      "description": "Unable to load this section. Please try again."
+    },
+    "products": {
+      "empty": {
+        "title": "No products yet",
+        "description": "This store hasn't listed any products yet."
+      }
+    },
+    "auctions": {
+      "empty": {
+        "title": "No active auctions",
+        "description": "This store has no live auctions at the moment."
+      }
+    },
+    "reviews": {
+      "empty": {
+        "title": "No reviews yet",
+        "description": "This store hasn't received any reviews yet."
+      },
+      "outOf5": "out of 5",
+      "totalCount": "{count} total reviews",
+      "anonymous": "Anonymous"
+    },
+    "about": {
+      "category": "Category",
+      "location": "Location",
+      "website": "Website",
+      "memberSince": "Member since"
+    }
+  },
   "help": {
     "title": "Help Center",
     "subtitle": "Find quick answers to common questions",
@@ -1057,6 +1154,55 @@
     "contactPrompt": "Still need help?",
     "contactLink": "Contact our support team",
     "faqsLink": "Browse all FAQs"
+  },
+  "sellerStore": {
+    "sectionStoreDetails": "Store Details",
+    "sectionStoreDetailsSubtitle": "Set your store name, description, and logo.",
+    "storeUrlLabel": "Public store URL:",
+    "storeName": "Store Name",
+    "storeNamePlaceholder": "e.g. Himalaya Treks Gear",
+    "storeDescription": "Store Description",
+    "storeDescriptionPlaceholder": "Briefly describe what your store sells...",
+    "storeDescriptionHelp": "Max 500 characters. Shown on your public storefront.",
+    "storeCategory": "Primary Category",
+    "storeCategoryPlaceholder": "e.g. Trekking Equipment",
+    "bio": "Seller Bio",
+    "bioPlaceholder": "A short bio about you as a seller...",
+    "bioHelp": "Max 300 characters.",
+    "storeLogoURL": "Store Logo URL",
+    "storeBannerURL": "Store Banner URL",
+    "storeVisibilityLabel": "Public Store",
+    "storeVisibilityHelp": "Make your storefront visible to buyers",
+    "sectionSocial": "Contact & Social",
+    "sectionSocialSubtitle": "Help buyers find and connect with you.",
+    "website": "Website",
+    "location": "Location",
+    "locationPlaceholder": "e.g. Mumbai, India",
+    "sectionPolicies": "Store Policies",
+    "sectionPoliciesSubtitle": "Clear policies build buyer trust.",
+    "returnPolicy": "Return & Refund Policy",
+    "returnPolicyPlaceholder": "Describe your return policy...",
+    "shippingPolicy": "Shipping Policy",
+    "shippingPolicyPlaceholder": "Describe shipping times, carriers, costs...",
+    "sectionVacation": "Vacation Mode",
+    "sectionVacationSubtitle": "Pause your store while you are away. Listings will be hidden from search.",
+    "vacationActiveTitle": "Vacation mode is ON",
+    "vacationActiveDefault": "This store is currently on vacation.",
+    "vacationMessage": "Vacation Message",
+    "vacationMessagePlaceholder": "e.g. Back on 15 March 2026. Orders placed now will ship after my return.",
+    "vacationMessageHelp": "Shown to buyers visiting your store.",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "saveFailed": "Failed to save store settings"
+  },
+  "sellerAuctions": {
+    "colTitle": "Title",
+    "colStatus": "Status",
+    "colEnds": "Ends",
+    "colStartingBid": "Starting Bid",
+    "noAuctions": "No auctions yet",
+    "noAuctionsSubtitle": "Create a product and mark it as an auction to see it here.",
+    "searchPlaceholder": "Search auctions..."
   },
   "sellerDashboard": {
     "welcome": "Welcome back, {name}",
@@ -1559,5 +1705,99 @@
     "phoneNotVerifiedMessage": "Verify your phone number to enable SMS notifications.",
     "verifying": "Verifying...",
     "verify": "Verify Phone Number"
+  },
+  "cookies": {
+    "title": "Cookie Policy",
+    "lastUpdated": "Last updated: March 2, 2026",
+    "subtitle": "This Cookie Policy explains how LetItRip uses cookies and similar tracking technologies when you visit our platform.",
+    "whatTitle": "What Are Cookies?",
+    "whatText": "Cookies are small text files stored on your device when you visit a website. They help us remember your preferences, keep you signed in, and understand how you use our platform.",
+    "typesTitle": "Types of Cookies We Use",
+    "typesText": "We use essential cookies (required for core functionality), preference cookies (to remember your settings and language), analytics cookies (to understand usage patterns), and marketing cookies (to show relevant promotions). You can control non-essential cookies from your browser settings.",
+    "essentialTitle": "Essential Cookies",
+    "essentialText": "These cookies are necessary for the platform to function and cannot be disabled. They include session cookies for authentication, security tokens, and cart state.",
+    "analyticsTitle": "Analytics Cookies",
+    "analyticsText": "We use analytics cookies to understand how visitors interact with our platform, which pages are most popular, and where users encounter issues. This data helps us improve your experience.",
+    "marketingTitle": "Marketing Cookies",
+    "marketingText": "Marketing cookies help us show you relevant promotions and measure the effectiveness of our advertising. You may opt out of these without affecting core functionality.",
+    "controlTitle": "Managing Your Cookie Preferences",
+    "controlText": "Most browsers allow you to refuse or delete cookies through their settings. Disabling essential cookies may affect platform functionality. Refer to your browser's help documentation for instructions.",
+    "thirdPartyTitle": "Third-Party Cookies",
+    "thirdPartyText": "Some of our service providers (such as analytics and payment processors) may also set cookies. These are governed by their respective privacy policies.",
+    "changesTitle": "Changes to This Policy",
+    "changesText": "We may update this Cookie Policy from time to time. Any changes will be posted on this page with an updated revision date.",
+    "contactTitle": "Contact Us",
+    "contactText": "If you have questions about our use of cookies, please contact us via our Contact page.",
+    "privacyPolicy": "Privacy Policy",
+    "contactUs": "Contact Us"
+  },
+  "refundPolicy": {
+    "title": "Refund Policy",
+    "lastUpdated": "Last updated: March 2, 2026",
+    "subtitle": "We want you to be completely satisfied with your purchase. Please read our refund policy carefully.",
+    "eligibilityTitle": "Refund Eligibility",
+    "eligibilityText": "Items are eligible for a refund if they are returned within 7 days of delivery in their original condition, unused, and in original packaging. Certain product categories (e.g. perishables, digital goods, customised items) are excluded from returns.",
+    "processTitle": "How to Initiate a Refund",
+    "processText": "Log in to your account, navigate to My Orders, select the order, and click 'Request Refund'. Provide a reason and upload supporting photos if applicable. Our team will review your request within 2 business days.",
+    "timelineTitle": "Refund Timeline",
+    "timelineText": "Approved refunds are processed within 5–7 business days. The amount is credited back to your original payment method. Bank processing times may add an additional 2–3 business days.",
+    "auctionsTitle": "Auction Purchases",
+    "auctionsText": "Auction purchases are generally final. Refunds are only available if the item received significantly differs from its description or arrives damaged. Please contact support immediately with photographic evidence.",
+    "exchangesTitle": "Exchanges",
+    "exchangesText": "We offer exchanges for items of the same value. To request an exchange, follow the same process as a refund request and select 'Exchange' as the resolution type.",
+    "shippingTitle": "Return Shipping",
+    "shippingText": "Customers are responsible for return shipping costs unless the item was defective, damaged, or incorrectly sent. We recommend using a trackable shipping method.",
+    "nonRefundableTitle": "Non-Refundable Items",
+    "nonRefundableText": "Gift cards, downloadable software, personalised items, and items marked as final sale are not eligible for refunds.",
+    "contactTitle": "Need Help?",
+    "contactText": "If you have any questions about our refund policy or need assistance with a return, please reach out via our Contact page or Help Center.",
+    "helpCenter": "Help Center",
+    "contactUs": "Contact Us"
+  },
+  "sellerGuide": {
+    "title": "Seller Guide",
+    "subtitle": "Everything you need to know to start selling on LetItRip and grow your business.",
+    "gettingStartedTitle": "Getting Started",
+    "gettingStartedText": "To become a seller on LetItRip, create a free account, complete your seller profile with business details, and wait for verification (usually within 24 hours). Once approved, you can start listing products immediately.",
+    "listingTitle": "Creating Listings",
+    "listingText": "Go to your Seller Dashboard and click 'Add Product'. Fill in the product title, description, category, condition, and price. Upload high-quality photos from multiple angles. Strong titles and detailed descriptions improve search visibility and buyer confidence.",
+    "pricingTitle": "Pricing & Fees",
+    "pricingText": "Listing products is free. LetItRip charges a small commission on each successful sale. Auction listings may have different fee structures. Review the current fee schedule in your Seller Dashboard under Settings > Fees.",
+    "auctionsTitle": "Running Auctions",
+    "auctionsText": "You can list eligible items as auctions with a starting bid and optional reserve price. Set a duration between 1 and 14 days. Winning bidders are automatically notified and have 48 hours to complete payment.",
+    "ordersTitle": "Managing Orders",
+    "ordersText": "When a buyer purchases your item, you will receive a notification. Ship the order within your stated handling time (default 2 business days). Update the tracking number in your order dashboard to keep buyers informed.",
+    "paymentsTitle": "Payments & Payouts",
+    "paymentsText": "Earnings are held for a short settlement period after delivery confirmation. Payouts are processed to your registered bank account on a weekly basis. You can view your earnings and payout history in the Seller Dashboard.",
+    "policiesTitle": "Seller Policies",
+    "policiesText": "All sellers must adhere to LetItRip's Seller Code of Conduct: accurate descriptions, prompt shipping, responsive communication, and no counterfeit goods. Violations may result in account suspension.",
+    "supportTitle": "Seller Support",
+    "supportText": "Our seller support team is available via the Help Center. For urgent issues, use the in-platform chat available in your Seller Dashboard.",
+    "startSelling": "Start Selling",
+    "helpCenter": "Help Center",
+    "contactUs": "Contact Us"
+  },
+  "trackOrder": {
+    "title": "Track Your Order",
+    "subtitle": "Enter your order ID or tracking number to get real-time updates on your shipment.",
+    "orderIdLabel": "Order ID or Tracking Number",
+    "orderIdPlaceholder": "e.g. LIT-20260302-001",
+    "searchButton": "Track",
+    "signInPrompt": "Sign in to your account to view all your orders and their status in one place.",
+    "viewOrders": "View My Orders",
+    "signIn": "Sign In",
+    "howItWorksTitle": "How Order Tracking Works",
+    "step1Title": "Order Placed",
+    "step1Text": "Your order is confirmed and the seller is notified to prepare your item.",
+    "step2Title": "Item Dispatched",
+    "step2Text": "The seller ships your item and updates the tracking number in the system.",
+    "step3Title": "In Transit",
+    "step3Text": "Your package is on its way. Track it using the tracking number provided.",
+    "step4Title": "Delivered",
+    "step4Text": "Your order has been delivered. Enjoy your purchase!",
+    "needHelpTitle": "Need Help?",
+    "needHelpText": "If your tracking number isn't updating or your order seems delayed, our support team is here to help.",
+    "contactSupport": "Contact Support",
+    "helpCenter": "Help Center"
   }
 }

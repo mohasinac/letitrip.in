@@ -13,6 +13,125 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-03-04] — Seller Store Settings & Auctions Pages
+
+### Added
+
+- **`src/features/seller/hooks/useSellerStore.ts`** — New hook; fetches seller store profile via `sellerService.getStore()` (queryKey `["seller-store"]`); exposes `updateStore(data)` mutation that calls `sellerService.updateStore(data)` then refetches. Returns `{ publicProfile, storeSlug, isLoading, isSaving, error, updateStore, refetch }`.
+- **`src/features/seller/components/SellerStoreView.tsx`** — Full store-settings form (4 sections: Store Details, Contact & Social, Store Policies, Vacation Mode). Uses `useSellerStore`, `FormField`, `Toggle`, `Alert`, `Card`, `Heading`, `Text`, `Caption`, `Label`, `Divider`, `Button`, `Spinner` from `@/components`. Auto-redirects unauthenticated users to login.
+- **`src/features/seller/components/SellerAuctionsView.tsx`** — Paginated auction listings view for sellers; uses `useApiQuery → sellerService.listMyProducts` with `isAuction==true` Sieve filter + `useUrlTable` for URL-driven pagination/sort; renders with `DataTable` + `SellerProductCard` mobileCardRender.
+- **`src/app/[locale]/seller/store/page.tsx`** — Thin page shell; renders `SellerStoreView` with `AdminPageHeader` titled "Store Settings".
+- **`src/app/[locale]/seller/auctions/page.tsx`** — Thin page shell; renders `SellerAuctionsView` with `AdminPageHeader` titled "My Auctions".
+- **`GET /api/seller/store`** — Returns store profile for authenticated sellers/admins (`userRepository.findById`).
+- **`PATCH /api/seller/store`** — Updates store settings; validates payload with Zod; auto-generates `storeSlug` from `storeName` when no slug exists (using `slugify`); preserves existing slug otherwise; updates `publicProfile` + optional `storeSlug` via `userRepository.update`.
+- **`sellerService.getStore()`** and **`sellerService.updateStore(data)`** — New service methods for the store endpoints.
+- **i18n**: Added `sellerStore` (35 keys) and `sellerAuctions` (7 keys) namespaces to `messages/en.json` and `messages/hi.json`; added `nav.myStore` key.
+
+### Tests Added
+
+- `src/services/__tests__/seller.service.test.ts` — Extended with `getStore()` and `updateStore()` tests.
+- `src/features/seller/hooks/__tests__/useSellerStore.test.ts` — 5 tests covering queryKey, service delegation, mutation behaviour, and loading state.
+- `src/features/seller/components/__tests__/SellerStoreView.test.tsx` — 3 tests: renders all 4 sections, shows spinner when loading, hides vacation alert by default.
+- `src/features/seller/components/__tests__/SellerAuctionsView.test.tsx` — 5 tests: filter bar renders, empty title shown, no pagination at total=0, service called with auction filter, pagination shows when total > 0.
+- `src/app/[locale]/seller/store/__tests__/page.test.tsx` — Page shell test.
+- `src/app/[locale]/seller/auctions/__tests__/page.test.tsx` — Page shell test.
+- `src/app/api/seller/store/__tests__/route.test.ts` — 8 tests covering GET and PATCH RBAC, slug generation, slug preservation, validation, and error handling.
+
+---
+
+## [2026-03-03] — Stores Feature Audit Fixes
+
+### Fixed
+
+- **`StoreCard`** — removed unused `themed` and `borderRadius` from `THEME_CONSTANTS` destructure; only `spacing` is referenced.
+- **`StoresListView`** — corrected `Input value={table.get("q") ?? ""}` (`string | undefined` → `string`); added `Heading level={1}` page title and `Text` subtitle using `t("title")` / `t("subtitle")` from the `storesPage` namespace.
+- **`StoreProductsView`** + **`StoreAuctionsView`** — replaced raw `<div>` placeholder cards + bare `<p>` tags with `Card` / `Text` primitives from `@/components` (Rules 8, 31).
+- **`StoreReviewsView`** — replaced bare `<span className="text-4xl font-bold ...">` with `<Heading level={2}>` (Rule 31).
+- **`StoreAboutView`** — replaced hardcoded `text-gray-500 dark:text-gray-400` / `text-gray-900 dark:text-white` on `<dt>`/`<dd>` elements with `THEME_CONSTANTS.themed.textSecondary` / `themed.textPrimary` (Rule 4).
+
+---
+
+## [2026-03-03] — Stores Feature (Buyer Storefront Directory)
+
+### Added
+
+- **`src/features/stores/`** — New Tier 2 feature module: buyer-facing storefront directory.
+  - `components/StoreCard.tsx` — Card displaying store banner, logo (`AvatarDisplay`), name, description, category badge, and stats (rating, product count). Links to the store detail page.
+  - `components/StoresListView.tsx` — Paginated grid of all stores with inline `Input` search; uses `useStores` + `useUrlTable` for URL-driven pagination/search.
+  - `components/StoreHeader.tsx` — Client component; shows store banner image, avatar, name, category, rating, review count, and description. Renders a `Skeleton` while loading.
+  - `components/StoreNavTabs.tsx` — Sticky tab bar (Products / Auctions / Reviews / About) rooted at the store slug routes.
+  - `components/StoreProductsView.tsx` — Paginated grid of the store's published products; uses `useStoreProducts` + `useUrlTable`.
+  - `components/StoreAuctionsView.tsx` — Paginated grid of the store's auction listings; uses `useStoreAuctions` + `useUrlTable`.
+  - `components/StoreReviewsView.tsx` — Aggregated review summary (average rating, star distribution) + individual review cards; uses `useStoreReviews`.
+  - `components/StoreAboutView.tsx` — Store detail card (description, category, bio, location, website, member since); uses `useStoreBySlug`.
+  - `hooks/useStores.ts` — Paginated store list via `storeService.listStores` with `useUrlTable` URL state.
+  - `hooks/useStoreBySlug.ts` — `useStoreBySlug`, `useStoreReviews`, `useStoreProducts`, `useStoreAuctions` — all backed by `storeService`.
+  - `types/index.ts` — `StoreListItem`, `StoreDetail`, `StoreReviewsData`, `StoreReview` interfaces.
+  - `index.ts` — Public barrel re-exporting all components, hooks, and types.
+
+- **`src/services/store.service.ts`** — `storeService` with `listStores`, `getBySlug`, `getProducts`, `getAuctions`, `getReviews`; exported via `src/services/index.ts`.
+
+- **API routes** (all dynamic, server-rendered):
+  - `src/app/api/stores/route.ts` — `GET /api/stores` — paginated seller list (Sieve query via `userRepository.listSellers`).
+  - `src/app/api/stores/[storeSlug]/route.ts` — `GET /api/stores/[storeSlug]` — single store by slug.
+  - `src/app/api/stores/[storeSlug]/products/route.ts` — `GET /api/stores/[storeSlug]/products` — store's published products.
+  - `src/app/api/stores/[storeSlug]/auctions/route.ts` — `GET /api/stores/[storeSlug]/auctions` — store's auction listings.
+  - `src/app/api/stores/[storeSlug]/reviews/route.ts` — `GET /api/stores/[storeSlug]/reviews` — aggregated reviews with `averageRating`, `totalReviews`, `ratingDistribution`.
+
+- **Pages** (`src/app/[locale]/stores/`):
+  - `page.tsx` — Stores listing page composing `StoresListView`.
+  - `[storeSlug]/layout.tsx` — Store layout: `StoreHeader` + `StoreNavTabs` + `{children}`.
+  - `[storeSlug]/page.tsx` — Redirects to `/stores/[storeSlug]/products`.
+  - `[storeSlug]/products/page.tsx`, `auctions/page.tsx`, `reviews/page.tsx`, `about/page.tsx` — Individual store sub-pages.
+
+- **`src/db/schema/users.ts`** — Added `storeSlug?: string` (top-level, indexed), and store profile fields (`storeName`, `storeDescription`, `storeCategory`, `storeLogoURL`, `storeBannerURL`) nested under `publicProfile`.
+
+- **`src/db/schema/field-names.ts`** — Added `USER_FIELDS.STORE_SLUG`, `USER_FIELDS.PROFILE.STORE_NAME`, `USER_FIELDS.PROFILE.STORE_DESCRIPTION`, `USER_FIELDS.PROFILE.STORE_CATEGORY`, `USER_FIELDS.PROFILE.STORE_LOGO_URL`, `USER_FIELDS.PROFILE.STORE_BANNER_URL`.
+
+- **`src/constants/routes.ts`** — Added `ROUTES.PUBLIC.STORES`, `STORE_DETAIL`, `STORE_PRODUCTS`, `STORE_AUCTIONS`, `STORE_REVIEWS`, `STORE_ABOUT`.
+
+- **`src/constants/api-endpoints.ts`** — Added `API_ENDPOINTS.STORES.*`.
+
+- **`src/repositories/user.repository.ts`** — Added `findByStoreSlug(storeSlug)` and `listSellers(model)` methods.
+
+- **`messages/en.json`** and **`messages/hi.json`** — Added `stores` nav key and `storesPage` / `storePage` translation namespaces.
+
+### Changed
+
+- **`src/constants/navigation.tsx`** — Changed 4th nav item from `sellers` (recruitment) to `stores` (storefront directory).
+- **`src/components/layout/MainNavbar.tsx`** — Updated `navTranslationKeys[3]` from `"sellers"` to `"stores"`.
+- **`src/constants/site.ts`** — Updated `nav.stores` pointing to `ROUTES.PUBLIC.STORES`.
+- **`src/components/seller/SellerStorefrontView.tsx`** — Updated back link from `ROUTES.PUBLIC.SELLERS` to `ROUTES.PUBLIC.STORES`.
+
+---
+
+## [2026-03-02] — Missing Footer Static Pages
+
+### Added
+
+- **`src/app/[locale]/cookies/page.tsx`** — Cookie Policy static page with 8 content sections (what are cookies, types, essential, analytics, marketing, control, third-party, changes). Follows the same hero + sections layout as Privacy and Terms pages.
+- **`src/app/[locale]/refund-policy/page.tsx`** — Refund Policy static page with 7 sections (eligibility, process, timeline, auctions, exchanges, return shipping, non-refundable items). Emerald gradient header.
+- **`src/app/[locale]/seller-guide/page.tsx`** — Seller Guide page with 8 icon-card sections (getting started, listings, pricing, auctions, orders, payments, policies, support). Violet/indigo gradient header with CTA to Seller Dashboard.
+- **`src/app/[locale]/track/page.tsx`** — Track Order page with sign-in prompt, 4-step "how it works" grid, and support CTA. Directs authenticated users to `/user/orders`.
+- `messages/en.json` — added `cookies`, `refundPolicy`, `sellerGuide`, and `trackOrder` translation namespaces.
+- `messages/hi.json` — added matching Hindi translations for all four new namespaces.
+
+---
+
+## [2026-03-02] — Docs Reorganisation
+
+### Changed
+
+- **`docs/README.md`** — removed broken link to `IMPLEMENTATION_PLAN.md` (file was removed); added `CHANGELOG_ARCHIVE.md` entry.
+- **`docs/CHANGELOG.md`** — archived pre-February 2026 versioned sections (`[1.0.0]`–`[1.2.0]`) to `CHANGELOG_ARCHIVE.md`; removed stale `refactor_audit.md` bullet references (file was removed).
+- **`docs/GUIDE.md`**, **`docs/SECURITY.md`**, **`docs/STYLING_GUIDE.md`**, **`docs/QUICK_REFERENCE.md`** — updated stale "Last Updated" dates to March 2, 2026.
+
+### Added
+
+- **`docs/CHANGELOG_ARCHIVE.md`** — new archive file holding `[1.0.0]`–`[1.2.0]` history (initial setup through early-February 2026 infrastructure work).
+
+---
+
 ## [2026-03-03] — Refactor Audit WAVE 5 Complete (tasks 94–105)
 
 ### Fixed
@@ -32,7 +151,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `FilterFacetSection` — `p` → `Text size="xs" variant="secondary"` (task 105)
 - **Tests updated** — all 12 source files have corresponding test additions/updates.
 - **TypeScript** — fixed `Text size="3xl"` (invalid enum value) → `className="text-3xl"`; fixed `import type React` → `import React` in test; added missing `OrderDocument`/`NotificationDocument` required fields in test fixtures.
-- **`docs/refactor_audit.md`** — all 12 subtask checkboxes marked `[x]`; WAVE 5 fully complete.
 
 ---
 
@@ -53,7 +171,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **`docs/refactor_audit.md`** — audit re-run #4 (2026-03-02): marked tasks 80–93 as done; added Wave 5 (tasks 94–105) with 12 newly discovered Rules 7/8/31 typography violations in `AddressCard`, `SellersListView`, `OrderTrackingView`, `NotificationItem`, `ProductDetailView`, `AddressForm`, `ProfileStatsGrid`, `EmailVerificationCard`, `PhoneVerificationCard`, `AddressSelectorCreate`, `Search`, and `FilterFacetSection`; updated Summary table to 105 total tasks.
+- Audit re-run #4: marked tasks 80–93 as done; identified Wave 5 (tasks 94–105) with 12 newly discovered Rules 7/8/31 violations in `AddressCard`, `SellersListView`, `OrderTrackingView`, `NotificationItem`, `ProductDetailView`, `AddressForm`, `ProfileStatsGrid`, `EmailVerificationCard`, `PhoneVerificationCard`, `AddressSelectorCreate`, `Search`, and `FilterFacetSection`.
 
 ---
 
@@ -1312,96 +1430,7 @@ _Phases 1–16_
 - Code deduplication: shared `DataTable`, `SideDrawer`, `AdminFilterBar` adopted across all 15 admin pages.
 - RBAC: `RBAC_CONFIG`, `ProtectedRoute`, `useHasRole`, `useIsAdmin`, `useIsSeller`, `useRBAC`.
 
----
-
-## [1.2.0] - 2026-02-05
-
-### Added
-
-- Centralized API client system (`src/lib/api-client.ts`)
-- API endpoint constants (`src/constants/api-endpoints.ts`)
-- React hooks for data fetching (`useApiQuery`) and mutations (`useApiMutation`)
-- Authentication hooks (`useAuth.ts`) with 7 specialized hooks
-- Profile management hooks (`useProfile.ts`)
-- Error handling with `ApiClientError` class
-- Automatic authentication via session cookies
-- Request timeout handling (30s default)
-
-### Changed
-
-- Refactored profile page to use new hooks and components
-- Refactored auth pages (forgot-password, reset-password, register, verify-email)
-- Updated all pages to use `FormField` component
-- Updated all pages to use `PasswordStrengthIndicator` component
-- Replaced all direct `fetch()` calls with `apiClient`
-- Reorganized hook exports in `src/hooks/index.ts`
-
-### Fixed
-
-- TypeScript errors in FormField component usage
-- Error message constant references
-- Password validation edge cases
-- Form field type validation
-
-### Deprecated
-
-- `useApiRequest` hook (use `useApiQuery` or `useApiMutation`)
-- Direct usage of `auth-utils` functions (use `useAuth` hooks)
-
-### Removed
-
-- Direct fetch calls from all pages
-- Duplicate form validation logic
-- Manual password strength calculations
-
-### Security
-
-- Added centralized error handling with status codes
-- Implemented proper input validation on all forms
-- Added timeout protection for API calls
-
----
-
-## [1.1.0] - 2026-01-15
-
-### Added
-
-- Profile page with avatar upload
-- Email verification functionality
-- Password change feature
-- Display name and phone number updates
-
-### Changed
-
-- Updated user profile schema
-- Enhanced authentication flow
-
-### Fixed
-
-- Session persistence issues
-- Profile image upload errors
-
----
-
-## [1.0.0] - 2026-01-01
-
-### Added
-
-- Initial project setup with Next.js 16.1.1
-- Authentication system with NextAuth v5
-- User registration and login
-- Mobile-first component library (40+ components)
-- Dark mode support with theme context
-- TypeScript configuration
-- Tailwind CSS styling
-- Testing setup with Jest
-- Documentation structure
-
-### Security
-
-- CSRF protection
-- Secure password hashing
-- Environment variable management
+> **Version history (v1.0.0 – v1.2.0, January–February 2026)** has been moved to [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md).
 
 ---
 

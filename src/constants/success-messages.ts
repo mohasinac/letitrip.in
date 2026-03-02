@@ -25,6 +25,7 @@ export const SUCCESS_MESSAGES = {
     USER_UPDATED: "User updated successfully",
     PHONE_VERIFIED: "Phone number verified successfully",
     ACCOUNT_DELETED: "User account deleted successfully",
+    STORE_UPDATED: "Store settings saved successfully",
   },
 
   // Upload Success

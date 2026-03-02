@@ -32,6 +32,9 @@ export interface UserDocument {
   createdAt: Date;
   updatedAt: Date;
 
+  // Store identity (set when a user becomes a seller)
+  storeSlug?: string; // Indexed, URL-safe slug — format: store-<storeName>-<sellerName>
+
   // Public profile settings
   publicProfile?: {
     isPublic: boolean; // Whether profile is publicly viewable
@@ -48,6 +51,17 @@ export interface UserDocument {
       facebook?: string;
       linkedin?: string;
     };
+    // Store-specific fields (populated when role = 'seller')
+    storeName?: string; // Display name for the store
+    storeDescription?: string; // Store description / tagline
+    storeCategory?: string; // Primary product category
+    storeLogoURL?: string; // Optional separate store logo
+    storeBannerURL?: string; // Optional store banner image
+    storeReturnPolicy?: string; // Return & refund policy text
+    storeShippingPolicy?: string; // Shipping info / estimated delivery text
+    // Vacation mode (seller pauses all listings)
+    isVacationMode?: boolean; // Hides listings and shows vacation banner
+    vacationMessage?: string; // Custom message shown to buyers
   };
 
   // User statistics (for public display)
@@ -103,6 +117,7 @@ export const USER_INDEXED_FIELDS = [
   "disabled",
   "emailVerified",
   "phoneVerified",
+  "storeSlug", // Indexed for /stores/[storeSlug] lookups
 ] as const;
 
 /**
@@ -115,7 +130,8 @@ export const USER_PUBLIC_FIELDS = [
   "avatarMetadata",
   "role",
   "createdAt",
-  "publicProfile", // Includes visibility settings
+  "storeSlug", // Public — used to build /stores/<storeSlug> URLs
+  "publicProfile", // Includes visibility settings + storeName/storeDescription
   "stats", // Public statistics
   // Conditionally include based on publicProfile settings:
   // - email (if showEmail is true)

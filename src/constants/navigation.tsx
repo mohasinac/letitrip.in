@@ -27,12 +27,12 @@ export interface NavItem {
 /**
  * Main Navigation Items (icon + href data)
  * Labels injected by MainNavbar via useTranslations("nav").
- * Translation key order: home, products, auctions, sellers, promotions
+ * Translation key order: home, products, auctions, stores, promotions
  */
 export const MAIN_NAV_ITEMS: NavItem[] = [
   { href: SITE_CONFIG.nav.home, icon: <Home className="w-5 h-5" /> },
   { href: SITE_CONFIG.nav.products, icon: <ShoppingBag className="w-5 h-5" /> },
   { href: SITE_CONFIG.nav.auctions, icon: <Gavel className="w-5 h-5" /> },
-  { href: SITE_CONFIG.nav.sellers, icon: <Store className="w-5 h-5" /> },
+  { href: SITE_CONFIG.nav.stores, icon: <Store className="w-5 h-5" /> },
   { href: SITE_CONFIG.nav.promotions, icon: <Tag className="w-5 h-5" /> },
 ];

@@ -1,0 +1,87 @@
+import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
+import { Heading, Text } from "@/components";
+import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+
+const { themed } = THEME_CONSTANTS;
+
+export async function generateMetadata() {
+  return {
+    title: `Cookie Policy — ${SITE_CONFIG.brand.name}`,
+    description:
+      "Learn how LetItRip uses cookies and tracking technologies on our platform.",
+  };
+}
+
+export default async function CookiePolicyPage() {
+  const t = await getTranslations("cookies");
+
+  const SECTIONS = [
+    { title: t("whatTitle"), text: t("whatText") },
+    { title: t("typesTitle"), text: t("typesText") },
+    { title: t("essentialTitle"), text: t("essentialText") },
+    { title: t("analyticsTitle"), text: t("analyticsText") },
+    { title: t("marketingTitle"), text: t("marketingText") },
+    { title: t("controlTitle"), text: t("controlText") },
+    { title: t("thirdPartyTitle"), text: t("thirdPartyText") },
+    { title: t("changesTitle"), text: t("changesText") },
+  ];
+
+  return (
+    <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
+      {/* Header */}
+      <section className="bg-gradient-to-br from-slate-700 to-slate-900 text-white py-14 md:py-16 lg:py-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Heading level={1} className="mb-3 text-white">
+            {t("title")}
+          </Heading>
+          <Text className="text-slate-300">{t("lastUpdated")}</Text>
+        </div>
+      </section>
+
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12 lg:py-16">
+        <Text size="lg" variant="secondary" className="mb-10">
+          {t("subtitle")}
+        </Text>
+
+        <div className="space-y-8">
+          {SECTIONS.map(({ title, text }) => (
+            <section key={title}>
+              <Heading level={2} className="mb-3">
+                {title}
+              </Heading>
+              <Text variant="secondary" className="leading-relaxed">
+                {text}
+              </Text>
+            </section>
+          ))}
+
+          {/* Contact */}
+          <section
+            className={`${themed.bgSecondary} rounded-xl p-6 border ${themed.border}`}
+          >
+            <Heading level={2} className="mb-2">
+              {t("contactTitle")}
+            </Heading>
+            <Text variant="secondary">{t("contactText")}</Text>
+          </section>
+        </div>
+
+        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 flex gap-6 text-sm">
+          <Link
+            href={ROUTES.PUBLIC.PRIVACY}
+            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+          >
+            {t("privacyPolicy")}
+          </Link>
+          <Link
+            href={ROUTES.PUBLIC.CONTACT}
+            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+          >
+            {t("contactUs")}
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

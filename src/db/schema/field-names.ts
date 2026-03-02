@@ -32,6 +32,8 @@ export const USER_FIELDS = {
   DISABLED: "disabled",
   CREATED_AT: "createdAt",
   UPDATED_AT: "updatedAt",
+  // Store identity
+  STORE_SLUG: "storeSlug",
 
   // Avatar metadata sub-fields
   AVATAR: {
@@ -60,6 +62,16 @@ export const USER_FIELDS = {
       FACEBOOK: "publicProfile.socialLinks.facebook",
       LINKEDIN: "publicProfile.socialLinks.linkedin",
     },
+    // Store profile fields
+    STORE_NAME: "publicProfile.storeName",
+    STORE_DESCRIPTION: "publicProfile.storeDescription",
+    STORE_CATEGORY: "publicProfile.storeCategory",
+    STORE_LOGO_URL: "publicProfile.storeLogoURL",
+    STORE_BANNER_URL: "publicProfile.storeBannerURL",
+    STORE_RETURN_POLICY: "publicProfile.storeReturnPolicy",
+    STORE_SHIPPING_POLICY: "publicProfile.storeShippingPolicy",
+    IS_VACATION_MODE: "publicProfile.isVacationMode",
+    VACATION_MESSAGE: "publicProfile.vacationMessage",
   },
 
   // User statistics

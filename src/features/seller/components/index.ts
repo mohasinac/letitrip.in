@@ -8,3 +8,5 @@ export { SellerStatCard } from "./SellerStatCard";
 export { SellerQuickActions } from "./SellerQuickActions";
 export { SellerRecentListings } from "./SellerRecentListings";
 export { SellersListView } from "./SellersListView";
+export { SellerStoreView } from "./SellerStoreView";
+export { SellerAuctionsView } from "./SellerAuctionsView";

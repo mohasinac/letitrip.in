@@ -36,6 +36,7 @@ export * from "./event.service";
 export * from "./admin.service";
 export * from "./bid.service";
 export * from "./contact.service";
+export * from "./store.service";
 export * from "./media.service";
 export * from "./blog.service";
 export * from "./seller.service";

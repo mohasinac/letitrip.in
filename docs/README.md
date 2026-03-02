@@ -5,10 +5,10 @@ This repository now keeps a smaller, core set of documentation files.
 ## Core Docs
 
 - [APPLICATION_GRAPH.md](./APPLICATION_GRAPH.md) - Full application page/component/hook/API dependency map
-- [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) - Ordered implementation tasks derived from APPLICATION_GRAPH gaps
 - [GUIDE.md](./GUIDE.md) - Complete codebase reference
 - [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Common patterns and shortcuts
-- [CHANGELOG.md](./CHANGELOG.md) - Project history and updates
+- [CHANGELOG.md](./CHANGELOG.md) - Project history and updates (February 2026 onward)
+- [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md) - Archived version history (v1.0.0–v1.2.0, January–February 2026)
 - [SECURITY.md](./SECURITY.md) - Security practices and policy
 - [RBAC.md](./RBAC.md) - Role-based access control
 - [ERROR_HANDLING.md](./ERROR_HANDLING.md) - Error architecture and patterns
