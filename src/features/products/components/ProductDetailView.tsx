@@ -1,14 +1,16 @@
-"use client";
+﻿"use client";
 
-import Link from "next/link";
 import {
+  AddToCartButton,
+  Heading,
+  Nav,
   ProductImageGallery,
   ProductInfo,
   ProductReviews,
-  AddToCartButton,
   RelatedProducts,
-  Heading,
+  Span,
   Text,
+  TextLink,
 } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -16,7 +18,7 @@ import { useApiQuery } from "@/hooks";
 import { productService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
-const { themed, borderRadius } = THEME_CONSTANTS;
+const { themed, borderRadius, flex, page } = THEME_CONSTANTS;
 
 interface ProductResponse {
   data: ProductDocument;
@@ -41,7 +43,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
   if (isLoading) {
     return (
       <div className={`min-h-screen ${themed.bgSecondary}`}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className={`${page.container.xl} py-8`}>
           <div className="animate-pulse grid md:grid-cols-2 gap-8">
             <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-2xl" />
             <div className="space-y-4">
@@ -60,23 +62,21 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
   // Error / not found
   if (error || !product) {
     return (
-      <div
-        className={`min-h-screen ${themed.bgSecondary} flex items-center justify-center`}
-      >
+      <div className={`min-h-screen ${themed.bgSecondary} ${flex.center}`}>
         <div className="text-center py-16 px-4">
-          <span className="text-6xl mb-4 block">🔍</span>
+          <Span className="text-6xl mb-4 block">🔍</Span>
           <Heading level={1} className="text-2xl font-bold mb-2">
             {t("productNotFound")}
           </Heading>
           <Text variant="secondary" size="sm" className="mb-6">
             {t("productNotFoundSubtitle")}
           </Text>
-          <Link
+          <TextLink
             href={ROUTES.PUBLIC.PRODUCTS}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors text-sm"
           >
             ← {t("backToProducts")}
-          </Link>
+          </TextLink>
         </div>
       </div>
     );
@@ -89,22 +89,25 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
 
   return (
     <div className={`min-h-screen ${themed.bgSecondary}`}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className={`${page.container.xl} py-8`}>
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm mb-6">
-          <Link
+        <Nav
+          className="flex items-center gap-2 text-sm mb-6"
+          aria-label="Breadcrumb"
+        >
+          <TextLink
             href={ROUTES.PUBLIC.PRODUCTS}
             className={`${themed.textSecondary} hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors`}
           >
             ← {t("backToProducts")}
-          </Link>
+          </TextLink>
           {product.category && (
             <>
-              <span className={themed.textSecondary}>/</span>
-              <span className={themed.textSecondary}>{product.category}</span>
+              <Span className={themed.textSecondary}>/</Span>
+              <Span className={themed.textSecondary}>{product.category}</Span>
             </>
           )}
-        </nav>
+        </Nav>
 
         {/* Main product layout */}
         <div

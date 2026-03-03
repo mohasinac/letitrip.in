@@ -7,7 +7,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useStoreBySlug } from "../hooks";
 
-const { spacing, themed } = THEME_CONSTANTS;
+const { spacing, themed, flex, page } = THEME_CONSTANTS;
 
 interface StoreAboutViewProps {
   storeSlug: string;
@@ -19,7 +19,7 @@ export function StoreAboutView({ storeSlug }: StoreAboutViewProps) {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-16">
+      <div className={`${flex.hCenter} ${page.empty}`}>
         <Spinner />
       </div>
     );

@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import { MessageCircle } from "lucide-react";
 import { useHomepageSections } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
-import { Button, Heading, Text } from "@/components";
+import { Button, Heading, Section, Span, Text } from "@/components";
 import { proseMirrorToHtml, formatNumber } from "@/utils";
 import type {
   HomepageSectionDocument,
@@ -17,13 +17,13 @@ export function WhatsAppCommunitySection() {
 
   if (isLoading) {
     return (
-      <section
+      <Section
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
       >
         <div className="w-full">
           <div className="h-80 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" />
         </div>
-      </section>
+      </Section>
     );
   }
 
@@ -37,7 +37,7 @@ export function WhatsAppCommunitySection() {
   const benefits = config.benefits ?? [];
 
   return (
-    <section
+    <Section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
       <div className="w-full">
@@ -107,7 +107,7 @@ export function WhatsAppCommunitySection() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-sm md:text-base">{benefit}</span>
+                  <Span className="text-sm md:text-base">{benefit}</Span>
                 </div>
               ))}
             </div>
@@ -132,6 +132,6 @@ export function WhatsAppCommunitySection() {
           </div>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
-import Link from "next/link";
 import { THEME_CONSTANTS } from "@/constants";
+import { TextLink } from "../typography/TextLink";
 import { ReactNode } from "react";
+import { Span } from "../typography/Typography";
 
 /**
  * NavItem Component
@@ -44,32 +45,32 @@ export default function NavItem({
   if (variant === "vertical") {
     // Bottom navbar style (vertical layout with icon on top)
     return (
-      <Link
+      <TextLink
         href={href}
         className={`flex flex-col items-center gap-1 py-2 transition-colors ${
           isActive ? colors.bottomNav.active : colors.bottomNav.inactive
         }`}
       >
-        <span className={`${colors.bottomNav.icon} flex items-center`}>
+        <Span className={`${colors.bottomNav.icon} flex items-center`}>
           {icon}
-        </span>
-        <span className={colors.bottomNav.text}>{label}</span>
-      </Link>
+        </Span>
+        <Span className={colors.bottomNav.text}>{label}</Span>
+      </TextLink>
     );
   }
 
   // Horizontal navbar style (icon and label side by side, more compact and user-friendly)
   return (
-    <Link
+    <TextLink
       href={href}
       className={`flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 lg:px-5 lg:py-3 rounded-lg text-sm md:text-base font-medium transition-all duration-200 ${
         isActive ? `${colors.navbar.active}` : `${colors.navbar.inactive}`
       }`}
     >
-      <span className={`${colors.navbar.icon} flex-shrink-0 flex items-center`}>
+      <Span className={`${colors.navbar.icon} flex-shrink-0 flex items-center`}>
         {icon}
-      </span>
-      <span className="whitespace-nowrap">{label}</span>
-    </Link>
+      </Span>
+      <Span className="whitespace-nowrap">{label}</Span>
+    </TextLink>
   );
 }

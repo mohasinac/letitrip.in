@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 /**
  * useBidTableColumns
@@ -8,6 +8,7 @@
  */
 
 import { THEME_CONSTANTS } from "@/constants";
+import { Button, Caption, Span, Text } from "@/components";
 import { formatCurrency, formatDate } from "@/utils";
 import { useTranslations } from "next-intl";
 import type { BidDocument } from "@/db/schema";
@@ -36,12 +37,12 @@ export function useBidTableColumns(onView: (bid: BidDocument) => void) {
         width: "22%",
         render: (bid: BidDocument) => (
           <div>
-            <p className="font-medium truncate max-w-[160px] text-sm">
+            <Text size="sm" weight="medium" className="truncate max-w-[160px]">
               {bid.productTitle}
-            </p>
-            <p className={`text-xs ${themed.textSecondary} font-mono`}>
+            </Text>
+            <Caption className="font-mono">
               {bid.productId.slice(0, 10)}…
-            </p>
+            </Caption>
           </div>
         ),
       },
@@ -52,14 +53,12 @@ export function useBidTableColumns(onView: (bid: BidDocument) => void) {
         width: "20%",
         render: (bid: BidDocument) => (
           <div>
-            <p className="text-sm font-medium truncate max-w-[150px]">
+            <Text size="sm" weight="medium" className="truncate max-w-[150px]">
               {bid.userName}
-            </p>
-            <p
-              className={`text-xs ${themed.textSecondary} truncate max-w-[150px]`}
-            >
+            </Text>
+            <Caption className="truncate max-w-[150px]">
               {bid.userEmail}
-            </p>
+            </Caption>
           </div>
         ),
       },
@@ -70,13 +69,13 @@ export function useBidTableColumns(onView: (bid: BidDocument) => void) {
         width: "12%",
         render: (bid: BidDocument) => (
           <div>
-            <span className="font-semibold text-sm">
+            <Span className="font-semibold text-sm">
               {formatCurrency(bid.bidAmount)}
-            </span>
+            </Span>
             {bid.isWinning && (
-              <span className="ml-1 text-xs text-indigo-600 dark:text-indigo-400 font-medium">
+              <Span className="ml-1 text-xs text-indigo-600 dark:text-indigo-400 font-medium">
                 ★
-              </span>
+              </Span>
             )}
           </div>
         ),
@@ -87,9 +86,9 @@ export function useBidTableColumns(onView: (bid: BidDocument) => void) {
         sortable: true,
         width: "14%",
         render: (bid: BidDocument) => (
-          <span className={`text-sm ${themed.textSecondary}`}>
+          <Span className={`text-sm ${themed.textSecondary}`}>
             {formatDate(bid.bidDate)}
-          </span>
+          </Span>
         ),
       },
       {
@@ -98,14 +97,14 @@ export function useBidTableColumns(onView: (bid: BidDocument) => void) {
         sortable: true,
         width: "12%",
         render: (bid: BidDocument) => (
-          <span
+          <Span
             className={`px-2 py-1 text-xs font-medium rounded capitalize ${
               BID_STATUS_STYLES[bid.status] ??
               `${themed.bgSecondary} ${themed.textSecondary}`
             }`}
           >
             {bid.status}
-          </span>
+          </Span>
         ),
       },
       {
@@ -113,12 +112,12 @@ export function useBidTableColumns(onView: (bid: BidDocument) => void) {
         header: t("viewProduct"),
         width: "10%",
         render: (bid: BidDocument) => (
-          <button
+          <Button
             onClick={() => onView(bid)}
             className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium"
           >
             {tActions("view")}
-          </button>
+          </Button>
         ),
       },
     ],

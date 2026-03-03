@@ -9,7 +9,7 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { Package, Store, Gavel, FileText } from "lucide-react";
 import { Spinner, EmptyState } from "@/components";
 import { Heading, Text } from "@/components/typography";
@@ -34,7 +34,7 @@ interface ProductsResponse {
   hasMore: boolean;
 }
 
-const { themed, spacing, enhancedCard } = THEME_CONSTANTS;
+const { themed, spacing, enhancedCard, flex } = THEME_CONSTANTS;
 
 export function SellerDashboardView() {
   const router = useRouter();
@@ -69,7 +69,7 @@ export function SellerDashboardView() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
+      <div className={`${flex.center} py-16`}>
         <Spinner size="xl" variant="primary" />
       </div>
     );

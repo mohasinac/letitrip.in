@@ -8,7 +8,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { CheckoutStepper } from "./CheckoutStepper";
 import { CheckoutAddressStep } from "./CheckoutAddressStep";
 import { CheckoutOrderReview } from "./CheckoutOrderReview";
@@ -16,8 +16,9 @@ import { OrderSummaryPanel } from "./OrderSummaryPanel";
 import { useCheckout, useMessage, useRazorpay } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
+import { Button, Heading, Main } from "@/components";
 
-const { themed, typography } = THEME_CONSTANTS;
+const { themed, typography, page } = THEME_CONSTANTS;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -180,11 +181,11 @@ export function CheckoutView() {
   };
 
   return (
-    <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Main className={`${page.container.lg} py-8`}>
       {/* Heading */}
-      <h1 className={`${typography.h2} ${themed.textPrimary} mb-6`}>
+      <Heading level={1} className="mb-6">
         {t("title")}
-      </h1>
+      </Heading>
 
       {/* Stepper */}
       <CheckoutStepper steps={STEPS} currentStep={step} />
@@ -201,19 +202,19 @@ export function CheckoutView() {
               />
               {/* Next button */}
               <div className="mt-6 flex justify-between items-center">
-                <button
+                <Button
                   onClick={() => router.push(ROUTES.USER.CART)}
                   className={`text-sm font-medium ${themed.textSecondary} hover:text-indigo-600 transition-colors`}
                 >
                   ← {t("backToCart")}
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handleNext}
                   disabled={!selectedAddressId}
                   className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
                 >
                   {t("stepReview")} →
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -230,19 +231,19 @@ export function CheckoutView() {
               />
               {/* Place order button */}
               <div className="mt-6 flex justify-between items-center">
-                <button
+                <Button
                   onClick={() => setStep(1)}
                   className={`text-sm font-medium ${themed.textSecondary} hover:text-indigo-600 transition-colors`}
                 >
                   ← {t("stepAddress")}
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handlePlaceOrder}
                   disabled={isPlacingOrder}
                   className="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
                 >
                   {isPlacingOrder ? t("placingOrder") : t("placeOrder")}
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -253,6 +254,6 @@ export function CheckoutView() {
           <OrderSummaryPanel itemCount={itemCount} subtotal={subtotal} />
         </div>
       </div>
-    </main>
+    </Main>
   );
 }

@@ -9,7 +9,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { PayoutSummary } from "./SellerPayoutStats";
 
-const { themed, spacing, typography } = THEME_CONSTANTS;
+const { themed, spacing, typography, flex } = THEME_CONSTANTS;
 
 interface SellerPayoutRequestFormProps {
   summary: PayoutSummary;
@@ -70,7 +70,7 @@ export function SellerPayoutRequestForm({
 
   return (
     <Card className={`${spacing.padding.lg} mb-8`}>
-      <div className="flex items-center justify-between mb-4">
+      <div className={`${flex.between} mb-4`}>
         <div>
           <Heading level={2}>{t("requestPayout")}</Heading>
           <Text size="sm" variant="secondary" className="mt-1">

@@ -1,8 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
-import { Card, Button } from "@/components";
+import { Button, Card, Heading, Label, Span, Text } from "@/components";
+
+const { flex, position } = THEME_CONSTANTS;
 
 /**
  * BackgroundSettings Component
@@ -74,13 +76,11 @@ export default function BackgroundSettings({
       <div className="space-y-6">
         {/* Header with Tabs */}
         <div
-          className={`flex items-center justify-between border-b ${THEME_CONSTANTS.themed.borderColor}`}
+          className={`${flex.between} border-b ${THEME_CONSTANTS.themed.borderColor}`}
         >
-          <h2
-            className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary} pb-4`}
-          >
+          <Heading level={2} className="pb-4">
             Background Settings
-          </h2>
+          </Heading>
           <div className="flex gap-2 pb-4">
             <Button
               onClick={() => setActiveTab("light")}
@@ -101,14 +101,14 @@ export default function BackgroundSettings({
 
         {/* Background Type Selector */}
         <div>
-          <label
+          <Label
             className={`block text-sm font-medium mb-3 ${THEME_CONSTANTS.themed.textPrimary}`}
           >
             Background Type
-          </label>
+          </Label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {(["color", "gradient", "image", "video"] as const).map((type) => (
-              <button
+              <Button
                 key={type}
                 onClick={() => updateConfig({ type })}
                 className={`px-4 py-3 rounded-lg border-2 transition-all capitalize ${
@@ -121,7 +121,7 @@ export default function BackgroundSettings({
                 {type === "gradient" && "🌈"}
                 {type === "image" && "🖼️"}
                 {type === "video" && "🎥"} {type}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -129,11 +129,11 @@ export default function BackgroundSettings({
         {/* Type-Specific Settings */}
         {config.type === "color" && (
           <div>
-            <label
+            <Label
               className={`block text-sm font-medium mb-2 ${THEME_CONSTANTS.themed.textPrimary}`}
             >
               Color
-            </label>
+            </Label>
             <div className="flex gap-3 items-center">
               <input
                 type="color"
@@ -155,11 +155,11 @@ export default function BackgroundSettings({
         {config.type === "gradient" && (
           <div className={THEME_CONSTANTS.spacing.stack}>
             <div>
-              <label
+              <Label
                 className={`block text-sm font-medium mb-2 ${THEME_CONSTANTS.themed.textPrimary}`}
               >
                 Gradient CSS
-              </label>
+              </Label>
               <textarea
                 value={config.value}
                 onChange={(e) => updateConfig({ value: e.target.value })}
@@ -169,25 +169,27 @@ export default function BackgroundSettings({
               />
             </div>
             <div>
-              <label
+              <Label
                 className={`block text-sm font-medium mb-2 ${THEME_CONSTANTS.themed.textPrimary}`}
               >
                 Quick Presets
-              </label>
+              </Label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {gradientPresets.map((preset) => (
-                  <button
+                  <Button
                     key={preset.name}
                     onClick={() => updateConfig({ value: preset.value })}
                     className={`relative h-20 rounded-lg border-2 ${THEME_CONSTANTS.themed.border} hover:border-blue-500 overflow-hidden transition-all group`}
                     style={{ background: preset.value }}
                   >
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <span className="text-white text-sm font-medium">
+                    <div
+                      className={`${position.fill} bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity ${flex.center}`}
+                    >
+                      <Span className="text-white text-sm font-medium">
                         {preset.name}
-                      </span>
+                      </Span>
                     </div>
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -196,11 +198,11 @@ export default function BackgroundSettings({
 
         {config.type === "image" && (
           <div>
-            <label
+            <Label
               className={`block text-sm font-medium mb-2 ${THEME_CONSTANTS.themed.textPrimary}`}
             >
               Image URL
-            </label>
+            </Label>
             <input
               type="url"
               value={config.value}
@@ -224,11 +226,11 @@ export default function BackgroundSettings({
 
         {config.type === "video" && (
           <div>
-            <label
+            <Label
               className={`block text-sm font-medium mb-2 ${THEME_CONSTANTS.themed.textPrimary}`}
             >
               Video URL (MP4)
-            </label>
+            </Label>
             <input
               type="url"
               value={config.value}
@@ -236,11 +238,11 @@ export default function BackgroundSettings({
               placeholder="https://example.com/background.mp4"
               className={THEME_CONSTANTS.patterns.adminInput}
             />
-            <p
+            <Text
               className={`mt-2 text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
             >
               Note: Video will auto-play, loop, and be muted for better UX
-            </p>
+            </Text>
           </div>
         )}
 
@@ -260,22 +262,22 @@ export default function BackgroundSettings({
               }
               className="w-4 h-4 text-blue-600 rounded"
             />
-            <label
+            <Label
               htmlFor="overlay-enabled"
               className={`text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary}`}
             >
               Enable Overlay (improves content readability)
-            </label>
+            </Label>
           </div>
 
           {config.overlay?.enabled && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ml-7">
               <div>
-                <label
+                <Label
                   className={`block text-sm font-medium mb-2 ${THEME_CONSTANTS.themed.textSecondary}`}
                 >
                   Overlay Color
-                </label>
+                </Label>
                 <div className="flex gap-2">
                   <input
                     type="color"
@@ -292,11 +294,11 @@ export default function BackgroundSettings({
                 </div>
               </div>
               <div>
-                <label
+                <Label
                   className={`block text-sm font-medium mb-2 ${THEME_CONSTANTS.themed.textSecondary}`}
                 >
                   Opacity ({Math.round(config.overlay.opacity * 100)}%)
-                </label>
+                </Label>
                 <input
                   type="range"
                   min="0"
@@ -315,11 +317,11 @@ export default function BackgroundSettings({
 
         {/* Preview */}
         <div className={`border-t ${THEME_CONSTANTS.themed.borderColor} pt-6`}>
-          <label
+          <Label
             className={`block text-sm font-medium mb-3 ${THEME_CONSTANTS.themed.textPrimary}`}
           >
             Preview
-          </label>
+          </Label>
           <div
             className={`relative h-40 rounded-lg overflow-hidden border-2 ${THEME_CONSTANTS.themed.border}`}
             style={{
@@ -339,22 +341,22 @@ export default function BackgroundSettings({
                 autoPlay
                 loop
                 muted
-                className="absolute inset-0 w-full h-full object-cover"
+                className={`${position.fill} w-full h-full object-cover`}
               />
             )}
             {config.overlay?.enabled && (
               <div
-                className="absolute inset-0"
+                className={position.fill}
                 style={{
                   backgroundColor: config.overlay.color,
                   opacity: config.overlay.opacity,
                 }}
               />
             )}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <p className="text-white text-lg font-semibold drop-shadow-lg">
+            <div className={`${position.fill} ${flex.center}`}>
+              <Text className="text-white text-lg font-semibold drop-shadow-lg">
                 Sample Content
-              </p>
+              </Text>
             </div>
           </div>
         </div>

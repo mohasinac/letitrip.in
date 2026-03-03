@@ -1,5 +1,6 @@
-import React from "react";
+﻿import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Span } from "../typography/Typography";
 
 export interface PaginationProps {
   currentPage: number;
@@ -77,7 +78,7 @@ export default function Pagination({
     lg: "text-lg px-4 py-2 min-w-[44px]",
   };
 
-  const { themed } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
 
   const buttonClass = (isActive: boolean, isDisabled: boolean) => {
     const base = `${sizeClasses[size]} rounded border transition-colors font-medium`;
@@ -97,7 +98,7 @@ export default function Pagination({
 
   return (
     <nav
-      className={`flex items-center gap-1 ${className}`}
+      className={`${flex.rowCenter} gap-1 ${className}`}
       aria-label="Pagination"
       role="navigation"
     >
@@ -126,12 +127,12 @@ export default function Pagination({
       {pages.map((page, index) => {
         if (page === "...") {
           return (
-            <span
+            <Span
               key={`ellipsis-${index}`}
-              className={`${sizeClasses[size]} flex items-center justify-center ${themed.textMuted}`}
+              className={`${sizeClasses[size]} ${flex.center} ${themed.textMuted}`}
             >
               ...
-            </span>
+            </Span>
           );
         }
 

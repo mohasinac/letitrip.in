@@ -1,7 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Button, Heading, Label, Span } from "@/components";
+
+const { flex } = THEME_CONSTANTS;
 
 interface GridCell {
   row: number;
@@ -83,17 +86,18 @@ export function GridEditor({
       : THEME_CONSTANTS.themed.bgSecondary;
 
     return (
-      <button
+      <Button
         key={`${cell.row}-${cell.col}`}
         type="button"
         onClick={() => handleCellClick(cell.row, cell.col)}
+        variant="ghost"
         className={`
           ${bgColor}
           border ${THEME_CONSTANTS.themed.border}
           hover:border-blue-400 dark:hover:border-blue-500
           transition-colors duration-150
           p-1 min-h-[60px]
-          flex items-center justify-center
+          ${flex.center}
           text-xs
         `}
         title={`Cell (${cell.row}, ${cell.col})`}
@@ -107,19 +111,19 @@ export function GridEditor({
           />
         )}
         {cell.content.type === "text" && cell.content.text && (
-          <span className={`truncate ${THEME_CONSTANTS.themed.textSecondary}`}>
+          <Span className={`truncate ${THEME_CONSTANTS.themed.textSecondary}`}>
             {cell.content.text}
-          </span>
+          </Span>
         )}
         {cell.content.type === "cta" && cell.content.buttonText && (
-          <span className="truncate text-blue-600 dark:text-blue-400 font-medium">
+          <Span className="truncate text-blue-600 dark:text-blue-400 font-medium">
             {cell.content.buttonText}
-          </span>
+          </Span>
         )}
         {cell.content.type === "empty" && (
-          <span className={THEME_CONSTANTS.themed.textMuted}>+</span>
+          <Span className={THEME_CONSTANTS.themed.textMuted}>+</Span>
         )}
-      </button>
+      </Button>
     );
   };
 
@@ -151,28 +155,28 @@ export function GridEditor({
         <div
           className={`w-full lg:w-80 ${THEME_CONSTANTS.themed.bgSecondary} p-4 rounded-lg border ${THEME_CONSTANTS.themed.borderColor}`}
         >
-          <div className="flex items-center justify-between mb-4">
-            <h3
-              className={`text-lg font-semibold ${THEME_CONSTANTS.themed.textPrimary}`}
-            >
+          <div className={`${flex.between} mb-4`}>
+            <Heading level={3} className="text-lg font-semibold">
               Edit Cell ({currentCell.row}, {currentCell.col})
-            </h3>
-            <button
+            </Heading>
+            <Button
               type="button"
               onClick={() => setEditMode(false)}
+              variant="ghost"
+              size="sm"
               className={`${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.hoverText}`}
             >
               ✕
-            </button>
+            </Button>
           </div>
 
           {/* Content Type Selector */}
           <div className="mb-4">
-            <label
+            <Label
               className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary} mb-2`}
             >
               Content Type
-            </label>
+            </Label>
             <select
               value={currentCell.content.type}
               onChange={(e) => {
@@ -192,11 +196,11 @@ export function GridEditor({
           {currentCell.content.type === "image" && (
             <div className="space-y-3">
               <div>
-                <label
+                <Label
                   className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary} mb-2`}
                 >
                   Image URL
-                </label>
+                </Label>
                 <input
                   type="url"
                   value={currentCell.content.imageUrl || ""}
@@ -211,11 +215,11 @@ export function GridEditor({
                 />
               </div>
               <div>
-                <label
+                <Label
                   className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary} mb-2`}
                 >
                   Link URL (optional)
-                </label>
+                </Label>
                 <input
                   type="url"
                   value={currentCell.content.link || ""}
@@ -235,11 +239,11 @@ export function GridEditor({
           {/* Text Content */}
           {currentCell.content.type === "text" && (
             <div>
-              <label
+              <Label
                 className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary} mb-2`}
               >
                 Text Content
-              </label>
+              </Label>
               <textarea
                 value={currentCell.content.text || ""}
                 onChange={(e) =>
@@ -259,11 +263,11 @@ export function GridEditor({
           {currentCell.content.type === "cta" && (
             <div className="space-y-3">
               <div>
-                <label
+                <Label
                   className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary} mb-2`}
                 >
                   Button Text
-                </label>
+                </Label>
                 <input
                   type="text"
                   value={currentCell.content.buttonText || ""}
@@ -278,11 +282,11 @@ export function GridEditor({
                 />
               </div>
               <div>
-                <label
+                <Label
                   className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary} mb-2`}
                 >
                   Link URL
-                </label>
+                </Label>
                 <input
                   type="url"
                   value={currentCell.content.link || ""}
@@ -300,16 +304,17 @@ export function GridEditor({
           )}
 
           {/* Clear Cell */}
-          <button
+          <Button
             type="button"
             onClick={() => {
               updateCell(currentCell.row, currentCell.col, { type: "empty" });
               setEditMode(false);
             }}
-            className="w-full mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200"
+            variant="danger"
+            className="w-full mt-4"
           >
             Clear Cell
-          </button>
+          </Button>
         </div>
       )}
     </div>

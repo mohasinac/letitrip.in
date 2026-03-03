@@ -1,11 +1,19 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES, SITE_CONFIG } from "@/constants";
 import { ReactNode } from "react";
 import { useAuth } from "@/hooks";
-import { AvatarDisplay } from "@/components";
+import {
+  AvatarDisplay,
+  Nav,
+  Ul,
+  Li,
+  TextLink,
+  Span,
+  Button,
+} from "@/components";
 import NavItem from "./NavItem";
 
 /**
@@ -103,15 +111,16 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
   ];
 
   return (
-    <nav
+    <Nav
       id="bottom-navbar"
+      aria-label={t("mobileNav")}
       className={`fixed bottom-0 left-0 right-0 md:hidden ${zIndex.bottomNav} ${layout.bottomNavBg} border-t ${themed.border} backdrop-blur-lg bg-white/95 dark:bg-gray-900/95 shadow-2xl ${utilities.safeAreaBottom}`}
     >
-      <ul
+      <Ul
         className={`flex items-stretch ${layout.bottomNavHeight} overflow-x-auto ${utilities.scrollbarHide}`}
       >
         {bottomNavLinks.map((link) => (
-          <li key={link.href} className="flex-none w-16 min-w-[56px]">
+          <Li key={link.href} className="flex-none w-16 min-w-[56px]">
             <NavItem
               href={link.href}
               label={link.label}
@@ -119,11 +128,11 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
               isActive={pathname === link.href}
               variant="vertical"
             />
-          </li>
+          </Li>
         ))}
         {/* Seller Dashboard - visible for seller/admin users only */}
         {isSeller && (
-          <li className="flex-none w-16 min-w-[56px]">
+          <Li className="flex-none w-16 min-w-[56px]">
             <NavItem
               href={ROUTES.SELLER.DASHBOARD}
               label={t("seller")}
@@ -146,13 +155,14 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
               isActive={pathname === ROUTES.SELLER.DASHBOARD}
               variant="vertical"
             />
-          </li>
+          </Li>
         )}
         {/* Search Button */}
-        <li className="flex-none w-16 min-w-[56px]">
-          <button
+        <Li className="flex-none w-16 min-w-[56px]">
+          <Button
+            variant="ghost"
             onClick={onSearchToggle}
-            className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-colors duration-200 ${themed.textSecondary} hover:${themed.textPrimary}`}
+            className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-colors duration-200 ${themed.textSecondary}`}
             aria-label={t("search")}
           >
             <svg
@@ -169,20 +179,21 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-            <span className={typography.xs}>{t("search")}</span>
-          </button>
-        </li>
+            <Span className={typography.xs}>{t("search")}</Span>
+          </Button>
+        </Li>
 
         {/* Profile Link - last position */}
-        <li className="flex-none w-16 min-w-[56px]">
+        <Li className="flex-none w-16 min-w-[56px]">
           {user ? (
-            <a
+            <TextLink
               href={ROUTES.USER.PROFILE}
+              variant="inherit"
               className={`flex flex-col items-center justify-center w-full h-full transition-colors duration-200 ${
                 pathname === ROUTES.USER.PROFILE
                   ? themed.textPrimary
                   : themed.textSecondary
-              } hover:${themed.textPrimary}`}
+              }`}
             >
               <div className="flex flex-col items-center gap-0.5">
                 <AvatarDisplay
@@ -201,16 +212,16 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
                   displayName={user.displayName}
                   email={user.email}
                 />
-                <span
+                <Span
                   className={`text-[7px] font-semibold uppercase leading-none ${
                     THEME_CONSTANTS.badge.roleText[user.role] ||
                     THEME_CONSTANTS.badge.roleText.user
                   }`}
                 >
                   {user.role || "user"}
-                </span>
+                </Span>
               </div>
-            </a>
+            </TextLink>
           ) : (
             <NavItem
               href={SITE_CONFIG.account.profile}
@@ -227,8 +238,8 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
               variant="vertical"
             />
           )}
-        </li>
-      </ul>
-    </nav>
+        </Li>
+      </Ul>
+    </Nav>
   );
 }

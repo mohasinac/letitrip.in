@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 /**
  * useUserTableColumns
@@ -8,10 +8,13 @@
  * Uses RoleBadge, StatusBadge from @/components and formatDate from @/utils.
  */
 
-import { RoleBadge, StatusBadge } from "@/components";
+import { Button, RoleBadge, Span, StatusBadge } from "@/components";
 import { useTranslations } from "next-intl";
 import { formatDate } from "@/utils";
 import type { AdminUser } from "./types";
+import { THEME_CONSTANTS } from "@/constants";
+
+const { flex } = THEME_CONSTANTS;
 
 export function useUserTableColumns(
   onView: (user: AdminUser) => void,
@@ -37,13 +40,15 @@ export function useUserTableColumns(
                 loading="lazy"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-sm font-medium">
+              <div
+                className={`w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 ${flex.center} text-sm font-medium`}
+              >
                 {(user.displayName || user.email || "U")
                   .charAt(0)
                   .toUpperCase()}
               </div>
             )}
-            <span>{user.displayName || "N/A"}</span>
+            <Span>{user.displayName || "N/A"}</Span>
           </div>
         ),
       },
@@ -56,9 +61,9 @@ export function useUserTableColumns(
           <div>
             <div>{user.email}</div>
             {!user.emailVerified && (
-              <span className="text-xs text-orange-600 dark:text-orange-400">
+              <Span className="text-xs text-orange-600 dark:text-orange-400">
                 {t("emailNotVerified")}
-              </span>
+              </Span>
             )}
           </div>
         ),
@@ -99,7 +104,7 @@ export function useUserTableColumns(
     ],
     actions: (user: AdminUser) => (
       <div className="flex gap-2">
-        <button
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             onView(user);
@@ -107,8 +112,8 @@ export function useUserTableColumns(
           className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 text-sm"
         >
           {tActions("view")}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             onToggleBan(user);
@@ -120,7 +125,7 @@ export function useUserTableColumns(
           } text-sm`}
         >
           {user.disabled ? t("unbanUser") : t("banUser")}
-        </button>
+        </Button>
       </div>
     ),
   };

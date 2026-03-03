@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CategoryForm Component
  * Path: src/components/admin/categories/CategoryForm.tsx
  *
@@ -8,7 +8,7 @@
 
 "use client";
 
-import { FormField, ImageUpload } from "@/components";
+import { FormField, ImageUpload, Label, Span } from "@/components";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { Category } from "./types";
 import { flattenCategories } from "./types";
@@ -80,9 +80,9 @@ export function CategoryForm({
 
       {category.imageUrl && isReadonly && (
         <div>
-          <label className={`block ${typography.label} mb-2`}>
+          <Label className={`block ${typography.label} mb-2`}>
             Category Image
-          </label>
+          </Label>
           <img
             src={category.imageUrl}
             alt={category.name || "Category"}
@@ -109,7 +109,7 @@ export function CategoryForm({
       />
 
       <div className="grid grid-cols-2 gap-4">
-        <label className="flex items-center gap-2">
+        <Label className="flex items-center gap-2">
           <input
             type="checkbox"
             checked={category.enabled || false}
@@ -117,10 +117,10 @@ export function CategoryForm({
             disabled={isReadonly}
             className="w-4 h-4 text-indigo-600 rounded"
           />
-          <span className={typography.label}>{LABELS.ENABLED}</span>
-        </label>
+          <Span className={typography.label}>{LABELS.ENABLED}</Span>
+        </Label>
 
-        <label className="flex items-center gap-2">
+        <Label className="flex items-center gap-2">
           <input
             type="checkbox"
             checked={category.showOnHomepage || false}
@@ -128,8 +128,8 @@ export function CategoryForm({
             disabled={isReadonly}
             className="w-4 h-4 text-indigo-600 rounded"
           />
-          <span className={typography.label}>{LABELS.SHOW_ON_HOMEPAGE}</span>
-        </label>
+          <Span className={typography.label}>{LABELS.SHOW_ON_HOMEPAGE}</Span>
+        </Label>
       </div>
 
       <FormField

@@ -8,19 +8,20 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { ROUTES } from "@/constants";
 import { useAdminSections } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
-  Card,
-  Button,
-  DataTable,
-  SideDrawer,
   AdminPageHeader,
+  Button,
+  Card,
+  DataTable,
   DrawerFormFooter,
-  useSectionTableColumns,
   SectionForm,
+  SideDrawer,
+  Text,
+  useSectionTableColumns,
   useToast,
 } from "@/components";
 import type { HomepageSection, SectionDrawerMode } from "@/components";
@@ -223,7 +224,7 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
         ) : error ? (
           <Card>
             <div className="text-center py-8">
-              <p className="text-red-600 mb-4">{error.message}</p>
+              <Text className="text-red-600 mb-4">{error.message}</Text>
               <Button onClick={() => refetch()}>{tActions("retry")}</Button>
             </div>
           </Card>

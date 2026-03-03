@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useRef, useEffect } from "react";
 import { useSwipe, useGesture } from "@/hooks";
-import { HorizontalScroller } from "@/components";
+import { HorizontalScroller, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 /**
@@ -54,7 +54,7 @@ export default function ImageGallery({
   const [scale, setScale] = useState(1);
   const [isZoomed, setIsZoomed] = useState(false);
   const imageContainerRef = useRef<HTMLDivElement>(null);
-  const { themed } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
 
   const currentImage = images[currentIndex];
 
@@ -137,9 +137,9 @@ export default function ImageGallery({
   if (images.length === 0) {
     return (
       <div
-        className={`flex items-center justify-center p-8 ${themed.bgTertiary} rounded-lg ${className}`}
+        className={`${flex.center} p-8 ${themed.bgTertiary} rounded-lg ${className}`}
       >
-        <p className={themed.textMuted}>No images to display</p>
+        <Text className={themed.textMuted}>No images to display</Text>
       </div>
     );
   }
@@ -266,9 +266,9 @@ export default function ImageGallery({
         {/* Caption */}
         {showCaptions && currentImage.caption && (
           <div className={`p-4 ${themed.border} border-t`}>
-            <p className={`${themed.textSecondary} text-sm md:text-base`}>
+            <Text className={`${themed.textSecondary} text-sm md:text-base`}>
               {currentImage.caption}
-            </p>
+            </Text>
           </div>
         )}
       </div>

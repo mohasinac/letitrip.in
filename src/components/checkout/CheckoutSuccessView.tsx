@@ -1,21 +1,21 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { useApiQuery } from "@/hooks";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { useTranslations } from "next-intl";
-import { Spinner } from "@/components";
+import { useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
+import { Spinner, Heading, Text, Span, Button } from "@/components";
 import {
   OrderSuccessHero,
   OrderSuccessCard,
   OrderSuccessActions,
 } from "@/components";
+import { useApiQuery } from "@/hooks";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { orderService } from "@/services";
 import type { OrderDocument } from "@/db/schema";
 
-const { themed, spacing, borderRadius } = THEME_CONSTANTS;
+const { themed, spacing, borderRadius, flex } = THEME_CONSTANTS;
 
 export function CheckoutSuccessView() {
   const router = useRouter();
@@ -43,9 +43,7 @@ export function CheckoutSuccessView() {
 
   if (isLoading) {
     return (
-      <div
-        className={`min-h-screen flex items-center justify-center ${themed.bgPrimary}`}
-      >
+      <div className={`min-h-screen ${flex.center} ${themed.bgPrimary}`}>
         <Spinner />
       </div>
     );
@@ -54,35 +52,39 @@ export function CheckoutSuccessView() {
   if (error || !order) {
     return (
       <div
-        className={`min-h-screen flex flex-col items-center justify-center ${themed.bgPrimary} ${spacing.padding.lg}`}
+        className={`min-h-screen ${flex.centerCol} ${themed.bgPrimary} ${spacing.padding.lg}`}
       >
         <div
           className={`${themed.bgSecondary} ${borderRadius.xl} ${spacing.padding.lg} max-w-md w-full text-center ${spacing.stack}`}
         >
           <div className="text-5xl mb-2">✅</div>
-          <h1 className={`text-2xl font-bold ${themed.textPrimary}`}>
+          <Heading level={1} className="text-2xl font-bold">
             {t("fallbackTitle")}
-          </h1>
-          <p className={themed.textSecondary}>
+          </Heading>
+          <Text variant="secondary">
             {t("fallbackConfirmed")} — Order ID:{" "}
-            <span className="font-mono font-semibold">{orderId}</span>
-          </p>
-          <p className={`text-sm ${themed.textSecondary}`}>
+            <Span className="font-mono font-semibold" variant="inherit">
+              {orderId}
+            </Span>
+          </Text>
+          <Text size="sm" variant="secondary">
             {t("fallbackSubtitle")}
-          </p>
+          </Text>
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <Link
-              href={ROUTES.USER.ORDERS}
-              className="flex-1 text-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+            <Button
+              variant="primary"
+              onClick={() => router.push(ROUTES.USER.ORDERS)}
+              className="flex-1"
             >
               {t("viewOrders")}
-            </Link>
-            <Link
-              href={ROUTES.PUBLIC.PRODUCTS}
-              className={`flex-1 text-center px-4 py-2 ${themed.bgPrimary} border ${themed.border} ${themed.textPrimary} rounded-lg font-medium hover:opacity-80 transition-opacity`}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
+              className="flex-1"
             >
               {t("continueShopping")}
-            </Link>
+            </Button>
           </div>
         </div>
       </div>

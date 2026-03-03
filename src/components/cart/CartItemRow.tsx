@@ -1,13 +1,13 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Button, Caption, Span, Text, TextLink } from "@/components";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { CartItemDocument } from "@/db/schema";
 
-const { themed, borderRadius } = THEME_CONSTANTS;
+const { themed, borderRadius, flex, position } = THEME_CONSTANTS;
 
 interface CartItemRowProps {
   item: CartItemDocument;
@@ -30,7 +30,7 @@ export function CartItemRow({
       className={`flex gap-4 p-4 ${themed.bgPrimary} ${borderRadius.xl} border ${themed.border} ${isUpdating ? "opacity-60 pointer-events-none" : ""}`}
     >
       {/* Product image */}
-      <Link
+      <TextLink
         href={`${ROUTES.PUBLIC.PRODUCTS}/${item.productId}`}
         className="shrink-0"
       >
@@ -44,67 +44,72 @@ export function CartItemRow({
               sizes="96px"
             />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-2xl text-gray-400">
+            <div
+              className={`${position.fill} ${flex.center} text-2xl text-gray-400`}
+            >
               📦
             </div>
           )}
         </div>
-      </Link>
+      </TextLink>
 
       {/* Item details */}
       <div className="flex-1 min-w-0">
-        <Link
+        <TextLink
           href={`${ROUTES.PUBLIC.PRODUCTS}/${item.productId}`}
           className={`text-sm font-medium ${themed.textPrimary} hover:text-indigo-600 dark:hover:text-indigo-400 line-clamp-2 transition-colors`}
         >
           {item.productTitle}
-        </Link>
-        <p className={`text-xs mt-0.5 ${themed.textSecondary}`}>
-          {item.sellerName}
-        </p>
-        <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 mt-1">
+        </TextLink>
+        <Caption className="mt-0.5">{item.sellerName}</Caption>
+        <Text className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 mt-1">
           {formatCurrency(item.price)}
-        </p>
+        </Text>
 
         {/* Quantity controls + remove */}
         <div className="flex items-center gap-3 mt-2">
           <div className="flex items-center gap-1">
-            <button
+            <Button
+              variant="ghost"
               onClick={() => onUpdateQuantity(item.itemId, item.quantity - 1)}
               disabled={item.quantity <= 1 || isUpdating}
-              className={`w-7 h-7 flex items-center justify-center rounded-lg border ${themed.border} ${themed.textPrimary} hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition-colors`}
+              className={`w-7 h-7 ${flex.center} rounded-lg border ${themed.border} ${themed.textPrimary} hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition-colors`}
+              aria-label="Decrease quantity"
             >
               −
-            </button>
-            <span
+            </Button>
+            <Span
               className={`w-8 text-center text-sm font-medium ${themed.textPrimary}`}
             >
               {item.quantity}
-            </span>
-            <button
+            </Span>
+            <Button
+              variant="ghost"
               onClick={() => onUpdateQuantity(item.itemId, item.quantity + 1)}
               disabled={isUpdating}
-              className={`w-7 h-7 flex items-center justify-center rounded-lg border ${themed.border} ${themed.textPrimary} hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition-colors`}
+              className={`w-7 h-7 ${flex.center} rounded-lg border ${themed.border} ${themed.textPrimary} hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition-colors`}
+              aria-label="Increase quantity"
             >
               +
-            </button>
+            </Button>
           </div>
 
-          <button
+          <Button
+            variant="ghost"
             onClick={() => onRemove(item.itemId)}
             disabled={isUpdating}
             className="text-xs text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 disabled:opacity-40 transition-colors font-medium"
           >
             {t("remove")}
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Line total */}
       <div className="shrink-0 text-right">
-        <p className={`text-sm font-bold ${themed.textPrimary}`}>
+        <Text size="sm" weight="bold" className={themed.textPrimary}>
           {formatCurrency(lineTotal)}
-        </p>
+        </Text>
       </div>
     </div>
   );

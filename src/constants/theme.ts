@@ -112,6 +112,11 @@ export const THEME_CONSTANTS = {
     shadowElevated: "shadow-lg",
     hover:
       "hover:shadow-md dark:hover:shadow-xl cursor-pointer transition-shadow duration-200",
+    /** Chat message bubble variants */
+    chatBubble: {
+      mine: "bg-indigo-600 text-white rounded-2xl rounded-br-sm",
+      theirs: "bg-gray-100 dark:bg-gray-800 rounded-2xl rounded-bl-sm",
+    },
   },
 
   /**
@@ -189,15 +194,31 @@ export const THEME_CONSTANTS = {
     pageY: "py-6 sm:py-8 lg:py-10",
     sectionGap: "mt-8 md:mt-12",
     cardPadding: "p-5 sm:p-6 lg:p-8",
-    // Gap utilities
+    // Gap utilities — all dimensions
     gap: {
       xs: "gap-2",
       sm: "gap-3",
       md: "gap-4",
       lg: "gap-6",
       xl: "gap-8",
+      // Horizontal axis
+      x: {
+        xs: "gap-x-2",
+        sm: "gap-x-3",
+        md: "gap-x-4",
+        lg: "gap-x-6",
+        xl: "gap-x-8",
+      },
+      // Vertical axis
+      y: {
+        xs: "gap-y-2",
+        sm: "gap-y-3",
+        md: "gap-y-4",
+        lg: "gap-y-6",
+        xl: "gap-y-8",
+      },
     },
-    // Padding presets
+    // Padding presets — all sides + axis variants
     padding: {
       xs: "p-2",
       sm: "p-3",
@@ -205,19 +226,114 @@ export const THEME_CONSTANTS = {
       lg: "p-6",
       xl: "p-8",
       "2xl": "p-10",
-    },
-    // Margin presets
-    margin: {
-      xs: "m-2 lg:m-3",
-      sm: "m-3 lg:m-4",
-      md: "m-4 lg:m-6",
-      lg: "m-6 lg:m-8 2xl:m-10",
-      xl: "m-8 lg:m-10 2xl:m-12",
+      // Horizontal axis
+      x: {
+        xs: "px-2",
+        sm: "px-3",
+        md: "px-4",
+        lg: "px-6",
+        xl: "px-8",
+        "2xl": "px-10",
+      },
+      // Vertical axis
+      y: {
+        xs: "py-2",
+        sm: "py-3",
+        md: "py-4",
+        lg: "py-6",
+        xl: "py-8",
+        "2xl": "py-10",
+      },
+      // Top
+      top: {
+        xs: "pt-2",
+        sm: "pt-3",
+        md: "pt-4",
+        lg: "pt-6",
+        xl: "pt-8",
+      },
+      // Bottom
       bottom: {
+        xs: "pb-2",
+        sm: "pb-3",
+        md: "pb-4",
+        lg: "pb-6",
+        xl: "pb-8",
+      },
+      // Left
+      left: {
+        xs: "pl-2",
+        sm: "pl-3",
+        md: "pl-4",
+        lg: "pl-6",
+        xl: "pl-8",
+      },
+      // Right
+      right: {
+        xs: "pr-2",
+        sm: "pr-3",
+        md: "pr-4",
+        lg: "pr-6",
+        xl: "pr-8",
+      },
+    },
+    // Margin presets — all sides + axis variants
+    margin: {
+      xs: "m-2",
+      sm: "m-3",
+      md: "m-4",
+      lg: "m-6",
+      xl: "m-8",
+      // Horizontal axis
+      x: {
+        xs: "mx-2",
+        sm: "mx-3",
+        md: "mx-4",
+        lg: "mx-6",
+        xl: "mx-8",
+        auto: "mx-auto",
+      },
+      // Vertical axis
+      y: {
+        xs: "my-2",
+        sm: "my-3",
+        md: "my-4",
+        lg: "my-6",
+        xl: "my-8",
+      },
+      // Top
+      top: {
+        xs: "mt-1",
+        sm: "mt-2",
+        md: "mt-4",
+        lg: "mt-6",
+        xl: "mt-8",
+        "2xl": "mt-12",
+      },
+      // Bottom
+      bottom: {
+        xs: "mb-1",
         sm: "mb-2",
         md: "mb-4",
         lg: "mb-6",
         xl: "mb-8",
+        "2xl": "mb-12",
+      },
+      // Left
+      left: {
+        xs: "ml-1",
+        sm: "ml-2",
+        md: "ml-4",
+        lg: "ml-6",
+        xl: "ml-8",
+      },
+      // Right
+      right: {
+        xs: "mr-1",
+        sm: "mr-2",
+        md: "mr-4",
+        lg: "mr-6",
+        xl: "mr-8",
       },
     },
   },
@@ -795,6 +911,264 @@ export const THEME_CONSTANTS = {
   touch: {
     target: "min-h-[44px]",
     targetSm: "min-h-[36px]",
+  },
+  /**
+   * Flex layout compositions
+   * Pre-composed flex containers — use these instead of writing flex classes inline.
+   */
+  flex: {
+    // ── Base containers ──────────────────────────────────────────────────
+    /** `flex flex-row` */
+    row: "flex flex-row",
+    /** `flex flex-col` */
+    col: "flex flex-col",
+    /** `flex flex-row flex-wrap` */
+    rowWrap: "flex flex-row flex-wrap",
+    /** `flex flex-col flex-wrap` */
+    colWrap: "flex flex-col flex-wrap",
+    /** `inline-flex` */
+    inline: "inline-flex",
+
+    // ── Alignment combos — row (items on main axis = columns) ────────────
+    /** `flex items-center justify-center` – centred in both axes */
+    center: "flex items-center justify-center",
+    /** `flex items-center justify-between` – spread with centred cross-axis */
+    between: "flex items-center justify-between",
+    /** `flex items-start justify-between` */
+    betweenStart: "flex items-start justify-between",
+    /** `flex items-end justify-between` */
+    betweenEnd: "flex items-end justify-between",
+    /** `flex items-center justify-start` */
+    start: "flex items-center justify-start",
+    /** `flex items-center justify-end` */
+    end: "flex items-center justify-end",
+    /** `flex items-center` – row, cross-axis centred, main-axis natural */
+    rowCenter: "flex flex-row items-center",
+    /** `flex items-start` – row, cross-axis top-aligned */
+    rowStart: "flex flex-row items-start",
+    /** `flex items-end` – row, cross-axis bottom-aligned */
+    rowEnd: "flex flex-row items-end",
+
+    // ── Alignment combos — column ────────────────────────────────────────
+    /** `flex flex-col items-center justify-center` */
+    centerCol: "flex flex-col items-center justify-center",
+    /** `flex flex-col items-start` */
+    colStart: "flex flex-col items-start",
+    /** `flex flex-col items-center` */
+    colCenter: "flex flex-col items-center",
+    /** `flex flex-col items-end` */
+    colEnd: "flex flex-col items-end",
+    /** `flex flex-col justify-between` */
+    colBetween: "flex flex-col justify-between",
+
+    // ── Inline variants ──────────────────────────────────────────────────
+    /** `inline-flex items-center` */
+    inlineCenter: "inline-flex items-center",
+    /** `inline-flex items-center justify-center` */
+    inlineFull: "inline-flex items-center justify-center",
+
+    // ── Child flex behaviour ─────────────────────────────────────────────
+    /** `flex-1` – grow and shrink equally */
+    grow: "flex-1",
+    /** `flex-1 min-w-0` – grow + prevent text overflow in flex children */
+    growMin: "flex-1 min-w-0",
+    /** `flex-1 min-h-0` – grow + prevent overflow in scrollable flex cols */
+    growMinH: "flex-1 min-h-0",
+    /** `flex-shrink-0` – never shrink */
+    noShrink: "flex-shrink-0",
+    /** `flex-none` – neither grow nor shrink */
+    none: "flex-none",
+    /** `flex justify-center` – horizontal center only (no vertical alignment; use with py-* for height) */
+    hCenter: "flex justify-center",
+  },
+
+  /**
+   * Responsive grid presets
+   * Mobile-first column counts that scale through xl/2xl. Use instead of
+   * writing `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3` inline.
+   */
+  grid: {
+    /** Single column */
+    cols1: "grid grid-cols-1",
+    /** 1 → 2 */
+    cols2: "grid grid-cols-1 sm:grid-cols-2",
+    /** 1 → 2 → 3 */
+    cols3: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+    /** 1 → 2 → 3 → 4 */
+    cols4: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+    /** 1 → 2 → 3 → 4 → 5 */
+    cols5:
+      "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
+    /** 2 → 3 → 4 → 5 → 6 */
+    cols6:
+      "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
+    /** Auto-fill with ~200 px min columns */
+    autoFillSm: "grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))]",
+    /** Auto-fill with ~280 px min columns */
+    autoFillMd: "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))]",
+    /** Auto-fill with ~360 px min columns */
+    autoFillLg: "grid grid-cols-[repeat(auto-fill,minmax(360px,1fr))]",
+    /** Fixed left sidebar beside a growing main area */
+    sidebar: "grid grid-cols-1 lg:grid-cols-[280px_1fr]",
+    /** Fixed right sidebar beside a growing main area */
+    sidebarRight: "grid grid-cols-1 lg:grid-cols-[1fr_280px]",
+    /** Wide left sidebar (admin layout) */
+    sidebarWide: "grid grid-cols-1 lg:grid-cols-[320px_1fr]",
+    /** Two equal halves */
+    halves: "grid grid-cols-1 md:grid-cols-2",
+    /** Two-thirds / one-third split */
+    twoThird: "grid grid-cols-1 md:grid-cols-[2fr_1fr]",
+    /** One-third / two-thirds split */
+    oneThird: "grid grid-cols-1 md:grid-cols-[1fr_2fr]",
+  },
+
+  /**
+   * Position utilities
+   * Named position helpers for layout composition.
+   */
+  position: {
+    relative: "relative",
+    absolute: "absolute",
+    fixed: "fixed",
+    sticky: "sticky",
+    static: "static",
+    /** Covers entire parent with `absolute inset-0` */
+    fill: "absolute inset-0",
+    /** Centred in parent: `absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2` */
+    absoluteCenter:
+      "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
+    /** Pinned to top edge of parent */
+    absoluteTop: "absolute top-0 inset-x-0",
+    /** Pinned to bottom edge of parent */
+    absoluteBottom: "absolute bottom-0 inset-x-0",
+    /** Top-right corner */
+    absoluteTopRight: "absolute top-0 right-0",
+    /** Top-left corner */
+    absoluteTopLeft: "absolute top-0 left-0",
+    /** Bottom-right corner */
+    absoluteBottomRight: "absolute bottom-0 right-0",
+    /** Bottom-left corner */
+    absoluteBottomLeft: "absolute bottom-0 left-0",
+    /** Covers entire viewport with `fixed inset-0` */
+    fixedFill: "fixed inset-0",
+    /** Fixed top bar */
+    fixedTop: "fixed top-0 inset-x-0",
+    /** Fixed bottom bar */
+    fixedBottom: "fixed bottom-0 inset-x-0",
+    /** Sticks to viewport top on scroll */
+    stickyTop: "sticky top-0",
+    /** Sticks to viewport bottom on scroll */
+    stickyBottom: "sticky bottom-0",
+  },
+
+  /**
+   * Size presets
+   * Common width, height, and square size tokens.
+   */
+  size: {
+    /** `w-full h-full` */
+    full: "w-full h-full",
+    /** `w-screen h-screen` */
+    screen: "w-screen h-screen",
+    /** `min-h-screen` — page root */
+    minScreen: "min-h-screen",
+    // Width tokens
+    w: {
+      full: "w-full",
+      auto: "w-auto",
+      screen: "w-screen",
+      half: "w-1/2",
+      third: "w-1/3",
+      twoThirds: "w-2/3",
+      quarter: "w-1/4",
+      threeQuarters: "w-3/4",
+      fit: "w-fit",
+      min: "w-min",
+      max: "w-max",
+    },
+    // Height tokens
+    h: {
+      full: "h-full",
+      screen: "h-screen",
+      auto: "h-auto",
+      fit: "h-fit",
+      min: "h-min",
+      max: "h-max",
+    },
+    // Equal width + height squares (icon containers, avatars, dots)
+    square: {
+      xs: "w-4 h-4",
+      sm: "w-6 h-6",
+      md: "w-8 h-8",
+      lg: "w-10 h-10",
+      xl: "w-12 h-12",
+      "2xl": "w-16 h-16",
+      "3xl": "w-20 h-20",
+      "4xl": "w-24 h-24",
+    },
+  },
+
+  /**
+   * Overflow utilities
+   * Named overflow helpers — prefer these over raw `overflow-*` classes.
+   */
+  overflow: {
+    /** Clip all overflow */
+    hidden: "overflow-hidden",
+    /** Scroll both axes when needed */
+    auto: "overflow-auto",
+    /** Always show scrollbars on both axes */
+    scroll: "overflow-scroll",
+    /** Horizontal scroll, vertical clip */
+    xAuto: "overflow-x-auto overflow-y-hidden",
+    /** Vertical scroll, horizontal clip */
+    yAuto: "overflow-y-auto overflow-x-hidden",
+    /** Clip horizontal only */
+    xHidden: "overflow-x-hidden",
+    /** Clip vertical only */
+    yHidden: "overflow-y-hidden",
+    /** Always scroll horizontally */
+    xScroll: "overflow-x-scroll",
+    /** Always scroll vertically */
+    yScroll: "overflow-y-scroll",
+    /** Visible — let content bleed out (e.g. tooltips inside overflow:hidden) */
+    visible: "overflow-visible",
+  },
+
+  /**
+   * Page layout tokens
+   * Responsive page container patterns — max-width + centered + horizontal padding.
+   * Use instead of writing `max-w-Xyl mx-auto px-4 sm:px-6 lg:px-8` inline.
+   */
+  page: {
+    /**
+     * Full-width page container: max-width + `mx-auto` + responsive horizontal padding.
+     * Choose the size that matches the content area width.
+     */
+    container: {
+      /** `max-w-3xl mx-auto px-4 sm:px-6 lg:px-8` — blog posts, legal / policy pages */
+      sm: "max-w-3xl mx-auto px-4 sm:px-6 lg:px-8",
+      /** `max-w-4xl mx-auto px-4 sm:px-6 lg:px-8` — narrow content, contact, about sections */
+      md: "max-w-4xl mx-auto px-4 sm:px-6 lg:px-8",
+      /** `max-w-5xl mx-auto px-4 sm:px-6 lg:px-8` — medium content, checkout, help */
+      lg: "max-w-5xl mx-auto px-4 sm:px-6 lg:px-8",
+      /** `max-w-6xl mx-auto px-4 sm:px-6 lg:px-8` — product detail, cart */
+      xl: "max-w-6xl mx-auto px-4 sm:px-6 lg:px-8",
+      /** `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8` — main content grids (products, auctions, search) */
+      "2xl": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+      /** `max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8` — full-bleed wide content */
+      full: "max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8",
+      /** `max-w-screen-2xl mx-auto px-4 sm:px-6` — wide store/seller layouts (no lg:px-8) */
+      wide: "max-w-screen-2xl mx-auto px-4 sm:px-6",
+    },
+    /** `px-4 sm:px-6 lg:px-8` — responsive horizontal padding (no max-width) */
+    px: "px-4 sm:px-6 lg:px-8",
+    /** `px-4 sm:px-6` — responsive horizontal padding, compact (no lg step) */
+    pxSm: "px-4 sm:px-6",
+    /** `py-16` — vertical padding for empty / loading states */
+    empty: "py-16",
+    /** `py-8 sm:py-12` — vertical padding for auth form wrappers */
+    authPad: "py-8 sm:py-12",
   },
 } as const;
 

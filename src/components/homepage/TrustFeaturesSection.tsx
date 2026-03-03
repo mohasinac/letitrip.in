@@ -1,9 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { ShieldCheck, Truck, RotateCcw, Headphones } from "lucide-react";
 import { THEME_CONSTANTS, TRUST_FEATURES } from "@/constants";
 import type { TrustFeatureItem } from "@/constants";
+import { Heading, Section, Text } from "@/components";
 
 // ─── Icon resolver ───────────────────────────────────────────────────────────
 const ICON_MAP: Record<
@@ -42,16 +43,17 @@ function TrustFeatureCard({
         <Icon className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
       </div>
 
-      <h3
+      <Heading
+        level={3}
         className={`${THEME_CONSTANTS.typography.h6} ${THEME_CONSTANTS.themed.textPrimary} mb-1`}
       >
         {item.title}
-      </h3>
-      <p
+      </Heading>
+      <Text
         className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary}`}
       >
         {item.description}
-      </p>
+      </Text>
     </div>
   );
 }
@@ -81,7 +83,7 @@ export function TrustFeaturesSection() {
   }, []);
 
   return (
-    <section
+    <Section
       ref={sectionRef}
       className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
@@ -97,6 +99,6 @@ export function TrustFeaturesSection() {
           ))}
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Modal, Button, Text } from "@/components";
+import { Button, Modal, Span, Text } from "@/components";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 
 export interface ImageCropData {
@@ -144,6 +144,8 @@ export function ImageCropModal({
     setPosition({ x: 50, y: 50 });
   };
 
+  const { flex } = THEME_CONSTANTS;
+
   return (
     <Modal
       isOpen={isOpen}
@@ -212,15 +214,15 @@ export function ImageCropModal({
 
         {/* Zoom Control */}
         <div className="space-y-1">
-          <div className="flex items-center justify-between">
+          <div className={`${flex.between}`}>
             <Text className="text-xs font-medium">{UI_LABELS.AVATAR.ZOOM}</Text>
             <Text className={`text-xs ${THEME_CONSTANTS.themed.textSecondary}`}>
               {Math.round(zoom * 100)}%
             </Text>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
+          <div className={`${flex.rowCenter} gap-3`}>
+            <Button
               type="button"
               onClick={() => setZoom(Math.max(0.1, zoom - 0.1))}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -239,7 +241,7 @@ export function ImageCropModal({
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"
                 />
               </svg>
-            </button>
+            </Button>
 
             <input
               type="range"
@@ -252,7 +254,7 @@ export function ImageCropModal({
               className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary-600"
             />
 
-            <button
+            <Button
               type="button"
               onClick={() => setZoom(Math.min(3, zoom + 0.1))}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -271,46 +273,46 @@ export function ImageCropModal({
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
                 />
               </svg>
-            </button>
+            </Button>
           </div>
 
           {/* Zoom presets */}
           <div className="flex gap-2">
-            <button
+            <Button
               type="button"
               onClick={() => setZoom(0.5)}
               className="px-3 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
               50%
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={() => setZoom(1)}
               className="px-3 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
               100%
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={() => setZoom(1.5)}
               className="px-3 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
               150%
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={() => setZoom(2)}
               className="px-3 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
               200%
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Warning for zoom out */}
         {showZoomWarning && (
           <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded">
-            <div className="flex items-start gap-2">
+            <div className={`${flex.rowStart} gap-2`}>
               <svg
                 className="w-4 h-4 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5"
                 fill="currentColor"
@@ -336,19 +338,19 @@ export function ImageCropModal({
 
         {/* Position Info */}
         <div
-          className={`flex items-center justify-between text-xs ${THEME_CONSTANTS.themed.textSecondary}`}
+          className={`${flex.between} text-xs ${THEME_CONSTANTS.themed.textSecondary}`}
         >
-          <span>
+          <Span>
             {UI_LABELS.AVATAR.POSITION}: {Math.round(position.x)}%,{" "}
             {Math.round(position.y)}%
-          </span>
-          <button
+          </Span>
+          <Button
             type="button"
             onClick={handleReset}
             className="text-primary-600 dark:text-primary-400 hover:underline"
           >
             {UI_LABELS.AVATAR.RESET}
-          </button>
+          </Button>
         </div>
 
         {/* Actions */}

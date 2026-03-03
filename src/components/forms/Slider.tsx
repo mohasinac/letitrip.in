@@ -1,7 +1,9 @@
-"use client";
+﻿"use client";
 
 import React, { useCallback, useRef, useState } from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Span } from "../typography/Typography";
+import { Label } from "../typography/Typography";
 
 export interface SliderProps {
   value?: number;
@@ -74,24 +76,24 @@ export default function Slider({
     lg: "w-5 h-5",
   };
 
-  const { themed } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
 
   return (
     <div className={`slider-container ${className}`}>
       {(label || showValue) && (
-        <div className="flex items-center justify-between mb-2">
+        <div className={`${flex.between} mb-2`}>
           {label && (
-            <label
+            <Label
               htmlFor={sliderId}
               className={`text-sm font-medium ${themed.textPrimary}`}
             >
               {label}
-            </label>
+            </Label>
           )}
           {showValue && (
-            <span className={`text-sm font-medium ${themed.textSecondary}`}>
+            <Span className={`text-sm font-medium ${themed.textSecondary}`}>
               {value}
-            </span>
+            </Span>
           )}
         </div>
       )}

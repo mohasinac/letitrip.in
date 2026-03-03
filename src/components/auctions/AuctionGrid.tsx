@@ -1,6 +1,7 @@
-"use client";
+﻿"use client";
 
 import { AuctionCard } from "./AuctionCard";
+import { Span, Text } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import type { ProductDocument } from "@/db/schema";
 
@@ -62,13 +63,13 @@ export function AuctionGrid({
   if (auctions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center gap-3">
-        <span className="text-6xl">🔨</span>
-        <p className={`text-xl font-medium ${themed.textPrimary}`}>
+        <Span className="text-6xl">🔨</Span>
+        <Text variant="primary" className="text-xl font-medium">
           {UI_LABELS.AUCTIONS_PAGE.NO_AUCTIONS}
-        </p>
-        <p className={`text-sm ${themed.textSecondary}`}>
+        </Text>
+        <Text size="sm" variant="secondary">
           {UI_LABELS.AUCTIONS_PAGE.NO_AUCTIONS_SUBTITLE}
-        </p>
+        </Text>
       </div>
     );
   }

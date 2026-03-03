@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { useAddToCart, useMessage } from "@/hooks";
+import { Button } from "@/components";
 
 interface AddToCartButtonProps {
   productId: string;
@@ -41,12 +42,12 @@ export function AddToCartButton({
       : tProducts("addToCart");
 
   return (
-    <button
+    <Button
       onClick={handleClick}
       disabled={disabled || isLoading}
       className={`w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors ${className}`}
     >
       {label}
-    </button>
+    </Button>
   );
 }

@@ -8,7 +8,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   Card,
   Button,
@@ -28,7 +28,7 @@ import {
 import { useTranslations } from "next-intl";
 import { productService } from "@/services";
 
-const { spacing } = THEME_CONSTANTS;
+const { spacing, flex } = THEME_CONSTANTS;
 
 interface SellerEditProductViewProps {
   id: string;
@@ -120,7 +120,7 @@ export function SellerEditProductView({ id }: SellerEditProductViewProps) {
 
   if (authLoading || productLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
+      <div className={`${flex.center} py-16`}>
         <Spinner size="xl" variant="primary" />
       </div>
     );

@@ -1,5 +1,4 @@
-import { ProductCard } from "@/components/products";
-import { Heading, Text } from "@/components";
+import { ProductCard, Heading, Text, Section } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import type { ProductDocument } from "@/db/schema";
 
@@ -19,7 +18,7 @@ export function ProductSection({
   if (products.length === 0) return null;
 
   return (
-    <section>
+    <Section>
       <div className="mb-6">
         <Heading level={2}>{title}</Heading>
         <Text variant="secondary" className="mt-1">
@@ -31,6 +30,6 @@ export function ProductSection({
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
-    </section>
+    </Section>
   );
 }

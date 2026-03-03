@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useUrlTable } from "@/hooks";
 import { useAdminBids } from "@/features/admin/hooks";
 import { ROUTES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
@@ -14,6 +14,9 @@ import {
   AdminPageHeader,
   useBidTableColumns,
   TablePagination,
+  Text,
+  Caption,
+  Span,
 } from "@/components";
 import { formatCurrency, formatDate } from "@/utils";
 import type { BidDocument } from "@/db/schema";
@@ -26,7 +29,7 @@ export function AdminBidsView({ action }: Props) {
   const router = useRouter();
   const t = useTranslations("adminBids");
   const tTable = useTranslations("table");
-  const { themed } = THEME_CONSTANTS;
+
   const table = useUrlTable({ defaults: { pageSize: "25", sort: "-bidDate" } });
   const statusFilter = table.get("status");
 
@@ -90,14 +93,12 @@ export function AdminBidsView({ action }: Props) {
           { label: t("totalValue"), value: formatCurrency(totalValue) },
         ].map(({ label, value }) => (
           <Card key={label} className="p-4">
-            <p
-              className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary}`}
-            >
+            <Caption className="uppercase tracking-wide font-medium">
               {label}
-            </p>
-            <p className={`mt-1 text-2xl font-bold ${themed.textPrimary}`}>
+            </Caption>
+            <Text weight="bold" className="mt-1 text-2xl">
               {value}
-            </p>
+            </Text>
           </Card>
         ))}
       </div>
@@ -149,88 +150,70 @@ export function AdminBidsView({ action }: Props) {
           <div className="flex flex-col h-full p-4 space-y-4">
             {/* Product */}
             <div>
-              <p
-                className={`text-xs font-semibold uppercase tracking-wide ${themed.textSecondary}`}
-              >
+              <Caption className="uppercase tracking-wide font-semibold">
                 {t("product")}
-              </p>
-              <p className={`mt-1 text-sm font-medium ${themed.textPrimary}`}>
+              </Caption>
+              <Text size="sm" weight="medium" className="mt-1">
                 {selectedBid.productTitle}
-              </p>
-              <p className={`text-xs font-mono ${themed.textSecondary}`}>
-                {selectedBid.productId}
-              </p>
+              </Text>
+              <Caption className="font-mono">{selectedBid.productId}</Caption>
             </div>
 
             {/* Bidder */}
             <div>
-              <p
-                className={`text-xs font-semibold uppercase tracking-wide ${themed.textSecondary}`}
-              >
+              <Caption className="uppercase tracking-wide font-semibold">
                 {t("bidder")}
-              </p>
-              <p className={`mt-1 text-sm font-medium ${themed.textPrimary}`}>
+              </Caption>
+              <Text size="sm" weight="medium" className="mt-1">
                 {selectedBid.userName}
-              </p>
-              <p className={`text-xs ${themed.textSecondary}`}>
-                {selectedBid.userEmail}
-              </p>
+              </Text>
+              <Caption>{selectedBid.userEmail}</Caption>
             </div>
 
             {/* Bid details */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p
-                  className={`text-xs font-semibold uppercase tracking-wide ${themed.textSecondary}`}
-                >
+                <Caption className="uppercase tracking-wide font-semibold">
                   {t("bidAmount")}
-                </p>
-                <p className={`mt-1 text-lg font-bold ${themed.textPrimary}`}>
+                </Caption>
+                <Text weight="bold" className="mt-1 text-lg">
                   {formatCurrency(selectedBid.bidAmount)}
-                </p>
+                </Text>
               </div>
               <div>
-                <p
-                  className={`text-xs font-semibold uppercase tracking-wide ${themed.textSecondary}`}
-                >
+                <Caption className="uppercase tracking-wide font-semibold">
                   {tTable("status")}
-                </p>
-                <p
-                  className={`mt-1 text-sm font-medium capitalize ${themed.textPrimary}`}
-                >
+                </Caption>
+                <Text size="sm" weight="medium" className="mt-1 capitalize">
                   {selectedBid.status}
                   {selectedBid.isWinning && (
-                    <span className="ml-1 text-indigo-600 dark:text-indigo-400">
+                    <Span variant="accent" className="ml-1">
                       ★ {t("winning")}
-                    </span>
+                    </Span>
                   )}
-                </p>
+                </Text>
               </div>
             </div>
 
             {/* Bid Date */}
             <div>
-              <p
-                className={`text-xs font-semibold uppercase tracking-wide ${themed.textSecondary}`}
-              >
+              <Caption className="uppercase tracking-wide font-semibold">
                 {t("bidDate")}
-              </p>
-              <p className={`mt-1 text-sm ${themed.textPrimary}`}>
+              </Caption>
+              <Text size="sm" className="mt-1">
                 {formatDate(selectedBid.bidDate)}
-              </p>
+              </Text>
             </div>
 
             {/* Auto max bid if set */}
             {selectedBid.autoMaxBid != null && (
               <div>
-                <p
-                  className={`text-xs font-semibold uppercase tracking-wide ${themed.textSecondary}`}
-                >
+                <Caption className="uppercase tracking-wide font-semibold">
                   Auto Max Bid
-                </p>
-                <p className={`mt-1 text-sm ${themed.textPrimary}`}>
+                </Caption>
+                <Text size="sm" className="mt-1">
                   {formatCurrency(selectedBid.autoMaxBid)}
-                </p>
+                </Text>
               </div>
             )}
           </div>

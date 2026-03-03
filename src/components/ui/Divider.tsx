@@ -1,5 +1,6 @@
-import React from "react";
+﻿import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Span } from "../typography/Typography";
 
 /**
  * Divider Component
@@ -43,9 +44,9 @@ export default function Divider({
     return (
       <div className={`flex items-center gap-4 ${className}`} role="separator">
         <div className={`flex-1 h-px ${themed.borderLight}`} />
-        <span className={`text-sm font-medium ${themed.textMuted}`}>
+        <Span className={`text-sm font-medium ${themed.textMuted}`}>
           {label}
-        </span>
+        </Span>
         <div className={`flex-1 h-px ${themed.borderLight}`} />
       </div>
     );

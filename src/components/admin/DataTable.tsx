@@ -1,8 +1,10 @@
-"use client";
+﻿"use client";
 
 import { ReactNode, useState, useMemo } from "react";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
-import { Spinner, Pagination } from "@/components";
+import { Button, Heading, Pagination, Span, Spinner, Text } from "@/components";
+
+const { flex } = THEME_CONSTANTS;
 
 type ViewMode = "table" | "grid" | "list";
 
@@ -146,7 +148,7 @@ export function DataTable<T extends Record<string, any>>({
       <div
         className={`border ${THEME_CONSTANTS.themed.borderColor} rounded-lg overflow-hidden`}
       >
-        <div className="flex items-center justify-center h-64">
+        <div className={`${flex.center} h-64`}>
           <Spinner size="lg" label={UI_LABELS.LOADING.DEFAULT} />
         </div>
       </div>
@@ -158,7 +160,7 @@ export function DataTable<T extends Record<string, any>>({
       <div
         className={`border ${THEME_CONSTANTS.themed.borderColor} rounded-lg overflow-hidden`}
       >
-        <div className="flex items-center justify-center h-64">
+        <div className={`${flex.center} h-64`}>
           <div className="text-center">
             {emptyIcon || (
               <svg
@@ -175,16 +177,12 @@ export function DataTable<T extends Record<string, any>>({
                 />
               </svg>
             )}
-            <h3
-              className={`mt-4 text-sm font-semibold ${THEME_CONSTANTS.themed.textPrimary}`}
-            >
+            <Heading level={3} className="mt-4 text-sm font-semibold">
               {emptyTitle || UI_LABELS.TABLE.NO_DATA_TITLE}
-            </h3>
-            <p
-              className={`mt-1 text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
-            >
+            </Heading>
+            <Text variant="secondary" size="sm" className="mt-1">
               {emptyMessage || UI_LABELS.TABLE.NO_DATA_DESCRIPTION}
-            </p>
+            </Text>
           </div>
         </div>
       </div>
@@ -201,11 +199,13 @@ export function DataTable<T extends Record<string, any>>({
           aria-label="View mode"
         >
           {/* Table mode — hidden on xs */}
-          <button
+          <Button
             type="button"
             onClick={() => handleViewModeChange("table")}
             aria-label={UI_LABELS.ADMIN.TABLE_VIEW ?? "Table view"}
             aria-pressed={activeViewMode === "table"}
+            variant="ghost"
+            size="sm"
             className={`hidden sm:flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${
               activeViewMode === "table"
                 ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300"
@@ -227,14 +227,16 @@ export function DataTable<T extends Record<string, any>>({
                 d="M3 10h18M3 6h18M3 14h18M3 18h18"
               />
             </svg>
-          </button>
+          </Button>
 
           {/* Grid mode */}
-          <button
+          <Button
             type="button"
             onClick={() => handleViewModeChange("grid")}
             aria-label={UI_LABELS.ADMIN.GRID_VIEW ?? "Grid view"}
             aria-pressed={activeViewMode === "grid"}
+            variant="ghost"
+            size="sm"
             className={`flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${
               activeViewMode === "grid"
                 ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300"
@@ -256,14 +258,16 @@ export function DataTable<T extends Record<string, any>>({
                 d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"
               />
             </svg>
-          </button>
+          </Button>
 
           {/* List mode */}
-          <button
+          <Button
             type="button"
             onClick={() => handleViewModeChange("list")}
             aria-label={UI_LABELS.ADMIN.LIST_VIEW ?? "List view"}
             aria-pressed={activeViewMode === "list"}
+            variant="ghost"
+            size="sm"
             className={`flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${
               activeViewMode === "list"
                 ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300"
@@ -285,7 +289,7 @@ export function DataTable<T extends Record<string, any>>({
                 d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
               />
             </svg>
-          </button>
+          </Button>
         </div>
       )}
 
@@ -354,17 +358,17 @@ export function DataTable<T extends Record<string, any>>({
                       <div className="flex items-center gap-2">
                         {column.header}
                         {column.sortable && (
-                          <span className="text-gray-400">
+                          <Span className="text-gray-400">
                             {sortKey === column.key ? (
                               sortDirection === "asc" ? (
-                                <span>↑</span>
+                                <Span>↑</Span>
                               ) : (
-                                <span>↓</span>
+                                <Span>↓</Span>
                               )
                             ) : (
-                              <span className="opacity-30">↕</span>
+                              <Span className="opacity-30">↕</Span>
                             )}
-                          </span>
+                          </Span>
                         )}
                       </div>
                     </th>

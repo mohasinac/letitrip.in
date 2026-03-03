@@ -1,13 +1,13 @@
-"use client";
+﻿"use client";
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
+import { Span, Text, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
 
-const { themed, borderRadius } = THEME_CONSTANTS;
+const { themed, borderRadius, flex, position } = THEME_CONSTANTS;
 
 interface ProductCardProps {
   product: Pick<
@@ -36,7 +36,7 @@ export function ProductCard({ product, className = "" }: ProductCardProps) {
     : product.price;
 
   return (
-    <Link
+    <TextLink
       href={ROUTES.PUBLIC.PRODUCT_DETAIL(product.slug ?? product.id)}
       className={`group block ${themed.bgPrimary} ${borderRadius.lg} overflow-hidden hover:shadow-xl transition-all duration-300 ${isOutOfStock ? "opacity-70" : ""} ${className}`}
     >
@@ -51,7 +51,9 @@ export function ProductCard({ product, className = "" }: ProductCardProps) {
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-4xl">
+          <div
+            className={`${position.fill} ${flex.center} text-gray-400 text-4xl`}
+          >
             📦
           </div>
         )}
@@ -59,43 +61,47 @@ export function ProductCard({ product, className = "" }: ProductCardProps) {
         {/* Badges overlay */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {product.featured && (
-            <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+            <Span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
               {t("featured")}
-            </span>
+            </Span>
           )}
           {product.isAuction && (
-            <span className="bg-indigo-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+            <Span className="bg-indigo-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
               {t("auction")}
-            </span>
+            </Span>
           )}
           {product.isPromoted && !product.isAuction && (
-            <span className="bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+            <Span className="bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
               {t("promoted")}
-            </span>
+            </Span>
           )}
         </div>
 
         {/* Out of stock overlay */}
         {isOutOfStock && (
-          <div className="absolute inset-0 bg-black/40 flex items-end justify-center pb-3">
-            <span className="bg-black/70 text-white text-xs font-medium px-3 py-1 rounded-full">
+          <div
+            className={`${position.fill} bg-black/40 flex items-end justify-center pb-3`}
+          >
+            <Span className="bg-black/70 text-white text-xs font-medium px-3 py-1 rounded-full">
               {product.status === "sold" ? t("sold") : t("outOfStock")}
-            </span>
+            </Span>
           </div>
         )}
       </div>
 
       {/* Info */}
       <div className="p-3">
-        <p
-          className={`text-sm font-medium ${themed.textPrimary} line-clamp-2 leading-snug mb-1`}
+        <Text
+          size="sm"
+          weight="medium"
+          className={`${themed.textPrimary} line-clamp-2 leading-snug mb-1`}
         >
           {product.title}
-        </p>
-        <p className="text-base font-bold text-indigo-600 dark:text-indigo-400">
+        </Text>
+        <Text className="text-base font-bold text-indigo-600 dark:text-indigo-400">
           {formatCurrency(displayPrice)}
-        </p>
+        </Text>
       </div>
-    </Link>
+    </TextLink>
   );
 }

@@ -1,5 +1,6 @@
-import React from "react";
+﻿import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Span } from "../typography/Typography";
 
 /**
  * Avatar Component
@@ -34,7 +35,7 @@ export default function Avatar({
   className = "",
 }: AvatarProps) {
   const [imageError, setImageError] = React.useState(false);
-  const { themed } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
 
   const sizeClasses = {
     xs: "w-6 h-6 text-xs",
@@ -70,7 +71,7 @@ export default function Avatar({
         className={`
           ${sizeClasses[size]}
           rounded-full overflow-hidden
-          flex items-center justify-center
+          ${flex.center}
           ${themed.bgSecondary}
           ${showInitials ? themed.textPrimary : ""}
           font-semibold
@@ -84,7 +85,7 @@ export default function Avatar({
             className="w-full h-full object-cover"
           />
         ) : showInitials ? (
-          <span>{initials}</span>
+          <Span>{initials}</Span>
         ) : (
           <svg
             className={`w-full h-full ${themed.textMuted}`}
@@ -97,7 +98,7 @@ export default function Avatar({
       </div>
 
       {status && (
-        <span
+        <Span
           className={`
             absolute bottom-0 right-0
             ${statusSizes[size]}
@@ -123,7 +124,7 @@ export function AvatarGroup({
   max = 3,
   className = "",
 }: AvatarGroupProps) {
-  const { themed } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
   const avatars = React.Children.toArray(children);
   const displayAvatars = max ? avatars.slice(0, max) : avatars;
   const remainingCount = max ? avatars.length - max : 0;
@@ -143,7 +144,7 @@ export function AvatarGroup({
           className={`
             w-10 h-10 rounded-full
             ${themed.bgTertiary}
-            flex items-center justify-center
+            ${flex.center}
             text-sm font-medium ${themed.textSecondary}
             ring-2 ${themed.bgSecondary.replace("bg-", "ring-")}
           `}

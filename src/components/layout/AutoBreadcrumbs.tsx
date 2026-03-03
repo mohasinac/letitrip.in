@@ -1,8 +1,10 @@
-"use client";
+﻿"use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { THEME_CONSTANTS } from "@/constants";
+import { Nav, Ol, Li } from "../semantic/Semantic";
+import { TextLink } from "../typography/TextLink";
+import { Span } from "../typography/Typography";
 
 /**
  * AutoBreadcrumbs Component
@@ -110,19 +112,19 @@ export default function AutoBreadcrumbs() {
   ];
 
   return (
-    <nav
+    <Nav
       aria-label="Breadcrumb"
       className={`${THEME_CONSTANTS.themed.bgSecondary} border-b ${THEME_CONSTANTS.themed.border}`}
     >
       <div
         className={`container mx-auto ${THEME_CONSTANTS.layout.contentPadding} ${THEME_CONSTANTS.layout.maxContentWidth} py-2 sm:py-3`}
       >
-        <ol className="flex items-center gap-2 flex-wrap">
+        <Ol className="flex items-center gap-2 flex-wrap">
           {breadcrumbs.map((crumb, index) => {
             const isLast = index === breadcrumbs.length - 1;
 
             return (
-              <li key={crumb.href} className="flex items-center gap-2">
+              <Li key={crumb.href} className="flex items-center gap-2">
                 {index > 0 && (
                   <svg
                     className={`w-4 h-4 ${THEME_CONSTANTS.themed.textSecondary}`}
@@ -140,25 +142,25 @@ export default function AutoBreadcrumbs() {
                 )}
 
                 {isLast ? (
-                  <span
+                  <Span
                     className={`text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary}`}
                     aria-current="page"
                   >
                     {crumb.label}
-                  </span>
+                  </Span>
                 ) : (
-                  <Link
+                  <TextLink
                     href={crumb.href}
                     className={`text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary} hover:${THEME_CONSTANTS.themed.textPrimary} transition-colors`}
                   >
                     {crumb.label}
-                  </Link>
+                  </TextLink>
                 )}
-              </li>
+              </Li>
             );
           })}
-        </ol>
+        </Ol>
       </div>
-    </nav>
+    </Nav>
   );
 }

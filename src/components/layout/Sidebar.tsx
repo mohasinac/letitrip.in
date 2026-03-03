@@ -1,13 +1,23 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES, ERROR_MESSAGES } from "@/constants";
 import { useSwipe, useAuth, useLogout } from "@/hooks";
 import { logger } from "@/classes";
-import { AvatarDisplay } from "@/components";
+import {
+  Aside,
+  AvatarDisplay,
+  Button,
+  Heading,
+  Li,
+  Nav,
+  Span,
+  Text,
+  TextLink,
+  Ul,
+} from "@/components";
 import { preventBodyScroll } from "@/utils";
 import { hasAnyRole } from "@/helpers";
 
@@ -47,6 +57,7 @@ export default function Sidebar({
   const router = useRouter();
   const { user, loading } = useAuth();
   const isAuthenticated = !!user && !loading;
+  const { flex, overflow, position } = THEME_CONSTANTS;
   const sidebarRef = useRef<HTMLElement>(null);
   const tNav = useTranslations("nav");
   const tA = useTranslations("accessibility");
@@ -89,13 +100,13 @@ export default function Sidebar({
       {/* Backdrop overlay — darkens content behind sidebar */}
       {isOpen && (
         <div
-          className={`fixed inset-0 bg-black/40 backdrop-blur-[2px] ${THEME_CONSTANTS.zIndex.overlay} transition-opacity duration-300`}
+          className={`${position.fixedFill} bg-black/40 backdrop-blur-[2px] ${THEME_CONSTANTS.zIndex.overlay} transition-opacity duration-300`}
           onClick={onClose}
           aria-hidden="true"
         />
       )}
 
-      <aside
+      <Aside
         ref={sidebarRef}
         id="secondary-sidebar"
         aria-label={tA("sideNavigation")}
@@ -113,14 +124,14 @@ export default function Sidebar({
       >
         {/* Fixed Header with User Info - Modern Card Style */}
         <div
-          className={`flex-shrink-0 px-6 py-5 border-b ${THEME_CONSTANTS.themed.border} ${THEME_CONSTANTS.themed.bgSecondary}`}
+          className={`${flex.noShrink} px-6 py-5 border-b ${THEME_CONSTANTS.themed.border} ${THEME_CONSTANTS.themed.bgSecondary}`}
         >
           {isAuthenticated ? (
-            <div className="flex items-center justify-between gap-3">
+            <div className={`${flex.between} gap-3`}>
               {/* User Details */}
-              <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className={`${flex.rowCenter} gap-3 flex-1 min-w-0`}>
                 {/* Avatar with modern badge */}
-                <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
+                <div className={`${flex.colCenter} gap-1.5 ${flex.noShrink}`}>
                   <div className="relative">
                     <AvatarDisplay
                       cropData={
@@ -139,7 +150,7 @@ export default function Sidebar({
                       email={user.email}
                     />
                     {/* Role badge with modern design */}
-                    <span
+                    <Span
                       className={`absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider shadow-md ${
                         THEME_CONSTANTS.badge.roleText[
                           (user.role as keyof typeof THEME_CONSTANTS.badge.roleText) ||
@@ -148,27 +159,28 @@ export default function Sidebar({
                       } bg-white/90 dark:bg-gray-900/90`}
                     >
                       {user.role || "user"}
-                    </span>
+                    </Span>
                   </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p
+                <div className={flex.growMin}>
+                  <Text
                     className={`${THEME_CONSTANTS.typography.small} font-medium ${THEME_CONSTANTS.themed.textPrimary} truncate`}
                   >
                     {user.displayName || "User"}
-                  </p>
-                  <p
+                  </Text>
+                  <Text
                     className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary} truncate`}
                   >
                     {user.email || ""}
-                  </p>
+                  </Text>
                 </div>
               </div>
 
               {/* Close Button - Modern circular */}
-              <button
+              <Button
+                variant="ghost"
                 onClick={onClose}
-                className={`p-2.5 rounded-full transition-all duration-200 flex-shrink-0 hover:rotate-90 ${THEME_CONSTANTS.colors.iconButton.onLight}`}
+                className={`p-2.5 rounded-full transition-all duration-200 ${flex.noShrink} hover:rotate-90 ${THEME_CONSTANTS.colors.iconButton.onLight}`}
                 aria-label={tA("closeSidebar")}
               >
                 <svg
@@ -184,13 +196,14 @@ export default function Sidebar({
                     d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
-              </button>
+              </Button>
             </div>
           ) : (
             <div className="space-y-3">
               {/* Close Button Row - Modern circular */}
               <div className="flex justify-end">
-                <button
+                <Button
+                  variant="ghost"
                   onClick={onClose}
                   className={`p-2.5 rounded-full transition-all duration-200 hover:rotate-90 ${THEME_CONSTANTS.colors.iconButton.onLight}`}
                   aria-label={tA("closeSidebar")}
@@ -208,13 +221,14 @@ export default function Sidebar({
                       d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
-                </button>
+                </Button>
               </div>
 
               {/* Auth Buttons - Modern with gradients */}
               <div className="space-y-2.5">
-                <Link
+                <TextLink
                   href={ROUTES.AUTH.LOGIN}
+                  variant="inherit"
                   className={`
                   w-full block px-4 py-3 rounded-xl
                   bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800
@@ -226,9 +240,10 @@ export default function Sidebar({
                   onClick={onClose}
                 >
                   {tNav("login")}
-                </Link>
-                <Link
+                </TextLink>
+                <TextLink
                   href={ROUTES.AUTH.REGISTER}
+                  variant="inherit"
                   className={`
                   w-full block px-4 py-3 rounded-xl
                   ${THEME_CONSTANTS.themed.bgPrimary}
@@ -244,35 +259,36 @@ export default function Sidebar({
                   onClick={onClose}
                 >
                   {tNav("register")}
-                </Link>
+                </TextLink>
               </div>
             </div>
           )}
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto scrollbar-thin px-6 py-4">
-          <nav className="space-y-6">
+        <div className={`flex-1 ${overflow.yAuto} scrollbar-thin px-6 py-4`}>
+          <Nav aria-label={tA("sidebarLinks")} className="space-y-6">
             {/* User Profile Actions - Only shown when logged in */}
             {isAuthenticated && (
               <div className="space-y-2">
                 <div
-                  className={`flex items-center gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
+                  className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
                 >
                   <div
                     className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
                   ></div>
-                  <h3
+                  <Heading
+                    level={3}
                     className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
                   >
                     {tNav("profile")}
-                  </h3>
+                  </Heading>
                   <div
                     className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
                   ></div>
                 </div>
 
-                <ul className="space-y-1">
+                <Ul className="space-y-1">
                   {[
                     {
                       href: ROUTES.USER.PROFILE,
@@ -333,11 +349,12 @@ export default function Sidebar({
                   ].map((item) => {
                     const isActive = pathname === item.href;
                     return (
-                      <li key={item.href}>
-                        <Link
+                      <Li key={item.href}>
+                        <TextLink
                           href={item.href}
+                          variant="inherit"
                           className={`
-                          flex items-center gap-3 px-3 py-2.5 rounded-lg 
+                          ${flex.rowCenter} gap-3 px-3 py-2.5 rounded-lg 
                           transition-all duration-200 group
                           ${
                             isActive
@@ -349,7 +366,7 @@ export default function Sidebar({
                         >
                           <div
                             className={`
-                          flex-shrink-0 p-1.5 rounded-md transition-colors
+                          ${flex.noShrink} p-1.5 rounded-md transition-colors
                           ${
                             isActive
                               ? "bg-primary-100 dark:bg-primary-900/50"
@@ -366,11 +383,11 @@ export default function Sidebar({
                               {item.icon}
                             </svg>
                           </div>
-                          <span
+                          <Span
                             className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
                           >
                             {item.label}
-                          </span>
+                          </Span>
                           {isActive && (
                             <svg
                               className="w-4 h-4 text-primary-600 dark:text-primary-400"
@@ -384,14 +401,15 @@ export default function Sidebar({
                               />
                             </svg>
                           )}
-                        </Link>
-                      </li>
+                        </TextLink>
+                      </Li>
                     );
                   })}
-                </ul>
+                </Ul>
 
                 {/* Logout Button */}
-                <button
+                <Button
+                  variant="ghost"
                   className={`
                   w-full mt-2 px-4 py-2.5 rounded-lg
                   ${THEME_CONSTANTS.themed.bgPrimary}
@@ -400,7 +418,7 @@ export default function Sidebar({
                   hover:text-red-600 dark:hover:text-red-400
                   border ${THEME_CONSTANTS.themed.border}
                   transition-all duration-200
-                  flex items-center justify-center gap-2
+                  ${flex.center} gap-2
                   font-medium ${THEME_CONSTANTS.typography.small}
                 `}
                   onClick={handleSignOut}
@@ -419,7 +437,7 @@ export default function Sidebar({
                     />
                   </svg>
                   {tNav("logout")}
-                </button>
+                </Button>
               </div>
             )}
 
@@ -429,29 +447,31 @@ export default function Sidebar({
               hasAnyRole(user.role, ["admin", "moderator", "seller"]) && (
                 <div className="space-y-2">
                   <div
-                    className={`flex items-center gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
+                    className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
                   >
                     <div
                       className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
                     ></div>
-                    <h3
+                    <Heading
+                      level={3}
                       className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
                     >
                       {tNav("dashboard")}
-                    </h3>
+                    </Heading>
                     <div
                       className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
                     ></div>
                   </div>
 
-                  <ul className="space-y-1">
+                  <Ul className="space-y-1">
                     {/* Admin Dashboard */}
                     {hasAnyRole(user.role, ["admin", "moderator"]) && (
-                      <li>
-                        <Link
+                      <Li>
+                        <TextLink
                           href={ROUTES.ADMIN.DASHBOARD}
+                          variant="inherit"
                           className={`
-                        flex items-center gap-3 px-3 py-2.5 rounded-lg 
+                        ${flex.rowCenter} gap-3 px-3 py-2.5 rounded-lg 
                         transition-all duration-200 group
                         ${
                           pathname === ROUTES.ADMIN.DASHBOARD ||
@@ -464,7 +484,7 @@ export default function Sidebar({
                         >
                           <div
                             className={`
-                        flex-shrink-0 p-1.5 rounded-md transition-colors
+                        ${flex.noShrink} p-1.5 rounded-md transition-colors
                         ${
                           pathname === ROUTES.ADMIN.DASHBOARD ||
                           pathname?.startsWith("/admin/")
@@ -492,11 +512,11 @@ export default function Sidebar({
                               />
                             </svg>
                           </div>
-                          <span
+                          <Span
                             className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
                           >
                             {tNav("adminDashboard")}
-                          </span>
+                          </Span>
                           {(pathname === ROUTES.ADMIN.DASHBOARD ||
                             pathname?.startsWith("/admin/")) && (
                             <svg
@@ -511,17 +531,18 @@ export default function Sidebar({
                               />
                             </svg>
                           )}
-                        </Link>
-                      </li>
+                        </TextLink>
+                      </Li>
                     )}
 
                     {/* Seller Dashboard */}
                     {hasAnyRole(user.role, ["seller", "admin"]) && (
-                      <li>
-                        <Link
+                      <Li>
+                        <TextLink
                           href={ROUTES.SELLER.DASHBOARD}
+                          variant="inherit"
                           className={`
-                        flex items-center gap-3 px-3 py-2.5 rounded-lg 
+                        ${flex.rowCenter} gap-3 px-3 py-2.5 rounded-lg 
                         transition-all duration-200 group
                         ${
                           pathname === ROUTES.SELLER.DASHBOARD ||
@@ -534,7 +555,7 @@ export default function Sidebar({
                         >
                           <div
                             className={`
-                        flex-shrink-0 p-1.5 rounded-md transition-colors
+                        ${flex.noShrink} p-1.5 rounded-md transition-colors
                         ${
                           pathname === ROUTES.SELLER.DASHBOARD ||
                           pathname?.startsWith("/seller/")
@@ -562,11 +583,11 @@ export default function Sidebar({
                               />
                             </svg>
                           </div>
-                          <span
+                          <Span
                             className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
                           >
                             {tNav("sellerDashboard")}
-                          </span>
+                          </Span>
                           {(pathname === ROUTES.SELLER.DASHBOARD ||
                             pathname?.startsWith("/seller/")) && (
                             <svg
@@ -581,32 +602,33 @@ export default function Sidebar({
                               />
                             </svg>
                           )}
-                        </Link>
-                      </li>
+                        </TextLink>
+                      </Li>
                     )}
-                  </ul>
+                  </Ul>
                 </div>
               )}
 
             {/* Support Section - Always visible */}
             <div className="space-y-2">
               <div
-                className={`flex items-center gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
+                className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
               >
                 <div
                   className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
                 ></div>
-                <h3
+                <Heading
+                  level={3}
                   className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
                 >
                   {tNav("support")}
-                </h3>
+                </Heading>
                 <div
                   className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
                 ></div>
               </div>
 
-              <ul className="space-y-1">
+              <Ul className="space-y-1">
                 {[
                   {
                     href: ROUTES.PUBLIC.CONTACT,
@@ -635,11 +657,12 @@ export default function Sidebar({
                 ].map((item) => {
                   const isActive = pathname === item.href;
                   return (
-                    <li key={item.href}>
-                      <Link
+                    <Li key={item.href}>
+                      <TextLink
                         href={item.href}
+                        variant="inherit"
                         className={`
-                        flex items-center gap-3 px-3 py-2.5 rounded-lg 
+                        ${flex.rowCenter} gap-3 px-3 py-2.5 rounded-lg 
                         transition-all duration-200 group
                         ${
                           isActive
@@ -651,7 +674,7 @@ export default function Sidebar({
                       >
                         <div
                           className={`
-                        flex-shrink-0 p-1.5 rounded-md transition-colors
+                        ${flex.noShrink} p-1.5 rounded-md transition-colors
                         ${
                           isActive
                             ? "bg-primary-100 dark:bg-primary-900/50"
@@ -659,17 +682,17 @@ export default function Sidebar({
                         }
                       `}
                         >
-                          <span
-                            className={`flex items-center ${isActive ? "text-primary-600 dark:text-primary-400" : THEME_CONSTANTS.themed.textMuted}`}
+                          <Span
+                            className={`${flex.rowCenter} ${isActive ? "text-primary-600 dark:text-primary-400" : THEME_CONSTANTS.themed.textMuted}`}
                           >
                             {item.icon}
-                          </span>
+                          </Span>
                         </div>
-                        <span
+                        <Span
                           className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
                         >
                           {item.label}
-                        </span>
+                        </Span>
                         {isActive && (
                           <svg
                             className="w-4 h-4 text-primary-600 dark:text-primary-400"
@@ -683,35 +706,37 @@ export default function Sidebar({
                             />
                           </svg>
                         )}
-                      </Link>
-                    </li>
+                      </TextLink>
+                    </Li>
                   );
                 })}
-              </ul>
+              </Ul>
             </div>
 
             {/* Theme Toggle - Always visible */}
             <div className="space-y-2">
               <div
-                className={`flex items-center gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
+                className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
               >
                 <div
                   className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
                 ></div>
-                <h3
+                <Heading
+                  level={3}
                   className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
                 >
                   {tNav("settings")}
-                </h3>
+                </Heading>
                 <div
                   className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
                 ></div>
               </div>
 
-              <button
+              <Button
+                variant="ghost"
                 onClick={onToggleTheme}
                 className={`
-                flex items-center gap-3 px-3 py-2.5 rounded-lg w-full
+                ${flex.rowCenter} gap-3 px-3 py-2.5 rounded-lg w-full
                 transition-all duration-200 group
                 ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.hoverCard}
               `}
@@ -719,7 +744,7 @@ export default function Sidebar({
               >
                 <div
                   className={`
-                  flex-shrink-0 p-1.5 rounded-md transition-colors
+                  ${flex.noShrink} p-1.5 rounded-md transition-colors
                   bg-transparent ${THEME_CONSTANTS.themed.hover.replace("hover:", "group-hover:")}
                 `}
                 >
@@ -746,11 +771,11 @@ export default function Sidebar({
                     )}
                   </svg>
                 </div>
-                <span
+                <Span
                   className={`${THEME_CONSTANTS.typography.small} font-medium flex-1 text-left`}
                 >
                   {tNav("darkMode")}
-                </span>
+                </Span>
                 {/* Toggle indicator */}
                 <div
                   className={`
@@ -766,11 +791,11 @@ export default function Sidebar({
                   `}
                   />
                 </div>
-              </button>
+              </Button>
             </div>
-          </nav>
+          </Nav>
         </div>
-      </aside>
+      </Aside>
     </>
   );
 }

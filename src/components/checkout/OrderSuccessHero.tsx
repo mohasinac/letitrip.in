@@ -1,7 +1,8 @@
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
+import { Heading, Text } from "@/components";
 
-const { themed, spacing, typography, borderRadius } = THEME_CONSTANTS;
+const { themed, spacing, typography, borderRadius, flex } = THEME_CONSTANTS;
 
 export function OrderSuccessHero() {
   const t = useTranslations("orderSuccess");
@@ -9,7 +10,9 @@ export function OrderSuccessHero() {
     <div
       className={`${themed.bgSecondary} ${borderRadius.xl} p-8 text-center ${spacing.stack} mb-6`}
     >
-      <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+      <div
+        className={`w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full ${flex.center} mx-auto`}
+      >
         <svg
           className="w-10 h-10 text-green-600 dark:text-green-400"
           fill="none"
@@ -24,9 +27,13 @@ export function OrderSuccessHero() {
           />
         </svg>
       </div>
-      <h1 className={`${typography.h2} ${themed.textPrimary}`}>{t("title")}</h1>
-      <p className={themed.textSecondary}>{t("subtitle")}</p>
-      <p className={`text-sm ${themed.textSecondary}`}>{t("emailSent")}</p>
+      <Heading level={1} className={typography.h2}>
+        {t("title")}
+      </Heading>
+      <Text variant="secondary">{t("subtitle")}</Text>
+      <Text size="sm" variant="secondary">
+        {t("emailSent")}
+      </Text>
     </div>
   );
 }

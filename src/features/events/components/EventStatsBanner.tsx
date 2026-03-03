@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { Card } from "@/components";
+import { Card, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 
@@ -52,10 +52,10 @@ export function EventStatsBanner({
     >
       {stats.map(({ label, value, color }) => (
         <Card key={label} className={spacing.cardPadding}>
-          <p className={`text-sm ${themed.textSecondary}`}>{label}</p>
-          <p className={`text-2xl font-bold mt-1 ${color}`}>
+          <Text className={`text-sm ${themed.textSecondary}`}>{label}</Text>
+          <Text className={`text-2xl font-bold mt-1 ${color}`}>
             {isLoading ? "—" : value}
-          </p>
+          </Text>
         </Card>
       ))}
     </div>

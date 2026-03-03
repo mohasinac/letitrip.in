@@ -12,10 +12,12 @@
 
 import { useCallback } from "react";
 import { useAuth } from "@/hooks";
-import { useRouter } from "next/navigation";
-import { ROUTES } from "@/constants";
+import { useRouter } from "@/i18n/navigation";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useWishlistToggle } from "@/hooks";
+
+const { flex } = THEME_CONSTANTS;
 
 interface WishlistButtonProps {
   productId: string;
@@ -74,7 +76,7 @@ export function WishlistButton({
       aria-label={label}
       title={label}
       className={`
-        flex items-center justify-center rounded-full
+        ${flex.center} rounded-full
         transition-all duration-150
         ${
           inWishlist

@@ -13,7 +13,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { useStores } from "../hooks";
 import { StoreCard } from "./StoreCard";
 
-const { spacing } = THEME_CONSTANTS;
+const { spacing, flex } = THEME_CONSTANTS;
 
 export function StoresListView() {
   const t = useTranslations("storesPage");
@@ -51,7 +51,7 @@ export function StoresListView() {
 
       {/* Loading */}
       {isLoading && (
-        <div className="flex justify-center py-16">
+        <div className={`${flex.hCenter} ${THEME_CONSTANTS.page.empty}`}>
           <Spinner />
         </div>
       )}

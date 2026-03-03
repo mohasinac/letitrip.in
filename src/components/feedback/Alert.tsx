@@ -1,5 +1,7 @@
 import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Heading } from "../typography/Typography";
+import Button from "../ui/Button";
 
 /**
  * Alert Component
@@ -95,17 +97,22 @@ export default function Alert({
 
         <div className="flex-1 min-w-0">
           {title && (
-            <h3 className={`text-sm font-semibold mb-1 ${styles.title}`}>
+            <Heading
+              level={3}
+              className={`text-sm font-semibold mb-1 ${styles.title}`}
+            >
               {title}
-            </h3>
+            </Heading>
           )}
           <div className={`text-sm ${styles.text}`}>{children}</div>
         </div>
 
         {onClose && (
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onClose}
-            className={`flex-shrink-0 ml-3 inline-flex rounded-lg p-1.5 transition-colors ${styles.icon} ${colors.button.alertClose}`}
+            className={`flex-shrink-0 ml-3 rounded-lg p-1.5 ${styles.icon} ${colors.button.alertClose}`}
             aria-label="Close"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -115,7 +122,7 @@ export default function Alert({
                 clipRule="evenodd"
               />
             </svg>
-          </button>
+          </Button>
         )}
       </div>
     </div>

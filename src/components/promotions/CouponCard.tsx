@@ -1,13 +1,13 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
-import { Card, Button, Heading, Text } from "@/components";
+import { Button, Card, Heading, Span, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 import type { CouponDocument } from "@/db/schema";
 
-const { themed } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
 
 export function CouponCard({ coupon }: { coupon: CouponDocument }) {
   const t = useTranslations("promotions");
@@ -40,16 +40,16 @@ export function CouponCard({ coupon }: { coupon: CouponDocument }) {
 
   return (
     <Card className="p-5 border-2 border-dashed border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-600 transition-colors">
-      <div className="flex items-start justify-between mb-3">
+      <div className={`${flex.betweenStart} mb-3`}>
         <div>
           <Heading level={3}>{coupon.name}</Heading>
           <Text className="text-indigo-600 dark:text-indigo-400 font-bold text-lg mt-0.5">
             {getDiscountLabel(coupon)}
           </Text>
         </div>
-        <span className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 px-2 py-0.5 rounded-full text-xs font-medium">
+        <Span className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 px-2 py-0.5 rounded-full text-xs font-medium">
           {t("statusActive")}
-        </span>
+        </Span>
       </div>
 
       {coupon.description && (

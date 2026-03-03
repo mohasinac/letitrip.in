@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   Card,
   Button,
@@ -12,14 +11,18 @@ import {
   PasswordStrengthIndicator,
   Heading,
   Text,
+  TextLink,
 } from "@/components";
 import { useResetPassword } from "@/hooks";
+import { useTranslations } from "next-intl";
 import {
   ERROR_MESSAGES,
   ROUTES,
   UI_PLACEHOLDERS,
   THEME_CONSTANTS,
 } from "@/constants";
+
+const { flex } = THEME_CONSTANTS;
 
 export function ResetPasswordView() {
   const router = useRouter();
@@ -75,7 +78,7 @@ export function ResetPasswordView() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 py-8">
+      <div className={`min-h-screen ${flex.center} px-4 py-8`}>
         <Card className="max-w-md w-full p-8 text-center">
           <div className="mb-4 text-green-500">
             <svg
@@ -111,7 +114,7 @@ export function ResetPasswordView() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8">
+    <div className={`min-h-screen ${flex.center} px-4 py-8`}>
       <Card className="max-w-md w-full p-8">
         <div className="text-center mb-6">
           <Heading level={4} className="mb-2">
@@ -189,12 +192,12 @@ export function ResetPasswordView() {
         <div className="mt-6 text-center">
           <Text className="text-gray-600 text-sm">
             {t("forgotPassword.rememberPassword")}{" "}
-            <Link
+            <TextLink
               href={ROUTES.AUTH.LOGIN}
               className="text-blue-600 hover:underline"
             >
               {t("forgotPassword.signInLink")}
-            </Link>
+            </TextLink>
           </Text>
         </div>
       </Card>

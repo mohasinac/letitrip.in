@@ -8,7 +8,7 @@
 
 "use client";
 
-import { AdminFilterBar, FormField } from "@/components";
+import { AdminFilterBar, FormField, Button } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { UserTab } from "./types";
@@ -60,7 +60,7 @@ export function UserFilters({
       <div className={`border-b ${themed.border}`}>
         <div className="flex gap-4">
           {TABS.map((tab) => (
-            <button
+            <Button
               key={tab.key}
               onClick={() => onTabChange(tab.key)}
               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
@@ -70,7 +70,7 @@ export function UserFilters({
               }`}
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

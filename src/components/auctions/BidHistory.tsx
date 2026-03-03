@@ -1,10 +1,11 @@
-"use client";
+﻿"use client";
 
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatRelativeTime } from "@/utils";
 import type { BidDocument } from "@/db/schema";
+import { Heading, Li, Span, Text, Ul } from "@/components";
 
-const { themed, spacing } = THEME_CONSTANTS;
+const { themed, spacing, flex } = THEME_CONSTANTS;
 
 interface BidHistoryProps {
   bids: BidDocument[];
@@ -34,13 +35,13 @@ export function BidHistory({ bids, loading = false }: BidHistoryProps) {
       <div
         className={`px-4 py-3 border-b ${themed.border} ${themed.bgSecondary}`}
       >
-        <h3 className={`font-semibold ${themed.textPrimary}`}>
+        <Heading level={3} className="font-semibold">
           {UI_LABELS.AUCTIONS_PAGE.BID_HISTORY_TITLE}
-        </h3>
+        </Heading>
         {bids.length > 0 && (
-          <p className={`text-xs ${themed.textSecondary}`}>
+          <Text size="xs" variant="secondary">
             {UI_LABELS.AUCTIONS_PAGE.BID_COUNT(bids.length)}
-          </p>
+          </Text>
         )}
       </div>
 
@@ -50,37 +51,37 @@ export function BidHistory({ bids, loading = false }: BidHistoryProps) {
           {UI_LABELS.AUCTIONS_PAGE.BID_HISTORY_EMPTY}
         </div>
       ) : (
-        <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+        <Ul className="divide-y divide-gray-100 dark:divide-gray-800">
           {bids.map((bid, index) => (
-            <li
+            <Li
               key={bid.id}
-              className={`flex items-center justify-between px-4 py-3 ${
+              className={`${flex.between} px-4 py-3 ${
                 index === 0 ? "bg-indigo-50 dark:bg-indigo-950/30" : ""
               }`}
             >
               <div className="flex items-center gap-2 min-w-0">
                 <div className="flex flex-col min-w-0">
-                  <span
+                  <Span
                     className={`text-sm font-medium ${themed.textPrimary} truncate`}
                   >
                     {anonymizeName(bid.userName)}
-                  </span>
-                  <span className={`text-xs ${themed.textSecondary}`}>
+                  </Span>
+                  <Span className={`text-xs ${themed.textSecondary}`}>
                     {formatRelativeTime(bid.bidDate || bid.createdAt)}
-                  </span>
+                  </Span>
                 </div>
                 {index === 0 && (
-                  <span className="shrink-0 text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-semibold px-2 py-0.5 rounded-full">
+                  <Span className="shrink-0 text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-semibold px-2 py-0.5 rounded-full">
                     {UI_LABELS.AUCTIONS_PAGE.WINNING_BID}
-                  </span>
+                  </Span>
                 )}
               </div>
-              <span className="font-bold text-indigo-600 dark:text-indigo-400 shrink-0 ml-2">
+              <Span className="font-bold text-indigo-600 dark:text-indigo-400 shrink-0 ml-2">
                 {formatCurrency(bid.bidAmount)}
-              </span>
-            </li>
+              </Span>
+            </Li>
           ))}
-        </ul>
+        </Ul>
       )}
     </div>
   );

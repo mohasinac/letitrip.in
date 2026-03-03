@@ -1,11 +1,13 @@
-"use client";
-import Link from "next/link";
+﻿"use client";
 import { THEME_CONSTANTS, FAQ_CATEGORIES, ROUTES } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
+import { Heading, Span, Text, TextLink } from "@/components";
 
 // Re-export for backward compatibility — consumers that imported from this file continue to work.
 export { FAQ_CATEGORIES } from "@/constants";
 export type { FAQCategoryKey } from "@/constants";
+
+const { flex } = THEME_CONSTANTS;
 
 interface FAQCategorySidebarProps {
   selectedCategory: FAQCategoryKey | "all";
@@ -29,14 +31,15 @@ export function FAQCategorySidebar({
       className={`${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} ${THEME_CONSTANTS.spacing.padding.lg} sticky top-4 h-fit`}
     >
       {/* Title */}
-      <h2
+      <Heading
+        level={2}
         className={`${THEME_CONSTANTS.typography.h3} ${THEME_CONSTANTS.themed.textPrimary} mb-6`}
       >
         Categories
-      </h2>
+      </Heading>
 
       {/* All FAQs */}
-      <Link
+      <TextLink
         href={ROUTES.PUBLIC.FAQS}
         onClick={() => onCategorySelect?.("all")}
         className={`block w-full text-left ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} mb-3 transition-colors ${
@@ -45,18 +48,18 @@ export function FAQCategorySidebar({
             : `${THEME_CONSTANTS.themed.textSecondary} hover:${THEME_CONSTANTS.themed.bgTertiary}`
         }`}
       >
-        <div className="flex items-center justify-between">
+        <div className={flex.between}>
           <div className="flex items-center gap-3">
-            <span className="text-2xl">📚</span>
-            <span className={THEME_CONSTANTS.typography.body}>All FAQs</span>
+            <Span className="text-2xl">📚</Span>
+            <Span className={THEME_CONSTANTS.typography.body}>All FAQs</Span>
           </div>
-          <span
+          <Span
             className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary}`}
           >
             {totalCount}
-          </span>
+          </Span>
         </div>
-      </Link>
+      </TextLink>
 
       {/* Category List */}
       <div className={`pt-6 mt-4 border-t ${THEME_CONSTANTS.themed.border}`}>
@@ -65,7 +68,7 @@ export function FAQCategorySidebar({
           const count = categoryCounts[key as FAQCategoryKey] || 0;
 
           return (
-            <Link
+            <TextLink
               key={key}
               href={ROUTES.PUBLIC.FAQ_CATEGORY(key)}
               onClick={() => onCategorySelect?.(key as FAQCategoryKey)}
@@ -75,44 +78,44 @@ export function FAQCategorySidebar({
                   : `${THEME_CONSTANTS.themed.textSecondary} hover:${THEME_CONSTANTS.themed.bgTertiary}`
               }`}
             >
-              <div className="flex items-center justify-between mb-1">
+              <div className={`${flex.between} mb-1`}>
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">{category.icon}</span>
-                  <span className={THEME_CONSTANTS.typography.body}>
+                  <Span className="text-2xl">{category.icon}</Span>
+                  <Span className={THEME_CONSTANTS.typography.body}>
                     {category.label}
-                  </span>
+                  </Span>
                 </div>
-                <span
+                <Span
                   className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary}`}
                 >
                   {count}
-                </span>
+                </Span>
               </div>
               {isSelected && (
-                <p
+                <Text
                   className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary} ml-11`}
                 >
                   {category.description}
-                </p>
+                </Text>
               )}
-            </Link>
+            </TextLink>
           );
         })}
       </div>
 
       {/* Contact Support CTA */}
       <div className={`pt-6 border-t ${THEME_CONSTANTS.themed.border}`}>
-        <p
+        <Text
           className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary} mb-3`}
         >
           Still have questions?
-        </p>
-        <Link
+        </Text>
+        <TextLink
           href={ROUTES.PUBLIC.CONTACT}
           className={`block text-center ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors`}
         >
           Contact Support
-        </Link>
+        </TextLink>
       </div>
     </div>
   );

@@ -8,8 +8,17 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { BidHistory, PlaceBidForm, Spinner } from "@/components";
+import {
+  BidHistory,
+  PlaceBidForm,
+  Spinner,
+  Heading,
+  Text,
+  Span,
+  TextLink,
+  Nav,
+  Main,
+} from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
@@ -20,7 +29,7 @@ import {
 } from "@/hooks";
 import { formatCurrency } from "@/utils";
 
-const { themed, typography, spacing } = THEME_CONSTANTS;
+const { themed, typography, spacing, flex, position, page } = THEME_CONSTANTS;
 
 interface AuctionDetailViewProps {
   id: string;
@@ -71,7 +80,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
 
   if (productQuery.isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className={`${flex.center} min-h-[60vh]`}>
         <Spinner size="lg" />
       </div>
     );
@@ -82,15 +91,15 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
       <div
         className={`max-w-7xl mx-auto px-4 py-20 text-center ${spacing.stack}`}
       >
-        <p className={`text-lg font-medium ${themed.textPrimary}`}>
+        <Text size="lg" weight="medium">
           {tProducts("productNotFound")}
-        </p>
-        <Link
+        </Text>
+        <TextLink
           href={ROUTES.PUBLIC.AUCTIONS}
           className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
         >
           {tActions("back")}
-        </Link>
+        </TextLink>
       </div>
     );
   }
@@ -100,36 +109,37 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
       <div
         className={`max-w-7xl mx-auto px-4 py-20 text-center ${spacing.stack}`}
       >
-        <p className={`text-lg font-medium ${themed.textPrimary}`}>
+        <Text size="lg" weight="medium">
           {tAuctions("noAuctions")}
-        </p>
-        <Link
+        </Text>
+        <TextLink
           href={ROUTES.PUBLIC.PRODUCTS + `/${product.id}`}
           className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
         >
           {tProducts("backToProducts")}
-        </Link>
+        </TextLink>
       </div>
     );
   }
 
   return (
-    <main
-      className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 ${spacing.stack}`}
-    >
+    <Main className={`${page.container["2xl"]} py-10 ${spacing.stack}`}>
       {/* Breadcrumb */}
-      <nav className={`text-sm ${themed.textSecondary}`}>
-        <Link
+      <Nav
+        aria-label="Breadcrumb"
+        className={`text-sm ${themed.textSecondary}`}
+      >
+        <TextLink
           href={ROUTES.PUBLIC.AUCTIONS}
           className="hover:text-indigo-600 dark:hover:text-indigo-400"
         >
           {tAuctions("title")}
-        </Link>
-        <span className="mx-2">/</span>
-        <span className={`${themed.textPrimary} line-clamp-1`}>
+        </TextLink>
+        <Span className="mx-2">/</Span>
+        <Span variant="primary" className="line-clamp-1">
           {product.title}
-        </span>
-      </nav>
+        </Span>
+      </Nav>
 
       {/* Main layout: image left, info right */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -145,58 +155,60 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
               sizes="(max-width: 1024px) 100vw, 50vw"
             />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-6xl">
+            <div
+              className={`${position.fill} ${flex.center} text-gray-400 text-6xl`}
+            >
               🔨
             </div>
           )}
           {!isEnded && (
-            <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
+            <Span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
               {tAuctions("liveBadge")}
-            </span>
+            </Span>
           )}
           {rtdbConnected && !isEnded && (
-            <span className="absolute top-3 right-3 flex items-center gap-1 bg-emerald-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            <Span className="absolute top-3 right-3 flex items-center gap-1 bg-emerald-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
+              <Span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
               {tAuctions("realtimeBadge")}
-            </span>
+            </Span>
           )}
         </div>
 
         {/* Right: info + bid panel */}
         <div className={`flex flex-col ${spacing.stack}`}>
-          <h1 className={`${typography.h3} ${themed.textPrimary}`}>
+          <Heading level={1} className={`${typography.h3}`}>
             {product.title}
-          </h1>
+          </Heading>
 
           {/* Bid summary */}
           <div
             className={`rounded-xl border ${themed.border} p-4 ${spacing.stack}`}
           >
             <div className="flex flex-col gap-1">
-              <p className={`text-xs ${themed.textSecondary}`}>
+              <Text size="xs" variant="secondary">
                 {hasCurrentBid
                   ? tAuctions("currentBid")
                   : tAuctions("startingBid")}
-              </p>
-              <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
+              </Text>
+              <Text className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
                 {formatCurrency(displayBid)}
-              </p>
-              <p className={`text-sm ${themed.textSecondary}`}>
+              </Text>
+              <Text size="sm" variant="secondary">
                 {tAuctions("totalBids", { count: liveBidCount })}
-              </p>
+              </Text>
               {lastRtdbBid && (
-                <p className={`text-xs ${themed.textSecondary}`}>
+                <Text size="xs" variant="secondary">
                   {tAuctions("lastBidBy", { name: lastRtdbBid.bidderName })}
-                </p>
+                </Text>
               )}
             </div>
 
             {/* Countdown */}
-            <div className="flex items-center justify-between">
-              <span className={`text-sm ${themed.textSecondary}`}>
+            <div className={flex.between}>
+              <Span size="sm" variant="secondary">
                 {isEnded ? tAuctions("ended") : `${tAuctions("endsIn")}:`}
-              </span>
-              <span
+              </Span>
+              <Span
                 className={`font-mono font-bold text-lg ${
                   isEnded
                     ? themed.textSecondary
@@ -206,7 +218,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                 }`}
               >
                 {countdownDisplay}
-              </span>
+              </Span>
             </div>
           </div>
 
@@ -223,12 +235,12 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
           {/* Description */}
           {product.description && (
             <div>
-              <h3 className={`font-semibold ${themed.textPrimary} mb-1`}>
+              <Heading level={3} className="font-semibold mb-1">
                 {tAuctions("description")}
-              </h3>
-              <p className={`text-sm ${themed.textSecondary} leading-relaxed`}>
+              </Heading>
+              <Text size="sm" variant="secondary" className="leading-relaxed">
                 {product.description}
-              </p>
+              </Text>
             </div>
           )}
         </div>
@@ -236,6 +248,6 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
 
       {/* Bid History */}
       <BidHistory bids={bids} />
-    </main>
+    </Main>
   );
 }

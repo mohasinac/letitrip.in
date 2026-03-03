@@ -1,10 +1,9 @@
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
-import { Heading, Text, Caption } from "@/components";
-import Link from "next/link";
+import { Heading, Text, Caption, Section, TextLink } from "@/components";
 import { getTranslations } from "next-intl/server";
 import { ShoppingBag, Truck, MapPin, CheckCircle2 } from "lucide-react";
 
-const { themed } = THEME_CONSTANTS;
+const { themed, flex, page } = THEME_CONSTANTS;
 
 export async function generateMetadata() {
   return {
@@ -51,44 +50,48 @@ export default async function TrackOrderPage() {
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}
-      <section className="bg-gradient-to-br from-indigo-600 to-violet-700 text-white py-14 md:py-16 lg:py-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <Section className="bg-gradient-to-br from-indigo-600 to-violet-700 text-white py-14 md:py-16 lg:py-20">
+        <div className={`${page.container.sm} text-center`}>
           <Heading level={1} className="mb-4 text-white">
             {t("title")}
           </Heading>
           <Text className="text-indigo-200">{t("subtitle")}</Text>
         </div>
-      </section>
+      </Section>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-16 space-y-14 md:space-y-16">
+      <div
+        className={`${page.container.md} py-14 md:py-16 space-y-14 md:space-y-16`}
+      >
         {/* Sign-in prompt */}
-        <section
+        <Section
           className={`${themed.bgSecondary} rounded-2xl border ${themed.border} p-8 text-center`}
         >
-          <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div
+            className={`w-16 h-16 bg-indigo-100 dark:bg-indigo-900/40 rounded-full ${flex.center} mx-auto mb-4`}
+          >
             <ShoppingBag className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
           </div>
           <Heading level={2} className="mb-3">
             {t("signInPrompt")}
           </Heading>
           <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
-            <Link
+            <TextLink
               href={ROUTES.AUTH.LOGIN}
               className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-lg transition-colors"
             >
               {t("signIn")}
-            </Link>
-            <Link
+            </TextLink>
+            <TextLink
               href={ROUTES.USER.ORDERS}
               className={`inline-flex items-center justify-center gap-2 ${themed.bgPrimary} border ${themed.border} ${themed.textPrimary} font-medium px-6 py-3 rounded-lg hover:opacity-80 transition-opacity`}
             >
               {t("viewOrders")}
-            </Link>
+            </TextLink>
           </div>
-        </section>
+        </Section>
 
         {/* How it works */}
-        <section>
+        <Section>
           <Heading level={2} className="text-center mb-10">
             {t("howItWorksTitle")}
           </Heading>
@@ -102,7 +105,7 @@ export default async function TrackOrderPage() {
                   {String(index + 1).padStart(2, "0")}
                 </Caption>
                 <div
-                  className={`w-12 h-12 ${bg} rounded-xl flex items-center justify-center mb-4`}
+                  className={`w-12 h-12 ${bg} rounded-xl ${flex.center} mb-4`}
                 >
                   <Icon className={`w-6 h-6 ${color}`} />
                 </div>
@@ -115,10 +118,10 @@ export default async function TrackOrderPage() {
               </div>
             ))}
           </div>
-        </section>
+        </Section>
 
         {/* Need help */}
-        <section
+        <Section
           className={`${themed.bgSecondary} rounded-xl border ${themed.border} p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4`}
         >
           <div>
@@ -130,20 +133,20 @@ export default async function TrackOrderPage() {
             </Text>
           </div>
           <div className="flex gap-3 flex-shrink-0">
-            <Link
+            <TextLink
               href={ROUTES.PUBLIC.HELP}
               className={`text-sm ${themed.textSecondary} hover:text-indigo-600 dark:hover:text-indigo-400 underline underline-offset-4 transition-colors`}
             >
               {t("helpCenter")}
-            </Link>
-            <Link
+            </TextLink>
+            <TextLink
               href={ROUTES.PUBLIC.CONTACT}
               className="text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors"
             >
               {t("contactSupport")}
-            </Link>
+            </TextLink>
           </div>
-        </section>
+        </Section>
       </div>
     </div>
   );

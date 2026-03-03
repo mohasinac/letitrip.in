@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PayoutStatusForm
  * Path: src/components/admin/payouts/PayoutStatusForm.tsx
  *
@@ -9,7 +9,7 @@
 "use client";
 
 import { useState } from "react";
-import { Select, Textarea } from "@/components";
+import { Button, Select, Span, Text, Textarea } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 import type { PayoutDocument, PayoutStatus } from "@/db/schema";
@@ -53,80 +53,80 @@ export function PayoutStatusForm({ payout, onChange }: PayoutStatusFormProps) {
         className={`rounded-lg border ${themed.border} p-4 space-y-2 text-sm`}
       >
         <div className="flex justify-between">
-          <span className={themed.textSecondary}>{LABELS.SELLER}</span>
-          <span className={`font-medium ${themed.textPrimary}`}>
+          <Span className={themed.textSecondary}>{LABELS.SELLER}</Span>
+          <Span className={`font-medium ${themed.textPrimary}`}>
             {payout.sellerName}
-          </span>
+          </Span>
         </div>
         <div className="flex justify-between">
-          <span className={themed.textSecondary}>{LABELS.AMOUNT}</span>
-          <span className="font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">
+          <Span className={themed.textSecondary}>{LABELS.AMOUNT}</Span>
+          <Span className="font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">
             {formatCurrency(payout.amount)}
-          </span>
+          </Span>
         </div>
         <div className="flex justify-between">
-          <span className={themed.textSecondary}>{LABELS.GROSS_AMOUNT}</span>
-          <span className={`${themed.textPrimary} tabular-nums`}>
+          <Span className={themed.textSecondary}>{LABELS.GROSS_AMOUNT}</Span>
+          <Span className={`${themed.textPrimary} tabular-nums`}>
             {formatCurrency(payout.grossAmount)}
-          </span>
+          </Span>
         </div>
         <div className="flex justify-between">
-          <span className={themed.textSecondary}>{LABELS.PLATFORM_FEE}</span>
-          <span className={`${themed.textPrimary} tabular-nums`}>
+          <Span className={themed.textSecondary}>{LABELS.PLATFORM_FEE}</Span>
+          <Span className={`${themed.textPrimary} tabular-nums`}>
             {formatCurrency(payout.platformFee)}
-          </span>
+          </Span>
         </div>
         <div className="flex justify-between">
-          <span className={themed.textSecondary}>{LABELS.METHOD}</span>
-          <span className={themed.textPrimary}>
+          <Span className={themed.textSecondary}>{LABELS.METHOD}</Span>
+          <Span className={themed.textPrimary}>
             {payout.paymentMethod === "bank_transfer"
               ? LABELS.PAYMENT_METHOD_BANK
               : LABELS.PAYMENT_METHOD_UPI}
-          </span>
+          </Span>
         </div>
         {payout.paymentMethod === "bank_transfer" && payout.bankAccount && (
           <>
             <div className="flex justify-between">
-              <span className={themed.textSecondary}>
+              <Span className={themed.textSecondary}>
                 {LABELS.BANK_DETAILS}
-              </span>
-              <span className={themed.textPrimary}>
+              </Span>
+              <Span className={themed.textPrimary}>
                 {payout.bankAccount.bankName}
-              </span>
+              </Span>
             </div>
             <div className="flex justify-between">
-              <span className={themed.textSecondary}>
+              <Span className={themed.textSecondary}>
                 {LABELS.ACCOUNT_MASKED}
-              </span>
-              <span className={`font-mono ${themed.textPrimary}`}>
+              </Span>
+              <Span className={`font-mono ${themed.textPrimary}`}>
                 ****{payout.bankAccount.accountNumberMasked}
-              </span>
+              </Span>
             </div>
             <div className="flex justify-between">
-              <span className={themed.textSecondary}>{LABELS.IFSC}</span>
-              <span className={`font-mono ${themed.textPrimary}`}>
+              <Span className={themed.textSecondary}>{LABELS.IFSC}</Span>
+              <Span className={`font-mono ${themed.textPrimary}`}>
                 {payout.bankAccount.ifscCode}
-              </span>
+              </Span>
             </div>
           </>
         )}
         {payout.paymentMethod === "upi" && payout.upiId && (
           <div className="flex justify-between">
-            <span className={themed.textSecondary}>{LABELS.UPI_ID}</span>
-            <span className={themed.textPrimary}>{payout.upiId}</span>
+            <Span className={themed.textSecondary}>{LABELS.UPI_ID}</Span>
+            <Span className={themed.textPrimary}>{payout.upiId}</Span>
           </div>
         )}
         <div className="flex justify-between">
-          <span className={themed.textSecondary}>{LABELS.REQUESTED}</span>
-          <span className={themed.textPrimary}>
+          <Span className={themed.textSecondary}>{LABELS.REQUESTED}</Span>
+          <Span className={themed.textPrimary}>
             {payout.requestedAt ? formatDate(payout.requestedAt) : "—"}
-          </span>
+          </Span>
         </div>
         {payout.notes && (
           <div className="pt-1 border-t border-dashed border-gray-200 dark:border-gray-700">
-            <p className={`text-xs italic ${themed.textSecondary}`}>
+            <Text variant="secondary" size="xs" className="italic">
               "{payout.notes}"
-            </p>
+            </Text>
           </div>
         )}
       </div>

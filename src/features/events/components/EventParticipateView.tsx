@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useApiQuery, useAuth, useApiMutation, useMessage } from "@/hooks";
 import { eventService } from "@/services";
@@ -12,14 +12,15 @@ import {
   THEME_CONSTANTS,
 } from "@/constants";
 import {
-  Card,
-  Spinner,
   Alert,
-  FormField,
   Button,
-  Input,
+  Card,
+  FormField,
   Heading,
+  Input,
   Label,
+  Span,
+  Spinner,
   Text,
 } from "@/components";
 import { formatDate } from "@/utils";
@@ -151,7 +152,7 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
         <div key={field.id} className="mb-4">
           <Label htmlFor={`field-${field.id}`} className="mb-1">
             {field.label}
-            {field.required && <span className="text-red-500 ml-1">*</span>}
+            {field.required && <Span className="text-red-500 ml-1">*</Span>}
           </Label>
           <Input
             id={`field-${field.id}`}
@@ -172,7 +173,7 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
         <div key={field.id} className="mb-4">
           <Label htmlFor={`field-${field.id}`} className="mb-1">
             {field.label}
-            {field.required && <span className="text-red-500 ml-1">*</span>}
+            {field.required && <Span className="text-red-500 ml-1">*</Span>}
           </Label>
           <Input
             id={`field-${field.id}`}

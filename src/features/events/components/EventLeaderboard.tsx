@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useEventLeaderboard } from "../hooks/useEventLeaderboard";
 import { THEME_CONSTANTS } from "@/constants";
-import { Spinner } from "@/components";
+import { Span, Spinner, Text } from "@/components";
 import { useAuth } from "@/hooks";
 import { useTranslations } from "next-intl";
 import type { EventEntryDocument } from "@/db/schema";
@@ -12,7 +12,7 @@ interface EventLeaderboardProps {
   pointsLabel?: string;
 }
 
-const { themed } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
 
 export function EventLeaderboard({
   eventId,
@@ -31,7 +31,7 @@ export function EventLeaderboard({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-8">
+      <div className={`${flex.center} py-8`}>
         <Spinner />
       </div>
     );
@@ -39,15 +39,15 @@ export function EventLeaderboard({
 
   if (!leaderboard || leaderboard.length === 0) {
     return (
-      <p className={`text-sm ${themed.textSecondary} text-center py-4`}>
+      <Text className={`text-sm ${themed.textSecondary} text-center py-4`}>
         No entries yet.
-      </p>
+      </Text>
     );
   }
 
   return (
     <div className="space-y-2">
-      <p className="text-sm font-medium mb-3">{t("leaderboard")}</p>
+      <Text className="text-sm font-medium mb-3">{t("leaderboard")}</Text>
       {leaderboard.map((entry, idx) => {
         const isCurrentUser = user?.uid === entry.userId;
         const rankStyle = RANK_STYLES[idx] ?? "";
@@ -58,21 +58,23 @@ export function EventLeaderboard({
               isCurrentUser ? "ring-2 ring-indigo-500" : ""
             }`}
           >
-            <span className="text-sm font-bold w-6 text-center text-gray-500">
+            <Span className="text-sm font-bold w-6 text-center text-gray-500">
               #{idx + 1}
-            </span>
-            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-xs font-semibold text-indigo-700 dark:text-indigo-300 shrink-0">
+            </Span>
+            <div
+              className={`w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 ${flex.center} text-xs font-semibold text-indigo-700 dark:text-indigo-300 shrink-0`}
+            >
               {(entry.userDisplayName ?? "U").charAt(0).toUpperCase()}
             </div>
-            <span className="text-sm flex-1">
+            <Span className="text-sm flex-1">
               {entry.userDisplayName ?? "Anonymous"}
               {isCurrentUser && (
-                <span className="ml-2 text-xs text-indigo-600">(you)</span>
+                <Span className="ml-2 text-xs text-indigo-600">(you)</Span>
               )}
-            </span>
-            <span className="text-sm font-semibold">
+            </Span>
+            <Span className="text-sm font-semibold">
               {entry.points ?? 0} {pointsLabel}
-            </span>
+            </Span>
           </div>
         );
       })}

@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import { SurveyFieldBuilder } from "../SurveyFieldBuilder";
 import type { FeedbackConfig } from "@/db/schema";
+import { Label } from "@/components";
 
 interface FeedbackConfigFormProps {
   value: Partial<FeedbackConfig>;
@@ -22,9 +23,9 @@ export function FeedbackConfigForm({
           onChange={(e) => onChange({ ...value, anonymous: e.target.checked })}
           className="h-4 w-4 rounded border-gray-300"
         />
-        <label htmlFor="allowAnonymous" className="text-sm">
+        <Label htmlFor="allowAnonymous" className="text-sm">
           Allow anonymous submissions
-        </label>
+        </Label>
       </div>
       <SurveyFieldBuilder
         fields={value.formFields ?? []}

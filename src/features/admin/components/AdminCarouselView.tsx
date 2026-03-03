@@ -1,19 +1,20 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { ROUTES } from "@/constants";
 import { useAdminCarousel } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
-  DataTable,
-  Card,
-  Button,
-  SideDrawer,
   AdminPageHeader,
+  Button,
+  Card,
+  CarouselSlideForm,
+  DataTable,
   DrawerFormFooter,
   getCarouselTableColumns,
-  CarouselSlideForm,
+  SideDrawer,
+  Text,
   useToast,
 } from "@/components";
 import type { CarouselSlide, DrawerMode } from "@/components";
@@ -211,7 +212,7 @@ export function AdminCarouselView({ action }: Props) {
         ) : error ? (
           <Card>
             <div className="text-center py-8">
-              <p className="text-red-600 mb-4">{error.message}</p>
+              <Text className="text-red-600 mb-4">{error.message}</Text>
               <Button onClick={() => refetch()}>{tActions("retry")}</Button>
             </div>
           </Card>

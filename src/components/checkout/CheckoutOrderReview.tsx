@@ -5,8 +5,9 @@ import { useTranslations } from "next-intl";
 import type { CartItemDocument, AddressDocument } from "@/db/schema";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
+import { Heading, Text, Span, Button } from "@/components";
 
-const { themed } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
 
 interface CheckoutOrderReviewProps {
   items: CartItemDocument[];
@@ -33,35 +34,39 @@ export function CheckoutOrderReview({
       <div
         className={`p-4 rounded-xl border ${themed.bgPrimary} ${themed.border}`}
       >
-        <div className="flex items-center justify-between mb-3">
-          <h3 className={`font-semibold ${themed.textPrimary}`}>
+        <div className={`${flex.between} mb-3`}>
+          <Heading level={3} className="font-semibold">
             {t("shippingTo")}
-          </h3>
-          <button
+          </Heading>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onChangeAddress}
             className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
           >
             {t("changeAddress")}
-          </button>
+          </Button>
         </div>
-        <p className={`text-sm font-medium ${themed.textPrimary}`}>
+        <Text size="sm" weight="medium">
           {address.fullName}
-        </p>
-        <p className={`text-sm ${themed.textSecondary}`}>
+        </Text>
+        <Text size="sm" variant="secondary">
           {address.addressLine1}
           {address.addressLine2 && `, ${address.addressLine2}`}
-        </p>
-        <p className={`text-sm ${themed.textSecondary}`}>
+        </Text>
+        <Text size="sm" variant="secondary">
           {address.city}, {address.state} — {address.postalCode}
-        </p>
-        <p className={`text-sm ${themed.textSecondary}`}>{address.phone}</p>
+        </Text>
+        <Text size="sm" variant="secondary">
+          {address.phone}
+        </Text>
       </div>
 
       {/* Order items */}
       <div>
-        <h3 className={`font-semibold mb-3 ${themed.textPrimary}`}>
+        <Heading level={3} className="font-semibold mb-3">
           {t("orderItems")}
-        </h3>
+        </Heading>
         <div className={`rounded-xl border divide-y ${themed.border}`}>
           {items.map((item) => (
             <div key={item.itemId} className="flex items-center gap-3 p-3">
@@ -81,20 +86,16 @@ export function CheckoutOrderReview({
                 />
               )}
               <div className="flex-1 min-w-0">
-                <p
-                  className={`text-sm font-medium truncate ${themed.textPrimary}`}
-                >
+                <Text size="sm" weight="medium" className="truncate">
                   {item.productTitle}
-                </p>
-                <p className={`text-xs ${themed.textSecondary}`}>
+                </Text>
+                <Text size="xs" variant="secondary">
                   {tCart("quantity")} × {item.quantity}
-                </p>
+                </Text>
               </div>
-              <p
-                className={`text-sm font-semibold flex-shrink-0 ${themed.textPrimary}`}
-              >
+              <Text size="sm" weight="semibold" className="flex-shrink-0">
                 {formatCurrency(item.price * item.quantity)}
-              </p>
+              </Text>
             </div>
           ))}
         </div>
@@ -102,12 +103,13 @@ export function CheckoutOrderReview({
 
       {/* Payment method */}
       <div>
-        <h3 className={`font-semibold mb-3 ${themed.textPrimary}`}>
+        <Heading level={3} className="font-semibold mb-3">
           {t("paymentMethod")}
-        </h3>
+        </Heading>
         <div className="space-y-2">
           {/* Cash on Delivery */}
-          <button
+          <Button
+            variant="outline"
             onClick={() => onPaymentMethodChange("cod")}
             className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors ${
               paymentMethod === "cod"
@@ -117,7 +119,7 @@ export function CheckoutOrderReview({
           >
             <div className="flex items-center gap-3">
               <div
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                className={`w-5 h-5 rounded-full border-2 ${flex.center} flex-shrink-0 ${
                   paymentMethod === "cod" ? "border-indigo-500" : themed.border
                 }`}
               >
@@ -126,18 +128,19 @@ export function CheckoutOrderReview({
                 )}
               </div>
               <div>
-                <p className={`text-sm font-medium ${themed.textPrimary}`}>
+                <Text size="sm" weight="medium">
                   {t("cod")}
-                </p>
-                <p className={`text-xs ${themed.textSecondary}`}>
+                </Text>
+                <Text size="xs" variant="secondary">
                   {t("paymentOnDelivery")}
-                </p>
+                </Text>
               </div>
             </div>
-          </button>
+          </Button>
 
           {/* Online payment */}
-          <button
+          <Button
+            variant="outline"
             onClick={() => onPaymentMethodChange("online")}
             className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors ${
               paymentMethod === "online"
@@ -147,7 +150,7 @@ export function CheckoutOrderReview({
           >
             <div className="flex items-center gap-3">
               <div
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                className={`w-5 h-5 rounded-full border-2 ${flex.center} flex-shrink-0 ${
                   paymentMethod === "online"
                     ? "border-indigo-500"
                     : themed.border
@@ -158,26 +161,26 @@ export function CheckoutOrderReview({
                 )}
               </div>
               <div>
-                <p className={`text-sm font-medium ${themed.textPrimary}`}>
+                <Text size="sm" weight="medium">
                   {t("online")}
-                </p>
-                <p className="text-xs text-emerald-600">Powered by Razorpay</p>
+                </Text>
+                <Text size="xs" className="text-emerald-600">
+                  Powered by Razorpay
+                </Text>
               </div>
             </div>
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Total */}
-      <div
-        className={`flex items-center justify-between pt-4 border-t ${themed.border}`}
-      >
-        <span className={`font-semibold ${themed.textPrimary}`}>
+      <div className={`${flex.between} pt-4 border-t ${themed.border}`}>
+        <Span weight="semibold" variant="primary">
           {t("orderTotal")}
-        </span>
-        <span className={`text-xl font-bold ${themed.textPrimary}`}>
+        </Span>
+        <Span className="text-xl font-bold" variant="primary">
           {formatCurrency(subtotal)}
-        </span>
+        </Span>
       </div>
     </div>
   );

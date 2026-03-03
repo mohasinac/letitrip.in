@@ -191,6 +191,7 @@
     "addresses": "Addresses",
     "settings": "Settings",
     "search": "Search",
+    "mobileNav": "Mobile navigation",
     "contactUs": "Contact Us",
     "helpCenter": "Help Center",
     "account": "Account",
@@ -868,7 +869,8 @@
     "heroCarouselPrevSlide": "Previous slide",
     "heroCarouselNextSlide": "Next slide",
     "closeSidebar": "Close sidebar",
-    "sideNavigation": "Site navigation"
+    "sideNavigation": "Site navigation",
+    "sidebarLinks": "Navigation links"
   },
   "locale": {
     "label": "Language",
@@ -1573,7 +1575,23 @@
     "noFaqs": "No FAQs found",
     "saveFailed": "Failed to save FAQ",
     "deleteFailed": "Failed to delete FAQ",
-    "searchPlaceholder": "Search FAQs..."
+    "searchPlaceholder": "Search FAQs...",
+    "question": "Question",
+    "questionPlaceholder": "Enter FAQ question...",
+    "answer": "Answer",
+    "answerPlaceholder": "Enter FAQ answer (use rich text formatting)...",
+    "showVariables": "Show Variables",
+    "hideVariables": "Hide Variables",
+    "insertVariableHelp": "Click to insert variable into answer:",
+    "category": "Category",
+    "priorityLabel": "Priority (1-10)",
+    "priorityHelp": "Higher priority appears first",
+    "tags": "Tags (comma-separated)",
+    "tagsPlaceholder": "e.g. payment, refund, shipping",
+    "order": "Order",
+    "orderHelp": "Display order within same priority",
+    "featuredLabel": "Featured (show on homepage)",
+    "insertVariableAriaLabel": "Insert variable {key}: {description}"
   },
   "adminCarousel": {
     "title": "Carousel Management",

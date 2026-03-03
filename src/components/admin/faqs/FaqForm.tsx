@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FaqForm Component
  * Path: src/components/admin/faqs/FaqForm.tsx
  *
@@ -9,13 +9,23 @@
 "use client";
 
 import { useState } from "react";
-import { FormField, RichTextEditor } from "@/components";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import {
+  Article,
+  Button,
+  Checkbox,
+  FormField,
+  Label,
+  Li,
+  RichTextEditor,
+  Text,
+  Ul,
+} from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
 import type { FAQ } from "./types";
 import { FAQ_CATEGORIES, VARIABLE_PLACEHOLDERS } from "./types";
 
-const { spacing, themed, typography } = THEME_CONSTANTS;
-const LABELS = UI_LABELS.ADMIN.FAQS;
+const { spacing, themed, typography, flex, grid } = THEME_CONSTANTS;
 
 interface FaqFormProps {
   faq: Partial<FAQ>;
@@ -24,6 +34,7 @@ interface FaqFormProps {
 }
 
 export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
+  const t = useTranslations("adminFaqs");
   const [showVariableHelper, setShowVariableHelper] = useState(false);
 
   const update = (partial: Partial<FAQ>) => {
@@ -39,54 +50,61 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
     <div className={spacing.stack}>
       <FormField
         name="question"
-        label={LABELS.QUESTION}
+        label={t("question")}
         type="text"
         value={faq.question || ""}
         onChange={(value) => update({ question: value })}
         disabled={isReadonly}
-        placeholder="Enter FAQ question..."
+        placeholder={t("questionPlaceholder")}
       />
 
       {/* Answer with variable helper */}
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className={`block ${typography.label} mb-0`}>
-            {LABELS.ANSWER}
-          </label>
+        <div className={`${flex.between} mb-2`}>
+          <Label className={`block ${typography.label} mb-0`}>
+            {t("answer")}
+          </Label>
           {!isReadonly && (
-            <button
+            <Button
               onClick={() => setShowVariableHelper(!showVariableHelper)}
+              aria-expanded={showVariableHelper}
+              aria-controls="faq-variable-helper"
               className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"
             >
-              {showVariableHelper
-                ? LABELS.HIDE_VARIABLES
-                : LABELS.SHOW_VARIABLES}
-            </button>
+              {showVariableHelper ? t("hideVariables") : t("showVariables")}
+            </Button>
           )}
         </div>
 
-        {showVariableHelper && !isReadonly && (
-          <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
-            <p className={`text-xs ${themed.textSecondary} mb-2`}>
-              {LABELS.INSERT_VARIABLE_HELP}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {VARIABLE_PLACEHOLDERS.map((v) => (
-                <button
-                  key={v.key}
+        <div
+          id="faq-variable-helper"
+          hidden={!showVariableHelper || isReadonly}
+          className="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800"
+        >
+          <Text size="xs" variant="secondary" className="mb-2">
+            {t("insertVariableHelp")}
+          </Text>
+          <Ul className="flex flex-wrap gap-2 list-none p-0 m-0">
+            {VARIABLE_PLACEHOLDERS.map((v) => (
+              <Li key={v.key}>
+                <Button
                   onClick={() => insertVariable(v.key)}
                   className={`px-2 py-1 text-xs ${themed.bgPrimary} border ${themed.border} rounded ${themed.hover}`}
                   title={v.description}
+                  aria-label={t("insertVariableAriaLabel", {
+                    key: v.key,
+                    description: v.description,
+                  })}
                 >
-                  {v.key}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+                  <code>{v.key}</code>
+                </Button>
+              </Li>
+            ))}
+          </Ul>
+        </div>
 
         {isReadonly ? (
-          <div
+          <Article
             className={`${THEME_CONSTANTS.patterns.adminInput} opacity-60 min-h-[150px]`}
             dangerouslySetInnerHTML={{ __html: faq.answer || "" }}
           />
@@ -94,16 +112,16 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
           <RichTextEditor
             content={faq.answer || ""}
             onChange={(content) => update({ answer: content })}
-            placeholder="Enter FAQ answer (use rich text formatting)..."
+            placeholder={t("answerPlaceholder")}
             minHeight="200px"
           />
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className={`${grid.cols2} ${spacing.gap.md}`}>
         <FormField
           name="category"
-          label={LABELS.CATEGORY}
+          label={t("category")}
           type="select"
           value={faq.category || "General"}
           onChange={(value) => update({ category: value })}
@@ -117,61 +135,57 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
         <div>
           <FormField
             name="priority"
-            label={`${LABELS.PRIORITY} (1-10)`}
+            label={t("priorityLabel")}
             type="number"
             value={String(faq.priority || 5)}
             onChange={(value) => update({ priority: parseInt(value) || 5 })}
             disabled={isReadonly}
           />
-          <p className={`text-xs ${themed.textSecondary} mt-1`}>
-            {LABELS.PRIORITY_HELP}
-          </p>
+          <Text size="xs" variant="secondary" className="mt-1">
+            {t("priorityHelp")}
+          </Text>
         </div>
       </div>
 
       <FormField
         name="tags"
-        label={LABELS.TAGS}
+        label={t("tags")}
         type="text"
         value={(faq.tags || []).join(", ")}
         onChange={(value) =>
           update({
             tags: value
               .split(",")
-              .map((t) => t.trim())
+              .map((tag) => tag.trim())
               .filter(Boolean),
           })
         }
         disabled={isReadonly}
-        placeholder={LABELS.TAGS_PLACEHOLDER}
+        placeholder={t("tagsPlaceholder")}
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className={`${grid.cols2} ${spacing.gap.md}`}>
         <div>
           <FormField
             name="order"
-            label="Order"
+            label={t("order")}
             type="number"
             value={String(faq.order || 0)}
             onChange={(value) => update({ order: parseInt(value) || 0 })}
             disabled={isReadonly}
           />
-          <p className={`text-xs ${themed.textSecondary} mt-1`}>
-            {LABELS.ORDER_HELP}
-          </p>
+          <Text size="xs" variant="secondary" className="mt-1">
+            {t("orderHelp")}
+          </Text>
         </div>
 
-        <div className="flex items-center mt-6">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={faq.featured || false}
-              onChange={(e) => update({ featured: e.target.checked })}
-              disabled={isReadonly}
-              className="w-4 h-4 text-indigo-600 rounded"
-            />
-            <span className={typography.label}>{LABELS.FEATURED_LABEL}</span>
-          </label>
+        <div className={`${flex.rowCenter} mt-6`}>
+          <Checkbox
+            label={t("featuredLabel")}
+            checked={faq.featured || false}
+            onChange={(e) => update({ featured: e.target.checked })}
+            disabled={isReadonly}
+          />
         </div>
       </div>
     </div>

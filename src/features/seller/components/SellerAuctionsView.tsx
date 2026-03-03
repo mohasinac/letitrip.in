@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SellerAuctionsView
  *
  * Feature view for the seller's auction listings.
@@ -9,7 +9,7 @@
 "use client";
 
 import { Suspense, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   Spinner,
   Input,
@@ -25,7 +25,7 @@ import { useTranslations } from "next-intl";
 import { SellerProductCard } from "./SellerProductCard";
 import type { AdminProduct } from "@/components";
 
-const { spacing } = THEME_CONSTANTS;
+const { spacing, flex } = THEME_CONSTANTS;
 
 interface AuctionsResponse {
   products: AdminProduct[];
@@ -131,7 +131,7 @@ export function SellerAuctionsView() {
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center py-20">
+        <div className={`${flex.center} py-20`}>
           <Spinner size="lg" />
         </div>
       }

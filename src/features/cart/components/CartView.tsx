@@ -1,9 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import type { CartDocument } from "@/db/schema";
-import { CartItemList, CartSummary, PromoCodeInput } from "@/components";
+import {
+  CartItemList,
+  CartSummary,
+  PromoCodeInput,
+  Main,
+  Heading,
+} from "@/components";
 import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
 import { cartService } from "@/services";
 import { useTranslations } from "next-intl";
@@ -14,7 +20,7 @@ import {
   SUCCESS_MESSAGES,
 } from "@/constants";
 
-const { themed, spacing, typography } = THEME_CONSTANTS;
+const { themed, spacing, typography, page } = THEME_CONSTANTS;
 
 interface CartApiResponse {
   cart: CartDocument;
@@ -110,10 +116,10 @@ export function CartView() {
   const itemCount = data?.itemCount ?? 0;
 
   return (
-    <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className={`${typography.h2} ${themed.textPrimary} mb-8`}>
+    <Main className={`${page.container.xl} py-8`}>
+      <Heading level={1} className="mb-8">
         {t("title")}
-      </h1>
+      </Heading>
 
       <div className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start">
         {/* Left column: cart items */}
@@ -156,6 +162,6 @@ export function CartView() {
           </div>
         )}
       </div>
-    </main>
+    </Main>
   );
 }

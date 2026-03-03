@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
+import { Span } from "../typography/Typography";
 
 export interface ActiveFilter {
   /** Unique key for this filter (e.g. "status", "category") */
@@ -49,7 +50,7 @@ export function ActiveFilterChips({
 }: ActiveFilterChipsProps) {
   if (filters.length === 0) return null;
 
-  const { themed, borderRadius, spacing } = THEME_CONSTANTS;
+  const { themed, borderRadius, spacing, flex } = THEME_CONSTANTS;
   const tActions = useTranslations("actions");
 
   return (
@@ -59,20 +60,20 @@ export function ActiveFilterChips({
       aria-label="Active filters"
     >
       {filters.map((filter) => (
-        <span
+        <Span
           key={filter.key}
           role="listitem"
           className={`inline-flex items-center gap-1 text-xs font-medium ${borderRadius.lg} border ${themed.border} ${themed.bgSecondary} ${themed.textPrimary} py-1 pl-2 pr-1`}
         >
-          <span className={`${themed.textSecondary} mr-0.5`}>
+          <Span className={`${themed.textSecondary} mr-0.5`}>
             {filter.label}:
-          </span>
+          </Span>
           {filter.value}
           <button
             type="button"
             onClick={() => onRemove(filter.key)}
             aria-label={`Remove ${filter.label}: ${filter.value} filter`}
-            className={`ml-1 flex items-center justify-center w-4 h-4 ${borderRadius.full} hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors`}
+            className={`ml-1 ${flex.center} w-4 h-4 ${borderRadius.full} hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors`}
           >
             <svg
               className="w-2.5 h-2.5"
@@ -89,7 +90,7 @@ export function ActiveFilterChips({
               />
             </svg>
           </button>
-        </span>
+        </Span>
       ))}
 
       {/* Clear all */}

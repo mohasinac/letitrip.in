@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SectionForm Component
  * Path: src/components/admin/sections/SectionForm.tsx
  *
@@ -8,7 +8,7 @@
 
 "use client";
 
-import { Checkbox, FormField, RichTextEditor } from "@/components";
+import { Checkbox, FormField, Label, RichTextEditor } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { HomepageSection } from "./types";
@@ -60,9 +60,9 @@ export function SectionForm({
       />
 
       <div>
-        <label className={`block ${typography.label} mb-2`}>
+        <Label className={`block ${typography.label} mb-2`}>
           {t("formDescription")}
-        </label>
+        </Label>
         {isReadonly ? (
           <div
             className={`${THEME_CONSTANTS.patterns.adminInput} opacity-60 min-h-[100px]`}
@@ -99,9 +99,9 @@ export function SectionForm({
       </div>
 
       <div>
-        <label className={`block ${typography.label} mb-2`}>
+        <Label className={`block ${typography.label} mb-2`}>
           {t("configuration")}
-        </label>
+        </Label>
         <textarea
           value={JSON.stringify(section.config, null, 2)}
           onChange={(e) => {

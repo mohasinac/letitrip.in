@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AuctionsView
  *
  * Extracted from src/app/[locale]/auctions/page.tsx
@@ -10,15 +10,18 @@
 
 import { Suspense, useMemo } from "react";
 import {
+  ActiveFilterChips,
   AuctionGrid,
-  Pagination,
   FilterDrawer,
   FilterFacetSection,
-  ActiveFilterChips,
+  Heading,
+  Main,
+  Pagination,
   SortDropdown,
+  Span,
+  Text,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
-import { Heading, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable } from "@/hooks";
@@ -83,8 +86,8 @@ function AuctionsContent() {
   }, [priceRange, t]);
 
   return (
-    <main
-      className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 ${spacing.stack}`}
+    <Main
+      className={`${THEME_CONSTANTS.page.container["2xl"]} py-10 ${spacing.stack}`}
     >
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -98,9 +101,9 @@ function AuctionsContent() {
         {/* Sort control */}
         <div className="flex items-center gap-2">
           {total > 0 && (
-            <span className={`text-sm ${themed.textSecondary}`}>
+            <Span className={`text-sm ${themed.textSecondary}`}>
               {t("resultsCount", { count: total })}
-            </span>
+            </Span>
           )}
           <SortDropdown
             value={sort}
@@ -148,7 +151,7 @@ function AuctionsContent() {
           />
         </div>
       )}
-    </main>
+    </Main>
   );
 }
 

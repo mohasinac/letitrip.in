@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState, useCallback } from "react";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useMessage, useAuth } from "@/hooks";
-import { Text, Label } from "@/components";
+import { Label, Span, Text } from "@/components";
 import { usePollVote } from "../hooks/usePollVote";
 import type { PollConfig } from "@/db/schema";
 
@@ -81,11 +81,11 @@ export function PollVotingSection({
                     : "border-gray-200 dark:border-gray-700"
                 }`}
               >
-                <span className="text-sm flex-1">{opt.label}</span>
+                <Span className="text-sm flex-1">{opt.label}</Span>
                 {isSelected && (
-                  <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
+                  <Span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
                     Your vote
-                  </span>
+                  </Span>
                 )}
               </div>
             );
@@ -121,7 +121,7 @@ export function PollVotingSection({
                 onChange={() => handleToggle(opt.id)}
                 className="h-4 w-4"
               />
-              <span className="text-sm">{opt.label}</span>
+              <Span className="text-sm">{opt.label}</Span>
             </Label>
           );
         })}

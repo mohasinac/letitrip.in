@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FaqTableColumns
  * Path: src/components/admin/faqs/FaqTableColumns.tsx
  *
@@ -7,6 +7,7 @@
 
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { FAQ } from "./types";
+import { Button, Span } from "@/components";
 
 const LABELS = UI_LABELS.ADMIN.FAQS;
 const { themed } = THEME_CONSTANTS;
@@ -49,9 +50,9 @@ export function getFaqTableColumns(
           const ratio =
             total > 0 ? Math.round((faq.helpfulCount / total) * 100) : 0;
           return (
-            <span className="text-sm">
+            <Span className="text-sm">
               {faq.helpfulCount} / {total} ({ratio}%)
-            </span>
+            </Span>
           );
         },
         width: "15%",
@@ -61,7 +62,7 @@ export function getFaqTableColumns(
         header: LABELS.FEATURED,
         sortable: true,
         render: (faq: FAQ) => (
-          <span
+          <Span
             className={`px-2 py-1 text-xs font-medium rounded ${
               faq.featured
                 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
@@ -69,14 +70,14 @@ export function getFaqTableColumns(
             }`}
           >
             {faq.featured ? UI_LABELS.ACTIONS.YES : UI_LABELS.ACTIONS.NO}
-          </span>
+          </Span>
         ),
         width: "15%",
       },
     ],
     actions: (faq: FAQ) => (
       <div className="flex gap-2">
-        <button
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             onEdit(faq);
@@ -84,8 +85,8 @@ export function getFaqTableColumns(
           className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
         >
           {UI_LABELS.ACTIONS.EDIT}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             onDelete(faq);
@@ -93,7 +94,7 @@ export function getFaqTableColumns(
           className="text-red-600 hover:text-red-800 dark:text-red-400"
         >
           {UI_LABELS.ACTIONS.DELETE}
-        </button>
+        </Button>
       </div>
     ),
   };

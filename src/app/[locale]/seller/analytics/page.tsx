@@ -8,12 +8,14 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   Spinner,
   SellerAnalyticsStats,
   SellerRevenueChart,
   SellerTopProducts,
+  Heading,
+  Text,
 } from "@/components";
 import type {
   SellerAnalyticsSummary,
@@ -26,7 +28,7 @@ import { useAuth, useApiQuery } from "@/hooks";
 import { sellerService } from "@/services";
 import { hasAnyRole } from "@/helpers";
 
-const { themed, spacing, typography } = THEME_CONSTANTS;
+const { themed, spacing, typography, flex } = THEME_CONSTANTS;
 
 interface AnalyticsResponse {
   summary: SellerAnalyticsSummary;
@@ -61,7 +63,7 @@ export default function SellerAnalyticsPage() {
 
   if (authLoading || (!user && !authLoading)) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
+      <div className={`${flex.center} min-h-[50vh]`}>
         <Spinner size="lg" />
       </div>
     );
@@ -70,12 +72,12 @@ export default function SellerAnalyticsPage() {
   return (
     <div className={spacing.stack}>
       <div>
-        <h1 className={`${typography.h3} ${themed.textPrimary}`}>
+        <Heading level={1} className={typography.h3}>
           {t("pageTitle")}
-        </h1>
-        <p className={`mt-1 text-sm ${themed.textSecondary}`}>
+        </Heading>
+        <Text size="sm" variant="secondary" className="mt-1">
           {t("pageSubtitle")}
-        </p>
+        </Text>
       </div>
 
       {isLoading && (
@@ -94,10 +96,12 @@ export default function SellerAnalyticsPage() {
 
       {!isLoading && !summary && (
         <div className={`text-center py-12 ${spacing.stack}`}>
-          <p className={`text-sm font-medium ${themed.textPrimary}`}>
+          <Text size="sm" weight="medium">
             {t("noData")}
-          </p>
-          <p className={`text-xs ${themed.textSecondary}`}>{t("noDataDesc")}</p>
+          </Text>
+          <Text size="xs" variant="secondary">
+            {t("noDataDesc")}
+          </Text>
         </div>
       )}
     </div>

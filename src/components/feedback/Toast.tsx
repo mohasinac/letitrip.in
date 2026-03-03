@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Text } from "../typography/Typography";
+import Button from "../ui/Button";
 import { nowMs } from "@/utils";
 
 /**
@@ -181,10 +183,14 @@ function ToastItem({ toast, onClose }: ToastItemProps) {
       role="alert"
     >
       <div className="flex-shrink-0">{icons[toast.variant]}</div>
-      <p className="flex-1 text-sm font-medium">{toast.message}</p>
-      <button
+      <Text size="sm" className="flex-1 font-medium">
+        {toast.message}
+      </Text>
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={() => onClose(toast.id)}
-        className="flex-shrink-0 p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+        className="flex-shrink-0 p-1"
         aria-label="Close notification"
       >
         <svg
@@ -200,7 +206,7 @@ function ToastItem({ toast, onClose }: ToastItemProps) {
             d="M6 18L18 6M6 6l12 12"
           />
         </svg>
-      </button>
+      </Button>
     </div>
   );
 }

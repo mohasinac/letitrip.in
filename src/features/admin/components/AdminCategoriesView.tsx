@@ -8,21 +8,22 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useAdminCategories } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
+  AdminPageHeader,
+  Button,
+  Card,
+  CategoryForm,
   CategoryTreeView,
   DataTable,
-  Card,
-  Button,
-  SideDrawer,
-  AdminPageHeader,
   DrawerFormFooter,
-  getCategoryTableColumns,
-  CategoryForm,
   flattenCategories,
+  getCategoryTableColumns,
+  SideDrawer,
+  Text,
 } from "@/components";
 import { useToast } from "@/components";
 import type { Category, CategoryDrawerMode } from "@/components";
@@ -229,12 +230,12 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
       <DrawerFormFooter onCancel={handleCloseDrawer} onSubmit={handleSave} />
     );
 
-  const { themed } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
 
   return (
     <>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className={flex.between}>
           <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
           <div className="flex gap-2">
             <div className={`flex border ${themed.border} rounded-md`}>
@@ -272,7 +273,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
         ) : error ? (
           <Card>
             <div className="text-center py-8">
-              <p className="text-red-600 mb-4">{error.message}</p>
+              <Text className="text-red-600 mb-4">{error.message}</Text>
               <Button onClick={() => refetch()}>{tActions("retry")}</Button>
             </div>
           </Card>

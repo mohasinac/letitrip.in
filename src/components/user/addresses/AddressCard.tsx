@@ -50,7 +50,7 @@ export function AddressCard({
   onSetDefault,
   className = "",
 }: AddressCardProps) {
-  const { spacing, themed } = THEME_CONSTANTS;
+  const { spacing, themed, flex } = THEME_CONSTANTS;
   const t = useTranslations("actions");
 
   return (
@@ -60,7 +60,7 @@ export function AddressCard({
     >
       <div className={spacing.stack}>
         {/* Header: Label + Default Badge */}
-        <div className="flex items-start justify-between gap-3">
+        <div className={`${flex.betweenStart} gap-3`}>
           <div>
             <Heading level={3}>{address.label}</Heading>
             {address.isDefault && (

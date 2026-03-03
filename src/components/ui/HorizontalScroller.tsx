@@ -43,15 +43,15 @@ interface ArrowButtonProps {
 }
 
 function ArrowButton({ direction, onClick }: ArrowButtonProps) {
-  const { themed } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={direction === "left" ? "Scroll left" : "Scroll right"}
       className={[
-        "flex-shrink-0 self-stretch",
-        "flex items-center justify-center",
+        `${flex.noShrink} self-stretch`,
+        `${flex.center}`,
         "w-8",
         "border rounded-lg",
         themed.border,
@@ -463,7 +463,7 @@ export function HorizontalScroller<T = unknown>({
 
   // â”€â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  const { utilities } = THEME_CONSTANTS;
+  const { utilities, overflow, flex } = THEME_CONSTANTS;
 
   // ─── Children passthrough mode ─────────────────────────────────────────────
   if (children !== undefined) {
@@ -500,7 +500,7 @@ export function HorizontalScroller<T = unknown>({
   };
 
   const innerClassName = [
-    "overflow-x-auto",
+    overflow.xAuto,
     isGrid ? "" : "flex",
     snapToItems ? "snap-x snap-mandatory" : "",
     utilities.scrollbarHide,
@@ -526,7 +526,7 @@ export function HorizontalScroller<T = unknown>({
       {/* â”€â”€ Scroll viewport â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div
         ref={containerRef}
-        className="relative flex-1 overflow-hidden min-w-0"
+        className={`relative ${flex.growMin} ${overflow.hidden}`}
       >
         {showFadeEdges && (
           <div

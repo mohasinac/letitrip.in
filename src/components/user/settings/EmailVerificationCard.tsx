@@ -37,7 +37,7 @@ export function EmailVerificationCard({
   className = "",
 }: EmailVerificationCardProps) {
   const t = useTranslations("userSettings");
-  const { spacing, typography } = THEME_CONSTANTS;
+  const { spacing, typography, flex } = THEME_CONSTANTS;
 
   const cardVariant = isVerified ? "gradient-teal" : "gradient-amber";
 
@@ -48,7 +48,7 @@ export function EmailVerificationCard({
     >
       <div className={spacing.stack}>
         {/* Header */}
-        <div className="flex items-start justify-between gap-3">
+        <div className={`${flex.betweenStart} gap-3`}>
           <div>
             <Heading level={3}>{t("emailVerificationTitle")}</Heading>
             <Text className={`${typography.cardBody} mt-1`}>{email}</Text>

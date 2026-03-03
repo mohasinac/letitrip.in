@@ -8,21 +8,22 @@
 "use client";
 
 import { useState, useCallback, useRef, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useMessage } from "@/hooks";
 import { useAdminBlog } from "@/features/admin/hooks";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
-  Card,
-  Button,
-  SideDrawer,
-  DataTable,
   AdminPageHeader,
-  DrawerFormFooter,
-  ConfirmDeleteModal,
-  useBlogTableColumns,
   BlogForm,
+  Button,
+  Card,
+  ConfirmDeleteModal,
+  DataTable,
+  DrawerFormFooter,
+  SideDrawer,
+  Text,
+  useBlogTableColumns,
 } from "@/components";
 import type { BlogPostDocument } from "@/db/schema";
 import type { BlogFormData } from "@/components";
@@ -175,7 +176,7 @@ export function AdminBlogView() {
     <div className="space-y-6">
       <AdminPageHeader
         title={t("title")}
-        subtitle={`${t("subtitle")} — ${totalPosts} total`}
+        subtitle={`${t("subtitle")} � ${totalPosts} total`}
         actionLabel={t("create")}
         onAction={openCreate}
       />
@@ -189,12 +190,14 @@ export function AdminBlogView() {
           { label: t("featuredPosts"), value: featuredCount },
         ].map(({ label, value }) => (
           <Card key={label} className="p-4">
-            <p
+            <Text
               className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary} mb-1`}
             >
               {label}
-            </p>
-            <p className={`${typography.h3} ${themed.textPrimary}`}>{value}</p>
+            </Text>
+            <Text className={`${typography.h3} ${themed.textPrimary}`}>
+              {value}
+            </Text>
           </Card>
         ))}
       </div>
@@ -216,7 +219,7 @@ export function AdminBlogView() {
       {/* DataTable */}
       <Card>
         {error ? (
-          <p className="p-6 text-red-500 text-sm">{tLoading("failed")}</p>
+          <Text className="p-6 text-red-500 text-sm">{tLoading("failed")}</Text>
         ) : (
           <DataTable
             columns={columns as any}

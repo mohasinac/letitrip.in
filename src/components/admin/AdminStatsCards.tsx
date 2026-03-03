@@ -18,7 +18,7 @@ import {
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 
-const { themed } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
 import { Text } from "@/components";
 import { formatNumber } from "@/utils";
 
@@ -87,7 +87,7 @@ export function AdminStatsCards({ stats }: StatsCardsProps) {
           key={card.label}
           className={`${card.cardClass} hover:shadow-md transition-shadow ${spacing.padding.md}`}
         >
-          <div className="flex items-start justify-between">
+          <div className={flex.betweenStart}>
             <div className="flex-1">
               <Text
                 size="sm"

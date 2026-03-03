@@ -1,15 +1,22 @@
 "use client";
 
-import Link from "next/link";
 import { useApiQuery } from "@/hooks";
 import { blogService } from "@/services";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { Card, Button, Spinner } from "@/components";
+import {
+  Card,
+  Button,
+  Spinner,
+  Heading,
+  Text,
+  Span,
+  TextLink,
+} from "@/components";
 import { formatDate } from "@/utils";
 import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
 
-const { themed, typography } = THEME_CONSTANTS;
+const { themed, typography, flex, page } = THEME_CONSTANTS;
 
 const CATEGORY_BADGE: Record<BlogPostCategory, string> = {
   news: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
@@ -43,9 +50,7 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
 
   if (isLoading) {
     return (
-      <div
-        className={`min-h-screen ${themed.bgPrimary} flex items-center justify-center`}
-      >
+      <div className={`min-h-screen ${themed.bgPrimary} ${flex.center}`}>
         <Spinner size="lg" />
       </div>
     );
@@ -54,15 +59,15 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
   if (error || !post) {
     return (
       <div
-        className={`min-h-screen ${themed.bgPrimary} flex flex-col items-center justify-center gap-4 p-8`}
+        className={`min-h-screen ${themed.bgPrimary} ${flex.centerCol} gap-4 p-8`}
       >
-        <h1 className={`${typography.h3} ${themed.textPrimary}`}>
+        <Heading level={1} className={typography.h3}>
           {t("postNotFound")}
-        </h1>
-        <p className={`${themed.textSecondary}`}>{t("postNotAvailable")}</p>
-        <Link href={ROUTES.PUBLIC.BLOG}>
+        </Heading>
+        <Text variant="secondary">{t("postNotAvailable")}</Text>
+        <TextLink href={ROUTES.PUBLIC.BLOG}>
           <Button variant="primary">{t("backToBlog")}</Button>
-        </Link>
+        </TextLink>
       </div>
     );
   }
@@ -81,56 +86,62 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
         </div>
       )}
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className={`${page.container.sm} py-12`}>
         {/* Breadcrumb */}
         <div
           className={`flex items-center gap-2 text-sm ${themed.textSecondary} mb-8`}
         >
-          <Link
+          <TextLink
             href={ROUTES.PUBLIC.BLOG}
             className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           >
             Blog
-          </Link>
-          <span>/</span>
-          <span className="capitalize">{post.category}</span>
+          </TextLink>
+          <Span>/</Span>
+          <Span className="capitalize">{post.category}</Span>
         </div>
 
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
-            <span
-              className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium capitalize ${CATEGORY_BADGE[post.category]}`}
+            <Span
+              size="xs"
+              weight="medium"
+              className={`inline-block px-2 py-0.5 rounded-full capitalize ${CATEGORY_BADGE[post.category]}`}
             >
               {post.category}
-            </span>
+            </Span>
             {post.isFeatured && (
-              <span className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 px-2 py-0.5 rounded-full text-xs font-medium">
+              <Span
+                size="xs"
+                weight="medium"
+                className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 px-2 py-0.5 rounded-full"
+              >
                 {t("featured")}
-              </span>
+              </Span>
             )}
           </div>
-          <h1 className={`${typography.h2} ${themed.textPrimary} mb-4`}>
+          <Heading level={1} className={`${typography.h2} mb-4`}>
             {post.title}
-          </h1>
-          <p className={`text-lg ${themed.textSecondary} mb-6`}>
+          </Heading>
+          <Text size="lg" variant="secondary" className="mb-6">
             {post.excerpt}
-          </p>
+          </Text>
           <div
             className={`flex flex-wrap items-center gap-4 text-sm ${themed.textSecondary}`}
           >
-            <span>
-              {t("author")}: <strong>{post.authorName}</strong>
-            </span>
-            <span>
+            <Span variant="secondary">
+              {t("author")}: <Span weight="bold">{post.authorName}</Span>
+            </Span>
+            <Span variant="secondary">
               {post.readTimeMinutes} {t("readTime")}
-            </span>
+            </Span>
             {post.publishedAt && (
-              <span>
+              <Span variant="secondary">
                 {t("publishedOn")} {formatDate(post.publishedAt)}
-              </span>
+              </Span>
             )}
-            <span>{post.views} views</span>
+            <Span variant="secondary">{post.views} views</Span>
           </div>
         </div>
 
@@ -138,12 +149,15 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-8">
             {post.tags.map((tag) => (
-              <span
+              <Span
                 key={tag}
-                className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${themed.bgSecondary} ${themed.textSecondary}`}
+                size="xs"
+                weight="medium"
+                variant="secondary"
+                className={`inline-block px-3 py-1 rounded-full ${themed.bgSecondary}`}
               >
                 #{tag}
-              </span>
+              </Span>
             ))}
           </div>
         )}
@@ -159,12 +173,12 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
         {/* Related posts */}
         {related.length > 0 && (
           <div>
-            <h2 className={`${typography.h3} ${themed.textPrimary} mb-6`}>
+            <Heading level={2} className={`${typography.h3} mb-6`}>
               {t("related")}
-            </h2>
+            </Heading>
             <div className="grid sm:grid-cols-3 gap-4">
               {related.map((rel) => (
-                <Link
+                <TextLink
                   key={rel.id}
                   href={`${ROUTES.PUBLIC.BLOG}/${rel.slug}`}
                   className="block group"
@@ -180,17 +194,18 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
                       </div>
                     )}
                     <div className="p-4">
-                      <h3
-                        className={`text-sm font-semibold ${themed.textPrimary} group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2`}
+                      <Heading
+                        level={3}
+                        className="text-sm font-semibold group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2"
                       >
                         {rel.title}
-                      </h3>
-                      <p className={`text-xs ${themed.textSecondary} mt-1`}>
+                      </Heading>
+                      <Text size="xs" variant="secondary" className="mt-1">
                         {post.readTimeMinutes} {t("readTime")}
-                      </p>
+                      </Text>
                     </div>
                   </Card>
-                </Link>
+                </TextLink>
               ))}
             </div>
           </div>
@@ -198,9 +213,9 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
 
         {/* Back link */}
         <div className="mt-10 pt-8 border-t border-gray-200 dark:border-gray-700">
-          <Link href={ROUTES.PUBLIC.BLOG}>
+          <TextLink href={ROUTES.PUBLIC.BLOG}>
             <Button variant="outline">&larr; {tActions("back")} to Blog</Button>
-          </Link>
+          </TextLink>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   Card,
   Alert,
@@ -28,7 +28,7 @@ import { ROUTES, THEME_CONSTANTS, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useSellerStore } from "../hooks";
 
-const { themed, spacing } = THEME_CONSTANTS;
+const { themed, spacing, flex } = THEME_CONSTANTS;
 
 interface StoreFormState {
   storeName: string;
@@ -161,7 +161,7 @@ export function SellerStoreView() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
+      <div className={`${flex.center} py-20`}>
         <Spinner size="lg" />
       </div>
     );
@@ -253,7 +253,7 @@ export function SellerStoreView() {
             />
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className={flex.between}>
             <div>
               <Label>{t("storeVisibilityLabel")}</Label>
               <Caption>{t("storeVisibilityHelp")}</Caption>
@@ -361,7 +361,7 @@ export function SellerStoreView() {
       {/* ── Vacation Mode ─────────────────────────────────────── */}
       <Card>
         <div className={spacing.stack}>
-          <div className="flex items-center justify-between">
+          <div className={flex.between}>
             <div>
               <Heading level={3}>{t("sectionVacation")}</Heading>
               <Text variant="secondary" size="sm" className="mt-0.5">

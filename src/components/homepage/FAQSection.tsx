@@ -1,7 +1,6 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
   THEME_CONSTANTS,
@@ -11,7 +10,19 @@ import {
   getStaticFaqCategoryCounts,
 } from "@/constants";
 import type { FAQCategoryKey, StaticFAQItem } from "@/constants";
-import { Tabs, TabsList, TabsTrigger } from "@/components";
+import {
+  Button,
+  Heading,
+  Section,
+  Span,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  Text,
+  TextLink,
+} from "@/components";
+
+const { flex } = THEME_CONSTANTS;
 
 export function FAQSection() {
   const t = useTranslations("faq");
@@ -36,22 +47,23 @@ export function FAQSection() {
   };
 
   return (
-    <section
+    <Section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
       <div className="w-full">
         {/* Section Header */}
         <div className="text-center mb-8">
-          <h2
+          <Heading
+            level={2}
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
           >
             {t("title")}
-          </h2>
-          <p
+          </Heading>
+          <Text
             className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
           >
             {t("subtitle")}
-          </p>
+          </Text>
         </div>
 
         {/* Category Tabs — single horizontal scrollable row, nav-item style */}
@@ -68,7 +80,7 @@ export function FAQSection() {
               ][]
             ).map(([key, category]) => (
               <TabsTrigger key={key} value={key}>
-                <span>{category.icon}</span>
+                <Span>{category.icon}</Span>
                 {category.label}
               </TabsTrigger>
             ))}
@@ -78,11 +90,11 @@ export function FAQSection() {
         {/* FAQ Accordion */}
         <div className={`${THEME_CONSTANTS.spacing.stack} max-w-3xl mx-auto`}>
           {faqs.length === 0 && (
-            <p
+            <Text
               className={`text-center py-8 ${THEME_CONSTANTS.themed.textSecondary}`}
             >
               {tEmpty("noData")}
-            </p>
+            </Text>
           )}
           {faqs.map((faq) => (
             <div
@@ -90,15 +102,15 @@ export function FAQSection() {
               className={`${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden transition-all`}
             >
               {/* Question Button */}
-              <button
-                className={`w-full text-left ${THEME_CONSTANTS.spacing.padding.lg} flex items-center justify-between gap-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors`}
+              <Button
+                className={`w-full text-left ${THEME_CONSTANTS.spacing.padding.lg} ${flex.between} gap-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors`}
                 onClick={() => toggleFaq(faq.id)}
               >
-                <span
+                <Span
                   className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-medium flex-1`}
                 >
                   {faq.question}
-                </span>
+                </Span>
                 <svg
                   className={`w-5 h-5 ${THEME_CONSTANTS.themed.textSecondary} transition-transform ${
                     openFaqId === faq.id ? "rotate-180" : ""
@@ -114,7 +126,7 @@ export function FAQSection() {
                     d="M19 9l-7 7-7-7"
                   />
                 </svg>
-              </button>
+              </Button>
 
               {/* Answer (Collapsible) */}
               {openFaqId === faq.id && (
@@ -131,19 +143,19 @@ export function FAQSection() {
 
         {/* View More / View All Link */}
         <div className="text-center mt-8">
-          <Link
+          <TextLink
             href={ROUTES.PUBLIC.FAQ_CATEGORY(activeCategory)}
             className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors`}
           >
             {tActions("viewAllArrow")}
             {hasMore && (
-              <span className="bg-blue-500 dark:bg-blue-400 text-white text-xs px-2 py-0.5 rounded-full">
+              <Span className="bg-blue-500 dark:bg-blue-400 text-white text-xs px-2 py-0.5 rounded-full">
                 +{totalInCategory - faqs.length}
-              </span>
+              </Span>
             )}
-          </Link>
+          </TextLink>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

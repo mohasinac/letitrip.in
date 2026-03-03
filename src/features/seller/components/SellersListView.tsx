@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { getTranslations } from "next-intl/server";
-import { Heading, Text } from "@/components";
+import { Heading, Text, Section, TextLink } from "@/components";
 
-const { themed, spacing, button } = THEME_CONSTANTS;
+const { themed, spacing, button, flex } = THEME_CONSTANTS;
 
 export async function SellersListView() {
   const t = await getTranslations("sellersPage");
@@ -30,7 +29,7 @@ export async function SellersListView() {
   return (
     <div className={`${themed.bgPrimary} min-h-screen`}>
       {/* Hero */}
-      <section className="bg-gradient-to-br from-emerald-600 via-green-600 to-teal-700 text-white py-24 px-4">
+      <Section className="bg-gradient-to-br from-emerald-600 via-green-600 to-teal-700 text-white py-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <Heading level={1} className="text-4xl md:text-6xl font-bold mb-6">
             {t("title")}
@@ -39,18 +38,18 @@ export async function SellersListView() {
             {t("subtitle")}
           </Text>
           <div className="flex justify-center gap-4 flex-wrap">
-            <Link href={ROUTES.AUTH.REGISTER} className={button.ctaPrimary}>
+            <TextLink href={ROUTES.AUTH.REGISTER} className={button.ctaPrimary}>
               {t("heroCta")}
-            </Link>
-            <a href="#how-it-works" className={button.ctaOutline}>
+            </TextLink>
+            <TextLink href="#how-it-works" className={button.ctaOutline}>
               {t("heroSecondary")}
-            </a>
+            </TextLink>
           </div>
         </div>
-      </section>
+      </Section>
 
       {/* Stats bar */}
-      <section className="bg-emerald-700 text-white py-6 px-4">
+      <Section className="bg-emerald-700 text-white py-6 px-4">
         <div className="max-w-4xl mx-auto flex justify-center gap-12 flex-wrap">
           {[
             { label: t("statSellersLabel"), value: t("statSellersValue") },
@@ -67,11 +66,11 @@ export async function SellersListView() {
             </div>
           ))}
         </div>
-      </section>
+      </Section>
 
       <div className="max-w-5xl mx-auto px-4 py-20 space-y-24">
         {/* Benefits */}
-        <section>
+        <Section>
           <Heading level={2} className="text-center mb-12">
             {t("whyTitle")}
           </Heading>
@@ -97,17 +96,19 @@ export async function SellersListView() {
               </div>
             ))}
           </div>
-        </section>
+        </Section>
 
         {/* How it works */}
-        <section id="how-it-works">
+        <Section id="how-it-works">
           <Heading level={2} className="text-center mb-12">
             {t("howTitle")}
           </Heading>
           <div className="grid md:grid-cols-3 gap-8">
             {STEPS.map(({ step, title, text }) => (
               <div key={step} className="text-center">
-                <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-2xl font-bold flex items-center justify-center mx-auto mb-4">
+                <div
+                  className={`w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-2xl font-bold ${flex.center} mx-auto mb-4`}
+                >
                   {step}
                 </div>
                 <Heading level={3} className="mb-2">
@@ -119,10 +120,10 @@ export async function SellersListView() {
               </div>
             ))}
           </div>
-        </section>
+        </Section>
 
         {/* FAQs */}
-        <section>
+        <Section>
           <Heading level={2} className="text-center mb-10">
             {t("faqTitle")}
           </Heading>
@@ -141,26 +142,29 @@ export async function SellersListView() {
               </div>
             ))}
           </div>
-        </section>
+        </Section>
 
         {/* Final CTA */}
-        <section className="text-center bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-12 text-white">
+        <Section className="text-center bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-12 text-white">
           <Heading level={2} className="text-3xl font-bold mb-4">
             {t("ctaTitle")}
           </Heading>
-          <Link
+          <TextLink
             href={ROUTES.AUTH.REGISTER}
             className={`inline-block mt-4 ${button.ctaPrimary}`}
           >
             {t("ctaButton")}
-          </Link>
+          </TextLink>
           <Text className="mt-4 text-emerald-100 text-sm">
             {t("signInPrompt")}{" "}
-            <Link href={ROUTES.AUTH.LOGIN} className="underline font-medium">
+            <TextLink
+              href={ROUTES.AUTH.LOGIN}
+              className="underline font-medium"
+            >
               {t("signInLink")}
-            </Link>
+            </TextLink>
           </Text>
-        </section>
+        </Section>
       </div>
     </div>
   );

@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Span } from "../typography/Typography";
 
 export interface SkeletonProps {
   variant?: "text" | "circular" | "rectangular";
@@ -69,7 +70,7 @@ export default function Skeleton({
         role="status"
         aria-label="Loading"
       >
-        <span className="sr-only">Loading...</span>
+        <Span className="sr-only">Loading...</Span>
       </div>
 
       {animation === "wave" && (

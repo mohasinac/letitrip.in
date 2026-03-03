@@ -1,7 +1,6 @@
-"use client";
+﻿"use client";
 
-import Link from "next/link";
-import { Card } from "@/components/ui";
+import { Card, Heading, Span, Text, TextLink } from "@/components";
 import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { CATEGORY_BADGE } from "./BlogCard";
@@ -13,7 +12,10 @@ const { themed, typography } = THEME_CONSTANTS;
 export function BlogFeaturedCard({ post }: { post: BlogPostDocument }) {
   return (
     <div className="mb-10">
-      <Link href={`${ROUTES.PUBLIC.BLOG}/${post.slug}`} className="block group">
+      <TextLink
+        href={`${ROUTES.PUBLIC.BLOG}/${post.slug}`}
+        className="block group"
+      >
         <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
           <div className="md:flex">
             {post.coverImage && (
@@ -27,38 +29,39 @@ export function BlogFeaturedCard({ post }: { post: BlogPostDocument }) {
             )}
             <div className="p-8 md:w-1/2 flex flex-col justify-center">
               <div className="flex items-center gap-2 mb-3">
-                <span
+                <Span
                   className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium capitalize ${CATEGORY_BADGE[post.category]}`}
                 >
                   {post.category}
-                </span>
-                <span className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 px-2 py-0.5 rounded-full text-xs font-medium">
+                </Span>
+                <Span className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 px-2 py-0.5 rounded-full text-xs font-medium">
                   {UI_LABELS.PRODUCTS_PAGE.FEATURED_BADGE}
-                </span>
+                </Span>
               </div>
-              <h2
+              <Heading
+                level={2}
                 className={`${typography.h3} ${themed.textPrimary} mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors`}
               >
                 {post.title}
-              </h2>
-              <p className={`${themed.textSecondary} mb-4 line-clamp-3`}>
+              </Heading>
+              <Text variant="secondary" className="mb-4 line-clamp-3">
                 {post.excerpt}
-              </p>
+              </Text>
               <div
                 className={`flex items-center gap-4 text-xs ${themed.textSecondary}`}
               >
-                <span>{post.authorName}</span>
-                <span>
+                <Span>{post.authorName}</Span>
+                <Span>
                   {post.readTimeMinutes} {LABELS.READ_TIME}
-                </span>
+                </Span>
                 {post.publishedAt && (
-                  <span>{formatDate(post.publishedAt)}</span>
+                  <Span>{formatDate(post.publishedAt)}</Span>
                 )}
               </div>
             </div>
           </div>
         </Card>
-      </Link>
+      </TextLink>
     </div>
   );
 }

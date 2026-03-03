@@ -1,6 +1,5 @@
 ﻿"use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import {
@@ -17,8 +16,16 @@ import {
 } from "lucide-react";
 import { useTopCategories } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { HorizontalScroller, Heading } from "@/components";
+import {
+  Heading,
+  HorizontalScroller,
+  Section,
+  Span,
+  TextLink,
+} from "@/components";
 import { formatNumber } from "@/utils";
+
+const { flex, position } = THEME_CONSTANTS;
 
 /** Lucide icon fallback mapped from category slug keywords */
 function CategoryIcon({
@@ -69,7 +76,7 @@ export function TopCategoriesSection() {
 
   if (isLoading) {
     return (
-      <section
+      <Section
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.sectionBg.cool}`}
       >
         <div className="w-full">
@@ -86,7 +93,7 @@ export function TopCategoriesSection() {
             ))}
           </div>
         </div>
-      </section>
+      </Section>
     );
   }
 
@@ -95,30 +102,31 @@ export function TopCategoriesSection() {
   }
 
   return (
-    <section
+    <Section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.sectionBg.cool}`}
     >
       <div className="w-full">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2
+        <div className={`${flex.between} mb-6`}>
+          <Heading
+            level={2}
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary}`}
           >
             {t("categoriesTitle")}
-          </h2>
-          <Link
+          </Heading>
+          <TextLink
             href={ROUTES.PUBLIC.CATEGORIES}
             className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
           >
             {tActions("viewAllArrow")}
-          </Link>
+          </TextLink>
         </div>
 
         {/* All screen sizes: unified horizontal scroller */}
         <HorizontalScroller
           items={categories.slice(0, 12)}
           renderItem={(category) => (
-            <Link
+            <TextLink
               href={`/categories/${category.slug}`}
               className={`relative block aspect-square ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} overflow-hidden group hover:scale-105 hover:shadow-xl transition-all duration-300`}
             >
@@ -131,23 +139,27 @@ export function TopCategoriesSection() {
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
                 />
               ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                <div
+                  className={`${position.fill} bg-gradient-to-br from-indigo-500 to-purple-600 ${flex.center}`}
+                >
                   <CategoryIcon
                     slug={category.slug}
                     className="w-10 h-10 text-white/80"
                   />
                 </div>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <div className="absolute inset-0 p-3 flex flex-col justify-end">
+              <div
+                className={`${position.fill} bg-gradient-to-t from-black/70 to-transparent`}
+              />
+              <div className={`${position.fill} p-3 flex flex-col justify-end`}>
                 <Heading level={3} className="text-white mb-1 line-clamp-2">
                   {category.name}
                 </Heading>
-                <span className="inline-block self-start bg-white/20 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded-full">
+                <Span className="inline-block self-start bg-white/20 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded-full">
                   {formatNumber(category.metrics?.totalItemCount ?? 0)} products
-                </span>
+                </Span>
               </div>
-            </Link>
+            </TextLink>
           )}
           keyExtractor={(c) => c.id ?? c.slug}
           perView={{ base: 2, sm: 3, lg: 4, xl: 5, "2xl": 6 }}
@@ -156,6 +168,6 @@ export function TopCategoriesSection() {
           className="px-5 pb-1"
         />
       </div>
-    </section>
+    </Section>
   );
 }

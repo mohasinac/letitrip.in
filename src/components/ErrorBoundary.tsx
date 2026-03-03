@@ -7,7 +7,7 @@
 "use client";
 
 import React, { Component, ReactNode } from "react";
-import { Button } from "@/components";
+import { Button, Text, Heading } from "@/components";
 import { ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { Logger } from "@/classes";
 import { useTranslations } from "next-intl";
@@ -33,13 +33,18 @@ function ErrorFallbackView({
 }) {
   const t = useTranslations("errorPages");
   const tActions = useTranslations("actions");
+  const { flex } = THEME_CONSTANTS;
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
+    <div
+      className={`min-h-screen ${flex.center} bg-gray-50 dark:bg-gray-950 px-4`}
+    >
       <div
         className={`max-w-md w-full ${THEME_CONSTANTS.themed.bgPrimary} rounded-lg shadow-lg p-8 text-center`}
       >
         <div className="mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
+          <div
+            className={`inline-flex ${flex.center} w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4`}
+          >
             <svg
               className="w-8 h-8 text-red-600"
               fill="none"
@@ -54,20 +59,21 @@ function ErrorFallbackView({
               />
             </svg>
           </div>
-          <h1
+          <Heading
+            level={1}
             className={`text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
           >
             {t("genericError.title")}
-          </h1>
-          <p className={`${THEME_CONSTANTS.themed.textSecondary} mb-6`}>
+          </Heading>
+          <Text variant="secondary" className="mb-6">
             {ERROR_MESSAGES.GENERIC.INTERNAL_ERROR}
-          </p>
+          </Text>
 
           {process.env.NODE_ENV === "development" && error && (
             <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg text-left">
-              <p className="text-sm font-mono text-red-600 break-all">
+              <Text size="sm" className="font-mono text-red-600 break-all">
                 {error.message}
-              </p>
+              </Text>
             </div>
           )}
         </div>

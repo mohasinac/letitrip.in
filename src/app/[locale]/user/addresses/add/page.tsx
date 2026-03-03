@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useAuth, useCreateAddress } from "@/hooks";
 import { Card, Heading, Spinner, AddressForm, useToast } from "@/components";
 import type { AddressFormData } from "@/hooks";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   THEME_CONSTANTS,
   ROUTES,
@@ -48,9 +48,11 @@ export default function AddAddressPage() {
     router.push(ROUTES.USER.ADDRESSES);
   };
 
+  const { flex } = THEME_CONSTANTS;
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className={`${flex.center} min-h-screen`}>
         <Spinner size="lg" label={tLoading("default")} />
       </div>
     );

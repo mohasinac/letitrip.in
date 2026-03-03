@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LoginForm — full login form including email/password fields,
  * social sign-in options, and auth redirect logic.
  *
@@ -8,23 +8,25 @@
 "use client";
 
 import { useState, FormEvent, useCallback, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import {
-  Input,
-  Button,
   Alert,
-  Spinner,
+  Button,
   Checkbox,
-  Text,
+  Input,
   Label,
+  Span,
+  Spinner,
+  Text,
+  TextLink,
 } from "@/components";
 import { ERROR_MESSAGES, ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useAuth, useLogin, useGoogleLogin, useAppleLogin } from "@/hooks";
 import { AuthSocialButtons } from "./AuthSocialButtons";
 
-const { themed, spacing } = THEME_CONSTANTS;
+const { themed, spacing, flex, page } = THEME_CONSTANTS;
 
 export function LoginForm() {
   const t = useTranslations("auth");
@@ -82,7 +84,7 @@ export function LoginForm() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
+      <div className={`${flex.center} py-16`}>
         <Spinner size="xl" variant="primary" />
       </div>
     );
@@ -91,13 +93,15 @@ export function LoginForm() {
   if (user) return null;
 
   return (
-    <div className="flex items-center justify-center py-8 sm:py-12 w-full">
+    <div className={`${flex.center} ${page.authPad} w-full`}>
       <div className={`max-w-md w-full ${spacing.stack}`}>
         {/* Header */}
         <div>
           <div className="flex justify-center">
-            <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <span className="text-white text-2xl font-bold">L</span>
+            <div
+              className={`w-16 h-16 bg-blue-600 rounded-2xl ${flex.center} shadow-lg`}
+            >
+              <Span className="text-white text-2xl font-bold">L</Span>
             </div>
           </div>
           <h1
@@ -110,12 +114,12 @@ export function LoginForm() {
             className={`mt-2 text-center ${themed.textSecondary}`}
           >
             {t("login.or")}{" "}
-            <Link
+            <TextLink
               href={ROUTES.AUTH.REGISTER}
               className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
             >
               {t("login.createAccountLink")}
-            </Link>
+            </TextLink>
           </Text>
         </div>
 
@@ -157,7 +161,7 @@ export function LoginForm() {
             />
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className={flex.between}>
             <div className="flex items-center">
               <Checkbox
                 id="remember-me"
@@ -174,12 +178,12 @@ export function LoginForm() {
               </Label>
             </div>
             <div className="text-sm">
-              <Link
+              <TextLink
                 href={ROUTES.AUTH.FORGOT_PASSWORD}
                 className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
               >
                 {t("login.forgotPasswordLink")}
-              </Link>
+              </TextLink>
             </div>
           </div>
 

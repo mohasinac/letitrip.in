@@ -8,7 +8,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useUrlTable } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useAdminReviews } from "@/features/admin/hooks";

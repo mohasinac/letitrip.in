@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   THEME_CONSTANTS,
   UI_LABELS,
@@ -12,13 +12,15 @@ import {
 } from "@/constants";
 import type { FAQCategoryKey, StaticFAQItem } from "@/constants";
 import { useUrlTable } from "@/hooks";
-import { HorizontalScroller } from "@/components";
+import { Button, Heading, HorizontalScroller, Span, Text } from "@/components";
 import { FAQCategorySidebar } from "./FAQCategorySidebar";
 import { FAQSearchBar } from "./FAQSearchBar";
 import { FAQSortDropdown } from "./FAQSortDropdown";
 import { FAQAccordion } from "./FAQAccordion";
 import { ContactCTA } from "./ContactCTA";
 import type { FAQSortOption } from "./FAQSortDropdown";
+
+const { flex } = THEME_CONSTANTS;
 
 interface FAQPageContentProps {
   initialCategory?: FAQCategoryKey | "all";
@@ -97,16 +99,17 @@ export function FAQPageContent({
     <div className="py-12">
       {/* Page Header */}
       <div className="text-center mb-12">
-        <h1
+        <Heading
+          level={1}
           className={`${THEME_CONSTANTS.typography.h1} ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
         >
           {UI_LABELS.FAQ.TITLE}
-        </h1>
-        <p
+        </Heading>
+        <Text
           className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.container["2xl"]} mx-auto`}
         >
           {UI_LABELS.FAQ.SUBTITLE}
-        </p>
+        </Text>
       </div>
 
       {/* Search Bar */}
@@ -139,7 +142,7 @@ export function FAQPageContent({
           renderItem={(pill) => {
             const isActive = selectedCategory === pill.key;
             return (
-              <button
+              <Button
                 onClick={() =>
                   handleCategorySelect(pill.key as FAQCategoryKey | "all")
                 }
@@ -150,9 +153,9 @@ export function FAQPageContent({
                     : `${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.border} hover:border-indigo-400`,
                 ].join(" ")}
               >
-                <span>{pill.icon}</span>
-                <span>{pill.label}</span>
-                <span
+                <Span>{pill.icon}</Span>
+                <Span>{pill.label}</Span>
+                <Span
                   className={`text-xs px-1.5 py-0.5 rounded-full ${
                     isActive
                       ? "bg-white/20 text-white"
@@ -160,8 +163,8 @@ export function FAQPageContent({
                   }`}
                 >
                   {pill.count}
-                </span>
-              </button>
+                </Span>
+              </Button>
             );
           }}
           keyExtractor={(pill) => String(pill.key)}
@@ -188,8 +191,8 @@ export function FAQPageContent({
         {/* Main Content (full width on mobile, 70% on desktop) */}
         <div className="col-span-1 lg:col-span-8 xl:col-span-9">
           {/* Sort & Results Count */}
-          <div className="flex items-center justify-between mb-8">
-            <p
+          <div className={`${flex.between} mb-8`}>
+            <Text
               className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
             >
               {filteredAndSortedFAQs.length}{" "}
@@ -198,7 +201,7 @@ export function FAQPageContent({
                 : UI_LABELS.FAQ.QUESTION_PLURAL}
               {selectedCategory !== "all" &&
                 ` ${UI_LABELS.FAQ.IN_CATEGORY} ${FAQ_CATEGORIES[selectedCategory].label}`}
-            </p>
+            </Text>
             <FAQSortDropdown
               selectedSort={sortOption}
               onSortChange={(sort) => table.setSort(sort)}

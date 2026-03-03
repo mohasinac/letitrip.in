@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AdminAnalyticsView
  *
  * Extracted from src/app/[locale]/admin/analytics/page.tsx
@@ -8,14 +8,13 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
-import { AdminPageHeader, Heading, Text } from "@/components";
+import { AdminPageHeader, Heading, Span, Text, TextLink } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useAdminAnalytics } from "@/features/admin/hooks";
 import { formatCurrency } from "@/utils";
 
-const { themed, spacing, typography } = THEME_CONSTANTS;
+const { themed, spacing, typography, flex } = THEME_CONSTANTS;
 
 // Lazy-load recharts to avoid SSR issues
 const AreaChart = dynamic(() => import("recharts").then((m) => m.AreaChart), {
@@ -92,7 +91,7 @@ function StatCard({
 }) {
   return (
     <div
-      className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-5 flex items-center justify-between`}
+      className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-5 ${flex.between}`}
     >
       <div>
         <Text
@@ -107,9 +106,9 @@ function StatCard({
           {value}
         </Text>
       </div>
-      <span className="text-3xl" aria-hidden>
+      <Span className="text-3xl" aria-hidden>
         {icon}
-      </span>
+      </Span>
     </div>
   );
 }
@@ -253,12 +252,12 @@ export function AdminAnalyticsView() {
                     key={p.productId}
                     className="flex items-center gap-4 py-3"
                   >
-                    <span
+                    <Span
                       className={`w-6 text-sm font-bold ${themed.textSecondary}`}
                     >
                       {i + 1}.
-                    </span>
-                    <div className="flex-1 min-w-0">
+                    </Span>
+                    <div className={flex.growMin}>
                       <Text size="sm" weight="medium" className="truncate">
                         {p.title}
                       </Text>
@@ -266,15 +265,15 @@ export function AdminAnalyticsView() {
                         {p.orders} {t("ordersLabel")}
                       </Text>
                     </div>
-                    <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                    <Span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                       {formatCurrency(p.revenue)}
-                    </span>
-                    <Link
+                    </Span>
+                    <TextLink
                       href={ROUTES.ADMIN.PRODUCTS}
                       className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline shrink-0"
                     >
                       View
-                    </Link>
+                    </TextLink>
                   </div>
                 ))}
               </div>

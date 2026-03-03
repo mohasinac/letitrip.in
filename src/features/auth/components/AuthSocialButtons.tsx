@@ -1,11 +1,11 @@
-/**
+﻿/**
  * AuthSocialButtons — shared Google + Apple sign-in button pair with OR divider.
  * Used by LoginForm and RegisterForm.
  */
 
 "use client";
 
-import { Button } from "@/components";
+import { Button, Span } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 
@@ -31,9 +31,9 @@ export function AuthSocialButtons({
           <div className={`w-full border-t ${themed.border}`} />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className={`px-2 ${themed.bgPrimary} ${themed.textMuted}`}>
+          <Span className={`px-2 ${themed.bgPrimary} ${themed.textMuted}`}>
             {t("login.orContinueWith")}
-          </span>
+          </Span>
         </div>
       </div>
 

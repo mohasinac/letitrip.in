@@ -1,9 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import Link from "next/link";
-import { Card, Alert, Text, PublicProfileView } from "@/components";
-import { ERROR_MESSAGES, ROUTES } from "@/constants";
+import { Card, Alert, Text, PublicProfileView, TextLink } from "@/components";
+import { ERROR_MESSAGES, ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatMonthYear } from "@/utils";
 import { usePublicProfile } from "@/hooks";
 import type { ImageCropData } from "@/components";
@@ -27,9 +26,11 @@ export default function PublicProfilePage() {
     reviewsLoading,
   } = usePublicProfile(userId);
 
+  const { flex } = THEME_CONSTANTS;
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className={`min-h-screen ${flex.center}`}>
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <Text>{tLoading("default")}</Text>
@@ -40,16 +41,16 @@ export default function PublicProfilePage() {
 
   if (profileError || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className={`min-h-screen ${flex.center} p-4`}>
         <Card className="max-w-md w-full">
           <Alert variant="error">{profileError || tProfile("notFound")}</Alert>
           <div className="mt-4">
-            <Link
+            <TextLink
               href={ROUTES.HOME}
               className="text-primary-600 hover:underline"
             >
               {tActions("goHome")}
-            </Link>
+            </TextLink>
           </div>
         </Card>
       </div>

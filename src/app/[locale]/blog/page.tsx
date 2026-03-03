@@ -10,6 +10,8 @@ import {
   BlogFeaturedCard,
   BlogCategoryTabs,
   EmptyState,
+  Heading,
+  Text,
 } from "@/components";
 import type { BlogPostCategory } from "@/db/schema";
 
@@ -51,10 +53,12 @@ function BlogPageContent() {
       {/* Header */}
       <div className="bg-gradient-to-br from-indigo-600 to-purple-700 text-white py-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">{t("title")}</h1>
-          <p className="text-lg text-indigo-100 max-w-2xl mx-auto">
+          <Heading level={1} className="mb-4">
+            {t("title")}
+          </Heading>
+          <Text className="text-lg text-indigo-100 max-w-2xl mx-auto">
             {t("subtitle")}
-          </p>
+          </Text>
         </div>
       </div>
 
@@ -72,7 +76,7 @@ function BlogPageContent() {
 
         {error && (
           <div className="text-center py-16">
-            <p className={`${themed.textSecondary}`}>{t("failedToLoad")}</p>
+            <Text variant="secondary">{t("failedToLoad")}</Text>
           </div>
         )}
 

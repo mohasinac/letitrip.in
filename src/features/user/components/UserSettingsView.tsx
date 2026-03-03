@@ -15,7 +15,7 @@ import {
   AccountInfoCard,
 } from "@/components";
 import type { ProfileInfoData } from "@/components";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { logger } from "@/classes";
 import {
   THEME_CONSTANTS,
@@ -128,7 +128,7 @@ export function UserSettingsView() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
         <Spinner size="xl" variant="primary" />
       </div>
     );

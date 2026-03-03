@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
+import { Button, Label, Span, Text } from "@/components";
 import { useCouponValidate } from "@/hooks";
 import { formatCurrency } from "@/utils";
 
@@ -74,11 +75,11 @@ export function PromoCodeInput({
   if (appliedCode) {
     return (
       <div>
-        <label
+        <Label
           className={`block text-xs font-medium mb-1.5 ${themed.textSecondary}`}
         >
           {t("promoCode")}
-        </label>
+        </Label>
         <div className="flex items-center gap-2">
           <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/20">
             <svg
@@ -94,19 +95,19 @@ export function PromoCodeInput({
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            <span className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+            <Span className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
               {appliedCode}
-            </span>
-            <span className="text-xs text-emerald-600 dark:text-emerald-500 ml-auto">
+            </Span>
+            <Span className="text-xs text-emerald-600 dark:text-emerald-500 ml-auto">
               -{formatCurrency(discountAmount)}
-            </span>
+            </Span>
           </div>
-          <button
+          <Button
             onClick={handleRemove}
             className="text-xs text-gray-500 hover:text-red-500 transition-colors"
           >
             {t("promoRemove")}
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -114,11 +115,11 @@ export function PromoCodeInput({
 
   return (
     <div>
-      <label
+      <Label
         className={`block text-xs font-medium mb-1.5 ${themed.textSecondary}`}
       >
         {t("promoCode")}
-      </label>
+      </Label>
       <div className="flex gap-2">
         <input
           type="text"
@@ -132,15 +133,20 @@ export function PromoCodeInput({
           className={`flex-1 text-sm ${input.base} ${themed.bgPrimary} ${themed.textPrimary}`}
           onKeyDown={(e) => e.key === "Enter" && handleApply()}
         />
-        <button
+        <Button
+          variant="primary"
           onClick={handleApply}
           disabled={disabled || loading || !code.trim()}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors"
+          className="px-4 py-2 text-sm font-medium"
         >
-          {loading ? "\u2026" : t("promoApply")}
-        </button>
+          {loading ? "…" : t("promoApply")}
+        </Button>
       </div>
-      {errorMsg && <p className="mt-1.5 text-xs text-red-500">{errorMsg}</p>}
+      {errorMsg && (
+        <Text size="xs" variant="error" className="mt-1.5">
+          {errorMsg}
+        </Text>
+      )}
     </div>
   );
 }

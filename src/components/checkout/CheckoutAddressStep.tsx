@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type { AddressDocument } from "@/db/schema";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { Heading, Text, Span, TextLink, Badge, Button } from "@/components";
 
-const { themed, borderRadius } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
 
 interface CheckoutAddressStepProps {
   addresses: AddressDocument[];
@@ -21,68 +21,68 @@ export function CheckoutAddressStep({
   const t = useTranslations("checkout");
   return (
     <div>
-      <h2 className={`text-lg font-semibold mb-4 ${themed.textPrimary}`}>
+      <Heading level={2} className="text-lg mb-4">
         {t("selectAddress")}
-      </h2>
+      </Heading>
 
       {addresses.length === 0 ? (
         <div
           className={`p-6 rounded-xl border ${themed.bgSecondary} ${themed.border} text-center`}
         >
-          <p className={`mb-4 ${themed.textSecondary}`}>{t("noAddresses")}</p>
-          <Link
+          <Text variant="secondary" className="mb-4">
+            {t("noAddresses")}
+          </Text>
+          <TextLink
             href={ROUTES.USER.ADDRESSES_ADD}
+            variant="inherit"
             className="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"
           >
             {t("addNewAddress")}
-          </Link>
+          </TextLink>
         </div>
       ) : (
         <div className="space-y-3">
           {addresses.map((addr) => {
             const isSelected = addr.id === selectedAddressId;
             return (
-              <button
+              <Button
                 key={addr.id}
                 onClick={() => onSelect(addr.id)}
+                variant="ghost"
                 className={`w-full text-left p-4 rounded-xl border-2 transition-colors ${
                   isSelected
                     ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
                     : `${themed.border} ${themed.bgPrimary} hover:border-indigo-300`
                 }`}
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className={`${flex.betweenStart} gap-3`}>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span
-                        className={`font-semibold text-sm ${themed.textPrimary}`}
-                      >
+                      <Span weight="semibold" size="sm">
                         {addr.label}
-                      </span>
+                      </Span>
                       {addr.isDefault && (
-                        <span className="text-xs px-1.5 py-0.5 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded">
+                        <Badge variant="info" className="text-xs">
                           Default
-                        </span>
+                        </Badge>
                       )}
                     </div>
-                    <p className={`text-sm ${themed.textPrimary}`}>
-                      {addr.fullName}
-                    </p>
-                    <p className={`text-sm ${themed.textSecondary}`}>
+                    <Text size="sm">{addr.fullName}</Text>
+                    <Text size="sm" variant="secondary">
                       {addr.addressLine1}
                       {addr.addressLine2 && `, ${addr.addressLine2}`}
                       {addr.landmark && ` (${addr.landmark})`}
-                    </p>
-                    <p className={`text-sm ${themed.textSecondary}`}>
+                    </Text>
+                    <Text size="sm" variant="secondary">
                       {addr.city}, {addr.state} — {addr.postalCode}
-                    </p>
-                    <p className={`text-sm ${themed.textSecondary}`}>
+                    </Text>
+                    <Text size="sm" variant="secondary">
                       {addr.phone}
-                    </p>
+                    </Text>
                   </div>
                   {/* Radio indicator */}
                   <div
-                    className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                    className={`mt-0.5 w-5 h-5 rounded-full border-2 ${flex.center} flex-shrink-0 ${
                       isSelected ? "border-indigo-500" : themed.border
                     }`}
                   >
@@ -91,13 +91,14 @@ export function CheckoutAddressStep({
                     )}
                   </div>
                 </div>
-              </button>
+              </Button>
             );
           })}
 
           {/* Add new address link */}
-          <Link
+          <TextLink
             href={ROUTES.USER.ADDRESSES_ADD}
+            variant="inherit"
             className={`flex items-center gap-2 w-full p-4 rounded-xl border-2 border-dashed ${themed.border} ${themed.textSecondary} hover:border-indigo-400 hover:text-indigo-600 transition-colors text-sm font-medium`}
           >
             <svg
@@ -114,7 +115,7 @@ export function CheckoutAddressStep({
               />
             </svg>
             {t("addNewAddress")}
-          </Link>
+          </TextLink>
         </div>
       )}
     </div>

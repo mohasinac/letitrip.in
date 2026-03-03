@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useTranslations } from "next-intl";
 import type { ImageCropData } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
+import { Span } from "./typography/Typography";
 
 interface AvatarDisplayProps {
   cropData: ImageCropData | null;
@@ -46,6 +47,7 @@ export function AvatarDisplay({
 }: AvatarDisplayProps) {
   const t = useTranslations("avatar");
   const resolvedAlt = alt ?? t("altText");
+  const { flex, overflow } = THEME_CONSTANTS;
 
   // Generate initials from displayName or email
   const getInitials = () => {
@@ -91,22 +93,22 @@ export function AvatarDisplay({
     // Show initials with gradient background
     return (
       <div
-        className={`${sizeClasses[size]} ${className} rounded-full bg-gradient-to-br ${getGradient()} flex items-center justify-center overflow-hidden`}
+        className={`${sizeClasses[size]} ${className} rounded-full bg-gradient-to-br ${getGradient()} ${flex.center} ${overflow.hidden}`}
         role="img"
         aria-label={resolvedAlt}
       >
-        <span
+        <Span
           className={`${textSizes[size]} font-semibold text-white select-none`}
         >
           {getInitials()}
-        </span>
+        </Span>
       </div>
     );
   }
 
   return (
     <div
-      className={`${sizeClasses[size]} ${className} rounded-full overflow-hidden ${THEME_CONSTANTS.themed.bgTertiary} relative`}
+      className={`${sizeClasses[size]} ${className} rounded-full ${overflow.hidden} ${THEME_CONSTANTS.themed.bgTertiary} relative`}
     >
       <img
         src={cropData.url}

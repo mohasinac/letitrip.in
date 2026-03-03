@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AdminSiteView
  *
  * Tier 2 — feature component.
@@ -12,14 +12,15 @@ import { useState, useEffect } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
-  Button,
-  BackgroundSettings,
   AdminPageHeader,
+  BackgroundSettings,
+  Button,
   Card,
-  useToast,
   SiteBasicInfoForm,
   SiteContactForm,
   SiteSocialLinksForm,
+  Text,
+  useToast,
 } from "@/components";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { siteSettingsService } from "@/services";
@@ -105,7 +106,7 @@ export function AdminSiteView() {
         <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
         <Card>
           <div className="text-center py-8">
-            <p className="text-red-600 mb-4">{error.message}</p>
+            <Text className="text-red-600 mb-4">{error.message}</Text>
             <Button onClick={() => refetch()}>{tActions("retry")}</Button>
           </div>
         </Card>

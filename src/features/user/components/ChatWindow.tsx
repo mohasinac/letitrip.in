@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 /**
  * ChatWindow
@@ -16,20 +16,21 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useTranslations } from "next-intl";
 import {
+  Alert,
+  Button,
+  Caption,
   Card,
   Heading,
-  Text,
-  Caption,
-  Button,
+  Span,
   Spinner,
-  Alert,
+  Text,
   Textarea,
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useChat } from "@/hooks";
 
-const { spacing, themed } = THEME_CONSTANTS;
+const { spacing, themed, card, flex, overflow } = THEME_CONSTANTS;
 
 interface Props {
   chatId: string;
@@ -73,15 +74,13 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
 
   return (
     <Card
-      className={`flex flex-col h-full min-h-[420px] max-h-[700px] ${spacing.padding.md}`}
+      className={`flex flex-col h-full min-h-[360px] sm:min-h-[420px] xl:min-h-[540px] max-h-[600px] xl:max-h-[760px] 2xl:max-h-[840px] ${spacing.padding.md}`}
     >
       {/* Header */}
-      <div
-        className={`flex items-center justify-between pb-3 border-b ${themed.border} mb-3`}
-      >
+      <div className={`${flex.between} pb-3 border-b ${themed.border} mb-3`}>
         <div className="flex items-center gap-2">
           <Heading level={4}>{participantName ?? t("chat")}</Heading>
-          <span
+          <Span
             className={`w-2 h-2 rounded-full ${isConnected ? "bg-emerald-500" : "bg-gray-400"}`}
             aria-label={isConnected ? t("connected") : t("disconnected")}
           />
@@ -97,9 +96,11 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
       )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto flex flex-col gap-3 pr-1">
+      <div
+        className={`${flex.growMinH} ${overflow.yAuto} flex flex-col ${spacing.gap.sm} pr-1`}
+      >
         {messages.length === 0 && !isLoading && (
-          <div className="flex items-center justify-center h-full">
+          <div className={`${flex.center} h-full`}>
             <Caption>{t("noMessages")}</Caption>
           </div>
         )}
@@ -111,14 +112,12 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
               className={`flex ${isMine ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[75%] rounded-2xl px-4 py-2 ${
-                  isMine
-                    ? "bg-indigo-600 text-white rounded-br-sm"
-                    : "bg-gray-100 dark:bg-gray-800 rounded-bl-sm"
+                className={`max-w-[75%] px-4 py-2 ${
+                  isMine ? card.chatBubble.mine : card.chatBubble.theirs
                 }`}
               >
                 {!isMine && (
-                  <Caption className="text-xs font-semibold mb-0.5 text-indigo-600 dark:text-indigo-400">
+                  <Caption variant="accent" className="mb-0.5">
                     {msg.userName}
                   </Caption>
                 )}
@@ -126,7 +125,8 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
                   {msg.message}
                 </Text>
                 <Caption
-                  className={`text-xs mt-0.5 ${isMine ? "text-indigo-200" : "text-gray-400"}`}
+                  variant={isMine ? "inverse" : "default"}
+                  className="mt-0.5"
                 >
                   {formatDate(msg.timestamp)}
                 </Caption>
@@ -139,7 +139,7 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
 
       {/* Input */}
       <div
-        className={`mt-3 pt-3 border-t ${themed.border} flex gap-2 items-end`}
+        className={`mt-3 pt-3 border-t ${themed.border} flex ${spacing.gap.xs} items-end`}
       >
         <div className="flex-1">
           <Textarea

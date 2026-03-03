@@ -3,7 +3,7 @@
 import { useApiQuery } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { EmptyState, Spinner } from "@/components";
+import { EmptyState, Spinner, Heading, Text, Section } from "@/components";
 import { EventCard } from "@/features/events";
 import { eventService } from "@/services";
 import type { EventDocument } from "@/db/schema";
@@ -34,10 +34,10 @@ export default function EventsPage() {
   return (
     <div className={spacing.stack}>
       {/* Current Events */}
-      <section>
-        <h1 className={`${typography.h2} ${themed.textPrimary} mb-4`}>
+      <Section>
+        <Heading level={1} className="mb-4">
           {t("currentEvents")}
-        </h1>
+        </Heading>
 
         {isLoading ? (
           <div className="flex justify-center py-12">
@@ -55,20 +55,20 @@ export default function EventsPage() {
             ))}
           </div>
         )}
-      </section>
+      </Section>
 
       {/* Past Events */}
       {!pastLoading && pastEvents.length > 0 && (
-        <section className="mt-10">
-          <h2 className={`${typography.h3} ${themed.textPrimary} mb-4`}>
+        <Section className="mt-10">
+          <Heading level={2} className="mb-4">
             {t("pastEvents")}
-          </h2>
+          </Heading>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {pastEvents.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </div>
-        </section>
+        </Section>
       )}
     </div>
   );

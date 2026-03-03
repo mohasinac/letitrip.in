@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
-import { Alert, Text, Label } from "@/components";
+import { Alert, Label, Span, Text } from "@/components";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useMessage } from "@/hooks";
@@ -58,7 +58,7 @@ export function FeedbackEventSection({
         <div key={field.id}>
           <Label className="block mb-1">
             {field.label}
-            {field.required && <span className="text-red-500 ml-1">*</span>}
+            {field.required && <Span className="text-red-500 ml-1">*</Span>}
           </Label>
           {field.type === "textarea" ? (
             <textarea

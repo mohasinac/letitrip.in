@@ -8,13 +8,23 @@
 
 "use client";
 
-import { SideDrawer, Button, RoleBadge, StatusBadge } from "@/components";
+import {
+  SideDrawer,
+  Button,
+  RoleBadge,
+  StatusBadge,
+  Heading,
+  Text,
+  Caption,
+  Label,
+  AvatarDisplay,
+} from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDateTime } from "@/utils";
 import { useTranslations } from "next-intl";
 import type { AdminUser } from "./types";
 
-const { spacing, themed, typography } = THEME_CONSTANTS;
+const { spacing, themed } = THEME_CONSTANTS;
 
 interface UserDetailDrawerProps {
   user: AdminUser | null;
@@ -49,23 +59,22 @@ export function UserDetailDrawer({
       <div className={spacing.stack}>
         {/* User Avatar + Info */}
         <div className={`flex items-start ${spacing.gap.md}`}>
-          {user.photoURL ? (
-            <img
-              src={user.photoURL}
-              alt={(user.displayName || user.email) ?? "User"}
-              className="w-20 h-20 rounded-full"
-              loading="lazy"
-            />
-          ) : (
-            <div className="w-20 h-20 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-2xl font-medium">
-              {(user.displayName || user.email || "U").charAt(0).toUpperCase()}
-            </div>
-          )}
+          <AvatarDisplay
+            cropData={
+              user.photoURL
+                ? { url: user.photoURL, position: { x: 50, y: 50 }, zoom: 1 }
+                : null
+            }
+            size="xl"
+            alt={(user.displayName || user.email) ?? "User"}
+            displayName={user.displayName || undefined}
+            email={user.email || undefined}
+          />
           <div className="flex-1">
-            <h2 className={`text-xl font-semibold ${themed.textPrimary}`}>
+            <Heading level={2} className="text-xl">
               {user.displayName || "No name"}
-            </h2>
-            <p className={themed.textSecondary}>{user.email}</p>
+            </Heading>
+            <Text variant="secondary">{user.email}</Text>
             <div className="flex gap-2 mt-2 flex-wrap">
               <RoleBadge role={user.role} />
               <StatusBadge
@@ -84,50 +93,41 @@ export function UserDetailDrawer({
           className={`grid grid-cols-2 gap-4 pt-4 border-t ${themed.border}`}
         >
           <div>
-            <label className={typography.caption}>User ID</label>
-            <p className={`${themed.textPrimary} font-mono text-sm break-all`}>
+            <Caption>User ID</Caption>
+            <Text className="font-mono break-all" size="sm">
               {user.uid}
-            </p>
+            </Text>
           </div>
           <div>
-            <label className={typography.caption}>Login Count</label>
-            <p className={themed.textPrimary}>
-              {user.metadata?.loginCount || 0} times
-            </p>
+            <Caption>Login Count</Caption>
+            <Text>{user.metadata?.loginCount || 0} times</Text>
           </div>
           <div>
-            <label className={typography.caption}>Joined</label>
-            <p className={themed.textPrimary}>
-              {formatDateTime(user.createdAt)}
-            </p>
+            <Caption>Joined</Caption>
+            <Text>{formatDateTime(user.createdAt)}</Text>
           </div>
           <div>
-            <label className={typography.caption}>Last Login</label>
-            <p className={themed.textPrimary}>
+            <Caption>Last Login</Caption>
+            <Text>
               {user.lastLoginAt ? formatDateTime(user.lastLoginAt) : "Never"}
-            </p>
+            </Text>
           </div>
         </div>
 
         {/* Role Change */}
         <div className={`pt-4 border-t ${themed.border}`}>
-          <label className={`block ${typography.label} mb-2`}>
-            {t("changeRole")}
-          </label>
+          <Label className="block mb-2">{t("changeRole")}</Label>
           <div className="flex gap-2 flex-wrap">
             {ROLES.map((role) => (
-              <button
+              <Button
                 key={role}
                 onClick={() => onRoleChange(user, role)}
                 disabled={user.role === role}
-                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                  user.role === role
-                    ? "bg-indigo-600 text-white cursor-not-allowed"
-                    : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
-                }`}
+                variant={user.role === role ? "primary" : "outline"}
+                size="sm"
               >
                 {role.charAt(0).toUpperCase() + role.slice(1)}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

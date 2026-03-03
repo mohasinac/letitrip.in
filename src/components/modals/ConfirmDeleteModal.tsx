@@ -50,10 +50,12 @@ export default function ConfirmDeleteModal({
 
   if (!isOpen) return null;
 
+  const { flex, position } = THEME_CONSTANTS;
+
   return (
     <div
       data-testid="confirm-delete-modal"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      className={`${position.fixedFill} z-50 ${flex.center} p-4 bg-black/50 backdrop-blur-sm`}
       onClick={onClose}
     >
       <div onClick={(e: React.MouseEvent) => e.stopPropagation()}>
@@ -62,7 +64,9 @@ export default function ConfirmDeleteModal({
         >
           {/* Icon */}
           <div className="flex justify-center">
-            <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+            <div
+              className={`w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/20 ${flex.center}`}
+            >
               <svg
                 className="w-6 h-6 text-red-600 dark:text-red-500"
                 fill="none"

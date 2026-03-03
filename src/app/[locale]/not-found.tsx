@@ -9,19 +9,20 @@
 
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components";
+import { useRouter } from "@/i18n/navigation";
+import { Button, Heading, Text, Span } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 export default function NotFound() {
-  const { themed, spacing, typography } = THEME_CONSTANTS;
+  const { themed, spacing, typography, flex } = THEME_CONSTANTS;
   const tError = useTranslations("errorPages");
   const tActions = useTranslations("actions");
+  const router = useRouter();
 
   return (
     <div
-      className={`min-h-screen flex items-center justify-center ${themed.bgPrimary} ${spacing.padding.xl}`}
+      className={`min-h-screen ${flex.center} ${themed.bgPrimary} ${spacing.padding.xl}`}
     >
       <div
         className={`${THEME_CONSTANTS.container["2xl"]} w-full text-center ${spacing.stack}`}
@@ -49,26 +50,29 @@ export default function NotFound() {
 
         {/* Large 404 Text */}
         <div className={`${themed.textPrimary} mb-4`}>
-          <span className="text-8xl md:text-9xl font-bold opacity-10">404</span>
+          <Span className="text-8xl md:text-9xl font-bold opacity-10">404</Span>
         </div>
 
         {/* Error Title */}
-        <h1 className={`${typography.h1} ${themed.textPrimary} mb-4`}>
+        <Heading level={1} className="mb-4">
           {tError("notFound.title")}
-        </h1>
+        </Heading>
 
         {/* Error Description */}
-        <p className={`${typography.body} ${themed.textSecondary} mb-8`}>
+        <Text variant="secondary" className="mb-8">
           {tError("notFound.description")}
-        </p>
+        </Text>
 
         {/* Action Button */}
         <div className="flex justify-center">
-          <Link href={ROUTES.HOME}>
-            <Button variant="primary" size="lg" className="min-w-[200px]">
-              {tActions("goHome")}
-            </Button>
-          </Link>
+          <Button
+            variant="primary"
+            size="lg"
+            className="min-w-[200px]"
+            onClick={() => router.push(ROUTES.HOME)}
+          >
+            {tActions("goHome")}
+          </Button>
         </div>
       </div>
     </div>

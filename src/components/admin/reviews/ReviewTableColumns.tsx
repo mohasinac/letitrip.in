@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { ReviewStars } from "./ReviewStars";
 import type { Review } from "./types";
+import { Button, Span } from "@/components";
 
 const REVIEWS = UI_LABELS.ADMIN.REVIEWS;
 
@@ -23,9 +24,9 @@ export function getReviewTableColumns() {
         <div>
           <div>{review.userName}</div>
           {review.verifiedPurchase && (
-            <span className="text-xs text-green-600 dark:text-green-400">
+            <Span className="text-xs text-green-600 dark:text-green-400">
               ✓ {REVIEWS.VERIFIED}
-            </span>
+            </Span>
           )}
         </div>
       ),
@@ -38,9 +39,9 @@ export function getReviewTableColumns() {
       render: (review: Review) => (
         <div className="flex items-center gap-2">
           <ReviewStars rating={review.rating} />
-          <span className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
+          <Span className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
             ({review.rating})
-          </span>
+          </Span>
         </div>
       ),
     },
@@ -66,9 +67,9 @@ export function getReviewTableColumns() {
         const ratio =
           total > 0 ? Math.round((review.helpfulCount / total) * 100) : 0;
         return (
-          <span className="text-sm">
+          <Span className="text-sm">
             {review.helpfulCount}/{total} ({ratio}%)
-          </span>
+          </Span>
         );
       },
     },
@@ -78,7 +79,7 @@ export function getReviewTableColumns() {
       sortable: true,
       width: "12%",
       render: (review: Review) => (
-        <span
+        <Span
           className={`px-2 py-1 text-xs font-medium rounded ${
             review.status === "approved"
               ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
@@ -88,7 +89,7 @@ export function getReviewTableColumns() {
           }`}
         >
           {review.status.charAt(0).toUpperCase() + review.status.slice(1)}
-        </span>
+        </Span>
       ),
     },
   ];
@@ -110,7 +111,7 @@ export function ReviewRowActions({
   return (
     <div className="flex gap-2">
       {review.status !== "approved" && (
-        <button
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             onApprove(review);
@@ -118,10 +119,10 @@ export function ReviewRowActions({
           className="text-green-600 hover:text-green-800 dark:text-green-400 text-sm"
         >
           {REVIEWS.APPROVE}
-        </button>
+        </Button>
       )}
       {review.status !== "rejected" && (
-        <button
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             onReject(review);
@@ -129,9 +130,9 @@ export function ReviewRowActions({
           className="text-orange-600 hover:text-orange-800 dark:text-orange-400 text-sm"
         >
           {REVIEWS.REJECT}
-        </button>
+        </Button>
       )}
-      <button
+      <Button
         onClick={(e) => {
           e.stopPropagation();
           onDelete(review);
@@ -139,7 +140,7 @@ export function ReviewRowActions({
         className="text-red-600 hover:text-red-800 dark:text-red-400 text-sm"
       >
         {REVIEWS.DELETE}
-      </button>
+      </Button>
     </div>
   );
 }

@@ -36,7 +36,7 @@ export function ProfileStatsGrid({
   stats,
   className = "",
 }: ProfileStatsGridProps) {
-  const { spacing, typography } = THEME_CONSTANTS;
+  const { spacing, typography, flex } = THEME_CONSTANTS;
 
   const statItems = [
     {
@@ -117,7 +117,7 @@ export function ProfileStatsGrid({
           variant={stat.variant}
           className={spacing.cardPadding}
         >
-          <div className="flex items-center justify-between">
+          <div className={flex.between}>
             <div>
               <Text
                 className={`text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}

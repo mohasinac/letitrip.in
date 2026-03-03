@@ -7,7 +7,7 @@ import { EmptyState, Spinner, TablePagination, Card, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useStoreProducts } from "../hooks";
 
-const { spacing } = THEME_CONSTANTS;
+const { spacing, flex } = THEME_CONSTANTS;
 
 interface StoreProductsViewProps {
   storeSlug: string;
@@ -37,7 +37,7 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
   return (
     <div className={spacing.stack}>
       {isLoading && (
-        <div className="flex justify-center py-16">
+        <div className={`${flex.hCenter} ${THEME_CONSTANTS.page.empty}`}>
           <Spinner />
         </div>
       )}

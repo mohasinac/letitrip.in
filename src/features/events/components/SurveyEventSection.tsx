@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { Alert, Text } from "@/components";
+import { Alert, Text, TextLink } from "@/components";
 import { ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/hooks";
@@ -24,12 +23,12 @@ export function SurveyEventSection({
     return (
       <div className="space-y-4">
         <Alert variant="info">{tEvents("loginToParticipate")}</Alert>
-        <Link
+        <TextLink
           href={ROUTES.AUTH.LOGIN}
           className="inline-block px-6 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors"
         >
           {tActions("login")}
-        </Link>
+        </TextLink>
       </div>
     );
   }
@@ -50,14 +49,14 @@ export function SurveyEventSection({
         Complete the survey to participate. Entries are reviewed before being
         counted.
       </Text>
-      <Link
+      <TextLink
         href={ROUTES.PUBLIC.EVENT_PARTICIPATE(event.id)}
         target="_blank"
         rel="noopener noreferrer"
         className="inline-block px-6 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors"
       >
         {tEvents("participate")}
-      </Link>
+      </TextLink>
     </div>
   );
 }

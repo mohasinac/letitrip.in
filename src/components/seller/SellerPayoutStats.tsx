@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "@/components/ui";
+import { Card, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
@@ -29,32 +29,38 @@ export function SellerPayoutStats({
 }: SellerPayoutStatsProps) {
   const t = useTranslations("sellerPayouts");
   if (isLoading) {
-    return <p className={`${themed.textSecondary} mb-6`}>{t("loading")}</p>;
+    return (
+      <Text variant="secondary" className="mb-6">
+        {t("loading")}
+      </Text>
+    );
   }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-8">
       <Card className={spacing.padding.md}>
-        <p className={`text-sm ${themed.textSecondary}`}>
+        <Text size="sm" variant="secondary">
           {t("availableEarnings")}
-        </p>
-        <p className={`${typography.h3} text-emerald-600 mt-1`}>
+        </Text>
+        <Text className={`${typography.h3} text-emerald-600 mt-1`}>
           {formatCurrency(summary?.availableEarnings ?? 0)}
-        </p>
+        </Text>
       </Card>
       <Card className={spacing.padding.md}>
-        <p className={`text-sm ${themed.textSecondary}`}>{t("totalPaid")}</p>
-        <p className={`${typography.h3} ${themed.textPrimary} mt-1`}>
+        <Text size="sm" variant="secondary">
+          {t("totalPaid")}
+        </Text>
+        <Text className={`${typography.h3} ${themed.textPrimary} mt-1`}>
           {formatCurrency(summary?.totalPaidOut ?? 0)}
-        </p>
+        </Text>
       </Card>
       <Card className={spacing.padding.md}>
-        <p className={`text-sm ${themed.textSecondary}`}>
+        <Text size="sm" variant="secondary">
           {t("pendingPayout")}
-        </p>
-        <p className={`${typography.h3} text-amber-600 mt-1`}>
+        </Text>
+        <Text className={`${typography.h3} text-amber-600 mt-1`}>
           {formatCurrency(summary?.pendingAmount ?? 0)}
-        </p>
+        </Text>
       </Card>
     </div>
   );

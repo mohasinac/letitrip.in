@@ -8,10 +8,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components";
+import { Button, Heading, Text } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 export default function UnauthorizedPage() {
@@ -78,43 +77,41 @@ export default function UnauthorizedPage() {
         </div>
 
         {/* Error Title */}
-        <h1
+        <Heading
+          level={1}
           className={`${typography.h1} ${themed.textPrimary} ${spacing.margin.bottom.md}`}
         >
           {tError("unauthorized.title")}
-        </h1>
+        </Heading>
 
         {/* Error Description */}
-        <p
-          className={`${typography.body} ${themed.textSecondary} ${spacing.margin.bottom.xl}`}
-        >
+        <Text variant="secondary" className={spacing.margin.bottom.xl}>
           {tError("unauthorized.description")}
-        </p>
+        </Text>
 
         {/* Countdown Message */}
         <div
           className={`${themed.bgSecondary} ${themed.border} ${THEME_CONSTANTS.borderRadius.lg} ${spacing.padding.md} ${spacing.margin.bottom.xl}`}
         >
-          <p className={`${typography.body} ${themed.textSecondary}`}>
+          <Text variant="secondary">
             {tAuth("redirectingIn")}{" "}
             <span className={THEME_CONSTANTS.text.emphasis}>{countdown}</span>{" "}
             {tAuth("seconds")}
-          </p>
+          </Text>
         </div>
 
         {/* Action Buttons */}
         <div
           className={`${THEME_CONSTANTS.layout.flexCenter} ${spacing.gap.md} flex-col sm:flex-row`}
         >
-          <Link href={ROUTES.AUTH.LOGIN}>
-            <Button
-              variant="primary"
-              size="lg"
-              className={THEME_CONSTANTS.button.minWidth}
-            >
-              {tActions("login")}
-            </Button>
-          </Link>
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={() => router.push(ROUTES.AUTH.LOGIN)}
+            className={THEME_CONSTANTS.button.minWidth}
+          >
+            {tActions("login")}
+          </Button>
           <Button
             variant="outline"
             size="lg"

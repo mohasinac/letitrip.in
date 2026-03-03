@@ -1,11 +1,12 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { usePlaceBid } from "@/hooks";
+import { Button, Label, Span, Text } from "@/components";
 import type { BidDocument } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;
@@ -83,15 +84,16 @@ export function PlaceBidForm({
   if (!isAuthenticated) {
     return (
       <div className={`rounded-xl border ${themed.border} p-4 text-center`}>
-        <p className={`text-sm ${themed.textSecondary} mb-3`}>
+        <Text size="sm" variant="secondary" className="mb-3">
           {t("loginToBid")}
-        </p>
-        <button
+        </Text>
+        <Button
+          variant="primary"
           onClick={() => router.push(ROUTES.AUTH.LOGIN)}
-          className="px-6 py-2 rounded-lg bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition-colors"
+          className="px-6 py-2 text-sm font-semibold"
         >
           {tActions("submit")}
-        </button>
+        </Button>
       </div>
     );
   }
@@ -102,19 +104,19 @@ export function PlaceBidForm({
       className={`rounded-xl border ${themed.border} p-4 space-y-3`}
     >
       <div>
-        <label
+        <Label
           htmlFor="bid-amount"
           className={`block text-sm font-medium ${themed.textPrimary} mb-1`}
         >
           {t("yourBidLabel")}
-        </label>
-        <p className={`text-xs ${themed.textSecondary} mb-2`}>
+        </Label>
+        <Text size="xs" variant="secondary" className="mb-2">
           {t("minimumBidError", { amount: formatCurrency(minimumRequired) })}
-        </p>
+        </Text>
         <div className="flex items-center gap-2">
-          <span className={`text-sm font-medium ${themed.textSecondary}`}>
+          <Span className={`text-sm font-medium ${themed.textSecondary}`}>
             {currency}
-          </span>
+          </Span>
           <input
             id="bid-amount"
             type="number"
@@ -129,26 +131,32 @@ export function PlaceBidForm({
             placeholder={String(minimumRequired)}
             className={`flex-1 h-10 px-3 rounded-lg border text-sm ${themed.border} ${themed.bgPrimary} ${themed.textPrimary} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
           />
-          <button
+          <Button
             type="submit"
+            variant="primary"
             disabled={isSubmitting}
-            className="h-10 px-5 rounded-lg bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 disabled:opacity-60 transition-colors whitespace-nowrap"
+            className="h-10 px-5 text-sm font-semibold whitespace-nowrap"
           >
             {isSubmitting ? tLoading("default") : t("placeBid")}
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Error */}
       {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <Text size="sm" variant="error">
+          {error}
+        </Text>
       )}
 
       {/* Success */}
       {success && (
-        <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+        <Text
+          size="sm"
+          className="text-emerald-600 dark:text-emerald-400 font-medium"
+        >
           {t("bidPlaced")}
-        </p>
+        </Text>
       )}
     </form>
   );

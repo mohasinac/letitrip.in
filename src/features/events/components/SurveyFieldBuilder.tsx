@@ -2,6 +2,7 @@
 
 import { Button, Label, Text } from "@/components";
 import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import { FORM_FIELD_TYPE_VALUES } from "../constants/FORM_FIELD_TYPE_OPTIONS";
 import type { SurveyFormField, FormFieldType } from "@/db/schema";
 
@@ -31,6 +32,7 @@ export function SurveyFieldBuilder({
   const t = useTranslations("adminEvents");
   const tActions = useTranslations("actions");
   const tFieldTypes = useTranslations("formFieldTypes");
+  const { flex } = THEME_CONSTANTS;
   const addField = () => onChange([...fields, emptyField(fields.length)]);
 
   const updateField = (id: string, patch: Partial<SurveyFormField>) =>
@@ -49,7 +51,7 @@ export function SurveyFieldBuilder({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
+      <div className={flex.between}>
         <Label>Form Fields</Label>
         <Button variant="outline" size="sm" onClick={addField} type="button">
           {t("addField")}
@@ -121,7 +123,7 @@ export function SurveyFieldBuilder({
             </div>
           )}
 
-          <div className="flex items-center justify-between">
+          <div className={flex.between}>
             <Label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"

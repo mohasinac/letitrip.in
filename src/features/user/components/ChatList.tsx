@@ -8,7 +8,8 @@
  * ?chatId= query param on the messages page.
  */
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -23,7 +24,7 @@ import { formatDate } from "@/utils";
 import { useChatRooms } from "@/hooks";
 import { useAuth } from "@/hooks";
 
-const { spacing, themed } = THEME_CONSTANTS;
+const { spacing, themed, flex } = THEME_CONSTANTS;
 
 export function ChatList() {
   const t = useTranslations("chat");
@@ -86,7 +87,7 @@ export function ChatList() {
                 : `${themed.bgPrimary} ${themed.border} hover:bg-gray-50 dark:hover:bg-gray-800`
             }`}
           >
-            <div className="flex items-start justify-between gap-2">
+            <div className={`${flex.betweenStart} gap-2`}>
               <Text weight="medium" size="sm">
                 {participantName}
               </Text>

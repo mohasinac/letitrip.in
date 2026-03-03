@@ -1,8 +1,11 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { classNames } from "@/helpers";
+import { Button, Span, Text } from "@/components";
+
+const { flex } = THEME_CONSTANTS;
 
 interface CategoryNode {
   id: string;
@@ -62,7 +65,7 @@ function TreeNode({
         style={{ paddingLeft: `${indent + 12}px` }}
       >
         {/* Expand/Collapse Icon */}
-        <button
+        <Button
           type="button"
           onClick={onToggle}
           className={`
@@ -86,7 +89,7 @@ function TreeNode({
               />
             </svg>
           )}
-        </button>
+        </Button>
 
         {/* Category Icon */}
         <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-gray-400">
@@ -106,31 +109,31 @@ function TreeNode({
         </div>
 
         {/* Category Name */}
-        <button
+        <Button
           type="button"
           onClick={() => onSelect?.(node)}
           className={`flex-1 text-left text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} truncate`}
         >
           {node.name}
-        </button>
+        </Button>
 
         {/* Metrics */}
         {node.metrics && (
           <div
             className={`flex items-center gap-3 text-xs ${THEME_CONSTANTS.themed.textSecondary}`}
           >
-            <span title="Direct Products">{node.metrics.productCount} P</span>
-            <span title="Total Products (including subcategories)">
+            <Span title="Direct Products">{node.metrics.productCount} P</Span>
+            <Span title="Total Products (including subcategories)">
               ({node.metrics.totalProductCount})
-            </span>
+            </Span>
             {node.metrics.auctionCount > 0 && (
               <>
-                <span title="Direct Auctions">
+                <Span title="Direct Auctions">
                   {node.metrics.auctionCount} A
-                </span>
-                <span title="Total Auctions (including subcategories)">
+                </Span>
+                <Span title="Total Auctions (including subcategories)">
                   ({node.metrics.totalAuctionCount})
-                </span>
+                </Span>
               </>
             )}
           </div>
@@ -139,7 +142,7 @@ function TreeNode({
         {/* Actions */}
         <div className="flex items-center gap-1">
           {onEdit && (
-            <button
+            <Button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -161,10 +164,10 @@ function TreeNode({
                   d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                 />
               </svg>
-            </button>
+            </Button>
           )}
           {onDelete && (
-            <button
+            <Button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -186,7 +189,7 @@ function TreeNode({
                   d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                 />
               </svg>
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -255,7 +258,7 @@ export function CategoryTreeView({
   if (categories.length === 0) {
     return (
       <div
-        className={`flex items-center justify-center h-64 border ${THEME_CONSTANTS.themed.borderColor} rounded-lg`}
+        className={`${flex.center} h-64 border ${THEME_CONSTANTS.themed.borderColor} rounded-lg`}
       >
         <div className="text-center">
           <svg
@@ -271,9 +274,9 @@ export function CategoryTreeView({
               d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
             />
           </svg>
-          <p className={`mt-4 text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
+          <Text size="sm" variant="secondary" className="mt-4">
             No categories yet
-          </p>
+          </Text>
         </div>
       </div>
     );

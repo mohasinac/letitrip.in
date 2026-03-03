@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { Search as SearchIcon } from "lucide-react";
-import { PRODUCT_SORT_VALUES } from "@/components";
+import { PRODUCT_SORT_VALUES, Span } from "@/components";
 import {
   FilterDrawer,
   FilterFacetSection,
@@ -11,7 +11,7 @@ import {
   EmptyState,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
-import { Heading, Text } from "@/components";
+import { Heading, Text, Main } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable } from "@/hooks";
@@ -19,7 +19,7 @@ import { useSearch } from "@/features/search";
 import { debounce } from "@/utils";
 import type { ProductSortValue } from "@/components";
 
-const { themed, spacing } = THEME_CONSTANTS;
+const { themed, spacing, page } = THEME_CONSTANTS;
 
 const PAGE_SIZE = 24;
 const DEBOUNCE_MS = 400;
@@ -116,9 +116,7 @@ export function SearchView() {
   const hasAnyFilter = !!(urlQ || urlCategory || urlMinPrice || urlMaxPrice);
 
   return (
-    <main
-      className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 ${spacing.stack}`}
-    >
+    <Main className={`${page.container["2xl"]} py-10 ${spacing.stack}`}>
       <div>
         <Heading level={1}>{t("title")}</Heading>
         <Text variant="secondary" className="mt-1">
@@ -136,11 +134,11 @@ export function SearchView() {
           autoFocus
           className={`w-full h-12 pl-4 pr-12 rounded-xl border text-base ${themed.border} ${themed.bgPrimary} ${themed.textPrimary} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
         />
-        <span
+        <Span
           className={`absolute right-4 top-1/2 -translate-y-1/2 ${THEME_CONSTANTS.icon.muted} pointer-events-none`}
         >
           <SearchIcon className="w-5 h-5" />
-        </span>
+        </Span>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -188,6 +186,6 @@ export function SearchView() {
           description={t("subtitle")}
         />
       )}
-    </main>
+    </Main>
   );
 }

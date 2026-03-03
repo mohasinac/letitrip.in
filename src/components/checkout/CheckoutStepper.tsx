@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
 import { THEME_CONSTANTS } from "@/constants";
+import { Li, Nav, Ol, Span } from "@/components";
 
-const { themed } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
 
 interface Step {
   number: number;
@@ -16,19 +17,19 @@ interface CheckoutStepperProps {
 
 export function CheckoutStepper({ steps, currentStep }: CheckoutStepperProps) {
   return (
-    <nav aria-label="Checkout steps" className="mb-8">
-      <ol className="flex items-center gap-0">
+    <Nav aria-label="Checkout steps" className="mb-8">
+      <Ol className="flex items-center gap-0">
         {steps.map((step, i) => {
           const isComplete = step.number < currentStep;
           const isActive = step.number === currentStep;
           const isLast = i === steps.length - 1;
 
           return (
-            <li key={step.number} className="flex items-center flex-1">
+            <Li key={step.number} className="flex items-center flex-1">
               {/* Step indicator */}
               <div className="flex items-center gap-2 flex-shrink-0">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 transition-colors ${
+                  className={`w-8 h-8 rounded-full ${flex.center} text-sm font-semibold border-2 transition-colors ${
                     isComplete
                       ? "bg-indigo-600 border-indigo-600 text-white"
                       : isActive
@@ -54,7 +55,7 @@ export function CheckoutStepper({ steps, currentStep }: CheckoutStepperProps) {
                     step.number
                   )}
                 </div>
-                <span
+                <Span
                   className={`text-sm font-medium hidden sm:block ${
                     isActive
                       ? "text-indigo-600"
@@ -64,7 +65,7 @@ export function CheckoutStepper({ steps, currentStep }: CheckoutStepperProps) {
                   }`}
                 >
                   {step.label}
-                </span>
+                </Span>
               </div>
 
               {/* Connector */}
@@ -77,10 +78,10 @@ export function CheckoutStepper({ steps, currentStep }: CheckoutStepperProps) {
                   }`}
                 />
               )}
-            </li>
+            </Li>
           );
         })}
-      </ol>
-    </nav>
+      </Ol>
+    </Nav>
   );
 }

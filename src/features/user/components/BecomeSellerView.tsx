@@ -6,31 +6,35 @@
  * Multi-state view for the /user/become-seller page.
  *
  * States:
- *  1. Guide — user with role="user" reads 5 sections, then applies
- *  2. Success — just applied this session (pending admin review)
- *  3. Already a seller / admin / moderator — redirect to seller dashboard
+ *  1. Guide � user with role="user" reads 5 sections, then applies
+ *  2. Success � just applied this session (pending admin review)
+ *  3. Already a seller / admin / moderator � redirect to seller dashboard
  */
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import {
-  Card,
-  Heading,
-  Text,
-  Caption,
-  Button,
-  Badge,
   Alert,
-  Spinner,
+  Badge,
+  Button,
+  Caption,
+  Card,
   Divider,
+  Heading,
+  Label,
+  Li,
+  Span,
+  Spinner,
+  Text,
+  Ul,
 } from "@/components";
 import { useAuth, useBecomeSeller } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
-const { spacing, themed } = THEME_CONSTANTS;
+const { spacing, themed, flex, page } = THEME_CONSTANTS;
 
-// ─── Section IDs ──────────────────────────────────────────────────────────────
+// --- Section IDs --------------------------------------------------------------
 
 const SECTION_IDS = [
   "howItWorks",
@@ -42,7 +46,7 @@ const SECTION_IDS = [
 
 type SectionId = (typeof SECTION_IDS)[number];
 
-// ─── Single guide section card ────────────────────────────────────────────────
+// --- Single guide section card ------------------------------------------------
 
 interface GuideSectionProps {
   sectionIndex: number;
@@ -67,7 +71,7 @@ function GuideSection({ sectionIndex, id, read, onToggle }: GuideSectionProps) {
         {/* Step number */}
         <div
           aria-hidden="true"
-          className={`mt-0.5 w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold ${
+          className={`mt-0.5 w-7 h-7 rounded-full flex-shrink-0 ${flex.center} text-xs font-bold ${
             read
               ? "bg-emerald-500 text-white"
               : "bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300"
@@ -85,19 +89,19 @@ function GuideSection({ sectionIndex, id, read, onToggle }: GuideSectionProps) {
           </Text>
 
           {/* Bullet points */}
-          <ul className={`${spacing.stack} list-none mb-4`}>
+          <Ul className={`${spacing.stack} list-none mb-4`}>
             {(t.raw(`sections.${id}.points`) as string[]).map((point, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0" />
+              <Li key={i} className="flex items-start gap-2">
+                <Span className="mt-[5px] w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0" />
                 <Text size="sm">{point}</Text>
-              </li>
+              </Li>
             ))}
-          </ul>
+          </Ul>
 
           <Divider className="mb-4" />
 
           {/* Read acknowledgement */}
-          <label
+          <Label
             htmlFor={checkboxId}
             className="flex items-center gap-2 cursor-pointer select-none"
           >
@@ -109,23 +113,23 @@ function GuideSection({ sectionIndex, id, read, onToggle }: GuideSectionProps) {
               className="w-4 h-4 rounded accent-indigo-600 cursor-pointer"
             />
             <Caption className="font-medium">{t("ackLabel")}</Caption>
-          </label>
+          </Label>
         </div>
       </div>
     </Card>
   );
 }
 
-// ─── Post-apply success state ─────────────────────────────────────────────────
+// --- Post-apply success state -------------------------------------------------
 
 function SuccessState() {
   const t = useTranslations("becomeSeller.states.success");
 
   return (
     <Card className={`${spacing.padding.lg} text-center max-w-xl mx-auto`}>
-      <div className="flex flex-col items-center gap-4">
+      <div className={`${flex.colCenter} gap-4`}>
         <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-3xl">
-          🎉
+          ??
         </div>
         <Badge variant="success">{t("badge")}</Badge>
         <Heading level={2}>{t("title")}</Heading>
@@ -138,7 +142,7 @@ function SuccessState() {
   );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
+// --- Main component -----------------------------------------------------------
 
 export function BecomeSellerView() {
   const t = useTranslations("becomeSeller");
@@ -156,7 +160,7 @@ export function BecomeSellerView() {
       ),
   );
 
-  // Local post-apply state — session isn't refreshed until re-login
+  // Local post-apply state � session isn't refreshed until re-login
   const [justApplied, setJustApplied] = useState(false);
 
   const allSectionsRead = SECTION_IDS.every((id) => readSections[id]);
@@ -176,7 +180,7 @@ export function BecomeSellerView() {
 
   if (authLoading || isAlreadySeller) {
     return (
-      <div className="flex justify-center py-16">
+      <div className={`${flex.hCenter} ${page.empty}`}>
         <Spinner />
       </div>
     );

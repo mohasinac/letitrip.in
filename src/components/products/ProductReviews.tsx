@@ -1,19 +1,21 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatRelativeTime, formatNumber } from "@/utils";
 import {
-  Heading,
-  Text,
-  Label,
-  Button,
   Alert,
+  Button,
   FormField,
+  Heading,
   HorizontalScroller,
+  Label,
+  Section,
+  Span,
+  Text,
 } from "@/components";
 import {
   useProductReviews,
@@ -24,7 +26,7 @@ import {
 import { reviewService } from "@/services";
 import type { ReviewDocument } from "@/db/schema";
 
-const { themed, borderRadius, rating: ratingTokens } = THEME_CONSTANTS;
+const { themed, borderRadius, rating: ratingTokens, flex } = THEME_CONSTANTS;
 
 interface ReviewsResponse {
   data: ReviewDocument[];
@@ -52,12 +54,12 @@ function StarRating({
   return (
     <div className={`flex items-center gap-0.5 ${sizes[size]}`}>
       {[1, 2, 3, 4, 5].map((star) => (
-        <span
+        <Span
           key={star}
           className={star <= rating ? "text-amber-400" : ratingTokens.empty}
         >
           ★
-        </span>
+        </Span>
       ))}
     </div>
   );
@@ -75,15 +77,15 @@ function RatingBar({
   const pct = total > 0 ? Math.round((count / total) * 100) : 0;
   return (
     <div className="flex items-center gap-2 text-xs">
-      <span className={`w-3 ${themed.textSecondary}`}>{star}</span>
-      <span className="text-amber-400 text-xs">★</span>
+      <Span className={`w-3 ${themed.textSecondary}`}>{star}</Span>
+      <Span className="text-amber-400 text-xs">★</Span>
       <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
         <div
           className="bg-amber-400 h-full rounded-full transition-all"
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className={`w-6 text-right ${themed.textSecondary}`}>{count}</span>
+      <Span className={`w-6 text-right ${themed.textSecondary}`}>{count}</Span>
     </div>
   );
 }
@@ -111,7 +113,7 @@ function StarPicker({
           onMouseLeave={() => setHovered(0)}
           className="text-2xl transition-colors focus:outline-none"
         >
-          <span
+          <Span
             className={
               star <= (hovered || value)
                 ? "text-amber-400"
@@ -119,7 +121,7 @@ function StarPicker({
             }
           >
             ★
-          </span>
+          </Span>
         </button>
       ))}
     </div>
@@ -287,7 +289,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
   const dist = meta?.ratingDistribution ?? {};
 
   return (
-    <section id="write-review">
+    <Section id="write-review">
       <Heading level={2} className="mb-4">
         {t("reviewsTitle")}
       </Heading>
@@ -308,13 +310,13 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
         >
           {/* Average */}
           <div className="flex flex-col items-center justify-center sm:w-32 shrink-0">
-            <span className={`text-5xl font-bold ${themed.textPrimary}`}>
+            <Span className={`text-5xl font-bold ${themed.textPrimary}`}>
               {formatNumber(avgRating, "en-US", { decimals: 1 })}
-            </span>
+            </Span>
             <StarRating rating={Math.round(avgRating)} size="md" />
-            <span className={`text-xs mt-1 ${themed.textSecondary}`}>
+            <Span className={`text-xs mt-1 ${themed.textSecondary}`}>
               {totalReviews} reviews
-            </span>
+            </Span>
           </div>
 
           {/* Distribution bars */}
@@ -366,7 +368,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
               className={`p-4 ${themed.bgSecondary} ${borderRadius.xl} space-y-2`}
             >
               {/* Header */}
-              <div className="flex items-start justify-between gap-3">
+              <div className={`${flex.betweenStart} gap-3`}>
                 <div className="flex items-center gap-3">
                   {review.userAvatar ? (
                     <div className="relative w-9 h-9 rounded-full overflow-hidden shrink-0">
@@ -379,10 +381,12 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                       />
                     </div>
                   ) : (
-                    <div className="w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center shrink-0">
-                      <span className="text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                    <div
+                      className={`w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900/40 ${flex.center} shrink-0`}
+                    >
+                      <Span className="text-sm font-bold text-indigo-600 dark:text-indigo-400">
                         {review.userName.charAt(0).toUpperCase()}
-                      </span>
+                      </Span>
                     </div>
                   )}
                   <div>
@@ -392,16 +396,16 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                     <div className="flex items-center gap-2">
                       <StarRating rating={review.rating} />
                       {review.verified && (
-                        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                        <Span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
                           {t("verifiedPurchase")}
-                        </span>
+                        </Span>
                       )}
                     </div>
                   </div>
                 </div>
-                <span className={`text-xs ${themed.textSecondary} shrink-0`}>
+                <Span className={`text-xs ${themed.textSecondary} shrink-0`}>
                   {formatRelativeTime(review.createdAt)}
-                </span>
+                </Span>
               </div>
 
               {/* Content */}
@@ -445,7 +449,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
           {/* Pagination */}
           {meta && meta.totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 pt-2">
+            <div className={`${flex.center} gap-2 pt-2`}>
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
@@ -453,9 +457,9 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
               >
                 {tActions("back")}
               </button>
-              <span className={`text-sm ${themed.textSecondary}`}>
+              <Span className={`text-sm ${themed.textSecondary}`}>
                 {page} / {meta.totalPages}
-              </span>
+              </Span>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={!meta.hasMore}
@@ -467,6 +471,6 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
           )}
         </div>
       )}
-    </section>
+    </Section>
   );
 }

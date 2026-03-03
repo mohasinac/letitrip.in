@@ -1,13 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Card, Button } from "@/components/ui";
 import { Heading, Text } from "@/components/typography";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { ProductDocument } from "@/db/schema";
+import { Span } from "@/components";
 
-const { themed, spacing } = THEME_CONSTANTS;
+const { themed, spacing, flex } = THEME_CONSTANTS;
 
 type RecentProduct = Pick<
   ProductDocument,
@@ -30,7 +31,7 @@ export function SellerRecentListings({
 
   return (
     <Card className="p-5">
-      <div className="flex items-center justify-between mb-4">
+      <div className={`${flex.between} mb-4`}>
         <Heading level={4} variant="primary">
           {t("recentListings")}
         </Heading>
@@ -46,10 +47,10 @@ export function SellerRecentListings({
         {products.slice(0, 5).map((product) => (
           <div
             key={product.id}
-            className={`flex items-center justify-between py-2 border-b last:border-0 ${themed.borderColor}`}
+            className={`${flex.between} py-2 border-b last:border-0 ${themed.borderColor}`}
           >
             <Text className={themed.textPrimary}>{product.title}</Text>
-            <span
+            <Span
               className={`text-xs px-2 py-1 rounded-full font-medium ${
                 product.status === "published"
                   ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
@@ -59,7 +60,7 @@ export function SellerRecentListings({
               }`}
             >
               {product.status}
-            </span>
+            </Span>
           </div>
         ))}
       </div>

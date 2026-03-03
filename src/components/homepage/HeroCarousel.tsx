@@ -3,11 +3,20 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useHeroCarousel, useMediaQuery } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
-import { Button, HorizontalScroller } from "@/components";
+import {
+  Button,
+  Heading,
+  HorizontalScroller,
+  Section,
+  Span,
+  Text,
+} from "@/components";
 import type { CarouselSlideDocument, GridCard } from "@/db/schema";
+
+const { flex, position } = THEME_CONSTANTS;
 
 export function HeroCarousel() {
   const tLoading = useTranslations("loading");
@@ -78,10 +87,8 @@ export function HeroCarousel() {
       <div
         className={`relative w-full aspect-[16/9] md:aspect-[21/9] ${THEME_CONSTANTS.themed.bgTertiary} animate-pulse`}
       >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <p className={THEME_CONSTANTS.themed.textSecondary}>
-            {tLoading("default")}
-          </p>
+        <div className={`${position.fill} ${flex.center}`}>
+          <Text variant="secondary">{tLoading("default")}</Text>
         </div>
       </div>
     );
@@ -131,7 +138,7 @@ export function HeroCarousel() {
   };
 
   return (
-    <section
+    <Section
       ref={sectionRef}
       className="relative w-full aspect-[16/9] md:aspect-[21/9]"
       aria-roledescription="carousel"
@@ -154,7 +161,7 @@ export function HeroCarousel() {
         gap={0}
         scrollContainerRef={slidesRef}
         onScroll={handleSlidesScroll}
-        className={`absolute inset-0 ${THEME_CONSTANTS.utilities.scrollbarThinX}`}
+        className={`${position.fill} ${THEME_CONSTANTS.utilities.scrollbarThinX}`}
       >
         {slides.map((slide, slideIndex) => (
           <div
@@ -162,7 +169,7 @@ export function HeroCarousel() {
             className="snap-start flex-none w-full h-full relative"
           >
             {/* Background Media */}
-            <div className="absolute inset-0">
+            <div className={position.fill}>
               {slide.media.type === "image" ? (
                 <Image
                   src={
@@ -192,12 +199,12 @@ export function HeroCarousel() {
                   playsInline
                 />
               )}
-              <div className="absolute inset-0 bg-black/10" />
+              <div className={`${position.fill} bg-black/10`} />
             </div>
 
             {/* Grid Overlay with Cards */}
             <div
-              className="absolute inset-0 grid gap-2 md:gap-4 p-4 md:p-8"
+              className={`${position.fill} grid gap-2 md:gap-4 p-4 md:p-8`}
               style={{
                 gridTemplateRows: `repeat(${isMobile ? 2 : 3}, 1fr)`,
                 gridTemplateColumns: `repeat(${isMobile ? 2 : 3}, 1fr)`,
@@ -215,23 +222,28 @@ export function HeroCarousel() {
                     }}
                   >
                     {!card.isButtonOnly && (
-                      <div className="absolute inset-0 p-4 md:p-6 flex flex-col justify-end bg-gradient-to-t from-black/60 to-transparent">
+                      <div
+                        className={`${position.fill} p-4 md:p-6 flex flex-col justify-end bg-gradient-to-t from-black/60 to-transparent`}
+                      >
                         {!hideText && (
                           <>
                             {card.content.subtitle && (
-                              <p className="text-xs md:text-sm text-white/90 mb-1 md:mb-2">
+                              <Text className="text-xs md:text-sm text-white/90 mb-1 md:mb-2">
                                 {card.content.subtitle}
-                              </p>
+                              </Text>
                             )}
                             {card.content.title && (
-                              <h3 className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-2 md:mb-3 line-clamp-2">
+                              <Heading
+                                level={3}
+                                className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-2 md:mb-3 line-clamp-2"
+                              >
                                 {card.content.title}
-                              </h3>
+                              </Heading>
                             )}
                             {card.content.description && (
-                              <p className="text-xs md:text-sm lg:text-base text-white/80 mb-3 md:mb-4 line-clamp-1 md:line-clamp-2">
+                              <Text className="text-xs md:text-sm lg:text-base text-white/80 mb-3 md:mb-4 line-clamp-1 md:line-clamp-2">
                                 {card.content.description}
-                              </p>
+                              </Text>
                             )}
                           </>
                         )}
@@ -262,8 +274,9 @@ export function HeroCarousel() {
                       </div>
                     )}
                     {card.isButtonOnly && card.buttons[0] && (
-                      <button
-                        className="absolute inset-0 flex items-center justify-center font-semibold text-white hover:bg-black/20 transition-colors"
+                      <Button
+                        variant="ghost"
+                        className={`${position.fill} ${flex.center} font-semibold text-white hover:bg-black/20 transition-colors rounded-none p-0`}
                         onClick={() => {
                           const btn = card.buttons[0];
                           if (btn.openInNewTab) {
@@ -277,10 +290,10 @@ export function HeroCarousel() {
                           }
                         }}
                       >
-                        <span className="text-lg md:text-2xl">
+                        <Span className="text-lg md:text-2xl">
                           {card.buttons[0].text}
-                        </span>
-                      </button>
+                        </Span>
+                      </Button>
                     )}
                   </div>
                 );
@@ -294,9 +307,10 @@ export function HeroCarousel() {
       {slides.length > 1 && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
           {slides.map((_, index) => (
-            <button
+            <Button
               key={index}
-              className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all ${
+              variant="ghost"
+              className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all p-0 ${
                 index === currentSlide
                   ? "bg-white w-6 md:w-8"
                   : "bg-white/50 hover:bg-white/75"
@@ -311,8 +325,9 @@ export function HeroCarousel() {
       {/* Navigation Arrows (desktop only) */}
       {slides.length > 1 && !isMobile && (
         <>
-          <button
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-lg transition-all z-10"
+          <Button
+            variant="ghost"
+            className={`absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/80 hover:bg-white ${flex.center} shadow-lg transition-all z-10 p-0`}
             onClick={goPrev}
             aria-label={tA11y("heroCarouselPrevSlide")}
           >
@@ -329,9 +344,10 @@ export function HeroCarousel() {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-          </button>
-          <button
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-lg transition-all z-10"
+          </Button>
+          <Button
+            variant="ghost"
+            className={`absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/80 hover:bg-white ${flex.center} shadow-lg transition-all z-10 p-0`}
             onClick={goNext}
             aria-label={tA11y("heroCarouselNextSlide")}
           >
@@ -348,9 +364,9 @@ export function HeroCarousel() {
                 d="M9 5l7 7-7 7"
               />
             </svg>
-          </button>
+          </Button>
         </>
       )}
-    </section>
+    </Section>
   );
 }

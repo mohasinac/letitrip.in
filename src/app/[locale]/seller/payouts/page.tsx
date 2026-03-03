@@ -8,11 +8,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   SellerPayoutStats,
   SellerPayoutRequestForm,
   SellerPayoutHistoryTable,
+  Heading,
+  Text,
 } from "@/components";
 import type { PayoutSummary, PayoutRecord } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
@@ -20,7 +22,7 @@ import { useTranslations } from "next-intl";
 import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";
 import { sellerService } from "@/services";
 
-const { themed, spacing, typography } = THEME_CONSTANTS;
+const { themed, spacing, typography, flex } = THEME_CONSTANTS;
 
 interface PayoutsResponse {
   summary: PayoutSummary;
@@ -54,10 +56,8 @@ export default function SellerPayoutsPage() {
 
   if (authLoading || !user) {
     return (
-      <div
-        className={`${themed.bgPrimary} min-h-screen flex items-center justify-center`}
-      >
-        <p className={themed.textSecondary}>{tLoading("default")}</p>
+      <div className={`${themed.bgPrimary} min-h-screen ${flex.center}`}>
+        <Text variant="secondary">{tLoading("default")}</Text>
       </div>
     );
   }
@@ -79,10 +79,10 @@ export default function SellerPayoutsPage() {
     <div className={`${themed.bgPrimary} min-h-screen`}>
       <div className={`max-w-4xl mx-auto ${spacing.padding.lg}`}>
         <div className={`${spacing.stack} mb-8`}>
-          <h1 className={`${typography.h2} ${themed.textPrimary}`}>
+          <Heading level={1} className={typography.h2}>
             {t("pageTitle")}
-          </h1>
-          <p className={themed.textSecondary}>{t("pageSubtitle")}</p>
+          </Heading>
+          <Text variant="secondary">{t("pageSubtitle")}</Text>
         </div>
 
         <SellerPayoutStats summary={summary} isLoading={isLoading} />

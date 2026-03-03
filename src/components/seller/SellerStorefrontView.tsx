@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -9,12 +8,15 @@ import {
   AvatarDisplay,
   EmptyState,
   Heading,
+  TextLink,
 } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatMonthYear, formatCurrency, formatNumber } from "@/utils";
 import type { UserDocument, ProductDocument } from "@/db/schema";
 import type { ImageCropData } from "@/components";
 import type { SellerReviewsData, ProductsApiResponse } from "@/hooks";
+
+const { flex, page } = THEME_CONSTANTS;
 
 interface SellerStorefrontViewProps {
   seller: UserDocument;
@@ -77,7 +79,7 @@ export function SellerStorefrontView({
       {/* Banner */}
       <div className="bg-gradient-to-r from-emerald-600 to-teal-700 h-48" />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 pb-12">
+      <div className={`${page.container.lg} -mt-24 pb-12`}>
         {/* Seller Header Card */}
         <Card className="mb-6">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
@@ -146,12 +148,12 @@ export function SellerStorefrontView({
               </div>
 
               <div className="mt-3">
-                <Link
+                <TextLink
                   href={ROUTES.PUBLIC.PROFILE(sellerId)}
                   className="text-sm text-primary-600 hover:underline"
                 >
                   {tSf("visitProfile")} →
-                </Link>
+                </TextLink>
               </div>
             </div>
 
@@ -193,7 +195,7 @@ export function SellerStorefrontView({
           ) : hasProducts ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
               {productsData!.data.map((product: ProductDocument) => (
-                <Link
+                <TextLink
                   key={product.id}
                   href={`/products/${product.id}`}
                   className={`block rounded-xl overflow-hidden border ${THEME_CONSTANTS.themed.border} hover:shadow-md transition-shadow`}
@@ -207,7 +209,9 @@ export function SellerStorefrontView({
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400 text-4xl">
+                      <div
+                        className={`w-full h-full ${flex.center} text-gray-400 text-4xl`}
+                      >
                         🛍️
                       </div>
                     )}
@@ -227,7 +231,7 @@ export function SellerStorefrontView({
                       </Badge>
                     )}
                   </div>
-                </Link>
+                </TextLink>
               ))}
             </div>
           ) : (
@@ -240,7 +244,7 @@ export function SellerStorefrontView({
 
         {/* Reviews Section */}
         <Card className="mb-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className={`${flex.between} mb-4`}>
             <Heading level={2}>{tSf("reviewsTitle")}</Heading>
             {reviewsData && reviewsData.totalReviews > 0 && (
               <div className="flex items-center gap-2">
@@ -271,7 +275,9 @@ export function SellerStorefrontView({
                   className={`p-4 rounded-xl ${THEME_CONSTANTS.themed.bgSecondary}`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-600 font-semibold text-sm flex-shrink-0">
+                    <div
+                      className={`w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 ${flex.center} text-primary-600 font-semibold text-sm flex-shrink-0`}
+                    >
                       {review.userName.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -294,12 +300,12 @@ export function SellerStorefrontView({
                       {review.productTitle && (
                         <Text variant="secondary" className="text-xs mt-2">
                           on{" "}
-                          <Link
+                          <TextLink
                             href={`/products/${review.productId}`}
                             className="text-primary-600 hover:underline"
                           >
                             {review.productTitle}
-                          </Link>
+                          </TextLink>
                         </Text>
                       )}
                     </div>
@@ -317,12 +323,12 @@ export function SellerStorefrontView({
 
         {/* Back link */}
         <div className="text-center">
-          <Link
+          <TextLink
             href={ROUTES.PUBLIC.STORES}
             className="text-primary-600 hover:underline text-sm"
           >
             ← {tSf("back")}
-          </Link>
+          </TextLink>
         </div>
       </div>
     </div>

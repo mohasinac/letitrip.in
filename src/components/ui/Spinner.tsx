@@ -1,5 +1,6 @@
-import React from "react";
+﻿import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Span } from "../typography/Typography";
 
 /**
  * Spinner Component
@@ -56,7 +57,7 @@ export default function Spinner({
           rounded-full animate-spin
         `}
       />
-      {label && <span className="sr-only">{label}</span>}
+      {label && <Span className="sr-only">{label}</Span>}
     </div>
   );
 }

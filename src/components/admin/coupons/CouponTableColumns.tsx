@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CouponTableColumns
  * Path: src/components/admin/coupons/CouponTableColumns.tsx
  *
@@ -8,7 +8,7 @@
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { CouponDocument } from "@/db/schema";
 import { formatCurrency, isPast } from "@/utils";
-import { Text } from "@/components";
+import { Button, Span, Text } from "@/components";
 
 const LABELS = UI_LABELS.ADMIN.COUPONS;
 const { themed } = THEME_CONSTANTS;
@@ -37,9 +37,9 @@ export function getCouponTableColumns(
         sortable: true,
         width: "15%",
         render: (coupon: CouponDocument) => (
-          <span className="font-mono font-bold text-sm tracking-wider">
+          <Span className="font-mono font-bold text-sm tracking-wider">
             {coupon.code}
-          </span>
+          </Span>
         ),
       },
       {
@@ -68,14 +68,14 @@ export function getCouponTableColumns(
         sortable: true,
         width: "14%",
         render: (coupon: CouponDocument) => (
-          <span
+          <Span
             className={`px-2 py-1 text-xs font-medium rounded ${
               TYPE_STYLES[coupon.type] ??
               `${themed.bgSecondary} ${themed.textSecondary}`
             }`}
           >
             {coupon.type.replace("_", " ")}
-          </span>
+          </Span>
         ),
       },
       {
@@ -85,16 +85,16 @@ export function getCouponTableColumns(
         render: (coupon: CouponDocument) => {
           const { type, discount } = coupon;
           if (type === "percentage")
-            return <span className="font-semibold">{discount.value}%</span>;
+            return <Span className="font-semibold">{discount.value}%</Span>;
           if (type === "fixed")
             return (
-              <span className="font-semibold">
+              <Span className="font-semibold">
                 {formatCurrency(discount.value, "INR", "en-IN")}
-              </span>
+              </Span>
             );
           if (type === "free_shipping")
-            return <span className="font-semibold">Free shipping</span>;
-          return <span className="font-semibold">BXGY</span>;
+            return <Span className="font-semibold">Free shipping</Span>;
+          return <Span className="font-semibold">BXGY</Span>;
         },
       },
       {
@@ -102,12 +102,12 @@ export function getCouponTableColumns(
         header: "Usage",
         width: "12%",
         render: (coupon: CouponDocument) => (
-          <span className={`text-sm ${themed.textSecondary}`}>
+          <Span className={`text-sm ${themed.textSecondary}`}>
             {coupon.usage.currentUsage}
             {coupon.usage.totalLimit
               ? ` / ${coupon.usage.totalLimit}`
               : " uses"}
-          </span>
+          </Span>
         ),
       },
       {
@@ -119,7 +119,7 @@ export function getCouponTableColumns(
           const isExpired =
             coupon.validity.endDate && isPast(coupon.validity.endDate);
           return (
-            <span
+            <Span
               className={`px-2 py-1 text-xs font-medium rounded ${
                 isExpired
                   ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"
@@ -129,7 +129,7 @@ export function getCouponTableColumns(
               }`}
             >
               {isExpired ? "Expired" : isActive ? "Active" : "Inactive"}
-            </span>
+            </Span>
           );
         },
       },
@@ -139,18 +139,18 @@ export function getCouponTableColumns(
         width: "18%",
         render: (coupon: CouponDocument) => (
           <div className="flex gap-2">
-            <button
+            <Button
               onClick={() => onEdit(coupon)}
               className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium"
             >
               {UI_LABELS.ACTIONS.EDIT}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => onDelete(coupon)}
               className="text-red-600 dark:text-red-400 hover:underline text-sm font-medium"
             >
               {UI_LABELS.ACTIONS.DELETE}
-            </button>
+            </Button>
           </div>
         ),
       },

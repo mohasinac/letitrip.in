@@ -3,7 +3,7 @@ import { Card, Spinner } from "@/components/ui";
 import { Text } from "@/components/typography";
 import { THEME_CONSTANTS } from "@/constants";
 
-const { enhancedCard, spacing, themed } = THEME_CONSTANTS;
+const { enhancedCard, spacing, themed, flex } = THEME_CONSTANTS;
 
 interface SellerStatCardProps {
   label: string;
@@ -29,7 +29,7 @@ export function SellerStatCard({
     <div
       className={`${cardClass} hover:shadow-md transition-shadow ${spacing.padding.md}`}
     >
-      <div className="flex items-start justify-between">
+      <div className={flex.betweenStart}>
         <div className="flex-1">
           <Text
             size="sm"

@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useRef, useEffect } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useClickOutside, useKeyPress } from "@/hooks";
+import { Span } from "../typography/Typography";
 
 /**
  * Dropdown Component
@@ -173,8 +174,8 @@ export function DropdownItem({
         ${className}
       `}
     >
-      {icon && <span className="flex-shrink-0">{icon}</span>}
-      <span className="flex-1">{children}</span>
+      {icon && <Span className="flex-shrink-0">{icon}</Span>}
+      <Span className="flex-1">{children}</Span>
     </button>
   );
 }

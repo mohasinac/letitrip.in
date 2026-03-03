@@ -1,9 +1,8 @@
-"use client";
+﻿"use client";
 
 import { ReactNode, useState } from "react";
 import { useTranslations } from "next-intl";
-import { SideDrawer } from "@/components";
-import { DrawerFormFooter } from "@/components";
+import { DrawerFormFooter, SideDrawer, Span } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface FilterDrawerProps {
@@ -105,12 +104,12 @@ export function FilterDrawer({
         </svg>
         {t("title")}
         {activeCount > 0 && (
-          <span
+          <Span
             className={`inline-flex items-center justify-center w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
             aria-label={t("activeCount", { count: activeCount })}
           >
             {activeCount}
-          </span>
+          </Span>
         )}
       </button>
 

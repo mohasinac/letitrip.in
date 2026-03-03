@@ -10,9 +10,9 @@
  */
 
 import { useEffect } from "react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components";
+import { useRouter } from "@/i18n/navigation";
+import { Button, Heading, Text } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { logger } from "@/classes";
 
@@ -35,11 +35,12 @@ export default function Error({ error, reset }: ErrorProps) {
 
   const tError = useTranslations("errorPages");
   const tActions = useTranslations("actions");
-  const { themed, spacing, typography, borderRadius } = THEME_CONSTANTS;
+  const router = useRouter();
+  const { themed, spacing, typography, borderRadius, flex } = THEME_CONSTANTS;
 
   return (
     <div
-      className={`min-h-screen flex items-center justify-center ${themed.bgPrimary} ${spacing.padding.xl}`}
+      className={`min-h-screen ${flex.center} ${themed.bgPrimary} ${spacing.padding.xl}`}
     >
       <div
         className={`${THEME_CONSTANTS.container["2xl"]} w-full text-center ${spacing.stack}`}
@@ -66,31 +67,27 @@ export default function Error({ error, reset }: ErrorProps) {
         </div>
 
         {/* Error Title */}
-        <h1 className={`${typography.h1} ${themed.textPrimary} mb-4`}>
+        <Heading level={1} className="mb-4">
           {tError("genericError.title")}
-        </h1>
+        </Heading>
 
         {/* Error Description */}
-        <p className={`${typography.body} ${themed.textSecondary} mb-6`}>
+        <Text variant="secondary" className="mb-6">
           {tError("genericError.description")}
-        </p>
+        </Text>
 
         {/* Error Details (Development Only) */}
         {process.env.NODE_ENV === "development" && error.message && (
           <div
             className={`bg-red-50 dark:bg-red-900/20 ${themed.border} ${borderRadius.lg} ${spacing.padding.md} mb-6 text-left`}
           >
-            <p
-              className={`${typography.small} ${themed.textError} font-mono break-all`}
-            >
+            <Text size="sm" variant="error" className="font-mono break-all">
               <strong>Error:</strong> {error.message}
-            </p>
+            </Text>
             {error.digest && (
-              <p
-                className={`${typography.small} ${themed.textSecondary} font-mono mt-2`}
-              >
+              <Text size="sm" variant="secondary" className="font-mono mt-2">
                 <strong>Digest:</strong> {error.digest}
-              </p>
+              </Text>
             )}
           </div>
         )}
@@ -105,15 +102,14 @@ export default function Error({ error, reset }: ErrorProps) {
           >
             {tActions("retry")}
           </Button>
-          <Link href={ROUTES.HOME}>
-            <Button
-              variant="outline"
-              size="lg"
-              className="min-w-[200px] w-full"
-            >
-              {tActions("goHome")}
-            </Button>
-          </Link>
+          <Button
+            variant="outline"
+            size="lg"
+            className="min-w-[200px] w-full"
+            onClick={() => router.push(ROUTES.HOME)}
+          >
+            {tActions("goHome")}
+          </Button>
         </div>
       </div>
     </div>

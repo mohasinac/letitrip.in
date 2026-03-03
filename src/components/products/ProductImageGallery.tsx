@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { THEME_CONSTANTS } from "@/constants";
-import { HorizontalScroller } from "@/components";
+import { Button, HorizontalScroller } from "@/components";
 
-const { themed, borderRadius } = THEME_CONSTANTS;
+const { themed, borderRadius, flex, position } = THEME_CONSTANTS;
 
 interface ProductImageGalleryProps {
   mainImage: string;
@@ -38,7 +38,9 @@ export function ProductImageGallery({
             sizes="(max-width: 768px) 100vw, 50vw"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-6xl text-gray-400">
+          <div
+            className={`${position.fill} ${flex.center} text-6xl text-gray-400`}
+          >
             📦
           </div>
         )}
@@ -48,7 +50,7 @@ export function ProductImageGallery({
       {allImages.length > 1 && (
         <HorizontalScroller snapToItems gap={8} className="pb-1">
           {allImages.map((img, idx) => (
-            <button
+            <Button
               key={idx}
               onClick={() => setSelectedIndex(idx)}
               className={`relative shrink-0 w-16 h-16 overflow-hidden ${borderRadius.md} border-2 transition-all ${
@@ -64,7 +66,7 @@ export function ProductImageGallery({
                 className="object-cover"
                 sizes="64px"
               />
-            </button>
+            </Button>
           ))}
         </HorizontalScroller>
       )}

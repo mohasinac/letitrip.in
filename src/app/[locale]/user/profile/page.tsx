@@ -11,7 +11,7 @@ import {
 } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useEffect } from "react";
 
 export default function UserProfilePage() {
@@ -29,9 +29,11 @@ export default function UserProfilePage() {
     }
   }, [user, loading, router]);
 
+  const { spacing, flex } = THEME_CONSTANTS;
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className={`${flex.center} min-h-screen`}>
         <Spinner size="lg" label={tLoading("default")} />
       </div>
     );
@@ -40,8 +42,6 @@ export default function UserProfilePage() {
   if (!user) {
     return null;
   }
-
-  const { spacing } = THEME_CONSTANTS;
 
   const stats = {
     orders: orderCount,
@@ -52,7 +52,7 @@ export default function UserProfilePage() {
   return (
     <div className={spacing.stack}>
       {/* Header with Edit Button */}
-      <div className="flex items-center justify-between">
+      <div className={flex.between}>
         <Heading level={3}>{tProfile("myProfile")}</Heading>
         <Button
           variant="secondary"

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Password Strength Indicator Component
  *
  * Visual indicator for password strength with validation feedback
@@ -8,6 +8,8 @@
 
 import React from "react";
 import { PASSWORD_CONFIG, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
+import { Span } from "./typography/Typography";
+import { Li, Ul } from "./semantic/Semantic";
 
 interface PasswordStrengthIndicatorProps {
   password: string;
@@ -77,19 +79,19 @@ export const PasswordStrengthIndicator: React.FC<
           />
         </div>
         {password && (
-          <span
+          <Span
             className={`text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}
           >
             {getStrengthLabel()}
-          </span>
+          </Span>
         )}
       </div>
 
       {/* Requirements List */}
       {showRequirements && (
-        <ul className="space-y-1">
+        <Ul className="space-y-1">
           {requirements.map((req, index) => (
-            <li
+            <Li
               key={index}
               className={`text-xs flex items-center gap-2 ${
                 req.met
@@ -124,11 +126,11 @@ export const PasswordStrengthIndicator: React.FC<
                   />
                 </svg>
               )}
-              <span className="sr-only">{req.met ? "Met: " : "Not met: "}</span>
+              <Span className="sr-only">{req.met ? "Met: " : "Not met: "}</Span>
               {req.label}
-            </li>
+            </Li>
           ))}
-        </ul>
+        </Ul>
       )}
     </div>
   );

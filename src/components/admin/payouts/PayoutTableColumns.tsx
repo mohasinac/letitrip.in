@@ -5,21 +5,21 @@
  * Column definitions for the admin Payouts DataTable.
  */
 
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { UI_LABELS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
+import { Text, Caption, Badge, Button } from "@/components";
 import type { PayoutDocument } from "@/db/schema";
 
 const LABELS = UI_LABELS.ADMIN.PAYOUTS;
-const { themed } = THEME_CONSTANTS;
 
-const PAYOUT_STATUS_STYLES: Record<string, string> = {
-  pending:
-    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300",
-  processing:
-    "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
-  completed:
-    "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
-  failed: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
+const PAYOUT_STATUS_VARIANTS: Record<
+  string,
+  "pending" | "info" | "success" | "danger"
+> = {
+  pending: "pending",
+  processing: "info",
+  completed: "success",
+  failed: "danger",
 };
 
 const PAYOUT_STATUS_LABELS: Record<string, string> = {
@@ -46,14 +46,12 @@ export function getPayoutTableColumns(
         width: "20%",
         render: (payout: PayoutDocument) => (
           <div>
-            <p className="font-medium text-sm truncate max-w-[150px]">
+            <Text weight="medium" size="sm" className="truncate max-w-[150px]">
               {payout.sellerName}
-            </p>
-            <p
-              className={`text-xs ${themed.textSecondary} truncate max-w-[150px]`}
-            >
+            </Text>
+            <Caption className="truncate max-w-[150px]">
               {payout.sellerEmail}
-            </p>
+            </Caption>
           </div>
         ),
       },
@@ -64,12 +62,12 @@ export function getPayoutTableColumns(
         width: "12%",
         render: (payout: PayoutDocument) => (
           <div>
-            <p className="font-semibold text-sm tabular-nums">
+            <Text weight="semibold" size="sm" className="tabular-nums">
               {formatCurrency(payout.amount)}
-            </p>
-            <p className={`text-xs ${themed.textSecondary}`}>
+            </Text>
+            <Caption>
               {LABELS.ORDERS_COUNT}: {payout.orderIds?.length ?? 0}
-            </p>
+            </Caption>
           </div>
         ),
       },
@@ -79,19 +77,17 @@ export function getPayoutTableColumns(
         width: "15%",
         render: (payout: PayoutDocument) => (
           <div>
-            <p className="text-sm">
+            <Text size="sm">
               {PAYMENT_METHOD_LABELS[payout.paymentMethod] ??
                 payout.paymentMethod}
-            </p>
+            </Text>
             {payout.paymentMethod === "bank_transfer" && payout.bankAccount ? (
-              <p className={`text-xs ${themed.textSecondary}`}>
+              <Caption>
                 {payout.bankAccount.bankName} ·{" "}
                 {payout.bankAccount.accountNumberMasked}
-              </p>
+              </Caption>
             ) : payout.paymentMethod === "upi" && payout.upiId ? (
-              <p className={`text-xs ${themed.textSecondary}`}>
-                {payout.upiId}
-              </p>
+              <Caption>{payout.upiId}</Caption>
             ) : null}
           </div>
         ),
@@ -102,13 +98,9 @@ export function getPayoutTableColumns(
         sortable: true,
         width: "12%",
         render: (payout: PayoutDocument) => (
-          <span
-            className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-              PAYOUT_STATUS_STYLES[payout.status] ?? ""
-            }`}
-          >
+          <Badge variant={PAYOUT_STATUS_VARIANTS[payout.status] ?? "default"}>
             {PAYOUT_STATUS_LABELS[payout.status] ?? payout.status}
-          </span>
+          </Badge>
         ),
       },
       {
@@ -117,9 +109,9 @@ export function getPayoutTableColumns(
         sortable: true,
         width: "15%",
         render: (payout: PayoutDocument) => (
-          <span className={`text-sm ${themed.textSecondary}`}>
+          <Text size="sm" variant="secondary">
             {payout.requestedAt ? formatDate(payout.requestedAt) : "—"}
-          </span>
+          </Text>
         ),
       },
       {
@@ -127,12 +119,9 @@ export function getPayoutTableColumns(
         header: UI_LABELS.TABLE.ACTIONS,
         width: "10%",
         render: (payout: PayoutDocument) => (
-          <button
-            onClick={() => onView(payout)}
-            className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium"
-          >
+          <Button variant="ghost" size="sm" onClick={() => onView(payout)}>
             {UI_LABELS.ACTIONS.VIEW}
-          </button>
+          </Button>
         ),
       },
     ],

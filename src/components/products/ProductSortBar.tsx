@@ -1,9 +1,11 @@
-"use client";
+﻿"use client";
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
+import { Text } from "../typography/Typography";
+import { Label } from "../typography/Typography";
 
-const { themed, input } = THEME_CONSTANTS;
+const { themed, input, flex } = THEME_CONSTANTS;
 
 export const PRODUCT_SORT_VALUES = {
   NEWEST: "-createdAt",
@@ -42,16 +44,16 @@ export function ProductSortBar({
   ];
 
   return (
-    <div className="flex items-center justify-between gap-4">
-      <p className={`text-sm ${themed.textSecondary}`}>
+    <div className={`${flex.between} gap-4`}>
+      <Text className={`text-sm ${themed.textSecondary}`}>
         {t("showing", { showing, total })}
-      </p>
+      </Text>
       <div className="flex items-center gap-2">
-        <label
+        <Label
           className={`text-sm font-medium ${themed.textSecondary} shrink-0`}
         >
           {t("sortBy")}
-        </label>
+        </Label>
         <select
           value={sort}
           onChange={(e) => onSortChange(e.target.value)}

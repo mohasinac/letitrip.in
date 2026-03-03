@@ -1,6 +1,7 @@
-import React from "react";
+﻿import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { classNames } from "@/helpers";
+import { Label, Span, Text } from "../typography/Typography";
 
 /**
  * Radio Component
@@ -50,16 +51,16 @@ export default function RadioGroup({
   error,
   orientation = "vertical",
 }: RadioGroupProps) {
-  const { themed, typography, input, colors } = THEME_CONSTANTS;
+  const { themed, typography, input, colors, flex } = THEME_CONSTANTS;
 
   return (
     <div className="w-full">
       {label && (
-        <label
+        <Label
           className={`block ${typography.small} font-medium ${themed.textSecondary} mb-2`}
         >
           {label}
-        </label>
+        </Label>
       )}
 
       <div
@@ -69,14 +70,14 @@ export default function RadioGroup({
         )}
       >
         {options.map((option) => (
-          <label
+          <Label
             key={option.value}
             className={`
-              flex items-center gap-3 cursor-pointer group
+              ${flex.rowCenter} gap-3 cursor-pointer group
               ${option.disabled ? "opacity-50 cursor-not-allowed" : ""}
             `}
           >
-            <div className="relative flex items-center justify-center">
+            <div className={`relative ${flex.center}`}>
               <input
                 type="radio"
                 name={name}
@@ -95,18 +96,18 @@ export default function RadioGroup({
               />
             </div>
 
-            <span
+            <Span
               className={`${typography.small} ${themed.textSecondary} select-none`}
             >
               {option.label}
-            </span>
-          </label>
+            </Span>
+          </Label>
         ))}
       </div>
 
       {error && (
-        <p
-          className={`mt-1.5 ${typography.small} ${themed.textError} flex items-center gap-1`}
+        <Text
+          className={`mt-1.5 ${typography.small} ${themed.textError} ${flex.rowCenter} gap-1`}
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path
@@ -116,7 +117,7 @@ export default function RadioGroup({
             />
           </svg>
           {error}
-        </p>
+        </Text>
       )}
     </div>
   );

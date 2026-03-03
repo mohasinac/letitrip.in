@@ -1,12 +1,11 @@
-"use client";
+﻿"use client";
 
-import { Card } from "@/components/ui";
-import { Text } from "@/components/typography";
+import { Card, Span, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 
-const { themed } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
 
 export interface SellerAnalyticsSummary {
   totalOrders: number;
@@ -28,7 +27,7 @@ function StatCard({
 }) {
   return (
     <Card className="p-5">
-      <div className="flex items-center justify-between">
+      <div className={flex.between}>
         <div>
           <Text
             size="sm"
@@ -36,11 +35,13 @@ function StatCard({
           >
             {label}
           </Text>
-          <p className={`mt-1 text-2xl font-bold ${colorClass}`}>{value}</p>
+          <Text className={`mt-1 text-2xl font-bold ${colorClass}`}>
+            {value}
+          </Text>
         </div>
-        <span className="text-3xl" aria-hidden>
+        <Span className="text-3xl" aria-hidden>
           {icon}
-        </span>
+        </Span>
       </div>
     </Card>
   );

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useCallback } from "react";
 import { useApiMutation } from "@/hooks";
@@ -11,6 +11,8 @@ import {
   DataTable,
   getMediaTableColumns,
   useToast,
+  Heading,
+  Text,
 } from "@/components";
 import type { MediaOperation } from "@/components";
 
@@ -139,10 +141,12 @@ export function AdminMediaView() {
       {recentOperations.length > 0 && (
         <Card className="p-6">
           <div className="mb-4">
-            <h2 className="text-lg font-semibold">{t("recentOperations")}</h2>
-            <p className="text-sm text-gray-600">
+            <Heading level={2} className="text-lg font-semibold">
+              {t("recentOperations")}
+            </Heading>
+            <Text size="sm" variant="secondary">
               {t("lastNOperations", { count: recentOperations.length })}
-            </p>
+            </Text>
           </div>
           <DataTable
             columns={tableColumns}
@@ -156,7 +160,7 @@ export function AdminMediaView() {
       {/* Empty State */}
       {recentOperations.length === 0 && (
         <Card className="p-12 text-center">
-          <p className="text-gray-500">{t("noOperations")}</p>
+          <Text className="text-gray-500">{t("noOperations")}</Text>
         </Card>
       )}
     </div>

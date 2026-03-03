@@ -1,11 +1,11 @@
 import React from "react";
-import { Badge } from "@/components/ui";
+import { Badge, Heading, Text, Caption } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { OrderDocument } from "@/db/schema";
 
-const { themed, spacing, typography, borderRadius } = THEME_CONSTANTS;
+const { themed, spacing, borderRadius, flex } = THEME_CONSTANTS;
 
 function orderStatusVariant(
   s: OrderDocument["status"],
@@ -43,22 +43,18 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
     <div
       className={`${themed.bgSecondary} ${borderRadius.xl} p-6 ${spacing.stack} mb-6`}
     >
-      <h2 className={`${typography.h4} ${themed.textPrimary}`}>
+      <Heading level={2} className="mb-0">
         {t("orderDetails")}
-      </h2>
+      </Heading>
 
-      <div className="flex items-start justify-between gap-4">
+      <div className={`${flex.betweenStart} gap-4`}>
         <div className={spacing.stack}>
-          <p
-            className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary}`}
-          >
+          <Caption className="font-medium uppercase tracking-wide">
             {t("orderId")}
-          </p>
-          <p
-            className={`font-mono text-sm font-semibold ${themed.textPrimary}`}
-          >
+          </Caption>
+          <Text className={`font-mono font-semibold`} size="sm">
             {order.id}
-          </p>
+          </Text>
         </div>
         <Badge
           variant={orderStatusVariant(order.status)}
@@ -73,17 +69,17 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
         className={`flex gap-4 p-4 ${themed.bgPrimary} ${borderRadius.xl} border ${themed.border}`}
       >
         <div className="flex-1 min-w-0">
-          <p className={`font-semibold ${themed.textPrimary} truncate`}>
+          <Text weight="semibold" className="truncate">
             {order.productTitle}
-          </p>
-          <p className={`text-sm ${themed.textSecondary}`}>
+          </Text>
+          <Text size="sm" variant="secondary">
             {t("qtyLabel")}: {order.quantity} ×{" "}
             {formatCurrency(order.unitPrice, order.currency, "en-IN")}
-          </p>
+          </Text>
         </div>
-        <p className={`font-bold ${themed.textPrimary} shrink-0`}>
+        <Text weight="bold" className="shrink-0">
           {formatCurrency(order.totalPrice, order.currency, "en-IN")}
-        </p>
+        </Text>
       </div>
 
       {/* Payment & shipping info */}
@@ -91,14 +87,12 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
         <div
           className={`p-4 ${themed.bgPrimary} ${borderRadius.xl} border ${themed.border} ${spacing.stack}`}
         >
-          <p
-            className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary}`}
-          >
+          <Caption className="font-medium uppercase tracking-wide">
             {t("paymentMethod")}
-          </p>
-          <p className={`font-medium capitalize ${themed.textPrimary}`}>
+          </Caption>
+          <Text weight="medium" className="capitalize">
             {order.paymentMethod === "cod" ? t("cod") : t("onlinePayment")}
-          </p>
+          </Text>
           <Badge
             variant={paymentStatusVariant(order.paymentStatus)}
             className="capitalize"
@@ -109,14 +103,10 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
         <div
           className={`p-4 ${themed.bgPrimary} ${borderRadius.xl} border ${themed.border} ${spacing.stack}`}
         >
-          <p
-            className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary}`}
-          >
+          <Caption className="font-medium uppercase tracking-wide">
             {t("shippingTo")}
-          </p>
-          <p className={`text-sm ${themed.textPrimary}`}>
-            {order.shippingAddress}
-          </p>
+          </Caption>
+          <Text size="sm">{order.shippingAddress}</Text>
         </div>
       </div>
     </div>

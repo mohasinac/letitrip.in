@@ -1,11 +1,11 @@
-/**
+﻿/**
  * CategoryTableColumns
  * Path: src/components/admin/categories/CategoryTableColumns.tsx
  *
  * Column definitions for the admin categories DataTable.
  */
 
-import { StatusBadge } from "@/components";
+import { Button, Span, StatusBadge } from "@/components";
 import { UI_LABELS } from "@/constants";
 import type { Category } from "./types";
 
@@ -23,9 +23,9 @@ export function getCategoryTableColumns(
           <div style={{ paddingLeft: `${cat.tier * 20}px` }}>
             {cat.name}
             {cat.tier > 0 && (
-              <span className="text-gray-400 text-xs ml-2">
+              <Span className="text-gray-400 text-xs ml-2">
                 (Tier {cat.tier})
-              </span>
+              </Span>
             )}
           </div>
         ),
@@ -39,9 +39,9 @@ export function getCategoryTableColumns(
         key: "metrics",
         header: "Products",
         render: (cat: Category) => (
-          <span className="text-sm">
+          <Span className="text-sm">
             {cat.metrics.productCount} ({cat.metrics.totalProductCount})
-          </span>
+          </Span>
         ),
       },
       {
@@ -60,7 +60,7 @@ export function getCategoryTableColumns(
     ],
     actions: (cat: Category) => (
       <div className="flex gap-2">
-        <button
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             onEdit(cat);
@@ -68,8 +68,8 @@ export function getCategoryTableColumns(
           className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
         >
           {UI_LABELS.ACTIONS.EDIT}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             onDelete(cat);
@@ -77,7 +77,7 @@ export function getCategoryTableColumns(
           className="text-red-600 hover:text-red-800 dark:text-red-400"
         >
           {UI_LABELS.ACTIONS.DELETE}
-        </button>
+        </Button>
       </div>
     ),
   };

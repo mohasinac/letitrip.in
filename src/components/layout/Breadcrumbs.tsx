@@ -1,5 +1,9 @@
-import React from "react";
+﻿import React from "react";
+import { Nav, Ol, Li } from "../semantic/Semantic";
+import Button from "../ui/Button";
+import { TextLink } from "../typography/TextLink";
 import { THEME_CONSTANTS } from "@/constants";
+import { Span } from "../typography/Typography";
 
 /**
  * Breadcrumbs Component
@@ -33,23 +37,23 @@ export default function Breadcrumbs({
   const { themed } = THEME_CONSTANTS;
 
   return (
-    <nav aria-label="Breadcrumb" className={className}>
-      <ol className="flex items-center gap-2 text-sm">
+    <Nav aria-label="Breadcrumb" className={className}>
+      <Ol className="flex items-center gap-2 text-sm">
         {items.map((item, index) => (
-          <li key={index} className="flex items-center gap-2">
+          <Li key={index} className="flex items-center gap-2">
             {item}
             {index < items.length - 1 && (
-              <span
+              <Span
                 className={`${themed.textMuted} select-none`}
                 aria-hidden="true"
               >
                 {separator}
-              </span>
+              </Span>
             )}
-          </li>
+          </Li>
         ))}
-      </ol>
-    </nav>
+      </Ol>
+    </Nav>
   );
 }
 
@@ -73,18 +77,18 @@ export function BreadcrumbItem({
 
   if (current) {
     return (
-      <span
+      <Span
         aria-current="page"
         className={`${themed.textPrimary} font-medium ${className}`}
       >
         {children}
-      </span>
+      </Span>
     );
   }
 
   if (href) {
     return (
-      <a
+      <TextLink
         href={href}
         onClick={onClick}
         className={`
@@ -96,12 +100,12 @@ export function BreadcrumbItem({
         `}
       >
         {children}
-      </a>
+      </TextLink>
     );
   }
 
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
       className={`
@@ -113,6 +117,6 @@ export function BreadcrumbItem({
       `}
     >
       {children}
-    </button>
+    </Button>
   );
 }

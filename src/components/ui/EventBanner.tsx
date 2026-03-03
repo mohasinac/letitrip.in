@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { usePublicEvents } from "@/hooks";
 import { useTranslations } from "next-intl";
 import { ROUTES } from "@/constants";
-import Link from "next/link";
+import { TextLink } from "@/components";
 
 /**
  * EventBanner
@@ -72,9 +72,9 @@ export function EventBanner() {
     <div
       className={`relative ${bgClass} text-white py-2 px-4 text-center text-sm font-medium`}
     >
-      <Link href={href} className="hover:underline">
+      <TextLink href={href} className="hover:underline">
         🎉 {bannerText}
-      </Link>
+      </TextLink>
       <button
         onClick={dismiss}
         aria-label="Dismiss banner"

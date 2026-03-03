@@ -1,13 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
-import { Button } from "@/components";
+import { Button, Text, Caption, Badge } from "@/components";
 import { EventStatusBadge } from "./EventStatusBadge";
 import type { EventDocument } from "@/db/schema";
-
-const { themed } = THEME_CONSTANTS;
 
 export function useEventsTableColumns(
   onEdit: (event: EventDocument) => void,
@@ -27,13 +24,13 @@ export function useEventsTableColumns(
         width: "30%",
         render: (e: EventDocument) => (
           <div>
-            <p className="font-medium text-sm">{e.title}</p>
+            <Text weight="medium" size="sm">
+              {e.title}
+            </Text>
             {e.description && (
-              <p
-                className={`text-xs mt-0.5 ${themed.textSecondary} truncate max-w-xs`}
-              >
+              <Caption className="mt-0.5 truncate max-w-xs">
                 {e.description}
-              </p>
+              </Caption>
             )}
           </div>
         ),
@@ -44,9 +41,9 @@ export function useEventsTableColumns(
         sortable: true,
         width: "10%",
         render: (e: EventDocument) => (
-          <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium capitalize bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300">
+          <Badge variant="info" className="capitalize">
             {e.type}
-          </span>
+          </Badge>
         ),
       },
       {
@@ -62,9 +59,9 @@ export function useEventsTableColumns(
         sortable: true,
         width: "14%",
         render: (e: EventDocument) => (
-          <p className={`text-sm ${themed.textSecondary}`}>
+          <Text size="sm" variant="secondary">
             {e.startsAt ? formatDate(e.startsAt as unknown as string) : "—"}
-          </p>
+          </Text>
         ),
       },
       {
@@ -73,9 +70,9 @@ export function useEventsTableColumns(
         sortable: true,
         width: "14%",
         render: (e: EventDocument) => (
-          <p className={`text-sm ${themed.textSecondary}`}>
+          <Text size="sm" variant="secondary">
             {e.endsAt ? formatDate(e.endsAt as unknown as string) : "—"}
-          </p>
+          </Text>
         ),
       },
       {
@@ -84,9 +81,9 @@ export function useEventsTableColumns(
         sortable: false,
         width: "8%",
         render: (e: EventDocument) => (
-          <p className="text-sm font-semibold text-center">
+          <Text weight="semibold" size="sm" className="text-center">
             {e.stats.totalEntries}
-          </p>
+          </Text>
         ),
       },
       {

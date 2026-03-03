@@ -1,9 +1,10 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, MAIN_NAV_ITEMS } from "@/constants";
 import NavItem from "./NavItem";
+import { Nav, Ul, Li } from "../semantic/Semantic";
 
 /**
  * MainNavbar Component
@@ -20,7 +21,7 @@ import NavItem from "./NavItem";
  */
 
 export default function MainNavbar() {
-  const { layout, zIndex } = THEME_CONSTANTS;
+  const { layout, zIndex, flex } = THEME_CONSTANTS;
   const pathname = usePathname();
   const t = useTranslations("nav");
   const navTranslationKeys = [
@@ -32,18 +33,17 @@ export default function MainNavbar() {
   ] as const;
 
   return (
-    <nav
+    <Nav
       id="main-navbar"
+      aria-label="Main navigation"
       className={`hidden md:block ${layout.navbarBg} border-b ${THEME_CONSTANTS.themed.border} backdrop-blur-sm`}
     >
       <div
         className={`container mx-auto ${layout.navPadding} ${layout.containerWidth}`}
       >
-        <ul
-          className={`flex items-center justify-start gap-0.5 lg:gap-1 ${layout.navbarHeight}`}
-        >
+        <Ul className={`${flex.start} gap-0.5 lg:gap-1 ${layout.navbarHeight}`}>
           {MAIN_NAV_ITEMS.map((item, i) => (
-            <li key={item.href}>
+            <Li key={item.href}>
               <NavItem
                 href={item.href}
                 label={t(navTranslationKeys[i])}
@@ -51,10 +51,10 @@ export default function MainNavbar() {
                 isActive={pathname === item.href}
                 variant="horizontal"
               />
-            </li>
+            </Li>
           ))}
-        </ul>
+        </Ul>
       </div>
-    </nav>
+    </Nav>
   );
 }

@@ -3,9 +3,16 @@
 import { usePromotions } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { Spinner, CouponCard, ProductSection } from "@/components";
+import {
+  Spinner,
+  CouponCard,
+  ProductSection,
+  Heading,
+  Text,
+  Section,
+} from "@/components";
 
-const { themed, typography, spacing } = THEME_CONSTANTS;
+const { themed, typography, spacing, page } = THEME_CONSTANTS;
 
 export default function PromotionsPage() {
   const t = useTranslations("promotions");
@@ -28,20 +35,20 @@ export default function PromotionsPage() {
     <div className={`min-h-screen ${themed.bgPrimary}`}>
       {/* Hero */}
       <div className="bg-gradient-to-br from-rose-500 via-pink-600 to-orange-500 text-white py-16">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-rose-100 font-medium mb-2 uppercase tracking-widest text-sm">
+        <div className={`${page.container.lg} text-center`}>
+          <Text className="text-rose-100 font-medium mb-2 uppercase tracking-widest text-sm">
             🎉 {t("exclusiveOffersBadge")}
-          </p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">{t("title")}</h1>
-          <p className="text-lg text-rose-100 max-w-2xl mx-auto">
+          </Text>
+          <Heading level={1} className="mb-4">
+            {t("title")}
+          </Heading>
+          <Text className="text-lg text-rose-100 max-w-2xl mx-auto">
             {t("subtitle")}
-          </p>
+          </Text>
         </div>
       </div>
 
-      <div
-        className={`max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 ${spacing.stack}`}
-      >
+      <div className={`${page.container.lg} py-12 ${spacing.stack}`}>
         {isLoading && (
           <div className="flex justify-center py-16">
             <Spinner size="lg" />
@@ -50,16 +57,16 @@ export default function PromotionsPage() {
 
         {error && (
           <div className="text-center py-16">
-            <p className={`${themed.textSecondary}`}>{tLoading("failed")}</p>
+            <Text variant="secondary">{tLoading("failed")}</Text>
           </div>
         )}
 
         {!isLoading && !error && !hasContent && (
           <div className="text-center py-16">
-            <p className={`${typography.h4} ${themed.textPrimary} mb-2`}>
+            <Heading level={2} className={`${typography.h4} mb-2`}>
               {t("emptyDeals")}
-            </p>
-            <p className={`${themed.textSecondary}`}>{t("checkBack")}</p>
+            </Heading>
+            <Text variant="secondary">{t("checkBack")}</Text>
           </div>
         )}
 
@@ -67,34 +74,34 @@ export default function PromotionsPage() {
           <div className={spacing.stack}>
             {/* Active Coupons */}
             {activeCoupons.length > 0 && (
-              <section>
+              <Section>
                 <div className="mb-6">
-                  <h2 className={`${typography.h3} ${themed.textPrimary}`}>
+                  <Heading level={2} className={`${typography.h3}`}>
                     {t("couponsTitle")}
-                  </h2>
-                  <p className={`mt-1 ${themed.textSecondary}`}>
+                  </Heading>
+                  <Text variant="secondary" className="mt-1">
                     {t("couponsSubtitle")}
-                  </p>
+                  </Text>
                 </div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {activeCoupons.map((coupon) => (
                     <CouponCard key={coupon.id} coupon={coupon} />
                   ))}
                 </div>
-              </section>
+              </Section>
             )}
 
             {activeCoupons.length === 0 && (
-              <section>
+              <Section>
                 <div className="mb-6">
-                  <h2 className={`${typography.h3} ${themed.textPrimary}`}>
+                  <Heading level={2} className={`${typography.h3}`}>
                     {t("couponsTitle")}
-                  </h2>
+                  </Heading>
                 </div>
-                <p className={`${themed.textSecondary} text-sm`}>
+                <Text variant="secondary" size="sm">
                   {t("emptyCoupons")}
-                </p>
-              </section>
+                </Text>
+              </Section>
             )}
 
             {/* Promoted Products */}

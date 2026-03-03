@@ -7,7 +7,8 @@
 
 "use client";
 
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useParams } from "next/navigation";
 import { useAuth, useApiQuery } from "@/hooks";
 import { Spinner, Button, EmptyState, OrderTrackingView } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
@@ -31,9 +32,11 @@ export default function OrderTrackPage() {
 
   const order = data?.data ?? null;
 
+  const { flex } = THEME_CONSTANTS;
+
   if (authLoading || isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className={`${flex.center} min-h-screen`}>
         <Spinner size="lg" />
       </div>
     );

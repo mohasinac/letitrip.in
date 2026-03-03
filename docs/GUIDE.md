@@ -416,9 +416,43 @@ When ready to extract shared code into a library:
   - `fast` (150ms), `normal` (300ms), `slow` (500ms)
 - `spacing` - Spacing patterns
   - Groups: `section`, `formGroup`, `stack`, `stackSmall`, `inline`, `inlineSmall`, `inlineLarge`
-  - `gap` - Gap utilities (sm, md, lg, xl)
-  - `padding` - Padding presets (xs, sm, md, lg, xl)
-  - `margin` - Margin presets with bottom variants (xs, sm, md, lg, xl, bottom.sm/md/lg/xl)
+  - `gap` — all-sides gap + axis variants: `gap.xs/sm/md/lg/xl`, `gap.x.xs…xl`, `gap.y.xs…xl`
+  - `padding` — all-sides + axis + single-side: `padding.xs…2xl`, `padding.x.*`, `padding.y.*`, `padding.top.*`, `padding.bottom.*`, `padding.left.*`, `padding.right.*`
+  - `margin` — all-sides + axis + single-side: `margin.xs…xl`, `margin.x.*` (includes `.auto`), `margin.y.*`, `margin.top.*`, `margin.bottom.*`, `margin.left.*`, `margin.right.*`
+- `flex` - Pre-composed flex containers — use instead of inline `flex items-center justify-*`
+  - Base: `row`, `col`, `rowWrap`, `inline`
+  - Row alignment: `center` (`flex items-center justify-center`), `between` (`flex items-center justify-between`), `betweenStart` (`flex items-start justify-between`), `start`, `end`, `rowCenter`, `rowStart`, `rowEnd`
+  - Column alignment: `centerCol`, `colStart`, `colCenter`, `colEnd`, `colBetween`
+  - Inline: `inlineCenter`, `inlineFull`
+  - Child behaviour: `grow` (`flex-1`), `growMin` (`flex-1 min-w-0`), `growMinH` (`flex-1 min-h-0`), `noShrink` (`flex-shrink-0`), `none` (`flex-none`)
+- `grid` - Mobile-first responsive grids — use instead of inline `grid grid-cols-*`
+  - Column presets: `cols1`, `cols2` (1→2), `cols3` (1→2→3), `cols4` (1→2→3→4), `cols5` (1→2→3→4→5), `cols6` (2→3→4→5→6)
+  - Auto-fill: `autoFillSm` (200px min), `autoFillMd` (280px min), `autoFillLg` (360px min)
+  - Layout splits: `sidebar` (280px + 1fr), `sidebarRight`, `sidebarWide` (320px + 1fr), `halves` (1→2), `twoThird` (2fr/1fr), `oneThird` (1fr/2fr)
+- `position` - Named position helpers
+  - `relative`, `absolute`, `fixed`, `sticky`, `static`
+  - `fill` (`absolute inset-0`), `absoluteCenter` (centered in parent), `absoluteTop`, `absoluteBottom`, `absoluteTopRight`, `absoluteTopLeft`, `absoluteBottomRight`, `absoluteBottomLeft`
+  - `fixedFill` (`fixed inset-0`), `fixedTop`, `fixedBottom`, `stickyTop`, `stickyBottom`
+- `size` - Width, height, and square size tokens
+  - `full` (`w-full h-full`), `screen`, `minScreen`
+  - `w` — `full`, `auto`, `screen`, `half`, `third`, `twoThirds`, `quarter`, `threeQuarters`, `fit`, `min`, `max`
+  - `h` — `full`, `screen`, `auto`, `fit`, `min`, `max`
+  - `square` — `xs` (w-4 h-4) through `4xl` (w-24 h-24)
+- `overflow` - Named overflow helpers — use instead of raw `overflow-*`
+  - `hidden`, `auto`, `scroll`, `xAuto`, `yAuto`, `xHidden`, `yHidden`, `xScroll`, `yScroll`, `visible`
+- `page` - Responsive page container patterns — max-width + `mx-auto` + responsive padding in one token
+  - `container.sm` (`max-w-3xl mx-auto px-4 sm:px-6 lg:px-8`) — blog posts, legal pages
+  - `container.md` (`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8`) — narrow content, contact, about
+  - `container.lg` (`max-w-5xl mx-auto px-4 sm:px-6 lg:px-8`) — checkout, help, medium content
+  - `container.xl` (`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8`) — product detail, cart
+  - `container["2xl"]` (`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`) — products, auctions, search grids
+  - `container.full` (`max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8`) — full-bleed wide content
+  - `container.wide` (`max-w-screen-2xl mx-auto px-4 sm:px-6`) — wide store/seller layouts
+  - `px` (`px-4 sm:px-6 lg:px-8`) — responsive horizontal padding (no max-width)
+  - `pxSm` (`px-4 sm:px-6`) — compact responsive horizontal padding
+  - `empty` (`py-16`) — vertical padding for empty/loading states (pair with `flex.hCenter`)
+  - `authPad` (`py-8 sm:py-12`) — vertical padding for auth form wrappers
+- `flex.hCenter` (`"flex justify-center"`) — horizontal centering only, no vertical alignment; use with `page.empty` for loading states
 - `typography` - Text styling
   - Headings: `h1` to `h6` - Responsive heading styles
   - Body: `body`, `bodyLarge`, `bodySmall`
@@ -2607,7 +2641,7 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 **Purpose**: Primary button component with variants  
 **Variants**: `primary`, `secondary`, `outline`, `ghost`, `danger`  
 **Sizes**: `xs`, `sm`, `md`, `lg`, `xl`  
-**Props**: `variant`, `size`, `fullWidth`, `disabled`, `loading`, `leftIcon`, `rightIcon`
+**Props**: `variant`, `size`, `fullWidth`, `disabled`, `loading`, `leftIcon`, `rightIcon`, `children?` (optional — supports icon-only / dot buttons that rely on `aria-label`)
 
 #### Card
 
@@ -2846,25 +2880,159 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 
 ### Typography Components (`src/components/typography/`)
 
+All text and link elements in the app MUST use these components — never raw `<h1>`–`<h6>`, `<p>`, `<label>`, `<span>`, or `<a>` tags.
+
 #### Heading
 
-**File**: `Heading.tsx`  
-**Purpose**: Heading component (h1-h6)  
-**Levels**: `1`, `2`, `3`, `4`, `5`, `6`  
-**Props**: `level`, `as`, `children`, `className`
+**File**: `Typography.tsx`  
+**Purpose**: Semantic heading (`h1`–`h6`) with level-based sizing and themed colour.  
+**Props**: `level` (1–6, default 1), `variant` (`"primary"` | `"secondary"` | `"muted"`), `className`, all native `<hN>` attrs.
+
+```tsx
+<Heading level={2} variant="secondary">
+  Section title
+</Heading>
+```
 
 #### Text
 
-**File**: `Text.tsx`  
-**Purpose**: Body text component  
-**Variants**: `body`, `small`, `caption`, `lead`  
-**Props**: `variant`, `weight`, `color`, `align`, `truncate`
+**File**: `Typography.tsx`  
+**Purpose**: Block-level paragraph (`<p>`) for body copy and descriptions.  
+**Props**: `variant` (`"primary"` | `"secondary"` | `"muted"` | `"error"` | `"success"`), `size` (`"xs"` | `"sm"` | `"base"` | `"lg"` | `"xl"`), `weight` (`"normal"` | `"medium"` | `"semibold"` | `"bold"`), `className`.
 
-#### Link
+```tsx
+<Text variant="secondary" size="sm">
+  Helper description
+</Text>
+```
 
-**File**: `Link.tsx`  
-**Purpose**: Next.js Link wrapper  
-**Props**: `href`, `external`, `underline`, `color`, `disabled`
+#### Label
+
+**File**: `Typography.tsx`  
+**Purpose**: Form field label (`<label>`).  
+**Props**: `required` (shows red asterisk), `htmlFor`, all native `<label>` attrs.
+
+```tsx
+<Label required htmlFor="email">
+  Email address
+</Label>
+```
+
+#### Caption
+
+**File**: `Typography.tsx`  
+**Purpose**: Small inline annotation (`<span>`) for timestamps, metadata, tags.  
+**Props**: `variant` (`"default"` | `"accent"` | `"inverse"`), `className`.
+
+```tsx
+<Caption>{formatDate(product.createdAt)}</Caption>
+<Caption variant="accent">New</Caption>
+```
+
+#### Span
+
+**File**: `Typography.tsx`  
+**Purpose**: Inline wrapper (`<span>`) for styled text fragments — gradient highlights, coloured sub-text, icon wrappers, etc.  
+When `variant="inherit"` (default) **no colour class is applied**, making it a transparent CSS-only wrapper.  
+**Props**: `variant` (`"inherit"` | `"primary"` | `"secondary"` | `"muted"` | `"error"` | `"success"` | `"accent"`), `size`, `weight`, `className`, `children?` (optional — supports decorative self-closing use, e.g. animated dots).
+
+```tsx
+// CSS-only wrapper (gradient text, no colour class injected)
+<Span className="bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+  Highlighted
+</Span>
+
+// Semantic colour
+<Span variant="error" weight="semibold">Required field</Span>
+```
+
+#### TextLink
+
+**File**: `TextLink.tsx`  
+**Purpose**: The only component for ALL anchor/link elements.
+
+- Internal URLs → locale-aware `Link` from `@/i18n/navigation`
+- External URLs / `mailto:` / `tel:` → `<a target="_blank" rel="noopener noreferrer">`
+- Auto-detects internal vs external from the `href`; override with `external={true}`.
+
+**Props**: `href` (required), `variant` (`"default"` | `"muted"` | `"nav"` | `"danger"` | `"inherit"`), `external`, all native `<a>` attrs.
+
+```tsx
+// Internal navigation (locale-aware)
+<TextLink href={ROUTES.PRODUCTS.LIST}>Browse products</TextLink>
+
+// External site (auto-detected) — opens in new tab
+<TextLink href="https://example.com">Visit site</TextLink>
+
+// Navigation style (no underline, colour-on-hover)
+<TextLink href={ROUTES.AUTH.LOGIN} variant="nav">Log in</TextLink>
+
+// Destructive action link
+<TextLink href="#" variant="danger" onClick={handleDelete}>Delete account</TextLink>
+```
+
+---
+
+### Semantic HTML Wrapper Components (`src/components/semantic/`)
+
+Use these instead of raw `<section>`, `<article>`, `<main>`, `<aside>`, `<nav>`, `<ul>`, `<ol>`, `<li>` elements to enable future one-place theming and enforce accessibility attributes.
+
+All components forward every standard HTML attribute via `...props`.
+
+| Component     | HTML element | Notes                                                                 |
+| ------------- | ------------ | --------------------------------------------------------------------- |
+| `Section`     | `<section>`  | Thematically grouped content with a heading                           |
+| `Article`     | `<article>`  | Self-contained compositions (blog posts, product cards, reviews)      |
+| `Main`        | `<main>`     | Primary document content — one per page                               |
+| `Aside`       | `<aside>`    | Supplementary content (sidebars, callout boxes)                       |
+| `Nav`         | `<nav>`      | **`aria-label` is required** to distinguish multiple navs             |
+| `BlockHeader` | `<header>`   | Block-level header inside a component — NOT the page-level app header |
+| `BlockFooter` | `<footer>`   | Block-level footer inside a component — NOT the page-level app footer |
+| `Ul`          | `<ul>`       | Unordered list                                                        |
+| `Ol`          | `<ol>`       | Ordered list                                                          |
+| `Li`          | `<li>`       | List item — use inside `Ul` or `Ol`                                   |
+
+```tsx
+import {
+  Section,
+  Article,
+  Main,
+  Aside,
+  Nav,
+  BlockHeader,
+  BlockFooter,
+  Ul,
+  Ol,
+  Li,
+} from "@/components";
+
+<Main className={THEME_CONSTANTS.page.container["2xl"]}>
+  <Section className="py-12">
+    <Article>
+      <BlockHeader className="mb-4">
+        <Heading level={2}>{post.title}</Heading>
+        <Caption>{formatDate(post.createdAt)}</Caption>
+      </BlockHeader>
+      <Text>{post.excerpt}</Text>
+      <BlockFooter className="mt-4">
+        <TextLink href={ROUTES.BLOG.POST(post.slug)}>Read more</TextLink>
+      </BlockFooter>
+    </Article>
+  </Section>
+  <Aside className="w-64 shrink-0">
+    <Nav aria-label="Related links">
+      <Ul className="space-y-2">
+        <Li>
+          <TextLink href="/products">Products</TextLink>
+        </Li>
+        <Li>
+          <TextLink href="/categories">Categories</TextLink>
+        </Li>
+      </Ul>
+    </Nav>
+  </Aside>
+</Main>;
+```
 
 ---
 

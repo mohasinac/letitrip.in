@@ -10,12 +10,14 @@
 import { Suspense } from "react";
 import { Spinner } from "@/components";
 import { LoginForm } from "@/features/auth";
+import { THEME_CONSTANTS } from "@/constants";
 
 export default function LoginPage() {
+  const { flex } = THEME_CONSTANTS;
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center min-h-screen">
+        <div className={`${flex.center} min-h-screen`}>
           <Spinner size="xl" variant="primary" />
         </div>
       }

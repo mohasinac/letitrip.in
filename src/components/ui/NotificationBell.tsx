@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 /**
  * NotificationBell Component
@@ -15,13 +15,12 @@
  */
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useNotifications, useMessage } from "@/hooks";
 import { NotificationDocument } from "@/db/schema";
 import { formatRelativeTime } from "@/utils";
-import { Spinner } from "@/components";
+import { Button, Li, Span, Spinner, Text, TextLink, Ul } from "@/components";
 
 const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   order_placed: "🛍️",
@@ -45,7 +44,7 @@ export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { showSuccess, showError } = useMessage();
-  const { colors } = THEME_CONSTANTS;
+  const { colors, flex } = THEME_CONSTANTS;
   const t = useTranslations("notifications");
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
@@ -128,11 +127,11 @@ export default function NotificationBell() {
 
         {/* Unread badge */}
         {unreadCount > 0 && (
-          <span
+          <Span
             className={`absolute -top-1 -right-1 ${THEME_CONSTANTS.colors.notification.badge} text-xs min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full font-semibold shadow-md`}
           >
             {unreadCount > 99 ? "99+" : unreadCount}
-          </span>
+          </Span>
         )}
       </button>
 
@@ -143,16 +142,16 @@ export default function NotificationBell() {
         >
           {/* Header */}
           <div
-            className={`flex items-center justify-between px-4 py-3 border-b ${THEME_CONSTANTS.themed.border}`}
+            className={`${flex.between} px-4 py-3 border-b ${THEME_CONSTANTS.themed.border}`}
           >
             <h3
               className={`font-semibold ${THEME_CONSTANTS.themed.textPrimary}`}
             >
               {t("title")}
               {unreadCount > 0 && (
-                <span className="ml-2 text-xs bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-2 py-0.5 rounded-full font-medium">
+                <Span className="ml-2 text-xs bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-2 py-0.5 rounded-full font-medium">
                   {unreadCount} {t("unread")}
-                </span>
+                </Span>
               )}
             </h3>
             {unreadCount > 0 && (
@@ -169,11 +168,11 @@ export default function NotificationBell() {
           {/* Body */}
           <div className="max-h-96 overflow-y-auto">
             {isLoading ? (
-              <div className="flex items-center justify-center py-10">
+              <div className={`${flex.center} py-10`}>
                 <Spinner size="md" />
               </div>
             ) : notifications.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+              <div className={`${flex.centerCol} py-10 px-4 text-center`}>
                 <svg
                   className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-3"
                   fill="none"
@@ -187,57 +186,60 @@ export default function NotificationBell() {
                     d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
                   />
                 </svg>
-                <p
+                <Text
                   className={`font-medium ${THEME_CONSTANTS.themed.textPrimary}`}
                 >
                   {t("empty")}
-                </p>
-                <p
-                  className={`text-sm mt-1 ${THEME_CONSTANTS.themed.textSecondary}`}
+                </Text>
+                <Text
+                  size="sm"
+                  className={`mt-1 ${THEME_CONSTANTS.themed.textSecondary}`}
                 >
                   {t("emptyDesc")}
-                </p>
+                </Text>
               </div>
             ) : (
-              <ul>
+              <Ul>
                 {notifications.map((n) => (
-                  <li
+                  <Li
                     key={n.id}
                     className={`group flex items-start gap-3 px-4 py-3 border-b ${THEME_CONSTANTS.themed.border} last:border-0 transition-colors hover:${THEME_CONSTANTS.themed.bgSecondary} ${
                       !n.isRead ? "bg-blue-50/50 dark:bg-blue-950/20" : ""
                     }`}
                   >
                     {/* Icon */}
-                    <span className="text-xl flex-shrink-0 mt-0.5">
+                    <Span className="text-xl flex-shrink-0 mt-0.5">
                       {NOTIFICATION_TYPE_ICONS[n.type] ?? "🔔"}
-                    </span>
+                    </Span>
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <p
-                          className={`text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} leading-tight`}
+                      <div className={`${flex.betweenStart} gap-2`}>
+                        <Text
+                          size="sm"
+                          className={`font-medium ${THEME_CONSTANTS.themed.textPrimary} leading-tight`}
                         >
                           {n.title}
                           {!n.isRead && (
-                            <span className="ml-1.5 inline-block w-2 h-2 rounded-full bg-blue-500 flex-shrink-0 align-middle" />
+                            <Span className="ml-1.5 inline-block w-2 h-2 rounded-full bg-blue-500 flex-shrink-0 align-middle" />
                           )}
-                        </p>
-                        <span
+                        </Text>
+                        <Span
                           className={`text-xs ${THEME_CONSTANTS.themed.textSecondary} flex-shrink-0`}
                         >
                           {formatRelativeTime(n.createdAt)}
-                        </span>
+                        </Span>
                       </div>
-                      <p
-                        className={`text-sm ${THEME_CONSTANTS.themed.textSecondary} mt-0.5 line-clamp-2`}
+                      <Text
+                        size="sm"
+                        className={`${THEME_CONSTANTS.themed.textSecondary} mt-0.5 line-clamp-2`}
                       >
                         {n.message}
-                      </p>
+                      </Text>
 
-                      <div className="flex items-center gap-3 mt-1.5">
+                      <div className={`${flex.rowCenter} gap-3 mt-1.5`}>
                         {n.actionUrl && (
-                          <Link
+                          <TextLink
                             href={n.actionUrl}
                             onClick={() => {
                               if (!n.isRead) handleMarkRead(n.id);
@@ -246,21 +248,22 @@ export default function NotificationBell() {
                             className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
                           >
                             {n.actionLabel ?? tActions("view")}
-                          </Link>
+                          </TextLink>
                         )}
                         {!n.isRead && (
-                          <button
+                          <Button
+                            variant="ghost"
                             onClick={() => handleMarkRead(n.id)}
-                            className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:underline"
+                            className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:underline p-0 h-auto"
                           >
                             {t("markRead")}
-                          </button>
+                          </Button>
                         )}
                       </div>
                     </div>
-                  </li>
+                  </Li>
                 ))}
-              </ul>
+              </Ul>
             )}
           </div>
 
@@ -268,13 +271,13 @@ export default function NotificationBell() {
           <div
             className={`px-4 py-3 border-t ${THEME_CONSTANTS.themed.border} text-center`}
           >
-            <Link
+            <TextLink
               href={ROUTES.USER.NOTIFICATIONS}
               onClick={() => setIsOpen(false)}
               className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
             >
               {t("viewAll")}
-            </Link>
+            </TextLink>
           </div>
         </div>
       )}

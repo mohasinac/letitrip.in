@@ -1,6 +1,7 @@
-"use client";
+﻿"use client";
 
 import { THEME_CONSTANTS } from "@/constants";
+import { Span } from "../typography/Typography";
 
 export type FAQSortOption = "helpful" | "newest" | "alphabetical";
 
@@ -21,11 +22,11 @@ export function FAQSortDropdown({
 }: FAQSortDropdownProps) {
   return (
     <div className="flex items-center gap-3">
-      <span
+      <Span
         className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
       >
         Sort by:
-      </span>
+      </Span>
       <select
         value={selectedSort}
         onChange={(e) => onSortChange(e.target.value as FAQSortOption)}

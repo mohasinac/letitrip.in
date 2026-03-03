@@ -8,23 +8,24 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useMessage, useUrlTable } from "@/hooks";
 import { ROUTES } from "@/constants";
 import { useAdminFaqs } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
-  Card,
-  Button,
-  SideDrawer,
-  DataTable,
-  AdminPageHeader,
-  DrawerFormFooter,
-  getFaqTableColumns,
-  FaqForm,
   AdminFilterBar,
+  AdminPageHeader,
+  Button,
+  Card,
+  DataTable,
+  DrawerFormFooter,
+  FaqForm,
   FormField,
+  getFaqTableColumns,
+  SideDrawer,
   TablePagination,
+  Text,
 } from "@/components";
 import type { FAQ, FaqDrawerMode } from "@/components";
 
@@ -241,7 +242,7 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
         ) : error ? (
           <Card>
             <div className="text-center py-8">
-              <p className="text-red-600 mb-4">{error.message}</p>
+              <Text className="text-red-600 mb-4">{error.message}</Text>
               <Button onClick={() => refetch()}>{tActions("retry")}</Button>
             </div>
           </Card>

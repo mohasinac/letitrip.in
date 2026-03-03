@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
+import { Label } from "../typography/Typography";
 
 interface SortOption {
   value: string;
@@ -52,12 +53,12 @@ export function SortDropdown({
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <label
+      <Label
         htmlFor="sort-dropdown"
         className={`text-sm font-medium whitespace-nowrap ${THEME_CONSTANTS.themed.textSecondary}`}
       >
         {displayLabel}
-      </label>
+      </Label>
       <select
         id="sort-dropdown"
         value={value}

@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useTranslations } from "next-intl";
 import { formatNumber } from "@/utils";
-import { Pagination } from "@/components";
+import { Label, Pagination, Span, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [10, 25, 50, 100] as const;
@@ -65,17 +65,17 @@ export function TablePagination({
       className={`flex flex-col sm:flex-row items-center justify-between gap-4 ${spacing.padding.md} border-t ${themed.border} ${className}`}
     >
       {/* Result count */}
-      <p className={`text-sm ${themed.textSecondary} tabular-nums`}>
+      <Text className={`text-sm ${themed.textSecondary} tabular-nums`}>
         {t("showing")}{" "}
-        <span className={`font-medium ${themed.textPrimary}`}>
+        <Span className={`font-medium ${themed.textPrimary}`}>
           {from}–{to}
-        </span>{" "}
+        </Span>{" "}
         {t("of")}{" "}
-        <span className={`font-medium ${themed.textPrimary}`}>
+        <Span className={`font-medium ${themed.textPrimary}`}>
           {formatNumber(total)}
-        </span>{" "}
+        </Span>{" "}
         {t("results")}
-      </p>
+      </Text>
 
       <div className="flex items-center gap-4">
         {/* Pagination */}
@@ -89,12 +89,12 @@ export function TablePagination({
         {/* Per-page selector */}
         {onPageSizeChange && (
           <div className="flex items-center gap-2">
-            <label
+            <Label
               htmlFor="page-size-select"
               className={`text-sm ${themed.textSecondary} whitespace-nowrap`}
             >
               {t("perPage")}
-            </label>
+            </Label>
             <select
               id="page-size-select"
               value={pageSize}

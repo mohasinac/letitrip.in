@@ -6,12 +6,21 @@
  */
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { Card, Button, Alert, FormField, Heading, Text } from "@/components";
+import { useRouter } from "@/i18n/navigation";
+import {
+  Card,
+  Button,
+  Alert,
+  FormField,
+  Heading,
+  Text,
+  TextLink,
+} from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { useForgotPassword } from "@/hooks";
+
+const { flex, page } = THEME_CONSTANTS;
 
 export function ForgotPasswordView() {
   const router = useRouter();
@@ -35,7 +44,7 @@ export function ForgotPasswordView() {
 
   if (success) {
     return (
-      <div className="flex items-center justify-center py-8 sm:py-12 w-full">
+      <div className={`${flex.center} ${page.authPad} w-full`}>
         <Card className="max-w-md w-full p-6 sm:p-8">
           <div className="text-center mb-6">
             <div className="mb-4 text-green-500">
@@ -90,7 +99,7 @@ export function ForgotPasswordView() {
   }
 
   return (
-    <div className="flex items-center justify-center py-8 sm:py-12 w-full">
+    <div className={`${flex.center} ${page.authPad} w-full`}>
       <Card className="max-w-md w-full p-6 sm:p-8">
         <div className="text-center mb-6">
           <Heading level={4} className="mb-2">
@@ -134,12 +143,12 @@ export function ForgotPasswordView() {
         <div className="mt-6 text-center">
           <Text className="text-gray-600 text-sm">
             {t("forgotPassword.rememberPassword")}{" "}
-            <Link
+            <TextLink
               href={ROUTES.AUTH.LOGIN}
               className="text-blue-600 hover:underline"
             >
               {t("forgotPassword.signInLink")}
-            </Link>
+            </TextLink>
           </Text>
         </div>
       </Card>

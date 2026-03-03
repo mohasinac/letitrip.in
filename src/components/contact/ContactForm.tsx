@@ -3,9 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { Button } from "@/components/ui";
-import { FormField } from "@/components/FormField";
-import { Alert } from "@/components/feedback";
+import { Button, FormField, Alert, Heading } from "@/components";
 import { useMessage, useContactSubmit } from "@/hooks";
 import { isValidEmail, isRequired } from "@/utils";
 const { typography, themed, spacing } = THEME_CONSTANTS;
@@ -66,9 +64,9 @@ export function ContactForm() {
 
   return (
     <div className="md:col-span-3">
-      <h2 className={`${typography.h3} ${themed.textPrimary} mb-6`}>
+      <Heading level={2} className="mb-6">
         {t("formTitle")}
-      </h2>
+      </Heading>
 
       {submitted && (
         <Alert variant="success" className="mb-6">

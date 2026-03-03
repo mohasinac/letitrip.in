@@ -7,7 +7,7 @@
 
 import { THEME_CONSTANTS } from "@/constants";
 
-const { skeleton, spacing, themed } = THEME_CONSTANTS;
+const { skeleton, spacing, themed, flex } = THEME_CONSTANTS;
 
 export function AdminDashboardSkeleton() {
   return (
@@ -29,7 +29,7 @@ export function AdminDashboardSkeleton() {
             key={i}
             className={`rounded-xl border-l-4 border-l-gray-200 dark:border-l-gray-700 ${themed.bgPrimary} ${spacing.padding.md}`}
           >
-            <div className="flex items-start justify-between">
+            <div className={flex.betweenStart}>
               <div className="flex-1">
                 <div className={`${skeleton.text} w-28 mb-3`} />
                 <div className={`${skeleton.heading} w-16`} />

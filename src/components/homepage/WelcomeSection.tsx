@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useHomepageSections } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
-import { Button } from "@/components";
+import { Button, Heading, Section, Text } from "@/components";
 import { proseMirrorToHtml } from "@/utils";
 import type {
   HomepageSectionDocument,
@@ -16,7 +16,7 @@ export function WelcomeSection() {
 
   if (isLoading) {
     return (
-      <section
+      <Section
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
       >
         <div className="w-full text-center">
@@ -28,7 +28,7 @@ export function WelcomeSection() {
             <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded-lg max-w-4xl mx-auto" />
           </div>
         </div>
-      </section>
+      </Section>
     );
   }
 
@@ -40,24 +40,25 @@ export function WelcomeSection() {
   const config = section.config as WelcomeSectionConfig;
 
   return (
-    <section
+    <Section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
     >
       <div className="w-full text-center">
         {/* H1 Heading */}
-        <h1
+        <Heading
+          level={1}
           className={`${THEME_CONSTANTS.typography.h1} ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
         >
           {config.h1}
-        </h1>
+        </Heading>
 
         {/* Subtitle */}
         {config.subtitle && (
-          <p
+          <Text
             className={`${THEME_CONSTANTS.typography.body} text-lg ${THEME_CONSTANTS.themed.textSecondary} mb-8`}
           >
             {config.subtitle}
-          </p>
+          </Text>
         )}
 
         {/* Rich Text Description */}
@@ -83,6 +84,6 @@ export function WelcomeSection() {
           </div>
         )}
       </div>
-    </section>
+    </Section>
   );
 }

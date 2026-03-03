@@ -25,7 +25,8 @@ import {
   useToast,
 } from "@/components";
 import type { AddressFormData } from "@/hooks";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useParams } from "next/navigation";
 import {
   THEME_CONSTANTS,
   ROUTES,
@@ -110,7 +111,7 @@ export function UserEditAddressView() {
 
   if (loading || loadingAddress) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
         <Spinner size="lg" label={tLoading("default")} />
       </div>
     );
@@ -123,7 +124,7 @@ export function UserEditAddressView() {
   return (
     <div className="max-w-3xl">
       <div className={THEME_CONSTANTS.spacing.stack}>
-        <div className="flex items-center justify-between">
+        <div className={THEME_CONSTANTS.flex.between}>
           <Heading level={3}>{tAddresses("edit")}</Heading>
           <Button
             variant="danger"

@@ -1,22 +1,23 @@
 /**
- * RegisterForm — full registration form including email/password/name fields,
+ * RegisterForm � full registration form including email/password/name fields,
  * terms acceptance, social sign-up options, and auth redirect logic.
  */
 
 "use client";
 
 import { useState, FormEvent, useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "@/i18n/navigation";
 import {
-  Button,
   Alert,
+  Button,
   Checkbox,
-  Spinner,
   FormField,
-  PasswordStrengthIndicator,
-  Text,
   Label,
+  PasswordStrengthIndicator,
+  Span,
+  Spinner,
+  Text,
+  TextLink,
 } from "@/components";
 import {
   ERROR_MESSAGES,
@@ -28,7 +29,7 @@ import { useTranslations } from "next-intl";
 import { useAuth, useRegister, useGoogleLogin, useAppleLogin } from "@/hooks";
 import { AuthSocialButtons } from "./AuthSocialButtons";
 
-const { themed, spacing } = THEME_CONSTANTS;
+const { themed, spacing, flex, page } = THEME_CONSTANTS;
 
 export function RegisterForm() {
   const t = useTranslations("auth");
@@ -104,7 +105,7 @@ export function RegisterForm() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
+      <div className={`${flex.center} py-16`}>
         <Spinner size="xl" variant="primary" />
       </div>
     );
@@ -147,13 +148,15 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="flex items-center justify-center py-8 sm:py-12 w-full">
+    <div className={`${flex.center} ${page.authPad} w-full`}>
       <div className={`max-w-md w-full ${spacing.stack}`}>
         {/* Header */}
         <div>
           <div className="flex justify-center">
-            <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <span className="text-white text-2xl font-bold">L</span>
+            <div
+              className={`w-16 h-16 bg-blue-600 rounded-2xl ${flex.center} shadow-lg`}
+            >
+              <Span className="text-white text-2xl font-bold">L</Span>
             </div>
           </div>
           <h1
@@ -166,12 +169,12 @@ export function RegisterForm() {
             className={`mt-2 text-center ${themed.textSecondary}`}
           >
             {t("register.or")}{" "}
-            <Link
+            <TextLink
               href={ROUTES.AUTH.LOGIN}
               className="font-medium text-blue-600 hover:text-blue-500"
             >
               {t("register.signInLink")}
-            </Link>
+            </TextLink>
           </Text>
         </div>
 
@@ -266,19 +269,19 @@ export function RegisterForm() {
                 className={`ml-2 text-sm ${themed.textSecondary}`}
               >
                 {t("register.acceptTerms")}{" "}
-                <Link
+                <TextLink
                   href={ROUTES.PUBLIC.TERMS}
                   className="text-blue-600 hover:text-blue-500"
                 >
                   {t("register.termsOfService")}
-                </Link>{" "}
+                </TextLink>{" "}
                 {t("register.and")}{" "}
-                <Link
+                <TextLink
                   href={ROUTES.PUBLIC.PRIVACY}
                   className="text-blue-600 hover:text-blue-500"
                 >
                   {t("register.privacyPolicy")}
-                </Link>
+                </TextLink>
               </Label>
             </div>
           </div>

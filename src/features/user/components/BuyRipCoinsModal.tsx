@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 /**
  * BuyRipCoinsModal
@@ -23,7 +23,7 @@ import {
 } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
 
-const { spacing } = THEME_CONSTANTS;
+const { spacing, flex } = THEME_CONSTANTS;
 
 const MIN_PACKS = 10;
 const MAX_PACKS = 500;
@@ -104,25 +104,27 @@ export function BuyRipCoinsModal({ open, onClose, onPurchaseSuccess }: Props) {
 
         {/* Summary */}
         <div className="rounded-lg bg-indigo-50 dark:bg-indigo-950/30 p-4 flex flex-col gap-1">
-          <div className="flex items-center justify-between">
+          <div className={flex.between}>
             <Caption>{t("packs")}</Caption>
             <Text weight="semibold">{packs}</Text>
           </div>
-          <div className="flex items-center justify-between">
+          <div className={flex.between}>
             <Caption>{t("coins")}</Caption>
             <Heading level={4} className="text-indigo-600 dark:text-indigo-400">
               {coins.toLocaleString()} RC
             </Heading>
           </div>
-          <div className="flex items-center justify-between border-t border-indigo-200 dark:border-indigo-800 pt-1 mt-1">
+          <div
+            className={`${flex.between} border-t border-indigo-200 dark:border-indigo-800 pt-1 mt-1`}
+          >
             <Caption>{t("amount")}</Caption>
             <Heading level={4}>₹{amountRs.toFixed(2)}</Heading>
           </div>
         </div>
 
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <Text className="text-xs text-gray-500 dark:text-gray-400">
           {t("infoNote")}
-        </p>
+        </Text>
 
         <Button
           variant="primary"

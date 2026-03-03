@@ -1,7 +1,6 @@
-"use client";
+﻿"use client";
 
-import Link from "next/link";
-import { Card, Heading, Text, Button } from "@/components";
+import { Button, Card, Heading, Span, Text, TextLink } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 /**
@@ -63,12 +62,12 @@ export function EmptyState({
         )}
 
         {actionLabel && actionHref && (
-          <Link
+          <TextLink
             href={actionHref}
             className={`${button.base} ${colors.button.warning} shadow-sm hover:shadow-md focus:ring-amber-500 ${button.active} px-4 py-2.5 text-base sm:px-6 sm:py-3 sm:text-lg gap-2.5 min-h-[44px]`}
           >
-            <span>{actionLabel}</span>
-          </Link>
+            <Span>{actionLabel}</Span>
+          </TextLink>
         )}
 
         {actionLabel && onAction && !actionHref && (

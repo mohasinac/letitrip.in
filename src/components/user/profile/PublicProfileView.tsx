@@ -1,13 +1,14 @@
-"use client";
+﻿"use client";
 
-import Link from "next/link";
 import {
-  Card,
-  Badge,
-  Text,
   AvatarDisplay,
+  Badge,
+  Card,
   EmptyState,
   Heading,
+  Span,
+  Text,
+  TextLink,
 } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
@@ -15,6 +16,8 @@ import { formatCurrency, formatNumber } from "@/utils";
 import type { UserDocument, ProductDocument } from "@/db/schema";
 import type { ImageCropData } from "@/components";
 import type { SellerReviewsData, ProductsApiResponse } from "@/hooks";
+
+const { flex, page } = THEME_CONSTANTS;
 
 interface PublicProfileViewProps {
   user: UserDocument;
@@ -72,7 +75,7 @@ function SellerProductsSection({
       ) : productsData?.data && productsData.data.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
           {productsData.data.map((product: ProductDocument) => (
-            <Link
+            <TextLink
               key={product.id}
               href={`/products/${product.id}`}
               className={`block rounded-xl overflow-hidden border ${THEME_CONSTANTS.themed.border} hover:shadow-md transition-shadow`}
@@ -86,7 +89,9 @@ function SellerProductsSection({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400 text-4xl">
+                  <div
+                    className={`w-full h-full ${flex.center} text-gray-400 text-4xl`}
+                  >
                     🛍️
                   </div>
                 )}
@@ -104,7 +109,7 @@ function SellerProductsSection({
                   </Badge>
                 )}
               </div>
-            </Link>
+            </TextLink>
           ))}
         </div>
       ) : (
@@ -127,7 +132,7 @@ function SellerReviewsSection({
   const tProfile = useTranslations("profile");
   return (
     <Card className="mb-6">
-      <div className="flex items-center justify-between mb-4">
+      <div className={`${flex.between} mb-4`}>
         <Heading level={2}>{tProfile("sellerReviewsTitle")}</Heading>
         {reviewsData && reviewsData.totalReviews > 0 && (
           <div className="flex items-center gap-2">
@@ -158,7 +163,9 @@ function SellerReviewsSection({
               className={`p-4 rounded-xl ${THEME_CONSTANTS.themed.bgSecondary}`}
             >
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-600 font-semibold text-sm flex-shrink-0">
+                <div
+                  className={`w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 ${flex.center} text-primary-600 font-semibold text-sm flex-shrink-0`}
+                >
                   {review.userName.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -181,12 +188,12 @@ function SellerReviewsSection({
                   {review.productTitle && (
                     <Text variant="secondary" className="text-xs mt-2">
                       on{" "}
-                      <Link
+                      <TextLink
                         href={`/products/${review.productId}`}
                         className="text-primary-600 hover:underline"
                       >
                         {review.productTitle}
-                      </Link>
+                      </TextLink>
                     </Text>
                   )}
                 </div>
@@ -222,7 +229,7 @@ export function PublicProfileView({
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-primary-600 to-primary-800 h-48" />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24">
+      <div className={`${page.container.md} -mt-24`}>
         {/* Profile Card */}
         <Card className="mb-6">
           <div className="text-center">
@@ -258,7 +265,7 @@ export function PublicProfileView({
               </Text>
             )}
 
-            <div className="flex items-center justify-center gap-4 mt-4 text-sm">
+            <div className={`${flex.center} gap-4 mt-4 text-sm`}>
               {user.publicProfile?.location && (
                 <div className="flex items-center gap-1">
                   <svg
@@ -272,7 +279,7 @@ export function PublicProfileView({
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span>{user.publicProfile.location}</span>
+                  <Span>{user.publicProfile.location}</Span>
                 </div>
               )}
               {user.publicProfile?.website && (
@@ -290,13 +297,13 @@ export function PublicProfileView({
                     <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
                     <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
                   </svg>
-                  <span>Website</span>
+                  <Span>Website</Span>
                 </a>
               )}
             </div>
 
             {user.publicProfile?.socialLinks && (
-              <div className="flex items-center justify-center gap-3 mt-4">
+              <div className={`${flex.center} gap-3 mt-4`}>
                 {user.publicProfile.socialLinks.twitter && (
                   <a
                     href={`https://twitter.com/${user.publicProfile.socialLinks.twitter}`}
@@ -350,7 +357,7 @@ export function PublicProfileView({
 
             <div className={`${THEME_CONSTANTS.spacing.stack} mt-6`}>
               {user.publicProfile?.showEmail && user.email && (
-                <div className="flex items-center justify-center gap-2 text-sm">
+                <div className={`${flex.center} gap-2 text-sm`}>
                   <svg
                     className="w-4 h-4"
                     fill="currentColor"
@@ -359,11 +366,11 @@ export function PublicProfileView({
                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                   </svg>
-                  <span>{user.email}</span>
+                  <Span>{user.email}</Span>
                 </div>
               )}
               {user.publicProfile?.showPhone && user.phoneNumber && (
-                <div className="flex items-center justify-center gap-2 text-sm">
+                <div className={`${flex.center} gap-2 text-sm`}>
                   <svg
                     className="w-4 h-4"
                     fill="currentColor"
@@ -371,7 +378,7 @@ export function PublicProfileView({
                   >
                     <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                   </svg>
-                  <span>{user.phoneNumber}</span>
+                  <Span>{user.phoneNumber}</Span>
                 </div>
               )}
             </div>
@@ -431,7 +438,7 @@ export function PublicProfileView({
         {/* Rating */}
         {user.stats?.rating && (
           <Card className="mb-6">
-            <div className="flex items-center justify-center gap-2">
+            <div className={`${flex.center} gap-2`}>
               <div className="flex items-center">
                 <StarIcons rating={Math.floor(user.stats.rating)} />
               </div>

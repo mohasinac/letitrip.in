@@ -191,6 +191,7 @@
     "addresses": "पते",
     "settings": "सेटिंग्स",
     "search": "खोजें",
+    "mobileNav": "मोबाइल नेवीगेशन",
     "contactUs": "हमसे संपर्क करें",
     "helpCenter": "सहायता केंद्र",
     "account": "खाता",
@@ -867,7 +868,8 @@
     "heroCarouselPrevSlide": "पिछली स्लाइड",
     "heroCarouselNextSlide": "अगली स्लाइड",
     "closeSidebar": "साइडबार बंद करें",
-    "sideNavigation": "साइट नेविगेशन"
+    "sideNavigation": "साइट नेविगेशन",
+    "sidebarLinks": "नेवीगेशन लिंक"
   },
   "locale": {
     "label": "भाषा",
@@ -1572,7 +1574,23 @@
     "noFaqs": "कोई FAQ नहीं मिला",
     "saveFailed": "FAQ सहेजने में विफल",
     "deleteFailed": "FAQ हटाने में विफल",
-    "searchPlaceholder": "FAQ खोजें..."
+    "searchPlaceholder": "FAQ खोजें...",
+    "question": "प्रश्न",
+    "questionPlaceholder": "FAQ प्रश्न दर्ज करें...",
+    "answer": "उत्तर",
+    "answerPlaceholder": "FAQ उत्तर दर्ज करें (रिच टेक्स्ट फॉर्मेटिंग का उपयोग करें)...",
+    "showVariables": "चर दिखाएं",
+    "hideVariables": "चर छुपाएं",
+    "insertVariableHelp": "उत्तर में चर सम्मिलित करने के लिए क्लिक करें:",
+    "category": "श्रेणी",
+    "priorityLabel": "प्राथमिकता (1-10)",
+    "priorityHelp": "अधिक प्राथमिकता पहले दिखती है",
+    "tags": "टैग (अल्पविराम से अलग)",
+    "tagsPlaceholder": "उदा. भुगतान, वापसी, शिपिंग",
+    "order": "क्रम",
+    "orderHelp": "समान प्राथमिकता में प्रदर्शन क्रम",
+    "featuredLabel": "फीचर्ड (होमपेज पर दिखाएं)",
+    "insertVariableAriaLabel": "चर सम्मिलित करें {key}: {description}"
   },
   "adminCarousel": {
     "title": "कैरोसेल प्रबंधन",

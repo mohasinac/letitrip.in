@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useTranslations } from "next-intl";
-import { Badge, Text } from "@/components";
+import { Badge, Span, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { AdminProduct } from "@/components";
@@ -18,7 +18,7 @@ export function SellerProductCard({
   onDelete,
 }: SellerProductCardProps) {
   const tActions = useTranslations("actions");
-  const { themed } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
 
   return (
     <div
@@ -34,15 +34,17 @@ export function SellerProductCard({
           />
         </div>
       ) : (
-        <div className="aspect-square bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-          <span className={`text-3xl ${THEME_CONSTANTS.icon.muted}`}>??</span>
+        <div
+          className={`aspect-square bg-gray-100 dark:bg-gray-800 ${flex.center}`}
+        >
+          <Span className={`text-3xl ${THEME_CONSTANTS.icon.muted}`}>??</Span>
         </div>
       )}
       <div className="p-3 space-y-2">
         <Text size="sm" weight="semibold" className="truncate">
           {product.title}
         </Text>
-        <div className="flex items-center justify-between gap-2">
+        <div className={`${flex.between} gap-2`}>
           <Text size="sm" weight="bold">
             {formatCurrency(product.price)}
           </Text>

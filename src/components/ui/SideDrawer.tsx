@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState, ReactNode, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Button, Heading, Text } from "@/components";
+import { Button, Heading, Span, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useSwipe } from "@/hooks";
 
@@ -150,7 +150,7 @@ export default function SideDrawer({
 
   if (!isOpen) return null;
 
-  const { themed, spacing, borderRadius } = THEME_CONSTANTS;
+  const { themed, spacing, borderRadius, flex } = THEME_CONSTANTS;
 
   const positionClass =
     side === "left"
@@ -185,12 +185,12 @@ export default function SideDrawer({
       >
         {/* Header */}
         <div
-          className={`flex items-center justify-between ${spacing.padding.lg} ${modeHeaderClass} border-b`}
+          className={`${flex.between} ${spacing.padding.lg} ${modeHeaderClass} border-b`}
         >
-          <div className="flex items-center gap-3 min-w-0">
+          <div className={`${flex.rowCenter} gap-3 min-w-0`}>
             <button
               onClick={attemptClose}
-              className={`flex-shrink-0 p-2 ${themed.textSecondary} ${borderRadius.lg} ${themed.hover} transition-colors ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-gray-300 dark:hover:ring-gray-600`}
+              className={`${flex.noShrink} p-2 ${themed.textSecondary} ${borderRadius.lg} ${themed.hover} transition-colors ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-gray-300 dark:hover:ring-gray-600`}
               aria-label={tActions("close")}
             >
               <svg
@@ -212,9 +212,9 @@ export default function SideDrawer({
             </Heading>
           </div>
           {mode === "delete" && (
-            <span className="flex-shrink-0 px-2.5 py-1 text-xs font-semibold rounded bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300">
+            <Span className="flex-shrink-0 px-2.5 py-1 text-xs font-semibold rounded bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300">
               {tActions("delete")}
-            </span>
+            </Span>
           )}
         </div>
 
@@ -243,7 +243,7 @@ export default function SideDrawer({
           <div
             className={`fixed z-[60] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md ${themed.bgPrimary} ${borderRadius.xl} shadow-2xl p-6`}
           >
-            <div className="flex items-start gap-3 mb-4">
+            <div className={`${flex.rowStart} gap-3 mb-4`}>
               <div className="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
                 <svg
                   className="w-5 h-5 text-yellow-600 dark:text-yellow-400"

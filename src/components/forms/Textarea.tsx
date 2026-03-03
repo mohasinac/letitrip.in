@@ -1,5 +1,5 @@
 import React from "react";
-import { Label } from "../typography/Typography";
+import { Label, Text } from "../typography/Typography";
 import { THEME_CONSTANTS } from "@/constants";
 
 /**
@@ -60,7 +60,7 @@ export default function Textarea({
       />
 
       {error && (
-        <p
+        <Text
           className={`mt-1.5 text-sm ${themed.textError} flex items-center gap-1`}
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -71,11 +71,13 @@ export default function Textarea({
             />
           </svg>
           {error}
-        </p>
+        </Text>
       )}
 
       {helperText && !error && (
-        <p className={`mt-1.5 text-sm ${themed.textMuted}`}>{helperText}</p>
+        <Text className={`mt-1.5 text-sm ${themed.textMuted}`}>
+          {helperText}
+        </Text>
       )}
     </div>
   );

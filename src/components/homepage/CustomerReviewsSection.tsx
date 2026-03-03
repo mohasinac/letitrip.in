@@ -2,12 +2,14 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useHomepageReviews, useSwipe } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import type { ReviewDocument } from "@/db/schema";
+import { Button, Heading, Section, Text, TextLink } from "@/components";
+
+const { flex } = THEME_CONSTANTS;
 
 export function CustomerReviewsSection() {
   const t = useTranslations("homepage");
@@ -29,7 +31,7 @@ export function CustomerReviewsSection() {
 
   if (isLoading) {
     return (
-      <section
+      <Section
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
       >
         <div className="w-full">
@@ -45,7 +47,7 @@ export function CustomerReviewsSection() {
             ))}
           </div>
         </div>
-      </section>
+      </Section>
     );
   }
 
@@ -56,26 +58,27 @@ export function CustomerReviewsSection() {
   const visibleReviews = reviews.slice(currentIndex, currentIndex + 3);
 
   return (
-    <section
+    <Section
       ref={sectionRef}
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
     >
       <div className="w-full">
         {/* Section Header */}
         <div className="text-center mb-10">
-          <h2
+          <Heading
+            level={2}
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
           >
             {t("whatOurCustomersSay")}
-          </h2>
-          <p
+          </Heading>
+          <Text
             className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
           >
             {t("reviewsSubtitle")}
-          </p>
+          </Text>
         </div>
 
-        {/* Reviews Grid â€” 3-col on desktop */}
+        {/* Reviews Grid — 3-col on desktop */}
         <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-6 mb-8">
           {visibleReviews.map((review) => (
             <div
@@ -100,11 +103,11 @@ export function CustomerReviewsSection() {
               </div>
 
               {/* Review Text */}
-              <p
+              <Text
                 className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} mb-4 line-clamp-4`}
               >
                 &ldquo;{review.comment}&rdquo;
-              </p>
+              </Text>
 
               {/* User Info */}
               <div className="flex items-center gap-3">
@@ -118,21 +121,23 @@ export function CustomerReviewsSection() {
                     className="rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                  <div
+                    className={`w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 ${flex.center} text-white font-bold`}
+                  >
                     {review.userName.charAt(0).toUpperCase()}
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p
+                  <Text
                     className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-medium truncate`}
                   >
                     {review.userName}
-                  </p>
-                  <p
+                  </Text>
+                  <Text
                     className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} truncate`}
                   >
                     {review.productTitle}
-                  </p>
+                  </Text>
                 </div>
               </div>
             </div>
@@ -143,7 +148,7 @@ export function CustomerReviewsSection() {
         {totalGroups > 1 && (
           <div className="flex justify-center gap-2 mb-6">
             {[...Array(totalGroups)].map((_, i) => (
-              <button
+              <Button
                 key={i}
                 className={`h-2 rounded-full transition-all ${
                   Math.floor(currentIndex / 3) === i
@@ -159,14 +164,14 @@ export function CustomerReviewsSection() {
 
         {/* See all reviews link */}
         <div className="text-center">
-          <Link
+          <TextLink
             href={ROUTES.PUBLIC.PRODUCTS}
             className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
           >
             {t("seeAllReviews")}
-          </Link>
+          </TextLink>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

@@ -37,7 +37,7 @@ export function PhoneVerificationCard({
   className = "",
 }: PhoneVerificationCardProps) {
   const t = useTranslations("userSettings");
-  const { spacing, typography } = THEME_CONSTANTS;
+  const { spacing, typography, flex } = THEME_CONSTANTS;
 
   const cardVariant = isVerified
     ? "gradient-teal"
@@ -53,7 +53,7 @@ export function PhoneVerificationCard({
     >
       <div className={spacing.stack}>
         {/* Header */}
-        <div className="flex items-start justify-between gap-3">
+        <div className={`${flex.betweenStart} gap-3`}>
           <div>
             <Heading level={3}>{t("phoneVerificationTitle")}</Heading>
             {hasPhone && (

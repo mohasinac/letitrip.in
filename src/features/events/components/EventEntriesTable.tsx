@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
-import { Button, Badge } from "@/components";
+import { Badge, Button, Text } from "@/components";
 import type { EventEntryDocument, EntryReviewStatus } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;
@@ -32,13 +32,13 @@ export function useEventEntriesTableColumns(
         width: "25%",
         render: (e: EventEntryDocument) => (
           <div>
-            <p className="font-medium text-sm">
+            <Text className="font-medium text-sm">
               {e.userDisplayName ?? e.userId ?? "Anonymous"}
-            </p>
+            </Text>
             {e.userEmail && (
-              <p className={`text-xs mt-0.5 ${themed.textSecondary}`}>
+              <Text className={`text-xs mt-0.5 ${themed.textSecondary}`}>
                 {e.userEmail}
-              </p>
+              </Text>
             )}
           </div>
         ),
@@ -60,9 +60,9 @@ export function useEventEntriesTableColumns(
         sortable: true,
         width: "16%",
         render: (e: EventEntryDocument) => (
-          <p className={`text-sm ${themed.textSecondary}`}>
+          <Text className={`text-sm ${themed.textSecondary}`}>
             {formatDate(e.submittedAt as unknown as string)}
-          </p>
+          </Text>
         ),
       },
       {
@@ -71,7 +71,9 @@ export function useEventEntriesTableColumns(
         sortable: false,
         width: "8%",
         render: (e: EventEntryDocument) => (
-          <p className="text-sm font-semibold text-center">{e.points ?? 0}</p>
+          <Text className="text-sm font-semibold text-center">
+            {e.points ?? 0}
+          </Text>
         ),
       },
       {

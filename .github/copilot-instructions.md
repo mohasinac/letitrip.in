@@ -287,7 +287,11 @@ return successResponse(result, SUCCESS_MESSAGES.PRODUCT.CREATED);
 | `"space-y-4"` | `THEME_CONSTANTS.spacing.stack` |
 | `"space-x-4"` | `THEME_CONSTANTS.spacing.inline` |
 | `"p-2"` / `"p-4"` / `"p-6"` | `THEME_CONSTANTS.spacing.padding.xs` / `.md` / `.lg` |
+| `"px-4"` / `"py-4"` | `THEME_CONSTANTS.spacing.padding.x.md` / `.y.md` |
+| `"mt-4"` / `"mb-4"` / `"ml-4"` / `"mr-4"` | `THEME_CONSTANTS.spacing.margin.top.md` / `.bottom.md` / `.left.md` / `.right.md` |
+| `"mx-auto"` | `THEME_CONSTANTS.spacing.margin.x.auto` |
 | `"gap-2"` / `"gap-4"` / `"gap-6"` | `THEME_CONSTANTS.spacing.gap.xs` / `.md` / `.lg` |
+| `"gap-x-4"` / `"gap-y-4"` | `THEME_CONSTANTS.spacing.gap.x.md` / `.y.md` |
 | `"text-4xl md:text-5xl font-bold"` | `THEME_CONSTANTS.typography.h1` |
 | `"text-3xl md:text-4xl font-bold"` | `THEME_CONSTANTS.typography.h2` |
 | `"text-2xl md:text-3xl font-bold"` | `THEME_CONSTANTS.typography.h3` |
@@ -306,6 +310,44 @@ return successResponse(result, SUCCESS_MESSAGES.PRODUCT.CREATED);
 | `"pb-8 mb-8 bg-gradient-to-r..."` (page header) | `THEME_CONSTANTS.pageHeader.adminGradient` |
 | `"bg-gray-50/50 dark:bg-gray-800/20"` | `THEME_CONSTANTS.sectionBg.subtle` |
 | Loose `rounded-lg border...focus:ring-2...` (input) | `THEME_CONSTANTS.input.base` |
+| `"flex items-center justify-center"` | `THEME_CONSTANTS.flex.center` |
+| `"flex items-center justify-between"` | `THEME_CONSTANTS.flex.between` |
+| `"flex items-start justify-between"` | `THEME_CONSTANTS.flex.betweenStart` |
+| `"flex items-center justify-start"` | `THEME_CONSTANTS.flex.start` |
+| `"flex items-center justify-end"` | `THEME_CONSTANTS.flex.end` |
+| `"flex items-center"` (row, no justify) | `THEME_CONSTANTS.flex.rowCenter` |
+| `"flex items-start"` (row, no justify) | `THEME_CONSTANTS.flex.rowStart` |
+| `"flex flex-col items-center justify-center"` | `THEME_CONSTANTS.flex.centerCol` |
+| `"flex flex-col items-start"` | `THEME_CONSTANTS.flex.colStart` |
+| `"flex flex-col items-center"` | `THEME_CONSTANTS.flex.colCenter` |
+| `"flex justify-center"` (horizontal only, no alignment) | `THEME_CONSTANTS.flex.hCenter` |
+| `"flex-1 min-w-0"` | `THEME_CONSTANTS.flex.growMin` |
+| `"flex-shrink-0"` | `THEME_CONSTANTS.flex.noShrink` |
+| `"overflow-hidden"` | `THEME_CONSTANTS.overflow.hidden` |
+| `"overflow-y-auto overflow-x-hidden"` / `"overflow-y-auto"` | `THEME_CONSTANTS.overflow.yAuto` |
+| `"overflow-x-auto"` | `THEME_CONSTANTS.overflow.xAuto` |
+| `"grid grid-cols-1 sm:grid-cols-2"` | `THEME_CONSTANTS.grid.cols2` |
+| `"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"` | `THEME_CONSTANTS.grid.cols3` |
+| `"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"` | `THEME_CONSTANTS.grid.cols4` |
+| `"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"` | `THEME_CONSTANTS.grid.cols5` |
+| `"grid grid-cols-1 md:grid-cols-2"` | `THEME_CONSTANTS.grid.halves` |
+| `"grid grid-cols-1 lg:grid-cols-[280px_1fr]"` | `THEME_CONSTANTS.grid.sidebar` |
+| `"absolute inset-0"` | `THEME_CONSTANTS.position.fill` |
+| `"fixed inset-0"` | `THEME_CONSTANTS.position.fixedFill` |
+| `"sticky top-0"` | `THEME_CONSTANTS.position.stickyTop` |
+| `"absolute top-0 right-0"` | `THEME_CONSTANTS.position.absoluteTopRight` |
+| `"w-8 h-8"` / `"w-12 h-12"` | `THEME_CONSTANTS.size.square.md` / `.xl` |
+| `"max-w-3xl mx-auto px-4 sm:px-6 lg:px-8"` | `THEME_CONSTANTS.page.container.sm` |
+| `"max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"` | `THEME_CONSTANTS.page.container.md` |
+| `"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8"` | `THEME_CONSTANTS.page.container.lg` |
+| `"max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"` | `THEME_CONSTANTS.page.container.xl` |
+| `"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"` | `THEME_CONSTANTS.page.container["2xl"]` |
+| `"max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8"` | `THEME_CONSTANTS.page.container.full` |
+| `"max-w-screen-2xl mx-auto px-4 sm:px-6"` | `THEME_CONSTANTS.page.container.wide` |
+| `"px-4 sm:px-6 lg:px-8"` (standalone) | `THEME_CONSTANTS.page.px` |
+| `"px-4 sm:px-6"` (standalone) | `THEME_CONSTANTS.page.pxSm` |
+| `"py-16"` for empty / loading state | `THEME_CONSTANTS.page.empty` |
+| `"py-8 sm:py-12"` for auth form wrapper | `THEME_CONSTANTS.page.authPad` |
 
 ### Inline Styles
 
@@ -623,7 +665,7 @@ useApiQuery({
 
 ### Typography Primitives — Mandatory for ALL Text Rendering
 
-**NEVER write bare `<h1>`–`<h6>`, `<p>`, `<label>`, or content `<span>` tags. ALWAYS use the Typography components from `@/components`.**
+**NEVER write bare `<h1>`–`<h6>`, `<p>`, `<label>`, `<span>`, or `<a>` tags. ALWAYS use the Typography components from `@/components`.**
 
 These components encode `THEME_CONSTANTS` typography and colour tokens. One token update propagates to every text element across the entire app — this is why raw tags are forbidden.
 
@@ -633,6 +675,8 @@ These components encode `THEME_CONSTANTS` typography and colour tokens. One toke
 | `Text` | Body paragraphs, descriptions, any sentence-length copy | `size="xs\|sm\|base\|lg\|xl"`, `weight="normal\|medium\|semibold\|bold"`, `variant="primary\|secondary\|muted\|error\|success"` |
 | `Label` | Form field labels, input annotations | `required={boolean}` |
 | `Caption` | Helper text, timestamps, metadata, tags, small annotations | — |
+| `Span` | Inline CSS wrappers (gradient text, highlight, clip-path), inline text with variant | `variant="inherit\|primary\|secondary\|muted\|error\|success\|accent"`, `size`, `weight`; `variant="inherit"` applies no colour class |
+| `TextLink` | ALL anchor/link elements — internal routes AND external/mailto/tel URLs | `href`, `variant="default\|muted\|nav\|danger\|inherit"`; auto-detects external (opens in new tab); use `href={ROUTES.*}` for internal |
 
 ```tsx
 // WRONG — raw tags with ad-hoc Tailwind
@@ -640,13 +684,19 @@ These components encode `THEME_CONSTANTS` typography and colour tokens. One toke
 <p className="text-sm text-gray-600 dark:text-gray-400">Description here</p>
 <label className="block text-sm font-medium">Email</label>
 <span className="text-xs text-gray-500">Created 3 days ago</span>
+<a href="/about" className="text-blue-600">About</a>
+<a href="https://example.com" target="_blank">External</a>
 
 // RIGHT — Typography primitives
-import { Heading, Text, Label, Caption } from '@/components';
+import { Heading, Text, Label, Caption, Span, TextLink } from '@/components';
+import { ROUTES } from '@/constants';
 <Heading level={2}>Section Title</Heading>
 <Text variant="secondary" size="sm">Description here</Text>
 <Label required>Email</Label>
 <Caption>Created 3 days ago</Caption>
+<Span variant="inherit" className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Gradient</Span>
+<TextLink href={ROUTES.ABOUT}>About</TextLink>
+<TextLink href="https://example.com">External</TextLink>
 ```
 
 **When a variant or size you need doesn’t exist yet**: add it inside `src/components/typography/Typography.tsx` following the existing pattern — then use it. Do not compensate with ad-hoc Tailwind on the element.
@@ -793,9 +843,56 @@ import { FormField, Button } from '@/components';
 
 **When a variant or prop is missing**: add it to the source file in `src/components/forms/` or `src/components/ui/Button.tsx`. Do not create wrapper components.
 
+### Semantic HTML Wrapper Components — Mandatory for ALL Structural Elements
+
+**NEVER write bare `<section>`, `<article>`, `<main>`, `<aside>`, `<nav>`, `<header>` (block), `<footer>` (block), `<ul>`, `<ol>`, or `<li>` elements. ALWAYS use the semantic wrappers from `@/components`.**
+
+These thin wrappers allow one-place theming of structural elements via `THEME_CONSTANTS` and enforce semantic HTML discipline across every tier.
+
+| Component | HTML | Notes |
+|-----------|------|-------|
+| `Section` | `<section>` | Semantic page section |
+| `Article` | `<article>` | Self-contained composition |
+| `Main` | `<main>` | Primary document content (one per page) |
+| `Aside` | `<aside>` | Supplementary content / sidebar |
+| `Nav` | `<nav>` | Navigation region — `aria-label` is **required** |
+| `BlockHeader` | `<header>` | Block-level component header — **NOT** the page app `Header` |
+| `BlockFooter` | `<footer>` | Block-level component footer — **NOT** the page app `Footer` |
+| `Ul` | `<ul>` | Unordered list |
+| `Ol` | `<ol>` | Ordered list |
+| `Li` | `<li>` | List item |
+
+```tsx
+// WRONG
+<section className="py-8">
+  <nav>
+    <ul>
+      <li><a href="/home">Home</a></li>
+    </ul>
+  </nav>
+</section>
+
+// RIGHT
+import { Section, Nav, Ul, Li, TextLink } from '@/components';
+import { ROUTES } from '@/constants';
+<Section className="py-8">
+  <Nav aria-label="Main navigation">
+    <Ul>
+      <Li><TextLink href={ROUTES.HOME}>{t('nav.home')}</TextLink></Li>
+    </Ul>
+  </Nav>
+</Section>
+```
+
+**When a prop or class is needed**: all semantic components forward `className` and all standard HTML attributes — add classes directly on the component; do not create a wrapper.
+
 ### Other Key Components
 
-**UI**: `Button`, `Card`, `Badge`, `Input`, `Select`, `Textarea`, `Checkbox`, `Toggle`, `Alert`, `Modal`, `ConfirmDeleteModal`, `ImageCropModal`, `FormField`, `Slider`, `Progress`, `Tabs`, `Accordion`, `Tooltip`, `Search`, `BackToTop`, `LoadingSpinner`, `Skeleton`, `Divider`, `ErrorBoundary`, `AvatarDisplay`, `AvatarUpload`, `PasswordStrengthIndicator`, `Heading`, `Text`, `Label`, `Caption`, `DataTable`, `SideDrawer`, `RichTextEditor`, `Sidebar`, `Header`, `Footer`, `SectionTabs`, `StatusBadge`, `RoleBadge`, `EmptyState`, `ResponsiveView`, `HorizontalScroller`.
+**Typography**: `Heading`, `Text`, `Label`, `Caption`, `Span`, `TextLink`.
+
+**Semantic HTML**: `Section`, `Article`, `Main`, `Aside`, `Nav`, `BlockHeader`, `BlockFooter`, `Ul`, `Ol`, `Li`.
+
+**UI**: `Button`, `Card`, `Badge`, `Input`, `Select`, `Textarea`, `Checkbox`, `Toggle`, `Alert`, `Modal`, `ConfirmDeleteModal`, `ImageCropModal`, `FormField`, `Slider`, `Progress`, `Tabs`, `Accordion`, `Tooltip`, `Search`, `BackToTop`, `LoadingSpinner`, `Skeleton`, `Divider`, `ErrorBoundary`, `AvatarDisplay`, `AvatarUpload`, `PasswordStrengthIndicator`, `DataTable`, `SideDrawer`, `RichTextEditor`, `Sidebar`, `Header`, `Footer`, `SectionTabs`, `StatusBadge`, `RoleBadge`, `EmptyState`, `ResponsiveView`, `HorizontalScroller`.
 
 **Filter / Facet / Pagination** — Tier 1 primitives for all page types:
 - `FilterFacetSection` — collapsible filter group (checkboxes + inline search + load-more).
@@ -832,8 +929,21 @@ This rule exists because repeated audits show that new code keeps re-implementin
 | `<h1>` / `<h2>` / `<h3>` / `<h4>` / `<h5>` / `<h6>` | `Heading level={1–6}` from `@/components` (Rule 31) |
 | `<p>` body paragraph | `Text` from `@/components` (Rule 31) |
 | `<span>` for helper text, timestamps, or metadata | `Caption` (or `Text`) from `@/components` (Rule 31) |
+| `<span>` styled wrapper (gradient text, highlight, CSS clip) | `Span` from `@/components` — `variant="inherit"` applies no colour class |
+| `<a>` internal navigation link | `TextLink href={ROUTES.*}` from `@/components` — never `<a>` or `Link` from `next/navigation` directly |
+| `<a>` external / mailto / tel link | `TextLink href="https://..." ` (auto-detected) from `@/components` |
 | `<label>` for form field labels | `Label` from `@/components` (Rule 31) |
 | `<button>` any interactive button | `Button variant="..."` from `@/components` (Rule 31) |
+| `<section>` semantic page section | `Section` from `@/components` |
+| `<article>` self-contained composition | `Article` from `@/components` |
+| `<main>` primary document content | `Main` from `@/components` |
+| `<aside>` supplementary content / sidebar | `Aside` from `@/components` |
+| `<nav>` navigation region | `Nav aria-label="..."` from `@/components` — `aria-label` is REQUIRED |
+| `<header>` block-level component header | `BlockHeader` from `@/components` — NOT the page app header |
+| `<footer>` block-level component footer | `BlockFooter` from `@/components` — NOT the page app footer |
+| `<ul>` unordered list | `Ul` from `@/components` |
+| `<ol>` ordered list | `Ol` from `@/components` |
+| `<li>` list item | `Li` from `@/components` |
 | `<input type="text/email/number">` | `FormField` or `Input` from `@/components` |
 | `<textarea>` | `FormField type="textarea"` from `@/components` |
 | `<select>` | `FormField type="select"` or `Select` from `@/components` |
@@ -2297,7 +2407,7 @@ Every change that touches `src/db/schema/`, `firestore.rules`, `storage.rules`, 
 
 1. Use `THEME_CONSTANTS` (Rule 4) for all repeated Tailwind patterns
 2. Use `ThemeContext` (`useTheme()`) only for conditional light/dark logic
-3. Use existing components (Rule 7) and Typography primitives (Rule 31) — no raw `<input>`, `<button>`, `<h1>`–`<h6>`, `<p>`, `<label>`, or content `<span>` elements — applies to **every** component at **every** tier including feature sub-components, modal internals, card bodies, table cells, and alert layouts
+3. Use existing components (Rule 7) and Typography primitives (Rule 31) — no raw `<input>`, `<button>`, `<h1>`–`<h6>`, `<p>`, `<label>`, `<span>`, `<a>`, `<section>`, `<article>`, `<main>`, `<aside>`, `<nav>`, `<header>` (block), `<footer>` (block), `<ul>`, `<ol>`, or `<li>` elements — applies to **every** component at **every** tier including feature sub-components, modal internals, card bodies, table cells, and alert layouts
 4. No inline `style={{}}` except for dynamic calculated values
 5. No CSS modules
 6. Mobile-first — write base styles for 375 px, extend upward with `sm:` → `2xl:` (Rule 25)
@@ -2991,6 +3101,122 @@ To add a new locale:
 
 ---
 
+## RULE 34: Semantic HTML — Use the Right Element for the Job
+
+**Element choice must reflect meaning, not just visual appearance. Choose the HTML element whose semantic role describes the content, then style it. Never choose an element purely for its default browser styling.**
+
+This rule covers elements NOT already wrapped by the Tier 1 component primitives in Rule 7. Use those wrapper components (`Section`, `Nav`, `Ul`, etc.) for structural layout; use the elements below for inline semantic meaning.
+
+### Additional Semantic Elements — Mandatory Where Applicable
+
+| Instead of... | Use | Why |
+|---|---|---|
+| `<span>{date}</span>` for dates/times | `<time dateTime="ISO-8601">{formatted}</time>` | Machine-readable dates for search engines, screen readers, and calendar apps |
+| `<div>` or `<p>` for contact info | `<address>` | Marks up contact information; screen readers and crawlers identify it as such |
+| `<ul>/<li>` for key-value pairs | `<dl>/<dt>/<dd>` | `dl` = description list; correct semantic for metadata, glossaries, and inline FAQs |
+| `<span className="highlight">` | `<mark>` | Marks text as highlighted/relevant — screen readers convey the emphasis |
+| Bare abbreviation text | `<abbr title="full term">` | Exposes the full term to screen readers and on hover |
+| `<span className="quote">` | `<blockquote>` / `<q>` | Block and inline quotations; use the `cite` attribute to attribute the source |
+| `<span>` for inline citations of a work | `<cite>` | Marks the title of a cited work (book, article, film) |
+| `<span className="code">` | `<code>` inline / `<pre><code>` block | Screen readers and search engines identify it as code |
+| `<span>` for keyboard input | `<kbd>` | Screen readers announce as keyboard input |
+
+### Heading Hierarchy — Never Skip Levels
+
+**NEVER skip heading levels. `<Heading level={3}>` must be nested within a `<Heading level={2}>` context — never appear before an `<Heading level={2}>`, and never jump from `level={1}` to `level={3}>`.**
+
+```tsx
+// WRONG — h1 followed by h3 (h2 is skipped)
+<Heading level={1}>Page Title</Heading>
+<Heading level={3}>Section</Heading>   // ❌
+
+// RIGHT — sequential hierarchy
+<Heading level={1}>Page Title</Heading>
+<Heading level={2}>Section</Heading>      // ✅
+<Heading level={3}>Sub-section</Heading>  // ✅
+```
+
+Rules:
+- Each page MUST have exactly **one** `<Heading level={1}>`.
+- Never use a lower heading level solely to produce bigger text — control size via `className` or a `size` prop on the `Heading` component.
+- Admin panels and modals start at `level={2}` (the page `<h1>` is the page title).
+
+### ARIA Attributes — Rules
+
+**NEVER omit ARIA attributes where they are required. NEVER use ARIA as a substitute for correct semantic HTML — fix the element choice first.**
+
+| When to use | Attribute | Notes |
+|---|---|---|
+| Interactive element with no visible text | `aria-label` | Required on all icon-only buttons and icon-only links |
+| Element labelled by another visible element | `aria-labelledby="id"` | Prefer over `aria-label` when label text is already visible on screen |
+| Live status message (loading, toast) | `aria-live="polite"` | Do not use `"assertive"` for non-critical messages |
+| Expandable widget (accordion, dropdown) | `aria-expanded={boolean}` | Must toggle correctly on open/close |
+| Button that controls a panel/region | `aria-controls="id"` | Links the trigger to its target element |
+| Active item in a nav or step list | `aria-current="page"` / `"step"` | Active nav link, current wizard step |
+| Decorative icon next to labelled text | `aria-hidden="true"` | Prevents icon SVG from being announced twice |
+| Invalid form field | `aria-invalid="true"` | Set when an error message is visible for that field |
+| Field wired to an error message | `aria-describedby="error-id"` | Links the input to its error `<Text>` element |
+
+**Dos and Don'ts:**
+- **DO** add `aria-label` to every icon-only `Button` and `TextLink`.
+- **DO** wire `aria-expanded` and `aria-controls` on custom interactive widgets.
+- **DO** set `aria-hidden="true"` on decorative icons that sit beside labelled text.
+- **DON'T** use `role="button"` on a `<div>` — use `<Button>` from `@/components`.
+- **DON'T** use `role="heading"` — use `<Heading>` from `@/components`.
+- **DON'T** add ARIA attributes to paper over a wrong element choice — fix the element.
+
+### Focus Management
+
+- All interactive elements MUST be keyboard-reachable (`Tab` / `Shift+Tab`).
+- Custom interactive widgets MUST implement correct keyboard patterns: arrow keys for menus/selects, `Enter`/`Space` for buttons, `Escape` to close modals.
+- When a modal opens, focus MUST move to the first focusable element inside it (handled by `Modal` from `@/components` — do not override).
+- When a modal closes, focus MUST return to the element that triggered it.
+- **NEVER** remove the focus ring with `focus:outline-none` unless a visible replacement is in place (`focus-visible:ring-2 focus-visible:ring-indigo-500 focus:outline-none`).
+
+```tsx
+// WRONG — removes focus ring with no replacement
+<Button className="focus:outline-none">Save</Button>  // ❌ keyboard users cannot see focus
+
+// RIGHT — custom ring replaces the default
+<Button className="focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">Save</Button>  // ✅
+```
+
+### `<time>` Element Pattern
+
+```tsx
+import { formatDate } from '@/utils';
+
+// WRONG — display-only, no machine-readable context
+<Caption>{formatDate(product.createdAt)}</Caption>
+
+// RIGHT — <time> provides the ISO datetime; Caption provides the display text
+<time dateTime={product.createdAt.toISOString()}>
+  <Caption>{formatDate(product.createdAt)}</Caption>
+</time>
+```
+
+Wrap **every** user-visible date, time, or duration in a `<time dateTime="...">` element.
+
+### `<dl>` / `<dt>` / `<dd>` Pattern
+
+```tsx
+// WRONG — key-value pairs faked with flex divs
+<div className="flex gap-2">
+  <Text weight="medium">Condition:</Text>
+  <Text>New</Text>
+</div>
+
+// RIGHT — semantic description list
+<dl>
+  <dt><Text weight="medium">Condition</Text></dt>
+  <dd><Text>New</Text></dd>
+</dl>
+```
+
+`<dl>` / `<dt>` / `<dd>` are native HTML — do NOT wrap them with `Ul`/`Li`. Use them directly for any key-value or term-definition metadata.
+
+---
+
 ## Development Commands
 
 ### Build & Test
@@ -3112,7 +3338,19 @@ Before writing ANY code, verify:
 - [ ] Has `npm run build` completed with 0 errors? (Rule 26)
 - [ ] Have I written or updated tests for every file I changed? (Rule 27)
 - [ ] Am I writing any `<h1>`–`<h6>`, `<p>`, content `<span>`, or `<label>` tag? → use `Heading`, `Text`, `Caption`, or `Label` from `@/components` — **this applies inside feature components, modals, cards, table cells, alerts, and sub-components too, not just pages** (Rule 7, Rule 31)
+- [ ] Am I using a styled `<span>` as a CSS wrapper (gradient text, clip-path, highlight)? → use `Span` from `@/components` with `variant="inherit"` (Rule 8)
 - [ ] Am I writing a raw `<button>` element anywhere? → use `Button` with the correct `variant` from `@/components` (Rule 31)
+- [ ] Am I writing a raw `<a>` tag for an internal route? → use `TextLink href={ROUTES.*}` from `@/components` — NEVER import `Link` from `@/i18n/navigation` directly in a component (Rule 8)
+- [ ] Am I writing a raw `<a>` tag for an external URL, mailto, or tel? → use `TextLink href="..."` from `@/components` (auto-detects external, opens in new tab) (Rule 8)
+- [ ] Am I writing a raw `<section>` element? → use `Section` from `@/components` (Rule 8)
+- [ ] Am I writing a raw `<article>` element? → use `Article` from `@/components` (Rule 8)
+- [ ] Am I writing a raw `<main>` element? → use `Main` from `@/components` (Rule 8)
+- [ ] Am I writing a raw `<aside>` element? → use `Aside` from `@/components` (Rule 8)
+- [ ] Am I writing a raw `<nav>` element? → use `Nav aria-label="..."` from `@/components` — `aria-label` is required (Rule 8)
+- [ ] Am I writing a raw `<header>` element inside a component (not the page app header)? → use `BlockHeader` from `@/components` (Rule 8)
+- [ ] Am I writing a raw `<footer>` element inside a component (not the page app footer)? → use `BlockFooter` from `@/components` (Rule 8)
+- [ ] Am I writing a raw `<ul>` or `<ol>` element? → use `Ul` or `Ol` from `@/components` (Rule 8)
+- [ ] Am I writing a raw `<li>` element? → use `Li` from `@/components` (Rule 8)
 - [ ] Am I rendering text inside a card, section, modal, table cell, or alert? → use the contextual Typography pattern (`Heading`/`Text`/`Caption`/`Label`) — no ad-hoc Tailwind on raw tags (Rule 7 — Typography in Context)
 - [ ] Before writing any `<input>`, `<textarea>`, `<select>`, `<button>`, or checkbox — did I check if the purpose-built component already exists in `@/components`? (Rule 8)
 - [ ] Before making an image/video URL text field — am I using `ImageUpload` / `MediaUploadField`? (Rule 8)
@@ -3185,6 +3423,17 @@ Before writing ANY code, verify:
 - [ ] Am I concatenating strings or using `.replace()` for dynamic text? → use `t('key', { variable })` interpolation (Rule 33)
 - [ ] Am I writing `aria-label`, `placeholder`, `title`, or `alt` with a hardcoded string? → translate via `t()` (Rule 33)
 - [ ] Did I mock `next-intl` and `@/i18n/navigation` in new test files? (Rule 33)
+- [ ] Am I displaying a date or time to the user without a `<time>` element? → wrap in `<time dateTime={iso}>` for machine-readable temporal metadata (Rule 34)
+- [ ] Am I listing key-value or term-definition pairs using `<ul>/<li>` or plain divs? → use `<dl>/<dt>/<dd>` instead (Rule 34)
+- [ ] Am I using a `<span>` to visually highlight text, quote something, or represent code/keyboard input? → use `<mark>`, `<blockquote>`/`<q>`, `<code>`, or `<kbd>` (Rule 34)
+- [ ] Am I rendering an abbreviation without `<abbr title="...">` ? → wrap it (Rule 34)
+- [ ] Does this page have exactly one `<Heading level={1}>`? (Rule 34)
+- [ ] Are heading levels sequential — no skipped levels (h1 → h2 → h3, never h1 → h3)? (Rule 34)
+- [ ] Does every icon-only `Button` or `TextLink` have an `aria-label`? (Rule 34)
+- [ ] Do all custom expandable widgets set `aria-expanded` correctly on open/close? (Rule 34)
+- [ ] Are decorative icons that sit beside labelled text marked `aria-hidden="true"`? (Rule 34)
+- [ ] Am I using `role="button"` on a `<div>` or `<span>`? → use `<Button>` from `@/components` (Rule 34)
+- [ ] Am I removing the focus ring with `focus:outline-none` without a visible `focus-visible:ring-*` replacement? (Rule 34)
 
 
 ---

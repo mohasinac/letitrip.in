@@ -1,13 +1,20 @@
 ﻿"use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useFeaturedProducts } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
-import { HorizontalScroller } from "@/components/ui";
+import {
+  Heading,
+  HorizontalScroller,
+  Section,
+  Text,
+  TextLink,
+} from "@/components";
+
+const { flex } = THEME_CONSTANTS;
 
 export function FeaturedProductsSection() {
   const t = useTranslations("homepage");
@@ -16,7 +23,7 @@ export function FeaturedProductsSection() {
 
   if (isLoading) {
     return (
-      <section
+      <Section
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
       >
         <div className="w-full">
@@ -48,7 +55,7 @@ export function FeaturedProductsSection() {
             ))}
           </div>
         </div>
-      </section>
+      </Section>
     );
   }
 
@@ -59,30 +66,31 @@ export function FeaturedProductsSection() {
   }
 
   return (
-    <section
+    <Section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
       <div className="w-full">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className={`${flex.between} mb-6`}>
           <div>
-            <h2
+            <Heading
+              level={2}
               className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-1`}
             >
               {t("featuredProducts")}
-            </h2>
-            <p
+            </Heading>
+            <Text
               className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
             >
               {t("featuredProductsSubtitle")}
-            </p>
+            </Text>
           </div>
-          <Link
+          <TextLink
             href={ROUTES.PUBLIC.PRODUCTS}
             className={`text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300`}
           >
             {tActions("viewAllArrow")}
-          </Link>
+          </TextLink>
         </div>
 
         {/* Mobile: single-row circular carousel */}
@@ -90,7 +98,7 @@ export function FeaturedProductsSection() {
           <HorizontalScroller
             items={products.slice(0, 20)}
             renderItem={(product) => (
-              <Link
+              <TextLink
                 href={`/products/${product.id}`}
                 className={`group block ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
               >
@@ -98,7 +106,7 @@ export function FeaturedProductsSection() {
                   product={product}
                   sizes="(max-width: 640px) 50vw, 33vw"
                 />
-              </Link>
+              </TextLink>
             )}
             perView={{ base: 2, sm: 3 }}
             gap={12}
@@ -113,7 +121,7 @@ export function FeaturedProductsSection() {
           <HorizontalScroller
             items={products.slice(0, 30)}
             renderItem={(product) => (
-              <Link
+              <TextLink
                 href={`/products/${product.id}`}
                 className={`group block ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
               >
@@ -121,7 +129,7 @@ export function FeaturedProductsSection() {
                   product={product}
                   sizes="(max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
                 />
-              </Link>
+              </TextLink>
             )}
             perView={{ base: 3, lg: 4, xl: 5, "2xl": 6 }}
             rows={2}
@@ -133,7 +141,7 @@ export function FeaturedProductsSection() {
           />
         </div>
       </div>
-    </section>
+    </Section>
   );
 }
 
@@ -162,22 +170,23 @@ function ProductCardContent({
       </div>
       <div className={`${THEME_CONSTANTS.spacing.padding.sm} text-left`}>
         {product.brand && (
-          <p
+          <Text
             className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
           >
             {product.brand}
-          </p>
+          </Text>
         )}
-        <h3
+        <Heading
+          level={3}
           className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-medium mb-2 line-clamp-2 min-h-[2.5rem]`}
         >
           {product.title}
-        </h3>
-        <p
+        </Heading>
+        <Text
           className={`${THEME_CONSTANTS.typography.h4} ${THEME_CONSTANTS.themed.textPrimary} font-bold`}
         >
           {formatCurrency(product.price, product.currency)}
-        </p>
+        </Text>
       </div>
     </>
   );

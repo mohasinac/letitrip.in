@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { formatNumber } from "@/utils";
-import { Text } from "@/components";
+import { Label, Span, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface FacetOption {
@@ -110,16 +110,16 @@ export function FilterFacetSection({
         className={`flex w-full items-center justify-between text-sm font-semibold ${themed.textPrimary} py-1 hover:opacity-80 transition-opacity`}
         aria-expanded={!isCollapsed}
       >
-        <span className="flex items-center gap-2">
+        <Span className="flex items-center gap-2">
           {title}
           {selected.length > 0 && (
-            <span
+            <Span
               className={`inline-flex items-center justify-center w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
             >
               {selected.length}
-            </span>
+            </Span>
           )}
-        </span>
+        </Span>
         {/* Chevron icon */}
         <svg
           className={`w-4 h-4 ${themed.textSecondary} transition-transform duration-200 ${isCollapsed ? "" : "rotate-180"}`}
@@ -165,7 +165,7 @@ export function FilterFacetSection({
             visibleOptions.map((opt) => {
               const isChecked = selected.includes(opt.value);
               return (
-                <label
+                <Label
                   key={opt.value}
                   className={`flex items-center gap-2 cursor-pointer py-1 px-1 ${borderRadius.md} hover:${themed.bgSecondary} transition-colors`}
                 >
@@ -176,17 +176,17 @@ export function FilterFacetSection({
                     aria-checked={isChecked}
                     className="w-3.5 h-3.5 rounded accent-indigo-600 cursor-pointer"
                   />
-                  <span className={`flex-1 text-sm ${themed.textPrimary}`}>
+                  <Span className={`flex-1 text-sm ${themed.textPrimary}`}>
                     {opt.label}
-                  </span>
+                  </Span>
                   {opt.count !== undefined && (
-                    <span
+                    <Span
                       className={`text-xs ${themed.textSecondary} tabular-nums`}
                     >
                       {formatNumber(opt.count)}
-                    </span>
+                    </Span>
                   )}
-                </label>
+                </Label>
               );
             })
           )}

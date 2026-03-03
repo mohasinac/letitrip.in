@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BlogTableColumns
  * Path: src/components/admin/blog/BlogTableColumns.tsx
  *
@@ -10,7 +10,7 @@
 
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
-import { Button } from "@/components";
+import { Button, Caption, Span, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import type { BlogPostDocument } from "@/db/schema";
 
@@ -51,12 +51,10 @@ export function useBlogTableColumns(
         width: "30%",
         render: (post: BlogPostDocument) => (
           <div>
-            <p className="font-medium text-sm truncate max-w-[220px]">
+            <Text size="sm" weight="medium" className="truncate max-w-[220px]">
               {post.title}
-            </p>
-            <p className={`text-xs ${themed.textSecondary} font-mono`}>
-              /{post.slug}
-            </p>
+            </Text>
+            <Caption className="font-mono">/{post.slug}</Caption>
           </div>
         ),
       },
@@ -66,11 +64,11 @@ export function useBlogTableColumns(
         sortable: true,
         width: "12%",
         render: (post: BlogPostDocument) => (
-          <span
+          <Span
             className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium capitalize ${CATEGORY_STYLES[post.category] ?? ""}`}
           >
             {post.category}
-          </span>
+          </Span>
         ),
       },
       {
@@ -79,11 +77,11 @@ export function useBlogTableColumns(
         sortable: true,
         width: "12%",
         render: (post: BlogPostDocument) => (
-          <span
+          <Span
             className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium capitalize ${STATUS_STYLES[post.status] ?? ""}`}
           >
             {post.status}
-          </span>
+          </Span>
         ),
       },
       {
@@ -92,9 +90,9 @@ export function useBlogTableColumns(
         width: "8%",
         render: (post: BlogPostDocument) =>
           post.isFeatured ? (
-            <span className="text-yellow-500 text-base">★</span>
+            <Span className="text-yellow-500 text-base">★</Span>
           ) : (
-            <span className={`text-xs ${themed.textSecondary}`}>—</span>
+            <Span className={`text-xs ${themed.textSecondary}`}>—</Span>
           ),
       },
       {
@@ -102,11 +100,13 @@ export function useBlogTableColumns(
         header: t("author"),
         width: "14%",
         render: (post: BlogPostDocument) => (
-          <p
-            className={`text-sm ${themed.textSecondary} truncate max-w-[100px]`}
+          <Text
+            size="sm"
+            variant="secondary"
+            className="truncate max-w-[100px]"
           >
             {post.authorName}
-          </p>
+          </Text>
         ),
       },
       {
@@ -115,9 +115,9 @@ export function useBlogTableColumns(
         sortable: true,
         width: "12%",
         render: (post: BlogPostDocument) => (
-          <p className={`text-sm ${themed.textSecondary}`}>
+          <Text size="sm" variant="secondary">
             {post.publishedAt ? formatDate(post.publishedAt) : "—"}
-          </p>
+          </Text>
         ),
       },
       {
@@ -126,7 +126,9 @@ export function useBlogTableColumns(
         sortable: true,
         width: "8%",
         render: (post: BlogPostDocument) => (
-          <p className={`text-sm ${themed.textSecondary}`}>{post.views}</p>
+          <Text size="sm" variant="secondary">
+            {post.views}
+          </Text>
         ),
       },
       {

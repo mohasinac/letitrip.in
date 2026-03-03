@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { THEME_CONSTANTS, UI_PLACEHOLDERS } from "@/constants";
+import { Button } from "@/components";
 
 interface FAQSearchBarProps {
   onSearch: (query: string) => void;
@@ -54,7 +55,7 @@ export function FAQSearchBar({
 
       {/* Clear Button */}
       {query && (
-        <button
+        <Button
           onClick={handleClear}
           className={`absolute right-4 top-1/2 -translate-y-1/2 ${THEME_CONSTANTS.themed.textSecondary} hover:${THEME_CONSTANTS.themed.textPrimary} transition-colors`}
           aria-label="Clear search"
@@ -72,7 +73,7 @@ export function FAQSearchBar({
               d="M6 18L18 6M6 6l12 12"
             />
           </svg>
-        </button>
+        </Button>
       )}
     </div>
   );

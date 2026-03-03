@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BlogForm Component
  * Path: src/components/admin/blog/BlogForm.tsx
  *
@@ -8,7 +8,15 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { FormField, Checkbox, RichTextEditor, ImageUpload } from "@/components";
+import {
+  Checkbox,
+  FormField,
+  ImageUpload,
+  Label,
+  RichTextEditor,
+  Span,
+  Text,
+} from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import type {
   BlogPostDocument,
@@ -96,12 +104,12 @@ export function BlogForm({
 
       {/* Content — rich text editor */}
       <div>
-        <label
+        <Label
           className={`block text-sm font-medium ${themed.textSecondary} mb-1`}
         >
           {t("formContent")}
-          <span className="text-red-500 ml-1">*</span>
-        </label>
+          <Span className="text-red-500 ml-1">*</Span>
+        </Label>
         {isReadonly ? (
           <div
             className="min-h-[200px] border rounded-md p-3 opacity-60 prose dark:prose-invert max-w-none"
@@ -129,14 +137,14 @@ export function BlogForm({
       )}
       {isReadonly && post.coverImage && (
         <div>
-          <label
+          <Label
             className={`block text-sm font-medium ${themed.textSecondary} mb-1`}
           >
             {t("formCover")}
-          </label>
-          <p className={`text-sm ${themed.textSecondary} truncate`}>
+          </Label>
+          <Text size="sm" variant="secondary" className="truncate">
             {post.coverImage}
-          </p>
+          </Text>
         </div>
       )}
 

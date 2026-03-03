@@ -9,7 +9,7 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";
 import { useTranslations } from "next-intl";
@@ -22,7 +22,7 @@ import {
 } from "@/components";
 import type { NotificationDocument } from "@/db/schema";
 
-const { themed, spacing } = THEME_CONSTANTS;
+const { themed, spacing, flex } = THEME_CONSTANTS;
 
 interface NotificationsResponse {
   notifications: NotificationDocument[];
@@ -114,7 +114,7 @@ export function UserNotificationsView() {
 
   if (authLoading || !user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className={`${flex.center} min-h-screen`}>
         <Spinner size="lg" />
       </div>
     );
@@ -132,7 +132,7 @@ export function UserNotificationsView() {
       />
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-16">
+        <div className={`${flex.center} py-16`}>
           <Spinner size="lg" />
         </div>
       ) : notifications.length === 0 ? (

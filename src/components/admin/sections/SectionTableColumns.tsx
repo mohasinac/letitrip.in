@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 /**
  * useSectionTableColumns
@@ -7,7 +7,7 @@
  * Column definitions hook for the admin homepage sections DataTable.
  */
 
-import { StatusBadge } from "@/components";
+import { Button, Span, StatusBadge } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { HomepageSection } from "./types";
@@ -39,10 +39,10 @@ export function useSectionTableColumns(
         header: t("sectionType"),
         sortable: true,
         render: (section: HomepageSection) => (
-          <span className={`text-sm ${themed.textSecondary}`}>
+          <Span className={`text-sm ${themed.textSecondary}`}>
             {SECTION_TYPES.find((st) => st.value === section.type)?.label ||
               section.type}
-          </span>
+          </Span>
         ),
       },
       {
@@ -59,7 +59,7 @@ export function useSectionTableColumns(
     ],
     actions: (section: HomepageSection) => (
       <div className="flex gap-2">
-        <button
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             onEdit(section);
@@ -67,8 +67,8 @@ export function useSectionTableColumns(
           className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
         >
           {tActions("edit")}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             onDelete(section);
@@ -76,7 +76,7 @@ export function useSectionTableColumns(
           className="text-red-600 hover:text-red-800 dark:text-red-400"
         >
           {tActions("delete")}
-        </button>
+        </Button>
       </div>
     ),
   };

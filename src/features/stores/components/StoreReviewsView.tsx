@@ -7,7 +7,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useStoreReviews } from "../hooks";
 
-const { spacing, themed } = THEME_CONSTANTS;
+const { spacing, themed, flex, overflow, page } = THEME_CONSTANTS;
 
 interface StoreReviewsViewProps {
   storeSlug: string;
@@ -32,7 +32,7 @@ export function StoreReviewsView({ storeSlug }: StoreReviewsViewProps) {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-16">
+      <div className={`${flex.hCenter} ${page.empty}`}>
         <Spinner />
       </div>
     );
@@ -64,7 +64,7 @@ export function StoreReviewsView({ storeSlug }: StoreReviewsViewProps) {
       <div
         className={`${themed.bgSecondary} rounded-xl p-4 sm:p-6 flex flex-col sm:flex-row gap-6`}
       >
-        <div className="flex flex-col items-center justify-center gap-1 sm:w-32 flex-shrink-0">
+        <div className={`${flex.centerCol} gap-1 sm:w-32 ${flex.noShrink}`}>
           <Heading level={2}>{averageRating.toFixed(1)}</Heading>
           <StarRow rating={Math.round(averageRating)} />
           <Caption>{t("reviews.outOf5")}</Caption>
@@ -80,7 +80,9 @@ export function StoreReviewsView({ storeSlug }: StoreReviewsViewProps) {
               <div key={star} className="flex items-center gap-2">
                 <Caption className="w-3">{star}</Caption>
                 <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-                <div className="flex-1 h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                <div
+                  className={`flex-1 h-2 rounded-full bg-gray-200 dark:bg-gray-700 ${overflow.hidden}`}
+                >
                   <div
                     className="h-full bg-yellow-400 rounded-full transition-all"
                     style={{ width: `${pct}%` }}

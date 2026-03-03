@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 /**
  * useProductTableColumns
@@ -10,6 +10,7 @@
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { formatCurrency } from "@/utils";
+import { Button, Span } from "@/components";
 import type { AdminProduct } from "./types";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -49,9 +50,9 @@ export function useProductTableColumns(
             ) : (
               <div className="w-8 h-8 rounded bg-gray-200 dark:bg-gray-700 flex-shrink-0" />
             )}
-            <span className="font-medium truncate max-w-[180px]">
+            <Span className="font-medium truncate max-w-[180px]">
               {product.title}
-            </span>
+            </Span>
           </div>
         ),
       },
@@ -67,7 +68,7 @@ export function useProductTableColumns(
         sortable: true,
         width: "10%",
         render: (product: AdminProduct) => (
-          <span>{formatCurrency(product.price ?? 0, "INR", "en-IN")}</span>
+          <Span>{formatCurrency(product.price ?? 0, "INR", "en-IN")}</Span>
         ),
       },
       {
@@ -82,14 +83,14 @@ export function useProductTableColumns(
         sortable: true,
         width: "12%",
         render: (product: AdminProduct) => (
-          <span
+          <Span
             className={`px-2 py-1 text-xs font-medium rounded ${
               STATUS_STYLES[product.status] ??
               `${themed.bgTertiary} ${themed.textSecondary}`
             }`}
           >
             {product.status.replace("_", " ")}
-          </span>
+          </Span>
         ),
       },
       {
@@ -98,9 +99,9 @@ export function useProductTableColumns(
         sortable: true,
         width: "15%",
         render: (product: AdminProduct) => (
-          <span className="text-sm truncate max-w-[120px] block">
+          <Span className="text-sm truncate max-w-[120px] block">
             {product.sellerName}
-          </span>
+          </Span>
         ),
       },
       {
@@ -109,7 +110,7 @@ export function useProductTableColumns(
         sortable: true,
         width: "8%",
         render: (product: AdminProduct) => (
-          <span
+          <Span
             className={`px-2 py-1 text-xs font-medium rounded ${
               product.featured
                 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
@@ -117,13 +118,13 @@ export function useProductTableColumns(
             }`}
           >
             {product.featured ? tActions("yes") : tActions("no")}
-          </span>
+          </Span>
         ),
       },
     ],
     actions: (product: AdminProduct) => (
       <div className="flex gap-2">
-        <button
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             onEdit(product);
@@ -131,8 +132,8 @@ export function useProductTableColumns(
           className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
         >
           {tActions("edit")}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             onDelete(product);
@@ -140,7 +141,7 @@ export function useProductTableColumns(
           className="text-red-600 hover:text-red-800 dark:text-red-400"
         >
           {tActions("delete")}
-        </button>
+        </Button>
       </div>
     ),
   };

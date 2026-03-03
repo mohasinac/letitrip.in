@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Card } from "@/components";
+import { Button, Card, Heading, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { eventBus } from "@/classes";
@@ -57,25 +57,27 @@ export default function UnsavedChangesModal() {
 
   if (!isOpen) return null;
 
+  const { flex, position } = THEME_CONSTANTS;
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      className={`${position.fixedFill} z-50 ${flex.center} p-4 bg-black/50 backdrop-blur-sm`}
       onClick={handleCancel}
     >
       <div onClick={(e: React.MouseEvent) => e.stopPropagation()}>
         <Card
           className={`w-full max-w-md ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.spacing.padding.lg}`}
         >
-          <h2
+          <Heading
+            level={2}
             className={`${THEME_CONSTANTS.typography.h4} ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
           >
             {t("title")}
-          </h2>
-          <p
+          </Heading>
+          <Text
             className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mb-6`}
           >
             {t("message")}
-          </p>
+          </Text>
           <div className="flex gap-3 justify-end">
             <Button variant="outline" onClick={handleCancel}>
               {t("stay")}

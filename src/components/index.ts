@@ -39,6 +39,10 @@ export type { FormFieldProps, SelectOption } from "./FormField";
 // Re-export from typography subdirectory
 export * from "./typography";
 
+// ==================== SEMANTIC HTML WRAPPERS ====================
+// Section, Article, Main, Aside, Nav, BlockHeader, BlockFooter, Ul, Ol, Li
+export * from "./semantic";
+
 // ==================== FEEDBACK COMPONENTS ====================
 // Re-export from feedback subdirectory
 export * from "./feedback";

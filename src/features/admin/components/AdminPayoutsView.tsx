@@ -14,12 +14,14 @@ import {
   DrawerFormFooter,
   getPayoutTableColumns,
   PayoutStatusForm,
+  Text,
+  Caption,
 } from "@/components";
 import type { PayoutStatusFormState } from "@/components";
 import { formatCurrency, isSameMonth, nowMs } from "@/utils";
 import type { PayoutDocument } from "@/db/schema";
 
-const { themed, spacing } = THEME_CONSTANTS;
+const { spacing } = THEME_CONSTANTS;
 
 interface PayoutsResponse {
   payouts: PayoutDocument[];
@@ -116,45 +118,46 @@ export function AdminPayoutsView() {
       {!statusFilter && (
         <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
           <Card className="p-4">
-            <p
-              className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary} mb-1`}
-            >
+            <Caption className="uppercase tracking-wide font-medium mb-1">
               {t("totalPending")}
-            </p>
-            <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 tabular-nums">
+            </Caption>
+            <Text
+              weight="bold"
+              className="text-2xl text-yellow-600 dark:text-yellow-400 tabular-nums"
+            >
               {formatCurrency(totalPending)}
-            </p>
-            <p className={`text-xs ${themed.textSecondary} mt-0.5`}>
+            </Text>
+            <Caption className="mt-0.5">
               {pendingPayouts.length} request
               {pendingPayouts.length !== 1 ? "s" : ""}
-            </p>
+            </Caption>
           </Card>
           <Card className="p-4">
-            <p
-              className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary} mb-1`}
-            >
+            <Caption className="uppercase tracking-wide font-medium mb-1">
               {t("totalPaidMonth")}
-            </p>
-            <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+            </Caption>
+            <Text
+              weight="bold"
+              className="text-2xl text-emerald-600 dark:text-emerald-400 tabular-nums"
+            >
               {formatCurrency(totalPaidMonth)}
-            </p>
-            <p className={`text-xs ${themed.textSecondary} mt-0.5`}>
+            </Text>
+            <Caption className="mt-0.5">
               {completedThisMonth.length} payout
               {completedThisMonth.length !== 1 ? "s" : ""}
-            </p>
+            </Caption>
           </Card>
           <Card className="p-4">
-            <p
-              className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary} mb-1`}
-            >
+            <Caption className="uppercase tracking-wide font-medium mb-1">
               {t("failureCount")}
-            </p>
-            <p className="text-2xl font-bold text-red-600 dark:text-red-400 tabular-nums">
+            </Caption>
+            <Text
+              weight="bold"
+              className="text-2xl text-red-600 dark:text-red-400 tabular-nums"
+            >
               {failedThisMonth}
-            </p>
-            <p className={`text-xs ${themed.textSecondary} mt-0.5`}>
-              this month
-            </p>
+            </Text>
+            <Caption className="mt-0.5">this month</Caption>
           </Card>
         </div>
       )}

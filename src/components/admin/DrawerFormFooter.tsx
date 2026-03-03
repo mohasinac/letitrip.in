@@ -56,7 +56,7 @@ export function DrawerFormFooter({
 }: DrawerFormFooterProps) {
   const t = useTranslations("actions");
   const tLoading = useTranslations("loading");
-  const { themed } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
 
   const resolvedSubmitLabel = submitLabel ?? t("save");
   const resolvedDeleteLabel = deleteLabel ?? t("delete");
@@ -65,7 +65,7 @@ export function DrawerFormFooter({
   return (
     <div
       className={`
-        flex items-center justify-between gap-3 
+        ${flex.between} gap-3 
         pt-6 border-t ${themed.border}
         ${className}
       `}

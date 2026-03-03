@@ -1,10 +1,11 @@
-"use client";
+﻿"use client";
 
 import { THEME_CONSTANTS, TRUST_INDICATORS } from "@/constants";
+import { Heading, Section, Text } from "@/components";
 
 export function TrustIndicatorsSection() {
   return (
-    <section
+    <Section
       className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
       <div className="w-full">
@@ -17,20 +18,21 @@ export function TrustIndicatorsSection() {
               <div className="text-4xl md:text-5xl mb-2 md:mb-3">
                 {indicator.icon}
               </div>
-              <h3
+              <Heading
+                level={3}
                 className={`${THEME_CONSTANTS.typography.h6} ${THEME_CONSTANTS.themed.textPrimary} mb-1 md:mb-2`}
               >
                 {indicator.title}
-              </h3>
-              <p
+              </Heading>
+              <Text
                 className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary}`}
               >
                 {indicator.description}
-              </p>
+              </Text>
             </div>
           ))}
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
-import { Badge } from "@/components";
+import { Badge, Heading, Text, Span, Button, Ul, Li } from "@/components";
 import type { ProductDocument } from "@/db/schema";
 
 const { themed, spacing } = THEME_CONSTANTS;
@@ -62,7 +62,6 @@ export function ProductInfo({
   isAddingToCart = false,
 }: ProductInfoProps) {
   const t = useTranslations("products");
-  const tLoading = useTranslations("loading");
   const isOutOfStock =
     status === "out_of_stock" || status === "sold" || availableQuantity === 0;
   const displayPrice = isAuction ? (currentBid ?? startingBid ?? price) : price;
@@ -75,47 +74,48 @@ export function ProductInfo({
           {featured && <Badge variant="warning">{t("featured")}</Badge>}
           {isAuction && <Badge variant="info">{t("auction")}</Badge>}
         </div>
-        <h1 className={`text-2xl font-bold ${themed.textPrimary}`}>{title}</h1>
+        <Heading level={1} className="text-2xl font-bold">
+          {title}
+        </Heading>
       </div>
 
       {/* Price */}
       <div>
         {isAuction ? (
           <div className="space-y-0.5">
-            <p className={`text-sm ${themed.textSecondary}`}>
+            <Text size="sm" variant="secondary">
               {currentBid ? t("currentBid") : t("startingBid")}
-            </p>
-            <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
+            </Text>
+            <Text className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
               {formatCurrency(displayPrice ?? price)}
-            </p>
+            </Text>
             {bidCount !== undefined && (
-              <p className={`text-sm ${themed.textSecondary}`}>
+              <Text size="sm" variant="secondary">
                 {t("totalBids", { count: bidCount })}
-              </p>
+              </Text>
             )}
             {auctionEndDate && (
-              <p className={`text-sm ${themed.textSecondary}`}>
+              <Text size="sm" variant="secondary">
                 {t("auctionEnds")}{" "}
-                <span className={themed.textPrimary}>
-                  {formatDate(auctionEndDate)}
-                </span>
-              </p>
+                <Span variant="primary">{formatDate(auctionEndDate)}</Span>
+              </Text>
             )}
           </div>
         ) : (
-          <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
+          <Text className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
             {formatCurrency(price)}
-          </p>
+          </Text>
         )}
       </div>
 
       {/* Stock */}
       {!isOutOfStock && availableQuantity > 0 && (
-        <p
-          className={`text-sm text-emerald-600 dark:text-emerald-400 font-medium`}
+        <Text
+          size="sm"
+          className="text-emerald-600 dark:text-emerald-400 font-medium"
         >
           {t("availableStock", { qty: availableQuantity })}
-        </p>
+        </Text>
       )}
 
       {/* Metadata row */}
@@ -123,20 +123,20 @@ export function ProductInfo({
         className={`flex flex-wrap gap-x-6 gap-y-1 text-sm ${themed.textSecondary}`}
       >
         {brand && (
-          <span>
-            <span className="font-medium">{t("brand")}:</span> {brand}
-          </span>
+          <Span variant="secondary">
+            <Span weight="medium">{t("brand")}:</Span> {brand}
+          </Span>
         )}
         {category && (
-          <span>
-            <span className="font-medium">{t("category")}:</span>{" "}
+          <Span variant="secondary">
+            <Span weight="medium">{t("category")}:</Span>{" "}
             {subcategory ? `${category} › ${subcategory}` : category}
-          </span>
+          </Span>
         )}
         {sellerName && (
-          <span>
-            <span className="font-medium">{t("seller")}:</span> {sellerName}
-          </span>
+          <Span variant="secondary">
+            <Span weight="medium">{t("seller")}:</Span> {sellerName}
+          </Span>
         )}
       </div>
 
@@ -148,21 +148,23 @@ export function ProductInfo({
               {status === "sold" ? t("sold") : t("outOfStock")}
             </div>
           ) : isAuction ? (
-            <button
+            <Button
               onClick={onAddToCart}
               disabled={isAddingToCart}
-              className="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white rounded-xl font-semibold transition-colors"
+              isLoading={isAddingToCart}
+              className="w-full"
             >
               {t("placeBid")}
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               onClick={onAddToCart}
               disabled={isAddingToCart}
-              className="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white rounded-xl font-semibold transition-colors"
+              isLoading={isAddingToCart}
+              className="w-full"
             >
-              {isAddingToCart ? tLoading("default") : t("addToCart")}
-            </button>
+              {t("addToCart")}
+            </Button>
           )}
         </div>
       )}
@@ -170,51 +172,53 @@ export function ProductInfo({
       {/* Description */}
       {description && (
         <div>
-          <h2 className={`font-semibold mb-2 ${themed.textPrimary}`}>
+          <Heading level={2} className="font-semibold mb-2">
             {t("description")}
-          </h2>
-          <p className={`text-sm leading-relaxed ${themed.textSecondary}`}>
+          </Heading>
+          <Text size="sm" variant="secondary" className="leading-relaxed">
             {description}
-          </p>
+          </Text>
         </div>
       )}
 
       {/* Features */}
       {features && features.length > 0 && (
         <div>
-          <h2 className={`font-semibold mb-2 ${themed.textPrimary}`}>
+          <Heading level={2} className="font-semibold mb-2">
             {t("features")}
-          </h2>
-          <ul className="list-disc list-inside space-y-1">
+          </Heading>
+          <Ul className="list-disc list-inside space-y-1">
             {features.map((f, idx) => (
-              <li key={idx} className={`text-sm ${themed.textSecondary}`}>
+              <Li key={idx} className={`text-sm ${themed.textSecondary}`}>
                 {f}
-              </li>
+              </Li>
             ))}
-          </ul>
+          </Ul>
         </div>
       )}
 
       {/* Specifications */}
       {specifications && specifications.length > 0 && (
         <div>
-          <h2 className={`font-semibold mb-2 ${themed.textPrimary}`}>
+          <Heading level={2} className="font-semibold mb-2">
             {t("specifications")}
-          </h2>
+          </Heading>
           <div
             className={`rounded-xl border ${themed.border} divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden`}
           >
             {specifications.map((spec, idx) => (
               <div key={idx} className="flex items-start px-4 py-2.5 text-sm">
-                <span
-                  className={`w-1/3 font-medium ${themed.textPrimary} shrink-0`}
+                <Span
+                  weight="medium"
+                  variant="primary"
+                  className="w-1/3 shrink-0"
                 >
                   {spec.name}
-                </span>
-                <span className={themed.textSecondary}>
+                </Span>
+                <Span variant="secondary">
                   {spec.value}
                   {spec.unit ? ` ${spec.unit}` : ""}
-                </span>
+                </Span>
               </div>
             ))}
           </div>
@@ -226,22 +230,22 @@ export function ProductInfo({
         <div className="space-y-3">
           {shippingInfo && (
             <div>
-              <h2 className={`font-semibold mb-1 ${themed.textPrimary}`}>
+              <Heading level={2} className="font-semibold mb-1">
                 {t("shipping")}
-              </h2>
-              <p className={`text-sm ${themed.textSecondary}`}>
+              </Heading>
+              <Text size="sm" variant="secondary">
                 {shippingInfo}
-              </p>
+              </Text>
             </div>
           )}
           {returnPolicy && (
             <div>
-              <h2 className={`font-semibold mb-1 ${themed.textPrimary}`}>
+              <Heading level={2} className="font-semibold mb-1">
                 {t("returnPolicy")}
-              </h2>
-              <p className={`text-sm ${themed.textSecondary}`}>
+              </Heading>
+              <Text size="sm" variant="secondary">
                 {returnPolicy}
-              </p>
+              </Text>
             </div>
           )}
         </div>
@@ -251,12 +255,14 @@ export function ProductInfo({
       {tags && tags.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (
-            <span
+            <Span
               key={tag}
-              className={`text-xs px-2.5 py-1 rounded-full ${themed.bgSecondary} ${themed.textSecondary} border ${themed.border}`}
+              size="xs"
+              variant="secondary"
+              className={`px-2.5 py-1 rounded-full ${themed.bgSecondary} border ${themed.border}`}
             >
               {tag}
-            </span>
+            </Span>
           ))}
         </div>
       )}

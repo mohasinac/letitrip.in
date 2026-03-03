@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Store, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
@@ -11,10 +10,11 @@ import {
   Text,
   Caption,
   AvatarDisplay,
+  TextLink,
 } from "@/components";
 import type { StoreListItem } from "../types";
 
-const { spacing } = THEME_CONSTANTS;
+const { spacing, flex, overflow } = THEME_CONSTANTS;
 
 interface StoreCardProps {
   store: StoreListItem;
@@ -26,7 +26,7 @@ export function StoreCard({ store }: StoreCardProps) {
   const href = ROUTES.PUBLIC.STORE_DETAIL(store.storeSlug);
 
   return (
-    <Link href={href} className="group block focus:outline-none">
+    <TextLink href={href} className="group block focus:outline-none">
       <Card
         className={`overflow-hidden transition-shadow duration-200 group-hover:shadow-md group-focus-visible:ring-2 group-focus-visible:ring-indigo-500 h-full flex flex-col`}
       >
@@ -48,7 +48,9 @@ export function StoreCard({ store }: StoreCardProps) {
         <div className={`${spacing.padding.md} flex flex-col gap-2 flex-1`}>
           {/* Avatar + name row */}
           <div className="flex items-start gap-3 -mt-10">
-            <div className="w-16 h-16 rounded-full border-4 border-white dark:border-gray-900 overflow-hidden bg-indigo-50 dark:bg-indigo-900/40 flex-shrink-0 flex items-center justify-center">
+            <div
+              className={`w-16 h-16 rounded-full border-4 border-white dark:border-gray-900 ${overflow.hidden} bg-indigo-50 dark:bg-indigo-900/40 ${flex.noShrink} ${flex.center}`}
+            >
               {store.storeLogoURL || store.photoURL ? (
                 <AvatarDisplay
                   cropData={{
@@ -63,7 +65,7 @@ export function StoreCard({ store }: StoreCardProps) {
                 <Store className="w-7 h-7 text-indigo-400" />
               )}
             </div>
-            <div className="pt-10 flex-1 min-w-0">
+            <div className={`pt-10 ${flex.growMin}`}>
               <Heading
                 level={3}
                 className="truncate text-sm sm:text-base leading-tight"
@@ -107,6 +109,6 @@ export function StoreCard({ store }: StoreCardProps) {
           </div>
         </div>
       </Card>
-    </Link>
+    </TextLink>
   );
 }

@@ -8,7 +8,7 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   Spinner,
   DataTable,
@@ -32,7 +32,7 @@ import { useTranslations } from "next-intl";
 import { useSellerProducts } from "../hooks";
 import { SellerProductCard } from "./SellerProductCard";
 
-const { input } = THEME_CONSTANTS;
+const { input, flex } = THEME_CONSTANTS;
 
 const DEFAULT_PRODUCT: Partial<AdminProduct> = {
   title: "",
@@ -153,7 +153,7 @@ function SellerProductsContent() {
 
   if (authLoading)
     return (
-      <div className="flex items-center justify-center py-16">
+      <div className={`${flex.center} py-16`}>
         <Spinner size="xl" variant="primary" />
       </div>
     );

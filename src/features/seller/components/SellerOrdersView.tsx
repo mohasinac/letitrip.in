@@ -8,7 +8,7 @@
 "use client";
 
 import { Suspense, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   Spinner,
   Card,
@@ -28,7 +28,7 @@ import { useTranslations } from "next-intl";
 import type { OrderDocument } from "@/db/schema";
 import { formatCurrency } from "@/utils";
 
-const { themed, spacing } = THEME_CONSTANTS;
+const { themed, spacing, flex } = THEME_CONSTANTS;
 
 function SellerOrdersContent() {
   const router = useRouter();
@@ -73,7 +73,7 @@ function SellerOrdersContent() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
+      <div className={`${flex.center} py-16`}>
         <Spinner size="xl" variant="primary" />
       </div>
     );

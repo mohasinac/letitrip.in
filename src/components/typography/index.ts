@@ -1,12 +1,18 @@
 /**
  * Typography Components Index
- * 
- * Text and heading components with consistent styling.
- * 
+ *
+ * All text, heading, link, and inline-wrapper components.
+ * Import from `@/components` — never import individual files.
+ *
  * @example
  * ```tsx
- * import { Heading, Text, Label } from '@/components/typography';
+ * import { Heading, Text, Label, Caption, Span, TextLink } from '@/components';
  * ```
  */
 
-export { Heading, Text, Label, Caption } from './Typography';
+// Block-level text primitives
+export { Heading, Text, Label, Caption, Span } from "./Typography";
+
+// Link primitive (wraps next-intl Link for internal, <a> for external)
+export { TextLink } from "./TextLink";
+export type { TextLinkProps } from "./TextLink";

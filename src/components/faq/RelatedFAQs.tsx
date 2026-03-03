@@ -1,8 +1,8 @@
 "use client";
 
 import { THEME_CONSTANTS } from "@/constants";
-import Link from "next/link";
 import type { FAQDocument } from "@/db/schema";
+import { Heading, Text, TextLink } from "@/components";
 
 interface RelatedFAQsProps {
   relatedFAQs: FAQDocument[];
@@ -17,15 +17,16 @@ export function RelatedFAQs({ relatedFAQs }: RelatedFAQsProps) {
     <div
       className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgTertiary} ${THEME_CONSTANTS.borderRadius.xl}`}
     >
-      <h3
+      <Heading
+        level={3}
         className={`${THEME_CONSTANTS.typography.h4} ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
       >
         Related Questions
-      </h3>
+      </Heading>
 
       <div className="space-y-3">
         {relatedFAQs.map((faq) => (
-          <Link
+          <TextLink
             key={faq.id}
             href={`/faqs#${faq.id}`}
             className={`block ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} ${THEME_CONSTANTS.themed.bgPrimary} hover:${THEME_CONSTANTS.themed.bgSecondary} transition-colors group`}
@@ -47,11 +48,11 @@ export function RelatedFAQs({ relatedFAQs }: RelatedFAQsProps) {
               </svg>
 
               {/* Question Text */}
-              <p
+              <Text
                 className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textPrimary} group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors`}
               >
                 {faq.question}
-              </p>
+              </Text>
 
               {/* Arrow Icon */}
               <svg
@@ -68,7 +69,7 @@ export function RelatedFAQs({ relatedFAQs }: RelatedFAQsProps) {
                 />
               </svg>
             </div>
-          </Link>
+          </TextLink>
         ))}
       </div>
     </div>

@@ -1,11 +1,16 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { Card, Alert, Text, SellerStorefrontView } from "@/components";
-import { ROUTES } from "@/constants";
+import {
+  Card,
+  Alert,
+  Text,
+  SellerStorefrontView,
+  TextLink,
+} from "@/components";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useSellerStorefront } from "@/hooks";
+import { useTranslations } from "next-intl";
 
 export default function SellerStorefrontPage() {
   const params = useParams();
@@ -23,9 +28,11 @@ export default function SellerStorefrontPage() {
     reviewsLoading,
   } = useSellerStorefront(sellerId);
 
+  const { flex } = THEME_CONSTANTS;
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className={`min-h-screen ${flex.center}`}>
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <Text>{tSf("loading")}</Text>
@@ -36,7 +43,7 @@ export default function SellerStorefrontPage() {
 
   if (profileError || !seller) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className={`min-h-screen ${flex.center} p-4`}>
         <Card className="max-w-md w-full">
           <Alert variant="error">
             {profileError === "notFound"
@@ -44,18 +51,18 @@ export default function SellerStorefrontPage() {
               : (profileError ?? tSf("notFound"))}
           </Alert>
           <div className="mt-4 flex gap-4">
-            <Link
+            <TextLink
               href={ROUTES.PUBLIC.SELLERS}
               className="text-primary-600 hover:underline text-sm"
             >
               {tSf("back")}
-            </Link>
-            <Link
+            </TextLink>
+            <TextLink
               href={ROUTES.HOME}
               className="text-primary-600 hover:underline text-sm"
             >
               {tActions("goHome")}
-            </Link>
+            </TextLink>
           </div>
         </Card>
       </div>

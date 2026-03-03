@@ -1,9 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import type { CategoryDocument } from "@/db/schema";
+import { Label, Span } from "../typography/Typography";
 
 const { themed } = THEME_CONSTANTS;
 
@@ -39,9 +40,9 @@ export function SearchFiltersRow({
     <div className="flex flex-wrap gap-4 items-end">
       {/* Category filter */}
       <div className="flex flex-col gap-1">
-        <label className={`text-sm font-medium ${themed.textSecondary}`}>
+        <Label className={`text-sm font-medium ${themed.textSecondary}`}>
           {t("categoryFilter")}
-        </label>
+        </Label>
         <select
           value={urlCategory}
           onChange={(e) => onCategoryChange(e.target.value)}
@@ -58,9 +59,9 @@ export function SearchFiltersRow({
 
       {/* Price range */}
       <div className="flex flex-col gap-1">
-        <label className={`text-sm font-medium ${themed.textSecondary}`}>
+        <Label className={`text-sm font-medium ${themed.textSecondary}`}>
           {t("priceRange")}
-        </label>
+        </Label>
         <div className="flex items-center gap-2">
           <input
             type="number"
@@ -70,7 +71,7 @@ export function SearchFiltersRow({
             placeholder={t("minPrice")}
             className={`w-28 ${inputBase}`}
           />
-          <span className={`text-sm ${themed.textSecondary}`}>–</span>
+          <Span className={`text-sm ${themed.textSecondary}`}>–</Span>
           <input
             type="number"
             min={0}

@@ -24,6 +24,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { THEME_CONSTANTS } from "@/constants";
+import Button from "../ui/Button";
 
 export default function LocaleSwitcher() {
   const t = useTranslations("locale");
@@ -45,7 +46,7 @@ export default function LocaleSwitcher() {
       {routing.locales.map((loc) => {
         const isActive = loc === locale;
         return (
-          <button
+          <Button
             key={loc}
             onClick={() => switchLocale(loc as Locale)}
             aria-pressed={isActive}
@@ -57,7 +58,7 @@ export default function LocaleSwitcher() {
             }`}
           >
             {t(loc as "en" | "hi")}
-          </button>
+          </Button>
         );
       })}
     </div>

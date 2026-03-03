@@ -1,9 +1,8 @@
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
-import { Heading, Text } from "@/components";
-import Link from "next/link";
+import { Heading, Text, Section, TextLink } from "@/components";
 import { getTranslations } from "next-intl/server";
 
-const { themed } = THEME_CONSTANTS;
+const { themed, page } = THEME_CONSTANTS;
 
 export async function generateMetadata() {
   return {
@@ -29,56 +28,56 @@ export default async function RefundPolicyPage() {
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}
-      <section className="bg-gradient-to-br from-emerald-700 to-teal-900 text-white py-14 md:py-16 lg:py-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section className="bg-gradient-to-br from-emerald-700 to-teal-900 text-white py-14 md:py-16 lg:py-20">
+        <div className={`${page.container.sm}`}>
           <Heading level={1} className="mb-3 text-white">
             {t("title")}
           </Heading>
           <Text className="text-emerald-200">{t("lastUpdated")}</Text>
         </div>
-      </section>
+      </Section>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12 lg:py-16">
+      <div className={`${page.container.sm} py-10 md:py-12 lg:py-16`}>
         <Text size="lg" variant="secondary" className="mb-10">
           {t("subtitle")}
         </Text>
 
         <div className="space-y-8">
           {SECTIONS.map(({ title, text }) => (
-            <section key={title}>
+            <Section key={title}>
               <Heading level={2} className="mb-3">
                 {title}
               </Heading>
               <Text variant="secondary" className="leading-relaxed">
                 {text}
               </Text>
-            </section>
+            </Section>
           ))}
 
           {/* Contact */}
-          <section
+          <Section
             className={`${themed.bgSecondary} rounded-xl p-6 border ${themed.border}`}
           >
             <Heading level={2} className="mb-2">
               {t("contactTitle")}
             </Heading>
             <Text variant="secondary">{t("contactText")}</Text>
-          </section>
+          </Section>
         </div>
 
         <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 flex gap-6 text-sm">
-          <Link
+          <TextLink
             href={ROUTES.PUBLIC.HELP}
             className="text-indigo-600 dark:text-indigo-400 hover:underline"
           >
             {t("helpCenter")}
-          </Link>
-          <Link
+          </TextLink>
+          <TextLink
             href={ROUTES.PUBLIC.CONTACT}
             className="text-indigo-600 dark:text-indigo-400 hover:underline"
           >
             {t("contactUs")}
-          </Link>
+          </TextLink>
         </div>
       </div>
     </div>

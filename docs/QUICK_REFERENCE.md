@@ -300,19 +300,25 @@ import { UI_LABELS } from "@/constants";
 
 ## Available Constants (Key Categories)
 
-| Need                       | Constant                                    | Example keys                                                 |
-| -------------------------- | ------------------------------------------- | ------------------------------------------------------------ |
-| Button/action labels       | `UI_LABELS.ACTIONS.*`                       | `.SAVE` `.DELETE` `.CANCEL` `.SUBMIT`                        |
-| Form field labels          | `UI_LABELS.FORM.*`                          | `.EMAIL` `.PASSWORD` `.PHONE`                                |
-| Empty / loading states     | `UI_LABELS.EMPTY.*` · `UI_LABELS.LOADING.*` | `.NO_DATA` `.DEFAULT`                                        |
-| Input placeholders         | `UI_PLACEHOLDERS.*`                         | `.EMAIL` `.SEARCH` `.PHONE`                                  |
-| Error messages             | `ERROR_MESSAGES.<DOMAIN>.*`                 | `.AUTH.UNAUTHORIZED` `.VALIDATION.FAILED`                    |
-| Success messages           | `SUCCESS_MESSAGES.<DOMAIN>.*`               | `.PRODUCT.CREATED` `.USER.UPDATED`                           |
-| Page routes                | `ROUTES.<AREA>.*`                           | `.AUTH.LOGIN` `.ADMIN.DASHBOARD`                             |
-| API paths                  | `API_ENDPOINTS.<AREA>.*`                    | `.PRODUCTS.LIST` `.ADMIN.USERS`                              |
-| Tailwind patterns          | `THEME_CONSTANTS.*`                         | `.themed.bgPrimary` `.spacing.stack` `.typography.h2`        |
-| Firestore collection names | `*_COLLECTION` from `@/db/schema`           | `USER_COLLECTION` `PRODUCT_COLLECTION`                       |
-| Firestore field names      | `*_FIELDS.*` from `@/db/schema`             | `USER_FIELDS.EMAIL` `PRODUCT_FIELDS.STATUS_VALUES.PUBLISHED` |
+| Need                       | Constant                                    | Example keys                                                             |
+| -------------------------- | ------------------------------------------- | ------------------------------------------------------------------------ |
+| Button/action labels       | `UI_LABELS.ACTIONS.*`                       | `.SAVE` `.DELETE` `.CANCEL` `.SUBMIT`                                    |
+| Form field labels          | `UI_LABELS.FORM.*`                          | `.EMAIL` `.PASSWORD` `.PHONE`                                            |
+| Empty / loading states     | `UI_LABELS.EMPTY.*` · `UI_LABELS.LOADING.*` | `.NO_DATA` `.DEFAULT`                                                    |
+| Input placeholders         | `UI_PLACEHOLDERS.*`                         | `.EMAIL` `.SEARCH` `.PHONE`                                              |
+| Error messages             | `ERROR_MESSAGES.<DOMAIN>.*`                 | `.AUTH.UNAUTHORIZED` `.VALIDATION.FAILED`                                |
+| Success messages           | `SUCCESS_MESSAGES.<DOMAIN>.*`               | `.PRODUCT.CREATED` `.USER.UPDATED`                                       |
+| Page routes                | `ROUTES.<AREA>.*`                           | `.AUTH.LOGIN` `.ADMIN.DASHBOARD`                                         |
+| API paths                  | `API_ENDPOINTS.<AREA>.*`                    | `.PRODUCTS.LIST` `.ADMIN.USERS`                                          |
+| Tailwind patterns          | `THEME_CONSTANTS.*`                         | `.themed.bgPrimary` `.spacing.stack` `.typography.h2`                    |
+| Flex containers            | `THEME_CONSTANTS.flex.*`                    | `.center` `.between` `.rowCenter` `.growMin` `.noShrink`                 |
+| Responsive grids           | `THEME_CONSTANTS.grid.*`                    | `.cols3` `.cols4` `.cols5` `.halves` `.sidebar`                          |
+| Position helpers           | `THEME_CONSTANTS.position.*`                | `.fill` `.absoluteCenter` `.stickyTop` `.fixedFill`                      |
+| Size tokens                | `THEME_CONSTANTS.size.*`                    | `.square.md` `.w.twoThirds` `.minScreen`                                 |
+| Overflow helpers           | `THEME_CONSTANTS.overflow.*`                | `.hidden` `.yAuto` `.xAuto`                                              |
+| Page containers            | `THEME_CONSTANTS.page.*`                    | `.container.sm/md/lg/xl/2xl/full/wide` `.px` `.pxSm` `.empty` `.authPad` |
+| Firestore collection names | `*_COLLECTION` from `@/db/schema`           | `USER_COLLECTION` `PRODUCT_COLLECTION`                                   |
+| Firestore field names      | `*_FIELDS.*` from `@/db/schema`             | `USER_FIELDS.EMAIL` `PRODUCT_FIELDS.STATUS_VALUES.PUBLISHED`             |
 
 ---
 

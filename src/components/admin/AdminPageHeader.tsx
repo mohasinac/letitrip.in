@@ -1,8 +1,7 @@
-"use client";
+﻿"use client";
 
-import Link from "next/link";
+import { Button, Heading, Nav, Span, Text, TextLink } from "@/components";
 import { ChevronRight } from "lucide-react";
-import { Button, Heading, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 /**
@@ -50,28 +49,28 @@ export function AdminPageHeader({
   return (
     <div className={`${pageHeader.adminGradient} ${className}`}>
       {breadcrumb && breadcrumb.length > 0 && (
-        <nav
+        <Nav
           aria-label="Breadcrumb"
           className="mb-3 flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400"
         >
           {breadcrumb.map((crumb, index) => (
-            <span key={index} className="flex items-center gap-1">
+            <Span key={index} className="flex items-center gap-1">
               {index > 0 && <ChevronRight className="w-3 h-3 flex-shrink-0" />}
               {crumb.href ? (
-                <Link
+                <TextLink
                   href={crumb.href}
                   className="hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
                 >
                   {crumb.label}
-                </Link>
+                </TextLink>
               ) : (
-                <span className="text-gray-700 dark:text-gray-200 font-medium">
+                <Span className="text-gray-700 dark:text-gray-200 font-medium">
                   {crumb.label}
-                </span>
+                </Span>
               )}
-            </span>
+            </Span>
           ))}
-        </nav>
+        </Nav>
       )}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className={spacing.stackSmall}>

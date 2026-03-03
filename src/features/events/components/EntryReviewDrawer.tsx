@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { SideDrawer, Button, FormField } from "@/components";
+import { SideDrawer, Button, FormField, Text, Caption } from "@/components";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useMessage } from "@/hooks";
@@ -91,28 +91,30 @@ export function EntryReviewDrawer({
       <div className="space-y-5 p-1">
         {/* Submitter info */}
         <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-1">
-          <p className="text-sm font-medium">Submitted by</p>
-          <p className="text-sm">
+          <Text weight="medium" size="sm">
+            Submitted by
+          </Text>
+          <Text size="sm">
             {entry.userDisplayName ?? entry.userId ?? "Anonymous"}
-          </p>
-          {entry.userEmail && (
-            <p className="text-xs text-gray-500">{entry.userEmail}</p>
-          )}
+          </Text>
+          {entry.userEmail && <Caption>{entry.userEmail}</Caption>}
         </div>
 
         {/* Form responses */}
         {Object.keys(formResponses).length > 0 && (
           <div className="space-y-3">
-            <p className="text-sm font-medium">Responses</p>
+            <Text weight="medium" size="sm">
+              Responses
+            </Text>
             {Object.entries(formResponses).map(([key, val]) => (
               <div
                 key={key}
                 className="rounded border border-gray-100 dark:border-gray-800 p-3"
               >
-                <p className="text-xs text-gray-500 mb-1">{key}</p>
-                <p className="text-sm">
+                <Caption className="mb-1">{key}</Caption>
+                <Text size="sm">
                   {Array.isArray(val) ? val.join(", ") : String(val)}
-                </p>
+                </Text>
               </div>
             ))}
           </div>
@@ -121,8 +123,10 @@ export function EntryReviewDrawer({
         {/* Poll votes */}
         {entry.pollVotes && entry.pollVotes.length > 0 && (
           <div className="space-y-2">
-            <p className="text-sm font-medium">Poll Votes</p>
-            <p className="text-sm">{entry.pollVotes.join(", ")}</p>
+            <Text weight="medium" size="sm">
+              Poll Votes
+            </Text>
+            <Text size="sm">{entry.pollVotes.join(", ")}</Text>
           </div>
         )}
 

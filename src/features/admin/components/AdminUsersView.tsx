@@ -9,22 +9,23 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useUrlTable } from "@/hooks";
 import { useAdminUsers } from "@/features/admin/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
-  Card,
-  Button,
-  DataTable,
   AdminPageHeader,
+  Button,
+  Card,
   ConfirmDeleteModal,
+  DataTable,
   TablePagination,
-  useToast,
-  UserFilters,
-  useUserTableColumns,
+  Text,
   UserDetailDrawer,
+  UserFilters,
+  useToast,
+  useUserTableColumns,
 } from "@/components";
 import type { AdminUser, UserTab } from "@/components";
 
@@ -208,7 +209,7 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
         ) : error ? (
           <Card>
             <div className="text-center py-8">
-              <p className="text-red-600 mb-4">{error.message}</p>
+              <Text className="text-red-600 mb-4">{error.message}</Text>
               <Button onClick={() => refetch()}>{tActions("retry")}</Button>
             </div>
           </Card>

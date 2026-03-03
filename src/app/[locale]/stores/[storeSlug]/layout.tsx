@@ -1,4 +1,8 @@
 import { StoreHeader, StoreNavTabs } from "@/features/stores";
+import { THEME_CONSTANTS } from "@/constants";
+import { Main } from "@/components";
+
+const { page } = THEME_CONSTANTS;
 
 interface StoreLayoutProps {
   children: React.ReactNode;
@@ -15,9 +19,9 @@ export default async function StoreLayout({
     <div className="min-h-screen flex flex-col">
       <StoreHeader storeSlug={storeSlug} />
       <StoreNavTabs storeSlug={storeSlug} />
-      <main className="flex-1 max-w-screen-2xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8">
+      <Main className={`flex-1 ${page.container.wide} w-full py-6 sm:py-8`}>
         {children}
-      </main>
+      </Main>
     </div>
   );
 }

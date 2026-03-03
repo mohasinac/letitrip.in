@@ -1,7 +1,9 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import Button from "../ui/Button";
+import { Label, Span } from "../typography/Typography";
 
 /**
  * Toggle/Switch Component
@@ -78,7 +80,7 @@ export default function Toggle({
 
   return (
     <div className={`inline-flex items-center gap-3 ${className}`}>
-      <button
+      <Button
         type="button"
         role="switch"
         aria-checked={checked}
@@ -94,7 +96,7 @@ export default function Toggle({
           ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         `}
       >
-        <span
+        <Span
           className={`
             ${sizeClasses[size].toggle}
             ${sizeClasses[size].translate}
@@ -103,10 +105,10 @@ export default function Toggle({
             shadow-lg
           `}
         />
-      </button>
+      </Button>
 
       {label && (
-        <label
+        <Label
           id={`${toggleId}-label`}
           htmlFor={toggleId}
           className={`
@@ -116,7 +118,7 @@ export default function Toggle({
           onClick={!disabled ? handleChange : undefined}
         >
           {label}
-        </label>
+        </Label>
       )}
     </div>
   );

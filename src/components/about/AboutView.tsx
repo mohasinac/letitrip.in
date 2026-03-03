@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { getTranslations } from "next-intl/server";
+import { Heading, Text, Span, Section, TextLink } from "@/components";
 
-const { themed, typography, spacing } = THEME_CONSTANTS;
+const { themed, spacing, page } = THEME_CONSTANTS;
 
 export async function AboutView() {
   const t = await getTranslations("about");
@@ -10,33 +10,38 @@ export async function AboutView() {
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Hero — full-bleed within the content container */}
-      <section className="bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-white py-16 md:py-20 lg:py-24">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">{t("title")}</h1>
-          <p className="text-xl text-indigo-100 max-w-2xl mx-auto">
+      <Section className="bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-white py-16 md:py-20 lg:py-24">
+        <div className={`${page.container.md} text-center`}>
+          <Heading
+            level={1}
+            className="text-4xl md:text-5xl font-bold mb-6 text-white"
+          >
+            {t("title")}
+          </Heading>
+          <Text className="text-xl text-indigo-100 max-w-2xl mx-auto">
             {t("subtitle")}
-          </p>
+          </Text>
         </div>
-      </section>
+      </Section>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 space-y-16 md:space-y-20">
+      <div
+        className={`${page.container.lg} py-16 md:py-20 space-y-16 md:space-y-20`}
+      >
         {/* Mission */}
-        <section className="text-center max-w-3xl mx-auto">
-          <h2 className={`${typography.h2} ${themed.textPrimary} mb-4`}>
+        <Section className="text-center max-w-3xl mx-auto">
+          <Heading level={2} className="mb-4">
             {t("missionTitle")}
-          </h2>
-          <p className={`text-lg ${themed.textSecondary} leading-relaxed`}>
+          </Heading>
+          <Text size="lg" variant="secondary" className="leading-relaxed">
             {t("missionText")}
-          </p>
-        </section>
+          </Text>
+        </Section>
 
         {/* How it works */}
-        <section>
-          <h2
-            className={`${typography.h2} ${themed.textPrimary} text-center mb-12`}
-          >
+        <Section>
+          <Heading level={2} className="text-center mb-12">
             {t("howItWorksTitle")}
-          </h2>
+          </Heading>
           <div className="grid md:grid-cols-3 xl:grid-cols-3 gap-6 md:gap-8 xl:gap-10">
             {[
               {
@@ -66,26 +71,20 @@ export async function AboutView() {
                 className={`bg-gradient-to-br ${color} rounded-2xl p-6 ${spacing.stack}`}
               >
                 <div className="text-4xl">{icon}</div>
-                <h3 className={`${typography.h4} ${themed.textPrimary}`}>
-                  {title}
-                </h3>
-                <p
-                  className={`text-sm ${themed.textSecondary} leading-relaxed`}
-                >
+                <Heading level={3}>{title}</Heading>
+                <Text size="sm" variant="secondary" className="leading-relaxed">
                   {text}
-                </p>
+                </Text>
               </div>
             ))}
           </div>
-        </section>
+        </Section>
 
         {/* Values */}
-        <section>
-          <h2
-            className={`${typography.h2} ${themed.textPrimary} text-center mb-12`}
-          >
+        <Section>
+          <Heading level={2} className="text-center mb-12">
             {t("valuesTitle")}
-          </h2>
+          </Heading>
           <div className="grid md:grid-cols-3 xl:grid-cols-3 gap-5 md:gap-6 xl:gap-8">
             {[
               {
@@ -109,26 +108,20 @@ export async function AboutView() {
                 className={`${themed.bgSecondary} rounded-xl p-6 ${spacing.stack} border ${themed.border}`}
               >
                 <div className="text-3xl">{icon}</div>
-                <h3 className={`${typography.h4} ${themed.textPrimary}`}>
-                  {title}
-                </h3>
-                <p
-                  className={`text-sm ${themed.textSecondary} leading-relaxed`}
-                >
+                <Heading level={3}>{title}</Heading>
+                <Text size="sm" variant="secondary" className="leading-relaxed">
                   {text}
-                </p>
+                </Text>
               </div>
             ))}
           </div>
-        </section>
+        </Section>
 
         {/* Milestones */}
-        <section>
-          <h2
-            className={`${typography.h2} ${themed.textPrimary} text-center mb-10`}
-          >
+        <Section>
+          <Heading level={2} className="text-center mb-10">
             {t("milestonesTitle")}
-          </h2>
+          </Heading>
           <div className="relative border-l-2 border-indigo-300 dark:border-indigo-700 pl-8 space-y-8 max-w-2xl mx-auto">
             {[
               { year: "2023", text: t("milestoneFounded") },
@@ -137,33 +130,39 @@ export async function AboutView() {
             ].map(({ year, text }) => (
               <div key={year} className="relative">
                 <div className="absolute -left-10 top-1 w-4 h-4 rounded-full bg-indigo-500 border-2 border-white dark:border-gray-900" />
-                <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">
+                <Span
+                  size="xs"
+                  weight="bold"
+                  className="text-indigo-600 dark:text-indigo-400 uppercase tracking-wide"
+                >
                   {year}
-                </span>
-                <p className={`mt-1 ${themed.textPrimary}`}>{text}</p>
+                </Span>
+                <Text className={`mt-1`}>{text}</Text>
               </div>
             ))}
           </div>
-        </section>
+        </Section>
 
         {/* CTA */}
-        <section className="text-center bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 md:p-12 xl:p-16 text-white">
-          <h2 className="text-3xl font-bold mb-8">{t("ctaTitle")}</h2>
+        <Section className="text-center bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 md:p-12 xl:p-16 text-white">
+          <Heading level={2} className="text-3xl font-bold mb-8 text-white">
+            {t("ctaTitle")}
+          </Heading>
           <div className="flex justify-center gap-3 md:gap-4 flex-wrap">
-            <Link
+            <TextLink
               href={ROUTES.AUTH.REGISTER}
               className="bg-white text-indigo-600 font-semibold px-8 py-3 rounded-full hover:bg-indigo-50 transition-colors"
             >
               {t("ctaSell")}
-            </Link>
-            <Link
+            </TextLink>
+            <TextLink
               href={ROUTES.PUBLIC.PRODUCTS}
               className="border-2 border-white text-white font-semibold px-8 py-3 rounded-full hover:bg-white/10 transition-colors"
             >
               {t("ctaShop")}
-            </Link>
+            </TextLink>
           </div>
-        </section>
+        </Section>
       </div>
     </div>
   );

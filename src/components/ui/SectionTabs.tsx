@@ -1,9 +1,11 @@
-"use client";
+﻿"use client";
 
-import { usePathname } from "next/navigation";
-import Link from "next/link";
+import { usePathname } from "@/i18n/navigation";
 import { THEME_CONSTANTS } from "@/constants";
 import { HorizontalScroller } from "./HorizontalScroller";
+import { Nav } from "../semantic/Semantic";
+import { TextLink } from "../typography/TextLink";
+import { Span } from "../typography/Typography";
 
 /**
  * SectionTabs Component
@@ -61,13 +63,13 @@ export function SectionTabs({
     >
       <div className="container mx-auto px-2 md:px-6 max-w-7xl">
         {/* Unified scrollable tab bar — mobile: no arrows · desktop: with arrows */}
-        <nav>
+        <Nav aria-label="Section navigation">
           <HorizontalScroller
             items={Array.from(tabs)}
             renderItem={(tab) => {
               const isActive = isActiveTab(tab.href);
               return (
-                <Link
+                <TextLink
                   href={tab.href}
                   className={[
                     "flex-shrink-0 px-3 md:px-5 py-3 md:py-3.5 text-sm font-medium transition-all duration-200",
@@ -77,9 +79,9 @@ export function SectionTabs({
                       : `${themed.textSecondary} border-transparent hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600`,
                   ].join(" ")}
                 >
-                  {tab.icon && <span className="w-4 h-4">{tab.icon}</span>}
+                  {tab.icon && <Span className="w-4 h-4">{tab.icon}</Span>}
                   {tab.label}
-                </Link>
+                </TextLink>
               );
             }}
             keyExtractor={(tab) => tab.href}
@@ -93,7 +95,7 @@ export function SectionTabs({
             renderItem={(tab) => {
               const isActive = isActiveTab(tab.href);
               return (
-                <Link
+                <TextLink
                   href={tab.href}
                   className={[
                     "flex-shrink-0 px-5 py-3.5 text-sm md:text-base font-medium transition-all duration-200",
@@ -105,7 +107,7 @@ export function SectionTabs({
                 >
                   {tab.icon}
                   {tab.label}
-                </Link>
+                </TextLink>
               );
             }}
             keyExtractor={(tab) => tab.href}
@@ -113,7 +115,7 @@ export function SectionTabs({
             autoScroll={false}
             className="outline-none hidden md:block"
           />
-        </nav>
+        </Nav>
       </div>
     </div>
   );

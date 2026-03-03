@@ -8,9 +8,8 @@
 
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Card, Button, Heading } from "@/components";
+import { Card, Button, Heading, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 const { spacing, enhancedCard } = THEME_CONSTANTS;
@@ -89,12 +88,12 @@ export function QuickActionsGrid() {
         </Heading>
         <div className={`grid grid-cols-1 md:grid-cols-3 ${spacing.gap.md}`}>
           {QUICK_ACTIONS.map((action) => (
-            <Link key={action.href} href={action.href} className="block">
+            <TextLink key={action.href} href={action.href} className="block">
               <Button variant="secondary" className="w-full justify-start">
                 {action.icon}
                 {t(action.labelKey)}
               </Button>
-            </Link>
+            </TextLink>
           ))}
         </div>
       </div>

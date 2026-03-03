@@ -12,7 +12,7 @@
 import { useEffect } from "react";
 import { logger } from "@/classes";
 import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text } from "@/components";
+import { Heading, Text, Button, TextLink } from "@/components";
 import { nowISO } from "@/utils";
 
 interface GlobalErrorProps {
@@ -32,13 +32,13 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
     });
   }, [error]);
 
-  const { themed, spacing, typography, borderRadius } = THEME_CONSTANTS;
+  const { themed, spacing, typography, borderRadius, flex } = THEME_CONSTANTS;
 
   return (
     <html>
       <body>
         <div
-          className={`min-h-screen flex items-center justify-center ${themed.bgPrimary} ${spacing.padding.xl}`}
+          className={`min-h-screen ${flex.center} ${themed.bgPrimary} ${spacing.padding.xl}`}
         >
           <div
             className={`${THEME_CONSTANTS.container["2xl"]} w-full text-center ${spacing.stack}`}
@@ -79,35 +79,36 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               <div
                 className={`bg-red-50 dark:bg-red-900/20 ${themed.border} ${borderRadius.lg} ${spacing.padding.md} mb-8 text-left`}
               >
-                <p
-                  className={`${typography.small} ${themed.textError} font-mono break-all`}
-                >
+                <Text size="sm" variant="error" className="font-mono break-all">
                   <strong>Error:</strong> {error.message}
-                </p>
+                </Text>
                 {error.digest && (
-                  <p
-                    className={`${typography.small} ${themed.textSecondary} font-mono mt-2`}
+                  <Text
+                    size="sm"
+                    variant="secondary"
+                    className="font-mono mt-2"
                   >
                     <strong>Digest:</strong> {error.digest}
-                  </p>
+                  </Text>
                 )}
               </div>
             )}
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-4 items-center">
-              <button
+              <Button
+                variant="primary"
                 onClick={reset}
-                className={`bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 ${borderRadius.lg} border-none text-lg font-medium cursor-pointer min-w-[200px] transition-colors`}
+                className={`text-lg font-medium min-w-[200px]`}
               >
                 {UI_LABELS.ACTIONS.RETRY}
-              </button>
-              <a
+              </Button>
+              <TextLink
                 href={ROUTES.HOME}
-                className={`${themed.bgPrimary} hover:bg-blue-50 text-blue-500 px-6 py-3 ${borderRadius.lg} ${themed.border} border-2 border-blue-500 text-lg font-medium no-underline inline-block min-w-[200px] transition-colors`}
+                className={`px-6 py-3 ${borderRadius.lg} border-2 border-blue-500 text-blue-500 text-lg font-medium min-w-[200px] inline-block text-center`}
               >
                 {UI_LABELS.ACTIONS.BACK} to Home
-              </a>
+              </TextLink>
             </div>
           </div>
         </div>

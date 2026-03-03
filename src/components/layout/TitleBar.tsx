@@ -1,11 +1,17 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { useAuth } from "@/hooks";
-import { AvatarDisplay, NotificationBell, LocaleSwitcher } from "@/components";
+import {
+  AvatarDisplay,
+  Button,
+  LocaleSwitcher,
+  NotificationBell,
+  Span,
+  TextLink,
+} from "@/components";
 
 /**
  * TitleBar Component
@@ -39,7 +45,7 @@ export default function TitleBar({
   onSearchToggle,
   searchOpen,
 }: TitleBarProps) {
-  const { colors, layout, zIndex } = THEME_CONSTANTS;
+  const { colors, layout, zIndex, flex } = THEME_CONSTANTS;
   const { user } = useAuth();
   const tA = useTranslations("accessibility");
 
@@ -49,29 +55,29 @@ export default function TitleBar({
       className={`sticky top-0 ${zIndex.titleBar} ${layout.titleBarBg} border-b ${THEME_CONSTANTS.themed.border} backdrop-blur-lg bg-white/90 dark:bg-gray-900/90`}
     >
       <div
-        className={`container mx-auto ${layout.navPadding} ${layout.containerWidth} py-2 md:py-2.5 flex items-center justify-between`}
+        className={`container mx-auto ${layout.navPadding} ${layout.containerWidth} py-2 md:py-2.5 ${flex.between}`}
       >
         {/* Logo - Modern design with gradient */}
-        <Link
+        <TextLink
           href={SITE_CONFIG.nav.home}
-          className="flex items-center gap-3 group"
+          className={`${flex.rowCenter} gap-3 group`}
         >
           <div
-            className={`w-8 h-8 md:w-10 md:h-10 ${colors.brand.logo} rounded-xl flex items-center justify-center ${colors.brand.logoText} font-bold text-lg md:text-xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105`}
+            className={`w-8 h-8 md:w-10 md:h-10 ${colors.brand.logo} rounded-xl ${flex.center} ${colors.brand.logoText} font-bold text-lg md:text-xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105`}
           >
             {SITE_CONFIG.brand.shortName}
           </div>
-          <span
+          <Span
             className={`text-lg md:text-xl font-bold hidden sm:block ${THEME_CONSTANTS.themed.textPrimary} group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300`}
           >
             {SITE_CONFIG.brand.name}
-          </span>
-        </Link>
+          </Span>
+        </TextLink>
 
         {/* Right Side Icons */}
-        <div className="flex items-center gap-2 ml-auto">
+        <div className={`${flex.rowCenter} gap-2 ml-auto`}>
           {/* Cart */}
-          <Link
+          <TextLink
             href={SITE_CONFIG.account.cart}
             className={`p-2 md:p-2.5 rounded-xl transition-colors relative ${THEME_CONSTANTS.colors.iconButton.onLight}`}
             aria-label={tA("cartIcon")}
@@ -89,15 +95,15 @@ export default function TitleBar({
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
               />
             </svg>
-            <span
-              className={`absolute -top-1 -right-1 ${THEME_CONSTANTS.colors.notification.badge} text-xs min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full font-semibold shadow-md`}
+            <Span
+              className={`absolute -top-1 -right-1 ${THEME_CONSTANTS.colors.notification.badge} text-xs min-w-[20px] h-5 px-1.5 ${flex.center} rounded-full font-semibold shadow-md`}
             >
               0
-            </span>
-          </Link>
+            </Span>
+          </TextLink>
 
           {/* Search - Hidden on mobile (available in bottom nav) */}
-          <button
+          <Button
             onClick={onSearchToggle}
             className={`hidden md:flex p-2 md:p-2.5 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onLight}`}
             aria-label={tA("searchIcon")}
@@ -115,7 +121,7 @@ export default function TitleBar({
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-          </button>
+          </Button>
 
           {/* Notification Bell - Authenticated users only, hidden on mobile */}
           {user && <NotificationBell />}
@@ -124,13 +130,13 @@ export default function TitleBar({
           <LocaleSwitcher />
 
           {/* User Profile - Hidden on mobile (available in bottom nav) */}
-          <Link
+          <TextLink
             href={SITE_CONFIG.account.profile}
             className={`hidden md:flex items-center justify-center rounded-xl transition-colors ${user ? "" : `p-2 md:p-2.5 ${THEME_CONSTANTS.colors.iconButton.onLight}`}`}
             aria-label={tA("userIcon")}
           >
             {user ? (
-              <div className="flex flex-col items-center gap-0.5">
+              <div className={`${flex.colCenter} gap-0.5`}>
                 <AvatarDisplay
                   cropData={
                     user.avatarMetadata ||
@@ -147,14 +153,14 @@ export default function TitleBar({
                   displayName={user.displayName}
                   email={user.email}
                 />
-                <span
+                <Span
                   className={`text-[8px] font-semibold uppercase ${
                     THEME_CONSTANTS.badge.roleText[user.role] ||
                     THEME_CONSTANTS.badge.roleText.user
                   }`}
                 >
                   {user.role || "user"}
-                </span>
+                </Span>
               </div>
             ) : (
               <svg
@@ -171,10 +177,10 @@ export default function TitleBar({
                 />
               </svg>
             )}
-          </Link>
+          </TextLink>
 
           {/* Hamburger Menu */}
-          <button
+          <Button
             onClick={onToggleSidebar}
             className={`p-2 md:p-2.5 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onLight}`}
             aria-label={sidebarOpen ? tA("closeMenu") : tA("openMenu")}
@@ -201,7 +207,7 @@ export default function TitleBar({
                 />
               )}
             </svg>
-          </button>
+          </Button>
         </div>
       </div>
     </header>

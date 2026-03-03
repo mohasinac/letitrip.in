@@ -1,13 +1,16 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatDate } from "@/utils";
 import { useApiQuery } from "@/hooks";
 import { blogService } from "@/services";
 import type { BlogPostDocument } from "@/db/schema";
+import { Button, Heading, Section, Span, Text } from "@/components";
+
+const { flex } = THEME_CONSTANTS;
 
 interface FeaturedBlogResult {
   posts: BlogPostDocument[];
@@ -33,36 +36,37 @@ export function BlogArticlesSection() {
   }
 
   return (
-    <section
+    <Section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.sectionBg.subtle}`}
     >
       <div className="w-full">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-10">
+        <div className={`${flex.between} mb-10`}>
           <div>
-            <h2
+            <Heading
+              level={2}
               className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
             >
               {t("blogTitle")}
-            </h2>
-            <p
+            </Heading>
+            <Text
               className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
             >
               {t("blogSubtitle")}
-            </p>
+            </Text>
           </div>
-          <button
+          <Button
             className={`${THEME_CONSTANTS.typography.body} text-blue-600 dark:text-blue-400 font-medium hover:underline hidden md:block`}
             onClick={() => router.push(ROUTES.PUBLIC.BLOG)}
           >
             {tActions("viewAll")} →
-          </button>
+          </Button>
         </div>
 
         {/* Articles Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
           {articles.map((article) => (
-            <button
+            <Button
               key={article.id}
               className={`group ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} overflow-hidden hover:shadow-xl transition-all text-left`}
               onClick={() => router.push(ROUTES.BLOG.ARTICLE(article.slug))}
@@ -78,7 +82,7 @@ export function BlogArticlesSection() {
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400">
+                  <div className={`w-full h-full ${flex.center} text-gray-400`}>
                     <svg
                       className="w-16 h-16"
                       fill="currentColor"
@@ -101,27 +105,28 @@ export function BlogArticlesSection() {
               {/* Content */}
               <div className={`${THEME_CONSTANTS.spacing.padding.lg}`}>
                 {/* Title */}
-                <h3
+                <Heading
+                  level={3}
                   className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-bold mb-2 line-clamp-2 min-h-[3rem] group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors`}
                 >
                   {article.title}
-                </h3>
+                </Heading>
 
                 {/* Excerpt */}
-                <p
+                <Text
                   className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} mb-4 line-clamp-2`}
                 >
                   {article.excerpt}
-                </p>
+                </Text>
 
                 {/* Meta Info */}
                 <div
-                  className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} flex items-center justify-between pt-3 border-t ${THEME_CONSTANTS.themed.border}`}
+                  className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} ${flex.between} pt-3 border-t ${THEME_CONSTANTS.themed.border}`}
                 >
-                  <span>
+                  <Span>
                     {article.publishedAt ? formatDate(article.publishedAt) : ""}
-                  </span>
-                  <span className="flex items-center gap-1">
+                  </Span>
+                  <Span className="flex items-center gap-1">
                     <svg
                       className="w-4 h-4"
                       fill="currentColor"
@@ -134,23 +139,23 @@ export function BlogArticlesSection() {
                       />
                     </svg>
                     {article.readTimeMinutes} min
-                  </span>
+                  </Span>
                 </div>
               </div>
-            </button>
+            </Button>
           ))}
         </div>
 
         {/* Mobile "View All" Button */}
         <div className="text-center mt-8 md:hidden">
-          <button
+          <Button
             className={`${THEME_CONSTANTS.typography.body} text-blue-600 dark:text-blue-400 font-medium hover:underline`}
             onClick={() => router.push(ROUTES.PUBLIC.BLOG)}
           >
             {tActions("viewAll")} →
-          </button>
+          </Button>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

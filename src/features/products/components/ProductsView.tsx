@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { PackageSearch } from "lucide-react";
 import {
+  Aside,
   ProductGrid,
   ProductFilters,
   ProductSortBar,
@@ -19,7 +20,7 @@ import { useTranslations } from "next-intl";
 import { useUrlTable } from "@/hooks";
 import { useProducts } from "../hooks";
 
-const { themed } = THEME_CONSTANTS;
+const { themed, page } = THEME_CONSTANTS;
 
 const PAGE_SIZE = 24;
 
@@ -118,7 +119,7 @@ export function ProductsView() {
 
   return (
     <div className={`min-h-screen ${themed.bgSecondary}`}>
-      <div className={`max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8`}>
+      <div className={`${page.container.full} py-8`}>
         {/* Page Header */}
         <div className="mb-6">
           <Heading level={1}>{t("title")}</Heading>
@@ -129,13 +130,13 @@ export function ProductsView() {
 
         <div className="flex gap-6">
           {/* Sidebar filters - desktop */}
-          <aside className="hidden lg:block w-52 shrink-0">
+          <Aside className="hidden lg:block w-52 shrink-0">
             <div
               className={`sticky top-20 ${themed.bgPrimary} rounded-xl p-4 border ${themed.border}`}
             >
               {filterContent}
             </div>
-          </aside>
+          </Aside>
 
           {/* Main content */}
           <div className="flex-1 min-w-0">

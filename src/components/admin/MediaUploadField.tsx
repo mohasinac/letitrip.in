@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MediaUploadField — embeddable single-file upload field for forms.
  *
  * SCOPE: Use for video, document, or any non-image file fields inside forms.
@@ -12,7 +12,7 @@
 import { useRef, ChangeEvent } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useMediaUpload } from "@/hooks";
-import { Alert, Spinner } from "@/components";
+import { Alert, Button, Label, Span, Spinner, Text } from "@/components";
 
 interface MediaUploadFieldProps {
   /** Required label shown above the upload control */
@@ -104,9 +104,9 @@ export function MediaUploadField({
   return (
     <div className={spacing.stack}>
       {/* Label */}
-      <label className={`block text-sm font-medium ${themed.textSecondary}`}>
+      <Label className={`block text-sm font-medium ${themed.textSecondary}`}>
         {label}
-      </label>
+      </Label>
 
       {/* Current file preview */}
       {value && !isLoading && (
@@ -138,33 +138,36 @@ export function MediaUploadField({
           )}
 
           {!disabled && (
-            <button
+            <Button
               type="button"
               onClick={handleRemove}
+              variant="ghost"
+              size="sm"
               className="mt-2 text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium"
             >
               Remove
-            </button>
+            </Button>
           )}
         </div>
       )}
 
       {/* Upload button / drop area */}
       {!disabled && !isLoading && (
-        <button
+        <Button
           type="button"
           onClick={() => fileInputRef.current?.click()}
+          variant="ghost"
           className={`w-full py-3 border-2 border-dashed ${themed.border} rounded-lg text-sm ${themed.textSecondary} hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors`}
         >
           {value ? "Replace file" : "Choose file to upload"}
-        </button>
+        </Button>
       )}
 
       {/* Uploading indicator */}
       {isLoading && (
         <div className="flex items-center gap-2 text-sm text-indigo-600 dark:text-indigo-400">
           <Spinner size="sm" />
-          <span>Uploading…</span>
+          <Span>Uploading…</Span>
         </div>
       )}
 
@@ -180,7 +183,9 @@ export function MediaUploadField({
 
       {/* Helper text */}
       {helperText && !error && (
-        <p className={`text-xs ${themed.textSecondary}`}>{helperText}</p>
+        <Text variant="secondary" size="xs">
+          {helperText}
+        </Text>
       )}
 
       {/* Error */}

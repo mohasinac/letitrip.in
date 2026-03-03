@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { Nav, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { classNames } from "@/helpers";
 
-const { themed } = THEME_CONSTANTS;
+const { themed, overflow, position, page } = THEME_CONSTANTS;
 
 interface StoreNavTabsProps {
   storeSlug: string;
@@ -41,15 +41,18 @@ export function StoreNavTabs({ storeSlug }: StoreNavTabsProps) {
 
   return (
     <div
-      className={`${themed.bgPrimary} border-b ${themed.border} sticky top-0 z-10`}
+      className={`${themed.bgPrimary} border-b ${themed.border} ${position.stickyTop} z-10`}
     >
-      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6">
-        <nav className="flex gap-0 overflow-x-auto" aria-label="Store sections">
+      <div className={`${page.container.wide}`}>
+        <Nav
+          className={`flex gap-0 ${overflow.xAuto}`}
+          aria-label="Store sections"
+        >
           {tabs.map((tab) => {
             const isActive =
               pathname.endsWith(`/${tab.id}`) || pathname === tab.href;
             return (
-              <Link
+              <TextLink
                 key={tab.id}
                 href={tab.href}
                 className={classNames(
@@ -61,10 +64,10 @@ export function StoreNavTabs({ storeSlug }: StoreNavTabsProps) {
                 aria-current={isActive ? "page" : undefined}
               >
                 {tab.label}
-              </Link>
+              </TextLink>
             );
           })}
-        </nav>
+        </Nav>
       </div>
     </div>
   );

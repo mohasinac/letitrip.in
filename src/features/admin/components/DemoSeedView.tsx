@@ -1,7 +1,20 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
-import { Button, Card, Badge, Spinner, ConfirmDeleteModal } from "@/components";
+import {
+  Button,
+  Card,
+  Badge,
+  Spinner,
+  ConfirmDeleteModal,
+  Heading,
+  Text,
+  Caption,
+  Span,
+  Checkbox,
+  Ul,
+  Li,
+} from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { demoService } from "@/services";
 
@@ -210,19 +223,23 @@ export function DemoSeedView() {
 
   const selCount = selectedCollections.length;
   const totalCount = ALL_COLLECTIONS.length;
+  const { flex } = THEME_CONSTANTS;
 
   // Guard: dev only
   if (process.env.NODE_ENV !== "development") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className={`min-h-screen ${flex.center} p-4`}>
         <Card className="max-w-md w-full p-10 text-center">
           <div className="text-5xl mb-4">🔒</div>
-          <h1 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-2">
+          <Heading
+            level={1}
+            className="text-2xl font-bold text-red-600 dark:text-red-400 mb-2"
+          >
             Access Denied
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400">
+          </Heading>
+          <Text variant="secondary">
             This page is only available in development mode.
-          </p>
+          </Text>
         </Card>
       </div>
     );
@@ -236,19 +253,22 @@ export function DemoSeedView() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <span className="text-4xl">🌱</span>
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                <Span className="text-4xl">🌱</Span>
+                <Heading
+                  level={1}
+                  className="text-3xl sm:text-4xl font-bold tracking-tight"
+                >
                   Seed Data Manager
-                </h1>
+                </Heading>
               </div>
-              <p className="text-gray-400 text-sm sm:text-base max-w-lg">
+              <Text className="text-gray-400 text-sm sm:text-base max-w-lg">
                 Load or remove deterministic seed documents from Firestore. All
                 operations are ID-scoped — safe alongside real data.
-              </p>
+              </Text>
             </div>
-            <span className="self-start sm:self-auto px-3 py-1.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded-full uppercase tracking-wide shrink-0">
+            <Span className="self-start sm:self-auto px-3 py-1.5 bg-yellow-400 text-yellow-900 text-xs font-bold rounded-full uppercase tracking-wide shrink-0">
               Dev Only
-            </span>
+            </Span>
           </div>
 
           {/* Summary chips */}
@@ -258,11 +278,11 @@ export function DemoSeedView() {
                 key={g.label}
                 className="flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full text-xs text-gray-300"
               >
-                <span>{g.emoji}</span>
-                <span>{g.label}</span>
-                <span className="font-bold text-white">
+                <Span>{g.emoji}</Span>
+                <Span>{g.label}</Span>
+                <Span className="font-bold text-white">
                   {g.collections.length}
-                </span>
+                </Span>
               </div>
             ))}
             <div className="flex items-center gap-1.5 px-3 py-1 bg-white/20 rounded-full text-xs font-semibold text-white">
@@ -277,12 +297,12 @@ export function DemoSeedView() {
         {loading && (
           <div className="flex items-center gap-3 px-5 py-4 bg-blue-600 text-white rounded-xl shadow-lg">
             <Spinner size="sm" variant="white" />
-            <span className="font-medium">
+            <Span className="font-medium">
               {lastAction === "load" ? "Loading" : "Deleting"} seed data…
-            </span>
-            <span className="text-blue-200 text-sm ml-auto">
+            </Span>
+            <Span className="text-blue-200 text-sm ml-auto">
               This may take a moment
-            </span>
+            </Span>
           </div>
         )}
 
@@ -292,16 +312,17 @@ export function DemoSeedView() {
             className={`p-6 border-2 ${response.success ? "border-emerald-300 dark:border-emerald-700" : "border-red-300 dark:border-red-700"}`}
           >
             <div className="flex items-start gap-3 mb-5">
-              <span className="text-2xl">{response.success ? "✅" : "❌"}</span>
+              <Span className="text-2xl">{response.success ? "✅" : "❌"}</Span>
               <div>
-                <h3
+                <Heading
+                  level={3}
                   className={`font-bold text-lg ${THEME_CONSTANTS.themed.textPrimary}`}
                 >
                   {response.success ? "Operation complete" : "Operation failed"}
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                </Heading>
+                <Text size="sm" variant="secondary" className="mt-0.5">
                   {response.message}
-                </p>
+                </Text>
               </div>
             </div>
 
@@ -368,9 +389,9 @@ export function DemoSeedView() {
                 {response.details.collections &&
                   response.details.collections.length > 0 && (
                     <div>
-                      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                      <Caption className="font-semibold uppercase tracking-wider mb-2">
                         Collections processed
-                      </p>
+                      </Caption>
                       <div className="flex flex-wrap gap-2">
                         {response.details.collections.map((col) => (
                           <Badge key={col} variant="info" className="text-xs">
@@ -389,16 +410,17 @@ export function DemoSeedView() {
         <Card className="p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
             <div>
-              <h2
+              <Heading
+                level={2}
                 className={`text-xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
               >
                 Select Collections
-              </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+              </Heading>
+              <Text size="sm" variant="secondary" className="mt-0.5">
                 {selCount === 0
                   ? "None selected — actions below will target all collections"
                   : `${selCount} of ${totalCount} selected`}
-              </p>
+              </Text>
             </div>
             <div className="flex gap-2 shrink-0">
               <Button
@@ -434,33 +456,34 @@ export function DemoSeedView() {
                   className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700"
                 >
                   {/* Group header */}
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={() => toggleGroup(group)}
                     disabled={loading}
-                    className={`w-full flex items-center justify-between px-4 py-3 ${group.headerBg} transition-opacity ${loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-80"}`}
+                    className={`w-full ${flex.between} px-4 py-3 ${group.headerBg} transition-opacity ${loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-80"}`}
                   >
                     <div className="flex items-center gap-2">
-                      <span>{group.emoji}</span>
-                      <span className={`font-semibold text-sm ${group.color}`}>
+                      <Span>{group.emoji}</Span>
+                      <Span className={`font-semibold text-sm ${group.color}`}>
                         {group.label}
-                      </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      </Span>
+                      <Span className="text-xs text-gray-500 dark:text-gray-400">
                         ({group.collections.length})
-                      </span>
+                      </Span>
                     </div>
                     <div className="flex items-center gap-2">
                       {someGroupSelected && !allGroupSelected && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                        <Span className="text-xs text-gray-500 dark:text-gray-400">
                           {
                             group.collections.filter((c) =>
                               selectedCollections.includes(c),
                             ).length
                           }{" "}
                           selected
-                        </span>
+                        </Span>
                       )}
-                      <span
+                      <Span
                         className={`text-xs font-medium px-2 py-0.5 rounded-full ${
                           allGroupSelected
                             ? "bg-gray-800 dark:bg-white text-white dark:text-gray-900"
@@ -472,17 +495,24 @@ export function DemoSeedView() {
                           : someGroupSelected
                             ? "Partial"
                             : "All off"}
-                      </span>
+                      </Span>
                     </div>
-                  </button>
+                  </Button>
 
                   {/* Group chips */}
                   <div className="p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 bg-white dark:bg-gray-900">
                     {group.collections.map((col) => {
                       const isSelected = selectedCollections.includes(col);
                       return (
-                        <label
+                        <div
                           key={col}
+                          onClick={() => !loading && toggleCollection(col)}
+                          onKeyDown={(e) =>
+                            e.key === " " && !loading && toggleCollection(col)
+                          }
+                          role="checkbox"
+                          aria-checked={isSelected}
+                          tabIndex={0}
                           className={`
                             flex items-center gap-2 px-3 py-2.5 rounded-lg border-2 cursor-pointer
                             transition-all duration-150 select-none
@@ -490,17 +520,16 @@ export function DemoSeedView() {
                             ${loading ? "opacity-50 cursor-not-allowed" : ""}
                           `}
                         >
-                          <input
-                            type="checkbox"
+                          <Checkbox
                             checked={isSelected}
                             onChange={() => toggleCollection(col)}
                             disabled={loading}
                             className="w-3.5 h-3.5 shrink-0"
                           />
-                          <span className="text-sm font-medium leading-tight">
+                          <Span className="text-sm font-medium leading-tight">
                             {COLLECTION_LABELS[col]}
-                          </span>
-                        </label>
+                          </Span>
+                        </div>
                       );
                     })}
                   </div>
@@ -515,12 +544,13 @@ export function DemoSeedView() {
           {/* Load card */}
           <Card className="p-5 border-2 border-emerald-200 dark:border-emerald-800">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl">📥</span>
-              <h3
+              <Span className="text-xl">📥</Span>
+              <Heading
+                level={3}
                 className={`font-bold text-base ${THEME_CONSTANTS.themed.textPrimary}`}
               >
                 Load Data
-              </h3>
+              </Heading>
             </div>
             <div className="space-y-3">
               <Button
@@ -529,9 +559,9 @@ export function DemoSeedView() {
                 className="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold"
               >
                 {loading && lastAction === "load" ? (
-                  <span className="flex items-center justify-center gap-2">
+                  <Span className={`${flex.center} gap-2`}>
                     <Spinner size="sm" variant="white" /> Loading…
-                  </span>
+                  </Span>
                 ) : (
                   "Load All Collections"
                 )}
@@ -545,21 +575,22 @@ export function DemoSeedView() {
                 Load Selected{selCount > 0 ? ` (${selCount})` : ""}
               </Button>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+            <Caption className="mt-3">
               Upserts documents using seed IDs. Existing docs are merged, not
               overwritten.
-            </p>
+            </Caption>
           </Card>
 
           {/* Delete card */}
           <Card className="p-5 border-2 border-red-200 dark:border-red-800">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl">🗑️</span>
-              <h3
+              <Span className="text-xl">🗑️</Span>
+              <Heading
+                level={3}
                 className={`font-bold text-base ${THEME_CONSTANTS.themed.textPrimary}`}
               >
                 Delete Data
-              </h3>
+              </Heading>
             </div>
             <div className="space-y-3">
               <Button
@@ -578,32 +609,32 @@ export function DemoSeedView() {
                 Delete Selected{selCount > 0 ? ` (${selCount})` : ""}
               </Button>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+            <Caption className="mt-3">
               Removes only documents matching seed IDs. Safe — won&apos;t touch
               non-seed data.
-            </p>
+            </Caption>
           </Card>
         </div>
 
         {/* ── Info footer ── */}
         <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 px-5 py-4">
-          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+          <Caption className="font-semibold uppercase tracking-wider mb-2">
             How it works
-          </p>
-          <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
-            <li>
+          </Caption>
+          <Ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
+            <Li>
               All operations target specific document IDs from seed files —
               never a whole collection
-            </li>
-            <li>
+            </Li>
+            <Li>
               Delete is safe to run even when the DB has non-seed documents
-            </li>
-            <li>Users are synced to Firebase Auth as well as Firestore</li>
-            <li>
+            </Li>
+            <Li>Users are synced to Firebase Auth as well as Firestore</Li>
+            <Li>
               Addresses are written as subcollections under their parent user
               document
-            </li>
-          </ul>
+            </Li>
+          </Ul>
         </div>
       </div>
 

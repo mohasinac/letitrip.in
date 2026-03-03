@@ -8,11 +8,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/hooks";
 import { Spinner } from "@/components";
-import { ROUTES } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { RipCoinsWallet } from "@/features/user";
+
+const { flex, page } = THEME_CONSTANTS;
 
 export default function UserRipCoinsPage() {
   const { user, loading } = useAuth();
@@ -26,7 +28,7 @@ export default function UserRipCoinsPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-16">
+      <div className={`${flex.hCenter} ${page.empty}`}>
         <Spinner />
       </div>
     );

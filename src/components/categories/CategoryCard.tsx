@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CategoryCard
  *
  * Displays a single category with its icon/image, name, description,
@@ -7,12 +7,11 @@
 
 "use client";
 
-import Link from "next/link";
 import { CategoryDocument } from "@/db/schema";
 import { UI_LABELS, ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Badge } from "@/components";
+import { Badge, Heading, Span, Text, TextLink } from "@/components";
 
-const { themed, borderRadius, spacing } = THEME_CONSTANTS;
+const { themed, borderRadius, spacing, flex } = THEME_CONSTANTS;
 
 interface CategoryCardProps {
   category: CategoryDocument;
@@ -37,7 +36,7 @@ export function CategoryCard({ category, className = "" }: CategoryCardProps) {
   const href = `${ROUTES.PUBLIC.CATEGORIES}/${slug}`;
 
   return (
-    <Link
+    <TextLink
       href={href}
       className={`group flex flex-col rounded-2xl border ${themed.border} ${themed.bgPrimary} overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 ${className}`}
     >
@@ -52,12 +51,12 @@ export function CategoryCard({ category, className = "" }: CategoryCardProps) {
         </div>
       ) : (
         <div
-          className={`aspect-video w-full flex items-center justify-center ${iconBackground(display?.color)}`}
+          className={`aspect-video w-full ${flex.center} ${iconBackground(display?.color)}`}
         >
           {display?.icon ? (
-            <span className="text-5xl">{display.icon}</span>
+            <Span className="text-5xl">{display.icon}</Span>
           ) : (
-            <span className="text-5xl">🗂️</span>
+            <Span className="text-5xl">🗂️</Span>
           )}
         </div>
       )}
@@ -65,12 +64,13 @@ export function CategoryCard({ category, className = "" }: CategoryCardProps) {
       {/* Body */}
       <div className={`flex flex-col flex-1 ${spacing.padding.md}`}>
         {/* Title + Featured Badge */}
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <h3
+        <div className={`${flex.betweenStart} gap-2 mb-1`}>
+          <Heading
+            level={3}
             className={`font-semibold ${themed.textPrimary} group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1`}
           >
             {name}
-          </h3>
+          </Heading>
           {isFeatured && (
             <Badge variant="info">{UI_LABELS.CATEGORIES_PAGE.FEATURED}</Badge>
           )}
@@ -78,29 +78,29 @@ export function CategoryCard({ category, className = "" }: CategoryCardProps) {
 
         {/* Description */}
         {description && (
-          <p className={`text-sm ${themed.textSecondary} line-clamp-2 mb-3`}>
+          <Text size="sm" variant="secondary" className="line-clamp-2 mb-3">
             {description}
-          </p>
+          </Text>
         )}
 
         {/* Meta: product / subcategory counts */}
         <div
           className={`mt-auto flex items-center gap-3 text-xs ${themed.textSecondary}`}
         >
-          <span>{UI_LABELS.CATEGORIES_PAGE.PRODUCTS_COUNT(productCount)}</span>
+          <Span>{UI_LABELS.CATEGORIES_PAGE.PRODUCTS_COUNT(productCount)}</Span>
           {subcategoryCount > 0 && (
             <>
-              <span>·</span>
-              <span>
+              <Span>·</Span>
+              <Span>
                 {UI_LABELS.CATEGORIES_PAGE.SUBCATEGORIES_COUNT(
                   subcategoryCount,
                 )}
-              </span>
+              </Span>
             </>
           )}
         </div>
       </div>
-    </Link>
+    </TextLink>
   );
 }
 

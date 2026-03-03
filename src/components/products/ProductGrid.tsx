@@ -1,9 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { ProductCard } from "./ProductCard";
 import type { ProductDocument } from "@/db/schema";
+import { Heading, Span, Text } from "@/components";
 
 const { themed } = THEME_CONSTANTS;
 
@@ -61,13 +62,13 @@ export function ProductGrid({
   if (products.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <span className="text-6xl mb-4">🔍</span>
-        <h3 className={`text-xl font-semibold mb-2 ${themed.textPrimary}`}>
+        <Span className="text-6xl mb-4">🔍</Span>
+        <Heading level={3} className="text-xl font-semibold mb-2">
           {t("noProductsFound")}
-        </h3>
-        <p className={`text-sm ${themed.textSecondary}`}>
+        </Heading>
+        <Text size="sm" variant="secondary">
           {t("noProductsSubtitle")}
-        </p>
+        </Text>
       </div>
     );
   }

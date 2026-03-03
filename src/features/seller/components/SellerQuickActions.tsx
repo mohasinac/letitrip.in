@@ -1,10 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Card, Button } from "@/components/ui";
 import { Heading } from "@/components/typography";
 import { ROUTES } from "@/constants";
+import { Span } from "@/components";
 
 export function SellerQuickActions() {
   const router = useRouter();
@@ -14,25 +15,25 @@ export function SellerQuickActions() {
     {
       label: t("addProduct"),
       href: ROUTES.SELLER.PRODUCTS_NEW,
-      icon: "➕",
+      icon: "?",
       variant: "primary" as const,
     },
     {
       label: t("viewProducts"),
       href: ROUTES.SELLER.PRODUCTS,
-      icon: "📋",
+      icon: "??",
       variant: "outline" as const,
     },
     {
       label: t("viewAuctions"),
       href: ROUTES.SELLER.AUCTIONS,
-      icon: "🔨",
+      icon: "??",
       variant: "outline" as const,
     },
     {
       label: t("viewSales"),
       href: ROUTES.SELLER.ORDERS,
-      icon: "💰",
+      icon: "??",
       variant: "outline" as const,
     },
   ];
@@ -50,7 +51,7 @@ export function SellerQuickActions() {
             onClick={() => router.push(href)}
             className="flex items-center gap-2"
           >
-            <span>{icon}</span>
+            <Span>{icon}</Span>
             {label}
           </Button>
         ))}

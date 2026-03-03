@@ -11,7 +11,8 @@ import {
   Spinner,
   EmptyState,
 } from "@/components";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useParams } from "next/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 import { useTranslations } from "next-intl";
@@ -50,7 +51,7 @@ export function OrderDetailView() {
 
   if (loading || isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
         <Spinner size="lg" label={tLoading("default")} />
       </div>
     );

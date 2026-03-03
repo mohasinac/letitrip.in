@@ -1,4 +1,4 @@
-/**
+﻿/**
  * OrderStatusForm
  * Path: src/components/admin/orders/OrderStatusForm.tsx
  *
@@ -8,7 +8,7 @@
 "use client";
 
 import { useState } from "react";
-import { Select, Textarea, Input, Text } from "@/components";
+import { Input, Select, Span, Text, Textarea } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import type { OrderDocument, OrderStatus, PaymentStatus } from "@/db/schema";
 
@@ -65,7 +65,7 @@ export function OrderStatusForm({ order, onChange }: OrderStatusFormProps) {
         className={`rounded-lg border ${THEME_CONSTANTS.themed.border} p-4 space-y-2 text-sm`}
       >
         <Text weight="semibold">
-          Order: <span className="font-mono">{order.id}</span>
+          Order: <Span className="font-mono">{order.id}</Span>
         </Text>
         <Text variant="secondary">
           {order.productTitle} × {order.quantity}

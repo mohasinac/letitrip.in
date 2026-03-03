@@ -1,5 +1,6 @@
-import React from "react";
+﻿import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Span } from "../typography/Typography";
 
 /**
  * Badge Component
@@ -70,8 +71,8 @@ export default function Badge({
   };
 
   return (
-    <span className={`${variantClasses[variant]} ${className}`}>
+    <Span className={`${variantClasses[variant]} ${className}`}>
       {children}
-    </span>
+    </Span>
   );
 }

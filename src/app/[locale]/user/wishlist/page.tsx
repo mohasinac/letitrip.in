@@ -8,15 +8,23 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useAuth, useApiQuery } from "@/hooks";
-import { Spinner, EmptyState, ProductGrid, WishlistButton } from "@/components";
+import {
+  Spinner,
+  EmptyState,
+  ProductGrid,
+  WishlistButton,
+  Heading,
+  Text,
+  Span,
+} from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { ProductDocument } from "@/db/schema";
 import { wishlistService } from "@/services";
 
-const { themed, typography, spacing } = THEME_CONSTANTS;
+const { themed, typography, spacing, flex, page } = THEME_CONSTANTS;
 
 interface WishlistItem {
   productId: string;
@@ -55,7 +63,7 @@ export default function UserWishlistPage() {
 
   if (authLoading || !user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className={`${flex.center} min-h-screen`}>
         <Spinner size="lg" label={tLoading("default")} />
       </div>
     );
@@ -80,25 +88,25 @@ export default function UserWishlistPage() {
   return (
     <div className={spacing.stack}>
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className={flex.between}>
         <div>
-          <h1 className={`${typography.h3} ${themed.textPrimary}`}>
+          <Heading level={1} className={typography.h3}>
             {t("title")}
-          </h1>
-          <p className={`mt-0.5 text-sm ${themed.textSecondary}`}>
+          </Heading>
+          <Text size="sm" variant="secondary" className="mt-0.5">
             {t("subtitle")}
-          </p>
+          </Text>
         </div>
         {items.length > 0 && (
-          <span className={`text-sm ${themed.textSecondary}`}>
+          <Span variant="secondary">
             {t("itemsCount")}: {items.length}
-          </span>
+          </Span>
         )}
       </div>
 
       {/* Loading */}
       {isLoading ? (
-        <div className="flex justify-center py-16">
+        <div className={`${flex.hCenter} ${page.empty}`}>
           <Spinner size="lg" />
         </div>
       ) : items.length === 0 ? (

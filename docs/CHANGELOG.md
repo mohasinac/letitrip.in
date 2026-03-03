@@ -13,6 +13,158 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-03-04] — DRY Refactoring: Import Corruption Fixes, Link→TextLink, Navigation Hook Migration
+
+### Fixed
+
+- **Corrupted barrel imports** — automated scripts had stripped commas between component names in 10+ files; all restored:
+  - `EventLeaderboard`, `EventStatsBanner`, `AuthSocialButtons`, `SearchView`, `NotificationBell`, `ProductTableColumns`, `FaqTableColumns`, `ReviewTableColumns`, `FilterFacetSection`, `TablePagination`
+  - `RichTextEditor`, `AuctionGrid`, `OrderSummaryPanel`, `FilterDrawer`, `ImageGallery`, `PasswordStrengthIndicator`, `AvatarDisplay`
+- **`AuctionsView`** — merged duplicate `Text` import; restored missing `import type { ActiveFilter }`
+- **`ProductDetailView`** — replaced orphaned `<Link>` (not imported) with `<TextLink>`
+- **`faqs/[category]/page.tsx`**, **`stores/[storeSlug]/page.tsx`** — reverted `redirect` to `next/navigation`; `@/i18n/navigation` redirect does not accept a bare string argument
+
+### Changed
+
+- **`useRouter` / `usePathname` migration** (~15 feature files) — moved imports from `next/navigation` → `@/i18n/navigation` per Rule 33:
+  - `ChatList`, `MessagesView`, `UserEditAddressView`, `OrderDetailView` and ~11 other feature components
+  - `useUrlTable.ts` — split `useRouter, useSearchParams, usePathname` so `useRouter` + `usePathname` come from `@/i18n/navigation` and `useSearchParams` stays in `next/navigation`
+- **`Link` → `TextLink` migration** — removed all `import Link from "next/link"` across the codebase; replaced with `TextLink` from `@/components` per Rule 8:
+  - `StoreCard`, `SurveyEventSection`, `LoginForm`, `ForgotPasswordView`, `RegisterForm`, `ResetPasswordView`
+  - `AdminAnalyticsView`, `EventCard`, `QuickActionsGrid`, `EmptyState`, `EventBanner`
+  - `SellerTopProducts`, `SellerStorefrontView` (4 links), `PublicProfileView` (2 links)
+- **`ForgotPasswordView`**, **`ResetPasswordView`** — restored accidentally removed `import { useTranslations } from "next-intl"` line
+
+---
+
+## [2026-03-05] — Semantic Component Coverage: BottomNavbar, DemoSeedView, Sidebar
+
+### Changed
+
+- **`BottomNavbar`** (`src/components/layout/BottomNavbar.tsx`) — replaced all raw HTML with semantic components:
+  - `usePathname` import moved from `next/navigation` → `@/i18n/navigation`
+  - `<nav>` → `<Nav aria-label={t("mobileNav")}>`, `<ul>` → `<Ul>`, `<li>` → `<Li>`, search `<button>` → `<Button variant="ghost">`, `<span>` → `<Span>`, profile `<a>` → `<TextLink variant="inherit">`
+  - Added `"mobileNav"` key to `messages/en.json` and `messages/hi.json` under `nav` namespace
+- **`DemoSeedView`** (`src/features/admin/components/DemoSeedView.tsx`) — replaced all raw HTML with semantic components:
+  - All `<h1>`/`<h2>`/`<h3>` → `<Heading level={n}>`, `<p>` → `<Text>` or `<Caption>`, `<span>` → `<Span>`, `<button>` → `<Button variant="ghost">`, `<input type="checkbox">` → `<Checkbox>`, `<ul>` → `<Ul>`, `<li>` → `<Li>`
+  - `<label>` wrappers for checkboxes replaced with `<div role="checkbox">` + `<Checkbox>` pattern
+- **`Sidebar`** (`src/components/layout/Sidebar.tsx`) — replaced all raw HTML with semantic components:
+  - `import Link from "next/link"` removed; `usePathname`/`useRouter` moved to `@/i18n/navigation`
+  - `Heading`, `Nav`, `Ul`, `Li`, `TextLink`, `Span`, `Button`, `Text` added to `@/components` import
+  - All `<h3>` section titles → `<Heading level={3}>`, `<p>` → `<Text>`, `<button>` → `<Button variant="ghost">`
+  - All nav lists: `<nav>` → `<Nav aria-label={tA("sidebarLinks")}>`, `<ul>` → `<Ul>`, `<li>` → `<Li>`, `<Link>` → `<TextLink variant="inherit">`, `<span>` → `<Span>`
+  - Added `"sidebarLinks"` key to `messages/en.json` and `messages/hi.json` under `accessibility` namespace
+
+### Fixed
+
+- **`Span` component** (`src/components/typography/Typography.tsx`) — `children` made optional (`children?: React.ReactNode`) to support decorative self-closing usage (e.g. animated pulse dots)
+- **`Button` component** (`src/components/ui/Button.tsx`) — `children` made optional (`children?: React.ReactNode`) to support icon-only / dot buttons that rely solely on `aria-label`
+
+---
+
+## [2026-03-03] — Complete HTML Tag Component Coverage (Span, TextLink, Semantic)
+
+### Added
+
+- **`Span` component** (`src/components/typography/Typography.tsx`) — inline `<span>` wrapper with `variant`, `size`, and `weight` props. `variant="inherit"` (default) injects no colour class, making it a pure CSS wrapper for gradients, clip-text, etc.
+- **`TextLink` component** (`src/components/typography/TextLink.tsx`) — the single component for ALL anchor/link elements in the app.
+  - Internal paths → locale-aware `Link` from `@/i18n/navigation`
+  - External URLs / `mailto:` / `tel:` → `<a target="_blank" rel="noopener noreferrer">`
+  - Auto-detects internal vs external; force external with `external={true}`
+  - Variants: `"default"` (indigo), `"muted"`, `"nav"`, `"danger"`, `"inherit"`
+- **`src/components/semantic/` directory** — thin, themeable wrappers around HTML5 semantic elements, enabling future one-place theming and enforcing accessibility attributes:
+  - `Section` → `<section>`
+  - `Article` → `<article>`
+  - `Main` → `<main>`
+  - `Aside` → `<aside>`
+  - `Nav` → `<nav>` (`aria-label` required at the TypeScript prop level)
+  - `BlockHeader` → `<header>` (block-level; ≠ page-level `TitleBar`/`MainNavbar`)
+  - `BlockFooter` → `<footer>` (block-level; ≠ page-level `Footer`)
+  - `Ul` → `<ul>`
+  - `Ol` → `<ol>`
+  - `Li` → `<li>`
+- **`src/components/semantic/index.ts`** — barrel exporting all semantic components + their TypeScript prop interfaces
+- **`src/components/typography/index.ts`** — updated to export `Span`, `TextLink`, and `TextLinkProps`
+- **`src/components/index.ts`** — added `export * from "./semantic"` so all semantic components are accessible via `@/components`
+
+### Tests
+
+- **`src/components/semantic/__tests__/Semantic.test.tsx`** — 25 tests covering element names, className forwarding, children rendering, aria attributes, and HTML attribute pass-through for all 10 semantic components
+- **`src/components/typography/__tests__/Typography.test.tsx`** — updated: added `Caption` (6 tests), `Span` (8 tests), and `TextLink` (9 tests); all assertions use `THEME_CONSTANTS` for colour classes to stay theme-independent
+
+### Docs
+
+- `docs/GUIDE.md` — Typography Components section rewritten with full API docs for all 6 components (`Heading`, `Text`, `Label`, `Caption`, `Span`, `TextLink`); new **Semantic HTML Wrapper Components** section with component–element mapping table and full usage example
+- `.github/copilot-instructions.md` (Rule 7) — Typography Primitives table extended with `Span` and `TextLink` rows; code example updated to show both; new **Semantic HTML Wrapper Components** subsection added with component table and usage example; **Other Key Components** reorganised into `Typography` + `Semantic HTML` + `UI` named groups with all new components listed
+
+---
+
+## [2026-03-05] — Page Container Token System + Codebase-Wide Implementation
+
+### Added
+
+- `THEME_CONSTANTS.page` group in `src/constants/theme.ts` with 11 tokens covering all responsive page container patterns:
+  - `page.container.sm/md/lg/xl/2xl/full/wide` — compound `max-w-* mx-auto px-4 sm:px-6 lg:px-8` tokens for every viewport size
+  - `page.px` / `page.pxSm` — standalone responsive horizontal padding
+  - `page.empty` — `py-16` for empty/loading states
+  - `page.authPad` — `py-8 sm:py-12` for auth form wrappers
+- `THEME_CONSTANTS.flex.hCenter` — `"flex justify-center"` for horizontal-only centering
+
+### Changed
+
+- **~45 source files** migrated from raw Tailwind container strings to `page.container.*` and `flex.hCenter` / `page.empty` tokens:
+  - Features: `ProductDetailView`, `ProductsView`, `AuctionsView`, `SearchView`, `CategoryProductsView`, `BlogPostView`, `CartView`, `StoreNavTabs`, `StoreHeader`, `StoresListView`, `StoreReviewsView`, `StoreProductsView`, `StoreAuctionsView`, `StoreAboutView`, `BecomeSellerView`, `LoginForm`, `RegisterForm`, `ForgotPasswordView`
+  - Components: `SellerStorefrontView`, `PublicProfileView`, `CheckoutView`, `AuctionDetailView`, `AboutView`
+  - Pages: `terms`, `privacy`, `refund-policy`, `help`, `contact`, `promotions`, `stores`, `stores/[storeSlug]/layout`, `stores/[storeSlug]/{about,products,reviews,auctions}`, `seller-guide`, `track`, `user/messages`, `user/ripcoins`, `user/wishlist`
+- `docs/GUIDE.md` — documented `page` group and `flex.hCenter` in THEME_CONSTANTS reference
+- `docs/QUICK_REFERENCE.md` — added `page.*` row to quick reference table
+- `.github/copilot-instructions.md` — Rule 4 table expanded with 12 new rows for all `page.*` and `flex.hCenter` tokens
+
+---
+
+## [2026-03-04] — Layout Token System + Codebase-Wide Implementation
+
+### Added
+
+- **`src/constants/theme.ts`** — Six new THEME_CONSTANTS token groups for layout:
+  - `flex.*` — 20+ flex container helpers (`center`, `between`, `betweenStart`, `start`, `end`, `rowCenter`, `rowStart`, `centerCol`, `colStart`, `colCenter`, `colEnd`, `colBetween`, `growMin`, `noShrink`, `grow`, `none`, `inline`, `inlineCenter`, `inlineFull`, `rowWrap`)
+  - `grid.*` — Responsive grid presets (`cols1`–`cols6`, `autoFillSm/Md/Lg`, `sidebar`, `sidebarRight`, `sidebarWide`, `halves`, `twoThird`, `oneThird`)
+  - `overflow.*` — Overflow helpers (`hidden`, `auto`, `scroll`, `xAuto`, `yAuto`, `xHidden`, `yHidden`, `xScroll`, `yScroll`, `visible`)
+  - `position.*` — Position helpers (`relative`, `absolute`, `fixed`, `sticky`, `static`, `fill`, `absoluteCenter`, `absoluteTop/Bottom/TopRight/TopLeft/BottomRight/BottomLeft`, `fixedFill`, `fixedTop/Bottom`, `stickyTop/Bottom`)
+  - `size.*` — Size tokens (`full`, `screen`, `minScreen`, `w.*`, `h.*`, `square.*` xs–4xl)
+  - Extended `spacing.gap` with `x.*` and `y.*` axis subtrees; `spacing.padding` and `spacing.margin` with `x.*`, `y.*`, `top.*`, `bottom.*`, `left.*`, `right.*`
+- **`src/components/typography/Typography.tsx`** — `Caption` component now accepts `variant?: "default" | "accent" | "inverse"` for themed caption colours without ad-hoc Tailwind overrides.
+
+### Changed (Rule 4 Violation Fixes)
+
+Replaced all raw Tailwind layout class strings with `THEME_CONSTANTS` tokens across **100+ files** including:
+
+- All `src/features/user/components/*.tsx` — `UserSettingsView`, `UserOrdersView`, `UserNotificationsView`, `UserEditAddressView`, `UserAddressesView`, `OrderDetailView`, `MessagesView`, `BecomeSellerView`, `BuyRipCoinsModal`, `ChatList`
+- All `src/features/seller/components/*.tsx` — `SellerEditProductView`, `SellerProductsView`, `SellersListView`, `SellerStoreView`, `SellerProductCard`, `SellerOrdersView`, `SellerDashboardView`, `SellerAuctionsView`, `SellerRecentListings`, `SellerStatCard`
+- All `src/features/stores/components/*.tsx` — `StoreHeader`, `StoreCard`, `StoreNavTabs`, `StoreReviewsView`
+- All `src/features/auth/components/*.tsx` — `VerifyEmailView`, `ResetPasswordView`, `RegisterForm`, `LoginForm`, `ForgotPasswordView`
+- All `src/components/ui/*.tsx` — `NotificationBell`, `SideDrawer`, `Pagination`, `HorizontalScroller`, `ImageGallery`, `Avatar`, `ActiveFilterChips`, `Accordion`, `Progress`
+- All `src/components/forms/*.tsx` — `Checkbox`, `Radio`, `Slider`
+- All `src/components/layout/*.tsx` — `TitleBar`, `Sidebar`, `MainNavbar`
+- All `src/components/admin/*.tsx` — `DataTable`, `CategoryTreeView`, `BackgroundSettings`, `GridEditor`, `ImageUpload`, `DrawerFormFooter`, `AdminStatsCards`, and admin sub-components
+- All `src/components/checkout/*.tsx` — `CheckoutSuccessView`, `CheckoutStepper`, `CheckoutOrderReview`, `CheckoutAddressStep`, `OrderSuccessHero`, `OrderSuccessCard`
+- All `src/components/homepage/*.tsx` — `HeroCarousel`, `TopCategoriesSection`, `BlogArticlesSection`, `FAQSection`, `CustomerReviewsSection`, `FeaturedProductsSection`, `FeaturedAuctionsSection`, `TrustFeaturesSection`, `WhatsAppCommunitySection`, `AdvertisementBanner`, `HomepageSkeleton`
+- All `src/components/products/*.tsx` — `ProductCard`, `ProductImageGallery`, `ProductReviews`, `ProductFilters`, `ProductSortBar`
+- All `src/components/auctions/*.tsx` — `AuctionDetailView`, `AuctionCard`, `BidHistory`
+- All `src/components/cart/*.tsx` — `CartItemRow`, `CartSummary`
+- All `src/components/faq/*.tsx`, `src/components/blog/*.tsx`, `src/components/categories/*.tsx`, `src/components/promotions/*.tsx`, `src/components/user/**/*.tsx`, `src/components/seller/*.tsx`
+- All relevant `src/app/[locale]/**/*.tsx` pages — login, reset-password, categories, profile, sellers, seller analytics/payouts, user profile/wishlist/addresses/orders, track
+- All relevant `src/features/events/*.tsx`, `src/features/categories/*.tsx`, `src/features/blog/*.tsx`, `src/features/admin/*.tsx`, `src/features/products/*.tsx`
+- `src/components/modals/UnsavedChangesModal.tsx`, `src/components/modals/ConfirmDeleteModal.tsx`, `src/components/modals/ImageCropModal.tsx`, `src/components/feedback/Modal.tsx`
+
+### Docs Updated
+
+- **`docs/GUIDE.md`** — THEME_CONSTANTS section updated with full documentation of all 6 new token groups
+- **`docs/QUICK_REFERENCE.md`** — Available Constants table updated with 5 new rows for flex/grid/overflow/position/size
+- **`.github/copilot-instructions.md`** — Rule 4 Class Replacement Table expanded from 22 to 50+ rows covering all new layout token patterns
+
+---
+
 ## [2026-03-03] — Modern Design Refresh (Zinc Palette + Flat Design)
 
 ### Fixed (Rule Violations)

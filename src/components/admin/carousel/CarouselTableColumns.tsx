@@ -6,7 +6,7 @@
  * Uses StatusBadge from @/components and UI_LABELS from @/constants.
  */
 
-import { StatusBadge } from "@/components";
+import { StatusBadge, Button } from "@/components";
 import { UI_LABELS } from "@/constants";
 import type { CarouselSlide } from "./types";
 
@@ -57,7 +57,7 @@ export function getCarouselTableColumns(
     ],
     actions: (slide: CarouselSlide) => (
       <div className="flex gap-2">
-        <button
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             onEdit(slide);
@@ -65,8 +65,8 @@ export function getCarouselTableColumns(
           className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
         >
           {UI_LABELS.ACTIONS.EDIT}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={(e) => {
             e.stopPropagation();
             onDelete(slide);
@@ -74,7 +74,7 @@ export function getCarouselTableColumns(
           className="text-red-600 hover:text-red-800 dark:text-red-400"
         >
           {UI_LABELS.ACTIONS.DELETE}
-        </button>
+        </Button>
       </div>
     ),
   };

@@ -16,7 +16,7 @@ import {
   AddressCard,
   ConfirmDeleteModal,
 } from "@/components";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   ROUTES,
   THEME_CONSTANTS,
@@ -76,9 +76,11 @@ export function UserAddressesView() {
   };
   const handleSetDefault = (id: string) => setDefault({ addressId: id });
 
+  const { spacing, flex } = THEME_CONSTANTS;
+
   if (authLoading || fetchLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className={`${flex.center} min-h-screen`}>
         <Spinner size="lg" label={tLoading("default")} />
       </div>
     );
@@ -86,12 +88,10 @@ export function UserAddressesView() {
 
   if (!user) return null;
 
-  const { spacing } = THEME_CONSTANTS;
-
   return (
     <>
       <div className={spacing.stack}>
-        <div className="flex items-center justify-between">
+        <div className={flex.between}>
           <Heading level={3}>{tAddresses("title")}</Heading>
           <Button
             variant="primary"

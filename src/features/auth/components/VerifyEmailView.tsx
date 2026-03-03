@@ -6,11 +6,14 @@
  */
 
 import { useEffect, useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Card, Button, Alert, Spinner, Heading, Text } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useVerifyEmail } from "@/hooks";
+
+const { flex } = THEME_CONSTANTS;
 
 function VerifyEmailContent() {
   const router = useRouter();
@@ -35,7 +38,7 @@ function VerifyEmailContent() {
   }, [token]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8">
+    <div className={`min-h-screen ${flex.center} px-4 py-8`}>
       <Card className="max-w-md w-full p-8 text-center">
         {isLoading && (
           <>
@@ -155,7 +158,7 @@ export function VerifyEmailView() {
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center min-h-screen">
+        <div className={`${flex.center} min-h-screen`}>
           <Spinner size="xl" variant="primary" />
         </div>
       }

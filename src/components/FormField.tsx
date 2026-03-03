@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Form Field Component
  *
  * Reusable form field with label, input, error, and validation
@@ -7,7 +7,7 @@
 "use client";
 
 import React from "react";
-import { Input, Textarea, Select } from "@/components";
+import { Input, Label, Select, Span, Text, Textarea } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 export interface SelectOption {
@@ -74,13 +74,13 @@ export const FormField: React.FC<FormFieldProps> = ({
   return (
     <div className="mb-4">
       {label && (
-        <label
+        <Label
           htmlFor={inputId}
           className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary} mb-1`}
         >
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
-        </label>
+          {required && <Span className="text-red-500 ml-1">*</Span>}
+        </Label>
       )}
 
       {type === "select" ? (
@@ -125,19 +125,21 @@ export const FormField: React.FC<FormFieldProps> = ({
       )}
 
       {helpText && !showError && (
-        <p className={`mt-1 text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
+        <Text size="sm" variant="secondary" className="mt-1">
           {helpText}
-        </p>
+        </Text>
       )}
 
       {showError && (
-        <p
+        <Text
           id={errorId}
-          className="mt-1 text-sm text-red-600 dark:text-red-400"
+          size="sm"
+          variant="error"
+          className="mt-1"
           role="alert"
         >
           {error}
-        </p>
+        </Text>
       )}
     </div>
   );

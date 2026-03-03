@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CarouselSlideForm Component
  * Path: src/components/admin/carousel/CarouselSlideForm.tsx
  *
@@ -8,7 +8,14 @@
 
 "use client";
 
-import { FormField, ImageUpload, GridEditor } from "@/components";
+import {
+  FormField,
+  GridEditor,
+  Heading,
+  ImageUpload,
+  Label,
+  Span,
+} from "@/components";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { CarouselSlide } from "./types";
 
@@ -62,9 +69,9 @@ export function CarouselSlideForm({
 
       {slide.imageUrl && isReadonly && (
         <div>
-          <label className={`block ${typography.label} mb-2`}>
+          <Label className={`block ${typography.label} mb-2`}>
             Slide Image
-          </label>
+          </Label>
           <img
             src={slide.imageUrl}
             alt={slide.title}
@@ -93,7 +100,7 @@ export function CarouselSlideForm({
         />
 
         <div className="flex items-end">
-          <label className="flex items-center gap-2">
+          <Label className="flex items-center gap-2">
             <input
               type="checkbox"
               checked={slide.isActive}
@@ -101,16 +108,16 @@ export function CarouselSlideForm({
               disabled={isReadonly}
               className="w-4 h-4 text-indigo-600 rounded"
             />
-            <span className={typography.label}>{UI_LABELS.STATUS.ACTIVE}</span>
-          </label>
+            <Span className={typography.label}>{UI_LABELS.STATUS.ACTIVE}</Span>
+          </Label>
         </div>
       </div>
 
       {!isReadonly && (
         <div className={`border-t ${themed.border} pt-4`}>
-          <h3 className={`${typography.cardTitle} mb-4`}>
+          <Heading level={3} className="mb-4">
             Grid Layout Designer (Optional)
-          </h3>
+          </Heading>
           <GridEditor
             initialGrid={slide.gridData}
             onChange={(grid) => update({ gridData: grid })}

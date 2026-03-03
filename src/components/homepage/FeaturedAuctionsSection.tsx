@@ -1,14 +1,22 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useFeaturedAuctions } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency, nowMs } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
-import { HorizontalScroller } from "@/components/ui";
+import {
+  Heading,
+  HorizontalScroller,
+  Section,
+  Span,
+  Text,
+  TextLink,
+} from "@/components";
+
+const { flex } = THEME_CONSTANTS;
 
 export function FeaturedAuctionsSection() {
   const t = useTranslations("homepage");
@@ -17,7 +25,7 @@ export function FeaturedAuctionsSection() {
 
   if (isLoading) {
     return (
-      <section
+      <Section
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
       >
         <div className="w-full">
@@ -49,7 +57,7 @@ export function FeaturedAuctionsSection() {
             ))}
           </div>
         </div>
-      </section>
+      </Section>
     );
   }
 
@@ -62,30 +70,31 @@ export function FeaturedAuctionsSection() {
   }
 
   return (
-    <section
+    <Section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
     >
       <div className="w-full">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className={`${flex.between} mb-6`}>
           <div>
-            <h2
+            <Heading
+              level={2}
               className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-1`}
             >
               {t("liveAuctions")}
-            </h2>
-            <p
+            </Heading>
+            <Text
               className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
             >
               {t("auctionsSubtitle")}
-            </p>
+            </Text>
           </div>
-          <Link
+          <TextLink
             href={ROUTES.PUBLIC.AUCTIONS}
             className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
           >
             {tActions("viewAllArrow")}
-          </Link>
+          </TextLink>
         </div>
 
         {/* Mobile: single-row circular carousel */}
@@ -93,7 +102,7 @@ export function FeaturedAuctionsSection() {
           <HorizontalScroller
             items={auctions.slice(0, 20)}
             renderItem={(auction) => (
-              <Link
+              <TextLink
                 href={`/auctions/${auction.id}`}
                 className={`group block ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
               >
@@ -101,7 +110,7 @@ export function FeaturedAuctionsSection() {
                   auction={auction}
                   sizes="(max-width: 640px) 50vw, 33vw"
                 />
-              </Link>
+              </TextLink>
             )}
             perView={{ base: 2, sm: 3 }}
             gap={12}
@@ -116,7 +125,7 @@ export function FeaturedAuctionsSection() {
           <HorizontalScroller
             items={auctions.slice(0, 30)}
             renderItem={(auction) => (
-              <Link
+              <TextLink
                 href={`/auctions/${auction.id}`}
                 className={`group block ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden hover:shadow-xl transition-all`}
               >
@@ -124,7 +133,7 @@ export function FeaturedAuctionsSection() {
                   auction={auction}
                   sizes="(max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
                 />
-              </Link>
+              </TextLink>
             )}
             perView={{ base: 3, lg: 4, xl: 5, "2xl": 6 }}
             rows={auctions.length > 5 ? 2 : 1}
@@ -136,7 +145,7 @@ export function FeaturedAuctionsSection() {
           />
         </div>
       </div>
-    </section>
+    </Section>
   );
 }
 
@@ -213,29 +222,30 @@ function AuctionCardContent({
 
       {/* Auction Info */}
       <div className={`${THEME_CONSTANTS.spacing.padding.sm} text-left`}>
-        <h3
+        <Heading
+          level={3}
           className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-medium mb-2 line-clamp-2 min-h-[2.5rem]`}
         >
           {auction.title}
-        </h3>
+        </Heading>
         <div className="space-y-1">
           <div className="flex items-baseline justify-between">
-            <span
+            <Span
               className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary}`}
             >
               {t("currentBid")}
-            </span>
-            <span
+            </Span>
+            <Span
               className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-bold`}
             >
               {formatCurrency(auction.currentBid ?? 0, auction.currency)}
-            </span>
+            </Span>
           </div>
-          <p
+          <Text
             className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary}`}
           >
             {auction.bidCount || 0} bid{auction.bidCount !== 1 ? "s" : ""}
-          </p>
+          </Text>
         </div>
       </div>
     </>

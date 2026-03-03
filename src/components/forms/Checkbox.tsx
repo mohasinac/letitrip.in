@@ -1,5 +1,6 @@
-import React from "react";
+﻿import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Span, Text } from "../typography/Typography";
 
 /**
  * Checkbox Component
@@ -33,12 +34,12 @@ export default function Checkbox({
   className = "",
   ...props
 }: CheckboxProps) {
-  const { themed, typography, input, colors } = THEME_CONSTANTS;
+  const { themed, typography, input, colors, flex } = THEME_CONSTANTS;
 
   return (
     <div className="w-full">
-      <label className="flex items-start gap-3 cursor-pointer group">
-        <div className="relative flex items-center justify-center">
+      <label className={`${flex.rowStart} gap-3 cursor-pointer group`}>
+        <div className={`relative ${flex.center}`}>
           <input
             type="checkbox"
             className={`
@@ -68,17 +69,17 @@ export default function Checkbox({
         </div>
 
         {label && (
-          <span
+          <Span
             className={`${typography.small} ${themed.textSecondary} select-none`}
           >
             {label}
-          </span>
+          </Span>
         )}
       </label>
 
       {error && (
-        <p
-          className={`mt-1.5 ${typography.small} ${themed.textError} flex items-center gap-1 ml-8`}
+        <Text
+          className={`mt-1.5 ${typography.small} ${themed.textError} ${flex.rowCenter} gap-1 ml-8`}
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path
@@ -88,7 +89,7 @@ export default function Checkbox({
             />
           </svg>
           {error}
-        </p>
+        </Text>
       )}
     </div>
   );

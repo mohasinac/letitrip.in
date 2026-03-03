@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 /**
  * useOrderTableColumns
@@ -8,6 +8,7 @@
  */
 
 import { THEME_CONSTANTS } from "@/constants";
+import { Button, Caption, Span, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import type { OrderDocument } from "@/db/schema";
 
@@ -45,9 +46,9 @@ export function useOrderTableColumns(onView: (order: OrderDocument) => void) {
         header: t("colOrderId"),
         width: "18%",
         render: (order: OrderDocument) => (
-          <span className="font-mono text-xs font-medium truncate max-w-[140px] block">
+          <Span className="font-mono text-xs font-medium truncate max-w-[140px] block">
             {order.id}
-          </span>
+          </Span>
         ),
       },
       {
@@ -57,12 +58,10 @@ export function useOrderTableColumns(onView: (order: OrderDocument) => void) {
         width: "22%",
         render: (order: OrderDocument) => (
           <div>
-            <p className="font-medium truncate max-w-[160px] text-sm">
+            <Text size="sm" weight="medium" className="truncate max-w-[160px]">
               {order.productTitle}
-            </p>
-            <p className={`text-xs ${themed.textSecondary}`}>
-              Qty: {order.quantity}
-            </p>
+            </Text>
+            <Caption>Qty: {order.quantity}</Caption>
           </div>
         ),
       },
@@ -73,14 +72,12 @@ export function useOrderTableColumns(onView: (order: OrderDocument) => void) {
         width: "20%",
         render: (order: OrderDocument) => (
           <div>
-            <p className="text-sm font-medium truncate max-w-[150px]">
+            <Text size="sm" weight="medium" className="truncate max-w-[150px]">
               {order.userName}
-            </p>
-            <p
-              className={`text-xs ${themed.textSecondary} truncate max-w-[150px]`}
-            >
+            </Text>
+            <Caption className="truncate max-w-[150px]">
               {order.userEmail}
-            </p>
+            </Caption>
           </div>
         ),
       },
@@ -90,13 +87,13 @@ export function useOrderTableColumns(onView: (order: OrderDocument) => void) {
         sortable: true,
         width: "10%",
         render: (order: OrderDocument) => (
-          <span className="font-semibold text-sm">
+          <Span className="font-semibold text-sm">
             {new Intl.NumberFormat("en-IN", {
               style: "currency",
               currency: order.currency ?? "INR",
               maximumFractionDigits: 0,
             }).format(order.totalPrice)}
-          </span>
+          </Span>
         ),
       },
       {
@@ -105,14 +102,14 @@ export function useOrderTableColumns(onView: (order: OrderDocument) => void) {
         sortable: true,
         width: "11%",
         render: (order: OrderDocument) => (
-          <span
+          <Span
             className={`px-2 py-1 text-xs font-medium rounded capitalize ${
               ORDER_STATUS_STYLES[order.status] ??
               `${themed.bgSecondary} ${themed.textSecondary}`
             }`}
           >
             {order.status}
-          </span>
+          </Span>
         ),
       },
       {
@@ -121,14 +118,14 @@ export function useOrderTableColumns(onView: (order: OrderDocument) => void) {
         sortable: true,
         width: "10%",
         render: (order: OrderDocument) => (
-          <span
+          <Span
             className={`px-2 py-1 text-xs font-medium rounded capitalize ${
               PAYMENT_STATUS_STYLES[order.paymentStatus] ??
               `${themed.bgSecondary} ${themed.textSecondary}`
             }`}
           >
             {order.paymentStatus}
-          </span>
+          </Span>
         ),
       },
       {
@@ -136,12 +133,12 @@ export function useOrderTableColumns(onView: (order: OrderDocument) => void) {
         header: t("colDetails"),
         width: "9%",
         render: (order: OrderDocument) => (
-          <button
+          <Button
             onClick={() => onView(order)}
             className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium"
           >
             {tActions("view")}
-          </button>
+          </Button>
         ),
       },
     ],

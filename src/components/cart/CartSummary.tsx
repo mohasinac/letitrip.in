@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
+import { Button, Heading, Span, TextLink } from "@/components";
 
-const { themed, borderRadius } = THEME_CONSTANTS;
+const { themed, borderRadius, flex } = THEME_CONSTANTS;
 
 interface CartSummaryProps {
   subtotal: number;
@@ -32,37 +32,37 @@ export function CartSummary({
     <div
       className={`${themed.bgPrimary} ${borderRadius.xl} border ${themed.border} p-5 space-y-4 sticky top-20`}
     >
-      <h2 className={`text-base font-bold ${themed.textPrimary}`}>
+      <Heading level={2} className="text-base font-bold">
         {t("orderSummary")}
-      </h2>
+      </Heading>
 
       {/* Line items */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-sm">
-          <span className={themed.textSecondary}>
+        <div className={`${flex.between} text-sm`}>
+          <Span className={themed.textSecondary}>
             {t("itemsSubtotal")} ({t("itemCount", { count: itemCount })})
-          </span>
-          <span className={themed.textPrimary}>{formatCurrency(subtotal)}</span>
+          </Span>
+          <Span className={themed.textPrimary}>{formatCurrency(subtotal)}</Span>
         </div>
         {discount > 0 && couponCode && (
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-emerald-600 dark:text-emerald-400">
+          <div className={`${flex.between} text-sm`}>
+            <Span className="text-emerald-600 dark:text-emerald-400">
               {t("discount")} ({couponCode})
-            </span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+            </Span>
+            <Span className="text-emerald-600 dark:text-emerald-400 font-medium">
               -{formatCurrency(discount)}
-            </span>
+            </Span>
           </div>
         )}
-        <div className="flex items-center justify-between text-sm">
-          <span className={themed.textSecondary}>{t("shipping")}</span>
-          <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+        <div className={`${flex.between} text-sm`}>
+          <Span className={themed.textSecondary}>{t("shipping")}</Span>
+          <Span className="text-emerald-600 dark:text-emerald-400 font-medium">
             {t("shippingCalculated")}
-          </span>
+          </Span>
         </div>
-        <div className="flex items-center justify-between text-sm">
-          <span className={themed.textSecondary}>{t("tax")}</span>
-          <span className={themed.textSecondary}>{t("taxCalculated")}</span>
+        <div className={`${flex.between} text-sm`}>
+          <Span className={themed.textSecondary}>{t("tax")}</Span>
+          <Span className={themed.textSecondary}>{t("taxCalculated")}</Span>
         </div>
       </div>
 
@@ -70,29 +70,32 @@ export function CartSummary({
       <div className={`border-t ${themed.border}`} />
 
       {/* Total */}
-      <div className="flex items-center justify-between">
-        <span className={`font-bold ${themed.textPrimary}`}>{t("total")}</span>
-        <span className="font-bold text-lg text-indigo-600 dark:text-indigo-400">
+      <div className={flex.between}>
+        <Span className={`font-bold ${themed.textPrimary}`}>{t("total")}</Span>
+        <Span className="font-bold text-lg text-indigo-600 dark:text-indigo-400">
           {formatCurrency(total)}
-        </span>
+        </Span>
       </div>
 
       {/* CTA */}
-      <button
+      <Button
+        variant="primary"
         onClick={onCheckout}
         disabled={isCheckingOut || itemCount === 0}
-        className="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors text-sm"
+        isLoading={isCheckingOut}
+        className="w-full"
       >
         {isCheckingOut ? tLoading("default") : t("checkout")}
-      </button>
+      </Button>
 
       {/* Continue shopping */}
-      <Link
+      <TextLink
         href={ROUTES.PUBLIC.PRODUCTS}
-        className={`block text-center text-sm ${themed.textSecondary} hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors`}
+        variant="muted"
+        className="block text-center text-sm"
       >
         ← {t("continueShopping")}
-      </Link>
+      </TextLink>
     </div>
   );
 }

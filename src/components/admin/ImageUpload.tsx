@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ImageUpload — Canonical image upload component for all content images.
  *
  * SCOPE: Use for ANY form field that produces an image URL:
@@ -22,6 +22,9 @@ import { ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useMediaUpload } from "@/hooks";
 import { ValidationError } from "@/lib/errors";
 import { formatFileSize } from "@/utils";
+import { Button, Label, Span, Text } from "@/components";
+
+const { flex, position } = THEME_CONSTANTS;
 
 interface ImageUploadProps {
   currentImage?: string;
@@ -133,11 +136,11 @@ export function ImageUpload({
     <div className="space-y-3">
       {/* Label */}
       {label && (
-        <label
+        <Label
           className={`block text-sm font-medium ${THEME_CONSTANTS.themed.textSecondary}`}
         >
           {label}
-        </label>
+        </Label>
       )}
 
       {/* Preview Area */}
@@ -151,23 +154,29 @@ export function ImageUpload({
             />
 
             {/* Overlay with actions */}
-            <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center gap-3">
-              <button
+            <div
+              className={`${position.fill} bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg ${flex.center} gap-3`}
+            >
+              <Button
                 type="button"
                 onClick={handleClick}
                 disabled={uploading}
+                variant="secondary"
+                size="sm"
                 className="px-4 py-2 bg-white text-gray-900 rounded-md hover:bg-gray-100 transition-colors duration-200 font-medium"
               >
                 Change
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={handleRemove}
                 disabled={uploading}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200 font-medium"
+                variant="danger"
+                size="sm"
+                className="px-4 py-2"
               >
                 Remove
-              </button>
+              </Button>
             </div>
 
             {/* Upload Progress */}
@@ -181,11 +190,12 @@ export function ImageUpload({
             )}
           </div>
         ) : (
-          <button
+          <Button
             type="button"
             onClick={handleClick}
             disabled={uploading}
-            className={`w-full h-64 border-2 border-dashed ${THEME_CONSTANTS.themed.border} rounded-lg ${THEME_CONSTANTS.themed.hoverBorder} transition-colors duration-200 flex flex-col items-center justify-center ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.bgTertiary}`}
+            variant="ghost"
+            className={`w-full h-64 border-2 border-dashed ${THEME_CONSTANTS.themed.border} rounded-lg ${THEME_CONSTANTS.themed.hoverBorder} transition-colors duration-200 ${flex.centerCol} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.bgTertiary}`}
           >
             <svg
               className="w-12 h-12 mb-3"
@@ -200,17 +210,17 @@ export function ImageUpload({
                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            <span className="text-sm font-medium">
+            <Span className="text-sm font-medium">
               {uploading ? "Uploading..." : "Click to upload"}
-            </span>
-            <span className="text-xs mt-1">
+            </Span>
+            <Span className="text-xs mt-1">
               {accept
                 .split(",")
                 .map((t) => t.split("/")[1].toUpperCase())
                 .join(", ")}{" "}
               (max {maxSizeMB}MB)
-            </span>
-          </button>
+            </Span>
+          </Button>
         )}
       </div>
 
@@ -225,15 +235,17 @@ export function ImageUpload({
 
       {/* Helper Text */}
       {helperText && !error && (
-        <p className={`text-xs ${THEME_CONSTANTS.themed.textSecondary}`}>
+        <Text variant="secondary" size="xs">
           {helperText}
-        </p>
+        </Text>
       )}
 
       {/* Error Message */}
       {error && (
         <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          <Text variant="error" size="sm">
+            {error}
+          </Text>
         </div>
       )}
 
@@ -255,7 +267,7 @@ export function ImageUpload({
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             />
           </svg>
-          <span>Uploading {progress}%...</span>
+          <Span>Uploading {progress}%...</Span>
         </div>
       )}
     </div>

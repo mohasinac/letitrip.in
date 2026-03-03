@@ -3,6 +3,8 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { Heading } from "../typography/Typography";
+import Button from "../ui/Button";
 import { useSwipe } from "@/hooks";
 import { preventBodyScroll } from "@/utils";
 
@@ -44,7 +46,7 @@ export default function Modal({
   size = "md",
   showCloseButton = true,
 }: ModalProps) {
-  const { themed, card, typography } = THEME_CONSTANTS;
+  const { themed, card, typography, flex, position } = THEME_CONSTANTS;
   const modalRef = useRef<HTMLDivElement>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
   const [translateY, setTranslateY] = useState(0);
@@ -186,10 +188,10 @@ export default function Modal({
   };
 
   const modalContent = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className={`${position.fixedFill} z-50 ${flex.center} p-4`}>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 transition-opacity"
+        className={`${position.fixedFill} bg-black/60 transition-opacity`}
         onClick={onClose}
         aria-hidden="true"
       />
@@ -222,19 +224,18 @@ export default function Modal({
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div
-            className={`flex items-center justify-between p-6 border-b ${themed.borderLight}`}
-          >
+          <div className={`${flex.between} p-6 border-b ${themed.borderLight}`}>
             {title && (
-              <h2
+              <Heading
+                level={2}
                 id={titleId}
                 className={`${THEME_CONSTANTS.typography.h4} ${themed.textPrimary}`}
               >
                 {title}
-              </h2>
+              </Heading>
             )}
             {showCloseButton && (
-              <button
+              <Button
                 onClick={onClose}
                 className={`p-2 rounded-lg transition-colors ${themed.hover}`}
                 aria-label={UI_LABELS.ACTIONS.CLOSE}
@@ -252,7 +253,7 @@ export default function Modal({
                     d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
-              </button>
+              </Button>
             )}
           </div>
         )}
@@ -274,10 +275,10 @@ export function ModalFooter({
   children: React.ReactNode;
   className?: string;
 }) {
-  const { themed, spacing } = THEME_CONSTANTS;
+  const { themed, spacing, flex } = THEME_CONSTANTS;
   return (
     <div
-      className={`p-6 border-t ${themed.borderLight} flex items-center justify-end ${spacing.inline} ${className}`}
+      className={`p-6 border-t ${themed.borderLight} ${flex.end} ${spacing.inline} ${className}`}
     >
       {children}
     </div>

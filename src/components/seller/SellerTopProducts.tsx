@@ -1,7 +1,6 @@
-"use client";
+﻿"use client";
 
-import Link from "next/link";
-import { Card, Heading, Text } from "@/components";
+import { Card, Heading, Span, Text, TextLink } from "@/components";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
@@ -30,11 +29,11 @@ export function SellerTopProducts({ products }: SellerTopProductsProps) {
           <div className="divide-y divide-gray-100 dark:divide-gray-800">
             {products.map((p, i) => (
               <div key={p.productId} className="flex items-center gap-4 py-3">
-                <span
+                <Span
                   className={`w-6 text-sm font-bold ${themed.textSecondary}`}
                 >
                   {i + 1}.
-                </span>
+                </Span>
                 <div className="flex-1 min-w-0">
                   <Text size="sm" weight="medium">
                     {p.title}
@@ -43,9 +42,9 @@ export function SellerTopProducts({ products }: SellerTopProductsProps) {
                     {p.orders} {t("ordersLabel")}
                   </Text>
                 </div>
-                <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                <Span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                   {formatCurrency(p.revenue)}
-                </span>
+                </Span>
               </div>
             ))}
           </div>
@@ -57,12 +56,12 @@ export function SellerTopProducts({ products }: SellerTopProductsProps) {
             <Text size="xs" variant="secondary">
               {t("noDataDesc")}
             </Text>
-            <Link
+            <TextLink
               href={ROUTES.SELLER.PRODUCTS}
               className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
             >
               {t("viewProducts")}
-            </Link>
+            </TextLink>
           </div>
         )}
       </div>

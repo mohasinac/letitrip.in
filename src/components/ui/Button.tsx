@@ -27,7 +27,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     | "warning";
   size?: "sm" | "md" | "lg";
   isLoading?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export default function Button({
@@ -69,7 +69,7 @@ export default function Button({
           aria-hidden="true"
         />
       )}
-      <span className={isLoading ? "opacity-70" : undefined}>{children}</span>
+      {isLoading ? <span className="opacity-70">{children}</span> : children}
     </button>
   );
 }

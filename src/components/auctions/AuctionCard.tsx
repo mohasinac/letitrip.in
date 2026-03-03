@@ -1,14 +1,14 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { Caption, Span, Text, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { formatCurrency, nowMs } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
 
-const { themed, borderRadius } = THEME_CONSTANTS;
+const { themed, borderRadius, flex, position } = THEME_CONSTANTS;
 
 interface AuctionCardProps {
   product: Pick<
@@ -81,7 +81,7 @@ export function AuctionCard({ product, className = "" }: AuctionCardProps) {
   const hasCurrentBid = (product.currentBid ?? 0) > 0;
 
   return (
-    <Link
+    <TextLink
       href={ROUTES.PUBLIC.AUCTION_DETAIL(product.id)}
       className={`group flex flex-col ${themed.bgPrimary} ${borderRadius.lg} overflow-hidden hover:shadow-xl transition-all duration-300 ${isEnded ? "opacity-60" : ""} ${className}`}
     >
@@ -96,7 +96,9 @@ export function AuctionCard({ product, className = "" }: AuctionCardProps) {
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-4xl">
+          <div
+            className={`${position.fill} ${flex.center} text-gray-400 text-4xl`}
+          >
             🔨
           </div>
         )}
@@ -104,19 +106,19 @@ export function AuctionCard({ product, className = "" }: AuctionCardProps) {
         {/* LIVE / Ending Soon badges */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {!isEnded && (
-            <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
+            <Span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
               {t("liveBadge")}
-            </span>
+            </Span>
           )}
           {isEndingSoon && (
-            <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+            <Span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
               {t("endingSoon")}
-            </span>
+            </Span>
           )}
           {isEnded && (
-            <span className="bg-gray-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+            <Span className="bg-gray-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
               {t("ended")}
-            </span>
+            </Span>
           )}
         </div>
       </div>
@@ -124,28 +126,30 @@ export function AuctionCard({ product, className = "" }: AuctionCardProps) {
       {/* Info */}
       <div className="flex flex-col flex-1 p-3 gap-2">
         {/* Title */}
-        <p
-          className={`text-sm font-medium ${themed.textPrimary} line-clamp-2 leading-snug`}
+        <Text
+          size="sm"
+          weight="medium"
+          className={`${themed.textPrimary} line-clamp-2 leading-snug`}
         >
           {product.title}
-        </p>
+        </Text>
 
         {/* Current bid */}
         <div>
-          <p className={`text-xs ${themed.textSecondary}`}>
+          <Caption>
             {hasCurrentBid ? t("currentBid") : t("startingBid")}
-          </p>
-          <p className="text-base font-bold text-indigo-600 dark:text-indigo-400">
+          </Caption>
+          <Text className="text-base font-bold text-indigo-600 dark:text-indigo-400">
             {formatCurrency(displayBid)}
-          </p>
+          </Text>
         </div>
 
         {/* Bid count + Countdown */}
-        <div className={`flex items-center justify-between text-xs mt-auto`}>
-          <span className={themed.textSecondary}>
+        <div className={`${flex.between} text-xs mt-auto`}>
+          <Span className={themed.textSecondary}>
             {t("totalBids", { count: bidCount })}
-          </span>
-          <span
+          </Span>
+          <Span
             className={`font-mono font-semibold ${
               isEnded
                 ? themed.textSecondary
@@ -155,14 +159,14 @@ export function AuctionCard({ product, className = "" }: AuctionCardProps) {
             }`}
           >
             {!isEnded && (
-              <span className={`${themed.textSecondary} mr-1`}>
+              <Span className={`${themed.textSecondary} mr-1`}>
                 {t("endsIn")}:
-              </span>
+              </Span>
             )}
             {formatCountdown(remaining, t("ended"))}
-          </span>
+          </Span>
         </div>
       </div>
-    </Link>
+    </TextLink>
   );
 }

@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTheme } from "@/contexts/ThemeContext";
 import { TitleBar, MainNavbar, Sidebar, Footer, BottomNavbar } from "./layout";
 import Search from "./utility/Search";
 import BackToTop from "./utility/BackToTop";
 import AutoBreadcrumbs from "./layout/AutoBreadcrumbs";
+import { Main } from "./semantic/Semantic";
 import { BackgroundRenderer } from "./utility";
 import { logger } from "@/classes";
 import { useSiteSettings } from "@/hooks";
@@ -144,13 +145,13 @@ export default function LayoutClient({
         />
 
         {/* Main Content - modern spacing and transitions */}
-        <main id="main-content" className="flex-1 mb-16 md:mb-0 w-full">
+        <Main id="main-content" className="flex-1 mb-16 md:mb-0 w-full">
           <div
             className={`container mx-auto ${THEME_CONSTANTS.layout.contentPadding} ${THEME_CONSTANTS.layout.maxContentWidth} ${THEME_CONSTANTS.spacing.pageY} w-full`}
           >
             {children}
           </div>
-        </main>
+        </Main>
       </div>
 
       <BackToTop sidebarOpen={sidebarOpen} />

@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Span } from "../typography/Typography";
 
 /**
  * Progress Bar Component
@@ -37,7 +38,7 @@ export default function Progress({
   showValue = false,
   className = "",
 }: ProgressProps) {
-  const { themed } = THEME_CONSTANTS;
+  const { themed, flex, position } = THEME_CONSTANTS;
 
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
@@ -57,16 +58,16 @@ export default function Progress({
   return (
     <div className={className}>
       {(label || showValue) && (
-        <div className="flex items-center justify-between mb-2">
+        <div className={`${flex.between} mb-2`}>
           {label && (
-            <span className={`text-sm font-medium ${themed.textPrimary}`}>
+            <Span className={`text-sm font-medium ${themed.textPrimary}`}>
               {label}
-            </span>
+            </Span>
           )}
           {showValue && (
-            <span className={`text-sm font-medium ${themed.textSecondary}`}>
+            <Span className={`text-sm font-medium ${themed.textSecondary}`}>
               {Math.round(percentage)}%
-            </span>
+            </Span>
           )}
         </div>
       )}
@@ -109,7 +110,7 @@ export function IndeterminateProgress({
   label,
   className = "",
 }: IndeterminateProgressProps) {
-  const { themed } = THEME_CONSTANTS;
+  const { themed, position } = THEME_CONSTANTS;
 
   const sizeClasses = {
     sm: "h-1",
@@ -127,11 +128,11 @@ export function IndeterminateProgress({
   return (
     <div className={className}>
       {label && (
-        <span
+        <Span
           className={`block text-sm font-medium mb-2 ${themed.textPrimary}`}
         >
           {label}
-        </span>
+        </Span>
       )}
 
       <div
@@ -145,7 +146,7 @@ export function IndeterminateProgress({
       >
         <div
           className={`
-            absolute inset-0 ${variantClasses[variant]}
+            ${position.fill} ${variantClasses[variant]}
             animate-[progress_1.5s_ease-in-out_infinite]
             rounded-full
           `}

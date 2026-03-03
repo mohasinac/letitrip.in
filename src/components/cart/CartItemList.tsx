@@ -1,9 +1,10 @@
-"use client";
+﻿"use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { CartItemRow } from "./CartItemRow";
+import { Button, Heading, Span, Text } from "@/components";
+import { useRouter } from "@/i18n/navigation";
 import type { CartItemDocument } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;
@@ -22,22 +23,23 @@ export function CartItemList({
   onRemove,
 }: CartItemListProps) {
   const t = useTranslations("cart");
+  const router = useRouter();
   if (items.length === 0) {
     return (
       <div className="text-center py-20">
-        <span className="text-6xl mb-4 block">🛒</span>
-        <h2 className={`text-xl font-bold mb-2 ${themed.textPrimary}`}>
+        <Span className="text-6xl mb-4 block">🛒</Span>
+        <Heading level={2} className="text-xl font-bold mb-2">
           {t("empty")}
-        </h2>
-        <p className={`text-sm mb-6 ${themed.textSecondary}`}>
+        </Heading>
+        <Text size="sm" variant="secondary" className="mb-6">
           {t("emptyDesc")}
-        </p>
-        <Link
-          href={ROUTES.PUBLIC.PRODUCTS}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors text-sm"
+        </Text>
+        <Button
+          variant="primary"
+          onClick={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
         >
           {t("startShopping")}
-        </Link>
+        </Button>
       </div>
     );
   }

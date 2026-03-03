@@ -7,7 +7,7 @@ import { EmptyState, Spinner, TablePagination, Card, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useStoreAuctions } from "../hooks";
 
-const { spacing } = THEME_CONSTANTS;
+const { spacing, flex } = THEME_CONSTANTS;
 
 interface StoreAuctionsViewProps {
   storeSlug: string;
@@ -37,7 +37,7 @@ export function StoreAuctionsView({ storeSlug }: StoreAuctionsViewProps) {
   return (
     <div className={spacing.stack}>
       {isLoading && (
-        <div className="flex justify-center py-16">
+        <div className={`${flex.hCenter} ${THEME_CONSTANTS.page.empty}`}>
           <Spinner />
         </div>
       )}

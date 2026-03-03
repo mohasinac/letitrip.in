@@ -1,18 +1,21 @@
-"use client";
+﻿"use client";
 
 import { useMemo } from "react";
-import Link from "next/link";
 import {
-  ProductGrid,
-  ProductSortBar,
-  Pagination,
-  Heading,
-  Text,
-  PRODUCT_SORT_VALUES,
-  Spinner,
+  ActiveFilterChips,
   FilterDrawer,
   FilterFacetSection,
-  ActiveFilterChips,
+  Heading,
+  Main,
+  Nav,
+  Pagination,
+  PRODUCT_SORT_VALUES,
+  ProductGrid,
+  ProductSortBar,
+  Span,
+  Spinner,
+  Text,
+  TextLink,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
 import { THEME_CONSTANTS, API_ENDPOINTS, ROUTES } from "@/constants";
@@ -21,7 +24,7 @@ import { useUrlTable } from "@/hooks";
 import { useCategoryProducts } from "../hooks";
 import type { ProductSortValue } from "@/components";
 
-const { themed, typography, spacing } = THEME_CONSTANTS;
+const { themed, typography, spacing, flex } = THEME_CONSTANTS;
 
 const PAGE_SIZE = 24;
 
@@ -79,7 +82,7 @@ export function CategoryProductsView({ slug }: Props) {
 
   if (catLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className={`${flex.center} min-h-[60vh]`}>
         <Spinner size="lg" />
       </div>
     );
@@ -93,36 +96,39 @@ export function CategoryProductsView({ slug }: Props) {
         <Text size="lg" weight="medium">
           {t("noCategories")}
         </Text>
-        <Link
+        <TextLink
           href={ROUTES.PUBLIC.CATEGORIES}
           className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
         >
           {t("backToCategories")}
-        </Link>
+        </TextLink>
       </div>
     );
   }
 
   return (
-    <main
-      className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 ${spacing.stack}`}
+    <Main
+      className={`${THEME_CONSTANTS.page.container["2xl"]} py-10 ${spacing.stack}`}
     >
       {/* Breadcrumb */}
-      <nav className={`text-sm ${themed.textSecondary}`}>
-        <Link
+      <Nav
+        aria-label="Breadcrumb"
+        className={`text-sm ${themed.textSecondary}`}
+      >
+        <TextLink
           href={ROUTES.PUBLIC.CATEGORIES}
           className="hover:text-indigo-600 dark:hover:text-indigo-400"
         >
           {t("title")}
-        </Link>
-        <span className="mx-2">/</span>
-        <span className={themed.textPrimary}>{category.name}</span>
-      </nav>
+        </TextLink>
+        <Span className="mx-2">/</Span>
+        <Span className={themed.textPrimary}>{category.name}</Span>
+      </Nav>
 
       {/* Category Header */}
       <div className="flex items-start gap-4">
         {category.display?.icon && (
-          <span className="text-4xl">{category.display.icon}</span>
+          <Span className="text-4xl">{category.display.icon}</Span>
         )}
         <div>
           <Heading level={1}>{category.name}</Heading>
@@ -167,16 +173,16 @@ export function CategoryProductsView({ slug }: Props) {
       {prodLoading ? (
         <ProductGrid products={[]} loading skeletonCount={PAGE_SIZE} />
       ) : products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className={`${flex.centerCol} py-16 text-center`}>
           <Text size="lg" weight="medium">
             {t("noProductsIn", { name: category.name })}
           </Text>
-          <Link
+          <TextLink
             href={ROUTES.PUBLIC.CATEGORIES}
             className="mt-3 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
           >
             {t("backToCategories")}
-          </Link>
+          </TextLink>
         </div>
       ) : (
         <ProductGrid products={products} />
@@ -192,6 +198,6 @@ export function CategoryProductsView({ slug }: Props) {
           />
         </div>
       )}
-    </main>
+    </Main>
   );
 }

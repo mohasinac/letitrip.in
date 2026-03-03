@@ -2,6 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import { Heading, Text } from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
+
+const { flex } = THEME_CONSTANTS;
 
 interface NotificationsBulkActionsProps {
   unreadCount: number;
@@ -17,7 +20,7 @@ export function NotificationsBulkActions({
   const tNotifications = useTranslations("notifications");
   const tLoading = useTranslations("loading");
   return (
-    <div className="flex items-center justify-between">
+    <div className={flex.between}>
       <div>
         <Heading level={1}>{tNotifications("title")}</Heading>
         {unreadCount > 0 && (

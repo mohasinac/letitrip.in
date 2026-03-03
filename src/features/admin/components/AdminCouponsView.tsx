@@ -9,7 +9,7 @@
 "use client";
 
 import { useState, useCallback, useMemo, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useMessage, useUrlTable } from "@/hooks";
 import { useAdminCoupons } from "@/features/admin/hooks";
 import { ROUTES, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";

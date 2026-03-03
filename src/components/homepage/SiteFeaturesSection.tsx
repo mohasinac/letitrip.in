@@ -1,27 +1,29 @@
-"use client";
+﻿"use client";
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, SITE_FEATURES } from "@/constants";
+import { Heading, Section, Text } from "@/components";
 
 export function SiteFeaturesSection() {
   const t = useTranslations("homepage");
   return (
-    <section
+    <Section
       className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
       <div className="w-full">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2
+          <Heading
+            level={2}
             className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
           >
             {t("featuresTitle")}
-          </h2>
-          <p
+          </Heading>
+          <Text
             className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.container["2xl"]} mx-auto`}
           >
             {t("featuresSubtitle")}
-          </p>
+          </Text>
         </div>
 
         {/* Features Grid */}
@@ -37,22 +39,23 @@ export function SiteFeaturesSection() {
               </div>
 
               {/* Title */}
-              <h3
+              <Heading
+                level={3}
                 className={`${THEME_CONSTANTS.typography.h4} ${THEME_CONSTANTS.themed.textPrimary} font-bold mb-2`}
               >
                 {feature.title}
-              </h3>
+              </Heading>
 
               {/* Description */}
-              <p
+              <Text
                 className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
               >
                 {feature.description}
-              </p>
+              </Text>
             </div>
           ))}
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

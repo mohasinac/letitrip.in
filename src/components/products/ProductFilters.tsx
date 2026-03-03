@@ -1,9 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
+import { Aside, Button, Heading, Label, Span } from "@/components";
 
-const { themed, borderRadius, input } = THEME_CONSTANTS;
+const { themed, borderRadius, input, flex } = THEME_CONSTANTS;
 
 interface ProductFiltersProps {
   category: string;
@@ -30,29 +31,31 @@ export function ProductFilters({
 }: ProductFiltersProps) {
   const t = useTranslations("products");
   return (
-    <aside className="space-y-5">
+    <Aside className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className={`font-semibold text-base ${themed.textPrimary}`}>
+      <div className={flex.between}>
+        <Heading level={2} className="font-semibold text-base">
           {t("filters")}
-        </h2>
+        </Heading>
         {hasActiveFilters && (
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onClear}
             className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
           >
             {t("clearFilters")}
-          </button>
+          </Button>
         )}
       </div>
 
       {/* Category */}
       <div>
-        <label
+        <Label
           className={`block text-xs font-medium mb-1.5 ${themed.textSecondary}`}
         >
           {t("filterCategory")}
-        </label>
+        </Label>
         <select
           value={category}
           onChange={(e) => onCategoryChange(e.target.value)}
@@ -69,11 +72,11 @@ export function ProductFilters({
 
       {/* Price Range */}
       <div>
-        <label
+        <Label
           className={`block text-xs font-medium mb-1.5 ${themed.textSecondary}`}
         >
           {t("filterPriceRange")}
-        </label>
+        </Label>
         <div className="flex items-center gap-2">
           <input
             type="number"
@@ -83,7 +86,7 @@ export function ProductFilters({
             placeholder={t("filterMinPrice")}
             className={`w-full text-sm ${input.base} ${themed.bgPrimary} ${themed.textPrimary}`}
           />
-          <span className={`text-xs ${themed.textSecondary} shrink-0`}>to</span>
+          <Span className={`text-xs ${themed.textSecondary} shrink-0`}>to</Span>
           <input
             type="number"
             min={0}
@@ -94,6 +97,6 @@ export function ProductFilters({
           />
         </div>
       </div>
-    </aside>
+    </Aside>
   );
 }

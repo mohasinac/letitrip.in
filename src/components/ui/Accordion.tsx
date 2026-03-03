@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Span } from "../typography/Typography";
 
 /**
  * Accordion Component
@@ -97,7 +98,7 @@ export function AccordionItem({
   className = "",
 }: AccordionItemProps) {
   const { openItems, toggleItem } = useAccordionContext();
-  const { themed } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
   const isOpen = openItems.includes(value);
 
   return (
@@ -114,7 +115,7 @@ export function AccordionItem({
         aria-expanded={isOpen}
         aria-controls={`accordion-content-${value}`}
         className={`
-          w-full flex items-center justify-between
+          w-full ${flex.between}
           px-4 py-4 text-left
           ${themed.textPrimary} font-medium
           hover:${themed.bgSecondary}
@@ -123,7 +124,7 @@ export function AccordionItem({
           ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         `}
       >
-        <span>{title}</span>
+        <Span>{title}</Span>
         <svg
           className={`
             w-5 h-5 transition-transform duration-200

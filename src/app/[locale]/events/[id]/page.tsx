@@ -3,7 +3,7 @@
 import { use } from "react";
 import { useApiQuery } from "@/hooks";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
-import { Card, Spinner, EmptyState } from "@/components";
+import { Card, Spinner, EmptyState, Heading, Text } from "@/components";
 import {
   EventStatusBadge,
   PollVotingSection,
@@ -63,25 +63,27 @@ export default function EventDetailPage({ params }: Props) {
         <div className="flex items-center gap-2 mb-2">
           <EventStatusBadge status={event.status} />
         </div>
-        <h1 className={`${typography.h2} ${themed.textPrimary}`}>
+        <Heading level={1} className={typography.h2}>
           {event.title}
-        </h1>
+        </Heading>
         {(startsAt || endsAt) && (
-          <p className={`text-sm mt-1 ${themed.textSecondary}`}>
+          <Text size="sm" variant="secondary" className="mt-1">
             {startsAt && `Starts: ${formatDate(startsAt)}`}
             {startsAt && endsAt && " · "}
             {endsAt && `Ends: ${formatDate(endsAt)}`}
-          </p>
+          </Text>
         )}
-        <p className={`mt-3 ${themed.textSecondary}`}>{event.description}</p>
+        <Text variant="secondary" className="mt-3">
+          {event.description}
+        </Text>
       </div>
 
       {/* Type-specific participation section */}
       {event.status === "active" && (
         <Card className="p-6">
-          <h2 className={`${typography.h4} ${themed.textPrimary} mb-4`}>
+          <Heading level={2} className={`${typography.h4} mb-4`}>
             {UI_LABELS.EVENTS.PARTICIPATE}
-          </h2>
+          </Heading>
           {event.type === "poll" && event.pollConfig && (
             <PollVotingSection
               eventId={event.id}
@@ -96,22 +98,22 @@ export default function EventDetailPage({ params }: Props) {
             />
           )}
           {(event.type === "sale" || event.type === "offer") && (
-            <p className={`text-sm ${themed.textSecondary}`}>
+            <Text size="sm" variant="secondary">
               {event.type === "sale" && event.saleConfig
                 ? UI_LABELS.EVENTS.SALE_BANNER(event.saleConfig.discountPercent)
                 : event.offerConfig
                   ? UI_LABELS.EVENTS.OFFER_BANNER(event.offerConfig.displayCode)
                   : null}
-            </p>
+            </Text>
           )}
         </Card>
       )}
 
       {event.status === "ended" && (
         <Card className="p-6">
-          <p className={`text-sm font-medium ${themed.textSecondary}`}>
+          <Text size="sm" variant="secondary" weight="medium">
             {UI_LABELS.EVENTS.ENTRIES_CLOSED}
-          </p>
+          </Text>
         </Card>
       )}
 

@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { AdminTabs } from "@/components";
+import { AdminTabs, Main, Heading, Text, BlockHeader } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 export const metadata = {
@@ -16,22 +16,21 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="w-full space-y-0">
       {/* Header */}
-      <header
+      <BlockHeader
         className={`${THEME_CONSTANTS.themed.bgSecondary} border-b ${THEME_CONSTANTS.themed.borderColor}`}
       >
         <div className="py-3 sm:py-4">
-          <h1
+          <Heading
+            level={1}
             className={`text-xl sm:text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
           >
             Admin Dashboard
-          </h1>
-          <p
-            className={`text-xs sm:text-sm ${THEME_CONSTANTS.themed.textSecondary} mt-1`}
-          >
+          </Heading>
+          <Text size="xs" variant="secondary" className="sm:text-sm mt-1">
             Manage your platform content and settings
-          </p>
+          </Text>
         </div>
-      </header>
+      </BlockHeader>
 
       {/* Tab Navigation */}
       <div
@@ -43,7 +42,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </div>
 
       {/* Main Content */}
-      <main className="py-4 sm:py-6">{children}</main>
+      <Main className="py-4 sm:py-6">{children}</Main>
     </div>
   );
 }

@@ -8,16 +8,16 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Card, Button, Heading, Text, Caption } from "@/components";
+import { Button, Caption, Card, Heading, Span, Text } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatDate, formatRelativeTime } from "@/utils";
 import type { OrderDocument, OrderStatus } from "@/db/schema";
 
-const { themed, spacing } = THEME_CONSTANTS;
+const { themed, spacing, flex } = THEME_CONSTANTS;
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// --- Types --------------------------------------------------------------------
 
 type TimelineStepState = "completed" | "active" | "pending" | "skipped";
 
@@ -44,7 +44,7 @@ interface TimelineLabels {
   stepReturnedDesc: string;
 }
 
-// ─── Timeline Builder ─────────────────────────────────────────────────────────
+// --- Timeline Builder ---------------------------------------------------------
 
 function buildTimeline(
   order: OrderDocument,
@@ -134,12 +134,14 @@ function buildTimeline(
   return steps;
 }
 
-// ─── Step Icon ────────────────────────────────────────────────────────────────
+// --- Step Icon ----------------------------------------------------------------
 
 function StepIcon({ state }: { state: TimelineStepState }) {
   if (state === "completed") {
     return (
-      <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 shadow-md">
+      <div
+        className={`w-10 h-10 rounded-full bg-green-500 ${flex.center} flex-shrink-0 shadow-md`}
+      >
         <svg
           className="w-5 h-5 text-white"
           fill="none"
@@ -158,14 +160,18 @@ function StepIcon({ state }: { state: TimelineStepState }) {
   }
   if (state === "active") {
     return (
-      <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 shadow-md ring-4 ring-blue-100 dark:ring-blue-900/40">
+      <div
+        className={`w-10 h-10 rounded-full bg-blue-500 ${flex.center} flex-shrink-0 shadow-md ring-4 ring-blue-100 dark:ring-blue-900/40`}
+      >
         <div className="w-3 h-3 rounded-full bg-white animate-pulse" />
       </div>
     );
   }
   if (state === "skipped") {
     return (
-      <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 border-2 border-red-300 dark:border-red-700 flex items-center justify-center flex-shrink-0">
+      <div
+        className={`w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 border-2 border-red-300 dark:border-red-700 ${flex.center} flex-shrink-0`}
+      >
         <svg
           className="w-5 h-5 text-red-500"
           fill="none"
@@ -183,13 +189,15 @@ function StepIcon({ state }: { state: TimelineStepState }) {
     );
   }
   return (
-    <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center flex-shrink-0">
+    <div
+      className={`w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 ${flex.center} flex-shrink-0`}
+    >
       <div className="w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600" />
     </div>
   );
 }
 
-// ─── Timeline Connector ───────────────────────────────────────────────────────
+// --- Timeline Connector -------------------------------------------------------
 
 function Connector({ state }: { state: TimelineStepState }) {
   const isActive = state === "completed";
@@ -202,14 +210,14 @@ function Connector({ state }: { state: TimelineStepState }) {
   );
 }
 
-// ─── Props ────────────────────────────────────────────────────────────────────
+// --- Props --------------------------------------------------------------------
 
 interface OrderTrackingViewProps {
   order: OrderDocument;
   orderId: string;
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// --- Main Component -----------------------------------------------------------
 
 export function OrderTrackingView({ order, orderId }: OrderTrackingViewProps) {
   const router = useRouter();
@@ -248,7 +256,7 @@ export function OrderTrackingView({ order, orderId }: OrderTrackingViewProps) {
         onClick={() => router.push(ROUTES.USER.ORDER_DETAIL(orderId))}
         className="w-fit"
       >
-        ← {tOrders("trackBack")}
+        ? {tOrders("trackBack")}
       </Button>
 
       {/* Header */}
@@ -256,7 +264,7 @@ export function OrderTrackingView({ order, orderId }: OrderTrackingViewProps) {
         <Heading level={1}>{tOrders("trackTitle")}</Heading>
         <Text size="sm" variant="secondary" className="mt-1">
           {tOrders("orderNumber")} #{order.id.slice(0, 8).toUpperCase()}
-          {" · "}
+          {" � "}
           {tOrders("placedOn")} {formatDate(order.orderDate)}
         </Text>
       </div>
@@ -264,7 +272,7 @@ export function OrderTrackingView({ order, orderId }: OrderTrackingViewProps) {
       {/* Tracking number */}
       {order.trackingNumber && (
         <Card className={THEME_CONSTANTS.spacing.cardPadding}>
-          <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className={`${flex.between} flex-wrap gap-3`}>
             <div>
               <Caption className="uppercase tracking-wider font-semibold">
                 {tOrders("trackingNumberLabel")}
@@ -293,7 +301,7 @@ export function OrderTrackingView({ order, orderId }: OrderTrackingViewProps) {
               <div className="flex items-start gap-4">
                 <StepIcon state={step.state} />
                 <div className="flex-1 min-w-0 pb-2">
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <div className={`${flex.between} gap-2 flex-wrap`}>
                     <Text
                       weight="semibold"
                       size="sm"
@@ -305,11 +313,11 @@ export function OrderTrackingView({ order, orderId }: OrderTrackingViewProps) {
                       {step.label}
                     </Text>
                     {step.date && (
-                      <span className={`text-xs ${themed.textSecondary}`}>
+                      <Span className={`text-xs ${themed.textSecondary}`}>
                         {formatDate(step.date)}
-                        {" · "}
+                        {" � "}
                         {formatRelativeTime(step.date)}
-                      </span>
+                      </Span>
                     )}
                   </div>
                   <Text

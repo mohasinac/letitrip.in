@@ -15,7 +15,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "@/i18n/navigation";
 import { useSession } from "@/contexts";
 import {
   hasRouteAccess,
@@ -24,7 +24,7 @@ import {
   UI_LABELS,
 } from "@/constants";
 import { UserRole } from "@/types/auth";
-import { Spinner, Button } from "@/components";
+import { Spinner, Button, Heading, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface ProtectedRouteProps {
@@ -161,16 +161,18 @@ export function ProtectedRoute({
         className={`${THEME_CONSTANTS.layout.fullScreen} ${THEME_CONSTANTS.layout.flexCenter} ${THEME_CONSTANTS.themed.bgPrimary}`}
       >
         <div className={THEME_CONSTANTS.layout.centerText}>
-          <h1
-            className={`${THEME_CONSTANTS.typography.h3} ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.spacing.margin.bottom.md}`}
+          <Heading
+            level={1}
+            className={`${THEME_CONSTANTS.typography.h3} ${THEME_CONSTANTS.spacing.margin.bottom.md}`}
           >
             {UI_LABELS.AUTH.ACCESS_DENIED}
-          </h1>
-          <p
-            className={`${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.spacing.margin.bottom.xl}`}
+          </Heading>
+          <Text
+            variant="secondary"
+            className={THEME_CONSTANTS.spacing.margin.bottom.xl}
           >
             {UI_LABELS.ERROR_PAGES.UNAUTHORIZED.DESCRIPTION}
-          </p>
+          </Text>
           <Button onClick={() => router.push(ROUTES.HOME)} variant="primary">
             {UI_LABELS.ACTIONS.GO_HOME}
           </Button>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
@@ -6,6 +6,7 @@ import { useMessage } from "@/hooks";
 import { formatNumber } from "@/utils";
 import { FAQHelpfulButtons } from "./FAQHelpfulButtons";
 import type { StaticFAQItem } from "@/constants";
+import { Button, Heading, Span, Text } from "@/components";
 
 interface FAQAccordionProps {
   faqs: StaticFAQItem[];
@@ -22,6 +23,7 @@ export function FAQAccordion({
       : new Set(),
   );
   const { showSuccess } = useMessage();
+  const { flex } = THEME_CONSTANTS;
 
   const toggleFAQ = (faqId: string) => {
     setExpandedIds((prev) => {
@@ -46,11 +48,11 @@ export function FAQAccordion({
       <div
         className={`${THEME_CONSTANTS.spacing.padding.xl} p-8 text-center ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl}`}
       >
-        <p
+        <Text
           className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
         >
           No FAQs found matching your criteria.
-        </p>
+        </Text>
       </div>
     );
   }
@@ -67,25 +69,26 @@ export function FAQAccordion({
             className={`${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} ${THEME_CONSTANTS.themed.border} border overflow-hidden transition-all`}
           >
             {/* Question Header */}
-            <button
+            <Button
               onClick={() => toggleFAQ(faq.id)}
-              className={`w-full text-left ${THEME_CONSTANTS.spacing.padding.lg} flex items-start justify-between gap-4 hover:${THEME_CONSTANTS.themed.bgTertiary} transition-colors`}
+              className={`w-full text-left ${THEME_CONSTANTS.spacing.padding.lg} ${flex.betweenStart} gap-4 hover:${THEME_CONSTANTS.themed.bgTertiary} transition-colors`}
             >
               <div className="flex-1">
-                <h3
+                <Heading
+                  level={3}
                   className={`${THEME_CONSTANTS.typography.h4} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
                 >
                   {faq.question}
-                </h3>
+                </Heading>
                 {faq.tags && faq.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {faq.tags.map((tag) => (
-                      <span
+                      <Span
                         key={tag}
                         className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.spacing.padding.sm} ${THEME_CONSTANTS.borderRadius.md} ${THEME_CONSTANTS.themed.bgTertiary} ${THEME_CONSTANTS.themed.textSecondary}`}
                       >
                         {tag}
-                      </span>
+                      </Span>
                     ))}
                   </div>
                 )}
@@ -107,7 +110,7 @@ export function FAQAccordion({
                   d="M19 9l-7 7-7-7"
                 />
               </svg>
-            </button>
+            </Button>
 
             {/* Answer Content */}
             {isExpanded && (
@@ -121,9 +124,9 @@ export function FAQAccordion({
                 />
 
                 {/* Actions Row */}
-                <div className="flex items-center justify-between gap-4 mb-6">
+                <div className={`${flex.between} gap-4 mb-6`}>
                   {/* Share Link Button */}
-                  <button
+                  <Button
                     onClick={() => copyLink(faq.id)}
                     className={`flex items-center gap-2 ${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary} hover:${THEME_CONSTANTS.themed.textPrimary} transition-colors`}
                   >
@@ -140,16 +143,16 @@ export function FAQAccordion({
                         d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
                       />
                     </svg>
-                    <span>Copy link</span>
-                  </button>
+                    <Span>Copy link</Span>
+                  </Button>
 
                   {/* View Count */}
                   {faq.stats?.views && (
-                    <span
+                    <Span
                       className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary}`}
                     >
                       {formatNumber(faq.stats.views)} views
-                    </span>
+                    </Span>
                   )}
                 </div>
 

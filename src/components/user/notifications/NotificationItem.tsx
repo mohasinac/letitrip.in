@@ -1,12 +1,12 @@
-"use client";
+﻿"use client";
 
-import { Badge, Text } from "@/components";
+import { Badge, Span, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatRelativeTime } from "@/utils";
 import type { NotificationDocument } from "@/db/schema";
 
-const { themed } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
 
 const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   order_placed: "🛍️",
@@ -46,13 +46,13 @@ export function NotificationItem({
       }`}
     >
       {/* Type icon */}
-      <span className="text-2xl flex-shrink-0 mt-0.5">
+      <Span className="text-2xl flex-shrink-0 mt-0.5">
         {NOTIFICATION_TYPE_ICONS[n.type] ?? "🔔"}
-      </span>
+      </Span>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-3">
+        <div className={`${flex.betweenStart} gap-3`}>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <Text weight="semibold" size="sm">

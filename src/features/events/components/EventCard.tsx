@@ -1,7 +1,6 @@
-"use client";
+﻿"use client";
 
-import Link from "next/link";
-import { Card, Badge } from "@/components";
+import { Badge, Card, Span, Text, TextLink } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatRelativeTime } from "@/utils";
 import { useTranslations } from "next-intl";
@@ -12,7 +11,7 @@ interface EventCardProps {
   event: EventDocument;
 }
 
-const { themed, spacing, borderRadius, typography } = THEME_CONSTANTS;
+const { themed, spacing, borderRadius, typography, flex } = THEME_CONSTANTS;
 
 export function EventCard({ event }: EventCardProps) {
   const t = useTranslations("events");
@@ -55,10 +54,12 @@ export function EventCard({ event }: EventCardProps) {
           className="w-full h-40 object-cover"
         />
       ) : (
-        <div className="w-full h-40 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-          <span className="text-white text-3xl font-bold opacity-30">
+        <div
+          className={`w-full h-40 bg-gradient-to-br from-indigo-500 to-purple-600 ${flex.center}`}
+        >
+          <Span className="text-white text-3xl font-bold opacity-30">
             {typeLabel.charAt(0)}
-          </span>
+          </Span>
         </div>
       )}
 
@@ -78,19 +79,19 @@ export function EventCard({ event }: EventCardProps) {
 
         {/* Ends in */}
         {endsIn && event.status === "active" && (
-          <p className={`text-xs mt-1 ${themed.textSecondary}`}>
+          <Text className={`text-xs mt-1 ${themed.textSecondary}`}>
             {t("endsIn")}: {endsIn}
-          </p>
+          </Text>
         )}
 
         {/* CTA */}
         <div className="mt-4">
-          <Link
+          <TextLink
             href={getCtaHref(event)}
             className="block w-full text-center px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors"
           >
             {getCtaLabel(event)}
-          </Link>
+          </TextLink>
         </div>
       </div>
     </Card>
