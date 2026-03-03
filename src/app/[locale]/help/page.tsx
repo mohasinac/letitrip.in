@@ -1,13 +1,15 @@
-﻿import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
+﻿import type { Metadata } from "next";
+import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { getTranslations } from "next-intl/server";
 import { Heading, Text, TextLink, Section } from "@/components";
 
 const { themed, typography, page } = THEME_CONSTANTS;
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("help");
   return {
-    title: `Help Center - ${SITE_CONFIG.brand.name}`,
-    description: "Find help and answers to common questions",
+    title: `${t("metaTitle")} – ${SITE_CONFIG.brand.name}`,
+    description: t("metaDescription"),
   };
 }
 

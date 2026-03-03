@@ -1,11 +1,16 @@
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { SITE_CONFIG } from "@/constants";
 import { BecomeSellerView } from "@/features/user";
 
-export const metadata = {
-  title: "Become a Seller - LetItRip",
-  description:
-    "Read the seller guide and apply to sell on LetItRip marketplace.",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("becomeSeller");
+  return {
+    title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
+    description: t("metaDescription"),
+    robots: { index: false, follow: false },
+  };
+}
 
 export default function BecomeSellerPage() {
   return <BecomeSellerView />;

@@ -1,19 +1,23 @@
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { SITE_CONFIG } from "@/constants";
 import { SellerStoreView } from "@/features/seller";
 import { AdminPageHeader } from "@/components";
 
-export const metadata = {
-  title: "Store Settings - Seller Dashboard",
-  description: "Manage your store profile, policies, and visibility",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("sellerStore");
+  return {
+    title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
+    description: t("metaDescription"),
+    robots: { index: false, follow: false },
+  };
+}
 
-export default function SellerStorePage() {
+export default async function SellerStorePage() {
+  const t = await getTranslations("sellerStore");
   return (
     <>
-      <AdminPageHeader
-        title="Store Settings"
-        subtitle="Manage your public store profile, policies, and visibility"
-      />
+      <AdminPageHeader title={t("pageTitle")} subtitle={t("pageSubtitle")} />
       <SellerStoreView />
     </>
   );

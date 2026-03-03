@@ -1,4 +1,4 @@
-# LetItRip Copilot Instructions
+﻿# LetItRip Copilot Instructions
 
 > **These are MANDATORY rules. Every line of code you write MUST comply — across every tier, every component, every sub-component, every feature, every hook, and every utility. No file is exempt, regardless of where it lives in the codebase.**
 > For detailed codebase reference, see `docs/GUIDE.md`.
@@ -169,6 +169,39 @@ import { groupBy } from '@/helpers';
 
 ---
 
+## RULE 24: No Backward Compatibility
+
+**When replacing or refactoring code, DELETE the old implementation. Do NOT keep legacy code alongside new code.**
+
+### Internal Code — No Legacy Support
+
+- **Delete deprecated code outright.** Never leave a deprecated hook, function, or component "just in case". If it has no callers, it's gone.
+- **No compatibility shims.** When a pattern is replaced (e.g. `useApiRequest` → `useApiQuery`), remove all old call sites and delete the old implementation in the same change.
+- **No dual implementations.** Never maintain two ways to do the same thing. Pick the correct approach (see the rules above) and migrate fully.
+- **No `@deprecated` JSDoc stubs.** If code is superseded, remove it. Use the git history to look back.
+- **No feature flags for old behaviour.** Don't gate new implementations behind flags to keep old code runnable.
+
+```ts
+// WRONG — keeping old hook alongside new one
+/** @deprecated use useApiQuery instead */
+export function useApiRequest() { ... } // ❌ delete this
+
+// WRONG — compatibility wrapper
+export const formatPrice = formatCurrency; // ❌ just update the call sites
+
+// RIGHT — delete the old code, update all call sites to the new pattern
+```
+
+### Browser Target — Modern Only
+
+- **Target**: last 2 stable releases of Chrome, Firefox, Safari, Edge. No IE, no legacy mobile WebKit.
+- **JavaScript**: use modern syntax freely — optional chaining (`?.`), nullish coalescing (`??`), `structuredClone`, `Array.at()`, `Object.hasOwn()`, `Promise.allSettled()`, top-level `await`, etc. No transpile-down polyfills.
+- **CSS**: use `gap`, `aspect-ratio`, `clamp()`, `container queries`, `@layer`, CSS Grid subgrid freely. No `@supports` fallbacks for features supported in modern browsers. No manual vendor prefixes — Autoprefixer (via PostCSS) handles what's needed.
+- **APIs**: `IntersectionObserver`, `ResizeObserver`, `navigator.clipboard`, `AbortController`, `crypto.subtle` — available natively; no ponyfills.
+- **Build target**: `browserslist` config must NOT include `ie` or `> 0.5%` global fallback tiers.
+
+---
+
 ## RULE 3: ZERO Hardcoded Strings
 
 **NEVER write literal UI text. ALWAYS use the right string constant for the context.**
@@ -277,6 +310,316 @@ return successResponse(result, SUCCESS_MESSAGES.PRODUCT.CREATED);
 
 ---
 
+## RULE 33: Internationalisation (i18n) — Mandatory Rules for ALL Files
+
+**The app supports English (`en`) and Hindi (`hi`) via `next-intl`. Every user-visible string MUST be in `messages/en.json` and `messages/hi.json`. No hardcoded UI text is ever allowed — not in JSX, not in metadata, not in aria labels, not in alt text.**
+
+This rule complements Rule 3 (Zero Hardcoded Strings). Rule 3 governs which constant layer to use (`useTranslations` vs `UI_LABELS`). Rule 33 governs HOW to use `next-intl` correctly in every context.
+
+---
+
+### 33.1 — Client Components: `useTranslations`
+
+**Import**: `import { useTranslations } from 'next-intl'`  
+**Rule**: Call `useTranslations` INSIDE the component function body. Never at module scope. Never conditionally.
+
+```tsx
+// WRONG — module-scope call
+const t = useTranslations('actions'); // ❌ hooks must be inside a component
+export function SaveButton() { return <Button>{t('save')}</Button>; }
+
+// WRONG — UI_LABELS in JSX
+import { UI_LABELS } from '@/constants';
+<button>{UI_LABELS.ACTIONS.SAVE}</button> // ❌
+
+// RIGHT
+import { useTranslations } from 'next-intl';
+export function SaveButton() {
+  const t = useTranslations('actions'); // ✅ inside component
+  return <Button>{t('save')}</Button>;
+}
+```
+
+---
+
+### 33.2 — Server Components & `generateMetadata`: `getTranslations`
+
+**Import**: `import { getTranslations } from 'next-intl/server'`  
+**Rule**: Async server components and `generateMetadata` MUST use `await getTranslations(namespace)`.
+
+```tsx
+// WRONG — useTranslations in a server component
+import { useTranslations } from 'next-intl'; // ❌ runtime hook, not valid server-side
+export default async function Page() {
+  const t = useTranslations('products');
+}
+
+// RIGHT — server component
+import { getTranslations } from 'next-intl/server';
+export default async function Page() {
+  const t = await getTranslations('products'); // ✅
+  return <Heading level={1}>{t('pageTitle')}</Heading>;
+}
+
+// RIGHT — generateMetadata
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('products');
+  return { title: t('metaTitle'), description: t('metaDescription') };
+}
+```
+
+---
+
+### 33.3 — Locale-Aware Navigation: `@/i18n/navigation`
+
+**Rule**: NEVER import `Link`, `useRouter`, `usePathname`, or `redirect` from `next/navigation`. ALWAYS use `@/i18n/navigation` so locale prefixes are handled automatically.
+
+```tsx
+// WRONG — next/navigation ignores locale prefix
+import { useRouter } from 'next/navigation'; // ❌
+import Link from 'next/link';                 // ❌
+
+// RIGHT — locale-aware wrappers
+import { Link, useRouter, usePathname, redirect } from '@/i18n/navigation'; // ✅
+```
+
+---
+
+### 33.4 — Namespace Conventions
+
+**Rule**: Use flat, domain-specific namespaces. Each page / feature typically owns one namespace. Shared global keys live in the top-level namespaces (`actions`, `form`, `status`, `nav`, `loading`, `empty`, `confirm`, `messages`).
+
+| Use-case | Namespace example |
+|----------|------------------|
+| Page-level copy | `'productsPage'`, `'storesPage'`, `'checkoutPage'` |
+| Feature view | `'search'`, `'becomeSeller'`, `'ripcoinsWallet.buy'` |
+| Shared action labels | `'actions'` (`t('save')`, `t('cancel')`, `t('delete')`) |
+| Shared form labels | `'form'` (`t('email')`, `t('password')`) |
+| Shared status labels | `'status'` (`t('active')`, `t('pending')`) |
+| Navigation labels | `'nav'` |
+| Sort labels | `'sort'` |
+| Confirmation prompts | `'confirm'` |
+| Loading states | `'loading'` |
+| Empty states | `'empty'` |
+
+```tsx
+// Use a shared namespace for common labels
+const tActions = useTranslations('actions');
+<Button>{tActions('save')}</Button>   // ✅ "Save"
+<Button>{tActions('cancel')}</Button> // ✅ "Cancel"
+
+// Use a page namespace for domain-specific copy
+const t = useTranslations('productsPage');
+<Heading level={1}>{t('title')}</Heading>
+```
+
+---
+
+### 33.5 — Interpolation: `t('key', { variable })`
+
+**Rule**: Use next-intl's built-in interpolation syntax. NEVER concatenate strings or use `.replace()`.
+
+```tsx
+// WRONG — string concatenation
+<Text>{'Hello, ' + user.name}</Text>      // ❌
+<Text>{`Hello, ${user.name}`}</Text>       // ❌
+<Text>{t('greeting').replace('{name}', user.name)}</Text> // ❌
+
+// RIGHT — interpolation via t()
+// messages/en.json: { "greeting": "Hello, {name}!" }
+<Text>{t('greeting', { name: user.name })}</Text>  // ✅
+```
+
+**Pluralisation**:
+```tsx
+// messages/en.json: { "itemCount": "{count, plural, one {# item} other {# items}}" }
+<Caption>{t('itemCount', { count: items.length })}</Caption> // ✅
+```
+
+---
+
+### 33.6 — Adding New Translation Keys
+
+**Rule**: ALWAYS add a new key to BOTH `messages/en.json` AND `messages/hi.json` in the same change. A missing key in either file will cause runtime errors in that locale.
+
+```
+// WRONG — key added to en.json only
+// messages/en.json: { "products": { "newFeature": "New Feature" } }  ✅ added
+// messages/hi.json: (key missing)                                     ❌ runtime error in Hindi
+
+// RIGHT — key added to both files simultaneously
+// messages/en.json: { "products": { "newFeature": "New Feature" } }  ✅
+// messages/hi.json: { "products": { "newFeature": "नई सुविधा" } }      ✅
+```
+
+**Checklist when adding keys:**
+1. Add to `messages/en.json` under the correct namespace object.
+2. Add the same key to `messages/hi.json` (translate or use the English string as placeholder if translation is not yet available — use `// TODO: translate` comment in a separate `.notes` block, NOT inside the JSON).
+3. Keep the JSON structure/nesting identical between both files.
+4. Never duplicate a key that already exists — search the file first.
+
+---
+
+### 33.7 — Non-JSX / Server utilities: `UI_LABELS` still applies
+
+`useTranslations` / `getTranslations` is for **user-visible strings rendered to the browser**. For server-side non-JSX code (API routes, server utilities, email templates, log messages), continue to use `UI_LABELS`, `ERROR_MESSAGES`, and `SUCCESS_MESSAGES` from `@/constants` as defined in Rule 3.
+
+```ts
+// API route — NOT JSX, NOT user-visible in the browser → use constants
+return successResponse(result, SUCCESS_MESSAGES.PRODUCT.CREATED); // ✅
+
+// Component — JSX, user-visible → use useTranslations
+const t = useTranslations('actions');
+<Button>{t('save')}</Button> // ✅
+```
+
+---
+
+### 33.8 — Aria Labels, Placeholders, and Alt Text
+
+**Rule**: All `aria-label`, `placeholder`, `title`, and `alt` attribute values that contain user-visible text MUST be translated via `t()`.
+
+```tsx
+// WRONG
+<input aria-label="Search products" placeholder="Search..." /> // ❌
+<img src={url} alt="Product image" />                          // ❌
+
+// RIGHT
+const t = useTranslations('search');
+<Search
+  aria-label={t('ariaLabel')}
+  placeholder={t('placeholder')}
+/>
+// For MediaImage, the alt text comes from MediaDisplayMeta.alt (set at upload time — see Rule 28)
+// and is already translated or contextual. Ensure it is set to a descriptive, translated string.
+```
+
+---
+
+### 33.9 — Testing: Mock `next-intl`
+
+**Rule**: In Jest tests, mock `next-intl` and `next-intl/server` so `t(key)` returns `key` (the key itself). This validates that the correct key is used without depending on translation strings.
+
+```ts
+// In a test file or jest.setup.ts
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key,
+}));
+
+jest.mock('next-intl/server', () => ({
+  getTranslations: jest.fn().mockImplementation(async () => (key: string) => key),
+  getLocale: jest.fn().mockResolvedValue('en'),
+}));
+
+// Navigation mock
+jest.mock('@/i18n/navigation', () => ({
+  Link: ({ children, href }: { children: React.ReactNode; href: string }) =>
+    React.createElement('a', { href }, children),
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
+  usePathname: () => '/',
+  redirect: jest.fn(),
+}));
+```
+
+---
+
+### 33.10 — Supported Locales & Adding New Ones
+
+Current locales: `en` (default, no URL prefix) and `hi` (`/hi/…` prefix).
+
+To add a new locale:
+1. Add the locale code to `src/i18n/routing.ts` → `locales` array.
+2. Create `messages/<locale>.json` with all translation keys (copy from `en.json` as baseline).
+3. Update `src/i18n/request.ts` if any locale-specific config is needed.
+4. Verify middleware picks up the new locale (the `matcher` in `src/middleware.ts`).
+5. Update seed data if any locale-aware records exist.
+
+---
+
+## RULE 17: Collection Names from Constants
+
+**NEVER hardcode Firestore collection names.**
+
+```tsx
+// WRONG
+db.collection('users')
+
+// RIGHT
+import { USER_COLLECTION } from '@/db/schema';
+db.collection(USER_COLLECTION)
+```
+
+Available constants: `USER_COLLECTION`, `PRODUCT_COLLECTION`, `ORDER_COLLECTION`, `REVIEW_COLLECTION`, `BID_COLLECTION`, `SESSION_COLLECTION`, `EMAIL_VERIFICATION_COLLECTION`, `PASSWORD_RESET_COLLECTION`, `CAROUSEL_SLIDES_COLLECTION`, `HOMEPAGE_SECTIONS_COLLECTION`, `CATEGORIES_COLLECTION`, `COUPONS_COLLECTION`, `FAQS_COLLECTION`, `SITE_SETTINGS_COLLECTION`.
+
+### Schema Field Constants
+
+**NEVER hardcode Firestore field names in queries, serializers, or update operations.**
+
+```tsx
+// WRONG
+await db.collection(USER_COLLECTION).doc(uid).update({ 'metadata.lastSignInTime': new Date() });
+const role = userData.role;
+
+// RIGHT
+import { USER_FIELDS, SCHEMA_DEFAULTS } from '@/db/schema';
+await db.collection(USER_COLLECTION).doc(uid).update({ [USER_FIELDS.META.LAST_SIGN_IN_TIME]: new Date() });
+const defaultRole = SCHEMA_DEFAULTS.USER_ROLE;
+```
+
+**Available field constant objects** (all from `@/db/schema`):
+
+| Constant | Collection | Key fields |
+|----------|-----------|------------|
+| `USER_FIELDS` | users | UID, EMAIL, ROLE, DISPLAY_NAME, META.LAST_SIGN_IN_TIME, STAT.TOTAL_ORDERS, PROFILE.IS_PUBLIC... |
+| `TOKEN_FIELDS` | tokens | USER_ID, EMAIL, TOKEN, EXPIRES_AT, USED |
+| `PRODUCT_FIELDS` | products | TITLE, PRICE, SELLER_ID, STATUS, STATUS_VALUES.PUBLISHED... |
+| `ORDER_FIELDS` | orders | USER_ID, STATUS, TOTAL_PRICE, STATUS_VALUES.PENDING... |
+| `REVIEW_FIELDS` | reviews | PRODUCT_ID, USER_ID, RATING, STATUS_VALUES.APPROVED... |
+| `BID_FIELDS` | bids | PRODUCT_ID, BID_AMOUNT, STATUS_VALUES.ACTIVE... |
+| `SESSION_FIELDS` | sessions | USER_ID, IS_ACTIVE, LAST_ACTIVITY, DEVICE.BROWSER... |
+| `CAROUSEL_FIELDS` | carouselSlides | TITLE, ORDER, ACTIVE, MEDIA |
+| `CATEGORY_FIELDS` | categories | NAME, SLUG, TIER, METRIC.PRODUCT_COUNT... |
+| `COUPON_FIELDS` | coupons | CODE, TYPE, DISCOUNT, TYPE_VALUES.PERCENTAGE... |
+| `FAQ_FIELDS` | faqs | QUESTION, CATEGORY, STAT.HELPFUL, CATEGORY_VALUES.GENERAL... |
+| `HOMEPAGE_SECTION_FIELDS` | homepageSections | TYPE, ORDER, ENABLED, TYPE_VALUES.WELCOME... |
+| `SITE_SETTINGS_FIELDS` | siteSettings | SITE_NAME, CONTACT_FIELDS.EMAIL, SOCIAL_LINKS... |
+| `COMMON_FIELDS` | (shared) | ID, CREATED_AT, UPDATED_AT, STATUS, IS_ACTIVE |
+| `SCHEMA_DEFAULTS` | (defaults) | USER_ROLE, ADMIN_EMAIL, UNKNOWN_USER_AGENT, DEFAULT_DISPLAY_NAME, ANONYMOUS_USER |
+
+---
+
+## RULE 18: Routes from Constants
+
+**NEVER hardcode route paths.**
+
+```tsx
+// WRONG
+router.push('/auth/login');
+<Link href="/user/profile">Profile</Link>
+
+// RIGHT
+import { ROUTES } from '@/constants';
+router.push(ROUTES.AUTH.LOGIN);
+<Link href={ROUTES.USER.PROFILE}>Profile</Link>
+```
+
+---
+
+## RULE 19: API Endpoints from Constants
+
+**NEVER hardcode API paths.**
+
+```tsx
+// WRONG
+const res = await fetch('/api/auth/login');
+
+// RIGHT
+import { API_ENDPOINTS } from '@/constants';
+const res = await fetch(API_ENDPOINTS.AUTH.LOGIN);
+```
+
+---
+
 ## RULE 4: Use THEME_CONSTANTS for Styling
 
 **NEVER write raw repeated Tailwind strings. Use `THEME_CONSTANTS` from `@/constants`.**
@@ -368,6 +711,58 @@ const { spacing, themed, typography, borderRadius } = THEME_CONSTANTS;
   <h1 className={`${typography.h2} ${themed.textPrimary}`}>Title</h1>
 </div>
 ```
+
+---
+
+## RULE 25: Mobile-First & Widescreen Support
+
+**Every layout MUST be designed mobile-first and explicitly extended for widescreen viewports.**
+
+### Mobile-First
+
+- **Write base styles for mobile** (≤ 640px), then layer up with `sm:`, `md:`, `lg:`, `xl:`, `2xl:` breakpoints.
+- No `max-sm:hidden` / `max-md:` tricks to hide desktop content on mobile — design mobile layout first instead.
+- Touch targets: minimum `44×44 px` (use `min-h-11 min-w-11` / `p-3` on interactive elements).
+- All forms, tables, and drawers MUST be scrollable and usable at 375px width.
+- Prefer `SideDrawer` over multi-column modals on mobile; prefer stacked layouts over horizontal split-panes.
+
+### Widescreen Support
+
+- **Every page must specify explicit `xl:` and `2xl:` classes** — never let a layout silently cap at `lg:`.
+- Outermost page containers use `max-w-screen-2xl mx-auto` (or `max-w-7xl` for content-focused pages).
+- Responsive grids MUST include a widescreen column count:
+
+```tsx
+// WRONG — caps at 3 cols on lg and above
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+
+// RIGHT — continues scaling on widescreen
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+```
+
+- Typography uses fluid-ish steps, never fixed `text-base` everywhere:
+
+```tsx
+// WRONG
+<p className="text-base">
+
+// RIGHT
+<p className="text-sm sm:text-base lg:text-lg">
+```
+
+- DataTable, ProductGrid, AdminFilterBar, SideDrawer — all must render correctly at 1920px+. Use `THEME_CONSTANTS.container.*` values to keep content width sane.
+- `useBreakpoint()` / `useMediaQuery()` hooks are available for JS-driven widescreen logic.
+
+### Breakpoint Reference
+
+| Breakpoint | Min-width | Target device |
+|------------|-----------|---------------|
+| _(base)_ | 0 | Mobile (375 px) |
+| `sm:` | 640 px | Large mobile / small tablet |
+| `md:` | 768 px | Tablet |
+| `lg:` | 1024 px | Laptop |
+| `xl:` | 1280 px | Desktop |
+| `2xl:` | 1536 px | Widescreen / 1920 px monitor |
 
 ---
 
@@ -1027,6 +1422,678 @@ All images and files (products, blog, categories, carousel, avatars):
 
 **NEVER** use `useStorageUpload` or any hook that calls the Firebase Storage client SDK.
 **NEVER** use a plain `<input type="text">` as a substitute for an image or file URL field when a proper upload component exists.
+
+---
+
+## RULE 31: Extend Primitives — Never Bypass or Fork
+
+**When a shared primitive (component, hook, or utility function) does not exactly cover your case, extend it in-place. Creating a parallel implementation is always a violation.**
+
+This rule is the operational companion to Rules 5, 6, 7, and 8. It defines the decision process to follow whenever you need something slightly different from what already exists.
+
+### Decision Tree
+
+```
+Do I need a button, text element, form control, utility function, or hook?
+  │
+  ├─ Does one already exist in @/components, @/hooks, @/utils, or @/helpers?
+  │   │
+  │   ├─ YES — and it covers my case exactly → USE IT as-is
+  │   │
+  │   ├─ YES — but missing a variant / size / option / param I need
+  │   │       → ADD the variant/param to the existing file
+  │   │         Follow the existing patterns in that file
+  │   │         Export from the same barrel
+  │   │         Write or update the test for the new case
+  │   │         Use the extended option everywhere needed
+  │   │
+  │   └─ NO → CREATE a new primitive using the established patterns
+  │             Place it in the correct Tier 1 directory
+  │             Export from the barrel
+  │             Document in docs/GUIDE.md + CHANGELOG.md
+  │
+  └─ NEVER: create a wrapper component that merely forwards a new prop to an existing one
+     NEVER: copy a function into a feature folder and modify it locally
+     NEVER: duplicate a hook with a slightly different queryFn or endpoint
+```
+
+### Correct Patterns — Extending In-Place
+
+**Adding a new component variant:**
+```tsx
+// src/components/ui/Button.tsx — add 'link' variant to the existing variants map
+const variants = {
+  primary:   `...`,
+  secondary: `...`,
+  link:      `text-indigo-600 hover:text-indigo-800 underline-offset-2 hover:underline px-0`, // ✅ ADD HERE
+};
+```
+
+**Adding a new utility option:**
+```ts
+// src/utils/formatters/number.formatter.ts — add compact notation as an option
+export function formatNumber(
+  num: number,
+  locale: string = 'en-US',
+  options?: { compact?: boolean },  // ✅ new option, not a new function
+): string {
+  return new Intl.NumberFormat(locale, {
+    notation: options?.compact ? 'compact' : 'standard',
+  }).format(num);
+}
+```
+
+**Adding a filter parameter to a hook:**
+```tsx
+// src/hooks/useProducts.ts — add optional sellerId to scope the query
+export function useProducts(options?: {
+  sellerId?: string;       // ✅ extend signature, not a new hook
+  featured?: boolean;
+}) {
+  const params = buildSieveParams(options);
+  return useApiQuery({
+    queryKey: ['products', options],
+    queryFn: () => productService.list(params),
+  });
+}
+```
+
+**Adding a Typography variant:**
+```tsx
+// src/components/typography/Typography.tsx — add 'accent' Text variant
+const variantClasses = {
+  primary:  themed.textPrimary,
+  secondary: themed.textSecondary,
+  muted:    themed.textMuted,
+  error:    themed.textError,
+  success:  themed.textSuccess,
+  accent:   'text-indigo-600 dark:text-indigo-400', // ✅ ADD HERE
+};
+```
+
+### Violations — Never Do These
+
+```tsx
+// ❌ FORK — same hook logic duplicated in a feature folder
+// src/features/seller/hooks/useSellerProducts.ts
+export function useSellerProducts(sellerId: string) {
+  return useApiQuery({ queryFn: () => productService.list(`?filters=sellerId==${sellerId}`) });
+  // → extend useProducts({ sellerId }) instead
+}
+
+// ❌ WRAPPER — trivial prop forwarding under a new name
+// src/components/DangerButton.tsx
+export function DangerButton(props) {
+  return <Button variant="danger" {...props} />;
+  // → caller should use <Button variant="danger"> directly
+}
+
+// ❌ LOCAL COPY — util copied into feature utils and modified
+// src/features/products/utils/formatPrice.ts
+export function formatPrice(amount: number) {
+  return `₹${amount.toLocaleString('en-IN')}`;
+  // → extend formatCurrency(amount, 'INR', 'en-IN') instead
+}
+
+// ❌ NEW FILE — Typography concern addressed by a bespoke component
+// src/components/ErrorText.tsx
+export function ErrorText({ children }) {
+  return <span className="text-red-600 text-sm">{children}</span>;
+  // → use <Text variant="error" size="sm"> instead
+}
+```
+
+### When to Create Something New
+
+Create a new primitive **only** when:
+1. Nothing in `@/components`, `@/hooks`, `@/utils`, or `@/helpers` has even remotely related functionality.
+2. The concept is genuinely new (e.g. a `QRCodeDisplay` component — nothing exists for QR codes).
+3. Follow Tier 1 placement rules: export from the barrel, update `docs/GUIDE.md`, add to `Pre-Code Checklist`.
+
+---
+
+## RULE 32: Mandatory Use of Data Display, List, Search, Filter & Navigation Primitives
+
+**NEVER build a custom table, filter panel, search input, sort dropdown, pagination bar, tab bar, accordion, or horizontal scroller. ALWAYS use the existing Tier 1 primitives.** These rules apply to every page, feature component, admin view, seller view, and user view — no exceptions.
+
+> All filter/sort/page state MUST live in URL query params via `useUrlTable`. Using `useState` for filter, sort, or pagination state is a violation.
+
+### DataTable — mandatory for ALL tabular and grid data
+
+**Never build a custom `<table>`, `<ul>` grid, or hand-rolled card grid when `DataTable` covers the need.**
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `columns` | `ColumnDef[]` | Column definitions with `key`, `header`, `render`, `sortable`, `width` |
+| `data` | `T[]` | Row data array |
+| `loading` | `boolean` | Shows skeleton rows while fetching |
+| `emptyState` | `ReactNode` | Shown when `data` is empty; default uses `EmptyState` |
+| `showViewToggle` | `boolean` | Renders table / grid / list toggle buttons |
+| `viewMode` | `'table' \| 'grid' \| 'list'` | Controlled view — read from `useUrlTable` |
+| `onViewModeChange` | `(mode) => void` | Write back to `useUrlTable` |
+| `mobileCardRender` | `(item: T) => ReactNode` | Card renderer for grid + list views and mobile breakpoints |
+| `onRowClick` | `(item: T) => void` | Row click handler; adds hover cursor |
+| `selectable` | `boolean` | Enables row checkboxes for bulk actions |
+| `selectedIds` | `string[]` | Controlled selection state |
+| `onSelectionChange` | `(ids: string[]) => void` | Fires on checkbox change |
+| `actions` | `ActionDef[]` | Per-row action menu (edit, delete, view…) |
+| `stickyHeader` | `boolean` | Keeps header visible on scroll |
+| `className` | `string` | Additional wrapper classes |
+
+```tsx
+// WRONG — custom table markup
+<table className="w-full border">
+  <thead><tr><th>Name</th><th>Status</th></tr></thead>
+  <tbody>{items.map(i => <tr key={i.id}><td>{i.name}</td><td>{i.status}</td></tr>)}</tbody>
+</table>
+
+// WRONG — custom card grid
+<div className="grid grid-cols-3 gap-4">
+  {items.map(i => <div key={i.id} className="p-4 border rounded">{i.name}</div>)}
+</div>
+
+// RIGHT
+import { DataTable } from '@/components';
+<DataTable
+  columns={columns}
+  data={items}
+  loading={loading}
+  viewMode={(table.get('view') || 'table') as 'table' | 'grid' | 'list'}
+  onViewModeChange={(m) => table.set('view', m)}
+  showViewToggle
+  mobileCardRender={(item) => <ProductCard product={item} />}
+/>
+```
+
+### Search — mandatory for ALL search inputs
+
+**Never use `<input type="search">`, `<Input type="search">`, or a raw `<input>` as a search field.**
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `value` | `string` | Controlled value — read from `useUrlTable` |
+| `onChange` | `(v: string) => void` | Write back to `useUrlTable` via `table.set('q', v)` |
+| `placeholder` | `string` | Use `UI_PLACEHOLDERS.SEARCH` |
+| `debounceMs` | `number` | Default 300 ms — avoids API call on every keystroke |
+| `onClear` | `() => void` | Clears value and resets page |
+| `className` | `string` | Wrapper classes |
+
+```tsx
+// WRONG
+<input type="search" value={q} onChange={e => setQ(e.target.value)} />
+
+// RIGHT
+import { Search } from '@/components';
+<Search
+  value={table.get('q')}
+  onChange={(v) => table.set('q', v)}
+  placeholder={UI_PLACEHOLDERS.SEARCH}
+/>
+```
+
+### FilterDrawer — mandatory for mobile/sidebar filter panels
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `open` | `boolean` | Controlled open state |
+| `onClose` | `() => void` | Close handler |
+| `onApply` | `() => void` | Apply button handler |
+| `onReset` | `() => void` | Reset all filters |
+| `activeCount` | `number` | Badge on the filter trigger button |
+| `children` | `ReactNode` | `FilterFacetSection` groups go here |
+| `withCard` | `boolean` | `false` for public/seller pages (no admin card shell) |
+
+### FilterFacetSection — mandatory for every filter group inside a drawer or sidebar
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `title` | `string` | Section heading (e.g. "Category", "Price") |
+| `options` | `{ label, value, count? }[]` | Checkbox options |
+| `selected` | `string[]` | Controlled selected values |
+| `onChange` | `(values: string[]) => void` | Selection change handler |
+| `collapsible` | `boolean` | Collapse toggle; default `true` |
+| `searchable` | `boolean` | Inline search box inside the section |
+| `showMoreThreshold` | `number` | How many options before "Show more"; default 5 |
+
+### AdminFilterBar — mandatory for all list-page filter toolbars
+
+**Never build a custom row of filter controls above a list. Always use `AdminFilterBar`.**  
+For public and seller pages, pass `withCard={false}`.
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `search` | `ReactNode` | `<Search />` component slot |
+| `filters` | `ReactNode` | Any `<Select>` / `<Toggle>` filter controls |
+| `actions` | `ReactNode` | Right-side action buttons (Create, Export…) |
+| `withCard` | `boolean` | `true` = admin card shell; `false` = public/seller flat layout |
+
+### ActiveFilterChips — mandatory whenever active filters can be dismissed
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `filters` | `{ label, key, value }[]` | Active filter list to render as chips |
+| `onRemove` | `(key, value) => void` | Remove one chip — calls `table.set(key, '')` |
+| `onClearAll` | `() => void` | Clears all filters — calls `table.setMany({...})` |
+
+```tsx
+// WRONG — custom chip list
+{activeFilters.map(f => (
+  <span key={f.key} className="bg-gray-100 px-2 py-1 rounded text-sm">
+    {f.label} <button onClick={() => removeFilter(f.key)}>×</button>
+  </span>
+))}
+
+// RIGHT
+import { ActiveFilterChips } from '@/components';
+<ActiveFilterChips
+  filters={activeFilters}
+  onRemove={(key) => table.set(key, '')}
+  onClearAll={() => table.setMany({ status: '', category: '', q: '' })}
+/>
+```
+
+### SortDropdown — mandatory for all sort controls
+
+**Never use a raw `<select>` or `<Select>` for sorting.**
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `value` | `string` | Controlled sort value — read from `table.get('sorts')` |
+| `onChange` | `(v: string) => void` | Write via `table.setSort(v)` |
+| `options` | `{ label, value }[]` | Use a domain constant (e.g. `PRODUCT_SORT_OPTIONS`) |
+
+### TablePagination — mandatory for all paginated result counts
+
+**Never build a custom page count / per-page selector.**
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `total` | `number` | Total record count from API |
+| `page` | `number` | Current page — from `table.getNumber('page', 1)` |
+| `pageSize` | `number` | Current page size — from `table.getNumber('pageSize', 25)` |
+| `onPageChange` | `(p: number) => void` | Calls `table.setPage(p)` |
+| `onPageSizeChange` | `(n: number) => void` | Calls `table.set('pageSize', String(n))` |
+| `pageSizeOptions` | `number[]` | Default `[10, 25, 50, 100]` |
+
+### Tabs / SectionTabs — mandatory for tab navigation
+
+**Never build custom tab markup with conditional rendering.**
+
+| Component | Use for |
+|-----------|--------|
+| `Tabs` | General in-page tabbed sections (product details, user settings…) |
+| `SectionTabs` | Page-level section navigation (admin nav, user account nav) |
+
+`Tabs` props:
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `items` | `{ id, label, content }[]` | Tab definitions |
+| `activeId` | `string` | Controlled active tab — read from `useUrlTable` or `useState` |
+| `onChange` | `(id: string) => void` | Tab change handler |
+| `variant` | `'line' \| 'pill' \| 'boxed'` | Visual style |
+
+```tsx
+// WRONG — conditional render with manual active state
+<div className="flex border-b">
+  {['Info','Reviews','Shipping'].map(t => (
+    <button key={t} onClick={() => setTab(t)} className={tab===t ? 'border-b-2' : ''}>{t}</button>
+  ))}
+</div>
+{tab === 'Info' && <InfoPanel />}
+
+// RIGHT
+import { Tabs } from '@/components';
+<Tabs
+  variant="line"
+  activeId={table.get('tab') || 'info'}
+  onChange={(id) => table.set('tab', id)}
+  items={[
+    { id: 'info',     label: t('tabs.info'),     content: <InfoPanel /> },
+    { id: 'reviews',  label: t('tabs.reviews'),  content: <ReviewsPanel /> },
+    { id: 'shipping', label: t('tabs.shipping'), content: <ShippingPanel /> },
+  ]}
+/>
+```
+
+### Accordion — mandatory for collapsible content sections
+
+**Never manage `open` state manually for collapsible sections.**
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `items` | `{ id, title, content }[]` | Section definitions |
+| `allowMultiple` | `boolean` | Allow more than one section open at once |
+| `defaultOpenIds` | `string[]` | Pre-opened sections on mount |
+
+### HorizontalScroller — mandatory for horizontal scroll containers
+
+**Never use `overflow-x-auto` directly on a wrapper div to create horizontal scroll; use `HorizontalScroller`.**
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `showArrows` | `boolean` | Left/right scroll arrow buttons |
+| `snapToItems` | `boolean` | CSS scroll-snap per item |
+| `className` | `string` | Wrapper classes |
+
+### useUrlTable — mandatory for ALL filter/sort/page state
+
+**Never use `useState` or `useReducer` to manage filter, sort, or pagination state on any list page.**  
+All such state lives in URL query params via `useUrlTable` so it is bookmark-able and history-safe.
+
+```tsx
+// WRONG
+const [status, setStatus] = useState('');
+const [sort, setSort] = useState('-createdAt');
+const [page, setPage] = useState(1);
+
+// RIGHT
+const table = useUrlTable({ defaults: { pageSize: '25', sorts: '-createdAt' } });
+// table.get('status'), table.setSort('-price'), table.setPage(2)
+```
+
+### Violation examples — never do these
+
+```tsx
+// ❌ Custom table
+<table><thead>...</thead><tbody>{rows.map(...)}</tbody></table>
+
+// ❌ Custom search input
+<input type="text" placeholder="Search..." onChange={e => setQuery(e.target.value)} />
+
+// ❌ Manual filter chips
+{filters.map(f => <span key={f}>{f} <button onClick={...}>×</button></span>)}
+
+// ❌ Raw sort select
+<select value={sort} onChange={e => setSort(e.target.value)}>
+  {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+</select>
+
+// ❌ Manual pagination
+<div>{page} of {totalPages} <button onClick={() => setPage(p => p+1)}>Next</button></div>
+
+// ❌ Custom tabs
+<div className="flex">{tabs.map(t => <button key={t} onClick={() => setTab(t)}>{t}</button>)}</div>
+```
+
+---
+
+## RULE 28: Media Metadata & Responsive Display
+
+**All media rendering MUST be consistent across the app and fully responsive across every breakpoint. The raw uploaded file is NEVER shown directly — always use the `displayMeta` fields.**
+
+### Component Hierarchy — Four Specialised Primitives (Tier 1)
+
+All media rendering is handled by a family of four purpose-built components in `@/components`. They all delegate to the same core `<MediaDisplay />` engine but expose a domain-appropriate API so call sites are clean and context is explicit.
+
+| Component | Use for | Props shortcut |
+|-----------|---------|----------------|
+| `<MediaImage />` | Any static image (product, blog, category, carousel...) | `media`, `size?`, `priority?`, `className?` |
+| `<MediaVideo />` | Video assets | `media`, `controls?`, `autoPlayMuted?`, `className?` |
+| `<MediaAvatar />` | User / seller / brand profile pictures | `media`, `size?: 'sm'|'md'|'lg'|'xl'`, `className?` |
+| `<MediaGallery />` | Multi-image sets (product gallery, blog gallery) | `items: MediaRecord[]`, `layout?: 'grid'|'masonry'|'strip'`, `className?` |
+| `<MediaDisplay />` | Internal engine — do NOT use directly at feature level | full `MediaDisplayMeta` surface |
+
+```tsx
+import { MediaImage, MediaVideo, MediaAvatar, MediaGallery } from '@/components';
+
+// Product cover image
+<MediaImage media={product.coverImage} size="card" priority />
+
+// Blog hero banner
+<MediaImage media={post.heroImage} size="hero" priority />
+
+// Product gallery
+<MediaGallery items={product.images} layout="grid" />
+
+// User avatar — small in nav, large on profile page
+<MediaAvatar media={user.avatar} size="sm" />   {/* nav */}
+<MediaAvatar media={user.avatar} size="xl" />   {/* profile */}
+
+// Auction video
+<MediaVideo media={auction.demoVideo} controls />
+```
+
+**NEVER** use `<MediaDisplay />` directly in a feature component or page — always go through the contextual variant above.
+
+### The `<MediaDisplay />` Engine
+
+`MediaDisplay` is the internal renderer used by all four components above. It MUST NOT be imported directly in feature/page code.
+
+It uses `displayMeta` to:
+1. Pick the correct `aspect-*` Tailwind class from `aspectRatio`
+2. Apply `object-cover` or `object-contain` from `objectFit`
+3. Set `style={{ objectPosition: \`${focalX * 100}% ${focalY * 100}%\` }}` (dynamic — inline style allowed)
+4. Apply zoom and crop via `transform: scale(zoom)` + `translate` on the `<img>` inside an `overflow-hidden` wrapper (dynamic — inline styles allowed for these calculated values)
+5. Emit `<figure>` + `<figcaption>` when `caption` is present
+6. Emit the SEO-friendly `alt` from `displayMeta.alt` — never empty for content images
+
+### `displayMode` → Sizing Presets
+
+| `displayMode` | Mobile | Tablet | Desktop | Widescreen |
+|---|---|---|---|---|
+| `thumbnail` | `aspect-square w-20` | `w-24` | `w-28` | `w-32` |
+| `card` | `aspect-[4/3] w-full` | `w-full` | `w-full` | `w-full` |
+| `banner` | `aspect-[3/1] w-full` | `aspect-[4/1]` | `aspect-[5/1]` | `aspect-[6/1]` |
+| `hero` | `aspect-[16/9] w-full` | `aspect-[16/9]` | `aspect-[21/9]` | `aspect-[21/9]` |
+| `gallery` | `aspect-square w-full` | `w-full` | `w-full` | `w-full` |
+| `avatar` | `aspect-square w-10 rounded-full` | `w-12` | `w-12` | `w-14` |
+
+All dimensions are driven by `THEME_CONSTANTS.media.*` rather than raw Tailwind strings. Add new presets to `THEME_CONSTANTS` before writing new display modes.
+
+### Responsive Rules for Media
+
+```tsx
+// WRONG — fixed pixel container, crops awkwardly on mobile
+<div className="w-[800px] h-[450px] overflow-hidden">
+  <img src={url} className="object-cover" />
+</div>
+
+// WRONG — no aspect ratio, height collapses or stretches unpredictably
+<img src={url} className="w-full" />
+
+// WRONG — using MediaDisplay directly at feature level
+import { MediaDisplay } from '@/components';
+<MediaDisplay media={product.cover} />  // ❌ use MediaImage instead
+
+// RIGHT — use the contextual variant; fluid width + locked aspect ratio
+import { MediaImage } from '@/components';
+<div className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4">
+  <MediaImage media={product.coverImage} size="card" />
+</div>
+```
+
+**Mandatory responsive rules for every media container:**
+
+- **Width**: always `w-full` or a responsive fraction (`sm:w-1/2 lg:w-1/3`). Never fixed `px` widths for containers.
+- **Height**: always determined by an `aspect-*` class. Never fixed `h-[px]` heights for media wrappers.
+- **Object fit**: read from `displayMeta.objectFit`, never hardcoded.
+- **Focal point**: `objectPosition` is always a dynamic `style={{}}` driven by `focalX`/`focalY`. This is the ONLY case where inline `style={{}}` is used on a media element.
+- **Zoom transform**: `transform: scale(${zoom})` on the inner `<img>` is dynamic and must use `style={{}}`. Wrap with `overflow-hidden` to contain it.
+- **Grid layouts with media**: must include `xl:` and `2xl:` column counts (Rule 25).
+- **Lazy loading**: all media beyond the first viewport fold MUST use `loading="lazy"` (handled inside `MediaDisplay`).
+- **Priority**: only above-the-fold hero / banner images pass `priority` to `MediaImage`, which maps to Next.js `<Image priority>`.
+
+### SEO Integration
+
+Every `<MediaImage />` / `<MediaVideo />` internally renders a Next.js `<Image>` with:
+- `alt` from `displayMeta.alt` — descriptive, keyword-rich text set at upload time
+- `title` from `displayMeta.caption` (when present)
+- The Storage URL already contains the SEO filename (e.g. `buy-product-red-trek-himalaya-cover-1.webp`) — search engines index the filename as a relevance signal
+- `<figure>` + `<figcaption>` markup for rich snippet eligibility
+
+### Accessibility
+
+- `alt` is ALWAYS sourced from `displayMeta.alt`. An empty `alt` is only allowed for purely decorative images.
+- `caption` from `displayMeta.caption`, when present, renders in a `<figcaption>` inside a `<figure>` wrapper.
+- `<video>` elements MUST have `controls` or clearly visible custom controls; never `autoplay` with audio.
+
+### Consistency Enforcement
+
+```tsx
+// WRONG — ad-hoc image styling scattered across features
+<img src={product.imageUrl} className="rounded-lg w-full h-48 object-cover" />
+
+// WRONG — raw <img> ignores crop / zoom / focal point / SEO filename
+<img src={record.url} alt={record.alt} />
+
+// WRONG — MediaDisplay used at feature level
+import { MediaDisplay } from '@/components';
+<MediaDisplay media={product.coverImage} />  // ❌
+
+// RIGHT — use the contextual component; all styling + meta is automatic
+import { MediaImage, MediaGallery } from '@/components';
+<MediaImage  media={product.coverImage} size="card" />
+<MediaGallery items={product.images}   layout="grid" />
+```
+
+**Before adding any `<img>`, `<video>`, or `<picture>` tag — check `@/components` for `MediaImage`, `MediaVideo`, `MediaAvatar`, `MediaGallery` first (Rule 8).**
+
+---
+
+Every schema file in `src/db/schema/` MUST have these 6 sections:
+
+1. **Collection Interface** - TypeScript interface + `COLLECTION_NAME` constant
+2. **Indexed Fields** - `INDEXED_FIELDS` array with comments explaining each
+3. **Relationships** - ASCII diagram showing FK references
+4. **Helper Constants** - `DEFAULT_*_DATA`, `*_PUBLIC_FIELDS`, `*_UPDATABLE_FIELDS`
+5. **Type Utilities** - `CreateInput`, `UpdateInput`, `AdminUpdateInput` types
+6. **Query Helpers** - `queryHelpers` object with typed query builders
+
+When adding indices, update BOTH the schema file AND `firestore.indexes.json`, then deploy with `firebase deploy --only firestore:indexes`.
+
+---
+
+## RULE 34: Semantic HTML — Use the Right Element for the Job
+
+**Element choice must reflect meaning, not just visual appearance. Choose the HTML element whose semantic role describes the content, then style it. Never choose an element purely for its default browser styling.**
+
+This rule covers elements NOT already wrapped by the Tier 1 component primitives in Rule 7. Use those wrapper components (`Section`, `Nav`, `Ul`, etc.) for structural layout; use the elements below for inline semantic meaning.
+
+### Additional Semantic Elements — Mandatory Where Applicable
+
+| Instead of... | Use | Why |
+|---|---|---|
+| `<span>{date}</span>` for dates/times | `<time dateTime="ISO-8601">{formatted}</time>` | Machine-readable dates for search engines, screen readers, and calendar apps |
+| `<div>` or `<p>` for contact info | `<address>` | Marks up contact information; screen readers and crawlers identify it as such |
+| `<ul>/<li>` for key-value pairs | `<dl>/<dt>/<dd>` | `dl` = description list; correct semantic for metadata, glossaries, and inline FAQs |
+| `<span className="highlight">` | `<mark>` | Marks text as highlighted/relevant — screen readers convey the emphasis |
+| Bare abbreviation text | `<abbr title="full term">` | Exposes the full term to screen readers and on hover |
+| `<span className="quote">` | `<blockquote>` / `<q>` | Block and inline quotations; use the `cite` attribute to attribute the source |
+| `<span>` for inline citations of a work | `<cite>` | Marks the title of a cited work (book, article, film) |
+| `<span className="code">` | `<code>` inline / `<pre><code>` block | Screen readers and search engines identify it as code |
+| `<span>` for keyboard input | `<kbd>` | Screen readers announce as keyboard input |
+
+### Heading Hierarchy — Never Skip Levels
+
+**NEVER skip heading levels. `<Heading level={3}>` must be nested within a `<Heading level={2}>` context — never appear before an `<Heading level={2}>`, and never jump from `level={1}` to `level={3}>`.**
+
+```tsx
+// WRONG — h1 followed by h3 (h2 is skipped)
+<Heading level={1}>Page Title</Heading>
+<Heading level={3}>Section</Heading>   // ❌
+
+// RIGHT — sequential hierarchy
+<Heading level={1}>Page Title</Heading>
+<Heading level={2}>Section</Heading>      // ✅
+<Heading level={3}>Sub-section</Heading>  // ✅
+```
+
+Rules:
+- Each page MUST have exactly **one** `<Heading level={1}>`.
+- Never use a lower heading level solely to produce bigger text — control size via `className` or a `size` prop on the `Heading` component.
+- Admin panels and modals start at `level={2}` (the page `<h1>` is the page title).
+
+### ARIA Attributes — Rules
+
+**NEVER omit ARIA attributes where they are required. NEVER use ARIA as a substitute for correct semantic HTML — fix the element choice first.**
+
+| When to use | Attribute | Notes |
+|---|---|---|
+| Interactive element with no visible text | `aria-label` | Required on all icon-only buttons and icon-only links |
+| Element labelled by another visible element | `aria-labelledby="id"` | Prefer over `aria-label` when label text is already visible on screen |
+| Live status message (loading, toast) | `aria-live="polite"` | Do not use `"assertive"` for non-critical messages |
+| Expandable widget (accordion, dropdown) | `aria-expanded={boolean}` | Must toggle correctly on open/close |
+| Button that controls a panel/region | `aria-controls="id"` | Links the trigger to its target element |
+| Active item in a nav or step list | `aria-current="page"` / `"step"` | Active nav link, current wizard step |
+| Decorative icon next to labelled text | `aria-hidden="true"` | Prevents icon SVG from being announced twice |
+| Invalid form field | `aria-invalid="true"` | Set when an error message is visible for that field |
+| Field wired to an error message | `aria-describedby="error-id"` | Links the input to its error `<Text>` element |
+
+**Dos and Don'ts:**
+- **DO** add `aria-label` to every icon-only `Button` and `TextLink`.
+- **DO** wire `aria-expanded` and `aria-controls` on custom interactive widgets.
+- **DO** set `aria-hidden="true"` on decorative icons that sit beside labelled text.
+- **DON'T** use `role="button"` on a `<div>` — use `<Button>` from `@/components`.
+- **DON'T** use `role="heading"` — use `<Heading>` from `@/components`.
+- **DON'T** add ARIA attributes to paper over a wrong element choice — fix the element.
+
+### Focus Management
+
+- All interactive elements MUST be keyboard-reachable (`Tab` / `Shift+Tab`).
+- Custom interactive widgets MUST implement correct keyboard patterns: arrow keys for menus/selects, `Enter`/`Space` for buttons, `Escape` to close modals.
+- When a modal opens, focus MUST move to the first focusable element inside it (handled by `Modal` from `@/components` — do not override).
+- When a modal closes, focus MUST return to the element that triggered it.
+- **NEVER** remove the focus ring with `focus:outline-none` unless a visible replacement is in place (`focus-visible:ring-2 focus-visible:ring-indigo-500 focus:outline-none`).
+
+```tsx
+// WRONG — removes focus ring with no replacement
+<Button className="focus:outline-none">Save</Button>  // ❌ keyboard users cannot see focus
+
+// RIGHT — custom ring replaces the default
+<Button className="focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">Save</Button>  // ✅
+```
+
+### `<time>` Element Pattern
+
+```tsx
+import { formatDate } from '@/utils';
+
+// WRONG — display-only, no machine-readable context
+<Caption>{formatDate(product.createdAt)}</Caption>
+
+// RIGHT — <time> provides the ISO datetime; Caption provides the display text
+<time dateTime={product.createdAt.toISOString()}>
+  <Caption>{formatDate(product.createdAt)}</Caption>
+</time>
+```
+
+Wrap **every** user-visible date, time, or duration in a `<time dateTime="...">` element.
+
+### `<dl>` / `<dt>` / `<dd>` Pattern
+
+```tsx
+// WRONG — key-value pairs faked with flex divs
+<div className="flex gap-2">
+  <Text weight="medium">Condition:</Text>
+  <Text>New</Text>
+</div>
+
+// RIGHT — semantic description list
+<dl>
+  <dt><Text weight="medium">Condition</Text></dt>
+  <dd><Text>New</Text></dd>
+</dl>
+```
+
+`<dl>` / `<dt>` / `<dd>` are native HTML — do NOT wrap them with `Ul`/`Li`. Use them directly for any key-value or term-definition metadata.
+
+---
+
+## Styling Standards
+
+> **These standards apply universally — Tier 1 or Tier 2, page or sub-component, feature or primitive. No component is exempt.**
+
+1. Use `THEME_CONSTANTS` (Rule 4) for all repeated Tailwind patterns
+2. Use `ThemeContext` (`useTheme()`) only for conditional light/dark logic
+3. Use existing components (Rule 7) and Typography primitives (Rule 31) — no raw `<input>`, `<button>`, `<h1>`–`<h6>`, `<p>`, `<label>`, `<span>`, `<a>`, `<section>`, `<article>`, `<main>`, `<aside>`, `<nav>`, `<header>` (block), `<footer>` (block), `<ul>`, `<ol>`, or `<li>` elements — applies to **every** component at **every** tier including feature sub-components, modal internals, card bodies, table cells, and alert layouts
+4. No inline `style={{}}` except for dynamic calculated values
+5. No CSS modules
+6. Mobile-first — write base styles for 375 px, extend upward with `sm:` → `2xl:` (Rule 25)
+7. Every grid/flex container must have explicit `xl:` and `2xl:` column/width classes (Rule 25)
+8. No legacy polyfills or vendor-prefixed CSS (Rule 24)
+9. All media (`<img>`, `<video>`) goes through `<MediaImage />`, `<MediaVideo />`, `<MediaAvatar />`, or `<MediaGallery />` — never raw tags or `<MediaDisplay />` directly (Rule 28)
+10. Media containers use `w-full` + `aspect-*` classes; never fixed pixel widths/heights (Rule 28)
 
 ---
 
@@ -1810,90 +2877,6 @@ export const RBAC_CONFIG = {
 
 ---
 
-## RULE 17: Collection Names from Constants
-
-**NEVER hardcode Firestore collection names.**
-
-```tsx
-// WRONG
-db.collection('users')
-
-// RIGHT
-import { USER_COLLECTION } from '@/db/schema';
-db.collection(USER_COLLECTION)
-```
-
-Available constants: `USER_COLLECTION`, `PRODUCT_COLLECTION`, `ORDER_COLLECTION`, `REVIEW_COLLECTION`, `BID_COLLECTION`, `SESSION_COLLECTION`, `EMAIL_VERIFICATION_COLLECTION`, `PASSWORD_RESET_COLLECTION`, `CAROUSEL_SLIDES_COLLECTION`, `HOMEPAGE_SECTIONS_COLLECTION`, `CATEGORIES_COLLECTION`, `COUPONS_COLLECTION`, `FAQS_COLLECTION`, `SITE_SETTINGS_COLLECTION`.
-
-### Schema Field Constants
-
-**NEVER hardcode Firestore field names in queries, serializers, or update operations.**
-
-```tsx
-// WRONG
-await db.collection(USER_COLLECTION).doc(uid).update({ 'metadata.lastSignInTime': new Date() });
-const role = userData.role;
-
-// RIGHT
-import { USER_FIELDS, SCHEMA_DEFAULTS } from '@/db/schema';
-await db.collection(USER_COLLECTION).doc(uid).update({ [USER_FIELDS.META.LAST_SIGN_IN_TIME]: new Date() });
-const defaultRole = SCHEMA_DEFAULTS.USER_ROLE;
-```
-
-**Available field constant objects** (all from `@/db/schema`):
-
-| Constant | Collection | Key fields |
-|----------|-----------|------------|
-| `USER_FIELDS` | users | UID, EMAIL, ROLE, DISPLAY_NAME, META.LAST_SIGN_IN_TIME, STAT.TOTAL_ORDERS, PROFILE.IS_PUBLIC... |
-| `TOKEN_FIELDS` | tokens | USER_ID, EMAIL, TOKEN, EXPIRES_AT, USED |
-| `PRODUCT_FIELDS` | products | TITLE, PRICE, SELLER_ID, STATUS, STATUS_VALUES.PUBLISHED... |
-| `ORDER_FIELDS` | orders | USER_ID, STATUS, TOTAL_PRICE, STATUS_VALUES.PENDING... |
-| `REVIEW_FIELDS` | reviews | PRODUCT_ID, USER_ID, RATING, STATUS_VALUES.APPROVED... |
-| `BID_FIELDS` | bids | PRODUCT_ID, BID_AMOUNT, STATUS_VALUES.ACTIVE... |
-| `SESSION_FIELDS` | sessions | USER_ID, IS_ACTIVE, LAST_ACTIVITY, DEVICE.BROWSER... |
-| `CAROUSEL_FIELDS` | carouselSlides | TITLE, ORDER, ACTIVE, MEDIA |
-| `CATEGORY_FIELDS` | categories | NAME, SLUG, TIER, METRIC.PRODUCT_COUNT... |
-| `COUPON_FIELDS` | coupons | CODE, TYPE, DISCOUNT, TYPE_VALUES.PERCENTAGE... |
-| `FAQ_FIELDS` | faqs | QUESTION, CATEGORY, STAT.HELPFUL, CATEGORY_VALUES.GENERAL... |
-| `HOMEPAGE_SECTION_FIELDS` | homepageSections | TYPE, ORDER, ENABLED, TYPE_VALUES.WELCOME... |
-| `SITE_SETTINGS_FIELDS` | siteSettings | SITE_NAME, CONTACT_FIELDS.EMAIL, SOCIAL_LINKS... |
-| `COMMON_FIELDS` | (shared) | ID, CREATED_AT, UPDATED_AT, STATUS, IS_ACTIVE |
-| `SCHEMA_DEFAULTS` | (defaults) | USER_ROLE, ADMIN_EMAIL, UNKNOWN_USER_AGENT, DEFAULT_DISPLAY_NAME, ANONYMOUS_USER |
-
----
-
-## RULE 18: Routes from Constants
-
-**NEVER hardcode route paths.**
-
-```tsx
-// WRONG
-router.push('/auth/login');
-<Link href="/user/profile">Profile</Link>
-
-// RIGHT
-import { ROUTES } from '@/constants';
-router.push(ROUTES.AUTH.LOGIN);
-<Link href={ROUTES.USER.PROFILE}>Profile</Link>
-```
-
----
-
-## RULE 19: API Endpoints from Constants
-
-**NEVER hardcode API paths.**
-
-```tsx
-// WRONG
-const res = await fetch('/api/auth/login');
-
-// RIGHT
-import { API_ENDPOINTS } from '@/constants';
-const res = await fetch(API_ENDPOINTS.AUTH.LOGIN);
-```
-
----
-
 ## RULE 20: No Direct `fetch()` in UI Code — Use the Service Layer
 
 **NEVER call `fetch()` directly anywhere in UI code (components, pages, hooks, contexts).** `fetch` is only called inside `apiClient` itself.
@@ -2047,91 +3030,6 @@ const { data } = useFeaturedProducts(); // ✅
 
 ---
 
-## RULE 24: No Backward Compatibility
-
-**When replacing or refactoring code, DELETE the old implementation. Do NOT keep legacy code alongside new code.**
-
-### Internal Code — No Legacy Support
-
-- **Delete deprecated code outright.** Never leave a deprecated hook, function, or component "just in case". If it has no callers, it's gone.
-- **No compatibility shims.** When a pattern is replaced (e.g. `useApiRequest` → `useApiQuery`), remove all old call sites and delete the old implementation in the same change.
-- **No dual implementations.** Never maintain two ways to do the same thing. Pick the correct approach (see the rules above) and migrate fully.
-- **No `@deprecated` JSDoc stubs.** If code is superseded, remove it. Use the git history to look back.
-- **No feature flags for old behaviour.** Don't gate new implementations behind flags to keep old code runnable.
-
-```ts
-// WRONG — keeping old hook alongside new one
-/** @deprecated use useApiQuery instead */
-export function useApiRequest() { ... } // ❌ delete this
-
-// WRONG — compatibility wrapper
-export const formatPrice = formatCurrency; // ❌ just update the call sites
-
-// RIGHT — delete the old code, update all call sites to the new pattern
-```
-
-### Browser Target — Modern Only
-
-- **Target**: last 2 stable releases of Chrome, Firefox, Safari, Edge. No IE, no legacy mobile WebKit.
-- **JavaScript**: use modern syntax freely — optional chaining (`?.`), nullish coalescing (`??`), `structuredClone`, `Array.at()`, `Object.hasOwn()`, `Promise.allSettled()`, top-level `await`, etc. No transpile-down polyfills.
-- **CSS**: use `gap`, `aspect-ratio`, `clamp()`, `container queries`, `@layer`, CSS Grid subgrid freely. No `@supports` fallbacks for features supported in modern browsers. No manual vendor prefixes — Autoprefixer (via PostCSS) handles what's needed.
-- **APIs**: `IntersectionObserver`, `ResizeObserver`, `navigator.clipboard`, `AbortController`, `crypto.subtle` — available natively; no ponyfills.
-- **Build target**: `browserslist` config must NOT include `ie` or `> 0.5%` global fallback tiers.
-
----
-
-## RULE 25: Mobile-First & Widescreen Support
-
-**Every layout MUST be designed mobile-first and explicitly extended for widescreen viewports.**
-
-### Mobile-First
-
-- **Write base styles for mobile** (≤ 640px), then layer up with `sm:`, `md:`, `lg:`, `xl:`, `2xl:` breakpoints.
-- No `max-sm:hidden` / `max-md:` tricks to hide desktop content on mobile — design mobile layout first instead.
-- Touch targets: minimum `44×44 px` (use `min-h-11 min-w-11` / `p-3` on interactive elements).
-- All forms, tables, and drawers MUST be scrollable and usable at 375px width.
-- Prefer `SideDrawer` over multi-column modals on mobile; prefer stacked layouts over horizontal split-panes.
-
-### Widescreen Support
-
-- **Every page must specify explicit `xl:` and `2xl:` classes** — never let a layout silently cap at `lg:`.
-- Outermost page containers use `max-w-screen-2xl mx-auto` (or `max-w-7xl` for content-focused pages).
-- Responsive grids MUST include a widescreen column count:
-
-```tsx
-// WRONG — caps at 3 cols on lg and above
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-
-// RIGHT — continues scaling on widescreen
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-```
-
-- Typography uses fluid-ish steps, never fixed `text-base` everywhere:
-
-```tsx
-// WRONG
-<p className="text-base">
-
-// RIGHT
-<p className="text-sm sm:text-base lg:text-lg">
-```
-
-- DataTable, ProductGrid, AdminFilterBar, SideDrawer — all must render correctly at 1920px+. Use `THEME_CONSTANTS.container.*` values to keep content width sane.
-- `useBreakpoint()` / `useMediaQuery()` hooks are available for JS-driven widescreen logic.
-
-### Breakpoint Reference
-
-| Breakpoint | Min-width | Target device |
-|------------|-----------|---------------|
-| _(base)_ | 0 | Mobile (375 px) |
-| `sm:` | 640 px | Large mobile / small tablet |
-| `md:` | 768 px | Tablet |
-| `lg:` | 1024 px | Laptop |
-| `xl:` | 1280 px | Desktop |
-| `2xl:` | 1536 px | Widescreen / 1920 px monitor |
-
----
-
 ## RULE 26: Build Verification Workflow
 
 **After every set of file changes, verify in this exact order. Do NOT skip steps.**
@@ -2177,152 +3075,6 @@ describe('useProducts', () => {
 ```
 
 
-
----
-
-## RULE 28: Media Metadata & Responsive Display
-
-**All media rendering MUST be consistent across the app and fully responsive across every breakpoint. The raw uploaded file is NEVER shown directly — always use the `displayMeta` fields.**
-
-### Component Hierarchy — Four Specialised Primitives (Tier 1)
-
-All media rendering is handled by a family of four purpose-built components in `@/components`. They all delegate to the same core `<MediaDisplay />` engine but expose a domain-appropriate API so call sites are clean and context is explicit.
-
-| Component | Use for | Props shortcut |
-|-----------|---------|----------------|
-| `<MediaImage />` | Any static image (product, blog, category, carousel...) | `media`, `size?`, `priority?`, `className?` |
-| `<MediaVideo />` | Video assets | `media`, `controls?`, `autoPlayMuted?`, `className?` |
-| `<MediaAvatar />` | User / seller / brand profile pictures | `media`, `size?: 'sm'|'md'|'lg'|'xl'`, `className?` |
-| `<MediaGallery />` | Multi-image sets (product gallery, blog gallery) | `items: MediaRecord[]`, `layout?: 'grid'|'masonry'|'strip'`, `className?` |
-| `<MediaDisplay />` | Internal engine — do NOT use directly at feature level | full `MediaDisplayMeta` surface |
-
-```tsx
-import { MediaImage, MediaVideo, MediaAvatar, MediaGallery } from '@/components';
-
-// Product cover image
-<MediaImage media={product.coverImage} size="card" priority />
-
-// Blog hero banner
-<MediaImage media={post.heroImage} size="hero" priority />
-
-// Product gallery
-<MediaGallery items={product.images} layout="grid" />
-
-// User avatar — small in nav, large on profile page
-<MediaAvatar media={user.avatar} size="sm" />   {/* nav */}
-<MediaAvatar media={user.avatar} size="xl" />   {/* profile */}
-
-// Auction video
-<MediaVideo media={auction.demoVideo} controls />
-```
-
-**NEVER** use `<MediaDisplay />` directly in a feature component or page — always go through the contextual variant above.
-
-### The `<MediaDisplay />` Engine
-
-`MediaDisplay` is the internal renderer used by all four components above. It MUST NOT be imported directly in feature/page code.
-
-It uses `displayMeta` to:
-1. Pick the correct `aspect-*` Tailwind class from `aspectRatio`
-2. Apply `object-cover` or `object-contain` from `objectFit`
-3. Set `style={{ objectPosition: \`${focalX * 100}% ${focalY * 100}%\` }}` (dynamic — inline style allowed)
-4. Apply zoom and crop via `transform: scale(zoom)` + `translate` on the `<img>` inside an `overflow-hidden` wrapper (dynamic — inline styles allowed for these calculated values)
-5. Emit `<figure>` + `<figcaption>` when `caption` is present
-6. Emit the SEO-friendly `alt` from `displayMeta.alt` — never empty for content images
-
-### `displayMode` → Sizing Presets
-
-| `displayMode` | Mobile | Tablet | Desktop | Widescreen |
-|---|---|---|---|---|
-| `thumbnail` | `aspect-square w-20` | `w-24` | `w-28` | `w-32` |
-| `card` | `aspect-[4/3] w-full` | `w-full` | `w-full` | `w-full` |
-| `banner` | `aspect-[3/1] w-full` | `aspect-[4/1]` | `aspect-[5/1]` | `aspect-[6/1]` |
-| `hero` | `aspect-[16/9] w-full` | `aspect-[16/9]` | `aspect-[21/9]` | `aspect-[21/9]` |
-| `gallery` | `aspect-square w-full` | `w-full` | `w-full` | `w-full` |
-| `avatar` | `aspect-square w-10 rounded-full` | `w-12` | `w-12` | `w-14` |
-
-All dimensions are driven by `THEME_CONSTANTS.media.*` rather than raw Tailwind strings. Add new presets to `THEME_CONSTANTS` before writing new display modes.
-
-### Responsive Rules for Media
-
-```tsx
-// WRONG — fixed pixel container, crops awkwardly on mobile
-<div className="w-[800px] h-[450px] overflow-hidden">
-  <img src={url} className="object-cover" />
-</div>
-
-// WRONG — no aspect ratio, height collapses or stretches unpredictably
-<img src={url} className="w-full" />
-
-// WRONG — using MediaDisplay directly at feature level
-import { MediaDisplay } from '@/components';
-<MediaDisplay media={product.cover} />  // ❌ use MediaImage instead
-
-// RIGHT — use the contextual variant; fluid width + locked aspect ratio
-import { MediaImage } from '@/components';
-<div className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4">
-  <MediaImage media={product.coverImage} size="card" />
-</div>
-```
-
-**Mandatory responsive rules for every media container:**
-
-- **Width**: always `w-full` or a responsive fraction (`sm:w-1/2 lg:w-1/3`). Never fixed `px` widths for containers.
-- **Height**: always determined by an `aspect-*` class. Never fixed `h-[px]` heights for media wrappers.
-- **Object fit**: read from `displayMeta.objectFit`, never hardcoded.
-- **Focal point**: `objectPosition` is always a dynamic `style={{}}` driven by `focalX`/`focalY`. This is the ONLY case where inline `style={{}}` is used on a media element.
-- **Zoom transform**: `transform: scale(${zoom})` on the inner `<img>` is dynamic and must use `style={{}}`. Wrap with `overflow-hidden` to contain it.
-- **Grid layouts with media**: must include `xl:` and `2xl:` column counts (Rule 25).
-- **Lazy loading**: all media beyond the first viewport fold MUST use `loading="lazy"` (handled inside `MediaDisplay`).
-- **Priority**: only above-the-fold hero / banner images pass `priority` to `MediaImage`, which maps to Next.js `<Image priority>`.
-
-### SEO Integration
-
-Every `<MediaImage />` / `<MediaVideo />` internally renders a Next.js `<Image>` with:
-- `alt` from `displayMeta.alt` — descriptive, keyword-rich text set at upload time
-- `title` from `displayMeta.caption` (when present)
-- The Storage URL already contains the SEO filename (e.g. `buy-product-red-trek-himalaya-cover-1.webp`) — search engines index the filename as a relevance signal
-- `<figure>` + `<figcaption>` markup for rich snippet eligibility
-
-### Accessibility
-
-- `alt` is ALWAYS sourced from `displayMeta.alt`. An empty `alt` is only allowed for purely decorative images.
-- `caption` from `displayMeta.caption`, when present, renders in a `<figcaption>` inside a `<figure>` wrapper.
-- `<video>` elements MUST have `controls` or clearly visible custom controls; never `autoplay` with audio.
-
-### Consistency Enforcement
-
-```tsx
-// WRONG — ad-hoc image styling scattered across features
-<img src={product.imageUrl} className="rounded-lg w-full h-48 object-cover" />
-
-// WRONG — raw <img> ignores crop / zoom / focal point / SEO filename
-<img src={record.url} alt={record.alt} />
-
-// WRONG — MediaDisplay used at feature level
-import { MediaDisplay } from '@/components';
-<MediaDisplay media={product.coverImage} />  // ❌
-
-// RIGHT — use the contextual component; all styling + meta is automatic
-import { MediaImage, MediaGallery } from '@/components';
-<MediaImage  media={product.coverImage} size="card" />
-<MediaGallery items={product.images}   layout="grid" />
-```
-
-**Before adding any `<img>`, `<video>`, or `<picture>` tag — check `@/components` for `MediaImage`, `MediaVideo`, `MediaAvatar`, `MediaGallery` first (Rule 8).**
-
----
-
-Every schema file in `src/db/schema/` MUST have these 6 sections:
-
-1. **Collection Interface** - TypeScript interface + `COLLECTION_NAME` constant
-2. **Indexed Fields** - `INDEXED_FIELDS` array with comments explaining each
-3. **Relationships** - ASCII diagram showing FK references
-4. **Helper Constants** - `DEFAULT_*_DATA`, `*_PUBLIC_FIELDS`, `*_UPDATABLE_FIELDS`
-5. **Type Utilities** - `CreateInput`, `UpdateInput`, `AdminUpdateInput` types
-6. **Query Helpers** - `queryHelpers` object with typed query builders
-
-When adding indices, update BOTH the schema file AND `firestore.indexes.json`, then deploy with `firebase deploy --only firestore:indexes`.
 
 ---
 
@@ -2402,23 +3154,6 @@ Every change that touches `src/db/schema/`, `firestore.rules`, `storage.rules`, 
 
 ---
 
-## Styling Standards
-
-> **These standards apply universally — Tier 1 or Tier 2, page or sub-component, feature or primitive. No component is exempt.**
-
-1. Use `THEME_CONSTANTS` (Rule 4) for all repeated Tailwind patterns
-2. Use `ThemeContext` (`useTheme()`) only for conditional light/dark logic
-3. Use existing components (Rule 7) and Typography primitives (Rule 31) — no raw `<input>`, `<button>`, `<h1>`–`<h6>`, `<p>`, `<label>`, `<span>`, `<a>`, `<section>`, `<article>`, `<main>`, `<aside>`, `<nav>`, `<header>` (block), `<footer>` (block), `<ul>`, `<ol>`, or `<li>` elements — applies to **every** component at **every** tier including feature sub-components, modal internals, card bodies, table cells, and alert layouts
-4. No inline `style={{}}` except for dynamic calculated values
-5. No CSS modules
-6. Mobile-first — write base styles for 375 px, extend upward with `sm:` → `2xl:` (Rule 25)
-7. Every grid/flex container must have explicit `xl:` and `2xl:` column/width classes (Rule 25)
-8. No legacy polyfills or vendor-prefixed CSS (Rule 24)
-9. All media (`<img>`, `<video>`) goes through `<MediaImage />`, `<MediaVideo />`, `<MediaAvatar />`, or `<MediaGallery />` — never raw tags or `<MediaDisplay />` directly (Rule 28)
-10. Media containers use `w-full` + `aspect-*` classes; never fixed pixel widths/heights (Rule 28)
-
----
-
 ## Documentation Standards
 
 - Update `docs/CHANGELOG.md` with every change
@@ -2480,741 +3215,6 @@ This rule exists because changelog entries that are not reflected in the corresp
 - `docs/STYLING_GUIDE.md` (styling standards)
 
 When updating links, reference only existing docs from this maintained set unless a new doc is explicitly approved.
-
----
-
-## RULE 31: Extend Primitives — Never Bypass or Fork
-
-**When a shared primitive (component, hook, or utility function) does not exactly cover your case, extend it in-place. Creating a parallel implementation is always a violation.**
-
-This rule is the operational companion to Rules 5, 6, 7, and 8. It defines the decision process to follow whenever you need something slightly different from what already exists.
-
-### Decision Tree
-
-```
-Do I need a button, text element, form control, utility function, or hook?
-  │
-  ├─ Does one already exist in @/components, @/hooks, @/utils, or @/helpers?
-  │   │
-  │   ├─ YES — and it covers my case exactly → USE IT as-is
-  │   │
-  │   ├─ YES — but missing a variant / size / option / param I need
-  │   │       → ADD the variant/param to the existing file
-  │   │         Follow the existing patterns in that file
-  │   │         Export from the same barrel
-  │   │         Write or update the test for the new case
-  │   │         Use the extended option everywhere needed
-  │   │
-  │   └─ NO → CREATE a new primitive using the established patterns
-  │             Place it in the correct Tier 1 directory
-  │             Export from the barrel
-  │             Document in docs/GUIDE.md + CHANGELOG.md
-  │
-  └─ NEVER: create a wrapper component that merely forwards a new prop to an existing one
-     NEVER: copy a function into a feature folder and modify it locally
-     NEVER: duplicate a hook with a slightly different queryFn or endpoint
-```
-
-### Correct Patterns — Extending In-Place
-
-**Adding a new component variant:**
-```tsx
-// src/components/ui/Button.tsx — add 'link' variant to the existing variants map
-const variants = {
-  primary:   `...`,
-  secondary: `...`,
-  link:      `text-indigo-600 hover:text-indigo-800 underline-offset-2 hover:underline px-0`, // ✅ ADD HERE
-};
-```
-
-**Adding a new utility option:**
-```ts
-// src/utils/formatters/number.formatter.ts — add compact notation as an option
-export function formatNumber(
-  num: number,
-  locale: string = 'en-US',
-  options?: { compact?: boolean },  // ✅ new option, not a new function
-): string {
-  return new Intl.NumberFormat(locale, {
-    notation: options?.compact ? 'compact' : 'standard',
-  }).format(num);
-}
-```
-
-**Adding a filter parameter to a hook:**
-```tsx
-// src/hooks/useProducts.ts — add optional sellerId to scope the query
-export function useProducts(options?: {
-  sellerId?: string;       // ✅ extend signature, not a new hook
-  featured?: boolean;
-}) {
-  const params = buildSieveParams(options);
-  return useApiQuery({
-    queryKey: ['products', options],
-    queryFn: () => productService.list(params),
-  });
-}
-```
-
-**Adding a Typography variant:**
-```tsx
-// src/components/typography/Typography.tsx — add 'accent' Text variant
-const variantClasses = {
-  primary:  themed.textPrimary,
-  secondary: themed.textSecondary,
-  muted:    themed.textMuted,
-  error:    themed.textError,
-  success:  themed.textSuccess,
-  accent:   'text-indigo-600 dark:text-indigo-400', // ✅ ADD HERE
-};
-```
-
-### Violations — Never Do These
-
-```tsx
-// ❌ FORK — same hook logic duplicated in a feature folder
-// src/features/seller/hooks/useSellerProducts.ts
-export function useSellerProducts(sellerId: string) {
-  return useApiQuery({ queryFn: () => productService.list(`?filters=sellerId==${sellerId}`) });
-  // → extend useProducts({ sellerId }) instead
-}
-
-// ❌ WRAPPER — trivial prop forwarding under a new name
-// src/components/DangerButton.tsx
-export function DangerButton(props) {
-  return <Button variant="danger" {...props} />;
-  // → caller should use <Button variant="danger"> directly
-}
-
-// ❌ LOCAL COPY — util copied into feature utils and modified
-// src/features/products/utils/formatPrice.ts
-export function formatPrice(amount: number) {
-  return `₹${amount.toLocaleString('en-IN')}`;
-  // → extend formatCurrency(amount, 'INR', 'en-IN') instead
-}
-
-// ❌ NEW FILE — Typography concern addressed by a bespoke component
-// src/components/ErrorText.tsx
-export function ErrorText({ children }) {
-  return <span className="text-red-600 text-sm">{children}</span>;
-  // → use <Text variant="error" size="sm"> instead
-}
-```
-
-### When to Create Something New
-
-Create a new primitive **only** when:
-1. Nothing in `@/components`, `@/hooks`, `@/utils`, or `@/helpers` has even remotely related functionality.
-2. The concept is genuinely new (e.g. a `QRCodeDisplay` component — nothing exists for QR codes).
-3. Follow Tier 1 placement rules: export from the barrel, update `docs/GUIDE.md`, add to `Pre-Code Checklist`.
-
----
-
-## RULE 32: Mandatory Use of Data Display, List, Search, Filter & Navigation Primitives
-
-**NEVER build a custom table, filter panel, search input, sort dropdown, pagination bar, tab bar, accordion, or horizontal scroller. ALWAYS use the existing Tier 1 primitives.** These rules apply to every page, feature component, admin view, seller view, and user view — no exceptions.
-
-> All filter/sort/page state MUST live in URL query params via `useUrlTable`. Using `useState` for filter, sort, or pagination state is a violation.
-
-### DataTable — mandatory for ALL tabular and grid data
-
-**Never build a custom `<table>`, `<ul>` grid, or hand-rolled card grid when `DataTable` covers the need.**
-
-| Prop | Type | Purpose |
-|------|------|---------|
-| `columns` | `ColumnDef[]` | Column definitions with `key`, `header`, `render`, `sortable`, `width` |
-| `data` | `T[]` | Row data array |
-| `loading` | `boolean` | Shows skeleton rows while fetching |
-| `emptyState` | `ReactNode` | Shown when `data` is empty; default uses `EmptyState` |
-| `showViewToggle` | `boolean` | Renders table / grid / list toggle buttons |
-| `viewMode` | `'table' \| 'grid' \| 'list'` | Controlled view — read from `useUrlTable` |
-| `onViewModeChange` | `(mode) => void` | Write back to `useUrlTable` |
-| `mobileCardRender` | `(item: T) => ReactNode` | Card renderer for grid + list views and mobile breakpoints |
-| `onRowClick` | `(item: T) => void` | Row click handler; adds hover cursor |
-| `selectable` | `boolean` | Enables row checkboxes for bulk actions |
-| `selectedIds` | `string[]` | Controlled selection state |
-| `onSelectionChange` | `(ids: string[]) => void` | Fires on checkbox change |
-| `actions` | `ActionDef[]` | Per-row action menu (edit, delete, view…) |
-| `stickyHeader` | `boolean` | Keeps header visible on scroll |
-| `className` | `string` | Additional wrapper classes |
-
-```tsx
-// WRONG — custom table markup
-<table className="w-full border">
-  <thead><tr><th>Name</th><th>Status</th></tr></thead>
-  <tbody>{items.map(i => <tr key={i.id}><td>{i.name}</td><td>{i.status}</td></tr>)}</tbody>
-</table>
-
-// WRONG — custom card grid
-<div className="grid grid-cols-3 gap-4">
-  {items.map(i => <div key={i.id} className="p-4 border rounded">{i.name}</div>)}
-</div>
-
-// RIGHT
-import { DataTable } from '@/components';
-<DataTable
-  columns={columns}
-  data={items}
-  loading={loading}
-  viewMode={(table.get('view') || 'table') as 'table' | 'grid' | 'list'}
-  onViewModeChange={(m) => table.set('view', m)}
-  showViewToggle
-  mobileCardRender={(item) => <ProductCard product={item} />}
-/>
-```
-
-### Search — mandatory for ALL search inputs
-
-**Never use `<input type="search">`, `<Input type="search">`, or a raw `<input>` as a search field.**
-
-| Prop | Type | Purpose |
-|------|------|---------|
-| `value` | `string` | Controlled value — read from `useUrlTable` |
-| `onChange` | `(v: string) => void` | Write back to `useUrlTable` via `table.set('q', v)` |
-| `placeholder` | `string` | Use `UI_PLACEHOLDERS.SEARCH` |
-| `debounceMs` | `number` | Default 300 ms — avoids API call on every keystroke |
-| `onClear` | `() => void` | Clears value and resets page |
-| `className` | `string` | Wrapper classes |
-
-```tsx
-// WRONG
-<input type="search" value={q} onChange={e => setQ(e.target.value)} />
-
-// RIGHT
-import { Search } from '@/components';
-<Search
-  value={table.get('q')}
-  onChange={(v) => table.set('q', v)}
-  placeholder={UI_PLACEHOLDERS.SEARCH}
-/>
-```
-
-### FilterDrawer — mandatory for mobile/sidebar filter panels
-
-| Prop | Type | Purpose |
-|------|------|---------|
-| `open` | `boolean` | Controlled open state |
-| `onClose` | `() => void` | Close handler |
-| `onApply` | `() => void` | Apply button handler |
-| `onReset` | `() => void` | Reset all filters |
-| `activeCount` | `number` | Badge on the filter trigger button |
-| `children` | `ReactNode` | `FilterFacetSection` groups go here |
-| `withCard` | `boolean` | `false` for public/seller pages (no admin card shell) |
-
-### FilterFacetSection — mandatory for every filter group inside a drawer or sidebar
-
-| Prop | Type | Purpose |
-|------|------|---------|
-| `title` | `string` | Section heading (e.g. "Category", "Price") |
-| `options` | `{ label, value, count? }[]` | Checkbox options |
-| `selected` | `string[]` | Controlled selected values |
-| `onChange` | `(values: string[]) => void` | Selection change handler |
-| `collapsible` | `boolean` | Collapse toggle; default `true` |
-| `searchable` | `boolean` | Inline search box inside the section |
-| `showMoreThreshold` | `number` | How many options before "Show more"; default 5 |
-
-### AdminFilterBar — mandatory for all list-page filter toolbars
-
-**Never build a custom row of filter controls above a list. Always use `AdminFilterBar`.**  
-For public and seller pages, pass `withCard={false}`.
-
-| Prop | Type | Purpose |
-|------|------|---------|
-| `search` | `ReactNode` | `<Search />` component slot |
-| `filters` | `ReactNode` | Any `<Select>` / `<Toggle>` filter controls |
-| `actions` | `ReactNode` | Right-side action buttons (Create, Export…) |
-| `withCard` | `boolean` | `true` = admin card shell; `false` = public/seller flat layout |
-
-### ActiveFilterChips — mandatory whenever active filters can be dismissed
-
-| Prop | Type | Purpose |
-|------|------|---------|
-| `filters` | `{ label, key, value }[]` | Active filter list to render as chips |
-| `onRemove` | `(key, value) => void` | Remove one chip — calls `table.set(key, '')` |
-| `onClearAll` | `() => void` | Clears all filters — calls `table.setMany({...})` |
-
-```tsx
-// WRONG — custom chip list
-{activeFilters.map(f => (
-  <span key={f.key} className="bg-gray-100 px-2 py-1 rounded text-sm">
-    {f.label} <button onClick={() => removeFilter(f.key)}>×</button>
-  </span>
-))}
-
-// RIGHT
-import { ActiveFilterChips } from '@/components';
-<ActiveFilterChips
-  filters={activeFilters}
-  onRemove={(key) => table.set(key, '')}
-  onClearAll={() => table.setMany({ status: '', category: '', q: '' })}
-/>
-```
-
-### SortDropdown — mandatory for all sort controls
-
-**Never use a raw `<select>` or `<Select>` for sorting.**
-
-| Prop | Type | Purpose |
-|------|------|---------|
-| `value` | `string` | Controlled sort value — read from `table.get('sorts')` |
-| `onChange` | `(v: string) => void` | Write via `table.setSort(v)` |
-| `options` | `{ label, value }[]` | Use a domain constant (e.g. `PRODUCT_SORT_OPTIONS`) |
-
-### TablePagination — mandatory for all paginated result counts
-
-**Never build a custom page count / per-page selector.**
-
-| Prop | Type | Purpose |
-|------|------|---------|
-| `total` | `number` | Total record count from API |
-| `page` | `number` | Current page — from `table.getNumber('page', 1)` |
-| `pageSize` | `number` | Current page size — from `table.getNumber('pageSize', 25)` |
-| `onPageChange` | `(p: number) => void` | Calls `table.setPage(p)` |
-| `onPageSizeChange` | `(n: number) => void` | Calls `table.set('pageSize', String(n))` |
-| `pageSizeOptions` | `number[]` | Default `[10, 25, 50, 100]` |
-
-### Tabs / SectionTabs — mandatory for tab navigation
-
-**Never build custom tab markup with conditional rendering.**
-
-| Component | Use for |
-|-----------|--------|
-| `Tabs` | General in-page tabbed sections (product details, user settings…) |
-| `SectionTabs` | Page-level section navigation (admin nav, user account nav) |
-
-`Tabs` props:
-
-| Prop | Type | Purpose |
-|------|------|---------|
-| `items` | `{ id, label, content }[]` | Tab definitions |
-| `activeId` | `string` | Controlled active tab — read from `useUrlTable` or `useState` |
-| `onChange` | `(id: string) => void` | Tab change handler |
-| `variant` | `'line' \| 'pill' \| 'boxed'` | Visual style |
-
-```tsx
-// WRONG — conditional render with manual active state
-<div className="flex border-b">
-  {['Info','Reviews','Shipping'].map(t => (
-    <button key={t} onClick={() => setTab(t)} className={tab===t ? 'border-b-2' : ''}>{t}</button>
-  ))}
-</div>
-{tab === 'Info' && <InfoPanel />}
-
-// RIGHT
-import { Tabs } from '@/components';
-<Tabs
-  variant="line"
-  activeId={table.get('tab') || 'info'}
-  onChange={(id) => table.set('tab', id)}
-  items={[
-    { id: 'info',     label: t('tabs.info'),     content: <InfoPanel /> },
-    { id: 'reviews',  label: t('tabs.reviews'),  content: <ReviewsPanel /> },
-    { id: 'shipping', label: t('tabs.shipping'), content: <ShippingPanel /> },
-  ]}
-/>
-```
-
-### Accordion — mandatory for collapsible content sections
-
-**Never manage `open` state manually for collapsible sections.**
-
-| Prop | Type | Purpose |
-|------|------|---------|
-| `items` | `{ id, title, content }[]` | Section definitions |
-| `allowMultiple` | `boolean` | Allow more than one section open at once |
-| `defaultOpenIds` | `string[]` | Pre-opened sections on mount |
-
-### HorizontalScroller — mandatory for horizontal scroll containers
-
-**Never use `overflow-x-auto` directly on a wrapper div to create horizontal scroll; use `HorizontalScroller`.**
-
-| Prop | Type | Purpose |
-|------|------|---------|
-| `showArrows` | `boolean` | Left/right scroll arrow buttons |
-| `snapToItems` | `boolean` | CSS scroll-snap per item |
-| `className` | `string` | Wrapper classes |
-
-### useUrlTable — mandatory for ALL filter/sort/page state
-
-**Never use `useState` or `useReducer` to manage filter, sort, or pagination state on any list page.**  
-All such state lives in URL query params via `useUrlTable` so it is bookmark-able and history-safe.
-
-```tsx
-// WRONG
-const [status, setStatus] = useState('');
-const [sort, setSort] = useState('-createdAt');
-const [page, setPage] = useState(1);
-
-// RIGHT
-const table = useUrlTable({ defaults: { pageSize: '25', sorts: '-createdAt' } });
-// table.get('status'), table.setSort('-price'), table.setPage(2)
-```
-
-### Violation examples — never do these
-
-```tsx
-// ❌ Custom table
-<table><thead>...</thead><tbody>{rows.map(...)}</tbody></table>
-
-// ❌ Custom search input
-<input type="text" placeholder="Search..." onChange={e => setQuery(e.target.value)} />
-
-// ❌ Manual filter chips
-{filters.map(f => <span key={f}>{f} <button onClick={...}>×</button></span>)}
-
-// ❌ Raw sort select
-<select value={sort} onChange={e => setSort(e.target.value)}>
-  {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-</select>
-
-// ❌ Manual pagination
-<div>{page} of {totalPages} <button onClick={() => setPage(p => p+1)}>Next</button></div>
-
-// ❌ Custom tabs
-<div className="flex">{tabs.map(t => <button key={t} onClick={() => setTab(t)}>{t}</button>)}</div>
-```
-
----
-
-## RULE 33: Internationalisation (i18n) — Mandatory Rules for ALL Files
-
-**The app supports English (`en`) and Hindi (`hi`) via `next-intl`. Every user-visible string MUST be in `messages/en.json` and `messages/hi.json`. No hardcoded UI text is ever allowed — not in JSX, not in metadata, not in aria labels, not in alt text.**
-
-This rule complements Rule 3 (Zero Hardcoded Strings). Rule 3 governs which constant layer to use (`useTranslations` vs `UI_LABELS`). Rule 33 governs HOW to use `next-intl` correctly in every context.
-
----
-
-### 33.1 — Client Components: `useTranslations`
-
-**Import**: `import { useTranslations } from 'next-intl'`  
-**Rule**: Call `useTranslations` INSIDE the component function body. Never at module scope. Never conditionally.
-
-```tsx
-// WRONG — module-scope call
-const t = useTranslations('actions'); // ❌ hooks must be inside a component
-export function SaveButton() { return <Button>{t('save')}</Button>; }
-
-// WRONG — UI_LABELS in JSX
-import { UI_LABELS } from '@/constants';
-<button>{UI_LABELS.ACTIONS.SAVE}</button> // ❌
-
-// RIGHT
-import { useTranslations } from 'next-intl';
-export function SaveButton() {
-  const t = useTranslations('actions'); // ✅ inside component
-  return <Button>{t('save')}</Button>;
-}
-```
-
----
-
-### 33.2 — Server Components & `generateMetadata`: `getTranslations`
-
-**Import**: `import { getTranslations } from 'next-intl/server'`  
-**Rule**: Async server components and `generateMetadata` MUST use `await getTranslations(namespace)`.
-
-```tsx
-// WRONG — useTranslations in a server component
-import { useTranslations } from 'next-intl'; // ❌ runtime hook, not valid server-side
-export default async function Page() {
-  const t = useTranslations('products');
-}
-
-// RIGHT — server component
-import { getTranslations } from 'next-intl/server';
-export default async function Page() {
-  const t = await getTranslations('products'); // ✅
-  return <Heading level={1}>{t('pageTitle')}</Heading>;
-}
-
-// RIGHT — generateMetadata
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('products');
-  return { title: t('metaTitle'), description: t('metaDescription') };
-}
-```
-
----
-
-### 33.3 — Locale-Aware Navigation: `@/i18n/navigation`
-
-**Rule**: NEVER import `Link`, `useRouter`, `usePathname`, or `redirect` from `next/navigation`. ALWAYS use `@/i18n/navigation` so locale prefixes are handled automatically.
-
-```tsx
-// WRONG — next/navigation ignores locale prefix
-import { useRouter } from 'next/navigation'; // ❌
-import Link from 'next/link';                 // ❌
-
-// RIGHT — locale-aware wrappers
-import { Link, useRouter, usePathname, redirect } from '@/i18n/navigation'; // ✅
-```
-
----
-
-### 33.4 — Namespace Conventions
-
-**Rule**: Use flat, domain-specific namespaces. Each page / feature typically owns one namespace. Shared global keys live in the top-level namespaces (`actions`, `form`, `status`, `nav`, `loading`, `empty`, `confirm`, `messages`).
-
-| Use-case | Namespace example |
-|----------|------------------|
-| Page-level copy | `'productsPage'`, `'storesPage'`, `'checkoutPage'` |
-| Feature view | `'search'`, `'becomeSeller'`, `'ripcoinsWallet.buy'` |
-| Shared action labels | `'actions'` (`t('save')`, `t('cancel')`, `t('delete')`) |
-| Shared form labels | `'form'` (`t('email')`, `t('password')`) |
-| Shared status labels | `'status'` (`t('active')`, `t('pending')`) |
-| Navigation labels | `'nav'` |
-| Sort labels | `'sort'` |
-| Confirmation prompts | `'confirm'` |
-| Loading states | `'loading'` |
-| Empty states | `'empty'` |
-
-```tsx
-// Use a shared namespace for common labels
-const tActions = useTranslations('actions');
-<Button>{tActions('save')}</Button>   // ✅ "Save"
-<Button>{tActions('cancel')}</Button> // ✅ "Cancel"
-
-// Use a page namespace for domain-specific copy
-const t = useTranslations('productsPage');
-<Heading level={1}>{t('title')}</Heading>
-```
-
----
-
-### 33.5 — Interpolation: `t('key', { variable })`
-
-**Rule**: Use next-intl's built-in interpolation syntax. NEVER concatenate strings or use `.replace()`.
-
-```tsx
-// WRONG — string concatenation
-<Text>{'Hello, ' + user.name}</Text>      // ❌
-<Text>{`Hello, ${user.name}`}</Text>       // ❌
-<Text>{t('greeting').replace('{name}', user.name)}</Text> // ❌
-
-// RIGHT — interpolation via t()
-// messages/en.json: { "greeting": "Hello, {name}!" }
-<Text>{t('greeting', { name: user.name })}</Text>  // ✅
-```
-
-**Pluralisation**:
-```tsx
-// messages/en.json: { "itemCount": "{count, plural, one {# item} other {# items}}" }
-<Caption>{t('itemCount', { count: items.length })}</Caption> // ✅
-```
-
----
-
-### 33.6 — Adding New Translation Keys
-
-**Rule**: ALWAYS add a new key to BOTH `messages/en.json` AND `messages/hi.json` in the same change. A missing key in either file will cause runtime errors in that locale.
-
-```
-// WRONG — key added to en.json only
-// messages/en.json: { "products": { "newFeature": "New Feature" } }  ✅ added
-// messages/hi.json: (key missing)                                     ❌ runtime error in Hindi
-
-// RIGHT — key added to both files simultaneously
-// messages/en.json: { "products": { "newFeature": "New Feature" } }  ✅
-// messages/hi.json: { "products": { "newFeature": "नई सुविधा" } }      ✅
-```
-
-**Checklist when adding keys:**
-1. Add to `messages/en.json` under the correct namespace object.
-2. Add the same key to `messages/hi.json` (translate or use the English string as placeholder if translation is not yet available — use `// TODO: translate` comment in a separate `.notes` block, NOT inside the JSON).
-3. Keep the JSON structure/nesting identical between both files.
-4. Never duplicate a key that already exists — search the file first.
-
----
-
-### 33.7 — Non-JSX / Server utilities: `UI_LABELS` still applies
-
-`useTranslations` / `getTranslations` is for **user-visible strings rendered to the browser**. For server-side non-JSX code (API routes, server utilities, email templates, log messages), continue to use `UI_LABELS`, `ERROR_MESSAGES`, and `SUCCESS_MESSAGES` from `@/constants` as defined in Rule 3.
-
-```ts
-// API route — NOT JSX, NOT user-visible in the browser → use constants
-return successResponse(result, SUCCESS_MESSAGES.PRODUCT.CREATED); // ✅
-
-// Component — JSX, user-visible → use useTranslations
-const t = useTranslations('actions');
-<Button>{t('save')}</Button> // ✅
-```
-
----
-
-### 33.8 — Aria Labels, Placeholders, and Alt Text
-
-**Rule**: All `aria-label`, `placeholder`, `title`, and `alt` attribute values that contain user-visible text MUST be translated via `t()`.
-
-```tsx
-// WRONG
-<input aria-label="Search products" placeholder="Search..." /> // ❌
-<img src={url} alt="Product image" />                          // ❌
-
-// RIGHT
-const t = useTranslations('search');
-<Search
-  aria-label={t('ariaLabel')}
-  placeholder={t('placeholder')}
-/>
-// For MediaImage, the alt text comes from MediaDisplayMeta.alt (set at upload time — see Rule 28)
-// and is already translated or contextual. Ensure it is set to a descriptive, translated string.
-```
-
----
-
-### 33.9 — Testing: Mock `next-intl`
-
-**Rule**: In Jest tests, mock `next-intl` and `next-intl/server` so `t(key)` returns `key` (the key itself). This validates that the correct key is used without depending on translation strings.
-
-```ts
-// In a test file or jest.setup.ts
-jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => key,
-}));
-
-jest.mock('next-intl/server', () => ({
-  getTranslations: jest.fn().mockImplementation(async () => (key: string) => key),
-  getLocale: jest.fn().mockResolvedValue('en'),
-}));
-
-// Navigation mock
-jest.mock('@/i18n/navigation', () => ({
-  Link: ({ children, href }: { children: React.ReactNode; href: string }) =>
-    React.createElement('a', { href }, children),
-  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
-  usePathname: () => '/',
-  redirect: jest.fn(),
-}));
-```
-
----
-
-### 33.10 — Supported Locales & Adding New Ones
-
-Current locales: `en` (default, no URL prefix) and `hi` (`/hi/…` prefix).
-
-To add a new locale:
-1. Add the locale code to `src/i18n/routing.ts` → `locales` array.
-2. Create `messages/<locale>.json` with all translation keys (copy from `en.json` as baseline).
-3. Update `src/i18n/request.ts` if any locale-specific config is needed.
-4. Verify middleware picks up the new locale (the `matcher` in `src/middleware.ts`).
-5. Update seed data if any locale-aware records exist.
-
----
-
-## RULE 34: Semantic HTML — Use the Right Element for the Job
-
-**Element choice must reflect meaning, not just visual appearance. Choose the HTML element whose semantic role describes the content, then style it. Never choose an element purely for its default browser styling.**
-
-This rule covers elements NOT already wrapped by the Tier 1 component primitives in Rule 7. Use those wrapper components (`Section`, `Nav`, `Ul`, etc.) for structural layout; use the elements below for inline semantic meaning.
-
-### Additional Semantic Elements — Mandatory Where Applicable
-
-| Instead of... | Use | Why |
-|---|---|---|
-| `<span>{date}</span>` for dates/times | `<time dateTime="ISO-8601">{formatted}</time>` | Machine-readable dates for search engines, screen readers, and calendar apps |
-| `<div>` or `<p>` for contact info | `<address>` | Marks up contact information; screen readers and crawlers identify it as such |
-| `<ul>/<li>` for key-value pairs | `<dl>/<dt>/<dd>` | `dl` = description list; correct semantic for metadata, glossaries, and inline FAQs |
-| `<span className="highlight">` | `<mark>` | Marks text as highlighted/relevant — screen readers convey the emphasis |
-| Bare abbreviation text | `<abbr title="full term">` | Exposes the full term to screen readers and on hover |
-| `<span className="quote">` | `<blockquote>` / `<q>` | Block and inline quotations; use the `cite` attribute to attribute the source |
-| `<span>` for inline citations of a work | `<cite>` | Marks the title of a cited work (book, article, film) |
-| `<span className="code">` | `<code>` inline / `<pre><code>` block | Screen readers and search engines identify it as code |
-| `<span>` for keyboard input | `<kbd>` | Screen readers announce as keyboard input |
-
-### Heading Hierarchy — Never Skip Levels
-
-**NEVER skip heading levels. `<Heading level={3}>` must be nested within a `<Heading level={2}>` context — never appear before an `<Heading level={2}>`, and never jump from `level={1}` to `level={3}>`.**
-
-```tsx
-// WRONG — h1 followed by h3 (h2 is skipped)
-<Heading level={1}>Page Title</Heading>
-<Heading level={3}>Section</Heading>   // ❌
-
-// RIGHT — sequential hierarchy
-<Heading level={1}>Page Title</Heading>
-<Heading level={2}>Section</Heading>      // ✅
-<Heading level={3}>Sub-section</Heading>  // ✅
-```
-
-Rules:
-- Each page MUST have exactly **one** `<Heading level={1}>`.
-- Never use a lower heading level solely to produce bigger text — control size via `className` or a `size` prop on the `Heading` component.
-- Admin panels and modals start at `level={2}` (the page `<h1>` is the page title).
-
-### ARIA Attributes — Rules
-
-**NEVER omit ARIA attributes where they are required. NEVER use ARIA as a substitute for correct semantic HTML — fix the element choice first.**
-
-| When to use | Attribute | Notes |
-|---|---|---|
-| Interactive element with no visible text | `aria-label` | Required on all icon-only buttons and icon-only links |
-| Element labelled by another visible element | `aria-labelledby="id"` | Prefer over `aria-label` when label text is already visible on screen |
-| Live status message (loading, toast) | `aria-live="polite"` | Do not use `"assertive"` for non-critical messages |
-| Expandable widget (accordion, dropdown) | `aria-expanded={boolean}` | Must toggle correctly on open/close |
-| Button that controls a panel/region | `aria-controls="id"` | Links the trigger to its target element |
-| Active item in a nav or step list | `aria-current="page"` / `"step"` | Active nav link, current wizard step |
-| Decorative icon next to labelled text | `aria-hidden="true"` | Prevents icon SVG from being announced twice |
-| Invalid form field | `aria-invalid="true"` | Set when an error message is visible for that field |
-| Field wired to an error message | `aria-describedby="error-id"` | Links the input to its error `<Text>` element |
-
-**Dos and Don'ts:**
-- **DO** add `aria-label` to every icon-only `Button` and `TextLink`.
-- **DO** wire `aria-expanded` and `aria-controls` on custom interactive widgets.
-- **DO** set `aria-hidden="true"` on decorative icons that sit beside labelled text.
-- **DON'T** use `role="button"` on a `<div>` — use `<Button>` from `@/components`.
-- **DON'T** use `role="heading"` — use `<Heading>` from `@/components`.
-- **DON'T** add ARIA attributes to paper over a wrong element choice — fix the element.
-
-### Focus Management
-
-- All interactive elements MUST be keyboard-reachable (`Tab` / `Shift+Tab`).
-- Custom interactive widgets MUST implement correct keyboard patterns: arrow keys for menus/selects, `Enter`/`Space` for buttons, `Escape` to close modals.
-- When a modal opens, focus MUST move to the first focusable element inside it (handled by `Modal` from `@/components` — do not override).
-- When a modal closes, focus MUST return to the element that triggered it.
-- **NEVER** remove the focus ring with `focus:outline-none` unless a visible replacement is in place (`focus-visible:ring-2 focus-visible:ring-indigo-500 focus:outline-none`).
-
-```tsx
-// WRONG — removes focus ring with no replacement
-<Button className="focus:outline-none">Save</Button>  // ❌ keyboard users cannot see focus
-
-// RIGHT — custom ring replaces the default
-<Button className="focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">Save</Button>  // ✅
-```
-
-### `<time>` Element Pattern
-
-```tsx
-import { formatDate } from '@/utils';
-
-// WRONG — display-only, no machine-readable context
-<Caption>{formatDate(product.createdAt)}</Caption>
-
-// RIGHT — <time> provides the ISO datetime; Caption provides the display text
-<time dateTime={product.createdAt.toISOString()}>
-  <Caption>{formatDate(product.createdAt)}</Caption>
-</time>
-```
-
-Wrap **every** user-visible date, time, or duration in a `<time dateTime="...">` element.
-
-### `<dl>` / `<dt>` / `<dd>` Pattern
-
-```tsx
-// WRONG — key-value pairs faked with flex divs
-<div className="flex gap-2">
-  <Text weight="medium">Condition:</Text>
-  <Text>New</Text>
-</div>
-
-// RIGHT — semantic description list
-<dl>
-  <dt><Text weight="medium">Condition</Text></dt>
-  <dd><Text>New</Text></dd>
-</dl>
-```
-
-`<dl>` / `<dt>` / `<dd>` are native HTML — do NOT wrap them with `Ul`/`Li`. Use them directly for any key-value or term-definition metadata.
 
 ---
 

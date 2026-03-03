@@ -1,13 +1,15 @@
+import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { getTranslations } from "next-intl/server";
 import { Heading, Text, TextLink, Section } from "@/components";
 
 const { themed, typography, page } = THEME_CONSTANTS;
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("terms");
   return {
-    title: `Terms & Conditions — ${SITE_CONFIG.brand.name}`,
-    description: "Terms and conditions for using the LetItRip platform",
+    title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
+    description: t("metaDescription"),
   };
 }
 

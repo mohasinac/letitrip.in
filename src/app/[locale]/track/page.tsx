@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { Heading, Text, Caption, Section, TextLink } from "@/components";
 import { getTranslations } from "next-intl/server";
@@ -5,11 +6,11 @@ import { ShoppingBag, Truck, MapPin, CheckCircle2 } from "lucide-react";
 
 const { themed, flex, page } = THEME_CONSTANTS;
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("trackOrder");
   return {
-    title: `Track Order — ${SITE_CONFIG.brand.name}`,
-    description:
-      "Track the status of your LetItRip orders and shipments in real time.",
+    title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
+    description: t("metaDescription"),
   };
 }
 

@@ -7,22 +7,22 @@
 
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   CategoryGrid,
   Spinner,
-  Input,
+  Search,
   Main,
   Heading,
   Text,
 } from "@/components";
-import { THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS, UI_PLACEHOLDERS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useApiQuery } from "@/hooks";
+import { useApiQuery, useUrlTable } from "@/hooks";
 import { categoryService } from "@/services";
 import type { CategoryDocument } from "@/db/schema";
 
-const { themed, typography, spacing, flex } = THEME_CONSTANTS;
+const { themed, typography, spacing, flex, page } = THEME_CONSTANTS;
 
 interface CategoriesApiResponse {
   data: CategoryDocument[];
@@ -30,7 +30,8 @@ interface CategoriesApiResponse {
 }
 
 export default function CategoriesPage() {
-  const [search, setSearch] = useState("");
+  const table = useUrlTable();
+  const search = table.get("q");
   const t = useTranslations("categories");
 
   const { data, isLoading, error } = useApiQuery<CategoriesApiResponse>({
@@ -71,9 +72,7 @@ export default function CategoriesPage() {
   }
 
   return (
-    <Main
-      className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 ${spacing.stack}`}
-    >
+    <Main className={`${page.container["2xl"]} py-10 ${spacing.stack}`}>
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
@@ -87,11 +86,11 @@ export default function CategoriesPage() {
 
         {/* Search */}
         <div className="sm:w-64">
-          <Input
-            type="text"
-            placeholder={t("searchPlaceholder")}
+          <Search
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(v) => table.set("q", v)}
+            placeholder={UI_PLACEHOLDERS.SEARCH}
+            onClear={() => table.set("q", "")}
           />
         </div>
       </div>

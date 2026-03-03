@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { Heading, Text, Section, TextLink } from "@/components";
 import { getTranslations } from "next-intl/server";
@@ -14,11 +15,11 @@ import {
 
 const { themed, flex, page } = THEME_CONSTANTS;
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("sellerGuide");
   return {
-    title: `Seller Guide — ${SITE_CONFIG.brand.name}`,
-    description:
-      "Learn how to sell on LetItRip — listing products, running auctions, managing orders, and getting paid.",
+    title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
+    description: t("metaDescription"),
   };
 }
 

@@ -1,14 +1,15 @@
+import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { Heading, Text, Section, TextLink } from "@/components";
 import { getTranslations } from "next-intl/server";
 
 const { themed } = THEME_CONSTANTS;
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("cookies");
   return {
-    title: `Cookie Policy — ${SITE_CONFIG.brand.name}`,
-    description:
-      "Learn how LetItRip uses cookies and tracking technologies on our platform.",
+    title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
+    description: t("metaDescription"),
   };
 }
 

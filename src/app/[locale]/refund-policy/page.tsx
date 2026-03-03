@@ -1,14 +1,15 @@
+import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { Heading, Text, Section, TextLink } from "@/components";
 import { getTranslations } from "next-intl/server";
 
 const { themed, page } = THEME_CONSTANTS;
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("refundPolicy");
   return {
-    title: `Refund Policy — ${SITE_CONFIG.brand.name}`,
-    description:
-      "Understand LetItRip's refund, return, and exchange policy for purchases.",
+    title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
+    description: t("metaDescription"),
   };
 }
 

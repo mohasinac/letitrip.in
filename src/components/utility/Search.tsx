@@ -8,12 +8,17 @@ import Button from "../ui/Button";
 /**
  * Search Component
  *
- * A sticky search bar that appears below the title bar when opened.
- * Features auto-focus, ESC key support, and Enter key submission.
- * Includes animated slide-down entrance and backdrop for mobile.
+ * Two modes:
+ *
+ * **Overlay mode** (default): A sticky search bar that slides in below the
+ * title bar. Features auto-focus, ESC key support, and Enter key submission.
+ *
+ * **Inline mode**: A controlled search input for filter toolbars and list
+ * pages. Activated by passing `value` + `onChange`. Calls `onChange` after
+ * `debounceMs` (default 300 ms) to avoid API calls on every keystroke.
  *
  * @component
- * @example
+ * @example Overlay mode
  * ```tsx
  * <Search
  *   isOpen={searchOpen}
@@ -21,51 +26,155 @@ import Button from "../ui/Button";
  *   onSearch={(query) => handleSearch(query)}
  * />
  * ```
+ * @example Inline mode (use with useUrlTable)
+ * ```tsx
+ * import { searchService } from '@/services';
+ * <Search
+ *   value={table.get("q")}
+ *   onChange={(v) => table.set("q", v)}
+ *   placeholder={UI_PLACEHOLDERS.SEARCH}
+ *   onClear={() => table.set("q", "")}
+ * />
+ * ```
  */
 
 interface SearchProps {
-  isOpen: boolean;
-  onClose: () => void;
+  // ── Overlay mode ────────────────────────────────────────────────────────────
+  isOpen?: boolean;
+  onClose?: () => void;
   onSearch?: (query: string) => void;
+  // ── Inline mode (activated when `value` is provided) ────────────────────────
+  /** Controlled value from `useUrlTable`. Providing this enables inline mode. */
+  value?: string;
+  /** Called with debounce after the user types. Write back via `table.set("q", v)`. */
+  onChange?: (v: string) => void;
+  placeholder?: string;
+  /** Debounce delay in ms. Default: `300`. */
+  debounceMs?: number;
+  /** Called after the clear button is pressed (in addition to `onChange("")`). */
+  onClear?: () => void;
+  className?: string;
 }
 
-export default function Search({ isOpen, onClose, onSearch }: SearchProps) {
-  const [query, setQuery] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+export default function Search({
+  isOpen,
+  onClose,
+  onSearch,
+  value,
+  onChange,
+  placeholder,
+  debounceMs = 300,
+  onClear,
+  className,
+}: SearchProps) {
+  const isInlineMode = value !== undefined;
 
+  // ── Shared state ────────────────────────────────────────────────────────────
+  const [query, setQuery] = useState(isInlineMode ? value : "");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ── Overlay: auto-focus ──────────────────────────────────────────────────────
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      // Small delay to ensure DOM is ready
+    if (!isInlineMode && isOpen && inputRef.current) {
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
     }
-  }, [isOpen]);
+  }, [isOpen, isInlineMode]);
 
+  // ── Overlay: ESC to close ────────────────────────────────────────────────────
   useEffect(() => {
+    if (isInlineMode) return;
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
+      if (e.key === "Escape") onClose?.();
     };
-
     if (isOpen) {
       document.addEventListener("keydown", handleEscape);
       return () => document.removeEventListener("keydown", handleEscape);
     }
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isInlineMode]);
 
-  const handleSearch = () => {
-    if (query.trim() && onSearch) {
-      onSearch(query);
-    }
+  // ── Inline: sync external value → internal query (e.g. cleared from outside) ─
+  useEffect(() => {
+    if (isInlineMode) setQuery(value ?? "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  // ── Inline: debounced onChange ───────────────────────────────────────────────
+  const handleInlineChange = (v: string) => {
+    setQuery(v);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => onChange?.(v), debounceMs);
+  };
+
+  // ── Overlay handlers ─────────────────────────────────────────────────────────
+  const handleOverlaySearch = () => {
+    if (query.trim() && onSearch) onSearch(query);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
+    if (!isInlineMode && e.key === "Enter") handleOverlaySearch();
   };
+
+  // ── INLINE RENDER ────────────────────────────────────────────────────────────
+  if (isInlineMode) {
+    return (
+      <div className={`relative flex items-center ${className ?? ""}`}>
+        <svg
+          className="absolute left-3 w-4 h-4 text-gray-400 pointer-events-none"
+          aria-hidden="true"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+        <input
+          ref={inputRef}
+          type="search"
+          value={query}
+          onChange={(e) => handleInlineChange(e.target.value)}
+          placeholder={placeholder}
+          className={`${THEME_CONSTANTS.input.base} ${THEME_CONSTANTS.themed.bgInput} ${THEME_CONSTANTS.themed.border} ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.placeholder} ${THEME_CONSTANTS.themed.focusRing} w-full pl-9${query ? " pr-9" : ""}`}
+        />
+        {query && (
+          <button
+            type="button"
+            onClick={() => {
+              setQuery("");
+              onChange?.("");
+              onClear?.();
+            }}
+            className="absolute right-3 p-0.5 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+            aria-label="Clear search"
+          >
+            <svg
+              className="w-4 h-4"
+              aria-hidden="true"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  // ── OVERLAY RENDER ───────────────────────────────────────────────────────────
 
   if (!isOpen) return null;
 
@@ -92,7 +201,7 @@ export default function Search({ isOpen, onClose, onSearch }: SearchProps) {
 
             {/* Search Button */}
             <Button
-              onClick={handleSearch}
+              onClick={handleOverlaySearch}
               variant="primary"
               size="md"
               className="hidden sm:flex gap-2"
@@ -115,7 +224,7 @@ export default function Search({ isOpen, onClose, onSearch }: SearchProps) {
 
             {/* Close Button */}
             <button
-              onClick={onClose}
+              onClick={() => onClose?.()}
               className={`p-2.5 md:p-3 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onLight} flex-shrink-0`}
               aria-label="Close search"
             >
