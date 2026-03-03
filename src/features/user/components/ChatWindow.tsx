@@ -23,6 +23,7 @@ import {
   Button,
   Spinner,
   Alert,
+  Textarea,
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
@@ -104,7 +105,6 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
         )}
         {messages.map((msg) => {
           const isMine = msg.userId === currentUserId;
-          const time = new Date(msg.timestamp);
           return (
             <div
               key={msg.id}
@@ -128,7 +128,7 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
                 <Caption
                   className={`text-xs mt-0.5 ${isMine ? "text-indigo-200" : "text-gray-400"}`}
                 >
-                  {formatDate(time)}
+                  {formatDate(msg.timestamp)}
                 </Caption>
               </div>
             </div>
@@ -141,16 +141,18 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
       <div
         className={`mt-3 pt-3 border-t ${themed.border} flex gap-2 items-end`}
       >
-        <textarea
-          className={`flex-1 resize-none rounded-xl border border-gray-300 dark:border-gray-600 ${themed.bgPrimary} px-3 py-2 text-sm ${themed.textPrimary} placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[40px] max-h-[120px]`}
-          rows={1}
-          placeholder={t("inputPlaceholder")}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={!isConnected || isSending}
-          aria-label={t("inputPlaceholder")}
-        />
+        <div className="flex-1">
+          <Textarea
+            className="resize-none min-h-[40px] max-h-[120px]"
+            rows={1}
+            placeholder={t("inputPlaceholder")}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={!isConnected || isSending}
+            aria-label={t("inputPlaceholder")}
+          />
+        </div>
         <Button
           variant="primary"
           size="sm"

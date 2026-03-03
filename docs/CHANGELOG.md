@@ -15,6 +15,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2026-03-03] — Modern Design Refresh (Zinc Palette + Flat Design)
 
+### Fixed (Rule Violations)
+
+- **`src/features/user/components/ChatWindow.tsx`**
+  - Replaced raw `<textarea>` element with `Textarea` from `@/components` (Rule 7, Rule 8). The raw element used ad-hoc Tailwind border/colour/focus strings; the shared primitive applies `THEME_CONSTANTS` tokens consistently.
+  - Wrapped `<Textarea>` in `<div className="flex-1">` to maintain flex expansion behaviour within the input row.
+  - Removed `const time = new Date(msg.timestamp)` — direct `new Date()` call in component code (Rule 5). `formatDate` is now called directly with the `number` timestamp.
+
+- **`src/utils/formatters/date.formatter.ts`**
+  - Extended `formatDate` signature from `Date | string` to `Date | string | number` so numeric Unix ms timestamps (as produced by Realtime DB) are accepted without requiring an inline `new Date()` at call sites (Rule 31 — extend in-place).
+  - Internal coercion updated to `date instanceof Date ? date : new Date(date)` which handles all three input types uniformly.
+
+---
+
+## [2026-03-03] — Modern Design Refresh (Zinc Palette + Flat Design)
+
 ### Changed
 
 - **`src/constants/theme.ts`** — Full design token refresh across all `THEME_CONSTANTS` sections:

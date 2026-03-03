@@ -19,11 +19,11 @@
  * ```
  */
 export function formatDate(
-  date: Date | string,
+  date: Date | string | number,
   format: "short" | "medium" | "long" | "full" = "medium",
   locale: string = "en-US",
 ): string {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const dateObj = date instanceof Date ? date : new Date(date);
 
   const options: Intl.DateTimeFormatOptions = {};
 
