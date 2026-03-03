@@ -13,9 +13,10 @@
  *
  * Usage:
  * ```tsx
+ * // Always call a service function — never apiClient directly (Rule 21)
  * const { data, isLoading, error, refetch } = useApiQuery({
  *   queryKey: ['profile'],
- *   queryFn: () => apiClient.get(API_ENDPOINTS.USER.PROFILE),
+ *   queryFn: () => userService.getProfile(),
  *   enabled: true,
  *   cacheTTL: 60000, // Cache for 60 seconds (default: 5 minutes)
  * });

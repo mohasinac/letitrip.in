@@ -3055,11 +3055,37 @@ import {
 **Purpose**: Scroll to top button  
 **Props**: `threshold`, `position`, `smooth`
 
-#### SearchBar
+#### Search
 
-**File**: `SearchBar.tsx`  
-**Purpose**: Search input with suggestions  
-**Props**: `placeholder`, `onSearch`, `suggestions`, `loading`
+**File**: `Search.tsx`  
+**Purpose**: Dual-mode search component — overlay (global nav search) and inline (list-page filter search)  
+**Import**: `import { Search } from '@/components'`
+
+**Overlay mode** (default): sticky search bar that slides in below the title bar; auto-focuses, supports ESC to close and Enter to submit.
+
+```tsx
+<Search
+  isOpen={searchOpen}
+  onClose={() => setSearchOpen(false)}
+  onSearch={(query) => handleSearch(query)}
+/>
+```
+
+**Inline mode**: controlled search input for filter toolbars and list pages. Activated by passing `value` + `onChange`. Use with `useUrlTable`.
+
+```tsx
+<Search
+  value={table.get("q")}
+  onChange={(v) => table.set("q", v)}
+  placeholder={UI_PLACEHOLDERS.SEARCH}
+  onClear={() => table.set("q", "")}
+/>
+```
+
+| Mode    | Key Props                                                                          | Notes                      |
+| ------- | ---------------------------------------------------------------------------------- | -------------------------- |
+| Overlay | `isOpen`, `onClose`, `onSearch?`                                                   | Overlay + backdrop         |
+| Inline  | `value`, `onChange`, `placeholder?`, `debounceMs?` (300), `onClear?`, `className?` | Debounced controlled input |
 
 #### Pagination
 

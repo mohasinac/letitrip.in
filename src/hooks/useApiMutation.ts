@@ -6,8 +6,9 @@
  *
  * Usage:
  * ```tsx
+ * // Always call a service function — never apiClient directly (Rule 21)
  * const { mutate, isLoading, error, data } = useApiMutation({
- *   mutationFn: (data) => apiClient.post(API_ENDPOINTS.USER.PROFILE, data),
+ *   mutationFn: (data) => userService.updateProfile(data),
  *   onSuccess: (data) => {
  *     toast.success('Profile updated!');
  *   },

@@ -13,6 +13,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-03-04] — Rule 32/33 Violations Fixed: Metadata i18n, URL State, Search Inline Mode
+
+### Changed
+
+- **`src/components/utility/Search.tsx`** — extended in-place with **inline controlled mode** (Rule 31):
+  - New props: `value`, `onChange`, `placeholder`, `debounceMs` (default 300 ms), `onClear`, `className`
+  - Inline mode activates when `value` is provided; renders a compact search input with search icon and clear button
+  - Original overlay mode (`isOpen`, `onClose`, `onSearch`) unchanged and still default
+- **`src/app/[locale]/categories/page.tsx`** — replaced `useState("")+Input` with `useUrlTable+Search` (Rules 32, 33)
+- **`src/app/[locale]/seller/store/page.tsx`** — converted static `export const metadata` to async `generateMetadata` with `getTranslations("sellerStore")`; fixed hardcoded `AdminPageHeader` `title`/`subtitle` strings
+- **`src/app/[locale]/seller/auctions/page.tsx`** — same pattern as above using `"sellerAuctions"` namespace
+- **`src/app/[locale]/user/become-seller/page.tsx`** — converted static metadata to async `generateMetadata` with `getTranslations("becomeSeller")`
+- **8 pages** (`track`, `cookies`, `help`, `privacy`, `refund-policy`, `terms`, `seller-guide`, `become-seller`) — converted hardcoded metadata strings to `async generateMetadata` using `getTranslations` (Rule 33)
+
+### Added
+
+- **`messages/en.json` + `messages/hi.json`** — new translation keys in 12 namespaces:
+  - `trackOrder`, `cookies`, `help`, `privacy`, `refundPolicy`, `terms`, `sellerGuide`, `becomeSeller`: `metaTitle`, `metaDescription`
+  - `sellerStore`, `sellerAuctions`: `metaTitle`, `metaDescription`, `pageTitle`, `pageSubtitle`
+
+---
+
 ## [2026-03-04] — Copilot Instructions: No Mass-Edit Scripts Rule
 
 ### Added
