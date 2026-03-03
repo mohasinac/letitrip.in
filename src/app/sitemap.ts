@@ -7,6 +7,8 @@ import {
   CATEGORY_FIELDS,
   EVENTS_COLLECTION,
   EVENT_FIELDS,
+  BLOG_POSTS_COLLECTION,
+  BLOG_POST_FIELDS,
 } from "@/db/schema";
 import { CATEGORIES_COLLECTION } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";
@@ -186,14 +188,70 @@ async function fetchCategoryUrls(): Promise<MetadataRoute.Sitemap> {
   }
 }
 
+async function fetchBlogPostUrls(): Promise<MetadataRoute.Sitemap> {
+  try {
+    const db = getAdminDb();
+    const snapshot = await db
+      .collection(BLOG_POSTS_COLLECTION)
+      .where(
+        BLOG_POST_FIELDS.STATUS,
+        "==",
+        BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
+      )
+      .select(
+        BLOG_POST_FIELDS.SLUG,
+        BLOG_POST_FIELDS.PUBLISHED_AT,
+        BLOG_POST_FIELDS.UPDATED_AT,
+      )
+      .limit(1000)
+      .get();
+
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      const slug: string =
+        (data[BLOG_POST_FIELDS.SLUG] as string | undefined) ?? doc.id;
+      const updatedAt =
+        (
+          data[BLOG_POST_FIELDS.UPDATED_AT] as
+            | { toDate?: () => Date }
+            | undefined
+        )?.toDate?.() ??
+        (
+          data[BLOG_POST_FIELDS.PUBLISHED_AT] as
+            | { toDate?: () => Date }
+            | undefined
+        )?.toDate?.() ??
+        new Date();
+      return {
+        url: `${BASE_URL}${ROUTES.BLOG.ARTICLE(slug)}`,
+        lastModified: updatedAt,
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      };
+    });
+  } catch (err) {
+    serverLogger.warn("sitemap: failed to fetch blog post URLs", {
+      error: err,
+    });
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [productUrls, categoryUrls, eventUrls] = await Promise.all([
+  const [productUrls, categoryUrls, eventUrls, blogUrls] = await Promise.all([
     fetchProductUrls(),
     fetchCategoryUrls(),
     fetchEventUrls(),
+    fetchBlogPostUrls(),
   ]);
 
-  return [...STATIC_PAGES, ...categoryUrls, ...productUrls, ...eventUrls];
+  return [
+    ...STATIC_PAGES,
+    ...categoryUrls,
+    ...blogUrls,
+    ...productUrls,
+    ...eventUrls,
+  ];
 }
 
 export const dynamic = "force-dynamic";

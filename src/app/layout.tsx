@@ -1,6 +1,7 @@
 import "./globals.css";
 import { getLocale } from "next-intl/server";
 import type { Metadata, Viewport } from "next";
+import { SEO_CONFIG } from "@/constants/seo";
 
 export const viewport: Viewport = {
   themeColor: [
@@ -14,8 +15,54 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "LetItRip",
-  description: "Discover and shop amazing products",
+  title: {
+    default: SEO_CONFIG.defaultTitle,
+    template: `%s | ${SEO_CONFIG.siteName}`,
+  },
+  description: SEO_CONFIG.defaultDescription,
+  metadataBase: new URL(SEO_CONFIG.siteUrl),
+  openGraph: {
+    type: "website",
+    locale: SEO_CONFIG.locale,
+    url: SEO_CONFIG.siteUrl,
+    siteName: SEO_CONFIG.siteName,
+    title: SEO_CONFIG.defaultTitle,
+    description: SEO_CONFIG.defaultDescription,
+    images: [
+      {
+        url: SEO_CONFIG.defaultImage,
+        width: 1200,
+        height: 630,
+        alt: SEO_CONFIG.siteName,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: SEO_CONFIG.twitterHandle,
+    creator: SEO_CONFIG.twitterHandle,
+    title: SEO_CONFIG.defaultTitle,
+    description: SEO_CONFIG.defaultDescription,
+    images: [SEO_CONFIG.defaultImage],
+  },
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
 };
 
 /**
