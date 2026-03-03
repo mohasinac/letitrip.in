@@ -25,6 +25,7 @@ import {
   TablePagination,
   AdminFilterBar,
   FormField,
+  Select,
 } from "@/components";
 import type { AdminProduct, ProductDrawerMode } from "@/components";
 
@@ -256,16 +257,18 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
                 onChange={(value) => table.set("q", value)}
                 placeholder={t("searchPlaceholder")}
               />
-              <select
+              <Select
                 value={statusFilter}
-                onChange={(e) => table.set("status", e.target.value)}
-                className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm"
-              >
-                <option value="">{t("filterAll")}</option>
-                <option value="draft">{tStatus("draft")}</option>
-                <option value="published">{tStatus("published")}</option>
-                <option value="archived">{tStatus("archived")}</option>
-              </select>
+                onChange={(e) =>
+                  table.set("status", (e.target as HTMLSelectElement).value)
+                }
+                options={[
+                  { value: "", label: t("filterAll") },
+                  { value: "draft", label: tStatus("draft") },
+                  { value: "published", label: tStatus("published") },
+                  { value: "archived", label: tStatus("archived") },
+                ]}
+              />
             </AdminFilterBar>
             <DataTable
               data={products}

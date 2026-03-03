@@ -3,7 +3,7 @@ import { Card, Spinner } from "@/components/ui";
 import { Text } from "@/components/typography";
 import { THEME_CONSTANTS } from "@/constants";
 
-const { enhancedCard, spacing } = THEME_CONSTANTS;
+const { enhancedCard, spacing, themed } = THEME_CONSTANTS;
 
 interface SellerStatCardProps {
   label: string;
@@ -48,7 +48,7 @@ export function SellerStatCard({
           )}
         </div>
         <div
-          className={`p-2 rounded-lg bg-gray-50 dark:bg-gray-800 ${iconClass} flex-shrink-0`}
+          className={`p-2 rounded-lg ${themed.bgSecondary} ${iconClass} flex-shrink-0`}
         >
           {icon}
         </div>

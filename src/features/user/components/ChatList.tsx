@@ -23,7 +23,7 @@ import { formatDate } from "@/utils";
 import { useChatRooms } from "@/hooks";
 import { useAuth } from "@/hooks";
 
-const { spacing } = THEME_CONSTANTS;
+const { spacing, themed } = THEME_CONSTANTS;
 
 export function ChatList() {
   const t = useTranslations("chat");
@@ -83,7 +83,7 @@ export function ChatList() {
             className={`w-full text-left rounded-xl border px-4 py-3 transition-colors ${
               isActive
                 ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-700"
-                : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                : `${themed.bgPrimary} ${themed.border} hover:bg-gray-50 dark:hover:bg-gray-800`
             }`}
           >
             <div className="flex items-start justify-between gap-2">

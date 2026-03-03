@@ -8,8 +8,8 @@
 "use client";
 
 import { useState } from "react";
-import { Select, Textarea, Input } from "@/components";
-import { UI_LABELS } from "@/constants";
+import { Select, Textarea, Input, Text } from "@/components";
+import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import type { OrderDocument, OrderStatus, PaymentStatus } from "@/db/schema";
 
 const LABELS = UI_LABELS.ADMIN.ORDERS;
@@ -61,23 +61,25 @@ export function OrderStatusForm({ order, onChange }: OrderStatusFormProps) {
   return (
     <div className="space-y-4">
       {/* Read-only order info */}
-      <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-2 text-sm">
-        <p className="font-semibold text-gray-900 dark:text-white">
+      <div
+        className={`rounded-lg border ${THEME_CONSTANTS.themed.border} p-4 space-y-2 text-sm`}
+      >
+        <Text weight="semibold">
           Order: <span className="font-mono">{order.id}</span>
-        </p>
-        <p className="text-gray-600 dark:text-gray-400">
+        </Text>
+        <Text variant="secondary">
           {order.productTitle} × {order.quantity}
-        </p>
-        <p className="text-gray-600 dark:text-gray-400">
+        </Text>
+        <Text variant="secondary">
           Customer: {order.userName} ({order.userEmail})
-        </p>
-        <p className="font-medium text-gray-900 dark:text-white">
+        </Text>
+        <Text weight="medium">
           Total:{" "}
           {new Intl.NumberFormat("en-IN", {
             style: "currency",
             currency: order.currency ?? "INR",
           }).format(order.totalPrice)}
-        </p>
+        </Text>
       </div>
 
       <Select

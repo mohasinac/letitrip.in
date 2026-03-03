@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
+
+const { themed } = THEME_CONSTANTS;
 import { Text } from "@/components";
 import { formatNumber } from "@/utils";
 
@@ -100,7 +102,7 @@ export function AdminStatsCards({ stats }: StatsCardsProps) {
               </Text>
             </div>
             <div
-              className={`p-2 rounded-lg bg-gray-50 dark:bg-gray-800 ${card.iconClass}`}
+              className={`p-2 rounded-lg ${themed.bgSecondary} ${card.iconClass}`}
             >
               <card.Icon className="w-6 h-6" />
             </div>

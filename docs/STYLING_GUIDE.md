@@ -171,17 +171,19 @@ return (
 
 #### `themed` - Theme-aware colors
 
-| Constant               | Classes                                        | When to Use             |
-| ---------------------- | ---------------------------------------------- | ----------------------- |
-| `themed.bgPrimary`     | `bg-gray-50 dark:bg-gray-950`                  | Main page background    |
-| `themed.bgSecondary`   | `bg-white dark:bg-gray-900`                    | Card/modal background   |
-| `themed.bgTertiary`    | `bg-gray-100 dark:bg-gray-800`                 | Subtle background areas |
-| `themed.bgInput`       | `bg-white dark:bg-gray-900`                    | Input fields            |
-| `themed.textPrimary`   | `text-gray-900 dark:text-gray-100`             | Primary text            |
-| `themed.textSecondary` | `text-gray-600 dark:text-gray-400`             | Secondary/muted text    |
-| `themed.border`        | `border-gray-200 dark:border-gray-800`         | Border colors           |
-| `themed.hover`         | `hover:bg-gray-100 dark:hover:bg-gray-800`     | Hover states            |
-| `themed.focusRing`     | `focus:ring-blue-500 dark:focus:ring-blue-500` | Focus rings             |
+| Constant               | Classes                                            | When to Use             |
+| ---------------------- | -------------------------------------------------- | ----------------------- |
+| `themed.bgPrimary`     | `bg-white dark:bg-zinc-950`                        | Main page background    |
+| `themed.bgSecondary`   | `bg-zinc-50 dark:bg-zinc-900`                      | Card/modal background   |
+| `themed.bgTertiary`    | `bg-zinc-100 dark:bg-zinc-800`                     | Subtle background areas |
+| `themed.bgInput`       | `bg-white dark:bg-zinc-800/60`                     | Input fields            |
+| `themed.textPrimary`   | `text-zinc-900 dark:text-zinc-50`                  | Primary text            |
+| `themed.textSecondary` | `text-zinc-500 dark:text-zinc-400`                 | Secondary/muted text    |
+| `themed.border`        | `border-zinc-200 dark:border-zinc-800`             | Border colors           |
+| `themed.hover`         | `hover:bg-zinc-100 dark:hover:bg-zinc-800`         | Hover states            |
+| `themed.focusRing`     | `focus:ring-indigo-500 dark:focus:ring-indigo-400` | Focus rings             |
+
+> **Design system palette:** `zinc-*` (warm neutral — same palette used by Vercel, Linear, Radix UI). Light mode is white-based with zinc-50 surfaces. Dark mode uses zinc-950 (near-black `#09090b`) as the base with zinc-900/800 elevation layers.
 
 #### `spacing` - Consistent spacing
 

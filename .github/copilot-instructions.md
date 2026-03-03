@@ -2765,6 +2765,232 @@ const table = useUrlTable({ defaults: { pageSize: '25', sorts: '-createdAt' } })
 
 ---
 
+## RULE 33: Internationalisation (i18n) — Mandatory Rules for ALL Files
+
+**The app supports English (`en`) and Hindi (`hi`) via `next-intl`. Every user-visible string MUST be in `messages/en.json` and `messages/hi.json`. No hardcoded UI text is ever allowed — not in JSX, not in metadata, not in aria labels, not in alt text.**
+
+This rule complements Rule 3 (Zero Hardcoded Strings). Rule 3 governs which constant layer to use (`useTranslations` vs `UI_LABELS`). Rule 33 governs HOW to use `next-intl` correctly in every context.
+
+---
+
+### 33.1 — Client Components: `useTranslations`
+
+**Import**: `import { useTranslations } from 'next-intl'`  
+**Rule**: Call `useTranslations` INSIDE the component function body. Never at module scope. Never conditionally.
+
+```tsx
+// WRONG — module-scope call
+const t = useTranslations('actions'); // ❌ hooks must be inside a component
+export function SaveButton() { return <Button>{t('save')}</Button>; }
+
+// WRONG — UI_LABELS in JSX
+import { UI_LABELS } from '@/constants';
+<button>{UI_LABELS.ACTIONS.SAVE}</button> // ❌
+
+// RIGHT
+import { useTranslations } from 'next-intl';
+export function SaveButton() {
+  const t = useTranslations('actions'); // ✅ inside component
+  return <Button>{t('save')}</Button>;
+}
+```
+
+---
+
+### 33.2 — Server Components & `generateMetadata`: `getTranslations`
+
+**Import**: `import { getTranslations } from 'next-intl/server'`  
+**Rule**: Async server components and `generateMetadata` MUST use `await getTranslations(namespace)`.
+
+```tsx
+// WRONG — useTranslations in a server component
+import { useTranslations } from 'next-intl'; // ❌ runtime hook, not valid server-side
+export default async function Page() {
+  const t = useTranslations('products');
+}
+
+// RIGHT — server component
+import { getTranslations } from 'next-intl/server';
+export default async function Page() {
+  const t = await getTranslations('products'); // ✅
+  return <Heading level={1}>{t('pageTitle')}</Heading>;
+}
+
+// RIGHT — generateMetadata
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('products');
+  return { title: t('metaTitle'), description: t('metaDescription') };
+}
+```
+
+---
+
+### 33.3 — Locale-Aware Navigation: `@/i18n/navigation`
+
+**Rule**: NEVER import `Link`, `useRouter`, `usePathname`, or `redirect` from `next/navigation`. ALWAYS use `@/i18n/navigation` so locale prefixes are handled automatically.
+
+```tsx
+// WRONG — next/navigation ignores locale prefix
+import { useRouter } from 'next/navigation'; // ❌
+import Link from 'next/link';                 // ❌
+
+// RIGHT — locale-aware wrappers
+import { Link, useRouter, usePathname, redirect } from '@/i18n/navigation'; // ✅
+```
+
+---
+
+### 33.4 — Namespace Conventions
+
+**Rule**: Use flat, domain-specific namespaces. Each page / feature typically owns one namespace. Shared global keys live in the top-level namespaces (`actions`, `form`, `status`, `nav`, `loading`, `empty`, `confirm`, `messages`).
+
+| Use-case | Namespace example |
+|----------|------------------|
+| Page-level copy | `'productsPage'`, `'storesPage'`, `'checkoutPage'` |
+| Feature view | `'search'`, `'becomeSeller'`, `'ripcoinsWallet.buy'` |
+| Shared action labels | `'actions'` (`t('save')`, `t('cancel')`, `t('delete')`) |
+| Shared form labels | `'form'` (`t('email')`, `t('password')`) |
+| Shared status labels | `'status'` (`t('active')`, `t('pending')`) |
+| Navigation labels | `'nav'` |
+| Sort labels | `'sort'` |
+| Confirmation prompts | `'confirm'` |
+| Loading states | `'loading'` |
+| Empty states | `'empty'` |
+
+```tsx
+// Use a shared namespace for common labels
+const tActions = useTranslations('actions');
+<Button>{tActions('save')}</Button>   // ✅ "Save"
+<Button>{tActions('cancel')}</Button> // ✅ "Cancel"
+
+// Use a page namespace for domain-specific copy
+const t = useTranslations('productsPage');
+<Heading level={1}>{t('title')}</Heading>
+```
+
+---
+
+### 33.5 — Interpolation: `t('key', { variable })`
+
+**Rule**: Use next-intl's built-in interpolation syntax. NEVER concatenate strings or use `.replace()`.
+
+```tsx
+// WRONG — string concatenation
+<Text>{'Hello, ' + user.name}</Text>      // ❌
+<Text>{`Hello, ${user.name}`}</Text>       // ❌
+<Text>{t('greeting').replace('{name}', user.name)}</Text> // ❌
+
+// RIGHT — interpolation via t()
+// messages/en.json: { "greeting": "Hello, {name}!" }
+<Text>{t('greeting', { name: user.name })}</Text>  // ✅
+```
+
+**Pluralisation**:
+```tsx
+// messages/en.json: { "itemCount": "{count, plural, one {# item} other {# items}}" }
+<Caption>{t('itemCount', { count: items.length })}</Caption> // ✅
+```
+
+---
+
+### 33.6 — Adding New Translation Keys
+
+**Rule**: ALWAYS add a new key to BOTH `messages/en.json` AND `messages/hi.json` in the same change. A missing key in either file will cause runtime errors in that locale.
+
+```
+// WRONG — key added to en.json only
+// messages/en.json: { "products": { "newFeature": "New Feature" } }  ✅ added
+// messages/hi.json: (key missing)                                     ❌ runtime error in Hindi
+
+// RIGHT — key added to both files simultaneously
+// messages/en.json: { "products": { "newFeature": "New Feature" } }  ✅
+// messages/hi.json: { "products": { "newFeature": "नई सुविधा" } }      ✅
+```
+
+**Checklist when adding keys:**
+1. Add to `messages/en.json` under the correct namespace object.
+2. Add the same key to `messages/hi.json` (translate or use the English string as placeholder if translation is not yet available — use `// TODO: translate` comment in a separate `.notes` block, NOT inside the JSON).
+3. Keep the JSON structure/nesting identical between both files.
+4. Never duplicate a key that already exists — search the file first.
+
+---
+
+### 33.7 — Non-JSX / Server utilities: `UI_LABELS` still applies
+
+`useTranslations` / `getTranslations` is for **user-visible strings rendered to the browser**. For server-side non-JSX code (API routes, server utilities, email templates, log messages), continue to use `UI_LABELS`, `ERROR_MESSAGES`, and `SUCCESS_MESSAGES` from `@/constants` as defined in Rule 3.
+
+```ts
+// API route — NOT JSX, NOT user-visible in the browser → use constants
+return successResponse(result, SUCCESS_MESSAGES.PRODUCT.CREATED); // ✅
+
+// Component — JSX, user-visible → use useTranslations
+const t = useTranslations('actions');
+<Button>{t('save')}</Button> // ✅
+```
+
+---
+
+### 33.8 — Aria Labels, Placeholders, and Alt Text
+
+**Rule**: All `aria-label`, `placeholder`, `title`, and `alt` attribute values that contain user-visible text MUST be translated via `t()`.
+
+```tsx
+// WRONG
+<input aria-label="Search products" placeholder="Search..." /> // ❌
+<img src={url} alt="Product image" />                          // ❌
+
+// RIGHT
+const t = useTranslations('search');
+<Search
+  aria-label={t('ariaLabel')}
+  placeholder={t('placeholder')}
+/>
+// For MediaImage, the alt text comes from MediaDisplayMeta.alt (set at upload time — see Rule 28)
+// and is already translated or contextual. Ensure it is set to a descriptive, translated string.
+```
+
+---
+
+### 33.9 — Testing: Mock `next-intl`
+
+**Rule**: In Jest tests, mock `next-intl` and `next-intl/server` so `t(key)` returns `key` (the key itself). This validates that the correct key is used without depending on translation strings.
+
+```ts
+// In a test file or jest.setup.ts
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key,
+}));
+
+jest.mock('next-intl/server', () => ({
+  getTranslations: jest.fn().mockImplementation(async () => (key: string) => key),
+  getLocale: jest.fn().mockResolvedValue('en'),
+}));
+
+// Navigation mock
+jest.mock('@/i18n/navigation', () => ({
+  Link: ({ children, href }: { children: React.ReactNode; href: string }) =>
+    React.createElement('a', { href }, children),
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
+  usePathname: () => '/',
+  redirect: jest.fn(),
+}));
+```
+
+---
+
+### 33.10 — Supported Locales & Adding New Ones
+
+Current locales: `en` (default, no URL prefix) and `hi` (`/hi/…` prefix).
+
+To add a new locale:
+1. Add the locale code to `src/i18n/routing.ts` → `locales` array.
+2. Create `messages/<locale>.json` with all translation keys (copy from `en.json` as baseline).
+3. Update `src/i18n/request.ts` if any locale-specific config is needed.
+4. Verify middleware picks up the new locale (the `matcher` in `src/middleware.ts`).
+5. Update seed data if any locale-aware records exist.
+
+---
+
 ## Development Commands
 
 ### Build & Test
@@ -2952,6 +3178,13 @@ Before writing ANY code, verify:
 - [ ] Did I update `docs/GUIDE.md` (and any other affected doc file) to reflect the change? (Rule 30)
 - [ ] Did I update all components, pages, or call sites that are impacted by the change described in the CHANGELOG? (Rule 30)
 - [ ] Is every CHANGELOG entry I wrote backed by a corresponding doc + code update in the same change — no entry references something the docs don't yet describe? (Rule 30)
+- [ ] Am I rendering any user-visible text in JSX (labels, headings, buttons, placeholders, aria-labels)? → use `useTranslations('namespace')` from `next-intl` — never hardcoded strings, never `UI_LABELS` in JSX (Rule 33)
+- [ ] Am I writing a server component or `generateMetadata` that needs translated text? → use `await getTranslations('namespace')` from `next-intl/server` — never `useTranslations` in async server code (Rule 33)
+- [ ] Am I using `Link`, `useRouter`, `usePathname`, or `redirect` from `next/navigation`? → swap for `@/i18n/navigation` equivalents (Rule 33)
+- [ ] Did I add new translation keys? → added to BOTH `messages/en.json` AND `messages/hi.json` with identical structure (Rule 33)
+- [ ] Am I concatenating strings or using `.replace()` for dynamic text? → use `t('key', { variable })` interpolation (Rule 33)
+- [ ] Am I writing `aria-label`, `placeholder`, `title`, or `alt` with a hardcoded string? → translate via `t()` (Rule 33)
+- [ ] Did I mock `next-intl` and `@/i18n/navigation` in new test files? (Rule 33)
 
 
 ---

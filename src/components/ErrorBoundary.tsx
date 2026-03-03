@@ -35,7 +35,9 @@ function ErrorFallbackView({
   const tActions = useTranslations("actions");
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
-      <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-lg shadow-lg p-8 text-center">
+      <div
+        className={`max-w-md w-full ${THEME_CONSTANTS.themed.bgPrimary} rounded-lg shadow-lg p-8 text-center`}
+      >
         <div className="mb-6">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
             <svg

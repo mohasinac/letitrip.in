@@ -30,59 +30,59 @@ export const THEME_CONSTANTS = {
    * Themed classes - Responsive to dark mode
    * All classes here automatically adjust colors based on theme
    */
-  // Themed classes (responsive to dark mode)
+  // Themed classes (responsive to dark mode) — zinc palette (warmer, more modern)
   themed: {
-    // Backgrounds - deeper dark mode with more depth
-    bgPrimary: "bg-white dark:bg-gray-950",
-    bgSecondary: "bg-gray-50 dark:bg-gray-900",
-    bgTertiary: "bg-gray-100 dark:bg-gray-800",
-    bgElevated: "bg-white dark:bg-gray-900/80",
-    bgInput: "bg-white dark:bg-gray-800",
+    // Backgrounds — white base in light, near-black in dark with clear surface layers
+    bgPrimary: "bg-white dark:bg-zinc-950",
+    bgSecondary: "bg-zinc-50 dark:bg-zinc-900",
+    bgTertiary: "bg-zinc-100 dark:bg-zinc-800",
+    bgElevated: "bg-white dark:bg-zinc-900/90",
+    bgInput: "bg-white dark:bg-zinc-800/60",
 
-    // Text colors - brighter white text in dark mode
-    textPrimary: "text-gray-900 dark:text-gray-50",
-    textSecondary: "text-gray-600 dark:text-gray-400",
-    textMuted: "text-gray-400 dark:text-gray-500",
+    // Text colors
+    textPrimary: "text-zinc-900 dark:text-zinc-50",
+    textSecondary: "text-zinc-500 dark:text-zinc-400",
+    textMuted: "text-zinc-400 dark:text-zinc-500",
     textError: "text-red-600 dark:text-red-400",
-    textSuccess: "text-green-600 dark:text-green-400",
+    textSuccess: "text-emerald-600 dark:text-emerald-400",
     textOnPrimary: "text-white",
     textOnDark: "text-white",
 
-    // Borders
-    border: "border-gray-200 dark:border-gray-800",
-    borderSubtle: "border-gray-100 dark:border-gray-800/60",
-    borderLight: "border-gray-100 dark:border-gray-700",
+    // Borders — subtle in light, visible but not harsh in dark
+    border: "border-zinc-200 dark:border-zinc-800",
+    borderSubtle: "border-zinc-100 dark:border-zinc-800/60",
+    borderLight: "border-zinc-100 dark:border-zinc-700/60",
     borderError: "border-red-500",
-    borderColor: "border-gray-200 dark:border-gray-700",
+    borderColor: "border-zinc-200 dark:border-zinc-700",
 
-    // Interactive states - tinted hover/active for personality
-    hover: "hover:bg-gray-100 dark:hover:bg-gray-800",
-    hoverCard: "hover:bg-gray-50 dark:hover:bg-indigo-950/20",
-    hoverBorder: "hover:border-gray-300 dark:hover:border-gray-600",
-    hoverText: "hover:text-gray-700 dark:hover:text-gray-200",
+    // Interactive states
+    hover: "hover:bg-zinc-100 dark:hover:bg-zinc-800",
+    hoverCard: "hover:bg-zinc-50 dark:hover:bg-zinc-800/60",
+    hoverBorder: "hover:border-zinc-300 dark:hover:border-zinc-600",
+    hoverText: "hover:text-zinc-800 dark:hover:text-zinc-100",
     activeRow: "bg-indigo-50 dark:bg-indigo-950/30",
-    focusRing: "focus:ring-indigo-500 dark:focus:ring-indigo-500",
+    focusRing: "focus:ring-indigo-500 dark:focus:ring-indigo-400",
 
     // Dividers
-    divider: "divide-gray-200 dark:divide-gray-800",
+    divider: "divide-zinc-200 dark:divide-zinc-800",
 
     // Placeholders
-    placeholder: "placeholder-gray-400 dark:placeholder-gray-500",
+    placeholder: "placeholder-zinc-400 dark:placeholder-zinc-500",
   },
 
   /**
    * Input/Form styles
    * Enhanced input styles with improved focus states
    */
-  // Input/Form styles
+  // Input/Form styles — clean zinc borders, no double-ring
   input: {
-    base: "rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors duration-150 placeholder:text-gray-400 dark:placeholder:text-gray-500",
+    base: "rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-400 focus:outline-none transition-colors duration-150 placeholder:text-zinc-400 dark:placeholder:text-zinc-500",
     error:
-      "border-rose-400 dark:border-rose-500 focus:ring-rose-500/20 focus:border-rose-500 bg-rose-50/50 dark:bg-rose-950/10",
+      "border-red-400 dark:border-red-500 focus:ring-red-500/20 focus:border-red-500 bg-red-50/30 dark:bg-red-950/10",
     success:
       "border-emerald-400 dark:border-emerald-500 focus:ring-emerald-500/20 focus:border-emerald-500",
     disabled:
-      "bg-gray-50 dark:bg-gray-800/50 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-50",
+      "bg-zinc-50 dark:bg-zinc-800/30 text-zinc-400 dark:text-zinc-500 cursor-not-allowed opacity-60",
     withIcon: "pl-10",
   },
 
@@ -105,13 +105,13 @@ export const THEME_CONSTANTS = {
    * Card styles
    * Container component styling with shadow variants
    */
-  // Card styles
+  // Card styles — minimal elevation, clean borders
   card: {
-    base: "rounded-xl overflow-hidden transition-all",
-    shadow: "shadow-md",
-    shadowElevated: "shadow-xl",
+    base: "rounded-2xl overflow-hidden transition-all",
+    shadow: "shadow-sm",
+    shadowElevated: "shadow-lg",
     hover:
-      "hover:scale-[1.02] hover:shadow-lg dark:hover:shadow-2xl cursor-pointer",
+      "hover:shadow-md dark:hover:shadow-xl cursor-pointer transition-shadow duration-200",
   },
 
   /**
@@ -131,15 +131,15 @@ export const THEME_CONSTANTS = {
     contentPadding: "px-4 md:px-6 lg:px-8",
     navPadding: "px-4 sm:px-6 lg:px-8",
     titleBarBg:
-      "bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800",
+      "bg-white/95 dark:bg-zinc-950/95 backdrop-blur-sm border-b border-zinc-200 dark:border-zinc-800",
     navbarBg:
-      "bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800",
+      "bg-white/95 dark:bg-zinc-950/95 backdrop-blur-sm border-b border-zinc-200 dark:border-zinc-800",
     sidebarBg:
-      "bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800",
+      "bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800",
     bottomNavBg:
-      "bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800",
+      "bg-white/95 dark:bg-zinc-950/95 backdrop-blur-sm border-t border-zinc-200 dark:border-zinc-800",
     footerBg:
-      "bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900",
+      "bg-zinc-50 dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800",
     // Utility layouts
     fullScreen: "min-h-screen",
     flexCenter: "flex items-center justify-center",
@@ -232,18 +232,18 @@ export const THEME_CONSTANTS = {
     // Page-level headings
     pageTitle: "text-2xl md:text-3xl font-bold tracking-tight leading-tight",
     pageSubtitle:
-      "text-base text-gray-500 dark:text-gray-400 leading-relaxed mt-1",
+      "text-base text-zinc-500 dark:text-zinc-400 leading-relaxed mt-1",
     // Section headings
     sectionTitle: "text-xl md:text-2xl font-semibold tracking-tight",
-    sectionSubtitle: "text-sm md:text-base text-gray-500 dark:text-gray-400",
+    sectionSubtitle: "text-sm md:text-base text-zinc-500 dark:text-zinc-400",
     // Card typography
     cardTitle: "text-lg font-semibold leading-snug",
     cardBody: "text-sm md:text-base leading-relaxed",
     // Utility typography
-    label: "text-sm font-medium text-gray-700 dark:text-gray-300",
-    caption: "text-xs text-gray-500 dark:text-gray-400",
+    label: "text-sm font-medium text-zinc-700 dark:text-zinc-300",
+    caption: "text-xs text-zinc-500 dark:text-zinc-400",
     overline:
-      "text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400",
+      "text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400",
     // Standard headings (moderated scale)
     h1: "text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight",
     h2: "text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight",
@@ -328,30 +328,30 @@ export const THEME_CONSTANTS = {
    * Multiple card styles including gradients, glass effects, and stat cards
    */
   enhancedCard: {
-    base: "rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow duration-200",
+    base: "rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm hover:shadow-md transition-all duration-200",
     elevated:
-      "rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200",
+      "rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-md hover:shadow-lg transition-shadow duration-200",
     interactive:
-      "rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700 transition-all duration-200 cursor-pointer",
+      "rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm hover:shadow-md hover:border-indigo-300/60 dark:hover:border-indigo-700/60 transition-all duration-200 cursor-pointer",
     glass:
-      "rounded-xl backdrop-blur-md bg-white/80 dark:bg-gray-900/80 border border-white/30 dark:border-gray-700/50 shadow-lg",
+      "rounded-2xl backdrop-blur-md bg-white/85 dark:bg-zinc-900/85 border border-zinc-200/60 dark:border-zinc-700/40 shadow-lg",
     gradient: {
       indigo:
-        "rounded-xl bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/40 dark:to-gray-900 border border-indigo-100 dark:border-indigo-900/40",
-      teal: "rounded-xl bg-gradient-to-br from-teal-50 to-white dark:from-teal-950/40 dark:to-gray-900 border border-teal-100 dark:border-teal-900/40",
+        "rounded-2xl bg-gradient-to-br from-indigo-50 via-white to-white dark:from-indigo-950/30 dark:via-zinc-900 dark:to-zinc-900 border border-indigo-100/80 dark:border-indigo-900/40",
+      teal: "rounded-2xl bg-gradient-to-br from-teal-50 via-white to-white dark:from-teal-950/30 dark:via-zinc-900 dark:to-zinc-900 border border-teal-100/80 dark:border-teal-900/40",
       amber:
-        "rounded-xl bg-gradient-to-br from-amber-50 to-white dark:from-amber-950/40 dark:to-gray-900 border border-amber-100 dark:border-amber-900/40",
-      rose: "rounded-xl bg-gradient-to-br from-rose-50 to-white dark:from-rose-950/40 dark:to-gray-900 border border-rose-100 dark:border-rose-900/40",
+        "rounded-2xl bg-gradient-to-br from-amber-50 via-white to-white dark:from-amber-950/30 dark:via-zinc-900 dark:to-zinc-900 border border-amber-100/80 dark:border-amber-900/40",
+      rose: "rounded-2xl bg-gradient-to-br from-rose-50 via-white to-white dark:from-rose-950/30 dark:via-zinc-900 dark:to-zinc-900 border border-rose-100/80 dark:border-rose-900/40",
     },
     stat: {
       indigo:
-        "rounded-xl border-l-4 border-l-indigo-500 bg-white dark:bg-gray-900 shadow-sm",
-      teal: "rounded-xl border-l-4 border-l-teal-500 bg-white dark:bg-gray-900 shadow-sm",
+        "rounded-2xl border-l-4 border-l-indigo-500 bg-white dark:bg-zinc-900 shadow-sm",
+      teal: "rounded-2xl border-l-4 border-l-teal-500 bg-white dark:bg-zinc-900 shadow-sm",
       amber:
-        "rounded-xl border-l-4 border-l-amber-500 bg-white dark:bg-gray-900 shadow-sm",
-      rose: "rounded-xl border-l-4 border-l-rose-500 bg-white dark:bg-gray-900 shadow-sm",
+        "rounded-2xl border-l-4 border-l-amber-500 bg-white dark:bg-zinc-900 shadow-sm",
+      rose: "rounded-2xl border-l-4 border-l-rose-500 bg-white dark:bg-zinc-900 shadow-sm",
       emerald:
-        "rounded-xl border-l-4 border-l-emerald-500 bg-white dark:bg-gray-900 shadow-sm",
+        "rounded-2xl border-l-4 border-l-emerald-500 bg-white dark:bg-zinc-900 shadow-sm",
     },
   },
 
@@ -360,11 +360,11 @@ export const THEME_CONSTANTS = {
    * Decorative page headers with optional gradients
    */
   pageHeader: {
-    wrapper: "pb-6 mb-8 border-b border-gray-200 dark:border-gray-700/60",
+    wrapper: "pb-6 mb-8 border-b border-zinc-200 dark:border-zinc-800",
     withGradient:
-      "pb-8 mb-8 border-b border-gray-200/80 dark:border-gray-700/40 bg-gradient-to-r from-indigo-50/60 via-transparent to-teal-50/30 dark:from-indigo-950/20 dark:via-transparent dark:to-teal-950/10 rounded-t-xl -mx-4 -mt-4 px-4 pt-6 md:-mx-6 md:-mt-6 md:px-6 md:pt-8",
+      "pb-8 mb-8 border-b border-zinc-200 dark:border-zinc-800 bg-gradient-to-br from-indigo-50/50 via-transparent to-transparent dark:from-indigo-950/10 dark:via-transparent dark:to-transparent rounded-t-2xl -mx-4 -mt-4 px-4 pt-6 md:-mx-6 md:-mt-6 md:px-6 md:pt-8",
     adminGradient:
-      "pb-8 mb-8 border-b border-gray-200/80 dark:border-gray-700/40 bg-gradient-to-r from-purple-50/60 via-transparent to-indigo-50/30 dark:from-purple-950/20 dark:via-transparent dark:to-indigo-950/10 rounded-t-xl -mx-4 -mt-4 px-4 pt-6 md:-mx-6 md:-mt-6 md:px-6 md:pt-8",
+      "pb-8 mb-8 border-b border-zinc-200 dark:border-zinc-800 bg-gradient-to-br from-violet-50/50 via-transparent to-transparent dark:from-violet-950/10 dark:via-transparent dark:to-transparent rounded-t-2xl -mx-4 -mt-4 px-4 pt-6 md:-mx-6 md:-mt-6 md:px-6 md:pt-8",
   },
 
   /**
@@ -372,10 +372,10 @@ export const THEME_CONSTANTS = {
    * Subtle background variations for visual hierarchy
    */
   sectionBg: {
-    subtle: "bg-gray-50/50 dark:bg-gray-800/20",
-    warm: "bg-gradient-to-br from-amber-50/30 to-orange-50/20 dark:from-amber-950/10 dark:to-orange-950/5",
-    cool: "bg-gradient-to-br from-indigo-50/30 to-sky-50/20 dark:from-indigo-950/10 dark:to-sky-950/5",
-    mesh: "bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-50/40 via-white to-teal-50/20 dark:from-indigo-950/20 dark:via-gray-900 dark:to-teal-950/10",
+    subtle: "bg-zinc-50/80 dark:bg-zinc-800/20",
+    warm: "bg-gradient-to-br from-amber-50/40 to-orange-50/20 dark:from-amber-950/10 dark:to-orange-950/5",
+    cool: "bg-gradient-to-br from-indigo-50/40 to-sky-50/20 dark:from-indigo-950/10 dark:to-sky-950/5",
+    mesh: "bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-50/50 via-white to-teal-50/20 dark:from-indigo-950/20 dark:via-zinc-900 dark:to-teal-950/10",
   },
 
   /**
@@ -391,62 +391,63 @@ export const THEME_CONSTANTS = {
     },
     // Badge colors
     badge: {
-      default: "bg-gray-200 dark:bg-gray-700 text-slate-700 dark:text-gray-200",
-      primary: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+      default: "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300",
+      primary:
+        "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300",
       secondary:
-        "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+        "bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-300",
       success:
-        "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+        "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300",
       warning:
-        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-      danger: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-      info: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200",
+        "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
+      danger: "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300",
+      info: "bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300",
     },
-    // Alert colors
+    // Alert colors — softer dark mode backgrounds for less visual noise
     alert: {
       info: {
         container:
-          "bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800",
-        icon: "text-blue-600 dark:text-blue-400",
-        title: "text-blue-900 dark:text-blue-200",
-        text: "text-blue-800 dark:text-blue-300",
+          "bg-sky-50 border-sky-200/80 dark:bg-sky-950/30 dark:border-sky-800/50",
+        icon: "text-sky-600 dark:text-sky-400",
+        title: "text-sky-900 dark:text-sky-200",
+        text: "text-sky-800 dark:text-sky-300",
       },
       success: {
         container:
-          "bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800",
-        icon: "text-green-600 dark:text-green-400",
-        title: "text-green-900 dark:text-green-200",
-        text: "text-green-800 dark:text-green-300",
+          "bg-emerald-50 border-emerald-200/80 dark:bg-emerald-950/30 dark:border-emerald-800/50",
+        icon: "text-emerald-600 dark:text-emerald-400",
+        title: "text-emerald-900 dark:text-emerald-200",
+        text: "text-emerald-800 dark:text-emerald-300",
       },
       warning: {
         container:
-          "bg-yellow-50 border-yellow-200 dark:bg-yellow-950 dark:border-yellow-800",
-        icon: "text-yellow-600 dark:text-yellow-400",
-        title: "text-yellow-900 dark:text-yellow-200",
-        text: "text-yellow-800 dark:text-yellow-300",
+          "bg-amber-50 border-amber-200/80 dark:bg-amber-950/30 dark:border-amber-800/50",
+        icon: "text-amber-600 dark:text-amber-400",
+        title: "text-amber-900 dark:text-amber-200",
+        text: "text-amber-800 dark:text-amber-300",
       },
       error: {
         container:
-          "bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800",
+          "bg-red-50 border-red-200/80 dark:bg-red-950/30 dark:border-red-800/50",
         icon: "text-red-600 dark:text-red-400",
         title: "text-red-900 dark:text-red-200",
         text: "text-red-800 dark:text-red-300",
       },
     },
-    // Button colors - harmonized with gradients and colored shadows
+    // Button colors — flat design, no gradients, clean hover states
     button: {
       primary:
-        "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-700 hover:to-indigo-800 shadow-sm hover:shadow-md shadow-indigo-500/20 focus:ring-indigo-500",
+        "bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-700 shadow-sm shadow-indigo-600/10 focus:ring-indigo-500",
       secondary:
-        "bg-gradient-to-r from-teal-500 to-teal-600 text-white hover:from-teal-600 hover:to-teal-700 shadow-sm hover:shadow-md shadow-teal-500/20 focus:ring-teal-500",
+        "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 shadow-sm focus:ring-zinc-500",
       outline:
-        "border-2 border-indigo-500 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50",
+        "border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-transparent text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800 focus:ring-zinc-400",
       ghost:
-        "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800",
+        "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 focus:ring-zinc-400",
       danger:
-        "bg-gradient-to-r from-rose-600 to-rose-700 text-white hover:from-rose-700 hover:to-rose-800 shadow-sm hover:shadow-md shadow-rose-500/20 focus:ring-rose-500",
+        "bg-red-600 text-white hover:bg-red-500 active:bg-red-700 shadow-sm shadow-red-600/10 focus:ring-red-500",
       warning:
-        "bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 shadow-sm hover:shadow-md shadow-amber-500/20 focus:ring-amber-500",
+        "bg-amber-500 text-white hover:bg-amber-400 active:bg-amber-600 shadow-sm shadow-amber-500/10 focus:ring-amber-500",
       alertClose: "hover:bg-black/5 dark:hover:bg-white/5",
     },
     // Form colors
@@ -461,26 +462,27 @@ export const THEME_CONSTANTS = {
     // Navbar colors
     navbar: {
       active:
-        "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-semibold shadow-sm",
+        "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-semibold",
       inactive:
-        "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors",
+        "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors",
       icon: "w-5 h-5 md:w-6 md:h-6",
     },
     // Bottom navbar colors
     bottomNav: {
-      active: "text-blue-600 dark:text-blue-400 font-semibold",
+      active: "text-indigo-600 dark:text-indigo-400 font-semibold",
       inactive:
-        "text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors",
+        "text-zinc-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors",
       text: "text-xs",
       icon: "w-6 h-6",
     },
     // Footer colors
     footer: {
-      title: "text-gray-900 dark:text-white",
-      text: "text-gray-600 dark:text-gray-300",
-      textHover: "hover:text-gray-900 dark:hover:text-white transition-colors",
-      border: "border-gray-300 dark:border-gray-700",
-      copyright: "text-gray-500 dark:text-gray-400",
+      title: "text-zinc-900 dark:text-zinc-50",
+      text: "text-zinc-500 dark:text-zinc-400",
+      textHover:
+        "hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors",
+      border: "border-zinc-200 dark:border-zinc-800",
+      copyright: "text-zinc-400 dark:text-zinc-500",
     },
     // Badge/notification
     notification: {
@@ -488,16 +490,16 @@ export const THEME_CONSTANTS = {
     },
     // Icon colors
     icon: {
-      muted: "text-gray-400",
-      titleBar: "text-gray-900 dark:text-gray-100",
-      navbar: "text-gray-900 dark:text-gray-100",
-      onLight: "text-slate-600 dark:text-gray-300",
+      muted: "text-zinc-400",
+      titleBar: "text-zinc-900 dark:text-zinc-100",
+      navbar: "text-zinc-900 dark:text-zinc-100",
+      onLight: "text-zinc-600 dark:text-zinc-300",
     },
     // Icon button hovers
     iconButton: {
       onPrimary: "hover:bg-black/10 active:bg-black/20",
       onLight:
-        "hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700",
+        "hover:bg-zinc-100 dark:hover:bg-zinc-800 active:bg-zinc-200 dark:active:bg-zinc-700",
     },
   },
 
@@ -530,10 +532,10 @@ export const THEME_CONSTANTS = {
     scrollbarHide:
       "scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
     scrollbarThin:
-      "scrollbar-thin [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gradient-to-b [&::-webkit-scrollbar-thumb]:from-primary-400 [&::-webkit-scrollbar-thumb]:to-primary-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:from-primary-500 [&::-webkit-scrollbar-thumb:hover]:to-primary-600",
+      "scrollbar-thin [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-zinc-100 dark:[&::-webkit-scrollbar-track]:bg-zinc-800/60 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-zinc-400 dark:[&::-webkit-scrollbar-thumb:hover]:bg-zinc-500",
     /** Thin horizontal scrollbar for HorizontalScroller and tab strips */
     scrollbarThinX:
-      "[&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-gray-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb:hover]:bg-gray-500",
+      "[&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-zinc-300 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-zinc-400 dark:[&::-webkit-scrollbar-thumb:hover]:bg-zinc-500",
     safeAreaBottom: "pb-[env(safe-area-inset-bottom)]",
     gradientText:
       "bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent",
@@ -602,7 +604,7 @@ export const THEME_CONSTANTS = {
    */
   // Base styles (for body/html)
   base: {
-    body: 'bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased font-[system-ui,-apple-system,"Segoe_UI",Roboto,"Helvetica_Neue",Arial,sans-serif]',
+    body: 'bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 antialiased font-[Inter,ui-sans-serif,system-ui,-apple-system,"Segoe_UI",Roboto,"Helvetica_Neue",Arial,sans-serif]',
     html: "scroll-smooth",
   },
 
@@ -632,25 +634,25 @@ export const THEME_CONSTANTS = {
   patterns: {
     // Admin input pattern
     adminInput:
-      "w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white",
+      "w-full px-3 py-2.5 border border-zinc-200 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-colors",
 
     // Admin select pattern
     adminSelect:
-      "w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white",
+      "w-full px-3 py-2.5 border border-zinc-200 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:outline-none transition-colors",
 
     // Page container
-    pageContainer: "min-h-screen bg-gray-50 dark:bg-gray-900",
+    pageContainer: "min-h-screen bg-white dark:bg-zinc-950",
 
     // Section container
     sectionContainer: "max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8 lg:py-12",
 
     // Form container
     formContainer:
-      "bg-white dark:bg-gray-900 rounded-xl shadow-md p-6 lg:p-8 space-y-6",
+      "bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 lg:p-8 space-y-6",
 
     // List item
     listItem:
-      "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-4 hover:border-gray-300 dark:hover:border-gray-700 transition-colors",
+      "bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors",
 
     // Badge default
     badgeDefault:
@@ -658,37 +660,37 @@ export const THEME_CONSTANTS = {
 
     // Link default
     linkDefault:
-      "text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors underline-offset-2 hover:underline",
+      "text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors underline-offset-2 hover:underline",
 
     // Icon button
     iconButton:
-      "p-2 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700",
+      "p-2 rounded-lg transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 active:bg-zinc-200 dark:active:bg-zinc-700",
 
     // Modal overlay
     modalOverlay:
-      "fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50",
+      "fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50",
 
     // Modal content
     modalContent:
-      "bg-white dark:bg-gray-900 rounded-xl shadow-xl max-w-lg w-full mx-4 overflow-hidden",
+      "bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xl max-w-lg w-full mx-4 overflow-hidden",
 
     // Divider
-    divider: "border-t border-gray-200 dark:border-gray-800",
+    divider: "border-t border-zinc-200 dark:border-zinc-800",
 
     // Empty state
     emptyState:
-      "flex flex-col items-center justify-center py-12 text-center text-gray-500 dark:text-gray-400",
+      "flex flex-col items-center justify-center py-12 text-center text-zinc-500 dark:text-zinc-400",
 
     // Loading state
     loadingState: "flex items-center justify-center py-8",
 
     // Error state
     errorState:
-      "bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-800 dark:text-red-200",
+      "bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 rounded-xl p-4 text-red-800 dark:text-red-300",
 
     // Success state
     successState:
-      "bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg p-4 text-green-800 dark:text-green-200",
+      "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-xl p-4 text-emerald-800 dark:text-emerald-300",
   },
 
   /**
@@ -702,7 +704,7 @@ export const THEME_CONSTANTS = {
     error: "border-red-500 dark:border-red-500",
     success: "border-green-500 dark:border-green-500",
     focus:
-      "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900",
+      "focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-950",
   },
 
   /**
@@ -749,9 +751,9 @@ export const THEME_CONSTANTS = {
    */
   tab: {
     active:
-      "border-b-2 border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 font-medium",
+      "border-b-2 border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 font-semibold",
     inactive:
-      "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300",
+      "border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300",
   },
 
   /**
@@ -768,11 +770,11 @@ export const THEME_CONSTANTS = {
    * Icon helper classes
    */
   icon: {
-    muted: "text-gray-400 dark:text-gray-500",
+    muted: "text-zinc-400 dark:text-zinc-500",
     primary: "text-indigo-600 dark:text-indigo-400",
     success: "text-emerald-500 dark:text-emerald-400",
     danger: "text-red-500 dark:text-red-400",
-    warning: "text-yellow-500 dark:text-yellow-400",
+    warning: "text-amber-500 dark:text-amber-400",
   },
 
   /**
@@ -780,11 +782,11 @@ export const THEME_CONSTANTS = {
    * Use these classes for skeleton placeholder elements.
    */
   skeleton: {
-    base: "animate-pulse rounded bg-gray-200 dark:bg-gray-700",
-    text: "animate-pulse rounded bg-gray-200 dark:bg-gray-700 h-4",
-    heading: "animate-pulse rounded bg-gray-200 dark:bg-gray-700 h-7",
-    image: "animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700",
-    card: "animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700",
+    base: "animate-pulse rounded bg-zinc-200 dark:bg-zinc-700/60",
+    text: "animate-pulse rounded bg-zinc-200 dark:bg-zinc-700/60 h-4",
+    heading: "animate-pulse rounded bg-zinc-200 dark:bg-zinc-700/60 h-7",
+    image: "animate-pulse rounded-xl bg-zinc-200 dark:bg-zinc-700/60",
+    card: "animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-700/60",
   },
 
   /**

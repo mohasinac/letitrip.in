@@ -7,7 +7,7 @@
 
 import { THEME_CONSTANTS } from "@/constants";
 
-const { skeleton, spacing } = THEME_CONSTANTS;
+const { skeleton, spacing, themed } = THEME_CONSTANTS;
 
 export function AdminDashboardSkeleton() {
   return (
@@ -17,7 +17,7 @@ export function AdminDashboardSkeleton() {
       aria-label="Loading dashboard"
     >
       {/* Header skeleton */}
-      <div className="pb-8 mb-8 border-b border-gray-200 dark:border-gray-700">
+      <div className={`pb-8 mb-8 border-b ${themed.border}`}>
         <div className={`${skeleton.heading} w-64 mb-3`} />
         <div className={`${skeleton.text} w-96`} />
       </div>
@@ -27,7 +27,7 @@ export function AdminDashboardSkeleton() {
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className={`rounded-xl border-l-4 border-l-gray-200 dark:border-l-gray-700 bg-white dark:bg-gray-900 ${spacing.padding.md}`}
+            className={`rounded-xl border-l-4 border-l-gray-200 dark:border-l-gray-700 ${themed.bgPrimary} ${spacing.padding.md}`}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">

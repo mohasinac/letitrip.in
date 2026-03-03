@@ -518,7 +518,7 @@ When ready to extract shared code into a library:
 
 ```
 src/
-  middleware.ts              ← locale detection + URL rewriting (next-intl)
+  proxy.ts                   ← locale detection + URL rewriting (next-intl)
   i18n/
     routing.ts               ← defineRouting({ locales, defaultLocale, localePrefix })
     request.ts               ← getRequestConfig (per-request server config)
@@ -542,7 +542,7 @@ messages/
 | `src/i18n/routing.ts`         | Locale routing config — `defineRouting({ locales, defaultLocale, localePrefix })`                                           |
 | `src/i18n/request.ts`         | Per-request server config — resolves locale + loads message JSON; calls `setupZodErrorMap()`                                |
 | `src/i18n/navigation.ts`      | Locale-aware navigation — `createNavigation(routing)` exports `Link`, `useRouter`, `usePathname`, `redirect`, `getPathname` |
-| `src/middleware.ts`           | `createMiddleware(routing)` — locale detection + URL rewriting                                                              |
+| `src/proxy.ts`                | `createMiddleware(routing)` — locale detection + URL rewriting                                                              |
 | `next.config.js`              | `createNextIntlPlugin('./src/i18n/request.ts')` wrapping the Next config                                                    |
 | `src/app/layout.tsx`          | Root HTML shell — `<html lang={await getLocale()}>`                                                                         |
 | `src/app/[locale]/layout.tsx` | Locale layout — `NextIntlClientProvider` + `<ZodSetup />` + all providers                                                   |

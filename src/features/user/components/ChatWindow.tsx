@@ -28,7 +28,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useChat } from "@/hooks";
 
-const { spacing } = THEME_CONSTANTS;
+const { spacing, themed } = THEME_CONSTANTS;
 
 interface Props {
   chatId: string;
@@ -75,7 +75,9 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
       className={`flex flex-col h-full min-h-[420px] max-h-[700px] ${spacing.padding.md}`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-700 mb-3">
+      <div
+        className={`flex items-center justify-between pb-3 border-b ${themed.border} mb-3`}
+      >
         <div className="flex items-center gap-2">
           <Heading level={4}>{participantName ?? t("chat")}</Heading>
           <span
@@ -136,9 +138,11 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
       </div>
 
       {/* Input */}
-      <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex gap-2 items-end">
+      <div
+        className={`mt-3 pt-3 border-t ${themed.border} flex gap-2 items-end`}
+      >
         <textarea
-          className="flex-1 resize-none rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[40px] max-h-[120px]"
+          className={`flex-1 resize-none rounded-xl border border-gray-300 dark:border-gray-600 ${themed.bgPrimary} px-3 py-2 text-sm ${themed.textPrimary} placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[40px] max-h-[120px]`}
           rows={1}
           placeholder={t("inputPlaceholder")}
           value={text}

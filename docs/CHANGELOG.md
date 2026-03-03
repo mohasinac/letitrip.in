@@ -13,6 +13,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-03-03] — Modern Design Refresh (Zinc Palette + Flat Design)
+
+### Changed
+
+- **`src/constants/theme.ts`** — Full design token refresh across all `THEME_CONSTANTS` sections:
+  - **Neutral palette**: all `gray-*` tokens replaced with `zinc-*` (warmer, more modern — Vercel/Linear/Radix aesthetic). No component files required changes.
+  - **Backgrounds**: light mode is now pure `white` base with `zinc-50` secondary surfaces. Dark mode uses `zinc-950` (`#09090b`) base with `zinc-900`/`zinc-800` elevation layers — cleaner surface hierarchy.
+  - **Buttons** (`colors.button.*`): removed all gradients (`bg-gradient-to-r from-* to-*`); replaced with flat colours (`bg-indigo-600 hover:bg-indigo-500`). Secondary button is now `zinc-900`/`zinc-100` (context-adaptive).
+  - **Cards** (`enhancedCard.*`, `card.*`): upgraded from `rounded-xl` to `rounded-2xl`; elevated uses border + shadow instead of shadow-only; interactive hover adjusts border opacity instead of border colour.
+  - **Nav/footer backgrounds** (`layout.navbarBg`, `titleBarBg`, `bottomNavBg`): added `backdrop-blur-sm` + `bg-white/95` for frosted-glass effect.
+  - **Footer background**: replaced busy gradient with clean `zinc-50 dark:zinc-900` + top border.
+  - **Inputs** (`input.base`, `patterns.adminInput/adminSelect`): `zinc` borders, explicit `text-zinc-*` colours, `focus:outline-none` guard to prevent double-ring.
+  - **Alerts** (`colors.alert.*`): dark mode containers switched from solid (`dark:bg-*-950`) to translucent (`dark:bg-*-950/30`) for less visual weight.
+  - **Badges** (`colors.badge.*`): `blue-*/green-*/purple-*` swapped to semantic `indigo-*/emerald-*/violet-*`; dark backgrounds use `/50` opacity for softer fill.
+  - **Skeletons**: updated to `zinc-200 dark:bg-zinc-700/60`; card skeleton upgraded to `rounded-2xl`.
+  - **Tab inactive**: `gray-*` → `zinc-*`; active tab is now `font-semibold` (was `font-medium`).
+  - **Bottom nav active** colour: `blue-*` → `indigo-*` for brand consistency.
+  - **Page headers** (`pageHeader.adminGradient`): updated gradient from `purple/indigo` to `violet/transparent` for cleaner look.
+  - **Icon** standalone tokens: `yellow-*` warning → `amber-*` for visual harmony.
+  - **Scrollbars**: replaced gradient thumb with flat `zinc-300/zinc-600`.
+
+- **`src/app/globals.css`** — Updated to match new token values:
+  - CSS custom properties (`:root` and `.dark`) updated to zinc RGB values.
+  - `body` font-family now includes `Inter` as preferred option (graceful fallback to system fonts).
+  - `body` background: `bg-white dark:bg-zinc-950`.
+  - Focus ring: `ring-indigo-500` (was `ring-blue-500`); dark offset against `zinc-950`.
+  - `.btn-primary`: flat `bg-indigo-600` (no gradient). `.btn-secondary`: `zinc-900/zinc-100`. `.btn-outline`: single `border` with zinc colours.
+  - `.input-base`: `zinc` borders, `indigo` focus ring.
+  - `.card`: `rounded-2xl`, `border border-zinc-200 dark:border-zinc-800`, `shadow-sm` (no `shadow-md`).
+  - `.card-hover`: shadow-based hover (removed `scale-[1.02]`).
+  - `.glass` / `.glass-strong`: updated to zinc-based backgrounds.
+  - Scrollbar track/thumb: zinc neutrals.
+  - Typography CSS classes updated to `zinc-950/zinc-50` for higher contrast.
+
+- **`tailwind.config.js`** — Safelist updated: `zinc-*` classes are now the primary safelisted set; `gray-*` kept as fallback for any components not yet consuming `THEME_CONSTANTS`.
+
+- **`docs/STYLING_GUIDE.md`** — `themed` token reference table updated to reflect zinc values; added palette rationale note.
+
+---
+
 ## [2026-03-13] — Firebase Rules Audit & Newsletter Subscriber Feature
 
 ### Fixed

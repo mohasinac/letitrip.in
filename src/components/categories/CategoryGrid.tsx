@@ -9,6 +9,7 @@
 import { useTranslations } from "next-intl";
 import { CategoryDocument } from "@/db/schema";
 import { THEME_CONSTANTS } from "@/constants";
+import { Text, Heading } from "@/components";
 import { CategoryCard } from "./CategoryCard";
 
 const { spacing } = THEME_CONSTANTS;
@@ -27,12 +28,10 @@ export function CategoryGrid({
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <span className="text-6xl mb-4">🗂️</span>
-        <p className="text-lg font-medium text-gray-900 dark:text-white">
-          {t("noCategories")}
-        </p>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <Heading level={3}>{t("noCategories")}</Heading>
+        <Text variant="secondary" size="sm" className="mt-1">
           {t("noCategoriesSubtitle")}
-        </p>
+        </Text>
       </div>
     );
   }
