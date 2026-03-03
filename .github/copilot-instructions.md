@@ -20,6 +20,7 @@
 - **Minimize parallel tool calls** — run only the tools necessary for the current step; avoid speculative reads.
 - **Windows paths** — always use backslash-compatible absolute paths (`D:\proj\letitrip.in\...`) in terminal commands; use forward slashes only in import statements.
 - **PowerShell syntax** — use `;` to chain commands, never `&&`; use `Get-ChildItem`, `Test-Path`, etc. instead of Unix aliases.
+- **No mass-edit scripts** — NEVER write or run PowerShell scripts, shell scripts, or any file-based automation to apply bulk edits across source files. Instead, use `multi_replace_string_in_file` for simultaneous independent edits, or `replace_string_in_file` sequentially for dependent edits. Scripted mass-edits corrupt files, destroy context, and produce difficult-to-review diffs. Every file change must go through the editor tools, one file (or a parallel batch of files) at a time.
 
 ---
 
@@ -3331,6 +3332,7 @@ Before writing ANY code, verify:
 - [ ] Am I calling `apiClient` directly in a component, page, context, or hook? → move the call into a service function in `@/services` or `@/features/<name>/services`, then call it via a hook (Rule 21)
 - [ ] Does a service for this domain already exist in `@/services` or `@/features/<name>/services`? → reuse it, do not duplicate
 - [ ] Is my `useApiQuery`/`useApiMutation` `queryFn`/`mutationFn` calling a named service function — not an inline `apiClient.*` call? (Rule 21)
+- [ ] Am I about to write or run a PowerShell / shell script to bulk-edit source files? → **STOP** — use `multi_replace_string_in_file` for parallel independent edits or `replace_string_in_file` sequentially; scripts corrupt files and produce unreviable diffs
 - [ ] Am I deleting the old implementation when replacing code — not keeping it alongside the new one? (Rule 24)
 - [ ] No `@deprecated` stubs, compatibility wrappers, or dual implementations? (Rule 24)
 - [ ] No legacy polyfills, `@supports` fallbacks, or manual vendor prefixes? (Rule 24)

@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-03-04] — Copilot Instructions: No Mass-Edit Scripts Rule
+
+### Added
+
+- **`.github/copilot-instructions.md`** — new **"No mass-edit scripts"** developer guideline:
+  - Explicitly forbids writing or running PowerShell / shell scripts to bulk-edit source files
+  - Mandates use of `multi_replace_string_in_file` for simultaneous independent edits and `replace_string_in_file` sequentially for dependent edits
+  - Explains that scripted mass-edits corrupt files, destroy context, and produce unreviable diffs
+  - Corresponding pre-code checklist item added: _"Am I about to write or run a PowerShell / shell script to bulk-edit source files? → STOP — use the editor tools instead"_
+
+---
+
 ## [2026-03-04] — DRY Refactoring: Import Corruption Fixes, Link→TextLink, Navigation Hook Migration
 
 ### Fixed
