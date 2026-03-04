@@ -1,11 +1,11 @@
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { Suspense } from "react";
 import { FAQ_CATEGORIES, ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
 import { FAQPageContent } from "@/components";
 
 interface Props {
-  params: Promise<{ category: string }>;
+  params: Promise<{ locale: string; category: string }>;
 }
 
 export function generateStaticParams() {
@@ -13,10 +13,10 @@ export function generateStaticParams() {
 }
 
 export default async function FAQCategoryPage({ params }: Props) {
-  const { category } = await params;
+  const { locale, category } = await params;
 
   if (!(category in FAQ_CATEGORIES)) {
-    redirect(ROUTES.PUBLIC.FAQS);
+    redirect({ href: ROUTES.PUBLIC.FAQS, locale });
   }
 
   return (

@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { ROUTES } from "@/constants";
 
 interface Props {
@@ -8,5 +8,5 @@ interface Props {
 /** Redirect root store URL → products sub-page */
 export default async function StoreIndexPage({ params }: Props) {
   const { locale, storeSlug } = await params;
-  redirect(`/${locale}${ROUTES.PUBLIC.STORE_PRODUCTS(storeSlug)}`);
+  redirect({ href: ROUTES.PUBLIC.STORE_PRODUCTS(storeSlug), locale });
 }

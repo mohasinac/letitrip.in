@@ -6,7 +6,9 @@ import {
   Button,
   FormField,
   Alert,
+  Input,
   Label,
+  Select,
   Text,
 } from "@/components";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
@@ -286,18 +288,15 @@ export function EventFormDrawer({
         {/* Type selector */}
         <div>
           <Label className="mb-1">Event Type</Label>
-          <select
+          <Select
             value={form.type}
             onChange={(e) => set("type", e.target.value as EventType)}
             disabled={isEdit}
-            className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm disabled:opacity-50"
-          >
-            {EVENT_TYPE_VALUES.map((value) => (
-              <option key={value} value={value}>
-                {tEventTypes(value)}
-              </option>
-            ))}
-          </select>
+            options={EVENT_TYPE_VALUES.map((value) => ({
+              value,
+              label: tEventTypes(value),
+            }))}
+          />
           {isEdit && (
             <Text size="xs" variant="secondary" className="mt-1">
               Event type cannot be changed after creation.
@@ -309,20 +308,18 @@ export function EventFormDrawer({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label className="mb-1">Starts At</Label>
-            <input
+            <Input
               type="datetime-local"
               value={form.startsAt}
               onChange={(e) => set("startsAt", e.target.value)}
-              className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
             />
           </div>
           <div>
             <Label className="mb-1">Ends At</Label>
-            <input
+            <Input
               type="datetime-local"
               value={form.endsAt}
               onChange={(e) => set("endsAt", e.target.value)}
-              className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
             />
           </div>
         </div>
@@ -338,12 +335,11 @@ export function EventFormDrawer({
 
         <div>
           <Label className="mb-1">Banner Image URL</Label>
-          <input
+          <Input
             type="url"
             value={form.bannerImageUrl}
             onChange={(e) => set("bannerImageUrl", e.target.value)}
             placeholder="https://..."
-            className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
           />
         </div>
 

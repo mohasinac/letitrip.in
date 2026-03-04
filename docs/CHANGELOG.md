@@ -13,6 +13,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-03-04] — Rule Violations Fixed: next/navigation redirect & duplicate hook
+
+### Fixed
+
+- **`src/app/[locale]/stores/[storeSlug]/page.tsx`** — replaced `redirect` import from `next/navigation` with `@/i18n/navigation` (Rule 33.3); updated call to `redirect({ href, locale })` with locale-aware signature
+- **`src/app/[locale]/faqs/[category]/page.tsx`** — replaced `redirect` import from `next/navigation` with `@/i18n/navigation` (Rule 33.3); added `locale` to params type; updated call to `redirect({ href: ROUTES.PUBLIC.FAQS, locale })`
+- **`src/app/[locale]/faqs/[category]/__tests__/page.test.tsx`** — updated mock from `next/navigation` to `@/i18n/navigation`; updated redirect assertion to match new `{ href, locale }` signature
+- **`src/features/events/hooks/usePublicEvents.ts`** — deleted Tier 2 duplicate of `src/hooks/usePublicEvents.ts` (Rule 24; Rule 31 — extend don't fork)
+- **`src/features/events/index.ts`** — removed re-export of deleted Tier 2 `usePublicEvents` hook; callers should use `@/hooks` directly
+
+### Added
+
+- **`src/hooks/__tests__/usePublicEvents.test.ts`** — moved test coverage from deleted Tier 2 hook to Tier 1 location; updated import to `@/hooks` (Rule 27)
+
+---
+
 ## [2026-03-04] — Rule Violations Fixed: FeedbackConfigForm i18n & Theme Constants
 
 ### Fixed

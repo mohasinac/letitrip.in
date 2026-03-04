@@ -1481,23 +1481,99 @@ await create({ name: "Electronics", slug: "electronics", tier: 1 });
 
 ---
 
-## 4. Utils (Pure Functions)
+#### useLogout
 
-**Location**: `src/utils/`  
-**Import**: `import { functionName } from '@/utils'`
+**File**: `useLogout.ts`
+**Purpose**: Mutation hook that calls the backend logout endpoint, clears the session cookie, and revokes tokens. Use instead of any direct auth sign-out call.
+**Parameters**: `(options?: { onSuccess?: () => void; onError?: (err: Error) => void })`
+**Returns**: `{ mutateAsync: logout, isLoading, error }`
 
-### Validators (`src/utils/validators/`)
+**Example**:
 
-#### Email Validators (`email.validator.ts`)
+```tsx
+import { useLogout } from "@/hooks";
+const { mutateAsync: logout, isLoading } = useLogout({
+  onSuccess: () => router.push(ROUTES.AUTH.LOGIN),
+});
+await logout();
+```
 
-- `isValidEmail(email: string): boolean` - Validate email format
-- `isValidEmailDomain(email: string, allowedDomains: string[]): boolean` - Check domain whitelist
-- `normalizeEmail(email: string): string` - Normalize email (lowercase, trim)
-- `isDisposableEmail(email: string): boolean` - Check if disposable email service
+---
 
-#### Password Validators (`password.validator.ts`)
+#### useBecomeSeller
 
-- `meetsPasswordRequirements(password: string, requirements: PasswordRequirements): boolean` - Check password requirements
+**File**: `useBecomeSeller.ts`
+**Purpose**: Mutation hook that submits a seller application for the authenticated user. On success the server sets `role='seller'` and `storeStatus='pending'` on the user document; admin must approve before the store goes live.
+**Parameters**: `(options?: { onSuccess?: () => void; onError?: (err: Error) => void })`
+**Returns**: `{ mutate: applyAsSeller, isLoading, error }`
+
+**Example**:
+
+```tsx
+import { useBecomeSeller } from "@/hooks";
+const { mutate: applyAsSeller, isLoading } = useBecomeSeller();
+applyAsSeller({ storeName: "My Store", category: "electronics" });
+```
+
+---
+
+#### useNewsletter
+
+**File**: `useNewsletter.ts`
+**Purpose**: Mutation hook for newsletter subscription. Wraps `newsletterService.subscribe()` — used in footers, homepage popups, and checkout opt-in banners.
+**Parameters**: None (mutation data passed to `mutate`)
+**Returns**: `{ mutate, isLoading, error }` — `mutate({ email, source? })`
+
+**Example**:
+
+```tsx
+import { useNewsletter } from "@/hooks";
+const { mutate: subscribe, isLoading } = useNewsletter();
+subscribe({ email: "user@example.com", source: "footer" });
+```
+
+---
+
+#### useRipCoinBalance / usePurchaseRipCoins / useVerifyRipCoinPurchase / useRipCoinHistory
+
+**File**: `useRipCoins.ts`
+**Purpose**: Four focused hooks that together cover the full RipCoins wallet lifecycle.
+
+| Hook                         | Returns                            | Notes                                                  |
+| ---------------------------- | ---------------------------------- | ------------------------------------------------------ |
+| `useRipCoinBalance()`        | `{ data: { balance }, isLoading }` | Query — cached wallet balance                          |
+| `usePurchaseRipCoins()`      | `{ mutate, isLoading }`            | Mutation — initiates Razorpay order for coin packs     |
+| `useVerifyRipCoinPurchase()` | `{ mutate, isLoading }`            | Mutation — verifies Razorpay payment and credits coins |
+| `useRipCoinHistory(params?)` | `{ data, isLoading }`              | Query — paginated purchase history                     |
+
+**Example**:
+
+```tsx
+import { useRipCoinBalance, usePurchaseRipCoins } from "@/hooks";
+const { data } = useRipCoinBalance();
+const { mutate: purchase } = usePurchaseRipCoins();
+purchase(2); // buy 2 packs
+```
+
+---
+
+#### useChat
+
+**File**: `useChat.ts`
+**Purpose**: Manages buyer–seller real-time chat. Authenticates a secondary Firebase app instance with a server-issued custom token, subscribes read-only to Realtime DB, and exposes `sendMessage` (writes via API route — never directly to Realtime DB).
+**Parameters**: `(chatId: string | null)`
+**Returns**: `{ messages: ChatMessage[], sendMessage, isConnected, isLoading, error }`
+
+**Example**:
+
+```tsx
+import { useChat } from "@/hooks";
+const { messages, sendMessage, isConnected } = useChat(chatId);
+await sendMessage("Hello, is this still available?");
+```
+
+---
+
 - `calculatePasswordStrength(password: string): PasswordStrength` - Calculate strength score
 - `isCommonPassword(password: string): boolean` - Check against common passwords
 
@@ -2123,6 +2199,186 @@ if (Object.keys(errors).length === 0) {
 - `downvote(faqId: string, userId: string): Promise<void>`
 - `incrementViews(faqId: string): Promise<void>`
 - `reorder(faqIds: string[]): Promise<void>`
+
+---
+
+### AddressRepository
+
+**File**: `address.repository.ts`
+**Instance**: `addressRepository`
+**Collection**: `users/{userId}/addresses` (subcollection)
+
+**Methods**:
+
+- `findByUser(userId: string): Promise<AddressDocument[]>`
+- `findById(userId: string, addressId: string): Promise<AddressDocument | null>`
+- `create(userId: string, data: AddressCreateInput): Promise<AddressDocument>`
+- `update(userId: string, addressId: string, data: AddressUpdateInput): Promise<AddressDocument>`
+- `delete(userId: string, addressId: string): Promise<void>`
+- `setDefault(userId: string, addressId: string): Promise<void>`
+
+---
+
+### BlogRepository
+
+**File**: `blog.repository.ts`
+**Instance**: `blogRepository`
+**Collection**: `blogPosts`
+
+**Methods**:
+
+- `findBySlug(slug: string): Promise<BlogPostDocument | null>`
+- `findByCategory(category: BlogPostCategory, limit?: number): Promise<BlogPostDocument[]>`
+- `findByAuthor(authorId: string, limit?: number): Promise<BlogPostDocument[]>`
+- `findByStatus(status: BlogPostStatus): Promise<BlogPostDocument[]>`
+- `findPublished(limit?: number): Promise<BlogPostDocument[]>`
+- `incrementViews(postId: string): Promise<void>`
+- `list(model: SieveModel): Promise<FirebaseSieveResult<BlogPostDocument>>`
+
+---
+
+### CartRepository
+
+**File**: `cart.repository.ts`
+**Instance**: `cartRepository`
+**Collection**: `carts`
+
+**Methods**:
+
+- `findByUserId(userId: string): Promise<CartDocument | null>`
+- `getOrCreate(userId: string): Promise<CartDocument>`
+- `addItem(userId: string, item: AddToCartInput): Promise<CartDocument>`
+- `updateItem(userId: string, itemId: string, data: UpdateCartItemInput): Promise<CartDocument>`
+- `removeItem(userId: string, itemId: string): Promise<CartDocument>`
+- `clearCart(userId: string): Promise<void>`
+- `getItemCount(userId: string): Promise<number>`
+
+---
+
+### WishlistRepository
+
+**File**: `wishlist.repository.ts`
+**Instance**: `wishlistRepository`
+**Collection**: `wishlists` (document ID = userId)
+
+**Methods**:
+
+- `findByUser(userId: string): Promise<WishlistDocument | null>`
+- `addProduct(userId: string, productId: string): Promise<void>`
+- `removeProduct(userId: string, productId: string): Promise<void>`
+- `isWishlisted(userId: string, productId: string): Promise<boolean>`
+- `getCount(userId: string): Promise<number>`
+
+---
+
+### ChatRepository
+
+**File**: `chat.repository.ts`
+**Instance**: `chatRepository`
+**Collection**: `chats`
+
+**Methods**:
+
+- `findOrCreate(buyerId: string, sellerId: string, productId: string): Promise<ChatDocument>`
+- `findByUser(userId: string): Promise<ChatDocument[]>`
+- `getActiveChatIdsForUser(userId: string): Promise<string[]>`
+- `markRead(chatId: string, userId: string): Promise<void>`
+- `updateLastMessage(chatId: string, message: string, senderId: string): Promise<void>`
+
+---
+
+### EventRepository
+
+**File**: `event.repository.ts`
+**Instance**: `eventRepository`
+**Collection**: `events`
+
+**Methods**:
+
+- `findPublished(limit?: number): Promise<EventDocument[]>`
+- `findUpcoming(limit?: number): Promise<EventDocument[]>`
+- `findByOrganiser(organiserId: string): Promise<EventDocument[]>`
+- `findByType(type: string): Promise<EventDocument[]>`
+- `list(model: SieveModel): Promise<FirebaseSieveResult<EventDocument>>`
+
+---
+
+### EventEntryRepository
+
+**File**: `eventEntry.repository.ts`
+**Instance**: `eventEntryRepository`
+**Collection**: `eventEntries`
+
+**Methods**:
+
+- `findByEvent(eventId: string): Promise<EventEntryDocument[]>`
+- `findByUser(userId: string): Promise<EventEntryDocument[]>`
+- `findUserEntry(eventId: string, userId: string): Promise<EventEntryDocument | null>`
+- `hasEntered(eventId: string, userId: string): Promise<boolean>`
+- `getLeaderboard(eventId: string, limit?: number): Promise<EventEntryDocument[]>`
+
+---
+
+### NewsletterRepository
+
+**File**: `newsletter.repository.ts`
+**Instance**: `newsletterRepository`
+**Collection**: `newsletterSubscribers`
+
+**Methods**:
+
+- `findByEmail(email: string): Promise<NewsletterSubscriberDocument | null>`
+- `subscribe(data: NewsletterSubscriberCreateInput): Promise<NewsletterSubscriberDocument>`
+- `unsubscribe(email: string): Promise<void>`
+- `resubscribe(email: string): Promise<void>`
+- `isSubscribed(email: string): Promise<boolean>`
+- `list(model: SieveModel): Promise<FirebaseSieveResult<NewsletterSubscriberDocument>>`
+
+---
+
+### NotificationRepository
+
+**File**: `notification.repository.ts`
+**Instance**: `notificationRepository`
+**Collection**: `notifications`
+
+**Methods**:
+
+- `findByUser(userId: string, unreadOnly?: boolean): Promise<NotificationDocument[]>`
+- `markRead(notificationId: string): Promise<void>`
+- `markAllRead(userId: string): Promise<void>`
+- `getUnreadCount(userId: string): Promise<number>`
+- `delete(notificationId: string): Promise<void>`
+
+---
+
+### PayoutRepository
+
+**File**: `payout.repository.ts`
+**Instance**: `payoutRepository`
+**Collection**: `payouts`
+
+**Methods**:
+
+- `findBySeller(sellerId: string): Promise<PayoutDocument[]>`
+- `findPending(): Promise<PayoutDocument[]>`
+- `updateStatus(payoutId: string, status: string): Promise<void>`
+- `list(model: SieveModel): Promise<FirebaseSieveResult<PayoutDocument>>`
+
+---
+
+### RipcoinRepository
+
+**File**: `ripcoin.repository.ts`
+**Instance**: `ripcoinRepository`
+**Collection**: `ripcoins`
+
+**Methods**:
+
+- `getBalance(userId: string): Promise<number>`
+- `credit(userId: string, amount: number, reason: string): Promise<void>`
+- `debit(userId: string, amount: number, reason: string): Promise<void>`
+- `getHistory(userId: string, params?: string): Promise<FirebaseSieveResult<RipcoinDocument>>`
 
 ---
 

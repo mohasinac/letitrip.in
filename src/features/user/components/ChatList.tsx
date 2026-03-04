@@ -12,6 +12,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
+  Button,
   Card,
   Heading,
   Text,
@@ -76,8 +77,9 @@ export function ChatList() {
           : "";
 
         return (
-          <button
+          <Button
             key={room.id}
+            variant="ghost"
             onClick={() =>
               router.push(`${ROUTES.USER.MESSAGES}?chatId=${room.id}`)
             }
@@ -98,7 +100,7 @@ export function ChatList() {
             {room.lastMessage && (
               <Caption className="truncate mt-0.5">{room.lastMessage}</Caption>
             )}
-          </button>
+          </Button>
         );
       })}
     </div>

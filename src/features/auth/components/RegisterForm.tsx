@@ -12,6 +12,7 @@ import {
   Button,
   Checkbox,
   FormField,
+  Heading,
   Label,
   PasswordStrengthIndicator,
   Span,
@@ -159,11 +160,12 @@ export function RegisterForm() {
               <Span className="text-white text-2xl font-bold">L</Span>
             </div>
           </div>
-          <h1
+          <Heading
+            level={1}
             className={`mt-6 text-center text-3xl font-extrabold ${themed.textPrimary}`}
           >
             {t("register.title")}
-          </h1>
+          </Heading>
           <Text
             size="sm"
             className={`mt-2 text-center ${themed.textSecondary}`}

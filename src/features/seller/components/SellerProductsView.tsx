@@ -11,6 +11,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import {
   Spinner,
+  Button,
   DataTable,
   AdminPageHeader,
   AdminFilterBar,
@@ -23,6 +24,8 @@ import {
   FilterDrawer,
   FilterFacetSection,
   ActiveFilterChips,
+  Search,
+  Select,
 } from "@/components";
 import type { ActiveFilter, AdminProduct } from "@/components";
 import { Store } from "lucide-react";
@@ -32,7 +35,7 @@ import { useTranslations } from "next-intl";
 import { useSellerProducts } from "../hooks";
 import { SellerProductCard } from "./SellerProductCard";
 
-const { input, flex } = THEME_CONSTANTS;
+const { flex } = THEME_CONSTANTS;
 
 const DEFAULT_PRODUCT: Partial<AdminProduct> = {
   title: "",
@@ -60,7 +63,6 @@ function SellerProductsContent() {
   const { showSuccess, showError } = useMessage();
   const t = useTranslations("sellerProducts");
   const tActions = useTranslations("actions");
-  const tLoading = useTranslations("loading");
 
   const STATUS_OPTIONS = [
     { value: "published", label: t("statusPublished") },
@@ -175,24 +177,22 @@ function SellerProductsContent() {
 
       <div className="flex flex-wrap items-center gap-2">
         <AdminFilterBar withCard={false} columns={2}>
-          <input
-            type="search"
+          <Search
             value={table.get("q")}
-            onChange={(e) => table.set("q", e.target.value)}
+            onChange={(v) => table.set("q", v)}
             placeholder={t("searchPlaceholder")}
-            className={input.base}
           />
-          <select
+          <Select
             value={table.get("sort") || "-createdAt"}
             onChange={(e) => table.setSort(e.target.value)}
-            className={input.base}
-          >
-            <option value="-createdAt">{t("sortNewest")}</option>
-            <option value="createdAt">{t("sortOldest")}</option>
-            <option value="title">{t("sortTitleAZ")}</option>
-            <option value="-price">{t("sortPriceHighLow")}</option>
-            <option value="price">{t("sortPriceLowHigh")}</option>
-          </select>
+            options={[
+              { value: "-createdAt", label: t("sortNewest") },
+              { value: "createdAt", label: t("sortOldest") },
+              { value: "title", label: t("sortTitleAZ") },
+              { value: "-price", label: t("sortPriceHighLow") },
+              { value: "price", label: t("sortPriceLowHigh") },
+            ]}
+          />
         </AdminFilterBar>
         <FilterDrawer
           activeCount={statusParam ? 1 : 0}
@@ -276,19 +276,12 @@ function SellerProductsContent() {
         isDirty={isFormDirty}
         footer={
           <div className="flex gap-3 justify-end">
-            <button
-              onClick={closeDrawer}
-              className={`px-4 py-2 rounded-lg text-sm border ${THEME_CONSTANTS.themed.border} ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.bgPrimary}`}
-            >
+            <Button variant="outline" onClick={closeDrawer}>
               {tActions("cancel")}
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
-            >
-              {isSaving ? tLoading("default") : tActions("save")}
-            </button>
+            </Button>
+            <Button variant="primary" onClick={handleSave} isLoading={isSaving}>
+              {tActions("save")}
+            </Button>
           </div>
         }
       >

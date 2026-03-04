@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Badge, Card, Span, Text, TextLink } from "@/components";
+import { Badge, Card, Heading, Span, Text, TextLink } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatRelativeTime } from "@/utils";
 import { useTranslations } from "next-intl";
@@ -71,11 +71,12 @@ export function EventCard({ event }: EventCardProps) {
         </div>
 
         {/* Title */}
-        <h3
+        <Heading
+          level={3}
           className={`${typography.h4} ${themed.textPrimary} line-clamp-2 flex-1`}
         >
           {event.title}
-        </h3>
+        </Heading>
 
         {/* Ends in */}
         {endsIn && event.status === "active" && (

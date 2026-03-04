@@ -1,7 +1,15 @@
 ﻿"use client";
 
 import { useState } from "react";
-import { Alert, Label, Span, Text } from "@/components";
+import {
+  Alert,
+  Button,
+  Input,
+  Label,
+  Span,
+  Text,
+  Textarea,
+} from "@/components";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useMessage } from "@/hooks";
@@ -19,7 +27,6 @@ export function FeedbackEventSection({
 }: FeedbackEventSectionProps) {
   const { showSuccess, showError } = useMessage();
   const tEvents = useTranslations("events");
-  const tLoading = useTranslations("loading");
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -61,17 +68,16 @@ export function FeedbackEventSection({
             {field.required && <Span className="text-red-500 ml-1">*</Span>}
           </Label>
           {field.type === "textarea" ? (
-            <textarea
+            <Textarea
               value={responses[field.id] ?? ""}
               onChange={(e) =>
                 setResponses((r) => ({ ...r, [field.id]: e.target.value }))
               }
               placeholder={field.placeholder}
               rows={4}
-              className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
             />
           ) : (
-            <input
+            <Input
               type={field.type === "rating" ? "number" : field.type}
               value={responses[field.id] ?? ""}
               onChange={(e) =>
@@ -80,19 +86,20 @@ export function FeedbackEventSection({
               placeholder={field.placeholder}
               min={field.type === "rating" ? 1 : undefined}
               max={field.type === "rating" ? 5 : undefined}
-              className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
             />
           )}
         </div>
       ))}
 
-      <button
+      <Button
+        variant="primary"
         onClick={handleSubmit}
         disabled={mutation.isLoading}
-        className="w-full px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium transition-colors"
+        isLoading={mutation.isLoading}
+        className="w-full"
       >
-        {mutation.isLoading ? tLoading("default") : tEvents("submit")}
-      </button>
+        {tEvents("submit")}
+      </Button>
     </div>
   );
 }

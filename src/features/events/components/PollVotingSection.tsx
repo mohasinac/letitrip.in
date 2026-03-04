@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useMessage, useAuth } from "@/hooks";
-import { Label, Span, Text } from "@/components";
+import { Button, Label, Span, Text, Textarea } from "@/components";
 import { usePollVote } from "../hooks/usePollVote";
 import type { PollConfig } from "@/db/schema";
 
@@ -128,22 +128,22 @@ export function PollVotingSection({
       </div>
 
       {pollConfig.allowComment && (
-        <textarea
+        <Textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="Add a comment (optional)"
           rows={3}
-          className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
         />
       )}
 
-      <button
+      <Button
+        variant="primary"
         onClick={handleSubmit}
         disabled={selected.length === 0 || mutation.isLoading}
-        className="w-full px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium transition-colors"
+        className="w-full"
       >
         {mutation.isLoading ? tLoading("default") : tEvents("vote")}
-      </button>
+      </Button>
     </div>
   );
 }

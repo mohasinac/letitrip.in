@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Label } from "@/components";
+import { Button, Checkbox, Input, Label, Select } from "@/components";
 import { useTranslations } from "next-intl";
 import type { PollConfig } from "@/db/schema";
 
@@ -48,12 +48,11 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
         {options.map((opt, idx) => (
           <div key={opt.id} className="flex items-center gap-2">
             <div className="flex-1">
-              <input
+              <Input
                 type="text"
                 value={opt.label}
                 onChange={(e) => updateOption(opt.id, e.target.value)}
                 placeholder={`Option ${idx + 1}`}
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
               />
             </div>
             <Button
@@ -71,29 +70,21 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
           + Add Option
         </Button>
       </div>
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="allowMultiSelect"
-          checked={value.allowMultiSelect ?? false}
-          onChange={(e) => setField("allowMultiSelect", e.target.checked)}
-          className="h-4 w-4 rounded border-gray-300"
-        />
-        <Label htmlFor="allowMultiSelect">Allow multiple selections</Label>
-      </div>
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="allowComment"
-          checked={value.allowComment ?? false}
-          onChange={(e) => setField("allowComment", e.target.checked)}
-          className="h-4 w-4 rounded border-gray-300"
-        />
-        <Label htmlFor="allowComment">Allow comments</Label>
-      </div>
+      <Checkbox
+        id="allowMultiSelect"
+        checked={value.allowMultiSelect ?? false}
+        onChange={(e) => setField("allowMultiSelect", e.target.checked)}
+        label="Allow multiple selections"
+      />
+      <Checkbox
+        id="allowComment"
+        checked={value.allowComment ?? false}
+        onChange={(e) => setField("allowComment", e.target.checked)}
+        label="Allow comments"
+      />
       <div>
         <Label className="mb-1">Results Visibility</Label>
-        <select
+        <Select
           value={value.resultsVisibility ?? "always"}
           onChange={(e) =>
             setField(
@@ -101,12 +92,12 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
               e.target.value as PollConfig["resultsVisibility"],
             )
           }
-          className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
-        >
-          <option value="always">Always</option>
-          <option value="after_vote">After voting</option>
-          <option value="after_end">After event ends</option>
-        </select>
+          options={[
+            { value: "always", label: "Always" },
+            { value: "after_vote", label: "After voting" },
+            { value: "after_end", label: "After event ends" },
+          ]}
+        />
       </div>
     </div>
   );

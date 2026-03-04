@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { renderHook } from "@testing-library/react";
-import { usePublicEvents } from "../usePublicEvents";
+import { usePublicEvents } from "@/hooks";
 
 jest.mock("@/hooks/useApiQuery", () => ({
   useApiQuery: jest.fn((opts: any) => {

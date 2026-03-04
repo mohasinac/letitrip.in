@@ -1,13 +1,17 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import FAQCategoryPage, { generateStaticParams } from "../page";
 import { FAQ_CATEGORIES, ROUTES } from "@/constants";
 
-// Mock next/navigation redirect
-jest.mock("next/navigation", () => ({
+// Mock @/i18n/navigation redirect
+jest.mock("@/i18n/navigation", () => ({
   redirect: jest.fn(),
   notFound: jest.fn(),
+  Link: ({ children, href }: { children: React.ReactNode; href: string }) =>
+    require("react").createElement("a", { href }, children),
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
+  usePathname: () => "/",
 }));
 
 // Mock the FAQPageContent component
@@ -20,9 +24,9 @@ jest.mock("@/components/faq", () => ({
 }));
 
 // Resolve params properly for server components
-async function renderWithCategory(category: string) {
+async function renderWithCategory(category: string, locale = "en") {
   const result = FAQCategoryPage({
-    params: Promise.resolve({ category }),
+    params: Promise.resolve({ locale, category }),
   });
   render(await result);
 }
@@ -43,7 +47,10 @@ describe("FAQCategoryPage", () => {
 
   it("redirects to /faqs for an invalid category", async () => {
     await renderWithCategory("not-a-real-category");
-    expect(redirect).toHaveBeenCalledWith(ROUTES.PUBLIC.FAQS);
+    expect(redirect).toHaveBeenCalledWith({
+      href: ROUTES.PUBLIC.FAQS,
+      locale: "en",
+    });
   });
 
   it("does not redirect for valid categories", async () => {

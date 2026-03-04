@@ -20,9 +20,9 @@ import {
   Button,
   Caption,
   Card,
+  Checkbox,
   Divider,
   Heading,
-  Label,
   Li,
   Span,
   Spinner,
@@ -101,19 +101,12 @@ function GuideSection({ sectionIndex, id, read, onToggle }: GuideSectionProps) {
           <Divider className="mb-4" />
 
           {/* Read acknowledgement */}
-          <Label
-            htmlFor={checkboxId}
-            className="flex items-center gap-2 cursor-pointer select-none"
-          >
-            <input
-              id={checkboxId}
-              type="checkbox"
-              checked={read}
-              onChange={(e) => onToggle(id, e.target.checked)}
-              className="w-4 h-4 rounded accent-indigo-600 cursor-pointer"
-            />
-            <Caption className="font-medium">{t("ackLabel")}</Caption>
-          </Label>
+          <Checkbox
+            id={checkboxId}
+            checked={read}
+            onChange={(e) => onToggle(id, e.target.checked)}
+            label={t("ackLabel")}
+          />
         </div>
       </div>
     </Card>

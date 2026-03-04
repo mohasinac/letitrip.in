@@ -8,7 +8,6 @@ export { EVENT_SORT_OPTIONS } from "./constants/EVENT_SORT_OPTIONS";
 export { FORM_FIELD_TYPE_VALUES } from "./constants/FORM_FIELD_TYPE_OPTIONS";
 
 // Hooks
-export { usePublicEvents } from "./hooks/usePublicEvents";
 export { useEventLeaderboard } from "./hooks/useEventLeaderboard";
 export { useEvents } from "./hooks/useEvents";
 export { useEvent } from "./hooks/useEvent";

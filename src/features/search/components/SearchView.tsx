@@ -1,8 +1,8 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Search as SearchIcon } from "lucide-react";
-import { PRODUCT_SORT_VALUES, Span } from "@/components";
+import { PRODUCT_SORT_VALUES, Search, Span } from "@/components";
 import {
   FilterDrawer,
   FilterFacetSection,
@@ -16,7 +16,6 @@ import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable } from "@/hooks";
 import { useSearch } from "@/features/search";
-import { debounce } from "@/utils";
 import type { ProductSortValue } from "@/components";
 
 const { themed, spacing, page } = THEME_CONSTANTS;
@@ -37,23 +36,6 @@ export function SearchView() {
   const urlSort =
     (table.get("sort") as ProductSortValue) || PRODUCT_SORT_VALUES.NEWEST;
   const urlPage = table.getNumber("page", 1);
-
-  const [inputValue, setInputValue] = useState(urlQ);
-
-  useEffect(() => {
-    setInputValue(urlQ);
-  }, [urlQ]);
-
-  const debouncedSetQ = useMemo(
-    () => debounce((q: string) => table.set("q", q), DEBOUNCE_MS),
-    [],
-  );
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setInputValue(val);
-    debouncedSetQ(val);
-  };
 
   const searchParams = useMemo(() => {
     const params = new URLSearchParams();
@@ -126,19 +108,13 @@ export function SearchView() {
 
       {/* Search Input */}
       <div className="relative">
-        <input
-          type="search"
-          value={inputValue}
-          onChange={handleInputChange}
+        <Search
+          value={table.get("q")}
+          onChange={(v) => table.set("q", v)}
           placeholder={t("searchInputPlaceholder")}
-          autoFocus
-          className={`w-full h-12 pl-4 pr-12 rounded-xl border text-base ${themed.border} ${themed.bgPrimary} ${themed.textPrimary} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+          debounceMs={DEBOUNCE_MS}
+          className="w-full h-12"
         />
-        <Span
-          className={`absolute right-4 top-1/2 -translate-y-1/2 ${THEME_CONSTANTS.icon.muted} pointer-events-none`}
-        >
-          <SearchIcon className="w-5 h-5" />
-        </Span>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">

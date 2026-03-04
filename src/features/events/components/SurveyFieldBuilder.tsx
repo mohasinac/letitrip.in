@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Label, Text } from "@/components";
+import { Button, Checkbox, Input, Label, Select, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { FORM_FIELD_TYPE_VALUES } from "../constants/FORM_FIELD_TYPE_OPTIONS";
@@ -72,32 +72,28 @@ export function SurveyFieldBuilder({
           <div className="flex items-center gap-2">
             <div className="flex-1">
               <Label className="mb-0.5">Label</Label>
-              <input
+              <Input
                 type="text"
                 value={field.label}
                 onChange={(e) =>
                   updateField(field.id, { label: e.target.value })
                 }
                 placeholder="Field label"
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
               />
             </div>
             <div className="shrink-0 mt-4">
-              <select
+              <Select
                 value={field.type}
                 onChange={(e) =>
                   updateField(field.id, {
                     type: e.target.value as FormFieldType,
                   })
                 }
-                className="rounded-md border border-gray-300 dark:border-gray-600 px-2 py-1.5 text-sm"
-              >
-                {FORM_FIELD_TYPE_VALUES.map((value) => (
-                  <option key={value} value={value}>
-                    {tFieldTypes(value)}
-                  </option>
-                ))}
-              </select>
+                options={FORM_FIELD_TYPE_VALUES.map((value) => ({
+                  value,
+                  label: tFieldTypes(value),
+                }))}
+              />
             </div>
           </div>
 
@@ -106,7 +102,7 @@ export function SurveyFieldBuilder({
             field.type === "radio") && (
             <div>
               <Label className="mb-0.5">Options (comma-separated)</Label>
-              <input
+              <Input
                 type="text"
                 value={(field.options ?? []).join(", ")}
                 onChange={(e) =>
@@ -118,23 +114,18 @@ export function SurveyFieldBuilder({
                   })
                 }
                 placeholder="Option 1, Option 2, Option 3"
-                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
               />
             </div>
           )}
 
           <div className={flex.between}>
-            <Label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={field.required ?? false}
-                onChange={(e) =>
-                  updateField(field.id, { required: e.target.checked })
-                }
-                className="h-4 w-4 rounded border-gray-300"
-              />
-              Required
-            </Label>
+            <Checkbox
+              checked={field.required ?? false}
+              onChange={(e) =>
+                updateField(field.id, { required: e.target.checked })
+              }
+              label="Required"
+            />
             <div className="flex gap-1">
               <Button
                 variant="ghost"

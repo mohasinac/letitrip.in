@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
-import { Badge, Span, Text } from "@/components";
+import { Badge, Button, Span, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { AdminProduct } from "@/components";
@@ -62,18 +62,22 @@ export function SellerProductCard({
           </Badge>
         </div>
         <div className="flex gap-2 pt-1">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => onEdit(product)}
-            className="flex-1 text-xs py-1.5 rounded-lg border border-indigo-500 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+            className="flex-1 text-xs py-1.5"
           >
             {tActions("edit")}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="danger"
+            size="sm"
             onClick={() => onDelete(product)}
-            className="flex-1 text-xs py-1.5 rounded-lg border border-red-400 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+            className="flex-1 text-xs py-1.5"
           >
             {tActions("delete")}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
