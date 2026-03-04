@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
+import { Button } from "@/components";
 import { Span } from "../typography/Typography";
 
 export interface ActiveFilter {
@@ -69,8 +70,9 @@ export function ActiveFilterChips({
             {filter.label}:
           </Span>
           {filter.value}
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => onRemove(filter.key)}
             aria-label={`Remove ${filter.label}: ${filter.value} filter`}
             className={`ml-1 ${flex.center} w-4 h-4 ${borderRadius.full} hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors`}
@@ -89,18 +91,19 @@ export function ActiveFilterChips({
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-          </button>
+          </Button>
         </Span>
       ))}
 
       {/* Clear all */}
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={onClearAll}
         className={`text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline ${spacing.padding.xs}`}
       >
         {tActions("clearAll")}
-      </button>
+      </Button>
     </div>
   );
 }

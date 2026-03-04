@@ -24,16 +24,9 @@
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useAddressSelector, useMessage } from "@/hooks";
-import { SideDrawer, Button, AddressForm, Label } from "@/components";
+import { SideDrawer, Button, AddressForm, Label, Select } from "@/components";
 import type { AddressFormData } from "@/hooks";
-import {
-  UI_PLACEHOLDERS,
-  SUCCESS_MESSAGES,
-  ERROR_MESSAGES,
-  THEME_CONSTANTS,
-} from "@/constants";
-
-const { input } = THEME_CONSTANTS;
+import { UI_PLACEHOLDERS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 
 interface SavedAddress {
   id: string;
@@ -97,20 +90,21 @@ export function AddressSelectorCreate({
       <div>
         {label && <Label className="mb-1">{label}</Label>}
         <div className="flex gap-2 items-center">
-          <select
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            disabled={disabled || isLoading}
-            className={`flex-1 ${input.base}`}
-            aria-label={label ?? tForm("pickupAddress")}
-          >
-            <option value="">{UI_PLACEHOLDERS.SELECT_ADDRESS}</option>
-            {addresses.map((addr) => (
-              <option key={addr.id} value={addr.id}>
-                {formatLabel(addr)}
-              </option>
-            ))}
-          </select>
+          <div className="flex-1">
+            <Select
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              disabled={disabled || isLoading}
+              aria-label={label ?? tForm("pickupAddress")}
+              options={[
+                { value: "", label: UI_PLACEHOLDERS.SELECT_ADDRESS },
+                ...addresses.map((addr) => ({
+                  value: addr.id,
+                  label: formatLabel(addr),
+                })),
+              ]}
+            />
+          </div>
 
           {!disabled && (
             <Button

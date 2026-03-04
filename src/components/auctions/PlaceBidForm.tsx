@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { usePlaceBid } from "@/hooks";
-import { Button, Label, Span, Text } from "@/components";
+import { Button, Input, Label, Span, Text } from "@/components";
 import type { BidDocument } from "@/db/schema";
 
 const { themed } = THEME_CONSTANTS;
@@ -117,7 +117,7 @@ export function PlaceBidForm({
           <Span className={`text-sm font-medium ${themed.textSecondary}`}>
             {currency}
           </Span>
-          <input
+          <Input
             id="bid-amount"
             type="number"
             min={minimumRequired}
@@ -129,7 +129,7 @@ export function PlaceBidForm({
               setSuccess(false);
             }}
             placeholder={String(minimumRequired)}
-            className={`flex-1 h-10 px-3 rounded-lg border text-sm ${themed.border} ${themed.bgPrimary} ${themed.textPrimary} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+            className="flex-1"
           />
           <Button
             type="submit"

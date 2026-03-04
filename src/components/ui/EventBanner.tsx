@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { usePublicEvents } from "@/hooks";
 import { useTranslations } from "next-intl";
 import { ROUTES } from "@/constants";
-import { TextLink } from "@/components";
+import { Button, TextLink } from "@/components";
 
 /**
  * EventBanner
@@ -75,13 +75,14 @@ export function EventBanner() {
       <TextLink href={href} className="hover:underline">
         🎉 {bannerText}
       </TextLink>
-      <button
+      <Button
+        variant="ghost"
         onClick={dismiss}
         aria-label="Dismiss banner"
         className="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white text-lg leading-none"
       >
         ×
-      </button>
+      </Button>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import {
   AdminPageHeader,
   AdminFilterBar,
   DataTable,
+  Select,
   TablePagination,
 } from "@/components";
 import { ROUTES } from "@/constants";
@@ -70,25 +71,27 @@ export default function AdminEventEntriesPage() {
 
       <div className="space-y-4 mt-4">
         <AdminFilterBar columns={2}>
-          <select
+          <Select
             value={table.get("reviewStatus")}
             onChange={(e) => table.set("reviewStatus", e.target.value)}
-            className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
-          >
-            <option value="">All Statuses</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="flagged">Flagged</option>
-          </select>
-          <select
+            className="w-full"
+            options={[
+              { value: "", label: "All Statuses" },
+              { value: "pending", label: "Pending" },
+              { value: "approved", label: "Approved" },
+              { value: "flagged", label: "Flagged" },
+            ]}
+          />
+          <Select
             value={table.get("sorts")}
             onChange={(e) => table.setSort(e.target.value)}
-            className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
-          >
-            <option value="-submittedAt">Newest First</option>
-            <option value="submittedAt">Oldest First</option>
-            <option value="-points">Most Points</option>
-          </select>
+            className="w-full"
+            options={[
+              { value: "-submittedAt", label: "Newest First" },
+              { value: "submittedAt", label: "Oldest First" },
+              { value: "-points", label: "Most Points" },
+            ]}
+          />
         </AdminFilterBar>
 
         <DataTable

@@ -473,6 +473,24 @@ Never use `console.log` in production code.
 | ---------------- | ---------- | ---------------------------- | ---------------------------------------------------------------------------------------- |
 | `useMediaUpload` | —          | `{ mutate, loading, error }` | `mutate(FormData)` → POST `/api/media/upload`. Prefer `<ImageUpload>` component instead. |
 
+### Commerce & Wallet
+
+| Hook                       | Parameters | Returns                 | Notes                                          |
+| -------------------------- | ---------- | ----------------------- | ---------------------------------------------- |
+| `useBecomeSeller`          | `options?` | `{ mutate, isLoading }` | Submit seller application; admin-approved flow |
+| `useNewsletter`            | —          | `{ mutate, isLoading }` | `mutate({ email, source? })` — subscribe       |
+| `useRipCoinBalance`        | —          | `{ data, isLoading }`   | Wallet balance query                           |
+| `usePurchaseRipCoins`      | —          | `{ mutate, isLoading }` | Initiate Razorpay coin-pack purchase           |
+| `useVerifyRipCoinPurchase` | —          | `{ mutate, isLoading }` | Verify Razorpay payment and credit coins       |
+| `useRipCoinHistory`        | `params?`  | `{ data, isLoading }`   | Paginated purchase history                     |
+
+### Authentication & Real-time
+
+| Hook        | Parameters | Returns                                                    | Notes                                  |
+| ----------- | ---------- | ---------------------------------------------------------- | -------------------------------------- |
+| `useLogout` | `options?` | `{ mutateAsync: logout, isLoading }`                       | Clears session cookie + revokes tokens |
+| `useChat`   | `chatId`   | `{ messages, sendMessage, isConnected, isLoading, error }` | Realtime DB subscribe; writes via API  |
+
 ---
 
 ## Key File Locations
@@ -481,7 +499,7 @@ Never use `console.log` in production code.
 constants/              src/constants/          (ui.ts, messages.ts, routes.ts, api-endpoints.ts, theme.ts)
 db schemas              src/db/schema/          (users.ts, products.ts, orders.ts, …)
 repositories            src/repositories/       (*.repository.ts)
-hooks                   src/hooks/              (useApiQuery, useApiMutation, useUrlTable, useAuth, useGoogleLogin, useAppleLogin, useAdminSessions, useRevokeSession, useRoleChecks, useIsOwner, useAddress, useCreateAddress, useUpdateAddress, useAllFaqs, useCategories, useCreateCategory, useGesture, useMediaUpload, …)
+hooks                   src/hooks/              (useApiQuery, useApiMutation, useUrlTable, useAuth, useLogout, useGoogleLogin, useAppleLogin, useAdminSessions, useRevokeSession, useRoleChecks, useIsOwner, useAddress, useCreateAddress, useUpdateAddress, useAllFaqs, useCategories, useCreateCategory, useGesture, useMediaUpload, useBecomeSeller, useNewsletter, useRipCoinBalance, usePurchaseRipCoins, useChat, …)
 utils                   src/utils/              (formatters, validators, converters, events)
 helpers                 src/helpers/            (auth, data, ui)
 classes                 src/classes/            (CacheManager, Logger, EventBus, StorageManager, Queue)

@@ -29,6 +29,7 @@ import {
   CategoryForm,
   DrawerFormFooter,
   Label,
+  Select,
   flattenCategories,
 } from "@/components";
 import type { Category } from "@/components";
@@ -37,8 +38,6 @@ import {
   SUCCESS_MESSAGES,
   THEME_CONSTANTS,
 } from "@/constants";
-
-const { input } = THEME_CONSTANTS;
 
 export interface CategorySelectorCreateProps {
   /** Currently selected category ID */
@@ -125,21 +124,21 @@ export function CategorySelectorCreate({
       <div>
         {label && <Label className="mb-1">{label}</Label>}
         <div className="flex gap-2 items-center">
-          <select
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            disabled={disabled || isLoading}
-            className={`flex-1 ${input.base}`}
-            aria-label={label ?? tForm("category")}
-          >
-            <option value="">{UI_PLACEHOLDERS.SELECT_CATEGORY}</option>
-            {flat.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {"  ".repeat(cat.tier)}
-                {cat.name}
-              </option>
-            ))}
-          </select>
+          <div className="flex-1">
+            <Select
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              disabled={disabled || isLoading}
+              aria-label={label ?? tForm("category")}
+              options={[
+                { value: "", label: UI_PLACEHOLDERS.SELECT_CATEGORY },
+                ...flat.map((cat) => ({
+                  value: cat.id,
+                  label: "\u00a0\u00a0".repeat(cat.tier) + cat.name,
+                })),
+              ]}
+            />
+          </div>
 
           {!disabled && (
             <Button

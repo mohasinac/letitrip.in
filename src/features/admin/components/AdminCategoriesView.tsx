@@ -239,7 +239,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
           <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
           <div className="flex gap-2">
             <div className={`flex border ${themed.border} rounded-md`}>
-              <button
+              <Button
                 onClick={() => setViewMode("tree")}
                 className={`px-3 py-2 text-sm ${
                   viewMode === "tree"
@@ -248,8 +248,8 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
                 }`}
               >
                 {t("treeView")}
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setViewMode("table")}
                 className={`px-3 py-2 text-sm ${
                   viewMode === "table"
@@ -258,7 +258,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
                 }`}
               >
                 {t("tableView")}
-              </button>
+              </Button>
             </div>
             <Button onClick={handleCreate} variant="primary">
               + {tActions("create")}

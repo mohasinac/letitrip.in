@@ -20,7 +20,16 @@ import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useNotifications, useMessage } from "@/hooks";
 import { NotificationDocument } from "@/db/schema";
 import { formatRelativeTime } from "@/utils";
-import { Button, Li, Span, Spinner, Text, TextLink, Ul } from "@/components";
+import {
+  Button,
+  Heading,
+  Li,
+  Span,
+  Spinner,
+  Text,
+  TextLink,
+  Ul,
+} from "@/components";
 
 const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   order_placed: "🛍️",
@@ -103,7 +112,7 @@ export default function NotificationBell() {
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Bell Button */}
-      <button
+      <Button
         onClick={handleToggle}
         className={`hidden md:flex p-2.5 md:p-3 rounded-xl transition-colors relative ${colors.iconButton.onLight}`}
         aria-label={t("title")}
@@ -133,7 +142,7 @@ export default function NotificationBell() {
             {unreadCount > 99 ? "99+" : unreadCount}
           </Span>
         )}
-      </button>
+      </Button>
 
       {/* Dropdown */}
       {isOpen && (
@@ -144,7 +153,8 @@ export default function NotificationBell() {
           <div
             className={`${flex.between} px-4 py-3 border-b ${THEME_CONSTANTS.themed.border}`}
           >
-            <h3
+            <Heading
+              level={3}
               className={`font-semibold ${THEME_CONSTANTS.themed.textPrimary}`}
             >
               {t("title")}
@@ -153,15 +163,15 @@ export default function NotificationBell() {
                   {unreadCount} {t("unread")}
                 </Span>
               )}
-            </h3>
+            </Heading>
             {unreadCount > 0 && (
-              <button
+              <Button
                 onClick={handleMarkAllRead}
                 disabled={isMarkingAll}
                 className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium disabled:opacity-50"
               >
                 {isMarkingAll ? tLoading("default") : t("markAllRead")}
-              </button>
+              </Button>
             )}
           </div>
 

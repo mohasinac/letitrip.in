@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import { THEME_CONSTANTS } from "@/constants";
-import { Button, Heading, Label, Span } from "@/components";
+import {
+  Button,
+  Heading,
+  Input,
+  Label,
+  Select,
+  Span,
+  Textarea,
+} from "@/components";
 
 const { flex } = THEME_CONSTANTS;
 
@@ -177,19 +185,19 @@ export function GridEditor({
             >
               Content Type
             </Label>
-            <select
+            <Select
               value={currentCell.content.type}
               onChange={(e) => {
                 const type = e.target.value as GridCell["content"]["type"];
                 updateCell(currentCell.row, currentCell.col, { type });
               }}
-              className={THEME_CONSTANTS.patterns.adminSelect}
-            >
-              <option value="empty">Empty</option>
-              <option value="image">Image</option>
-              <option value="text">Text</option>
-              <option value="cta">Call to Action</option>
-            </select>
+              options={[
+                { value: "empty", label: "Empty" },
+                { value: "image", label: "Image" },
+                { value: "text", label: "Text" },
+                { value: "cta", label: "Call to Action" },
+              ]}
+            />
           </div>
 
           {/* Image Content */}
@@ -201,7 +209,7 @@ export function GridEditor({
                 >
                   Image URL
                 </Label>
-                <input
+                <Input
                   type="url"
                   value={currentCell.content.imageUrl || ""}
                   onChange={(e) =>
@@ -211,7 +219,6 @@ export function GridEditor({
                     })
                   }
                   placeholder="https://example.com/image.jpg"
-                  className={THEME_CONSTANTS.patterns.adminInput}
                 />
               </div>
               <div>
@@ -220,7 +227,7 @@ export function GridEditor({
                 >
                   Link URL (optional)
                 </Label>
-                <input
+                <Input
                   type="url"
                   value={currentCell.content.link || ""}
                   onChange={(e) =>
@@ -230,7 +237,6 @@ export function GridEditor({
                     })
                   }
                   placeholder="https://example.com/destination"
-                  className={THEME_CONSTANTS.patterns.adminInput}
                 />
               </div>
             </div>
@@ -244,7 +250,7 @@ export function GridEditor({
               >
                 Text Content
               </Label>
-              <textarea
+              <Textarea
                 value={currentCell.content.text || ""}
                 onChange={(e) =>
                   updateCell(currentCell.row, currentCell.col, {
@@ -268,7 +274,7 @@ export function GridEditor({
                 >
                   Button Text
                 </Label>
-                <input
+                <Input
                   type="text"
                   value={currentCell.content.buttonText || ""}
                   onChange={(e) =>
@@ -278,7 +284,6 @@ export function GridEditor({
                     })
                   }
                   placeholder="Shop Now"
-                  className={THEME_CONSTANTS.patterns.adminInput}
                 />
               </div>
               <div>
@@ -287,7 +292,7 @@ export function GridEditor({
                 >
                   Link URL
                 </Label>
-                <input
+                <Input
                   type="url"
                   value={currentCell.content.link || ""}
                   onChange={(e) =>
@@ -297,7 +302,6 @@ export function GridEditor({
                     })
                   }
                   placeholder="https://example.com/shop"
-                  className={THEME_CONSTANTS.patterns.adminInput}
                 />
               </div>
             </div>

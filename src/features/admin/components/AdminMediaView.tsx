@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import {
   Card,
   AdminPageHeader,
+  Button,
   MediaOperationForm,
   DataTable,
   getMediaTableColumns,
@@ -105,7 +106,7 @@ export function AdminMediaView() {
       {/* Operation Type Selector */}
       <Card className="p-4">
         <div className="flex gap-2">
-          <button
+          <Button
             onClick={() => setOperationType("crop")}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               operationType === "crop"
@@ -114,8 +115,8 @@ export function AdminMediaView() {
             }`}
           >
             🖼️ {t("cropImage")}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setOperationType("trim")}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               operationType === "trim"
@@ -124,7 +125,7 @@ export function AdminMediaView() {
             }`}
           >
             🎬 {t("trimVideo")}
-          </button>
+          </Button>
         </div>
       </Card>
 

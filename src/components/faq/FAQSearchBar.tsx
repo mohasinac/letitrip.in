@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { THEME_CONSTANTS, UI_PLACEHOLDERS } from "@/constants";
 import { Button } from "@/components";
+import Input from "../forms/Input";
 
 interface FAQSearchBarProps {
   onSearch: (query: string) => void;
@@ -45,12 +46,12 @@ export function FAQSearchBar({
       </div>
 
       {/* Search Input */}
-      <input
+      <Input
         type="text"
         value={query}
         onChange={(e) => handleSearch(e.target.value)}
         placeholder={placeholder}
-        className={`w-full ${THEME_CONSTANTS.spacing.padding.lg} pl-12 pr-12 ${THEME_CONSTANTS.borderRadius.xl} ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.border} border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
+        className="w-full pl-12 pr-12"
       />
 
       {/* Clear Button */}

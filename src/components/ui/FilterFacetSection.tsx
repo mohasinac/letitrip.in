@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { formatNumber } from "@/utils";
-import { Label, Span, Text } from "@/components";
+import { Button, Checkbox, Input, Span, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface FacetOption {
@@ -58,7 +58,7 @@ export function FilterFacetSection({
   const [visibleCount, setVisibleCount] = useState(pageSize);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const { themed, borderRadius, spacing } = THEME_CONSTANTS;
+  const { themed, spacing } = THEME_CONSTANTS;
   const t = useTranslations("filters");
   const tTable = useTranslations("table");
 
@@ -103,8 +103,9 @@ export function FilterFacetSection({
       className={`${spacing.padding.md} border-b ${themed.border} last:border-b-0 ${className}`}
     >
       {/* Section header */}
-      <button
+      <Button
         type="button"
+        variant="ghost"
         id={`facet-${title}`}
         onClick={() => setIsCollapsed((c) => !c)}
         className={`flex w-full items-center justify-between text-sm font-semibold ${themed.textPrimary} py-1 hover:opacity-80 transition-opacity`}
@@ -135,14 +136,14 @@ export function FilterFacetSection({
             d="M19 9l-7 7-7-7"
           />
         </svg>
-      </button>
+      </Button>
 
       {!isCollapsed && (
         <div className="mt-2 space-y-1" onKeyDown={handleOptionsKeyDown}>
           {/* Inline search */}
           {searchable && options.length > pageSize && (
             <div className="mb-2">
-              <input
+              <Input
                 type="search"
                 value={searchQuery}
                 onChange={(e) => {
@@ -150,7 +151,7 @@ export function FilterFacetSection({
                   setVisibleCount(pageSize);
                 }}
                 placeholder={t("searchIn", { section: title })}
-                className={`w-full text-xs ${THEME_CONSTANTS.input.base}`}
+                className="w-full text-xs"
                 aria-label={t("searchIn", { section: title })}
               />
             </div>
@@ -165,41 +166,37 @@ export function FilterFacetSection({
             visibleOptions.map((opt) => {
               const isChecked = selected.includes(opt.value);
               return (
-                <Label
+                <Checkbox
                   key={opt.value}
-                  className={`flex items-center gap-2 cursor-pointer py-1 px-1 ${borderRadius.md} hover:${themed.bgSecondary} transition-colors`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={() => handleToggle(opt.value)}
-                    aria-checked={isChecked}
-                    className="w-3.5 h-3.5 rounded accent-indigo-600 cursor-pointer"
-                  />
-                  <Span className={`flex-1 text-sm ${themed.textPrimary}`}>
-                    {opt.label}
-                  </Span>
-                  {opt.count !== undefined && (
-                    <Span
-                      className={`text-xs ${themed.textSecondary} tabular-nums`}
-                    >
-                      {formatNumber(opt.count)}
-                    </Span>
-                  )}
-                </Label>
+                  checked={isChecked}
+                  onChange={() => handleToggle(opt.value)}
+                  aria-checked={isChecked}
+                  className="w-3.5 h-3.5 rounded accent-indigo-600 cursor-pointer"
+                  label={opt.label}
+                  suffix={
+                    opt.count !== undefined ? (
+                      <Span
+                        className={`text-xs ${themed.textSecondary} tabular-nums`}
+                      >
+                        {formatNumber(opt.count)}
+                      </Span>
+                    ) : undefined
+                  }
+                />
               );
             })
           )}
 
           {/* Load more */}
           {hasMore && (
-            <button
+            <Button
               type="button"
+              variant="ghost"
               onClick={() => setVisibleCount((c) => c + pageSize)}
-              className={`mt-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline`}
+              className="mt-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
             >
               {tTable("loadMore")}
-            </button>
+            </Button>
           )}
         </div>
       )}

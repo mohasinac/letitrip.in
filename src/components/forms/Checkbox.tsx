@@ -25,11 +25,14 @@ interface CheckboxProps extends Omit<
   "type"
 > {
   label?: string;
+  /** Extra content rendered after the label text inside the checkbox row */
+  suffix?: React.ReactNode;
   error?: string;
 }
 
 export default function Checkbox({
   label,
+  suffix,
   error,
   className = "",
   ...props
@@ -70,11 +73,12 @@ export default function Checkbox({
 
         {label && (
           <Span
-            className={`${typography.small} ${themed.textSecondary} select-none`}
+            className={`${typography.small} ${themed.textSecondary} select-none flex-1`}
           >
             {label}
           </Span>
         )}
+        {suffix}
       </label>
 
       {error && (

@@ -104,14 +104,15 @@ function StarPicker({
   return (
     <div className="flex items-center gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
-        <button
+        <Button
           key={star}
           type="button"
           aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
           onClick={() => onChange(star)}
           onMouseEnter={() => setHovered(star)}
           onMouseLeave={() => setHovered(0)}
-          className="text-2xl transition-colors focus:outline-none"
+          className="text-2xl transition-colors"
+          variant="ghost"
         >
           <Span
             className={
@@ -122,7 +123,7 @@ function StarPicker({
           >
             ★
           </Span>
-        </button>
+        </Button>
       ))}
     </div>
   );
@@ -450,23 +451,23 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
           {/* Pagination */}
           {meta && meta.totalPages > 1 && (
             <div className={`${flex.center} gap-2 pt-2`}>
-              <button
+              <Button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${themed.bgPrimary} ${themed.textPrimary} border ${themed.border}`}
               >
                 {tActions("back")}
-              </button>
+              </Button>
               <Span className={`text-sm ${themed.textSecondary}`}>
                 {page} / {meta.totalPages}
               </Span>
-              <button
+              <Button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={!meta.hasMore}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${themed.bgPrimary} ${themed.textPrimary} border ${themed.border}`}
               >
                 {tActions("next")}
-              </button>
+              </Button>
             </div>
           )}
         </div>

@@ -9,6 +9,7 @@
 "use client";
 
 import {
+  Checkbox,
   FormField,
   GridEditor,
   Heading,
@@ -100,16 +101,12 @@ export function CarouselSlideForm({
         />
 
         <div className="flex items-end">
-          <Label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={slide.isActive}
-              onChange={(e) => update({ isActive: e.target.checked })}
-              disabled={isReadonly}
-              className="w-4 h-4 text-indigo-600 rounded"
-            />
-            <Span className={typography.label}>{UI_LABELS.STATUS.ACTIVE}</Span>
-          </Label>
+          <Checkbox
+            checked={slide.isActive}
+            onChange={(e) => update({ isActive: e.target.checked })}
+            disabled={isReadonly}
+            label={UI_LABELS.STATUS.ACTIVE}
+          />
         </div>
       </div>
 

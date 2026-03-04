@@ -1,6 +1,7 @@
 import {
   LayoutClient,
   MonitoringProvider,
+  TextLink,
   ToastProvider,
   ZodSetup,
 } from "@/components";
@@ -39,12 +40,13 @@ export default async function LocaleLayout({
 
   return (
     <>
-      <a
+      <TextLink
         href="#main-content"
+        variant="bare"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md focus:outline-none"
       >
         Skip to main content
-      </a>
+      </TextLink>
       <NextIntlClientProvider messages={messages}>
         <ZodSetup />
         <ThemeProvider>

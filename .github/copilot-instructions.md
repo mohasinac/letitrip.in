@@ -20,7 +20,7 @@
 - **Minimize parallel tool calls** — run only the tools necessary for the current step; avoid speculative reads.
 - **Windows paths** — always use backslash-compatible absolute paths (`D:\proj\letitrip.in\...`) in terminal commands; use forward slashes only in import statements.
 - **PowerShell syntax** — use `;` to chain commands, never `&&`; use `Get-ChildItem`, `Test-Path`, etc. instead of Unix aliases.
-- **No mass-edit scripts** — NEVER write or run PowerShell scripts, shell scripts, or any file-based automation to apply bulk edits across source files. Instead, use `multi_replace_string_in_file` for simultaneous independent edits, or `replace_string_in_file` sequentially for dependent edits. Scripted mass-edits corrupt files, destroy context, and produce difficult-to-review diffs. Every file change must go through the editor tools, one file (or a parallel batch of files) at a time.
+- **No scripts to fix source files — ever** — NEVER write, create, or run any PowerShell script, shell script, batch file, or any other file-based automation to fix, refactor, or edit source files. This applies to ALL scripts regardless of size or purpose — a one-liner fix script is just as forbidden as a large refactoring script. Scripts corrupt files, silently skip edits, destroy context, and produce diffs that are impossible to review. If you feel the urge to write a script to fix files, that is a signal to stop and use the editor tools instead. **The only permitted way to edit source files is through `multi_replace_string_in_file` (for multiple independent edits in parallel) or `replace_string_in_file` (for sequential dependent edits).** Every single file change must go through these editor tools — no exceptions.
 
 ---
 
@@ -990,6 +990,11 @@ const diff     = formatRelativeTime(date);
 | Auction detail | `useAuctionDetail(auctionId)` — full auction data including live bids |
 | Product reviews | `useProductReviews(productId)` — paginated reviews for a product |
 | Related products | `useRelatedProducts(productId)` — related/recommended product list |
+| Logout | `useLogout(options?)` — mutation hook: calls backend logout endpoint, clears session cookie and revokes tokens |
+| Become seller application | `useBecomeSeller()` — mutation: submits seller application via API; server sets `role='seller'` and `storeStatus='pending'`; admin must approve |
+| Newsletter subscription | `useNewsletter()` — mutation: POST to `/api/newsletter/subscribe` with `{ email, source? }` |
+| RipCoins wallet | `useRipCoins()` — composite hook: `{ balance, purchase, verifyPurchase, history }` — wallet balance query plus Razorpay-backed purchase flow |
+| Buyer–seller real-time chat | `useChat(chatId)` — subscribes (read-only) to Realtime DB `/chat/{chatId}/messages` via Firebase custom token; exposes `sendMessage` (writes via API), `isConnected`, `isLoading` |
 | URL-driven list state (filter/sort/page) | `useUrlTable(options)` — all state in URL query params; bookmark-able, history-safe |
 
 ### `useUrlTable` — URL-Driven List / Table State
@@ -2612,7 +2617,7 @@ import { userRepository } from '@/repositories';
 const user = await userRepository.findByEmail('user@example.com');
 ```
 
-Available repositories: `userRepository`, `tokenRepository`, `productRepository`, `orderRepository`, `reviewRepository`, `sessionRepository`, `siteSettingsRepository`, `carouselRepository`, `homepageSectionsRepository`, `categoriesRepository`, `couponsRepository`, `faqRepository`, `bidRepository`.
+Available repositories: `userRepository`, `tokenRepository`, `productRepository`, `orderRepository`, `reviewRepository`, `sessionRepository`, `siteSettingsRepository`, `carouselRepository`, `homepageSectionsRepository`, `categoriesRepository`, `couponsRepository`, `faqRepository`, `bidRepository`, `addressRepository`, `blogRepository`, `cartRepository`, `wishlistRepository`, `chatRepository`, `eventRepository`, `eventEntryRepository`, `newsletterRepository`, `notificationRepository`, `payoutRepository`, `ripcoinRepository`.
 
 **Important**: API routes in `src/app/api/**` MUST also use repositories for all Firestore operations. Direct `db.collection().doc().get()` calls in API routes violate this rule.
 
@@ -3332,7 +3337,7 @@ Before writing ANY code, verify:
 - [ ] Am I calling `apiClient` directly in a component, page, context, or hook? → move the call into a service function in `@/services` or `@/features/<name>/services`, then call it via a hook (Rule 21)
 - [ ] Does a service for this domain already exist in `@/services` or `@/features/<name>/services`? → reuse it, do not duplicate
 - [ ] Is my `useApiQuery`/`useApiMutation` `queryFn`/`mutationFn` calling a named service function — not an inline `apiClient.*` call? (Rule 21)
-- [ ] Am I about to write or run a PowerShell / shell script to bulk-edit source files? → **STOP** — use `multi_replace_string_in_file` for parallel independent edits or `replace_string_in_file` sequentially; scripts corrupt files and produce unreviable diffs
+- [ ] Am I about to write or create ANY script (PowerShell, shell, batch, or otherwise) to fix or edit source files? → **STOP IMMEDIATELY** — scripts of any size or purpose are forbidden for source file edits. They corrupt files, silently skip edits, and produce unreviable diffs. Use `multi_replace_string_in_file` for parallel independent edits or `replace_string_in_file` sequentially. No exceptions.
 - [ ] Am I deleting the old implementation when replacing code — not keeping it alongside the new one? (Rule 24)
 - [ ] No `@deprecated` stubs, compatibility wrappers, or dual implementations? (Rule 24)
 - [ ] No legacy polyfills, `@supports` fallbacks, or manual vendor prefixes? (Rule 24)

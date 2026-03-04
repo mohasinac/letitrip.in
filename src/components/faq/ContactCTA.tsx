@@ -48,8 +48,9 @@ export function ContactCTA() {
       {/* Contact Options */}
       <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-4 mb-8">
         {/* Email */}
-        <a
+        <TextLink
           href={`mailto:${SITE_CONFIG.contact.email}`}
+          variant="bare"
           className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgTertiary} ${THEME_CONSTANTS.borderRadius.xl} hover:${THEME_CONSTANTS.themed.bgPrimary} transition-colors group`}
         >
           <svg
@@ -75,11 +76,12 @@ export function ContactCTA() {
           >
             {SITE_CONFIG.contact.email}
           </Text>
-        </a>
+        </TextLink>
 
         {/* Phone */}
-        <a
+        <TextLink
           href={`tel:${SITE_CONFIG.contact.phone}`}
+          variant="bare"
           className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgTertiary} ${THEME_CONSTANTS.borderRadius.xl} hover:${THEME_CONSTANTS.themed.bgPrimary} transition-colors group`}
         >
           <svg
@@ -105,7 +107,7 @@ export function ContactCTA() {
           >
             {SITE_CONFIG.contact.phone}
           </Text>
-        </a>
+        </TextLink>
 
         {/* Contact Form */}
         <TextLink

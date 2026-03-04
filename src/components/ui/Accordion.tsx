@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Button } from "@/components";
 import { Span } from "../typography/Typography";
 
 /**
@@ -108,8 +109,9 @@ export function AccordionItem({
         ${className}
       `}
     >
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={() => !disabled && toggleItem(value)}
         disabled={disabled}
         aria-expanded={isOpen}
@@ -141,7 +143,7 @@ export function AccordionItem({
             d="M19 9l-7 7-7-7"
           />
         </svg>
-      </button>
+      </Button>
 
       {isOpen && (
         <div

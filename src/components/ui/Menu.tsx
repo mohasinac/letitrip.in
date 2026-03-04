@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useClickOutside, useKeyPress } from "@/hooks";
+import { Button } from "@/components";
 
 interface MenuContextType {
   isOpen: boolean;
@@ -77,15 +78,16 @@ export function MenuTrigger({ children, className = "" }: MenuTriggerProps) {
   }, [isOpen, setIsOpen]);
 
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
       onClick={handleClick}
       className={className}
       aria-haspopup="true"
       aria-expanded={isOpen}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
@@ -160,8 +162,9 @@ export function MenuItem({
   );
 
   return (
-    <button
+    <Button
       role="menuitem"
+      variant="ghost"
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       disabled={disabled}
@@ -178,7 +181,7 @@ export function MenuItem({
       tabIndex={disabled ? -1 : 0}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 

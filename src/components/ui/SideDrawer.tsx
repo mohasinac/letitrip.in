@@ -188,7 +188,8 @@ export default function SideDrawer({
           className={`${flex.between} ${spacing.padding.lg} ${modeHeaderClass} border-b`}
         >
           <div className={`${flex.rowCenter} gap-3 min-w-0`}>
-            <button
+            <Button
+              variant="ghost"
               onClick={attemptClose}
               className={`${flex.noShrink} p-2 ${themed.textSecondary} ${borderRadius.lg} ${themed.hover} transition-colors ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-gray-300 dark:hover:ring-gray-600`}
               aria-label={tActions("close")}
@@ -206,7 +207,7 @@ export default function SideDrawer({
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </button>
+            </Button>
             <Heading level={3} id="drawer-title" className="truncate">
               {title}
             </Heading>

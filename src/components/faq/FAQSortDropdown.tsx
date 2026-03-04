@@ -2,6 +2,7 @@
 
 import { THEME_CONSTANTS } from "@/constants";
 import { Span } from "../typography/Typography";
+import SelectField from "../forms/Select";
 
 export type FAQSortOption = "helpful" | "newest" | "alphabetical";
 
@@ -27,17 +28,14 @@ export function FAQSortDropdown({
       >
         Sort by:
       </Span>
-      <select
+      <SelectField
         value={selectedSort}
         onChange={(e) => onSortChange(e.target.value as FAQSortOption)}
-        className={`${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.border} border focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer`}
-      >
-        {Object.entries(SORT_OPTIONS).map(([value, label]) => (
-          <option key={value} value={value}>
-            {label}
-          </option>
-        ))}
-      </select>
+        options={Object.entries(SORT_OPTIONS).map(([v, l]) => ({
+          value: v,
+          label: l,
+        }))}
+      />
     </div>
   );
 }

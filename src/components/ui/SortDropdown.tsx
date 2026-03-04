@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { Label } from "../typography/Typography";
+import SelectField from "../forms/Select";
 
 interface SortOption {
   value: string;
@@ -59,19 +60,14 @@ export function SortDropdown({
       >
         {displayLabel}
       </Label>
-      <select
+      <SelectField
         id="sort-dropdown"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`text-sm ${THEME_CONSTANTS.input.base}`}
+        className="text-sm"
         aria-label={displayLabel}
-      >
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
+        options={options}
+      />
     </div>
   );
 }

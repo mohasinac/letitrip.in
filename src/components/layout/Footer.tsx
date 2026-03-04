@@ -4,7 +4,16 @@ import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, SITE_CONFIG, ROUTES } from "@/constants";
 import { currentYear } from "@/utils";
-import { Heading, Text, Span, Caption, TextLink, Ul, Li } from "@/components";
+import {
+  BlockFooter,
+  Heading,
+  Text,
+  Span,
+  Caption,
+  TextLink,
+  Ul,
+  Li,
+} from "@/components";
 
 export default function Footer() {
   const { colors, layout } = THEME_CONSTANTS;
@@ -12,7 +21,7 @@ export default function Footer() {
   const tNav = useTranslations("nav");
 
   return (
-    <footer
+    <BlockFooter
       id="footer"
       className={`mt-auto mb-16 md:mb-0 ${layout.footerBg} border-t ${THEME_CONSTANTS.themed.border}`}
     >
@@ -185,6 +194,6 @@ export default function Footer() {
           <Caption>{t("madeIn")}</Caption>
         </div>
       </div>
-    </footer>
+    </BlockFooter>
   );
 }

@@ -24,7 +24,15 @@ import {
   TablePagination,
 } from "@/components";
 import { useToast } from "@/components";
-import { Modal, ConfirmDeleteModal, Label, Text } from "@/components";
+import {
+  Modal,
+  ConfirmDeleteModal,
+  Label,
+  Text,
+  Select,
+  Input,
+  Textarea,
+} from "@/components";
 import type { Review, ReviewStatus } from "@/components";
 
 interface AdminReviewsViewProps {
@@ -225,44 +233,42 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mb-4">
           <div>
             <Label className="mb-2">{tTable("status")}</Label>
-            <select
+            <Select
               value={statusFilter}
               onChange={(e) =>
                 table.set("status", e.target.value as ReviewStatus)
               }
-              className={THEME_CONSTANTS.patterns.adminInput}
-            >
-              <option value="all">{tStatus("all")}</option>
-              <option value="pending">{t("pending")}</option>
-              <option value="approved">{t("approved")}</option>
-              <option value="rejected">{t("rejected")}</option>
-            </select>
+              options={[
+                { value: "all", label: tStatus("all") },
+                { value: "pending", label: t("pending") },
+                { value: "approved", label: t("approved") },
+                { value: "rejected", label: t("rejected") },
+              ]}
+            />
           </div>
 
           <div>
             <Label className="mb-2">{t("rating")}</Label>
-            <select
+            <Select
               value={ratingFilter}
               onChange={(e) => table.set("rating", e.target.value)}
-              className={THEME_CONSTANTS.patterns.adminInput}
-            >
-              <option value="all">{t("allRatings")}</option>
-              {[5, 4, 3, 2, 1].map((n) => (
-                <option key={n} value={String(n)}>
-                  {n} {n === 1 ? "Star" : "Stars"}
-                </option>
-              ))}
-            </select>
+              options={[
+                { value: "all", label: t("allRatings") },
+                ...[5, 4, 3, 2, 1].map((n) => ({
+                  value: String(n),
+                  label: `${n} ${n === 1 ? "Star" : "Stars"}`,
+                })),
+              ]}
+            />
           </div>
 
           <div>
             <Label className="mb-2">{tActions("search")}</Label>
-            <input
+            <Input
               type="text"
               value={searchTerm}
               onChange={(e) => table.set("q", e.target.value)}
               placeholder={t("searchPlaceholder")}
-              className={THEME_CONSTANTS.patterns.adminInput}
             />
           </div>
         </div>
@@ -318,8 +324,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
         title={t("rejectionReason")}
       >
         <div className={THEME_CONSTANTS.spacing.stack}>
-          <textarea
-            className={THEME_CONSTANTS.input.base}
+          <Textarea
             rows={4}
             value={rejectModal.reason}
             onChange={(e) =>

@@ -1,6 +1,7 @@
 ﻿import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
-import { Span } from "../typography/Typography";
+import { Button, Span } from "@/components";
+import { Nav } from "../semantic/Semantic";
 
 export interface PaginationProps {
   currentPage: number;
@@ -97,31 +98,32 @@ export default function Pagination({
   const pages = getPageNumbers();
 
   return (
-    <nav
+    <Nav
       className={`${flex.rowCenter} gap-1 ${className}`}
       aria-label="Pagination"
-      role="navigation"
     >
       {showFirstLast && (
-        <button
+        <Button
+          variant="ghost"
           onClick={() => handlePageChange(1)}
           disabled={disabled || currentPage === 1}
           className={buttonClass(false, disabled || currentPage === 1)}
           aria-label="Go to first page"
         >
           «
-        </button>
+        </Button>
       )}
 
       {showPrevNext && (
-        <button
+        <Button
+          variant="ghost"
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={disabled || currentPage === 1}
           className={buttonClass(false, disabled || currentPage === 1)}
           aria-label="Go to previous page"
         >
           ‹
-        </button>
+        </Button>
       )}
 
       {pages.map((page, index) => {
@@ -138,8 +140,9 @@ export default function Pagination({
 
         const pageNum = page as number;
         return (
-          <button
+          <Button
             key={pageNum}
+            variant="ghost"
             onClick={() => handlePageChange(pageNum)}
             disabled={disabled}
             className={buttonClass(
@@ -150,31 +153,33 @@ export default function Pagination({
             aria-current={pageNum === currentPage ? "page" : undefined}
           >
             {pageNum}
-          </button>
+          </Button>
         );
       })}
 
       {showPrevNext && (
-        <button
+        <Button
+          variant="ghost"
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={disabled || currentPage === totalPages}
           className={buttonClass(false, disabled || currentPage === totalPages)}
           aria-label="Go to next page"
         >
           ›
-        </button>
+        </Button>
       )}
 
       {showFirstLast && (
-        <button
+        <Button
+          variant="ghost"
           onClick={() => handlePageChange(totalPages)}
           disabled={disabled || currentPage === totalPages}
           className={buttonClass(false, disabled || currentPage === totalPages)}
           aria-label="Go to last page"
         >
           »
-        </button>
+        </Button>
       )}
-    </nav>
+    </Nav>
   );
 }

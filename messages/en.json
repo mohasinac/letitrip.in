@@ -1690,7 +1690,14 @@
     "addField": "Add field",
     "endEvent": "End Event",
     "activate": "Activate",
-    "pause": "Pause"
+    "pause": "Pause",
+    "allTypes": "All Types",
+    "allStatuses": "All Statuses",
+    "typeSale": "Sale",
+    "typeOffer": "Offer",
+    "typePoll": "Poll",
+    "typeSurvey": "Survey",
+    "typeFeedback": "Feedback"
   },
   "eventStatus": {
     "draft": "Draft",

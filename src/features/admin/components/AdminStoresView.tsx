@@ -19,6 +19,7 @@ import {
   ConfirmDeleteModal,
   Text,
   Caption,
+  Input,
 } from "@/components";
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -233,12 +234,11 @@ export function AdminStoresView() {
       </div>
 
       <AdminFilterBar>
-        <input
+        <Input
           type="text"
           placeholder={tActions("search")}
           value={searchTerm}
           onChange={(e) => table.set("q", e.target.value)}
-          className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
         />
       </AdminFilterBar>
 

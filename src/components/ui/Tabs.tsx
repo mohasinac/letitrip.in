@@ -2,6 +2,7 @@
 
 import React, { useState, createContext, useContext } from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Button } from "@/components";
 
 /**
  * Tabs Component
@@ -145,8 +146,9 @@ export function TabsTrigger({
         }`;
 
   return (
-    <button
+    <Button
       id={`tab-${value}`}
+      variant="ghost"
       role="tab"
       aria-selected={isSelected}
       aria-controls={`tabpanel-${value}`}
@@ -155,7 +157,7 @@ export function TabsTrigger({
       className={`${baseClass} ${className}`}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 

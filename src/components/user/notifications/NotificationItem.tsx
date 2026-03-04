@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Badge, Span, Text } from "@/components";
+import { Badge, Button, Span, Text, TextLink } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatRelativeTime } from "@/utils";
@@ -73,7 +73,8 @@ export function NotificationItem({
           {/* Actions */}
           <div className="flex items-center gap-2 flex-shrink-0">
             {!n.isRead && (
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => onMarkRead(n.id)}
                 title={tNotifications("markRead")}
                 aria-label={tNotifications("markRead")}
@@ -92,9 +93,10 @@ export function NotificationItem({
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-              </button>
+              </Button>
             )}
-            <button
+            <Button
+              variant="ghost"
               onClick={() => onDelete(n.id)}
               title={tNotifications("deleted")}
               aria-label={tNotifications("deleted")}
@@ -113,21 +115,22 @@ export function NotificationItem({
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Action link */}
         {n.actionUrl && (
-          <a
+          <TextLink
             href={n.actionUrl}
+            variant="bare"
             onClick={() => {
               if (!n.isRead) onMarkRead(n.id);
             }}
             className="inline-block mt-2 text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
           >
             {n.actionLabel ?? tActions("view")} →
-          </a>
+          </TextLink>
         )}
       </div>
     </div>

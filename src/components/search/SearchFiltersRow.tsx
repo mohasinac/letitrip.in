@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import type { CategoryDocument } from "@/db/schema";
-import { Label, Span } from "../typography/Typography";
+import { Button, Input, Label, Select, Span } from "@/components";
 
 const { themed } = THEME_CONSTANTS;
 
@@ -34,8 +34,6 @@ export function SearchFiltersRow({
   const [minPrice, setMinPrice] = useState(urlMinPrice);
   const [maxPrice, setMaxPrice] = useState(urlMaxPrice);
 
-  const inputBase = THEME_CONSTANTS.input.base;
-
   return (
     <div className="flex flex-wrap gap-4 items-end">
       {/* Category filter */}
@@ -43,18 +41,14 @@ export function SearchFiltersRow({
         <Label className={`text-sm font-medium ${themed.textSecondary}`}>
           {t("categoryFilter")}
         </Label>
-        <select
+        <Select
           value={urlCategory}
           onChange={(e) => onCategoryChange(e.target.value)}
-          className={inputBase}
-        >
-          <option value="">{t("allCategories")}</option>
-          {topCategories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
+          options={[
+            { value: "", label: t("allCategories") },
+            ...topCategories.map((cat) => ({ value: cat.id, label: cat.name })),
+          ]}
+        />
       </div>
 
       {/* Price range */}
@@ -63,40 +57,38 @@ export function SearchFiltersRow({
           {t("priceRange")}
         </Label>
         <div className="flex items-center gap-2">
-          <input
+          <Input
             type="number"
             min={0}
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
             placeholder={t("minPrice")}
-            className={`w-28 ${inputBase}`}
+            className="w-28"
           />
           <Span className={`text-sm ${themed.textSecondary}`}>–</Span>
-          <input
+          <Input
             type="number"
             min={0}
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
             placeholder={t("maxPrice")}
-            className={`w-28 ${inputBase}`}
+            className="w-28"
           />
-          <button
+          <Button
             onClick={() => onPriceFilter(minPrice, maxPrice)}
-            className="h-10 px-4 rounded-lg text-sm bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+            variant="primary"
+            className="h-10"
           >
             {tActions("search")}
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Clear filters */}
       {showClear && (
-        <button
-          onClick={onClearFilters}
-          className={`h-10 px-4 rounded-lg text-sm border ${themed.border} ${themed.textSecondary} hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors`}
-        >
+        <Button variant="outline" onClick={onClearFilters} className="h-10">
           {t("clearFilters")}
-        </button>
+        </Button>
       )}
     </div>
   );

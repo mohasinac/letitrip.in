@@ -8,7 +8,7 @@
 
 "use client";
 
-import { FormField, ImageUpload, Label, Span } from "@/components";
+import { Checkbox, FormField, ImageUpload, Label, Span } from "@/components";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { Category } from "./types";
 import { flattenCategories } from "./types";
@@ -109,27 +109,19 @@ export function CategoryForm({
       />
 
       <div className="grid grid-cols-2 gap-4">
-        <Label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={category.enabled || false}
-            onChange={(e) => update({ enabled: e.target.checked })}
-            disabled={isReadonly}
-            className="w-4 h-4 text-indigo-600 rounded"
-          />
-          <Span className={typography.label}>{LABELS.ENABLED}</Span>
-        </Label>
+        <Checkbox
+          checked={category.enabled || false}
+          onChange={(e) => update({ enabled: e.target.checked })}
+          disabled={isReadonly}
+          label={LABELS.ENABLED}
+        />
 
-        <Label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={category.showOnHomepage || false}
-            onChange={(e) => update({ showOnHomepage: e.target.checked })}
-            disabled={isReadonly}
-            className="w-4 h-4 text-indigo-600 rounded"
-          />
-          <Span className={typography.label}>{LABELS.SHOW_ON_HOMEPAGE}</Span>
-        </Label>
+        <Checkbox
+          checked={category.showOnHomepage || false}
+          onChange={(e) => update({ showOnHomepage: e.target.checked })}
+          disabled={isReadonly}
+          label={LABELS.SHOW_ON_HOMEPAGE}
+        />
       </div>
 
       <FormField

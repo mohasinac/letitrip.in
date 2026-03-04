@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from "react";
 import { useTranslations } from "next-intl";
-import { DrawerFormFooter, SideDrawer, Span } from "@/components";
+import { Button, DrawerFormFooter, SideDrawer, Span } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface FilterDrawerProps {
@@ -81,8 +81,9 @@ export function FilterDrawer({
   return (
     <>
       {/* Trigger button */}
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={() => setIsOpen(true)}
         aria-label={triggerLabel ?? t("title")}
         className={`inline-flex items-center gap-2 text-sm font-medium ${themed.textPrimary} ${borderRadius.lg} border ${themed.border} ${spacing.padding.xs} px-3 hover:${themed.bgSecondary} transition-colors ${triggerClassName}`}
@@ -111,7 +112,7 @@ export function FilterDrawer({
             {activeCount}
           </Span>
         )}
-      </button>
+      </Button>
 
       {/* Drawer */}
       <SideDrawer

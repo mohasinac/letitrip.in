@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useClickOutside, useKeyPress } from "@/hooks";
-import { Span } from "../typography/Typography";
+import { Button, Span } from "@/components";
 
 /**
  * Dropdown Component
@@ -157,8 +157,9 @@ export function DropdownItem({
   };
 
   return (
-    <button
+    <Button
       role="menuitem"
+      variant="ghost"
       onClick={handleClick}
       disabled={disabled}
       className={`
@@ -176,7 +177,7 @@ export function DropdownItem({
     >
       {icon && <Span className="flex-shrink-0">{icon}</Span>}
       <Span className="flex-1">{children}</Span>
-    </button>
+    </Button>
   );
 }
 

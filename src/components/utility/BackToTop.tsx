@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Button } from "@/components";
 
 /**
  * BackToTop Component
@@ -52,7 +53,8 @@ export default function BackToTop({ sidebarOpen = false }: BackToTopProps) {
   };
 
   return (
-    <button
+    <Button
+      variant="ghost"
       onClick={scrollToTop}
       className={`
         fixed
@@ -85,6 +87,6 @@ export default function BackToTop({ sidebarOpen = false }: BackToTopProps) {
           d="M5 10l7-7m0 0l7 7m-7-7v18"
         />
       </svg>
-    </button>
+    </Button>
   );
 }

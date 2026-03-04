@@ -12,7 +12,15 @@
 import { useRef, ChangeEvent } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useMediaUpload } from "@/hooks";
-import { Alert, Button, Label, Span, Spinner, Text } from "@/components";
+import {
+  Alert,
+  Button,
+  Label,
+  Span,
+  Spinner,
+  Text,
+  TextLink,
+} from "@/components";
 
 interface MediaUploadFieldProps {
   /** Required label shown above the upload control */
@@ -127,14 +135,9 @@ export function MediaUploadField({
               className="w-full max-h-56 object-contain rounded"
             />
           ) : (
-            <a
-              href={value}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-indigo-600 dark:text-indigo-400 underline break-all"
-            >
+            <TextLink href={value} className="text-sm underline break-all">
               {filenameFromUrl(value)}
-            </a>
+            </TextLink>
           )}
 
           {!disabled && (

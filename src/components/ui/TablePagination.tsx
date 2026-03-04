@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { formatNumber } from "@/utils";
-import { Label, Pagination, Span, Text } from "@/components";
+import { Label, Pagination, Select, Span, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [10, 25, 50, 100] as const;
@@ -95,20 +95,18 @@ export function TablePagination({
             >
               {t("perPage")}
             </Label>
-            <select
+            <Select
               id="page-size-select"
-              value={pageSize}
+              value={String(pageSize)}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
               disabled={isLoading}
               aria-label={t("perPage")}
-              className={`text-sm ${THEME_CONSTANTS.input.base}`}
-            >
-              {pageSizeOptions.map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
+              className="text-sm"
+              options={pageSizeOptions.map((s) => ({
+                value: String(s),
+                label: String(s),
+              }))}
+            />
           </div>
         )}
       </div>

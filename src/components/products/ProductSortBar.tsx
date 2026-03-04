@@ -2,10 +2,10 @@
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { Text } from "../typography/Typography";
-import { Label } from "../typography/Typography";
+import { Label, Text } from "../typography/Typography";
+import SelectField from "../forms/Select";
 
-const { themed, input, flex } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
 
 export const PRODUCT_SORT_VALUES = {
   NEWEST: "-createdAt",
@@ -54,17 +54,12 @@ export function ProductSortBar({
         >
           {t("sortBy")}
         </Label>
-        <select
+        <SelectField
           value={sort}
           onChange={(e) => onSortChange(e.target.value)}
-          className={`text-sm ${input.base} ${themed.bgPrimary} ${themed.textPrimary} min-w-40`}
-        >
-          {sortOptions.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          options={sortOptions}
+          className={`text-sm ${themed.bgPrimary} ${themed.textPrimary} min-w-40`}
+        />
       </div>
     </div>
   );

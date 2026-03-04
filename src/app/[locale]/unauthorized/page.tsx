@@ -10,7 +10,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Button, Heading, Text } from "@/components";
+import { Button, Heading, Span, Text } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 export default function UnauthorizedPage() {
@@ -95,7 +95,7 @@ export default function UnauthorizedPage() {
         >
           <Text variant="secondary">
             {tAuth("redirectingIn")}{" "}
-            <span className={THEME_CONSTANTS.text.emphasis}>{countdown}</span>{" "}
+            <Span className={THEME_CONSTANTS.text.emphasis}>{countdown}</Span>{" "}
             {tAuth("seconds")}
           </Text>
         </div>

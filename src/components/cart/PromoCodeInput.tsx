@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { Button, Label, Span, Text } from "@/components";
+import { Button, Input, Label, Span, Text } from "@/components";
 import { useCouponValidate } from "@/hooks";
 import { formatCurrency } from "@/utils";
 
@@ -121,7 +121,7 @@ export function PromoCodeInput({
         {t("promoCode")}
       </Label>
       <div className="flex gap-2">
-        <input
+        <Input
           type="text"
           value={code}
           onChange={(e) => {
@@ -130,7 +130,7 @@ export function PromoCodeInput({
           }}
           placeholder={t("promoPlaceholder")}
           disabled={disabled || loading}
-          className={`flex-1 text-sm ${input.base} ${themed.bgPrimary} ${themed.textPrimary}`}
+          className="flex-1 text-sm"
           onKeyDown={(e) => e.key === "Enter" && handleApply()}
         />
         <Button

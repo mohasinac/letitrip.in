@@ -2,7 +2,18 @@
 
 import { useState } from "react";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
-import { Button, Card, Heading, Label, Span, Text } from "@/components";
+import {
+  Button,
+  Card,
+  Checkbox,
+  Heading,
+  Input,
+  Label,
+  Slider,
+  Span,
+  Text,
+  Textarea,
+} from "@/components";
 
 const { flex, position } = THEME_CONSTANTS;
 
@@ -135,18 +146,18 @@ export default function BackgroundSettings({
               Color
             </Label>
             <div className="flex gap-3 items-center">
-              <input
+              <Input
                 type="color"
                 value={config.value}
                 onChange={(e) => updateConfig({ value: e.target.value })}
-                className={`w-20 h-12 rounded-lg border ${THEME_CONSTANTS.themed.border} cursor-pointer`}
+                className="w-20 h-12 rounded-lg cursor-pointer"
               />
-              <input
+              <Input
                 type="text"
                 value={config.value}
                 onChange={(e) => updateConfig({ value: e.target.value })}
                 placeholder="#000000"
-                className={`flex-1 px-3 py-2 border ${THEME_CONSTANTS.themed.border} rounded-md bg-white dark:bg-gray-700 ${THEME_CONSTANTS.themed.textPrimary}`}
+                className="flex-1"
               />
             </div>
           </div>
@@ -160,7 +171,7 @@ export default function BackgroundSettings({
               >
                 Gradient CSS
               </Label>
-              <textarea
+              <Textarea
                 value={config.value}
                 onChange={(e) => updateConfig({ value: e.target.value })}
                 placeholder="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
@@ -203,12 +214,11 @@ export default function BackgroundSettings({
             >
               Image URL
             </Label>
-            <input
+            <Input
               type="url"
               value={config.value}
               onChange={(e) => updateConfig({ value: e.target.value })}
               placeholder="https://example.com/background.jpg"
-              className={THEME_CONSTANTS.patterns.adminInput}
             />
             {config.value && (
               <div
@@ -231,12 +241,11 @@ export default function BackgroundSettings({
             >
               Video URL (MP4)
             </Label>
-            <input
+            <Input
               type="url"
               value={config.value}
               onChange={(e) => updateConfig({ value: e.target.value })}
               placeholder="https://example.com/background.mp4"
-              className={THEME_CONSTANTS.patterns.adminInput}
             />
             <Text
               className={`mt-2 text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
@@ -249,8 +258,7 @@ export default function BackgroundSettings({
         {/* Overlay Settings */}
         <div className={`border-t ${THEME_CONSTANTS.themed.borderColor} pt-6`}>
           <div className="flex items-center gap-3 mb-4">
-            <input
-              type="checkbox"
+            <Checkbox
               id="overlay-enabled"
               checked={config.overlay?.enabled || false}
               onChange={(e) =>
@@ -260,14 +268,8 @@ export default function BackgroundSettings({
                   opacity: config.overlay?.opacity || 0.5,
                 })
               }
-              className="w-4 h-4 text-blue-600 rounded"
+              label="Enable Overlay (improves content readability)"
             />
-            <Label
-              htmlFor="overlay-enabled"
-              className={`text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary}`}
-            >
-              Enable Overlay (improves content readability)
-            </Label>
           </div>
 
           {config.overlay?.enabled && (
@@ -279,17 +281,17 @@ export default function BackgroundSettings({
                   Overlay Color
                 </Label>
                 <div className="flex gap-2">
-                  <input
+                  <Input
                     type="color"
                     value={config.overlay.color}
                     onChange={(e) => updateOverlay({ color: e.target.value })}
-                    className={`w-12 h-10 rounded border ${THEME_CONSTANTS.themed.border}`}
+                    className="w-12 h-10 rounded cursor-pointer"
                   />
-                  <input
+                  <Input
                     type="text"
                     value={config.overlay.color}
                     onChange={(e) => updateOverlay({ color: e.target.value })}
-                    className={`flex-1 px-3 py-2 border ${THEME_CONSTANTS.themed.border} rounded-md bg-white dark:bg-gray-700 ${THEME_CONSTANTS.themed.textPrimary} text-sm`}
+                    className="flex-1 text-sm"
                   />
                 </div>
               </div>
@@ -299,15 +301,12 @@ export default function BackgroundSettings({
                 >
                   Opacity ({Math.round(config.overlay.opacity * 100)}%)
                 </Label>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.05"
+                <Slider
+                  min={0}
+                  max={1}
+                  step={0.05}
                   value={config.overlay.opacity}
-                  onChange={(e) =>
-                    updateOverlay({ opacity: parseFloat(e.target.value) })
-                  }
+                  onChange={(value) => updateOverlay({ opacity: value })}
                   className="w-full"
                 />
               </div>

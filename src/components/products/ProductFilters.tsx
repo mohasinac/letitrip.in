@@ -2,9 +2,17 @@
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { Aside, Button, Heading, Label, Span } from "@/components";
+import {
+  Aside,
+  Button,
+  Heading,
+  Input,
+  Label,
+  Select,
+  Span,
+} from "@/components";
 
-const { themed, borderRadius, input, flex } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
 
 interface ProductFiltersProps {
   category: string;
@@ -56,18 +64,15 @@ export function ProductFilters({
         >
           {t("filterCategory")}
         </Label>
-        <select
+        <Select
           value={category}
           onChange={(e) => onCategoryChange(e.target.value)}
-          className={`w-full text-sm ${input.base} ${themed.bgPrimary} ${themed.textPrimary}`}
-        >
-          <option value="">{t("filterAllCategories")}</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
+          options={[
+            { value: "", label: t("filterAllCategories") },
+            ...categories.map((cat) => ({ value: cat, label: cat })),
+          ]}
+          className={`w-full text-sm ${themed.bgPrimary} ${themed.textPrimary}`}
+        />
       </div>
 
       {/* Price Range */}
@@ -78,22 +83,22 @@ export function ProductFilters({
           {t("filterPriceRange")}
         </Label>
         <div className="flex items-center gap-2">
-          <input
+          <Input
             type="number"
             min={0}
             value={minPrice}
             onChange={(e) => onMinPriceChange(e.target.value)}
             placeholder={t("filterMinPrice")}
-            className={`w-full text-sm ${input.base} ${themed.bgPrimary} ${themed.textPrimary}`}
+            className={`w-full text-sm ${themed.bgPrimary} ${themed.textPrimary}`}
           />
           <Span className={`text-xs ${themed.textSecondary} shrink-0`}>to</Span>
-          <input
+          <Input
             type="number"
             min={0}
             value={maxPrice}
             onChange={(e) => onMaxPriceChange(e.target.value)}
             placeholder={t("filterMaxPrice")}
-            className={`w-full text-sm ${input.base} ${themed.bgPrimary} ${themed.textPrimary}`}
+            className={`w-full text-sm ${themed.bgPrimary} ${themed.textPrimary}`}
           />
         </div>
       </div>

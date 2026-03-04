@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useSwipe, useGesture } from "@/hooks";
-import { HorizontalScroller, Text } from "@/components";
+import { Button, HorizontalScroller, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 /**
@@ -172,7 +172,8 @@ export default function ImageGallery({
           {/* Navigation Arrows */}
           {images.length > 1 && !isZoomed && (
             <>
-              <button
+              <Button
+                variant="ghost"
                 onClick={goToPrevious}
                 disabled={currentIndex === 0}
                 className={`
@@ -200,9 +201,10 @@ export default function ImageGallery({
                     d="M15 19l-7-7 7-7"
                   />
                 </svg>
-              </button>
+              </Button>
 
-              <button
+              <Button
+                variant="ghost"
                 onClick={goToNext}
                 disabled={currentIndex === images.length - 1}
                 className={`
@@ -230,7 +232,7 @@ export default function ImageGallery({
                     d="M9 5l7 7-7 7"
                   />
                 </svg>
-              </button>
+              </Button>
             </>
           )}
 
@@ -277,8 +279,9 @@ export default function ImageGallery({
       {showThumbnails && images.length > 1 && (
         <HorizontalScroller snapToItems className="mt-4 pb-2">
           {images.map((image, index) => (
-            <button
+            <Button
               key={index}
+              variant="ghost"
               onClick={() => goToIndex(index)}
               className={`
                 flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden
@@ -297,7 +300,7 @@ export default function ImageGallery({
                 className="w-full h-full object-cover"
                 draggable={false}
               />
-            </button>
+            </Button>
           ))}
         </HorizontalScroller>
       )}

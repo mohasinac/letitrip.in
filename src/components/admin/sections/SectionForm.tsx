@@ -8,7 +8,13 @@
 
 "use client";
 
-import { Checkbox, FormField, Label, RichTextEditor } from "@/components";
+import {
+  Checkbox,
+  FormField,
+  Label,
+  RichTextEditor,
+  Textarea,
+} from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { HomepageSection } from "./types";
@@ -102,7 +108,7 @@ export function SectionForm({
         <Label className={`block ${typography.label} mb-2`}>
           {t("configuration")}
         </Label>
-        <textarea
+        <Textarea
           value={JSON.stringify(section.config, null, 2)}
           onChange={(e) => {
             try {

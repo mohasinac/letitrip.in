@@ -20,6 +20,24 @@ jest.mock("@/components", () => ({
     children: React.ReactNode;
     className?: string;
   }) => <p className={className}>{children}</p>,
+  Span: ({ children }: { children: React.ReactNode }) => (
+    <span>{children}</span>
+  ),
+  TextLink: ({
+    href,
+    children,
+    className,
+    onClick,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+    onClick?: () => void;
+  }) => (
+    <a href={href} className={className} onClick={onClick}>
+      {children}
+    </a>
+  ),
 }));
 
 jest.mock("@/constants", () => ({
@@ -27,6 +45,9 @@ jest.mock("@/constants", () => ({
     themed: {
       bgPrimary: "bg-white",
       textSecondary: "text-gray-600",
+    },
+    flex: {
+      betweenStart: "flex items-start justify-between",
     },
   },
 }));

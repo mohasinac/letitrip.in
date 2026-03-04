@@ -6,6 +6,7 @@ import { THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { useAuth } from "@/hooks";
 import {
   AvatarDisplay,
+  BlockHeader,
   Button,
   LocaleSwitcher,
   NotificationBell,
@@ -50,7 +51,7 @@ export default function TitleBar({
   const tA = useTranslations("accessibility");
 
   return (
-    <header
+    <BlockHeader
       id="title-bar"
       className={`sticky top-0 ${zIndex.titleBar} ${layout.titleBarBg} border-b ${THEME_CONSTANTS.themed.border} backdrop-blur-lg bg-white/90 dark:bg-gray-900/90`}
     >
@@ -210,6 +211,6 @@ export default function TitleBar({
           </Button>
         </div>
       </div>
-    </header>
+    </BlockHeader>
   );
 }

@@ -42,7 +42,7 @@ export interface TextLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElem
   /** Destination URL. Internal paths use locale-aware `Link`; external URLs open in a new tab. */
   href: string;
   /** Visual style variant. Defaults to `"default"` (indigo, hover underline). */
-  variant?: "default" | "muted" | "nav" | "danger" | "inherit";
+  variant?: "default" | "muted" | "nav" | "danger" | "inherit" | "bare";
   /**
    * Force the link to render as an external `<a>` tag.
    * Auto-detected when `href` starts with http/https/mailto/tel.
@@ -73,6 +73,7 @@ export function TextLink({
       "text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 underline-offset-2 hover:underline transition-colors duration-150",
     inherit:
       "underline-offset-2 hover:underline transition-colors duration-150",
+    bare: "",
   };
 
   const resolvedClass = `${variantClasses[variant]} ${className}`.trim();

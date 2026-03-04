@@ -2,7 +2,7 @@
 
 > **Complete Index of All Code, Snippets, Functions, Classes, Hooks, Components, and Database Schemas**
 
-**Last Updated**: March 4, 2026  
+**Last Updated**: March 4, 2026 (hooks & repositories sync)
 **Status**: Comprehensive Reference for LetItRip.in Project
 
 ---
@@ -2897,7 +2897,8 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 **Purpose**: Primary button component with variants  
 **Variants**: `primary`, `secondary`, `outline`, `ghost`, `danger`  
 **Sizes**: `xs`, `sm`, `md`, `lg`, `xl`  
-**Props**: `variant`, `size`, `fullWidth`, `disabled`, `loading`, `leftIcon`, `rightIcon`, `children?` (optional — supports icon-only / dot buttons that rely on `aria-label`)
+**Props**: `variant`, `size`, `fullWidth`, `disabled`, `loading`, `leftIcon`, `rightIcon`, `children?` (optional — supports icon-only / dot buttons that rely on `aria-label`)  
+**Class merging**: Uses `twMerge()` from `tailwind-merge` — custom `className` props properly override conflicting utilities from base/variant/size (e.g. `flex` wins over `inline-flex`, `justify-between` wins over `justify-center`).
 
 #### Card
 
@@ -3079,8 +3080,9 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 
 **File**: `Input.tsx`  
 **Purpose**: Text input field  
-**Types**: `text`, `email`, `password`, `number`, `tel`, `url`  
-**Props**: `type`, `placeholder`, `disabled`, `error`, `leftIcon`, `rightIcon`
+**Types**: `text`, `email`, `password`, `number`, `tel`, `url`, `search`, `color`  
+**Props**: `type`, `placeholder`, `disabled`, `error`, `leftIcon`, `rightIcon`, `label`, `helperText`, `success`  
+**Ref forwarding**: Supports `ref` via `React.forwardRef` — pass a `RefObject<HTMLInputElement>` when the native input element must be programmatically focused.
 
 #### Select
 
@@ -3098,7 +3100,7 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 
 **File**: `Checkbox.tsx`  
 **Purpose**: Checkbox input  
-**Props**: `label`, `checked`, `onChange`, `disabled`, `indeterminate`
+**Props**: `label`, `checked`, `onChange`, `disabled`, `indeterminate`, `suffix` — `suffix?: React.ReactNode` renders additional content (e.g. a count badge) right-aligned inside the label row. The label `<Span>` receives `flex-1` so trailing content does not crowd the label text.
 
 #### Radio
 
@@ -3211,7 +3213,16 @@ When `variant="inherit"` (default) **no colour class is applied**, making it a t
 - External URLs / `mailto:` / `tel:` → `<a target="_blank" rel="noopener noreferrer">`
 - Auto-detects internal vs external from the `href`; override with `external={true}`.
 
-**Props**: `href` (required), `variant` (`"default"` | `"muted"` | `"nav"` | `"danger"` | `"inherit"`), `external`, all native `<a>` attrs.
+**Props**: `href` (required), `variant` (`"default"` | `"muted"` | `"nav"` | `"danger"` | `"inherit"` | `"bare"`), `external`, all native `<a>` attrs.
+
+| Variant     | Classes applied                                           | When to use                                        |
+| ----------- | --------------------------------------------------------- | -------------------------------------------------- |
+| `"default"` | Indigo text + hover underline                             | Standard text links                                |
+| `"muted"`   | Muted text + hover underline                              | Secondary / helper links                           |
+| `"nav"`     | Secondary text + indigo on hover, no underline            | Navigation items                                   |
+| `"danger"`  | Red text + hover underline                                | Destructive action links                           |
+| `"inherit"` | Underline offset + hover underline, no colour override    | Links inside coloured containers                   |
+| `"bare"`    | _(nothing)_ — caller controls all styling via `className` | Card-style links, skip-nav, icon-only social links |
 
 ```tsx
 // Internal navigation (locale-aware)
@@ -3225,6 +3236,21 @@ When `variant="inherit"` (default) **no colour class is applied**, making it a t
 
 // Destructive action link
 <TextLink href="#" variant="danger" onClick={handleDelete}>Delete account</TextLink>
+
+// Card-style link — caller owns all styling
+<TextLink href={`mailto:${email}`} variant="bare" className="p-4 rounded-xl bg-gray-50 hover:bg-white">
+  Email Us
+</TextLink>
+
+// Skip-navigation accessibility link
+<TextLink href="#main-content" variant="bare" className="sr-only focus:not-sr-only ...">
+  Skip to main content
+</TextLink>
+
+// Icon-only social link — aria-label required
+<TextLink href={`https://twitter.com/${handle}`} variant="bare" aria-label="Twitter profile" className="p-2 rounded-lg">
+  <TwitterIcon />
+</TextLink>
 ```
 
 ---

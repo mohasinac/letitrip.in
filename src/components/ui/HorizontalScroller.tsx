@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { Button } from "@/components";
 import { useHorizontalScrollDrag } from "./useHorizontalScrollDrag";
 import { useHorizontalAutoScroll } from "./useHorizontalAutoScroll";
 
@@ -45,8 +46,9 @@ interface ArrowButtonProps {
 function ArrowButton({ direction, onClick }: ArrowButtonProps) {
   const { themed, flex } = THEME_CONSTANTS;
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
       onClick={onClick}
       aria-label={direction === "left" ? "Scroll left" : "Scroll right"}
       className={[
@@ -94,7 +96,7 @@ function ArrowButton({ direction, onClick }: ArrowButtonProps) {
           <polyline points="9 18 15 12 9 6" />
         </svg>
       )}
-    </button>
+    </Button>
   );
 }
 

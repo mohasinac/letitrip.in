@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Heading, Text } from "@/components";
+import { Button, Heading, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;
@@ -31,13 +31,14 @@ export function NotificationsBulkActions({
         )}
       </div>
       {unreadCount > 0 && (
-        <button
+        <Button
+          variant="ghost"
           onClick={onMarkAllRead}
           disabled={isMarkingAll}
           className="text-sm text-blue-600 dark:text-blue-400 font-medium hover:underline disabled:opacity-50"
         >
           {isMarkingAll ? tLoading("saving") : tNotifications("markAllRead")}
-        </button>
+        </Button>
       )}
     </div>
   );

@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useMessage, useAuth } from "@/hooks";
-import { Button, Label, Span, Text, Textarea } from "@/components";
+import { Button, Checkbox, Label, Span, Text, Textarea } from "@/components";
 import { usePollVote } from "../hooks/usePollVote";
 import type { PollConfig } from "@/db/schema";
 
@@ -107,22 +107,28 @@ export function PollVotingSection({
         {pollConfig.options.map((opt) => {
           const isChecked = selected.includes(opt.id);
           return (
-            <Label
+            <div
               key={opt.id}
-              className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors mb-0 ${
+              role="button"
+              tabIndex={0}
+              onClick={() => handleToggle(opt.id)}
+              onKeyDown={(e) =>
+                e.key === "Enter" || e.key === " "
+                  ? handleToggle(opt.id)
+                  : undefined
+              }
+              className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
                 isChecked
                   ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
                   : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
               }`}
             >
-              <input
-                type={pollConfig.allowMultiSelect ? "checkbox" : "radio"}
+              <Checkbox
                 checked={isChecked}
                 onChange={() => handleToggle(opt.id)}
-                className="h-4 w-4"
               />
               <Span className="text-sm">{opt.label}</Span>
-            </Label>
+            </div>
           );
         })}
       </div>

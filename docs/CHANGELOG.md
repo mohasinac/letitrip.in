@@ -13,6 +13,125 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-03-06] — Raw HTML Primitive Violations Eliminated (Part 2)
+
+### Fixed
+
+All remaining raw lowercase HTML element violations in non-test `.tsx` files replaced with their corresponding Tier 1 primitive components per Rules 7, 8, and 31.
+
+**`<button>` → `<Button>` replacements:**
+
+- **`src/components/ui/Tabs.tsx`** — Tab trigger `<button>` → `<Button variant="ghost">`. Added `Button` import from `@/components`.
+- **`src/components/ui/SideDrawer.tsx`** — Close `<button>` → `<Button variant="ghost">` (Button was already imported; also fixed mismatched `</button>` closing tag left from prior edit).
+- **`src/components/ui/ActiveFilterChips.tsx`** — Per-chip dismiss `<button>` and "Clear all" `<button>` → `<Button variant="ghost">`. Added `Button` import from `@/components`.
+- **`src/components/ui/Accordion.tsx`** — Section toggle `<button>` → `<Button variant="ghost">`. Added `Button` import from `@/components`.
+- **`src/components/ui/Pagination.tsx`** — Five navigation `<button>` elements (first/prev/page/next/last) → `<Button variant="ghost">`. Added `Button` import from `@/components`.
+- **`src/components/ui/FilterDrawer.tsx`** — Filter panel trigger `<button>` → `<Button variant="ghost">`. Added `Button` import from `@/components`.
+- **`src/components/ui/HorizontalScroller.tsx`** — Left/right arrow `<button>` elements → `<Button variant="ghost">`. Added `Button` import from `@/components`.
+- **`src/components/ui/EventBanner.tsx`** — Dismiss `<button>` → `<Button variant="ghost">`. Added `Button` import from `@/components`.
+- **`src/components/ui/Dropdown.tsx`** — `DropdownItem` trigger `<button>` → `<Button variant="ghost">`. Updated import to include `Button`.
+- **`src/components/ui/ImageGallery.tsx`** — Previous/next arrow and thumbnail `<button>` elements → `<Button variant="ghost">`. Added `Button` import from `@/components`.
+- **`src/components/ui/Menu.tsx`** — `MenuTrigger` and `MenuItem` `<button>` elements → `<Button variant="ghost">`. Added `Button` import from `@/components`.
+- **`src/components/user/notifications/NotificationItem.tsx`** — Mark-read and delete action `<button>` elements → `<Button variant="ghost">`. Added `Button` to the `@/components` import.
+- **`src/components/user/notifications/NotificationsBulkActions.tsx`** — Mark-all-read `<button>` → `<Button variant="ghost">`. Added `Button` to the `@/components` import.
+- **`src/components/user/WishlistButton.tsx`** — Toggle `<button>` → `<Button variant="ghost">`. Added `Button` import from `@/components`.
+- **`src/components/utility/BackToTop.tsx`** — Scroll-to-top `<button>` → `<Button variant="ghost">`. Added `Button` import from `@/components`.
+- **`src/components/utility/Search.tsx`** — Clear-query `<button>` and close-overlay `<button>` → `<Button variant="ghost">`. (`Button` was already imported.)
+- **`src/components/ui/NotificationBell.tsx`** — Fixed unclosed JSX comment `{/* Dropdown */` → `{/* Dropdown */}` (syntax error introduced in prior session).
+
+**`<select>` → `<Select>` replacements:**
+
+- **`src/components/ui/TablePagination.tsx`** — Page-size `<select>` → `<Select options={...}/>`. Added `Select` to the `@/components` import.
+- **`src/app/[locale]/admin/events/[id]/entries/page.tsx`** — Review-status and sort `<select>` elements → `<Select options={[...]}>`. Added `Select` to the `@/components` import.
+
+**`<input>` → `<Input>` replacement:**
+
+- **`src/components/admin/RichTextEditor.tsx`** — URL popover `<input type="url">` → `<Input type="url">`. Added `Input` to the `@/components` import.
+
+**`<input type="search">` + `<input type="checkbox">` → `<Input>` + `<Checkbox>` in `FilterFacetSection`:**
+
+- **`src/components/ui/FilterFacetSection.tsx`** — Inline search `<input type="search">` → `<Input>`; checkbox rows `<input type="checkbox">` + manual label markup → `<Checkbox suffix={...}>`. Added `Button`, `Checkbox`, `Input` to the `@/components` import. Removed unused `borderRadius` from destructured `THEME_CONSTANTS`.
+
+### Changed
+
+- **`src/components/forms/Checkbox.tsx`** — Added `suffix?: React.ReactNode` prop. The label `<Span>` receives `flex-1` class so appended content (count badge, etc.) stays right-aligned inside the label row. Used by `FilterFacetSection` to show option counts.
+
+- **`src/components/forms/Input.tsx`** — Converted from a plain function to `React.forwardRef<HTMLInputElement, InputProps>` so callers can attach a `ref` (needed by `RichTextEditor`'s URL popover). Exported `InputProps` interface. Behaviour is fully backward-compatible.
+
+- **`src/components/ui/Button.tsx`** — Replaced template-literal `className` concatenation with `twMerge()` from `tailwind-merge` (newly added `^3.5.0` dependency). This ensures that custom `className` props properly override conflicting Tailwind utilities from `button.base`/`variants`/`sizes` (e.g. `flex` overrides `inline-flex`, `justify-between` overrides `justify-center`). Required for correct display of `<Button>` replacements in Accordion, Pagination, and filter components.
+
+---
+
+## [2026-03-04] — Raw Structural HTML Tag Violations Fixed
+
+### Fixed
+
+- **`src/components/layout/Footer.tsx`** — Replaced raw `<footer>` with `BlockFooter` from `@/components`; added `BlockFooter` to the component import.
+- **`src/components/layout/TitleBar.tsx`** — Replaced raw `<header>` with `BlockHeader` from `@/components`; added `BlockHeader` to the component import.
+- **`src/components/ui/Pagination.tsx`** — Replaced raw `<nav role="navigation">` (redundant role) with `Nav` imported from `../semantic/Semantic`; `Nav` renders a native `<nav>` with implicit navigation role.
+
+---
+
+## [2026-03-05] — Raw `<a>` Tag Violations Fixed; TextLink `bare` Variant Added
+
+### Changed
+
+- **`src/components/typography/TextLink.tsx`** — Added `"bare"` variant (empty string, no colour or hover classes applied). Use `variant="bare"` when the caller controls all styling via `className` (e.g. card-style links, skip-nav links, icon-only social links).
+
+- **`src/components/faq/ContactCTA.tsx`** — Replaced raw `<a href="mailto:...">` email card and `<a href="tel:...">` phone card with `<TextLink variant="bare">`. Both are auto-detected as external by TextLink and render as native `<a>` elements.
+
+- **`src/app/[locale]/layout.tsx`** — Replaced raw `<a href="#main-content">` skip-navigation link with `<TextLink href="#main-content" variant="bare">`. Added `TextLink` to the `@/components` import.
+
+- **`src/features/stores/components/StoreAboutView.tsx`** — Replaced raw `<a href={store.website}>` with `<TextLink href={store.website}>` (default variant, auto-detects https:// as external). Added `TextLink` to the `@/components` import.
+
+- **`src/components/user/notifications/NotificationItem.tsx`** — Replaced raw `<a href={n.actionUrl}>` (with `onClick`) with `<TextLink href={n.actionUrl} variant="bare">`. Props including `onClick` are forwarded transparently. Added `TextLink` to the `@/components` import.
+
+- **`src/components/admin/MediaUploadField.tsx`** — Replaced raw `<a href={value}>` non-image file preview link with `<TextLink href={value}>` (default variant, auto-detects Firebase Storage URL as external). Added `TextLink` to the `@/components` import.
+
+- **`src/components/user/profile/PublicProfileView.tsx`** — Replaced 4 raw `<a>` tags with `<TextLink variant="bare">`:
+  - Website link (`user.publicProfile.website`)
+  - Twitter social link (`https://twitter.com/…`) — added `aria-label="Twitter profile"`
+  - Instagram social link (`https://instagram.com/…`) — added `aria-label="Instagram profile"`
+  - LinkedIn social link (`https://linkedin.com/in/…`) — added `aria-label="LinkedIn profile"`
+
+### Tests
+
+- **`src/components/typography/__tests__/TextLink.test.tsx`** — New test file. Covers: external URL detection (https, mailto, tel), internal path routing via locale-aware Link, hash-only links, `variant="bare"`, `variant="default"`, `external={true}` override, `onClick` and `aria-label` prop forwarding.
+
+- **`src/features/stores/components/__tests__/StoreAboutView.test.tsx`** — New test file. Covers: loading spinner, error/empty state, store name rendering, website rendered as `TextLink` (anchor with correct `href`), absent website renders no link.
+
+- **`src/components/admin/__tests__/MediaUploadField.test.tsx`** — Added `TextLink` to the `@/components` mock so the existing link-render test passes after the `<a>` → `<TextLink>` change.
+
+- **`src/components/user/notifications/__tests__/NotificationItem.test.tsx`** — Added `TextLink` and `Span` to the `@/components` mock.
+
+---
+
+## [2026-03-04] — Docs & Instructions Sync: Missing Hooks and Repositories
+
+### Added
+
+- **`.github/copilot-instructions.md` — RULE 6 hook table** — added 5 previously missing hooks:
+  - `useLogout(options?)` — logout mutation that clears session cookie and revokes tokens
+  - `useBecomeSeller()` — seller application mutation (server sets `role='seller'`, `storeStatus='pending'`)
+  - `useNewsletter()` — newsletter subscribe mutation; POST to `/api/newsletter/subscribe`
+  - `useRipCoins()` composite entry (`useRipCoinBalance`, `usePurchaseRipCoins`, `useVerifyRipCoinPurchase`, `useRipCoinHistory`)
+  - `useChat(chatId)` — Realtime DB subscribe-only hook; writes via API
+
+- **`.github/copilot-instructions.md` — RULE 12 repository list** — added 11 previously missing repositories:
+  `addressRepository`, `blogRepository`, `cartRepository`, `wishlistRepository`, `chatRepository`, `eventRepository`, `eventEntryRepository`, `newsletterRepository`, `notificationRepository`, `payoutRepository`, `ripcoinRepository`
+
+- **`docs/GUIDE.md` — Section 3 (Hooks)** — added full documentation entries for:
+  `useLogout`, `useBecomeSeller`, `useNewsletter`, `useRipCoinBalance / usePurchaseRipCoins / useVerifyRipCoinPurchase / useRipCoinHistory`, `useChat`
+
+- **`docs/GUIDE.md` — Section 7 (Repositories)** — added full documentation entries for:
+  `AddressRepository`, `BlogRepository`, `CartRepository`, `WishlistRepository`, `ChatRepository`, `EventRepository`, `EventEntryRepository`, `NewsletterRepository`, `NotificationRepository`, `PayoutRepository`, `RipcoinRepository`
+
+- **`docs/QUICK_REFERENCE.md` — Available Repositories** — extended code block with all 11 new repository instances and their key method comments
+- **`docs/QUICK_REFERENCE.md` — Hooks Quick Lookup** — added two new subsections: `Commerce & Wallet` (useBecomeSeller, useNewsletter, useRipCoin\*) and `Authentication & Real-time` (useLogout, useChat)
+- **`docs/QUICK_REFERENCE.md` — Key File Locations** — updated the `hooks` line to include new hook names
+
+---
+
 ## [2026-03-04] — Rule Violations Fixed: next/navigation redirect & duplicate hook
 
 ### Fixed

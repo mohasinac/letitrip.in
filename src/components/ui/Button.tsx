@@ -1,4 +1,5 @@
 import React from "react";
+import { twMerge } from "tailwind-merge";
 import { Loader2 } from "lucide-react";
 import { THEME_CONSTANTS } from "@/constants";
 
@@ -58,7 +59,12 @@ export default function Button({
 
   return (
     <button
-      className={`${button.base} ${variants[variant]} ${sizes[size]} ${className}`}
+      className={twMerge(
+        button.base,
+        variants[variant],
+        sizes[size],
+        className,
+      )}
       disabled={disabled || isLoading}
       aria-busy={isLoading || undefined}
       {...props}

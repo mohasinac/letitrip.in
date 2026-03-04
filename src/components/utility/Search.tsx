@@ -144,8 +144,9 @@ export default function Search({
           className={`${THEME_CONSTANTS.input.base} ${THEME_CONSTANTS.themed.bgInput} ${THEME_CONSTANTS.themed.border} ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.placeholder} ${THEME_CONSTANTS.themed.focusRing} w-full pl-9${query ? " pr-9" : ""}`}
         />
         {query && (
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => {
               setQuery("");
               onChange?.("");
@@ -168,7 +169,7 @@ export default function Search({
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-          </button>
+          </Button>
         )}
       </div>
     );
@@ -223,7 +224,8 @@ export default function Search({
             </Button>
 
             {/* Close Button */}
-            <button
+            <Button
+              variant="ghost"
               onClick={() => onClose?.()}
               className={`p-2.5 md:p-3 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onLight} flex-shrink-0`}
               aria-label="Close search"
@@ -241,7 +243,7 @@ export default function Search({
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </button>
+            </Button>
           </div>
 
           {/* Search Results Preview */}

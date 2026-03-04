@@ -16,6 +16,7 @@ import { useRouter } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useWishlistToggle } from "@/hooks";
+import { Button } from "@/components";
 
 const { flex } = THEME_CONSTANTS;
 
@@ -70,7 +71,8 @@ export function WishlistButton({
   const label = inWishlist ? t("removeFromWishlist") : t("addToWishlist");
 
   return (
-    <button
+    <Button
+      variant="ghost"
       onClick={handleToggle}
       disabled={loading}
       aria-label={label}
@@ -101,7 +103,7 @@ export function WishlistButton({
           d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
         />
       </svg>
-    </button>
+    </Button>
   );
 }
 

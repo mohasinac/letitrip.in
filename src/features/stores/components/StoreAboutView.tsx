@@ -2,7 +2,14 @@
 
 import { Globe, MapPin, Store } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { EmptyState, Spinner, Heading, Text, Card } from "@/components";
+import {
+  EmptyState,
+  Spinner,
+  Heading,
+  Text,
+  Card,
+  TextLink,
+} from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useStoreBySlug } from "../hooks";
@@ -86,14 +93,9 @@ export function StoreAboutView({ storeSlug }: StoreAboutViewProps) {
                 {t("about.website")}
               </dt>
               <dd>
-                <a
-                  href={store.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-indigo-600 dark:text-indigo-400 hover:underline break-all"
-                >
+                <TextLink href={store.website} className="break-all">
                   {store.website}
-                </a>
+                </TextLink>
               </dd>
             </div>
           )}

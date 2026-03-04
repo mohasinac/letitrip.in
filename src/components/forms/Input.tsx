@@ -22,7 +22,7 @@ import { THEME_CONSTANTS } from "@/constants";
  * ```
  */
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   helperText?: string;
@@ -30,17 +30,20 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   success?: boolean;
 }
 
-export default function Input({
-  label,
-  error,
-  helperText,
-  icon,
-  success,
-  className = "",
-  required,
-  disabled,
-  ...props
-}: InputProps) {
+const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input(
+  {
+    label,
+    error,
+    helperText,
+    icon,
+    success,
+    className = "",
+    required,
+    disabled,
+    ...props
+  },
+  ref,
+) {
   const { input, themed } = THEME_CONSTANTS;
 
   // Determine input state classes
@@ -66,6 +69,7 @@ export default function Input({
         )}
 
         <input
+          ref={ref}
           className={`
             w-full
             ${input.base}
@@ -100,4 +104,8 @@ export default function Input({
       )}
     </div>
   );
-}
+});
+
+Input.displayName = "Input";
+
+export default Input;

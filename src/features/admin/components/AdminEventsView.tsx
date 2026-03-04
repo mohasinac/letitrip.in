@@ -15,6 +15,8 @@ import {
   DataTable,
   TablePagination,
   ConfirmDeleteModal,
+  Input,
+  Select,
 } from "@/components";
 import { ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -86,36 +88,35 @@ export function AdminEventsView() {
 
       <div className="space-y-4">
         <AdminFilterBar columns={3}>
-          <input
+          <Input
             type="text"
             placeholder={tActions("search")}
             value={table.get("q")}
             onChange={(e) => table.set("q", e.target.value)}
-            className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
           />
-          <select
+          <Select
             value={table.get("type")}
             onChange={(e) => table.set("type", e.target.value)}
-            className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
-          >
-            <option value="">All Types</option>
-            <option value="sale">Sale</option>
-            <option value="offer">Offer</option>
-            <option value="poll">Poll</option>
-            <option value="survey">Survey</option>
-            <option value="feedback">Feedback</option>
-          </select>
-          <select
+            options={[
+              { value: "", label: t("allTypes") },
+              { value: "sale", label: t("typeSale") },
+              { value: "offer", label: t("typeOffer") },
+              { value: "poll", label: t("typePoll") },
+              { value: "survey", label: t("typeSurvey") },
+              { value: "feedback", label: t("typeFeedback") },
+            ]}
+          />
+          <Select
             value={table.get("status")}
             onChange={(e) => table.set("status", e.target.value)}
-            className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm"
-          >
-            <option value="">All Statuses</option>
-            <option value="draft">{tEventStatus("draft")}</option>
-            <option value="active">{tEventStatus("active")}</option>
-            <option value="paused">{tEventStatus("paused")}</option>
-            <option value="ended">{tEventStatus("ended")}</option>
-          </select>
+            options={[
+              { value: "", label: t("allStatuses") },
+              { value: "draft", label: tEventStatus("draft") },
+              { value: "active", label: tEventStatus("active") },
+              { value: "paused", label: tEventStatus("paused") },
+              { value: "ended", label: tEventStatus("ended") },
+            ]}
+          />
         </AdminFilterBar>
 
         <DataTable

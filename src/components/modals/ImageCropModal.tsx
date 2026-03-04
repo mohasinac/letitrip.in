@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Button, Modal, Span, Text } from "@/components";
+import Slider from "../forms/Slider";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 
 export interface ImageCropData {
@@ -126,10 +127,6 @@ export function ImageCropModal({
     }
   };
 
-  const handleZoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setZoom(parseFloat(e.target.value));
-  };
-
   const handleSave = () => {
     onSave({
       url: imageUrl,
@@ -243,15 +240,13 @@ export function ImageCropModal({
               </svg>
             </Button>
 
-            <input
-              type="range"
-              min="0.1"
-              max="3"
-              step="0.01"
+            <Slider
               value={zoom}
-              onChange={handleZoomChange}
-              aria-label="Zoom level"
-              className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary-600"
+              min={0.1}
+              max={3}
+              step={0.01}
+              onChange={(v) => setZoom(v)}
+              className="flex-1"
             />
 
             <Button
