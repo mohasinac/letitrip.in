@@ -1,9 +1,14 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { CheckoutOrderReview } from "../CheckoutOrderReview";
 
 jest.mock("next-intl", () => ({
-  useTranslations: () => (key: string) => key,
+  useTranslations: () => (key: string, params?: Record<string, unknown>) => {
+    if (params && typeof params === "object") {
+      return `${key}(${JSON.stringify(params)})`;
+    }
+    return key;
+  },
 }));
 jest.mock("next/image", () => ({
   __esModule: true,
@@ -12,6 +17,11 @@ jest.mock("next/image", () => ({
 jest.mock("@/utils", () => ({
   formatCurrency: (amount: number) => `₹${amount}`,
 }));
+
+// Mock clipboard
+Object.assign(navigator, {
+  clipboard: { writeText: jest.fn().mockResolvedValue(undefined) },
+});
 
 const mockAddress = {
   id: "addr1",
@@ -89,5 +99,53 @@ describe("CheckoutOrderReview", () => {
   it("renders product title in order items", () => {
     render(<CheckoutOrderReview {...defaultProps} />);
     expect(screen.getByText("Trek Boots")).toBeInTheDocument();
+  });
+
+  it("does NOT render UPI option when upiVpa is not provided", () => {
+    render(<CheckoutOrderReview {...defaultProps} />);
+    expect(screen.queryByText("upiManual")).not.toBeInTheDocument();
+  });
+
+  it("renders UPI option when upiVpa is provided", () => {
+    render(<CheckoutOrderReview {...defaultProps} upiVpa="letitrip@upi" />);
+    expect(screen.getByText("upiManual")).toBeInTheDocument();
+  });
+
+  it("shows UPI instructions panel when upi_manual is selected", () => {
+    render(
+      <CheckoutOrderReview
+        {...defaultProps}
+        paymentMethod="upi_manual"
+        upiVpa="letitrip@upi"
+      />,
+    );
+    expect(screen.getByText("letitrip@upi")).toBeInTheDocument();
+    expect(screen.getByText("upiInstructions")).toBeInTheDocument();
+    expect(screen.getByText("copyUpiId")).toBeInTheDocument();
+  });
+
+  it("calls onPaymentMethodChange with upi_manual when UPI button is clicked", () => {
+    const onPaymentMethodChange = jest.fn();
+    render(
+      <CheckoutOrderReview
+        {...defaultProps}
+        onPaymentMethodChange={onPaymentMethodChange}
+        upiVpa="letitrip@upi"
+      />,
+    );
+    fireEvent.click(screen.getByText("upiManual").closest("button")!);
+    expect(onPaymentMethodChange).toHaveBeenCalledWith("upi_manual");
+  });
+
+  it("copies UPI ID to clipboard on copy button click", async () => {
+    render(
+      <CheckoutOrderReview
+        {...defaultProps}
+        paymentMethod="upi_manual"
+        upiVpa="letitrip@upi"
+      />,
+    );
+    fireEvent.click(screen.getByText("copyUpiId"));
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith("letitrip@upi");
   });
 });

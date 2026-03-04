@@ -111,6 +111,7 @@ export const API_ENDPOINTS = {
     /** ✅ Admin payouts */
     PAYOUTS: "/api/admin/payouts", // GET - List all payouts
     PAYOUT_BY_ID: (id: string) => `/api/admin/payouts/${id}`, // PATCH - Update payout status
+    PAYOUTS_WEEKLY: "/api/admin/payouts/weekly", // POST - Trigger weekly auto-payout run
     /** ✅ Admin reviews — GET all reviews across all products (admin-only) */
     REVIEWS: "/api/admin/reviews", // GET - List all reviews with Sieve filters
     REVIEW_BY_ID: (id: string) => `/api/reviews/${id}`, // PATCH/DELETE
@@ -259,10 +260,15 @@ export const API_ENDPOINTS = {
   // Seller endpoints ✅ Routes exist
   SELLER: {
     ORDERS: "/api/seller/orders", // GET - List seller's orders (auth: seller)
+    ORDER_SHIP: (id: string) => `/api/seller/orders/${id}/ship`, // POST - Ship order with tracking
+    ORDERS_BULK: "/api/seller/orders/bulk", // POST - Bulk order actions (request payout, etc.)
     ANALYTICS: "/api/seller/analytics", // GET - Seller analytics stats (auth: seller)
     PAYOUTS: "/api/seller/payouts", // GET/POST - List/request payouts (auth: seller)
     PRODUCTS: "/api/seller/products", // GET/POST - List/create seller's products (auth: seller)
     STORE: "/api/seller/store", // GET/PATCH - Get & update store profile (auth: seller)
+    SHIPPING: "/api/seller/shipping", // GET/PATCH - Get & update shipping config (auth: seller)
+    SHIPPING_VERIFY_PICKUP: "/api/seller/shipping/verify-pickup", // POST - OTP verify pickup address
+    PAYOUT_SETTINGS: "/api/seller/payout-settings", // GET/PATCH - Get & update payout details (auth: seller)
   },
 
   // Blog endpoints — public
@@ -309,6 +315,11 @@ export const API_ENDPOINTS = {
     PURCHASE: "/api/ripcoins/purchase", // POST - Create Razorpay order for coin pack
     VERIFY: "/api/ripcoins/purchase/verify", // POST - Verify payment and credit coins
     HISTORY: "/api/ripcoins/history", // GET  - Transaction history
+  },
+
+  // Shiprocket webhook
+  WEBHOOKS: {
+    SHIPROCKET: "/api/webhooks/shiprocket", // POST - Shiprocket shipment status updates
   },
 
   // Chat endpoints

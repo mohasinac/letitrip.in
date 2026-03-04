@@ -14,6 +14,8 @@ import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useAdminReviews } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
+  Badge,
+  Caption,
   Card,
   Button,
   DataTable,
@@ -21,6 +23,7 @@ import {
   getReviewTableColumns,
   ReviewRowActions,
   ReviewDetailView,
+  StatusBadge,
   TablePagination,
 } from "@/components";
 import { useToast } from "@/components";
@@ -303,6 +306,25 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
               />
             )}
             externalPagination
+            showViewToggle
+            viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+            onViewModeChange={(mode) => table.set("view", mode)}
+            mobileCardRender={(review) => (
+              <Card
+                className="p-4 space-y-2 cursor-pointer"
+                onClick={() => handleViewReview(review)}
+              >
+                <Text weight="medium" size="sm" className="line-clamp-1">
+                  {review.productName}
+                </Text>
+                <Caption>{review.userName}</Caption>
+                <div className="flex items-center justify-between">
+                  <Badge>{"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}</Badge>
+                  <StatusBadge status={review.status as any} />
+                </div>
+                <Caption className="line-clamp-2">{review.comment}</Caption>
+              </Card>
+            )}
           />
           <TablePagination
             currentPage={data?.meta?.page ?? 1}

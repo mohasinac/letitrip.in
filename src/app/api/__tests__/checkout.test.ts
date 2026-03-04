@@ -291,4 +291,36 @@ describe("POST /api/checkout", () => {
 
     expect(status).toBe(200);
   });
+
+  it("places order successfully with upi_manual payment method", async () => {
+    mockRequireAuthFromRequest.mockResolvedValue(mockUser);
+    mockCartGetOrCreate.mockResolvedValue(mockCartWithItems);
+    mockAddressGetById.mockResolvedValue(mockAddress);
+    mockProductFindById.mockResolvedValue(mockProduct);
+
+    const req = buildRequest("/api/checkout", {
+      method: "POST",
+      body: { addressId: "addr-1", paymentMethod: "upi_manual" },
+    });
+    const res = await POST(req);
+    const { status, body } = await parseResponse(res);
+
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.data).toHaveProperty("orderIds");
+  });
+
+  it("returns 400 when paymentMethod is an unknown value", async () => {
+    mockRequireAuthFromRequest.mockResolvedValue(mockUser);
+    mockCartGetOrCreate.mockResolvedValue(mockCartWithItems);
+
+    const req = buildRequest("/api/checkout", {
+      method: "POST",
+      body: { addressId: "addr-1", paymentMethod: "bitcoin" },
+    });
+    const res = await POST(req);
+    const { status } = await parseResponse(res);
+
+    expect(status).toBe(400);
+  });
 });

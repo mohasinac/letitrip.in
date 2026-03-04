@@ -8,12 +8,15 @@ import { useTranslations } from "next-intl";
 import {
   AdminPageHeader,
   Button,
+  Caption,
   Card,
   CarouselSlideForm,
   DataTable,
   DrawerFormFooter,
   getCarouselTableColumns,
+  MediaImage,
   SideDrawer,
+  StatusBadge,
   Text,
   useToast,
 } from "@/components";
@@ -43,6 +46,7 @@ export function AdminCarouselView({ action }: Props) {
   const [editingSlide, setEditingSlide] = useState<CarouselSlide | null>(null);
   const [drawerMode, setDrawerMode] = useState<DrawerMode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"table" | "grid" | "list">("table");
   const initialFormRef = useRef<string>("");
 
   const slides = data?.slides || [];
@@ -223,6 +227,34 @@ export function AdminCarouselView({ action }: Props) {
             keyExtractor={(slide) => slide.id}
             onRowClick={(slide) => handleEdit(slide)}
             actions={actions}
+            showViewToggle
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            mobileCardRender={(slide) => (
+              <Card
+                className="overflow-hidden cursor-pointer"
+                onClick={() => handleEdit(slide)}
+              >
+                <div className="relative aspect-video overflow-hidden">
+                  <MediaImage
+                    src={slide.imageUrl}
+                    alt={slide.title}
+                    size="card"
+                  />
+                </div>
+                <div className="p-3 space-y-2">
+                  <Text weight="medium" size="sm" className="line-clamp-1">
+                    {slide.title}
+                  </Text>
+                  <div className="flex items-center justify-between">
+                    <Caption>#{slide.order}</Caption>
+                    <StatusBadge
+                      status={slide.isActive ? "active" : "inactive"}
+                    />
+                  </div>
+                </div>
+              </Card>
+            )}
           />
         )}
       </div>

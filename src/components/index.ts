@@ -59,6 +59,10 @@ export { default as UnsavedChangesModal } from "./modals/UnsavedChangesModal";
 // Re-export from utility subdirectory
 export * from "./utility";
 
+// ==================== MEDIA PRIMITIVES ====================
+// Rule 28: all image + video rendering goes through these Tier 1 components.
+export * from "./media";
+
 // ==================== UPLOAD COMPONENTS ====================
 export { AvatarUpload } from "./AvatarUpload";
 export { AvatarDisplay } from "./AvatarDisplay";

@@ -155,7 +155,7 @@ export default function SideDrawer({
   const positionClass =
     side === "left"
       ? "left-0 w-full sm:w-96 md:w-[420px]"
-      : "right-0 w-full md:w-3/5 lg:max-w-2xl";
+      : "right-0 w-full md:w-3/4 md:max-w-[900px]";
 
   const modeHeaderStyles: Record<DrawerMode, string> = {
     delete: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800",

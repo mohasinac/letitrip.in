@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Badge, Card, Heading, Span, Text, TextLink } from "@/components";
+import { Badge, Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatRelativeTime } from "@/utils";
 import { useTranslations } from "next-intl";
@@ -48,11 +48,13 @@ export function EventCard({ event }: EventCardProps) {
     <Card className={`flex flex-col overflow-hidden ${borderRadius.xl}`}>
       {/* Cover image or gradient placeholder */}
       {event.coverImageUrl ? (
-        <img
-          src={event.coverImageUrl}
-          alt={event.title}
-          className="w-full h-40 object-cover"
-        />
+        <div className="relative h-40 overflow-hidden">
+          <MediaImage
+            src={event.coverImageUrl}
+            alt={event.title}
+            size="card"
+          />
+        </div>
       ) : (
         <div
           className={`w-full h-40 bg-gradient-to-br from-indigo-500 to-purple-600 ${flex.center}`}

@@ -3,9 +3,9 @@
 import { useTranslations } from "next-intl";
 import {
   EmptyState,
+  Search,
   Spinner,
   TablePagination,
-  Input,
   Heading,
   Text,
 } from "@/components";
@@ -41,11 +41,11 @@ export function StoresListView() {
 
       {/* Search bar */}
       <div className="max-w-md">
-        <Input
-          type="text"
-          value={table.get("q") ?? ""}
-          onChange={(e) => table.set("q", e.target.value)}
+        <Search
+          value={table.get("q")}
+          onChange={(v) => table.set("q", v)}
           placeholder={t("searchPlaceholder")}
+          onClear={() => table.set("q", "")}
         />
       </div>
 

@@ -47,11 +47,7 @@ jest.mock("@/components", () => ({
   }: {
     children: React.ReactNode;
     variant?: string;
-  }) => (
-    <p data-testid="text" data-variant={variant}>
-      {children}
-    </p>
-  ),
+  }) => <p data-testid="text" data-variant={variant}>{children}</p>,
   EmptyState: ({ title }: { title: string }) => (
     <div data-testid="empty-state">{title}</div>
   ),

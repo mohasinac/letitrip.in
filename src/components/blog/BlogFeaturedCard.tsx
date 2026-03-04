@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Card, Heading, Span, Text, TextLink } from "@/components";
+import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
 import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { CATEGORY_BADGE } from "./BlogCard";
@@ -19,11 +19,12 @@ export function BlogFeaturedCard({ post }: { post: BlogPostDocument }) {
         <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
           <div className="md:flex">
             {post.coverImage && (
-              <div className="md:w-1/2 relative">
-                <img
+              <div className="md:w-1/2 relative h-64 md:min-h-[320px] overflow-hidden">
+                <MediaImage
                   src={post.coverImage}
                   alt={post.title}
-                  className="w-full h-64 md:h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  size="hero"
+                  className="group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
             )}

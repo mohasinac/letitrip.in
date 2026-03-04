@@ -469,4 +469,46 @@ export const ERROR_MESSAGES = {
     MESSAGE_TOO_LONG: "Message exceeds the 1000 character limit",
     TOKEN_FAILED: "Failed to obtain realtime token",
   },
+
+  // Shipping errors
+  SHIPPING: {
+    FETCH_FAILED: "Failed to load shipping configuration",
+    UPDATE_FAILED: "Failed to save shipping configuration",
+    NOT_CONFIGURED: "Shipping is not configured for this store",
+    INVALID_METHOD: "Invalid shipping method selected",
+    CUSTOM_PRICE_REQUIRED: "A shipping price is required for custom shipping",
+    CARRIER_REQUIRED: "Carrier name is required for custom shipping",
+    SHIPROCKET_CREDS_REQUIRED: "Shiprocket email and password are required",
+    SHIPROCKET_AUTH_FAILED: "Failed to authenticate with Shiprocket — check your credentials",
+    PICKUP_ADDRESS_REQUIRED: "A verified pickup address is required before shipping with Shiprocket",
+    PICKUP_VERIFICATION_FAILED: "Pickup address OTP verification failed",
+    PICKUP_ADD_FAILED: "Failed to add pickup address in Shiprocket",
+    ORDER_CREATE_FAILED: "Failed to create shipment in Shiprocket",
+    AWB_ASSIGN_FAILED: "Failed to assign courier AWB number",
+    PICKUP_SCHEDULE_FAILED: "Failed to schedule pickup with Shiprocket",
+    TRACKING_FAILED: "Failed to fetch tracking details",
+    INVALID_TRACKING_URL: "Please provide a valid tracking URL",
+    CARRIER_NAME_REQUIRED: "Carrier name is required when providing tracking details",
+    ORDER_ALREADY_SHIPPED: "This order has already been marked as shipped",
+    ORDER_NOT_SHIPPABLE: "Only confirmed orders can be shipped",
+    ORDER_NOT_FOUND: "Order not found or does not belong to your store",
+  },
+
+  // Payout settings errors
+  PAYOUT_SETTINGS: {
+    FETCH_FAILED: "Failed to load payout settings",
+    UPDATE_FAILED: "Failed to save payout settings",
+    UPI_REQUIRED: "A valid UPI ID is required",
+    BANK_DETAILS_REQUIRED: "Complete bank account details are required",
+    INVALID_IFSC: "Please enter a valid IFSC code (e.g. HDFC0001234)",
+    INVALID_ACCOUNT_NUMBER: "Please enter a valid account number",
+  },
+
+  // Bulk order action errors
+  BULK_ORDER: {
+    NO_ORDERS_SELECTED: "Please select at least one order",
+    NO_ELIGIBLE_ORDERS: "None of the selected orders are eligible for a payout request",
+    PAYOUT_REQUEST_FAILED: "Failed to submit payout request for selected orders",
+    ALREADY_REQUESTED: "A payout has already been requested for some of the selected orders",
+  },
 } as const;

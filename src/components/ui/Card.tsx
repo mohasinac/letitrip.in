@@ -47,6 +47,7 @@ interface CardProps {
     | "stat-rose"
     | "stat-emerald";
   className?: string;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
 export default function Card({
@@ -54,6 +55,7 @@ export default function Card({
   hover = false,
   variant = "default",
   className = "",
+  onClick,
 }: CardProps) {
   const { card, themed, enhancedCard } = THEME_CONSTANTS;
 
@@ -82,8 +84,10 @@ export default function Card({
         ${card.base}
         ${variantClasses[variant]}
         ${hover ? card.hover : ""}
+        ${onClick ? "cursor-pointer" : ""}
         ${className}
       `}
+      onClick={onClick}
     >
       {children}
     </div>

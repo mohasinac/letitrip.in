@@ -7,6 +7,7 @@
  * Column definitions hook for the admin Products DataTable.
  */
 
+import Image from "next/image";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { formatCurrency } from "@/utils";
@@ -41,12 +42,15 @@ export function useProductTableColumns(
         render: (product: AdminProduct) => (
           <div className="flex items-center gap-2">
             {product.mainImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={product.mainImage}
-                alt={product.title}
-                className="w-8 h-8 rounded object-cover flex-shrink-0"
-              />
+              <div className="relative w-8 h-8 rounded overflow-hidden flex-shrink-0">
+                <Image
+                  src={product.mainImage}
+                  alt={product.title}
+                  fill
+                  className="object-cover"
+                  sizes="32px"
+                />
+              </div>
             ) : (
               <div className="w-8 h-8 rounded bg-gray-200 dark:bg-gray-700 flex-shrink-0" />
             )}

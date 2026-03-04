@@ -118,6 +118,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
             <ProductImageGallery
               mainImage={product.mainImage}
               images={product.images}
+              video={product.video}
               title={product.title}
             />
 

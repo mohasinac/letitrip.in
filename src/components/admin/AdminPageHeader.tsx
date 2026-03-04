@@ -25,6 +25,7 @@ interface AdminPageHeaderProps {
   title: string;
   subtitle?: string;
   description?: string;
+  badge?: React.ReactNode;
   breadcrumb?: Array<{ label: string; href?: string }>;
   actionLabel?: string;
   onAction?: () => void;
@@ -37,6 +38,7 @@ export function AdminPageHeader({
   title,
   subtitle,
   description,
+  badge,
   breadcrumb,
   actionLabel,
   onAction,
@@ -74,9 +76,12 @@ export function AdminPageHeader({
       )}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className={spacing.stackSmall}>
-          <Heading level={2} className={typography.pageTitle}>
-            {title}
-          </Heading>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Heading level={2} className={typography.pageTitle}>
+              {title}
+            </Heading>
+            {badge && <span className="flex-shrink-0">{badge}</span>}
+          </div>
           {subtitle && (
             <Text className={typography.pageSubtitle}>{subtitle}</Text>
           )}

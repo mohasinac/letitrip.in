@@ -1,21 +1,26 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import type { CartItemDocument, AddressDocument } from "@/db/schema";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
-import { Heading, Text, Span, Button } from "@/components";
+import { Heading, Text, Span, Button, Caption } from "@/components";
 
 const { themed, flex } = THEME_CONSTANTS;
+
+export type CheckoutPaymentMethod = "cod" | "online" | "upi_manual";
 
 interface CheckoutOrderReviewProps {
   items: CartItemDocument[];
   address: AddressDocument;
   subtotal: number;
-  paymentMethod: "cod" | "online";
-  onPaymentMethodChange: (method: "cod" | "online") => void;
+  paymentMethod: CheckoutPaymentMethod;
+  onPaymentMethodChange: (method: CheckoutPaymentMethod) => void;
   onChangeAddress: () => void;
+  /** Business UPI Virtual Payment Address from site settings */
+  upiVpa?: string;
 }
 
 export function CheckoutOrderReview({
@@ -25,9 +30,20 @@ export function CheckoutOrderReview({
   paymentMethod,
   onPaymentMethodChange,
   onChangeAddress,
+  upiVpa,
 }: CheckoutOrderReviewProps) {
   const t = useTranslations("checkout");
   const tCart = useTranslations("cart");
+  const [upiCopied, setUpiCopied] = useState(false);
+
+  const handleCopyUpiId = () => {
+    if (!upiVpa) return;
+    navigator.clipboard.writeText(upiVpa).then(() => {
+      setUpiCopied(true);
+      setTimeout(() => setUpiCopied(false), 2000);
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Shipping address */}
@@ -138,7 +154,7 @@ export function CheckoutOrderReview({
             </div>
           </Button>
 
-          {/* Online payment */}
+          {/* Online payment (Razorpay) */}
           <Button
             variant="outline"
             onClick={() => onPaymentMethodChange("online")}
@@ -170,6 +186,109 @@ export function CheckoutOrderReview({
               </div>
             </div>
           </Button>
+
+          {/* UPI Manual — only shown when a UPI VPA is configured */}
+          {upiVpa && (
+            <div className="space-y-0">
+              <Button
+                variant="outline"
+                onClick={() => onPaymentMethodChange("upi_manual")}
+                className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors ${
+                  paymentMethod === "upi_manual"
+                    ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 rounded-b-none border-b-0"
+                    : `${themed.border} ${themed.bgPrimary}`
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-5 h-5 rounded-full border-2 ${flex.center} flex-shrink-0 ${
+                      paymentMethod === "upi_manual"
+                        ? "border-indigo-500"
+                        : themed.border
+                    }`}
+                  >
+                    {paymentMethod === "upi_manual" && (
+                      <div className="w-2.5 h-2.5 rounded-full bg-indigo-500" />
+                    )}
+                  </div>
+                  <div>
+                    <Text size="sm" weight="medium">
+                      {t("upiManual")}
+                    </Text>
+                    <Text size="xs" variant="secondary">
+                      {t("upiManualDesc")}
+                    </Text>
+                  </div>
+                  {/* UPI app logos */}
+                  <Span
+                    className="ml-auto text-xs font-medium text-violet-600 dark:text-violet-400"
+                    variant="inherit"
+                  >
+                    PhonePe · GPay · Paytm
+                  </Span>
+                </div>
+              </Button>
+
+              {/* Expanded UPI instructions panel */}
+              {paymentMethod === "upi_manual" && (
+                <div
+                  className={`px-4 py-4 rounded-b-xl border-2 border-t-0 border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 space-y-4`}
+                >
+                  {/* UPI ID display + copy */}
+                  <div
+                    className={`flex items-center gap-3 p-3 rounded-lg border ${themed.border} ${themed.bgPrimary}`}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <Caption>{t("upiId")}</Caption>
+                      <Text
+                        weight="semibold"
+                        className="text-lg tracking-wide font-mono"
+                      >
+                        {upiVpa}
+                      </Text>
+                    </div>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={handleCopyUpiId}
+                      className="flex-shrink-0"
+                    >
+                      {upiCopied ? t("upiIdCopied") : t("copyUpiId")}
+                    </Button>
+                  </div>
+
+                  {/* Steps */}
+                  <div>
+                    <Caption className="font-medium mb-2">
+                      {t("upiInstructions")}
+                    </Caption>
+                    <ol className="space-y-1 list-none">
+                      {[
+                        t("upiStep1"),
+                        t("upiStep2", { amount: formatCurrency(subtotal) }),
+                        t("upiStep3"),
+                      ].map((step, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <Span
+                            className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold mt-0.5"
+                            variant="inherit"
+                          >
+                            {i + 1}
+                          </Span>
+                          <Caption>{step}</Caption>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+
+                  {/* Note */}
+                  <Text size="xs" className="text-amber-700 dark:text-amber-400">
+                    ⚠ {t("upiPaymentNote")}
+                  </Text>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

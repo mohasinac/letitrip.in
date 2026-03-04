@@ -17,6 +17,7 @@ import {
   Text,
   Caption,
   Span,
+  StatusBadge,
 } from "@/components";
 import { formatCurrency, formatDate } from "@/utils";
 import type { BidDocument } from "@/db/schema";
@@ -128,6 +129,24 @@ export function AdminBidsView({ action }: Props) {
           }
           keyExtractor={(bid: BidDocument) => bid.id}
           externalPagination
+          showViewToggle
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          onViewModeChange={(mode) => table.set("view", mode)}
+          mobileCardRender={(bid) => (
+            <Card className="p-4 space-y-2">
+              <Text weight="medium" size="sm" className="line-clamp-2">
+                {bid.productTitle}
+              </Text>
+              <Caption>{bid.userName}</Caption>
+              <div className="flex items-center justify-between">
+                <Text weight="bold" size="sm">
+                  {formatCurrency(bid.bidAmount)}
+                </Text>
+                <StatusBadge status={bid.status as any} />
+              </div>
+              <Caption>{formatDate(bid.bidDate)}</Caption>
+            </Card>
+          )}
         />
         <TablePagination
           currentPage={data?.meta?.page ?? 1}

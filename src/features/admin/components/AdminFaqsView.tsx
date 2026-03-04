@@ -16,7 +16,9 @@ import { useTranslations } from "next-intl";
 import {
   AdminFilterBar,
   AdminPageHeader,
+  Badge,
   Button,
+  Caption,
   Card,
   DataTable,
   DrawerFormFooter,
@@ -24,6 +26,7 @@ import {
   FormField,
   getFaqTableColumns,
   SideDrawer,
+  StatusBadge,
   TablePagination,
   Text,
 } from "@/components";
@@ -264,6 +267,28 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
               onRowClick={handleEdit}
               actions={actions}
               externalPagination
+              showViewToggle
+              viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+              onViewModeChange={(mode) => table.set("view", mode)}
+              mobileCardRender={(faq) => (
+                <Card
+                  className="p-4 space-y-2 cursor-pointer"
+                  onClick={() => handleEdit(faq)}
+                >
+                  <Text weight="medium" size="sm" className="line-clamp-2">
+                    {faq.question}
+                  </Text>
+                  <div className="flex items-center justify-between">
+                    <Badge>{faq.category}</Badge>
+                    {faq.featured && (
+                      <StatusBadge status="active" />
+                    )}
+                  </div>
+                  <Caption>
+                    ❤ {faq.helpfulCount ?? 0} · 👁 {faq.viewCount ?? 0}
+                  </Caption>
+                </Card>
+              )}
             />
             {(faqMeta?.totalPages ?? 1) > 1 && (
               <TablePagination

@@ -140,6 +140,24 @@ export const SUCCESS_MESSAGES = {
     CREATED: "Payout request submitted successfully",
     UPDATED: "Payout updated successfully",
     COMPLETED: "Payout processed successfully",
+    BULK_REQUESTED: "Payout requested for {count} orders",
+    WEEKLY_PROCESSED: "Weekly payouts processed successfully",
+  },
+
+  // Shipping Success
+  SHIPPING: {
+    UPDATED: "Shipping configuration saved successfully",
+    SHIPROCKET_CONNECTED: "Shiprocket account connected successfully",
+    PICKUP_OTP_SENT: "OTP sent to your registered phone number",
+    PICKUP_VERIFIED: "Pickup address verified successfully",
+    ORDER_SHIPPED: "Order marked as shipped",
+    SHIPROCKET_ORDER_CREATED: "Shipment created in Shiprocket",
+    PICKUP_SCHEDULED: "Pickup scheduled with Shiprocket",
+  },
+
+  // Payout settings Success
+  PAYOUT_SETTINGS: {
+    UPDATED: "Payout details saved successfully",
   },
 
   // Product Success

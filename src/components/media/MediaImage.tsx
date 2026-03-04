@@ -1,0 +1,109 @@
+/**
+ * MediaImage
+ *
+ * Tier 1 primitive for ALL static image rendering (products, blogs, categories,
+ * carousel, brand logos, etc.).  Replaces every raw <Image> / <img> usage.
+ *
+ * Always fills its parent container — the parent must supply:
+ *   position: relative (or use Tailwind `relative`)
+ *   overflow: hidden  (or use Tailwind `overflow-hidden`)
+ *   an aspect-ratio / fixed height to define the display area
+ *
+ * Usage:
+ *   <div className="relative aspect-square overflow-hidden rounded-xl">
+ *     <MediaImage src={product.mainImage} alt={product.title} size="card" priority />
+ *   </div>
+ */
+
+import Image from "next/image";
+import { Span } from "../typography";
+
+// ----- `sizes` hints per display context -----------------------------------------------
+// Matches the breakpoint + column-count patterns used in grids across the app.
+const SIZE_HINTS: Record<MediaImageSize, string> = {
+  thumbnail: "(max-width: 640px) 80px, (max-width: 1024px) 96px, 112px",
+  card: "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw",
+  hero: "100vw",
+  banner: "100vw",
+  gallery: "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw",
+  avatar: "(max-width: 640px) 48px, 56px",
+};
+
+// ----- Default fallback icons per size ---------------------------------------------------
+const FALLBACK_ICONS: Record<MediaImageSize, string> = {
+  thumbnail: "📦",
+  card: "📦",
+  hero: "🖼️",
+  banner: "🖼️",
+  gallery: "📦",
+  avatar: "👤",
+};
+
+export type MediaImageSize = "thumbnail" | "card" | "hero" | "banner" | "gallery" | "avatar";
+
+export interface MediaImageProps {
+  /** Image URL. When undefined the fallback icon is rendered instead. */
+  src: string | undefined;
+  /** Descriptive alt text — required for accessibility and SEO. */
+  alt: string;
+  /**
+   * Sizing preset — controls the `sizes` attribute passed to Next.js Image
+   * so the browser requests the correct srcset entry.
+   * Defaults to `'card'`.
+   */
+  size?: MediaImageSize;
+  /** Pass `true` for above-the-fold hero / banner images to skip lazy loading. */
+  priority?: boolean;
+  /** CSS object-fit applied to the underlying img element. Defaults to `'cover'`. */
+  objectFit?: "cover" | "contain";
+  /**
+   * Emoji or text to show when `src` is undefined.
+   * Falls back to the per-size default icon.
+   */
+  fallback?: string;
+  /**
+   * Extra Tailwind classes applied to the absolute-fill wrapper div.
+   * Use for hover animations, e.g. `group-hover:scale-110 transition-transform duration-300`.
+   */
+  className?: string;
+}
+
+export function MediaImage({
+  src,
+  alt,
+  size = "card",
+  priority = false,
+  objectFit = "cover",
+  fallback,
+  className,
+}: MediaImageProps) {
+  const icon = fallback ?? FALLBACK_ICONS[size];
+  const fitClass = objectFit === "contain" ? "object-contain" : "object-cover";
+
+  if (!src) {
+    return (
+      <div
+        className={`absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-400 text-4xl${className ? ` ${className}` : ""}`}
+        role="img"
+        aria-label={alt}
+      >
+        <Span aria-hidden="true">{icon}</Span>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`absolute inset-0 overflow-hidden${className ? ` ${className}` : ""}`}>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        priority={priority}
+        className={fitClass}
+        sizes={SIZE_HINTS[size]}
+      />
+    </div>
+  );
+}
+
+export default MediaImage;

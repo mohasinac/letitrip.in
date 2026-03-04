@@ -4,6 +4,7 @@ import { useApiQuery } from "@/hooks";
 import { blogService } from "@/services";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import {
   Card,
   Button,
@@ -77,10 +78,13 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
       {/* Cover image */}
       {post.coverImage && (
         <div className="relative h-72 md:h-96 overflow-hidden">
-          <img
+          <Image
             src={post.coverImage}
             alt={post.title}
-            className="w-full h-full object-cover"
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         </div>
@@ -184,12 +188,14 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
                   className="block group"
                 >
                   <Card className="hover:shadow-md transition-shadow duration-200 overflow-hidden">
-                    {rel.coverImage && (
-                      <div className="h-32 overflow-hidden">
-                        <img
+                  {rel.coverImage && (
+                      <div className="relative h-32 overflow-hidden">
+                        <Image
                           src={rel.coverImage}
                           alt={rel.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 640px) 100vw, 33vw"
                         />
                       </div>
                     )}

@@ -3435,6 +3435,77 @@ import {
 
 ---
 
+### Media Display Primitives (`src/components/media/`)
+
+> **Rule 28**: All image and video rendering must go through these Tier 1 primitives. Never use raw `<img>`, `<video>`, or Next.js `<Image>` directly in feature/page code. Import from `@/components`.
+
+#### MediaImage
+
+**File**: `src/components/media/MediaImage.tsx`  
+**Purpose**: Tier 1 primitive for ALL static image rendering (products, blog, categories, carousel, etc.).  
+**Props**:
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `src` | `string \| undefined` | — | When undefined, renders emoji fallback |
+| `alt` | `string` | — | Required; used as aria-label on fallback too |
+| `size` | `'thumbnail' \| 'card' \| 'hero' \| 'banner' \| 'gallery' \| 'avatar'` | `'card'` | Controls `sizes` hint passed to Next.js Image |
+| `priority` | `boolean` | `false` | Pass `true` for above-the-fold hero images |
+| `objectFit` | `'cover' \| 'contain'` | `'cover'` | |
+| `fallback` | `string` | per-size emoji | Override fallback emoji |
+| `className` | `string` | — | Forwarded to outer wrapper |
+
+**Usage**: Parent must be `relative overflow-hidden` with a defined size (width + aspect or height).
+
+```tsx
+// Product card thumbnail
+<div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg">
+  <MediaImage src={product.mainImage} alt={product.title} size="card" />
+</div>
+
+// Hero banner (above the fold)
+<div className="relative aspect-[16/9] w-full overflow-hidden">
+  <MediaImage src={post.heroImage} alt={post.title} size="hero" priority />
+</div>
+```
+
+**Fallback emojis by size**: `thumbnail` → 🖼️, `card` → 📦, `hero` → 🌅, `banner` → 🎨, `gallery` → 🖼️, `avatar` → 👤.
+
+#### MediaVideo
+
+**File**: `src/components/media/MediaVideo.tsx`  
+**Purpose**: Tier 1 primitive for ALL video rendering.  
+**Props**:
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `src` | `string \| undefined` | — | When undefined, renders 🎬 fallback |
+| `thumbnailUrl` | `string` | — | Set as video `poster` |
+| `alt` | `string` | `'Video'` | Used on fallback aria-label |
+| `controls` | `boolean` | `true` | |
+| `autoPlayMuted` | `boolean` | `false` | Applies `autoPlay muted playsInline` |
+| `loop` | `boolean` | `false` | |
+| `trimStart` | `number` | — | Seconds; seeks video `currentTime` on load |
+| `trimEnd` | `number` | — | Seconds; pauses and resets at this point |
+| `objectFit` | `'cover' \| 'contain'` | `'cover'` | |
+| `className` | `string` | — | Forwarded to outer wrapper |
+
+```tsx
+// Auction product demo video
+<div className="relative aspect-square overflow-hidden rounded-2xl">
+  <MediaVideo
+    src={product.video.url}
+    thumbnailUrl={product.video.thumbnailUrl}
+    alt={product.title}
+    trimStart={product.video.trimStart}
+    trimEnd={product.video.trimEnd}
+    controls
+  />
+</div>
+```
+
+---
+
 ### Upload Components
 
 #### MediaUploadField
@@ -3696,6 +3767,122 @@ import {
 **Purpose**: Row of dismissible chips showing every currently-active filter. "Clear all" link when two or more filters are set. Hidden when none are active. Renders below the `FilterDrawer` trigger or inline `AdminFilterBar` on any list page — public, seller, or admin.  
 **Used by**: `products/page.tsx`, `search/page.tsx`, `categories/[slug]/page.tsx`, `auctions/page.tsx`, `seller/products/page.tsx`, admin list pages.  
 **Props**: `filters` (`{ key, label, value }[]`), `onRemove(key)`, `onClearAll`
+
+#### ListingLayout
+
+**File**: `src/components/ui/ListingLayout.tsx`  
+**Tier**: 1 — Shared primitive. Replaces ad-hoc filter + toolbar assemblies on **all** listing pages — public, seller, and admin.  
+**Purpose**: Universal listing-page shell that wires together the toolbar (search, view toggle, sort, action buttons), collapsible filter sidebar (desktop), fullscreen filter overlay (mobile), and bulk-action bar. All content slots are `ReactNode` props so the parent stays thin.
+
+Key behaviours:
+- **Desktop sidebar**: collapses/expands via the "Show/Hide filters" toggle button without shifting the content grid. Width transitions from `w-60 xl:w-64` → `w-0` with `overflow-hidden`.
+- **Mobile overlay**: tapping "Filters" opens a `fixed inset-0 z-50` fullscreen panel. Applying filters or committing a search auto-closes the overlay. Escape key also closes it. Body scroll is locked while open.
+- **Bulk action bar**: `BulkActionBar` is auto-rendered below the toolbar whenever `selectedCount > 0`. Pass `bulkActions` as children (`<Button>` elements) and `onClearSelection` to wire up the ✕ button.
+
+**Props**:
+
+| Prop | Type | Default | Purpose |
+|------|------|---------|---------|
+| `filterContent` | `ReactNode` | — | `FilterFacetSection` groups rendered in both sidebar and mobile overlay |
+| `filterActiveCount` | `number` | `0` | Badge count on the mobile filter trigger button |
+| `filterTitle` | `string` | `"Filters"` | Mobile overlay panel title |
+| `onFilterApply` | `() => void` | — | Called when user taps "Apply" in the mobile overlay |
+| `onFilterClear` | `() => void` | — | Called when user taps "Clear all" in the mobile overlay |
+| `searchSlot` | `ReactNode` | — | `<Search>` component (fills available toolbar width) |
+| `sortSlot` | `ReactNode` | — | `<SortDropdown>` placed right of the search bar |
+| `viewToggleSlot` | `ReactNode` | — | Grid/list/table view toggle buttons |
+| `actionsSlot` | `ReactNode` | — | Extra toolbar actions (e.g. "Create", "Export") |
+| `selectedCount` | `number` | `0` | When > 0 shows `BulkActionBar` |
+| `onClearSelection` | `() => void` | — | Wired to the ✕ button inside `BulkActionBar` |
+| `bulkActions` | `ReactNode` | — | `<Button>` elements rendered inside `BulkActionBar` |
+| `defaultSidebarOpen` | `boolean` | `true` | Initial desktop sidebar state |
+| `className` | `string` | — | Additional classes on the root wrapper |
+| `children` | `ReactNode` | — | The data grid / table content area |
+
+```tsx
+import { ListingLayout, Search, SortDropdown, DataTable, Button } from '@/components';
+import { FilterFacetSection } from '@/components';
+import { useUrlTable } from '@/hooks';
+import { useTranslations } from 'next-intl';
+
+export function ProductsView() {
+  const t = useTranslations('productsPage');
+  const table = useUrlTable({ defaults: { pageSize: '24', sorts: '-createdAt' } });
+  const { data, loading } = useProducts(table.params.toString());
+
+  return (
+    <ListingLayout
+      filterContent={
+        <FilterFacetSection
+          title={t('filters.category')}
+          options={categoryOptions}
+          selected={table.get('category').split(',')}
+          onChange={(v) => table.set('category', v.join(','))}
+        />
+      }
+      filterActiveCount={activeFilterCount}
+      onFilterApply={() => {/* no-op — filters already in URL */}}
+      onFilterClear={() => table.setMany({ category: '', status: '' })}
+      searchSlot={
+        <Search value={table.get('q')} onChange={(v) => table.set('q', v)} />
+      }
+      sortSlot={<SortDropdown value={table.get('sorts')} onChange={table.setSort} options={PRODUCT_SORT_OPTIONS} />}
+      selectedCount={selectedIds.length}
+      onClearSelection={() => setSelectedIds([])}
+      bulkActions={
+        <Button variant="danger" size="sm" onClick={handleBulkDelete}>
+          {t('bulkDelete')}
+        </Button>
+      }
+    >
+      <DataTable columns={columns} data={data?.items ?? []} loading={loading} selectable selectedIds={selectedIds} onSelectionChange={setSelectedIds} mobileCardRender={(p) => <ProductCard product={p} />} />
+    </ListingLayout>
+  );
+}
+```
+
+#### BulkActionBar
+
+**File**: `src/components/ui/BulkActionBar.tsx`  
+**Tier**: 1 — Shared primitive.  
+**Purpose**: Compact contextual bar that appears (with fade-in animation) when one or more list items are selected. Shows the selection count, a ✕ "Clear selection" button, a vertical divider, then any action buttons passed as `children`. Returns `null` when `selectedCount === 0` so it is safe to always render.
+
+Public pages pass cart/wishlist actions; seller and admin pages pass delete/export/status-change actions.
+
+**Props**:
+
+| Prop | Type | Purpose |
+|------|------|---------|
+| `selectedCount` | `number` | Number of selected items. Bar is hidden (returns `null`) when 0. |
+| `onClearSelection` | `() => void` | Called by the ✕ button to deselect all items. |
+| `children` | `ReactNode` | One or more `<Button>` elements for bulk operations. |
+
+```tsx
+// Public listing — cart/wishlist bulk actions
+<BulkActionBar
+  selectedCount={selectedIds.length}
+  onClearSelection={() => setSelectedIds([])}
+>
+  <Button variant="primary" size="sm" onClick={handleAddAllToCart}>
+    {t('addAllToCart')}
+  </Button>
+  <Button variant="outline" size="sm" onClick={handleAddAllToWishlist}>
+    {t('addAllToWishlist')}
+  </Button>
+</BulkActionBar>
+
+// Admin listing — delete/export bulk actions
+<BulkActionBar selectedCount={selectedIds.length} onClearSelection={() => setSelectedIds([])}>
+  <Button variant="danger" size="sm" onClick={handleBulkDelete}>
+    {t('deleteSelected')}
+  </Button>
+  <Button variant="outline" size="sm" onClick={handleExport}>
+    {t('exportSelected')}
+  </Button>
+</BulkActionBar>
+```
+
+> The `BulkActionBar` is auto-rendered by `ListingLayout` when `selectedCount > 0` and `bulkActions` is provided — you do **not** need to render it manually when using `ListingLayout`.
 
 ---
 

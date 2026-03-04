@@ -15,18 +15,23 @@ import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   AdminPageHeader,
+  Badge,
   BlogForm,
   Button,
+  Caption,
   Card,
   ConfirmDeleteModal,
   DataTable,
   DrawerFormFooter,
+  MediaImage,
   SideDrawer,
+  StatusBadge,
   Text,
   useBlogTableColumns,
 } from "@/components";
 import type { BlogPostDocument } from "@/db/schema";
 import type { BlogFormData } from "@/components";
+import { formatDate } from "@/utils";
 
 const { themed, typography } = THEME_CONSTANTS;
 
@@ -55,6 +60,7 @@ export function AdminBlogView() {
   const [deleteTarget, setDeleteTarget] = useState<BlogPostDocument | null>(
     null,
   );
+  const [viewMode, setViewMode] = useState<"table" | "grid" | "list">("table");
   const initialFormRef = useRef<string>("");
 
   const {
@@ -228,6 +234,33 @@ export function AdminBlogView() {
             loading={isLoading}
             emptyMessage={t("empty")}
             emptyTitle={t("emptySubtitle")}
+            showViewToggle
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            mobileCardRender={(post: BlogPostDocument) => (
+              <Card className="overflow-hidden cursor-pointer">
+                {post.coverImage && (
+                  <div className="relative aspect-video overflow-hidden">
+                    <MediaImage
+                      src={post.coverImage}
+                      alt={post.title}
+                      size="card"
+                    />
+                  </div>
+                )}
+                <div className="p-3 space-y-2">
+                  <Text weight="medium" size="sm" className="line-clamp-2">
+                    {post.title}
+                  </Text>
+                  <div className="flex items-center justify-between">
+                    <Badge>{post.category}</Badge>
+                    <StatusBadge status={post.status as any} />
+                  </div>
+                  <Caption>{post.authorName}</Caption>
+                  <Caption>{formatDate(post.createdAt)}</Caption>
+                </div>
+              </Card>
+            )}
           />
         )}
       </Card>

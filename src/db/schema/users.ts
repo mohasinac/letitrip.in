@@ -83,6 +83,82 @@ export interface UserDocument {
   // RipCoins wallet (for auction bidding)
   ripcoinBalance?: number; // Available (spendable) coins
   engagedRipcoins?: number; // Coins currently locked in active bids
+  /**
+   * Seller shipping configuration — private, never sent to client
+   * Set via /api/seller/shipping (GET/PATCH)
+   */
+  shippingConfig?: SellerShippingConfig;
+  /**
+   * Seller payout payment details — private, never sent to client in full
+   * Set via /api/seller/payout-settings (GET/PATCH)
+   */
+  payoutDetails?: SellerPayoutDetails;
+}
+
+// ─── Seller Shipping Config ──────────────────────────────────────────────────
+
+export type SellerShippingMethod = 'custom' | 'shiprocket';
+
+export interface SellerPickupAddress {
+  /** Short nickname used as Shiprocket location identifier */
+  locationName: string;
+  name: string;
+  phone: string;
+  email: string;
+  address: string;
+  address2?: string;
+  city: string;
+  state: string;
+  pincode: string;
+  country: string;
+  /** True after Shiprocket OTP verification completes */
+  isVerified: boolean;
+  /** Shiprocket internal pickup address ID (populated after verification) */
+  shiprocketAddressId?: number;
+}
+
+export interface SellerShippingConfig {
+  method: SellerShippingMethod;
+  /** Fixed shipping charge added to order total for custom method */
+  customShippingPrice?: number;
+  /** Primary carrier name used for custom shipping (e.g. 'DTDC', 'India Post') */
+  customCarrierName?: string;
+  // ── Shiprocket fields ──
+  /** Email used to authenticate with the seller's Shiprocket account */
+  shiprocketEmail?: string;
+  /**
+   * Shiprocket JWT — server-only, never returned to client.
+   * Refreshed when expired (10-day TTL on Shiprocket tokens).
+   */
+  shiprocketToken?: string;
+  shiprocketTokenExpiry?: Date;
+  /** Verified pickup address registered in Shiprocket */
+  pickupAddress?: SellerPickupAddress;
+  /** True when minimum setup is complete (method chosen + relevant config saved) */
+  isConfigured: boolean;
+}
+
+// ─── Seller Payout Details ─────────────────────────────────────────────────
+
+export type SellerPayoutMethod = 'upi' | 'bank_transfer';
+
+export interface SellerBankAccount {
+  accountHolderName: string;
+  /** Full account number — stored server-side only, never returned to client in full */
+  accountNumber: string;
+  /** Last 4 digits shown to client for confirmation */
+  accountNumberMasked: string;
+  ifscCode: string;
+  bankName: string;
+  accountType: 'savings' | 'current';
+}
+
+export interface SellerPayoutDetails {
+  method: SellerPayoutMethod;
+  upiId?: string;
+  bankAccount?: SellerBankAccount;
+  /** True once at least one valid payment detail is saved */
+  isConfigured: boolean;
 }
 
 export const USER_COLLECTION = "users" as const;

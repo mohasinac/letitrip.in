@@ -48,6 +48,12 @@ interface DataTableProps<T> {
   defaultViewMode?: ViewMode;
   /** Called when the user switches view mode. */
   onViewModeChange?: (mode: ViewMode) => void;
+  /** Enable row checkboxes for bulk selection */
+  selectable?: boolean;
+  /** Controlled array of selected item keys */
+  selectedIds?: string[];
+  /** Called when selection changes */
+  onSelectionChange?: (ids: string[]) => void;
 }
 
 type SortDirection = "asc" | "desc" | null;
@@ -72,6 +78,9 @@ export function DataTable<T extends Record<string, any>>({
   viewMode: controlledViewMode,
   defaultViewMode = "table",
   onViewModeChange,
+  selectable = false,
+  selectedIds = [],
+  onSelectionChange,
 }: DataTableProps<T>) {
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
@@ -295,9 +304,23 @@ export function DataTable<T extends Record<string, any>>({
 
       {/* Grid view */}
       {showViewToggle && activeViewMode === "grid" && mobileCardRender && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
           {paginatedData.map((item) => (
-            <div key={keyExtractor(item)}>{mobileCardRender(item)}</div>
+            <SelectableCard
+              key={keyExtractor(item)}
+              id={keyExtractor(item)}
+              selectable={selectable}
+              selected={selectedIds.includes(keyExtractor(item))}
+              onToggle={(id, checked) =>
+                onSelectionChange?.(
+                  checked
+                    ? [...selectedIds, id]
+                    : selectedIds.filter((s) => s !== id)
+                )
+              }
+            >
+              {mobileCardRender(item)}
+            </SelectableCard>
           ))}
         </div>
       )}
@@ -306,7 +329,22 @@ export function DataTable<T extends Record<string, any>>({
       {showViewToggle && activeViewMode === "list" && mobileCardRender && (
         <div className="flex flex-col gap-2">
           {paginatedData.map((item) => (
-            <div key={keyExtractor(item)}>{mobileCardRender(item)}</div>
+            <SelectableCard
+              key={keyExtractor(item)}
+              id={keyExtractor(item)}
+              selectable={selectable}
+              selected={selectedIds.includes(keyExtractor(item))}
+              listMode
+              onToggle={(id, checked) =>
+                onSelectionChange?.(
+                  checked
+                    ? [...selectedIds, id]
+                    : selectedIds.filter((s) => s !== id)
+                )
+              }
+            >
+              {mobileCardRender(item)}
+            </SelectableCard>
           ))}
         </div>
       )}
@@ -315,7 +353,21 @@ export function DataTable<T extends Record<string, any>>({
       {(!showViewToggle || activeViewMode === "table") && mobileCardRender && (
         <div className={`md:hidden ${THEME_CONSTANTS.spacing.stack}`}>
           {paginatedData.map((item) => (
-            <div key={keyExtractor(item)}>{mobileCardRender(item)}</div>
+            <SelectableCard
+              key={keyExtractor(item)}
+              id={keyExtractor(item)}
+              selectable={selectable}
+              selected={selectedIds.includes(keyExtractor(item))}
+              onToggle={(id, checked) =>
+                onSelectionChange?.(
+                  checked
+                    ? [...selectedIds, id]
+                    : selectedIds.filter((s) => s !== id)
+                )
+              }
+            >
+              {mobileCardRender(item)}
+            </SelectableCard>
           ))}
         </div>
       )}
@@ -335,6 +387,29 @@ export function DataTable<T extends Record<string, any>>({
                 className={`${THEME_CONSTANTS.themed.bgTertiary} ${stickyHeader ? "sticky top-0 z-10" : ""}`}
               >
                 <tr>
+                  {selectable && (
+                    <th scope="col" className="px-4 py-3 w-8">
+                      <input
+                        type="checkbox"
+                        className="rounded border-gray-300"
+                        aria-label="Select all on page"
+                        checked={
+                          paginatedData.length > 0 &&
+                          paginatedData.every((item) =>
+                            selectedIds.includes(keyExtractor(item))
+                          )
+                        }
+                        onChange={(e) => {
+                          const pageIds = paginatedData.map(keyExtractor);
+                          onSelectionChange?.(
+                            e.target.checked
+                              ? [...new Set([...selectedIds, ...pageIds])]
+                              : selectedIds.filter((id) => !pageIds.includes(id))
+                          );
+                        }}
+                      />
+                    </th>
+                  )}
                   {columns.map((column) => (
                     <th
                       key={column.key}
@@ -397,6 +472,27 @@ export function DataTable<T extends Record<string, any>>({
                   `}
                     onClick={() => onRowClick?.(item)}
                   >
+                    {selectable && (
+                      <td
+                        className="px-4 py-4 w-8"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <input
+                          type="checkbox"
+                          className="rounded border-gray-300"
+                          aria-label="Select row"
+                          checked={selectedIds.includes(keyExtractor(item))}
+                          onChange={(e) => {
+                            const id = keyExtractor(item);
+                            onSelectionChange?.(
+                              e.target.checked
+                                ? [...selectedIds, id]
+                                : selectedIds.filter((s) => s !== id)
+                            );
+                          }}
+                        />
+                      </td>
+                    )}
                     {columns.map((column) => (
                       <td
                         key={column.key}
@@ -433,6 +529,97 @@ export function DataTable<T extends Record<string, any>>({
           />
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── SelectableCard ──────────────────────────────────────────────────────────
+
+interface SelectableCardProps {
+  id: string;
+  selectable: boolean;
+  selected: boolean;
+  onToggle: (id: string, checked: boolean) => void;
+  children: ReactNode;
+  /** When true, uses a left-side checkbox (list row style). Default: false (card grid). */
+  listMode?: boolean;
+}
+
+/**
+ * Wraps any card/row with a selection checkbox overlay + selected-state ring.
+ * Used internally by DataTable for grid, list, and mobile card views.
+ */
+function SelectableCard({
+  id,
+  selectable,
+  selected,
+  onToggle,
+  children,
+  listMode = false,
+}: SelectableCardProps) {
+  if (!selectable) {
+    return <div>{children}</div>;
+  }
+
+  return (
+    // The outer wrapper is `relative` so the checkbox and ring can be `absolute`.
+    <div className="relative group">
+      {/* Checkbox — top-left for cards, left-center for list rows */}
+      <div
+        className={[
+          "absolute z-10",
+          listMode
+            ? "left-2 top-1/2 -translate-y-1/2"
+            : "top-2 left-2",
+        ].join(" ")}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <label className="flex items-center justify-center cursor-pointer">
+          <input
+            type="checkbox"
+            className={
+              [
+                "w-4 h-4 rounded border-2 cursor-pointer",
+                "transition-all appearance-none",
+                "border-gray-300 dark:border-gray-600",
+                selected
+                  ? "border-indigo-500 bg-indigo-500"
+                  : "bg-white dark:bg-gray-800 group-hover:border-indigo-400",
+              ].join(" ")
+            }
+            checked={selected}
+            onChange={(e) => onToggle(id, e.target.checked)}
+            aria-label="Select item"
+          />
+          {/* Checkmark SVG overlay */}
+          {selected && (
+            <svg
+              className="absolute w-3 h-3 text-white pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={3}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          )}
+        </label>
+      </div>
+
+      {/* Selected ring highlight */}
+      {selected && (
+        <div
+          className="absolute inset-0 z-[5] rounded-xl ring-2 ring-indigo-500 ring-offset-0 pointer-events-none"
+          aria-hidden="true"
+        />
+      )}
+
+      {children}
     </div>
   );
 }

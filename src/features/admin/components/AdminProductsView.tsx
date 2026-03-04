@@ -17,17 +17,21 @@ import {
   AdminFilterBar,
   AdminPageHeader,
   Button,
+  Caption,
   Card,
   DataTable,
   DrawerFormFooter,
   FormField,
+  MediaImage,
   ProductForm,
   Select,
   SideDrawer,
+  StatusBadge,
   TablePagination,
   Text,
   useProductTableColumns,
 } from "@/components";
+import { formatCurrency } from "@/utils";
 import type { AdminProduct, ProductDrawerMode } from "@/components";
 
 interface AdminProductsViewProps {
@@ -278,6 +282,38 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
               onRowClick={handleEdit}
               actions={actions}
               externalPagination
+              showViewToggle
+              viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+              onViewModeChange={(mode) => table.set("view", mode)}
+              mobileCardRender={(product) => (
+                <Card
+                  className="overflow-hidden cursor-pointer"
+                  onClick={() => handleEdit(product)}
+                >
+                  <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    <MediaImage
+                      src={product.mainImage}
+                      alt={product.title}
+                      size="card"
+                    />
+                  </div>
+                  <div className="p-3 space-y-1">
+                    <Text
+                      weight="medium"
+                      size="sm"
+                      className="line-clamp-2"
+                    >
+                      {product.title}
+                    </Text>
+                    <div className="flex items-center justify-between gap-1">
+                      <StatusBadge status={product.status as any} />
+                      <Caption className="font-semibold">
+                        {formatCurrency(product.price)}
+                      </Caption>
+                    </div>
+                  </div>
+                </Card>
+              )}
             />
             <TablePagination
               currentPage={data?.meta?.page ?? 1}

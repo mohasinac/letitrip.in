@@ -10,17 +10,10 @@
 "use client";
 
 import { useRef, ChangeEvent } from "react";
+import Image from "next/image";
 import { THEME_CONSTANTS } from "@/constants";
 import { useMediaUpload } from "@/hooks";
-import {
-  Alert,
-  Button,
-  Label,
-  Span,
-  Spinner,
-  Text,
-  TextLink,
-} from "@/components";
+import { Alert, Button, Label, Span, Spinner, Text, TextLink } from "@/components";
 
 interface MediaUploadFieldProps {
   /** Required label shown above the upload control */
@@ -129,13 +122,19 @@ export function MediaUploadField({
               aria-label={label}
             />
           ) : isImage(value) ? (
-            <img
+            <Image
               src={value}
               alt={label}
+              width={400}
+              height={224}
               className="w-full max-h-56 object-contain rounded"
+              unoptimized
             />
           ) : (
-            <TextLink href={value} className="text-sm underline break-all">
+            <TextLink
+              href={value}
+              className="text-sm underline break-all"
+            >
               {filenameFromUrl(value)}
             </TextLink>
           )}

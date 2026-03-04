@@ -13,6 +13,172 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased-7] — Universal Listing Layout, Bulk Actions & Consistent Selection UX
+
+### Added
+
+- **`ListingLayout` component** (`src/components/ui/ListingLayout.tsx`) — Standard layout shell for ALL listing pages (public, seller, admin).
+  - Desktop: collapsible left-side filter sidebar (240 px / 256 px), toggled with a Filters button in the toolbar. Default open; collapses with a CSS slide-animation.
+  - Mobile: filter panel is hidden by default. A "Filters" button opens a **fullscreen overlay** with Apply / Clear all footer. Pressing Apply fires `onFilterApply` and auto-closes the overlay. Escape key and backdrop tap also close.
+  - Body-scroll lock while the mobile overlay is open.
+  - Toolbar slots: `searchSlot`, `sortSlot`, `viewToggleSlot`, `actionsSlot`.
+  - Automatic `BulkActionBar` shown when `selectedCount > 0`.
+  - Props: `filterContent`, `filterActiveCount`, `onFilterApply`, `onFilterClear`, `filterTitle`, `searchSlot`, `sortSlot`, `viewToggleSlot`, `actionsSlot`, `selectedCount`, `onClearSelection`, `bulkActions`, `defaultSidebarOpen`, `className`.
+
+- **`BulkActionBar` component** (`src/components/ui/BulkActionBar.tsx`) — Appears at the top of the content area when items are selected.
+  - Shows `{count} selected` label + ✕ deselect button + caller-provided action buttons.
+  - Public pages pass cart / wishlist buttons. Admin / seller pages pass delete, export, publish, etc.
+  - Returns `null` when `selectedCount === 0` (no layout shift).
+  - Props: `selectedCount`, `onClearSelection`, `children`.
+
+- **`SelectableCard` internal helper** in `DataTable` — wraps grid-view, list-view, and mobile-card-view items with a checkbox overlay and selected-ring highlight when `selectable={true}`.
+  - Checkbox is `absolute` top-left on cards; left-center for list rows.
+  - Clicking the card body still triggers `onRowClick`; clicking the checkbox area stops propagation so only selection changes.
+  - Grid view column count extended: `grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6`.
+
+### Changed
+
+- **`SideDrawer`** (`src/components/ui/SideDrawer.tsx`) — edit/create drawer on desktop is now **3/4 screen width with a 900 px max-width** (`w-full md:w-3/4 md:max-w-[900px]`). Background is already blurred via `backdrop-blur-sm` on the overlay. Content is never shifted (fixed positioning throughout).
+
+### i18n
+
+- Added `filters.showFilters` / `filters.hideFilters` to `messages/en.json` and `messages/hi.json`.
+- Added `actions.clearSelection` to both locale files.
+- Added new `listingLayout` namespace: `selectedCount`, `bulkActionsRegion` in both locale files.
+
+### Tests
+
+- `src/components/ui/__tests__/BulkActionBar.test.tsx` — 7 tests covering count display, deselect callback, children rendering, ARIA region.
+- `src/components/ui/__tests__/ListingLayout.test.tsx` — 13 tests covering toolbar slots, filter toggle, mobile overlay open/close/apply/clear, BulkActionBar visibility, sidebar toggle.
+
+### Fixed
+
+- `src/app/api/seller/orders/[id]/ship/route.ts` — corrected `POST` handler params type from `{ params: { id: string } }` to `{ params: Promise<{ id: string }> }` and destructured with `await params` to comply with Next.js 15 async route-params convention; resolves build-time TypeScript error TS2344.
+
+---
+
+## [Unreleased-6] — Seller Shipping Configuration & Payout System
+
+### Added
+
+- **Seller shipping configuration** — sellers can choose between two shipping modes:
+  - **Custom (own courier)**: seller sets a fixed shipping price charged to buyers.
+  - **Shiprocket (platform)**: automated shipment creation, AWB/label generation, and real-time status tracking via Shiprocket integration with OTP-verified pickup address.
+- `src/db/schema/field-names.ts` — extended `ORDER_FIELDS` with: `SELLER_ID`, `PAYOUT_STATUS`, `PAYOUT_ID`, `SHIPPING_METHOD`, `SHIPPING_CARRIER`, `TRACKING_URL`, `SHIPROCKET_ORDER_ID`, `SHIPROCKET_SHIPMENT_ID`, `SHIPROCKET_AWB`, `SHIPROCKET_STATUS`, `SHIPROCKET_UPDATED_AT`, `PAYOUT_STATUS_VALUES` (`ELIGIBLE | REQUESTED | PAID`), `SHIPPING_METHOD_VALUES` (`CUSTOM | SHIPROCKET`).
+- `src/lib/shiprocket/client.ts` — typed Shiprocket API client: order creation, AWB assignment, pickup scheduling, order tracking, and OTP-based pickup address verification.
+- **Seller payout settings** — sellers can save UPI details or full bank account details (account holder name, account number, IFSC code) for receiving payouts.
+- `src/db/schema/payouts.ts` — `PayoutDocument` interface with `sellerName`, `sellerEmail`, `platformFeeRate`, `currency`, `paymentMethod` (`bank_transfer | upi`), `PayoutCreateInput` type.
+- **Bulk payout request** — seller orders page gains checkbox selection + bulk action bar; sellers can mark delivered custom-method orders and request payment from admin in one click.
+- **Weekly automated payout** (admin-only) — `POST /api/admin/payouts/weekly` scans Shiprocket-delivered orders, calculates seller earnings minus platform commission, and creates `PayoutDocument` records for admin processing.
+- **New API routes**:
+  - `POST /api/seller/shipping` — save/update seller shipping configuration.
+  - `GET /api/seller/shipping` — retrieve current shipping settings.
+  - `POST/GET /api/seller/payout-settings` — save/retrieve UPI or bank account details.
+  - `POST /api/seller/orders/[id]/ship` — trigger Shiprocket order creation + AWB + pickup scheduling for a specific order.
+  - `POST /api/seller/orders/bulk` — bulk payout-request action for selected orders.
+  - `POST /api/admin/payouts/weekly` — admin-triggered weekly payout batch.
+  - `POST /api/webhooks/shiprocket` — Shiprocket webhook handler for real-time shipment status updates written to Firestore.
+- `src/features/seller/components/SellerShippingView.tsx` — full shipping settings UI: mode toggle (custom / Shiprocket), fixed-price input, Shiprocket API key + pickup address form with OTP verification flow.
+- `src/features/seller/components/SellerPayoutSettingsView.tsx` — payout settings UI: UPI ID entry or bank account form (name, account number, IFSC); displays current verified payout method.
+- `src/features/seller/components/SellerOrdersView.tsx` — seller orders list extended with: checkbox selection column, bulk action bar (request payout / warning when payout not configured), "Ship via Shiprocket" per-row action with carrier + tracking fields for custom shipping.
+- `src/app/[locale]/seller/shipping/page.tsx` + `src/app/[locale]/seller/payout-settings/page.tsx` — thin page shells.
+- `src/features/seller/hooks/useSellerShipping.ts` + `useSellerPayoutSettings.ts` — data hooks for the new seller pages.
+- `src/components/admin/DataTable.tsx` — extended `DataTableProps` with `selectable?: boolean`, `selectedIds?: string[]`, `onSelectionChange?: (ids: string[]) => void`; renders a leading checkbox column (with select-all on current page) when `selectable` is true.
+- `src/components/admin/AdminPageHeader.tsx` — added optional `badge?: React.ReactNode` prop rendered inline next to the title heading.
+- `messages/en.json` + `messages/hi.json` — added `sellerShipping`, `sellerPayoutSettings`, and extended `sellerOrders` namespaces with all new UI strings.
+- `src/services/seller.service.ts` — extended with `getShipping`, `saveShipping`, `getPayoutSettings`, `savePayoutSettings`, `shipOrder`, `bulkPayoutRequest` methods.
+
+---
+
+## [Unreleased-5] — UPI Manual Payment & WhatsApp Confirmation Flow
+
+### Added
+
+- **UPI Manual payment method** — customers can now select "Pay via UPI" at checkout, copy the business UPI VPA, pay in any UPI app, place their order, and are redirected to WhatsApp with a pre-filled confirmation message containing order ID and amount.
+- `src/db/schema/site-settings.ts` — added `contact.upiVpa?: string` (business UPI VPA) and `contact.whatsappNumber?: string` (WhatsApp number for payment confirmations); added new `payment: { razorpayEnabled: boolean; upiManualEnabled: boolean }` section with defaults; updated `SITE_SETTINGS_PUBLIC_FIELDS` and `SITE_SETTINGS_UPDATABLE_FIELDS`.
+- `src/db/schema/field-names.ts` — added `SITE_SETTINGS_FIELDS.CONTACT_FIELDS.UPI_VPA`, `SITE_SETTINGS_FIELDS.CONTACT_FIELDS.WHATSAPP`, `SITE_SETTINGS_FIELDS.PAYMENT`, and `SITE_SETTINGS_FIELDS.PAYMENT_FIELDS` (`RAZORPAY_ENABLED`, `UPI_MANUAL_ENABLED`).
+- `src/components/checkout/CheckoutOrderReview.tsx` — exported `CheckoutPaymentMethod = "cod" | "online" | "upi_manual"` type; added `upiVpa?: string` prop; renders a third payment option "Pay via UPI" (hidden when `upiVpa` is not set); shows expanded instructions panel when `upi_manual` is selected with the UPI VPA in a monospace card, clipboard copy button (with "Copied!" feedback), and numbered steps.
+- `messages/en.json` + `messages/hi.json` — added 10 new keys under `checkout` namespace: `upiManual`, `upiManualDesc`, `upiId`, `copyUpiId`, `upiIdCopied`, `upiInstructions`, `upiStep1`, `upiStep2`, `upiStep3`, `placeAndWhatsapp`, `upiPaymentNote`.
+- `scripts/seed-data/site-settings-seed-data.ts` — added `contact.upiVpa`, `contact.whatsappNumber`, and `payment` block to seed data.
+
+### Changed
+
+- `src/app/api/checkout/route.ts` — `paymentMethod` Zod enum now includes `"upi_manual"` alongside `"cod"` and `"online"`; UPI manual orders are created with `paymentStatus: "pending"` and confirmed manually via WhatsApp.
+- `src/hooks/useCheckout.ts` — `PlaceOrderPayload.paymentMethod` type updated to `"cod" | "online" | "upi_manual"`.
+- `src/components/checkout/CheckoutView.tsx` — `paymentMethod` state type updated to `CheckoutPaymentMethod`; reads `upiVpa` and `whatsappNumber` from `useSiteSettings`; `handlePlaceOrder` handles `"upi_manual"` via the COD order path then redirects to `https://wa.me/{number}?text={prefilledMessage}`; button label changes to `t("placeAndWhatsapp")` when UPI manual is selected; passes `upiVpa` prop to `CheckoutOrderReview`.
+
+### Tests
+
+- `src/components/checkout/__tests__/CheckoutOrderReview.test.tsx` — added 5 new test cases: UPI option hidden without `upiVpa`, UPI option shown with `upiVpa`, instructions panel visible when `upi_manual` selected, `onPaymentMethodChange` called with `"upi_manual"`, clipboard copy button.
+- `src/app/api/__tests__/checkout.test.ts` — added `"places order successfully with upi_manual payment method"` and `"returns 400 when paymentMethod is an unknown value"` test cases.
+
+---
+
+## [Unreleased-4] — Store & Category Page Fixes
+
+### Fixed
+
+- `src/features/stores/components/StoreProductsView.tsx` — replaced placeholder `Card`/`Text` stub with a proper `ProductGrid` rendering typed `StoreProductItem[]`; removed `unknown[]` casts.
+- `src/features/stores/components/StoreAuctionsView.tsx` — replaced placeholder `Card`/`Text` stub with a proper `AuctionGrid` rendering typed `StoreAuctionItem[]`; removed `unknown[]` casts.
+- `src/features/stores/components/StoresListView.tsx` — replaced bare `Input` with `Search` component (Rule 8/32 compliance); `onChange` now passes string value directly via `table.set`.
+
+### Added
+
+- `src/features/stores/types/index.ts` — added `StoreProductItem`, `StoreAuctionItem`, `StoreProductsResponse`, `StoreAuctionsResponse` typed interfaces derived from `ProductDocument` via `Pick`; avoids `unknown[]` casts in views.
+- `src/features/stores/hooks/useStoreBySlug.ts` — `useStoreProducts` and `useStoreAuctions` now carry explicit `StoreProductsResponse` / `StoreAuctionsResponse` return types via `useApiQuery<T>`.
+
+---
+
+## [Unreleased-3] — MediaImage / MediaVideo Primitives + Media Rule Compliance
+
+### Added
+
+- `src/components/media/MediaImage.tsx` — new Tier 1 primitive (Rule 28). Wraps Next.js `<Image fill>` with size presets (`thumbnail`, `card`, `hero`, `banner`, `gallery`, `avatar`), emoji fallback when `src` is undefined, and a `sizes` hint per preset. Import from `@/components`.
+- `src/components/media/MediaVideo.tsx` — new Tier 1 primitive (Rule 28). Wraps `<video>` with `controls`, `autoPlayMuted`, `loop`, `trimStart`/`trimEnd` support via `useEffect`, and an emoji fallback. Import from `@/components`.
+- `src/components/media/index.ts` — barrel exporting both primitives.
+- `src/components/media/__tests__/MediaImage.test.tsx` — unit tests for MediaImage (5 cases).
+- `src/components/media/__tests__/MediaVideo.test.tsx` — unit tests for MediaVideo (5 cases).
+- `src/components/auctions/__tests__/AuctionCard.test.tsx` — new test file for AuctionCard (6 cases; was previously untested).
+- `src/components/categories/__tests__/CategoryCard.test.tsx` — new test file for CategoryCard (10 cases; was previously untested).
+- `messages/en.json` + `messages/hi.json` — added `featured`, `productsCount` (ICU plural), `subcategoriesCount` (ICU plural) to the `categories` namespace.
+
+### Changed
+
+- `src/components/index.ts` — registered `./media` barrel under `MEDIA PRIMITIVES` section.
+- `src/components/categories/CategoryCard.tsx` — replaced `UI_LABELS.CATEGORIES_PAGE.*` with `useTranslations("categories")` (Rules 3 & 33) and replaced raw `<Image>` with `<MediaImage>` (Rule 28).
+- `src/components/auctions/AuctionCard.tsx` — removed local `useCountdown`/`useState`/`useEffect` re-implementation; now uses canonical `useCountdown` from `@/hooks` (Rule 6). Replaced raw `<Image>` with `<MediaImage>` (Rule 28).
+- `src/components/auctions/AuctionDetailView.tsx` — replaced raw `<Image>` with `<MediaImage>`; added video-first media panel using `<MediaVideo>` when `product.video` is set (Rule 28).
+- `src/components/products/ProductImageGallery.tsx` — full rewrite: accepts optional `video?: VideoData` prop; builds unified `MediaItem[]` array (video first); renders `<MediaVideo>` or `<MediaImage>` based on type; thumbnail strip shows video play overlay (Rule 28). Replaced raw `<Image>`.
+- `src/features/products/components/ProductDetailView.tsx` — passes `video={product.video}` to `<ProductImageGallery>`.
+
+---
+
+## [Unreleased-4] — Video Support in All Card Components & Detail Pages
+
+### Changed
+
+- `src/components/media/MediaImage.tsx` — added `className` prop forwarded to the outer wrapper `div`, enabling hover-scale and transition classes from call sites.
+- `src/components/media/__tests__/MediaImage.test.tsx` — updated tests to reflect new wrapper `div` structure from `className` prop addition.
+- `src/components/products/ProductCard.tsx` — added video-first media display: renders `<MediaVideo autoPlayMuted loop>` when `product.video` is set; falls back to `<MediaImage>`. Hover-scale transition applied via `className` prop on `MediaImage`.
+- `src/components/products/__tests__/ProductCard.test.tsx` — added test case for video rendering (mocks `MediaVideo`; asserts it renders when `product.video` is set).
+- `src/components/auctions/AuctionCard.tsx` — added video-first media display: renders `<MediaVideo autoPlayMuted loop>` when `product.video` is set; falls back to `<MediaImage className="...">` with hover-scale.
+- `src/components/auctions/__tests__/AuctionCard.test.tsx` — added test case asserting `<MediaVideo>` renders when `product.video` is provided.
+- `src/components/blog/BlogCard.tsx` — replaced raw `<Image>` with `<MediaImage className="...">` with hover-scale transition.
+- `src/components/blog/BlogFeaturedCard.tsx` — replaced raw `<Image>` with `<MediaImage className="...">` with hover-scale transition.
+- `src/components/events/EventCard.tsx` — added video-first media: renders `<MediaVideo autoPlayMuted loop>` when `event.video` is set; falls back to `<MediaImage className="...">`.
+- `src/features/seller/components/SellerProductCard.tsx` — added video badge overlay and video-first display: renders `<MediaVideo autoPlayMuted loop>` when `product.video` is set; falls back to `<MediaImage className="...">`.
+- `src/types/admin.ts` — added optional `video?: VideoData` field to `AdminProduct` type to match `ProductDocument`.
+
+
+
+## [Unreleased-2] — Raw HTML Primitive Audit & Fix (Part 3)
+
+### Fixed
+
+- `src/app/[locale]/unauthorized/page.tsx`: replaced bare `<span>` with `<Span>` for the "401" display text — `Span` was already imported, so this was a complete one-line fix. All other apparent violations in the scan were confirmed as intended implementation internals (`Typography.tsx`, `Semantic.tsx`, `Button.tsx`, form primitive components, upload components) which are exempt from the rule by design.
+
+---
+
 ## [2026-03-06] — Raw HTML Primitive Violations Eliminated (Part 2)
 
 ### Fixed

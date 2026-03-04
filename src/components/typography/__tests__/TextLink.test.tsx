@@ -62,7 +62,9 @@ describe("TextLink", () => {
     });
 
     it("renders mailto URL as <a> (auto-detected external)", () => {
-      render(<TextLink href="mailto:test@example.com">Email us</TextLink>);
+      render(
+        <TextLink href="mailto:test@example.com">Email us</TextLink>,
+      );
       const link = screen.getByRole("link");
       expect(link.tagName).toBe("A");
       expect(link).toHaveAttribute("href", "mailto:test@example.com");
@@ -148,9 +150,7 @@ describe("TextLink", () => {
           <svg />
         </TextLink>,
       );
-      expect(
-        screen.getByRole("link", { name: "Twitter profile" }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: "Twitter profile" })).toBeInTheDocument();
     });
 
     it("applies custom className alongside variant classes", () => {

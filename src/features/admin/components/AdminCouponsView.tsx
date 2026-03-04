@@ -15,6 +15,8 @@ import { useAdminCoupons } from "@/features/admin/hooks";
 import { ROUTES, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
+  Badge,
+  Caption,
   Card,
   Button,
   SideDrawer,
@@ -26,10 +28,13 @@ import {
   CouponForm,
   couponToFormState,
   formStateToCouponPayload,
+  StatusBadge,
   TablePagination,
   AdminFilterBar,
   FormField,
+  Text,
 } from "@/components";
+import { formatDate } from "@/utils";
 import type { CouponFormState } from "@/components";
 import type { CouponDocument } from "@/db/schema";
 
@@ -199,6 +204,31 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
           }
           keyExtractor={(c: CouponDocument) => c.id}
           externalPagination
+          showViewToggle
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          onViewModeChange={(mode) => table.set("view", mode)}
+          mobileCardRender={(coupon) => (
+            <Card className="p-4 space-y-2">
+              <Text
+                weight="medium"
+                className="font-mono tracking-wide"
+              >
+                {coupon.code}
+              </Text>
+              <Caption className="truncate">{coupon.name}</Caption>
+              <div className="flex items-center justify-between">
+                <Badge>{coupon.type}</Badge>
+                <Caption>
+                  {t("usageCount", {
+                    count: coupon.usage?.currentUsage ?? 0,
+                  })}
+                </Caption>
+              </div>
+              <Caption>
+                {t("expiresLabel")}: {coupon.validity?.endDate ? formatDate(coupon.validity.endDate) : "—"}
+              </Caption>
+            </Card>
+          )}
         />
         <TablePagination
           currentPage={data?.meta?.page ?? 1}

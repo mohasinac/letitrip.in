@@ -31,7 +31,7 @@ import type { AddressDocument } from "@/db/schema";
 
 const checkoutSchema = z.object({
   addressId: z.string().min(1, "addressId is required"),
-  paymentMethod: z.enum(["cod", "online"]).default("cod"),
+  paymentMethod: z.enum(["cod", "online", "upi_manual"]).default("cod"),
   notes: z.string().max(500).optional(),
 });
 

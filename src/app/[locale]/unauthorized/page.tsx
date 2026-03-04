@@ -69,11 +69,11 @@ export default function UnauthorizedPage() {
 
         {/* Large 401 Text */}
         <div className={`${themed.textPrimary} ${spacing.margin.bottom.md}`}>
-          <span
+          <Span
             className={`${typography.display} ${THEME_CONSTANTS.opacity.low}`}
           >
             401
-          </span>
+          </Span>
         </div>
 
         {/* Error Title */}

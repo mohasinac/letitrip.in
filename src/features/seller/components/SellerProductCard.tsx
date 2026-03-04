@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
-import { Badge, Button, Span, Text } from "@/components";
+import { Badge, Button, MediaImage, Span, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { AdminProduct } from "@/components";
@@ -24,22 +24,21 @@ export function SellerProductCard({
     <div
       className={`rounded-xl overflow-hidden border ${themed.border} ${themed.bgPrimary} h-full`}
     >
-      {product.mainImage ? (
-        <div className="aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={product.mainImage}
-            alt={product.title}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      ) : (
-        <div
-          className={`aspect-square bg-gray-100 dark:bg-gray-800 ${flex.center}`}
-        >
-          <Span className={`text-3xl ${THEME_CONSTANTS.icon.muted}`}>??</Span>
-        </div>
-      )}
+      <div className="relative aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
+        <MediaImage
+          src={product.video?.thumbnailUrl || product.mainImage || undefined}
+          alt={product.title}
+          size="card"
+          fallback="📦"
+        />
+        {product.video?.url && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <Span className="bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm leading-none">
+              ▶
+            </Span>
+          </div>
+        )}
+      </div>
       <div className="p-3 space-y-2">
         <Text size="sm" weight="semibold" className="truncate">
           {product.title}

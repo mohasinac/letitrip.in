@@ -1,0 +1,86 @@
+"use client";
+
+import { useApiQuery, useApiMutation, useAuth, useMessage } from "@/hooks";
+import { sellerService } from "@/services";
+import { useTranslations } from "next-intl";
+import type { SellerShippingConfig, SellerPickupAddress } from "@/db/schema";
+
+export interface SellerShippingData {
+  shippingConfig: Omit<SellerShippingConfig, "shiprocketToken" | "shiprocketTokenExpiry"> & {
+    isTokenValid?: boolean;
+  };
+}
+
+export type UpdateShippingPayload =
+  | {
+      method: "custom";
+      customShippingPrice: number;
+      customCarrierName: string;
+    }
+  | {
+      method: "shiprocket";
+      shiprocketCredentials?: { email: string; password: string };
+      pickupAddress?: Omit<SellerPickupAddress, "isVerified" | "shiprocketAddressId">;
+    };
+
+export interface VerifyPickupOtpPayload {
+  otp: number;
+  pickupLocationId: number;
+}
+
+/**
+ * useSellerShipping
+ * Fetches and manages the authenticated seller's shipping configuration.
+ */
+export function useSellerShipping() {
+  const { user, loading: authLoading } = useAuth();
+  const { showSuccess, showError } = useMessage();
+  const t = useTranslations("sellerShipping");
+
+  const { data, isLoading, error, refetch } = useApiQuery<SellerShippingData>({
+    queryKey: ["seller-shipping"],
+    queryFn: () => sellerService.getShipping(),
+    enabled: !authLoading && !!user,
+  });
+
+  const { mutate: updateShipping, isLoading: isSaving } = useApiMutation<
+    SellerShippingData,
+    UpdateShippingPayload
+  >({
+    mutationFn: (payload) => sellerService.updateShipping(payload),
+    onSuccess: () => {
+      showSuccess(t("updateSuccess"));
+      refetch();
+    },
+    onError: (err) => {
+      showError(err?.message ?? t("updateError"));
+    },
+  });
+
+  const { mutate: verifyOtp, isLoading: isVerifying } = useApiMutation<
+    { message: string },
+    VerifyPickupOtpPayload
+  >({
+    mutationFn: (payload) => sellerService.verifyPickupOtp(payload),
+    onSuccess: () => {
+      showSuccess(t("pickupVerified"));
+      refetch();
+    },
+    onError: (err) => {
+      showError(err?.message ?? t("otpVerifyError"));
+    },
+  });
+
+  return {
+    shippingConfig: data?.shippingConfig ?? null,
+    isConfigured: data?.shippingConfig?.isConfigured ?? false,
+    isTokenValid: data?.shippingConfig?.isTokenValid ?? false,
+    isLoading: authLoading || isLoading,
+    isSaving,
+    isVerifying,
+    error,
+    updateShipping,
+    verifyOtp,
+    refetch,
+  };
+}

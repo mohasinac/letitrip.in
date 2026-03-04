@@ -237,6 +237,28 @@ export const ORDER_FIELDS = {
     FAILED: "failed",
     REFUNDED: "refunded",
   },
+
+  // Seller / shipping / payout fields (added for shipping feature)
+  SELLER_ID: "sellerId",
+  PAYOUT_STATUS: "payoutStatus",
+  PAYOUT_ID: "payoutId",
+  SHIPPING_METHOD: "shippingMethod",
+  SHIPPING_CARRIER: "shippingCarrier",
+  TRACKING_URL: "trackingUrl",
+  SHIPROCKET_ORDER_ID: "shiprocketOrderId",
+  SHIPROCKET_SHIPMENT_ID: "shiprocketShipmentId",
+  SHIPROCKET_AWB: "shiprocketAWB",
+  SHIPROCKET_STATUS: "shiprocketStatus",
+  SHIPROCKET_UPDATED_AT: "shiprocketUpdatedAt",
+  PAYOUT_STATUS_VALUES: {
+    ELIGIBLE: "eligible",
+    REQUESTED: "requested",
+    PAID: "paid",
+  },
+  SHIPPING_METHOD_VALUES: {
+    CUSTOM: "custom",
+    SHIPROCKET: "shiprocket",
+  },
 } as const;
 
 // ============================================================================
@@ -546,6 +568,13 @@ export const SITE_SETTINGS_FIELDS = {
     EMAIL: "contact.email",
     PHONE: "contact.phone",
     ADDRESS: "contact.address",
+    UPI_VPA: "contact.upiVpa",
+    WHATSAPP: "contact.whatsappNumber",
+  },
+  PAYMENT: "payment",
+  PAYMENT_FIELDS: {
+    RAZORPAY_ENABLED: "payment.razorpayEnabled",
+    UPI_MANUAL_ENABLED: "payment.upiManualEnabled",
   },
   SOCIAL_LINKS: "socialLinks",
   EMAIL_SETTINGS: "emailSettings",

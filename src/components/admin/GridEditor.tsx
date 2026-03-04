@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { THEME_CONSTANTS } from "@/constants";
 import {
   Button,
@@ -111,12 +112,16 @@ export function GridEditor({
         title={`Cell (${cell.row}, ${cell.col})`}
       >
         {cell.content.type === "image" && cell.content.imageUrl && (
-          <img
-            src={cell.content.imageUrl}
-            alt={`Cell ${cell.row},${cell.col}`}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
+          <div className="relative w-full min-h-[52px]">
+            <Image
+              src={cell.content.imageUrl}
+              alt={`Cell ${cell.row},${cell.col}`}
+              width={80}
+              height={52}
+              className="w-full h-auto object-cover"
+              unoptimized
+            />
+          </div>
         )}
         {cell.content.type === "text" && cell.content.text && (
           <Span className={`truncate ${THEME_CONSTANTS.themed.textSecondary}`}>

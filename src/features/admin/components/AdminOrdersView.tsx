@@ -17,16 +17,20 @@ import { useTranslations } from "next-intl";
 import {
   Card,
   Button,
+  Caption,
   SideDrawer,
   DataTable,
   AdminPageHeader,
   DrawerFormFooter,
   useOrderTableColumns,
   OrderStatusForm,
+  StatusBadge,
   TablePagination,
+  Text,
 } from "@/components";
 import type { OrderStatusFormState } from "@/components";
 import type { OrderDocument } from "@/db/schema";
+import { formatCurrency, formatDate } from "@/utils";
 
 interface AdminOrdersViewProps {
   action?: string[];
@@ -149,6 +153,29 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
           }
           keyExtractor={(order: OrderDocument) => order.id}
           externalPagination
+          showViewToggle
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          onViewModeChange={(mode) => table.set("view", mode)}
+          mobileCardRender={(order) => (
+            <Card className="p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <Caption className="font-mono text-xs">
+                  #{(order.id ?? "").slice(-8).toUpperCase()}
+                </Caption>
+                <StatusBadge status={order.status as any} />
+              </div>
+              <Text weight="medium" size="sm" className="truncate">
+                {order.productTitle}
+              </Text>
+              <Caption>{order.userName}</Caption>
+              <div className="flex items-center justify-between pt-1">
+                <Caption>{formatDate(order.createdAt)}</Caption>
+                <Text weight="bold" size="sm">
+                  {formatCurrency(order.totalPrice)}
+                </Text>
+              </div>
+            </Card>
+          )}
         />
         <TablePagination
           currentPage={data?.meta?.page ?? 1}

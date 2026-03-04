@@ -12,12 +12,19 @@ import { useState, useCallback } from "react";
 import {
   AdminPageHeader,
   AdminFilterBar,
+  Badge,
+  Caption,
+  Card,
   DataTable,
+  MediaImage,
+  StatusBadge,
   TablePagination,
+  Text,
   ConfirmDeleteModal,
   Input,
   Select,
 } from "@/components";
+import { formatDate } from "@/utils";
 import { ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, useMessage } from "@/hooks";
@@ -126,6 +133,32 @@ export function AdminEventsView() {
           loading={isLoading}
           emptyMessage={t("noEvents")}
           externalPagination
+          showViewToggle
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          onViewModeChange={(mode) => table.set("view", mode)}
+          mobileCardRender={(event) => (
+            <Card className="overflow-hidden cursor-pointer">
+              {event.coverImageUrl && (
+                <div className="relative aspect-video overflow-hidden">
+                  <MediaImage
+                    src={event.coverImageUrl}
+                    alt={event.title}
+                    size="card"
+                  />
+                </div>
+              )}
+              <div className="p-3 space-y-2">
+                <Text weight="medium" size="sm" className="line-clamp-2">
+                  {event.title}
+                </Text>
+                <div className="flex items-center justify-between">
+                  <Badge>{event.type}</Badge>
+                  <StatusBadge status={event.status as any} />
+                </div>
+                <Caption>{formatDate(event.startsAt.toDate())}</Caption>
+              </div>
+            </Card>
+          )}
         />
 
         <TablePagination

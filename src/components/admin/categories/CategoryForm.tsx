@@ -8,6 +8,7 @@
 
 "use client";
 
+import Image from "next/image";
 import { Checkbox, FormField, ImageUpload, Label, Span } from "@/components";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { Category } from "./types";
@@ -83,11 +84,16 @@ export function CategoryForm({
           <Label className={`block ${typography.label} mb-2`}>
             Category Image
           </Label>
-          <img
-            src={category.imageUrl}
-            alt={category.name || "Category"}
-            className="h-32 w-auto object-cover rounded"
-          />
+          <div className="relative h-32 w-40 overflow-hidden rounded">
+            <Image
+              src={category.imageUrl}
+              alt={category.name || "Category"}
+              fill
+              className="object-cover"
+              sizes="160px"
+              unoptimized
+            />
+          </div>
         </div>
       )}
 

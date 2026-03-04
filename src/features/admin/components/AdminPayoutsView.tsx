@@ -14,11 +14,12 @@ import {
   DrawerFormFooter,
   getPayoutTableColumns,
   PayoutStatusForm,
+  StatusBadge,
   Text,
   Caption,
 } from "@/components";
 import type { PayoutStatusFormState } from "@/components";
-import { formatCurrency, isSameMonth, nowMs } from "@/utils";
+import { formatCurrency, formatDate, isSameMonth, nowMs } from "@/utils";
 import type { PayoutDocument } from "@/db/schema";
 
 const { spacing } = THEME_CONSTANTS;
@@ -47,6 +48,7 @@ export function AdminPayoutsView() {
   const [formState, setFormState] = useState<PayoutStatusFormState | null>(
     null,
   );
+  const [viewMode, setViewMode] = useState<"table" | "grid" | "list">("table");
 
   const { data, isLoading, error, refetch, updateMutation } =
     useAdminPayouts(statusFilter);
@@ -183,6 +185,22 @@ export function AdminPayoutsView() {
           loading={isLoading}
           emptyMessage={error ? ERROR_MESSAGES.PAYOUT.FETCH_FAILED : t("empty")}
           keyExtractor={(p: PayoutDocument) => p.id}
+          showViewToggle
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          mobileCardRender={(payout) => (
+            <Card className="p-4 space-y-2">
+              <Text weight="medium" size="sm">{payout.sellerName}</Text>
+              <Caption className="truncate">{payout.sellerEmail}</Caption>
+              <div className="flex items-center justify-between">
+                <Text weight="semibold" size="sm">
+                  {formatCurrency(payout.amount)}
+                </Text>
+                <StatusBadge status={payout.status as any} />
+              </div>
+              <Caption>{formatDate(payout.requestedAt)}</Caption>
+            </Card>
+          )}
         />
       </Card>
 

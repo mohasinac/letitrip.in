@@ -20,9 +20,7 @@ jest.mock("@/components", () => ({
     children: React.ReactNode;
     className?: string;
   }) => <p className={className}>{children}</p>,
-  Span: ({ children }: { children: React.ReactNode }) => (
-    <span>{children}</span>
-  ),
+  Span: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
   TextLink: ({
     href,
     children,

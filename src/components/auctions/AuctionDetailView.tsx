@@ -7,9 +7,10 @@
 
 "use client";
 
-import Image from "next/image";
 import {
   BidHistory,
+  MediaImage,
+  MediaVideo,
   PlaceBidForm,
   Spinner,
   Heading,
@@ -29,7 +30,7 @@ import {
 } from "@/hooks";
 import { formatCurrency } from "@/utils";
 
-const { themed, typography, spacing, flex, position, page } = THEME_CONSTANTS;
+const { themed, typography, spacing, flex, page } = THEME_CONSTANTS;
 
 interface AuctionDetailViewProps {
   id: string;
@@ -141,36 +142,52 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
         </Span>
       </Nav>
 
-      {/* Main layout: image left, info right */}
+      {/* Main layout: media left, info right */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left: image */}
-        <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800">
-          {product.mainImage ? (
-            <Image
-              src={product.mainImage}
-              alt={product.title}
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-            />
-          ) : (
-            <div
-              className={`${position.fill} ${flex.center} text-gray-400 text-6xl`}
-            >
-              🔨
+        {/* Left: video (if present) or image */}
+        <div className="space-y-3">
+          {/* Primary media */}
+          <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800">
+            {product.video?.url ? (
+              <MediaVideo
+                src={product.video.url}
+                thumbnailUrl={product.video.thumbnailUrl}
+                alt={product.title}
+                trimStart={product.video.trimStart}
+                trimEnd={product.video.trimEnd}
+                controls
+              />
+            ) : (
+              <MediaImage
+                src={product.mainImage}
+                alt={product.title}
+                size="card"
+                priority
+                fallback="🔨"
+              />
+            )}
+            {!isEnded && (
+              <Span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
+                {tAuctions("liveBadge")}
+              </Span>
+            )}
+            {rtdbConnected && !isEnded && (
+              <Span className="absolute top-3 right-3 flex items-center gap-1 bg-emerald-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
+                <Span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                {tAuctions("realtimeBadge")}
+              </Span>
+            )}
+          </div>
+
+          {/* Thumbnail — show the main image when a video is the primary display */}
+          {product.video?.url && product.mainImage && (
+            <div className="relative aspect-video rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800">
+              <MediaImage
+                src={product.mainImage}
+                alt={product.title}
+                size="gallery"
+              />
             </div>
-          )}
-          {!isEnded && (
-            <Span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
-              {tAuctions("liveBadge")}
-            </Span>
-          )}
-          {rtdbConnected && !isEnded && (
-            <Span className="absolute top-3 right-3 flex items-center gap-1 bg-emerald-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
-              <Span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              {tAuctions("realtimeBadge")}
-            </Span>
           )}
         </div>
 

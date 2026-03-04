@@ -1,8 +1,7 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
-import Image from "next/image";
-import { Span, Text, TextLink } from "@/components";
+import { MediaImage, Span, Text, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
@@ -17,6 +16,7 @@ interface ProductCardProps {
     | "price"
     | "currency"
     | "mainImage"
+    | "video"
     | "status"
     | "featured"
     | "isAuction"
@@ -35,26 +35,29 @@ export function ProductCard({ product, className = "" }: ProductCardProps) {
     ? (product.currentBid ?? product.price)
     : product.price;
 
+  const hasVideo = Boolean(product.video?.url);
+  const mediaSrc = product.video?.thumbnailUrl || product.mainImage;
+
   return (
     <TextLink
       href={ROUTES.PUBLIC.PRODUCT_DETAIL(product.slug ?? product.id)}
       className={`group block ${themed.bgPrimary} ${borderRadius.lg} overflow-hidden hover:shadow-xl transition-all duration-300 ${isOutOfStock ? "opacity-70" : ""} ${className}`}
     >
-      {/* Image */}
+      {/* Media — video thumbnail or main image */}
       <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
-        {product.mainImage ? (
-          <Image
-            src={product.mainImage}
-            alt={product.title}
-            fill
-            className="object-cover group-hover:scale-110 transition-transform duration-300"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          />
-        ) : (
-          <div
-            className={`${position.fill} ${flex.center} text-gray-400 text-4xl`}
-          >
-            📦
+        <MediaImage
+          src={mediaSrc}
+          alt={product.title}
+          size="card"
+          className="group-hover:scale-110 transition-transform duration-300"
+        />
+
+        {/* Video play indicator */}
+        {hasVideo && (
+          <div className={`${position.fill} ${flex.center} pointer-events-none`}>
+            <Span className="bg-black/50 text-white rounded-full w-10 h-10 flex items-center justify-center text-base leading-none">
+              ▶
+            </Span>
           </div>
         )}
 

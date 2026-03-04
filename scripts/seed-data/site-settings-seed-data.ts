@@ -38,6 +38,12 @@ export const siteSettingsSeedData: Partial<SiteSettingsDocument> = {
     email: "support@letitrip.in",
     phone: "+91-9876543210",
     address: "123, Marketplace Street, Mumbai, Maharashtra - 400001, India",
+    upiVpa: "letitrip@upi",
+    whatsappNumber: "+919876543210",
+  },
+  payment: {
+    razorpayEnabled: true,
+    upiManualEnabled: true,
   },
   socialLinks: {
     facebook: "https://facebook.com/letitrip",

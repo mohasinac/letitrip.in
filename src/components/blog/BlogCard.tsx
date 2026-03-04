@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Card, Heading, Span, Text, TextLink } from "@/components";
+import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
 import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
@@ -28,10 +28,11 @@ export function BlogCard({ post }: { post: BlogPostDocument }) {
       <Card className="h-full overflow-hidden hover:shadow-md transition-shadow duration-200">
         {post.coverImage && (
           <div className="relative h-48 overflow-hidden">
-            <img
+            <MediaImage
               src={post.coverImage}
               alt={post.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              size="gallery"
+              className="group-hover:scale-105 transition-transform duration-300"
             />
           </div>
         )}

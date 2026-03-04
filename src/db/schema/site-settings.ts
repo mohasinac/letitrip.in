@@ -40,6 +40,12 @@ export interface SiteSettingsDocument {
     email: string;
     phone: string;
     address: string;
+    upiVpa?: string;        // Business UPI Virtual Payment Address, e.g. "letitrip@upi"
+    whatsappNumber?: string; // WhatsApp number with country code, e.g. "+919876543210"
+  };
+  payment: {
+    razorpayEnabled: boolean;
+    upiManualEnabled: boolean;
   };
   socialLinks: {
     facebook?: string;
@@ -130,6 +136,10 @@ export const DEFAULT_SITE_SETTINGS_DATA: Partial<SiteSettingsDocument> = {
   id: "global",
   siteName: "LetItRip",
   motto: "Your Marketplace, Your Rules",
+  payment: {
+    razorpayEnabled: true,
+    upiManualEnabled: true,
+  },
   background: {
     light: {
       type: "color",
@@ -154,6 +164,8 @@ export const DEFAULT_SITE_SETTINGS_DATA: Partial<SiteSettingsDocument> = {
     email: "support@letitrip.in",
     phone: "+91-XXXXXXXXXX",
     address: "Marketplace Street, India",
+    upiVpa: "letitrip@upi",
+    whatsappNumber: "+91XXXXXXXXXX",
   },
   emailSettings: {
     fromName: "LetItRip",
@@ -232,6 +244,9 @@ export const SITE_SETTINGS_PUBLIC_FIELDS = [
   "background",
   "contact.email",
   "contact.phone",
+  "contact.upiVpa",
+  "contact.whatsappNumber",
+  "payment",
   "socialLinks",
   "seo",
   "features",
@@ -247,6 +262,7 @@ export const SITE_SETTINGS_UPDATABLE_FIELDS = [
   "logo",
   "background",
   "contact",
+  "payment",
   "socialLinks",
   "emailSettings",
   "seo",

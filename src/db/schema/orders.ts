@@ -9,6 +9,9 @@ import { generateOrderId, type GenerateOrderIdInput } from "@/utils";
 // ============================================
 // 1. COLLECTION INTERFACE & NAME
 // ============================================
+export type ShippingMethod = 'custom' | 'shiprocket';
+export type OrderPayoutStatus = 'eligible' | 'requested' | 'paid';
+
 export interface OrderDocument {
   id: string;
   productId: string;
@@ -16,6 +19,8 @@ export interface OrderDocument {
   userId: string;
   userName: string;
   userEmail: string;
+  /** Seller who owns the product — indexed for efficient seller-order queries */
+  sellerId?: string;
   quantity: number;
   unitPrice: number;
   totalPrice: number;
@@ -34,6 +39,28 @@ export interface OrderDocument {
   cancellationReason?: string;
   refundAmount?: number;
   refundStatus?: RefundStatus;
+  // ─── Shipping fulfilment fields ────────────────────────────────────────
+  /** How this order is shipped — determined by the seller's store shipping config */
+  shippingMethod?: ShippingMethod;
+  /** For custom shipping: carrier name (e.g. 'DTDC', 'India Post') */
+  shippingCarrier?: string;
+  /** Direct URL to track the shipment (custom or Shiprocket) */
+  trackingUrl?: string;
+  /** Shiprocket-assigned order ID */
+  shiprocketOrderId?: number;
+  /** Shiprocket shipment ID */
+  shiprocketShipmentId?: number;
+  /** Air Waybill number (courier tracking number from Shiprocket) */
+  shiprocketAWB?: string;
+  /** Human-readable status received from Shiprocket webhook */
+  shiprocketStatus?: string;
+  /** ISO date when Shiprocket last updated the status */
+  shiprocketUpdatedAt?: Date;
+  // ─── Payout tracking ──────────────────────────────────────────────────
+  /** Payout eligibility / request state for this order's seller earnings */
+  payoutStatus?: OrderPayoutStatus;
+  /** ID of the payout document that includes this order */
+  payoutId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -62,8 +89,11 @@ export const ORDER_COLLECTION = "orders" as const;
 export const ORDER_INDEXED_FIELDS = [
   "userId", // For user's orders
   "productId", // For product's orders
+  "sellerId", // For seller's orders (new)
   "status", // For filtering by status
   "paymentStatus", // For payment queries
+  "payoutStatus", // For payout eligibility queries
+  "shippingMethod", // For filtering by shipping method
   "orderDate", // For date-based sorting
   "createdAt", // For sorting by creation date
 ] as const;

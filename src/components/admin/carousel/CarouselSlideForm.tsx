@@ -8,6 +8,7 @@
 
 "use client";
 
+import Image from "next/image";
 import {
   Checkbox,
   FormField,
@@ -73,11 +74,16 @@ export function CarouselSlideForm({
           <Label className={`block ${typography.label} mb-2`}>
             Slide Image
           </Label>
-          <img
-            src={slide.imageUrl}
-            alt={slide.title}
-            className="h-32 w-auto object-cover rounded"
-          />
+          <div className="relative h-32 w-40 overflow-hidden rounded">
+            <Image
+              src={slide.imageUrl}
+              alt={slide.title}
+              fill
+              className="object-cover"
+              sizes="160px"
+              unoptimized
+            />
+          </div>
         </div>
       )}
 

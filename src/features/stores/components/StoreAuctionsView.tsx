@@ -3,7 +3,12 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useUrlTable } from "@/hooks";
-import { EmptyState, Spinner, TablePagination, Card, Text } from "@/components";
+import {
+  AuctionGrid,
+  EmptyState,
+  Spinner,
+  TablePagination,
+} from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useStoreAuctions } from "../hooks";
 
@@ -29,8 +34,8 @@ export function StoreAuctionsView({ storeSlug }: StoreAuctionsViewProps) {
 
   const { data, isLoading, error } = useStoreAuctions(storeSlug, params);
 
-  const items = (data as { items?: unknown[] } | undefined)?.items ?? [];
-  const total = (data as { total?: number } | undefined)?.total ?? 0;
+  const items = data?.items ?? [];
+  const total = data?.total ?? 0;
   const page = table.getNumber("page", 1);
   const pageSize = table.getNumber("pageSize", 24);
 
@@ -55,15 +60,7 @@ export function StoreAuctionsView({ storeSlug }: StoreAuctionsViewProps) {
       )}
       {!isLoading && !error && items.length > 0 && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
-            {(items as Record<string, unknown>[]).map((item) => (
-              <Card key={item.id as string} className="p-4">
-                <Text weight="medium" className="truncate">
-                  {item.title as string}
-                </Text>
-              </Card>
-            ))}
-          </div>
+          <AuctionGrid auctions={items} />
           <TablePagination
             total={total}
             currentPage={page}

@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import {
   Button,
@@ -222,12 +223,15 @@ export default function BackgroundSettings({
             />
             {config.value && (
               <div
-                className={`mt-3 rounded-lg overflow-hidden border ${THEME_CONSTANTS.themed.border}`}
+                className={`mt-3 rounded-lg overflow-hidden border relative h-40 ${THEME_CONSTANTS.themed.border}`}
               >
-                <img
+                <Image
                   src={config.value}
                   alt="Background preview"
-                  className="w-full h-40 object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="100vw"
+                  unoptimized
                 />
               </div>
             )}

@@ -16,6 +16,13 @@ export interface AdminProduct {
   availableQuantity: number;
   mainImage: string;
   images: string[];
+  video?: {
+    url: string;
+    thumbnailUrl: string;
+    duration?: number;
+    trimStart?: number;
+    trimEnd?: number;
+  };
   status: ProductStatus;
   sellerId: string;
   sellerName: string;

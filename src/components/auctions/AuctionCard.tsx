@@ -1,11 +1,11 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { Caption, Span, Text, TextLink } from "@/components";
+import { Caption, MediaImage, Span, Text, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { formatCurrency, nowMs } from "@/utils";
+import { useCountdown } from "@/hooks";
+import type { CountdownRemaining } from "@/hooks";
+import { formatCurrency } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
 
 const { themed, borderRadius, flex, position } = THEME_CONSTANTS;
@@ -18,6 +18,7 @@ interface AuctionCardProps {
     | "price"
     | "currency"
     | "mainImage"
+    | "video"
     | "isAuction"
     | "auctionEndDate"
     | "startingBid"
@@ -28,35 +29,8 @@ interface AuctionCardProps {
   className?: string;
 }
 
-function useCountdown(endDate: Date | string | undefined) {
-  const getRemaining = () => {
-    if (!endDate) return null;
-    const end = endDate instanceof Date ? endDate : new Date(endDate as string);
-    const diff = end.getTime() - nowMs();
-    if (diff <= 0) return null;
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    return { days, hours, minutes, seconds };
-  };
-
-  const [remaining, setRemaining] = useState(getRemaining);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setRemaining(getRemaining());
-    }, 1000);
-    return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [endDate]);
-
-  return remaining;
-}
-
 function formatCountdown(
-  remaining: ReturnType<typeof useCountdown>,
+  remaining: CountdownRemaining | null,
   endedLabel: string,
 ): string {
   if (!remaining) return endedLabel;
@@ -85,21 +59,21 @@ export function AuctionCard({ product, className = "" }: AuctionCardProps) {
       href={ROUTES.PUBLIC.AUCTION_DETAIL(product.id)}
       className={`group flex flex-col ${themed.bgPrimary} ${borderRadius.lg} overflow-hidden hover:shadow-xl transition-all duration-300 ${isEnded ? "opacity-60" : ""} ${className}`}
     >
-      {/* Image */}
+      {/* Media — video thumbnail or main image */}
       <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
-        {product.mainImage ? (
-          <Image
-            src={product.mainImage}
-            alt={product.title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          />
-        ) : (
-          <div
-            className={`${position.fill} ${flex.center} text-gray-400 text-4xl`}
-          >
-            🔨
+        <MediaImage
+          src={product.video?.thumbnailUrl || product.mainImage}
+          alt={product.title}
+          size="card"
+          fallback="🔨"
+        />
+
+        {/* Video play indicator */}
+        {product.video?.url && (
+          <div className={`${position.fill} ${flex.center} pointer-events-none`}>
+            <Span className="bg-black/50 text-white rounded-full w-10 h-10 flex items-center justify-center text-base leading-none">
+              ▶
+            </Span>
           </div>
         )}
 

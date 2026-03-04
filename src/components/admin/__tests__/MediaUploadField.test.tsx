@@ -41,10 +41,7 @@ jest.mock("@/components", () => ({
     onClick?: () => void;
     type?: string;
   }) => (
-    <button
-      type={(type as "button" | "submit" | "reset") ?? "button"}
-      onClick={onClick}
-    >
+    <button type={(type as "button" | "submit" | "reset") ?? "button"} onClick={onClick}>
       {children}
     </button>
   ),
@@ -57,7 +54,11 @@ jest.mock("@/components", () => ({
   Spinner: ({ size }: { size?: string }) => (
     <div data-testid="spinner" data-size={size} />
   ),
-  Text: ({ children }: { children: React.ReactNode }) => <p>{children}</p>,
+  Text: ({
+    children,
+  }: {
+    children: React.ReactNode;
+  }) => <p>{children}</p>,
   TextLink: ({
     href,
     children,

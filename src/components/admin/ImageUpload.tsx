@@ -18,6 +18,7 @@
 "use client";
 
 import { useState, useRef, ChangeEvent } from "react";
+import Image from "next/image";
 import { ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useMediaUpload } from "@/hooks";
 import { ValidationError } from "@/lib/errors";
@@ -146,11 +147,13 @@ export function ImageUpload({
       {/* Preview Area */}
       <div className="relative">
         {preview ? (
-          <div className="relative group">
-            <img
+          <div className={`relative group h-64 overflow-hidden rounded-lg border-2 ${THEME_CONSTANTS.themed.border}`}>
+            <Image
               src={preview}
               alt="Preview"
-              className={`w-full h-64 object-cover rounded-lg border-2 ${THEME_CONSTANTS.themed.border}`}
+              fill
+              className="object-cover"
+              unoptimized
             />
 
             {/* Overlay with actions */}

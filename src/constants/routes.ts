@@ -88,6 +88,8 @@ export const ROUTES = {
     ANALYTICS: "/seller/analytics",
     PAYOUTS: "/seller/payouts",
     STORE: "/seller/store",
+    SHIPPING: "/seller/shipping",
+    PAYOUT_SETTINGS: "/seller/payout-settings",
   },
 
   // Admin Routes

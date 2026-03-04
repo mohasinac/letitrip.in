@@ -20,6 +20,9 @@ const baseProduct = {
   price: 2500,
   currency: "INR",
   mainImage: "/img.jpg",
+  video: undefined as
+    | { url: string; thumbnailUrl: string; duration: number }
+    | undefined,
   status: "published" as const,
   featured: false,
   isAuction: false,
@@ -65,5 +68,29 @@ describe("ProductCard", () => {
       />,
     );
     expect(screen.getByText("outOfStock")).toBeInTheDocument();
+  });
+
+  it("shows play indicator when product has a video", () => {
+    const withVideo = {
+      ...baseProduct,
+      video: { url: "/video.mp4", thumbnailUrl: "/thumb.jpg", duration: 30 },
+    };
+    render(<ProductCard product={withVideo} />);
+    expect(screen.getByText("▶")).toBeInTheDocument();
+  });
+
+  it("does not show play indicator when product has no video", () => {
+    render(<ProductCard product={baseProduct} />);
+    expect(screen.queryByText("▶")).toBeNull();
+  });
+
+  it("uses video thumbnail as media src when video is present", () => {
+    const withVideo = {
+      ...baseProduct,
+      video: { url: "/video.mp4", thumbnailUrl: "/thumb.jpg", duration: 30 },
+    };
+    render(<ProductCard product={withVideo} />);
+    const img = document.querySelector("img") as HTMLImageElement;
+    expect(img?.src).toContain("thumb.jpg");
   });
 });

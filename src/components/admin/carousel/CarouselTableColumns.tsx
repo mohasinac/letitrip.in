@@ -6,6 +6,7 @@
  * Uses StatusBadge from @/components and UI_LABELS from @/constants.
  */
 
+import Image from "next/image";
 import { StatusBadge, Button } from "@/components";
 import { UI_LABELS } from "@/constants";
 import type { CarouselSlide } from "./types";
@@ -31,12 +32,15 @@ export function getCarouselTableColumns(
         key: "imageUrl",
         header: "Image",
         render: (slide: CarouselSlide) => (
-          <img
-            src={slide.imageUrl}
-            alt={slide.title}
-            className="h-12 w-20 object-cover rounded"
-            loading="lazy"
-          />
+          <div className="relative h-12 w-20 overflow-hidden rounded flex-shrink-0">
+            <Image
+              src={slide.imageUrl}
+              alt={slide.title}
+              fill
+              className="object-cover"
+              sizes="80px"
+            />
+          </div>
         ),
       },
       {

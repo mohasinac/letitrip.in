@@ -52,4 +52,36 @@ export const sellerService = {
 
   /** Apply to become a seller — upgrades role from "user" to "seller" with pending status */
   becomeSeller: () => apiClient.post(API_ENDPOINTS.USER.BECOME_SELLER, {}),
+
+  // ── Shipping config ──────────────────────────────────────────────────────
+
+  /** Get the authenticated seller's shipping configuration */
+  getShipping: () => apiClient.get(API_ENDPOINTS.SELLER.SHIPPING),
+
+  /** Update shipping config (custom or Shiprocket) */
+  updateShipping: (data: unknown) =>
+    apiClient.patch(API_ENDPOINTS.SELLER.SHIPPING, data),
+
+  /** Verify Shiprocket pickup address OTP */
+  verifyPickupOtp: (data: { otp: number; pickupLocationId: number }) =>
+    apiClient.post(API_ENDPOINTS.SELLER.SHIPPING_VERIFY_PICKUP, data),
+
+  // ── Payout settings ──────────────────────────────────────────────────────
+
+  /** Get the authenticated seller's payout details (account number masked) */
+  getPayoutSettings: () => apiClient.get(API_ENDPOINTS.SELLER.PAYOUT_SETTINGS),
+
+  /** Save/update payout details (UPI or bank transfer) */
+  updatePayoutSettings: (data: unknown) =>
+    apiClient.patch(API_ENDPOINTS.SELLER.PAYOUT_SETTINGS, data),
+
+  // ── Order actions ────────────────────────────────────────────────────────
+
+  /** Ship an order (custom or Shiprocket) */
+  shipOrder: (id: string, data: unknown) =>
+    apiClient.post(API_ENDPOINTS.SELLER.ORDER_SHIP(id), data),
+
+  /** Bulk actions on orders (e.g. request_payout) */
+  bulkOrderAction: (data: unknown) =>
+    apiClient.post(API_ENDPOINTS.SELLER.ORDERS_BULK, data),
 };

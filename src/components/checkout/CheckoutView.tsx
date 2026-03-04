@@ -2,7 +2,8 @@
  * CheckoutView
  *
  * Extracted from src/app/[locale]/checkout/page.tsx
- * Two-step checkout: address selection → order review → payment (COD or Razorpay).
+ * Two-step checkout: address selection → order review → payment
+ * (COD, Razorpay online, or manual UPI via WhatsApp confirmation).
  */
 
 "use client";
@@ -12,11 +13,19 @@ import { useRouter } from "@/i18n/navigation";
 import { CheckoutStepper } from "./CheckoutStepper";
 import { CheckoutAddressStep } from "./CheckoutAddressStep";
 import { CheckoutOrderReview } from "./CheckoutOrderReview";
+import type { CheckoutPaymentMethod } from "./CheckoutOrderReview";
 import { OrderSummaryPanel } from "./OrderSummaryPanel";
-import { useCheckout, useMessage, useRazorpay } from "@/hooks";
+import {
+  useCheckout,
+  useMessage,
+  useRazorpay,
+  useSiteSettings,
+} from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { Button, Heading, Main } from "@/components";
+import { formatCurrency } from "@/utils";
+import type { SiteSettingsDocument } from "@/db/schema";
 
 const { themed, typography, page } = THEME_CONSTANTS;
 
@@ -71,6 +80,14 @@ export function CheckoutView() {
   const { openRazorpay } = useRazorpay();
   const t = useTranslations("checkout");
 
+  // Site settings — read UPI VPA for manual UPI payment option
+  const { data: siteSettingsData } = useSiteSettings<{
+    contact?: SiteSettingsDocument["contact"];
+    payment?: SiteSettingsDocument["payment"];
+  }>();
+  const upiVpa = siteSettingsData?.contact?.upiVpa;
+  const whatsappNumber = siteSettingsData?.contact?.whatsappNumber;
+
   const STEPS = [
     { number: 1, label: t("stepAddress") },
     { number: 2, label: t("stepReview") },
@@ -80,7 +97,8 @@ export function CheckoutView() {
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     null,
   );
-  const [paymentMethod, setPaymentMethod] = useState<"cod" | "online">("cod");
+  const [paymentMethod, setPaymentMethod] =
+    useState<CheckoutPaymentMethod>("cod");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const {
@@ -92,6 +110,15 @@ export function CheckoutView() {
   } = useCheckout({
     onPlaceCodOrderSuccess: (result) => {
       const primaryOrderId = result?.orderIds?.[0] ?? "";
+      if (paymentMethod === "upi_manual" && whatsappNumber) {
+        // Open WhatsApp with pre-filled payment confirmation message
+        const msg = encodeURIComponent(
+          `Hi! I've placed Order #${primaryOrderId} on LetItRip and paid ` +
+          `${formatCurrency(result.total)} via UPI to ${upiVpa ?? "our UPI ID"}. ` +
+          `Please confirm my payment. Thank you!`,
+        );
+        window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, "")}?text=${msg}`, "_blank");
+      }
       router.push(`${ROUTES.USER.CHECKOUT_SUCCESS}?orderId=${primaryOrderId}`);
     },
     onPlaceCodOrderError: () => {
@@ -136,6 +163,12 @@ export function CheckoutView() {
     if (paymentMethod === "cod") {
       // COD: directly create orders via /api/checkout
       placeCodOrder({ addressId: selectedAddressId, paymentMethod: "cod" });
+    } else if (paymentMethod === "upi_manual") {
+      // UPI Manual: place order then open WhatsApp so customer can confirm payment
+      placeCodOrder(
+        { addressId: selectedAddressId, paymentMethod: "upi_manual" },
+      );
+      // WhatsApp redirect is handled in onPlaceCodOrderSuccess
     } else {
       // Online: Razorpay flow
       try {
@@ -228,6 +261,7 @@ export function CheckoutView() {
                 paymentMethod={paymentMethod}
                 onPaymentMethodChange={setPaymentMethod}
                 onChangeAddress={() => setStep(1)}
+                upiVpa={upiVpa}
               />
               {/* Place order button */}
               <div className="mt-6 flex justify-between items-center">
@@ -242,7 +276,11 @@ export function CheckoutView() {
                   disabled={isPlacingOrder}
                   className="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
                 >
-                  {isPlacingOrder ? t("placingOrder") : t("placeOrder")}
+                  {isPlacingOrder
+                    ? t("placingOrder")
+                    : paymentMethod === "upi_manual"
+                      ? t("placeAndWhatsapp")
+                      : t("placeOrder")}
                 </Button>
               </div>
             </div>

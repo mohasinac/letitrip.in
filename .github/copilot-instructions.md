@@ -20,7 +20,7 @@
 - **Minimize parallel tool calls** — run only the tools necessary for the current step; avoid speculative reads.
 - **Windows paths** — always use backslash-compatible absolute paths (`D:\proj\letitrip.in\...`) in terminal commands; use forward slashes only in import statements.
 - **PowerShell syntax** — use `;` to chain commands, never `&&`; use `Get-ChildItem`, `Test-Path`, etc. instead of Unix aliases.
-- **No scripts to fix source files — ever** — NEVER write, create, or run any PowerShell script, shell script, batch file, or any other file-based automation to fix, refactor, or edit source files. This applies to ALL scripts regardless of size or purpose — a one-liner fix script is just as forbidden as a large refactoring script. Scripts corrupt files, silently skip edits, destroy context, and produce diffs that are impossible to review. If you feel the urge to write a script to fix files, that is a signal to stop and use the editor tools instead. **The only permitted way to edit source files is through `multi_replace_string_in_file` (for multiple independent edits in parallel) or `replace_string_in_file` (for sequential dependent edits).** Every single file change must go through these editor tools — no exceptions.
+f- **No scripts to fix source files — ever** — NEVER write, create, or run any PowerShell script, shell script, batch file, or any other file-based automation to fix, refactor, or edit source files. This applies to ALL scripts regardless of size or purpose — a one-liner fix script is just as forbidden as a large refactoring script. Scripts corrupt files, silently skip edits, destroy context, and produce diffs that are impossible to review. If you feel the urge to write a script to fix files, that is a signal to stop and use the editor tools instead. **The only permitted way to edit source files is through `multi_replace_string_in_file` (for multiple independent edits in parallel) or `replace_string_in_file` (for sequential dependent edits).** Every single file change must go through these editor tools — no exceptions.
 
 ---
 
@@ -490,8 +490,8 @@ const t = useTranslations('search');
   aria-label={t('ariaLabel')}
   placeholder={t('placeholder')}
 />
-// For MediaImage, the alt text comes from MediaDisplayMeta.alt (set at upload time — see Rule 28)
-// and is already translated or contextual. Ensure it is set to a descriptive, translated string.
+// For MediaImage, alt is a direct string prop — pass a translated string via t() or a contextual
+// description already available on the entity (e.g. product.title). Never hardcode English text.
 ```
 
 ---
@@ -1128,17 +1128,18 @@ import { Heading, Text, Caption } from '@/components';
 #### Sections (page sections, feature sections)
 
 ```tsx
-// WRONG
+// WRONG — raw <section> and raw heading/paragraph tags
 <section>
   <h2 className="text-2xl font-bold mb-2">Featured Products</h2>
   <p className="text-gray-600 mb-6">Hand-picked items for you</p>
 </section>
 
-// RIGHT
-<section>
-  <Heading level={2} className="mb-2">{t('sections.featuredProducts')}</Heading>
-  <Text variant="secondary" className="mb-6">{t('sections.featuredProductsSubtitle')}</Text>
-</section>
+// RIGHT — <Section> wrapper + Typography primitives + translations
+import { Section, Heading, Text } from '@/components';
+<Section className="mb-2">
+  <Heading level={2}>{t('sections.featuredProducts')}</Heading>
+  <Text variant="secondary">{t('sections.featuredProductsSubtitle')}</Text>
+</Section>
 ```
 
 #### Modals
@@ -1192,7 +1193,7 @@ import { Alert } from '@/components';
 Typography rules apply inside **every** feature component at any nesting depth:
 
 ```tsx
-// src/features/products/components/ProductCard.tsx — WRONG
+// src/components/products/ProductCard.tsx — WRONG
 export function ProductCard({ product }: Props) {
   return (
     <div>
@@ -1203,7 +1204,7 @@ export function ProductCard({ product }: Props) {
   );
 }
 
-// src/features/products/components/ProductCard.tsx — RIGHT
+// src/components/products/ProductCard.tsx — RIGHT
 export function ProductCard({ product }: Props) {
   return (
     <div>
@@ -1238,8 +1239,11 @@ export function ProductCard({ product }: Props) {
 
 // RIGHT — use form primitives
 import { FormField, Button } from '@/components';
-<FormField type="email" label="Email" placeholder={UI_PLACEHOLDERS.EMAIL} />
-<Button variant="primary">{t('actions.save')}</Button>
+import { useTranslations } from 'next-intl';
+const t = useTranslations('form');
+const tActions = useTranslations('actions');
+<FormField type="email" label={t('email')} placeholder={UI_PLACEHOLDERS.EMAIL} />
+<Button variant="primary">{tActions('save')}</Button>
 ```
 
 **When a variant or prop is missing**: add it to the source file in `src/components/forms/` or `src/components/ui/Button.tsx`. Do not create wrapper components.
@@ -1391,9 +1395,11 @@ This rule exists because repeated audits show that new code keeps re-implementin
 | Page header with breadcrumb (admin) | `AdminPageHeader` from `@/components` |
 | Filter bar at top of list (admin/seller) | `AdminFilterBar` from `@/components` |
 | Drawer submit/cancel/delete footer | `DrawerFormFooter` from `@/components` |
-| Display any static image (product, blog, carousel...) | `MediaImage` from `@/components` |
-| Display a video asset | `MediaVideo` from `@/components` |
-| Display a user / seller / brand avatar | `MediaAvatar` from `@/components` |
+| Display any static image (product, blog, carousel...) | `MediaImage src={url} alt={text} size="card"` from `@/components` |
+| Video in a card (thumbnail + ▶ overlay) | video-first card pattern — `MediaImage` with `src={video?.thumbnailUrl \|\| mainImage}` + `<Span>▶</Span>` overlay |
+| Video playback (detail page / gallery) | `MediaVideo src={url} thumbnailUrl={url} controls` from `@/components` |
+| Auto-play muted loop video (hero/banner) | `MediaVideo src={url} autoPlayMuted loop` from `@/components` |
+| Display a user / seller / brand avatar | `MediaAvatar src={url} alt={text}` from `@/components` |
 | Display a multi-image set / gallery | `MediaGallery` from `@/components` |
 | Address entry / edit form | `AddressForm` from `@/components` |
 | Address display card | `AddressCard` from `@/components` |
@@ -1829,62 +1835,133 @@ const table = useUrlTable({ defaults: { pageSize: '25', sorts: '-createdAt' } })
 
 ### Component Hierarchy — Four Specialised Primitives (Tier 1)
 
-All media rendering is handled by a family of four purpose-built components in `@/components`. They all delegate to the same core `<MediaDisplay />` engine but expose a domain-appropriate API so call sites are clean and context is explicit.
+All media rendering is handled by four purpose-built components in `@/components`. Each fills its **parent container** — the parent must be `relative overflow-hidden` with an aspect ratio or fixed height.
 
-| Component | Use for | Props shortcut |
-|-----------|---------|----------------|
-| `<MediaImage />` | Any static image (product, blog, category, carousel...) | `media`, `size?`, `priority?`, `className?` |
-| `<MediaVideo />` | Video assets | `media`, `controls?`, `autoPlayMuted?`, `className?` |
-| `<MediaAvatar />` | User / seller / brand profile pictures | `media`, `size?: 'sm'|'md'|'lg'|'xl'`, `className?` |
-| `<MediaGallery />` | Multi-image sets (product gallery, blog gallery) | `items: MediaRecord[]`, `layout?: 'grid'|'masonry'|'strip'`, `className?` |
-| `<MediaDisplay />` | Internal engine — do NOT use directly at feature level | full `MediaDisplayMeta` surface |
+| Component | Use for | Key props |
+|-----------|---------|----------|
+| `<MediaImage />` | Any static image (product, blog, category, carousel...) | `src: string\|undefined`, `alt: string`, `size?`, `priority?`, `objectFit?`, `fallback?`, `className?` |
+| `<MediaVideo />` | Video playback (detail pages, galleries) | `src: string\|undefined`, `thumbnailUrl?`, `alt?`, `controls?`, `autoPlayMuted?`, `loop?`, `trimStart?`, `trimEnd?`, `objectFit?` |
+| `<MediaAvatar />` | User / seller / brand profile pictures | `src: string\|undefined`, `alt: string`, `size?: 'sm'\|'md'\|'lg'\|'xl'`, `className?` |
+| `<MediaGallery />` | Multi-image sets (product gallery, blog gallery) | `items: MediaRecord[]`, `layout?: 'grid'\|'masonry'\|'strip'`, `className?` |
+
+#### `<MediaImage />` — size presets
+
+`size` controls the `sizes` hint passed to Next.js `<Image>`. Defaults to `'card'`.
+
+| `size` | Best for |
+|--------|----------|
+| `thumbnail` | Small thumbnails in strips, table cells, search results |
+| `card` | Product / auction / blog cards (default) |
+| `hero` | Full-bleed hero banners — pass `priority` |
+| `banner` | Wide section banners — pass `priority` |
+| `gallery` | Gallery grid items |
+| `avatar` | User / seller avatars (prefer `<MediaAvatar>`) |
+
+`className` is applied to the absolute-fill wrapper `div` — use it for hover-scale animations:
+```tsx
+<MediaImage
+  src={product.mainImage}
+  alt={product.title}
+  size="card"
+  className="group-hover:scale-110 transition-transform duration-300"
+/>
+```
+
+#### `<MediaVideo />` — detail / gallery use only
+
+Use `<MediaVideo>` only where the video actually **plays** (detail pages, media galleries). Do **not** use it in cards — use the video-first card pattern below instead.
+
+```tsx
+// Detail page — full playback
+<div className="relative aspect-video overflow-hidden rounded-xl">
+  <MediaVideo
+    src={product.video?.url}
+    thumbnailUrl={product.video?.thumbnailUrl}
+    controls
+  />
+</div>
+
+// Auto-play muted loop in a hero/banner slot
+<div className="relative aspect-[21/9] overflow-hidden">
+  <MediaVideo src={hero.videoUrl} autoPlayMuted loop />
+</div>
+```
+
+#### Video-first card pattern
+
+**Cards must NOT embed a `<MediaVideo>` player.** Cards show the video thumbnail as a static image with a ▶ play indicator. The video plays only on the detail page.
+
+```tsx
+import { MediaImage, Span } from '@/components';
+import { THEME_CONSTANTS } from '@/constants';
+
+const { flex, position } = THEME_CONSTANTS;
+const hasVideo = Boolean(product.video?.url);
+const mediaSrc = product.video?.thumbnailUrl || product.mainImage;
+
+<div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+  <MediaImage
+    src={mediaSrc}
+    alt={product.title}
+    size="card"
+    className="group-hover:scale-110 transition-transform duration-300"
+  />
+  {/* Play indicator — shown only when a video is attached */}
+  {hasVideo && (
+    <div className={`${position.fill} ${flex.center} pointer-events-none`}>
+      <Span className="bg-black/50 text-white rounded-full w-10 h-10 flex items-center justify-center text-base">
+        ▶
+      </Span>
+    </div>
+  )}
+</div>
+```
+
+This pattern applies to: `ProductCard`, `AuctionCard`, `SellerProductCard`, `EventCard`, and any future entity card that has an optional `video` field.
+
+#### Complete usage examples
 
 ```tsx
 import { MediaImage, MediaVideo, MediaAvatar, MediaGallery } from '@/components';
 
-// Product cover image
-<MediaImage media={product.coverImage} size="card" priority />
+// Product card thumbnail (video-first)
+const mediaSrc = product.video?.thumbnailUrl || product.mainImage;
+<div className="relative aspect-square overflow-hidden rounded-xl">
+  <MediaImage src={mediaSrc} alt={product.title} size="card" />
+</div>
 
 // Blog hero banner
-<MediaImage media={post.heroImage} size="hero" priority />
+<div className="relative aspect-[21/9] overflow-hidden">
+  <MediaImage src={post.heroImage} alt={post.title} size="hero" priority />
+</div>
+
+// Product detail — video player
+<div className="relative aspect-video overflow-hidden rounded-xl">
+  <MediaVideo src={product.video?.url} thumbnailUrl={product.video?.thumbnailUrl} controls />
+</div>
 
 // Product gallery
 <MediaGallery items={product.images} layout="grid" />
 
 // User avatar — small in nav, large on profile page
-<MediaAvatar media={user.avatar} size="sm" />   {/* nav */}
-<MediaAvatar media={user.avatar} size="xl" />   {/* profile */}
-
-// Auction video
-<MediaVideo media={auction.demoVideo} controls />
+<div className="relative w-8 h-8 rounded-full overflow-hidden">
+  <MediaAvatar src={user.avatarUrl} alt={user.displayName} size="sm" />
+</div>
 ```
 
-**NEVER** use `<MediaDisplay />` directly in a feature component or page — always go through the contextual variant above.
+### Parent container sizing — your responsibility
 
-### The `<MediaDisplay />` Engine
+Every media primitive fills its **parent** with `absolute inset-0`. You control the display size by giving the parent a `relative` wrapper with an aspect ratio:
 
-`MediaDisplay` is the internal renderer used by all four components above. It MUST NOT be imported directly in feature/page code.
+| Use case | Recommended parent classes |
+|---|---|
+| Square product / auction card | `relative aspect-square overflow-hidden` |
+| Video detail player | `relative aspect-video overflow-hidden` |
+| Wide hero banner | `relative aspect-[21/9] overflow-hidden` |
+| Blog card | `relative aspect-[4/3] overflow-hidden` |
+| Avatar (small, circular) | `relative w-8 h-8 rounded-full overflow-hidden` |
 
-It uses `displayMeta` to:
-1. Pick the correct `aspect-*` Tailwind class from `aspectRatio`
-2. Apply `object-cover` or `object-contain` from `objectFit`
-3. Set `style={{ objectPosition: \`${focalX * 100}% ${focalY * 100}%\` }}` (dynamic — inline style allowed)
-4. Apply zoom and crop via `transform: scale(zoom)` + `translate` on the `<img>` inside an `overflow-hidden` wrapper (dynamic — inline styles allowed for these calculated values)
-5. Emit `<figure>` + `<figcaption>` when `caption` is present
-6. Emit the SEO-friendly `alt` from `displayMeta.alt` — never empty for content images
-
-### `displayMode` → Sizing Presets
-
-| `displayMode` | Mobile | Tablet | Desktop | Widescreen |
-|---|---|---|---|---|
-| `thumbnail` | `aspect-square w-20` | `w-24` | `w-28` | `w-32` |
-| `card` | `aspect-[4/3] w-full` | `w-full` | `w-full` | `w-full` |
-| `banner` | `aspect-[3/1] w-full` | `aspect-[4/1]` | `aspect-[5/1]` | `aspect-[6/1]` |
-| `hero` | `aspect-[16/9] w-full` | `aspect-[16/9]` | `aspect-[21/9]` | `aspect-[21/9]` |
-| `gallery` | `aspect-square w-full` | `w-full` | `w-full` | `w-full` |
-| `avatar` | `aspect-square w-10 rounded-full` | `w-12` | `w-12` | `w-14` |
-
-All dimensions are driven by `THEME_CONSTANTS.media.*` rather than raw Tailwind strings. Add new presets to `THEME_CONSTANTS` before writing new display modes.
+Never use fixed pixel heights on media wrappers — always use `aspect-*` Tailwind classes.
 
 ### Responsive Rules for Media
 
@@ -1897,59 +1974,66 @@ All dimensions are driven by `THEME_CONSTANTS.media.*` rather than raw Tailwind 
 // WRONG — no aspect ratio, height collapses or stretches unpredictably
 <img src={url} className="w-full" />
 
-// WRONG — using MediaDisplay directly at feature level
-import { MediaDisplay } from '@/components';
-<MediaDisplay media={product.cover} />  // ❌ use MediaImage instead
+// WRONG — MediaVideo used in a card (should be thumbnail + play overlay instead)
+<div className="relative aspect-square overflow-hidden">
+  <MediaVideo src={product.video?.url} autoPlayMuted loop />  // ❌ card = thumbnail only
+</div>
 
-// RIGHT — use the contextual variant; fluid width + locked aspect ratio
-import { MediaImage } from '@/components';
+// RIGHT — fluid width + locked aspect ratio + video-first thumbnail
 <div className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4">
-  <MediaImage media={product.coverImage} size="card" />
+  <div className="relative aspect-square overflow-hidden rounded-xl">
+    <MediaImage
+      src={product.video?.thumbnailUrl || product.mainImage}
+      alt={product.title}
+      size="card"
+    />
+  </div>
 </div>
 ```
 
 **Mandatory responsive rules for every media container:**
 
 - **Width**: always `w-full` or a responsive fraction (`sm:w-1/2 lg:w-1/3`). Never fixed `px` widths for containers.
-- **Height**: always determined by an `aspect-*` class. Never fixed `h-[px]` heights for media wrappers.
-- **Object fit**: read from `displayMeta.objectFit`, never hardcoded.
-- **Focal point**: `objectPosition` is always a dynamic `style={{}}` driven by `focalX`/`focalY`. This is the ONLY case where inline `style={{}}` is used on a media element.
-- **Zoom transform**: `transform: scale(${zoom})` on the inner `<img>` is dynamic and must use `style={{}}`. Wrap with `overflow-hidden` to contain it.
+- **Height**: always determined by an `aspect-*` class on the parent wrapper. Never fixed `h-[px]` heights.
+- **Object fit**: `<MediaImage>` defaults to `objectFit="cover"`. Pass `objectFit="contain"` when the full image must be shown without cropping (e.g. logos, diagrams).
 - **Grid layouts with media**: must include `xl:` and `2xl:` column counts (Rule 25).
-- **Lazy loading**: all media beyond the first viewport fold MUST use `loading="lazy"` (handled inside `MediaDisplay`).
-- **Priority**: only above-the-fold hero / banner images pass `priority` to `MediaImage`, which maps to Next.js `<Image priority>`.
+- **Lazy loading**: handled automatically by Next.js `<Image>` inside `MediaImage`. Pass `priority` to skip lazy loading for above-the-fold images.
+- **Priority**: only above-the-fold hero / banner images pass `priority` to `MediaImage`.
 
 ### SEO Integration
 
-Every `<MediaImage />` / `<MediaVideo />` internally renders a Next.js `<Image>` with:
-- `alt` from `displayMeta.alt` — descriptive, keyword-rich text set at upload time
-- `title` from `displayMeta.caption` (when present)
+`<MediaImage />` renders a Next.js `<Image>` with:
+- `alt` passed as a direct string prop — must be descriptive and keyword-rich
 - The Storage URL already contains the SEO filename (e.g. `buy-product-red-trek-himalaya-cover-1.webp`) — search engines index the filename as a relevance signal
-- `<figure>` + `<figcaption>` markup for rich snippet eligibility
 
 ### Accessibility
 
-- `alt` is ALWAYS sourced from `displayMeta.alt`. An empty `alt` is only allowed for purely decorative images.
-- `caption` from `displayMeta.caption`, when present, renders in a `<figcaption>` inside a `<figure>` wrapper.
+- `alt` on `<MediaImage>` and `<MediaVideo>` is a **required string prop** — never omit it or pass an empty string for content images.
+- An empty `alt=""` is only allowed for purely decorative images (pass `alt=""` explicitly).
 - `<video>` elements MUST have `controls` or clearly visible custom controls; never `autoplay` with audio.
 
 ### Consistency Enforcement
 
 ```tsx
-// WRONG — ad-hoc image styling scattered across features
+// WRONG — raw img tag
 <img src={product.imageUrl} className="rounded-lg w-full h-48 object-cover" />
 
-// WRONG — raw <img> ignores crop / zoom / focal point / SEO filename
-<img src={record.url} alt={record.alt} />
+// WRONG — MediaVideo embedded in a card component
+<MediaVideo src={product.video?.url} autoPlayMuted loop />  // ❌ use thumbnail + play overlay
 
-// WRONG — MediaDisplay used at feature level
-import { MediaDisplay } from '@/components';
-<MediaDisplay media={product.coverImage} />  // ❌
+// WRONG — wrong prop name (there is no `media` prop — use `src` + `alt`)
+<MediaImage media={product.coverImage} size="card" />  // ❌
+<MediaVideo media={product.video} controls />           // ❌
 
-// RIGHT — use the contextual component; all styling + meta is automatic
-import { MediaImage, MediaGallery } from '@/components';
-<MediaImage  media={product.coverImage} size="card" />
-<MediaGallery items={product.images}   layout="grid" />
+// RIGHT — correct string-based props; parent controls sizing
+import { MediaImage, MediaVideo, MediaGallery } from '@/components';
+<div className="relative aspect-square overflow-hidden">
+  <MediaImage src={product.mainImage} alt={product.title} size="card" />
+</div>
+<div className="relative aspect-video overflow-hidden">
+  <MediaVideo src={product.video?.url} thumbnailUrl={product.video?.thumbnailUrl} controls />
+</div>
+<MediaGallery items={product.images} layout="grid" />
 ```
 
 **Before adding any `<img>`, `<video>`, or `<picture>` tag — check `@/components` for `MediaImage`, `MediaVideo`, `MediaAvatar`, `MediaGallery` first (Rule 8).**
@@ -2097,7 +2181,7 @@ Wrap **every** user-visible date, time, or duration in a `<time dateTime="...">`
 6. Mobile-first — write base styles for 375 px, extend upward with `sm:` → `2xl:` (Rule 25)
 7. Every grid/flex container must have explicit `xl:` and `2xl:` column/width classes (Rule 25)
 8. No legacy polyfills or vendor-prefixed CSS (Rule 24)
-9. All media (`<img>`, `<video>`) goes through `<MediaImage />`, `<MediaVideo />`, `<MediaAvatar />`, or `<MediaGallery />` — never raw tags or `<MediaDisplay />` directly (Rule 28)
+9. All media (`<img>`, `<video>`) goes through `<MediaImage />`, `<MediaVideo />`, `<MediaAvatar />`, or `<MediaGallery />` — never raw tags (Rule 28)
 10. Media containers use `w-full` + `aspect-*` classes; never fixed pixel widths/heights (Rule 28)
 
 ---
@@ -2351,18 +2435,17 @@ const meta: MediaDisplayMeta = {
 form.append('metadata', JSON.stringify(meta));
 ```
 
-**UI renders using `displayMeta` (see Rule 28 for the `<MediaDisplay />` primitive):**
+**UI renders using `displayMeta` (see Rule 28 for the media primitives):**
 ```tsx
 // WRONG — raw <img> ignoring crop / zoom data
 <img src={record.url} className="w-full h-48 object-cover" />
 
-// RIGHT — delegate to the shared MediaDisplay primitive
-import { MediaDisplay } from '@/components';
-<MediaDisplay media={record} className="w-full" />
-// MediaDisplay reads displayMeta and applies:
-//   - overflow-hidden wrapper sized to aspectRatio preset
-//   - img scaled by zoom with object-position driven by focalX/focalY
-//   - CSS clip to cropX/cropY/cropWidth/cropHeight via transform
+// RIGHT — use the string-based contextual primitives (src + alt + parent container)
+import { MediaImage } from '@/components';
+<div className="relative aspect-square overflow-hidden rounded-xl">
+  <MediaImage src={record.url} alt={record.alt} size="card" />
+</div>
+// MediaImage internally handles: object-fit, sizes hint, fallback icon, and Next.js <Image fill>
 ```
 
 #### SEO Filename Convention
@@ -3159,6 +3242,203 @@ Every change that touches `src/db/schema/`, `firestore.rules`, `storage.rules`, 
 
 ---
 
+## RULE 35: Firebase Functions — Scheduled Jobs, Triggers & Secure Backend Operations
+
+**Scheduled (cron) operations, Firestore event triggers, long-running privileged tasks, and any future message-queue consumers MUST live in `functions/src/` — NEVER in Next.js API routes or UI code.**
+
+> This rule exists because Next.js API routes are request-driven (they need a caller), run with hard timeouts, and are publicly reachable HTTP endpoints. A cron job, an event trigger, or a privileged background task has none of those characteristics — it must run on a schedule or in response to a DB event, not a user request. Firebase Functions (Cloud Run + Cloud Scheduler + Firestore Triggers) is the correct runtime for all of these.
+
+---
+
+### 35.1 — What MUST Go in Firebase Functions
+
+| Use-case | Correct location |
+|----------|------------------|
+| Scheduled / cron jobs (run on a timer) | `functions/src/jobs/<name>.ts` |
+| Firestore onCreate / onUpdate / onDelete reactive side-effects | `functions/src/triggers/<name>.ts` |
+| Realtime DB triggers | `functions/src/triggers/<name>.ts` |
+| Long-running batch operations (>30 s) | `functions/src/jobs/<name>.ts` |
+| Privileged backend work not reachable by end-users (payouts, audit log sweeps, stats recompute) | `functions/src/jobs/<name>.ts` |
+| Future: Cloud Pub/Sub message consumers | `functions/src/jobs/<name>.ts` (use `onMessagePublished`) |
+| Future: Cloud Tasks queue handlers | `functions/src/jobs/<name>.ts` (use `onTaskDispatched`) |
+
+---
+
+### 35.2 — What Stays in Next.js API Routes
+
+Next.js API routes (`src/app/api/**`) are for **user-initiated, request-driven operations only**:
+
+- CRUD driven by a UI action (create product, place order, update profile)
+- Authentication flows (login, logout, token refresh)
+- File uploads triggered by a form submit
+- Real-time token issuance (Realtime DB custom tokens)
+- Any operation where the caller is a logged-in user and the response goes back to their browser
+
+```ts
+// WRONG — a cron-style batch inside an API route
+// src/app/api/admin/expire-coupons/route.ts
+export async function POST() {
+  const coupons = await couponRepository.findExpired();
+  await Promise.all(coupons.map(c => couponRepository.deactivate(c.id))); // ❌
+}
+// → This is unreliable (no retry, no scheduler guarantee, exposed HTTP endpoint)
+// → Move it to functions/src/jobs/couponExpiry.ts
+
+// WRONG — reactive logic for a DB write inside an API route
+export async function PATCH(req) {
+  await orderRepository.updateStatus(id, 'shipped');
+  // inline: send notification, update stats, trigger payout...
+  await notificationRepository.create(...); // ❌ side-effects belong in a Firestore trigger
+}
+// → Move side-effects to functions/src/triggers/onOrderStatusChange.ts
+```
+
+---
+
+### 35.3 — Scheduled Job Pattern
+
+**File**: `functions/src/jobs/<jobName>.ts`  
+**Export it** from `functions/src/index.ts`.  
+**Use**: `onSchedule` from `firebase-functions/v2/scheduler`.
+
+```ts
+// functions/src/jobs/myJob.ts
+import { onSchedule } from 'firebase-functions/v2/scheduler';
+import { logInfo, logError } from '../utils/logger';
+import { SCHEDULES, REGION } from '../config/constants';
+import { myRepository } from '../repositories';
+
+const JOB = 'myJob';
+
+export const myJob = onSchedule(
+  {
+    schedule: SCHEDULES.MY_JOB,   // e.g. 'every 24 hours' or cron '0 2 * * *'
+    region: REGION,
+    memory: '256MiB',
+    maxInstances: 1,              // prevent overlap
+    timeoutSeconds: 540,
+  },
+  async () => {
+    logInfo(JOB, 'starting');
+    try {
+      const items = await myRepository.findPending();
+      // ... process items
+      logInfo(JOB, `processed ${items.length} records`);
+    } catch (err) {
+      logError(JOB, 'unexpected error', err);
+      throw err; // re-throw so Cloud Scheduler marks it failed
+    }
+  },
+);
+```
+
+**Then export it:**
+```ts
+// functions/src/index.ts
+export { myJob } from './jobs/myJob';
+```
+
+---
+
+### 35.4 — Firestore Trigger Pattern
+
+**File**: `functions/src/triggers/on<Entity><Event>.ts`  
+**Use**: `onDocumentCreated`, `onDocumentUpdated`, `onDocumentDeleted` from `firebase-functions/v2/firestore`.
+
+```ts
+// functions/src/triggers/onOrderStatusChange.ts
+import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
+import { REGION, COLLECTIONS } from '../config/constants';
+import { logInfo, logError } from '../utils/logger';
+
+export const onOrderStatusChange = onDocumentUpdated(
+  { document: `${COLLECTIONS.ORDERS}/{orderId}`, region: REGION },
+  async (event) => {
+    const before = event.data?.before.data();
+    const after  = event.data?.after.data();
+    if (!before || !after) return;
+    if (before.status === after.status) return; // no-op
+
+    // side-effects: send notification, update counters, trigger payout…
+  },
+);
+```
+
+---
+
+### 35.5 — Functions Repository Layer
+
+**Import repositories from `../repositories`** (Functions has its own repository layer that mirrors the Next.js one but uses the Admin SDK directly — no API routes in between).
+
+```ts
+// WRONG — calling a Next.js API route from a Function
+const res = await fetch('https://letitrip.in/api/products');
+
+// RIGHT — use the Functions repository directly
+import { productRepository } from '../repositories';
+const products = await productRepository.findPending();
+```
+
+---
+
+### 35.6 — Never Cross the Boundaries
+
+```ts
+// WRONG — next.js API route importing from functions/
+import { settleAuction } from '../../../../functions/src/jobs/auctionSettlement'; // ❌
+
+// WRONG — functions importing from src/ (Next.js app code)
+import { productService } from '../../../src/services/product.service'; // ❌
+
+// RIGHT — each runtime is self-contained; shared types only live in src/types/ and
+//         are imported by the functions as dev dependencies via tsconfig paths.
+```
+
+---
+
+### 35.7 — Scheduling Constants
+
+**NEVER hardcode cron expressions or schedule strings.** Add them to `functions/src/config/constants.ts` under `SCHEDULES`.
+
+```ts
+// WRONG
+onSchedule({ schedule: 'every 15 minutes' })
+
+// RIGHT
+import { SCHEDULES } from '../config/constants';
+onSchedule({ schedule: SCHEDULES.AUCTION_SETTLEMENT })
+```
+
+---
+
+### 35.8 — Future: Message Queues
+
+When the platform needs deferred or fan-out work (e.g. sending bulk emails, processing large import files, dispatching fulfilment webhooks to multiple vendors), migrate those jobs to:
+
+- **Cloud Tasks** (`onTaskDispatched`) — delay a single unit of work by N minutes/hours; retry on failure.
+- **Cloud Pub/Sub** (`onMessagePublished`) — fan-out one event to N parallel consumers.
+
+Until those patterns are needed, Firebase Cloud Scheduler + scheduled Functions cover all current cron requirements. Do NOT pre-emptively add Pub/Sub or Cloud Tasks infrastructure; implement them only when the specific deferral or fan-out requirement is confirmed.
+
+---
+
+### 35.9 — Deployment
+
+```powershell
+# Deploy all functions
+.\scripts\deploy-functions.ps1
+
+# Or with the Firebase CLI directly
+firebase deploy --only functions
+
+# Deploy a single function
+firebase deploy --only functions:auctionSettlement
+```
+
+**After adding a new job or trigger**: update the dispatch table comment at the top of `functions/src/index.ts` to reflect the new function name, schedule, and description.
+
+---
+
 ## Documentation Standards
 
 - Update `docs/CHANGELOG.md` with every change
@@ -3412,7 +3692,8 @@ Before writing ANY code, verify:
 - [ ] Does every grid/flex layout include explicit `xl:` and `2xl:` column classes? (Rule 25)
 - [ ] Are all touch targets at least 44×44 px (`min-h-11 min-w-11`)? (Rule 25)
 - [ ] Am I rendering any `<img>` or `<video>` directly? → use `MediaImage`, `MediaVideo`, `MediaAvatar`, or `MediaGallery` from `@/components` instead (Rule 28)
-- [ ] Am I using `<MediaDisplay />` directly in a feature or page component? → use the contextual variant (`MediaImage` etc.) instead (Rule 28)
+- [ ] Am I embedding `<MediaVideo>` inside a card component? → use the video-first card pattern instead: `src={video?.thumbnailUrl || mainImage}` on `<MediaImage>` + `▶` play overlay `<Span>` (Rule 28)
+- [ ] Are `<MediaImage>` and `<MediaVideo>` called with string `src`/`alt` props — NOT a `media` object? (Rule 28)
 - [ ] Does every file upload include a `MediaDisplayMeta` object with `cropX/Y`, `cropWidth/Height`, `zoom`, `focalX/Y`, `aspectRatio`, `objectFit`, `displayMode`, `seoContext`, `alt`? (Rule 28)
 - [ ] Are media containers using `w-full` + `aspect-*` Tailwind classes — no fixed `px` widths or heights? (Rule 28)
 - [ ] Did I change a schema file, Firestore/Storage/Database rules, or `firestore.indexes.json`? → update `scripts/seed-data/<domain>-seed-data.ts` and `scripts/seed-all-data.ts` in the same change (Rule 29)
@@ -3441,6 +3722,14 @@ Before writing ANY code, verify:
 - [ ] Are decorative icons that sit beside labelled text marked `aria-hidden="true"`? (Rule 34)
 - [ ] Am I using `role="button"` on a `<div>` or `<span>`? → use `<Button>` from `@/components` (Rule 34)
 - [ ] Am I removing the focus ring with `focus:outline-none` without a visible `focus-visible:ring-*` replacement? (Rule 34)
+- [ ] Am I adding a scheduled/cron operation? → it MUST go in `functions/src/jobs/<name>.ts` using `onSchedule` — NEVER in a Next.js API route (Rule 35)
+- [ ] Am I adding a Firestore onCreate/onUpdate/onDelete side-effect? → it MUST go in `functions/src/triggers/on<Entity><Event>.ts` — NEVER inline in an API route after a write (Rule 35)
+- [ ] Am I adding a long-running batch or privileged backend task (>30 s, not user-initiated)? → it MUST go in `functions/src/jobs/<name>.ts` (Rule 35)
+- [ ] Did I add a new job/trigger and export it from `functions/src/index.ts`? (Rule 35)
+- [ ] Did I update the dispatch-table comment at the top of `functions/src/index.ts`? (Rule 35)
+- [ ] Did I add the schedule string to `SCHEDULES` in `functions/src/config/constants.ts` instead of hardcoding it? (Rule 35)
+- [ ] Am I importing `functions/src/` into Next.js app code, or `src/` into Functions? → these runtimes MUST stay self-contained (Rule 35)
+- [ ] Am I calling a Next.js API route from inside a Function? → use the Functions repository layer (`../repositories`) directly (Rule 35)
 
 
 ---

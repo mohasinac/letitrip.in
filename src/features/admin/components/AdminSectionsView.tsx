@@ -14,12 +14,15 @@ import { useAdminSections } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
   AdminPageHeader,
+  Badge,
   Button,
+  Caption,
   Card,
   DataTable,
   DrawerFormFooter,
   SectionForm,
   SideDrawer,
+  StatusBadge,
   Text,
   useSectionTableColumns,
   useToast,
@@ -52,6 +55,7 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
   );
   const [drawerMode, setDrawerMode] = useState<SectionDrawerMode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"table" | "grid" | "list">("table");
   const initialFormRef = useRef<string>("");
 
   const sections = data?.sections || [];
@@ -235,6 +239,29 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
             keyExtractor={(section) => section.id}
             onRowClick={(section) => handleEdit(section)}
             actions={actions}
+            showViewToggle
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            mobileCardRender={(section) => (
+              <Card
+                className="p-4 space-y-2 cursor-pointer"
+                onClick={() => handleEdit(section)}
+              >
+                <div className="flex items-center justify-between">
+                    <Badge>{section.type}</Badge>
+                  <StatusBadge
+                    status={section.enabled ? "active" : "inactive"}
+                  />
+                </div>
+                <Text weight="medium" size="sm">{section.title}</Text>
+                {section.description && (
+                  <Caption className="line-clamp-2">
+                    {section.description}
+                  </Caption>
+                )}
+                <Caption>#{section.order}</Caption>
+              </Card>
+            )}
           />
         )}
       </div>

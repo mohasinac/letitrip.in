@@ -17,9 +17,13 @@ import { useTranslations } from "next-intl";
 import {
   AdminPageHeader,
   Button,
+  Caption,
   Card,
   ConfirmDeleteModal,
   DataTable,
+  RoleBadge,
+  Span,
+  StatusBadge,
   TablePagination,
   Text,
   UserDetailDrawer,
@@ -222,6 +226,33 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
               onRowClick={handleViewUser}
               actions={actions}
               externalPagination
+              showViewToggle
+              viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+              onViewModeChange={(mode) => table.set("view", mode)}
+              mobileCardRender={(user) => (
+                <Card
+                  className="p-4 space-y-3 cursor-pointer"
+                  onClick={() => handleViewUser(user)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center flex-shrink-0">
+                      <Span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+                        {(user.displayName ?? user.email ?? "U")[0].toUpperCase()}
+                      </Span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <Text weight="medium" size="sm" className="truncate">
+                        {user.displayName ?? "—"}
+                      </Text>
+                      <Caption className="truncate">{user.email ?? "—"}</Caption>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <RoleBadge role={user.role} />
+                    <StatusBadge status={user.disabled ? "inactive" : "active"} />
+                  </div>
+                </Card>
+              )}
             />
             <TablePagination
               currentPage={data?.meta?.page ?? 1}

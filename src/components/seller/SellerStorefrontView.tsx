@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -200,13 +201,14 @@ export function SellerStorefrontView({
                   href={`/products/${product.id}`}
                   className={`block rounded-xl overflow-hidden border ${THEME_CONSTANTS.themed.border} hover:shadow-md transition-shadow`}
                 >
-                  <div className="aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                  <div className="relative aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
                     {product.mainImage ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={product.mainImage}
                         alt={product.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
                       />
                     ) : (
                       <div

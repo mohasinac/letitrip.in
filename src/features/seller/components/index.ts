@@ -10,3 +10,5 @@ export { SellerRecentListings } from "./SellerRecentListings";
 export { SellersListView } from "./SellersListView";
 export { SellerStoreView } from "./SellerStoreView";
 export { SellerAuctionsView } from "./SellerAuctionsView";
+export { SellerShippingView } from "./SellerShippingView";
+export { SellerPayoutSettingsView } from "./SellerPayoutSettingsView";

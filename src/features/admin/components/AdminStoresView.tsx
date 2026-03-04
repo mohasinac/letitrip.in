@@ -12,14 +12,16 @@ import { useState, useCallback } from "react";
 import {
   AdminPageHeader,
   AdminFilterBar,
-  DataTable,
-  TablePagination,
   Badge,
   Button,
-  ConfirmDeleteModal,
-  Text,
   Caption,
+  Card,
+  ConfirmDeleteModal,
+  DataTable,
   Input,
+  StatusBadge,
+  TablePagination,
+  Text,
 } from "@/components";
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -249,6 +251,23 @@ export function AdminStoresView() {
         loading={isLoading}
         emptyMessage={t("noStores")}
         externalPagination
+        showViewToggle
+        viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+        onViewModeChange={(mode) => table.set("view", mode)}
+        mobileCardRender={(store) => (
+          <Card className="p-4 space-y-2">
+            <Text weight="medium" size="sm" className="line-clamp-1">
+              {store.publicProfile?.storeName ?? store.displayName}
+            </Text>
+            <Caption className="truncate">{store.email}</Caption>
+            <div className="flex items-center justify-between">
+              <Caption>
+                {t("soldCount", { count: store.stats?.itemsSold ?? 0 })}
+              </Caption>
+              <StatusBadge status={store.storeStatus} />
+            </div>
+          </Card>
+        )}
       />
 
       <TablePagination

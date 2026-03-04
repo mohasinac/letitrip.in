@@ -2,7 +2,12 @@
 
 import { useApiQuery } from "@/hooks";
 import { storeService } from "@/services";
-import type { StoreDetail, StoreReviewsData } from "../types";
+import type {
+  StoreDetail,
+  StoreReviewsData,
+  StoreProductsResponse,
+  StoreAuctionsResponse,
+} from "../types";
 
 /**
  * Fetches a single store by its storeSlug.
@@ -31,7 +36,7 @@ export function useStoreReviews(storeSlug: string) {
  * @param params URLSearchParams string
  */
 export function useStoreProducts(storeSlug: string, params?: string) {
-  return useApiQuery({
+  return useApiQuery<StoreProductsResponse>({
     queryKey: ["stores", "products", storeSlug, params ?? ""],
     queryFn: () => storeService.getProducts(storeSlug, params ?? ""),
     enabled: !!storeSlug,
@@ -43,7 +48,7 @@ export function useStoreProducts(storeSlug: string, params?: string) {
  * @param params URLSearchParams string
  */
 export function useStoreAuctions(storeSlug: string, params?: string) {
-  return useApiQuery({
+  return useApiQuery<StoreAuctionsResponse>({
     queryKey: ["stores", "auctions", storeSlug, params ?? ""],
     queryFn: () => storeService.getAuctions(storeSlug, params ?? ""),
     enabled: !!storeSlug,
