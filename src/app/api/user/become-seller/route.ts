@@ -7,6 +7,7 @@
  */
 
 import { handleApiError } from "@/lib/errors/error-handler";
+import { NotFoundError } from "@/lib/errors";
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { userRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
@@ -20,7 +21,7 @@ export async function POST() {
 
     const user = await userRepository.findById(decoded.uid);
     if (!user) {
-      throw new Error(ERROR_MESSAGES.USER.NOT_FOUND);
+      throw new NotFoundError(ERROR_MESSAGES.USER.NOT_FOUND);
     }
 
     // If already a seller, return current status rather than error

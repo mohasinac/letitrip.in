@@ -13,6 +13,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-03-04] — Rule Violations Fixed: Barrel Imports, Error Classes, i18n in global-error
+
+### Fixed
+
+- **`src/hooks/usePublicEvents.ts`** — changed `import { useApiQuery } from "@/hooks/useApiQuery"` to barrel import `from "@/hooks"` (Rule 2)
+- **`src/features/events/hooks/useEventLeaderboard.ts`** — same barrel import fix (Rule 2)
+- **`src/features/events/hooks/usePublicEvents.ts`** — same barrel import fix (Rule 2)
+- **`src/app/api/user/become-seller/route.ts`** — replaced `throw new Error(...)` with `throw new NotFoundError(...)` using proper error class (Rule 14); added `NotFoundError` import from `@/lib/errors`
+- **`src/app/global-error.tsx`** — replaced `UI_LABELS` JSX usage with `useTranslations` (Rules 3, 33); component now wraps content in `NextIntlClientProvider` using statically-imported `messages/en.json` so translations work correctly when root layout error boundary fires; extracted inner `GlobalErrorContent` component to allow hook usage; eliminated string concatenation `{UI_LABELS.ACTIONS.BACK} + " to Home"`
+
+### Added
+
+- **`messages/en.json`** / **`messages/hi.json`** — added `errorPages.criticalError.backToHome` key (`"Back to Home"` / `"होम पर वापस"`) to support translated back-link in `global-error.tsx`
+
+---
+
 ## [2026-03-04] — Rule 32/33 Violations Fixed: Metadata i18n, URL State, Search Inline Mode
 
 ### Changed
