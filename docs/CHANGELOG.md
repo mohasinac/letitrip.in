@@ -13,6 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-03-04] — Rule Violations Fixed: FeedbackConfigForm i18n & Theme Constants
+
+### Fixed
+
+- **`src/features/events/components/EventTypeConfig/FeedbackConfigForm.tsx`** — replaced hardcoded `"Allow anonymous submissions"` string with `useTranslations('feedbackConfig')` call (Rule 33); replaced `"space-y-4"` raw Tailwind class with `THEME_CONSTANTS.spacing.stack` (Rule 4)
+
+### Added
+
+- **`messages/en.json`** — added `feedbackConfig.allowAnonymousLabel` translation key
+- **`messages/hi.json`** — added `feedbackConfig.allowAnonymousLabel` translation key (Hindi)
+- **`src/features/events/components/EventTypeConfig/__tests__/FeedbackConfigForm.test.tsx`** — new test file covering anonymous checkbox render, onChange fire, and SurveyFieldBuilder delegation (Rule 27)
+
+---
+
 ## [2026-03-04] — Rule Violations Fixed: Barrel Imports, Error Classes, i18n in global-error
 
 ### Fixed

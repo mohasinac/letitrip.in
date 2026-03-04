@@ -1,8 +1,10 @@
 ﻿"use client";
 
+import { useTranslations } from "next-intl";
 import { SurveyFieldBuilder } from "../SurveyFieldBuilder";
 import type { FeedbackConfig } from "@/db/schema";
-import { Label } from "@/components";
+import { Checkbox } from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
 
 interface FeedbackConfigFormProps {
   value: Partial<FeedbackConfig>;
@@ -13,20 +15,15 @@ export function FeedbackConfigForm({
   value,
   onChange,
 }: FeedbackConfigFormProps) {
+  const t = useTranslations("feedbackConfig");
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="allowAnonymous"
-          checked={value.anonymous ?? false}
-          onChange={(e) => onChange({ ...value, anonymous: e.target.checked })}
-          className="h-4 w-4 rounded border-gray-300"
-        />
-        <Label htmlFor="allowAnonymous" className="text-sm">
-          Allow anonymous submissions
-        </Label>
-      </div>
+    <div className={THEME_CONSTANTS.spacing.stack}>
+      <Checkbox
+        id="allowAnonymous"
+        checked={value.anonymous ?? false}
+        onChange={(e) => onChange({ ...value, anonymous: e.target.checked })}
+        label={t("allowAnonymousLabel")}
+      />
       <SurveyFieldBuilder
         fields={value.formFields ?? []}
         onChange={(fields) => onChange({ ...value, formFields: fields })}

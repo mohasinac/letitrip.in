@@ -947,6 +947,9 @@
     "survey": "सर्वेक्षण / गिवअवे",
     "feedback": "फीडबैक"
   },
+  "feedbackConfig": {
+    "allowAnonymousLabel": "अज्ञात सबमिशन की अनुमति दें"
+  },
   "about": {
     "title": "LetItRip के बारे में",
     "subtitle": "खरीदारों, विक्रेताओं और बोलीदाताओं को एक जीवंत बाज़ार में जोड़ना",

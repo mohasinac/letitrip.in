@@ -948,6 +948,9 @@
     "survey": "Survey / Giveaway",
     "feedback": "Feedback"
   },
+  "feedbackConfig": {
+    "allowAnonymousLabel": "Allow anonymous submissions"
+  },
   "about": {
     "title": "About LetItRip",
     "subtitle": "Connecting buyers, sellers, and bidders in one vibrant marketplace",
