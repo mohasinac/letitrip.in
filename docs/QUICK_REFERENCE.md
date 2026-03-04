@@ -338,6 +338,18 @@ import {
   siteSettingsRepository,
   carouselRepository,
   homepageSectionsRepository,
+  // --- New repositories ---
+  addressRepository, // subcollection users/{uid}/addresses
+  blogRepository, // + findBySlug, list(model)
+  cartRepository, // + addItem, removeItem, clearCart
+  wishlistRepository, // + addProduct, removeProduct, isWishlisted
+  chatRepository, // + findOrCreate, getActiveChatIdsForUser
+  eventRepository, // + findUpcoming, list(model)
+  eventEntryRepository, // + hasEntered, getLeaderboard
+  newsletterRepository, // + subscribe, unsubscribe, list(model)
+  notificationRepository, // + markRead, getUnreadCount
+  payoutRepository, // + findBySeller, list(model)
+  ripcoinRepository, // + getBalance, credit, debit, getHistory
 } from "@/repositories";
 ```
 
