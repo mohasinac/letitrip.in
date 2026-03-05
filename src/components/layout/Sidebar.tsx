@@ -126,7 +126,7 @@ export default function Sidebar({
       >
         {/* Fixed Header with User Info - Modern Card Style */}
         <div
-          className={`${flex.noShrink} px-6 py-5 border-b border-primary-600 dark:border-secondary-700 bg-primary-800 dark:bg-secondary-900`}
+          className={`${flex.noShrink} px-6 py-5 border-b border-zinc-200 dark:border-slate-800 bg-zinc-50 dark:bg-slate-900/80`}
         >
           {isAuthenticated ? (
             <div className={`${flex.between} gap-3`}>
@@ -233,7 +233,7 @@ export default function Sidebar({
                   variant="inherit"
                   className={`
                   w-full block px-4 py-3 rounded-xl
-                  bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800
+                  bg-zinc-900 hover:bg-zinc-700 dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-900
                   text-white text-center
                   transition-all duration-200
                   font-semibold ${THEME_CONSTANTS.typography.small}

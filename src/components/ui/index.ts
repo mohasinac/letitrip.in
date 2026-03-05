@@ -70,6 +70,18 @@ export { EventBanner } from "./EventBanner";
 // Phase 10: Generic Layout Primitives
 export { StepperNav } from "./StepperNav";
 export type { StepperNavProps } from "./StepperNav";
+export { StatsGrid } from "./StatsGrid";
+export type { StatsGridProps, StatItem } from "./StatsGrid";
+export { RatingDisplay } from "./RatingDisplay";
+export type { RatingDisplayProps } from "./RatingDisplay";
+export { CountdownDisplay } from "./CountdownDisplay";
+export type { CountdownDisplayProps } from "./CountdownDisplay";
+export { PriceDisplay } from "./PriceDisplay";
+export type { PriceDisplayProps } from "./PriceDisplay";
+export { ItemRow } from "./ItemRow";
+export type { ItemRowProps } from "./ItemRow";
+export { SummaryCard } from "./SummaryCard";
+export type { SummaryCardProps, SummaryLine } from "./SummaryCard";
 
 // Horizontal scroll container with arrows, auto-scroll, and circular mode
 export { HorizontalScroller } from "./HorizontalScroller";

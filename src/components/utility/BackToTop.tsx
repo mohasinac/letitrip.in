@@ -62,10 +62,10 @@ export default function BackToTop({ sidebarOpen = false }: BackToTopProps) {
         bottom-24 md:bottom-8
         p-3 md:p-4
         rounded-full
-        bg-gradient-to-r from-blue-600 to-blue-700
-        text-white
+        bg-zinc-900 dark:bg-zinc-100
+        text-white dark:text-zinc-900
         shadow-lg hover:shadow-xl
-        hover:from-blue-700 hover:to-blue-800
+        hover:bg-zinc-700 dark:hover:bg-zinc-200
         active:scale-95
         transition-all duration-300
         z-[60]

@@ -122,7 +122,7 @@ export function AccordionItem({
           ${themed.textPrimary} font-medium
           hover:${themed.bgSecondary}
           transition-colors duration-150
-          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset
+          focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-inset dark:focus:ring-zinc-600
           ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         `}
       >

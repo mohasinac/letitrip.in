@@ -136,13 +136,13 @@ export const THEME_CONSTANTS = {
     contentPadding: "px-4 md:px-6 lg:px-8",
     navPadding: "px-4 sm:px-6 lg:px-8",
     titleBarBg:
-      "bg-primary-600/95 dark:bg-secondary-700/95 backdrop-blur-sm border-b border-primary-500 dark:border-secondary-600",
+      "bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-zinc-200/80 dark:border-slate-800/80",
     navbarBg:
-      "bg-primary-600/95 dark:bg-secondary-700/95 backdrop-blur-sm border-b border-primary-500 dark:border-secondary-600",
+      "bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-zinc-200/80 dark:border-slate-800/80",
     sidebarBg:
-      "bg-primary-700 dark:bg-secondary-800 border-l border-primary-600 dark:border-secondary-700",
+      "bg-white dark:bg-slate-900 border-l border-zinc-200 dark:border-slate-800",
     bottomNavBg:
-      "bg-primary-600/95 dark:bg-secondary-700/95 backdrop-blur-sm border-t border-primary-500 dark:border-secondary-600",
+      "bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-t border-zinc-200/80 dark:border-slate-800/80",
     footerBg:
       "bg-zinc-50 dark:bg-slate-900 border-t border-zinc-200 dark:border-slate-800",
     // Utility layouts
@@ -553,7 +553,7 @@ export const THEME_CONSTANTS = {
     // Button colors — flat design, no gradients, clean hover states
     button: {
       primary:
-        "bg-primary-600 text-white hover:bg-primary-500 active:bg-primary-700 shadow-sm shadow-primary-600/10 focus:ring-primary-500 dark:bg-secondary-500 dark:text-primary-950 dark:hover:bg-secondary-400 dark:active:bg-secondary-600 dark:shadow-secondary-500/10 dark:focus:ring-secondary-400",
+        "bg-zinc-900 text-white hover:bg-zinc-700 active:bg-zinc-800 shadow-sm focus:ring-zinc-500 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:active:bg-zinc-300 dark:focus:ring-zinc-400",
       secondary:
         "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 shadow-sm focus:ring-zinc-500",
       outline:
@@ -578,16 +578,16 @@ export const THEME_CONSTANTS = {
     // Navbar colors
     navbar: {
       active:
-        "bg-white/20 text-white font-semibold",
+        "bg-zinc-100 dark:bg-slate-800 text-zinc-900 dark:text-zinc-50 font-semibold",
       inactive:
-        "text-white/75 hover:bg-white/15 hover:text-white transition-colors",
+        "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-slate-800 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors",
       icon: "w-5 h-5 md:w-6 md:h-6",
     },
     // Bottom navbar colors
     bottomNav: {
-      active: "text-white font-semibold",
+      active: "text-zinc-900 dark:text-zinc-50 font-semibold",
       inactive:
-        "text-white/65 hover:text-white transition-colors",
+        "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors",
       text: "text-xs",
       icon: "w-6 h-6",
     },
@@ -607,34 +607,34 @@ export const THEME_CONSTANTS = {
     // Icon colors
     icon: {
       muted: "text-zinc-400",
-      titleBar: "text-white",
+      titleBar: "text-zinc-600 dark:text-zinc-300",
       navbar: "text-zinc-900 dark:text-zinc-100",
       onLight: "text-zinc-600 dark:text-zinc-300",
     },
     // Icon button hovers
     iconButton: {
-      onPrimary: "hover:bg-white/15 active:bg-white/25",
+      onPrimary: "hover:bg-zinc-100 dark:hover:bg-slate-800 active:bg-zinc-200 dark:active:bg-slate-700",
       onLight:
         "hover:bg-zinc-100 dark:hover:bg-slate-800 active:bg-zinc-200 dark:active:bg-slate-700",
     },
-    // Colors for elements rendered on a primary/secondary colored background
+    // Colors for elements rendered on the chrome (navbar, sidebar, titlebar)
     onPrimary: {
-      text:            "text-white",
-      textMuted:       "text-white/70",
-      textWeak:        "text-white/80",
-      textSubtle:      "text-white/65",
-      textIcon:        "text-white/60",
-      textFaint:       "text-white/50",
-      brandHover:      "text-white group-hover:text-white/80",
-      navItemActive:   "bg-white/20 text-white shadow-sm",
-      navItemInactive: "text-white/80 hover:bg-white/10 hover:text-white transition-colors",
-      iconBgActive:    "bg-white/20",
-      iconBgInactive:  "bg-transparent group-hover:bg-white/10",
-      divider:         "h-px flex-1 border-white/20",
-      sectionLabel:    "text-white/50",
-      logoutBtn:       "bg-white/10 text-white border border-white/20 hover:bg-red-500/70 hover:text-white",
-      ghostOutlineBtn: "bg-white/10 text-white border-2 border-white/30 hover:bg-white/20 hover:border-white/50",
-      settingsRow:     "text-white hover:bg-white/10 hover:text-white transition-colors",
+      text:            "text-zinc-900 dark:text-zinc-50",
+      textMuted:       "text-zinc-500 dark:text-zinc-400",
+      textWeak:        "text-zinc-600 dark:text-zinc-400",
+      textSubtle:      "text-zinc-500 dark:text-zinc-500",
+      textIcon:        "text-zinc-400 dark:text-zinc-500",
+      textFaint:       "text-zinc-400 dark:text-zinc-500",
+      brandHover:      "text-zinc-900 dark:text-zinc-50 group-hover:text-zinc-600 dark:group-hover:text-zinc-300",
+      navItemActive:   "bg-zinc-100 dark:bg-slate-800 text-zinc-900 dark:text-zinc-50 shadow-sm",
+      navItemInactive: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-slate-800 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors",
+      iconBgActive:    "bg-zinc-100 dark:bg-slate-700",
+      iconBgInactive:  "bg-transparent group-hover:bg-zinc-100 dark:group-hover:bg-slate-800",
+      divider:         "h-px flex-1 border-zinc-200 dark:border-slate-700",
+      sectionLabel:    "text-zinc-400 dark:text-zinc-500",
+      logoutBtn:       "bg-zinc-100 dark:bg-slate-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400",
+      ghostOutlineBtn: "bg-transparent text-zinc-700 dark:text-zinc-300 border-2 border-zinc-200 dark:border-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800",
+      settingsRow:     "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-slate-800 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors",
     },
   },
 
