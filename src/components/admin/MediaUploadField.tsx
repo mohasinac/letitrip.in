@@ -4,15 +4,15 @@
  * SCOPE: Use for video, document, or any non-image file fields inside forms.
  * For image fields specifically, prefer <ImageUpload> (images-only, with preview).
  *
- * UPLOAD PATH: useMediaUpload → POST /api/media/upload (Firebase Admin SDK).
+ * UPLOAD PATH: caller-provided onUpload() → /api/media/upload (Firebase Admin SDK).
+ * Pass `onUpload` from `useMediaUpload().upload`. The component is upload-agnostic.
  * Never calls Firebase Storage client SDK.
  */
 "use client";
 
-import { useRef, ChangeEvent } from "react";
+import { useState, useRef, ChangeEvent } from "react";
 import Image from "next/image";
 import { THEME_CONSTANTS } from "@/constants";
-import { useMediaUpload } from "@/hooks";
 import { Alert, Button, Label, Span, Spinner, Text, TextLink } from "@/components";
 
 interface MediaUploadFieldProps {
@@ -20,14 +20,14 @@ interface MediaUploadFieldProps {
   label: string;
   /** Current file URL — empty string when no file has been uploaded */
   value: string;
-  /** Called with the new URL after a successful upload */
+  /** Called with the new URL after a successful upload or removal */
   onChange: (url: string) => void;
+  /** Upload function: receives the selected File, returns the uploaded URL. Use useMediaUpload().upload. */
+  onUpload: (file: File) => Promise<string>;
   /** MIME type filter, e.g. "video/*", "image/*", "application/pdf" or "*" */
   accept?: string;
   /** Maximum file size in MB (default: 50) */
   maxSizeMB?: number;
-  /** Storage folder hint forwarded to /api/media/upload */
-  folder?: string;
   /** Disables the control (readonly view) */
   disabled?: boolean;
   /** Optional helper text shown below the control */
@@ -55,17 +55,15 @@ export function MediaUploadField({
   label,
   value,
   onChange,
+  onUpload,
   accept = "*",
   maxSizeMB = 50,
-  folder = "uploads",
   disabled = false,
   helperText,
 }: MediaUploadFieldProps) {
-  const uploadMutation = useMediaUpload();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const isLoading = uploadMutation.isLoading;
-  const error = uploadMutation.error?.message ?? null;
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -73,21 +71,20 @@ export function MediaUploadField({
 
     const fileSizeMB = file.size / 1024 / 1024;
     if (fileSizeMB > maxSizeMB) {
-      return; // handled by the mutation error state
+      setError(`File size must be less than ${maxSizeMB}MB`);
+      return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("folder", folder);
-    formData.append("public", "true");
+    setError(null);
+    setIsLoading(true);
 
     try {
-      const data = await uploadMutation.mutate(formData);
-      if (data?.url) {
-        onChange(data.url);
-      }
-    } catch {
-      // error surfaced via uploadMutation.error
+      const url = await onUpload(file);
+      onChange(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setIsLoading(false);
     }
 
     // Reset input so the same file can be re-selected after an error
@@ -98,6 +95,7 @@ export function MediaUploadField({
 
   const handleRemove = () => {
     onChange("");
+    setError(null);
   };
 
   const { themed, spacing } = THEME_CONSTANTS;

@@ -1,13 +1,13 @@
 "use client";
 
 import { Badge } from "@/components";
-import type { UserRole } from "@/types/auth";
 
 /**
  * RoleBadge Component
  *
- * Displays user role with color-coded badge from THEME_CONSTANTS.badge.
+ * Displays a role string with a color-coded badge from THEME_CONSTANTS.badge.
  * Uses role-specific variants: admin=purple, moderator=blue, seller=teal, user=gray.
+ * `role` is a plain string — no domain type import required.
  *
  * @example
  * ```tsx
@@ -17,19 +17,19 @@ import type { UserRole } from "@/types/auth";
  */
 
 interface RoleBadgeProps {
-  role: UserRole;
+  role: string;
   label?: string;
   className?: string;
 }
 
-const ROLE_LABELS: Record<UserRole, string> = {
+const ROLE_LABELS: Record<string, string> = {
   admin: "Admin",
   moderator: "Moderator",
   seller: "Seller",
   user: "User",
 };
 
-const ROLE_VARIANTS: Record<UserRole, any> = {
+const ROLE_VARIANTS: Record<string, string> = {
   admin: "admin",
   moderator: "moderator",
   seller: "seller",
@@ -37,9 +37,15 @@ const ROLE_VARIANTS: Record<UserRole, any> = {
 };
 
 export function RoleBadge({ role, label, className }: RoleBadgeProps) {
+  const variant = (ROLE_VARIANTS[role] ?? "default") as
+    | "admin"
+    | "moderator"
+    | "seller"
+    | "user"
+    | "default";
   return (
-    <Badge variant={ROLE_VARIANTS[role]} className={className}>
-      {label || ROLE_LABELS[role]}
+    <Badge variant={variant} className={className}>
+      {label ?? (ROLE_LABELS[role] ?? role)}
     </Badge>
   );
 }

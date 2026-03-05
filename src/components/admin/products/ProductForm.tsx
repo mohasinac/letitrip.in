@@ -17,6 +17,7 @@ import {
   Text,
   Alert,
 } from "@/components";
+import { useMediaUpload } from "@/hooks";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import type { AdminProduct } from "./types";
@@ -36,6 +37,7 @@ export function ProductForm({
   isReadonly = false,
 }: ProductFormProps) {
   const t = useTranslations("adminProducts");
+  const { upload } = useMediaUpload();
   const update = (partial: Partial<AdminProduct>) => {
     onChange({ ...product, ...partial });
   };
@@ -130,8 +132,8 @@ export function ProductForm({
       {!isReadonly && (
         <ImageUpload
           currentImage={product.mainImage}
-          onUpload={(url) => update({ mainImage: url })}
-          folder="products"
+          onUpload={(file) => upload(file, "products")}
+          onChange={(url) => update({ mainImage: url })}
           label={t("formMainImage")}
           helperText="Recommended: 800x800px (1:1)"
         />

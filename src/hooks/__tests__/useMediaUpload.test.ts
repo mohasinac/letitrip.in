@@ -1,14 +1,14 @@
 /**
- * useMediaUpload Tests — Phase 61
+ * useMediaUpload Tests
  *
  * Verifies that useMediaUpload delegates to mediaService.upload()
- * and wires the mutation correctly.
+ * and exposes an upload() convenience function.
  */
 
 /**
  * @jest-environment jsdom
  */
-import { renderHook } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import { useMediaUpload } from "../useMediaUpload";
 
 jest.mock("@/hooks", () => ({
@@ -76,5 +76,29 @@ describe("useMediaUpload", () => {
     expect(result.current.data).toEqual({
       url: "https://cdn.example.com/img.jpg",
     });
+  });
+
+  it("upload() builds FormData and returns the URL string", async () => {
+    const mockMutate = jest
+      .fn()
+      .mockResolvedValue({ url: "https://cdn.example.com/img.jpg" });
+    (useApiMutation as jest.Mock).mockReturnValue({
+      mutate: mockMutate,
+      isLoading: false,
+      error: null,
+      data: undefined,
+      reset: jest.fn(),
+    });
+    const { result } = renderHook(() => useMediaUpload());
+    const file = new File(["data"], "photo.png", { type: "image/png" });
+    let url: string = "";
+    await act(async () => {
+      url = await result.current.upload(file, "products");
+    });
+    expect(url).toBe("https://cdn.example.com/img.jpg");
+    const calledFormData: FormData = mockMutate.mock.calls[0][0];
+    expect(calledFormData.get("file")).toBe(file);
+    expect(calledFormData.get("folder")).toBe("products");
+    expect(calledFormData.get("public")).toBe("true");
   });
 });

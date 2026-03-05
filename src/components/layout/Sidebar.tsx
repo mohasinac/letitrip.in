@@ -233,8 +233,8 @@ export default function Sidebar({
                   variant="inherit"
                   className={`
                   w-full block px-4 py-3 rounded-xl
-                  bg-zinc-900 hover:bg-zinc-700 dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-900
-                  text-white text-center
+                  bg-zinc-900 hover:bg-zinc-700 dark:bg-zinc-100 dark:hover:bg-zinc-200
+                  text-white dark:text-zinc-900 text-center
                   transition-all duration-200
                   font-semibold ${THEME_CONSTANTS.typography.small}
                   shadow-lg hover:shadow-xl hover:scale-[1.02]

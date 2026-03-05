@@ -17,6 +17,7 @@ import {
   Span,
   Text,
 } from "@/components";
+import { useMediaUpload } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
 import type {
   BlogPostDocument,
@@ -56,6 +57,7 @@ export function BlogForm({
   isReadonly = false,
 }: BlogFormProps) {
   const t = useTranslations("adminBlog");
+  const { upload } = useMediaUpload();
   const update = (partial: BlogFormData) => onChange({ ...post, ...partial });
 
   const handleTitleChange = (value: string) => {
@@ -129,8 +131,8 @@ export function BlogForm({
       {!isReadonly && (
         <ImageUpload
           currentImage={post.coverImage}
-          onUpload={(url) => update({ coverImage: url })}
-          folder="blog"
+          onUpload={(file) => upload(file, "blog")}
+          onChange={(url) => update({ coverImage: url })}
           label={t("formCover")}
           helperText="Recommended: 1200x630px (16:9)"
         />

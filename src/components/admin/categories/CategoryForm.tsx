@@ -10,6 +10,7 @@
 
 import Image from "next/image";
 import { Checkbox, FormField, ImageUpload, Label, Span } from "@/components";
+import { useMediaUpload } from "@/hooks";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { Category } from "./types";
 import { flattenCategories } from "./types";
@@ -30,6 +31,7 @@ export function CategoryForm({
   onChange,
   isReadonly = false,
 }: CategoryFormProps) {
+  const { upload } = useMediaUpload();
   const update = (partial: Partial<Category>) => {
     onChange({ ...category, ...partial });
   };
@@ -72,8 +74,8 @@ export function CategoryForm({
       {!isReadonly && (
         <ImageUpload
           currentImage={category.imageUrl}
-          onUpload={(url) => update({ imageUrl: url })}
-          folder="categories"
+          onUpload={(file) => upload(file, "categories")}
+          onChange={(url) => update({ imageUrl: url })}
           label="Category Image"
           helperText="Recommended: 400x300px"
         />

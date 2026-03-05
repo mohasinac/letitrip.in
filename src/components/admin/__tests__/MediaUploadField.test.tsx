@@ -1,7 +1,7 @@
 /**
  * MediaUploadField Tests
  *
- * Covers: render with/without current value, file selection triggers upload,
+ * Covers: render with/without current value, file selection triggers onUpload,
  * loading state, error state, remove button, disabled state.
  */
 
@@ -11,25 +11,18 @@ import "@testing-library/jest-dom";
 
 // --- Mocks ---
 
-const mockMutate = jest.fn();
-jest.mock("@/hooks", () => ({
-  useMediaUpload: jest.fn(() => ({
-    mutate: mockMutate,
-    isLoading: false,
-    error: null,
-  })),
-}));
-
 jest.mock("@/components", () => ({
   Alert: ({
     children,
     variant,
+    description,
   }: {
-    children: React.ReactNode;
+    children?: React.ReactNode;
     variant?: string;
+    description?: string;
   }) => (
     <div data-testid="alert" data-variant={variant}>
-      {children}
+      {description ?? children}
     </div>
   ),
   Button: ({
@@ -86,24 +79,19 @@ jest.mock("@/constants", () => ({
 }));
 
 import { MediaUploadField } from "../MediaUploadField";
-import { useMediaUpload } from "@/hooks";
 
 describe("MediaUploadField", () => {
+  const mockOnUpload = jest.fn();
   const baseProps = {
     label: "Video",
     value: "",
     onChange: jest.fn(),
+    onUpload: mockOnUpload,
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (useMediaUpload as jest.Mock).mockReturnValue({
-      mutate: mockMutate,
-      isLoading: false,
-      error: null,
-    });
   });
-
   it("renders label and upload button when no value", () => {
     render(<MediaUploadField {...baseProps} />);
     expect(screen.getByText("Video")).toBeInTheDocument();
@@ -121,8 +109,8 @@ describe("MediaUploadField", () => {
     expect(link).toHaveAttribute("href", "https://ex.com/file.pdf");
   });
 
-  it("calls mutate with FormData when file is selected", async () => {
-    mockMutate.mockResolvedValue({ url: "https://cdn.example.com/out.mp4" });
+  it("calls onUpload with File and calls onChange with the returned URL", async () => {
+    mockOnUpload.mockResolvedValue("https://cdn.example.com/out.mp4");
     const onChange = jest.fn();
     render(<MediaUploadField {...baseProps} onChange={onChange} />);
 
@@ -134,30 +122,50 @@ describe("MediaUploadField", () => {
     fireEvent.change(input);
 
     await waitFor(() => {
-      expect(mockMutate).toHaveBeenCalled();
+      expect(mockOnUpload).toHaveBeenCalledWith(file);
       expect(onChange).toHaveBeenCalledWith("https://cdn.example.com/out.mp4");
     });
   });
 
-  it("shows spinner when uploading", () => {
-    (useMediaUpload as jest.Mock).mockReturnValue({
-      mutate: mockMutate,
-      isLoading: true,
-      error: null,
-    });
+  it("shows spinner while onUpload promise is pending", async () => {
+    let resolveUpload!: (url: string) => void;
+    mockOnUpload.mockReturnValue(
+      new Promise<string>((res) => {
+        resolveUpload = res;
+      }),
+    );
     render(<MediaUploadField {...baseProps} />);
-    expect(screen.getByTestId("spinner")).toBeInTheDocument();
+
+    const input = document.querySelector(
+      "input[type=file]",
+    ) as HTMLInputElement;
+    const file = new File(["v"], "demo.mp4", { type: "video/mp4" });
+    Object.defineProperty(input, "files", { value: [file] });
+    fireEvent.change(input);
+
+    await waitFor(() =>
+      expect(screen.getByTestId("spinner")).toBeInTheDocument(),
+    );
     expect(screen.queryByText("Choose file to upload")).not.toBeInTheDocument();
+
+    // resolve to clean up pending promise
+    resolveUpload("https://cdn.example.com/out.mp4");
   });
 
-  it("shows error alert when upload fails", () => {
-    (useMediaUpload as jest.Mock).mockReturnValue({
-      mutate: mockMutate,
-      isLoading: false,
-      error: { message: "Upload failed" },
-    });
+  it("shows error alert when onUpload rejects", async () => {
+    mockOnUpload.mockRejectedValue(new Error("Upload failed"));
     render(<MediaUploadField {...baseProps} />);
-    expect(screen.getByTestId("alert")).toBeInTheDocument();
+
+    const input = document.querySelector(
+      "input[type=file]",
+    ) as HTMLInputElement;
+    const file = new File(["v"], "demo.mp4", { type: "video/mp4" });
+    Object.defineProperty(input, "files", { value: [file] });
+    fireEvent.change(input);
+
+    await waitFor(() =>
+      expect(screen.getByTestId("alert")).toBeInTheDocument(),
+    );
     expect(screen.getByText("Upload failed")).toBeInTheDocument();
   });
 

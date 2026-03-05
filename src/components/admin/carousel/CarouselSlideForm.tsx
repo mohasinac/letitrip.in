@@ -20,6 +20,7 @@ import {
   Select,
   Text,
 } from "@/components";
+import { useMediaUpload } from "@/hooks";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { CarouselSlide, GridCard } from "./types";
@@ -57,6 +58,7 @@ export function CarouselSlideForm({
   isReadonly = false,
 }: CarouselSlideFormProps) {
   const t = useTranslations("adminCarousel");
+  const { upload } = useMediaUpload();
   const [editingCell, setEditingCell] = useState<CellKey | null>(null);
 
   const update = (partial: Partial<CarouselSlide>) =>
@@ -119,8 +121,8 @@ export function CarouselSlideForm({
       {!isReadonly && (
         <ImageUpload
           currentImage={slide.imageUrl}
-          onUpload={(url) => update({ imageUrl: url })}
-          folder="carousel"
+          onUpload={(file) => upload(file, "carousel")}
+          onChange={(url) => update({ imageUrl: url })}
           label="Slide Image"
           helperText="Recommended: 1920×600 px"
         />

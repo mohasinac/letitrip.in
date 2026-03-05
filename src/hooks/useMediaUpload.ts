@@ -5,10 +5,28 @@ import { mediaService } from "@/services";
 
 /**
  * useMediaUpload
- * Wraps `mediaService.upload()` as a `useApiMutation` for ImageUpload component.
+ * Wraps `mediaService.upload()` as a `useApiMutation`.
+ *
+ * Use `upload(file, folder?)` as the `onUpload` prop for `<ImageUpload>` and
+ * `<MediaUploadField>` — it builds FormData internally and returns the URL.
  */
 export function useMediaUpload() {
-  return useApiMutation<{ url: string }, FormData>({
+  const mutation = useApiMutation<{ url: string }, FormData>({
     mutationFn: (formData) => mediaService.upload<{ url: string }>(formData),
   });
+
+  const upload = async (
+    file: File,
+    folder = "uploads",
+    isPublic = true,
+  ): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("folder", folder);
+    formData.append("public", isPublic.toString());
+    const data = await mutation.mutate(formData);
+    return data!.url;
+  };
+
+  return { ...mutation, upload };
 }

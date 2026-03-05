@@ -8,30 +8,29 @@
  *   - Carousel slide image
  *   - Any other content image
  *
- * UPLOAD PATH: Stages locally → submits via /api/media/upload (Firebase Admin SDK).
- * Never calls Firebase Storage client SDK. Uses useMediaUpload hook.
+ * UPLOAD PATH: Stages locally → caller-provided onUpload() → /api/media/upload.
+ * The component is upload-agnostic: pass `onUpload` from `useMediaUpload().upload`
+ * (or any function that accepts a File and returns Promise<string>).
  *
  * For PROFILE AVATARS specifically, use <AvatarUpload> (src/components/AvatarUpload.tsx).
- * AvatarUpload supports crop, zoom, and avatar-specific UX but must be migrated
- * to /api/media/upload as part of TASK-20.
  */
 "use client";
 
 import { useState, useRef, ChangeEvent } from "react";
 import Image from "next/image";
-import { ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
-import { useMediaUpload } from "@/hooks";
-import { ValidationError } from "@/lib/errors";
+import { THEME_CONSTANTS } from "@/constants";
 import { formatFileSize } from "@/utils";
 import { Button, Label, Span, Text } from "@/components";
 
 const { flex, position } = THEME_CONSTANTS;
 
 interface ImageUploadProps {
+  /** Current image URL to pre-populate the preview */
   currentImage?: string;
-  onUpload: (imageUrl: string) => void;
-  folder?: string;
-  isPublic?: boolean;
+  /** Upload function: receives the selected File, returns the uploaded URL. Use useMediaUpload().upload. */
+  onUpload: (file: File) => Promise<string>;
+  /** Called after a successful upload or removal with the resulting URL (empty string on remove) */
+  onChange?: (url: string) => void;
   accept?: string;
   maxSizeMB?: number;
   label?: string;
@@ -41,15 +40,13 @@ interface ImageUploadProps {
 export function ImageUpload({
   currentImage,
   onUpload,
-  folder = "uploads",
-  isPublic = true,
+  onChange,
   accept = "image/jpeg,image/png,image/gif,image/webp",
   maxSizeMB = 10,
   label = "Upload Image",
   helperText,
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
-  const uploadMutation = useMediaUpload();
   const [preview, setPreview] = useState<string>(currentImage || "");
   const [error, setError] = useState<string>("");
   const [progress, setProgress] = useState<number>(0);
@@ -88,28 +85,15 @@ export function ImageUpload({
     };
     reader.readAsDataURL(file);
 
-    // Upload to server
+    // Upload via caller-provided function
     try {
       setUploading(true);
       setProgress(10);
-
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("folder", folder);
-      formData.append("public", isPublic.toString());
-
       setProgress(30);
-
-      const data = await uploadMutation.mutate(formData);
-      setProgress(70);
+      const url = await onUpload(file);
       setProgress(100);
-
-      if (data?.url) {
-        onUpload(data.url);
-        setPreview(data.url);
-      } else {
-        throw new ValidationError(ERROR_MESSAGES.UPLOAD.INVALID_TYPE);
-      }
+      setPreview(url);
+      onChange?.(url);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Upload failed";
       setError(message);
@@ -126,7 +110,7 @@ export function ImageUpload({
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-    onUpload("");
+    onChange?.("");
   };
 
   const handleClick = () => {
