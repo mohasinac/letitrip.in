@@ -504,6 +504,189 @@ Behaviour:
 
 ---
 
+### P1-15 · Extend `ui/FilterFacetSection` — explicit multi-select + Select All / Clear Section
+
+**File**: `src/components/ui/FilterFacetSection.tsx`  
+**Test**: update `src/components/ui/__tests__/FilterFacetSection.test.tsx`
+
+**New / changed props**:
+
+```tsx
+interface FilterFacetSectionProps {
+  // ... existing props unchanged ...
+  selected:  string[];                              // multi-value array (already exists)
+  onChange:  (values: string[]) => void;            // replaces full selection (already exists)
+
+  // NEW
+  maxSelections?: number;                           // cap how many values can be selected at once (default: unlimited)
+  showSelectAll?: boolean;                          // renders "Select all" / "Deselect all" toggle (default: false)
+  selectionMode?:  'multi' | 'single';              // 'multi' = checkbox (default); 'single' = radio-style (one at a time)
+}
+```
+
+Behaviour rules for `selectionMode: 'multi'` (default):
+- Clicking an unselected option **appends** its value to `selected[]` — never replaces.
+- Clicking a selected option **removes** it from `selected[]`.
+- When `showSelectAll` is `true` and all visible options are selected → label changes to "Deselect all"; otherwise "Select all". The action selects/deselects **all visible options** (respecting the inline search filter if active).
+- When `maxSelections` is set and the limit is reached, unselected checkboxes become `disabled` with `aria-disabled="true"` and `Tooltip` showing `t('filters.maxSelectionsReached', { max: maxSelections })`.
+
+Behaviour rules for `selectionMode: 'single'`:
+- Renders radio buttons instead of checkboxes.
+- Clicking a value replaces the entire `selected[]` with `[value]`.
+- "Select all" / `maxSelections` are ignored when `selectionMode === 'single'`.
+
+Translation keys — add to **both** `messages/en.json` and `messages/hi.json` under `"filters"` namespace:
+
+```json
+"filters": {
+  "selectAll":            "Select all",
+  "deselectAll":          "Deselect all",
+  "maxSelectionsReached": "Maximum {max} selections allowed",
+  "showMore":             "Show {count} more",
+  "showLess":             "Show less",
+  "clearSection":         "Clear"
+}
+```
+
+---
+
+### P1-16 · New `hooks/usePendingFilters` — local deferred filter state
+
+**New file**: `src/hooks/usePendingFilters.ts`  
+**Test**: `src/hooks/__tests__/usePendingFilters.test.ts`
+
+```ts
+interface UsePendingFiltersOptions {
+  table: ReturnType<typeof useUrlTable>;  // the page's useUrlTable instance
+  keys:  string[];                        // which URL param keys to manage (e.g. ['status', 'category', 'role'])
+}
+
+interface UsePendingFiltersReturn {
+  pending:       Record<string, string[]>;             // current uncommitted selections per key
+  applied:       Record<string, string[]>;             // values currently in the URL (committed)
+  isDirty:       boolean;                              // pending !== applied
+  pendingCount:  number;                               // total number of selected values across all pending keys
+  appliedCount:  number;                               // total number of selected values in the URL (for badge)
+  set:           (key: string, values: string[]) => void;   // update one key in pending state
+  apply:         () => void;                           // write all pending keys to useUrlTable (resets page to 1)
+  reset:         () => void;                           // discard pending, revert to applied (URL) state
+  clear:         () => void;                           // clear all keys in both pending and URL state
+}
+```
+
+Rules:
+- `pending` is initialised from the **current URL params** on mount (so opening a drawer pre-fills with already-applied filters).
+- `set(key, values)` updates only `pending` — does NOT call `table.set()`/`table.setMany()`.
+- `apply()` calls `table.setMany({ ...Object.fromEntries(Object.entries(pending).map(([k, v]) => [k, v.join(',')])), page: '1' })` — single URL navigation, no multiple history entries.
+- `reset()` re-reads current URL params for all tracked `keys` and replaces `pending` with those values.
+- `clear()` sets pending to all empty strings AND calls `table.setMany({...})` to clear the URL keys.
+- Calling `table.set()` / `table.setMany()` externally (e.g. from a search input) does NOT affect `pending` — the two states are intentionally independent.
+- Export from `src/hooks/index.ts`. Zero domain imports.
+
+---
+
+### P1-17 · Update `ui/FilterDrawer` — deferred apply mode
+
+**File**: `src/components/ui/FilterDrawer.tsx`  
+**Test**: update `src/components/ui/__tests__/FilterDrawer.test.tsx`
+
+**New prop**:
+
+```tsx
+pendingCount?: number;   // from usePendingFilters().pendingCount — drives the Apply button badge
+```
+
+**Changed behaviour**:
+- The `FilterFacetSection` children rendered inside `FilterDrawer` MUST bind to `usePendingFilters().pending` and call `usePendingFilters().set()` — NOT `table.set()` directly.
+- `onApply` fires when the user clicks **Apply** → caller calls `usePendingFilters().apply()` → URL updates once.
+- `onReset` fires when the user clicks **Reset all** → caller calls `usePendingFilters().clear()`.
+- Closing the drawer without clicking Apply fires `onClose`; the caller (page/view) calls `usePendingFilters().reset()` to discard uncommitted changes.
+- The **Apply** button label uses `t('filters.apply')` and shows a `Badge` with `pendingCount` when `pendingCount > 0`.
+- No filter value is ever written to the URL until Apply is clicked.
+
+**Mandatory usage pattern** (for every list page using `FilterDrawer`):
+
+```tsx
+const table   = useUrlTable({ defaults: { pageSize: '25' } });
+const filters = usePendingFilters({ table, keys: ['status', 'category', 'role'] });
+
+<FilterDrawer
+  open={drawerOpen}
+  onClose={() => { setDrawerOpen(false); filters.reset(); }}   // discard on close
+  onApply={() => { filters.apply(); setDrawerOpen(false); }}   // commit on apply
+  onReset={() => filters.clear()}
+  activeCount={filters.appliedCount}
+  pendingCount={filters.pendingCount}
+>
+  <FilterFacetSection
+    title={t('filters.status')}
+    options={STATUS_OPTIONS}
+    selected={filters.pending['status'] ?? []}
+    onChange={(v) => filters.set('status', v)}
+    showSelectAll
+  />
+  <FilterFacetSection
+    title={t('filters.category')}
+    options={categoryOptions}
+    selected={filters.pending['category'] ?? []}
+    onChange={(v) => filters.set('category', v)}
+    searchable
+  />
+</FilterDrawer>
+```
+
+Translation keys — add under the `"filters"` namespace in both locale files:
+
+```json
+"filters": {
+  "apply":     "Apply",
+  "resetAll":  "Reset all",
+  "active":    "{count} active",
+  "pending":   "{count} selected"
+}
+```
+
+---
+
+### P1-18 · Update `ui/AdminFilterBar` — deferred apply for non-search controls
+
+**File**: `src/components/ui/AdminFilterBar.tsx`  
+**Test**: update `src/components/ui/__tests__/AdminFilterBar.test.tsx`
+
+**New props**:
+
+```tsx
+deferred?:        boolean;            // default false; when true, Apply/Reset buttons appear in the bar
+onApply?:         () => void;         // called when Apply button is clicked (only shown when deferred=true)
+onReset?:         () => void;         // called when Reset button is clicked (only shown when deferred=true)
+pendingCount?:    number;             // from usePendingFilters().pendingCount; drives Apply badge
+```
+
+Behaviour rules:
+
+| `deferred` | Search input | Filter `<Select>` / `<Toggle>` controls | Apply / Reset buttons |
+|---|---|---|---|
+| `false` (default) | Debounced 300 ms → instant URL update | Instant `table.set()` on change | Hidden |
+| `true` | Debounced 300 ms → instant URL update (search is always instant) | Write to `usePendingFilters().pending` — NO URL update | Visible; Apply calls `onApply`, Reset calls `onReset` |
+
+- `deferred=true` is the **required** setting for all admin list pages, all seller list pages, and all public list pages that expose more than one non-search filter control.
+- `deferred=false` remains for single-filter bars (e.g. a bar with only a search box) to preserve backward compatibility.
+- The Apply button uses `variant="primary"` with a numeric `Badge` when `pendingCount > 0`.
+- The Reset button uses `variant="ghost"` and is only rendered when `filters.appliedCount > 0` OR `filters.isDirty`.
+
+Translation keys — add under `"filters"` namespace (already defined in P1-17):
+```json
+"filters": {
+  "apply":  "Apply",
+  "reset":  "Reset"
+}
+```
+
+**Git commit after P1-18**: `feat: phase 1 (part 4) - multi-select filters with deferred apply: FilterFacetSection, usePendingFilters, FilterDrawer, AdminFilterBar`  
+**BUSINESS_AND_COMPONENTS.md §12**: mark P1-15 through P1-18 ✅
+
+---
+
 ## Phase 2 — Move All Business Directories (15 tasks)
 
 ---
@@ -949,25 +1132,26 @@ Fix any remaining errors, then:
 | 2 | `feat: phase 1 (part 1) - new generic ui primitives: StepperNav, StatsGrid, RatingDisplay, CountdownDisplay, PriceDisplay, ItemRow, SummaryCard` | P1-1 → P1-7 |
 | 3 | `feat: phase 1 (part 2) - genericize RoleBadge, ImageUpload, MediaUploadField` | P1-8 → P1-10 |
 | 4 | `feat: phase 1 (part 3) - camera capture: useCamera hook, CameraCapture primitive, ImageUpload + MediaUploadField camera extensions` | P1-11 → P1-14 |
-| 5 | `refactor: phase 2.1 - move admin sub-directory business components to features/admin` | P2-1 |
-| 6 | `refactor: phase 2.2 - move product components to features/products` | P2-2 |
-| 7 | `refactor: phase 2.3 - move auction components to features/products` | P2-3 |
-| 8 | `refactor: phase 2.4 - move user components to features/user` | P2-4 |
-| 9 | `refactor: phase 2.5 - move seller components to features/seller` | P2-5 |
-| 10 | `refactor: phase 2.6 - move cart and checkout components to features/cart` | P2-6 |
-| 11 | `refactor: phase 2.7 - move blog components to features/blog` | P2-7 |
-| 12 | `refactor: phase 2.8 - move category components to features/categories` | P2-8 |
-| 13 | `refactor: phase 2.9 - move review components to features/reviews` | P2-9 |
-| 14 | `refactor: phase 2.10 - move search components to features/search` | P2-10 |
-| 15 | `refactor: phase 2.11 - create features/homepage, move homepage components` | P2-11 |
-| 16 | `refactor: phase 2.12 - create features/faq, move faq components` | P2-12 |
-| 17 | `refactor: phase 2.13 - create features/contact, move contact components` | P2-13 |
-| 18 | `refactor: phase 2.14 - create features/promotions, move promotions components` | P2-14 |
-| 19 | `refactor: phase 2.15 - create features/about, move about view` | P2-15 |
-| 20 | `refactor: phase 3 - move misplaced business components from ui/ to features` | P3-1 → P3-4 |
-| 21 | `refactor: phase 4 - genericize layout components` | P4-1 → P4-5 |
-| 22 | `chore: phase 5 - clean up component barrel exports` | P5-1 → P5-4 |
-| 23 | `chore: phase 6 - refactor complete (0 TS errors, build passes, all tests pass)` | P6-1 → P6-3 |
+| 5 | `feat: phase 1 (part 4) - multi-select filters with deferred apply: FilterFacetSection, usePendingFilters, FilterDrawer, AdminFilterBar` | P1-15 → P1-18 |
+| 6 | `refactor: phase 2.1 - move admin sub-directory business components to features/admin` | P2-1 |
+| 7 | `refactor: phase 2.2 - move product components to features/products` | P2-2 |
+| 8 | `refactor: phase 2.3 - move auction components to features/products` | P2-3 |
+| 9 | `refactor: phase 2.4 - move user components to features/user` | P2-4 |
+| 10 | `refactor: phase 2.5 - move seller components to features/seller` | P2-5 |
+| 11 | `refactor: phase 2.6 - move cart and checkout components to features/cart` | P2-6 |
+| 12 | `refactor: phase 2.7 - move blog components to features/blog` | P2-7 |
+| 13 | `refactor: phase 2.8 - move category components to features/categories` | P2-8 |
+| 14 | `refactor: phase 2.9 - move review components to features/reviews` | P2-9 |
+| 15 | `refactor: phase 2.10 - move search components to features/search` | P2-10 |
+| 16 | `refactor: phase 2.11 - create features/homepage, move homepage components` | P2-11 |
+| 17 | `refactor: phase 2.12 - create features/faq, move faq components` | P2-12 |
+| 18 | `refactor: phase 2.13 - create features/contact, move contact components` | P2-13 |
+| 19 | `refactor: phase 2.14 - create features/promotions, move promotions components` | P2-14 |
+| 20 | `refactor: phase 2.15 - create features/about, move about view` | P2-15 |
+| 21 | `refactor: phase 3 - move misplaced business components from ui/ to features` | P3-1 → P3-4 |
+| 22 | `refactor: phase 4 - genericize layout components` | P4-1 → P4-5 |
+| 23 | `chore: phase 5 - clean up component barrel exports` | P5-1 → P5-4 |
+| 24 | `chore: phase 6 - refactor complete (0 TS errors, build passes, all tests pass)` | P6-1 → P6-3 |
 
 ---
 
@@ -977,7 +1161,7 @@ Fix any remaining errors, then:
 |----------|--------|-------|
 | `src/components/` total | ~200 files | ~86 files (generics only) |
 | `src/features/` total | ~90 files | ~209 files |
-| Net new (generics) | — | 9 new files (StepperNav, StatsGrid, RatingDisplay, CountdownDisplay, PriceDisplay, ItemRow, SummaryCard, CameraCapture, useCamera) |
+| Net new (generics) | — | 11 new files (StepperNav, StatsGrid, RatingDisplay, CountdownDisplay, PriceDisplay, ItemRow, SummaryCard, CameraCapture, useCamera, usePendingFilters + updates to FilterFacetSection / FilterDrawer / AdminFilterBar) |
 | Net deleted | — | 5 (3 empty orphans + ProductImageGallery + FAQSearchBar) |
 | Net moved | — | ~105 files (nothing rewritten, just relocated) |
 

@@ -67,6 +67,10 @@ export type { AddressSelectorCreateProps } from "./AddressSelectorCreate";
 export { default as NotificationBell } from "./NotificationBell";
 export { EventBanner } from "./EventBanner";
 
+// Phase 10: Generic Layout Primitives
+export { StepperNav } from "./StepperNav";
+export type { StepperNavProps } from "./StepperNav";
+
 // Horizontal scroll container with arrows, auto-scroll, and circular mode
 export { HorizontalScroller } from "./HorizontalScroller";
 export type {
