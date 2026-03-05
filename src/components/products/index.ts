@@ -8,3 +8,5 @@ export { ProductInfo } from "./ProductInfo";
 export { ProductReviews } from "./ProductReviews";
 export { AddToCartButton } from "./AddToCartButton";
 export { RelatedProducts } from "./RelatedProducts";
+export { ProductFeatureBadges } from "./ProductFeatureBadges";
+export { ProductActions } from "./ProductActions";

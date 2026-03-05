@@ -2,32 +2,38 @@
  * UserOrdersView
  *
  * Extracted from src/app/[locale]/user/orders/page.tsx
- * Lists the current user's orders with status filter tabs and pagination.
- * URL-driven via useUrlTable — bookmark-able at any filter state.
+ * Lists the current user's orders with status filter tabs, search, sort,
+ * and pagination — all URL-driven via useUrlTable.
+ * Uses the unified ListingLayout shell.
  */
 
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useMemo } from "react";
+import { ShoppingBag } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth, useUrlTable } from "@/hooks";
 import { useUserOrders } from "../hooks";
 import {
-  Heading,
-  Spinner,
-  EmptyState,
-  Card,
   Button,
-  Text,
+  Card,
+  EmptyState,
+  Heading,
+  ListingLayout,
+  Search,
+  SortDropdown,
+  Spinner,
   StatusBadge,
   TablePagination,
   Tabs,
   TabsList,
   TabsTrigger,
+  Text,
 } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
-import { useTranslations } from "next-intl";
+
 const STATUS_MAP: Record<
   string,
   "pending" | "info" | "active" | "success" | "danger"
@@ -40,6 +46,13 @@ const STATUS_MAP: Record<
   returned: "danger",
 };
 
+const ORDER_SORT_OPTIONS_KEYS = [
+  { value: "-orderDate", key: "sortNewest" },
+  { value: "orderDate", key: "sortOldest" },
+  { value: "-totalPrice", key: "sortHighest" },
+  { value: "totalPrice", key: "sortLowest" },
+] as const;
+
 function UserOrdersContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -50,6 +63,8 @@ function UserOrdersContent() {
   const statusFilter = table.get("status");
   const page = table.getNumber("page", 1);
   const pageSize = table.getNumber("pageSize", 10);
+  const search = table.get("q");
+  const sortParam = table.get("sorts") || "-orderDate";
 
   const STATUS_TABS = [
     { key: "", label: tOrders("tabAll") },
@@ -60,13 +75,15 @@ function UserOrdersContent() {
     { key: "cancelled", label: tOrders("tabCancelled") },
   ];
 
-  const ordersParams = (() => {
+  const ordersParams = useMemo(() => {
     const p = new URLSearchParams();
     if (statusFilter) p.set("status", statusFilter);
+    if (search) p.set("q", search);
+    if (sortParam) p.set("sorts", sortParam);
     p.set("page", String(page));
     p.set("pageSize", String(pageSize));
     return p.toString();
-  })();
+  }, [statusFilter, search, sortParam, page, pageSize]);
 
   const {
     orders,
@@ -75,7 +92,16 @@ function UserOrdersContent() {
     isLoading,
   } = useUserOrders(ordersParams);
 
-  if (loading || isLoading) {
+  const sortOptions = useMemo(
+    () =>
+      ORDER_SORT_OPTIONS_KEYS.map((o) => ({
+        value: o.value,
+        label: tOrders(o.key),
+      })),
+    [tOrders],
+  );
+
+  if (loading) {
     return (
       <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
         <Spinner size="lg" label={tLoading("default")} />
@@ -89,41 +115,64 @@ function UserOrdersContent() {
   }
 
   return (
-    <div className={THEME_CONSTANTS.spacing.stack}>
-      <Heading level={3}>{tOrders("title")}</Heading>
-
-      {/* Status filter tabs */}
-      <Tabs
-        variant="line"
-        value={statusFilter}
-        onChange={(v) => table.set("status", v)}
-      >
-        <TabsList>
-          {STATUS_TABS.map((tab) => (
-            <TabsTrigger key={tab.key} value={tab.key}>
-              {tab.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-
-      {orders.length === 0 ? (
+    <ListingLayout
+      headerSlot={
+        <div>
+          <Heading level={3}>{tOrders("title")}</Heading>
+          <Text variant="secondary" className="mt-1">
+            {totalOrders > 0
+              ? tOrders("subtitleWithCount", { count: totalOrders })
+              : tOrders("subtitle")}
+          </Text>
+        </div>
+      }
+      statusTabsSlot={
+        <Tabs
+          variant="line"
+          value={statusFilter}
+          onChange={(v) => table.set("status", v)}
+        >
+          <TabsList>
+            {STATUS_TABS.map((tab) => (
+              <TabsTrigger key={tab.key} value={tab.key}>
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+      }
+      searchSlot={
+        <Search
+          value={search}
+          onChange={(v) => table.set("q", v)}
+          placeholder={tOrders("searchPlaceholder")}
+          onClear={() => table.set("q", "")}
+        />
+      }
+      sortSlot={
+        <SortDropdown
+          value={sortParam}
+          onChange={(v) => table.set("sorts", v)}
+          options={sortOptions}
+        />
+      }
+      paginationSlot={
+        totalPages > 1 ? (
+          <TablePagination
+            currentPage={page}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            total={totalOrders}
+            onPageChange={table.setPage}
+            isLoading={isLoading}
+          />
+        ) : undefined
+      }
+      loading={isLoading}
+    >
+      {!isLoading && orders.length === 0 ? (
         <EmptyState
-          icon={
-            <svg
-              className="w-24 h-24 mx-auto text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-              />
-            </svg>
-          }
+          icon={<ShoppingBag className="w-16 h-16" />}
           title={tOrders("noOrders")}
           description={tOrders("emptySubtitle")}
           actionLabel={tActions("browseProducts")}
@@ -190,18 +239,7 @@ function UserOrdersContent() {
           ))}
         </div>
       )}
-
-      {totalPages > 1 && (
-        <TablePagination
-          currentPage={page}
-          totalPages={totalPages}
-          pageSize={pageSize}
-          total={totalOrders}
-          onPageChange={table.setPage}
-          isLoading={isLoading}
-        />
-      )}
-    </div>
+    </ListingLayout>
   );
 }
 

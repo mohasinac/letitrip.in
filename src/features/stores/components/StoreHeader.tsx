@@ -1,10 +1,11 @@
 ﻿"use client";
 
-import { Store, Star, Package } from "lucide-react";
+import { Store, Star, Package, Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import {
   AvatarDisplay,
+  Button,
   Caption,
   Heading,
   Skeleton,
@@ -85,31 +86,48 @@ export function StoreHeader({ storeSlug }: StoreHeaderProps) {
 
             {/* Name + meta */}
             <div className={`${flex.growMin} pt-10 sm:pt-12`}>
-              <Heading
-                level={1}
-                className="text-xl sm:text-2xl leading-tight truncate"
-              >
-                {store.storeName || store.displayName}
-              </Heading>
+              <div className="flex items-center gap-3 flex-wrap">
+                <Heading
+                  level={1}
+                  className="text-xl sm:text-2xl leading-tight truncate"
+                >
+                  {store.storeName || store.displayName}
+                </Heading>
 
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
+                {/* Ratings badge */}
+                {typeof store.averageRating === "number" &&
+                  store.averageRating > 0 && (
+                    <Span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
+                      <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+                      <Caption className="font-medium text-yellow-700 dark:text-yellow-400">
+                        {store.averageRating.toFixed(1)}
+                      </Caption>
+                    </Span>
+                  )}
+
+                {/* Featured star */}
+                <Star
+                  className="w-5 h-5 text-yellow-500 fill-yellow-500 flex-shrink-0"
+                  aria-label={t("featured")}
+                />
+
+                {/* Wishlist heart */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
+                  aria-label={t("addToWishlist")}
+                >
+                  <Heart className="w-5 h-5 text-gray-400 hover:text-red-500 transition-colors" />
+                </Button>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
                 {store.storeCategory && (
                   <Caption className="capitalize">
                     {store.storeCategory}
                   </Caption>
                 )}
-                {typeof store.averageRating === "number" &&
-                  store.averageRating > 0 && (
-                    <Span className="flex items-center gap-1">
-                      <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-                      <Caption>{store.averageRating.toFixed(1)}</Caption>
-                      {typeof store.totalReviews === "number" && (
-                        <Caption>
-                          ({t("reviewCount", { count: store.totalReviews })})
-                        </Caption>
-                      )}
-                    </Span>
-                  )}
                 {typeof store.totalProducts === "number" && (
                   <Span className="flex items-center gap-1">
                     <Package className="w-3.5 h-3.5 text-gray-400" />
@@ -118,6 +136,12 @@ export function StoreHeader({ storeSlug }: StoreHeaderProps) {
                     </Caption>
                   </Span>
                 )}
+                {typeof store.totalReviews === "number" &&
+                  store.totalReviews > 0 && (
+                    <Caption>
+                      {t("reviewCount", { count: store.totalReviews })}
+                    </Caption>
+                  )}
               </div>
 
               {store.storeDescription && (

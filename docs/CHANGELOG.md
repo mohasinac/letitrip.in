@@ -9,6 +9,167 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Public reviews page** — New route `[locale]/reviews/page.tsx` routing to `ReviewsListView` feature component with search, rating filter, sort, and pagination — all URL-driven via `useUrlTable`.
+- **ReviewsListView feature** — `src/features/reviews/components/ReviewsListView.tsx` with barrel exports via `src/features/reviews/index.ts`.
+- **ReviewCard component** — `src/components/reviews/ReviewCard.tsx` — displays review avatar, name (profile link), verified badge, rating star badge, comment, item link, and optional thumbnail images. Uses `generateInitials` from `@/helpers`, `MediaImage` from `@/components`, and `useTranslations("reviews")` for all user-visible strings.
+- **SectionCarousel component** — `src/components/homepage/SectionCarousel.tsx` — generic reusable section carousel with optional background image, heading, description, "See All" link, and `HorizontalScroller` for items.
+- **ProductActions component** — `src/components/products/ProductActions.tsx` — add-to-cart, buy-now, and wishlist actions with desktop and mobile sticky bar layouts.
+- **ProductFeatureBadges component** — `src/components/products/ProductFeatureBadges.tsx` — feature badges (featured, free shipping, COD, etc.).
+- **SkipToMain component** — `src/components/ui/SkipToMain.tsx` — keyboard-accessible skip-navigation link for a11y.
+- **BlogListView feature** — `src/features/blog/components/BlogListView.tsx` — public blog listing with `ListingLayout`, category filter, sort, search, and pagination.
+- **CategoriesListView feature** — `src/features/categories/components/CategoriesListView.tsx` — public categories listing page.
+- **useCategoryDetail hook** — `src/features/categories/hooks/useCategoryDetail.ts` — fetches category detail + children.
+- **EventsListView feature** — `src/features/events/components/EventsListView.tsx` — public events listing with status/type filters, sort, search, pagination.
+- **SellerAddressesView feature** — `src/features/seller/components/SellerAddressesView.tsx` — seller business/pickup address management using `ListingLayout`.
+- **Seller addresses page** — `src/app/[locale]/seller/addresses/page.tsx`.
+- **WishlistView feature** — `src/features/wishlist/components/WishlistView.tsx` — wishlist with Products/Auctions/Categories/Stores tabs.
+- **Hindi FAQ data** — `src/constants/faq-data-hi.ts` — full Hindi translation of FAQ content.
+- **Crash-safe middleware** — `src/middleware.ts` — next-intl middleware with try/catch that redirects to `/error.html` on failure.
+- **Static error page** — `public/error.html` — standalone HTML error page with dark mode support for middleware crash scenarios.
+- **weeklyPayoutEligibility job** — `functions/src/jobs/weeklyPayoutEligibility.ts` — scheduled function for weekly payout processing with 5% platform commission.
+- **Functions user repository** — `functions/src/repositories/user.repository.ts` — `SellerPayoutDetails` interface and `findById` method.
+- **Test files** — `BlogCard.test.tsx`, `ReviewCard.test.tsx`, `StoreCard.test.tsx`, `HeroCarousel.test.tsx`.
+- **`reviewImageAlt` i18n key** — Added to `reviews` namespace in both `messages/en.json` and `messages/hi.json`.
+
+### Fixed
+
+- **SectionCarousel — replaced raw `next/image` import with `MediaImage`** from `@/components` (Rule 28).
+- **ReviewCard — replaced manual `charAt(0).toUpperCase()` with `generateInitials()`** from `@/helpers` (Rule 5).
+- **ReviewCard — replaced hardcoded English `alt` text with `t("reviewImageAlt")`** using `next-intl` interpolation (Rule 33).
+- **SkipToMain — fixed non-barrel import** — changed `@/components/typography` to `@/components` (Rule 2).
+- **EventsListView — consolidated duplicate `@/hooks` imports** into a single import statement (Rule 2).
+- **SellerAddressesView — added `xl:` and `2xl:` grid breakpoints** (`xl:grid-cols-2 2xl:grid-cols-3`) (Rule 25).
+- **WishlistView — added `2xl:grid-cols-6`** breakpoint to grid overlay (Rule 25).
+- **HeroCarousel.test.tsx — fixed TS2322** — added `as React.ReactNode` cast for `children` in Section mock.
+
+### Changed
+
+- **Homepage reviews section — show latest instead of featured** — `CustomerReviewsSection` now displays the most recent approved reviews (`-createdAt`) instead of top-rated ones (`-rating`). `reviewService.getHomepageReviews()` sorts by `-createdAt`. `useHomepageReviews` queryKey updated to `["reviews", "latest"]`.
+- **ReviewCard — rating star badge replaces featured star** — Removed the conditional yellow "featured" circle badge. Replaced with an always-visible compact rating badge (star icon + numeric rating) in the top-right corner. Removed the separate 5-star rating row below the comment for a cleaner card layout.
+- **Homepage featured sections — fill with latest items when below minimum count** — `useFeaturedProducts` and `useFeaturedAuctions` now fetch promoted items first, then backfill with latest published items (deduped) to reach a minimum of 12. `BlogArticlesSection` similarly fills featured posts with latest ones to reach 4. All sections return `null` (hidden) when no items are available and not loading.
+- **HeroCarousel — limit to 5 active slides, hide when empty** — Active slides are now capped at 5 (sorted by order). When no active slides exist, the carousel returns `null` instead of rendering an empty shell.
+
+### Added
+
+- **`productService.getLatest()`** — Fetches latest published products sorted by `-createdAt`.
+- **`productService.getLatestAuctions()`** — Fetches latest published auctions sorted by `-createdAt`.
+- **`blogService.getLatest()`** — Fetches latest published blog posts sorted by `-publishedAt`.
+
+- **Form components — visual overhaul & new props** — All core form primitives in `src/components/forms/` updated with consistent themed colours (primary-600 / secondary-500), improved accessibility, and new opt-in features.
+  - **`Checkbox`** — Fixed invisible tick: added `peer` class to `<input>` and switched SVG visibility to `opacity-0 peer-checked:opacity-100`. Added `indeterminate` prop (renders a dash icon; sets `input.indeterminate` via `useEffect`). Error border uses `border-red-400`.
+  - **`RadioGroup`** — Default variant changed to `"toggle"`: each option renders as a pill-style card with a coloured border and indicator dot when selected. New `variant="classic"` restores the traditional outer-ring + inner-dot style. Both variants respect `orientation` and `error` props. The `onChange` callback signature is `(value: string) => void`.
+  - **`Input`** — Added `rightIcon?: React.ReactNode` prop (shown in the trailing slot). Added `success?: boolean` prop (shows an emerald checkmark; suppressed when `error` is also set). Icon slots use group `focus-within` colour transitions (primary-500 / secondary-400 in dark mode). Converted to `React.forwardRef`.
+  - **`Select`** — Added `placeholder?: string` prop (rendered as a first `disabled` `<option value="">`). Chevron icon adopts `focus-within` colour transition via `group` wrapper.
+  - **`Textarea`** — Converted to `React.forwardRef`. Added `showCharCount?: boolean` prop — when combined with `maxLength`, renders a `{count}/{max}` indicator bottom-right. Error border follows `THEME_CONSTANTS.input.error` (`border-red-400 ...`).
+  - **`Toggle`** — Replaced `Button` import with native `<button role="switch">`. Unchecked track: `bg-zinc-300 dark:bg-slate-600`. Checked track: `bg-primary-600 dark:bg-secondary-500`. White thumb. Focus rings use `focus-visible` (keyboard-only). `sm` track height is `h-[18px]` (not `h-5`).
+  - **`Slider`** — Track fill: `bg-primary-600 dark:bg-secondary-500`. Track background: `bg-zinc-200 dark:bg-slate-700`. Thumb: white fill with 3 px primary-coloured border; dark mode thumb via `:global(.dark)` CSS override (border `#65c408`, background `#1e293b`).
+
+### Fixed
+
+- **FAQ vote schema mismatch** — The Zod validation schema (`faqVoteSchema`) accepted `"not_helpful"` (underscore) but the client-side hook (`useFaqVote`) sent `"not-helpful"` (hyphen). Aligned the Zod schema to `z.enum(["helpful", "not-helpful"])` so votes are validated correctly. The API route, service layer, and hook all use `"not-helpful"` consistently now.
+
+- **FAQ components i18n violations (Rule 3/33)** — All public FAQ components used hardcoded English strings or `UI_LABELS` in JSX. Migrated every user-visible string to `useTranslations('faq')` from `next-intl`:
+  - **`FAQPageContent`** — Title, subtitle, search placeholder, result count (with ICU plural), category label
+  - **`FAQAccordion`** — Empty state, "Copy link", view count, link-copied toast
+  - **`ContactCTA`** — 6 hardcoded strings ("Still Need Help?", "Email Us", "Call Us", "Contact Form", "Submit a request", "Contact Support Team")
+  - **`FAQCategorySidebar`** — "Categories" heading, "All FAQs", "Still have questions?", "Contact Support"
+  - **`FAQSortDropdown`** — "Sort by:", "Most Helpful", "Newest First", "A-Z"
+  - **`FAQSearchBar`** — Removed import of `UI_PLACEHOLDERS`, uses `t('searchPlaceholder')` as default; aria-label uses `tActions('clear')`
+  - **FAQ page `generateMetadata`** — Switched from static `SEO_CONFIG` to `getTranslations('faq')` for locale-aware meta title/description
+
+### Added
+
+- **FAQ i18n namespace expanded** — Added 30+ new translation keys to `messages/en.json` and `messages/hi.json` under the `faq` namespace: `searchPlaceholder`, `noResults`, `resultCount` (ICU plural), `inCategory`, `copyLink`, `views`, `allFaqs`, `categories`, `stillHaveQuestions`, `contactSupport`, `sort.*` (label/helpful/newest/alphabetical), `category.*` (7 categories), `contact.*` (title/description/emailUs/callUs/contactForm/submitRequest/contactTeam), `metaTitle`, `metaDescription`.
+
+- **UTF-8 BOM in translation files caused dev-server crash** — Both `messages/en.json` and `messages/hi.json` contained a UTF-8 Byte Order Mark (`EF BB BF`) prefix. Turbopack's JSON parser (Next.js 16 dev mode) rejected files starting with BOM, producing `"Unable to make a module from invalid JSON: expected value at line 1 column 1"`. Downstream, the failed message load caused a secondary `"No intl context found. Have you configured the provider?"` error during SSR. Both files were rewritten without BOM. The dev server now starts and serves all pages correctly.
+
+### Added
+
+- **Middleware crash-safe error handling** — Wrapped the `next-intl` locale middleware (`src/middleware.ts`) in a try/catch so that unexpected errors (corrupted cookies, locale resolution failures, next-intl internal errors) no longer produce raw 500 responses. On failure the middleware logs the error (Edge-compatible `console.error`) and redirects to a new static `/public/error.html` page. Because the static file has an extension, it is excluded by the middleware matcher — redirect loops are impossible. The static error page is fully self-contained (no framework dependencies), dark-mode aware, and shows the originating path via the `?from=` query param for debugging.
+
+- **Unified `ListingLayout` migration — public listing pages** — Refactored all public-facing listing pages to use the shared `ListingLayout` component for consistent filter sidebar, search, sort, pagination, and empty state patterns across the entire storefront.
+  - **`EventsListView`** (`src/features/events/components/EventsListView.tsx`) — New view component: status filter (active/ended), type filter (sale/offer/poll/survey/feedback), search, sort (newest/ending soon/ending latest), `TablePagination`, skeleton loading.
+  - **`BlogListView`** (`src/features/blog/components/BlogListView.tsx`) — New view component: category filter (news/tips/guides/updates/community), search, sort (newest/oldest/title), `BlogFeaturedCard` on page 1, `BlogCard` grid, `TablePagination`.
+  - **`StoresListView`** (`src/features/stores/components/StoresListView.tsx`) — Rewritten from manual composition to `ListingLayout`: search, sort (newest/oldest/name A-Z/Z-A/most products), `TablePagination`, skeleton loading.
+  - **`ProductsView`** and **`AuctionsView`** — Previously migrated to `ListingLayout` in the same effort.
+  - **Pages thinned**: `src/app/[locale]/events/page.tsx` (80→7 lines), `src/app/[locale]/blog/page.tsx` (127→7 lines) — now thin shells delegating to feature views.
+  - **Barrel exports updated**: `src/features/events/index.ts` exports `EventsListView`; `src/features/blog/index.ts` exports `BlogListView`.
+  - **i18n keys added** to both `messages/en.json` and `messages/hi.json`: `events.*` (sort/filter/empty), `blog.*` (sort/filter/empty/subtitleWithCount), `storesPage.*` (sort/subtitleWithCount).
+  - **Nav: Events & Blog** already in main navbar (`MAIN_NAV_ITEMS` & `SITE_CONFIG.nav`).
+
+- **Auction & Product Schema — new business features** — Added fields to `ProductDocument` for insurance, shipping payer, item condition, and advanced auction settings.
+  - `condition` (`"new" | "used" | "refurbished" | "broken"`) — item condition for both products and auctions.
+  - `insurance` (boolean) + `insuranceCost` (number) — opt-in insurance; when enabled, Shiprocket is mandatory and cost is added to shipping.
+  - `shippingPaidBy` (`"seller" | "buyer"`) — who pays shipping on regular products.
+  - `auctionShippingPaidBy` (`"seller" | "winner"`) — who pays shipping on auction items.
+  - `reservePrice` (number) — hidden minimum price; auction won't sell below this.
+  - `buyNowPrice` (number) — instant-purchase option that bypasses bidding.
+  - `minBidIncrement` (number) — minimum bid increase per bid.
+  - `autoExtendable` (boolean) + `auctionExtensionMinutes` (number, default 5) — if a bid arrives in the last N minutes, the auction extends by N minutes.
+  - `auctionOriginalEndDate` (Date) — tracks the original end date before extensions.
+  - Updated `DEFAULT_PRODUCT_DATA`, `PRODUCT_PUBLIC_FIELDS`, `PRODUCT_UPDATABLE_FIELDS`, `ProductCreateInput` in `src/db/schema/products.ts`.
+  - Updated `PRODUCT_FIELDS` in `src/db/schema/field-names.ts` with new constants + `CONDITION_VALUES`, `SHIPPING_PAID_BY_VALUES`, `AUCTION_SHIPPING_PAID_BY_VALUES` sub-objects.
+  - Updated `AdminProduct` interface in `src/components/admin/products/types.ts`.
+
+- **ProductForm — new form sections** — `src/components/admin/products/ProductForm.tsx` (shared between admin and seller):
+  - "Condition & Shipping" section: condition dropdown (4 options), shipping payer select, insurance checkbox with Alert + cost field.
+  - Expanded auction section: reserve price, buy-now price, min bid increment, auction shipping payer, auto-extend toggle with extension minutes.
+
+- **Auction Detail Page — 3-column layout rewrite** — `src/components/auctions/AuctionDetailView.tsx` rewritten to match `ProductDetailView` design:
+  - 3-column layout: Gallery (with live/ended badge) | Auction Info | Sticky Bid Panel.
+  - Prominent countdown timer grid (days / hours / minutes / seconds) with colour-coded ending-soon state.
+  - Bid info panel with current/starting bid, reserve price met/not-met indicator, min increment display.
+  - Feature badges via `ProductFeatureBadges`, shipping/insurance/auto-extend info badges.
+  - Accordion for specifications + delivery/returns.
+  - Desktop sticky sidebar with `PlaceBidForm`, Buy Now button, Wishlist toggle, Seller card.
+  - Mobile fixed bottom bar with price + wishlist + Place Bid CTA.
+  - Full `BidHistory` section below the grid.
+  - Uses `useWishlistToggle` hook for wishlist functionality.
+
+- **Translation keys** — ~80 new keys added to both `messages/en.json` and `messages/hi.json`:
+  - `adminProducts` namespace: form fields for condition, insurance, shipping payer, reserve price, buy-now price, min bid increment, auto-extendable, extension minutes, auction shipping payer, section headers.
+  - `auctionDetail` namespace: all labels for auction detail page (breadcrumbs, countdown, bid info, reserve price, insurance, auto-extend, shipping, condition labels, feature sections, seller info, CTA buttons).
+
+- **Seed data** — Updated `scripts/seed-data/products-seed-data.ts`:
+  - First product (iPhone): `condition: "new"`, `insurance: true`, `insuranceCost: 999`, `shippingPaidBy: "seller"`.
+  - Vintage Canon auction: `condition: "used"`, insurance, `reservePrice: 25000`, `minBidIncrement: 500`, `autoExtendable: true`, `auctionShippingPaidBy: "winner"`.
+  - MacBook auction: `condition: "refurbished"`, `buyNowPrice: 180000`, `minBidIncrement: 2000`, `autoExtendable: true`, `auctionShippingPaidBy: "seller"`.
+  - Leica camera auction: `condition: "used"`, `reservePrice: 100000`, `minBidIncrement: 2500`, `autoExtendable: false`.
+  - Air Jordan auction: `condition: "new"`, `buyNowPrice: 65000`, `minBidIncrement: 1000`, `autoExtendable: true`, `auctionOriginalEndDate`.
+
+### Changed
+
+- **Seller create flow** (`src/features/seller/components/SellerCreateProductView.tsx`) — `EMPTY_PRODUCT` expanded with defaults for new fields: `condition: "new"`, `insurance: false`, `shippingPaidBy: "buyer"`, `autoExtendable: false`, `auctionExtensionMinutes: 5`, `auctionShippingPaidBy: "winner"`.
+- **Seller edit flow** (`src/features/seller/components/SellerEditProductView.tsx`) — `handleSubmit` field mapping expanded to include all new fields with conditional logic for auction-only fields.
+
+- **Product Detail Page — complete redesign** — 3-column responsive layout (gallery | info | actions) matching new wireframe design.
+  - `ProductFeatureBadges` (NEW `src/components/products/ProductFeatureBadges.tsx`) — coloured badge pills for product/seller features: Featured, Faster Delivery, Rated Seller, Condition, Returnable, Free Shipping, COD, Wishlist Count, Category Product Count.
+  - `ProductActions` (NEW `src/components/products/ProductActions.tsx`) — sticky action bar with Add to Cart (orange), Buy Now (green), Wishlist (pink); right column on `lg:` desktop, fixed bottom bar on mobile with safe-area padding.
+  - Barrel exports added to `src/components/products/index.ts`.
+  - ~30 new translation keys added to both `messages/en.json` and `messages/hi.json` (`products` namespace): `condition`, `conditionNew/Used/Broken/Refurbished`, `ratedSeller`, `fasterDelivery`, `returnable`, `codAvailable`, `wishlistCount`, `categoryProductCount`, `viewStore`, `removeFromWishlist`, `addedToWishlist`, `removedFromWishlist`, `productFeatures`, `shortDescription`, `longDescription`, `home`, `viewCount`, `shareProduct`, `sku`, `tags`, `specsTitle`, `deliveryInfo`, `sellerInfo`, `verified`, `quickActions`.
+
+### Changed
+
+- **`ProductDetailView`** (`src/features/products/components/ProductDetailView.tsx`) — rewritten to 3-column layout with `grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px]`; replaced hand-rolled `Nav` breadcrumbs with `Breadcrumbs`/`BreadcrumbItem` components; now passes `slug`, `sellerId`, `viewCount`, `isPromoted` props to `ProductInfo`; uses `ProductActions` instead of inline `AddToCartButton`; added `h-20 lg:hidden` bottom padding for mobile sticky bar.
+- **`ProductImageGallery`** (`src/components/products/ProductImageGallery.tsx`) — rewritten with nav arrows (`ChevronLeft`/`ChevronRight`) on hover, image counter badge, responsive aspect ratios (`aspect-square sm:aspect-[4/3] lg:aspect-square`), larger thumbnails on `sm:` (`w-20 h-20`), ring selection indicator on active thumbnail.
+- **`ProductInfo`** (`src/components/products/ProductInfo.tsx`) — rewritten for centre-column layout; removed `onAddToCart`/`isAddingToCart` props (actions now in `ProductActions`); added `sellerId`, `viewCount`, `slug`, `isPromoted`, `condition` props; added `TextLink` for store/category/tags navigation; uses `Accordion`/`AccordionItem` for specifications and delivery/returns sections; integrates `ProductFeatureBadges`; uses `Divider` between sections.
+- **`ProductInfo` test** (`src/components/products/__tests__/ProductInfo.test.tsx`) — updated to match new props and mock dependencies; removed stale `onAddToCart` assertions; added seller name and feature badges tests.
+
+### Changed
+
+- **Carousel slide card grid simplified to fixed 2×3 layout** — replaced the old free-form 9×9 span-based grid with a fixed 2 rows × 3 columns grid (Top/Bottom × Left/Center/Right). Each card now occupies exactly one cell with `gridRow: 1|2` and `gridCol: 1|2|3`; no spanning; max 6 cards per slide.
+  - `GridCard` interface (`src/db/schema/carousel-slides.ts`): replaced `gridPosition`, `mobilePosition`, `width`, `height`, `mobileHideText` with `gridRow: 1|2` and `gridCol: 1|2|3`. `content` and `buttons` made optional.
+  - `GRID_CONFIG` simplified to `{ rows: 2, cols: 3 }`. `isValidGridPosition` updated to `(gridRow, gridCol)` signature.
+  - `gridCardSchema` (`src/lib/validation/schemas.ts`): now validates `gridRow` (1–2) and `gridCol` (1–3); `max(6)` cards; unique-position check.
+  - `CarouselCreateRequest` (`src/types/api.ts`): updated gridCards shape to match new schema.
+  - `CarouselSlideForm` (`src/components/admin/carousel/CarouselSlideForm.tsx`): fully rewritten — replaced `GridEditor` with inline 2×3 visual grid designer; each cell shows add/edit/remove card controls with `CardEditor` subcomponent (background, content, buttons).
+  - `CarouselTableColumns` (`src/components/admin/carousel/CarouselTableColumns.tsx`): replaced `order` column with `cards` count column (`X / 6`).
+  - `HeroCarousel` (`src/components/homepage/HeroCarousel.tsx`): grid overlay updated to fixed `repeat(2, 1fr)` × `repeat(3, 1fr)`; card positioning uses `gridRow`/`gridCol` directly; optional chaining added for `content` and `buttons`.
+  - `adminCarousel` namespace in `messages/en.json` and `messages/hi.json`: added 25+ new translation keys for grid editor UI.
+  - Seed data (`scripts/seed-data/carousel-slides-seed-data.ts`): all cards migrated to `gridRow`/`gridCol` format.
+
 > Development phases (Phases 1–67) completed between 2026-01-01 and 2026-02-28.
 
 ---

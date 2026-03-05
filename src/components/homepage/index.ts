@@ -1,4 +1,6 @@
 export { HeroCarousel } from "./HeroCarousel";
+export { SectionCarousel } from "./SectionCarousel";
+export type { SectionCarouselProps } from "./SectionCarousel";
 export { WelcomeSection } from "./WelcomeSection";
 // Merged replacement for TrustIndicatorsSection + SiteFeaturesSection
 export { TrustFeaturesSection } from "./TrustFeaturesSection";

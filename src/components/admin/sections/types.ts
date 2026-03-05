@@ -14,16 +14,18 @@ export interface HomepageSection {
 
 export type SectionDrawerMode = "create" | "edit" | "delete" | null;
 
+
 export const SECTION_TYPES = [
-  { value: "hero", label: "Hero Banner" },
-  { value: "featured-products", label: "Featured Products" },
-  { value: "featured-auctions", label: "Featured Auctions" },
-  { value: "categories", label: "Categories Grid" },
-  { value: "testimonials", label: "Testimonials" },
-  { value: "stats", label: "Statistics" },
-  { value: "cta", label: "Call to Action" },
-  { value: "blog", label: "Blog Posts" },
+  { value: "welcome", label: "Welcome" },
+  { value: "trust-indicators", label: "Trust Indicators" },
+  { value: "categories", label: "Categories" },
+  { value: "products", label: "Products" },
+  { value: "auctions", label: "Auctions" },
+  { value: "banner", label: "Banner" },
+  { value: "features", label: "Features" },
+  { value: "reviews", label: "Reviews" },
+  { value: "whatsapp-community", label: "WhatsApp Community" },
   { value: "faq", label: "FAQ" },
-  { value: "newsletter", label: "Newsletter Signup" },
-  { value: "custom-html", label: "Custom HTML" },
+  { value: "blog-articles", label: "Blog Articles" },
+  { value: "newsletter", label: "Newsletter" },
 ] as const;

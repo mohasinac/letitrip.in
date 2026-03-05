@@ -8,9 +8,12 @@ export type AuctionItem = Pick<
   ProductDocument,
   | "id"
   | "title"
+  | "description"
   | "price"
   | "currency"
   | "mainImage"
+  | "images"
+  | "video"
   | "isAuction"
   | "auctionEndDate"
   | "startingBid"

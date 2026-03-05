@@ -16,6 +16,12 @@ export const blogService = {
     apiClient.get(
       `${API_ENDPOINTS.BLOG.LIST}?featured=true&pageSize=${count}&sorts=-publishedAt`,
     ),
+  /** Latest published blog posts (for homepage fallback) */
+  getLatest: (count = 4) =>
+    apiClient.get(
+      `${API_ENDPOINTS.BLOG.LIST}?pageSize=${count}&sorts=-publishedAt`,
+    ),
+
   /** Get a single post by its slug */
   getBySlug: (slug: string) =>
     apiClient.get(API_ENDPOINTS.BLOG.GET_BY_SLUG(slug)),

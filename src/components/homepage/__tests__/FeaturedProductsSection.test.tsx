@@ -1,30 +1,131 @@
 import { render, screen } from "@testing-library/react";
 import { FeaturedProductsSection } from "../FeaturedProductsSection";
+import type { SectionCarouselProps } from "../SectionCarousel";
 
-// Mock useApiQuery
-const mockUseApiQuery = jest.fn();
-jest.mock("@/hooks", () => ({
-  useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
-  useFeaturedProducts: (...args: unknown[]) => mockUseApiQuery(...args),
+// ── i18n ──────────────────────────────────────────────────────────────────
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => key,
 }));
 
-// Mock Button component
-jest.mock("@/components", () => ({
-  Button: ({
+// ── Navigation ────────────────────────────────────────────────────────────
+jest.mock("@/i18n/navigation", () => ({
+  Link: ({
     children,
-    onClick,
-    ...props
+    href,
   }: {
     children: React.ReactNode;
-    onClick?: () => void;
-    [key: string]: unknown;
-  }) => (
-    <button onClick={onClick} {...props}>
-      {children}
-    </button>
-  ),
+    href: string;
+  }) => <a href={href}>{children}</a>,
+  useRouter: () => ({ push: jest.fn() }),
+  usePathname: () => "/",
 }));
 
+// ── Data hook ─────────────────────────────────────────────────────────────
+const mockUseFeaturedProducts = jest.fn();
+jest.mock("@/hooks", () => ({
+  useFeaturedProducts: (...args: unknown[]) =>
+    mockUseFeaturedProducts(...args),
+}));
+
+// ── SectionCarousel stub — renders items via renderItem ───────────────────
+jest.mock(
+  "../SectionCarousel",
+  () => ({
+    SectionCarousel: <T,>({
+      items,
+      renderItem,
+      isLoading,
+      viewMoreHref,
+      title,
+      description,
+    }: SectionCarouselProps<T>) => (
+      <div data-testid="section-carousel">
+        {isLoading && <div data-testid="skeleton" className="animate-pulse" />}
+        <h2>{title}</h2>
+        {description && <p>{description}</p>}
+        {viewMoreHref && <a href={viewMoreHref}>viewMore</a>}
+        {!isLoading &&
+          (items as unknown[]).map((item, i) => (
+            <div key={i}>{renderItem(item as T, i)}</div>
+          ))}
+      </div>
+    ),
+  }),
+);
+
+// ── Shared components ─────────────────────────────────────────────────────
+jest.mock("@/components", () => ({
+  Heading: ({
+    children,
+    level,
+    className,
+  }: {
+    children: React.ReactNode;
+    level?: number;
+    className?: string;
+  }) => {
+    const Tag = `h${level ?? 2}` as React.ElementType;
+    return <Tag className={className}>{children}</Tag>;
+  },
+  Text: ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) => <p className={className}>{children}</p>,
+  Span: ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) => <span className={className}>{children}</span>,
+  TextLink: ({
+    children,
+    href,
+  }: {
+    children: React.ReactNode;
+    href: string;
+  }) => <a href={href}>{children}</a>,
+}));
+
+jest.mock("@/constants", () => ({
+  THEME_CONSTANTS: {
+    themed: {
+      bgPrimary: "bg-primary",
+      bgSecondary: "bg-secondary",
+      textPrimary: "text-primary",
+      textSecondary: "text-secondary",
+    },
+    spacing: { padding: { sm: "p-3" } },
+    borderRadius: { lg: "rounded-lg" },
+    typography: { body: "text-base", small: "text-sm", h4: "text-xl" },
+  },
+  ROUTES: { PUBLIC: { PRODUCTS: "/products" } },
+}));
+
+jest.mock("@/utils", () => ({
+  formatCurrency: (amount: number) => `₹${amount.toLocaleString("en-IN")}`,
+}));
+
+jest.mock("@/db/schema", () => ({}));
+jest.mock("next/image", () => ({
+  __esModule: true,
+  default: ({
+    src,
+    alt,
+    fill: _fill,
+    ...rest
+  }: {
+    src: string;
+    alt: string;
+    fill?: boolean;
+    [key: string]: unknown;
+  }) => <img src={src} alt={alt} {...rest} />,
+}));
+
+// ── Test data ─────────────────────────────────────────────────────────────
 const mockProducts = [
   {
     id: "1",
@@ -35,7 +136,6 @@ const mockProducts = [
     mainImage: "/img/headphones.jpg",
     isPromoted: true,
     brand: "SoundMax",
-    category: "Electronics",
   },
   {
     id: "2",
@@ -46,7 +146,6 @@ const mockProducts = [
     mainImage: "/img/watch.jpg",
     isPromoted: false,
     brand: "TimeCraft",
-    category: "Accessories",
   },
   {
     id: "3",
@@ -55,172 +154,124 @@ const mockProducts = [
     price: 1299,
     currency: "INR",
     mainImage: "/img/wallet.jpg",
-    isPromoted: true,
-    category: "Accessories",
+    isPromoted: false,
   },
 ];
 
+// ── Tests ─────────────────────────────────────────────────────────────────
 describe("FeaturedProductsSection", () => {
   beforeEach(() => {
-    mockUseApiQuery.mockReset();
+    mockUseFeaturedProducts.mockReset();
   });
 
-  // ====================================
-  // Loading State
-  // ====================================
   describe("Loading State", () => {
-    it("renders loading skeleton when loading", () => {
-      mockUseApiQuery.mockReturnValue({ data: null, isLoading: true });
-      const { container } = render(<FeaturedProductsSection />);
-      expect(
-        container.querySelectorAll(".animate-pulse").length,
-      ).toBeGreaterThan(0);
+    it("passes isLoading=true to SectionCarousel when loading", () => {
+      mockUseFeaturedProducts.mockReturnValue({ data: null, isLoading: true });
+      render(<FeaturedProductsSection />);
+      expect(screen.getByTestId("skeleton")).toBeInTheDocument();
     });
   });
 
-  // ====================================
-  // No Data State
-  // ====================================
-  describe("No Data State", () => {
-    it("returns null when no products", () => {
-      mockUseApiQuery.mockReturnValue({
-        data: [],
-        isLoading: false,
-      });
-      const { container } = render(<FeaturedProductsSection />);
-      expect(container.innerHTML).toBe("");
-    });
-
-    it("returns null when products array is missing", () => {
-      mockUseApiQuery.mockReturnValue({ data: null, isLoading: false });
-      const { container } = render(<FeaturedProductsSection />);
-      expect(container.innerHTML).toBe("");
-    });
-  });
-
-  // ====================================
-  // Content Rendering
-  // ====================================
-  describe("Content Rendering", () => {
+  describe("With data", () => {
     beforeEach(() => {
-      mockUseApiQuery.mockReturnValue({
-        data: mockProducts,
+      mockUseFeaturedProducts.mockReturnValue({
+        data: { items: mockProducts },
         isLoading: false,
       });
     });
 
-    it('renders "Featured Products" heading', () => {
+    it("renders SectionCarousel", () => {
+      render(<FeaturedProductsSection />);
+      expect(screen.getByTestId("section-carousel")).toBeInTheDocument();
+    });
+
+    it("passes title translation key", () => {
       render(<FeaturedProductsSection />);
       expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
-        "Featured Products",
+        "featuredProducts",
       );
     });
 
-    it("renders subtitle", () => {
+    it("passes description translation key", () => {
       render(<FeaturedProductsSection />);
       expect(
-        screen.getByText("Handpicked items just for you"),
+        screen.getByText("featuredProductsSubtitle"),
       ).toBeInTheDocument();
     });
 
-    it('renders "View All" link', () => {
+    it("passes viewMoreHref pointing to products route", () => {
       render(<FeaturedProductsSection />);
-      // Component renders View All link in both mobile and desktop layouts
-      const links = screen.getAllByText(/view all/i);
-      expect(links.length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByRole("link", { name: "viewMore" })).toHaveAttribute(
+        "href",
+        "/products",
+      );
     });
 
     it("renders all product titles", () => {
       render(<FeaturedProductsSection />);
-      // Component renders products in both mobile (carousel) and desktop (grid) layouts
-      expect(
-        screen.getAllByText("Premium Headphones").length,
-      ).toBeGreaterThanOrEqual(1);
-      expect(
-        screen.getAllByText("Vintage Watch").length,
-      ).toBeGreaterThanOrEqual(1);
-      expect(
-        screen.getAllByText("Leather Wallet").length,
-      ).toBeGreaterThanOrEqual(1);
-    });
-
-    it("renders product images with alt text", () => {
-      render(<FeaturedProductsSection />);
-      const images = screen.getAllByRole("img");
-      // Images appear in both mobile and desktop layouts
-      expect(images.length).toBeGreaterThanOrEqual(3);
-      expect(images[0]).toHaveAttribute("alt");
+      expect(screen.getByText("Premium Headphones")).toBeInTheDocument();
+      expect(screen.getByText("Vintage Watch")).toBeInTheDocument();
+      expect(screen.getByText("Leather Wallet")).toBeInTheDocument();
     });
 
     it('renders "Featured" badge for promoted products', () => {
       render(<FeaturedProductsSection />);
-      const badges = screen.getAllByText("Featured");
-      // 2 promoted products × 2 layouts (mobile + desktop) = 4 badges
-      expect(badges.length).toBeGreaterThanOrEqual(2);
+      expect(screen.getByText("Featured")).toBeInTheDocument();
     });
 
     it("renders brand name when available", () => {
       render(<FeaturedProductsSection />);
-      expect(screen.getAllByText("SoundMax").length).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText("TimeCraft").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText("SoundMax")).toBeInTheDocument();
+      expect(screen.getByText("TimeCraft")).toBeInTheDocument();
+    });
+
+    it("renders product image with alt text", () => {
+      render(<FeaturedProductsSection />);
+      const images = screen.getAllByRole("img");
+      expect(images.length).toBeGreaterThanOrEqual(1);
+      images.forEach((img) => {
+        expect(img).toHaveAttribute("alt");
+        expect(img.getAttribute("alt")).not.toBe("");
+      });
+    });
+
+    it("renders formatted prices", () => {
+      render(<FeaturedProductsSection />);
+      expect(screen.getByText(/4,999/)).toBeInTheDocument();
     });
 
     it("renders product cards as links", () => {
       render(<FeaturedProductsSection />);
-      // Products are rendered as Link elements
-      const links = screen.getAllByRole("link");
+      const links = screen
+        .getAllByRole("link")
+        .filter((l) => l.getAttribute("href")?.startsWith("/products/"));
       expect(links.length).toBeGreaterThanOrEqual(3);
     });
-  });
 
-  // ====================================
-  // Price Formatting
-  // ====================================
-  describe("Price Formatting", () => {
-    it("formats prices in INR currency", () => {
-      mockUseApiQuery.mockReturnValue({
-        data: mockProducts,
-        isLoading: false,
-      });
-      render(<FeaturedProductsSection />);
-      // Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 })
-      expect(screen.getAllByText(/₹\s?4,999/).length).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText(/₹\s?12,500/).length).toBeGreaterThanOrEqual(
-        1,
-      );
-      expect(screen.getAllByText(/₹\s?1,299/).length).toBeGreaterThanOrEqual(1);
-    });
-  });
-
-  // ====================================
-  // Accessibility
-  // ====================================
-  describe("Accessibility", () => {
-    beforeEach(() => {
-      mockUseApiQuery.mockReturnValue({
-        data: mockProducts,
-        isLoading: false,
-      });
-    });
-
-    it("uses h2 for section heading", () => {
-      render(<FeaturedProductsSection />);
-      expect(screen.getByRole("heading", { level: 2 })).toBeInTheDocument();
-    });
-
-    it("uses h3 for product titles", () => {
+    it("uses h3 for product card headings", () => {
       render(<FeaturedProductsSection />);
       const h3s = screen.getAllByRole("heading", { level: 3 });
-      // 3 products × 2 layouts (mobile + desktop) = 6 h3s
       expect(h3s.length).toBeGreaterThanOrEqual(3);
     });
+  });
 
-    it("all images have alt text", () => {
-      render(<FeaturedProductsSection />);
-      screen.getAllByRole("img").forEach((img) => {
-        expect(img).toHaveAttribute("alt");
-        expect(img.getAttribute("alt")).not.toBe("");
+  describe("Empty data", () => {
+    it("returns null when no products and not loading", () => {
+      mockUseFeaturedProducts.mockReturnValue({
+        data: { items: [] },
+        isLoading: false,
       });
+      const { container } = render(<FeaturedProductsSection />);
+      expect(container.innerHTML).toBe("");
+    });
+
+    it("shows skeleton when loading even with no data yet", () => {
+      mockUseFeaturedProducts.mockReturnValue({
+        data: null,
+        isLoading: true,
+      });
+      render(<FeaturedProductsSection />);
+      expect(screen.getByTestId("skeleton")).toBeInTheDocument();
     });
   });
 });

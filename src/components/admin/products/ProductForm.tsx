@@ -13,6 +13,9 @@ import {
   CategorySelectorCreate,
   AddressSelectorCreate,
   ImageUpload,
+  Heading,
+  Text,
+  Alert,
 } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
@@ -178,7 +181,84 @@ export function ProductForm({
         />
       </div>
 
+      {/* Condition & Shipping */}
+      <Heading level={4} className={spacing.margin.top.md}>
+        {t("sectionConditionShipping")}
+      </Heading>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <FormField
+          name="condition"
+          label={t("formCondition")}
+          type="select"
+          value={product.condition || "new"}
+          onChange={(value) =>
+            update({
+              condition: value as AdminProduct["condition"],
+            })
+          }
+          disabled={isReadonly}
+          options={[
+            { value: "new", label: t("formConditionNew") },
+            { value: "used", label: t("formConditionUsed") },
+            { value: "refurbished", label: t("formConditionRefurbished") },
+            { value: "broken", label: t("formConditionBroken") },
+          ]}
+        />
+        <FormField
+          name="shippingPaidBy"
+          label={t("formShippingPaidBy")}
+          type="select"
+          value={product.shippingPaidBy || "buyer"}
+          onChange={(value) =>
+            update({
+              shippingPaidBy: value as AdminProduct["shippingPaidBy"],
+            })
+          }
+          disabled={isReadonly}
+          options={[
+            { value: "buyer", label: t("formShippingPaidByBuyer") },
+            { value: "seller", label: t("formShippingPaidBySeller") },
+          ]}
+        />
+      </div>
+
+      {/* Insurance */}
+      <Checkbox
+        label={t("formInsurance")}
+        checked={!!product.insurance}
+        onChange={(e) =>
+          update({
+            insurance: e.target.checked,
+            insuranceCost: e.target.checked
+              ? product.insuranceCost || 0
+              : undefined,
+          })
+        }
+        disabled={isReadonly}
+      />
+      {product.insurance && (
+        <>
+          <Alert variant="info" title={t("formInsuranceHelp")}>
+            {t("formInsuranceHelp")}
+          </Alert>
+          <FormField
+            name="insuranceCost"
+            label={t("formInsuranceCost")}
+            type="number"
+            value={String(product.insuranceCost ?? "")}
+            onChange={(value) => update({ insuranceCost: Number(value) })}
+            disabled={isReadonly}
+            placeholder="0"
+          />
+        </>
+      )}
+
       {/* Auction fields */}
+      <Heading level={4} className={spacing.margin.top.md}>
+        {t("sectionAuctionSettings")}
+      </Heading>
+
       <Checkbox
         label={t("formIsAuction")}
         checked={!!product.isAuction}
@@ -187,26 +267,111 @@ export function ProductForm({
       />
 
       {product.isAuction && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              name="startingBid"
+              label={t("formStartingBid")}
+              type="number"
+              value={String(product.startingBid ?? "")}
+              onChange={(value) => update({ startingBid: Number(value) })}
+              disabled={isReadonly}
+              placeholder="0"
+            />
+            <FormField
+              name="auctionEndDate"
+              label={t("formAuctionEndDate")}
+              type="text"
+              value={product.auctionEndDate || ""}
+              onChange={(value) => update({ auctionEndDate: value })}
+              disabled={isReadonly}
+              placeholder="YYYY-MM-DDTHH:mm"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              name="reservePrice"
+              label={t("formReservePrice")}
+              type="number"
+              value={String(product.reservePrice ?? "")}
+              onChange={(value) => update({ reservePrice: Number(value) || undefined })}
+              disabled={isReadonly}
+              placeholder="0"
+              helpText={t("formReservePriceHelp")}
+            />
+            <FormField
+              name="buyNowPrice"
+              label={t("formBuyNowPrice")}
+              type="number"
+              value={String(product.buyNowPrice ?? "")}
+              onChange={(value) => update({ buyNowPrice: Number(value) || undefined })}
+              disabled={isReadonly}
+              placeholder="0"
+              helpText={t("formBuyNowPriceHelp")}
+            />
+          </div>
+
           <FormField
-            name="startingBid"
-            label={t("formStartingBid")}
+            name="minBidIncrement"
+            label={t("formMinBidIncrement")}
             type="number"
-            value={String(product.startingBid ?? "")}
-            onChange={(value) => update({ startingBid: Number(value) })}
+            value={String(product.minBidIncrement ?? "")}
+            onChange={(value) => update({ minBidIncrement: Number(value) || undefined })}
             disabled={isReadonly}
             placeholder="0"
+            helpText={t("formMinBidIncrementHelp")}
           />
+
+          {/* Auction shipping payer */}
           <FormField
-            name="auctionEndDate"
-            label={t("formAuctionEndDate")}
-            type="text"
-            value={product.auctionEndDate || ""}
-            onChange={(value) => update({ auctionEndDate: value })}
+            name="auctionShippingPaidBy"
+            label={t("formAuctionShippingPaidBy")}
+            type="select"
+            value={product.auctionShippingPaidBy || "winner"}
+            onChange={(value) =>
+              update({
+                auctionShippingPaidBy: value as AdminProduct["auctionShippingPaidBy"],
+              })
+            }
             disabled={isReadonly}
-            placeholder="YYYY-MM-DDTHH:mm"
+            options={[
+              { value: "winner", label: t("formAuctionShippingPaidByWinner") },
+              { value: "seller", label: t("formAuctionShippingPaidBySeller") },
+            ]}
           />
-        </div>
+
+          {/* Advanced Auction Options */}
+          <Text variant="secondary" weight="semibold" className={spacing.margin.top.sm}>
+            {t("sectionAuctionAdvanced")}
+          </Text>
+
+          <Checkbox
+            label={t("formAutoExtendable")}
+            checked={!!product.autoExtendable}
+            onChange={(e) => update({ autoExtendable: e.target.checked })}
+            disabled={isReadonly}
+          />
+          {product.autoExtendable && (
+            <>
+              <Alert variant="info" title={t("formAutoExtendableHelp")}>
+                {t("formAutoExtendableHelp")}
+              </Alert>
+              <FormField
+                name="auctionExtensionMinutes"
+                label={t("formAuctionExtensionMinutes")}
+                type="number"
+                value={String(product.auctionExtensionMinutes ?? 5)}
+                onChange={(value) =>
+                  update({ auctionExtensionMinutes: Number(value) || 5 })
+                }
+                disabled={isReadonly}
+                placeholder="5"
+                helpText={t("formAuctionExtensionMinutesHelp")}
+              />
+            </>
+          )}
+        </>
       )}
 
       {/* Shipping & Returns */}

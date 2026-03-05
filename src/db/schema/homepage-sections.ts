@@ -214,22 +214,19 @@ export const HOMEPAGE_SECTIONS_INDEXED_FIELDS = [
 // ============================================
 // 4. HELPER CONSTANTS
 // ============================================
-/**
- * Default order for homepage sections (15 total)
- */
 export const DEFAULT_SECTION_ORDER: Record<SectionType, number> = {
   welcome: 1,
-  "trust-indicators": 2,
-  categories: 3,
+  "trust-indicators": 3,
+  categories: 2,
   products: 4,
   auctions: 5,
-  banner: 6,
-  features: 7,
-  reviews: 8,
-  "whatsapp-community": 9,
-  faq: 10,
-  "blog-articles": 11,
-  newsletter: 12,
+  banner: 4,
+  features: 5,
+  reviews: 6,
+  "whatsapp-community": 6,
+  faq: 4,
+  "blog-articles": 5,
+  newsletter: 6,
 };
 
 /**

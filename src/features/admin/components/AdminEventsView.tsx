@@ -4,25 +4,29 @@
  * Tier 2 — feature component.
  * Extracted from src/app/[locale]/admin/events/page.tsx (was 153 lines).
  * Manages the admin events list with filtering, pagination, and CRUD.
+ * Uses the unified ListingLayout shell.
  */
 
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
+import { useRouter } from "@/i18n/navigation";
 import {
   AdminPageHeader,
-  AdminFilterBar,
   Badge,
+  Button,
   Caption,
   Card,
   DataTable,
+  FilterFacetSection,
+  ListingLayout,
   MediaImage,
+  Search,
+  SortDropdown,
   StatusBadge,
   TablePagination,
   Text,
   ConfirmDeleteModal,
-  Input,
-  Select,
 } from "@/components";
 import { formatDate } from "@/utils";
 import { ROUTES } from "@/constants";
@@ -33,11 +37,18 @@ import {
   useEventsTableColumns,
   EventFormDrawer,
   useDeleteEvent,
+  useChangeEventStatus,
 } from "@/features/events";
 import type { EventDocument } from "@/db/schema";
 
+const EVENT_SORT_OPTIONS_KEYS = [
+  { value: "-createdAt", key: "sortNewest" },
+  { value: "createdAt", key: "sortOldest" },
+] as const;
+
 export function AdminEventsView() {
   const { showSuccess, showError } = useMessage();
+  const router = useRouter();
   const t = useTranslations("adminEvents");
   const tActions = useTranslations("actions");
   const tEventStatus = useTranslations("eventStatus");
@@ -49,6 +60,37 @@ export function AdminEventsView() {
   const [editTarget, setEditTarget] = useState<EventDocument | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<EventDocument | null>(null);
 
+  // ── Bulk selection state ────────────────────────────────────────────
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isBulkProcessing, setIsBulkProcessing] = useState(false);
+
+  // ── Staged filter state ──────────────────────────────────────────────
+  const typeFilter = table.get("type");
+  const statusFilter = table.get("status");
+  const [stagedType, setStagedType] = useState<string[]>(
+    typeFilter ? [typeFilter] : [],
+  );
+  const [stagedStatus, setStagedStatus] = useState<string[]>(
+    statusFilter ? [statusFilter] : [],
+  );
+
+  const handleFilterApply = useCallback(() => {
+    table.setMany({
+      type: stagedType[0] ?? "",
+      status: stagedStatus[0] ?? "",
+      page: "1",
+    });
+  }, [stagedType, stagedStatus, table]);
+
+  const handleFilterClear = useCallback(() => {
+    setStagedType([]);
+    setStagedStatus([]);
+    table.setMany({ type: "", status: "", page: "1" });
+  }, [table]);
+
+  const filterActiveCount =
+    (typeFilter ? 1 : 0) + (statusFilter ? 1 : 0);
+
   const params = table.params.toString();
   const { events, total, page, pageSize, totalPages, isLoading, refetch } =
     useEvents({ params });
@@ -59,14 +101,67 @@ export function AdminEventsView() {
     refetch();
   });
 
+  const changeStatusMutation = useChangeEventStatus(() => {
+    refetch();
+  });
+
+  // ── Bulk action handlers ────────────────────────────────────────────
+  const handleBulkStatusChange = useCallback(
+    async (status: "active" | "paused" | "ended") => {
+      if (selectedIds.length === 0) return;
+      setIsBulkProcessing(true);
+      try {
+        await Promise.allSettled(
+          selectedIds.map((id) =>
+            changeStatusMutation.mutate({ id, status }),
+          ),
+        );
+        showSuccess(
+          tActions("bulkSuccess", { action: status, count: selectedIds.length }),
+        );
+        setSelectedIds([]);
+        await refetch();
+      } catch {
+        showError(tActions("bulkFailed", { action: status }));
+      } finally {
+        setIsBulkProcessing(false);
+      }
+    },
+    [selectedIds, changeStatusMutation, refetch, showSuccess, showError, tActions],
+  );
+
+  const handleBulkDelete = useCallback(async () => {
+    if (selectedIds.length === 0) return;
+    setIsBulkProcessing(true);
+    try {
+      await Promise.allSettled(
+        selectedIds.map((id) => deleteMutation.mutate(id)),
+      );
+      showSuccess(
+        tActions("bulkSuccess", {
+          action: tActions("delete").toLowerCase(),
+          count: selectedIds.length,
+        }),
+      );
+      setSelectedIds([]);
+      await refetch();
+    } catch {
+      showError(
+        tActions("bulkFailed", { action: tActions("delete").toLowerCase() }),
+      );
+    } finally {
+      setIsBulkProcessing(false);
+    }
+  }, [selectedIds, deleteMutation, refetch, showSuccess, showError, tActions]);
+
   const handleEdit = useCallback((event: EventDocument) => {
     setEditTarget(event);
     setDrawerOpen(true);
   }, []);
 
   const handleEntries = useCallback((event: EventDocument) => {
-    window.location.href = ROUTES.ADMIN.EVENT_ENTRIES(event.id);
-  }, []);
+    router.push(ROUTES.ADMIN.EVENT_ENTRIES(event.id));
+  }, [router]);
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
@@ -81,51 +176,128 @@ export function AdminEventsView() {
     setDeleteTarget(e),
   );
 
+  const sortOptions = useMemo(
+    () =>
+      EVENT_SORT_OPTIONS_KEYS.map((o) => ({
+        value: o.value,
+        label: t(o.key),
+      })),
+    [t],
+  );
+
+  const typeOptions = useMemo(
+    () => [
+      { value: "sale", label: t("typeSale") },
+      { value: "offer", label: t("typeOffer") },
+      { value: "poll", label: t("typePoll") },
+      { value: "survey", label: t("typeSurvey") },
+      { value: "feedback", label: t("typeFeedback") },
+    ],
+    [t],
+  );
+
+  const statusOptions = useMemo(
+    () => [
+      { value: "draft", label: tEventStatus("draft") },
+      { value: "active", label: tEventStatus("active") },
+      { value: "paused", label: tEventStatus("paused") },
+      { value: "ended", label: tEventStatus("ended") },
+    ],
+    [tEventStatus],
+  );
+
   return (
     <>
-      <AdminPageHeader
-        title={t("title")}
-        subtitle={t("subtitle")}
-        actionLabel={t("newEvent")}
-        onAction={() => {
-          setEditTarget(null);
-          setDrawerOpen(true);
-        }}
-      />
-
-      <div className="space-y-4">
-        <AdminFilterBar columns={3}>
-          <Input
-            type="text"
-            placeholder={tActions("search")}
+      <ListingLayout
+        headerSlot={
+          <AdminPageHeader
+            title={t("title")}
+            subtitle={`${t("subtitle")} — ${total} total`}
+            actionLabel={t("newEvent")}
+            onAction={() => {
+              setEditTarget(null);
+              setDrawerOpen(true);
+            }}
+          />
+        }
+        searchSlot={
+          <Search
             value={table.get("q")}
-            onChange={(e) => table.set("q", e.target.value)}
+            onChange={(v) => table.set("q", v)}
+            placeholder={t("searchPlaceholder")}
+            onClear={() => table.set("q", "")}
           />
-          <Select
-            value={table.get("type")}
-            onChange={(e) => table.set("type", e.target.value)}
-            options={[
-              { value: "", label: t("allTypes") },
-              { value: "sale", label: t("typeSale") },
-              { value: "offer", label: t("typeOffer") },
-              { value: "poll", label: t("typePoll") },
-              { value: "survey", label: t("typeSurvey") },
-              { value: "feedback", label: t("typeFeedback") },
-            ]}
+        }
+        sortSlot={
+          <SortDropdown
+            value={table.get("sort") || "-createdAt"}
+            onChange={(v) => table.set("sort", v)}
+            options={sortOptions}
           />
-          <Select
-            value={table.get("status")}
-            onChange={(e) => table.set("status", e.target.value)}
-            options={[
-              { value: "", label: t("allStatuses") },
-              { value: "draft", label: tEventStatus("draft") },
-              { value: "active", label: tEventStatus("active") },
-              { value: "paused", label: tEventStatus("paused") },
-              { value: "ended", label: tEventStatus("ended") },
-            ]}
+        }
+        filterContent={
+          <>
+            <FilterFacetSection
+              title={t("allTypes")}
+              options={typeOptions}
+              selected={stagedType}
+              onChange={setStagedType}
+              searchable={false}
+            />
+            <FilterFacetSection
+              title={t("allStatuses")}
+              options={statusOptions}
+              selected={stagedStatus}
+              onChange={setStagedStatus}
+              searchable={false}
+            />
+          </>
+        }
+        filterActiveCount={filterActiveCount}
+        onFilterApply={handleFilterApply}
+        onFilterClear={handleFilterClear}
+        selectedCount={selectedIds.length}
+        onClearSelection={() => setSelectedIds([])}
+        bulkActions={
+          <>
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => handleBulkStatusChange("active")}
+              isLoading={isBulkProcessing}
+            >
+              {tActions("bulkPublish")}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleBulkStatusChange("ended")}
+              isLoading={isBulkProcessing}
+            >
+              {tActions("bulkArchive")}
+            </Button>
+            <Button
+              size="sm"
+              variant="danger"
+              onClick={handleBulkDelete}
+              isLoading={isBulkProcessing}
+            >
+              {tActions("bulkDelete")}
+            </Button>
+          </>
+        }
+        loading={isLoading}
+        paginationSlot={
+          <TablePagination
+            currentPage={page}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            total={total}
+            onPageChange={table.setPage}
+            onPageSizeChange={(ps) => table.set("pageSize", String(ps))}
           />
-        </AdminFilterBar>
-
+        }
+      >
         <DataTable
           data={events}
           columns={columns}
@@ -133,6 +305,9 @@ export function AdminEventsView() {
           loading={isLoading}
           emptyMessage={t("noEvents")}
           externalPagination
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           showViewToggle
           viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
@@ -160,16 +335,7 @@ export function AdminEventsView() {
             </Card>
           )}
         />
-
-        <TablePagination
-          total={total}
-          currentPage={page}
-          pageSize={pageSize}
-          totalPages={totalPages}
-          onPageChange={(p) => table.setPage(p)}
-          onPageSizeChange={(ps) => table.set("pageSize", String(ps))}
-        />
-      </div>
+      </ListingLayout>
 
       <EventFormDrawer
         isOpen={drawerOpen}

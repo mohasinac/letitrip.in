@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Textarea } from '../index';
@@ -32,7 +33,18 @@ describe('Textarea Component', () => {
   it('applies error styling when error is present', () => {
     render(<Textarea error="Error" />);
     const textarea = screen.getByRole('textbox');
-    expect(textarea).toHaveClass('border-red-500');
+    expect(textarea).toHaveClass('border-red-400');
+  });
+
+  it('shows character count when showCharCount and maxLength are set', () => {
+    render(<Textarea maxLength={100} showCharCount value="hello" onChange={() => {}} />);
+    expect(screen.getByText('5/100')).toBeInTheDocument();
+  });
+
+  it('supports ref forwarding', () => {
+    const ref = React.createRef<HTMLTextAreaElement>();
+    render(<Textarea ref={ref} />);
+    expect(ref.current).toBeInstanceOf(HTMLTextAreaElement);
   });
 
   it('handles user input', async () => {

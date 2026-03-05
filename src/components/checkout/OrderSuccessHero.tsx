@@ -1,3 +1,5 @@
+"use client";
+
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { Heading, Text } from "@/components";

@@ -1,99 +1,116 @@
 ﻿"use client";
 
-import { Badge, Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
-import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { formatRelativeTime } from "@/utils";
 import { useTranslations } from "next-intl";
-import { EventStatusBadge } from "./EventStatusBadge";
+import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import type { EventDocument } from "@/db/schema";
 
 interface EventCardProps {
   event: EventDocument;
+  /** Show checkbox for bulk selection */
+  selectable?: boolean;
+  /** Whether this card is selected */
+  selected?: boolean;
+  /** Callback when checkbox is toggled */
+  onSelectionChange?: (id: string, checked: boolean) => void;
 }
 
-const { themed, spacing, borderRadius, typography, flex } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
 
-export function EventCard({ event }: EventCardProps) {
+export function EventCard({
+  event,
+  selectable,
+  selected,
+  onSelectionChange,
+}: EventCardProps) {
   const t = useTranslations("events");
-  const tTypes = useTranslations("eventTypes");
 
-  function getCtaLabel(ev: EventDocument): string {
-    if (ev.status === "ended") return t("viewResults");
-    switch (ev.type) {
-      case "sale":
-        return "Shop Now";
-      case "offer":
-        return "Get Offer";
-      case "poll":
-        return t("vote");
-      case "survey":
-        return t("participate");
-      case "feedback":
-        return "Give Feedback";
-      default:
-        return t("participate");
-    }
-  }
-
-  function getCtaHref(ev: EventDocument): string {
-    if (ev.type === "sale") return ROUTES.PUBLIC.PRODUCTS;
-    return ROUTES.PUBLIC.EVENT_DETAIL(ev.id);
-  }
-
-  const typeLabel = tTypes(event.type as Parameters<typeof tTypes>[0]);
-  const endsAtDate = event.endsAt as unknown as Date | string | null;
-  const endsIn = endsAtDate ? formatRelativeTime(endsAtDate) : null;
+  const plainDescription = event.description
+    ? event.description.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
+    : "";
 
   return (
-    <Card className={`flex flex-col overflow-hidden ${borderRadius.xl}`}>
-      {/* Cover image or gradient placeholder */}
-      {event.coverImageUrl ? (
-        <div className="relative h-40 overflow-hidden">
+    <Card
+      className={`h-full overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200${
+        selected ? " ring-2 ring-indigo-500" : ""
+      }`}
+    >
+      {/* ── Image area ── */}
+      <div className="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+        {event.coverImageUrl ? (
           <MediaImage
             src={event.coverImageUrl}
             alt={event.title}
             size="card"
           />
-        </div>
-      ) : (
-        <div
-          className={`w-full h-40 bg-gradient-to-br from-indigo-500 to-purple-600 ${flex.center}`}
-        >
-          <Span className="text-white text-3xl font-bold opacity-30">
-            {typeLabel.charAt(0)}
+        ) : (
+          <div
+            className={`${flex.center} w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600`}
+          >
+            <Span className="text-white text-5xl font-bold opacity-30">
+              {event.title.charAt(0).toUpperCase()}
+            </Span>
+          </div>
+        )}
+
+        {/* Checkbox — top left */}
+        {selectable && (
+          <div className="absolute top-2 left-2 z-10">
+            <input
+              type="checkbox"
+              aria-label={`Select ${event.title}`}
+              checked={!!selected}
+              onChange={(e) => onSelectionChange?.(event.id, e.target.checked)}
+              className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer bg-white/80"
+            />
+          </div>
+        )}
+
+        {/* Status badge — bottom left */}
+        <div className="absolute bottom-2 left-2 z-10">
+          <Span
+            className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium capitalize ${
+              event.status === "active"
+                ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
+                : event.status === "ended"
+                  ? "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                  : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300"
+            }`}
+          >
+            {event.status}
           </Span>
         </div>
-      )}
+      </div>
 
-      <div className={`flex flex-col flex-1 ${spacing.padding.md}`}>
-        {/* Type + status */}
-        <div className="flex items-center gap-2 mb-2">
-          <Badge variant="info">{typeLabel}</Badge>
-          <EventStatusBadge status={event.status} />
-        </div>
+      {/* ── Content ── */}
+      <div className="flex flex-col flex-1 p-4 gap-2">
+        {/* Event title */}
+        <TextLink href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}>
+          <Heading
+            level={3}
+            className={`text-base sm:text-[17px] font-semibold leading-snug ${themed.textPrimary} line-clamp-2 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors`}
+          >
+            {event.title}
+          </Heading>
+        </TextLink>
 
-        {/* Title */}
-        <Heading
-          level={3}
-          className={`${typography.h4} ${themed.textPrimary} line-clamp-2 flex-1`}
-        >
-          {event.title}
-        </Heading>
-
-        {/* Ends in */}
-        {endsIn && event.status === "active" && (
-          <Text className={`text-xs mt-1 ${themed.textSecondary}`}>
-            {t("endsIn")}: {endsIn}
+        {plainDescription && (
+          <Text
+            size="sm"
+            variant="secondary"
+            className="line-clamp-3 flex-1"
+          >
+            {plainDescription}
           </Text>
         )}
 
-        {/* CTA */}
-        <div className="mt-4">
+        {/* Visit button */}
+        <div className="mt-auto pt-2">
           <TextLink
-            href={getCtaHref(event)}
-            className="block w-full text-center px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors"
+            href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}
+            className="inline-flex w-full items-center justify-center px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
-            {getCtaLabel(event)}
+            {t("visitEvent")}
           </TextLink>
         </div>
       </div>

@@ -1,7 +1,8 @@
 /**
  * Carousel Slides Collection Schema
  *
- * Firestore schema definition for homepage carousel slides
+ * Firestore schema definition for homepage carousel slides.
+ * Each slide supports up to 2 content cards placed in a 2-row × 3-column grid.
  */
 
 import { generateCarouselId, type GenerateCarouselIdInput } from "@/utils";
@@ -11,28 +12,36 @@ import { generateCarouselId, type GenerateCarouselIdInput } from "@/utils";
 // ============================================
 export interface GridCard {
   id: string;
-  gridPosition: { row: number; col: number }; // 3x3 grid (1-3)
-  mobilePosition?: { row: number; col: number }; // 2x2 grid (1-2)
-  width: number; // Grid cells span
-  height: number; // Grid cells span
+  /** Row in the 2-row grid: 1 = Top, 2 = Bottom */
+  gridRow: 1 | 2;
+  /** Column in the 3-column grid: 1 = Left, 2 = Center, 3 = Right */
+  gridCol: 1 | 2 | 3;
   background: {
     type: "color" | "gradient" | "image";
     value: string; // hex color, gradient string, or image URL
   };
-  content: {
+  content?: {
     title?: string;
     subtitle?: string;
     description?: string;
   };
-  buttons: {
+  buttons?: {
     id: string;
     text: string;
     link: string;
     variant: "primary" | "secondary" | "outline";
     openInNewTab: boolean;
   }[];
-  isButtonOnly: boolean; // Card acts as large button
-  mobileHideText: boolean; // Hide text on mobile
+  isButtonOnly: boolean; // Card fills the cell with just a button
+  /** Optional sizing overrides for this card within its grid cell */
+  sizing?: {
+    /** Card width as a percentage of its grid cell. Default: 100 */
+    widthPct?: 25 | 50 | 75 | 100;
+    /** Card height as a percentage of its grid cell. Default: 100 */
+    heightPct?: 25 | 50 | 75 | 100;
+    /** Internal content padding. Default: "md" */
+    padding?: "none" | "sm" | "md" | "lg";
+  };
 }
 
 export interface CarouselSlideDocument {
@@ -111,9 +120,10 @@ export const MAX_ACTIVE_SLIDES = 5 as const;
 /**
  * Grid configuration
  */
+/** 2 rows × 3 columns = 6 fixed cells */
 export const GRID_CONFIG = {
-  desktop: { rows: 9, cols: 9 },
-  mobile: { rows: 2, cols: 2 },
+  rows: 2,
+  cols: 3,
 } as const;
 
 /**
@@ -214,16 +224,12 @@ export function createCarouselId(title: string): string {
 /**
  * Validate grid position is within bounds
  */
-export function isValidGridPosition(
-  position: { row: number; col: number },
-  isMobile: boolean = false,
-): boolean {
-  const config = isMobile ? GRID_CONFIG.mobile : GRID_CONFIG.desktop;
+export function isValidGridPosition(gridRow: number, gridCol: number): boolean {
   return (
-    position.row >= 1 &&
-    position.row <= config.rows &&
-    position.col >= 1 &&
-    position.col <= config.cols
+    gridRow >= 1 &&
+    gridRow <= GRID_CONFIG.rows &&
+    gridCol >= 1 &&
+    gridCol <= GRID_CONFIG.cols
   );
 }
 

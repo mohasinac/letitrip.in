@@ -531,22 +531,13 @@ export const carouselListQuerySchema = z.object({
 
 /**
  * Grid card schema for carousel
- * NOTE: Grid validation (row/col 1-9, width/height) is enforced per card.
- * Cross-card overlap detection is handled in `carouselCreateSchema` via a `.refine()` — ✅ Done
+ * NOTE: Max 2 cards per slide. Grid validation (row 1-2, col 1-3) is enforced per card.
  */
 const gridCardSchema = z.object({
-  gridPosition: z.object({
-    row: z.number().int().min(1).max(9),
-    col: z.number().int().min(1).max(9),
-  }),
-  mobilePosition: z
-    .object({
-      row: z.number().int().min(1).max(2),
-      col: z.number().int().min(1).max(2),
-    })
-    .optional(),
-  width: z.number().int().min(1).max(9),
-  height: z.number().int().min(1).max(9),
+  /** 1 = Top row, 2 = Bottom row */
+  gridRow: z.number().int().min(1).max(2),
+  /** 1 = Left, 2 = Center, 3 = Right */
+  gridCol: z.number().int().min(1).max(3),
   background: z.object({
     type: z.enum(["color", "gradient", "image"]),
     value: z.string().min(1).max(500),
@@ -570,7 +561,17 @@ const gridCardSchema = z.object({
     .max(3)
     .optional(),
   isButtonOnly: z.boolean().default(false),
-  mobileHideText: z.boolean().default(false),
+  sizing: z
+    .object({
+      widthPct: z
+        .union([z.literal(25), z.literal(50), z.literal(75), z.literal(100)])
+        .optional(),
+      heightPct: z
+        .union([z.literal(25), z.literal(50), z.literal(75), z.literal(100)])
+        .optional(),
+      padding: z.enum(["none", "sm", "md", "lg"]).optional(),
+    })
+    .optional(),
 });
 
 /**
@@ -592,7 +593,7 @@ const carouselBaseSchema = z.object({
       openInNewTab: z.boolean().default(false),
     })
     .optional(),
-  gridCards: z.array(gridCardSchema).min(1).max(20),
+  gridCards: z.array(gridCardSchema).min(1).max(2),
   startDate: dateStringSchema.optional(),
   endDate: dateStringSchema.optional(),
   template: z.string().max(100).optional(),
@@ -615,25 +616,22 @@ export const carouselCreateSchema = carouselBaseSchema
   )
   .refine(
     (data) => {
-      const cards = data.gridCards;
-      for (let i = 0; i < cards.length; i++) {
-        for (let j = i + 1; j < cards.length; j++) {
-          const a = cards[i];
-          const b = cards[j];
-          const aRowEnd = a.gridPosition.row + a.height - 1;
-          const aColEnd = a.gridPosition.col + a.width - 1;
-          const bRowEnd = b.gridPosition.row + b.height - 1;
-          const bColEnd = b.gridPosition.col + b.width - 1;
-          const rowOverlap =
-            a.gridPosition.row <= bRowEnd && aRowEnd >= b.gridPosition.row;
-          const colOverlap =
-            a.gridPosition.col <= bColEnd && aColEnd >= b.gridPosition.col;
-          if (rowOverlap && colOverlap) return false;
-        }
-      }
-      return true;
+      const positions = data.gridCards.map((c) => `${c.gridRow},${c.gridCol}`);
+      return new Set(positions).size === positions.length;
     },
-    { message: "Carousel grid cards must not overlap in the 9×9 grid" },
+    {
+      message:
+        "Each grid cell (row 1\u20132, col 1\u20133) may contain at most one card",
+    },
+  )
+  .refine(
+    (data) => {
+      const rows = data.gridCards.map((c) => c.gridRow);
+      return new Set(rows).size === rows.length;
+    },
+    {
+      message: "Each row may contain at most one card",
+    },
   );
 
 /**
@@ -674,18 +672,24 @@ export const homepageSectionsListQuerySchema = z.object({
  * Homepage section base object schema (no refinements — safe to call .partial() on)
  */
 const homepageSectionBaseSchema = z.object({
-  type: z.enum(["welcome", "featured", "categories", "trending", "custom"]),
+  type: z.enum([
+    "welcome",
+    "trust-indicators",
+    "categories",
+    "products",
+    "auctions",
+    "banner",
+    "features",
+    "reviews",
+    "whatsapp-community",
+    "faq",
+    "blog-articles",
+    "newsletter",
+  ]),
   title: z.string().min(1).max(200),
-  order: z.number().int().nonnegative().optional(),
+  order: z.number().int().nonnegative(),
   enabled: z.boolean().default(true),
-  config: z
-    .object({
-      maxItems: z.number().int().positive().optional(),
-      layout: z.enum(["grid", "carousel", "list"]).optional(),
-      columns: z.number().int().min(1).max(12).optional(),
-      template: z.string().max(100).optional(),
-    })
-    .optional(),
+  config: z.record(z.string(), z.any()).optional(),
 });
 
 /**
@@ -697,15 +701,15 @@ const homepageSectionBaseSchema = z.object({
 export const homepageSectionCreateSchema = homepageSectionBaseSchema.refine(
   (data) => {
     if (
-      (data.type === "featured" || data.type === "trending") &&
-      data.config?.maxItems !== undefined
+      (data.type === "products" || data.type === "auctions") &&
+      (data.config as any)?.maxItems !== undefined
     ) {
-      return data.config.maxItems > 0;
+      return (data.config as any).maxItems > 0;
     }
     return true;
   },
   {
-    message: "Featured/trending sections require a positive maxItems in config",
+    message: "Products/auctions sections require a positive maxItems in config",
   },
 );
 
@@ -778,7 +782,7 @@ export const faqUpdateSchema = faqBaseSchema.partial();
  * FAQ vote validation
  */
 export const faqVoteSchema = z.object({
-  vote: z.enum(["helpful", "not_helpful"]),
+  vote: z.enum(["helpful", "not-helpful"]),
 });
 
 // ============================================

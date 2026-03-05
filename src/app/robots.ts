@@ -18,12 +18,14 @@ export default function robots(): MetadataRoute.Robots {
           "/checkout/",
           "/cart/",
           "/demo/",
+          "/track/",
+          "/unauthorized/",
           "/_next/",
           "/profile/*/edit",
         ],
       },
       {
-        // Block GPTBot and similar AI scrapers from specific content
+        // Block GPTBot and similar AI scrapers from all content
         userAgent: ["GPTBot", "ChatGPT-User", "Google-Extended", "CCBot"],
         disallow: "/",
       },

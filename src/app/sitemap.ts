@@ -96,6 +96,42 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
     changeFrequency: "monthly",
     priority: 0.4,
   },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.STORES}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.7,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.PROMOTIONS}`,
+    lastModified: new Date(),
+    changeFrequency: "daily",
+    priority: 0.6,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.REVIEWS}`,
+    lastModified: new Date(),
+    changeFrequency: "daily",
+    priority: 0.5,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.SELLER_GUIDE}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.5,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.COOKIE_POLICY}`,
+    lastModified: new Date(),
+    changeFrequency: "yearly",
+    priority: 0.2,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.REFUND_POLICY}`,
+    lastModified: new Date(),
+    changeFrequency: "yearly",
+    priority: 0.3,
+  },
 ];
 
 async function fetchProductUrls(): Promise<MetadataRoute.Sitemap> {
@@ -237,12 +273,49 @@ async function fetchBlogPostUrls(): Promise<MetadataRoute.Sitemap> {
   }
 }
 
+async function fetchAuctionUrls(): Promise<MetadataRoute.Sitemap> {
+  try {
+    const db = getAdminDb();
+    const snapshot = await db
+      .collection(PRODUCT_COLLECTION)
+      .where(
+        PRODUCT_FIELDS.STATUS,
+        "==",
+        PRODUCT_FIELDS.STATUS_VALUES.PUBLISHED,
+      )
+      .where("isAuction", "==", true)
+      .select(
+        PRODUCT_FIELDS.SLUG,
+        PRODUCT_FIELDS.ID,
+        PRODUCT_FIELDS.UPDATED_AT ?? "updatedAt",
+      )
+      .limit(2000)
+      .get();
+
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      const slugOrId: string =
+        (data[PRODUCT_FIELDS.SLUG] as string | undefined) ?? doc.id;
+      return {
+        url: `${BASE_URL}${ROUTES.PUBLIC.AUCTION_DETAIL(slugOrId)}`,
+        lastModified: data.updatedAt?.toDate?.() ?? new Date(),
+        changeFrequency: "daily" as const,
+        priority: 0.8,
+      };
+    });
+  } catch (err) {
+    serverLogger.warn("sitemap: failed to fetch auction URLs", { error: err });
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [productUrls, categoryUrls, eventUrls, blogUrls] = await Promise.all([
+  const [productUrls, categoryUrls, eventUrls, blogUrls, auctionUrls] = await Promise.all([
     fetchProductUrls(),
     fetchCategoryUrls(),
     fetchEventUrls(),
     fetchBlogPostUrls(),
+    fetchAuctionUrls(),
   ]);
 
   return [
@@ -250,6 +323,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...categoryUrls,
     ...blogUrls,
     ...productUrls,
+    ...auctionUrls,
     ...eventUrls,
   ];
 }

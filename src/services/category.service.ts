@@ -32,6 +32,16 @@ export const categoryService = {
   update: (id: string, data: unknown) =>
     apiClient.patch(API_ENDPOINTS.CATEGORIES.UPDATE(id), data),
 
+  /** Get a single category by slug (public) */
+  getBySlug: (slug: string) =>
+    apiClient.get(`${API_ENDPOINTS.CATEGORIES.LIST}?slug=${encodeURIComponent(slug)}`),
+
+  /** Get direct children of a category */
+  getChildren: (parentId: string) =>
+    apiClient.get(
+      `${API_ENDPOINTS.CATEGORIES.LIST}?parentId=${encodeURIComponent(parentId)}`,
+    ),
+
   /** Delete a category (admin only) */
   delete: (id: string) => apiClient.delete(API_ENDPOINTS.CATEGORIES.DELETE(id)),
 };

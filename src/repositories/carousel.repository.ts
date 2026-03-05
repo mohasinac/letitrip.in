@@ -39,7 +39,9 @@ class CarouselRepository extends BaseRepository<CarouselSlideDocument> {
     title: { canFilter: true, canSort: true },
     active: { canFilter: true, canSort: false },
     order: { canFilter: true, canSort: true },
+    createdBy: { canFilter: true, canSort: false },
     createdAt: { canFilter: true, canSort: true },
+    updatedAt: { canFilter: true, canSort: true },
   };
 
   /**

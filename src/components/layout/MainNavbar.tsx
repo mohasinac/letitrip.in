@@ -28,8 +28,12 @@ export default function MainNavbar() {
     "home",
     "products",
     "auctions",
+    "categories",
     "stores",
+    "events",
+    "blog",
     "promotions",
+    "reviews",
   ] as const;
 
   return (

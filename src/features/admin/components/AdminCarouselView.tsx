@@ -79,13 +79,14 @@ export function AdminCarouselView({ action }: Props) {
   );
 
   const handleCreate = useCallback(() => {
-    const newSlide = {
+    const newSlide: CarouselSlide = {
       id: "",
       title: "",
       imageUrl: "",
       isActive: true,
       order: slides.length + 1,
-    } as CarouselSlide;
+      cards: [],
+    };
     openDrawer(newSlide, "create", "add");
     if (action?.[0] !== "add") {
       router.push(`${ROUTES.ADMIN.CAROUSEL}/add`);

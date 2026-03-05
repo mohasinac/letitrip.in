@@ -8,7 +8,34 @@ jest.mock("@/hooks", () => ({
   useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
 }));
 jest.mock("@/services", () => ({
-  blogService: { getFeatured: jest.fn() },
+  blogService: { getFeatured: jest.fn(), getLatest: jest.fn() },
+}));
+
+jest.mock("next/image", () => ({
+  __esModule: true,
+  default: ({ alt, src }: any) => <img alt={alt} src={src} />,
+}));
+
+jest.mock("@/i18n/navigation", () => ({
+  Link: ({ children, href }: any) => <a href={href}>{children}</a>,
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
+  usePathname: () => "/",
+  redirect: jest.fn(),
+}));
+
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string, params?: Record<string, unknown>) => {
+    const map: Record<string, string> = {
+      blogTitle: "From Our Blog",
+      blogSubtitle: "Latest insights and updates",
+      viewAll: "View All",
+      continueReading: "Continue Reading",
+      readTime: "min read",
+      featured: "Featured",
+    };
+    if (key === "productsCount") return `${params?.count ?? 0} products`;
+    return map[key] ?? key;
+  },
 }));
 
 const mockPost = (
@@ -128,15 +155,21 @@ describe("BlogArticlesSection", () => {
 
     it("renders read time for each article", () => {
       render(<BlogArticlesSection />);
-      expect(screen.getByText("5 min")).toBeInTheDocument();
-      expect(screen.getByText("7 min")).toBeInTheDocument();
+      // BlogCard renders readTimeMinutes + thin space + "min read" inside a <span>
+      // The thin space (&thinsp;) splits text nodes, so use a function matcher
+      expect(screen.getByText((_content, node) =>
+        node?.tagName === "SPAN" && node.textContent?.includes("5") && node.textContent?.includes("min read") || false
+      )).toBeInTheDocument();
+      expect(screen.getByText((_content, node) =>
+        node?.tagName === "SPAN" && node.textContent?.includes("7") && node.textContent?.includes("min read") || false
+      )).toBeInTheDocument();
     });
 
-    it("renders article cards as clickable buttons", () => {
+    it("renders article cards as clickable links", () => {
       render(<BlogArticlesSection />);
-      const buttons = screen.getAllByRole("button");
-      // 2 article cards + at least 1 "View All" button
-      expect(buttons.length).toBeGreaterThanOrEqual(3);
+      const links = screen.getAllByRole("link");
+      // 2 article card links + View All links
+      expect(links.length).toBeGreaterThanOrEqual(2);
     });
 
     it("renders article headings as h3", () => {
@@ -169,7 +202,7 @@ describe("BlogArticlesSection", () => {
       expect(img).toHaveAttribute("alt", "With Image");
     });
 
-    it("renders placeholder icon when coverImage is absent", () => {
+    it("renders placeholder emoji when coverImage is absent", () => {
       mockUseApiQuery.mockReturnValue({
         data: {
           posts: [
@@ -181,6 +214,7 @@ describe("BlogArticlesSection", () => {
       });
       render(<BlogArticlesSection />);
       expect(screen.queryByRole("img")).toBeNull();
+      expect(screen.getByText("📝")).toBeInTheDocument();
     });
   });
 

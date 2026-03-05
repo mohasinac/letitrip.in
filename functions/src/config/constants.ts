@@ -43,6 +43,13 @@ export const SCHEDULES = {
 
   /** Read-notification prune — Monday 01:00 UTC */
   WEEKLY_MON_0100: "0 1 * * 1",
+
+  /**
+   * Weekly payout eligibility sweep — Saturday 05:00 UTC.
+   * Runs one hour before payoutBatch (DAILY_0600) so the freshly created
+   * "pending" payout records are picked up in the same morning window.
+   */
+  WEEKLY_SAT_0500: "0 5 * * 6",
 } as const;
 
 // ---------------------------------------------------------------------------

@@ -36,6 +36,13 @@ const EMPTY_PRODUCT: Partial<AdminProduct> = {
   status: "draft",
   featured: false,
   tags: [],
+  condition: "new",
+  insurance: false,
+  shippingPaidBy: "buyer",
+  isAuction: false,
+  autoExtendable: false,
+  auctionExtensionMinutes: 5,
+  auctionShippingPaidBy: "winner",
 };
 
 export function SellerCreateProductView() {

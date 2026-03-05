@@ -85,8 +85,12 @@ describe('Toggle', () => {
   it('applies size classes correctly', () => {
     const { rerender } = render(<Toggle size="sm" />);
     let toggle = screen.getByRole('switch');
-    expect(toggle).toHaveClass('w-8', 'h-5');
-    
+    expect(toggle).toHaveClass('w-8', 'h-[18px]');
+
+    rerender(<Toggle size="md" />);
+    toggle = screen.getByRole('switch');
+    expect(toggle).toHaveClass('w-11', 'h-6');
+
     rerender(<Toggle size="lg" />);
     toggle = screen.getByRole('switch');
     expect(toggle).toHaveClass('w-14', 'h-7');

@@ -11,6 +11,7 @@ describe("CarouselSlideForm", () => {
     imageUrl: "image-url",
     isActive: true,
     order: 1,
+    cards: [],
   };
 
   it("calls onChange when fields update", () => {

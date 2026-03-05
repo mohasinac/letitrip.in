@@ -4,11 +4,13 @@
  * Extracted from src/app/[locale]/admin/orders/[[...action]]/page.tsx
  * Order management with status filter tabs, DataTable, paginated Sieve query,
  * and URL-driven status update drawer.
+ *
+ * Uses ListingLayout for a unified listing shell.
  */
 
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useUrlTable, useMessage } from "@/hooks";
 import { useAdminOrders } from "@/features/admin/hooks";
@@ -22,6 +24,9 @@ import {
   DataTable,
   AdminPageHeader,
   DrawerFormFooter,
+  FilterFacetSection,
+  ListingLayout,
+  Search,
   useOrderTableColumns,
   OrderStatusForm,
   StatusBadge,
@@ -39,6 +44,7 @@ interface AdminOrdersViewProps {
 export function AdminOrdersView({ action }: AdminOrdersViewProps) {
   const router = useRouter();
   const t = useTranslations("adminOrders");
+  const tStatus = useTranslations("status");
   const { showSuccess, showError } = useMessage();
 
   const table = useUrlTable({
@@ -52,6 +58,27 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [formState, setFormState] = useState<OrderStatusFormState | null>(null);
 
+  // ── Staged filter state (applied on button click) ────────────────────
+  const [stagedStatus, setStagedStatus] = useState<string[]>(
+    statusFilter ? [statusFilter] : [],
+  );
+
+  useEffect(() => {
+    setStagedStatus(statusFilter ? [statusFilter] : []);
+  }, [statusFilter]);
+
+  const handleFilterApply = useCallback(() => {
+    table.setMany({ status: stagedStatus[0] ?? "", page: "1" });
+  }, [stagedStatus, table]);
+
+  const handleFilterClear = useCallback(() => {
+    setStagedStatus([]);
+    table.setMany({ status: "", page: "1" });
+  }, [table]);
+
+  const filterActiveCount = statusFilter ? 1 : 0;
+
+  // ── Data fetching ───────────────────────────────────────────────────
   const filtersParam = statusFilter ? `status==${statusFilter}` : undefined;
   const sieveParams = table.buildSieveParams(filtersParam ?? "");
 
@@ -111,50 +138,109 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
     refetch,
   ]);
 
-  const STATUS_TABS = [
-    { key: "", label: t("filterAll") },
-    { key: "pending", label: t("filterPending") },
-    { key: "confirmed", label: t("filterConfirmed") },
-    { key: "shipped", label: t("filterShipped") },
-    { key: "delivered", label: t("filterDelivered") },
-    { key: "cancelled", label: t("filterCancelled") },
-  ];
+  // ── Status tabs rendered in statusTabsSlot ──────────────────────────
+  const STATUS_TABS = useMemo(
+    () => [
+      { key: "", label: t("filterAll") },
+      { key: "pending", label: t("filterPending") },
+      { key: "confirmed", label: t("filterConfirmed") },
+      { key: "shipped", label: t("filterShipped") },
+      { key: "delivered", label: t("filterDelivered") },
+      { key: "cancelled", label: t("filterCancelled") },
+    ],
+    [t],
+  );
+
+  const statusTabsSlot = (
+    <div className="flex flex-wrap gap-2">
+      {STATUS_TABS.map((tab) => (
+        <Button
+          key={tab.key}
+          variant={statusFilter === tab.key ? "primary" : "outline"}
+          size="sm"
+          onClick={() => table.set("status", tab.key)}
+        >
+          {tab.label}
+        </Button>
+      ))}
+    </div>
+  );
+
+  // ── Filter facet options ────────────────────────────────────────────
+  const statusOptions = useMemo(
+    () => [
+      { value: "pending", label: tStatus("pending") },
+      { value: "confirmed", label: t("filterConfirmed") },
+      { value: "shipped", label: t("filterShipped") },
+      { value: "delivered", label: t("filterDelivered") },
+      { value: "cancelled", label: tStatus("cancelled") },
+    ],
+    [t, tStatus],
+  );
 
   const { columns } = useOrderTableColumns(handleView);
 
   return (
-    <div className="space-y-6">
-      <AdminPageHeader
-        title={t("title")}
-        subtitle={`${t("subtitle")} — ${data?.meta.total ?? 0} total`}
-      />
-
-      {/* Status filter tabs */}
-      <div className="flex flex-wrap gap-2">
-        {STATUS_TABS.map((tab) => (
-          <Button
-            key={tab.key}
-            variant={statusFilter === tab.key ? "primary" : "outline"}
-            size="sm"
-            onClick={() => table.set("status", tab.key)}
-          >
-            {tab.label}
-          </Button>
-        ))}
-      </div>
-
-      <Card>
+    <>
+      <ListingLayout
+        headerSlot={
+          <AdminPageHeader
+            title={t("title")}
+            subtitle={`${t("subtitle")} — ${data?.meta.total ?? 0} total`}
+          />
+        }
+        statusTabsSlot={statusTabsSlot}
+        searchSlot={
+          <Search
+            value={table.get("q")}
+            onChange={(v) => table.set("q", v)}
+            placeholder={t("searchPlaceholder")}
+          />
+        }
+        filterContent={
+          <FilterFacetSection
+            title={tStatus("all")}
+            options={statusOptions}
+            selected={stagedStatus}
+            onChange={setStagedStatus}
+            searchable={false}
+          />
+        }
+        filterActiveCount={filterActiveCount}
+        onFilterApply={handleFilterApply}
+        onFilterClear={handleFilterClear}
+        loading={isLoading}
+        errorSlot={
+          error ? (
+            <Card>
+              <div className="text-center py-8">
+                <Text variant="error">{ERROR_MESSAGES.ORDER.FETCH_FAILED}</Text>
+              </div>
+            </Card>
+          ) : undefined
+        }
+        paginationSlot={
+          <TablePagination
+            currentPage={data?.meta?.page ?? 1}
+            totalPages={data?.meta?.totalPages ?? 1}
+            pageSize={table.getNumber("pageSize", 25)}
+            total={data?.meta?.total ?? 0}
+            onPageChange={table.setPage}
+            onPageSizeChange={table.setPageSize}
+          />
+        }
+      >
         <DataTable
           columns={columns}
           data={orders}
           loading={isLoading}
-          emptyMessage={
-            error ? ERROR_MESSAGES.ORDER.FETCH_FAILED : t("noOrders")
-          }
+          emptyMessage={t("noOrders")}
           keyExtractor={(order: OrderDocument) => order.id}
           externalPagination
           showViewToggle
-          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          viewMode={
+            (table.get("view") || "table") as "table" | "grid" | "list"
+          }
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(order) => (
             <Card className="p-4 space-y-2">
@@ -177,15 +263,7 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
             </Card>
           )}
         />
-        <TablePagination
-          currentPage={data?.meta?.page ?? 1}
-          totalPages={data?.meta?.totalPages ?? 1}
-          pageSize={table.getNumber("pageSize", 25)}
-          total={data?.meta?.total ?? 0}
-          onPageChange={table.setPage}
-          onPageSizeChange={table.setPageSize}
-        />
-      </Card>
+      </ListingLayout>
 
       {/* Update order status drawer */}
       <SideDrawer
@@ -208,6 +286,6 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
           </div>
         )}
       </SideDrawer>
-    </div>
+    </>
   );
 }

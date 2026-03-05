@@ -479,10 +479,10 @@ export interface CarouselCreateRequest {
     openInNewTab: boolean;
   };
   gridCards: Array<{
-    gridPosition: { row: number; col: number };
-    mobilePosition?: { row: number; col: number };
-    width: number;
-    height: number;
+    /** 1 = Top row, 2 = Bottom row */
+    gridRow: 1 | 2;
+    /** 1 = Left, 2 = Center, 3 = Right */
+    gridCol: 1 | 2 | 3;
     background: {
       type: "color" | "gradient" | "image";
       value: string;
@@ -499,7 +499,11 @@ export interface CarouselCreateRequest {
       openInNewTab: boolean;
     }>;
     isButtonOnly?: boolean;
-    mobileHideText?: boolean;
+    sizing?: {
+      widthPct?: 25 | 50 | 75 | 100;
+      heightPct?: 25 | 50 | 75 | 100;
+      padding?: "none" | "sm" | "md" | "lg";
+    };
   }>;
   startDate?: Date; // Slide scheduling start
   endDate?: Date; // Slide scheduling end
@@ -555,16 +559,23 @@ export interface HomepageSectionsListQuery {
  * Homepage section creation request (admin only)
  */
 export interface HomepageSectionCreateRequest {
-  type: "welcome" | "featured" | "categories" | "trending" | "custom";
+  type:
+    | "welcome"
+    | "trust-indicators"
+    | "categories"
+    | "products"
+    | "auctions"
+    | "banner"
+    | "features"
+    | "reviews"
+    | "whatsapp-community"
+    | "faq"
+    | "blog-articles"
+    | "newsletter";
   title: string;
   order: number;
   enabled: boolean;
-  config?: {
-    maxItems?: number;
-    layout?: "grid" | "carousel" | "list";
-    columns?: number; // For responsive layout
-    template?: string; // Template reference
-  };
+  config?: Record<string, unknown>;
 }
 
 /**

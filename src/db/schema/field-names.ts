@@ -142,11 +142,22 @@ export const PRODUCT_FIELDS = {
   FEATURES: "features",
   SHIPPING_INFO: "shippingInfo",
   RETURN_POLICY: "returnPolicy",
+  CONDITION: "condition",
+  INSURANCE: "insurance",
+  INSURANCE_COST: "insuranceCost",
+  SHIPPING_PAID_BY: "shippingPaidBy",
   IS_AUCTION: "isAuction",
   AUCTION_END_DATE: "auctionEndDate",
   STARTING_BID: "startingBid",
   CURRENT_BID: "currentBid",
   BID_COUNT: "bidCount",
+  RESERVE_PRICE: "reservePrice",
+  BUY_NOW_PRICE: "buyNowPrice",
+  MIN_BID_INCREMENT: "minBidIncrement",
+  AUTO_EXTENDABLE: "autoExtendable",
+  AUCTION_EXTENSION_MINUTES: "auctionExtensionMinutes",
+  AUCTION_ORIGINAL_END_DATE: "auctionOriginalEndDate",
+  AUCTION_SHIPPING_PAID_BY: "auctionShippingPaidBy",
   IS_PROMOTED: "isPromoted",
   PROMOTION_END_DATE: "promotionEndDate",
   PICKUP_ADDRESS_ID: "pickupAddressId",
@@ -164,6 +175,26 @@ export const PRODUCT_FIELDS = {
     OUT_OF_STOCK: "out_of_stock",
     DISCONTINUED: "discontinued",
     SOLD: "sold",
+  },
+
+  // Condition values
+  CONDITION_VALUES: {
+    NEW: "new",
+    USED: "used",
+    REFURBISHED: "refurbished",
+    BROKEN: "broken",
+  },
+
+  // Shipping paid by values
+  SHIPPING_PAID_BY_VALUES: {
+    SELLER: "seller",
+    BUYER: "buyer",
+  },
+
+  // Auction shipping paid by values
+  AUCTION_SHIPPING_PAID_BY_VALUES: {
+    SELLER: "seller",
+    WINNER: "winner",
   },
 } as const;
 

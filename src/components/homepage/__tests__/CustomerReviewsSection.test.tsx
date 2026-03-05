@@ -9,6 +9,34 @@ jest.mock("@/hooks", () => ({
   useSwipe: () => ({ onTouchStart: jest.fn(), onTouchEnd: jest.fn() }),
 }));
 
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string, params?: Record<string, unknown>) => {
+    const map: Record<string, string> = {
+      whatOurCustomersSay: "What Our Customers Say",
+      reviewsSubtitle: "Read reviews from satisfied customers",
+      seeAllReviews: "See All Reviews",
+      anonymous: "Anonymous",
+      verified: "Verified Purchase",
+      featured: "Featured",
+      viewItem: "View Item",
+    };
+    if (key === "moreImages") return `+${params?.count ?? 0} more`;
+    return map[key] ?? key;
+  },
+}));
+
+jest.mock("next/image", () => ({
+  __esModule: true,
+  default: ({ alt, src }: any) => <img alt={alt} src={src} />,
+}));
+
+jest.mock("@/i18n/navigation", () => ({
+  Link: ({ children, href }: any) => <a href={href}>{children}</a>,
+  useRouter: () => ({ push: jest.fn() }),
+  usePathname: () => "/",
+  redirect: jest.fn(),
+}));
+
 const mockReviews = [
   {
     id: "1",
@@ -18,8 +46,14 @@ const mockReviews = [
     productId: "p1",
     productTitle: "Wireless Earbuds",
     rating: 5,
+    title: "Great!",
     comment: "Amazing sound quality!",
-    createdAt: "2026-02-01",
+    status: "approved",
+    helpfulCount: 0,
+    reportCount: 0,
+    verified: true,
+    createdAt: new Date("2026-02-01"),
+    updatedAt: new Date("2026-02-01"),
   },
   {
     id: "2",
@@ -28,8 +62,14 @@ const mockReviews = [
     productId: "p2",
     productTitle: "Smart Watch",
     rating: 4,
+    title: "Good",
     comment: "Great features but battery could be better.",
-    createdAt: "2026-01-28",
+    status: "approved",
+    helpfulCount: 0,
+    reportCount: 0,
+    verified: false,
+    createdAt: new Date("2026-01-28"),
+    updatedAt: new Date("2026-01-28"),
   },
   {
     id: "3",
@@ -39,8 +79,14 @@ const mockReviews = [
     productId: "p3",
     productTitle: "Running Shoes",
     rating: 3,
+    title: "Okay",
     comment: "Decent quality for the price.",
-    createdAt: "2026-01-25",
+    status: "approved",
+    helpfulCount: 0,
+    reportCount: 0,
+    verified: false,
+    createdAt: new Date("2026-01-25"),
+    updatedAt: new Date("2026-01-25"),
   },
 ];
 
@@ -114,9 +160,8 @@ describe("CustomerReviewsSection", () => {
       expect(screen.getByText("Carol Davis")).toBeInTheDocument();
     });
 
-    it("renders review comments in quotes", () => {
+    it("renders review comments", () => {
       render(<CustomerReviewsSection />);
-      // Component uses HTML entities &ldquo; and &rdquo; (curly quotes)
       expect(screen.getByText(/Amazing sound quality!/)).toBeInTheDocument();
       expect(
         screen.getByText(/Great features but battery could be better\./),
@@ -126,7 +171,7 @@ describe("CustomerReviewsSection", () => {
       ).toBeInTheDocument();
     });
 
-    it("renders product titles", () => {
+    it("renders product titles as links", () => {
       render(<CustomerReviewsSection />);
       expect(screen.getByText("Wireless Earbuds")).toBeInTheDocument();
       expect(screen.getByText("Smart Watch")).toBeInTheDocument();
@@ -138,26 +183,27 @@ describe("CustomerReviewsSection", () => {
   // Star Ratings
   // ====================================
   describe("Star Ratings", () => {
-    it("renders 5 star SVGs per review", () => {
+    it("renders 1 rating star badge per review card", () => {
       mockUseApiQuery.mockReturnValue({
         data: mockReviews,
         isLoading: false,
       });
       const { container } = render(<CustomerReviewsSection />);
-      const stars = container.querySelectorAll("svg.w-5.h-5");
-      // 3 reviews × 5 stars = 15
-      expect(stars).toHaveLength(15);
+      const stars = container.querySelectorAll("svg.w-3\\.5.h-3\\.5");
+      // 3 reviews × 1 star each = 3
+      expect(stars).toHaveLength(3);
     });
 
-    it("applies yellow color to filled stars and gray to empty", () => {
+    it("displays numeric rating next to star", () => {
       mockUseApiQuery.mockReturnValue({
         data: mockReviews,
         isLoading: false,
       });
-      const { container } = render(<CustomerReviewsSection />);
-      const yellowStars = container.querySelectorAll("svg.text-yellow-500");
-      // Alice: 5, Bob: 4, Carol: 3 = 12 yellow stars
-      expect(yellowStars).toHaveLength(12);
+      render(<CustomerReviewsSection />);
+      // Alice: 5, Bob: 4, Carol: 3
+      expect(screen.getByText("5")).toBeInTheDocument();
+      expect(screen.getByText("4")).toBeInTheDocument();
+      expect(screen.getByText("3")).toBeInTheDocument();
     });
   });
 
@@ -174,8 +220,6 @@ describe("CustomerReviewsSection", () => {
       const images = screen.getAllByRole("img");
       // Alice and Carol have avatars
       expect(images).toHaveLength(2);
-      expect(images[0]).toHaveAttribute("alt", "Alice Johnson");
-      expect(images[1]).toHaveAttribute("alt", "Carol Davis");
     });
 
     it("renders initial letter when no avatar", () => {

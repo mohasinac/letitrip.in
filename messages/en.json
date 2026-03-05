@@ -48,6 +48,9 @@
       "backToHome": "Back to Home"
     }
   },
+  "a11y": {
+    "skipToMainContent": "Skip to main content"
+  },
   "actions": {
     "save": "Save",
     "cancel": "Cancel",
@@ -106,7 +109,21 @@
     "writeReview": "Write a review",
     "browseProducts": "Browse products",
     "clearSearch": "Clear search",
-    "viewMyListings": "View my listings"
+    "viewMyListings": "View my listings",
+    "bulkDelete": "Delete ({count})",
+    "bulkPublish": "Publish ({count})",
+    "bulkArchive": "Archive ({count})",
+    "bulkApprove": "Approve ({count})",
+    "bulkReject": "Reject ({count})",
+    "bulkMarkShipped": "Mark Shipped ({count})",
+    "bulkMarkDelivered": "Mark Delivered ({count})",
+    "bulkCancel": "Cancel ({count})",
+    "bulkAddToWishlist": "Add to Wishlist ({count})",
+    "bulkAddToCart": "Add to Cart ({count})",
+    "bulkRemove": "Remove ({count})",
+    "bulkSuccess": "{count} items updated successfully",
+    "bulkPartialSuccess": "{success} of {total} items updated",
+    "bulkFailed": "Failed to update items"
   },
   "sort": {
     "label": "Sort by",
@@ -198,7 +215,9 @@
     "helpCenter": "Help Center",
     "account": "Account",
     "support": "Support",
+    "browse": "Browse",
     "darkMode": "Dark Mode",
+    "language": "Language",
     "siteSettings": "Site Settings",
     "carousel": "Carousel",
     "sections": "Sections",
@@ -229,7 +248,10 @@
     "myRipCoins": "My RipCoins",
     "myMessages": "Messages",
     "myStore": "My Store",
-    "becomeSeller": "Become a Seller"
+    "becomeSeller": "Become a Seller",
+    "events": "Events",
+    "blog": "Blog",
+    "cart": "Cart"
   },
   "auth": {
     "login": {
@@ -375,7 +397,21 @@
     "empty": "Your wishlist is empty",
     "addToWishlist": "Add to Wishlist",
     "removeFromWishlist": "Remove from Wishlist",
-    "itemsCount": "Wishlist Items"
+    "itemsCount": "Wishlist Items",
+    "subtitleWithCount": "{count, plural, one {# item} other {# items}} saved",
+    "tabProducts": "Products",
+    "tabAuctions": "Auctions",
+    "tabCategories": "Categories",
+    "tabStores": "Stores",
+    "searchPlaceholder": "Search wishlist…",
+    "sortNewest": "Recently Added",
+    "sortOldest": "Oldest First",
+    "sortPriceHigh": "Price: High to Low",
+    "sortPriceLow": "Price: Low to High",
+    "noResults": "No items match your search",
+    "noResultsSubtitle": "Try a different search term",
+    "comingSoon": "Coming Soon",
+    "comingSoonDescription": "Wishlists for this category are coming soon. Stay tuned!"
   },
   "settings": {
     "title": "Account Settings",
@@ -387,6 +423,7 @@
   "addresses": {
     "title": "My Addresses",
     "subtitle": "Manage your delivery addresses",
+    "subtitleWithCount": "{count, plural, one {# address} other {# addresses}} saved",
     "add": "Add New Address",
     "addFirst": "Add Your First Address",
     "edit": "Edit Address",
@@ -486,6 +523,7 @@
     "filters": "Filters",
     "filterAllCategories": "All Categories",
     "filterPriceRange": "Price Range",
+    "auctionsBannerCta": "Looking for unique deals? Browse Auctions →",
     "showing": "{showing} of {total} products",
     "sortNewest": "Newest First",
     "sortOldest": "Oldest First",
@@ -520,7 +558,38 @@
     "reviewFormPurchaseRequired": "Only verified buyers can review this product.",
     "reviewFormAlreadyReviewed": "You have already reviewed this product.",
     "reviewFormLoginRequired": "Sign in to write a review.",
-    "reviewFormSignIn": "Sign In to Review"
+    "reviewFormSignIn": "Sign In to Review",
+    "selectItem": "Select item",
+    "deselectItem": "Deselect item",
+    "condition": "Condition",
+    "conditionNew": "New",
+    "conditionUsed": "Used",
+    "conditionBroken": "Broken",
+    "conditionRefurbished": "Refurbished",
+    "ratedSeller": "Rated Seller",
+    "fasterDelivery": "Faster Delivery",
+    "returnable": "Returnable",
+    "codAvailable": "COD Available",
+    "wishlistCount": "{count, plural, one {# person} other {# people}} wishlisted",
+    "categoryProductCount": "{count} products in {category}",
+    "viewStore": "Visit Store",
+    "removeFromWishlist": "Remove from Wishlist",
+    "addedToWishlist": "Added to wishlist",
+    "removedFromWishlist": "Removed from wishlist",
+    "productFeatures": "Product Highlights",
+    "shortDescription": "About this product",
+    "longDescription": "Detailed Description",
+    "home": "Home",
+    "viewCount": "{count, plural, one {# view} other {# views}}",
+    "shareProduct": "Share",
+    "sku": "SKU",
+    "tags": "Tags",
+    "specsTitle": "Specifications",
+    "deliveryInfo": "Delivery & Returns",
+    "sellerInfo": "Seller Information",
+    "verified": "Verified",
+    "quickActions": "Quick Actions",
+    "searchPlaceholder": "Search products..."
   },
   "cart": {
     "title": "Shopping Cart",
@@ -578,7 +647,6 @@
     "subtotal": "Subtotal",
     "shipping": "Shipping",
     "tax": "Tax",
-    "paymentInfo": "Payment Information",
     "paymentMethod": "Payment Method",
     "paymentStatus": "Payment Status",
     "paid": "Paid",
@@ -614,7 +682,13 @@
     "tabShipped": "Shipped",
     "tabDelivered": "Delivered",
     "tabCancelled": "Cancelled",
-    "writeReview": "Write a Review"
+    "writeReview": "Write a Review",
+    "subtitleWithCount": "{count, plural, one {# order} other {# orders}}",
+    "searchPlaceholder": "Search orders…",
+    "sortNewest": "Newest First",
+    "sortOldest": "Oldest First",
+    "sortHighest": "Highest Amount",
+    "sortLowest": "Lowest Amount"
   },
   "checkout": {
     "title": "Checkout",
@@ -714,7 +788,67 @@
     "bidFailed": "Failed to place bid",
     "auctionEndedInfo": "This auction has ended and is no longer accepting bids",
     "loginToBid": "Login to place a bid",
-    "yourBidLabel": "Your Bid Amount"
+    "yourBidLabel": "Your Bid Amount",
+    "buyout": "Buyout",
+    "selectItem": "Select item",
+    "deselectItem": "Deselect item",
+    "searchPlaceholder": "Search auctions..."
+  },
+  "auctionDetail": {
+    "breadcrumbAuctions": "Auctions",
+    "loadError": "Failed to load auction details",
+    "notFound": "Auction not found",
+    "notFoundDesc": "This auction doesn't exist or has been removed.",
+    "backToAuctions": "Back to Auctions",
+    "currentBid": "Current Bid",
+    "startingBid": "Starting Bid",
+    "totalBids": "{count, plural, one {# bid} other {# bids}}",
+    "reservePrice": "Reserve Price",
+    "reserveNotMet": "Reserve not met",
+    "reserveMet": "Reserve met",
+    "buyNowPrice": "Buy Now",
+    "buyNowAction": "Buy Now for {price}",
+    "minIncrement": "Min increment: {amount}",
+    "auctionEnds": "Auction Ends",
+    "auctionEnded": "Auction Ended",
+    "timeRemaining": "Time Remaining",
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "autoExtend": "Auto-Extend",
+    "autoExtendInfo": "This auction auto-extends by {minutes} min if a bid is placed in the last {minutes} min",
+    "shippingPaidBy": "Shipping paid by {payer}",
+    "shippingBySeller": "seller",
+    "shippingByWinner": "winner",
+    "shippingByBuyer": "buyer",
+    "insurance": "Insured Shipping",
+    "insuranceInfo": "This item ships with insurance via Shiprocket (+{cost})",
+    "insuranceIncluded": "Insurance included",
+    "condition": "Condition",
+    "conditionNew": "New",
+    "conditionUsed": "Used",
+    "conditionRefurbished": "Refurbished",
+    "conditionBroken": "Broken / For Parts",
+    "placed": "placed",
+    "winningBid": "Winning Bid",
+    "bidHistory": "Bid History",
+    "noBidsYet": "No bids yet — be the first!",
+    "liveBadge": "LIVE",
+    "endedBadge": "ENDED",
+    "description": "Description",
+    "features": "Features",
+    "specifications": "Specifications",
+    "deliveryReturns": "Delivery & Returns",
+    "shippingInfo": "Shipping Information",
+    "returnPolicy": "Return Policy",
+    "seller": "Seller",
+    "viewStore": "View Store",
+    "relatedAuctions": "Related Auctions",
+    "placeBidCta": "Place Bid",
+    "loginToBid": "Login to Bid",
+    "addToWishlist": "Add to Wishlist",
+    "removeFromWishlist": "Remove from Wishlist"
   },
   "search": {
     "title": "Search",
@@ -741,6 +875,7 @@
   "categories": {
     "title": "Categories",
     "subtitle": "Browse all product categories",
+    "subtitleWithCount": "{count, plural, one {# category} other {# categories}} to explore",
     "allCategories": "All Categories",
     "allCategoriesCount": "{count} categories",
     "filteredCategoriesCount": "{shown} of {total} categories",
@@ -751,7 +886,20 @@
     "searchPlaceholder": "Search categories\u2026",
     "featured": "Featured",
     "productsCount": "{count, plural, one {# product} other {# products}}",
-    "subcategoriesCount": "{count, plural, one {# subcategory} other {# subcategories}}"
+    "subcategoriesCount": "{count, plural, one {# subcategory} other {# subcategories}}",
+    "view": "View",
+    "productsTab": "Products",
+    "auctionsTab": "Auctions",
+    "searchProducts": "Search products in {name}\u2026",
+    "subcategories": "Subcategories",
+    "noAuctionsIn": "No auctions found in {name}",
+    "filterPrice": "Price Range",
+    "priceUnder500": "Under \u20b9500",
+    "price500to2000": "\u20b9500 \u2013 \u20b92,000",
+    "price2000to10000": "\u20b92,000 \u2013 \u20b910,000",
+    "priceOver10000": "Over \u20b910,000",
+    "addToWishlist": "Add to wishlist",
+    "removeFromWishlist": "Remove from wishlist"
   },
   "seller": {
     "dashboard": "Seller Dashboard",
@@ -900,6 +1048,15 @@
     "en": "English",
     "hi": "हिन्दी"
   },
+  "blogCard": {
+    "continueReading": "Continue Reading"
+  },
+  "reviewCard": {
+    "anonymous": "Anonymous",
+    "viewItem": "View Item",
+    "reviewImageAlt": "Review image {index}",
+    "moreImages": "+{count} more"
+  },
   "blog": {
     "title": "Blog",
     "subtitle": "Insights, guides, and updates from the LetItRip team",
@@ -913,7 +1070,37 @@
     "postNotFound": "Post not found",
     "postNotAvailable": "This article doesn't exist or is no longer available.",
     "backToBlog": "Back to Blog",
-    "featured": "Featured"
+    "featured": "Featured",
+    "continueReading": "Continue Reading",
+    "subtitleWithCount": "{count, plural, one {# article} other {# articles}} published",
+    "searchPlaceholder": "Search articles...",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
+    "sortTitle": "Title A–Z",
+    "filterCategory": "Category",
+    "noArticlesFound": "No articles found",
+    "noArticlesSubtitle": "Try adjusting your filters or check back soon."
+  },
+  "reviews": {
+    "anonymous": "Anonymous",
+    "verified": "Verified Purchase",
+    "viewProfile": "View Profile",
+    "viewItem": "View Item",
+    "moreImages": "+{count} more",
+    "featured": "Featured",
+    "title": "Customer Reviews",
+    "subtitle": "See what our customers are saying",
+    "subtitleWithCount": "{count, plural, one {# review} other {# reviews}}",
+    "searchPlaceholder": "Search reviews…",
+    "sortNewest": "Newest First",
+    "sortOldest": "Oldest First",
+    "sortHighestRated": "Highest Rated",
+    "sortLowestRated": "Lowest Rated",
+    "filterRating": "Rating",
+    "stars": "{count} Stars",
+    "noReviewsFound": "No reviews found",
+    "noReviewsSubtitle": "Try adjusting your filters or check back later",
+    "reviewImageAlt": "Review image {index}"
   },
   "contact": {
     "title": "Contact Us",
@@ -960,7 +1147,24 @@
     "entriesClosed": "Entries for this event are closed.",
     "selectOption": "Select an option",
     "fillInRequired": "Please fill in: {fields}",
-    "notSurveyEvent": "This event does not have a participation form."
+    "notSurveyEvent": "This event does not have a participation form.",
+    "visitBtn": "Visit",
+    "visitEvent": "Visit Event",
+    "selectEvent": "Select event",
+    "title": "Events",
+    "subtitle": "Sales, polls, giveaways, and more from the LetItRip community",
+    "subtitleWithCount": "{count, plural, one {# event} other {# events}} available",
+    "searchPlaceholder": "Search events...",
+    "noEventsFound": "No events found",
+    "noEventsSubtitle": "Try adjusting your filters or check back soon.",
+    "sortNewest": "Newest first",
+    "sortEndingSoon": "Ending soon",
+    "sortEndingLatest": "Ending latest",
+    "filterStatus": "Status",
+    "filterType": "Type",
+    "filterStatusActive": "Active",
+    "filterStatusEnded": "Ended",
+    "filterStatusDraft": "Draft"
   },
   "eventTypes": {
     "sale": "Sale",
@@ -1099,12 +1303,20 @@
     "title": "Stores",
     "subtitle": "Browse all seller stores — discover unique products and trusted sellers",
     "searchPlaceholder": "Search stores...",
+    "subtitleWithCount": "{count, plural, one {# store} other {# stores}} available",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
+    "sortNameAZ": "Name A–Z",
+    "sortNameZA": "Name Z–A",
+    "sortMostProducts": "Most products",
     "noStores": "No stores found",
     "noStoresSubtitle": "Try adjusting your search or check back soon",
     "showingCount": "{count} stores",
     "viewStore": "Visit Store",
     "productCount": "{count} products",
     "productsCount": "{count} products",
+    "itemsSold": "{count} sold",
+    "availableProducts": "Available Products",
     "memberSince": "Joined",
     "sellerBadge": "Verified Seller",
     "loading": "Loading stores...",
@@ -1164,13 +1376,19 @@
       "empty": {
         "title": "No products yet",
         "description": "This store hasn't listed any products yet."
-      }
+      },
+      "searchPlaceholder": "Search products…"
     },
     "auctions": {
       "empty": {
         "title": "No active auctions",
         "description": "This store has no live auctions at the moment."
-      }
+      },
+      "searchPlaceholder": "Search auctions…",
+      "sortNewest": "Newest First",
+      "sortEndingSoon": "Ending Soon",
+      "sortPriceLow": "Price: Low to High",
+      "sortPriceHigh": "Price: High to Low"
     },
     "reviews": {
       "empty": {
@@ -1186,7 +1404,9 @@
       "location": "Location",
       "website": "Website",
       "memberSince": "Member since"
-    }
+    },
+    "featured": "Featured",
+    "addToWishlist": "Add to wishlist"
   },
   "help": {
     "metaTitle": "Help Center",
@@ -1203,7 +1423,9 @@
     "popularTitle": "Popular Questions",
     "contactPrompt": "Still need help?",
     "contactLink": "Contact our support team",
-    "faqsLink": "Browse all FAQs"
+    "faqsLink": "Browse all FAQs",
+    "faqDescription": "Browse our comprehensive FAQ library for answers to hundreds of common questions.",
+    "supportResponseTime": "Our support team typically responds within 24 hours."
   },
   "sellerStore": {
     "metaTitle": "Store Settings",
@@ -1315,7 +1537,19 @@
     "shipFormRequired": "All shipping fields are required",
     "markShipped": "Mark as Shipped",
     "shipError": "Failed to mark order as shipped",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "searchPlaceholder": "Search orders..."
+  },
+  "sellerAddresses": {
+    "title": "Business Addresses",
+    "subtitle": "Manage your pickup and business addresses",
+    "subtitleWithCount": "{count, plural, one {# address} other {# addresses}} saved",
+    "add": "Add New Address",
+    "addFirst": "Add Your First Business Address",
+    "empty": "No saved addresses",
+    "emptySubtitle": "Add a pickup or business address for your store",
+    "deleteConfirmTitle": "Delete Address?",
+    "deleteConfirmMessage": "Are you sure you want to delete this address? This action cannot be undone."
   },
   "sellerProducts": {
     "title": "My Products",
@@ -1441,7 +1675,8 @@
     "failureCount": "Failed This Month",
     "empty": "No payout requests",
     "updateStatus": "Update Payout Status",
-    "updatePayout": "Update Payout"
+    "updatePayout": "Update Payout",
+    "searchPlaceholder": "Search payouts..."
   },
   "adminSite": {
     "title": "Site Settings",
@@ -1516,7 +1751,34 @@
     "formShipping": "Shipping Info",
     "formReturnPolicy": "Return Policy",
     "formSeller": "Seller",
-    "formPickupAddress": "Pickup Address"
+    "formPickupAddress": "Pickup Address",
+    "formCondition": "Condition",
+    "formConditionNew": "New",
+    "formConditionUsed": "Used",
+    "formConditionRefurbished": "Refurbished",
+    "formConditionBroken": "Broken / For Parts",
+    "formInsurance": "Insurance",
+    "formInsuranceHelp": "When enabled, Shiprocket is mandatory and insurance surcharge is added to shipping cost",
+    "formInsuranceCost": "Insurance Cost (₹)",
+    "formShippingPaidBy": "Shipping Paid By",
+    "formShippingPaidBySeller": "Seller",
+    "formShippingPaidByBuyer": "Buyer",
+    "formReservePrice": "Reserve Price (₹)",
+    "formReservePriceHelp": "Minimum price for the auction to be valid. Auction won't complete below this.",
+    "formBuyNowPrice": "Buy Now Price (₹)",
+    "formBuyNowPriceHelp": "Optional instant purchase price that skips the auction",
+    "formMinBidIncrement": "Minimum Bid Increment (₹)",
+    "formMinBidIncrementHelp": "Minimum amount each new bid must exceed the current bid by",
+    "formAutoExtendable": "Auto-Extend Auction",
+    "formAutoExtendableHelp": "If someone bids in the last few minutes, the auction extends automatically to prevent sniping",
+    "formAuctionExtensionMinutes": "Extension Minutes",
+    "formAuctionExtensionMinutesHelp": "How many minutes to extend when a last-minute bid is placed",
+    "formAuctionShippingPaidBy": "Auction Shipping Paid By",
+    "formAuctionShippingPaidBySeller": "Seller",
+    "formAuctionShippingPaidByWinner": "Winner",
+    "sectionConditionShipping": "Condition & Shipping",
+    "sectionAuctionSettings": "Auction Settings",
+    "sectionAuctionAdvanced": "Advanced Auction Options"
   },
   "adminOrders": {
     "title": "Orders",
@@ -1536,7 +1798,8 @@
     "colAmount": "Amount",
     "colStatus": "Status",
     "colPayment": "Payment",
-    "colDetails": "Order Details"
+    "colDetails": "Order Details",
+    "searchPlaceholder": "Search orders..."
   },
   "adminReviews": {
     "title": "Reviews",
@@ -1555,7 +1818,12 @@
     "rejectionReason": "Rejection Reason",
     "rating": "Rating",
     "allRatings": "All Ratings",
-    "searchPlaceholder": "Search products, users..."
+    "searchPlaceholder": "Search products, users...",
+    "filterAll": "All Reviews",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
+    "sortHighestRated": "Highest rated",
+    "sortLowestRated": "Lowest rated"
   },
   "adminBids": {
     "title": "Auctions & Bids",
@@ -1577,7 +1845,8 @@
     "bidDate": "Bid Date",
     "winning": "Winning",
     "viewProduct": "View Product",
-    "status": "Status"
+    "status": "Status",
+    "searchPlaceholder": "Search bids..."
   },
   "adminBlog": {
     "title": "Blog Posts",
@@ -1607,7 +1876,10 @@
     "formFeatured": "Featured Post",
     "views": "Views",
     "author": "Author",
-    "publishedOn": "Published on"
+    "publishedOn": "Published on",
+    "searchPlaceholder": "Search blog posts...",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first"
   },
   "adminCategories": {
     "title": "Categories",
@@ -1661,11 +1933,51 @@
     "deleteSlide": "Delete Carousel Slide",
     "noSlides": "No slides found",
     "saveFailed": "Failed to save slide",
-    "deleteFailed": "Failed to delete slide"
+    "deleteFailed": "Failed to delete slide",
+    "gridLayout": "Grid Layout",
+    "gridLayoutSubtitle": "Place up to 2 content cards — one per row, in any column. On mobile, cards stack in a single centred column.",
+    "topRow": "Top Row",
+    "bottomRow": "Bottom Row",
+    "colLeft": "Left",
+    "colCenter": "Center",
+    "colRight": "Right",
+    "emptyCell": "Empty",
+    "addCard": "Add Card",
+    "editCard": "Edit Card",
+    "removeCard": "Remove",
+    "cardCount": "{count} / 2 cards",
+    "cardBackground": "Background",
+    "cardContent": "Content",
+    "cardTitle": "Card Title",
+    "cardSubtitle": "Subtitle",
+    "cardDescription": "Description",
+    "cardButtons": "Buttons",
+    "cardButtonText": "Button Text",
+    "cardButtonLink": "Button Link",
+    "addButton": "Add Button",
+    "removeButton": "Remove",
+    "isButtonOnly": "Button only (no text)",
+    "backgroundType": "Type",
+    "backgroundValue": "Color / Gradient / Image URL",
+    "variantPrimary": "Primary",
+    "variantSecondary": "Secondary",
+    "variantOutline": "Outline",
+    "cardSizing": "Card Sizing",
+    "cardWidth": "Width",
+    "cardHeight": "Height",
+    "cardPadding": "Padding",
+    "sizeFull": "Full (100%)",
+    "size75": "Large (75%)",
+    "size50": "Medium (50%)",
+    "size25": "Small (25%)",
+    "paddingNone": "None",
+    "paddingSm": "Small",
+    "paddingMd": "Medium",
+    "paddingLg": "Large"
   },
   "adminSections": {
     "title": "Homepage Sections",
-    "subtitle": "Manage homepage sections and their order",
+    "subtitle": "Manage homepage sections",
     "addSection": "Add Section",
     "createSection": "Create Section",
     "editSection": "Edit Section",
@@ -1714,7 +2026,8 @@
     "approveMessage": "Approve the store for {name}? Their products will become publicly visible.",
     "rejectTitle": "Reject Store",
     "rejectMessage": "Reject the store for {name}? Their store and products will be hidden from public.",
-    "noStores": "No stores found"
+    "noStores": "No stores found",
+    "searchPlaceholder": "Search stores..."
   },
   "adminEvents": {
     "title": "Events",
@@ -1738,7 +2051,10 @@
     "typeOffer": "Offer",
     "typePoll": "Poll",
     "typeSurvey": "Survey",
-    "typeFeedback": "Feedback"
+    "typeFeedback": "Feedback",
+    "searchPlaceholder": "Search events...",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first"
   },
   "eventStatus": {
     "draft": "Draft",
@@ -1784,7 +2100,52 @@
     "subtitle": "Find answers to common questions about our platform, products, shipping, and more.",
     "viewAll": "View All FAQs",
     "wasThisHelpful": "Was this helpful?",
-    "thanksForFeedback": "Thanks for your feedback!"
+    "thanksForFeedback": "Thanks for your feedback!",
+    "searchPlaceholder": "Search FAQs...",
+    "noResults": "No FAQs found matching your criteria.",
+    "resultCount": "{count, plural, one {# question} other {# questions}}",
+    "inCategory": "in {category}",
+    "copyLink": "Copy link",
+    "views": "{count} views",
+    "allFaqs": "All FAQs",
+    "categories": "Categories",
+    "stillHaveQuestions": "Still have questions?",
+    "contactSupport": "Contact Support",
+    "sort": {
+      "label": "Sort by:",
+      "helpful": "Most Helpful",
+      "newest": "Newest First",
+      "alphabetical": "A-Z"
+    },
+    "category": {
+      "general": "General",
+      "products": "Products",
+      "shipping": "Shipping & Delivery",
+      "returns": "Returns & Refunds",
+      "payment": "Payment",
+      "account": "Account & Security",
+      "sellers": "Sellers"
+    },
+    "categoryDescription": {
+      "general": "About our platform, services, and policies",
+      "products": "Product listings, auctions, bidding, and quality",
+      "shipping": "Delivery times, tracking, shipping options, and COD",
+      "returns": "Return policy, refund process, and timelines",
+      "payment": "Payment methods, COD deposit, coupons, and pricing",
+      "account": "Registration, login, verification, and profile",
+      "sellers": "Selling guidelines, fees, payouts, and dashboard"
+    },
+    "contact": {
+      "title": "Still Need Help?",
+      "description": "Can't find the answer you're looking for? Our support team is here to help you. Get in touch and we'll get back to you as soon as possible.",
+      "emailUs": "Email Us",
+      "callUs": "Call Us",
+      "contactForm": "Contact Form",
+      "submitRequest": "Submit a request",
+      "contactTeam": "Contact Support Team"
+    },
+    "metaTitle": "FAQs - LetItRip",
+    "metaDescription": "Find answers to frequently asked questions about LetItRip platform, products, shipping, returns and more."
   },
   "unsavedChanges": {
     "title": "Unsaved Changes",

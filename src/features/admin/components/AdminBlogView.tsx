@@ -2,14 +2,15 @@
  * AdminBlogView
  *
  * Extracted from src/app/[locale]/admin/blog/[[...action]]/page.tsx
- * Full CRUD UI for blog posts with URL-driven drawer and status filter tabs.
+ * Full CRUD UI for blog posts with URL-driven drawer, status filter tabs,
+ * and unified ListingLayout shell.
  */
 
 "use client";
 
 import { useState, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useMessage } from "@/hooks";
+import { useMessage, useUrlTable } from "@/hooks";
 import { useAdminBlog } from "@/features/admin/hooks";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -23,8 +24,12 @@ import {
   ConfirmDeleteModal,
   DataTable,
   DrawerFormFooter,
+  FilterFacetSection,
+  ListingLayout,
   MediaImage,
+  Search,
   SideDrawer,
+  SortDropdown,
   StatusBadge,
   Text,
   useBlogTableColumns,
@@ -47,21 +52,46 @@ const DEFAULT_FORM: BlogFormData = {
   readTimeMinutes: 5,
 };
 
+const BLOG_SORT_OPTIONS_KEYS = [
+  { value: "-createdAt", key: "sortNewest" },
+  { value: "createdAt", key: "sortOldest" },
+] as const;
+
 export function AdminBlogView() {
   const router = useRouter();
   const t = useTranslations("adminBlog");
   const tLoading = useTranslations("loading");
+  const tStatus = useTranslations("status");
   const { showSuccess, showError } = useMessage();
 
-  const [statusFilter, setStatusFilter] = useState("");
+  const table = useUrlTable({
+    defaults: { pageSize: "25", sort: "-createdAt" },
+  });
+  const statusFilter = table.get("status");
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogPostDocument | null>(null);
   const [formData, setFormData] = useState<BlogFormData>(DEFAULT_FORM);
   const [deleteTarget, setDeleteTarget] = useState<BlogPostDocument | null>(
     null,
   );
-  const [viewMode, setViewMode] = useState<"table" | "grid" | "list">("table");
   const initialFormRef = useRef<string>("");
+
+  // ── Staged filter state ──────────────────────────────────────────────
+  const [stagedStatus, setStagedStatus] = useState<string[]>(
+    statusFilter ? [statusFilter] : [],
+  );
+
+  const handleFilterApply = useCallback(() => {
+    table.setMany({ status: stagedStatus[0] ?? "", page: "1" });
+  }, [stagedStatus, table]);
+
+  const handleFilterClear = useCallback(() => {
+    setStagedStatus([]);
+    table.setMany({ status: "", page: "1" });
+  }, [table]);
+
+  const filterActiveCount = statusFilter ? 1 : 0;
 
   const {
     data,
@@ -159,17 +189,39 @@ export function AdminBlogView() {
 
   const isSaving = createMutation.isLoading || updateMutation.isLoading;
   const isDeleting = deleteMutation.isLoading;
-  const STATUS_TABS = [
-    { key: "", label: t("filterAll") },
-    { key: "draft", label: t("filterDraft") },
-    { key: "published", label: t("filterPublished") },
-    { key: "archived", label: t("filterArchived") },
-  ];
+
+  const STATUS_TABS = useMemo(
+    () => [
+      { key: "", label: t("filterAll") },
+      { key: "draft", label: t("filterDraft") },
+      { key: "published", label: t("filterPublished") },
+      { key: "archived", label: t("filterArchived") },
+    ],
+    [t],
+  );
 
   const drawerTitle = editingPost ? t("edit") : t("create");
 
   const { columns } = useBlogTableColumns(openEdit, (post) =>
     setDeleteTarget(post),
+  );
+
+  const sortOptions = useMemo(
+    () =>
+      BLOG_SORT_OPTIONS_KEYS.map((o) => ({
+        value: o.value,
+        label: t(o.key),
+      })),
+    [t],
+  );
+
+  const statusOptions = useMemo(
+    () => [
+      { value: "draft", label: t("filterDraft") },
+      { value: "published", label: t("filterPublished") },
+      { value: "archived", label: t("filterArchived") },
+    ],
+    [t],
   );
 
   // Stats
@@ -178,92 +230,131 @@ export function AdminBlogView() {
   const draftsCount = data?.meta.drafts ?? 0;
   const featuredCount = data?.meta.featured ?? 0;
 
+  const statusTabsSlot = (
+    <div className="flex flex-wrap gap-2">
+      {STATUS_TABS.map((tab) => (
+        <Button
+          key={tab.key}
+          variant={statusFilter === tab.key ? "primary" : "outline"}
+          size="sm"
+          onClick={() => table.set("status", tab.key)}
+        >
+          {tab.label}
+        </Button>
+      ))}
+    </div>
+  );
+
   return (
-    <div className="space-y-6">
-      <AdminPageHeader
-        title={t("title")}
-        subtitle={`${t("subtitle")} � ${totalPosts} total`}
-        actionLabel={t("create")}
-        onAction={openCreate}
-      />
-
-      {/* Stat cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
-        {[
-          { label: t("totalPosts"), value: totalPosts },
-          { label: t("publishedPosts"), value: publishedCount },
-          { label: t("draftPosts"), value: draftsCount },
-          { label: t("featuredPosts"), value: featuredCount },
-        ].map(({ label, value }) => (
-          <Card key={label} className="p-4">
-            <Text
-              className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary} mb-1`}
-            >
-              {label}
-            </Text>
-            <Text className={`${typography.h3} ${themed.textPrimary}`}>
-              {value}
-            </Text>
-          </Card>
-        ))}
-      </div>
-
-      {/* Status filter tabs */}
-      <div className="flex gap-2 flex-wrap">
-        {STATUS_TABS.map((tab) => (
-          <Button
-            key={tab.key}
-            variant={statusFilter === tab.key ? "primary" : "outline"}
-            onClick={() => setStatusFilter(tab.key)}
-            className="text-sm"
-          >
-            {tab.label}
-          </Button>
-        ))}
-      </div>
-
-      {/* DataTable */}
-      <Card>
-        {error ? (
-          <Text className="p-6 text-red-500 text-sm">{tLoading("failed")}</Text>
-        ) : (
-          <DataTable
-            columns={columns as any}
-            data={allPosts}
-            keyExtractor={(p: any) => p.id}
-            loading={isLoading}
-            emptyMessage={t("empty")}
-            emptyTitle={t("emptySubtitle")}
-            showViewToggle
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            mobileCardRender={(post: BlogPostDocument) => (
-              <Card className="overflow-hidden cursor-pointer">
-                {post.coverImage && (
-                  <div className="relative aspect-video overflow-hidden">
-                    <MediaImage
-                      src={post.coverImage}
-                      alt={post.title}
-                      size="card"
-                    />
-                  </div>
-                )}
-                <div className="p-3 space-y-2">
-                  <Text weight="medium" size="sm" className="line-clamp-2">
-                    {post.title}
+    <>
+      <ListingLayout
+        headerSlot={
+          <>
+            <AdminPageHeader
+              title={t("title")}
+              subtitle={`${t("subtitle")} — ${totalPosts} total`}
+              actionLabel={t("create")}
+              onAction={openCreate}
+            />
+            {/* Stat cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
+              {[
+                { label: t("totalPosts"), value: totalPosts },
+                { label: t("publishedPosts"), value: publishedCount },
+                { label: t("draftPosts"), value: draftsCount },
+                { label: t("featuredPosts"), value: featuredCount },
+              ].map(({ label, value }) => (
+                <Card key={label} className="p-4">
+                  <Text
+                    className={`text-xs font-medium uppercase tracking-wide ${themed.textSecondary} mb-1`}
+                  >
+                    {label}
                   </Text>
-                  <div className="flex items-center justify-between">
-                    <Badge>{post.category}</Badge>
-                    <StatusBadge status={post.status as any} />
-                  </div>
-                  <Caption>{post.authorName}</Caption>
-                  <Caption>{formatDate(post.createdAt)}</Caption>
-                </div>
-              </Card>
-            )}
+                  <Text className={`${typography.h3} ${themed.textPrimary}`}>
+                    {value}
+                  </Text>
+                </Card>
+              ))}
+            </div>
+          </>
+        }
+        statusTabsSlot={statusTabsSlot}
+        searchSlot={
+          <Search
+            value={table.get("q")}
+            onChange={(v) => table.set("q", v)}
+            placeholder={t("searchPlaceholder")}
+            onClear={() => table.set("q", "")}
           />
-        )}
-      </Card>
+        }
+        sortSlot={
+          <SortDropdown
+            value={table.get("sort") || "-createdAt"}
+            onChange={(v) => table.set("sort", v)}
+            options={sortOptions}
+          />
+        }
+        filterContent={
+          <FilterFacetSection
+            title={tStatus("all")}
+            options={statusOptions}
+            selected={stagedStatus}
+            onChange={setStagedStatus}
+            searchable={false}
+          />
+        }
+        filterActiveCount={filterActiveCount}
+        onFilterApply={handleFilterApply}
+        onFilterClear={handleFilterClear}
+        loading={isLoading}
+        errorSlot={
+          error ? (
+            <Card>
+              <div className="text-center py-8">
+                <Text variant="error">{tLoading("failed")}</Text>
+              </div>
+            </Card>
+          ) : undefined
+        }
+      >
+        <DataTable
+          columns={columns as any}
+          data={allPosts}
+          keyExtractor={(p: any) => p.id}
+          loading={isLoading}
+          emptyMessage={t("empty")}
+          emptyTitle={t("emptySubtitle")}
+          showViewToggle
+          viewMode={
+            (table.get("view") || "table") as "table" | "grid" | "list"
+          }
+          onViewModeChange={(mode) => table.set("view", mode)}
+          mobileCardRender={(post: BlogPostDocument) => (
+            <Card className="overflow-hidden cursor-pointer">
+              {post.coverImage && (
+                <div className="relative aspect-video overflow-hidden">
+                  <MediaImage
+                    src={post.coverImage}
+                    alt={post.title}
+                    size="card"
+                  />
+                </div>
+              )}
+              <div className="p-3 space-y-2">
+                <Text weight="medium" size="sm" className="line-clamp-2">
+                  {post.title}
+                </Text>
+                <div className="flex items-center justify-between">
+                  <Badge>{post.category}</Badge>
+                  <StatusBadge status={post.status as any} />
+                </div>
+                <Caption>{post.authorName}</Caption>
+                <Caption>{formatDate(post.createdAt)}</Caption>
+              </div>
+            </Card>
+          )}
+        />
+      </ListingLayout>
 
       {/* Create / Edit Drawer */}
       <SideDrawer
@@ -291,6 +382,6 @@ export function AdminBlogView() {
         onConfirm={handleDelete}
         isDeleting={isDeleting}
       />
-    </div>
+    </>
   );
 }

@@ -431,8 +431,18 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
       canFilter: true,
       canSort: false,
     },
+    "validity.endDate": {
+      path: "validity.endDate",
+      canFilter: true,
+      canSort: true,
+    },
     "discount.value": {
       path: "discount.value",
+      canFilter: true,
+      canSort: true,
+    },
+    "discount.minPurchase": {
+      path: "discount.minPurchase",
       canFilter: true,
       canSort: true,
     },

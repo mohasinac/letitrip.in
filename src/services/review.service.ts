@@ -26,10 +26,10 @@ export const reviewService = {
   listBySeller: (sellerId: string, page = 1, pageSize = 5) =>
     apiClient.get(API_ENDPOINTS.PROFILE.GET_SELLER_REVIEWS(sellerId)),
 
-  /** Fetch homepage customer reviews (approved, top-rated) */
+  /** Fetch homepage customer reviews (approved, latest) */
   getHomepageReviews: () =>
     apiClient.get(
-      `${API_ENDPOINTS.REVIEWS.LIST}?filters=status==approved&sorts=-rating&pageSize=6`,
+      `${API_ENDPOINTS.REVIEWS.LIST}?filters=status==approved&sorts=-createdAt&pageSize=6`,
     ),
 
   /** Get a single review by ID */

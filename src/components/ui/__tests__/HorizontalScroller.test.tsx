@@ -20,7 +20,7 @@ jest.mock("@/constants", () => ({
       bgPrimary: "bg-white",
       hover: "hover:bg-gray-100",
     },
-    utilities: { scrollbarHide: "scrollbar-hide" },
+    utilities: { scrollbarHide: "scrollbar-hide", scrollbarThinX: "scrollbar-thin-x" },
   },
 }));
 

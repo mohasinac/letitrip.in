@@ -56,5 +56,38 @@ describe('Radio Component', () => {
       const radioGroup = container.querySelector('.flex-col, .space-y-2');
       expect(radioGroup).toBeInTheDocument();
     });
+
+    it('calls onChange with the selected value', async () => {
+      const user = userEvent.setup();
+      const handleChange = jest.fn();
+      render(<RadioGroup name="test" options={options} onChange={handleChange} />);
+
+      await user.click(screen.getByLabelText('Option 1'));
+      expect(handleChange).toHaveBeenCalledWith('option1');
+    });
+
+    it('renders classic variant with dot-style radios', () => {
+      render(<RadioGroup name="test" options={options} variant="classic" />);
+      // All 3 radio inputs should be present
+      expect(screen.getAllByRole('radio')).toHaveLength(3);
+    });
+
+    it('renders toggle variant (default) with pill-style selectors', () => {
+      const { container } = render(
+        <RadioGroup name="test" options={options} />
+      );
+      // pill cards rendered in elements with rounded-lg class
+      expect(container.querySelector('.rounded-lg')).toBeInTheDocument();
+    });
+
+    it('respects disabled option', () => {
+      const optionsWithDisabled = [
+        { value: 'a', label: 'A' },
+        { value: 'b', label: 'B', disabled: true },
+      ];
+      render(<RadioGroup name="test" options={optionsWithDisabled} />);
+      const radioB = screen.getByLabelText('B') as HTMLInputElement;
+      expect(radioB).toBeDisabled();
+    });
   });
 });

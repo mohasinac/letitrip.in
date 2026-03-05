@@ -54,7 +54,7 @@ export async function POST(
     }
 
     const { vote } = validation.data;
-    const helpful = vote === "helpful";
+    const helpful = vote === "helpful"; // "not-helpful" is the other value
 
     // Initialize stats if not present
     const stats = faq.stats || { views: 0, helpful: 0, notHelpful: 0 };

@@ -20,7 +20,42 @@ export interface PayoutRow {
   orderIds: string[];
 }
 
+export interface CreatePayoutInput {
+  sellerId: string;
+  sellerName: string;
+  sellerEmail: string;
+  orderIds: string[];
+  amount: number;
+  grossAmount: number;
+  platformFee: number;
+  platformFeeRate: number;
+  currency: string;
+  status: "pending";
+  paymentMethod: "upi" | "bank_transfer";
+  upiId?: string;
+  bankAccount?: {
+    accountHolderName: string;
+    accountNumberMasked: string;
+    ifscCode: string;
+    bankName: string;
+  };
+  notes: string;
+  requestedAt: Date;
+}
+
 export const payoutRepository = {
+  /** Create a new payout record and return its document reference + id. */
+  async create(input: CreatePayoutInput): Promise<{ id: string; ref: DocumentReference }> {
+    const ref = db.collection(COLLECTIONS.PAYOUTS).doc();
+    await ref.set({
+      id: ref.id,
+      ...input,
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    return { id: ref.id, ref };
+  },
+
   /** All payouts with status === "pending". */
   async getPending(): Promise<
     Array<{ id: string; ref: DocumentReference; data: PayoutRow }>

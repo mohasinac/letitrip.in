@@ -35,7 +35,10 @@ export function HeroCarousel() {
   const { data, isLoading } = useHeroCarousel();
 
   const slides =
-    data?.filter((s) => s.active)?.sort((a, b) => a.order - b.order) || [];
+    data
+      ?.filter((s) => s.active)
+      ?.sort((a, b) => a.order - b.order)
+      ?.slice(0, 5) || [];
 
   // Detect mobile on client-side
   useEffect(() => {
@@ -115,17 +118,11 @@ export function HeroCarousel() {
     return {};
   };
 
-  const getGridPosition = (card: GridCard) => {
-    const pos =
-      isMobile && card.mobilePosition ? card.mobilePosition : card.gridPosition;
-    const gridSize = isMobile ? 2 : 3;
-
-    return {
-      gridRow: `${pos.row} / span ${card.height}`,
-      gridColumn: `${pos.col} / span ${card.width}`,
-      ...(isMobile && { gridColumn: `1 / span ${gridSize}` }), // Full width on mobile
-    };
-  };
+  const getGridPosition = (card: GridCard) => ({
+    gridRow: String(card.gridRow),
+    // On mobile: all cards stack in a single column, centred regardless of configured gridCol
+    gridColumn: isMobile ? "1" : String(card.gridCol),
+  });
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowRight") goNext();
@@ -206,12 +203,14 @@ export function HeroCarousel() {
             <div
               className={`${position.fill} grid gap-2 md:gap-4 p-4 md:p-8`}
               style={{
-                gridTemplateRows: `repeat(${isMobile ? 2 : 3}, 1fr)`,
-                gridTemplateColumns: `repeat(${isMobile ? 2 : 3}, 1fr)`,
+                gridTemplateRows: "repeat(2, 1fr)",
+                // Mobile: single centred column. Desktop: 3-column layout.
+                gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+                justifyItems: isMobile ? "center" : undefined,
+                alignItems: isMobile ? "center" : undefined,
               }}
             >
               {slide.cards.map((card) => {
-                const hideText = isMobile && card.mobileHideText;
                 return (
                   <div
                     key={card.id}
@@ -219,37 +218,49 @@ export function HeroCarousel() {
                     style={{
                       ...getGridPosition(card),
                       ...getBackgroundStyle(card),
+                      width: card.sizing?.widthPct
+                        ? `${card.sizing.widthPct}%`
+                        : "100%",
+                      height: card.sizing?.heightPct
+                        ? `${card.sizing.heightPct}%`
+                        : "100%",
+                      justifySelf: "center",
+                      alignSelf: "center",
                     }}
                   >
                     {!card.isButtonOnly && (
                       <div
-                        className={`${position.fill} p-4 md:p-6 flex flex-col justify-end bg-gradient-to-t from-black/60 to-transparent`}
+                        className={`${position.fill} flex flex-col justify-end bg-gradient-to-t from-black/60 to-transparent ${
+                          card.sizing?.padding === "none"
+                            ? "p-0"
+                            : card.sizing?.padding === "sm"
+                              ? "p-2 md:p-3"
+                              : card.sizing?.padding === "lg"
+                                ? "p-6 md:p-8"
+                                : "p-4 md:p-6"
+                        }`}
                       >
-                        {!hideText && (
-                          <>
-                            {card.content.subtitle && (
-                              <Text className="text-xs md:text-sm text-white/90 mb-1 md:mb-2">
-                                {card.content.subtitle}
-                              </Text>
-                            )}
-                            {card.content.title && (
-                              <Heading
-                                level={3}
-                                className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-2 md:mb-3 line-clamp-2"
-                              >
-                                {card.content.title}
-                              </Heading>
-                            )}
-                            {card.content.description && (
-                              <Text className="text-xs md:text-sm lg:text-base text-white/80 mb-3 md:mb-4 line-clamp-1 md:line-clamp-2">
-                                {card.content.description}
-                              </Text>
-                            )}
-                          </>
+                        {card.content?.subtitle && (
+                          <Text className="text-xs md:text-sm text-white/90 mb-1 md:mb-2">
+                            {card.content.subtitle}
+                          </Text>
                         )}
-                        {card.buttons.length > 0 && (
+                        {card.content?.title && (
+                          <Heading
+                            level={3}
+                            className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-2 md:mb-3 line-clamp-2"
+                          >
+                            {card.content.title}
+                          </Heading>
+                        )}
+                        {card.content?.description && (
+                          <Text className="text-xs md:text-sm lg:text-base text-white/80 mb-3 md:mb-4 line-clamp-1 md:line-clamp-2">
+                            {card.content.description}
+                          </Text>
+                        )}
+                        {(card.buttons?.length ?? 0) > 0 && (
                           <div className="flex flex-wrap gap-2">
-                            {card.buttons.map((btn) => (
+                            {(card.buttons ?? []).map((btn) => (
                               <Button
                                 key={btn.id}
                                 variant={btn.variant}
@@ -273,12 +284,12 @@ export function HeroCarousel() {
                         )}
                       </div>
                     )}
-                    {card.isButtonOnly && card.buttons[0] && (
+                    {card.isButtonOnly && card.buttons?.[0] && (
                       <Button
                         variant="ghost"
                         className={`${position.fill} ${flex.center} font-semibold text-white hover:bg-black/20 transition-colors rounded-none p-0`}
                         onClick={() => {
-                          const btn = card.buttons[0];
+                          const btn = card.buttons![0];
                           if (btn.openInNewTab) {
                             window.open(
                               btn.link,
@@ -291,7 +302,7 @@ export function HeroCarousel() {
                         }}
                       >
                         <Span className="text-lg md:text-2xl">
-                          {card.buttons[0].text}
+                          {card.buttons![0].text}
                         </Span>
                       </Button>
                     )}

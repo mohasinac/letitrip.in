@@ -38,6 +38,7 @@ class HomepageSectionsRepository extends BaseRepository<HomepageSectionDocument>
     enabled: { canFilter: true, canSort: false },
     order: { canFilter: true, canSort: true },
     createdAt: { canFilter: true, canSort: true },
+    updatedAt: { canFilter: true, canSort: true },
   };
 
   /**

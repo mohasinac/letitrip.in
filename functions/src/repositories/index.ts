@@ -29,3 +29,6 @@ export type { CreateNotificationInput } from "./notification.repository";
 
 export { reviewRepository } from "./review.repository";
 export type { ReviewRatingAggregate } from "./review.repository";
+
+export { userRepository } from "./user.repository";
+export type { SellerPayoutDetails } from "./user.repository";

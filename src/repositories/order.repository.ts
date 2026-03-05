@@ -270,12 +270,15 @@ class OrderRepository extends BaseRepository<OrderDocument> {
     userId: { canFilter: true, canSort: false },
     userName: { canFilter: true, canSort: true },
     userEmail: { canFilter: true, canSort: true },
+    sellerId: { canFilter: true, canSort: false },
     productId: { canFilter: true, canSort: false },
     productTitle: { canFilter: true, canSort: true },
     status: { canFilter: true, canSort: true },
     paymentStatus: { canFilter: true, canSort: true },
     paymentMethod: { canFilter: true, canSort: true },
+    payoutStatus: { canFilter: true, canSort: false },
     totalPrice: { canFilter: true, canSort: true },
+    orderDate: { canFilter: true, canSort: true },
     createdAt: { canFilter: true, canSort: true },
   };
 

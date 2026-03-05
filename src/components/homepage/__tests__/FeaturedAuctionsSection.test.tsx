@@ -1,33 +1,131 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import { FeaturedAuctionsSection } from "../FeaturedAuctionsSection";
+import type { SectionCarouselProps } from "../SectionCarousel";
 
-// Mock useApiQuery
-const mockUseApiQuery = jest.fn();
-jest.mock("@/hooks", () => ({
-  useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
-  useFeaturedAuctions: (...args: unknown[]) => mockUseApiQuery(...args),
+// ── i18n ──────────────────────────────────────────────────────────────────
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => key,
 }));
 
-// Mock Button component
-jest.mock("@/components", () => ({
-  Button: ({
+// ── Navigation ────────────────────────────────────────────────────────────
+jest.mock("@/i18n/navigation", () => ({
+  Link: ({
     children,
-    onClick,
-    ...props
+    href,
   }: {
     children: React.ReactNode;
-    onClick?: () => void;
-    [key: string]: unknown;
-  }) => (
-    <button onClick={onClick} {...props}>
-      {children}
-    </button>
+    href: string;
+  }) => <a href={href}>{children}</a>,
+  useRouter: () => ({ push: jest.fn() }),
+  usePathname: () => "/",
+}));
+
+// ── Data hook ─────────────────────────────────────────────────────────────
+const mockUseFeaturedAuctions = jest.fn();
+jest.mock("@/hooks", () => ({
+  useFeaturedAuctions: (...args: unknown[]) =>
+    mockUseFeaturedAuctions(...args),
+}));
+
+// ── SectionCarousel stub — renders items via renderItem ───────────────────
+jest.mock("../SectionCarousel", () => ({
+  SectionCarousel: <T,>({
+    items,
+    renderItem,
+    isLoading,
+    viewMoreHref,
+    title,
+    description,
+  }: SectionCarouselProps<T>) => (
+    <div data-testid="section-carousel">
+      {isLoading && <div data-testid="skeleton" className="animate-pulse" />}
+      <h2>{title}</h2>
+      {description && <p>{description}</p>}
+      {viewMoreHref && <a href={viewMoreHref}>viewMore</a>}
+      {!isLoading &&
+        (items as unknown[]).map((item, i) => (
+          <div key={i}>{renderItem(item as T, i)}</div>
+        ))}
+    </div>
   ),
 }));
 
-// Create future date for active auction
-const futureDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(); // 2 days from now
-const pastDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(); // 1 day ago
+// ── Shared components ─────────────────────────────────────────────────────
+jest.mock("@/components", () => ({
+  Heading: ({
+    children,
+    level,
+  }: {
+    children: React.ReactNode;
+    level?: number;
+  }) => {
+    const Tag = `h${level ?? 2}` as React.ElementType;
+    return <Tag>{children}</Tag>;
+  },
+  Span: ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) => <span className={className}>{children}</span>,
+  Text: ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) => <p className={className}>{children}</p>,
+  TextLink: ({
+    children,
+    href,
+    className,
+  }: {
+    children: React.ReactNode;
+    href: string;
+    className?: string;
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
+}));
+
+// ── Constants & utils ─────────────────────────────────────────────────────
+jest.mock("@/constants", () => ({
+  THEME_CONSTANTS: {
+    themed: { bgPrimary: "", bgSecondary: "", textPrimary: "", textSecondary: "" },
+    spacing: { padding: { sm: "" } },
+    borderRadius: { lg: "" },
+    typography: { body: "", small: "" },
+    skeleton: { text: "", image: "" },
+  },
+  ROUTES: { PUBLIC: { AUCTIONS: "/auctions" } },
+}));
+
+jest.mock("@/utils", () => ({
+  formatCurrency: (amount: number) =>
+    `₹${amount.toLocaleString("en-IN")}`,
+  nowMs: () => Date.now(),
+}));
+
+jest.mock("@/db/schema", () => ({}));
+
+jest.mock("next/image", () => ({
+  __esModule: true,
+  default: (props: Record<string, unknown>) => (
+    // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
+    <img {...props} />
+  ),
+}));
+
+// ── Mock data ─────────────────────────────────────────────────────────────
+const futureDate = new Date(
+  Date.now() + 2 * 24 * 60 * 60 * 1000,
+).toISOString();
+const pastDate = new Date(
+  Date.now() - 24 * 60 * 60 * 1000,
+).toISOString();
 
 const mockAuctions = [
   {
@@ -68,9 +166,10 @@ const mockAuctions = [
   },
 ];
 
+// ── Tests ─────────────────────────────────────────────────────────────────
 describe("FeaturedAuctionsSection", () => {
   beforeEach(() => {
-    mockUseApiQuery.mockReset();
+    mockUseFeaturedAuctions.mockReset();
     jest.useFakeTimers();
   });
 
@@ -82,12 +181,10 @@ describe("FeaturedAuctionsSection", () => {
   // Loading State
   // ====================================
   describe("Loading State", () => {
-    it("renders loading skeleton when loading", () => {
-      mockUseApiQuery.mockReturnValue({ data: null, isLoading: true });
-      const { container } = render(<FeaturedAuctionsSection />);
-      expect(
-        container.querySelectorAll(".animate-pulse").length,
-      ).toBeGreaterThan(0);
+    it("renders skeleton when loading", () => {
+      mockUseFeaturedAuctions.mockReturnValue({ data: null, isLoading: true });
+      render(<FeaturedAuctionsSection />);
+      expect(screen.getByTestId("skeleton")).toBeInTheDocument();
     });
   });
 
@@ -95,8 +192,8 @@ describe("FeaturedAuctionsSection", () => {
   // No Data State
   // ====================================
   describe("No Data State", () => {
-    it("returns null when no auctions", () => {
-      mockUseApiQuery.mockReturnValue({
+    it("returns null when no auctions and not loading", () => {
+      mockUseFeaturedAuctions.mockReturnValue({
         data: [],
         isLoading: false,
       });
@@ -104,8 +201,8 @@ describe("FeaturedAuctionsSection", () => {
       expect(container.innerHTML).toBe("");
     });
 
-    it("returns null when products array is missing", () => {
-      mockUseApiQuery.mockReturnValue({ data: null, isLoading: false });
+    it("returns null when data is null and not loading", () => {
+      mockUseFeaturedAuctions.mockReturnValue({ data: null, isLoading: false });
       const { container } = render(<FeaturedAuctionsSection />);
       expect(container.innerHTML).toBe("");
     });
@@ -116,64 +213,69 @@ describe("FeaturedAuctionsSection", () => {
   // ====================================
   describe("Content Rendering", () => {
     beforeEach(() => {
-      mockUseApiQuery.mockReturnValue({
+      mockUseFeaturedAuctions.mockReturnValue({
         data: mockAuctions,
         isLoading: false,
       });
     });
 
-    it('renders "Live Auctions" heading', () => {
+    it("passes translated title key to SectionCarousel", () => {
       render(<FeaturedAuctionsSection />);
       expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
-        "Live Auctions",
+        "liveAuctions",
       );
     });
 
-    it("renders subtitle", () => {
+    it("passes translated description key", () => {
       render(<FeaturedAuctionsSection />);
-      expect(screen.getByText("Bid on exclusive items")).toBeInTheDocument();
+      expect(screen.getByText("auctionsSubtitle")).toBeInTheDocument();
     });
 
-    it('renders "View All" button', () => {
+    it("passes viewMoreHref to SectionCarousel", () => {
       render(<FeaturedAuctionsSection />);
-      const viewAllItems = screen.getAllByText(/view all/i);
-      expect(viewAllItems.length).toBeGreaterThan(0);
+      expect(
+        screen.getByRole("link", { name: "viewMore" }),
+      ).toHaveAttribute("href", "/auctions");
     });
 
     it("renders all auction titles", () => {
       render(<FeaturedAuctionsSection />);
-      // Component renders in both mobile and desktop layouts
-      expect(
-        screen.getAllByText("Rare Painting").length,
-      ).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText("Antique Vase").length).toBeGreaterThanOrEqual(
-        1,
-      );
-      expect(
-        screen.getAllByText("Signed Jersey").length,
-      ).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText("Rare Painting")).toBeInTheDocument();
+      expect(screen.getByText("Antique Vase")).toBeInTheDocument();
+      expect(screen.getByText("Signed Jersey")).toBeInTheDocument();
     });
 
     it("renders auction images with alt text", () => {
       render(<FeaturedAuctionsSection />);
       const images = screen.getAllByRole("img");
-      // Images appear in both mobile and desktop layouts
-      expect(images.length).toBeGreaterThanOrEqual(3);
-      expect(images[0]).toHaveAttribute("alt");
+      expect(images).toHaveLength(3);
+      expect(images[0]).toHaveAttribute("alt", "Rare Painting");
+      expect(images[1]).toHaveAttribute("alt", "Antique Vase");
+      expect(images[2]).toHaveAttribute("alt", "Signed Jersey");
     });
 
-    it('renders "Current Bid" labels', () => {
+    it("renders currentBid labels", () => {
       render(<FeaturedAuctionsSection />);
-      const labels = screen.getAllByText("Current Bid");
-      // 3 auctions × 2 layouts = 6 labels
-      expect(labels.length).toBeGreaterThanOrEqual(3);
+      const labels = screen.getAllByText("currentBid");
+      expect(labels).toHaveLength(3);
     });
 
-    it("renders bid counts with proper pluralization", () => {
+    it("renders bid counts with proper pluralisation", () => {
       render(<FeaturedAuctionsSection />);
-      expect(screen.getAllByText("15 bids").length).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText("1 bid").length).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText("0 bids").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText("15 bids")).toBeInTheDocument();
+      expect(screen.getByText("1 bid")).toBeInTheDocument();
+      expect(screen.getByText("0 bids")).toBeInTheDocument();
+    });
+
+    it("renders auction links with correct hrefs", () => {
+      render(<FeaturedAuctionsSection />);
+      const links = screen.getAllByRole("link").filter(
+        (a) => a.getAttribute("href")?.startsWith("/auctions/"),
+      );
+      expect(links).toHaveLength(3);
+      expect(links[0]).toHaveAttribute("href", "/auctions/1");
+      expect(links[1]).toHaveAttribute("href", "/auctions/2");
+      expect(links[2]).toHaveAttribute("href", "/auctions/3");
     });
   });
 
@@ -182,16 +284,14 @@ describe("FeaturedAuctionsSection", () => {
   // ====================================
   describe("Price Formatting", () => {
     it("formats current bid prices in INR", () => {
-      mockUseApiQuery.mockReturnValue({
+      mockUseFeaturedAuctions.mockReturnValue({
         data: mockAuctions,
         isLoading: false,
       });
       render(<FeaturedAuctionsSection />);
-      expect(screen.getAllByText(/₹\s?25,000/).length).toBeGreaterThanOrEqual(
-        1,
-      );
-      expect(screen.getAllByText(/₹\s?8,000/).length).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText(/₹\s?3,500/).length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText("₹25,000")).toBeInTheDocument();
+      expect(screen.getByText("₹8,000")).toBeInTheDocument();
+      expect(screen.getByText("₹3,500")).toBeInTheDocument();
     });
   });
 
@@ -199,25 +299,34 @@ describe("FeaturedAuctionsSection", () => {
   // Countdown Timer
   // ====================================
   describe("Countdown Timer", () => {
-    it('shows "Ended" for past auctions', () => {
-      mockUseApiQuery.mockReturnValue({
+    beforeEach(() => {
+      mockUseFeaturedAuctions.mockReturnValue({
         data: mockAuctions,
         isLoading: false,
       });
+    });
+
+    it('shows "Ended" for past auctions', () => {
       render(<FeaturedAuctionsSection />);
-      // "Ended" appears in both mobile and desktop layouts for the past auction
-      expect(screen.getAllByText("Ended").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText("Ended")).toBeInTheDocument();
     });
 
     it("shows time remaining for active auctions", () => {
-      mockUseApiQuery.mockReturnValue({
-        data: mockAuctions,
-        isLoading: false,
-      });
       render(<FeaturedAuctionsSection />);
-      // 2 days from now should show "1d Xh" or "2d 0h"
       const timeTexts = screen.getAllByText(/\d+d \d+h/);
       expect(timeTexts.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("updates countdown on interval tick", () => {
+      render(<FeaturedAuctionsSection />);
+      const before = screen.getAllByText(/\d+d \d+h/);
+      expect(before.length).toBeGreaterThanOrEqual(1);
+      // Advance timer — countdown recalculates
+      act(() => {
+        jest.advanceTimersByTime(60_000);
+      });
+      const after = screen.getAllByText(/\d+[dhm]/);
+      expect(after.length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -226,7 +335,7 @@ describe("FeaturedAuctionsSection", () => {
   // ====================================
   describe("Accessibility", () => {
     beforeEach(() => {
-      mockUseApiQuery.mockReturnValue({
+      mockUseFeaturedAuctions.mockReturnValue({
         data: mockAuctions,
         isLoading: false,
       });
@@ -240,11 +349,10 @@ describe("FeaturedAuctionsSection", () => {
     it("uses h3 for auction titles", () => {
       render(<FeaturedAuctionsSection />);
       const h3s = screen.getAllByRole("heading", { level: 3 });
-      // 3 auctions × 2 layouts (mobile + desktop) = 6 h3s
-      expect(h3s.length).toBeGreaterThanOrEqual(3);
+      expect(h3s).toHaveLength(3);
     });
 
-    it("all images have alt text", () => {
+    it("all images have non-empty alt text", () => {
       render(<FeaturedAuctionsSection />);
       screen.getAllByRole("img").forEach((img) => {
         expect(img).toHaveAttribute("alt");

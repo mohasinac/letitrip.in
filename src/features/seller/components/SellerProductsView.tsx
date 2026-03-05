@@ -3,29 +3,30 @@
  *
  * Feature view for seller product listing with CRUD actions.
  * Extracted from /seller/products page — Rule 16 (page < 150 lines).
+ *
+ * Uses ListingLayout for a unified listing shell.
  */
 
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
 import {
   Spinner,
   Button,
   DataTable,
   AdminPageHeader,
-  AdminFilterBar,
   TablePagination,
   SideDrawer,
   ConfirmDeleteModal,
   ProductForm,
   useProductTableColumns,
   EmptyState,
-  FilterDrawer,
   FilterFacetSection,
   ActiveFilterChips,
+  ListingLayout,
   Search,
-  Select,
+  SortDropdown,
 } from "@/components";
 import type { ActiveFilter, AdminProduct } from "@/components";
 import { Store } from "lucide-react";
@@ -64,12 +65,26 @@ function SellerProductsContent() {
   const t = useTranslations("sellerProducts");
   const tActions = useTranslations("actions");
 
-  const STATUS_OPTIONS = [
-    { value: "published", label: t("statusPublished") },
-    { value: "draft", label: t("statusDraft") },
-    { value: "out_of_stock", label: t("statusOutOfStock") },
-    { value: "archived", label: t("statusArchived") },
-  ];
+  const STATUS_OPTIONS = useMemo(
+    () => [
+      { value: "published", label: t("statusPublished") },
+      { value: "draft", label: t("statusDraft") },
+      { value: "out_of_stock", label: t("statusOutOfStock") },
+      { value: "archived", label: t("statusArchived") },
+    ],
+    [t],
+  );
+
+  const SORT_OPTIONS = useMemo(
+    () => [
+      { value: "-createdAt", label: t("sortNewest") },
+      { value: "createdAt", label: t("sortOldest") },
+      { value: "title", label: t("sortTitleAZ") },
+      { value: "-price", label: t("sortPriceHighLow") },
+      { value: "price", label: t("sortPriceLowHigh") },
+    ],
+    [t],
+  );
 
   const table = useUrlTable({
     defaults: { pageSize: "25", sort: "-createdAt" },
@@ -82,6 +97,27 @@ function SellerProductsContent() {
     useState<Partial<AdminProduct>>(DEFAULT_PRODUCT);
   const [deleteTarget, setDeleteTarget] = useState<AdminProduct | null>(null);
   const [isFormDirty, setIsFormDirty] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  // ── Staged filter state (applied on button click) ────────────────────
+  const [stagedStatus, setStagedStatus] = useState<string[]>(
+    statusParam ? [statusParam] : [],
+  );
+
+  useEffect(() => {
+    setStagedStatus(statusParam ? [statusParam] : []);
+  }, [statusParam]);
+
+  const handleFilterApply = useCallback(() => {
+    table.setMany({ status: stagedStatus[0] ?? "", page: "1" });
+  }, [stagedStatus, table]);
+
+  const handleFilterClear = useCallback(() => {
+    setStagedStatus([]);
+    table.setMany({ status: "", page: "1" });
+  }, [table]);
+
+  const filterActiveCount = statusParam ? 1 : 0;
 
   const {
     data,
@@ -149,6 +185,44 @@ function SellerProductsContent() {
     }
   };
 
+  // ── Bulk action handlers ─────────────────────────────────────────
+  const handleBulkDelete = useCallback(async () => {
+    const results = await Promise.allSettled(
+      selectedIds.map((id) => deleteMutation.mutate(id)),
+    );
+    const succeeded = results.filter((r) => r.status === "fulfilled").length;
+    if (succeeded === selectedIds.length) {
+      showSuccess(tActions("bulkSuccess", { count: succeeded }));
+    } else if (succeeded > 0) {
+      showError(tActions("bulkPartialSuccess", { success: succeeded, total: selectedIds.length }));
+    } else {
+      showError(tActions("bulkFailed"));
+    }
+    setSelectedIds([]);
+    refetch();
+  }, [selectedIds, deleteMutation, refetch, showSuccess, showError, tActions]);
+
+  const handleBulkStatusChange = useCallback(
+    async (status: string) => {
+      const results = await Promise.allSettled(
+        selectedIds.map((id) =>
+          updateMutation.mutate({ id, status } as Partial<AdminProduct> & { id: string }),
+        ),
+      );
+      const succeeded = results.filter((r) => r.status === "fulfilled").length;
+      if (succeeded === selectedIds.length) {
+        showSuccess(tActions("bulkSuccess", { count: succeeded }));
+      } else if (succeeded > 0) {
+        showError(tActions("bulkPartialSuccess", { success: succeeded, total: selectedIds.length }));
+      } else {
+        showError(tActions("bulkFailed"));
+      }
+      setSelectedIds([]);
+      refetch();
+    },
+    [selectedIds, updateMutation, refetch, showSuccess, showError, tActions],
+  );
+
   const { columns, actions } = useProductTableColumns(openEdit, (p) =>
     setDeleteTarget(p),
   );
@@ -166,107 +240,127 @@ function SellerProductsContent() {
   const totalItems = data?.total ?? 0;
   const isSaving = createMutation.isLoading || updateMutation.isLoading;
 
-  return (
-    <div className="space-y-6">
-      <AdminPageHeader
-        title={t("title")}
-        subtitle={t("subtitle")}
-        actionLabel={t("addProduct")}
-        onAction={openCreate}
-      />
+  // ── Active filter chips ──────────────────────────────────────────────
+  const activeFiltersSlot = statusParam ? (
+    <ActiveFilterChips
+      filters={
+        [
+          {
+            key: "status",
+            label: "Status",
+            value:
+              STATUS_OPTIONS.find((o) => o.value === statusParam)?.label ??
+              statusParam,
+          },
+        ] satisfies ActiveFilter[]
+      }
+      onRemove={() => table.set("status", "")}
+      onClearAll={() => table.set("status", "")}
+    />
+  ) : undefined;
 
-      <div className="flex flex-wrap items-center gap-2">
-        <AdminFilterBar withCard={false} columns={2}>
+  return (
+    <>
+      <ListingLayout
+        headerSlot={
+          <AdminPageHeader
+            title={t("title")}
+            subtitle={t("subtitle")}
+            actionLabel={t("addProduct")}
+            onAction={openCreate}
+          />
+        }
+        searchSlot={
           <Search
             value={table.get("q")}
             onChange={(v) => table.set("q", v)}
             placeholder={t("searchPlaceholder")}
           />
-          <Select
+        }
+        sortSlot={
+          <SortDropdown
             value={table.get("sort") || "-createdAt"}
-            onChange={(e) => table.setSort(e.target.value)}
-            options={[
-              { value: "-createdAt", label: t("sortNewest") },
-              { value: "createdAt", label: t("sortOldest") },
-              { value: "title", label: t("sortTitleAZ") },
-              { value: "-price", label: t("sortPriceHighLow") },
-              { value: "price", label: t("sortPriceLowHigh") },
-            ]}
+            onChange={(v) => table.setSort(v)}
+            options={SORT_OPTIONS}
           />
-        </AdminFilterBar>
-        <FilterDrawer
-          activeCount={statusParam ? 1 : 0}
-          onClearAll={() => table.set("status", "")}
-        >
+        }
+        filterContent={
           <FilterFacetSection
             title={t("filterStatusTitle")}
             options={STATUS_OPTIONS}
-            selected={statusParam ? [statusParam] : []}
-            onChange={(vals) => table.set("status", vals[0] ?? "")}
+            selected={stagedStatus}
+            onChange={setStagedStatus}
             searchable={false}
           />
-        </FilterDrawer>
-      </div>
-
-      {statusParam && (
-        <ActiveFilterChips
-          filters={
-            [
-              {
-                key: "status",
-                label: "Status",
-                value:
-                  STATUS_OPTIONS.find((o) => o.value === statusParam)?.label ??
-                  statusParam,
-              },
-            ] satisfies ActiveFilter[]
-          }
-          onRemove={() => table.set("status", "")}
-          onClearAll={() => table.set("status", "")}
-        />
-      )}
-
-      {!isLoading && products.length === 0 ? (
-        <EmptyState
-          icon={<Store className="w-16 h-16" />}
-          title={t("noProducts")}
-          description={t("noProductsSubtitle")}
-          actionLabel={t("addProduct")}
-          onAction={openCreate}
-        />
-      ) : (
-        <DataTable<AdminProduct>
-          data={products}
-          columns={columns}
-          keyExtractor={(p) => p.id}
-          loading={isLoading}
-          actions={actions}
-          emptyTitle={t("noProducts")}
-          emptyMessage={t("noProductsSubtitle")}
-          externalPagination
-          showViewToggle
-          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
-          onViewModeChange={(mode) => table.set("view", mode)}
-          mobileCardRender={(product) => (
-            <SellerProductCard
-              product={product}
-              onEdit={openEdit}
-              onDelete={setDeleteTarget}
+        }
+        filterActiveCount={filterActiveCount}
+        onFilterApply={handleFilterApply}
+        onFilterClear={handleFilterClear}
+        activeFiltersSlot={activeFiltersSlot}
+        selectedCount={selectedIds.length}
+        onClearSelection={() => setSelectedIds([])}
+        bulkActions={
+          <>
+            <Button variant="primary" size="sm" onClick={() => handleBulkStatusChange("published")}>
+              {tActions("bulkPublish", { count: selectedIds.length })}
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => handleBulkStatusChange("archived")}>
+              {tActions("bulkArchive", { count: selectedIds.length })}
+            </Button>
+            <Button variant="danger" size="sm" onClick={handleBulkDelete}>
+              {tActions("bulkDelete", { count: selectedIds.length })}
+            </Button>
+          </>
+        }
+        paginationSlot={
+          totalPages > 1 ? (
+            <TablePagination
+              currentPage={page}
+              totalPages={totalPages}
+              pageSize={25}
+              total={totalItems}
+              onPageChange={table.setPage}
+              isLoading={isLoading}
             />
-          )}
-        />
-      )}
-
-      {totalPages > 1 && (
-        <TablePagination
-          currentPage={page}
-          totalPages={totalPages}
-          pageSize={25}
-          total={totalItems}
-          onPageChange={table.setPage}
-          isLoading={isLoading}
-        />
-      )}
+          ) : undefined
+        }
+      >
+        {!isLoading && products.length === 0 ? (
+          <EmptyState
+            icon={<Store className="w-16 h-16" />}
+            title={t("noProducts")}
+            description={t("noProductsSubtitle")}
+            actionLabel={t("addProduct")}
+            onAction={openCreate}
+          />
+        ) : (
+          <DataTable<AdminProduct>
+            data={products}
+            columns={columns}
+            keyExtractor={(p) => p.id}
+            loading={isLoading}
+            actions={actions}
+            selectable
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+            emptyTitle={t("noProducts")}
+            emptyMessage={t("noProductsSubtitle")}
+            externalPagination
+            showViewToggle
+            viewMode={
+              (table.get("view") || "table") as "table" | "grid" | "list"
+            }
+            onViewModeChange={(mode) => table.set("view", mode)}
+            mobileCardRender={(product) => (
+              <SellerProductCard
+                product={product}
+                onEdit={openEdit}
+                onDelete={setDeleteTarget}
+              />
+            )}
+          />
+        )}
+      </ListingLayout>
 
       <SideDrawer
         isOpen={drawerMode !== null}
@@ -304,7 +398,7 @@ function SellerProductsContent() {
           isDeleting={deleteMutation.isLoading}
         />
       )}
-    </div>
+    </>
   );
 }
 

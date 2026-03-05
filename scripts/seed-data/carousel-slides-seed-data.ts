@@ -25,10 +25,8 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     cards: [
       {
         id: "card_001",
-        gridPosition: { row: 2, col: 2 },
-        mobilePosition: { row: 1, col: 1 },
-        width: 4,
-        height: 3,
+        gridRow: 1,
+        gridCol: 1,
         background: {
           type: "gradient",
           value:
@@ -56,14 +54,11 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
           },
         ],
         isButtonOnly: false,
-        mobileHideText: false,
       },
       {
         id: "card_002",
-        gridPosition: { row: 6, col: 7 },
-        mobilePosition: { row: 2, col: 1 },
-        width: 2,
-        height: 2,
+        gridRow: 2,
+        gridCol: 3,
         background: {
           type: "color",
           value: "#10b981",
@@ -74,7 +69,6 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
         },
         buttons: [],
         isButtonOnly: false,
-        mobileHideText: true,
       },
     ],
     createdAt: new Date("2024-01-01T00:00:00Z"),
@@ -96,10 +90,8 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     cards: [
       {
         id: "card_003",
-        gridPosition: { row: 3, col: 1 },
-        mobilePosition: { row: 1, col: 1 },
-        width: 3,
-        height: 4,
+        gridRow: 1,
+        gridCol: 1,
         background: {
           type: "gradient",
           value:
@@ -120,14 +112,11 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
           },
         ],
         isButtonOnly: false,
-        mobileHideText: false,
       },
       {
         id: "card_004",
-        gridPosition: { row: 7, col: 7 },
-        mobilePosition: { row: 2, col: 1 },
-        width: 2,
-        height: 2,
+        gridRow: 2,
+        gridCol: 3,
         background: {
           type: "image",
           value:
@@ -147,7 +136,6 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
           },
         ],
         isButtonOnly: true,
-        mobileHideText: false,
       },
     ],
     createdAt: new Date("2026-02-01T00:00:00Z"),
@@ -169,10 +157,8 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     cards: [
       {
         id: "card_005",
-        gridPosition: { row: 2, col: 6 },
-        mobilePosition: { row: 1, col: 1 },
-        width: 4,
-        height: 3,
+        gridRow: 1,
+        gridCol: 3,
         background: {
           type: "gradient",
           value:
@@ -200,7 +186,6 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
           },
         ],
         isButtonOnly: false,
-        mobileHideText: false,
       },
     ],
     createdAt: new Date("2026-02-05T00:00:00Z"),
@@ -224,10 +209,8 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     cards: [
       {
         id: "card_006",
-        gridPosition: { row: 4, col: 1 },
-        mobilePosition: { row: 1, col: 1 },
-        width: 3,
-        height: 2,
+        gridRow: 1,
+        gridCol: 1,
         background: {
           type: "color",
           value: "#f59e0b",
@@ -246,14 +229,11 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
           },
         ],
         isButtonOnly: false,
-        mobileHideText: false,
       },
       {
         id: "card_007",
-        gridPosition: { row: 6, col: 6 },
-        mobilePosition: { row: 2, col: 1 },
-        width: 2,
-        height: 2,
+        gridRow: 2,
+        gridCol: 3,
         background: {
           type: "gradient",
           value: "linear-gradient(135deg, #ef4444, #dc2626)",
@@ -264,7 +244,6 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
         },
         buttons: [],
         isButtonOnly: false,
-        mobileHideText: true,
       },
     ],
     createdAt: new Date("2026-02-07T00:00:00Z"),
@@ -290,10 +269,8 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     cards: [
       {
         id: "card_008",
-        gridPosition: { row: 3, col: 3 },
-        mobilePosition: { row: 1, col: 1 },
-        width: 4,
-        height: 3,
+        gridRow: 1,
+        gridCol: 2,
         background: {
           type: "gradient",
           value:
@@ -314,14 +291,11 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
           },
         ],
         isButtonOnly: false,
-        mobileHideText: false,
       },
       {
         id: "card_009",
-        gridPosition: { row: 7, col: 7 },
-        mobilePosition: { row: 2, col: 1 },
-        width: 2,
-        height: 2,
+        gridRow: 2,
+        gridCol: 3,
         background: {
           type: "color",
           value: "#ef4444",
@@ -332,7 +306,6 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
         },
         buttons: [],
         isButtonOnly: false,
-        mobileHideText: true,
       },
     ],
     createdAt: new Date("2026-02-08T00:00:00Z"),

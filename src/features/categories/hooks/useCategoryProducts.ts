@@ -9,18 +9,22 @@ export type CategoryProductItem = Pick<
   ProductDocument,
   | "id"
   | "title"
+  | "description"
   | "price"
   | "currency"
   | "mainImage"
+  | "images"
+  | "video"
   | "status"
   | "featured"
   | "isAuction"
   | "currentBid"
   | "isPromoted"
+  | "slug"
 >;
 
-interface CategoriesResponse {
-  data: CategoryDocument[];
+interface CategoryResponse {
+  data: CategoryDocument;
 }
 
 interface ProductsResponse {
@@ -33,13 +37,14 @@ interface UseCategoryProductsOptions {
   page: number;
   pageSize: number;
   priceRange?: string;
+  search?: string;
   /** table.params.toString() — used as cache-key suffix for reactivity */
   cacheKey: string;
 }
 
 /**
  * useCategoryProducts
- * Fetches a category by slug (via flat categories list) and then fetches
+ * Fetches a category by slug (via slug API query) and then fetches
  * products filtered to that category.  Sort/pagination/price-range are
  * controlled by the caller via `options`.
  */
@@ -47,19 +52,17 @@ export function useCategoryProducts(
   slug: string,
   options: UseCategoryProductsOptions,
 ) {
-  const { sort, page, pageSize, priceRange, cacheKey } = options;
+  const { sort, page, pageSize, priceRange, search, cacheKey } = options;
 
-  /* ---- Fetch all categories (flat) to resolve slug → category doc ---- */
+  /* ---- Fetch category by slug ---- */
   const { data: catData, isLoading: catLoading } =
-    useApiQuery<CategoriesResponse>({
-      queryKey: ["categories", "flat"],
-      queryFn: () => categoryService.list("flat=true"),
+    useApiQuery<CategoryResponse>({
+      queryKey: ["categories", "slug", slug],
+      queryFn: () => categoryService.getBySlug(slug),
+      enabled: !!slug,
     });
 
-  const category = useMemo(
-    () => (catData?.data ?? []).find((c) => c.slug === slug),
-    [catData, slug],
-  );
+  const category = catData?.data ?? null;
 
   /* ---- Build products query params from category + options ---- */
   const productsParams = useMemo(() => {
@@ -73,8 +76,9 @@ export function useCategoryProducts(
     const filterParts = ["status==published", `category==${category.id}`];
     if (minPrice) filterParts.push(`price>=${minPrice}`);
     if (maxPrice) filterParts.push(`price<=${maxPrice}`);
+    if (search) filterParts.push(`title_=${search}`);
     return `filters=${encodeURIComponent(filterParts.join(","))}&sorts=${encodeURIComponent(sort)}&page=${String(page)}&pageSize=${String(pageSize)}`;
-  }, [category, sort, page, pageSize, priceRange]);
+  }, [category, sort, page, pageSize, priceRange, search]);
 
   /* ---- Fetch products ---- */
   const {

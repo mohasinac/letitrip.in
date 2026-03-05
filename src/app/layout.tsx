@@ -2,11 +2,12 @@ import "./globals.css";
 import { getLocale } from "next-intl/server";
 import type { Metadata, Viewport } from "next";
 import { SEO_CONFIG } from "@/constants/seo";
+import { organizationJsonLd, searchBoxJsonLd } from "@/lib/seo";
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#3b82f6" },
-    { media: "(prefers-color-scheme: dark)", color: "#1e3a5f" },
+    { media: "(prefers-color-scheme: light)", color: "#4f46e5" },
+    { media: "(prefers-color-scheme: dark)", color: "#312e81" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -63,6 +64,13 @@ export const metadata: Metadata = {
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   },
+  alternates: {
+    canonical: SEO_CONFIG.siteUrl,
+    languages: {
+      en: SEO_CONFIG.siteUrl,
+      hi: `${SEO_CONFIG.siteUrl}/hi`,
+    },
+  },
 };
 
 /**
@@ -87,6 +95,18 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning className="h-full">
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationJsonLd()),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(searchBoxJsonLd()),
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

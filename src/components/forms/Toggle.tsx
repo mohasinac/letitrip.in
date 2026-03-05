@@ -2,14 +2,14 @@
 
 import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
-import Button from "../ui/Button";
+import { classNames } from "@/helpers";
 import { Label, Span } from "../typography/Typography";
 
 /**
  * Toggle/Switch Component
  *
  * A switch control for boolean input with smooth animation.
- * Supports controlled and uncontrolled modes.
+ * Supports controlled and uncontrolled modes with themed coloring.
  *
  * @component
  * @example
@@ -58,63 +58,67 @@ export default function Toggle({
     onChange?.(newChecked);
   };
 
-  const sizeClasses = {
+  const sizeConfig = {
     sm: {
-      container: "w-8 h-5",
-      toggle: "w-3 h-3",
-      translate: checked ? "translate-x-3" : "translate-x-1",
+      track: "w-8 h-[18px]",
+      thumb: "w-3.5 h-3.5",
+      translate: checked ? "translate-x-[14px]" : "translate-x-0.5",
     },
     md: {
-      container: "w-11 h-6",
-      toggle: "w-4 h-4",
-      translate: checked ? "translate-x-5" : "translate-x-1",
+      track: "w-11 h-6",
+      thumb: "w-5 h-5",
+      translate: checked ? "translate-x-5" : "translate-x-0.5",
     },
     lg: {
-      container: "w-14 h-7",
-      toggle: "w-5 h-5",
-      translate: checked ? "translate-x-7" : "translate-x-1",
+      track: "w-14 h-7",
+      thumb: "w-6 h-6",
+      translate: checked ? "translate-x-7" : "translate-x-0.5",
     },
   };
 
   const toggleId = id || `toggle-${React.useId()}`;
+  const cfg = sizeConfig[size];
 
   return (
-    <div className={`inline-flex items-center gap-3 ${className}`}>
-      <Button
+    <div className={classNames("inline-flex items-center gap-3", className)}>
+      <button
         type="button"
         role="switch"
         aria-checked={checked}
         aria-labelledby={label ? `${toggleId}-label` : undefined}
         disabled={disabled}
         onClick={handleChange}
-        className={`
-          ${sizeClasses[size].container}
-          relative inline-flex items-center rounded-full
-          transition-colors duration-200 ease-in-out
-          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-          ${checked ? "bg-blue-600 dark:bg-blue-500" : themed.bgTertiary}
-          ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
-        `}
+        className={classNames(
+          cfg.track,
+          "relative inline-flex items-center rounded-full p-0",
+          "transition-colors duration-200 ease-in-out",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 focus-visible:ring-offset-2",
+          "dark:focus-visible:ring-secondary-400/40 dark:focus-visible:ring-offset-slate-900",
+          checked
+            ? "bg-primary-600 dark:bg-secondary-500"
+            : "bg-zinc-300 dark:bg-slate-600",
+          disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
+        )}
       >
         <Span
-          className={`
-            ${sizeClasses[size].toggle}
-            ${sizeClasses[size].translate}
-            inline-block rounded-full ${themed.bgSecondary}
-            transform transition-transform duration-200 ease-in-out
-            shadow-lg
-          `}
+          className={classNames(
+            cfg.thumb,
+            cfg.translate,
+            "inline-block rounded-full bg-white shadow-sm",
+            "transform transition-transform duration-200 ease-in-out",
+          )}
         />
-      </Button>
+      </button>
 
       {label && (
         <Label
           id={`${toggleId}-label`}
           htmlFor={toggleId}
-          className={`
-            text-sm font-medium cursor-pointer select-none
-            ${disabled ? "opacity-50 cursor-not-allowed" : ""}
-          `}
+          className={classNames(
+            "text-sm font-medium cursor-pointer select-none",
+            themed.textPrimary,
+            disabled ? "opacity-50 cursor-not-allowed" : "",
+          )}
           onClick={!disabled ? handleChange : undefined}
         >
           {label}

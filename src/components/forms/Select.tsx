@@ -1,6 +1,7 @@
 import React from "react";
 import { Label, Text } from "../typography/Typography";
 import { THEME_CONSTANTS } from "@/constants";
+import { classNames } from "@/helpers";
 
 /**
  * Select Component
@@ -28,6 +29,8 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   error?: string;
   helperText?: string;
   options: Array<{ value: string; label: string }>;
+  /** Optional placeholder text shown as the first disabled option */
+  placeholder?: string;
 }
 
 export default function Select({
@@ -35,6 +38,7 @@ export default function Select({
   error,
   helperText,
   options,
+  placeholder,
   className = "",
   required,
   ...props
@@ -45,23 +49,22 @@ export default function Select({
     <div className="w-full">
       {label && <Label required={required}>{label}</Label>}
 
-      <div className="relative">
+      <div className="relative group">
         <select
-          className={`
-            ${input.base}
-            pr-10 appearance-none cursor-pointer
-            ${
-              error
-                ? `${themed.borderError} focus:ring-red-500`
-                : `${themed.border} ${themed.focusRing}`
-            }
-            ${themed.bgInput}
-            ${themed.textPrimary}
-            ${input.disabled}
-            ${className}
-          `}
+          className={classNames(
+            input.base,
+            "pr-10 appearance-none cursor-pointer",
+            error ? input.error : "",
+            className,
+          )}
+          aria-invalid={error ? "true" : undefined}
           {...props}
         >
+          {placeholder && (
+            <option value="" disabled>
+              {placeholder}
+            </option>
+          )}
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -70,12 +73,17 @@ export default function Select({
         </select>
 
         {/* Dropdown Icon */}
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-150">
           <svg
-            className={`w-5 h-5 ${themed.textMuted}`}
+            className={classNames(
+              "w-5 h-5 transition-transform duration-200",
+              error ? themed.textError : themed.textMuted,
+              "group-focus-within:text-primary-500 dark:group-focus-within:text-secondary-400",
+            )}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -91,7 +99,7 @@ export default function Select({
         <Text
           className={`mt-1.5 text-sm ${themed.textError} flex items-center gap-1`}
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path
               fillRule="evenodd"
               d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"

@@ -4,7 +4,7 @@ import { useApiQuery } from "./useApiQuery";
 import { productService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
-interface FeaturedProductsResult {
+interface PaginatedResult {
   items: ProductDocument[];
   total: number;
   page: number;
@@ -13,16 +13,44 @@ interface FeaturedProductsResult {
   hasMore: boolean;
 }
 
+const MIN_COUNT = 12;
+
 /**
  * useFeaturedProducts
  * Fetches promoted/featured products for the homepage featured section.
- * Returns up to 18 published, promoted products sorted by newest.
+ * If fewer than MIN_COUNT promoted products exist, fills the remaining
+ * slots with the latest published products (deduped).
  */
 export function useFeaturedProducts() {
-  return useApiQuery<FeaturedProductsResult>({
+  return useApiQuery<PaginatedResult>({
     queryKey: ["products", "featured"],
-    queryFn: () =>
-      productService.list("isPromoted=true&status=published&pageSize=18"),
+    queryFn: async () => {
+      const promotedRes = (await productService.list(
+        "isPromoted=true&status=published&pageSize=18",
+      )) as PaginatedResult;
+      const promoted = promotedRes?.items ?? [];
+
+      if (promoted.length >= MIN_COUNT) return promotedRes;
+
+      // Fill remaining slots with latest products
+      const remaining = MIN_COUNT - promoted.length;
+      const latestRes = (await productService.getLatest(
+        remaining + promoted.length,
+      )) as PaginatedResult;
+      const latest = latestRes?.items ?? [];
+
+      const existingIds = new Set(promoted.map((p) => p.id));
+      const filler = latest
+        .filter((p) => !existingIds.has(p.id))
+        .slice(0, remaining);
+
+      const merged = [...promoted, ...filler];
+      return {
+        ...promotedRes,
+        items: merged,
+        total: merged.length,
+      };
+    },
     cacheTTL: 5 * 60 * 1000, // 5 minutes
   });
 }

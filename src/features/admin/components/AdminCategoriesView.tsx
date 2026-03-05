@@ -22,6 +22,7 @@ import {
   DrawerFormFooter,
   flattenCategories,
   getCategoryTableColumns,
+  ListingLayout,
   SideDrawer,
   Text,
 } from "@/components";
@@ -37,7 +38,6 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
   const { showToast } = useToast();
   const t = useTranslations("adminCategories");
   const tActions = useTranslations("actions");
-  const tLoading = useTranslations("loading");
 
   const {
     data,
@@ -230,54 +230,58 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
       <DrawerFormFooter onCancel={handleCloseDrawer} onSubmit={handleSave} />
     );
 
-  const { themed, flex } = THEME_CONSTANTS;
+  const { themed } = THEME_CONSTANTS;
 
   return (
     <>
-      <div className="space-y-6">
-        <div className={flex.between}>
+      <ListingLayout
+        headerSlot={
           <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
-          <div className="flex gap-2">
-            <div className={`flex border ${themed.border} rounded-md`}>
-              <Button
-                onClick={() => setViewMode("tree")}
-                className={`px-3 py-2 text-sm ${
-                  viewMode === "tree"
-                    ? "bg-blue-600 text-white"
-                    : `${themed.bgTertiary} ${themed.textSecondary}`
-                }`}
-              >
-                {t("treeView")}
-              </Button>
-              <Button
-                onClick={() => setViewMode("table")}
-                className={`px-3 py-2 text-sm ${
-                  viewMode === "table"
-                    ? "bg-blue-600 text-white"
-                    : `${themed.bgTertiary} ${themed.textSecondary}`
-                }`}
-              >
-                {t("tableView")}
-              </Button>
-            </div>
-            <Button onClick={handleCreate} variant="primary">
-              + {tActions("create")}
+        }
+        viewToggleSlot={
+          <div className={`flex border ${themed.border} rounded-md`}>
+            <Button
+              onClick={() => setViewMode("tree")}
+              className={`px-3 py-2 text-sm ${
+                viewMode === "tree"
+                  ? "bg-blue-600 text-white"
+                  : `${themed.bgTertiary} ${themed.textSecondary}`
+              }`}
+            >
+              {t("treeView")}
+            </Button>
+            <Button
+              onClick={() => setViewMode("table")}
+              className={`px-3 py-2 text-sm ${
+                viewMode === "table"
+                  ? "bg-blue-600 text-white"
+                  : `${themed.bgTertiary} ${themed.textSecondary}`
+              }`}
+            >
+              {t("tableView")}
             </Button>
           </div>
-        </div>
-
-        {isLoading ? (
-          <Card>
-            <div className="text-center py-8">{tLoading("default")}</div>
-          </Card>
-        ) : error ? (
-          <Card>
-            <div className="text-center py-8">
-              <Text className="text-red-600 mb-4">{error.message}</Text>
-              <Button onClick={() => refetch()}>{tActions("retry")}</Button>
-            </div>
-          </Card>
-        ) : viewMode === "tree" ? (
+        }
+        actionsSlot={
+          <Button onClick={handleCreate} variant="primary">
+            + {tActions("create")}
+          </Button>
+        }
+        loading={isLoading}
+        errorSlot={
+          error ? (
+            <Card>
+              <div className="text-center py-8">
+                <Text variant="error" className="mb-4">
+                  {error.message}
+                </Text>
+                <Button onClick={() => refetch()}>{tActions("retry")}</Button>
+              </div>
+            </Card>
+          ) : undefined
+        }
+      >
+        {viewMode === "tree" ? (
           <CategoryTreeView
             categories={categories}
             onSelect={(cat) => handleEdit(cat as Partial<Category>)}
@@ -293,7 +297,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
             actions={actions}
           />
         )}
-      </div>
+      </ListingLayout>
 
       {editingCategory && (
         <SideDrawer

@@ -42,11 +42,13 @@ export const SITE_CONFIG = {
     auctions: ROUTES.PUBLIC.AUCTIONS,
     sellers: ROUTES.PUBLIC.SELLERS, // kept for "Sell on LetItRip" page
     stores: ROUTES.PUBLIC.STORES, // storefront directory
+    events: ROUTES.PUBLIC.EVENTS,
+    blog: ROUTES.PUBLIC.BLOG,
     categories: ROUTES.PUBLIC.CATEGORIES,
     promotions: ROUTES.PUBLIC.PROMOTIONS,
+    reviews: ROUTES.PUBLIC.REVIEWS,
     about: ROUTES.PUBLIC.ABOUT,
     contact: ROUTES.PUBLIC.CONTACT,
-    blog: ROUTES.PUBLIC.BLOG,
   },
 
   // Social media links

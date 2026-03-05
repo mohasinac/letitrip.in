@@ -47,7 +47,11 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
     tier: { canFilter: true, canSort: true },
     isActive: { canFilter: true, canSort: false },
     isFeatured: { canFilter: true, canSort: false },
+    isSearchable: { canFilter: true, canSort: false },
     parentId: { canFilter: true, canSort: false },
+    order: { canFilter: true, canSort: true },
+    'metrics.productCount': { path: 'metrics.productCount', canFilter: true, canSort: true },
+    'metrics.totalItemCount': { path: 'metrics.totalItemCount', canFilter: true, canSort: true },
     createdAt: { canFilter: true, canSort: true },
   };
 

@@ -8,14 +8,18 @@ export type ProductItem = Pick<
   ProductDocument,
   | "id"
   | "title"
+  | "description"
   | "price"
   | "currency"
   | "mainImage"
+  | "images"
+  | "video"
   | "status"
   | "featured"
   | "isAuction"
   | "currentBid"
   | "isPromoted"
+  | "slug"
   | "category"
 >;
 

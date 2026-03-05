@@ -23,6 +23,7 @@ jest.mock("next/image", () => ({
 
 jest.mock("@/hooks", () => ({
   useCountdown: jest.fn().mockReturnValue({ days: 0, hours: 1, minutes: 30, seconds: 0 }),
+  useWishlistToggle: () => ({ inWishlist: false, isLoading: false, toggle: jest.fn() }),
 }));
 
 jest.mock("@/utils", () => ({
@@ -41,9 +42,11 @@ jest.mock("@/i18n/navigation", () => ({
 const baseProduct = {
   id: "a1",
   title: "Vintage Camera",
+  description: "A rare vintage film camera in great condition.",
   price: 5000,
   currency: "INR",
   mainImage: "/cam.jpg",
+  images: [] as string[],
   isAuction: true,
   auctionEndDate: new Date(Date.now() + 3_600_000),
   startingBid: 3000,
@@ -77,7 +80,6 @@ describe("AuctionCard", () => {
     const { useCountdown } = require("@/hooks");
     (useCountdown as jest.Mock).mockReturnValueOnce(null);
     render(<AuctionCard product={baseProduct} />);
-    // "ended" appears in both the status badge and the countdown text
     expect(screen.getAllByText("ended").length).toBeGreaterThanOrEqual(1);
   });
 
@@ -85,7 +87,6 @@ describe("AuctionCard", () => {
     const noImage = { ...baseProduct, mainImage: undefined as unknown as string };
     render(<AuctionCard product={noImage} />);
     expect(document.querySelector("img")).toBeNull();
-    // fallback emoji rendered
     expect(screen.getByRole("img", { name: "Vintage Camera" })).toBeInTheDocument();
   });
 
@@ -101,5 +102,47 @@ describe("AuctionCard", () => {
   it("does not show play indicator when product has no video", () => {
     render(<AuctionCard product={baseProduct} />);
     expect(screen.queryByText("▶")).toBeNull();
+  });
+
+  it("renders Bid button when auction is live", () => {
+    render(<AuctionCard product={baseProduct} />);
+    expect(screen.getByText("placeBid")).toBeInTheDocument();
+  });
+
+  it("renders Buyout button when buyoutPrice is provided", () => {
+    render(<AuctionCard product={baseProduct} buyoutPrice={8000} />);
+    expect(screen.getByText("buyout")).toBeInTheDocument();
+  });
+
+  it("does not render Buyout button when no buyoutPrice", () => {
+    render(<AuctionCard product={baseProduct} />);
+    expect(screen.queryByText("buyout")).toBeNull();
+  });
+
+  it("shows disabled Ended button when auction has ended", () => {
+    const { useCountdown } = require("@/hooks");
+    (useCountdown as jest.Mock).mockReturnValueOnce(null);
+    render(<AuctionCard product={baseProduct} />);
+    expect(screen.queryByText("placeBid")).toBeNull();
+    const endedBtns = screen.getAllByText("ended");
+    const disabledBtn = endedBtns.find(
+      (el) => el.closest("button") !== null,
+    );
+    expect(disabledBtn).toBeTruthy();
+    expect(disabledBtn!.closest("button")).toBeDisabled();
+  });
+
+  it("renders description in list variant", () => {
+    render(<AuctionCard product={baseProduct} variant="list" />);
+    expect(
+      screen.getByText("A rare vintage film camera in great condition."),
+    ).toBeInTheDocument();
+  });
+
+  it("renders wishlist heart button", () => {
+    render(<AuctionCard product={baseProduct} />);
+    expect(
+      screen.getByRole("button", { name: /addToWishlist/i }),
+    ).toBeInTheDocument();
   });
 });

@@ -24,10 +24,12 @@ import type {
 class EventRepository extends BaseRepository<EventDocument> {
   static readonly SIEVE_FIELDS: FirebaseSieveFields = {
     type: { canFilter: true, canSort: false },
-    status: { canFilter: true, canSort: false },
+    status: { canFilter: true, canSort: true },
     title: { canFilter: true, canSort: true },
+    createdBy: { canFilter: true, canSort: false },
     startsAt: { canFilter: true, canSort: true },
     endsAt: { canFilter: true, canSort: true },
+    'stats.totalEntries': { path: 'stats.totalEntries', canFilter: true, canSort: true },
     createdAt: { canFilter: true, canSort: true },
   };
 

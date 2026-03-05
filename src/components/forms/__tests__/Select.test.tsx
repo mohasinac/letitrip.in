@@ -33,13 +33,23 @@ describe('Select Component', () => {
   it('applies error styling when error is present', () => {
     render(<Select options={options} error="Error" />);
     const select = screen.getByRole('combobox');
-    expect(select).toHaveClass('border-red-500');
+    expect(select).toHaveClass('border-red-400');
   });
 
   it('renders all options', () => {
     render(<Select options={options} />);
     const select = screen.getByRole('combobox');
     expect(select.querySelectorAll('option')).toHaveLength(3);
+  });
+
+  it('renders placeholder as first disabled option', () => {
+    render(<Select options={options} placeholder="Choose one" />);
+    const select = screen.getByRole('combobox');
+    const allOptions = select.querySelectorAll('option');
+    expect(allOptions).toHaveLength(4);
+    expect(allOptions[0]).toHaveValue('');
+    expect(allOptions[0]).toBeDisabled();
+    expect(allOptions[0].textContent).toBe('Choose one');
   });
 
   it('handles user selection', async () => {

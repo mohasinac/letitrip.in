@@ -13,14 +13,15 @@
  * ┌─────────────────────────────────────────────────────────────────────┐
  * │  Scheduled Jobs (Cloud Scheduler + Cloud Run)                       │
  * ├─────────────────────────────────────────────────────────────────────┤
- * │  auctionSettlement  — every 15 min    settle ended auctions         │
- * │  pendingOrderTimeout— every 2 hrs     cancel stale orders           │
- * │  couponExpiry       — 00:05 UTC       deactivate old coupons        │
- * │  dailyDataCleanup   — 02:00 UTC       purge sessions + tokens       │
- * │  payoutBatch        — 06:00 UTC       dispatch seller payouts       │
- * │  productStatsSync   — 01:00 UTC       recompute avg ratings         │
- * │  cartPrune          — Sun 04:00 UTC   remove stale carts            │
- * │  notificationPrune  — Mon 01:00 UTC   remove old read notifications │
+ * │  auctionSettlement      — every 15 min    settle ended auctions          │
+ * │  pendingOrderTimeout    — every 2 hrs     cancel stale orders            │
+ * │  couponExpiry           — 00:05 UTC       deactivate old coupons         │
+ * │  dailyDataCleanup       — 02:00 UTC       purge sessions + tokens        │
+ * │  weeklyPayoutEligibility— Sat 05:00 UTC   create payout records          │
+ * │  payoutBatch            — 06:00 UTC       dispatch seller payouts        │
+ * │  productStatsSync       — 01:00 UTC       recompute avg ratings          │
+ * │  cartPrune              — Sun 04:00 UTC   remove stale carts             │
+ * │  notificationPrune      — Mon 01:00 UTC   remove old read notifications  │
  * ├─────────────────────────────────────────────────────────────────────┤
  * │  Firestore Triggers                                                 │
  * ├─────────────────────────────────────────────────────────────────────┤
@@ -34,6 +35,7 @@ export { auctionSettlement } from "./jobs/auctionSettlement";
 export { pendingOrderTimeout } from "./jobs/pendingOrderTimeout";
 export { couponExpiry } from "./jobs/couponExpiry";
 export { dailyDataCleanup } from "./jobs/dailyDataCleanup";
+export { weeklyPayoutEligibility } from "./jobs/weeklyPayoutEligibility";
 export { payoutBatch } from "./jobs/payoutBatch";
 export { productStatsSync } from "./jobs/productStatsSync";
 export { cartPrune } from "./jobs/cartPrune";

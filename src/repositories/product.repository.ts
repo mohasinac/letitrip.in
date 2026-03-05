@@ -261,6 +261,8 @@ class ProductRepository extends BaseRepository<ProductDocument> {
     slug: { canFilter: true, canSort: false },
     category: { canFilter: true, canSort: true },
     subcategory: { canFilter: true, canSort: true },
+    brand: { canFilter: true, canSort: true },
+    condition: { canFilter: true, canSort: false },
     status: { canFilter: true, canSort: true },
     sellerId: { canFilter: true, canSort: false },
     sellerName: { canFilter: true, canSort: true },
@@ -269,6 +271,9 @@ class ProductRepository extends BaseRepository<ProductDocument> {
     isPromoted: { canFilter: true, canSort: false },
     price: { canFilter: true, canSort: true },
     stockQuantity: { canFilter: true, canSort: true },
+    viewCount: { canFilter: true, canSort: true },
+    currentBid: { canFilter: true, canSort: true },
+    bidCount: { canFilter: true, canSort: true },
     createdAt: { canFilter: true, canSort: true },
     updatedAt: { canFilter: true, canSort: true },
   };

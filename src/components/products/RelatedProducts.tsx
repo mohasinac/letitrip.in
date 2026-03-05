@@ -13,14 +13,18 @@ type RelatedProduct = Pick<
   ProductDocument,
   | "id"
   | "title"
+  | "description"
   | "price"
   | "currency"
   | "mainImage"
+  | "images"
+  | "video"
   | "status"
   | "featured"
   | "isAuction"
   | "currentBid"
   | "isPromoted"
+  | "slug"
   | "category"
 >;
 
@@ -39,7 +43,7 @@ export function RelatedProducts({ category, excludeId }: RelatedProductsProps) {
   const { data, isLoading } = useRelatedProducts(category, excludeId, 8);
 
   const products =
-    data?.items?.filter((p: RelatedProduct) => p.id !== excludeId) ?? [];
+    data?.items?.filter((p) => p.id !== excludeId) ?? [];
 
   if (!isLoading && products.length === 0) return null;
 
@@ -66,7 +70,7 @@ export function RelatedProducts({ category, excludeId }: RelatedProductsProps) {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-3 md:gap-4">
-          {products.slice(0, 4).map((product: RelatedProduct) => (
+          {products.slice(0, 4).map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

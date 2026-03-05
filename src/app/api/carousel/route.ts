@@ -30,6 +30,7 @@ import {
 import { AuthenticationError, AuthorizationError } from "@/lib/errors";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { serverLogger } from "@/lib/server-logger";
+import type { GridCard } from "@/db/schema";
 
 /**
  * GET /api/carousel
@@ -170,12 +171,16 @@ export async function POST(request: NextRequest) {
       ...validation.data,
       cards: validation.data.gridCards.map((card, index) => ({
         ...card,
+        gridRow: card.gridRow as 1 | 2,
+        gridCol: card.gridCol as 1 | 2 | 3,
         id: `card-${Date.now()}-${index}`,
         content: card.content || { title: "", subtitle: "", description: "" },
         buttons: (card.buttons || []).map((btn, btnIndex) => ({
           ...btn,
           id: `btn-${Date.now()}-${index}-${btnIndex}`,
         })),
+        isButtonOnly: card.isButtonOnly ?? false,
+        sizing: card.sizing as GridCard["sizing"],
       })),
       createdBy: user.uid,
     });

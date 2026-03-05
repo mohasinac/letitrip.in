@@ -219,6 +219,7 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
     productTitle: { canFilter: true, canSort: true },
     userId: { canFilter: true, canSort: false },
     userName: { canFilter: true, canSort: true },
+    sellerId: { canFilter: true, canSort: false },
     status: { canFilter: true, canSort: true },
     rating: { canFilter: true, canSort: true },
     verified: { canFilter: true, canSort: false },

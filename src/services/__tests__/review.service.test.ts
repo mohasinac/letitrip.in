@@ -67,11 +67,11 @@ describe("reviewService", () => {
     );
   });
 
-  it("getHomepageReviews() calls GET with approved+top-rated filter", async () => {
+  it("getHomepageReviews() calls GET with approved+latest filter", async () => {
     mockGet.mockResolvedValueOnce([] as never);
     await reviewService.getHomepageReviews();
     expect(mockGet).toHaveBeenCalledWith(
-      `${API_ENDPOINTS.REVIEWS.LIST}?filters=status==approved&sorts=-rating&pageSize=6`,
+      `${API_ENDPOINTS.REVIEWS.LIST}?filters=status==approved&sorts=-createdAt&pageSize=6`,
     );
   });
 

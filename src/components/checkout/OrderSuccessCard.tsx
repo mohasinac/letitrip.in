@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Badge, Heading, Text, Caption } from "@/components";
 import { useTranslations } from "next-intl";

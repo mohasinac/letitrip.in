@@ -82,4 +82,20 @@ describe("Input Component", () => {
     render(<Input placeholder="Enter text" />);
     expect(screen.getByPlaceholderText("Enter text")).toBeInTheDocument();
   });
-});
+  it('renders rightIcon', () => {
+    const rightIcon = <span data-testid="right-icon">x</span>;
+    render(<Input rightIcon={rightIcon} />);
+    expect(screen.getByTestId('right-icon')).toBeInTheDocument();
+  });
+
+  it('shows success indicator when success prop is true', () => {
+    const { container } = render(<Input success />);
+    const successSvg = container.querySelector('.text-emerald-500');
+    expect(successSvg).toBeInTheDocument();
+  });
+
+  it('does not show success indicator when error is also set', () => {
+    const { container } = render(<Input success error="Error" />);
+    const successSvg = container.querySelector('.text-emerald-500');
+    expect(successSvg).not.toBeInTheDocument();
+  });});

@@ -21,7 +21,18 @@ describe('Checkbox Component', () => {
   it('applies error styling when error is present', () => {
     render(<Checkbox label="Accept" error="Error" />);
     const checkbox = screen.getByRole('checkbox');
-    expect(checkbox).toHaveClass('border-red-500');
+    expect(checkbox).toHaveClass('border-red-400');
+  });
+
+  it('shows indeterminate state', () => {
+    render(<Checkbox label="Select all" indeterminate />);
+    const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+    expect(checkbox.indeterminate).toBe(true);
+  });
+
+  it('renders suffix content', () => {
+    render(<Checkbox label="Accept" suffix={<span data-testid="suffix">info</span>} />);
+    expect(screen.getByTestId('suffix')).toBeInTheDocument();
   });
 
   it('handles check/uncheck', async () => {

@@ -1,18 +1,16 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import {
-  THEME_CONSTANTS,
-  generateMetadata as genMetadata,
-  SEO_CONFIG,
-} from "@/constants";
+import { getTranslations } from "next-intl/server";
+import { THEME_CONSTANTS } from "@/constants";
 import { FAQPageContent } from "@/components";
 
-export const metadata: Metadata = genMetadata({
-  title: SEO_CONFIG.pages.faqs.title,
-  description: SEO_CONFIG.pages.faqs.description,
-  keywords: [...SEO_CONFIG.pages.faqs.keywords],
-  path: "/faqs",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("faq");
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  };
+}
 
 export default function FAQPage() {
   return (

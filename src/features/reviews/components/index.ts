@@ -1,0 +1,1 @@
+export { ReviewsListView } from "./ReviewsListView";

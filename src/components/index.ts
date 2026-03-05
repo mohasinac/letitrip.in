@@ -114,6 +114,9 @@ export * from "./seller";
 // ==================== BLOG ====================
 export * from "./blog";
 
+// ==================== REVIEWS ====================
+export * from "./reviews";
+
 // ==================== PROMOTIONS ====================
 export * from "./promotions";
 

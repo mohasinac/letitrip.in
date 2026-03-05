@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { THEME_CONSTANTS, UI_PLACEHOLDERS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import { Button } from "@/components";
 import Input from "../forms/Input";
 
@@ -12,9 +13,11 @@ interface FAQSearchBarProps {
 
 export function FAQSearchBar({
   onSearch,
-  placeholder = UI_PLACEHOLDERS.SEARCH,
+  placeholder,
 }: FAQSearchBarProps) {
   const [query, setQuery] = useState("");
+  const t = useTranslations("faq");
+  const tActions = useTranslations("actions");
 
   const handleSearch = (value: string) => {
     setQuery(value);
@@ -50,7 +53,7 @@ export function FAQSearchBar({
         type="text"
         value={query}
         onChange={(e) => handleSearch(e.target.value)}
-        placeholder={placeholder}
+        placeholder={placeholder || t("searchPlaceholder")}
         className="w-full pl-12 pr-12"
       />
 
@@ -59,7 +62,7 @@ export function FAQSearchBar({
         <Button
           onClick={handleClear}
           className={`absolute right-4 top-1/2 -translate-y-1/2 ${THEME_CONSTANTS.themed.textSecondary} hover:${THEME_CONSTANTS.themed.textPrimary} transition-colors`}
-          aria-label="Clear search"
+          aria-label={tActions("clear")}
         >
           <svg
             className="w-5 h-5"

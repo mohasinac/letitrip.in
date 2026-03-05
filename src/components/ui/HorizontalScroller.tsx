@@ -41,10 +41,62 @@ function resolvePerView(cfg: PerViewConfig, containerWidth: number): number {
 interface ArrowButtonProps {
   direction: "left" | "right";
   onClick: () => void;
+  size?: "sm" | "lg";
+  disabled?: boolean;
 }
 
-function ArrowButton({ direction, onClick }: ArrowButtonProps) {
+function ArrowButton({
+  direction,
+  onClick,
+  size = "sm",
+  disabled = false,
+}: ArrowButtonProps) {
   const { themed, flex } = THEME_CONSTANTS;
+
+  if (size === "lg") {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        aria-label={direction === "left" ? "Scroll left" : "Scroll right"}
+        className={[
+          `${flex.noShrink} self-stretch`,
+          `${flex.center}`,
+          "w-12 min-h-[3rem]",
+          "rounded-xl",
+          "border-2",
+          themed.border,
+          "bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm",
+          disabled
+            ? "opacity-30 cursor-not-allowed"
+            : "hover:bg-white dark:hover:bg-gray-800 hover:shadow-md active:scale-95 cursor-pointer",
+          "transition-all duration-200",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
+        ].join(" ")}
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={themed.textPrimary}
+          aria-hidden
+        >
+          {direction === "left" ? (
+            <polyline points="15 18 9 12 15 6" />
+          ) : (
+            <polyline points="9 18 15 12 9 6" />
+          )}
+        </svg>
+      </button>
+    );
+  }
+
   return (
     <Button
       type="button"
@@ -201,6 +253,19 @@ export interface HorizontalScrollerProps<T = unknown> {
    * Only applies in children passthrough mode.
    */
   onScroll?: React.UIEventHandler<HTMLDivElement>;
+
+  /**
+   * Show a visible thin horizontal scrollbar below the scroll container.
+   * Default: false (scrollbar hidden)
+   */
+  showScrollbar?: boolean;
+
+  /**
+   * Size of the arrow navigation buttons.
+   * - 'sm' (default): compact 32 px buttons (original style)
+   * - 'lg': 48 px buttons with backdrop, for section carousels
+   */
+  arrowSize?: "sm" | "lg";
 }
 
 // â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -225,6 +290,8 @@ export function HorizontalScroller<T = unknown>({
   children,
   scrollContainerRef,
   onScroll,
+  showScrollbar = false,
+  arrowSize = "sm",
 }: HorizontalScrollerProps<T>) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -476,7 +543,8 @@ export function HorizontalScroller<T = unknown>({
         className={[
           "flex overflow-x-auto touch-pan-x",
           snapToItems ? "snap-x snap-mandatory" : "",
-          utilities.scrollbarHide,
+          showScrollbar ? utilities.scrollbarThinX : utilities.scrollbarHide,
+          showScrollbar ? "pb-2" : "",
           className,
         ]
           .filter(Boolean)
@@ -505,7 +573,8 @@ export function HorizontalScroller<T = unknown>({
     overflow.xAuto,
     isGrid ? "" : "flex",
     snapToItems ? "snap-x snap-mandatory" : "",
-    utilities.scrollbarHide,
+    showScrollbar ? utilities.scrollbarThinX : utilities.scrollbarHide,
+    showScrollbar ? "pb-2" : "",
     drag.cursorClass,
     scrollerClassName,
   ]
@@ -523,7 +592,14 @@ export function HorizontalScroller<T = unknown>({
       aria-label="Scrollable content"
     >
       {/* â”€â”€ Left arrow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      {showArrows && <ArrowButton direction="left" onClick={scrollLeft} />}
+      {showArrows && (
+        <ArrowButton
+          direction="left"
+          onClick={scrollLeft}
+          size={arrowSize}
+          disabled={!canScrollLeft}
+        />
+      )}
 
       {/* â”€â”€ Scroll viewport â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div
@@ -597,7 +673,14 @@ export function HorizontalScroller<T = unknown>({
       </div>
 
       {/* â”€â”€ Right arrow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      {showArrows && <ArrowButton direction="right" onClick={scrollRight} />}
+      {showArrows && (
+        <ArrowButton
+          direction="right"
+          onClick={scrollRight}
+          size={arrowSize}
+          disabled={!canScrollRight}
+        />
+      )}
     </div>
   );
 }

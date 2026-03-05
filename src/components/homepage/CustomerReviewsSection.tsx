@@ -1,15 +1,17 @@
 ﻿"use client";
 
 import { useState, useRef } from "react";
-import Image from "next/image";
-import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useHomepageReviews, useSwipe } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import type { ReviewDocument } from "@/db/schema";
-import { Button, Heading, Section, Text, TextLink } from "@/components";
-
-const { flex } = THEME_CONSTANTS;
+import {
+  Button,
+  Heading,
+  ReviewCard,
+  Section,
+  Text,
+  TextLink,
+} from "@/components";
 
 export function CustomerReviewsSection() {
   const t = useTranslations("homepage");
@@ -81,66 +83,7 @@ export function CustomerReviewsSection() {
         {/* Reviews Grid — 3-col on desktop */}
         <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-6 mb-8">
           {visibleReviews.map((review) => (
-            <div
-              key={review.id}
-              className={`${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} ${THEME_CONSTANTS.spacing.padding.lg}`}
-            >
-              {/* Star Rating using lucide-react */}
-              <div
-                className="flex gap-1 mb-4"
-                aria-label={`${review.rating} out of 5 stars`}
-              >
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-5 h-5 ${
-                      i < review.rating
-                        ? "text-yellow-500 fill-yellow-500"
-                        : THEME_CONSTANTS.rating.empty
-                    }`}
-                  />
-                ))}
-              </div>
-
-              {/* Review Text */}
-              <Text
-                className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} mb-4 line-clamp-4`}
-              >
-                &ldquo;{review.comment}&rdquo;
-              </Text>
-
-              {/* User Info */}
-              <div className="flex items-center gap-3">
-                {review.userAvatar ? (
-                  <Image
-                    src={review.userAvatar}
-                    alt={review.userName}
-                    width={40}
-                    height={40}
-                    sizes="40px"
-                    className="rounded-full object-cover"
-                  />
-                ) : (
-                  <div
-                    className={`w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 ${flex.center} text-white font-bold`}
-                  >
-                    {review.userName.charAt(0).toUpperCase()}
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <Text
-                    className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-medium truncate`}
-                  >
-                    {review.userName}
-                  </Text>
-                  <Text
-                    className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} truncate`}
-                  >
-                    {review.productTitle}
-                  </Text>
-                </div>
-              </div>
-            </div>
+            <ReviewCard key={review.id} review={review} />
           ))}
         </div>
 

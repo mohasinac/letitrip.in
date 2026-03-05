@@ -1,9 +1,12 @@
 ﻿"use client";
 
+import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, SITE_CONFIG, ROUTES } from "@/constants";
 import { Heading, Span, Text, TextLink } from "@/components";
 
 export function ContactCTA() {
+  const t = useTranslations("faq.contact");
+
   return (
     <div
       className={`${THEME_CONSTANTS.spacing.padding.xl} p-8 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} text-center`}
@@ -34,15 +37,14 @@ export function ContactCTA() {
         level={2}
         className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
       >
-        Still Need Help?
+        {t("title")}
       </Heading>
 
       {/* Description */}
       <Text
         className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} mb-6 ${THEME_CONSTANTS.container["2xl"]} mx-auto`}
       >
-        Can't find the answer you're looking for? Our support team is here to
-        help you. Get in touch and we'll get back to you as soon as possible.
+        {t("description")}
       </Text>
 
       {/* Contact Options */}
@@ -69,7 +71,7 @@ export function ContactCTA() {
           <Text
             className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textPrimary} font-medium mb-1`}
           >
-            Email Us
+            {t("emailUs")}
           </Text>
           <Text
             className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary}`}
@@ -100,7 +102,7 @@ export function ContactCTA() {
           <Text
             className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textPrimary} font-medium mb-1`}
           >
-            Call Us
+            {t("callUs")}
           </Text>
           <Text
             className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary}`}
@@ -130,12 +132,12 @@ export function ContactCTA() {
           <Text
             className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textPrimary} font-medium mb-1`}
           >
-            Contact Form
+            {t("contactForm")}
           </Text>
           <Text
             className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary}`}
           >
-            Submit a request
+            {t("submitRequest")}
           </Text>
         </TextLink>
       </div>
@@ -145,7 +147,7 @@ export function ContactCTA() {
         href={ROUTES.PUBLIC.CONTACT}
         className={`inline-flex items-center gap-2 ${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.borderRadius.xl} bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors`}
       >
-        <Span>Contact Support Team</Span>
+        <Span>{t("contactTeam")}</Span>
         <svg
           className="w-5 h-5"
           fill="none"

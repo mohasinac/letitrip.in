@@ -8,7 +8,6 @@ import {
   AvatarDisplay,
   BlockHeader,
   Button,
-  LocaleSwitcher,
   NotificationBell,
   Span,
   TextLink,
@@ -77,10 +76,10 @@ export default function TitleBar({
 
         {/* Right Side Icons */}
         <div className={`${flex.rowCenter} gap-2 ml-auto`}>
-          {/* Cart */}
+          {/* Cart - Hidden on mobile (available in bottom nav) */}
           <TextLink
             href={SITE_CONFIG.account.cart}
-            className={`p-2 md:p-2.5 rounded-xl transition-colors relative ${THEME_CONSTANTS.colors.iconButton.onLight}`}
+            className={`hidden md:flex p-2 md:p-2.5 rounded-xl transition-colors relative items-center ${THEME_CONSTANTS.colors.iconButton.onLight}`}
             aria-label={tA("cartIcon")}
           >
             <svg
@@ -126,9 +125,6 @@ export default function TitleBar({
 
           {/* Notification Bell - Authenticated users only, hidden on mobile */}
           {user && <NotificationBell />}
-
-          {/* Locale Switcher — hidden on mobile (available via sidebar) */}
-          <LocaleSwitcher />
 
           {/* User Profile - Hidden on mobile (available in bottom nav) */}
           <TextLink

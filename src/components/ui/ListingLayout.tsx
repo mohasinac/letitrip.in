@@ -3,43 +3,40 @@
 /**
  * ListingLayout
  *
- * Standard layout shell for ALL listing / table pages — public, seller, and
- * admin.  Provides a collapsible filter sidebar on desktop and a fullscreen
- * filter overlay on mobile, along with toolbar slots for search, view-toggle,
- * sort, and right-side action buttons.
+ * Standard layout shell for ALL listing / table pages — public, seller, admin,
+ * and user. Matches the wireframe design:
  *
- * Bulk-action bar appears automatically when selectedCount > 0.
+ *  ┌──────────────────────────────────────────────────────────────────┐
+ *  │ [headerSlot — AdminPageHeader / Heading + subtitle]             │
+ *  ├──────────────────────────────────────────────────────────────────┤
+ *  │ [statusTabsSlot — status filter tabs]                           │
+ *  ├──────────────────────────────────────────────────────────────────┤
+ *  │ [searchSlot] [🔍] [viewToggle] [bulkActions] [sortSlot] [acts] │
+ *  ├──────────┬───────────────────────────────────────────────────────┤
+ *  │ Filters  │  [activeFiltersSlot — chips]                         │
+ *  │ (sidebar)│  [DataTable / ProductGrid / card list — children]    │
+ *  │          │  [paginationSlot — TablePagination]                  │
+ *  └──────────┴───────────────────────────────────────────────────────┘
  *
- * Mobile behaviour
- * ────────────────
- * • Filter panel is hidden.  A "Filters" trigger button opens a fullscreen
- *   overlay.  "Apply" or tapping the backdrop closes it.
- * • On mobile the Apply button fires onFilterApply, then closes the overlay.
- *
- * Desktop behaviour
- * ─────────────────
- * • Filter panel renders as an inline left-side sidebar.
- * • A toggle button in the toolbar collapses / expands it with a CSS slide.
- * • "Clear all" is always reachable inside the sidebar header.
+ * Desktop: collapsible left filter sidebar.
+ * Mobile: filter sidebar hidden; "Filters" button opens fullscreen overlay.
+ * Apply filter on button click (not live) — matches wireframe.
  *
  * @example
  * ```tsx
- * const table = useUrlTable({ defaults: { pageSize: '24', sorts: '-createdAt' } });
- *
  * <ListingLayout
- *   filterContent={<FilterFacetSection title="Category" options={...} selected={...} onChange={...} />}
- *   filterActiveCount={activeFilterCount}
+ *   headerSlot={<AdminPageHeader title="Products" onAction={openCreate} />}
+ *   filterContent={<FilterFacetSection ... />}
+ *   filterActiveCount={2}
  *   onFilterApply={() => table.setPage(1)}
- *   onFilterClear={clearAllFilters}
+ *   onFilterClear={clearAll}
  *   searchSlot={<Search value={table.get('q')} onChange={v => table.set('q', v)} />}
- *   sortSlot={<SortDropdown value={table.get('sorts')} onChange={v => table.setSort(v)} options={SORT_OPTIONS} />}
- *   viewToggleSlot={...}
- *   actionsSlot={<Button variant="primary" onClick={openCreate}>Create</Button>}
+ *   sortSlot={<SortDropdown ... />}
+ *   activeFiltersSlot={<ActiveFilterChips ... />}
+ *   paginationSlot={<TablePagination ... />}
  *   selectedCount={selectedIds.length}
  *   onClearSelection={() => setSelectedIds([])}
- *   bulkActions={<>
- *     <Button variant="danger" size="sm" onClick={bulkDelete}>Delete</Button>
- *   </>}
+ *   bulkActions={<Button variant="danger" size="sm">Delete</Button>}
  * >
  *   <DataTable ... />
  * </ListingLayout>
@@ -52,6 +49,14 @@ import { Button, BulkActionBar, Span, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 export interface ListingLayoutProps {
+  // ── Header ──────────────────────────────────────────────────────────────
+  /** Page header (AdminPageHeader, Heading, or custom) — rendered above toolbar */
+  headerSlot?: ReactNode;
+
+  // ── Status tabs ─────────────────────────────────────────────────────────
+  /** Status filter tabs rendered between header and toolbar (orders, reviews) */
+  statusTabsSlot?: ReactNode;
+
   // ── Filter ──────────────────────────────────────────────────────────────
   /** FilterFacetSection nodes rendered in the filter panel */
   filterContent?: ReactNode;
@@ -63,6 +68,10 @@ export interface ListingLayoutProps {
   onFilterClear?: () => void;
   /** Filter panel title. Defaults to the "filters.title" i18n key */
   filterTitle?: string;
+
+  // ── Active filters ──────────────────────────────────────────────────────
+  /** ActiveFilterChips rendered above the content area */
+  activeFiltersSlot?: ReactNode;
 
   // ── Toolbar slots ────────────────────────────────────────────────────────
   /** <Search> component */
@@ -82,6 +91,10 @@ export interface ListingLayoutProps {
   /** Action buttons rendered inside the BulkActionBar */
   bulkActions?: ReactNode;
 
+  // ── Pagination ───────────────────────────────────────────────────────────
+  /** TablePagination rendered below the content area */
+  paginationSlot?: ReactNode;
+
   // ── Content ──────────────────────────────────────────────────────────────
   /** DataTable, card grid, or any other list content */
   children: ReactNode;
@@ -91,14 +104,21 @@ export interface ListingLayoutProps {
   defaultSidebarOpen?: boolean;
   /** Additional className for the outer wrapper */
   className?: string;
+  /** Loading state — shows skeleton placeholders */
+  loading?: boolean;
+  /** Error state node — rendered instead of children when present */
+  errorSlot?: ReactNode;
 }
 
 export function ListingLayout({
+  headerSlot,
+  statusTabsSlot,
   filterContent,
   filterActiveCount = 0,
   onFilterApply,
   onFilterClear,
   filterTitle,
+  activeFiltersSlot,
   searchSlot,
   sortSlot,
   viewToggleSlot,
@@ -106,9 +126,12 @@ export function ListingLayout({
   selectedCount = 0,
   onClearSelection,
   bulkActions,
+  paginationSlot,
   children,
   defaultSidebarOpen = true,
   className = "",
+  loading = false,
+  errorSlot,
 }: ListingLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(defaultSidebarOpen);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
@@ -117,7 +140,7 @@ export function ListingLayout({
   const t = useTranslations("filters");
   const tActions = useTranslations("actions");
 
-  const { themed, borderRadius, flex } = THEME_CONSTANTS;
+  const { themed } = THEME_CONSTANTS;
 
   const hasFilter = Boolean(filterContent);
   const panelTitle = filterTitle ?? t("title");
@@ -154,9 +177,15 @@ export function ListingLayout({
   };
 
   return (
-    <div className={`w-full ${className}`}>
+    <div className={`w-full space-y-4 ${className}`}>
+      {/* ─────────────────────── Header ─────────────────────── */}
+      {headerSlot}
+
+      {/* ─────────────────────── Status tabs ───────────────── */}
+      {statusTabsSlot}
+
       {/* ─────────────────────── Toolbar ─────────────────────── */}
-      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         {/* Filter trigger */}
         {hasFilter && (
           <>
@@ -167,7 +196,7 @@ export function ListingLayout({
               size="sm"
               onClick={() => setMobileFilterOpen(true)}
               aria-label={t("title")}
-              className="md:hidden flex items-center gap-1.5"
+              className="lg:hidden flex items-center gap-1.5"
             >
               <FilterIcon />
               {t("title")}
@@ -191,7 +220,7 @@ export function ListingLayout({
                 sidebarOpen ? t("hideFilters") : t("showFilters")
               }
               aria-expanded={sidebarOpen}
-              className="hidden md:flex items-center gap-1.5"
+              className="hidden lg:flex items-center gap-1.5"
             >
               <FilterIcon />
               {t("title")}
@@ -224,12 +253,20 @@ export function ListingLayout({
 
         {/* Search — grows to fill available space */}
         {searchSlot && (
-          <div className="flex-1 min-w-[180px]">{searchSlot}</div>
+          <div className="flex-1 min-w-[180px] max-w-xl">{searchSlot}</div>
         )}
 
         {/* Right-side controls */}
         <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
           {viewToggleSlot}
+
+          {/* Bulk actions — visible only when items selected (desktop) */}
+          {selectedCount > 0 && bulkActions && (
+            <div className="hidden sm:flex items-center gap-2">
+              {bulkActions}
+            </div>
+          )}
+
           {sortSlot}
           {actionsSlot}
         </div>
@@ -242,16 +279,16 @@ export function ListingLayout({
           <aside
             aria-label={panelTitle}
             className={[
-              "hidden md:block flex-shrink-0",
+              "hidden lg:block flex-shrink-0",
               "transition-all duration-200 ease-in-out overflow-hidden",
               sidebarOpen
-                ? "w-60 xl:w-64 opacity-100"
+                ? "w-60 xl:w-64 2xl:w-72 opacity-100"
                 : "w-0 opacity-0 pointer-events-none",
             ].join(" ")}
           >
             <div
               className={[
-                "w-60 xl:w-64 border rounded-xl overflow-hidden",
+                "w-60 xl:w-64 2xl:w-72 border rounded-xl overflow-hidden sticky top-20",
                 themed.border,
                 themed.bgPrimary,
               ].join(" ")}
@@ -277,8 +314,21 @@ export function ListingLayout({
               </div>
 
               {/* Scrollable facets */}
-              <div className="px-3 py-3 max-h-[calc(100vh-220px)] overflow-y-auto">
+              <div className="px-3 py-3 max-h-[calc(100vh-220px)] overflow-y-auto space-y-4">
                 {filterContent}
+              </div>
+
+              {/* Apply button at sidebar bottom — filters only apply on click */}
+              <div className={`px-3 pb-3 pt-1 border-t ${themed.border}`}>
+                <Button
+                  type="button"
+                  variant="primary"
+                  className="w-full"
+                  size="sm"
+                  onClick={onFilterApply}
+                >
+                  {tActions("applyFilters")}
+                </Button>
               </div>
             </div>
           </aside>
@@ -286,26 +336,43 @@ export function ListingLayout({
 
         {/* Main content */}
         <div className="flex-1 min-w-0 space-y-3">
-          {/* Bulk action bar (appears when items are selected) */}
+          {/* Bulk action bar — full width on mobile */}
           {selectedCount > 0 && (
             <BulkActionBar
               selectedCount={selectedCount}
               onClearSelection={onClearSelection}
             >
-              {bulkActions}
+              {/* Mobile-only bulk actions */}
+              <div className="sm:hidden flex items-center gap-2">
+                {bulkActions}
+              </div>
             </BulkActionBar>
           )}
 
-          {children}
+          {/* Active filter chips */}
+          {activeFiltersSlot}
+
+          {/* Error state */}
+          {errorSlot ? (
+            errorSlot
+          ) : (
+            <>
+              {children}
+              {/* Pagination */}
+              {paginationSlot && (
+                <div className="pt-2">{paginationSlot}</div>
+              )}
+            </>
+          )}
         </div>
       </div>
 
       {/* ─────────── Mobile fullscreen filter overlay ─────────── */}
       {hasFilter && mobileFilterOpen && (
         <>
-          {/* Backdrop (for wide tablets that could show partial drawer) */}
+          {/* Backdrop */}
           <div
-            className="fixed inset-0 z-40 bg-black/40 md:hidden"
+            className="fixed inset-0 z-40 bg-black/40 lg:hidden"
             onClick={() => setMobileFilterOpen(false)}
             aria-hidden="true"
           />
@@ -314,7 +381,7 @@ export function ListingLayout({
           <div
             ref={mobileOverlayRef}
             className={[
-              "fixed inset-0 z-50 flex flex-col md:hidden",
+              "fixed inset-0 z-50 flex flex-col lg:hidden",
               themed.bgPrimary,
             ].join(" ")}
             role="dialog"
@@ -355,11 +422,11 @@ export function ListingLayout({
             </div>
 
             {/* Scrollable facets */}
-            <div className="flex-1 overflow-y-auto px-4 py-4">
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
               {filterContent}
             </div>
 
-            {/* Footer actions */}
+            {/* Footer actions — apply filter button */}
             <div
               className={[
                 "flex-shrink-0 flex gap-3 px-4 py-3 border-t",

@@ -1,4 +1,6 @@
-﻿import React from "react";
+﻿"use client";
+
+import React from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { Span } from "../typography/Typography";
 

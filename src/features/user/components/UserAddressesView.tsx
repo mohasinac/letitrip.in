@@ -1,6 +1,15 @@
 "use client";
 
+/**
+ * UserAddressesView
+ *
+ * User address management using the unified ListingLayout shell.
+ * Displays addresses in a responsive grid with add/edit/delete/set-default.
+ */
+
 import { useEffect, useState } from "react";
+import { MapPin } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   useAuth,
   useAddresses,
@@ -9,12 +18,14 @@ import {
   useMessage,
 } from "@/hooks";
 import {
-  Heading,
-  Button,
-  Spinner,
-  EmptyState,
   AddressCard,
+  Button,
   ConfirmDeleteModal,
+  EmptyState,
+  Heading,
+  ListingLayout,
+  Spinner,
+  Text,
 } from "@/components";
 import { useRouter } from "@/i18n/navigation";
 import {
@@ -23,7 +34,6 @@ import {
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
 } from "@/constants";
-import { useTranslations } from "next-intl";
 import type { Address } from "@/hooks";
 
 export function UserAddressesView() {
@@ -76,11 +86,9 @@ export function UserAddressesView() {
   };
   const handleSetDefault = (id: string) => setDefault({ addressId: id });
 
-  const { spacing, flex } = THEME_CONSTANTS;
-
   if (authLoading || fetchLoading) {
     return (
-      <div className={`${flex.center} min-h-screen`}>
+      <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
         <Spinner size="lg" label={tLoading("default")} />
       </div>
     );
@@ -88,58 +96,46 @@ export function UserAddressesView() {
 
   if (!user) return null;
 
+  const total = addresses?.length ?? 0;
+
   return (
     <>
-      <div className={spacing.stack}>
-        <div className={flex.between}>
-          <Heading level={3}>{tAddresses("title")}</Heading>
+      <ListingLayout
+        headerSlot={
+          <div>
+            <Heading level={3}>{tAddresses("title")}</Heading>
+            {total > 0 && (
+              <Text variant="secondary" className="mt-1">
+                {tAddresses("subtitleWithCount", { count: total })}
+              </Text>
+            )}
+          </div>
+        }
+        actionsSlot={
           <Button
             variant="primary"
             onClick={() => router.push(ROUTES.USER.ADDRESSES_ADD)}
           >
             {tAddresses("add")}
           </Button>
-        </div>
-
-        {error && (
-          <div className="text-red-600 dark:text-red-400">
-            {tLoading("failed")}
-          </div>
-        )}
-
-        {!fetchLoading && (!addresses || addresses.length === 0) && (
+        }
+      >
+        {error ? (
           <EmptyState
-            icon={
-              <svg
-                className="w-full h-full"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-            }
+            title={tLoading("failed")}
+            description={tAddresses("empty")}
+          />
+        ) : total === 0 ? (
+          <EmptyState
+            icon={<MapPin className="w-16 h-16" />}
             title={tAddresses("empty")}
             description={tAddresses("emptySubtitle")}
             actionLabel={tAddresses("addFirst")}
             onAction={() => router.push(ROUTES.USER.ADDRESSES_ADD)}
           />
-        )}
-
-        {addresses && addresses.length > 0 && (
+        ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {addresses.map((address: Address) => (
+            {addresses!.map((address: Address) => (
               <AddressCard
                 key={address.id}
                 address={address}
@@ -150,7 +146,7 @@ export function UserAddressesView() {
             ))}
           </div>
         )}
-      </div>
+      </ListingLayout>
 
       {deleteId && (
         <ConfirmDeleteModal

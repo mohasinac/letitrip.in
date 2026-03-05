@@ -11,26 +11,28 @@ export const SEO_CONFIG = {
   // Site-wide defaults
   siteName: "LetItRip",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://letitrip.in",
-  defaultTitle: "LetItRip - Multi-Seller E-commerce & Auction Platform",
+  defaultTitle: "LetItRip — Multi-Seller E-commerce & Auction Platform | Shop, Bid & Sell",
   defaultDescription:
-    "Discover unique products, join exciting auctions, and shop from multiple sellers on LetItRip. Your one-stop marketplace for deals and bidding.",
+    "Shop unique products, join live auctions, and sell from your own store on LetItRip — India's multi-seller marketplace for deals, bidding, and discovery.",
   defaultImage: "/og-image.jpg",
   twitterHandle: "@letitrip",
-  locale: "en_US",
+  locale: "en_IN",
 
   // Page-specific metadata
   pages: {
     home: {
-      title: "LetItRip - Multi-Seller E-commerce & Auction Platform",
+      title: "LetItRip — Multi-Seller E-commerce & Auction Platform | Shop, Bid & Sell",
       description:
-        "Discover unique products, join exciting auctions, and shop from multiple sellers. Your one-stop marketplace for deals and bidding.",
+        "Shop unique products, join live auctions, and sell from your own store on LetItRip — India's multi-seller marketplace for deals, bidding, and discovery.",
       keywords: [
         "e-commerce",
         "marketplace",
         "auctions",
         "shopping",
-        "destinations",
-        "services",
+        "online store India",
+        "multi-seller platform",
+        "bid online",
+        "buy and sell",
       ],
     },
     destinations: {
@@ -139,10 +141,58 @@ export const SEO_CONFIG = {
       keywords: ["contact", "support", "help", "email"],
     },
     sellers: {
-      title: "Seller Directory - LetItRip",
+      title: "Seller Directory — Browse Trusted Sellers",
       description:
-        "Browse our network of trusted sellers on LetItRip. Discover unique shops and products.",
-      keywords: ["sellers", "shops", "directory", "marketplace"],
+        "Browse our network of trusted sellers on LetItRip. Discover unique shops and products from verified merchants.",
+      keywords: ["sellers", "shops", "directory", "marketplace", "verified sellers"],
+    },
+    events: {
+      title: "Events — Upcoming Sales, Drops & Community Events",
+      description:
+        "Don't miss flash sales, exclusive drops, and community events on LetItRip. Stay updated and participate.",
+      keywords: ["events", "flash sale", "drops", "community", "promotions"],
+    },
+    stores: {
+      title: "Stores — Explore Seller Storefronts",
+      description:
+        "Browse curated seller storefronts on LetItRip. Discover unique shops with their own brand identity, products, and reviews.",
+      keywords: ["stores", "storefronts", "online shops", "seller stores"],
+    },
+    promotions: {
+      title: "Promotions & Deals — Save Big on LetItRip",
+      description:
+        "Grab the latest promotions, discount codes, and limited-time deals. Save big on your favourite products.",
+      keywords: ["promotions", "deals", "discounts", "coupons", "offers"],
+    },
+    reviews: {
+      title: "Customer Reviews — Trusted Feedback on LetItRip",
+      description:
+        "Read honest customer reviews and ratings. See what buyers think about products and sellers on LetItRip.",
+      keywords: ["reviews", "ratings", "customer feedback", "testimonials"],
+    },
+    sellerGuide: {
+      title: "Seller Guide — Start Selling on LetItRip",
+      description:
+        "Everything you need to start selling on LetItRip. Learn how to set up your store, list products, and manage orders.",
+      keywords: ["seller guide", "start selling", "merchant", "how to sell"],
+    },
+    cookiePolicy: {
+      title: "Cookie Policy — LetItRip",
+      description:
+        "Learn about how LetItRip uses cookies and similar technologies to improve your browsing experience.",
+      keywords: ["cookie policy", "cookies", "privacy"],
+    },
+    refundPolicy: {
+      title: "Refund Policy — Returns & Refunds",
+      description:
+        "Understand our return and refund policy. Know your rights and how to request a refund on LetItRip.",
+      keywords: ["refund policy", "returns", "refunds", "exchange"],
+    },
+    trackOrder: {
+      title: "Track Your Order — LetItRip",
+      description:
+        "Track your order in real-time. Enter your order ID to see the latest shipping and delivery status.",
+      keywords: ["track order", "order tracking", "shipping status", "delivery"],
     },
   },
 } as const;

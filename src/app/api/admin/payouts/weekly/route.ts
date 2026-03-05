@@ -1,7 +1,10 @@
 /**
  * POST /api/admin/payouts/weekly
  *
- * Admin-only — processes weekly automated payouts for Shiprocket orders.
+ * Admin-manual trigger — processes weekly payouts for Shiprocket orders.
+ * The scheduled version of this logic runs automatically every Saturday
+ * at 05:00 UTC via the `weeklyPayoutEligibility` Firebase Function.
+ * Use this endpoint for on-demand admin-initiated runs only.
  *
  * Logic:
  *   1. Find all orders where:
@@ -18,13 +21,9 @@
  *
  * This endpoint is intentionally idempotent — orders with payoutStatus
  * already set to 'requested' or 'paid' are silently skipped.
- *
- * Call this from a scheduled Cloud Function, a manual admin action,
- * or a cron via vercel.json / Cloud Scheduler hitting this endpoint
- * with an Authorization header containing ADMIN_CRON_SECRET.
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { userRepository, orderRepository, payoutRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
@@ -36,27 +35,14 @@ import type { OrderDocument } from "@/db/schema";
 
 const PLATFORM_COMMISSION_RATE = 0.05; // 5 %
 
-// ─── Internal cron secret auth (alternative to session cookie) ───────────────
-
-function isCronRequest(request: NextRequest): boolean {
-  const secret = process.env.ADMIN_CRON_SECRET;
-  if (!secret) return false;
-  const header = request.headers.get("Authorization") ?? "";
-  return header === `Bearer ${secret}`;
-}
-
 // ─── Route ────────────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
   try {
-    // Allow either a valid admin session OR a cron-secret Authorization header
-    const cron = isCronRequest(request);
-    if (!cron) {
-      const authUser = await requireAuth();
-      const user = await userRepository.findById(authUser.uid);
-      if (!user || user.role !== "admin") {
-        throw new AuthorizationError(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED);
-      }
+    const authUser = await requireAuth();
+    const user = await userRepository.findById(authUser.uid);
+    if (!user || user.role !== "admin") {
+      throw new AuthorizationError(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED);
     }
 
     // ── 1. Fetch all eligible Shiprocket-delivered orders ──────────────────

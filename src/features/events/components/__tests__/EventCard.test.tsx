@@ -11,44 +11,65 @@ jest.mock("next/link", () => ({
   default: ({ children, href }: any) => <a href={href}>{children}</a>,
 }));
 
-jest.mock("@/components", () => ({
-  Card: ({ children, className }: any) => (
-    <div data-testid="card" className={className}>
-      {children}
-    </div>
-  ),
-  Badge: ({ children }: any) => <span data-testid="badge">{children}</span>,
+jest.mock("next/image", () => ({
+  __esModule: true,
+  default: ({ alt, src }: any) => <img alt={alt} src={src} />,
+}));
+
+jest.mock("@/i18n/navigation", () => ({
+  Link: ({ children, href }: any) => <a href={href}>{children}</a>,
+  useRouter: () => ({ push: jest.fn() }),
+  usePathname: () => "/",
+  redirect: jest.fn(),
+}));
+
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => {
+    const map: Record<string, string> = {
+      visitEvent: "Visit Event",
+      visitBtn: "Visit",
+    };
+    return map[key] ?? key;
+  },
 }));
 
 jest.mock("@/constants", () => ({
   ROUTES: {
     PUBLIC: {
-      PRODUCTS: "/products",
       EVENT_DETAIL: (id: string) => `/events/${id}`,
     },
   },
   THEME_CONSTANTS: {
-    themed: { textSecondary: "text-gray-600", textPrimary: "text-gray-900" },
-    spacing: {
-      stack: "space-y-4",
-      padding: { xs: "p-2", md: "p-4", lg: "p-6" },
-      gap: { xs: "gap-2", md: "gap-4", lg: "gap-6" },
+    themed: {
+      textSecondary: "text-gray-600",
+      textPrimary: "text-gray-900",
+      border: "border-gray-200",
     },
-    borderRadius: { xl: "rounded-xl", lg: "rounded-lg" },
-    typography: { h3: "text-xl font-semibold", h4: "text-lg font-semibold" },
+    flex: {
+      center: "flex items-center justify-center",
+      between: "flex items-center justify-between",
+      rowCenter: "flex items-center",
+    },
+    spacing: { padding: { md: "p-4" }, gap: { md: "gap-4" } },
+    typography: { h3: "text-xl font-bold" },
   },
-}));
-
-jest.mock("@/utils", () => ({
-  formatRelativeTime: (d: any) => "in 2 days",
-}));
-
-jest.mock("../EventStatusBadge", () => ({
-  EventStatusBadge: ({ status }: any) => (
-    <span data-testid="status-badge" data-status={status}>
-      {status}
-    </span>
-  ),
+  UI_LABELS: {
+    ADMIN: {
+      CATEGORIES: {
+        TITLE: "Categories",
+        ADD: "Add Category",
+        EDIT: "Edit Category",
+        DELETE: "Delete Category",
+        FORM: { NAME: "Name", SLUG: "Slug", SAVE: "Save" },
+      },
+    },
+    ACTIONS: { SAVE: "Save", CANCEL: "Cancel" },
+    FORM: {},
+  },
+  UI_PLACEHOLDERS: {},
+  ERROR_MESSAGES: { VALIDATION: {}, AUTH: {} },
+  SUCCESS_MESSAGES: {},
+  API_ENDPOINTS: {},
 }));
 
 const mockEvent = {
@@ -56,9 +77,9 @@ const mockEvent = {
   title: "Summer Poll",
   type: "poll" as const,
   status: "active" as const,
-  description: "Vote on your favourite product",
+  description: "<p>Vote on your <b>favourite</b> product</p>",
   endsAt: new Date(Date.now() + 86400000).toISOString(),
-  coverImageUrl: null,
+  coverImageUrl: undefined as string | undefined,
   pollConfig: {
     options: [{ id: "o1", label: "Option A", votes: 0, percentage: 0 }],
     allowMultiSelect: false,
@@ -69,6 +90,8 @@ const mockEvent = {
   offerConfig: null,
   feedbackConfig: null,
   surveyConfig: null,
+  createdBy: "user1",
+  stats: { totalEntries: 0, approvedEntries: 0, flaggedEntries: 0 },
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   startsAt: new Date().toISOString(),
@@ -84,21 +107,29 @@ describe("EventCard", () => {
     expect(screen.getByText("Summer Poll")).toBeInTheDocument();
   });
 
-  it("renders status badge", () => {
+  it("strips HTML from description", () => {
     render(<EventCard event={mockEvent as any} />);
-    expect(screen.getByTestId("status-badge")).toBeInTheDocument();
+    expect(screen.getByText(/Vote on your/)).toBeInTheDocument();
+    expect(screen.queryByText(/<p>/)).toBeNull();
   });
 
-  it("renders a link for the event", () => {
+  it("renders Visit Event button", () => {
     render(<EventCard event={mockEvent as any} />);
-    const link = screen.getByRole("link");
-    expect(link).toBeInTheDocument();
+    expect(screen.getByText("Visit Event")).toBeInTheDocument();
+  });
+
+  it("renders links for the event (title + visit button)", () => {
+    render(<EventCard event={mockEvent as any} />);
+    const links = screen.getAllByRole("link");
+    expect(links.length).toBeGreaterThanOrEqual(2);
+    links.forEach((link) =>
+      expect(link).toHaveAttribute("href", "/events/evt-1")
+    );
   });
 
   it("shows gradient placeholder when no cover image", () => {
     render(<EventCard event={mockEvent as any} />);
-    // No img tag when coverImageUrl is null
-    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(screen.queryByRole("img")).toBeNull();
   });
 
   it("shows cover image when provided", () => {
@@ -108,5 +139,10 @@ describe("EventCard", () => {
     };
     render(<EventCard event={eventWithImage as any} />);
     expect(screen.getByRole("img")).toBeInTheDocument();
+  });
+
+  it("renders checkbox when selectable is true", () => {
+    render(<EventCard event={mockEvent as any} selectable selected={false} />);
+    expect(screen.getByRole("checkbox")).toBeInTheDocument();
   });
 });

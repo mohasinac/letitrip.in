@@ -20,9 +20,10 @@ class EventEntryRepository extends BaseRepository<EventEntryDocument> {
   static readonly SIEVE_FIELDS: FirebaseSieveFields = {
     eventId: { canFilter: true, canSort: false },
     userId: { canFilter: true, canSort: false },
+    userDisplayName: { canFilter: true, canSort: true },
     reviewStatus: { canFilter: true, canSort: false },
-    submittedAt: { canFilter: false, canSort: true },
-    points: { canFilter: false, canSort: true },
+    submittedAt: { canFilter: true, canSort: true },
+    points: { canFilter: true, canSort: true },
   };
 
   constructor() {

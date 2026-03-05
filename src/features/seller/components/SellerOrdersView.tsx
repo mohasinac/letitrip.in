@@ -22,6 +22,7 @@ import {
   DataTable,
   AdminPageHeader,
   FormField,
+  ListingLayout,
   Modal,
   Spinner,
   StatusBadge,
@@ -344,114 +345,120 @@ function SellerOrdersContent() {
   if (!user) return null;
 
   return (
-    <div className={spacing.stack}>
-      <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
-
-      {/* Summary stats */}
-      {!isLoading && orders.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
-          {(
-            [
-              { label: t("statTotal"),     count: orders.length,                                         color: "text-indigo-600 dark:text-indigo-400" },
-              { label: t("statPending"),   count: orders.filter((o) => o.status === "pending").length,   color: "text-yellow-600 dark:text-yellow-400" },
-              { label: t("statConfirmed"), count: orders.filter((o) => o.status === "confirmed").length, color: "text-blue-600 dark:text-blue-400" },
-              { label: t("statDelivered"), count: orders.filter((o) => o.status === "delivered").length, color: "text-green-600 dark:text-green-400" },
-            ] as const
-          ).map(({ label, count, color }) => (
-            <Card key={label} className="p-4 text-center">
-              <Text weight="bold" className={`text-2xl ${color}`}>{count}</Text>
-              <Text size="sm" className={themed.textSecondary}>{label}</Text>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {/* Status tabs */}
-      <Tabs
-        value={statusFilter}
-        onChange={(id) => { table.set("status", id); setSelectedIds([]); }}
+    <>
+      <ListingLayout
+        headerSlot={
+          <>
+            <AdminPageHeader title={t("title")} subtitle={t("subtitle")} />
+            {/* Summary stats */}
+            {!isLoading && orders.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
+                {(
+                  [
+                    { label: t("statTotal"),     count: orders.length,                                         color: "text-indigo-600 dark:text-indigo-400" },
+                    { label: t("statPending"),   count: orders.filter((o) => o.status === "pending").length,   color: "text-yellow-600 dark:text-yellow-400" },
+                    { label: t("statConfirmed"), count: orders.filter((o) => o.status === "confirmed").length, color: "text-blue-600 dark:text-blue-400" },
+                    { label: t("statDelivered"), count: orders.filter((o) => o.status === "delivered").length, color: "text-green-600 dark:text-green-400" },
+                  ] as const
+                ).map(({ label, count, color }) => (
+                  <Card key={label} className="p-4 text-center">
+                    <Text weight="bold" className={`text-2xl ${color}`}>{count}</Text>
+                    <Text size="sm" className={themed.textSecondary}>{label}</Text>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </>
+        }
+        statusTabsSlot={
+          <Tabs
+            value={statusFilter}
+            onChange={(id) => { table.set("status", id); setSelectedIds([]); }}
+          >
+            <TabsList>
+              {STATUS_TABS.map((tab) => (
+                <TabsTrigger key={tab.key} value={tab.key}>{tab.label}</TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        }
+        paginationSlot={
+          (meta?.totalPages ?? 1) > 1 ? (
+            <TablePagination
+              currentPage={page}
+              totalPages={meta?.totalPages ?? 1}
+              pageSize={PAGE_SIZE}
+              total={meta?.total ?? 0}
+              onPageChange={table.setPage}
+              isLoading={isLoading}
+            />
+          ) : undefined
+        }
       >
-        <TabsList>
-          {STATUS_TABS.map((tab) => (
-            <TabsTrigger key={tab.key} value={tab.key}>{tab.label}</TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+        {/* Bulk action bar — only visible when rows selected */}
+        <BulkActionBar
+          selectedCount={selectedIds.length}
+          eligibleCount={eligibleForPayout.length}
+          isPayoutConfigured={isPayoutConfigured}
+          onRequestPayout={handleRequestPayout}
+          onClearSelection={() => setSelectedIds([])}
+          isLoading={isBulkLoading}
+        />
 
-      {/* Bulk action bar — only visible when rows selected */}
-      <BulkActionBar
-        selectedCount={selectedIds.length}
-        eligibleCount={eligibleForPayout.length}
-        isPayoutConfigured={isPayoutConfigured}
-        onRequestPayout={handleRequestPayout}
-        onClearSelection={() => setSelectedIds([])}
-        isLoading={isBulkLoading}
-      />
+        {/* Orders table */}
+        <DataTable<OrderDocument>
+          data={orders}
+          columns={columns}
+          keyExtractor={(o) => o.id!}
+          loading={isLoading}
+          emptyTitle={t("emptyTitle")}
+          emptyMessage={t("emptySubtitle")}
+          externalPagination
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
+          actions={rowActions}
+          showViewToggle
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          onViewModeChange={(mode) => table.set("view", mode)}
+          mobileCardRender={(order) => (
+            <Card className="p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <Caption className="font-mono">
+                  #{(order.id ?? "").slice(-8).toUpperCase()}
+                </Caption>
+                <StatusBadge status={order.status as any} />
+              </div>
+              <Text weight="medium" size="sm" className="line-clamp-1">
+                {order.productTitle}
+              </Text>
+              <Caption>{order.userName}</Caption>
+              <div className="flex items-center justify-between">
+                <Caption>{formatDate(order.createdAt)}</Caption>
+                <Text weight="semibold" size="sm">
+                  {formatCurrency(order.totalPrice)}
+                </Text>
+              </div>
+            </Card>
+          )}
+        />
 
-      {/* Orders table */}
-      <DataTable<OrderDocument>
-        data={orders}
-        columns={columns}
-        keyExtractor={(o) => o.id!}
-        loading={isLoading}
-        emptyTitle={t("emptyTitle")}
-        emptyMessage={t("emptySubtitle")}
-        externalPagination
-        selectable
-        selectedIds={selectedIds}
-        onSelectionChange={setSelectedIds}
-        actions={rowActions}
-        showViewToggle
-        viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
-        onViewModeChange={(mode) => table.set("view", mode)}
-        mobileCardRender={(order) => (
-          <Card className="p-4 space-y-2">
-            <div className="flex items-center justify-between">
-              <Caption className="font-mono">
-                #{(order.id ?? "").slice(-8).toUpperCase()}
-              </Caption>
-              <StatusBadge status={order.status as any} />
-            </div>
-            <Text weight="medium" size="sm" className="line-clamp-1">
-              {order.productTitle}
-            </Text>
-            <Caption>{order.userName}</Caption>
-            <div className="flex items-center justify-between">
-              <Caption>{formatDate(order.createdAt)}</Caption>
-              <Text weight="semibold" size="sm">
-                {formatCurrency(order.totalPrice)}
+        {/* Revenue summary */}
+        {!isLoading && orders.length > 0 && (
+          <Card className={`p-4 ${themed.bgSecondary}`}>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <Text className={`font-medium ${themed.textPrimary}`}>
+                {statusFilter
+                  ? t("revenueFiltered", { status: statusFilter })
+                  : t("revenueThisPage")}
+              </Text>
+              <Text weight="bold" className="text-2xl text-indigo-600 dark:text-indigo-400">
+                {formatCurrency(orders.reduce((sum, o) => sum + (o.totalPrice ?? 0), 0))}
               </Text>
             </div>
           </Card>
         )}
-      />
-
-      {(meta?.totalPages ?? 1) > 1 && (
-        <TablePagination
-          currentPage={page}
-          totalPages={meta?.totalPages ?? 1}
-          pageSize={PAGE_SIZE}
-          total={meta?.total ?? 0}
-          onPageChange={table.setPage}
-          isLoading={isLoading}
-        />
-      )}
-
-      {/* Revenue summary */}
-      {!isLoading && orders.length > 0 && (
-        <Card className={`p-4 ${themed.bgSecondary}`}>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <Text className={`font-medium ${themed.textPrimary}`}>
-              {statusFilter
-                ? t("revenueFiltered", { status: statusFilter })
-                : t("revenueThisPage")}
-            </Text>
-            <Text weight="bold" className="text-2xl text-indigo-600 dark:text-indigo-400">
-              {formatCurrency(orders.reduce((sum, o) => sum + (o.totalPrice ?? 0), 0))}
-            </Text>
-          </div>
-        </Card>
-      )}
+      </ListingLayout>
 
       {/* Ship-order modal (custom shipping only) */}
       <ShipOrderModal
@@ -459,7 +466,7 @@ function SellerOrdersContent() {
         onClose={() => setShipModalOrder(null)}
         onShipped={refetch}
       />
-    </div>
+    </>
   );
 }
 

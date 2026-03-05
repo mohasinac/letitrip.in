@@ -11,6 +11,7 @@ describe("CarouselTableColumns", () => {
     imageUrl: "image-url",
     isActive: true,
     order: 1,
+    cards: [],
   };
 
   it("renders action buttons", () => {

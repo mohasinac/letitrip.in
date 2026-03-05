@@ -6,13 +6,13 @@
  *
  * Exports:
  * - MAIN_NAV_ITEMS: href + icon data for MainNavbar.
- *   Translation keys (in order): home · products · auctions · sellers · promotions
+ *   Translation keys (in order): home · products · auctions · categories · sellers · promotions
  *
  * @constant
  */
 
 import { ReactNode } from "react";
-import { Home, ShoppingBag, Gavel, Store, Tag } from "lucide-react";
+import { Home, ShoppingBag, Gavel, LayoutGrid, Store, Tag, CalendarDays, BookOpen, Star } from "lucide-react";
 import { SITE_CONFIG } from "./site";
 
 /**
@@ -27,12 +27,16 @@ export interface NavItem {
 /**
  * Main Navigation Items (icon + href data)
  * Labels injected by MainNavbar via useTranslations("nav").
- * Translation key order: home, products, auctions, stores, promotions
+ * Translation key order: home, products, auctions, categories, stores, events, blog, promotions, reviews
  */
 export const MAIN_NAV_ITEMS: NavItem[] = [
   { href: SITE_CONFIG.nav.home, icon: <Home className="w-5 h-5" /> },
   { href: SITE_CONFIG.nav.products, icon: <ShoppingBag className="w-5 h-5" /> },
   { href: SITE_CONFIG.nav.auctions, icon: <Gavel className="w-5 h-5" /> },
+  { href: SITE_CONFIG.nav.categories, icon: <LayoutGrid className="w-5 h-5" /> },
   { href: SITE_CONFIG.nav.stores, icon: <Store className="w-5 h-5" /> },
+  { href: SITE_CONFIG.nav.events, icon: <CalendarDays className="w-5 h-5" /> },
+  { href: SITE_CONFIG.nav.blog, icon: <BookOpen className="w-5 h-5" /> },
   { href: SITE_CONFIG.nav.promotions, icon: <Tag className="w-5 h-5" /> },
+  { href: SITE_CONFIG.nav.reviews, icon: <Star className="w-5 h-5" /> },
 ];

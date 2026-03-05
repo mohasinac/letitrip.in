@@ -2399,7 +2399,7 @@ if (Object.keys(errors).length === 0) {
 | ------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `USER_FIELDS`             | users            | UID, EMAIL, ROLE, DISPLAY_NAME, PHONE_NUMBER, PHONE_VERIFIED, PHOTO_URL, AVATAR_METADATA, PASSWORD_HASH, EMAIL_VERIFIED, DISABLED, PUBLIC_PROFILE, STATS, METADATA, AVATAR.\*, PROFILE.\*, STAT.\*, META.\* |
 | `TOKEN_FIELDS`            | tokens           | ID, USER_ID, EMAIL, TOKEN, EXPIRES_AT, CREATED_AT, USED, USED_AT                                                                                                                                            |
-| `PRODUCT_FIELDS`          | products         | ID, TITLE, DESCRIPTION, CATEGORY, PRICE, SELLER_ID, STATUS, IMAGES, VIDEO, FEATURED, TAGS, IS_AUCTION, STATUS_VALUES.\*                                                                                     |
+| `PRODUCT_FIELDS`          | products         | ID, TITLE, DESCRIPTION, CATEGORY, PRICE, SELLER_ID, STATUS, IMAGES, VIDEO, FEATURED, TAGS, IS_AUCTION, CONDITION, INSURANCE, INSURANCE_COST, SHIPPING_PAID_BY, RESERVE_PRICE, BUY_NOW_PRICE, MIN_BID_INCREMENT, AUTO_EXTENDABLE, AUCTION_EXTENSION_MINUTES, AUCTION_ORIGINAL_END_DATE, AUCTION_SHIPPING_PAID_BY, CONDITION_VALUES.\*, SHIPPING_PAID_BY_VALUES.\*, AUCTION_SHIPPING_PAID_BY_VALUES.\*, STATUS_VALUES.\* |
 | `ORDER_FIELDS`            | orders           | ID, PRODUCT_ID, USER_ID, QUANTITY, TOTAL_PRICE, STATUS, PAYMENT_STATUS, SHIPPING_ADDRESS, STATUS_VALUES.\*, PAYMENT_STATUS_VALUES.\*                                                                        |
 | `REVIEW_FIELDS`           | reviews          | ID, PRODUCT_ID, USER_ID, RATING, TITLE, COMMENT, STATUS, HELPFUL_COUNT, VERIFIED, FEATURED, STATUS_VALUES.\*                                                                                                |
 | `BID_FIELDS`              | bids             | ID, PRODUCT_ID, USER_ID, BID_AMOUNT, STATUS, IS_WINNING, BID_DATE, STATUS_VALUES.\*                                                                                                                         |
@@ -2512,6 +2512,22 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 - `tags` (string[]) - Search tags
 - `views` (number) - View count
 - `featured` (boolean) - Featured status
+- `condition` (`"new" | "used" | "refurbished" | "broken"`) - Item condition
+- `insurance` (boolean) - Insurance opt-in; when enabled Shiprocket is mandatory
+- `insuranceCost` (number) - Extra insurance cost added to shipping
+- `shippingPaidBy` (`"seller" | "buyer"`) - Who pays shipping on regular products
+- `isAuction` (boolean) - Whether this product is an auction listing
+- `auctionEndDate` (Date) - When the auction closes
+- `startingBid` (number) - Minimum opening bid
+- `currentBid` (number) - Current highest bid
+- `bidCount` (number) - Total number of bids
+- `reservePrice` (number) - Hidden minimum; won't sell below this
+- `buyNowPrice` (number) - Instant-purchase price bypassing bidding
+- `minBidIncrement` (number) - Minimum bid increase per bid
+- `autoExtendable` (boolean) - Extends auction if bid in last N minutes
+- `auctionExtensionMinutes` (number) - How many minutes to extend (default 5)
+- `auctionOriginalEndDate` (Date) - Tracks original end before extensions
+- `auctionShippingPaidBy` (`"seller" | "winner"`) - Who pays shipping on auctions
 - `createdAt` (Date)
 - `updatedAt` (Date)
 
@@ -3081,50 +3097,46 @@ const isAdmin = email === SCHEMA_DEFAULTS.ADMIN_EMAIL;
 **File**: `Input.tsx`  
 **Purpose**: Text input field  
 **Types**: `text`, `email`, `password`, `number`, `tel`, `url`, `search`, `color`  
-**Props**: `type`, `placeholder`, `disabled`, `error`, `leftIcon`, `rightIcon`, `label`, `helperText`, `success`  
+**Props**: `type`, `placeholder`, `disabled`, `error`, `icon` (left slot), `rightIcon` (right slot), `label`, `helperText`, `success`  
 **Ref forwarding**: Supports `ref` via `React.forwardRef` — pass a `RefObject<HTMLInputElement>` when the native input element must be programmatically focused.
 
 #### Select
 
 **File**: `Select.tsx`  
 **Purpose**: Select dropdown  
-**Props**: `options`, `value`, `onChange`, `placeholder`, `disabled`, `error`, `searchable`
+**Props**: `options`, `value`, `onChange`, `placeholder` (rendered as a first disabled `<option value="">`), `disabled`, `error`, `label`, `helperText`, `className`
 
 #### Textarea
 
 **File**: `Textarea.tsx`  
 **Purpose**: Multiline text input  
-**Props**: `placeholder`, `rows`, `maxLength`, `disabled`, `error`, `resize`
+**Ref forwarding**: Supports `ref` via `React.forwardRef`.  
+**Props**: `placeholder`, `rows`, `maxLength`, `disabled`, `error`, `label`, `helperText`, `showCharCount` — when `showCharCount={true}` and `maxLength` is set, renders a `{count}/{max}` indicator
 
 #### Checkbox
 
 **File**: `Checkbox.tsx`  
-**Purpose**: Checkbox input  
-**Props**: `label`, `checked`, `onChange`, `disabled`, `indeterminate`, `suffix` — `suffix?: React.ReactNode` renders additional content (e.g. a count badge) right-aligned inside the label row. The label `<Span>` receives `flex-1` so trailing content does not crowd the label text.
+**Purpose**: Checkbox input with SVG tick/dash overlay (opacity-transition based, requires `peer` on the native input).  
+**Props**: `label`, `checked`, `onChange`, `disabled`, `indeterminate` — sets `input.indeterminate` via `useEffect` and shows a dash icon instead of a tick; `suffix?: React.ReactNode` renders additional content (e.g. a count badge) right-aligned inside the label row.
 
-#### Radio
+#### RadioGroup
 
 **File**: `Radio.tsx`  
-**Purpose**: Radio button  
-**Props**: `label`, `value`, `checked`, `onChange`, `disabled`
+**Purpose**: Radio button group. Default variant renders pill-style toggle cards; classic variant renders dot-style radios.  
+**Props**: `name`, `options: { value, label, disabled? }[]`, `value`, `onChange: (value: string) => void`, `label`, `error`, `orientation` (`"vertical"` | `"horizontal"`), `variant` (`"toggle"` (default) | `"classic"`)
 
-#### Switch
+#### Toggle
 
-**File**: `Switch.tsx`  
-**Purpose**: Toggle switch  
-**Props**: `checked`, `onChange`, `disabled`, `label`
+**File**: `Toggle.tsx`  
+**Purpose**: Boolean switch control.  
+**Props**: `checked`, `defaultChecked`, `onChange: (checked: boolean) => void`, `disabled`, `label`, `size` (`"sm"` | `"md"` | `"lg"`), `className`, `id`  
+**Size track heights**: `sm` = `h-[18px]`, `md` = `h-6`, `lg` = `h-7`
 
-#### FileUpload
+#### Slider
 
-**File**: `FileUpload.tsx`  
-**Purpose**: File upload input  
-**Props**: `accept`, `multiple`, `maxSize`, `onChange`, `preview`
-
-#### DatePicker
-
-**File**: `DatePicker.tsx`  
-**Purpose**: Date selection input  
-**Props**: `value`, `onChange`, `minDate`, `maxDate`, `format`
+**File**: `Slider.tsx`  
+**Purpose**: Range slider input.  
+**Props**: `value`, `defaultValue`, `min`, `max`, `step`, `onChange: (value: number) => void`, `onChangeEnd: (value: number) => void`, `disabled`, `label`, `showValue`, `size` (`"sm"` | `"md"` | `"lg"`), `className`, `id`
 
 ---
 
@@ -3922,6 +3934,49 @@ Public pages pass cart/wishlist actions; seller and admin pages pass delete/expo
 **Purpose**: Category grid display  
 **Props**: `categories`, `columns`
 
+#### SectionCarousel
+
+**File**: `SectionCarousel.tsx`  
+**Purpose**: Generic reusable section carousel with optional background image, heading, description, "See All" link, and `HorizontalScroller` for scroll-snapping items.  
+**Props**: `title`, `description?`, `backgroundImage?`, `seeAllHref?`, `items`, `renderItem`, `perView?`, `className?`
+
+---
+
+### Review Components (`src/components/reviews/`)
+
+#### ReviewCard
+
+**File**: `ReviewCard.tsx`  
+**Purpose**: Displays a review with reviewer avatar (uses `generateInitials` from `@/helpers`), name with profile link, verified badge, rating star badge, comment, item link, and optional thumbnail images.  
+**Props**: `review: ReviewDocument`, `className?`  
+**i18n**: `useTranslations("reviews")` — keys: `anonymous`, `verified`, `viewItem`, `moreImages`, `reviewImageAlt`
+
+---
+
+### Product Components (`src/components/products/`)
+
+#### ProductActions
+
+**File**: `ProductActions.tsx`  
+**Purpose**: Add-to-cart, buy-now, and wishlist actions with desktop layout and mobile sticky bar.  
+**Props**: `product`, `className?`
+
+#### ProductFeatureBadges
+
+**File**: `ProductFeatureBadges.tsx`  
+**Purpose**: Feature badges (featured, free shipping, COD, etc.) rendered as colored pills.  
+**Props**: `product`, `className?`
+
+---
+
+### UI Components (`src/components/ui/`)
+
+#### SkipToMain
+
+**File**: `SkipToMain.tsx`  
+**Purpose**: Keyboard-only skip-navigation link for a11y. Hidden by default (`sr-only`), appears on Tab focus as a fixed pill in the top-left corner linking to `#main-content`.  
+**i18n**: `useTranslations("a11y")` — key: `skipToContent`
+
 ---
 
 ### Error Handling Components
@@ -4070,6 +4125,37 @@ export * from "./constants";
 **File**: `app/faqs/page.tsx`  
 **Purpose**: Frequently asked questions
 
+#### Reviews
+
+**Route**: `/reviews`  
+**File**: `app/[locale]/reviews/page.tsx`  
+**Purpose**: Public reviews showcase page  
+**Component**: `ReviewsListView` from `@/features/reviews`  
+**i18n**: `useTranslations("reviews")`
+
+#### Blog
+
+**Route**: `/blog`  
+**File**: `app/[locale]/blog/page.tsx`  
+**Purpose**: Public blog listing with category filter, sort, search, and pagination  
+**Component**: `BlogListView` from `@/features/blog`  
+**i18n**: `useTranslations("blog")`
+
+#### Categories
+
+**Route**: `/categories`  
+**File**: `app/[locale]/categories/page.tsx`  
+**Purpose**: Public categories listing  
+**Component**: `CategoriesListView` from `@/features/categories`
+
+#### Events
+
+**Route**: `/events`  
+**File**: `app/[locale]/events/page.tsx`  
+**Purpose**: Public events listing with status/type filters, sort, search, and pagination  
+**Component**: `EventsListView` from `@/features/events`  
+**i18n**: `useTranslations("events")`, `useTranslations("eventTypes")`
+
 ---
 
 ### Static / Informational Pages
@@ -4143,7 +4229,9 @@ All static pages follow the same pattern: hero gradient header → content secti
 
 **Route**: `/user/wishlist`  
 **File**: `app/user/wishlist/page.tsx`  
-**Purpose**: User wishlist
+**Purpose**: User wishlist with Products/Auctions/Categories/Stores tabs  
+**Component**: `WishlistView`  
+**i18n**: `useTranslations("wishlist")`
 
 #### Addresses
 
@@ -4284,6 +4372,14 @@ All static pages follow the same pattern: hero gradient header → content secti
 **File**: `app/seller/auctions/page.tsx`  
 **Purpose**: Browse and manage the seller's auction listings  
 **Component**: `SellerAuctionsView`
+
+#### Seller Addresses
+
+**Route**: `/seller/addresses`  
+**File**: `app/[locale]/seller/addresses/page.tsx`  
+**Purpose**: Seller business/pickup address management  
+**Component**: `SellerAddressesView`  
+**i18n**: `useTranslations("sellerAddresses")`
 
 ---
 
@@ -4972,6 +5068,21 @@ This guide provides a complete reference for:
 3. **See Parameters**: Function signatures show required parameters
 4. **Understand Purpose**: Short descriptions explain what each item does
 5. **Follow Patterns**: See how to use similar patterns across the codebase
+
+---
+
+---
+
+## Firebase Functions (`functions/src/`)
+
+### Scheduled Jobs
+
+#### weeklyPayoutEligibility
+
+**File**: `functions/src/jobs/weeklyPayoutEligibility.ts`  
+**Schedule**: Weekly (Saturday 05:00 UTC)  
+**Purpose**: Scans sellers with delivered orders since last payout, calculates eligible payout amount (5% platform commission deducted), and creates pending payout records.  
+**Repository**: `functions/src/repositories/user.repository.ts` — `SellerPayoutDetails` interface, `findById` method
 
 ---
 

@@ -41,6 +41,7 @@ export const ROUTES = {
     EVENTS: "/events",
     EVENT_DETAIL: (id: string) => `/events/${id}`,
     EVENT_PARTICIPATE: (id: string) => `/events/${id}/participate`,
+    REVIEWS: "/reviews",
   },
 
   // Error Pages
@@ -90,6 +91,9 @@ export const ROUTES = {
     STORE: "/seller/store",
     SHIPPING: "/seller/shipping",
     PAYOUT_SETTINGS: "/seller/payout-settings",
+    ADDRESSES: "/seller/addresses",
+    ADDRESSES_ADD: "/seller/addresses/add",
+    ADDRESSES_EDIT: (id: string) => `/seller/addresses/edit/${id}`,
   },
 
   // Admin Routes

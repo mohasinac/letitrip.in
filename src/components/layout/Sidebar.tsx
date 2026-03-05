@@ -3,7 +3,7 @@
 import { useRef, useEffect } from "react";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { THEME_CONSTANTS, ROUTES, ERROR_MESSAGES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES, ERROR_MESSAGES, MAIN_NAV_ITEMS } from "@/constants";
 import { useSwipe, useAuth, useLogout } from "@/hooks";
 import { logger } from "@/classes";
 import {
@@ -12,6 +12,7 @@ import {
   Button,
   Heading,
   Li,
+  LocaleSwitcher,
   Nav,
   Span,
   Text,
@@ -609,6 +610,96 @@ export default function Sidebar({
                 </div>
               )}
 
+            {/* Browse Section - Main navigation links for sidebar access */}
+            <div className="space-y-2">
+              <div
+                className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
+              >
+                <div
+                  className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
+                ></div>
+                <Heading
+                  level={3}
+                  className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
+                >
+                  {tNav("browse")}
+                </Heading>
+                <div
+                  className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
+                ></div>
+              </div>
+
+              <Ul className="space-y-1">
+                {MAIN_NAV_ITEMS.map((item, i) => {
+                  const translationKeys = [
+                    "home",
+                    "products",
+                    "auctions",
+                    "categories",
+                    "stores",
+                    "events",
+                    "blog",
+                    "promotions",
+                    "reviews",
+                  ] as const;
+                  const isActive = pathname === item.href;
+                  return (
+                    <Li key={item.href}>
+                      <TextLink
+                        href={item.href}
+                        variant="inherit"
+                        className={`
+                        ${flex.rowCenter} gap-3 px-3 py-2.5 rounded-lg 
+                        transition-all duration-200 group
+                        ${
+                          isActive
+                            ? "bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 shadow-sm"
+                            : `${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.hoverCard}`
+                        }
+                      `}
+                        onClick={onClose}
+                      >
+                        <div
+                          className={`
+                        ${flex.noShrink} p-1.5 rounded-md transition-colors
+                        ${
+                          isActive
+                            ? "bg-primary-100 dark:bg-primary-900/50"
+                            : `bg-transparent ${THEME_CONSTANTS.themed.hover.replace("hover:", "group-hover:")}`
+                        }
+                      `}
+                        >
+                          <Span
+                            className={`${flex.rowCenter} ${isActive ? "text-primary-600 dark:text-primary-400" : THEME_CONSTANTS.themed.textMuted}`}
+                          >
+                            {item.icon}
+                          </Span>
+                        </div>
+                        <Span
+                          className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
+                        >
+                          {tNav(translationKeys[i])}
+                        </Span>
+                        {isActive && (
+                          <svg
+                            className="w-4 h-4 text-primary-600 dark:text-primary-400"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        )}
+                      </TextLink>
+                    </Li>
+                  );
+                })}
+              </Ul>
+            </div>
+
             {/* Support Section - Always visible */}
             <div className="space-y-2">
               <div
@@ -792,6 +883,40 @@ export default function Sidebar({
                   />
                 </div>
               </Button>
+
+              {/* Language Switcher */}
+              <div
+                className={`
+                ${flex.rowCenter} gap-3 px-3 py-2.5 rounded-lg w-full
+                ${THEME_CONSTANTS.themed.textPrimary}
+              `}
+              >
+                <div
+                  className={`
+                  ${flex.noShrink} p-1.5 rounded-md transition-colors
+                `}
+                >
+                  <svg
+                    className={`w-4 h-4 ${THEME_CONSTANTS.themed.textMuted}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <Span
+                  className={`${THEME_CONSTANTS.typography.small} font-medium flex-1 text-left`}
+                >
+                  {tNav("language")}
+                </Span>
+                <LocaleSwitcher />
+              </div>
             </div>
           </Nav>
         </div>

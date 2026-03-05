@@ -17,9 +17,12 @@ jest.mock("next/image", () => ({
 const mockProduct = {
   id: "p1",
   title: "Trek Boots",
+  description: "Great hiking boots.",
   price: 2500,
   currency: "INR",
   mainImage: "/img.jpg",
+  images: [] as string[],
+  video: undefined as { url: string; thumbnailUrl: string; duration: number } | undefined,
   status: "published" as const,
   featured: false,
   isAuction: false,

@@ -2,6 +2,7 @@
 
 import React, { useCallback, useRef, useState } from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { classNames } from "@/helpers";
 import { Span } from "../typography/Typography";
 import { Label } from "../typography/Typography";
 
@@ -70,16 +71,10 @@ export default function Slider({
     lg: "h-3",
   };
 
-  const thumbSizeClasses = {
-    sm: "w-3 h-3",
-    md: "w-4 h-4",
-    lg: "w-5 h-5",
-  };
-
   const { themed, flex } = THEME_CONSTANTS;
 
   return (
-    <div className={`slider-container ${className}`}>
+    <div className={classNames("slider-container", className)}>
       {(label || showValue) && (
         <div className={`${flex.between} mb-2`}>
           {label && (
@@ -91,7 +86,7 @@ export default function Slider({
             </Label>
           )}
           {showValue && (
-            <Span className={`text-sm font-medium ${themed.textSecondary}`}>
+            <Span className={`text-sm font-medium tabular-nums ${themed.textSecondary}`}>
               {value}
             </Span>
           )}
@@ -120,10 +115,18 @@ export default function Slider({
 
         <div className="slider-track-container pointer-events-none absolute top-1/2 -translate-y-1/2 left-0 right-0">
           <div
-            className={`slider-track ${themed.bgTertiary} rounded-full ${sizeClasses[size]}`}
+            className={classNames(
+              "slider-track rounded-full",
+              sizeClasses[size],
+              "bg-zinc-200 dark:bg-slate-700",
+            )}
           >
             <div
-              className={`slider-fill bg-blue-600 dark:bg-blue-500 rounded-full ${sizeClasses[size]}`}
+              className={classNames(
+                "slider-fill rounded-full",
+                sizeClasses[size],
+                "bg-primary-600 dark:bg-secondary-500",
+              )}
               style={{ width: `${percentage}%` }}
             />
           </div>
@@ -155,24 +158,25 @@ export default function Slider({
         .slider-input::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
-          ${size === "sm" ? "width: 0.75rem; height: 0.75rem;" : ""}
-          ${size === "md" ? "width: 1rem; height: 1rem;" : ""}
-          ${size === "lg" ? "width: 1.25rem; height: 1.25rem;" : ""}
-          background: ${disabled ? "#9ca3af" : "#2563eb"};
-          border: 2px solid white;
+          ${size === "sm" ? "width: 0.875rem; height: 0.875rem;" : ""}
+          ${size === "md" ? "width: 1.125rem; height: 1.125rem;" : ""}
+          ${size === "lg" ? "width: 1.375rem; height: 1.375rem;" : ""}
+          background: white;
+          border: 3px solid #1a55f2;
           border-radius: 50%;
           cursor: ${disabled ? "not-allowed" : "pointer"};
           box-shadow:
             0 1px 3px 0 rgb(0 0 0 / 0.1),
             0 1px 2px -1px rgb(0 0 0 / 0.1);
           transition:
-            background 0.2s,
-            transform 0.2s;
+            border-color 0.2s,
+            transform 0.2s,
+            box-shadow 0.2s;
         }
 
         .slider-input:not(:disabled)::-webkit-slider-thumb:hover {
-          background: #1d4ed8;
-          transform: scale(1.1);
+          transform: scale(1.15);
+          box-shadow: 0 0 0 4px rgba(26, 85, 242, 0.15);
         }
 
         .slider-input:not(:disabled)::-webkit-slider-thumb:active {
@@ -181,24 +185,25 @@ export default function Slider({
 
         /* Firefox */
         .slider-input::-moz-range-thumb {
-          ${size === "sm" ? "width: 0.75rem; height: 0.75rem;" : ""}
-          ${size === "md" ? "width: 1rem; height: 1rem;" : ""}
-          ${size === "lg" ? "width: 1.25rem; height: 1.25rem;" : ""}
-          background: ${disabled ? "#9ca3af" : "#2563eb"};
-          border: 2px solid white;
+          ${size === "sm" ? "width: 0.875rem; height: 0.875rem;" : ""}
+          ${size === "md" ? "width: 1.125rem; height: 1.125rem;" : ""}
+          ${size === "lg" ? "width: 1.375rem; height: 1.375rem;" : ""}
+          background: white;
+          border: 3px solid #1a55f2;
           border-radius: 50%;
           cursor: ${disabled ? "not-allowed" : "pointer"};
           box-shadow:
             0 1px 3px 0 rgb(0 0 0 / 0.1),
             0 1px 2px -1px rgb(0 0 0 / 0.1);
           transition:
-            background 0.2s,
-            transform 0.2s;
+            border-color 0.2s,
+            transform 0.2s,
+            box-shadow 0.2s;
         }
 
         .slider-input:not(:disabled)::-moz-range-thumb:hover {
-          background: #1d4ed8;
-          transform: scale(1.1);
+          transform: scale(1.15);
+          box-shadow: 0 0 0 4px rgba(26, 85, 242, 0.15);
         }
 
         .slider-input:not(:disabled)::-moz-range-thumb:active {
@@ -213,6 +218,25 @@ export default function Slider({
         .slider-track-container {
           left: 0;
           right: 0;
+        }
+
+        /* Dark mode thumb color */
+        :global(.dark) .slider-input::-webkit-slider-thumb {
+          border-color: #65c408;
+          background: #1e293b;
+        }
+
+        :global(.dark) .slider-input:not(:disabled)::-webkit-slider-thumb:hover {
+          box-shadow: 0 0 0 4px rgba(101, 196, 8, 0.15);
+        }
+
+        :global(.dark) .slider-input::-moz-range-thumb {
+          border-color: #65c408;
+          background: #1e293b;
+        }
+
+        :global(.dark) .slider-input:not(:disabled)::-moz-range-thumb:hover {
+          box-shadow: 0 0 0 4px rgba(101, 196, 8, 0.15);
         }
       `}</style>
     </div>

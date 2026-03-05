@@ -102,9 +102,23 @@ export function SellerEditProductView({ id }: SellerEditProductViewProps) {
         tags: formData.tags ?? [],
         shippingInfo: formData.shippingInfo || undefined,
         returnPolicy: formData.returnPolicy || undefined,
+        condition: formData.condition || "new",
+        insurance: formData.insurance ?? false,
+        insuranceCost: formData.insurance ? (formData.insuranceCost ?? 0) : undefined,
+        shippingPaidBy: formData.shippingPaidBy || "buyer",
         isAuction: formData.isAuction ?? false,
         auctionEndDate: formData.auctionEndDate || undefined,
         startingBid: formData.startingBid || undefined,
+        reservePrice: formData.reservePrice || undefined,
+        buyNowPrice: formData.buyNowPrice || undefined,
+        minBidIncrement: formData.minBidIncrement || undefined,
+        autoExtendable: formData.autoExtendable ?? false,
+        auctionExtensionMinutes: formData.autoExtendable
+          ? (formData.auctionExtensionMinutes ?? 5)
+          : undefined,
+        auctionShippingPaidBy: formData.isAuction
+          ? (formData.auctionShippingPaidBy || "winner")
+          : undefined,
         status: formData.status,
       });
       showSuccess(SUCCESS_MESSAGES.PRODUCT.UPDATED);

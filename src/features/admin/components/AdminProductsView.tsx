@@ -3,6 +3,8 @@
  *
  * Contains all product management state, mutations, drawer logic, and JSX.
  * Consumed by /admin/products/[[...action]]/page.tsx.
+ *
+ * Uses ListingLayout for a unified listing shell matching the standard wireframe.
  */
 
 "use client";
@@ -14,17 +16,17 @@ import { useAdminProducts } from "@/features/admin/hooks";
 import { ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
-  AdminFilterBar,
   AdminPageHeader,
   Button,
   Caption,
   Card,
   DataTable,
   DrawerFormFooter,
-  FormField,
+  FilterFacetSection,
+  ListingLayout,
   MediaImage,
   ProductForm,
-  Select,
+  Search,
   SideDrawer,
   StatusBadge,
   TablePagination,
@@ -42,7 +44,6 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
   const router = useRouter();
   const t = useTranslations("adminProducts");
   const tActions = useTranslations("actions");
-  const tLoading = useTranslations("loading");
   const tStatus = useTranslations("status");
   const { showError } = useMessage();
   const table = useUrlTable({
@@ -51,6 +52,31 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
   const searchTerm = table.get("q");
   const statusFilter = table.get("status");
 
+  // ── Staged filter state (applied on button click, not live) ─────────
+  const [stagedStatus, setStagedStatus] = useState<string[]>(
+    statusFilter ? [statusFilter] : [],
+  );
+
+  // Sync staged state when URL changes externally (back/forward nav)
+  useEffect(() => {
+    setStagedStatus(statusFilter ? [statusFilter] : []);
+  }, [statusFilter]);
+
+  const handleFilterApply = useCallback(() => {
+    table.setMany({
+      status: stagedStatus[0] ?? "",
+      page: "1",
+    });
+  }, [stagedStatus, table]);
+
+  const handleFilterClear = useCallback(() => {
+    setStagedStatus([]);
+    table.setMany({ status: "", page: "1" });
+  }, [table]);
+
+  const filterActiveCount = statusFilter ? 1 : 0;
+
+  // ── Data fetching ───────────────────────────────────────────────────
   const filtersArr: string[] = [];
   if (searchTerm) filtersArr.push(`title@=*${searchTerm}`);
   if (statusFilter) filtersArr.push(`status==${statusFilter}`);
@@ -231,101 +257,109 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
       <DrawerFormFooter onCancel={handleCloseDrawer} onSubmit={handleSave} />
     );
 
+  // ── Status filter options for FilterFacetSection ─────────────────────
+  const statusOptions = useMemo(
+    () => [
+      { value: "draft", label: tStatus("draft") },
+      { value: "published", label: tStatus("published") },
+      { value: "archived", label: tStatus("archived") },
+    ],
+    [tStatus],
+  );
+
   return (
     <>
-      <div className="space-y-6">
-        <AdminPageHeader
-          title={t("title")}
-          subtitle={t("subtitle")}
-          actionLabel={t("createProduct")}
-          onAction={handleCreate}
+      <ListingLayout
+        headerSlot={
+          <AdminPageHeader
+            title={t("title")}
+            subtitle={t("subtitle")}
+            actionLabel={t("createProduct")}
+            onAction={handleCreate}
+          />
+        }
+        searchSlot={
+          <Search
+            value={searchTerm}
+            onChange={(v) => table.set("q", v)}
+            placeholder={t("searchPlaceholder")}
+          />
+        }
+        filterContent={
+          <FilterFacetSection
+            title={t("formStatus")}
+            options={statusOptions}
+            selected={stagedStatus}
+            onChange={setStagedStatus}
+            searchable={false}
+          />
+        }
+        filterActiveCount={filterActiveCount}
+        onFilterApply={handleFilterApply}
+        onFilterClear={handleFilterClear}
+        loading={isLoading}
+        errorSlot={
+          error ? (
+            <Card>
+              <div className="text-center py-8">
+                <Text variant="error" className="mb-4">
+                  {error.message}
+                </Text>
+                <Button onClick={() => refetch()}>{tActions("retry")}</Button>
+              </div>
+            </Card>
+          ) : undefined
+        }
+        paginationSlot={
+          <TablePagination
+            currentPage={data?.meta?.page ?? 1}
+            totalPages={data?.meta?.totalPages ?? 1}
+            pageSize={table.getNumber("pageSize", 25)}
+            total={data?.meta?.total ?? 0}
+            onPageChange={table.setPage}
+            onPageSizeChange={table.setPageSize}
+          />
+        }
+      >
+        <DataTable
+          data={products}
+          columns={columns}
+          keyExtractor={(product) => product.id}
+          onRowClick={handleEdit}
+          actions={actions}
+          externalPagination
+          showViewToggle
+          viewMode={
+            (table.get("view") || "table") as "table" | "grid" | "list"
+          }
+          onViewModeChange={(mode) => table.set("view", mode)}
+          mobileCardRender={(product) => (
+            <Card
+              className="overflow-hidden cursor-pointer"
+              onClick={() => handleEdit(product)}
+            >
+              <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+                <MediaImage
+                  src={product.mainImage}
+                  alt={product.title}
+                  size="card"
+                />
+              </div>
+              <div className="p-3 space-y-1">
+                <Text weight="medium" size="sm" className="line-clamp-2">
+                  {product.title}
+                </Text>
+                <div className="flex items-center justify-between gap-1">
+                  <StatusBadge status={product.status as any} />
+                  <Caption className="font-semibold">
+                    {formatCurrency(product.price)}
+                  </Caption>
+                </div>
+              </div>
+            </Card>
+          )}
         />
-
-        {isLoading ? (
-          <Card>
-            <div className="text-center py-8">{tLoading("default")}</div>
-          </Card>
-        ) : error ? (
-          <Card>
-            <div className="text-center py-8">
-              <Text className="text-red-600 mb-4">{error.message}</Text>
-              <Button onClick={() => refetch()}>{tActions("retry")}</Button>
-            </div>
-          </Card>
-        ) : (
-          <>
-            <AdminFilterBar>
-              <FormField
-                type="text"
-                name="search"
-                value={searchTerm}
-                onChange={(value) => table.set("q", value)}
-                placeholder={t("searchPlaceholder")}
-              />
-              <Select
-                value={statusFilter}
-                onChange={(e) =>
-                  table.set("status", (e.target as HTMLSelectElement).value)
-                }
-                options={[
-                  { value: "", label: t("filterAll") },
-                  { value: "draft", label: tStatus("draft") },
-                  { value: "published", label: tStatus("published") },
-                  { value: "archived", label: tStatus("archived") },
-                ]}
-              />
-            </AdminFilterBar>
-            <DataTable
-              data={products}
-              columns={columns}
-              keyExtractor={(product) => product.id}
-              onRowClick={handleEdit}
-              actions={actions}
-              externalPagination
-              showViewToggle
-              viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
-              onViewModeChange={(mode) => table.set("view", mode)}
-              mobileCardRender={(product) => (
-                <Card
-                  className="overflow-hidden cursor-pointer"
-                  onClick={() => handleEdit(product)}
-                >
-                  <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
-                    <MediaImage
-                      src={product.mainImage}
-                      alt={product.title}
-                      size="card"
-                    />
-                  </div>
-                  <div className="p-3 space-y-1">
-                    <Text
-                      weight="medium"
-                      size="sm"
-                      className="line-clamp-2"
-                    >
-                      {product.title}
-                    </Text>
-                    <div className="flex items-center justify-between gap-1">
-                      <StatusBadge status={product.status as any} />
-                      <Caption className="font-semibold">
-                        {formatCurrency(product.price)}
-                      </Caption>
-                    </div>
-                  </div>
-                </Card>
-              )}
-            />
-            <TablePagination
-              currentPage={data?.meta?.page ?? 1}
-              totalPages={data?.meta?.totalPages ?? 1}
-              pageSize={table.getNumber("pageSize", 25)}
-              total={data?.meta?.total ?? 0}
-              onPageChange={table.setPage}
-              onPageSizeChange={table.setPageSize}
-            />
-          </>
-        )}
-      </div>
+      </ListingLayout>
 
       {editingProduct && (
         <SideDrawer

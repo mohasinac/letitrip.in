@@ -79,7 +79,7 @@ export default function OpengraphImage() {
           letterSpacing: "0.5px",
         }}
       >
-        {SEO_CONFIG.defaultDescription}
+        Shop, Bid &amp; Sell — India&apos;s Multi-Seller Marketplace
       </div>
 
       {/* URL */}

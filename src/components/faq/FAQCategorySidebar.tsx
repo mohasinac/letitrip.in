@@ -1,4 +1,5 @@
 ﻿"use client";
+import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, FAQ_CATEGORIES, ROUTES } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
 import { Heading, Span, Text, TextLink } from "@/components";
@@ -21,6 +22,7 @@ export function FAQCategorySidebar({
   onCategorySelect,
   categoryCounts,
 }: FAQCategorySidebarProps) {
+  const t = useTranslations("faq");
   const totalCount = Object.values(categoryCounts).reduce(
     (sum, count) => sum + count,
     0,
@@ -35,7 +37,7 @@ export function FAQCategorySidebar({
         level={2}
         className={`${THEME_CONSTANTS.typography.h3} ${THEME_CONSTANTS.themed.textPrimary} mb-6`}
       >
-        Categories
+        {t("categories")}
       </Heading>
 
       {/* All FAQs */}
@@ -51,7 +53,7 @@ export function FAQCategorySidebar({
         <div className={flex.between}>
           <div className="flex items-center gap-3">
             <Span className="text-2xl">📚</Span>
-            <Span className={THEME_CONSTANTS.typography.body}>All FAQs</Span>
+            <Span className={THEME_CONSTANTS.typography.body}>{t("allFaqs")}</Span>
           </div>
           <Span
             className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary}`}
@@ -82,7 +84,7 @@ export function FAQCategorySidebar({
                 <div className="flex items-center gap-3">
                   <Span className="text-2xl">{category.icon}</Span>
                   <Span className={THEME_CONSTANTS.typography.body}>
-                    {category.label}
+                    {t(`category.${key}`)}
                   </Span>
                 </div>
                 <Span
@@ -95,7 +97,7 @@ export function FAQCategorySidebar({
                 <Text
                   className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary} ml-11`}
                 >
-                  {category.description}
+                  {t(`categoryDescription.${key}`)}
                 </Text>
               )}
             </TextLink>
@@ -108,13 +110,13 @@ export function FAQCategorySidebar({
         <Text
           className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary} mb-3`}
         >
-          Still have questions?
+          {t("stillHaveQuestions")}
         </Text>
         <TextLink
           href={ROUTES.PUBLIC.CONTACT}
           className={`block text-center ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors`}
         >
-          Contact Support
+          {t("contactSupport")}
         </TextLink>
       </div>
     </div>

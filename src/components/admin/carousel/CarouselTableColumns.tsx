@@ -7,7 +7,7 @@
  */
 
 import Image from "next/image";
-import { StatusBadge, Button } from "@/components";
+import { StatusBadge, Button, Text } from "@/components";
 import { UI_LABELS } from "@/constants";
 import type { CarouselSlide } from "./types";
 
@@ -18,10 +18,14 @@ export function getCarouselTableColumns(
   return {
     columns: [
       {
-        key: "order",
-        header: "Order",
-        sortable: true,
+        key: "cards",
+        header: "Cards",
         width: "80px",
+        render: (slide: CarouselSlide) => (
+          <Text variant="secondary" size="sm">
+            {(slide.cards ?? []).length} / 6
+          </Text>
+        ),
       },
       {
         key: "title",

@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import { useState } from "react";
-import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
+import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS, getLocalizedFaqText } from "@/constants";
 import { useMessage } from "@/hooks";
 import { formatNumber } from "@/utils";
 import { FAQHelpfulButtons } from "./FAQHelpfulButtons";
@@ -10,11 +11,13 @@ import { Button, Heading, Span, Text } from "@/components";
 
 interface FAQAccordionProps {
   faqs: StaticFAQItem[];
+  locale?: string;
   expandedByDefault?: boolean;
 }
 
 export function FAQAccordion({
   faqs,
+  locale = "en",
   expandedByDefault = false,
 }: FAQAccordionProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(
@@ -22,6 +25,8 @@ export function FAQAccordion({
       ? new Set(faqs.map((faq: StaticFAQItem) => faq.id))
       : new Set(),
   );
+  const t = useTranslations("faq");
+  const tActions = useTranslations("actions");
   const { showSuccess } = useMessage();
   const { flex } = THEME_CONSTANTS;
 
@@ -40,7 +45,7 @@ export function FAQAccordion({
   const copyLink = (faqId: string) => {
     const url = `${window.location.origin}/faqs#${faqId}`;
     navigator.clipboard.writeText(url);
-    showSuccess(UI_LABELS.ACTIONS.LINK_COPIED);
+    showSuccess(tActions("linkCopied"));
   };
 
   if (faqs.length === 0) {
@@ -51,7 +56,7 @@ export function FAQAccordion({
         <Text
           className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
         >
-          No FAQs found matching your criteria.
+          {t("noResults")}
         </Text>
       </div>
     );
@@ -61,6 +66,7 @@ export function FAQAccordion({
     <div className="space-y-5">
       {faqs.map((faq) => {
         const isExpanded = expandedIds.has(faq.id);
+        const { question, answer } = getLocalizedFaqText(faq, locale);
 
         return (
           <div
@@ -78,7 +84,7 @@ export function FAQAccordion({
                   level={3}
                   className={`${THEME_CONSTANTS.typography.h4} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
                 >
-                  {faq.question}
+                  {question}
                 </Heading>
                 {faq.tags && faq.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
@@ -120,7 +126,7 @@ export function FAQAccordion({
                 {/* Answer Text */}
                 <div
                   className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} mb-6 prose dark:prose-invert max-w-none`}
-                  dangerouslySetInnerHTML={{ __html: faq.answer }}
+                  dangerouslySetInnerHTML={{ __html: answer }}
                 />
 
                 {/* Actions Row */}
@@ -143,7 +149,7 @@ export function FAQAccordion({
                         d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
                       />
                     </svg>
-                    <Span>Copy link</Span>
+                    <Span>{t("copyLink")}</Span>
                   </Button>
 
                   {/* View Count */}
@@ -151,7 +157,7 @@ export function FAQAccordion({
                     <Span
                       className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary}`}
                     >
-                      {formatNumber(faq.stats.views)} views
+                      {t("views", { count: formatNumber(faq.stats.views) })}
                     </Span>
                   )}
                 </div>

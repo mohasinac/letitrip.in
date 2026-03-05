@@ -11,9 +11,12 @@ type AuctionItem = Pick<
   ProductDocument,
   | "id"
   | "title"
+  | "description"
   | "price"
   | "currency"
   | "mainImage"
+  | "images"
+  | "video"
   | "isAuction"
   | "auctionEndDate"
   | "startingBid"
@@ -26,9 +29,31 @@ interface AuctionGridProps {
   auctions: AuctionItem[];
   loading?: boolean;
   skeletonCount?: number;
+  /** "grid" (default): responsive grid. "list": stacked horizontal cards. */
+  variant?: "grid" | "list";
+  selectable?: boolean;
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
 }
 
-function AuctionCardSkeleton() {
+function AuctionCardSkeleton({ variant = "grid" }: { variant?: "grid" | "list" }) {
+  if (variant === "list") {
+    return (
+      <div className="bg-gray-200 dark:bg-gray-700 rounded-xl overflow-hidden animate-pulse flex flex-row">
+        <div className="w-32 sm:w-44 aspect-square bg-gray-300 dark:bg-gray-600 flex-shrink-0" />
+        <div className="flex-1 p-3 space-y-2">
+          <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3" />
+          <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-full" />
+          <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-3/4" />
+          <div className="h-5 bg-gray-300 dark:bg-gray-600 rounded w-1/2" />
+          <div className="flex gap-2">
+            <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded flex-1" />
+            <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded flex-1" />
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="bg-gray-200 dark:bg-gray-700 rounded-xl overflow-hidden animate-pulse">
       <div className="aspect-square bg-gray-300 dark:bg-gray-600" />
@@ -40,6 +65,9 @@ function AuctionCardSkeleton() {
           <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/4" />
           <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/3" />
         </div>
+        <div className="flex gap-2">
+          <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded flex-1" />
+        </div>
       </div>
     </div>
   );
@@ -49,12 +77,30 @@ export function AuctionGrid({
   auctions,
   loading = false,
   skeletonCount = 12,
+  variant = "grid",
+  selectable = false,
+  selectedIds = [],
+  onSelectionChange,
 }: AuctionGridProps) {
+  const handleSelect = (id: string, selected: boolean) => {
+    if (!onSelectionChange) return;
+    if (selected) {
+      onSelectionChange([...selectedIds, id]);
+    } else {
+      onSelectionChange(selectedIds.filter((sid) => sid !== id));
+    }
+  };
+
+  const containerClass =
+    variant === "list"
+      ? "flex flex-col gap-3"
+      : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4";
+
   if (loading) {
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      <div className={containerClass}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
-          <AuctionCardSkeleton key={i} />
+          <AuctionCardSkeleton key={i} variant={variant} />
         ))}
       </div>
     );
@@ -75,9 +121,16 @@ export function AuctionGrid({
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+    <div className={containerClass}>
       {auctions.map((auction) => (
-        <AuctionCard key={auction.id} product={auction} />
+        <AuctionCard
+          key={auction.id}
+          product={auction}
+          variant={variant}
+          selectable={selectable}
+          isSelected={selectedIds.includes(auction.id)}
+          onSelect={handleSelect}
+        />
       ))}
     </div>
   );

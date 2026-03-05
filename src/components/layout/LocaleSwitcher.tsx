@@ -39,7 +39,7 @@ export default function LocaleSwitcher() {
 
   return (
     <div
-      className={`hidden sm:flex items-center gap-0.5 rounded-lg border ${THEME_CONSTANTS.themed.border} p-0.5`}
+      className={`flex items-center gap-0.5 rounded-lg border ${THEME_CONSTANTS.themed.border} p-0.5`}
       role="group"
       aria-label={t("switchTo")}
     >

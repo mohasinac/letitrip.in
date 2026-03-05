@@ -1,3 +1,4 @@
+import React from "react";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { HeroCarousel } from "../HeroCarousel";
 
@@ -11,21 +12,36 @@ jest.mock("@/hooks", () => ({
 }));
 
 // Mock Button component
-jest.mock("@/components", () => ({
-  Button: ({
-    children,
-    onClick,
-    ...props
-  }: {
-    children: React.ReactNode;
-    onClick?: () => void;
-    [key: string]: unknown;
-  }) => (
-    <button onClick={onClick} {...props}>
-      {children}
-    </button>
-  ),
-}));
+jest.mock("@/components", () => {
+  const Passthrough = ({ children, ...props }: { children?: React.ReactNode; [k: string]: unknown }) => (
+    <div {...(Object.fromEntries(Object.entries(props).filter(([, v]) => typeof v === "string" || typeof v === "number")))}>{children}</div>
+  );
+  return {
+    Button: ({
+      children,
+      onClick,
+      ...props
+    }: {
+      children: React.ReactNode;
+      onClick?: () => void;
+      [key: string]: unknown;
+    }) => (
+      <button onClick={onClick} {...props}>
+        {children}
+      </button>
+    ),
+    Heading: ({ children, ...props }: { children?: React.ReactNode; [k: string]: unknown }) => <h2 {...(Object.fromEntries(Object.entries(props).filter(([, v]) => typeof v === "string")))}>{children}</h2>,
+    Text: Passthrough,
+    Span: Passthrough,
+    Section: React.forwardRef<HTMLElement, Record<string, unknown>>(({ children, ...props }, ref) => {
+      const htmlProps = Object.fromEntries(
+        Object.entries(props).filter(([k, v]) => typeof v === "string" || typeof v === "number" || typeof v === "boolean" || k.startsWith("aria-") || k === "role" || k === "tabIndex" || k === "className" || k === "id"),
+      );
+      return <section ref={ref} {...htmlProps}>{children as React.ReactNode}</section>;
+    }),
+    HorizontalScroller: Passthrough,
+  };
+});
 
 const makeSlide = (
   id: string,
@@ -200,6 +216,23 @@ describe("HeroCarousel", () => {
       expect(container.querySelector("section")).toBeInTheDocument();
       // No navigation dots for single slide
       expect(screen.queryByLabelText("Go to slide 1")).not.toBeInTheDocument();
+    });
+
+    it("limits active slides to a maximum of 5", () => {
+      const sevenSlides = Array.from({ length: 7 }, (_, i) =>
+        makeSlide(`s${i + 1}`, `Slide ${i + 1}`, i + 1),
+      );
+      mockUseApiQuery.mockReturnValue({
+        data: sevenSlides,
+        isLoading: false,
+      });
+      render(<HeroCarousel />);
+      // Navigation dots should be rendered for exactly 5 slides, not 7
+      for (let i = 1; i <= 5; i++) {
+        expect(screen.getByLabelText(`Go to slide ${i}`)).toBeInTheDocument();
+      }
+      expect(screen.queryByLabelText("Go to slide 6")).not.toBeInTheDocument();
+      expect(screen.queryByLabelText("Go to slide 7")).not.toBeInTheDocument();
     });
   });
 

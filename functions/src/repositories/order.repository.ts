@@ -55,6 +55,40 @@ export const orderRepository = {
     }));
   },
 
+  /**
+   * Orders eligible to be bundled into a weekly payout:
+   * delivered via Shiprocket with payoutStatus still 'eligible'.
+   */
+  async getEligibleShiprocket(): Promise<
+    Array<{ id: string; ref: DocumentReference; data: OrderRow & { sellerId: string; totalPrice: number; payoutStatus: string; shippingMethod: string } }>
+  > {
+    const snap = await db
+      .collection(COLLECTIONS.ORDERS)
+      .where("payoutStatus", "==", "eligible")
+      .where("shippingMethod", "==", "shiprocket")
+      .where("status", "==", "delivered")
+      .limit(QUERY_LIMIT)
+      .get();
+    return snap.docs.map((d) => ({
+      id: d.id,
+      ref: d.ref,
+      data: { id: d.id, ...d.data() } as OrderRow & { sellerId: string; totalPrice: number; payoutStatus: string; shippingMethod: string },
+    }));
+  },
+
+  /** Mark orders as having a payout requested, recording the payoutId. */
+  markPayoutRequested(
+    batch: FirebaseFirestore.WriteBatch,
+    ref: DocumentReference,
+    payoutId: string,
+  ): void {
+    batch.update(ref, {
+      payoutStatus: "requested",
+      payoutId,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+  },
+
   cancelInBatch(
     batch: FirebaseFirestore.WriteBatch,
     ref: DocumentReference,

@@ -81,3 +81,6 @@ export type { ListingLayoutProps } from "./ListingLayout";
 // Bulk action bar (appears when items are selected)
 export { BulkActionBar } from "./BulkActionBar";
 export type { BulkActionBarProps } from "./BulkActionBar";
+
+// Accessibility
+export { SkipToMain } from "./SkipToMain";

@@ -90,5 +90,8 @@ export {
   getStaticFaqsByCategory,
   getAllStaticFaqs,
   getStaticFaqCategoryCounts,
+  getLocalizedFaqText,
 } from "./faq-data";
 export type { StaticFAQItem } from "./faq-data";
+export { FAQ_TRANSLATIONS_HI } from "./faq-data-hi";
+export type { FAQTranslation } from "./faq-data-hi";

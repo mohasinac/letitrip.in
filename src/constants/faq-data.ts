@@ -9,6 +9,7 @@
  */
 
 import type { FAQCategoryKey } from "./faq";
+import { FAQ_TRANSLATIONS_HI } from "./faq-data-hi";
 
 export interface StaticFAQItem {
   id: string;
@@ -1310,4 +1311,19 @@ export function getStaticFaqCategoryCounts(): Record<FAQCategoryKey, number> {
     if (f.category in counts) counts[f.category]++;
   });
   return counts;
+}
+
+/**
+ * Returns the localised question and answer for a FAQ item.
+ * Falls back to the English (canonical) text when no translation exists for the given locale.
+ */
+export function getLocalizedFaqText(
+  faq: StaticFAQItem,
+  locale: string,
+): { question: string; answer: string } {
+  if (locale === "hi") {
+    const hi = FAQ_TRANSLATIONS_HI[faq.id];
+    if (hi) return hi;
+  }
+  return { question: faq.question, answer: faq.answer };
 }

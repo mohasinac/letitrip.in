@@ -1,12 +1,13 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { CategoryCard } from "../CategoryCard";
 import type { CategoryDocument } from "@/db/schema";
 
 jest.mock("next-intl", () => ({
   useTranslations: () => (key: string, params?: Record<string, unknown>) => {
     if (key === "productsCount") return `${params?.count ?? 0} products`;
-    if (key === "subcategoriesCount") return `${params?.count ?? 0} subcategories`;
+    if (key === "view") return "View";
     return key;
   },
 }));
@@ -49,39 +50,55 @@ describe("CategoryCard", () => {
     expect(screen.getByText("Trekking")).toBeInTheDocument();
   });
 
-  it("renders the description", () => {
-    render(<CategoryCard category={baseCategory as CategoryDocument} />);
-    expect(screen.getByText("All trekking gear")).toBeInTheDocument();
-  });
-
   it("renders product count from useTranslations", () => {
     render(<CategoryCard category={baseCategory as CategoryDocument} />);
     expect(screen.getByText("12 products")).toBeInTheDocument();
   });
 
-  it("does NOT render subcategory count when childrenIds is empty", () => {
+  it("renders the amber View label", () => {
     render(<CategoryCard category={baseCategory as CategoryDocument} />);
-    expect(screen.queryByText(/subcategor/i)).toBeNull();
+    expect(screen.getByText("View")).toBeInTheDocument();
   });
 
-  it("renders subcategory count when childrenIds has entries", () => {
-    const withSubs = {
-      ...baseCategory,
-      childrenIds: ["c1", "c2"],
-    } as CategoryDocument;
-    render(<CategoryCard category={withSubs} />);
-    expect(screen.getByText("2 subcategories")).toBeInTheDocument();
-  });
-
-  it("shows featured badge when isFeatured is true", () => {
+  it("shows featured star when isFeatured is true", () => {
     const featured = { ...baseCategory, isFeatured: true } as CategoryDocument;
-    render(<CategoryCard category={featured} />);
-    expect(screen.getByText("featured")).toBeInTheDocument();
+    const { container } = render(<CategoryCard category={featured} />);
+    // Star SVG is rendered inside the featured indicator div
+    const starEl = container.querySelector(".fill-yellow-900");
+    expect(starEl).toBeInTheDocument();
   });
 
-  it("does NOT show featured badge when isFeatured is false", () => {
-    render(<CategoryCard category={baseCategory as CategoryDocument} />);
-    expect(screen.queryByText("featured")).toBeNull();
+  it("does NOT show featured star when isFeatured is false", () => {
+    const { container } = render(
+      <CategoryCard category={baseCategory as CategoryDocument} />
+    );
+    expect(container.querySelector(".fill-yellow-900")).toBeNull();
+  });
+
+  it("renders checkbox when selectable is true", () => {
+    render(
+      <CategoryCard
+        category={baseCategory as CategoryDocument}
+        selectable
+        selected={false}
+        onSelect={jest.fn()}
+      />
+    );
+    expect(screen.getByRole("checkbox")).toBeInTheDocument();
+  });
+
+  it("calls onSelect with correct args when checkbox changes", async () => {
+    const onSelect = jest.fn();
+    render(
+      <CategoryCard
+        category={baseCategory as CategoryDocument}
+        selectable
+        selected={false}
+        onSelect={onSelect}
+      />
+    );
+    await userEvent.click(screen.getByRole("checkbox"));
+    expect(onSelect).toHaveBeenCalledWith("cat1", true);
   });
 
   it("renders cover image when display.coverImage is set", () => {
@@ -107,5 +124,11 @@ describe("CategoryCard", () => {
     } as CategoryDocument;
     const { container } = render(<CategoryCard category={noIcon} />);
     expect(container.textContent).toContain("🗂️");
+  });
+
+  it("renders a link to the category page", () => {
+    render(<CategoryCard category={baseCategory as CategoryDocument} />);
+    const link = screen.getByRole("link");
+    expect(link).toHaveAttribute("href", expect.stringContaining("trekking"));
   });
 });

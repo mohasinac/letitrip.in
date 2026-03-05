@@ -1,60 +1,50 @@
 /**
  * AuctionDetailView
  *
- * Full auction detail + bidding UI.
- * Extracted from /auctions/[id]/page.tsx.
+ * Full auction detail page with 3-column layout matching ProductDetailView.
+ * Col 1: Image Gallery | Col 2: Auction Info | Col 3: Bid Panel (sticky)
+ * Below: Bid History table + Related auctions
  */
 
 "use client";
 
 import {
+  Badge,
   BidHistory,
-  MediaImage,
-  MediaVideo,
-  PlaceBidForm,
-  Spinner,
+  Breadcrumbs,
+  BreadcrumbItem,
+  Button,
+  Divider,
   Heading,
-  Text,
+  PlaceBidForm,
+  ProductImageGallery,
+  ProductFeatureBadges,
   Span,
+  Text,
   TextLink,
-  Nav,
-  Main,
+  Accordion,
+  AccordionItem,
 } from "@/components";
-import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   useAuth,
   useRealtimeBids,
   useCountdown,
   useAuctionDetail,
+  useWishlistToggle,
 } from "@/hooks";
-import { formatCurrency } from "@/utils";
+import { formatCurrency, formatDate } from "@/utils";
 
-const { themed, typography, spacing, flex, page } = THEME_CONSTANTS;
+const { themed, borderRadius, flex, page, spacing } = THEME_CONSTANTS;
 
 interface AuctionDetailViewProps {
   id: string;
 }
 
-function formatCountdown(
-  r: ReturnType<typeof useCountdown>,
-  endedLabel: string,
-): { display: string; isEndingSoon: boolean } {
-  if (!r) return { display: endedLabel, isEndingSoon: false };
-  const { days, hours, minutes, seconds } = r;
-  const isEndingSoon = days === 0 && hours < 1;
-  let display: string;
-  if (days > 0) display = `${days}d ${hours}h ${minutes}m`;
-  else if (hours > 0) display = `${hours}h ${minutes}m ${seconds}s`;
-  else display = `${minutes}m ${seconds}s`;
-  return { display, isEndingSoon };
-}
-
 export function AuctionDetailView({ id }: AuctionDetailViewProps) {
   const { user } = useAuth();
-  const tAuctions = useTranslations("auctions");
-  const tProducts = useTranslations("products");
-  const tActions = useTranslations("actions");
+  const t = useTranslations("auctionDetail");
 
   const { productQuery, product, bidsQuery, bids } = useAuctionDetail(id);
 
@@ -67,10 +57,6 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
 
   const remaining = useCountdown(product?.auctionEndDate);
   const isEnded = remaining === null && !!product?.auctionEndDate;
-  const { display: countdownDisplay, isEndingSoon } = formatCountdown(
-    remaining,
-    tAuctions("ended"),
-  );
 
   const firestoreBid = product?.currentBid ?? 0;
   const currentBid = rtdbBid ?? firestoreBid;
@@ -79,192 +65,461 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
   const hasCurrentBid = currentBid > 0;
   const liveBidCount = rtdbBidCount ?? bids.length;
 
+  const { inWishlist, isLoading: wishlistLoading, toggle: toggleWishlist } =
+    useWishlistToggle(product?.id ?? "");
+
+  // Reserve price status
+  const reserveMet =
+    product?.reservePrice && currentBid >= product.reservePrice;
+
+  // Loading skeleton
   if (productQuery.isLoading) {
     return (
-      <div className={`${flex.center} min-h-[60vh]`}>
-        <Spinner size="lg" />
+      <div className={`min-h-screen ${themed.bgSecondary}`}>
+        <div className={`${page.container.xl} py-6 sm:py-8`}>
+          <div className="h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-6 animate-pulse" />
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] gap-6 lg:gap-8">
+            <div className="animate-pulse space-y-3">
+              <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-2xl" />
+              <div className="flex gap-2">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg shrink-0" />
+                ))}
+              </div>
+            </div>
+            <div className="animate-pulse space-y-4">
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl w-1/3" />
+              <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+            </div>
+            <div className="hidden lg:block animate-pulse space-y-3">
+              <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (!product) {
+  // Error / not found
+  if (productQuery.error || !product) {
     return (
-      <div
-        className={`max-w-7xl mx-auto px-4 py-20 text-center ${spacing.stack}`}
-      >
-        <Text size="lg" weight="medium">
-          {tProducts("productNotFound")}
-        </Text>
-        <TextLink
-          href={ROUTES.PUBLIC.AUCTIONS}
-          className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
-        >
-          {tActions("back")}
-        </TextLink>
+      <div className={`min-h-screen ${themed.bgSecondary} ${flex.center}`}>
+        <div className="text-center py-16 px-4">
+          <Span className="text-6xl mb-4 block">🔨</Span>
+          <Heading level={1} className="text-2xl font-bold mb-2">
+            {t("notFound")}
+          </Heading>
+          <Text variant="secondary" size="sm" className="mb-6">
+            {t("notFoundDesc")}
+          </Text>
+          <TextLink
+            href={ROUTES.PUBLIC.AUCTIONS}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors text-sm"
+          >
+            ← {t("backToAuctions")}
+          </TextLink>
+        </div>
       </div>
     );
   }
 
-  if (!product.isAuction) {
-    return (
-      <div
-        className={`max-w-7xl mx-auto px-4 py-20 text-center ${spacing.stack}`}
-      >
-        <Text size="lg" weight="medium">
-          {tAuctions("noAuctions")}
-        </Text>
-        <TextLink
-          href={ROUTES.PUBLIC.PRODUCTS + `/${product.id}`}
-          className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
-        >
-          {tProducts("backToProducts")}
-        </TextLink>
-      </div>
-    );
-  }
+  const conditionLabel = product.condition
+    ? t(`condition${product.condition.charAt(0).toUpperCase()}${product.condition.slice(1)}` as any)
+    : t("conditionNew");
 
   return (
-    <Main className={`${page.container["2xl"]} py-10 ${spacing.stack}`}>
-      {/* Breadcrumb */}
-      <Nav
-        aria-label="Breadcrumb"
-        className={`text-sm ${themed.textSecondary}`}
-      >
-        <TextLink
-          href={ROUTES.PUBLIC.AUCTIONS}
-          className="hover:text-indigo-600 dark:hover:text-indigo-400"
-        >
-          {tAuctions("title")}
-        </TextLink>
-        <Span className="mx-2">/</Span>
-        <Span variant="primary" className="line-clamp-1">
-          {product.title}
-        </Span>
-      </Nav>
+    <div className={`min-h-screen ${themed.bgSecondary}`}>
+      <div className={`${page.container.xl} py-4 sm:py-6 lg:py-8`}>
+        {/* ——— Breadcrumbs ——— */}
+        <Breadcrumbs className="mb-4 sm:mb-6">
+          <BreadcrumbItem href={ROUTES.HOME}>{t("breadcrumbAuctions")}</BreadcrumbItem>
+          <BreadcrumbItem href={ROUTES.PUBLIC.AUCTIONS}>
+            {t("breadcrumbAuctions")}
+          </BreadcrumbItem>
+          {product.category && (
+            <BreadcrumbItem
+              href={`${ROUTES.PUBLIC.AUCTIONS}?filters=category==${encodeURIComponent(product.category)}`}
+            >
+              {product.category}
+            </BreadcrumbItem>
+          )}
+          <BreadcrumbItem current>{product.title}</BreadcrumbItem>
+        </Breadcrumbs>
 
-      {/* Main layout: media left, info right */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left: video (if present) or image */}
-        <div className="space-y-3">
-          {/* Primary media */}
-          <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800">
-            {product.video?.url ? (
-              <MediaVideo
-                src={product.video.url}
-                thumbnailUrl={product.video.thumbnailUrl}
-                alt={product.title}
-                trimStart={product.video.trimStart}
-                trimEnd={product.video.trimEnd}
-                controls
-              />
+        {/* ——— 3-Column Auction Layout ——— */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] gap-6 lg:gap-8">
+          {/* Column 1 — Gallery */}
+          <div className="relative">
+            <ProductImageGallery
+              mainImage={product.mainImage}
+              images={product.images}
+              video={product.video}
+              title={product.title}
+              slug={product.slug}
+            />
+            {/* Live / Ended badge overlay */}
+            {!isEnded ? (
+              <Span className="absolute top-3 left-3 z-10 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full animate-pulse">
+                {t("liveBadge")}
+              </Span>
             ) : (
-              <MediaImage
-                src={product.mainImage}
-                alt={product.title}
-                size="card"
-                priority
-                fallback="🔨"
-              />
-            )}
-            {!isEnded && (
-              <Span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
-                {tAuctions("liveBadge")}
+              <Span className="absolute top-3 left-3 z-10 bg-gray-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                {t("endedBadge")}
               </Span>
             )}
             {rtdbConnected && !isEnded && (
-              <Span className="absolute top-3 right-3 flex items-center gap-1 bg-emerald-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
+              <Span className="absolute top-3 right-3 z-10 flex items-center gap-1 bg-emerald-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
                 <Span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                {tAuctions("realtimeBadge")}
+                Live
               </Span>
             )}
           </div>
 
-          {/* Thumbnail — show the main image when a video is the primary display */}
-          {product.video?.url && product.mainImage && (
-            <div className="relative aspect-video rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800">
-              <MediaImage
-                src={product.mainImage}
-                alt={product.title}
-                size="gallery"
-              />
+          {/* Column 2 — Auction Info */}
+          <div className={spacing.stack}>
+            {/* Title + badges */}
+            <div>
+              <Heading level={1} className="text-xl sm:text-2xl lg:text-3xl font-bold leading-tight">
+                {product.title}
+              </Heading>
+              <div className="flex flex-wrap items-center gap-2 mt-2">
+                <Badge variant="primary">
+                  {t("condition")}: {conditionLabel}
+                </Badge>
+                {product.featured && (
+                  <Badge variant="warning">⭐ Featured</Badge>
+                )}
+                {product.insurance && (
+                  <Badge variant="success">🛡️ {t("insurance")}</Badge>
+                )}
+                {product.autoExtendable && (
+                  <Badge variant="info">⏱️ {t("autoExtend")}</Badge>
+                )}
+              </div>
             </div>
-          )}
-        </div>
 
-        {/* Right: info + bid panel */}
-        <div className={`flex flex-col ${spacing.stack}`}>
-          <Heading level={1} className={`${typography.h3}`}>
-            {product.title}
-          </Heading>
+            {/* Seller + Category */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+              <TextLink
+                href={`${ROUTES.PUBLIC.STORES}/${product.sellerId}`}
+                className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+              >
+                {product.sellerName}
+              </TextLink>
+              <Span variant="muted">•</Span>
+              <TextLink
+                href={`${ROUTES.PUBLIC.AUCTIONS}?filters=category==${encodeURIComponent(product.category)}`}
+                className="hover:underline"
+              >
+                {product.category}
+              </TextLink>
+              {product.brand && (
+                <>
+                  <Span variant="muted">•</Span>
+                  <Text size="sm" variant="secondary">{product.brand}</Text>
+                </>
+              )}
+            </div>
 
-          {/* Bid summary */}
-          <div
-            className={`rounded-xl border ${themed.border} p-4 ${spacing.stack}`}
-          >
-            <div className="flex flex-col gap-1">
-              <Text size="xs" variant="secondary">
-                {hasCurrentBid
-                  ? tAuctions("currentBid")
-                  : tAuctions("startingBid")}
+            {/* ——— Countdown Timer — prominent display ——— */}
+            <div className={`rounded-xl border-2 ${isEnded ? "border-gray-300 dark:border-gray-600" : isEndingSoon(remaining) ? "border-amber-400 dark:border-amber-500" : "border-indigo-400 dark:border-indigo-500"} p-4`}>
+              <Text size="xs" variant="secondary" weight="semibold" className="uppercase tracking-wider mb-2">
+                {isEnded ? t("auctionEnded") : t("timeRemaining")}
               </Text>
-              <Text className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
-                {formatCurrency(displayBid)}
-              </Text>
-              <Text size="sm" variant="secondary">
-                {tAuctions("totalBids", { count: liveBidCount })}
-              </Text>
-              {lastRtdbBid && (
-                <Text size="xs" variant="secondary">
-                  {tAuctions("lastBidBy", { name: lastRtdbBid.bidderName })}
+              {!isEnded && remaining ? (
+                <div className="grid grid-cols-4 gap-2 text-center">
+                  {[
+                    { value: remaining.days, label: t("days") },
+                    { value: remaining.hours, label: t("hours") },
+                    { value: remaining.minutes, label: t("minutes") },
+                    { value: remaining.seconds, label: t("seconds") },
+                  ].map((unit) => (
+                    <div key={unit.label}>
+                      <Text className="text-2xl sm:text-3xl font-bold font-mono text-indigo-600 dark:text-indigo-400">
+                        {String(unit.value).padStart(2, "0")}
+                      </Text>
+                      <Text size="xs" variant="secondary">{unit.label}</Text>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <Text className="text-2xl font-bold text-gray-400">
+                  {t("auctionEnded")}
+                </Text>
+              )}
+              {product.auctionEndDate && (
+                <time dateTime={new Date(product.auctionEndDate).toISOString()}>
+                  <Text size="xs" variant="muted" className="mt-2">
+                    {t("auctionEnds")}: {formatDate(product.auctionEndDate)}
+                  </Text>
+                </time>
+              )}
+            </div>
+
+            {/* ——— Bid Info ——— */}
+            <div className={`${themed.bgPrimary} rounded-xl ${spacing.padding.md} ${spacing.stack}`}>
+              <div className={flex.between}>
+                <div>
+                  <Text size="xs" variant="secondary">
+                    {hasCurrentBid ? t("currentBid") : t("startingBid")}
+                  </Text>
+                  <Text className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
+                    {formatCurrency(displayBid)}
+                  </Text>
+                </div>
+                <div className="text-right">
+                  <Text size="xs" variant="secondary">
+                    {t("totalBids", { count: liveBidCount })}
+                  </Text>
+                  {lastRtdbBid && (
+                    <Text size="xs" variant="muted">
+                      {lastRtdbBid.bidderName}
+                    </Text>
+                  )}
+                </div>
+              </div>
+
+              {/* Reserve price indicator */}
+              {product.reservePrice && product.reservePrice > 0 && (
+                <div className={`flex items-center gap-2 text-sm ${reserveMet ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>
+                  <Span>{reserveMet ? "✓" : "⚠"}</Span>
+                  <Text size="sm" weight="medium">
+                    {reserveMet ? t("reserveMet") : t("reserveNotMet")}
+                  </Text>
+                  <Text size="xs" variant="muted">
+                    ({t("reservePrice")}: {formatCurrency(product.reservePrice)})
+                  </Text>
+                </div>
+              )}
+
+              {/* Min bid increment */}
+              {product.minBidIncrement && product.minBidIncrement > 0 && (
+                <Text size="xs" variant="muted">
+                  {t("minIncrement", { amount: formatCurrency(product.minBidIncrement) })}
                 </Text>
               )}
             </div>
 
-            {/* Countdown */}
-            <div className={flex.between}>
-              <Span size="sm" variant="secondary">
-                {isEnded ? tAuctions("ended") : `${tAuctions("endsIn")}:`}
+            {/* ——— Feature Badges ——— */}
+            <ProductFeatureBadges
+              condition={product.condition}
+              isAuction
+              featured={product.featured}
+              freeShipping={product.shippingPaidBy === "seller" || product.auctionShippingPaidBy === "seller"}
+              returnable={!!product.returnPolicy}
+            />
+
+            {/* ——— Shipping & Insurance Info ——— */}
+            <div className="flex flex-wrap gap-2">
+              {/* Shipping payer */}
+              <Span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium ${themed.bgSecondary}`}>
+                📦 {t("shippingPaidBy", {
+                  payer: product.auctionShippingPaidBy === "seller"
+                    ? t("shippingBySeller")
+                    : t("shippingByWinner"),
+                })}
               </Span>
-              <Span
-                className={`font-mono font-bold text-lg ${
-                  isEnded
-                    ? themed.textSecondary
-                    : isEndingSoon
-                      ? "text-amber-600 dark:text-amber-400"
-                      : "text-emerald-600 dark:text-emerald-400"
-                }`}
-              >
-                {countdownDisplay}
-              </Span>
+
+              {/* Insurance badge */}
+              {product.insurance && (
+                <Span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                  🛡️ {product.insuranceCost
+                    ? t("insuranceInfo", { cost: formatCurrency(product.insuranceCost) })
+                    : t("insuranceIncluded")}
+                </Span>
+              )}
+
+              {/* Auto-extend badge */}
+              {product.autoExtendable && (
+                <Span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                  ⏱️ {t("autoExtendInfo", { minutes: product.auctionExtensionMinutes ?? 5 })}
+                </Span>
+              )}
             </div>
+
+            <Divider />
+
+            {/* ——— Description ——— */}
+            {product.description && (
+              <div>
+                <Heading level={3} className="font-semibold mb-2">
+                  {t("description")}
+                </Heading>
+                <Text size="sm" variant="secondary" className="leading-relaxed whitespace-pre-line">
+                  {product.description}
+                </Text>
+              </div>
+            )}
+
+            {/* ——— Features ——— */}
+            {product.features && product.features.length > 0 && (
+              <div>
+                <Heading level={3} className="font-semibold mb-2">
+                  {t("features")}
+                </Heading>
+                <ul className="space-y-1.5">
+                  {product.features.map((feature, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <Span className="text-indigo-500 mt-0.5">•</Span>
+                      <Text size="sm" variant="secondary">{feature}</Text>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* ——— Specifications + Delivery (Accordions) ——— */}
+            <Accordion type="multiple" defaultValue={[]}>
+              {product.specifications && product.specifications.length > 0 && (
+                <AccordionItem value="specs" title={t("specifications")}>
+                  <dl className="space-y-2">
+                    {product.specifications.map((spec, i) => (
+                      <div key={i} className="flex justify-between gap-4">
+                        <dt><Text size="sm" weight="medium">{spec.name}</Text></dt>
+                        <dd><Text size="sm" variant="secondary">{spec.value}</Text></dd>
+                      </div>
+                    ))}
+                  </dl>
+                </AccordionItem>
+              )}
+              {(product.shippingInfo || product.returnPolicy) && (
+                <AccordionItem value="delivery" title={t("deliveryReturns")}>
+                  <div className={spacing.stack}>
+                    {product.shippingInfo && (
+                      <div>
+                        <Text size="sm" weight="semibold" className="mb-1">{t("shippingInfo")}</Text>
+                        <Text size="sm" variant="secondary">{product.shippingInfo}</Text>
+                      </div>
+                    )}
+                    {product.returnPolicy && (
+                      <div>
+                        <Text size="sm" weight="semibold" className="mb-1">{t("returnPolicy")}</Text>
+                        <Text size="sm" variant="secondary">{product.returnPolicy}</Text>
+                      </div>
+                    )}
+                  </div>
+                </AccordionItem>
+              )}
+            </Accordion>
           </div>
 
-          {/* Place bid form */}
-          <PlaceBidForm
-            productId={product.id}
-            minimumBid={displayBid}
-            currency={product.currency}
-            isEnded={isEnded}
-            isAuthenticated={!!user}
-            onBidPlaced={() => bidsQuery.refetch()}
-          />
+          {/* Column 3 — Bid Panel (desktop sticky sidebar) */}
+          <div className="hidden lg:block">
+            <div className={`sticky top-24 ${spacing.stack}`}>
+              {/* Bid panel card */}
+              <div className={`${themed.bgPrimary} ${borderRadius.xl} p-5 ${spacing.stack} shadow-sm border ${themed.border}`}>
+                <PlaceBidForm
+                  productId={product.id}
+                  minimumBid={displayBid}
+                  currency={product.currency}
+                  isEnded={isEnded}
+                  isAuthenticated={!!user}
+                  onBidPlaced={() => bidsQuery.refetch()}
+                />
 
-          {/* Description */}
-          {product.description && (
-            <div>
-              <Heading level={3} className="font-semibold mb-1">
-                {tAuctions("description")}
-              </Heading>
-              <Text size="sm" variant="secondary" className="leading-relaxed">
-                {product.description}
-              </Text>
+                {/* Buy Now button */}
+                {product.buyNowPrice && product.buyNowPrice > 0 && !isEnded && (
+                  <>
+                    <Divider />
+                    <Button
+                      variant="secondary"
+                      className="w-full"
+                      disabled={isEnded}
+                    >
+                      {t("buyNowAction", { price: formatCurrency(product.buyNowPrice) })}
+                    </Button>
+                  </>
+                )}
+
+                <Divider />
+
+                {/* Wishlist */}
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={toggleWishlist}
+                  disabled={wishlistLoading}
+                >
+                  {inWishlist ? `❤️ ${t("removeFromWishlist")}` : `🤍 ${t("addToWishlist")}`}
+                </Button>
+              </div>
+
+              {/* Seller card */}
+              <div className={`${themed.bgPrimary} ${borderRadius.xl} p-4 border ${themed.border}`}>
+                <Text size="xs" variant="secondary" className="uppercase tracking-wider mb-1">
+                  {t("seller")}
+                </Text>
+                <Text weight="semibold">{product.sellerName}</Text>
+                <TextLink
+                  href={`${ROUTES.PUBLIC.STORES}/${product.sellerId}`}
+                  className="text-indigo-600 dark:text-indigo-400 text-sm hover:underline mt-1 inline-block"
+                >
+                  {t("viewStore")} →
+                </TextLink>
+              </div>
             </div>
-          )}
+          </div>
+        </div>
+
+        {/* ——— Bid History Section ——— */}
+        <div className={`${themed.bgPrimary} ${borderRadius.xl} p-4 sm:p-6 lg:p-8 mt-8 lg:mt-12`}>
+          <BidHistory bids={bids} loading={bidsQuery.isLoading} />
         </div>
       </div>
 
-      {/* Bid History */}
-      <BidHistory bids={bids} />
-    </Main>
+      {/* ——— Mobile sticky bottom bar ——— */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden">
+        <div className={`${themed.bgPrimary} border-t ${themed.border} px-4 py-3`}>
+          <div className={flex.between}>
+            <div>
+              <Text size="xs" variant="secondary">
+                {hasCurrentBid ? t("currentBid") : t("startingBid")}
+              </Text>
+              <Text className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
+                {formatCurrency(displayBid)}
+              </Text>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleWishlist}
+                disabled={wishlistLoading}
+                aria-label={inWishlist ? t("removeFromWishlist") : t("addToWishlist")}
+              >
+                {inWishlist ? "❤️" : "🤍"}
+              </Button>
+              {!isEnded ? (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => document.getElementById("place-bid-mobile")?.scrollIntoView({ behavior: "smooth" })}
+                >
+                  {t("placeBidCta")}
+                </Button>
+              ) : (
+                <Button variant="secondary" size="sm" disabled>
+                  {t("auctionEnded")}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom padding for mobile sticky bar */}
+      <div className="h-20 lg:hidden" />
+    </div>
   );
+}
+
+/**
+ * Helper to check if auction is ending soon (< 1 hour remaining)
+ */
+function isEndingSoon(remaining: ReturnType<typeof useCountdown>): boolean {
+  if (!remaining) return false;
+  return remaining.days === 0 && remaining.hours < 1;
 }

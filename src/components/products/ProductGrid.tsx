@@ -12,23 +12,51 @@ type ProductCardData = Pick<
   ProductDocument,
   | "id"
   | "title"
+  | "description"
   | "price"
   | "currency"
   | "mainImage"
+  | "images"
+  | "video"
   | "status"
   | "featured"
   | "isAuction"
   | "currentBid"
   | "isPromoted"
+  | "slug"
 >;
 
 interface ProductGridProps {
   products: ProductCardData[];
   loading?: boolean;
   skeletonCount?: number;
+  /** "grid" (default): responsive grid. "list": stacked horizontal cards. */
+  variant?: "grid" | "list";
+  selectable?: boolean;
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
 }
 
-function ProductSkeleton() {
+function ProductSkeleton({ variant = "grid" }: { variant?: "grid" | "list" }) {
+  if (variant === "list") {
+    return (
+      <div
+        className={`${themed.bgPrimary} rounded-lg overflow-hidden animate-pulse flex flex-row`}
+      >
+        <div className="w-32 sm:w-44 aspect-square bg-gray-200 dark:bg-gray-700 flex-shrink-0" />
+        <div className="flex-1 p-3 space-y-2">
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
+          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+          <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+          <div className="flex gap-2">
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded flex-1" />
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded flex-1" />
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div
       className={`${themed.bgPrimary} rounded-lg overflow-hidden animate-pulse`}
@@ -38,6 +66,10 @@ function ProductSkeleton() {
         <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
         <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4" />
         <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+        <div className="flex gap-2">
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded flex-1" />
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded flex-1" />
+        </div>
       </div>
     </div>
   );
@@ -47,13 +79,32 @@ export function ProductGrid({
   products,
   loading = false,
   skeletonCount = 24,
+  variant = "grid",
+  selectable = false,
+  selectedIds = [],
+  onSelectionChange,
 }: ProductGridProps) {
   const t = useTranslations("products");
+
+  const handleSelect = (id: string, selected: boolean) => {
+    if (!onSelectionChange) return;
+    if (selected) {
+      onSelectionChange([...selectedIds, id]);
+    } else {
+      onSelectionChange(selectedIds.filter((sid) => sid !== id));
+    }
+  };
+
+  const containerClass =
+    variant === "list"
+      ? "flex flex-col gap-3"
+      : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4";
+
   if (loading) {
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+      <div className={containerClass}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
-          <ProductSkeleton key={i} />
+          <ProductSkeleton key={i} variant={variant} />
         ))}
       </div>
     );
@@ -74,9 +125,16 @@ export function ProductGrid({
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+    <div className={containerClass}>
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard
+          key={product.id}
+          product={product}
+          variant={variant}
+          selectable={selectable}
+          isSelected={selectedIds.includes(product.id)}
+          onSelect={handleSelect}
+        />
       ))}
     </div>
   );

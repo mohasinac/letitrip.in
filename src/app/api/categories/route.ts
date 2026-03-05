@@ -27,7 +27,11 @@ import {
   formatZodErrors,
   categoryCreateSchema,
 } from "@/lib/validation/schemas";
-import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import {
+  AuthenticationError,
+  AuthorizationError,
+  NotFoundError,
+} from "@/lib/errors";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -61,8 +65,18 @@ export async function GET(request: NextRequest) {
     const searchParams = getSearchParams(request);
     const rootId = getStringParam(searchParams, "rootId");
     const parentId = getStringParam(searchParams, "parentId");
+    const slug = getStringParam(searchParams, "slug");
     const featured = getBooleanParam(searchParams, "featured") === true;
     const flat = getBooleanParam(searchParams, "flat") === true;
+
+    // Slug-based single-category lookup
+    if (slug) {
+      const category = await categoriesRepository.getCategoryBySlug(slug);
+      if (!category) {
+        throw new NotFoundError(ERROR_MESSAGES.CATEGORY.NOT_FOUND);
+      }
+      return successResponse(category);
+    }
 
     // Get categories based on filters
     let categories;

@@ -12,10 +12,50 @@ jest.mock("@/components", () => ({
   Badge: ({ children, className }: any) => (
     <span className={className}>{children}</span>
   ),
+  Heading: ({ children }: any) => <h1>{children}</h1>,
+  Text: ({ children }: any) => <p>{children}</p>,
+  Span: ({ children }: any) => <span>{children}</span>,
+  TextLink: ({ children, href }: any) => <a href={href}>{children}</a>,
+  Ul: ({ children }: any) => <ul>{children}</ul>,
+  Li: ({ children }: any) => <li>{children}</li>,
+  Divider: () => <hr />,
+  Accordion: ({ children }: any) => <div>{children}</div>,
+  AccordionItem: ({ children, title }: any) => (
+    <div>
+      <span>{title}</span>
+      {children}
+    </div>
+  ),
+  ProductFeatureBadges: () => <div data-testid="feature-badges" />,
 }));
 jest.mock("@/utils", () => ({
   formatCurrency: (amount: number) => `₹${amount}`,
   formatDate: (date: Date) => "Jan 1, 2025",
+}));
+jest.mock("@/constants", () => ({
+  ROUTES: {
+    PUBLIC: { PRODUCTS: "/products", SELLER: (id: string) => `/seller/${id}` },
+  },
+  THEME_CONSTANTS: {
+    themed: {
+      textPrimary: "",
+      textSecondary: "",
+      textMuted: "",
+      bgSecondary: "",
+      border: "",
+    },
+    flex: { rowCenter: "", rowStart: "", center: "" },
+    borderRadius: { xl: "", lg: "" },
+    spacing: { padding: { md: "" } },
+  },
+}));
+jest.mock("lucide-react", () => ({
+  Store: () => <span>StoreIcon</span>,
+  Tag: () => <span>TagIcon</span>,
+  Eye: () => <span>EyeIcon</span>,
+  Clock: () => <span>ClockIcon</span>,
+  Truck: () => <span>TruckIcon</span>,
+  RotateCcw: () => <span>RotateIcon</span>,
 }));
 
 const defaultProps = {
@@ -54,20 +94,12 @@ describe("ProductInfo", () => {
   });
 
   it("shows sold badge when status is sold", () => {
-    render(
-      <ProductInfo {...defaultProps} status="sold" onAddToCart={jest.fn()} />,
-    );
+    render(<ProductInfo {...defaultProps} status="sold" />);
     expect(screen.getByText("sold")).toBeInTheDocument();
   });
 
   it("shows outOfStock badge when status is out_of_stock", () => {
-    render(
-      <ProductInfo
-        {...defaultProps}
-        status="out_of_stock"
-        onAddToCart={jest.fn()}
-      />,
-    );
+    render(<ProductInfo {...defaultProps} status="out_of_stock" />);
     expect(screen.getByText("outOfStock")).toBeInTheDocument();
   });
 
@@ -76,8 +108,13 @@ describe("ProductInfo", () => {
     expect(screen.getByText("Footwear")).toBeInTheDocument();
   });
 
-  it("renders add to cart button when status is published", () => {
-    render(<ProductInfo {...defaultProps} onAddToCart={jest.fn()} />);
-    expect(screen.getByText("addToCart")).toBeInTheDocument();
+  it("renders seller name", () => {
+    render(<ProductInfo {...defaultProps} />);
+    expect(screen.getByText("Himalaya Treks")).toBeInTheDocument();
+  });
+
+  it("renders feature badges component", () => {
+    render(<ProductInfo {...defaultProps} />);
+    expect(screen.getByTestId("feature-badges")).toBeInTheDocument();
   });
 });

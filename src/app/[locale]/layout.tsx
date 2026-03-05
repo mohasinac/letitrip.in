@@ -1,14 +1,14 @@
 import {
   LayoutClient,
   MonitoringProvider,
-  TextLink,
+  SkipToMain,
   ToastProvider,
   ZodSetup,
 } from "@/components";
 import { ThemeProvider, SessionProvider } from "@/contexts";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, getLocale } from "next-intl/server";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = genMetadata({
@@ -36,18 +36,13 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   // Load messages for the resolved locale (set by next-intl middleware)
+  const locale = await getLocale();
   const messages = await getMessages();
 
   return (
     <>
-      <TextLink
-        href="#main-content"
-        variant="bare"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md focus:outline-none"
-      >
-        Skip to main content
-      </TextLink>
-      <NextIntlClientProvider messages={messages}>
+      <NextIntlClientProvider locale={locale} messages={messages}>
+        <SkipToMain />
         <ZodSetup />
         <ThemeProvider>
           <SessionProvider>

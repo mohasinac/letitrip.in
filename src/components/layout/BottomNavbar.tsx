@@ -3,7 +3,6 @@
 import { usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES, SITE_CONFIG } from "@/constants";
-import { ReactNode } from "react";
 import { useAuth } from "@/hooks";
 import {
   AvatarDisplay,
@@ -15,12 +14,14 @@ import {
   Button,
 } from "@/components";
 import NavItem from "./NavItem";
+import { Home, ShoppingBag } from "lucide-react";
 
 /**
  * BottomNavbar Component
  *
  * The mobile navigation bar fixed at the bottom of the screen.
- * Contains main navigation links and search button, all with icons and labels.
+ * Shows exactly 5 items: Home, Products, Search, Cart, Profile.
+ * Additional navigation (Auctions, Stores, Events, Blog, etc.) is accessible via the sidebar.
  * Visible only on mobile devices (hidden on desktop where MainNavbar is shown).
  *
  * @component
@@ -34,81 +35,15 @@ interface BottomNavbarProps {
   onSearchToggle?: () => void;
 }
 
-interface BottomNavLink {
-  href: string;
-  label: string;
-  icon: ReactNode;
-}
-
 export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
-  const { layout, zIndex, themed, typography, utilities } = THEME_CONSTANTS;
+  const { layout, zIndex, themed, typography, utilities, flex } =
+    THEME_CONSTANTS;
   const pathname = usePathname();
   const { user } = useAuth();
-  const isSeller = user?.role === "seller" || user?.role === "admin";
   const t = useTranslations("nav");
 
-  const bottomNavLinks: BottomNavLink[] = [
-    {
-      href: SITE_CONFIG.nav.home,
-      label: t("home"),
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-          />
-        </svg>
-      ),
-    },
-    {
-      href: SITE_CONFIG.nav.products,
-      label: t("products"),
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-          />
-        </svg>
-      ),
-    },
-    {
-      href: SITE_CONFIG.nav.auctions,
-      label: t("auctions"),
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-          />
-        </svg>
-      ),
-    },
-  ];
+  /** Shared 20% width style for each of the 5 equal slots */
+  const itemStyle = { width: "20%" } as const;
 
   return (
     <Nav
@@ -117,57 +52,41 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
       className={`fixed bottom-0 left-0 right-0 md:hidden ${zIndex.bottomNav} ${layout.bottomNavBg} border-t ${themed.border} backdrop-blur-lg bg-white/95 dark:bg-gray-900/95 shadow-2xl ${utilities.safeAreaBottom}`}
     >
       <Ul
-        className={`flex items-stretch ${layout.bottomNavHeight} overflow-x-auto ${utilities.scrollbarHide}`}
+        className={`flex items-stretch ${layout.bottomNavHeight}`}
       >
-        {bottomNavLinks.map((link) => (
-          <Li key={link.href} className="flex-none w-16 min-w-[56px]">
-            <NavItem
-              href={link.href}
-              label={link.label}
-              icon={link.icon}
-              isActive={pathname === link.href}
-              variant="vertical"
-            />
-          </Li>
-        ))}
-        {/* Seller Dashboard - visible for seller/admin users only */}
-        {isSeller && (
-          <Li className="flex-none w-16 min-w-[56px]">
-            <NavItem
-              href={ROUTES.SELLER.DASHBOARD}
-              label={t("seller")}
-              icon={
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
-                </svg>
-              }
-              isActive={pathname === ROUTES.SELLER.DASHBOARD}
-              variant="vertical"
-            />
-          </Li>
-        )}
-        {/* Search Button */}
-        <Li className="flex-none w-16 min-w-[56px]">
+        {/* 1 — Home */}
+        <Li className="flex-1" style={itemStyle}>
+          <NavItem
+            href={SITE_CONFIG.nav.home}
+            label={t("home")}
+            icon={<Home className="w-5 h-5" />}
+            isActive={pathname === SITE_CONFIG.nav.home}
+            variant="vertical"
+          />
+        </Li>
+
+        {/* 2 — Products */}
+        <Li className="flex-1" style={itemStyle}>
+          <NavItem
+            href={SITE_CONFIG.nav.products}
+            label={t("products")}
+            icon={<ShoppingBag className="w-5 h-5" />}
+            isActive={pathname === SITE_CONFIG.nav.products}
+            variant="vertical"
+          />
+        </Li>
+
+        {/* 3 — Search */}
+        <Li className="flex-1" style={itemStyle}>
           <Button
             variant="ghost"
             onClick={onSearchToggle}
-            className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-colors duration-200 ${themed.textSecondary}`}
+            className={`${flex.centerCol} gap-1 w-full h-full transition-colors duration-200 ${themed.textSecondary}`}
             aria-label={t("search")}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
+              className="h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -179,62 +98,101 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-            <Span className={typography.xs}>{t("search")}</Span>
+            <Span className={`${typography.xs} leading-none`}>
+              {t("search")}
+            </Span>
           </Button>
         </Li>
 
-        {/* Profile Link - last position */}
-        <Li className="flex-none w-16 min-w-[56px]">
+        {/* 4 — Cart */}
+        <Li className="flex-1" style={itemStyle}>
+          <TextLink
+            href={SITE_CONFIG.account.cart}
+            variant="inherit"
+            className={`${flex.centerCol} gap-1 w-full h-full transition-colors duration-200 relative ${
+              pathname === SITE_CONFIG.account.cart
+                ? themed.textPrimary
+                : themed.textSecondary
+            }`}
+            aria-label={t("cart")}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+            <Span className={`${typography.xs} leading-none`}>{t("cart")}</Span>
+          </TextLink>
+        </Li>
+
+        {/* 5 — Profile */}
+        <Li className="flex-1" style={itemStyle}>
           {user ? (
             <TextLink
               href={ROUTES.USER.PROFILE}
               variant="inherit"
-              className={`flex flex-col items-center justify-center w-full h-full transition-colors duration-200 ${
+              className={`${flex.centerCol} gap-1 w-full h-full transition-colors duration-200 ${
                 pathname === ROUTES.USER.PROFILE
                   ? themed.textPrimary
                   : themed.textSecondary
               }`}
+              aria-label={t("profile")}
             >
-              <div className="flex flex-col items-center gap-0.5">
-                <AvatarDisplay
-                  cropData={
-                    user.avatarMetadata ||
-                    (user.photoURL
-                      ? {
-                          url: user.photoURL,
-                          position: { x: 50, y: 50 },
-                          zoom: 1,
-                        }
-                      : null)
-                  }
-                  size="sm"
-                  alt={user.displayName || "User"}
-                  displayName={user.displayName}
-                  email={user.email}
-                />
-                <Span
-                  className={`text-[7px] font-semibold uppercase leading-none ${
-                    THEME_CONSTANTS.badge.roleText[user.role] ||
-                    THEME_CONSTANTS.badge.roleText.user
-                  }`}
-                >
-                  {user.role || "user"}
-                </Span>
-              </div>
+              <AvatarDisplay
+                cropData={
+                  user.avatarMetadata ||
+                  (user.photoURL
+                    ? {
+                        url: user.photoURL,
+                        position: { x: 50, y: 50 },
+                        zoom: 1,
+                      }
+                    : null)
+                }
+                size="sm"
+                alt={user.displayName || "User"}
+                displayName={user.displayName}
+                email={user.email}
+              />
+              <Span
+                className={`text-[7px] font-semibold uppercase leading-none ${
+                  THEME_CONSTANTS.badge.roleText[user.role] ||
+                  THEME_CONSTANTS.badge.roleText.user
+                }`}
+              >
+                {user.role || "user"}
+              </Span>
             </TextLink>
           ) : (
             <NavItem
-              href={SITE_CONFIG.account.profile}
+              href={ROUTES.AUTH.LOGIN}
               label={t("profile")}
               icon={
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
               }
-              isActive={pathname === SITE_CONFIG.account.profile}
+              isActive={pathname === ROUTES.AUTH.LOGIN}
               variant="vertical"
             />
           )}

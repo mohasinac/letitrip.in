@@ -3,11 +3,12 @@
  *
  * Contains all review management state, mutations, handlers, and JSX.
  * Consumed by /admin/reviews/[[...action]]/page.tsx.
+ * Uses unified ListingLayout with FilterFacetSection, Search, SortDropdown.
  */
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useUrlTable } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
@@ -25,18 +26,26 @@ import {
   ReviewDetailView,
   StatusBadge,
   TablePagination,
+  FilterFacetSection,
+  ListingLayout,
+  Search,
+  SortDropdown,
 } from "@/components";
 import { useToast } from "@/components";
 import {
   Modal,
   ConfirmDeleteModal,
-  Label,
   Text,
-  Select,
-  Input,
   Textarea,
 } from "@/components";
 import type { Review, ReviewStatus } from "@/components";
+
+const REVIEW_SORT_OPTIONS_KEYS = [
+  { value: "-createdAt", key: "sortNewest" },
+  { value: "createdAt", key: "sortOldest" },
+  { value: "-rating", key: "sortHighestRated" },
+  { value: "rating", key: "sortLowestRated" },
+] as const;
 
 interface AdminReviewsViewProps {
   action?: string[];
@@ -47,7 +56,6 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
   const t = useTranslations("adminReviews");
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
-  const tTable = useTranslations("table");
   const tStatus = useTranslations("status");
   const { showToast } = useToast();
   const table = useUrlTable({
@@ -67,10 +75,36 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<Review | null>(null);
   const [bulkApproveConfirm, setBulkApproveConfirm] = useState(false);
 
+  // ── Staged filter state ──────────────────────────────────────────────
+  const [stagedStatus, setStagedStatus] = useState<string[]>(
+    statusFilter && statusFilter !== "all" ? [statusFilter] : [],
+  );
+  const [stagedRating, setStagedRating] = useState<string[]>(
+    ratingFilter && ratingFilter !== "all" ? [ratingFilter] : [],
+  );
+
+  const handleFilterApply = useCallback(() => {
+    table.setMany({
+      status: stagedStatus[0] ?? "",
+      rating: stagedRating[0] ?? "",
+      page: "1",
+    });
+  }, [stagedStatus, stagedRating, table]);
+
+  const handleFilterClear = useCallback(() => {
+    setStagedStatus([]);
+    setStagedRating([]);
+    table.setMany({ status: "", rating: "", page: "1" });
+  }, [table]);
+
+  const filterActiveCount =
+    (statusFilter && statusFilter !== "all" ? 1 : 0) +
+    (ratingFilter && ratingFilter !== "all" ? 1 : 0);
+
   // Build Sieve filter string
   const filtersArr: string[] = [];
-  if (statusFilter !== "all") filtersArr.push(`status==${statusFilter}`);
-  if (ratingFilter !== "all") filtersArr.push(`rating==${ratingFilter}`);
+  if (statusFilter !== "all" && statusFilter) filtersArr.push(`status==${statusFilter}`);
+  if (ratingFilter !== "all" && ratingFilter) filtersArr.push(`rating==${ratingFilter}`);
   if (searchTerm) filtersArr.push(`(userName|userEmail)@=*${searchTerm}`);
   const filtersParam = filtersArr.join(",");
 
@@ -210,6 +244,33 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
   const tableColumns = getReviewTableColumns();
   const pendingCount = reviews.filter((r) => r.status === "pending").length;
 
+  const sortOptions = useMemo(
+    () =>
+      REVIEW_SORT_OPTIONS_KEYS.map((o) => ({
+        value: o.value,
+        label: t(o.key),
+      })),
+    [t],
+  );
+
+  const statusOptions = useMemo(
+    () => [
+      { value: "pending", label: t("pending") },
+      { value: "approved", label: t("approved") },
+      { value: "rejected", label: t("rejected") },
+    ],
+    [t],
+  );
+
+  const ratingOptions = useMemo(
+    () =>
+      [5, 4, 3, 2, 1].map((n) => ({
+        value: String(n),
+        label: `${n} ${n === 1 ? "Star" : "Stars"}`,
+      })),
+    [],
+  );
+
   if (selectedReview) {
     return (
       <ReviewDetailView
@@ -223,109 +284,54 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
   }
 
   return (
-    <div className={THEME_CONSTANTS.spacing.stack}>
-      <AdminPageHeader
-        title={t("title")}
-        subtitle={`${t("subtitle")} (${total} total)`}
-        actionLabel={t("approveAll")}
-        onAction={handleBulkApprove}
-        actionDisabled={pendingCount === 0}
-      />
-
-      <Card>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mb-4">
-          <div>
-            <Label className="mb-2">{tTable("status")}</Label>
-            <Select
-              value={statusFilter}
-              onChange={(e) =>
-                table.set("status", e.target.value as ReviewStatus)
-              }
-              options={[
-                { value: "all", label: tStatus("all") },
-                { value: "pending", label: t("pending") },
-                { value: "approved", label: t("approved") },
-                { value: "rejected", label: t("rejected") },
-              ]}
-            />
-          </div>
-
-          <div>
-            <Label className="mb-2">{t("rating")}</Label>
-            <Select
-              value={ratingFilter}
-              onChange={(e) => table.set("rating", e.target.value)}
-              options={[
-                { value: "all", label: t("allRatings") },
-                ...[5, 4, 3, 2, 1].map((n) => ({
-                  value: String(n),
-                  label: `${n} ${n === 1 ? "Star" : "Stars"}`,
-                })),
-              ]}
-            />
-          </div>
-
-          <div>
-            <Label className="mb-2">{tActions("search")}</Label>
-            <Input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => table.set("q", e.target.value)}
-              placeholder={t("searchPlaceholder")}
-            />
-          </div>
-        </div>
-      </Card>
-
-      {isLoading ? (
-        <Card>
-          <div className="text-center py-8">{tLoading("default")}</div>
-        </Card>
-      ) : error ? (
-        <Card>
-          <div className="text-center py-8">
-            <Text variant="error" className="mb-4">
-              {error.message}
-            </Text>
-            <Button onClick={() => refetch()}>{tActions("retry")}</Button>
-          </div>
-        </Card>
-      ) : (
-        <>
-          <DataTable
-            data={reviews}
-            columns={tableColumns}
-            keyExtractor={(review) => review.id}
-            onRowClick={(review) => handleViewReview(review)}
-            actions={(review) => (
-              <ReviewRowActions
-                review={review}
-                onApprove={handleApprove}
-                onReject={handleReject}
-                onDelete={handleDelete}
-              />
-            )}
-            externalPagination
-            showViewToggle
-            viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
-            onViewModeChange={(mode) => table.set("view", mode)}
-            mobileCardRender={(review) => (
-              <Card
-                className="p-4 space-y-2 cursor-pointer"
-                onClick={() => handleViewReview(review)}
-              >
-                <Text weight="medium" size="sm" className="line-clamp-1">
-                  {review.productName}
-                </Text>
-                <Caption>{review.userName}</Caption>
-                <div className="flex items-center justify-between">
-                  <Badge>{"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}</Badge>
-                  <StatusBadge status={review.status as any} />
-                </div>
-                <Caption className="line-clamp-2">{review.comment}</Caption>
-              </Card>
-            )}
+    <>
+      <ListingLayout
+        headerSlot={
+          <AdminPageHeader
+            title={t("title")}
+            subtitle={`${t("subtitle")} (${total} total)`}
+            actionLabel={t("approveAll")}
+            onAction={handleBulkApprove}
+            actionDisabled={pendingCount === 0}
           />
+        }
+        searchSlot={
+          <Search
+            value={table.get("q")}
+            onChange={(v) => table.set("q", v)}
+            placeholder={t("searchPlaceholder")}
+            onClear={() => table.set("q", "")}
+          />
+        }
+        sortSlot={
+          <SortDropdown
+            value={table.get("sort") || "-createdAt"}
+            onChange={(v) => table.set("sort", v)}
+            options={sortOptions}
+          />
+        }
+        filterContent={
+          <>
+            <FilterFacetSection
+              title={tStatus("all")}
+              options={statusOptions}
+              selected={stagedStatus}
+              onChange={setStagedStatus}
+              searchable={false}
+            />
+            <FilterFacetSection
+              title={t("rating")}
+              options={ratingOptions}
+              selected={stagedRating}
+              onChange={setStagedRating}
+              searchable={false}
+            />
+          </>
+        }
+        filterActiveCount={filterActiveCount}
+        onFilterApply={handleFilterApply}
+        onFilterClear={handleFilterClear}
+        paginationSlot={
           <TablePagination
             currentPage={data?.meta?.page ?? 1}
             totalPages={data?.meta?.totalPages ?? 1}
@@ -334,8 +340,56 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
             onPageChange={table.setPage}
             onPageSizeChange={table.setPageSize}
           />
-        </>
-      )}
+        }
+        loading={isLoading}
+        errorSlot={
+          error ? (
+            <Card>
+              <div className="text-center py-8">
+                <Text variant="error" className="mb-4">
+                  {error.message}
+                </Text>
+                <Button onClick={() => refetch()}>{tActions("retry")}</Button>
+              </div>
+            </Card>
+          ) : undefined
+        }
+      >
+        <DataTable
+          data={reviews}
+          columns={tableColumns}
+          keyExtractor={(review) => review.id}
+          onRowClick={(review) => handleViewReview(review)}
+          actions={(review) => (
+            <ReviewRowActions
+              review={review}
+              onApprove={handleApprove}
+              onReject={handleReject}
+              onDelete={handleDelete}
+            />
+          )}
+          externalPagination
+          showViewToggle
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          onViewModeChange={(mode) => table.set("view", mode)}
+          mobileCardRender={(review) => (
+            <Card
+              className="p-4 space-y-2 cursor-pointer"
+              onClick={() => handleViewReview(review)}
+            >
+              <Text weight="medium" size="sm" className="line-clamp-1">
+                {review.productName}
+              </Text>
+              <Caption>{review.userName}</Caption>
+              <div className="flex items-center justify-between">
+                <Badge>{"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}</Badge>
+                <StatusBadge status={review.status as any} />
+              </div>
+              <Caption className="line-clamp-2">{review.comment}</Caption>
+            </Card>
+          )}
+        />
+      </ListingLayout>
 
       {/* Reject modal */}
       <Modal
@@ -392,6 +446,6 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
         message={`${t("approveAll")} (${pendingCount})?`}
         confirmText={tActions("confirm")}
       />
-    </div>
+    </>
   );
 }

@@ -337,6 +337,7 @@ export class UserRepository extends BaseRepository<UserDocument> {
     email: { canFilter: true, canSort: false },
     displayName: { canFilter: true, canSort: true },
     role: { canFilter: true, canSort: true },
+    emailVerified: { canFilter: true, canSort: false },
     disabled: { canFilter: true, canSort: true },
     storeStatus: { canFilter: true, canSort: false },
     createdAt: { canFilter: true, canSort: true },

@@ -84,8 +84,7 @@ export default async function HelpPage() {
             {t("popularTitle")}
           </Heading>
           <Text variant="secondary" className="mb-6">
-            Browse our comprehensive FAQ library for answers to hundreds of
-            common questions.
+            {t("faqDescription")}
           </Text>
           <TextLink
             href={ROUTES.PUBLIC.FAQS}
@@ -101,7 +100,7 @@ export default async function HelpPage() {
             {t("contactPrompt")}
           </Heading>
           <Text variant="secondary" className="mb-6">
-            Our support team typically responds within 24 hours.
+            {t("supportResponseTime")}
           </Text>
           <TextLink
             href={ROUTES.PUBLIC.CONTACT}

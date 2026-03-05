@@ -31,7 +31,9 @@ class NotificationRepository extends BaseRepository<NotificationDocument> {
   static readonly SIEVE_FIELDS: FirebaseSieveFields = {
     userId: { canFilter: true, canSort: false },
     type: { canFilter: true, canSort: false },
+    priority: { canFilter: true, canSort: true },
     isRead: { canFilter: true, canSort: false },
+    relatedType: { canFilter: true, canSort: false },
     createdAt: { canFilter: true, canSort: true },
   };
 

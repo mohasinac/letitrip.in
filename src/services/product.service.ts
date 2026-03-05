@@ -29,6 +29,18 @@ export const productService = {
       `${API_ENDPOINTS.PRODUCTS.LIST}?filters=type==auction,status==published&sorts=auctionEndDate&pageSize=6`,
     ),
 
+  /** Latest published products (sorted by newest, for homepage fallback) */
+  getLatest: (pageSize = 12) =>
+    apiClient.get(
+      `${API_ENDPOINTS.PRODUCTS.LIST}?status=published&sorts=-createdAt&pageSize=${pageSize}`,
+    ),
+
+  /** Latest published auctions (for homepage fallback) */
+  getLatestAuctions: (pageSize = 12) =>
+    apiClient.get(
+      `${API_ENDPOINTS.PRODUCTS.LIST}?isAuction=true&status=published&sorts=-createdAt&pageSize=${pageSize}`,
+    ),
+
   /** List live auctions with optional Sieve filter/sort/pagination query string */
   listAuctions: (params?: string) =>
     apiClient.get(

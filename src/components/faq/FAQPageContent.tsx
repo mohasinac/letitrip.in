@@ -1,14 +1,15 @@
 ﻿"use client";
 
 import { useState, useMemo } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import {
   THEME_CONSTANTS,
-  UI_LABELS,
   ROUTES,
   FAQ_CATEGORIES,
   STATIC_FAQS,
   getStaticFaqCategoryCounts,
+  getLocalizedFaqText,
 } from "@/constants";
 import type { FAQCategoryKey, StaticFAQItem } from "@/constants";
 import { useUrlTable } from "@/hooks";
@@ -29,6 +30,8 @@ interface FAQPageContentProps {
 export function FAQPageContent({
   initialCategory = "all",
 }: FAQPageContentProps) {
+  const t = useTranslations("faq");
+  const locale = useLocale();
   const router = useRouter();
 
   const [selectedCategory, setSelectedCategory] = useState<
@@ -56,9 +59,10 @@ export function FAQPageContent({
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter((faq) => {
+        const { question, answer } = getLocalizedFaqText(faq, locale);
         return (
-          faq.question.toLowerCase().includes(query) ||
-          faq.answer.toLowerCase().includes(query) ||
+          question.toLowerCase().includes(query) ||
+          answer.toLowerCase().includes(query) ||
           faq.tags?.some((tag) => tag.toLowerCase().includes(query))
         );
       });
@@ -103,12 +107,12 @@ export function FAQPageContent({
           level={1}
           className={`${THEME_CONSTANTS.typography.h1} ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
         >
-          {UI_LABELS.FAQ.TITLE}
+          {t("title")}
         </Heading>
         <Text
           className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.container["2xl"]} mx-auto`}
         >
-          {UI_LABELS.FAQ.SUBTITLE}
+          {t("subtitle")}
         </Text>
       </div>
 
@@ -116,7 +120,7 @@ export function FAQPageContent({
       <div className="mb-8">
         <FAQSearchBar
           onSearch={setSearchQuery}
-          placeholder={UI_LABELS.FAQ.SEARCH_PLACEHOLDER}
+          placeholder={t("searchPlaceholder")}
         />
       </div>
 
@@ -126,7 +130,7 @@ export function FAQPageContent({
           items={[
             {
               key: "all" as const,
-              label: "All FAQs",
+              label: t("allFaqs"),
               icon: "📚",
               count: categoryCounts
                 ? Object.values(categoryCounts).reduce((s, c) => s + c, 0)
@@ -134,7 +138,7 @@ export function FAQPageContent({
             },
             ...Object.entries(FAQ_CATEGORIES).map(([k, cat]) => ({
               key: k as FAQCategoryKey,
-              label: cat.label,
+              label: t(`category.${k}`),
               icon: cat.icon,
               count: categoryCounts[k as FAQCategoryKey] ?? 0,
             })),
@@ -195,12 +199,9 @@ export function FAQPageContent({
             <Text
               className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary}`}
             >
-              {filteredAndSortedFAQs.length}{" "}
-              {filteredAndSortedFAQs.length === 1
-                ? UI_LABELS.FAQ.QUESTION_SINGULAR
-                : UI_LABELS.FAQ.QUESTION_PLURAL}
+              {t("resultCount", { count: filteredAndSortedFAQs.length })}
               {selectedCategory !== "all" &&
-                ` ${UI_LABELS.FAQ.IN_CATEGORY} ${FAQ_CATEGORIES[selectedCategory].label}`}
+                ` ${t("inCategory", { category: t(`category.${selectedCategory}`) })}`}
             </Text>
             <FAQSortDropdown
               selectedSort={sortOption}
@@ -209,7 +210,7 @@ export function FAQPageContent({
           </div>
 
           {/* FAQ Accordion */}
-          <FAQAccordion faqs={filteredAndSortedFAQs} />
+          <FAQAccordion faqs={filteredAndSortedFAQs} locale={locale} />
 
           {/* Contact CTA */}
           {filteredAndSortedFAQs.length > 0 && (

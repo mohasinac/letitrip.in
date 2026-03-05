@@ -8,9 +8,11 @@ export type StoreProductItem = Pick<
   ProductDocument,
   | "id"
   | "title"
+  | "description"
   | "price"
   | "currency"
   | "mainImage"
+  | "images"
   | "video"
   | "status"
   | "featured"
@@ -28,9 +30,11 @@ export type StoreAuctionItem = Pick<
   ProductDocument,
   | "id"
   | "title"
+  | "description"
   | "price"
   | "currency"
   | "mainImage"
+  | "images"
   | "video"
   | "isAuction"
   | "auctionEndDate"

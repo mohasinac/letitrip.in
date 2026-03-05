@@ -157,8 +157,10 @@ class BlogRepository extends BaseRepository<BlogPostDocument> {
     status: { canFilter: true, canSort: true },
     category: { canFilter: true, canSort: true },
     authorName: { canFilter: true, canSort: true },
+    authorId: { canFilter: true, canSort: false },
     isFeatured: { canFilter: true, canSort: false },
     readTimeMinutes: { canFilter: true, canSort: true },
+    views: { canFilter: true, canSort: true },
     publishedAt: { canFilter: true, canSort: true },
     createdAt: { canFilter: true, canSort: true },
   };

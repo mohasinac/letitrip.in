@@ -53,12 +53,33 @@ export interface ProductDocument {
   shippingInfo?: string;
   returnPolicy?: string;
 
+  // Product condition
+  condition?: "new" | "used" | "refurbished" | "broken";
+
+  // Insurance — if true, Shiprocket is mandatory and insurance surcharge is added to shipping cost
+  insurance?: boolean;
+  insuranceCost?: number; // Extra insurance cost added on top of shipping
+
+  // Shipping configuration
+  shippingPaidBy?: "seller" | "buyer"; // Who pays for shipping (default: buyer)
+
   // Auction fields (optional - for auction items)
   isAuction?: boolean;
   auctionEndDate?: Date;
   startingBid?: number;
   currentBid?: number;
   bidCount?: number;
+  reservePrice?: number; // Minimum price for the auction to be valid
+  buyNowPrice?: number; // Instant purchase price (skips auction)
+  minBidIncrement?: number; // Minimum increment per bid (default: 10% of starting bid)
+
+  // Auto-extend: if someone bids in last N minutes, extend auction by N minutes
+  autoExtendable?: boolean;
+  auctionExtensionMinutes?: number; // Default: 5 minutes
+  auctionOriginalEndDate?: Date; // Original end date before any extensions
+
+  // Auction shipping — who pays for shipping (seller or auction winner)
+  auctionShippingPaidBy?: "seller" | "winner";
 
   // Advertisement fields
   isPromoted?: boolean;
@@ -151,6 +172,12 @@ export const DEFAULT_PRODUCT_DATA: Partial<ProductDocument> = {
   isAuction: false,
   isPromoted: false,
   bidCount: 0,
+  condition: "new",
+  insurance: false,
+  shippingPaidBy: "buyer",
+  autoExtendable: false,
+  auctionExtensionMinutes: 5,
+  auctionShippingPaidBy: "winner",
 };
 
 /**
@@ -181,6 +208,16 @@ export const PRODUCT_PUBLIC_FIELDS = [
   "startingBid",
   "currentBid",
   "bidCount",
+  "reservePrice",
+  "buyNowPrice",
+  "minBidIncrement",
+  "autoExtendable",
+  "auctionExtensionMinutes",
+  "auctionShippingPaidBy",
+  "condition",
+  "insurance",
+  "insuranceCost",
+  "shippingPaidBy",
   "isPromoted",
   "slug",
   "seoTitle",
@@ -209,6 +246,15 @@ export const PRODUCT_UPDATABLE_FIELDS = [
   "shippingInfo",
   "returnPolicy",
   "pickupAddressId",
+  "condition",
+  "insurance",
+  "shippingPaidBy",
+  "autoExtendable",
+  "auctionExtensionMinutes",
+  "auctionShippingPaidBy",
+  "reservePrice",
+  "buyNowPrice",
+  "minBidIncrement",
   "seoTitle",
   "seoDescription",
   "seoKeywords",
@@ -228,6 +274,7 @@ export type ProductCreateInput = Omit<
   | "availableQuantity"
   | "bidCount"
   | "currentBid"
+  | "auctionOriginalEndDate"
 >;
 
 /**
