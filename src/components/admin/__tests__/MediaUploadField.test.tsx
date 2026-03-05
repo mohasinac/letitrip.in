@@ -65,6 +65,21 @@ jest.mock("@/components", () => ({
       {children}
     </a>
   ),
+  CameraCapture: ({
+    onCapture,
+  }: {
+    onCapture: (blob: Blob, type: "photo" | "video") => void;
+  }) => (
+    <div data-testid="camera-capture">
+      <button
+        onClick={() =>
+          onCapture(new Blob(["vid"], { type: "video/webm" }), "video")
+        }
+      >
+        capture
+      </button>
+    </div>
+  ),
 }));
 
 jest.mock("@/constants", () => ({
@@ -76,6 +91,14 @@ jest.mock("@/constants", () => ({
       bgSecondary: "bg-gray-50",
     },
   },
+}));
+
+jest.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => key,
+}));
+
+jest.mock("@/hooks", () => ({
+  useCamera: jest.fn(() => ({ isSupported: true })),
 }));
 
 import { MediaUploadField } from "../MediaUploadField";
@@ -197,5 +220,63 @@ describe("MediaUploadField", () => {
   it("renders helperText when provided and no error", () => {
     render(<MediaUploadField {...baseProps} helperText="Max 50MB" />);
     expect(screen.getByText("Max 50MB")).toBeInTheDocument();
+  });
+
+  // ── captureSource / captureMode (P1-14) ─────────────────────────────────
+
+  it("renders only file picker when captureSource=file-only", () => {
+    render(<MediaUploadField {...baseProps} captureSource="file-only" />);
+    expect(screen.getByText("Choose file to upload")).toBeInTheDocument();
+    expect(screen.queryByTestId("camera-capture")).not.toBeInTheDocument();
+  });
+
+  it("renders CameraCapture when captureSource=camera-only and camera supported", () => {
+    render(<MediaUploadField {...baseProps} captureSource="camera-only" />);
+    expect(screen.getByTestId("camera-capture")).toBeInTheDocument();
+    expect(screen.queryByText("Choose file to upload")).not.toBeInTheDocument();
+  });
+
+  it("calls onUpload with a File when camera captures", async () => {
+    const onChange = jest.fn();
+    mockOnUpload.mockResolvedValue("https://cdn.example.com/vid.webm");
+    render(
+      <MediaUploadField
+        {...baseProps}
+        onChange={onChange}
+        captureSource="camera-only"
+        captureMode="video"
+      />,
+    );
+    fireEvent.click(screen.getByText("capture"));
+    await waitFor(() => {
+      expect(mockOnUpload).toHaveBeenCalledTimes(1);
+      const arg = mockOnUpload.mock.calls[0][0] as File;
+      expect(arg).toBeInstanceOf(File);
+      expect(arg.name).toBe("camera-capture.webm");
+    });
+    expect(onChange).toHaveBeenCalledWith("https://cdn.example.com/vid.webm");
+  });
+
+  it("shows toggle buttons when captureSource=both and camera supported", () => {
+    render(<MediaUploadField {...baseProps} captureSource="both" />);
+    expect(screen.getByText("switchToUpload")).toBeInTheDocument();
+    expect(screen.getByText("switchToCamera")).toBeInTheDocument();
+  });
+
+  it("switches to camera mode on toggle click when captureSource=both", () => {
+    render(<MediaUploadField {...baseProps} captureSource="both" />);
+    fireEvent.click(screen.getByText("switchToCamera"));
+    expect(screen.getByTestId("camera-capture")).toBeInTheDocument();
+    expect(screen.queryByText("Choose file to upload")).not.toBeInTheDocument();
+  });
+
+  it("shows mobile fallback button when captureSource=camera-only and camera not supported", () => {
+    const { useCamera } = jest.requireMock("@/hooks") as {
+      useCamera: jest.Mock;
+    };
+    useCamera.mockReturnValueOnce({ isSupported: false });
+    render(<MediaUploadField {...baseProps} captureSource="camera-only" />);
+    expect(screen.queryByTestId("camera-capture")).not.toBeInTheDocument();
+    expect(screen.getByText("switchToCamera")).toBeInTheDocument();
   });
 });

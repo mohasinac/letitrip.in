@@ -12,10 +12,12 @@
 
 import { useState, useRef, ChangeEvent } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
-import { Alert, Button, Label, Span, Spinner, Text, TextLink } from "@/components";
+import { useCamera } from "@/hooks";
+import { Alert, Button, CameraCapture, Label, Span, Spinner, Text, TextLink } from "@/components";
 
-interface MediaUploadFieldProps {
+export interface MediaUploadFieldProps {
   /** Required label shown above the upload control */
   label: string;
   /** Current file URL — empty string when no file has been uploaded */
@@ -32,6 +34,20 @@ interface MediaUploadFieldProps {
   disabled?: boolean;
   /** Optional helper text shown below the control */
   helperText?: string;
+  /**
+   * Controls which capture source(s) are available:
+   * - 'file-only': file picker only (default)
+   * - 'camera-only': camera viewfinder; falls back to <input capture> on unsupported devices
+   * - 'both': segmented toggle between file picker and camera viewfinder
+   */
+  captureSource?: "file-only" | "camera-only" | "both";
+  /**
+   * What the camera should capture when captureSource includes camera:
+   * - 'photo': still image only
+   * - 'video': video recording only
+   * - 'both': user can switch between photo and video capture
+   */
+  captureMode?: "photo" | "video" | "both";
 }
 
 function isVideo(url: string): boolean {
@@ -60,10 +76,28 @@ export function MediaUploadField({
   maxSizeMB = 50,
   disabled = false,
   helperText,
+  captureSource = "file-only",
+  captureMode = "photo",
 }: MediaUploadFieldProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mobileCaptureRef = useRef<HTMLInputElement>(null);
+
+  const t = useTranslations("camera");
+  const { isSupported: isCameraSupported } = useCamera();
+  const [inputMode, setInputMode] = useState<"file" | "camera">("file");
+
+  const showCamera =
+    captureSource === "camera-only" ||
+    (captureSource === "both" && inputMode === "camera");
+  const showFileInput =
+    captureSource === "file-only" ||
+    (captureSource === "both" && inputMode === "file");
+
+  // MIME type for the mobile capture fallback input
+  const captureModeAccept =
+    captureMode === "video" ? "video/*" : captureMode === "both" ? "image/*,video/*" : "image/*";
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -96,6 +130,21 @@ export function MediaUploadField({
   const handleRemove = () => {
     onChange("");
     setError(null);
+  };
+
+  const handleCameraCapture = async (blob: Blob, type: "photo" | "video") => {
+    const ext = type === "video" ? "webm" : "webp";
+    const file = new File([blob], `camera-capture.${ext}`, { type: blob.type });
+    setError(null);
+    setIsLoading(true);
+    try {
+      const url = await onUpload(file);
+      onChange(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const { themed, spacing } = THEME_CONSTANTS;
@@ -151,16 +200,65 @@ export function MediaUploadField({
         </div>
       )}
 
-      {/* Upload button / drop area */}
+      {/* Upload controls (capture source toggle + upload/camera area) */}
       {!disabled && !isLoading && (
-        <Button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          variant="ghost"
-          className={`w-full py-3 border-2 border-dashed ${themed.border} rounded-lg text-sm ${themed.textSecondary} hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors`}
-        >
-          {value ? "Replace file" : "Choose file to upload"}
-        </Button>
+        <>
+          {/* Capture source toggle */}
+          {captureSource === "both" && isCameraSupported && (
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant={inputMode === "file" ? "primary" : "outline"}
+                size="sm"
+                onClick={() => setInputMode("file")}
+              >
+                {t("switchToUpload")}
+              </Button>
+              <Button
+                type="button"
+                variant={inputMode === "camera" ? "primary" : "outline"}
+                size="sm"
+                onClick={() => setInputMode("camera")}
+              >
+                {t("switchToCamera")}
+              </Button>
+            </div>
+          )}
+
+          {/* Camera viewfinder */}
+          {showCamera && isCameraSupported && (
+            <CameraCapture
+              mode={captureMode}
+              facingMode="environment"
+              onCapture={handleCameraCapture}
+              onError={(msg) => setError(msg)}
+            />
+          )}
+
+          {/* Mobile camera fallback */}
+          {showCamera && !isCameraSupported && (
+            <Button
+              type="button"
+              onClick={() => mobileCaptureRef.current?.click()}
+              variant="ghost"
+              className={`w-full py-3 border-2 border-dashed ${themed.border} rounded-lg text-sm ${themed.textSecondary} hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors`}
+            >
+              {t("switchToCamera")}
+            </Button>
+          )}
+
+          {/* File picker */}
+          {showFileInput && (
+            <Button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              variant="ghost"
+              className={`w-full py-3 border-2 border-dashed ${themed.border} rounded-lg text-sm ${themed.textSecondary} hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors`}
+            >
+              {value ? "Replace file" : "Choose file to upload"}
+            </Button>
+          )}
+        </>
       )}
 
       {/* Uploading indicator */}
@@ -180,6 +278,19 @@ export function MediaUploadField({
         className="hidden"
         aria-hidden="true"
       />
+
+      {/* Mobile camera fallback input */}
+      {showCamera && !isCameraSupported && (
+        <input
+          ref={mobileCaptureRef}
+          type="file"
+          accept={captureModeAccept}
+          capture="environment"
+          onChange={handleFileChange}
+          className="hidden"
+          aria-hidden="true"
+        />
+      )}
 
       {/* Helper text */}
       {helperText && !error && (

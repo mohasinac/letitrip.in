@@ -150,6 +150,8 @@ export type {
 } from "./useCheckout";
 export { useCouponValidate } from "./useCouponValidate";
 export { useMediaUpload } from "./useMediaUpload";
+export { useCamera } from "./useCamera";
+export type { UseCameraOptions, UseCameraReturn } from "./useCamera";
 
 // Phase 59: Rule 20 completion — shared Tier 1 component hooks
 export { useFaqVote } from "./useFaqVote";

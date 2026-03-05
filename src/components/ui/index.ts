@@ -98,5 +98,9 @@ export type { ListingLayoutProps } from "./ListingLayout";
 export { BulkActionBar } from "./BulkActionBar";
 export type { BulkActionBarProps } from "./BulkActionBar";
 
+// Phase 11: Camera capture
+export { default as CameraCapture } from "./CameraCapture";
+export type { CameraCaptureProps } from "./CameraCapture";
+
 // Accessibility
 export { SkipToMain } from "./SkipToMain";

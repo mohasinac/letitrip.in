@@ -11,6 +11,18 @@
     "changing": "Changing...",
     "failed": "Failed to load data."
   },
+  "camera": {
+    "takePhoto": "Take Photo",
+    "startRecording": "Start Recording",
+    "stopRecording": "Stop Recording",
+    "flipCamera": "Flip Camera",
+    "switchToCamera": "Use Camera",
+    "switchToUpload": "Upload File",
+    "cameraError": "Camera unavailable",
+    "permissionDenied": "Camera permission denied. Please allow access in your browser settings.",
+    "notSupported": "Camera is not supported on this device",
+    "starting": "Starting camera..."
+  },
   "empty": {
     "noData": "No data available",
     "noUsers": "No users found",

@@ -18,13 +18,15 @@
 
 import { useState, useRef, ChangeEvent } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatFileSize } from "@/utils";
-import { Button, Label, Span, Text } from "@/components";
+import { useCamera } from "@/hooks";
+import { Button, CameraCapture, Label, Span, Text } from "@/components";
 
 const { flex, position } = THEME_CONSTANTS;
 
-interface ImageUploadProps {
+export interface ImageUploadProps {
   /** Current image URL to pre-populate the preview */
   currentImage?: string;
   /** Upload function: receives the selected File, returns the uploaded URL. Use useMediaUpload().upload. */
@@ -35,6 +37,13 @@ interface ImageUploadProps {
   maxSizeMB?: number;
   label?: string;
   helperText?: string;
+  /**
+   * Controls which capture source(s) are available:
+   * - 'file-only': file picker only (default)
+   * - 'camera-only': camera viewfinder; falls back to <input capture> on unsupported devices
+   * - 'both': segmented toggle between file picker and camera viewfinder
+   */
+  captureSource?: "file-only" | "camera-only" | "both";
 }
 
 export function ImageUpload({
@@ -45,12 +54,48 @@ export function ImageUpload({
   maxSizeMB = 10,
   label = "Upload Image",
   helperText,
+  captureSource = "file-only",
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string>(currentImage || "");
   const [error, setError] = useState<string>("");
   const [progress, setProgress] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mobileCaptureRef = useRef<HTMLInputElement>(null);
+
+  const t = useTranslations("camera");
+  const { isSupported: isCameraSupported } = useCamera();
+  const [captureMode, setCaptureMode] = useState<"file" | "camera">("file");
+
+  const showCamera =
+    captureSource === "camera-only" ||
+    (captureSource === "both" && captureMode === "camera");
+  const showFileInput =
+    captureSource === "file-only" ||
+    (captureSource === "both" && captureMode === "file");
+
+  const handleCameraCapture = async (blob: Blob, _type: "photo" | "video") => {
+    const file = new File([blob], "camera-capture.webp", {
+      type: "image/webp",
+    });
+    setError("");
+    setProgress(0);
+    try {
+      setUploading(true);
+      setProgress(30);
+      const url = await onUpload(file);
+      setProgress(100);
+      setPreview(url);
+      onChange?.(url);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Upload failed";
+      setError(message);
+      setPreview(currentImage || "");
+    } finally {
+      setUploading(false);
+      setProgress(0);
+    }
+  };
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -177,37 +222,87 @@ export function ImageUpload({
             )}
           </div>
         ) : (
-          <Button
-            type="button"
-            onClick={handleClick}
-            disabled={uploading}
-            variant="ghost"
-            className={`w-full h-64 border-2 border-dashed ${THEME_CONSTANTS.themed.border} rounded-lg ${THEME_CONSTANTS.themed.hoverBorder} transition-colors duration-200 ${flex.centerCol} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.bgTertiary}`}
-          >
-            <svg
-              className="w-12 h-12 mb-3"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+          <>
+            {/* Capture source toggle */}
+            {captureSource === "both" && isCameraSupported && (
+              <div className={`${flex.center} gap-2 mb-3`}>
+                <Button
+                  type="button"
+                  variant={captureMode === "file" ? "primary" : "outline"}
+                  size="sm"
+                  onClick={() => setCaptureMode("file")}
+                >
+                  {t("switchToUpload")}
+                </Button>
+                <Button
+                  type="button"
+                  variant={captureMode === "camera" ? "primary" : "outline"}
+                  size="sm"
+                  onClick={() => setCaptureMode("camera")}
+                >
+                  {t("switchToCamera")}
+                </Button>
+              </div>
+            )}
+
+            {/* Camera viewfinder */}
+            {showCamera && isCameraSupported && (
+              <CameraCapture
+                mode="photo"
+                facingMode="environment"
+                onCapture={handleCameraCapture}
+                onError={setError}
               />
-            </svg>
-            <Span className="text-sm font-medium">
-              {uploading ? "Uploading..." : "Click to upload"}
-            </Span>
-            <Span className="text-xs mt-1">
-              {accept
-                .split(",")
-                .map((t) => t.split("/")[1].toUpperCase())
-                .join(", ")}{" "}
-              (max {maxSizeMB}MB)
-            </Span>
-          </Button>
+            )}
+
+            {/* Mobile camera fallback — no getUserMedia support */}
+            {showCamera && !isCameraSupported && (
+              <Button
+                type="button"
+                onClick={() => mobileCaptureRef.current?.click()}
+                disabled={uploading}
+                variant="ghost"
+                className={`w-full h-64 border-2 border-dashed ${THEME_CONSTANTS.themed.border} rounded-lg ${THEME_CONSTANTS.themed.hoverBorder} transition-colors duration-200 ${flex.centerCol} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.bgTertiary}`}
+              >
+                <Span className="text-sm font-medium">{t("switchToCamera")}</Span>
+              </Button>
+            )}
+
+            {/* File picker */}
+            {showFileInput && (
+              <Button
+                type="button"
+                onClick={handleClick}
+                disabled={uploading}
+                variant="ghost"
+                className={`w-full h-64 border-2 border-dashed ${THEME_CONSTANTS.themed.border} rounded-lg ${THEME_CONSTANTS.themed.hoverBorder} transition-colors duration-200 ${flex.centerCol} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.bgTertiary}`}
+              >
+                <svg
+                  className="w-12 h-12 mb-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <Span className="text-sm font-medium">
+                  {uploading ? "Uploading..." : "Click to upload"}
+                </Span>
+                <Span className="text-xs mt-1">
+                  {accept
+                    .split(",")
+                    .map((mimeType) => mimeType.split("/")[1].toUpperCase())
+                    .join(", ")}{" "}
+                  (max {maxSizeMB}MB)
+                </Span>
+              </Button>
+            )}
+          </>
         )}
       </div>
 
@@ -219,6 +314,18 @@ export function ImageUpload({
         onChange={handleFileChange}
         className="hidden"
       />
+
+      {/* Mobile camera fallback input */}
+      {showCamera && !isCameraSupported && (
+        <input
+          ref={mobileCaptureRef}
+          type="file"
+          accept="image/*"
+          capture="environment" // eslint-disable-line react/no-unknown-property
+          onChange={handleFileChange}
+          className="hidden"
+        />
+      )}
 
       {/* Helper Text */}
       {helperText && !error && (
