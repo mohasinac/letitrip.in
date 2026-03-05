@@ -224,6 +224,9 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
     rating: { canFilter: true, canSort: true },
     verified: { canFilter: true, canSort: false },
     helpfulCount: { canFilter: true, canSort: true },
+    featured: { canFilter: true, canSort: false },
+    reportCount: { canFilter: true, canSort: true },
+    updatedAt: { canFilter: true, canSort: true },
     createdAt: { canFilter: true, canSort: true },
   };
 

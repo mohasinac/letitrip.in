@@ -340,8 +340,7 @@ export class UserRepository extends BaseRepository<UserDocument> {
     emailVerified: { canFilter: true, canSort: false },
     disabled: { canFilter: true, canSort: true },
     storeStatus: { canFilter: true, canSort: false },
-    createdAt: { canFilter: true, canSort: true },
-  };
+    createdAt: { canFilter: true, canSort: true },    updatedAt:     { canFilter: true, canSort: true  },  };
 
   /**
    * Paginated, Firestore-native user list (admin use).

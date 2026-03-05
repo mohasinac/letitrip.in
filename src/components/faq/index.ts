@@ -1,5 +1,4 @@
 export { FAQCategorySidebar, FAQ_CATEGORIES } from "./FAQCategorySidebar";
-export { FAQSearchBar } from "./FAQSearchBar";
 export { FAQSortDropdown } from "./FAQSortDropdown";
 export { FAQAccordion } from "./FAQAccordion";
 export { FAQHelpfulButtons } from "./FAQHelpfulButtons";

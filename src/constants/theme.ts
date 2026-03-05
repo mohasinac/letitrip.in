@@ -136,13 +136,13 @@ export const THEME_CONSTANTS = {
     contentPadding: "px-4 md:px-6 lg:px-8",
     navPadding: "px-4 sm:px-6 lg:px-8",
     titleBarBg:
-      "bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm border-b border-zinc-200 dark:border-slate-800",
+      "bg-primary-600/95 dark:bg-secondary-700/95 backdrop-blur-sm border-b border-primary-500 dark:border-secondary-600",
     navbarBg:
-      "bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm border-b border-zinc-200 dark:border-slate-800",
+      "bg-primary-600/95 dark:bg-secondary-700/95 backdrop-blur-sm border-b border-primary-500 dark:border-secondary-600",
     sidebarBg:
-      "bg-white dark:bg-slate-900 border-l border-zinc-200 dark:border-slate-800",
+      "bg-primary-700 dark:bg-secondary-800 border-l border-primary-600 dark:border-secondary-700",
     bottomNavBg:
-      "bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm border-t border-zinc-200 dark:border-slate-800",
+      "bg-primary-600/95 dark:bg-secondary-700/95 backdrop-blur-sm border-t border-primary-500 dark:border-secondary-600",
     footerBg:
       "bg-zinc-50 dark:bg-slate-900 border-t border-zinc-200 dark:border-slate-800",
     // Utility layouts
@@ -578,16 +578,16 @@ export const THEME_CONSTANTS = {
     // Navbar colors
     navbar: {
       active:
-        "bg-zinc-100 dark:bg-slate-800 text-zinc-900 dark:text-zinc-100 font-semibold",
+        "bg-white/20 text-white font-semibold",
       inactive:
-        "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-slate-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors",
+        "text-white/75 hover:bg-white/15 hover:text-white transition-colors",
       icon: "w-5 h-5 md:w-6 md:h-6",
     },
     // Bottom navbar colors
     bottomNav: {
-      active: "text-primary-600 dark:text-secondary-400 font-semibold",
+      active: "text-white font-semibold",
       inactive:
-        "text-zinc-500 dark:text-zinc-400 hover:text-primary-600 dark:hover:text-secondary-400 transition-colors",
+        "text-white/65 hover:text-white transition-colors",
       text: "text-xs",
       icon: "w-6 h-6",
     },
@@ -607,15 +607,34 @@ export const THEME_CONSTANTS = {
     // Icon colors
     icon: {
       muted: "text-zinc-400",
-      titleBar: "text-zinc-900 dark:text-zinc-100",
+      titleBar: "text-white",
       navbar: "text-zinc-900 dark:text-zinc-100",
       onLight: "text-zinc-600 dark:text-zinc-300",
     },
     // Icon button hovers
     iconButton: {
-      onPrimary: "hover:bg-black/10 active:bg-black/20",
+      onPrimary: "hover:bg-white/15 active:bg-white/25",
       onLight:
         "hover:bg-zinc-100 dark:hover:bg-slate-800 active:bg-zinc-200 dark:active:bg-slate-700",
+    },
+    // Colors for elements rendered on a primary/secondary colored background
+    onPrimary: {
+      text:            "text-white",
+      textMuted:       "text-white/70",
+      textWeak:        "text-white/80",
+      textSubtle:      "text-white/65",
+      textIcon:        "text-white/60",
+      textFaint:       "text-white/50",
+      brandHover:      "text-white group-hover:text-white/80",
+      navItemActive:   "bg-white/20 text-white shadow-sm",
+      navItemInactive: "text-white/80 hover:bg-white/10 hover:text-white transition-colors",
+      iconBgActive:    "bg-white/20",
+      iconBgInactive:  "bg-transparent group-hover:bg-white/10",
+      divider:         "h-px flex-1 border-white/20",
+      sectionLabel:    "text-white/50",
+      logoutBtn:       "bg-white/10 text-white border border-white/20 hover:bg-red-500/70 hover:text-white",
+      ghostOutlineBtn: "bg-white/10 text-white border-2 border-white/30 hover:bg-white/20 hover:border-white/50",
+      settingsRow:     "text-white hover:bg-white/10 hover:text-white transition-colors",
     },
   },
 

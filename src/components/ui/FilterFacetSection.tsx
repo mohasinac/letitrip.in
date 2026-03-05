@@ -25,6 +25,8 @@ interface FilterFacetSectionProps {
   searchable?: boolean;
   /** How many options to show initially before "Load more". Defaults to 10. */
   pageSize?: number;
+  /** Whether the section starts collapsed. Defaults to false. */
+  defaultCollapsed?: boolean;
   className?: string;
 }
 
@@ -52,11 +54,12 @@ export function FilterFacetSection({
   onChange,
   searchable = true,
   pageSize = 10,
+  defaultCollapsed = false,
   className = "",
 }: FilterFacetSectionProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(pageSize);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
 
   const { themed, spacing } = THEME_CONSTANTS;
   const t = useTranslations("filters");

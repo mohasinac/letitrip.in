@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES, ERROR_MESSAGES, MAIN_NAV_ITEMS } from "@/constants";
@@ -58,10 +58,12 @@ export default function Sidebar({
   const router = useRouter();
   const { user, loading } = useAuth();
   const isAuthenticated = !!user && !loading;
-  const { flex, overflow, position } = THEME_CONSTANTS;
+  const { flex, overflow, position, colors } = THEME_CONSTANTS;
   const sidebarRef = useRef<HTMLElement>(null);
   const tNav = useTranslations("nav");
   const tA = useTranslations("accessibility");
+  const [supportOpen, setSupportOpen] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(true);
   const logoutMutation = useLogout();
 
   const handleSignOut = async () => {
@@ -120,12 +122,11 @@ export default function Sidebar({
           ${THEME_CONSTANTS.zIndex.sidebar}
           ${isOpen ? "translate-x-0" : "translate-x-full"}
           flex flex-col
-          border-l ${THEME_CONSTANTS.themed.border}
         `}
       >
         {/* Fixed Header with User Info - Modern Card Style */}
         <div
-          className={`${flex.noShrink} px-6 py-5 border-b ${THEME_CONSTANTS.themed.border} ${THEME_CONSTANTS.themed.bgSecondary}`}
+          className={`${flex.noShrink} px-6 py-5 border-b border-primary-600 dark:border-secondary-700 bg-primary-800 dark:bg-secondary-900`}
         >
           {isAuthenticated ? (
             <div className={`${flex.between} gap-3`}>
@@ -165,12 +166,12 @@ export default function Sidebar({
                 </div>
                 <div className={flex.growMin}>
                   <Text
-                    className={`${THEME_CONSTANTS.typography.small} font-medium ${THEME_CONSTANTS.themed.textPrimary} truncate`}
+                    className={`${THEME_CONSTANTS.typography.small} font-medium ${colors.onPrimary.text} truncate`}
                   >
                     {user.displayName || "User"}
                   </Text>
                   <Text
-                    className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.themed.textSecondary} truncate`}
+                    className={`${THEME_CONSTANTS.typography.xs} ${colors.onPrimary.textMuted} truncate`}
                   >
                     {user.email || ""}
                   </Text>
@@ -181,7 +182,7 @@ export default function Sidebar({
               <Button
                 variant="ghost"
                 onClick={onClose}
-                className={`p-2.5 rounded-full transition-all duration-200 ${flex.noShrink} hover:rotate-90 ${THEME_CONSTANTS.colors.iconButton.onLight}`}
+                className={`p-2.5 rounded-full transition-all duration-200 ${flex.noShrink} hover:rotate-90 ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
                 aria-label={tA("closeSidebar")}
               >
                 <svg
@@ -206,7 +207,7 @@ export default function Sidebar({
                 <Button
                   variant="ghost"
                   onClick={onClose}
-                  className={`p-2.5 rounded-full transition-all duration-200 hover:rotate-90 ${THEME_CONSTANTS.colors.iconButton.onLight}`}
+                  className={`p-2.5 rounded-full transition-all duration-200 hover:rotate-90 ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
                   aria-label={tA("closeSidebar")}
                 >
                   <svg
@@ -247,11 +248,7 @@ export default function Sidebar({
                   variant="inherit"
                   className={`
                   w-full block px-4 py-3 rounded-xl
-                  ${THEME_CONSTANTS.themed.bgPrimary}
-                  ${THEME_CONSTANTS.themed.textPrimary}
-                  border-2 ${THEME_CONSTANTS.themed.border}
-                  hover:${THEME_CONSTANTS.themed.bgSecondary}
-                  hover:border-blue-500
+                  ${colors.onPrimary.ghostOutlineBtn}
                   text-center
                   transition-all duration-200
                   font-semibold ${THEME_CONSTANTS.typography.small}
@@ -273,10 +270,10 @@ export default function Sidebar({
             {isAuthenticated && (
               <div className="space-y-2">
                 <div
-                  className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
+                  className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}
                 >
                   <div
-                    className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
+                    className={colors.onPrimary.divider}
                   ></div>
                   <Heading
                     level={3}
@@ -285,7 +282,7 @@ export default function Sidebar({
                     {tNav("profile")}
                   </Heading>
                   <div
-                    className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
+                    className={colors.onPrimary.divider}
                   ></div>
                 </div>
 
@@ -359,8 +356,8 @@ export default function Sidebar({
                           transition-all duration-200 group
                           ${
                             isActive
-                              ? "bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 shadow-sm"
-                              : `${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.hoverCard}`
+                              ? colors.onPrimary.navItemActive
+                              : colors.onPrimary.navItemInactive
                           }
                         `}
                           onClick={onClose}
@@ -370,13 +367,13 @@ export default function Sidebar({
                           ${flex.noShrink} p-1.5 rounded-md transition-colors
                           ${
                             isActive
-                              ? "bg-primary-100 dark:bg-primary-900/50"
-                              : `bg-transparent ${THEME_CONSTANTS.themed.hover.replace("hover:", "group-hover:")}`
+                              ? colors.onPrimary.iconBgActive
+                              : colors.onPrimary.iconBgInactive
                           }
                         `}
                           >
                             <svg
-                              className={`w-5 h-5 ${isActive ? "text-primary-600 dark:text-primary-400" : THEME_CONSTANTS.themed.textMuted}`}
+                              className={`w-5 h-5 ${isActive ? colors.onPrimary.text : colors.onPrimary.textIcon}`}
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -391,7 +388,7 @@ export default function Sidebar({
                           </Span>
                           {isActive && (
                             <svg
-                              className="w-4 h-4 text-primary-600 dark:text-primary-400"
+                              className={`w-4 h-4 ${colors.onPrimary.text}`}
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
@@ -413,11 +410,7 @@ export default function Sidebar({
                   variant="ghost"
                   className={`
                   w-full mt-2 px-4 py-2.5 rounded-lg
-                  ${THEME_CONSTANTS.themed.bgPrimary}
-                  ${THEME_CONSTANTS.themed.textPrimary}
-                  hover:bg-red-50 dark:hover:bg-red-950/30
-                  hover:text-red-600 dark:hover:text-red-400
-                  border ${THEME_CONSTANTS.themed.border}
+                  ${colors.onPrimary.logoutBtn}
                   transition-all duration-200
                   ${flex.center} gap-2
                   font-medium ${THEME_CONSTANTS.typography.small}
@@ -448,10 +441,10 @@ export default function Sidebar({
               hasAnyRole(user.role, ["admin", "moderator", "seller"]) && (
                 <div className="space-y-2">
                   <div
-                    className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
+                    className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}
                   >
                     <div
-                      className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
+                      className={colors.onPrimary.divider}
                     ></div>
                     <Heading
                       level={3}
@@ -460,7 +453,7 @@ export default function Sidebar({
                       {tNav("dashboard")}
                     </Heading>
                     <div
-                      className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
+                      className={colors.onPrimary.divider}
                     ></div>
                   </div>
 
@@ -477,8 +470,8 @@ export default function Sidebar({
                         ${
                           pathname === ROUTES.ADMIN.DASHBOARD ||
                           pathname?.startsWith("/admin/")
-                            ? "bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 shadow-sm"
-                            : `${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.hoverCard}`
+                            ? colors.onPrimary.navItemActive
+                            : colors.onPrimary.navItemInactive
                         }
                       `}
                           onClick={onClose}
@@ -489,8 +482,8 @@ export default function Sidebar({
                         ${
                           pathname === ROUTES.ADMIN.DASHBOARD ||
                           pathname?.startsWith("/admin/")
-                            ? "bg-primary-100 dark:bg-primary-900/50"
-                            : `bg-transparent ${THEME_CONSTANTS.themed.hover.replace("hover:", "group-hover:")}`
+                            ? colors.onPrimary.iconBgActive
+                            : colors.onPrimary.iconBgInactive
                         }
                       `}
                           >
@@ -498,8 +491,8 @@ export default function Sidebar({
                               className={`w-4 h-4 ${
                                 pathname === ROUTES.ADMIN.DASHBOARD ||
                                 pathname?.startsWith("/admin/")
-                                  ? "text-primary-600 dark:text-primary-400"
-                                  : THEME_CONSTANTS.themed.textMuted
+                                  ? colors.onPrimary.text
+                                  : colors.onPrimary.textIcon
                               }`}
                               fill="none"
                               stroke="currentColor"
@@ -521,7 +514,7 @@ export default function Sidebar({
                           {(pathname === ROUTES.ADMIN.DASHBOARD ||
                             pathname?.startsWith("/admin/")) && (
                             <svg
-                              className="w-4 h-4 text-primary-600 dark:text-primary-400"
+                              className={`w-4 h-4 ${colors.onPrimary.text}`}
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
@@ -548,8 +541,8 @@ export default function Sidebar({
                         ${
                           pathname === ROUTES.SELLER.DASHBOARD ||
                           pathname?.startsWith("/seller/")
-                            ? "bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 shadow-sm"
-                            : `${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.hoverCard}`
+                            ? colors.onPrimary.navItemActive
+                            : colors.onPrimary.navItemInactive
                         }
                       `}
                           onClick={onClose}
@@ -560,8 +553,8 @@ export default function Sidebar({
                         ${
                           pathname === ROUTES.SELLER.DASHBOARD ||
                           pathname?.startsWith("/seller/")
-                            ? "bg-primary-100 dark:bg-primary-900/50"
-                            : `bg-transparent ${THEME_CONSTANTS.themed.hover.replace("hover:", "group-hover:")}`
+                            ? colors.onPrimary.iconBgActive
+                            : colors.onPrimary.iconBgInactive
                         }
                       `}
                           >
@@ -569,8 +562,8 @@ export default function Sidebar({
                               className={`w-4 h-4 ${
                                 pathname === ROUTES.SELLER.DASHBOARD ||
                                 pathname?.startsWith("/seller/")
-                                  ? "text-primary-600 dark:text-primary-400"
-                                  : THEME_CONSTANTS.themed.textMuted
+                                  ? colors.onPrimary.text
+                                  : colors.onPrimary.textIcon
                               }`}
                               fill="none"
                               stroke="currentColor"
@@ -592,7 +585,7 @@ export default function Sidebar({
                           {(pathname === ROUTES.SELLER.DASHBOARD ||
                             pathname?.startsWith("/seller/")) && (
                             <svg
-                              className="w-4 h-4 text-primary-600 dark:text-primary-400"
+                              className={`w-4 h-4 ${colors.onPrimary.text}`}
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
@@ -613,10 +606,10 @@ export default function Sidebar({
             {/* Browse Section - Main navigation links for sidebar access */}
             <div className="space-y-2">
               <div
-                className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
+                className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}
               >
                 <div
-                  className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
+                  className={colors.onPrimary.divider}
                 ></div>
                 <Heading
                   level={3}
@@ -625,7 +618,7 @@ export default function Sidebar({
                   {tNav("browse")}
                 </Heading>
                 <div
-                  className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
+                  className={colors.onPrimary.divider}
                 ></div>
               </div>
 
@@ -653,8 +646,8 @@ export default function Sidebar({
                         transition-all duration-200 group
                         ${
                           isActive
-                            ? "bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 shadow-sm"
-                            : `${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.hoverCard}`
+                            ? colors.onPrimary.navItemActive
+                            : colors.onPrimary.navItemInactive
                         }
                       `}
                         onClick={onClose}
@@ -664,13 +657,13 @@ export default function Sidebar({
                         ${flex.noShrink} p-1.5 rounded-md transition-colors
                         ${
                           isActive
-                            ? "bg-primary-100 dark:bg-primary-900/50"
-                            : `bg-transparent ${THEME_CONSTANTS.themed.hover.replace("hover:", "group-hover:")}`
+                            ? colors.onPrimary.iconBgActive
+                            : colors.onPrimary.iconBgInactive
                         }
                       `}
                         >
                           <Span
-                            className={`${flex.rowCenter} ${isActive ? "text-primary-600 dark:text-primary-400" : THEME_CONSTANTS.themed.textMuted}`}
+                            className={`${flex.rowCenter} ${isActive ? colors.onPrimary.text : colors.onPrimary.textIcon}`}
                           >
                             {item.icon}
                           </Span>
@@ -682,7 +675,7 @@ export default function Sidebar({
                         </Span>
                         {isActive && (
                           <svg
-                            className="w-4 h-4 text-primary-600 dark:text-primary-400"
+                            className={`w-4 h-4 ${colors.onPrimary.text}`}
                             fill="currentColor"
                             viewBox="0 0 20 20"
                           >
@@ -700,13 +693,13 @@ export default function Sidebar({
               </Ul>
             </div>
 
-            {/* Support Section - Always visible */}
+            {/* Support Section - Collapsible */}
             <div className="space-y-2">
               <div
-                className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
+                className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}
               >
                 <div
-                  className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
+                  className={colors.onPrimary.divider}
                 ></div>
                 <Heading
                   level={3}
@@ -715,10 +708,35 @@ export default function Sidebar({
                   {tNav("support")}
                 </Heading>
                 <div
-                  className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
+                  className={colors.onPrimary.divider}
                 ></div>
+                <Button
+                  variant="ghost"
+                  onClick={() => setSupportOpen((v) => !v)}
+                  aria-expanded={supportOpen}
+                  aria-label={tNav("support")}
+                  className="p-1 rounded-md -mr-1"
+                >
+                  <svg
+                    className={`w-3 h-3 transition-transform duration-200 ${supportOpen ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </Button>
               </div>
 
+              <div
+                className={`overflow-hidden transition-all duration-300 ${supportOpen ? "max-h-48" : "max-h-0"}`}
+              >
               <Ul className="space-y-1">
                 {[
                   {
@@ -757,8 +775,8 @@ export default function Sidebar({
                         transition-all duration-200 group
                         ${
                           isActive
-                            ? "bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 shadow-sm"
-                            : `${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.hoverCard}`
+                            ? colors.onPrimary.navItemActive
+                            : colors.onPrimary.navItemInactive
                         }
                       `}
                         onClick={onClose}
@@ -768,13 +786,13 @@ export default function Sidebar({
                         ${flex.noShrink} p-1.5 rounded-md transition-colors
                         ${
                           isActive
-                            ? "bg-primary-100 dark:bg-primary-900/50"
-                            : `bg-transparent ${THEME_CONSTANTS.themed.hover.replace("hover:", "group-hover:")}`
+                            ? colors.onPrimary.iconBgActive
+                            : colors.onPrimary.iconBgInactive
                         }
                       `}
                         >
                           <Span
-                            className={`${flex.rowCenter} ${isActive ? "text-primary-600 dark:text-primary-400" : THEME_CONSTANTS.themed.textMuted}`}
+                            className={`${flex.rowCenter} ${isActive ? colors.onPrimary.text : colors.onPrimary.textIcon}`}
                           >
                             {item.icon}
                           </Span>
@@ -786,7 +804,7 @@ export default function Sidebar({
                         </Span>
                         {isActive && (
                           <svg
-                            className="w-4 h-4 text-primary-600 dark:text-primary-400"
+                            className={`w-4 h-4 ${colors.onPrimary.text}`}
                             fill="currentColor"
                             viewBox="0 0 20 20"
                           >
@@ -802,15 +820,16 @@ export default function Sidebar({
                   );
                 })}
               </Ul>
+              </div>
             </div>
 
-            {/* Theme Toggle - Always visible */}
+            {/* Settings Section - Collapsible */}
             <div className="space-y-2">
               <div
-                className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${THEME_CONSTANTS.themed.textSecondary}`}
+                className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}
               >
                 <div
-                  className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
+                  className={colors.onPrimary.divider}
                 ></div>
                 <Heading
                   level={3}
@@ -819,28 +838,53 @@ export default function Sidebar({
                   {tNav("settings")}
                 </Heading>
                 <div
-                  className={`h-px flex-1 ${THEME_CONSTANTS.themed.border}`}
+                  className={colors.onPrimary.divider}
                 ></div>
+                <Button
+                  variant="ghost"
+                  onClick={() => setSettingsOpen((v) => !v)}
+                  aria-expanded={settingsOpen}
+                  aria-label={tNav("settings")}
+                  className="p-1 rounded-md -mr-1"
+                >
+                  <svg
+                    className={`w-3 h-3 transition-transform duration-200 ${settingsOpen ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </Button>
               </div>
 
+              <div
+                className={`overflow-hidden transition-all duration-300 ${settingsOpen ? "max-h-40" : "max-h-0"}`}
+              >
               <Button
                 variant="ghost"
                 onClick={onToggleTheme}
                 className={`
                 ${flex.rowCenter} gap-3 px-3 py-2.5 rounded-lg w-full
                 transition-all duration-200 group
-                ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.hoverCard}
+                ${colors.onPrimary.settingsRow}
               `}
                 aria-label={tA("toggleTheme")}
               >
                 <div
                   className={`
                   ${flex.noShrink} p-1.5 rounded-md transition-colors
-                  bg-transparent ${THEME_CONSTANTS.themed.hover.replace("hover:", "group-hover:")}
+                  ${colors.onPrimary.iconBgInactive}
                 `}
                 >
                   <svg
-                    className={`w-4 h-4 ${THEME_CONSTANTS.themed.textMuted}`}
+                    className={`w-4 h-4 ${colors.onPrimary.textIcon}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -888,7 +932,7 @@ export default function Sidebar({
               <div
                 className={`
                 ${flex.rowCenter} gap-3 px-3 py-2.5 rounded-lg w-full
-                ${THEME_CONSTANTS.themed.textPrimary}
+                ${colors.onPrimary.text}
               `}
               >
                 <div
@@ -897,7 +941,7 @@ export default function Sidebar({
                 `}
                 >
                   <svg
-                    className={`w-4 h-4 ${THEME_CONSTANTS.themed.textMuted}`}
+                    className={`w-4 h-4 ${colors.onPrimary.textIcon}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -916,6 +960,7 @@ export default function Sidebar({
                   {tNav("language")}
                 </Span>
                 <LocaleSwitcher />
+              </div>
               </div>
             </div>
           </Nav>

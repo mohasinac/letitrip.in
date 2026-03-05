@@ -52,6 +52,9 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
     order: { canFilter: true, canSort: true },
     'metrics.productCount': { path: 'metrics.productCount', canFilter: true, canSort: true },
     'metrics.totalItemCount': { path: 'metrics.totalItemCount', canFilter: true, canSort: true },
+    'metrics.auctionCount': { path: 'metrics.auctionCount', canFilter: true, canSort: true },
+    id: { canFilter: true, canSort: false },
+    isLeaf: { canFilter: true, canSort: false },
     createdAt: { canFilter: true, canSort: true },
   };
 

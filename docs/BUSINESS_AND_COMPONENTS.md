@@ -21,6 +21,11 @@
 11. [Execution Phases](#11-execution-phases)
 12. [Tracking Checklist](#12-tracking-checklist)
 13. [Key Principles](#13-key-principles)
+14. [Sieve Configuration Recommendations](#14-sieve-configuration-recommendations)
+15. [Resource Filter Components](#15-resource-filter-components)
+16. [Global Search Architecture](#16-global-search-architecture)
+17. [URL Navigation & Back-Button Behaviour](#17-url-navigation--back-button-behaviour)
+18. [Bulk Actions Matrix](#18-bulk-actions-matrix)
 
 ---
 
@@ -1205,3 +1210,879 @@ import { Search, SortDropdown, FilterFacetSection } from '@/components';
 | TitleBar.tsx | BUSINESS | SPLIT → generic `TitleBarLayout` + config |
 
 </details>
+
+---
+
+## 14. Sieve Configuration Recommendations
+
+> **Scope**: Which fields to add, change, or remove in each repository's `SIEVE_FIELDS` so that the corresponding filter components and API endpoints expose exactly the right facets. All additions assume the field is (or will be) stored in the Firestore document — if denormalization is needed a note is included.
+
+---
+
+### 14.1 ReviewRepository
+
+**Current fields**: `id`, `productId`, `productTitle`, `userId`, `userName`, `sellerId`, `status`, `rating`, `verified`, `helpfulCount`, `featured`, `reportCount`, `updatedAt`, `createdAt`
+
+| Add field | canFilter | canSort | Notes |
+|-----------|:---------:|:-------:|-------|
+| `orderId` | ✓ | ✗ | Store on the review doc at write time. Allows "find all reviews for an order". |
+| `categoryId` | ✓ | ✗ | Denormalize from the product at review-write time. |
+| `categoryName` | ✓ | ✓ | Displayable category label — used in admin facet dropdowns. |
+| `productSlug` | ✓ | ✗ | SEO-friendly product filter when `productId` is not user-facing. |
+| `isEdited` | ✓ | ✗ | Flag set when buyer edits their review after initial submission. |
+| `hasMedia` | ✓ | ✗ | `true` when the review contains image/video attachments — common facet. |
+
+**Remove nothing** — existing fields are all useful.
+
+**URL param names**: `orderId`, `categoryId`, `rating`, `verified`, `sellerId`, `status`, `hasMedia`, `dateFrom`, `dateTo`
+
+---
+
+### 14.2 ProductRepository
+
+**Current fields** (non-auction): `id`, `title`, `slug`, `category`, `subcategory`, `brand`, `condition`, `status`, `sellerId`, `sellerName`, `featured`, `isAuction`, `isPromoted`, `price`, `stockQuantity`, `viewCount`, `currentBid`, `bidCount`, `createdAt`, `updatedAt`, `auctionEndDate`, `startingBid`, `buyNowPrice`, `minBidIncrement`, `autoExtendable`, `reservePrice`, `tags`, `features`, `insurance`, `currency`
+
+| Add field | canFilter | canSort | Notes |
+|-----------|:---------:|:-------:|-------|
+| `averageRating` | ✓ | ✓ | Denormalized from review aggregates (updated by Function trigger). |
+| `reviewCount` | ✓ | ✓ | Denormalized from review aggregates. |
+| `hasVideo` | ✓ | ✗ | `true` when the product has at least one video media item. |
+| `location` | ✓ | ✗ | City/state string for geo-filtered browsing (optional, if sellers provide it). |
+| `shippingAvailable` | ✓ | ✗ | `true` when the seller offers delivery; `false` = pickup only. |
+| `isVerifiedSeller` | ✓ | ✗ | Denormalized from seller's `storeStatus === 'verified'`. |
+| `sellerRating` | ✓ | ✓ | Denormalized from seller's `stats.averageRating`. |
+
+**Remove nothing** — all current fields have valid use cases.
+
+**URL param names** (products page): `category`, `subcategory`, `brand`, `condition`, `sellerId`, `minPrice`, `maxPrice`, `minRating`, `featured`, `hasVideo`, `tags`, `features`, `inStock`, `status`
+
+---
+
+### 14.3 ProductRepository — Auction-specific
+
+Auctions reuse the same repository with an implicit `isAuction==true` pre-filter applied in the API route. The following fields are already present but need a planned `auctionStatus` denormalized field:
+
+| Add field | canFilter | canSort | Notes |
+|-----------|:---------:|:-------:|-------|
+| `auctionStatus` | ✓ | ✓ | Denormalized enum: `upcoming` / `live` / `ended`. Updated by a scheduled Function so queries can filter efficiently without date arithmetic. |
+| `hasReserve` | ✓ | ✗ | `true` when `reservePrice > 0`. Set at write time; avoids `reservePrice > 0` range query. |
+| `isExtended` | ✓ | ✗ | `true` when the auction has been auto-extended at least once. |
+| `winnerUserId` | ✓ | ✗ | Set once the auction settles. Enables "won auctions" filter. |
+
+**Note**: "Time left" filters are best expressed as `auctionStatus==live` combined with `auctionEndDate` range queries rather than computed durations:
+- Ending < 1 h → `auctionEndDate<={now+1h}`
+- Ending today → `auctionEndDate<={endOfToday}`
+- Ending this week → `auctionEndDate<={endOfWeek}`
+
+**URL param names** (auctions page): `category`, `brand`, `sellerId`, `minBid`, `maxBid`, `auctionStatus`, `hasReserve`, `bidCount`, `endBefore`, `endAfter`
+
+---
+
+### 14.4 CategoriesRepository
+
+**Current fields**: `name`, `slug`, `tier`, `isActive`, `isFeatured`, `isSearchable`, `parentId`, `order`, `metrics.productCount`, `metrics.totalItemCount`, `metrics.auctionCount`, `id`, `isLeaf`, `createdAt`
+
+| Add field | canFilter | canSort | Notes |
+|-----------|:---------:|:-------:|-------|
+| `parentName` | ✓ | ✓ | Denormalized parent display name — avoids join for filter labels. |
+| `depth` | ✓ | ✓ | Nesting level (0 = root). Easier than inferring from `tier`. |
+| `hasImage` | ✓ | ✗ | `true` when a cover image is uploaded — admin completeness filter. |
+| `metrics.activeProductCount` | ✓ | ✓ | Published products only, separate from `totalItemCount`. |
+
+**URL param names**: `tier`, `parentId`, `isFeatured`, `isActive`, `hasImage`, `minProducts`, `maxProducts`
+
+---
+
+### 14.5 UserRepository (Stores context)
+
+When the stores listing queries users with `role==seller`, these additional fields become relevant:
+
+| Add field | canFilter | canSort | Notes |
+|-----------|:---------:|:-------:|-------|
+| `storeName` | ✓ | ✓ | Distinct from `displayName`; the brand/shop name shown in listings. |
+| `stats.totalProducts` | ✓ | ✓ | Published product count — denormalized by Function trigger. |
+| `stats.totalSales` | ✓ | ✓ | Completed order count — denormalized. |
+| `stats.averageRating` | ✓ | ✓ | Average store rating — denormalized from reviews. |
+| `stats.reviewCount` | ✓ | ✓ | Total store review count. |
+| `isVerified` | ✓ | ✗ | `true` when admin has marked the store as verified. |
+| `location` | ✓ | ✓ | City/region for geo-filtered store browsing. |
+| `primaryCategory` | ✓ | ✓ | Main category the store sells in — useful for facet filtering. |
+
+**URL param names** (stores page): `storeStatus`, `minRating`, `minProducts`, `isVerified`, `primaryCategory`, `location`
+
+---
+
+### 14.6 BlogRepository
+
+**Current fields**: `id`, `title`, `slug`, `status`, `category`, `authorName`, `authorId`, `isFeatured`, `readTimeMinutes`, `views`, `publishedAt`, `updatedAt`, `tags`, `createdAt`
+
+| Add field | canFilter | canSort | Notes |
+|-----------|:---------:|:-------:|-------|
+| `commentCount` | ✓ | ✓ | Denormalized total comment count for "most discussed" sorts. |
+| `series` | ✓ | ✓ | Named blog series (e.g. "Trekking Basics") — groups multi-part posts. |
+| `difficulty` | ✓ | ✓ | Content difficulty rating (beginner/intermediate/advanced) — travel/guide blogs. |
+| `destination` | ✓ | ✓ | Geographic destination tag — key for a travel-focused site. |
+| `hasVideo` | ✓ | ✗ | `true` when the post contains embedded video. |
+
+**URL param names**: `category`, `tags`, `authorId`, `minReadTime`, `maxReadTime`, `isFeatured`, `dateFrom`, `dateTo`, `destination`, `series`
+
+---
+
+### 14.7 EventRepository
+
+**Current fields**: `type`, `status`, `title`, `createdBy`, `startsAt`, `endsAt`, `stats.totalEntries`, `stats.approvedEntries`, `stats.flaggedEntries`, `id`, `createdAt`
+
+| Add field | canFilter | canSort | Notes |
+|-----------|:---------:|:-------:|-------|
+| `slug` | ✓ | ✗ | SEO-friendly identifier used in deep-link filters. |
+| `tags` | ✓ | ✗ | Free-form topic tags (array-contains `@=` operator). |
+| `isFeatured` | ✓ | ✗ | Pinned to featured carousel. |
+| `isPublic` | ✓ | ✗ | `false` for invite-only or admin-only events. |
+| `prizePool` | ✓ | ✓ | Total prize/reward value — for "events with prizes" filter. |
+| `maxEntries` | ✓ | ✓ | Cap on participants — allows "has open spots" filter via `stats.totalEntries < maxEntries`. |
+| `location` | ✓ | ✓ | City/region for in-person event geo filtering. |
+| `updatedAt` | ✓ | ✓ | Missing from current config — add for recency sorts. |
+
+**URL param names**: `type`, `status`, `isFeatured`, `isPublic`, `tags`, `dateFrom`, `dateTo`, `hasOpenSpots`
+
+---
+
+### 14.8 OrderRepository — Both Field Sets
+
+#### SELLER_SIEVE_FIELDS — additions
+
+| Add field | canFilter | canSort | Notes |
+|-----------|:---------:|:-------:|-------|
+| `couponCode` | ✓ | ✗ | Allows seller to filter orders that used a discount. |
+| `trackingNumber` | ✓ | ✗ | Filter orders by shipping tracking number. |
+| `isDisputed` | ✓ | ✗ | Flag for return/dispute raised by buyer. |
+| `shippingMethod` | ✓ | ✓ | Standard / Express / Pickup. |
+| `deliveryDate` | ✓ | ✓ | Expected or actual delivery date for range filters. |
+| `sellerName` | ✓ | ✓ | Needed if a seller manages multiple store front-names. |
+
+#### ADMIN_SIEVE_FIELDS — additions
+
+Same as seller additions, plus:
+
+| Add field | canFilter | canSort | Notes |
+|-----------|:---------:|:-------:|-------|
+| `sellerName` | ✓ | ✓ | Seller display name for admin search. |
+| `couponCode` | ✓ | ✗ | Admin coupon redemption analytics. |
+| `deliveryDate` | ✓ | ✓ | SLA / fulfilment reporting. |
+| `isDisputed` | ✓ | ✗ | Dispute-management queue. |
+| `shippingMethod` | ✓ | ✓ | Operations analysis. |
+| `riskScore` | ✓ | ✓ | Fraud-detection score if integrated. |
+
+**URL param names** (orders): `status`, `paymentStatus`, `paymentMethod`, `sellerId`, `dateFrom`, `dateTo`, `minPrice`, `maxPrice`, `isDisputed`, `shippingMethod`, `couponCode`
+
+---
+
+### 14.9 Generic Sieve Pattern — "Search by ID / Slug / Name"
+
+Every resource whose listing page must support searching by ID, slug, or name should expose the following fields (all with `canFilter: true`, using the `_=` starts-with or `==` exact operator):
+
+| Resource | ID field | Slug field | Name/Title field |
+|----------|----------|-----------|-----------------|
+| Products | `id` ✓ | `slug` ✓ | `title` ✓ |
+| Auctions | `id` ✓ | `slug` ✓ | `title` ✓ |
+| Reviews | `id` ✓ | `productSlug` (add) | `productTitle` ✓ / `userName` ✓ |
+| Categories | `id` ✓ | `slug` ✓ | `name` ✓ |
+| Stores | `uid` ✓ | — | `storeName` (add) / `displayName` ✓ |
+| Blogs | `id` ✓ | `slug` ✓ | `title` ✓ |
+| Events | `id` ✓ | `slug` (add) | `title` ✓ |
+| Orders | `id` ✓ | — | `productTitle` ✓ / `userName` ✓ |
+
+The search `q` param is handled by the Sieve `_=` (starts-with) operator applied against the name/title field. Direct ID lookup uses `==` on the `id` field. The API routes should check `q` first as a name starts-with, then fall back to an exact-ID match when `q` matches the pattern of an ID/slug.
+
+---
+
+## 15. Resource Filter Components
+
+> **Architecture rule**: filter components are **business components** (they know URL param names and domain option shapes) and live in their feature's `components/` folder. They each accept a `table: UrlTable` prop and async option arrays loaded by the parent view. All sections default to `defaultCollapsed={true}`. The filter panel itself (the drawer/sidebar wrapper) is controlled by the parent `ListingLayout` — these components only render the inner filter groups.
+
+### 15.1 Tier 1 Generic Filter Primitives (stay in `src/components/filters/`)
+
+| File | Purpose | Notes |
+|------|---------|-------|
+| `RangeFilter.tsx` ✅ | Numeric or date min/max range | Already exists; supports `type="number"` and `type="date"` |
+| `DateRangeFilter.tsx` 🆕 | Purpose-built date range (two `<Input type="date">`) | Extract from `RangeFilter type="date"` into a dedicated component with locale-aware date formatting and "presets" (Today, This week, This month, Custom). Identical API to `RangeFilter` but adds preset buttons. |
+| `ToggleFilter.tsx` 🆕 | Single boolean on/off facet | Renders as a `Toggle` + label row; writes `table.set(key, checked ? 'true' : '')`. Used for "in stock only", "has video", "featured only", "verified seller". |
+| `StarRatingFilter.tsx` 🆕 | Minimum star rating selector | Renders 5 clickable stars; writes `minRating` param. Reusable across products, stores, events. |
+
+`ProductFilters.tsx` at `src/components/filters/ProductFilters.tsx` is **moved** to `src/features/products/components/ProductFilters.tsx` (it already appears in the §7.1 migration plan).
+
+---
+
+### 15.2 ReviewFilters
+
+**Location**: `src/features/reviews/components/ReviewFilters.tsx`
+
+```
+Props:
+  table: UrlTable
+  sellerOptions?: FacetOption[]          // loaded by parent
+  categoryOptions?: FacetOption[]        // loaded by parent
+  productOptions?: FacetOption[]         // loaded by parent (searchable)
+  showStatus?: boolean                   // true for admin/seller only
+  showVerifiedFilter?: boolean           // true for all public pages
+
+Filter groups (all defaultCollapsed):
+  1. Rating          — StarRatingFilter (minRating)
+  2. Category        — FilterFacetSection, dynamic, searchable
+  3. Seller          — FilterFacetSection, dynamic, searchable (hidden on seller's own page)
+  4. Product         — FilterFacetSection, dynamic, searchable
+  5. Verified        — ToggleFilter (verified==true)
+  6. Has Media       — ToggleFilter (hasMedia==true)
+  7. Date Range      — DateRangeFilter (dateFrom / dateTo → maps to createdAt)
+  8. Status          — FilterFacetSection [pending/approved/rejected/flagged] (admin/seller only)
+
+URL params written: minRating, categoryId, sellerId, productId, verified, hasMedia, dateFrom, dateTo, status
+Search bar (ID/slug/name):  q param — maps to productTitle _= or orderId == or userName _=
+```
+
+---
+
+### 15.3 ProductFilters (relocated)
+
+**Current location**: `src/components/filters/ProductFilters.tsx`  
+**New location**: `src/features/products/components/ProductFilters.tsx`
+
+```
+Props (extending current):
+  table: UrlTable
+  categoryOptions?: FacetOption[]
+  subcategoryOptions?: FacetOption[]     // 🆕 dynamic subcategory facet
+  brandOptions?: FacetOption[]
+  sellerOptions?: FacetOption[]
+  tagOptions?: FacetOption[]
+  featureOptions?: FacetOption[]         // 🆕 product feature flags as checkboxes
+  showStatus?: boolean                   // admin/seller only
+  statusOptions?: FacetOption[]
+  showRating?: boolean                   // 🆕 show rating filter (default true on public pages)
+
+Filter groups (all defaultCollapsed):
+  1. Category        — FilterFacetSection, dynamic, searchable
+  2. Subcategory     — FilterFacetSection, dynamic (visible only when category selected)
+  3. Brand           — FilterFacetSection, dynamic, searchable
+  4. Condition       — FilterFacetSection [new/used/refurbished/broken], static
+  5. Price Range     — RangeFilter (minPrice / maxPrice, prefix ₹)
+  6. Rating          — StarRatingFilter (minRating) — hidden when showRating=false
+  7. Seller          — FilterFacetSection, dynamic, searchable
+  8. Features        — FilterFacetSection, dynamic (product-level feature flags)
+  9. Tags            — FilterFacetSection, dynamic, searchable
+  10. In Stock Only  — ToggleFilter (stockQuantity>0)
+  11. Has Video      — ToggleFilter (hasVideo==true)
+  12. Featured Only  — ToggleFilter (featured==true) — admin/seller only
+  13. Status         — FilterFacetSection (admin/seller only)
+
+URL params written: category, subcategory, brand, condition, minPrice, maxPrice, minRating,
+                    sellerId, features, tags, inStock, hasVideo, featured, status
+Search bar: q → title _=  or  id ==  or  slug ==
+```
+
+---
+
+### 15.4 AuctionFilters
+
+**Location**: `src/features/products/components/AuctionFilters.tsx`
+
+```
+Props:
+  table: UrlTable
+  categoryOptions?: FacetOption[]
+  brandOptions?: FacetOption[]
+  sellerOptions?: FacetOption[]
+
+Filter groups (all defaultCollapsed):
+  1. Auction Status  — FilterFacetSection [upcoming/live/ended], static
+  2. Time Left       — FilterFacetSection with preset ranges:
+                         • Ending < 1 hour  → endBefore={now+1h}
+                         • Ending today     → endBefore={endOfToday}
+                         • Ending this week → endBefore={endOfWeek}
+                       (writes auctionStatus + endBefore params)
+  3. Category        — FilterFacetSection, dynamic, searchable
+  4. Brand           — FilterFacetSection, dynamic, searchable
+  5. Current Bid     — RangeFilter (minBid / maxBid, prefix ₹)
+  6. Starting Bid    — RangeFilter (minStartBid / maxStartBid, prefix ₹)
+  7. Bid Count       — RangeFilter (minBidCount / maxBidCount)
+  8. Has Reserve     — ToggleFilter (hasReserve==true)
+  9. Buy Now Only    — ToggleFilter (buyNowPrice>0)
+  10. Seller         — FilterFacetSection, dynamic, searchable
+  11. Auto-Extend    — ToggleFilter (autoExtendable==true)
+
+URL params written: auctionStatus, endBefore, category, brand, minBid, maxBid,
+                    minStartBid, maxStartBid, minBidCount, hasReserve, hasBuyNow,
+                    sellerId, autoExtendable
+Search bar: q → title _=  or  id ==
+```
+
+---
+
+### 15.5 CategoryFilters
+
+**Location**: `src/features/categories/components/CategoryFilters.tsx`
+
+```
+Props:
+  table: UrlTable
+  parentOptions?: FacetOption[]          // tier-1 + tier-2 category names
+  showAdminFields?: boolean              // shows isActive, hasImage filters
+
+Filter groups (all defaultCollapsed):
+  1. Tier / Level    — FilterFacetSection [Root (1) / Sub (2) / Leaf (3)], static
+  2. Parent Category — FilterFacetSection, dynamic, searchable
+  3. Product Count   — RangeFilter (minProducts / maxProducts)
+  4. Featured Only   — ToggleFilter (isFeatured==true)
+  5. Has Items Only  — ToggleFilter (metrics.productCount>0)
+  6. Active Only     — ToggleFilter (isActive==true) — admin only
+  7. Has Image       — ToggleFilter (hasImage==true) — admin only
+
+URL params written: tier, parentId, minProducts, maxProducts, isFeatured, hasItems, isActive, hasImage
+Search bar: q → name _=  or  id ==  or  slug ==
+```
+
+---
+
+### 15.6 StoreFilters
+
+**Location**: `src/features/stores/components/StoreFilters.tsx`
+
+```
+Props:
+  table: UrlTable
+  categoryOptions?: FacetOption[]        // primary category options
+  locationOptions?: FacetOption[]        // city/region options
+
+Filter groups (all defaultCollapsed):
+  1. Store Status    — FilterFacetSection [active/pending/suspended], static (admin only)
+  2. Rating          — StarRatingFilter (minRating)
+  3. Products Listed — RangeFilter (minProducts / maxProducts)
+  4. Primary Category— FilterFacetSection, dynamic, searchable
+  5. Location        — FilterFacetSection, dynamic, searchable
+  6. Verified Only   — ToggleFilter (isVerified==true)
+
+URL params written: storeStatus, minRating, minProducts, maxProducts, primaryCategory, location, isVerified
+Search bar: q → storeName _=  or  displayName _=  or  uid ==
+```
+
+---
+
+### 15.7 BlogFilters
+
+**Location**: `src/features/blog/components/BlogFilters.tsx`
+
+```
+Props:
+  table: UrlTable
+  categoryOptions?: FacetOption[]
+  tagOptions?: FacetOption[]
+  authorOptions?: FacetOption[]
+  destinationOptions?: FacetOption[]     // travel destination facet
+  showStatus?: boolean                   // author/admin only
+
+Filter groups (all defaultCollapsed):
+  1. Category/Topic  — FilterFacetSection, dynamic, searchable
+  2. Tags            — FilterFacetSection, dynamic, searchable (multi-select)
+  3. Author          — FilterFacetSection, dynamic, searchable
+  4. Destination     — FilterFacetSection, dynamic, searchable (travel context)
+  5. Read Time       — RangeFilter (minReadTime / maxReadTime, suffix "min")
+  6. Published Date  — DateRangeFilter (dateFrom / dateTo → publishedAt)
+  7. Featured Only   — ToggleFilter (isFeatured==true)
+  8. Has Video       — ToggleFilter (hasVideo==true)
+  9. Status          — FilterFacetSection [published/draft/archived] — author/admin only
+
+URL params written: category, tags, authorId, destination, minReadTime, maxReadTime,
+                    dateFrom, dateTo, isFeatured, hasVideo, status
+Search bar: q → title _=  or  id ==  or  slug ==
+```
+
+---
+
+### 15.8 EventFilters
+
+**Location**: `src/features/events/components/EventFilters.tsx`
+
+```
+Props:
+  table: UrlTable
+  tagOptions?: FacetOption[]
+  showAdminFields?: boolean
+
+Filter groups (all defaultCollapsed):
+  1. Event Type      — FilterFacetSection [contest/poll/survey/quiz/challenge], static
+  2. Status          — FilterFacetSection [upcoming/live/ended] for public;
+                       + draft/cancelled for admin
+  3. Date Range      — DateRangeFilter (dateFrom / dateTo → startsAt)
+  4. Tags/Topics     — FilterFacetSection, dynamic, searchable
+  5. Featured Only   — ToggleFilter (isFeatured==true)
+  6. Public Only     — ToggleFilter (isPublic==true) — admin only
+  7. Has Prize        — ToggleFilter (prizePool>0)
+  8. Open Spots      — ToggleFilter (hasOpenSpots==true) — entries < maxEntries
+
+URL params written: type, status, dateFrom, dateTo, tags, isFeatured, isPublic, hasPrize, hasOpenSpots
+Search bar: q → title _=  or  id ==  or  slug ==
+```
+
+---
+
+### 15.9 OrderFilters
+
+**Location**: `src/features/user/components/OrderFilters.tsx`  
+*(Consumed by `UserOrdersView`, `SellerOrdersView`, `AdminOrdersView` — role variant controlled via props)*
+
+```
+Props:
+  table: UrlTable
+  sellerOptions?: FacetOption[]          // admin only
+  productOptions?: FacetOption[]         // dynamic
+  showAdminFields?: boolean              // unlocks admin-only groups
+  showSellerFields?: boolean             // unlocks seller-only groups
+
+Filter groups (all defaultCollapsed):
+  1. Order Status    — FilterFacetSection
+                       [pending/confirmed/processing/shipped/delivered/cancelled/disputed]
+  2. Payment Status  — FilterFacetSection [pending/paid/failed/refunded]
+  3. Payment Method  — FilterFacetSection [online/cod/wallet]
+  4. Date Range      — DateRangeFilter (dateFrom / dateTo → orderDate)
+  5. Price Range     — RangeFilter (minPrice / maxPrice, prefix ₹)
+  6. Product         — FilterFacetSection, dynamic, searchable
+  7. Seller          — FilterFacetSection, dynamic, searchable (user + admin; hidden on seller's own page)
+  8. Shipping Method — FilterFacetSection [standard/express/pickup] — seller + admin
+  9. Disputed Only   — ToggleFilter (isDisputed==true) — admin only
+  10. Coupon Used    — ToggleFilter (couponCode!=null) — admin only
+
+URL params written: status, paymentStatus, paymentMethod, dateFrom, dateTo,
+                    minPrice, maxPrice, productId, sellerId, shippingMethod, isDisputed
+Search bar: q → productTitle _=  or  id ==  or  userName _=
+```
+
+---
+
+### 15.10 Filter Component Placement Summary
+
+| Component | Location | Used by |
+|-----------|----------|---------|
+| `RangeFilter` | `src/components/filters/` ✅ | All filter forms |
+| `DateRangeFilter` 🆕 | `src/components/filters/` | ReviewFilters, BlogFilters, EventFilters, OrderFilters |
+| `ToggleFilter` 🆕 | `src/components/filters/` | ProductFilters, AuctionFilters, StoreFilters, etc. |
+| `StarRatingFilter` 🆕 | `src/components/filters/` | ReviewFilters, ProductFilters, StoreFilters |
+| `ProductFilters` (moved) | `src/features/products/components/` | ProductsView, SearchView (products tab) |
+| `AuctionFilters` 🆕 | `src/features/products/components/` | AuctionsView, SearchView (auctions tab) |
+| `ReviewFilters` 🆕 | `src/features/reviews/components/` | ReviewsListView, AdminReviewsView, SellerReviewsView |
+| `CategoryFilters` 🆕 | `src/features/categories/components/` | CategoriesListView, AdminCategoriesView |
+| `StoreFilters` 🆕 | `src/features/stores/components/` | StoresListView, SearchView (stores tab) |
+| `BlogFilters` 🆕 | `src/features/blog/components/` | BlogListView, AdminBlogView, SearchView (blogs tab) |
+| `EventFilters` 🆕 | `src/features/events/components/` | EventsListView, AdminEventsView, SearchView (events tab) |
+| `OrderFilters` 🆕 | `src/features/user/components/` | UserOrdersView, SellerOrdersView, AdminOrdersView |
+
+All Tier 1 filter primitives are exported from `src/components/filters/index.ts` and re-exported from `src/components/index.ts`.
+
+---
+
+## 16. Global Search Architecture
+
+### 16.1 Overview
+
+The global search is a site-wide feature that indexes all public content types and presents results in a **tabbed listing layout**. It is distinct from the per-page filters described in §15 — global search crosses resource boundaries.
+
+```
+ Header Search Input (present on every page)
+   ├── Live suggestions dropdown (fires after 300 ms debounce)
+   │     ├── Products group      (top 3 matches)
+   │     ├── Auctions group      (top 3 matches)
+   │     ├── Categories group    (top 3 matches)
+   │     ├── Stores group        (top 3 matches)
+   │     ├── Blogs group         (top 3 matches)
+   │     ├── Events group        (top 3 matches)
+   │     └── Site Pages group    (matched from static SITE_PAGES map — "All" tab only)
+   │
+   ├── "View all results for X"  →  /search?q=X&type=all
+   └── Per-group "See all Products/Auctions/..."  →  /search?q=X&type=products
+```
+
+### 16.2 Search Results Page (`/[locale]/search`)
+
+**URL params**: `q` (query), `type` (active tab), plus per-type filter params.
+
+**Tab bar**:
+
+| Tab key | Label | Content |
+|---------|-------|---------|
+| `all` | All | Mixed top results from every type (no filters, no pagination) + site page shortcuts |
+| `products` | Products | Full `ProductsView` with `ProductFilters` |
+| `auctions` | Auctions | Full `AuctionsView` with `AuctionFilters` |
+| `categories` | Categories | Full `CategoriesListView` with `CategoryFilters` |
+| `stores` | Stores | Full `StoresListView` with `StoreFilters` |
+| `reviews` | Reviews | Full `ReviewsListView` with `ReviewFilters` |
+| `blogs` | Blogs | Full `BlogListView` with `BlogFilters` |
+| `events` | Events | Full `EventsListView` with `EventFilters` |
+
+Tab state lives in URL: `?type=products`. Switching tab resets page to 1 but preserves `q`. Filters are tab-scoped — each type has its own filter param namespace so switching tabs does not bleed params.
+
+### 16.3 "All" Tab — Mixed Results
+
+The "All" tab shows fast, non-paginated previews of the top N results per type. It is NOT filtered or paginated — it is a discovery view.
+
+```
+Layout:
+  ┌─ Site Page Shortcuts  (if any pages match the query)
+  │    e.g. "my orders" → card with link to /user/orders (requires auth)
+  │    e.g. "seller dashboard" → /seller/dashboard (requires seller role)
+  │
+  ├─ Products  (top 6, 3-col grid)  →  "See all X products" link
+  ├─ Auctions  (top 4, 4-col grid)  →  "See all X auctions" link
+  ├─ Categories (top 6, icon list)  →  "See all X categories" link
+  ├─ Stores    (top 4, card strip)  →  "See all X stores" link
+  ├─ Blogs     (top 4, 2-col grid)  →  "See all X posts" link
+  └─ Events    (top 6, card list)   →  "See all X events" link
+```
+
+No `FilterDrawer` is shown on the "All" tab. The `Search` component in `AdminFilterBar` is replaced by the global search bar.
+
+### 16.4 Site Page Suggestions (Static Map)
+
+A static constant `SITE_PAGES` lives at `src/constants/site-pages.ts`:
+
+```ts
+// Pattern — each entry has a label, route, requiredRole,
+// and a list of keyword aliases that trigger suggestion display
+export const SITE_PAGES: SitePageEntry[] = [
+  { label: 'My Orders',          route: ROUTES.USER.ORDERS,       requiredRole: 'user',   keywords: ['my orders', 'order history', 'purchases'] },
+  { label: 'My Wishlist',         route: ROUTES.USER.WISHLIST,     requiredRole: 'user',   keywords: ['wishlist', 'saved items', 'favorites'] },
+  { label: 'My Addresses',        route: ROUTES.USER.ADDRESSES,    requiredRole: 'user',   keywords: ['address', 'delivery address', 'shipping'] },
+  { label: 'Seller Dashboard',    route: ROUTES.SELLER.DASHBOARD,  requiredRole: 'seller', keywords: ['seller dashboard', 'my store', 'sales'] },
+  { label: 'Seller Orders',       route: ROUTES.SELLER.ORDERS,     requiredRole: 'seller', keywords: ['seller orders', 'my orders', 'fulfil'] },
+  { label: 'Admin Dashboard',     route: ROUTES.ADMIN.DASHBOARD,   requiredRole: 'admin',  keywords: ['admin', 'dashboard'] },
+  { label: 'Admin Products',      route: ROUTES.ADMIN.PRODUCTS,    requiredRole: 'admin',  keywords: ['admin products', 'manage products'] },
+  // … full list covers all major routes
+];
+```
+
+Matching logic: fuzzy substring match — `query.toLowerCase()` contained in any `keyword`. Shown only as suggestions in the dropdown, not as actual search results. Role check against `useAuth().user.role` before including in the list.
+
+### 16.5 Search API Endpoints
+
+All search requests go through `src/app/api/search/route.ts`:
+
+```
+GET /api/search?q=shoes&type=products&category=footwear&page=1&pageSize=24
+GET /api/search?q=shoes&type=all&pageSize=6      ← top N per type (no pagination)
+GET /api/search?q=shoes&type=auctions&auctionStatus=live
+```
+
+The `type` param routes to the appropriate repository `.list()` call with the `q` param mapped to `title_=shoes` (starts-with). For "all", the route fires N parallel repository calls and merges the top results.
+
+### 16.6 Feature Module: `src/features/search/`
+
+```
+src/features/search/
+  components/
+    SearchView.tsx              ← results page (tabbed, uses ListingLayout)
+    SearchAllTab.tsx            ← mixed results grid for type=all
+    SearchTabBar.tsx            ← tab strip (Products / Auctions / etc.)
+    SearchSuggestions.tsx       ← dropdown shown from header input
+    SitePageSuggestion.tsx      ← single site-page shortcut card in suggestions
+  hooks/
+    useSearchResults.ts         ← useApiQuery wrapping searchService
+    useSearchSuggestions.ts     ← debounced suggestion query
+    useSitePageMatches.ts       ← static keyword matching against SITE_PAGES
+  services/
+    search.service.ts           ← apiClient calls to /api/search
+  types/
+    SearchTab.ts                ← 'all' | 'products' | 'auctions' | ...
+    SearchResult.ts             ← union of result types
+  index.ts
+```
+
+`SearchView` composes the correct filter component (from §15) for each tab. On the "all" tab, no filter drawer is shown.
+
+### 16.7 Search State in URL
+
+```
+/search?q=shoes                           ← "all" tab, default
+/search?q=shoes&type=products             ← products tab, no extra filters
+/search?q=shoes&type=products&category=footwear&minPrice=500&sorts=-createdAt&page=2
+```
+
+`useUrlTable` is used for all tab state. Tab changes call `table.set('type', tab)` which resets `page` to 1 but preserves `q`. Filter changes within a tab reset `page` to 1 automatically (built-in `useUrlTable` behaviour). The `type` param is excluded from the page-reset guard (same treatment as `view`).
+
+### 16.8 Accessibility & SEO
+
+- Each tab panel has `role="tabpanel"` with `aria-labelledby` pointing to its tab button.  
+- `<title>` and `<meta name="description">` are generated by `generateMetadata` using the `q` and `type` params.  
+- Results pages render with `noindex` when `q` is empty; indexed when `q` is non-empty and `type` is a specific tab.
+
+---
+
+## 17. URL Navigation & Back-Button Behaviour
+
+### 17.1 Core Principle — Everything in the URL
+
+All list state (search query, filters, sort, pagination, view mode, active tab) lives in URL query params via `useUrlTable`. This is what makes the back-button work correctly for free — the browser restores the previous URL, which restores the full state, with no extra code.
+
+```
+/products?q=trek&category=hiking&brand=osprey&minPrice=500&sorts=-createdAt&page=2&view=grid
+/search?q=shoes&type=products&category=footwear&page=1
+/[locale]/stores?minRating=4&isVerified=true&sorts=-stats.totalSales
+```
+
+### 17.2 Public Listing Page — Click Behaviour
+
+Items on public listing pages (products, auctions, categories, stores, blog, events, search results) are **standard HTML links**. This gives correct behaviour for free:
+
+| Action | Behaviour |
+|--------|-----------|
+| Left click | Same tab — browser navigates, pushes to history |
+| Ctrl+Click (Windows/Linux) | New tab |
+| Cmd+Click (Mac) | New tab |
+| Middle-click | New tab |
+| Back button | Previous URL restored → all filters preserved |
+| Forward button | Forward URL restored |
+| Bookmark | Bookmarks the current filters + page |
+| Share URL | Full filter state shareable |
+
+**Implementation pattern** — item cards must use a real `<a>` element, not an `onClick` with `router.push()`:
+
+```tsx
+// WRONG — onClick navigation: Ctrl+click and back button break
+<div onClick={() => router.push(ROUTES.PRODUCTS.DETAIL(slug))} className="cursor-pointer">
+  <ProductCard product={product} />
+</div>
+
+// WRONG — wrapping anchor that has no href (React key trick)
+<div role="button" onClick={...}>
+
+// RIGHT — card is wrapped in a TextLink (renders <a href="...">)
+<TextLink href={ROUTES.PRODUCTS.DETAIL(slug)} className="block group" aria-label={product.title}>
+  <ProductCard product={product} />
+</TextLink>
+
+// RIGHT — article with an overlay link (preferred for complex cards with multiple clickable zones)
+<Article className="relative group">
+  <TextLink
+    href={ROUTES.PRODUCTS.DETAIL(slug)}
+    className="absolute inset-0 z-0"
+    aria-label={product.title}
+  />
+  {/* interactive child elements (wishlist, add-to-cart) get z-10 to sit above the overlay */}
+  <WishlistButton productId={product.id} className="relative z-10" />
+  <AddToCartButton product={product} className="relative z-10" />
+</Article>
+```
+
+The overlay-link pattern is the standard for cards that have multiple interactive elements. Accessibility note: the overlay `TextLink` must have a descriptive `aria-label` (the item title). Inner interactive elements must have explicit `aria-label` and be raised above the overlay via `relative z-10`.
+
+### 17.3 Admin / Seller / User Pages — Click Behaviour
+
+These pages intentionally diverge from the public pattern because actions open drawers instead of navigating:
+
+| Interaction | Behaviour |
+|-------------|-----------|
+| Row click on a `DataTable` row | Opens `SideDrawer` (edit/detail — no navigation) |
+| "View" action in row actions menu | Navigates to external detail page in same tab |
+| "Open in new tab" action | `window.open(ROUTES.PRODUCTS.DETAIL(slug), '_blank', 'noopener')` |
+| Filter / sort / pagination changes | `router.replace()` — no new history entry |
+
+The distinction: admin/seller/user pages use `router.replace()` for all filter state changes (via `useUrlTable`) and `router.push()` only for deliberate navigation (Create → Edit page). This prevents the history stack from filling up with filter changes.
+
+### 17.4 Back-Button State Guarantee
+
+Because `useUrlTable` always writes state to the URL (via `router.replace()`), the back button restores the exact URL the user was on before navigating to a detail page — filters, sort, page number, and view mode are all preserved without any localStorage or session storage.
+
+What this means in practice:
+1. User is on `/products?category=hiking&minPrice=500&page=3` 
+2. User clicks a product → navigates to `/products/my-product`
+3. User clicks back → browser restores `/products?category=hiking&minPrice=500&page=3`
+4. `useUrlTable` reads those params → the same filtered, paginated list appears
+
+No special "save-and-restore" code is needed. This is a direct consequence of the URL-first state design.
+
+### 17.5 Scroll Restoration
+
+Next.js App Router restores scroll position by default when navigating back. For infinite-scroll or virtual-scroll lists, scroll position must be manually saved. The recommendation:
+
+- **Paginated lists** (the default): scroll restoration is automatic.
+- **Infinite scroll lists** (if introduced): save scroll position to `sessionStorage` keyed by the full URL string before navigating away; restore on mount if `sessionStorage` entry exists.
+
+### 17.6 Filter Drawer — Open State
+
+The `FilterDrawer` open/close state is **local `useState`** — not in the URL. This is intentional: the drawer being open or closed is a transient UI state that should not be bookmarked or shared. The filter *values* inside the drawer are always in the URL.
+
+---
+
+## 18. Bulk Actions Matrix
+
+### 18.1 Design Principles
+
+1. **Never show bulk actions on public-facing pages** (product listing, stores, search, categories, blog, events). Bulk selection is a management tool — public users do not select multiple items.
+2. **The `BulkActionBar` Tier-1 component is generic** — it accepts an `actions` array. Feature views build that array dynamically based on `useAuth().user.role` and the current page context.
+3. **Action availability depends on the selected items' state**, not just the user's role. For example, "Cancel Order" is only enabled when all selected orders have status `pending` or `confirmed`.
+4. **Destructive actions require confirmation** via `ConfirmDeleteModal` — never silently delete.
+5. **Bulk export is always safe** and requires no confirmation.
+
+### 18.2 BulkActionBar — Generic Contract
+
+```tsx
+// src/components/ui/BulkActionBar.tsx  (already exists — Tier 1)
+interface BulkAction {
+  id: string;
+  label: string;                        // translated by the feature view
+  icon?: ReactNode;
+  variant?: 'primary' | 'danger' | 'secondary';
+  onClick: (selectedIds: string[]) => void;
+  disabled?: boolean;                   // derived from selected items' state
+  requiresConfirm?: boolean;            // true → ConfirmDeleteModal shown first
+  confirmMessage?: string;
+}
+```
+
+The feature view builds the `actions` array, calling `useApiMutation` hooks for each action. No role logic ever lives inside `BulkActionBar` itself.
+
+### 18.3 Products Bulk Actions
+
+| Action | Admin | Seller (own items) | Public |
+|--------|:-----:|:-----------------:|:------:|
+| Publish selected | ✓ | ✓ | — |
+| Archive selected | ✓ | ✓ | — |
+| Feature / Unfeature | ✓ | — | — |
+| Delete selected | ✓ | ✓ (draft only) | — |
+| Export CSV | ✓ | ✓ | — |
+| Assign category | ✓ | — | — |
+
+**State constraint**: "Publish" disabled if any selected item is already published. "Delete" disabled if any selected item has associated orders.
+
+### 18.4 Auctions Bulk Actions
+
+| Action | Admin | Seller (own items) | Public |
+|--------|:-----:|:-----------------:|:------:|
+| Extend deadline | ✓ | ✓ (live only) | — |
+| Cancel selected | ✓ | ✓ (upcoming only) | — |
+| Archive ended | ✓ | ✓ (ended only) | — |
+| Feature / Unfeature | ✓ | — | — |
+| Export CSV | ✓ | ✓ | — |
+
+**State constraint**: "Extend" disabled if any selected auction has already ended. "Cancel" disabled if bids exist on any selected auction (admin can override with extra confirmation).
+
+### 18.5 Reviews Bulk Actions
+
+| Action | Admin | Seller (for own products) | User (own reviews) | Public |
+|--------|:-----:|:------------------------:|:-----------------:|:------:|
+| Approve selected | ✓ | — | — | — |
+| Reject selected | ✓ | — | — | — |
+| Feature / Unfeature | ✓ | — | — | — |
+| Delete selected | ✓ | — | ✓ (own only) | — |
+| Mark as spam | ✓ | ✓ (flag to admin) | — | — |
+| Export CSV | ✓ | — | — | — |
+
+### 18.6 Orders Bulk Actions
+
+| Action | Admin | Seller (own orders) | User (own orders) | Public |
+|--------|:-----:|:------------------:|:-----------------:|:------:|
+| Mark as Processing | — | ✓ (confirmed only) | — | — |
+| Mark as Shipped | ✓ | ✓ (processing only) | — | — |
+| Mark as Delivered | ✓ | — | — | — |
+| Cancel selected | ✓ | — | ✓ (pending only) | — |
+| Request Return | — | — | ✓ (delivered only) | — |
+| Export CSV | ✓ | ✓ | — | — |
+| Assign tracking number | ✓ | ✓ | — | — |
+
+**State constraint**: "Cancel" enabled only when ALL selected orders are in `pending` or `confirmed` status. Mixed-status selections disable the action with a tooltip.
+
+### 18.7 Users Bulk Actions (Admin Only)
+
+| Action | Admin |
+|--------|:-----:|
+| Enable selected | ✓ |
+| Disable / Suspend | ✓ |
+| Assign role | ✓ |
+| Send email | ✓ |
+| Export CSV | ✓ |
+| Delete selected | ✓ (with strong confirm — "type DELETE to confirm") |
+
+### 18.8 Blogs Bulk Actions
+
+| Action | Admin | Author (own posts) | Public |
+|--------|:-----:|:-----------------:|:------:|
+| Publish selected | ✓ | ✓ (own drafts) | — |
+| Archive selected | ✓ | ✓ (own only) | — |
+| Feature / Unfeature | ✓ | — | — |
+| Delete selected | ✓ | ✓ (draft only) | — |
+| Export CSV | ✓ | — | — |
+
+### 18.9 Categories Bulk Actions (Admin Only)
+
+| Action | Admin |
+|--------|:-----:|
+| Activate selected | ✓ |
+| Deactivate selected | ✓ |
+| Feature / Unfeature | ✓ |
+| Delete selected | ✓ (leaf/empty only) |
+| Merge into another | ✓ |
+
+**State constraint**: "Delete" disabled if any selected category has products. Merged categories transfer their products to the target category.
+
+### 18.10 Events Bulk Actions (Admin Only)
+
+| Action | Admin |
+|--------|:-----:|
+| Publish selected | ✓ |
+| Close / End selected | ✓ |
+| Feature / Unfeature | ✓ |
+| Delete selected | ✓ (draft/ended only) |
+| Export entries CSV | ✓ |
+
+### 18.11 Notifications Bulk Actions (User)
+
+| Action | User |
+|--------|:----:|
+| Mark as read | ✓ |
+| Delete selected | ✓ |
+| Mark all as read | ✓ (button, not selection-based) |
+
+### 18.12 Entity-State Guard Pattern
+
+Feature views evaluate the state of selected items before enabling actions. Use a helper in the feature hook:
+
+```tsx
+// Pattern in a feature view
+const { selectedIds } = bulkState;
+const selectedItems = data.items.filter((i) => selectedIds.includes(i.id));
+
+const canCancel = selectedItems.length > 0
+  && selectedItems.every((o) => ['pending', 'confirmed'].includes(o.status));
+
+const canShip = selectedItems.length > 0
+  && selectedItems.every((o) => o.status === 'processing');
+
+const actions: BulkAction[] = [
+  {
+    id: 'cancel',
+    label: t('bulkActions.cancel'),
+    variant: 'danger',
+    disabled: !canCancel,
+    requiresConfirm: true,
+    confirmMessage: t('bulkActions.cancelConfirm', { count: selectedIds.length }),
+    onClick: (ids) => cancelMutation.mutate(ids),
+  },
+  {
+    id: 'ship',
+    label: t('bulkActions.markShipped'),
+    variant: 'primary',
+    disabled: !canShip,
+    onClick: (ids) => shipMutation.mutate(ids),
+  },
+];
+```
+
+### 18.13 Bulk Action API Endpoints
+
+Each bulk action maps to a dedicated `PATCH /api/<resource>/bulk` or `DELETE /api/<resource>/bulk` endpoint that accepts `{ ids: string[], action: string, payload?: object }`. The endpoint:
+1. Verifies the session and role.
+2. Verifies each ID belongs to the caller (sellers can only bulk-action their own items).
+3. Validates the state constraint (e.g. all orders must be in `pending` before cancelling).
+4. Executes as a Firestore batch write (≤500 items; chunked if more).
+5. Returns `{ succeeded: string[], failed: { id, reason }[] }`.
+
+Partial failures are surfaced via `useMessage()` toast: "X items updated, Y items failed."
+
+---

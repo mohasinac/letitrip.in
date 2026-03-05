@@ -162,6 +162,8 @@ class BlogRepository extends BaseRepository<BlogPostDocument> {
     readTimeMinutes: { canFilter: true, canSort: true },
     views: { canFilter: true, canSort: true },
     publishedAt: { canFilter: true, canSort: true },
+    updatedAt: { canFilter: true, canSort: true },
+    tags: { canFilter: true, canSort: false },
     createdAt: { canFilter: true, canSort: true },
   };
 

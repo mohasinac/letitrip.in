@@ -13,9 +13,8 @@ import {
 } from "@/constants";
 import type { FAQCategoryKey, StaticFAQItem } from "@/constants";
 import { useUrlTable } from "@/hooks";
-import { Button, Heading, HorizontalScroller, Span, Text } from "@/components";
+import { Button, Heading, HorizontalScroller, Search, Span, Text } from "@/components";
 import { FAQCategorySidebar } from "./FAQCategorySidebar";
-import { FAQSearchBar } from "./FAQSearchBar";
 import { FAQSortDropdown } from "./FAQSortDropdown";
 import { FAQAccordion } from "./FAQAccordion";
 import { ContactCTA } from "./ContactCTA";
@@ -118,8 +117,9 @@ export function FAQPageContent({
 
       {/* Search Bar */}
       <div className="mb-8">
-        <FAQSearchBar
-          onSearch={setSearchQuery}
+        <Search
+          value={searchQuery}
+          onChange={setSearchQuery}
           placeholder={t("searchPlaceholder")}
         />
       </div>

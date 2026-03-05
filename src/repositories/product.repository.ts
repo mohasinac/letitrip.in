@@ -276,6 +276,18 @@ class ProductRepository extends BaseRepository<ProductDocument> {
     bidCount: { canFilter: true, canSort: true },
     createdAt: { canFilter: true, canSort: true },
     updatedAt: { canFilter: true, canSort: true },
+    // auction-specific
+    auctionEndDate: { canFilter: true, canSort: true },
+    startingBid: { canFilter: true, canSort: true },
+    buyNowPrice: { canFilter: true, canSort: true },
+    minBidIncrement: { canFilter: true, canSort: false },
+    autoExtendable: { canFilter: true, canSort: false },
+    reservePrice: { canFilter: true, canSort: true },
+    // product metadata
+    tags: { canFilter: true, canSort: false },
+    features: { canFilter: true, canSort: false },
+    insurance: { canFilter: true, canSort: false },
+    currency: { canFilter: true, canSort: false },
   };
 
   /**

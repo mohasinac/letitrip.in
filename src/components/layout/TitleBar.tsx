@@ -52,7 +52,7 @@ export default function TitleBar({
   return (
     <BlockHeader
       id="title-bar"
-      className={`sticky top-0 ${zIndex.titleBar} ${layout.titleBarBg} border-b ${THEME_CONSTANTS.themed.border} backdrop-blur-lg bg-white/90 dark:bg-gray-900/90`}
+      className={`sticky top-0 ${zIndex.titleBar} ${layout.titleBarBg}`}
     >
       <div
         className={`container mx-auto ${layout.navPadding} ${layout.containerWidth} py-2 md:py-2.5 ${flex.between}`}
@@ -68,7 +68,7 @@ export default function TitleBar({
             {SITE_CONFIG.brand.shortName}
           </div>
           <Span
-            className={`text-lg md:text-xl font-bold hidden sm:block ${THEME_CONSTANTS.themed.textPrimary} group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300`}
+            className={`text-lg md:text-xl font-bold hidden sm:block ${colors.onPrimary.brandHover} transition-colors duration-300`}
           >
             {SITE_CONFIG.brand.name}
           </Span>
@@ -79,7 +79,7 @@ export default function TitleBar({
           {/* Cart - Hidden on mobile (available in bottom nav) */}
           <TextLink
             href={SITE_CONFIG.account.cart}
-            className={`hidden md:flex p-2 md:p-2.5 rounded-xl transition-colors relative items-center ${THEME_CONSTANTS.colors.iconButton.onLight}`}
+            className={`hidden md:flex p-2 md:p-2.5 rounded-xl transition-colors relative items-center ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
             aria-label={tA("cartIcon")}
           >
             <svg
@@ -105,7 +105,7 @@ export default function TitleBar({
           {/* Search - Hidden on mobile (available in bottom nav) */}
           <Button
             onClick={onSearchToggle}
-            className={`hidden md:flex p-2 md:p-2.5 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onLight}`}
+            className={`hidden md:flex p-2 md:p-2.5 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
             aria-label={tA("searchIcon")}
           >
             <svg
@@ -129,7 +129,7 @@ export default function TitleBar({
           {/* User Profile - Hidden on mobile (available in bottom nav) */}
           <TextLink
             href={SITE_CONFIG.account.profile}
-            className={`hidden md:flex items-center justify-center rounded-xl transition-colors ${user ? "" : `p-2 md:p-2.5 ${THEME_CONSTANTS.colors.iconButton.onLight}`}`}
+            className={`hidden md:flex items-center justify-center rounded-xl transition-colors ${user ? "" : `p-2 md:p-2.5 ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}`}
             aria-label={tA("userIcon")}
           >
             {user ? (
@@ -179,7 +179,7 @@ export default function TitleBar({
           {/* Hamburger Menu */}
           <Button
             onClick={onToggleSidebar}
-            className={`p-2 md:p-2.5 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onLight}`}
+            className={`p-2 md:p-2.5 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
             aria-label={sidebarOpen ? tA("closeMenu") : tA("openMenu")}
           >
             <svg

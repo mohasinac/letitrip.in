@@ -30,6 +30,9 @@ class EventRepository extends BaseRepository<EventDocument> {
     startsAt: { canFilter: true, canSort: true },
     endsAt: { canFilter: true, canSort: true },
     'stats.totalEntries': { path: 'stats.totalEntries', canFilter: true, canSort: true },
+    'stats.approvedEntries': { path: 'stats.approvedEntries', canFilter: true, canSort: true },
+    'stats.flaggedEntries': { path: 'stats.flaggedEntries', canFilter: true, canSort: true },
+    id: { canFilter: true, canSort: false },
     createdAt: { canFilter: true, canSort: true },
   };
 

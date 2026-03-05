@@ -114,7 +114,7 @@ export default function NotificationBell() {
       {/* Bell Button */}
       <Button
         onClick={handleToggle}
-        className={`hidden md:flex p-2.5 md:p-3 rounded-xl transition-colors relative ${colors.iconButton.onLight}`}
+        className={`hidden md:flex p-2.5 md:p-3 rounded-xl transition-colors relative ${colors.iconButton.onPrimary}`}
         aria-label={t("title")}
         aria-expanded={isOpen}
       >

@@ -40,7 +40,7 @@ export default function MainNavbar() {
     <Nav
       id="main-navbar"
       aria-label="Main navigation"
-      className={`hidden md:block ${layout.navbarBg} border-b ${THEME_CONSTANTS.themed.border} backdrop-blur-sm`}
+      className={`hidden md:block ${layout.navbarBg}`}
     >
       <div
         className={`container mx-auto ${layout.navPadding} ${layout.containerWidth}`}

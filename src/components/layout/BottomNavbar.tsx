@@ -36,7 +36,7 @@ interface BottomNavbarProps {
 }
 
 export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
-  const { layout, zIndex, themed, typography, utilities, flex } =
+  const { layout, zIndex, themed, typography, utilities, flex, colors } =
     THEME_CONSTANTS;
   const pathname = usePathname();
   const { user } = useAuth();
@@ -49,7 +49,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
     <Nav
       id="bottom-navbar"
       aria-label={t("mobileNav")}
-      className={`fixed bottom-0 left-0 right-0 md:hidden ${zIndex.bottomNav} ${layout.bottomNavBg} border-t ${themed.border} backdrop-blur-lg bg-white/95 dark:bg-gray-900/95 shadow-2xl ${utilities.safeAreaBottom}`}
+      className={`fixed bottom-0 left-0 right-0 md:hidden ${zIndex.bottomNav} ${layout.bottomNavBg} shadow-2xl ${utilities.safeAreaBottom}`}
     >
       <Ul
         className={`flex items-stretch ${layout.bottomNavHeight}`}
@@ -81,7 +81,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
           <Button
             variant="ghost"
             onClick={onSearchToggle}
-            className={`${flex.centerCol} gap-1 w-full h-full transition-colors duration-200 ${themed.textSecondary}`}
+            className={`${flex.centerCol} gap-1 w-full h-full transition-colors duration-200 ${colors.bottomNav.inactive}`}
             aria-label={t("search")}
           >
             <svg
@@ -111,8 +111,8 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
             variant="inherit"
             className={`${flex.centerCol} gap-1 w-full h-full transition-colors duration-200 relative ${
               pathname === SITE_CONFIG.account.cart
-                ? themed.textPrimary
-                : themed.textSecondary
+                ? colors.bottomNav.active
+                : colors.bottomNav.inactive
             }`}
             aria-label={t("cart")}
           >
@@ -142,8 +142,8 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
               variant="inherit"
               className={`${flex.centerCol} gap-1 w-full h-full transition-colors duration-200 ${
                 pathname === ROUTES.USER.PROFILE
-                  ? themed.textPrimary
-                  : themed.textSecondary
+                  ? colors.bottomNav.active
+                  : colors.bottomNav.inactive
               }`}
               aria-label={t("profile")}
             >
