@@ -8,13 +8,33 @@ import { THEME_CONSTANTS } from "@/constants";
 interface FilterDrawerProps {
   /** FilterFacetSection nodes or any filter content */
   children: ReactNode;
+  /**
+   * Controlled open state. When provided, the component does not manage
+   * its own open state — the parent controls it entirely.
+   */
+  open?: boolean;
+  /**
+   * Called when the drawer requests to be closed (X button or overlay click).
+   * Required when `open` is provided.
+   */
+  onClose?: () => void;
   /** Called when the user clicks "Apply" */
   onApply?: () => void;
-  /** Called when the user clicks "Clear all" */
+  /**
+   * Called when the user clicks "Reset all".
+   * Replaces the old `onClearAll` prop (backward-compatible alias retained).
+   */
+  onReset?: () => void;
+  /** @deprecated Use onReset instead */
   onClearAll?: () => void;
-  /** Number of currently active filters - shows a badge on the trigger */
+  /** Number of currently active (URL-committed) filters — shows a badge on the trigger */
   activeCount?: number;
-  /** Drawer heading. Defaults to UI_LABELS.FILTERS.TITLE */
+  /**
+   * Number of currently pending (uncommitted) filter selections.
+   * When > 0, shown as a numeric badge on the Apply button.
+   */
+  pendingCount?: number;
+  /** Drawer heading. Defaults to t('filters.title') */
   title?: string;
   /** Accessible label for the trigger button */
   triggerLabel?: string;
@@ -26,35 +46,59 @@ interface FilterDrawerProps {
  * FilterDrawer
  *
  * A left-side SideDrawer that contains filter facets. Includes a trigger
- * button showing an active-filter badge, and footer "Clear all" / "Apply"
+ * button showing an active-filter badge, and footer "Reset all" / "Apply"
  * actions using DrawerFormFooter.
  *
- * @example
+ * Supports two open-state modes:
+ * - **Uncontrolled** (default): manages its own `isOpen` state. Trigger button
+ *   is rendered automatically.
+ * - **Controlled**: pass `open` + `onClose` — the trigger button is NOT rendered.
+ *   The parent is responsible for opening and closing the drawer.
+ *
+ * For deferred filter apply (recommended), pair with `usePendingFilters`:
  * ```tsx
+ * const filters = usePendingFilters({ table, keys: ['status', 'category'] });
  * <FilterDrawer
- *   activeCount={activeFilters.length}
- *   onClearAll={clearAllFilters}
- *   onApply={applyFilters}
+ *   open={drawerOpen}
+ *   onClose={() => { setDrawerOpen(false); filters.reset(); }}
+ *   onApply={() => { filters.apply(); setDrawerOpen(false); }}
+ *   onReset={() => filters.clear()}
+ *   activeCount={filters.appliedCount}
+ *   pendingCount={filters.pendingCount}
  * >
- *   <FilterFacetSection title="Category" options={...} selected={...} onChange={...} />
- *   <FilterFacetSection title="Status"   options={...} selected={...} onChange={...} />
+ *   <FilterFacetSection ... />
  * </FilterDrawer>
  * ```
  */
 export function FilterDrawer({
   children,
+  open: controlledOpen,
+  onClose,
   onApply,
+  onReset,
   onClearAll,
   activeCount = 0,
+  pendingCount,
   title,
   triggerLabel,
   triggerClassName = "",
 }: FilterDrawerProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const t = useTranslations("filters");
   const tActions = useTranslations("actions");
 
   const { themed, borderRadius, spacing } = THEME_CONSTANTS;
+
+  // Controlled vs uncontrolled open state
+  const isControlled = controlledOpen !== undefined;
+  const isOpen = isControlled ? controlledOpen : internalOpen;
+  const handleClose = () => {
+    if (isControlled) {
+      onClose?.();
+    } else {
+      setInternalOpen(false);
+    }
+  };
 
   const drawerTitle =
     title ??
@@ -62,62 +106,69 @@ export function FilterDrawer({
 
   const handleApply = () => {
     onApply?.();
-    setIsOpen(false);
+    if (!isControlled) setInternalOpen(false);
   };
 
-  const handleClearAll = () => {
-    onClearAll?.();
+  // Support both onReset (new) and onClearAll (deprecated alias)
+  const handleReset = () => {
+    (onReset ?? onClearAll)?.();
   };
 
   const footer = (
     <DrawerFormFooter
-      onCancel={handleClearAll}
+      onCancel={handleReset}
       onSubmit={handleApply}
-      cancelLabel={tActions("clearAll")}
-      submitLabel={tActions("applyFilters")}
+      cancelLabel={t("resetAll")}
+      submitLabel={
+        pendingCount !== undefined && pendingCount > 0
+          ? `${tActions("applyFilters")} (${pendingCount})`
+          : tActions("applyFilters")
+      }
     />
   );
 
   return (
     <>
-      {/* Trigger button */}
-      <Button
-        type="button"
-        variant="ghost"
-        onClick={() => setIsOpen(true)}
-        aria-label={triggerLabel ?? t("title")}
-        className={`inline-flex items-center gap-2 text-sm font-medium ${themed.textPrimary} ${borderRadius.lg} border ${themed.border} ${spacing.padding.xs} px-3 hover:${themed.bgSecondary} transition-colors ${triggerClassName}`}
-      >
-        {/* Filter icon */}
-        <svg
-          className="w-4 h-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-          aria-hidden="true"
+      {/* Trigger button — only rendered in uncontrolled mode */}
+      {!isControlled && (
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => setInternalOpen(true)}
+          aria-label={triggerLabel ?? t("title")}
+          className={`inline-flex items-center gap-2 text-sm font-medium ${themed.textPrimary} ${borderRadius.lg} border ${themed.border} ${spacing.padding.xs} px-3 hover:${themed.bgSecondary} transition-colors ${triggerClassName}`}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"
-          />
-        </svg>
-        {t("title")}
-        {activeCount > 0 && (
-          <Span
-            className={`inline-flex items-center justify-center w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
-            aria-label={t("activeCount", { count: activeCount })}
+          {/* Filter icon */}
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+            aria-hidden="true"
           >
-            {activeCount}
-          </Span>
-        )}
-      </Button>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"
+            />
+          </svg>
+          {t("title")}
+          {activeCount > 0 && (
+            <Span
+              className={`inline-flex items-center justify-center w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
+              aria-label={t("activeCount", { count: activeCount })}
+            >
+              {activeCount}
+            </Span>
+          )}
+        </Button>
+      )}
 
       {/* Drawer */}
       <SideDrawer
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={handleClose}
         title={drawerTitle}
         side="left"
         mode="view"

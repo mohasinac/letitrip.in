@@ -468,7 +468,18 @@
     "activeCount": "फ़िल्टर ({count})",
     "searchIn": "{section} में खोजें...",
     "showFilters": "फ़िल्टर दिखाएँ",
-    "hideFilters": "फ़िल्टर छुपाएँ"
+    "hideFilters": "फ़िल्टर छुपाएँ",
+    "selectAll": "सभी चुनें",
+    "deselectAll": "सभी हटाएं",
+    "maxSelectionsReached": "अधिकतम {max} चयन की अनुमति है",
+    "showMore": "{count} और दिखाएं",
+    "showLess": "कम दिखाएं",
+    "clearSection": "साफ़ करें",
+    "apply": "लागू करें",
+    "resetAll": "सभी रीसेट करें",
+    "active": "{count} सक्रिय",
+    "pending": "{count} चयनित",
+    "reset": "रीसेट करें"
   },
   "listingLayout": {
     "selectedCount": "{count} चयनित",

@@ -177,3 +177,10 @@ export type { ChatMessage, UseChatReturn } from "./useChat";
 // Seller application
 export { useBecomeSeller } from "./useBecomeSeller";
 export type { BecomeSellerResult } from "./useBecomeSeller";
+
+// Phase 1 part 4: deferred filter state
+export { usePendingFilters } from "./usePendingFilters";
+export type {
+  UsePendingFiltersOptions,
+  UsePendingFiltersReturn,
+} from "./usePendingFilters";

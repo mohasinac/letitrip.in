@@ -1,9 +1,9 @@
 ﻿"use client";
 
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import { useTranslations } from "next-intl";
 import { formatNumber } from "@/utils";
-import { Button, Checkbox, Input, Span, Text } from "@/components";
+import { Button, Checkbox, Input, Span, Text, Tooltip } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 interface FacetOption {
@@ -27,15 +27,32 @@ interface FilterFacetSectionProps {
   pageSize?: number;
   /** Whether the section starts collapsed. Defaults to false. */
   defaultCollapsed?: boolean;
+  /**
+   * Cap how many values can be selected at once.
+   * Unselected options become disabled when the limit is reached.
+   * Ignored when selectionMode is 'single'. Default: unlimited.
+   */
+  maxSelections?: number;
+  /**
+   * Show a "Select all" / "Deselect all" toggle above the options list.
+   * Ignored when selectionMode is 'single'. Default: false.
+   */
+  showSelectAll?: boolean;
+  /**
+   * 'multi' (default): checkbox style — multiple values can be selected.
+   * 'single': radio style — only one value can be selected at a time.
+   */
+  selectionMode?: "multi" | "single";
   className?: string;
 }
 
 /**
  * FilterFacetSection
  *
- * A collapsible filter group with checkboxes, an optional inline search input,
- * and a "Load more" control. Designed to be composed inside FilterDrawer or
- * an inline filter panel.
+ * A collapsible filter group with checkboxes (multi) or radios (single),
+ * an optional inline search input, optional "Select all / Deselect all",
+ * and a "Load more" control. Designed to be composed inside FilterDrawer
+ * or an inline filter panel.
  *
  * @example
  * ```tsx
@@ -44,6 +61,8 @@ interface FilterFacetSectionProps {
  *   options={categoryOptions}
  *   selected={selectedCategories}
  *   onChange={setSelectedCategories}
+ *   showSelectAll
+ *   maxSelections={5}
  * />
  * ```
  */
@@ -55,12 +74,16 @@ export function FilterFacetSection({
   searchable = true,
   pageSize = 10,
   defaultCollapsed = false,
+  maxSelections,
+  showSelectAll = false,
+  selectionMode = "multi",
   className = "",
 }: FilterFacetSectionProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(pageSize);
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
 
+  const groupId = useId();
   const { themed, spacing } = THEME_CONSTANTS;
   const t = useTranslations("filters");
   const tTable = useTranslations("table");
@@ -74,42 +97,70 @@ export function FilterFacetSection({
   const visibleOptions = filteredOptions.slice(0, visibleCount);
   const hasMore = filteredOptions.length > visibleCount;
 
-  const handleToggle = (value: string) => {
-    const next = selected.includes(value)
-      ? selected.filter((v) => v !== value)
-      : [...selected, value];
-    onChange(next);
+  // Multi-select: toggle a value in/out of selected[]
+  const handleMultiToggle = (value: string) => {
+    if (selected.includes(value)) {
+      onChange(selected.filter((v) => v !== value));
+    } else {
+      if (maxSelections !== undefined && selected.length >= maxSelections)
+        return;
+      onChange([...selected, value]);
+    }
   };
 
-  /** ↑/↓ keyboard navigation between checkboxes */
+  // Single-select: replace entire selection with [value]
+  const handleSingleSelect = (value: string) => {
+    onChange([value]);
+  };
+
+  // Select all / Deselect all acts on visible (filtered) options
+  const allVisibleSelected = visibleOptions.every((o) =>
+    selected.includes(o.value),
+  );
+  const handleSelectAll = () => {
+    if (allVisibleSelected) {
+      const visibleValues = new Set(visibleOptions.map((o) => o.value));
+      onChange(selected.filter((v) => !visibleValues.has(v)));
+    } else {
+      const visibleValues = visibleOptions.map((o) => o.value);
+      const merged = Array.from(new Set([...selected, ...visibleValues]));
+      onChange(merged);
+    }
+  };
+
+  /** ↑/↓ keyboard navigation between inputs */
   const handleOptionsKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
-    const checkboxes = Array.from(
-      e.currentTarget.querySelectorAll<HTMLInputElement>(
-        'input[type="checkbox"]',
-      ),
+    const inputType = selectionMode === "single" ? 'input[type="radio"]' : 'input[type="checkbox"]';
+    const inputs = Array.from(
+      e.currentTarget.querySelectorAll<HTMLInputElement>(inputType),
     );
-    const idx = checkboxes.indexOf(document.activeElement as HTMLInputElement);
+    const idx = inputs.indexOf(document.activeElement as HTMLInputElement);
     if (idx === -1) return;
     e.preventDefault();
     if (e.key === "ArrowDown") {
-      checkboxes[(idx + 1) % checkboxes.length].focus();
+      inputs[(idx + 1) % inputs.length].focus();
     } else {
-      checkboxes[(idx - 1 + checkboxes.length) % checkboxes.length].focus();
+      inputs[(idx - 1 + inputs.length) % inputs.length].focus();
     }
   };
+
+  const limitReached =
+    selectionMode === "multi" &&
+    maxSelections !== undefined &&
+    selected.length >= maxSelections;
 
   return (
     <div
       role="group"
-      aria-labelledby={`facet-${title}`}
+      aria-labelledby={`facet-${groupId}`}
       className={`${spacing.padding.md} border-b ${themed.border} last:border-b-0 ${className}`}
     >
       {/* Section header */}
       <Button
         type="button"
         variant="ghost"
-        id={`facet-${title}`}
+        id={`facet-${groupId}`}
         onClick={() => setIsCollapsed((c) => !c)}
         className={`flex w-full items-center justify-between text-sm font-semibold ${themed.textPrimary} py-1 hover:opacity-80 transition-opacity`}
         aria-expanded={!isCollapsed}
@@ -160,20 +211,76 @@ export function FilterFacetSection({
             </div>
           )}
 
+          {/* Select all / Deselect all — multi mode only */}
+          {showSelectAll && selectionMode === "multi" && visibleOptions.length > 0 && (
+            <div className="mb-1 flex items-center justify-between">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={handleSelectAll}
+                className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline p-0 h-auto"
+              >
+                {allVisibleSelected ? t("deselectAll") : t("selectAll")}
+              </Button>
+              {selected.length > 0 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => onChange([])}
+                  className="text-xs text-gray-500 dark:text-gray-400 hover:underline p-0 h-auto"
+                >
+                  {t("clearSection")}
+                </Button>
+              )}
+            </div>
+          )}
+
           {/* Options */}
           {visibleOptions.length === 0 ? (
             <Text size="xs" variant="secondary" className="py-1">
               {tTable("noResults")}
             </Text>
+          ) : selectionMode === "single" ? (
+            // Single-select: native radio inputs
+            <div className="space-y-1">
+              {visibleOptions.map((opt) => {
+                const isChecked = selected.includes(opt.value);
+                return (
+                  <label
+                    key={opt.value}
+                    className={`flex items-center gap-2 cursor-pointer py-0.5 ${themed.textPrimary}`}
+                  >
+                    <input
+                      type="radio"
+                      name={`facet-radio-${groupId}`}
+                      value={opt.value}
+                      checked={isChecked}
+                      onChange={() => handleSingleSelect(opt.value)}
+                      className="w-3.5 h-3.5 accent-indigo-600 cursor-pointer"
+                    />
+                    <Span className="text-sm flex-1">{opt.label}</Span>
+                    {opt.count !== undefined && (
+                      <Span className={`text-xs ${themed.textSecondary} tabular-nums`}>
+                        {formatNumber(opt.count)}
+                      </Span>
+                    )}
+                  </label>
+                );
+              })}
+            </div>
           ) : (
+            // Multi-select: checkboxes
             visibleOptions.map((opt) => {
               const isChecked = selected.includes(opt.value);
-              return (
+              const isDisabled = limitReached && !isChecked;
+              const checkbox = (
                 <Checkbox
                   key={opt.value}
                   checked={isChecked}
-                  onChange={() => handleToggle(opt.value)}
+                  onChange={() => handleMultiToggle(opt.value)}
+                  disabled={isDisabled}
                   aria-checked={isChecked}
+                  aria-disabled={isDisabled}
                   className="w-3.5 h-3.5 rounded accent-indigo-600 cursor-pointer"
                   label={opt.label}
                   suffix={
@@ -187,6 +294,17 @@ export function FilterFacetSection({
                   }
                 />
               );
+              if (isDisabled && maxSelections !== undefined) {
+                return (
+                  <Tooltip
+                    key={opt.value}
+                    content={t("maxSelectionsReached", { max: maxSelections })}
+                  >
+                    <div aria-disabled="true">{checkbox}</div>
+                  </Tooltip>
+                );
+              }
+              return checkbox;
             })
           )}
 
@@ -198,7 +316,18 @@ export function FilterFacetSection({
               onClick={() => setVisibleCount((c) => c + pageSize)}
               className="mt-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
             >
-              {tTable("loadMore")}
+              {t("showMore", { count: filteredOptions.length - visibleCount })}
+            </Button>
+          )}
+          {/* Show less — only when more than one page is loaded */}
+          {visibleCount > pageSize && (
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setVisibleCount(pageSize)}
+              className="mt-1 text-xs font-medium text-gray-500 dark:text-gray-400 hover:underline"
+            >
+              {t("showLess")}
             </Button>
           )}
         </div>

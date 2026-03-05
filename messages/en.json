@@ -468,7 +468,18 @@
     "activeCount": "Filters ({count})",
     "searchIn": "Search {section}...",
     "showFilters": "Show filters",
-    "hideFilters": "Hide filters"
+    "hideFilters": "Hide filters",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "maxSelectionsReached": "Maximum {max} selections allowed",
+    "showMore": "Show {count} more",
+    "showLess": "Show less",
+    "clearSection": "Clear",
+    "apply": "Apply",
+    "resetAll": "Reset all",
+    "active": "{count} active",
+    "pending": "{count} selected",
+    "reset": "Reset"
   },
   "listingLayout": {
     "selectedCount": "{count} selected",
