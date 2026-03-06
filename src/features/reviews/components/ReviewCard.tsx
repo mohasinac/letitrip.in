@@ -10,14 +10,7 @@
 import { Star, BadgeCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import {
-  Card,
-  Caption,
-  MediaImage,
-  Span,
-  Text,
-  TextLink,
-} from "@/components";
+import { Card, Caption, MediaImage, Span, Text, TextLink } from "@/components";
 import { generateInitials } from "@/helpers";
 import type { ReviewDocument } from "@/db/schema";
 
@@ -82,7 +75,9 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
           </div>
 
           {/* Rating star — top right */}
-          <div className={`${flex.rowCenter} gap-1 px-2 py-1 rounded-full bg-yellow-50 dark:bg-yellow-900/20 flex-shrink-0`}>
+          <div
+            className={`${flex.rowCenter} gap-1 px-2 py-1 rounded-full bg-yellow-50 dark:bg-yellow-900/20 flex-shrink-0`}
+          >
             <Star
               className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400"
               aria-hidden="true"
@@ -129,7 +124,9 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
               <div
                 className={`${flex.center} w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 text-xs ${themed.textSecondary} flex-shrink-0`}
               >
-                <Caption>{t("moreImages", { count: review.images.length - 2 })}</Caption>
+                <Caption>
+                  {t("moreImages", { count: review.images.length - 2 })}
+                </Caption>
               </div>
             )}
           </div>

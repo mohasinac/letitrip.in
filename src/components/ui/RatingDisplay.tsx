@@ -2,6 +2,7 @@
 
 import { THEME_CONSTANTS } from "@/constants";
 import { classNames } from "@/helpers";
+import { Span } from "@/components";
 
 const { rating: ratingTokens } = THEME_CONSTANTS;
 
@@ -50,9 +51,12 @@ export function RatingDisplay({
         ))}
       </div>
       {showValue && (
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <Span
+          variant="inherit"
+          className="text-sm font-medium text-gray-700 dark:text-gray-300"
+        >
           {rating.toFixed(1)}
-        </span>
+        </Span>
       )}
     </div>
   );

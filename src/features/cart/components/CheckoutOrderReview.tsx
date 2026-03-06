@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import type { CartItemDocument, AddressDocument } from "@/db/schema";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
-import { Heading, Text, Span, Button, Caption } from "@/components";
+import { Heading, Text, Span, Button, Caption, Ol, Li } from "@/components";
 
 const { themed, flex } = THEME_CONSTANTS;
 
@@ -262,13 +262,13 @@ export function CheckoutOrderReview({
                     <Caption className="font-medium mb-2">
                       {t("upiInstructions")}
                     </Caption>
-                    <ol className="space-y-1 list-none">
+                    <Ol className="space-y-1 list-none">
                       {[
                         t("upiStep1"),
                         t("upiStep2", { amount: formatCurrency(subtotal) }),
                         t("upiStep3"),
                       ].map((step, i) => (
-                        <li key={i} className="flex items-start gap-2">
+                        <Li key={i} className="flex items-start gap-2">
                           <Span
                             className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold mt-0.5"
                             variant="inherit"
@@ -276,13 +276,16 @@ export function CheckoutOrderReview({
                             {i + 1}
                           </Span>
                           <Caption>{step}</Caption>
-                        </li>
+                        </Li>
                       ))}
-                    </ol>
+                    </Ol>
                   </div>
 
                   {/* Note */}
-                  <Text size="xs" className="text-amber-700 dark:text-amber-400">
+                  <Text
+                    size="xs"
+                    className="text-amber-700 dark:text-amber-400"
+                  >
                     ⚠ {t("upiPaymentNote")}
                   </Text>
                 </div>

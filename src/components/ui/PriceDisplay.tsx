@@ -1,5 +1,6 @@
 import { formatCurrency, formatPercentage } from "@/utils";
 import { classNames } from "@/helpers";
+import { Span } from "@/components";
 
 export interface PriceDisplayProps {
   amount: number;
@@ -36,16 +37,23 @@ export function PriceDisplay({
       : "text-xs line-through text-gray-400 dark:text-gray-500";
 
   return (
-    <div className={classNames("flex items-baseline flex-wrap gap-1.5", className)}>
-      <span className={priceClass}>{formatCurrency(amount, currency)}</span>
+    <div
+      className={classNames("flex items-baseline flex-wrap gap-1.5", className)}
+    >
+      <Span variant="inherit" className={priceClass}>
+        {formatCurrency(amount, currency)}
+      </Span>
       {hasDiscount && (
         <>
-          <span className={originalClass}>
+          <Span variant="inherit" className={originalClass}>
             {formatCurrency(originalAmount!, currency)}
-          </span>
-          <span className="text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-1 py-0.5 rounded">
+          </Span>
+          <Span
+            variant="inherit"
+            className="text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-1 py-0.5 rounded"
+          >
             -{formatPercentage(discountPct / 100, 0)}
-          </span>
+          </Span>
         </>
       )}
     </div>

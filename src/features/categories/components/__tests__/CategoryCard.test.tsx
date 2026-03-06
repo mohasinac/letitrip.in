@@ -14,14 +14,20 @@ jest.mock("next-intl", () => ({
 
 jest.mock("next/link", () => ({
   __esModule: true,
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
-  ),
+  default: ({
+    children,
+    href,
+  }: {
+    children: React.ReactNode;
+    href: string;
+  }) => <a href={href}>{children}</a>,
 }));
 
 jest.mock("next/image", () => ({
   __esModule: true,
-  default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />,
+  default: ({ alt, src }: { alt: string; src: string }) => (
+    <img alt={alt} src={src} />
+  ),
 }));
 
 jest.mock("@/i18n/navigation", () => ({
@@ -38,8 +44,17 @@ const baseCategory: Partial<CategoryDocument> = {
   name: "Trekking",
   slug: "trekking",
   description: "All trekking gear",
-  display: { icon: "🥾", color: undefined, coverImage: undefined, showInMenu: false, showInFooter: false },
-  metrics: { productCount: 12, totalProductCount: 12 } as CategoryDocument["metrics"],
+  display: {
+    icon: "🥾",
+    color: undefined,
+    coverImage: undefined,
+    showInMenu: false,
+    showInFooter: false,
+  },
+  metrics: {
+    productCount: 12,
+    totalProductCount: 12,
+  } as CategoryDocument["metrics"],
   isFeatured: false,
   childrenIds: [],
 };
@@ -70,7 +85,7 @@ describe("CategoryCard", () => {
 
   it("does NOT show featured star when isFeatured is false", () => {
     const { container } = render(
-      <CategoryCard category={baseCategory as CategoryDocument} />
+      <CategoryCard category={baseCategory as CategoryDocument} />,
     );
     expect(container.querySelector(".fill-yellow-900")).toBeNull();
   });
@@ -82,7 +97,7 @@ describe("CategoryCard", () => {
         selectable
         selected={false}
         onSelect={jest.fn()}
-      />
+      />,
     );
     expect(screen.getByRole("checkbox")).toBeInTheDocument();
   });
@@ -95,7 +110,7 @@ describe("CategoryCard", () => {
         selectable
         selected={false}
         onSelect={onSelect}
-      />
+      />,
     );
     await userEvent.click(screen.getByRole("checkbox"));
     expect(onSelect).toHaveBeenCalledWith("cat1", true);
@@ -112,7 +127,7 @@ describe("CategoryCard", () => {
 
   it("renders icon emoji when no coverImage", () => {
     const { container } = render(
-      <CategoryCard category={baseCategory as CategoryDocument} />
+      <CategoryCard category={baseCategory as CategoryDocument} />,
     );
     expect(container.textContent).toContain("🥾");
   });
@@ -120,7 +135,13 @@ describe("CategoryCard", () => {
   it("renders fallback emoji when no icon and no coverImage", () => {
     const noIcon = {
       ...baseCategory,
-      display: { coverImage: undefined, icon: undefined, color: undefined, showInMenu: false, showInFooter: false },
+      display: {
+        coverImage: undefined,
+        icon: undefined,
+        color: undefined,
+        showInMenu: false,
+        showInFooter: false,
+      },
     } as CategoryDocument;
     const { container } = render(<CategoryCard category={noIcon} />);
     expect(container.textContent).toContain("🗂️");

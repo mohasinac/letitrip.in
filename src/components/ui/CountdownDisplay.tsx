@@ -3,6 +3,7 @@
 import { useCountdown } from "@/hooks";
 import type { CountdownRemaining } from "@/hooks";
 import { classNames } from "@/helpers";
+import { Span } from "@/components";
 
 export interface CountdownDisplayProps {
   targetDate: Date;
@@ -49,6 +50,8 @@ export function CountdownDisplay({
   const label = remaining ? formatLabel(remaining, format) : expiredLabel;
 
   return (
-    <span className={classNames("tabular-nums", className)}>{label}</span>
+    <Span variant="inherit" className={classNames("tabular-nums", className)}>
+      {label}
+    </Span>
   );
 }

@@ -23,7 +23,7 @@ import {
 import { THEME_CONSTANTS } from "@/constants";
 import { useApiQuery, useUrlTable } from "@/hooks";
 import { reviewService } from "@/services";
-import { ReviewCard } from "@/components";
+import { ReviewCard } from "./ReviewCard";
 import type { ReviewDocument } from "@/db/schema";
 
 const PAGE_SIZE = 12;
@@ -96,8 +96,10 @@ function ReviewsListContent() {
     filtered.sort((a, b) => {
       const desc = sortParam.startsWith("-");
       const field = desc ? sortParam.slice(1) : sortParam;
-      const aVal = field === "rating" ? a.rating : new Date(a.createdAt).getTime();
-      const bVal = field === "rating" ? b.rating : new Date(b.createdAt).getTime();
+      const aVal =
+        field === "rating" ? a.rating : new Date(a.createdAt).getTime();
+      const bVal =
+        field === "rating" ? b.rating : new Date(b.createdAt).getTime();
       return desc ? bVal - aVal : aVal - bVal;
     });
 
@@ -111,7 +113,11 @@ function ReviewsListContent() {
   const totalPages = Math.ceil(displayed.length / pageSize) || 1;
 
   const sortOptions = useMemo(
-    () => REVIEW_SORT_OPTIONS_KEYS.map((o) => ({ value: o.value, label: t(o.key) })),
+    () =>
+      REVIEW_SORT_OPTIONS_KEYS.map((o) => ({
+        value: o.value,
+        label: t(o.key),
+      })),
     [t],
   );
 
@@ -196,9 +202,7 @@ function ReviewsListContent() {
               actionLabel={
                 search || ratingFilter ? tActions("clearAll") : undefined
               }
-              onAction={
-                search || ratingFilter ? handleClearFilters : undefined
-              }
+              onAction={search || ratingFilter ? handleClearFilters : undefined}
             />
           ) : (
             <div className={THEME_CONSTANTS.grid.cols3}>

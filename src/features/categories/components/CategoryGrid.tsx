@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CategoryGrid
  *
  * Renders a responsive grid of CategoryCards.

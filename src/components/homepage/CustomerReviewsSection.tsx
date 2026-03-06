@@ -4,14 +4,8 @@ import { useState, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useHomepageReviews, useSwipe } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import {
-  Button,
-  Heading,
-  ReviewCard,
-  Section,
-  Text,
-  TextLink,
-} from "@/components";
+import { Button, Heading, Section, Text, TextLink } from "@/components";
+import { ReviewCard } from "@/features/reviews";
 
 export function CustomerReviewsSection() {
   const t = useTranslations("homepage");

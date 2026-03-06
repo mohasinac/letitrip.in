@@ -13,8 +13,6 @@ import { BookOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   ActiveFilterChips,
-  BlogCard,
-  BlogFeaturedCard,
   EmptyState,
   FilterFacetSection,
   Heading,
@@ -23,9 +21,11 @@ import {
   SortDropdown,
   TablePagination,
   Text,
-  BLOG_CATEGORY_TABS,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
+import { BlogCard } from "./BlogCard";
+import { BlogFeaturedCard } from "./BlogFeaturedCard";
+import { BLOG_CATEGORY_TABS } from "./BlogCategoryTabs";
 import { THEME_CONSTANTS } from "@/constants";
 import { useUrlTable, useBlogPosts } from "@/hooks";
 

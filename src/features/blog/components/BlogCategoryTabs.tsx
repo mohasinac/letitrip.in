@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, HorizontalScroller } from "@/components/ui";
+import { Button, HorizontalScroller } from "@/components";
 import type { BlogPostCategory } from "@/db/schema";
 
 export const BLOG_CATEGORY_TABS: {

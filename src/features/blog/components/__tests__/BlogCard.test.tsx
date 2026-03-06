@@ -20,14 +20,20 @@ jest.mock("next-intl", () => ({
 
 jest.mock("next/link", () => ({
   __esModule: true,
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
-  ),
+  default: ({
+    children,
+    href,
+  }: {
+    children: React.ReactNode;
+    href: string;
+  }) => <a href={href}>{children}</a>,
 }));
 
 jest.mock("next/image", () => ({
   __esModule: true,
-  default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />,
+  default: ({ alt, src }: { alt: string; src: string }) => (
+    <img alt={alt} src={src} />
+  ),
 }));
 
 jest.mock("@/i18n/navigation", () => ({
@@ -61,7 +67,7 @@ describe("BlogCard", () => {
   it("renders the excerpt", () => {
     render(<BlogCard post={basePost as BlogPostDocument} />);
     expect(
-      screen.getByText("This is a short excerpt of the blog post.")
+      screen.getByText("This is a short excerpt of the blog post."),
     ).toBeInTheDocument();
   });
 
@@ -83,7 +89,10 @@ describe("BlogCard", () => {
   it("renders a link to the blog post", () => {
     render(<BlogCard post={basePost as BlogPostDocument} />);
     const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", expect.stringContaining("my-first-post"));
+    expect(link).toHaveAttribute(
+      "href",
+      expect.stringContaining("my-first-post"),
+    );
   });
 
   it("shows featured star when isFeatured is true", () => {
@@ -93,7 +102,9 @@ describe("BlogCard", () => {
   });
 
   it("does NOT show featured star when isFeatured is false", () => {
-    const { container } = render(<BlogCard post={basePost as BlogPostDocument} />);
+    const { container } = render(
+      <BlogCard post={basePost as BlogPostDocument} />,
+    );
     expect(container.querySelector(".fill-yellow-900")).toBeNull();
   });
 
@@ -113,7 +124,7 @@ describe("BlogCard", () => {
         selectable
         selected={false}
         onSelect={jest.fn()}
-      />
+      />,
     );
     expect(screen.getByRole("checkbox")).toBeInTheDocument();
   });
@@ -126,7 +137,7 @@ describe("BlogCard", () => {
         selectable
         selected={false}
         onSelect={onSelect}
-      />
+      />,
     );
     await userEvent.click(screen.getByRole("checkbox"));
     expect(onSelect).toHaveBeenCalledWith("post-1", true);

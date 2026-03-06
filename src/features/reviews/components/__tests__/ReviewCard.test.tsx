@@ -22,14 +22,20 @@ jest.mock("next-intl", () => ({
 
 jest.mock("next/link", () => ({
   __esModule: true,
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
-  ),
+  default: ({
+    children,
+    href,
+  }: {
+    children: React.ReactNode;
+    href: string;
+  }) => <a href={href}>{children}</a>,
 }));
 
 jest.mock("next/image", () => ({
   __esModule: true,
-  default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />,
+  default: ({ alt, src }: { alt: string; src: string }) => (
+    <img alt={alt} src={src} />
+  ),
 }));
 
 jest.mock("@/i18n/navigation", () => ({
@@ -70,7 +76,7 @@ describe("ReviewCard", () => {
   it("renders the review comment", () => {
     render(<ReviewCard review={baseReview} />);
     expect(
-      screen.getByText("These boots are very comfortable for long treks.")
+      screen.getByText("These boots are very comfortable for long treks."),
     ).toBeInTheDocument();
   });
 

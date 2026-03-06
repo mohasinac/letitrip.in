@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CategoryCard
  *
  * Displays a single category with optional image, checkbox,
@@ -37,7 +37,10 @@ export function CategoryCard({
   const href = `${ROUTES.PUBLIC.CATEGORIES}/${slug}`;
 
   return (
-    <TextLink href={href} className={`block group focus:outline-none ${className}`}>
+    <TextLink
+      href={href}
+      className={`block group focus:outline-none ${className}`}
+    >
       <Card
         className={`h-full overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200${
           selected ? " ring-2 ring-indigo-500" : ""
@@ -117,5 +120,3 @@ export function CategoryCard({
     </TextLink>
   );
 }
-
-export default CategoryCard;

@@ -1,2 +1,1 @@
-export { BlogPostView } from "./components/BlogPostView";
-export { BlogListView } from "./components/BlogListView";
+export * from "./components";

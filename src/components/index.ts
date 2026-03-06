@@ -102,12 +102,6 @@ export * from "./auctions";
 // ==================== CATEGORIES ====================
 export * from "./categories";
 
-// ==================== BLOG ====================
-export * from "./blog";
-
-// ==================== REVIEWS ====================
-export * from "./reviews";
-
 // ==================== PROMOTIONS ====================
 export * from "./promotions";
 

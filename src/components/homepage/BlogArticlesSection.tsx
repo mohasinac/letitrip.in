@@ -6,7 +6,8 @@ import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useApiQuery } from "@/hooks";
 import { blogService } from "@/services";
 import type { BlogPostDocument } from "@/db/schema";
-import { BlogCard, Button, Heading, Section, Text } from "@/components";
+import { Button, Heading, Section, Text } from "@/components";
+import { BlogCard } from "@/features/blog";
 
 const { flex } = THEME_CONSTANTS;
 

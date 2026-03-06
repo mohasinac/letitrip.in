@@ -2,7 +2,15 @@
 
 import { ReactNode, useState, useMemo } from "react";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
-import { Button, Heading, Pagination, Span, Spinner, Text } from "@/components";
+import {
+  Button,
+  Heading,
+  Label,
+  Pagination,
+  Span,
+  Spinner,
+  Text,
+} from "@/components";
 
 const { flex } = THEME_CONSTANTS;
 
@@ -315,7 +323,7 @@ export function DataTable<T extends Record<string, any>>({
                 onSelectionChange?.(
                   checked
                     ? [...selectedIds, id]
-                    : selectedIds.filter((s) => s !== id)
+                    : selectedIds.filter((s) => s !== id),
                 )
               }
             >
@@ -339,7 +347,7 @@ export function DataTable<T extends Record<string, any>>({
                 onSelectionChange?.(
                   checked
                     ? [...selectedIds, id]
-                    : selectedIds.filter((s) => s !== id)
+                    : selectedIds.filter((s) => s !== id),
                 )
               }
             >
@@ -362,7 +370,7 @@ export function DataTable<T extends Record<string, any>>({
                 onSelectionChange?.(
                   checked
                     ? [...selectedIds, id]
-                    : selectedIds.filter((s) => s !== id)
+                    : selectedIds.filter((s) => s !== id),
                 )
               }
             >
@@ -396,7 +404,7 @@ export function DataTable<T extends Record<string, any>>({
                         checked={
                           paginatedData.length > 0 &&
                           paginatedData.every((item) =>
-                            selectedIds.includes(keyExtractor(item))
+                            selectedIds.includes(keyExtractor(item)),
                           )
                         }
                         onChange={(e) => {
@@ -404,7 +412,9 @@ export function DataTable<T extends Record<string, any>>({
                           onSelectionChange?.(
                             e.target.checked
                               ? [...new Set([...selectedIds, ...pageIds])]
-                              : selectedIds.filter((id) => !pageIds.includes(id))
+                              : selectedIds.filter(
+                                  (id) => !pageIds.includes(id),
+                                ),
                           );
                         }}
                       />
@@ -487,7 +497,7 @@ export function DataTable<T extends Record<string, any>>({
                             onSelectionChange?.(
                               e.target.checked
                                 ? [...selectedIds, id]
-                                : selectedIds.filter((s) => s !== id)
+                                : selectedIds.filter((s) => s !== id),
                             );
                           }}
                         />
@@ -568,25 +578,21 @@ function SelectableCard({
       <div
         className={[
           "absolute z-10",
-          listMode
-            ? "left-2 top-1/2 -translate-y-1/2"
-            : "top-2 left-2",
+          listMode ? "left-2 top-1/2 -translate-y-1/2" : "top-2 left-2",
         ].join(" ")}
         onClick={(e) => e.stopPropagation()}
       >
-        <label className="flex items-center justify-center cursor-pointer">
+        <Label className="flex items-center justify-center cursor-pointer mb-0">
           <input
             type="checkbox"
-            className={
-              [
-                "w-4 h-4 rounded border-2 cursor-pointer",
-                "transition-all appearance-none",
-                "border-gray-300 dark:border-gray-600",
-                selected
-                  ? "border-indigo-500 bg-indigo-500"
-                  : "bg-white dark:bg-gray-800 group-hover:border-indigo-400",
-              ].join(" ")
-            }
+            className={[
+              "w-4 h-4 rounded border-2 cursor-pointer",
+              "transition-all appearance-none",
+              "border-gray-300 dark:border-gray-600",
+              selected
+                ? "border-indigo-500 bg-indigo-500"
+                : "bg-white dark:bg-gray-800 group-hover:border-indigo-400",
+            ].join(" ")}
             checked={selected}
             onChange={(e) => onToggle(id, e.target.checked)}
             aria-label="Select item"
@@ -608,7 +614,7 @@ function SelectableCard({
               />
             </svg>
           )}
-        </label>
+        </Label>
       </div>
 
       {/* Selected ring highlight */}

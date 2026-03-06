@@ -56,16 +56,22 @@ export function ProductCard({
   const [imgIdx, setImgIdx] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const { inWishlist, isLoading: wishlistLoading, toggle: toggleWishlist } =
-    useWishlistToggle(product.id, initialInWishlist);
+  const {
+    inWishlist,
+    isLoading: wishlistLoading,
+    toggle: toggleWishlist,
+  } = useWishlistToggle(product.id, initialInWishlist);
   const { mutate: addToCart, isLoading: cartLoading } = useAddToCart();
 
-  const isOutOfStock = product.status === "out_of_stock" || product.status === "sold";
+  const isOutOfStock =
+    product.status === "out_of_stock" || product.status === "sold";
   const displayPrice = product.isAuction
     ? (product.currentBid ?? product.price)
     : product.price;
   const hasVideo = Boolean(product.video?.url);
-  const allImages = [product.mainImage, ...(product.images ?? [])].filter(Boolean);
+  const allImages = [product.mainImage, ...(product.images ?? [])].filter(
+    Boolean,
+  );
   const currentSrc = allImages[imgIdx] ?? product.mainImage;
   const productHref = ROUTES.PUBLIC.PRODUCT_DETAIL(product.slug ?? product.id);
 
@@ -138,7 +144,9 @@ export function ProductCard({
 
         {/* Video play indicator — only on first image */}
         {hasVideo && imgIdx === 0 && (
-          <div className={`${position.fill} ${flex.center} pointer-events-none`}>
+          <div
+            className={`${position.fill} ${flex.center} pointer-events-none`}
+          >
             <Span className="bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center text-xs leading-none">
               ▶
             </Span>
@@ -149,8 +157,9 @@ export function ProductCard({
         {allImages.length > 1 && (
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 pointer-events-none">
             {allImages.map((_, i) => (
-              <span
+              <Span
                 key={i}
+                variant="inherit"
                 className={`rounded-full transition-all duration-200 ${i === imgIdx ? "w-3 h-1.5 bg-white" : "w-1.5 h-1.5 bg-white/60"}`}
               />
             ))}
@@ -169,13 +178,17 @@ export function ProductCard({
 
         {/* Checkbox — top-right */}
         {selectable && (
-          <button
+          <Button
+            variant="ghost"
             onClick={handleSelect}
             aria-label={isSelected ? t("deselectItem") : t("selectItem")}
-            className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/90 dark:bg-gray-800/90 flex items-center justify-center shadow border border-gray-200 dark:border-gray-600 hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors z-10"
+            className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/90 dark:bg-gray-800/90 flex items-center justify-center shadow border border-gray-200 dark:border-gray-600 hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors z-10 p-0"
           >
             {isSelected ? (
-              <span className="w-4 h-4 rounded bg-indigo-600 flex items-center justify-center">
+              <Span
+                variant="inherit"
+                className="w-4 h-4 rounded bg-indigo-600 flex items-center justify-center"
+              >
                 <svg
                   viewBox="0 0 10 8"
                   className="w-2.5 h-2 text-white"
@@ -184,13 +197,20 @@ export function ProductCard({
                   strokeWidth="1.5"
                   aria-hidden="true"
                 >
-                  <path d="M1 4l2.5 2.5L9 1" strokeLinecap="round" strokeLinejoin="round" />
+                  <path
+                    d="M1 4l2.5 2.5L9 1"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
-              </span>
+              </Span>
             ) : (
-              <span className="w-4 h-4 rounded border-2 border-gray-400 dark:border-gray-500 block" />
+              <Span
+                variant="inherit"
+                className="w-4 h-4 rounded border-2 border-gray-400 dark:border-gray-500 block"
+              />
             )}
-          </button>
+          </Button>
         )}
 
         {/* Status badges — below featured star */}
@@ -233,7 +253,8 @@ export function ProductCard({
           >
             {product.title}
           </TextLink>
-          <button
+          <Button
+            variant="ghost"
             onClick={handleWishlist}
             disabled={wishlistLoading}
             aria-label={
@@ -247,7 +268,7 @@ export function ProductCard({
               className={`w-4 h-4 transition-colors ${inWishlist ? "fill-rose-500 text-rose-500" : "text-gray-400 dark:text-gray-500"}`}
               aria-hidden="true"
             />
-          </button>
+          </Button>
         </div>
 
         {/* Description — list variant only */}
@@ -278,9 +299,9 @@ export function ProductCard({
               className="flex-1 text-xs px-2 gap-1 cursor-not-allowed opacity-60"
               disabled
             >
-              <span className="truncate">
+              <Span variant="inherit" className="truncate">
                 {product.status === "sold" ? t("sold") : t("outOfStock")}
-              </span>
+              </Span>
             </Button>
           ) : (
             <>
@@ -291,8 +312,13 @@ export function ProductCard({
                 isLoading={cartLoading}
                 onClick={handleAddToCart}
               >
-                <ShoppingCart className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
-                <span className="truncate">{t("addToCart")}</span>
+                <ShoppingCart
+                  className="w-3 h-3 flex-shrink-0"
+                  aria-hidden="true"
+                />
+                <Span variant="inherit" className="truncate">
+                  {t("addToCart")}
+                </Span>
               </Button>
               <Button
                 variant="secondary"
@@ -300,8 +326,13 @@ export function ProductCard({
                 className="flex-1 text-xs px-2 gap-1"
                 onClick={handleBuyNow}
               >
-                <Zap className="w-3 h-3 flex-shrink-0 text-emerald-400" aria-hidden="true" />
-                <span className="truncate">{t("buyNow")}</span>
+                <Zap
+                  className="w-3 h-3 flex-shrink-0 text-emerald-400"
+                  aria-hidden="true"
+                />
+                <Span variant="inherit" className="truncate">
+                  {t("buyNow")}
+                </Span>
               </Button>
             </>
           )}

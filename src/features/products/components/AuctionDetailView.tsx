@@ -21,6 +21,8 @@ import {
   TextLink,
   Accordion,
   AccordionItem,
+  Ul,
+  Li,
 } from "@/components";
 import { BidHistory } from "./BidHistory";
 import { PlaceBidForm } from "./PlaceBidForm";
@@ -65,8 +67,11 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
   const hasCurrentBid = currentBid > 0;
   const liveBidCount = rtdbBidCount ?? bids.length;
 
-  const { inWishlist, isLoading: wishlistLoading, toggle: toggleWishlist } =
-    useWishlistToggle(product?.id ?? "");
+  const {
+    inWishlist,
+    isLoading: wishlistLoading,
+    toggle: toggleWishlist,
+  } = useWishlistToggle(product?.id ?? "");
 
   // Reserve price status
   const reserveMet =
@@ -83,7 +88,10 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
               <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-2xl" />
               <div className="flex gap-2">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg shrink-0" />
+                  <div
+                    key={i}
+                    className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg shrink-0"
+                  />
                 ))}
               </div>
             </div>
@@ -127,7 +135,9 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
   }
 
   const conditionLabel = product.condition
-    ? t(`condition${product.condition.charAt(0).toUpperCase()}${product.condition.slice(1)}` as any)
+    ? t(
+        `condition${product.condition.charAt(0).toUpperCase()}${product.condition.slice(1)}` as any,
+      )
     : t("conditionNew");
 
   return (
@@ -135,7 +145,9 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
       <div className={`${page.container.xl} py-4 sm:py-6 lg:py-8`}>
         {/* ——— Breadcrumbs ——— */}
         <Breadcrumbs className="mb-4 sm:mb-6">
-          <BreadcrumbItem href={ROUTES.HOME}>{t("breadcrumbAuctions")}</BreadcrumbItem>
+          <BreadcrumbItem href={ROUTES.HOME}>
+            {t("breadcrumbAuctions")}
+          </BreadcrumbItem>
           <BreadcrumbItem href={ROUTES.PUBLIC.AUCTIONS}>
             {t("breadcrumbAuctions")}
           </BreadcrumbItem>
@@ -182,7 +194,10 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
           <div className={spacing.stack}>
             {/* Title + badges */}
             <div>
-              <Heading level={1} className="text-xl sm:text-2xl lg:text-3xl font-bold leading-tight">
+              <Heading
+                level={1}
+                className="text-xl sm:text-2xl lg:text-3xl font-bold leading-tight"
+              >
                 {product.title}
               </Heading>
               <div className="flex flex-wrap items-center gap-2 mt-2">
@@ -219,14 +234,23 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
               {product.brand && (
                 <>
                   <Span variant="muted">•</Span>
-                  <Text size="sm" variant="secondary">{product.brand}</Text>
+                  <Text size="sm" variant="secondary">
+                    {product.brand}
+                  </Text>
                 </>
               )}
             </div>
 
             {/* ——— Countdown Timer — prominent display ——— */}
-            <div className={`rounded-xl border-2 ${isEnded ? "border-gray-300 dark:border-gray-600" : isEndingSoon(remaining) ? "border-amber-400 dark:border-amber-500" : "border-indigo-400 dark:border-indigo-500"} p-4`}>
-              <Text size="xs" variant="secondary" weight="semibold" className="uppercase tracking-wider mb-2">
+            <div
+              className={`rounded-xl border-2 ${isEnded ? "border-gray-300 dark:border-gray-600" : isEndingSoon(remaining) ? "border-amber-400 dark:border-amber-500" : "border-indigo-400 dark:border-indigo-500"} p-4`}
+            >
+              <Text
+                size="xs"
+                variant="secondary"
+                weight="semibold"
+                className="uppercase tracking-wider mb-2"
+              >
                 {isEnded ? t("auctionEnded") : t("timeRemaining")}
               </Text>
               {!isEnded && remaining ? (
@@ -241,7 +265,9 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                       <Text className="text-2xl sm:text-3xl font-bold font-mono text-indigo-600 dark:text-indigo-400">
                         {String(unit.value).padStart(2, "0")}
                       </Text>
-                      <Text size="xs" variant="secondary">{unit.label}</Text>
+                      <Text size="xs" variant="secondary">
+                        {unit.label}
+                      </Text>
                     </div>
                   ))}
                 </div>
@@ -260,7 +286,9 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
             </div>
 
             {/* ——— Bid Info ——— */}
-            <div className={`${themed.bgPrimary} rounded-xl ${spacing.padding.md} ${spacing.stack}`}>
+            <div
+              className={`${themed.bgPrimary} rounded-xl ${spacing.padding.md} ${spacing.stack}`}
+            >
               <div className={flex.between}>
                 <div>
                   <Text size="xs" variant="secondary">
@@ -284,13 +312,16 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
 
               {/* Reserve price indicator */}
               {product.reservePrice && product.reservePrice > 0 && (
-                <div className={`flex items-center gap-2 text-sm ${reserveMet ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>
+                <div
+                  className={`flex items-center gap-2 text-sm ${reserveMet ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}
+                >
                   <Span>{reserveMet ? "✓" : "⚠"}</Span>
                   <Text size="sm" weight="medium">
                     {reserveMet ? t("reserveMet") : t("reserveNotMet")}
                   </Text>
                   <Text size="xs" variant="muted">
-                    ({t("reservePrice")}: {formatCurrency(product.reservePrice)})
+                    ({t("reservePrice")}: {formatCurrency(product.reservePrice)}
+                    )
                   </Text>
                 </div>
               )}
@@ -298,7 +329,9 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
               {/* Min bid increment */}
               {product.minBidIncrement && product.minBidIncrement > 0 && (
                 <Text size="xs" variant="muted">
-                  {t("minIncrement", { amount: formatCurrency(product.minBidIncrement) })}
+                  {t("minIncrement", {
+                    amount: formatCurrency(product.minBidIncrement),
+                  })}
                 </Text>
               )}
             </div>
@@ -308,26 +341,36 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
               condition={product.condition}
               isAuction
               featured={product.featured}
-              freeShipping={product.shippingPaidBy === "seller" || product.auctionShippingPaidBy === "seller"}
+              freeShipping={
+                product.shippingPaidBy === "seller" ||
+                product.auctionShippingPaidBy === "seller"
+              }
               returnable={!!product.returnPolicy}
             />
 
             {/* ——— Shipping & Insurance Info ——— */}
             <div className="flex flex-wrap gap-2">
               {/* Shipping payer */}
-              <Span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium ${themed.bgSecondary}`}>
-                📦 {t("shippingPaidBy", {
-                  payer: product.auctionShippingPaidBy === "seller"
-                    ? t("shippingBySeller")
-                    : t("shippingByWinner"),
+              <Span
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium ${themed.bgSecondary}`}
+              >
+                📦{" "}
+                {t("shippingPaidBy", {
+                  payer:
+                    product.auctionShippingPaidBy === "seller"
+                      ? t("shippingBySeller")
+                      : t("shippingByWinner"),
                 })}
               </Span>
 
               {/* Insurance badge */}
               {product.insurance && (
                 <Span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
-                  🛡️ {product.insuranceCost
-                    ? t("insuranceInfo", { cost: formatCurrency(product.insuranceCost) })
+                  🛡️{" "}
+                  {product.insuranceCost
+                    ? t("insuranceInfo", {
+                        cost: formatCurrency(product.insuranceCost),
+                      })
                     : t("insuranceIncluded")}
                 </Span>
               )}
@@ -335,7 +378,10 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
               {/* Auto-extend badge */}
               {product.autoExtendable && (
                 <Span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                  ⏱️ {t("autoExtendInfo", { minutes: product.auctionExtensionMinutes ?? 5 })}
+                  ⏱️{" "}
+                  {t("autoExtendInfo", {
+                    minutes: product.auctionExtensionMinutes ?? 5,
+                  })}
                 </Span>
               )}
             </div>
@@ -348,7 +394,11 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                 <Heading level={3} className="font-semibold mb-2">
                   {t("description")}
                 </Heading>
-                <Text size="sm" variant="secondary" className="leading-relaxed whitespace-pre-line">
+                <Text
+                  size="sm"
+                  variant="secondary"
+                  className="leading-relaxed whitespace-pre-line"
+                >
                   {product.description}
                 </Text>
               </div>
@@ -360,14 +410,16 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                 <Heading level={3} className="font-semibold mb-2">
                   {t("features")}
                 </Heading>
-                <ul className="space-y-1.5">
+                <Ul className="space-y-1.5">
                   {product.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-2">
+                    <Li key={i} className="flex items-start gap-2">
                       <Span className="text-indigo-500 mt-0.5">•</Span>
-                      <Text size="sm" variant="secondary">{feature}</Text>
-                    </li>
+                      <Text size="sm" variant="secondary">
+                        {feature}
+                      </Text>
+                    </Li>
                   ))}
-                </ul>
+                </Ul>
               </div>
             )}
 
@@ -378,8 +430,16 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                   <dl className="space-y-2">
                     {product.specifications.map((spec, i) => (
                       <div key={i} className="flex justify-between gap-4">
-                        <dt><Text size="sm" weight="medium">{spec.name}</Text></dt>
-                        <dd><Text size="sm" variant="secondary">{spec.value}</Text></dd>
+                        <dt>
+                          <Text size="sm" weight="medium">
+                            {spec.name}
+                          </Text>
+                        </dt>
+                        <dd>
+                          <Text size="sm" variant="secondary">
+                            {spec.value}
+                          </Text>
+                        </dd>
                       </div>
                     ))}
                   </dl>
@@ -390,14 +450,22 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                   <div className={spacing.stack}>
                     {product.shippingInfo && (
                       <div>
-                        <Text size="sm" weight="semibold" className="mb-1">{t("shippingInfo")}</Text>
-                        <Text size="sm" variant="secondary">{product.shippingInfo}</Text>
+                        <Text size="sm" weight="semibold" className="mb-1">
+                          {t("shippingInfo")}
+                        </Text>
+                        <Text size="sm" variant="secondary">
+                          {product.shippingInfo}
+                        </Text>
                       </div>
                     )}
                     {product.returnPolicy && (
                       <div>
-                        <Text size="sm" weight="semibold" className="mb-1">{t("returnPolicy")}</Text>
-                        <Text size="sm" variant="secondary">{product.returnPolicy}</Text>
+                        <Text size="sm" weight="semibold" className="mb-1">
+                          {t("returnPolicy")}
+                        </Text>
+                        <Text size="sm" variant="secondary">
+                          {product.returnPolicy}
+                        </Text>
                       </div>
                     )}
                   </div>
@@ -410,7 +478,9 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
           <div className="hidden lg:block">
             <div className={`sticky top-24 ${spacing.stack}`}>
               {/* Bid panel card */}
-              <div className={`${themed.bgPrimary} ${borderRadius.xl} p-5 ${spacing.stack} shadow-sm border ${themed.border}`}>
+              <div
+                className={`${themed.bgPrimary} ${borderRadius.xl} p-5 ${spacing.stack} shadow-sm border ${themed.border}`}
+              >
                 <PlaceBidForm
                   productId={product.id}
                   minimumBid={displayBid}
@@ -429,7 +499,9 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                       className="w-full"
                       disabled={isEnded}
                     >
-                      {t("buyNowAction", { price: formatCurrency(product.buyNowPrice) })}
+                      {t("buyNowAction", {
+                        price: formatCurrency(product.buyNowPrice),
+                      })}
                     </Button>
                   </>
                 )}
@@ -443,13 +515,21 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                   onClick={toggleWishlist}
                   disabled={wishlistLoading}
                 >
-                  {inWishlist ? `❤️ ${t("removeFromWishlist")}` : `🤍 ${t("addToWishlist")}`}
+                  {inWishlist
+                    ? `❤️ ${t("removeFromWishlist")}`
+                    : `🤍 ${t("addToWishlist")}`}
                 </Button>
               </div>
 
               {/* Seller card */}
-              <div className={`${themed.bgPrimary} ${borderRadius.xl} p-4 border ${themed.border}`}>
-                <Text size="xs" variant="secondary" className="uppercase tracking-wider mb-1">
+              <div
+                className={`${themed.bgPrimary} ${borderRadius.xl} p-4 border ${themed.border}`}
+              >
+                <Text
+                  size="xs"
+                  variant="secondary"
+                  className="uppercase tracking-wider mb-1"
+                >
                   {t("seller")}
                 </Text>
                 <Text weight="semibold">{product.sellerName}</Text>
@@ -465,14 +545,18 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
         </div>
 
         {/* ——— Bid History Section ——— */}
-        <div className={`${themed.bgPrimary} ${borderRadius.xl} p-4 sm:p-6 lg:p-8 mt-8 lg:mt-12`}>
+        <div
+          className={`${themed.bgPrimary} ${borderRadius.xl} p-4 sm:p-6 lg:p-8 mt-8 lg:mt-12`}
+        >
           <BidHistory bids={bids} loading={bidsQuery.isLoading} />
         </div>
       </div>
 
       {/* ——— Mobile sticky bottom bar ——— */}
       <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden">
-        <div className={`${themed.bgPrimary} border-t ${themed.border} px-4 py-3`}>
+        <div
+          className={`${themed.bgPrimary} border-t ${themed.border} px-4 py-3`}
+        >
           <div className={flex.between}>
             <div>
               <Text size="xs" variant="secondary">
@@ -488,7 +572,9 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                 size="sm"
                 onClick={toggleWishlist}
                 disabled={wishlistLoading}
-                aria-label={inWishlist ? t("removeFromWishlist") : t("addToWishlist")}
+                aria-label={
+                  inWishlist ? t("removeFromWishlist") : t("addToWishlist")
+                }
               >
                 {inWishlist ? "❤️" : "🤍"}
               </Button>
@@ -496,7 +582,11 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                 <Button
                   variant="primary"
                   size="sm"
-                  onClick={() => document.getElementById("place-bid-mobile")?.scrollIntoView({ behavior: "smooth" })}
+                  onClick={() =>
+                    document
+                      .getElementById("place-bid-mobile")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
                 >
                   {t("placeBidCta")}
                 </Button>
