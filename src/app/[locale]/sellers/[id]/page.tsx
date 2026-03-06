@@ -1,13 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import {
-  Card,
-  Alert,
-  Text,
-  SellerStorefrontView,
-  TextLink,
-} from "@/components";
+import { Card, Alert, Text, TextLink } from "@/components";
+import { SellerStorefrontView } from "@/features/seller";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useSellerStorefront } from "@/hooks";
 import { useTranslations } from "next-intl";

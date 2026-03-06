@@ -17,7 +17,6 @@ import { useTranslations } from "next-intl";
 import {
   AdminPageHeader,
   Badge,
-  BlogForm,
   Button,
   Caption,
   Card,
@@ -32,10 +31,10 @@ import {
   SortDropdown,
   StatusBadge,
   Text,
-  useBlogTableColumns,
 } from "@/components";
 import type { BlogPostDocument } from "@/db/schema";
-import type { BlogFormData } from "@/components";
+import { BlogForm, useBlogTableColumns } from ".";
+import type { BlogFormData } from ".";
 import { formatDate } from "@/utils";
 
 const { themed, typography } = THEME_CONSTANTS;

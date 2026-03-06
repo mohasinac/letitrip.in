@@ -2,7 +2,7 @@
 
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { carouselService } from "@/services";
-import type { CarouselSlide } from "@/components";
+import type { CarouselSlide } from "../components";
 
 /**
  * useAdminCarousel

@@ -82,7 +82,6 @@ export * from "./layout";
 export * from "./admin";
 
 // ==================== USER COMPONENTS ====================
-// Re-export from user subdirectory
 export * from "./user";
 
 // ==================== AUTH COMPONENTS ====================
@@ -94,22 +93,14 @@ export * from "./auth";
 export * from "./providers";
 
 // ==================== PRODUCTS ====================
-// Re-export from products subdirectory
+// Admin-only product form/types (domain views live in @/features/products)
 export * from "./products";
-
-// ==================== CART ====================
-export * from "./cart";
-
-// ==================== CHECKOUT ====================
-export * from "./checkout";
-
-// ==================== CATEGORIES ====================
-export * from "./categories";
 
 // ==================== AUCTIONS ====================
 export * from "./auctions";
-// ==================== SELLER ====================
-export * from "./seller";
+
+// ==================== CATEGORIES ====================
+export * from "./categories";
 
 // ==================== BLOG ====================
 export * from "./blog";

@@ -2,7 +2,7 @@
 
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { reviewService } from "@/services";
-import type { Review } from "@/components";
+import type { Review } from "../components";
 
 interface ReviewListMeta {
   total: number;

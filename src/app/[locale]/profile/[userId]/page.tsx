@@ -1,7 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { Card, Alert, Text, PublicProfileView, TextLink } from "@/components";
+import { Card, Alert, Text, TextLink } from "@/components";
+import { PublicProfileView } from "@/features/user";
 import { ERROR_MESSAGES, ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatMonthYear } from "@/utils";
 import { usePublicProfile } from "@/hooks";

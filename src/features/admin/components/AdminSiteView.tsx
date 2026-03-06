@@ -16,14 +16,12 @@ import {
   BackgroundSettings,
   Button,
   Card,
-  SiteBasicInfoForm,
-  SiteContactForm,
-  SiteSocialLinksForm,
   Text,
   useToast,
 } from "@/components";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { siteSettingsService } from "@/services";
+import { SiteBasicInfoForm, SiteContactForm, SiteSocialLinksForm } from ".";
 import type { SiteSettingsDocument } from "@/db/schema";
 
 export function AdminSiteView() {

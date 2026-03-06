@@ -14,6 +14,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useMessage, useUrlTable } from "@/hooks";
 import { useAdminProducts } from "@/features/admin/hooks";
 import { ROUTES } from "@/constants";
+import { formatCurrency } from "@/utils";
 import { useTranslations } from "next-intl";
 import {
   AdminPageHeader,
@@ -25,15 +26,13 @@ import {
   FilterFacetSection,
   ListingLayout,
   MediaImage,
-  ProductForm,
   Search,
   SideDrawer,
   StatusBadge,
   TablePagination,
   Text,
-  useProductTableColumns,
 } from "@/components";
-import { formatCurrency } from "@/utils";
+import { ProductForm, useProductTableColumns } from "@/components";
 import type { AdminProduct, ProductDrawerMode } from "@/components";
 
 interface AdminProductsViewProps {

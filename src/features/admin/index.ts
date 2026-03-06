@@ -25,3 +25,4 @@ export { AdminEventsView } from "./components/AdminEventsView";
 export { AdminStoresView } from "./components/AdminStoresView";
 
 export * from "./hooks";
+export * from "./components";

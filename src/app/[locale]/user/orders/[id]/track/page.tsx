@@ -10,7 +10,8 @@
 import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { useAuth, useApiQuery } from "@/hooks";
-import { Spinner, Button, EmptyState, OrderTrackingView } from "@/components";
+import { Spinner, Button, EmptyState } from "@/components";
+import { OrderTrackingView } from "@/features/user";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { orderService } from "@/services";
 import { useTranslations } from "next-intl";

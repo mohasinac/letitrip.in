@@ -21,9 +21,6 @@ import {
   Button,
   DataTable,
   AdminPageHeader,
-  getReviewTableColumns,
-  ReviewRowActions,
-  ReviewDetailView,
   StatusBadge,
   TablePagination,
   FilterFacetSection,
@@ -38,7 +35,8 @@ import {
   Text,
   Textarea,
 } from "@/components";
-import type { Review, ReviewStatus } from "@/components";
+import { getReviewTableColumns, ReviewRowActions, ReviewDetailView } from ".";
+import type { Review, ReviewStatus } from ".";
 
 const REVIEW_SORT_OPTIONS_KEYS = [
   { value: "-createdAt", key: "sortNewest" },

@@ -2,13 +2,7 @@
 
 import { useAuth } from "@/hooks";
 import { useProfileStats } from "@/hooks";
-import {
-  Heading,
-  Button,
-  Spinner,
-  ProfileHeader,
-  ProfileStatsGrid,
-} from "@/components";
+import { Heading, Button, Spinner, ProfileHeader, ProfileStatsGrid } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";

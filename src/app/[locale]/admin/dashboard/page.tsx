@@ -16,12 +16,10 @@ import {
   Heading,
   AdminStatsCards,
   AdminPageHeader,
-} from "@/components";
-import {
-  QuickActionsGrid,
   RecentActivityCard,
   AdminDashboardSkeleton,
 } from "@/components";
+import { QuickActionsGrid } from "@/features/admin";
 import { useAuth, useAdminStats } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";

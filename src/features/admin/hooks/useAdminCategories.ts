@@ -2,7 +2,7 @@
 
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { categoryService } from "@/services";
-import type { Category } from "@/components";
+import type { Category } from "../components";
 
 /**
  * useAdminCategories

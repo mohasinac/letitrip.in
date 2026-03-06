@@ -718,55 +718,71 @@ npm test                  # all pass
 
 Track each domain migration as it proceeds. Mark ✅ when complete.
 
+> **Last verified**: 2026-03-06
+
 ### Phase 0: Cleanup
 | Task | Status |
 |------|--------|
-| Delete `admin/UserFilters.tsx` (empty) | ☐ |
-| Delete `admin/FaqForm.tsx` (empty) | ☐ |
-| Delete `admin/PayoutStatusForm.tsx` (empty) | ☐ |
-| Delete `products/ProductImageGallery.tsx` (dup of `ui/ImageGallery`) | ☐ |
-| Delete `faq/FAQSearchBar.tsx` (unnecessary wrapper) | ☐ |
+| Delete `admin/UserFilters.tsx` (empty) | ✅ |
+| Delete `admin/FaqForm.tsx` (empty) | ✅ |
+| Delete `admin/PayoutStatusForm.tsx` (empty) | ✅ |
+| Delete `products/ProductImageGallery.tsx` (dup of `ui/ImageGallery`) | ☐ — file still exists |
+| Delete `faq/FAQSearchBar.tsx` (unnecessary wrapper) | ✅ |
 
-### Phase 1: New Generics
+### Phase 1: New Generics (P1-1 – P1-10)
 | Generic | Extracted From | Status |
 |---------|---------------|--------|
-| `ui/StepperNav` | `checkout/CheckoutStepper` | ☐ |
-| `ui/StatsGrid` | `user/profile/ProfileStatsGrid` | ☐ |
-| `ui/RatingDisplay` | `admin/reviews/ReviewStars` | ☐ |
-| `ui/CountdownDisplay` | `AuctionCard` pattern | ☐ |
-| `ui/PriceDisplay` | `ProductCard` pattern | ☐ |
-| `ui/ItemRow` | `cart/CartItemRow` pattern | ☐ |
-| `ui/SummaryCard` | `cart/CartSummary` pattern | ☐ |
-| Genericize `RoleBadge` | Drop `UserRole` import | ☐ |
-| Genericize `ImageUpload` | Accept handler prop | ☐ |
-| Genericize `MediaUploadField` | Accept handler prop | ☐ |
+| `ui/StepperNav` | `checkout/CheckoutStepper` | ✅ |
+| `ui/StatsGrid` | `user/profile/ProfileStatsGrid` | ✅ |
+| `ui/RatingDisplay` | `admin/reviews/ReviewStars` | ✅ |
+| `ui/CountdownDisplay` | `AuctionCard` pattern | ✅ |
+| `ui/PriceDisplay` | `ProductCard` pattern | ✅ |
+| `ui/ItemRow` | `cart/CartItemRow` pattern | ✅ |
+| `ui/SummaryCard` | `cart/CartSummary` pattern | ✅ |
+| Genericize `RoleBadge` | Drop `UserRole` import | ✅ |
+| Genericize `ImageUpload` | Accept `onUpload` handler prop | ✅ |
+| Genericize `MediaUploadField` | Accept `onUpload` handler prop | ✅ |
+
+### Phase 1: Camera + Filter Primitives (P1-11 – P1-18)
+| Item | Description | Status |
+|------|-------------|--------|
+| `hooks/useCamera` | Device camera hook (P1-11) | ✅ |
+| `ui/CameraCapture` | In-page viewfinder primitive (P1-12) | ✅ |
+| `ImageUpload captureSource` | Camera capture extension (P1-13) | ✅ |
+| `MediaUploadField captureSource` | Camera capture extension (P1-14) | ✅ |
+| `FilterFacetSection` multi-select | `maxSelections`, `showSelectAll`, `selectionMode` (P1-15) | ✅ |
+| `hooks/usePendingFilters` | Deferred filter state (P1-16) | ✅ |
+| `FilterDrawer pendingCount` | Deferred apply mode (P1-17) | ✅ |
+| `AdminFilterBar deferred` | Deferred apply + Apply/Reset buttons (P1-18) | ✅ |
+
+> ⚠️ **Rule 24 violation**: `features/admin/components/ReviewStars.tsx` is a backward-compat re-export shim (`export { RatingDisplay as ReviewStars }`). Must be deleted and all callers updated to use `RatingDisplay` directly.
 
 ### Phase 2: Move Business Directories
 | Domain | Generic Extract | Move Files | Update Imports | Delete Source | Verified |
 |--------|----------------|------------|----------------|---------------|----------|
-| admin sub-dirs | — | ☐ | ☐ | ☐ | ☐ |
-| products | ☐ PriceDisplay | ☐ | ☐ | ☐ | ☐ |
-| auctions | ☐ CountdownDisplay | ☐ | ☐ | ☐ | ☐ |
-| user | ☐ StatsGrid | ☐ | ☐ | ☐ | ☐ |
-| seller | — | ☐ | ☐ | ☐ | ☐ |
-| cart + checkout | ☐ StepperNav, ItemRow, SummaryCard | ☐ | ☐ | ☐ | ☐ |
-| blog | — | ☐ | ☐ | ☐ | ☐ |
-| categories | — | ☐ | ☐ | ☐ | ☐ |
-| reviews | ☐ RatingDisplay | ☐ | ☐ | ☐ | ☐ |
-| search | — | ☐ | ☐ | ☐ | ☐ |
-| homepage (NEW) | — | ☐ | ☐ | ☐ | ☐ |
-| faq (NEW) | — | ☐ | ☐ | ☐ | ☐ |
-| contact (NEW) | — | ☐ | ☐ | ☐ | ☐ |
-| promotions (NEW) | — | ☐ | ☐ | ☐ | ☐ |
-| about (NEW) | — | ☐ | ☐ | ☐ | ☐ |
+| admin sub-dirs | — (N/A) | ✅ | ✅ | ✅ | ✅ |
+| products | ✅ PriceDisplay | ☐ | ☐ | ☐ | ☐ |
+| auctions | ✅ CountdownDisplay | ☐ | ☐ | ☐ | ☐ |
+| user | ✅ StatsGrid | ☐ | ☐ | ☐ | ☐ |
+| seller | — (N/A) | ☐ | ☐ | ☐ | ☐ |
+| cart + checkout | ✅ StepperNav, ItemRow, SummaryCard | ☐ | ☐ | ☐ | ☐ |
+| blog | — (N/A) | ☐ | ☐ | ☐ | ☐ |
+| categories | — (N/A) | ☐ | ☐ | ☐ | ☐ |
+| reviews | ✅ RatingDisplay | ☐ | ☐ | ☐ | ☐ |
+| search | — (N/A) | ☐ | ☐ | ☐ | ☐ |
+| homepage (NEW) | — (N/A) | ☐ | ☐ | ☐ | ☐ |
+| faq (NEW) | — (N/A) | ☐ | ☐ | ☐ | ☐ |
+| contact (NEW) | — (N/A) | ☐ | ☐ | ☐ | ☐ |
+| promotions (NEW) | — (N/A) | ☐ | ☐ | ☐ | ☐ |
+| about (NEW) | — (N/A) | ☐ | ☐ | ☐ | ☐ |
 
 ### Phase 3: Misplaced UI
 | File | Destination | Status |
 |------|-------------|--------|
-| `ui/AddressSelectorCreate` | `features/user/` | ☐ |
-| `ui/CategorySelectorCreate` | `features/categories/` | ☐ |
-| `ui/EventBanner` | `features/events/` | ☐ |
-| `ui/NotificationBell` | `features/user/` | ☐ |
+| `ui/AddressSelectorCreate` | `features/user/` | ☐ — still in `ui/` |
+| `ui/CategorySelectorCreate` | `features/categories/` | ☐ — still in `ui/` |
+| `ui/EventBanner` | `features/events/` | ☐ — still in `ui/` |
+| `ui/NotificationBell` | `features/user/` | ☐ — still in `ui/` |
 
 ### Phase 4: Layout Genericization
 | File | Generic Name | Status |
@@ -780,9 +796,9 @@ Track each domain migration as it proceeds. Mark ✅ when complete.
 ### Phase 5: Barrel Cleanup
 | Task | Status |
 |------|--------|
-| Remove domain exports from `components/index.ts` | ☐ |
-| Remove admin sub-dir exports from `components/admin/index.ts` | ☐ |
-| Remove user sub-dir exports from `components/user/index.ts` | ☐ |
+| Remove domain exports from `components/index.ts` | ☐ — blocked by Phase 2 |
+| Remove admin sub-dir exports from `components/admin/index.ts` | ☐ — blocked by Phase 2 |
+| Remove user sub-dir exports from `components/user/index.ts` | ☐ — blocked by Phase 2 |
 | Verify all feature `index.ts` barrels complete | ☐ |
 
 ### Phase 6: Verification

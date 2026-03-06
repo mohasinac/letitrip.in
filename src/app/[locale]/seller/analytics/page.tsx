@@ -9,19 +9,17 @@
 
 import { useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { Spinner, Heading, Text } from "@/components";
 import {
-  Spinner,
   SellerAnalyticsStats,
   SellerRevenueChart,
   SellerTopProducts,
-  Heading,
-  Text,
-} from "@/components";
+} from "@/features/seller";
 import type {
   SellerAnalyticsSummary,
   MonthEntry,
   TopProduct,
-} from "@/components";
+} from "@/features/seller";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useAuth, useApiQuery } from "@/hooks";

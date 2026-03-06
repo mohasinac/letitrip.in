@@ -4,15 +4,15 @@ import {
   Breadcrumbs,
   BreadcrumbItem,
   Heading,
-  ProductActions,
   ProductImageGallery,
-  ProductInfo,
-  ProductReviews,
-  RelatedProducts,
   Span,
   Text,
   TextLink,
 } from "@/components";
+import { ProductActions } from "./ProductActions";
+import { ProductInfo } from "./ProductInfo";
+import { ProductReviews } from "./ProductReviews";
+import { RelatedProducts } from "./RelatedProducts";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useApiQuery } from "@/hooks";

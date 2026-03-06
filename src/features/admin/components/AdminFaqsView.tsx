@@ -22,15 +22,14 @@ import {
   Card,
   DataTable,
   DrawerFormFooter,
-  FaqForm,
   FormField,
-  getFaqTableColumns,
   SideDrawer,
   StatusBadge,
   TablePagination,
   Text,
 } from "@/components";
-import type { FAQ, FaqDrawerMode } from "@/components";
+import { FaqForm, getFaqTableColumns } from ".";
+import type { FAQ, FaqDrawerMode } from ".";
 
 interface FAQsListResponse {
   items: FAQ[];

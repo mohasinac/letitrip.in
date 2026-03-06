@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **P2-2 – P2-6: Feature-module migration (architecture)** — Migrated domain view components from `src/components/` into their respective `src/features/<domain>/components/` directories following the three-tier architecture:
+  - **P2-2 products**: `ProductInfo`, `ProductReviews`, `ProductActions`, `ProductFeatureBadges`, `RelatedProducts`, `AddToCartButton` → `features/products/components/`. `ProductCard`, `ProductGrid`, `ProductFilters`, `ProductSortBar` retained in `src/components/products/` (Tier 1 — used cross-feature).
+  - **P2-3 auctions**: `AuctionDetailView`, `BidHistory`, `PlaceBidForm` → `features/products/components/`. `AuctionCard`, `AuctionGrid` retained in new `src/components/auctions/` (Tier 1).
+  - **P2-4 user**: `UserTabs`, `NotificationItem`, `NotificationsBulkActions`, `OrderTrackingView`, `PublicProfileView` → `features/user/components/`. `AddressCard`, `AddressForm`, `WishlistButton`, `ProfileHeader`, `ProfileStatsGrid`, `EmailVerificationCard`, `PhoneVerificationCard`, `ProfileInfoForm` (+ `ProfileInfoData` type), `PasswordChangeForm`, `AccountInfoCard` retained in new `src/components/user/` (Tier 1 — explicitly listed in copilot Rule 7).
+  - **P2-5 seller**: All seller views and analytics/payout/storefront components → `features/seller/components/`.
+  - **P2-6 cart/checkout**: All cart and checkout components → `features/cart/components/`. `CheckoutView` updated to use `StepperNav` from `@/components` instead of `CheckoutStepper`.
+  - Feature barrels stripped to export views only; cross-feature import violations resolved; all feature-internal imports converted to relative paths.
+  - Fixed `CarouselSlideForm.tsx` file encoding (Windows-1252 → UTF-8).
+
 ### Added
 
 - **Public reviews page** — New route `[locale]/reviews/page.tsx` routing to `ReviewsListView` feature component with search, rating filter, sort, and pagination — all URL-driven via `useUrlTable`.

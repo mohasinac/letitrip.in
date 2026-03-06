@@ -14,12 +14,9 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";
 import { useTranslations } from "next-intl";
 import { notificationService } from "@/services";
-import {
-  Spinner,
-  EmptyState,
-  NotificationItem,
-  NotificationsBulkActions,
-} from "@/components";
+import { Spinner, EmptyState } from "@/components";
+import { NotificationItem } from "./NotificationItem";
+import { NotificationsBulkActions } from "./NotificationsBulkActions";
 import type { NotificationDocument } from "@/db/schema";
 
 const { themed, spacing, flex } = THEME_CONSTANTS;

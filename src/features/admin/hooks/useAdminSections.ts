@@ -2,7 +2,7 @@
 
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { homepageSectionsService } from "@/services";
-import type { HomepageSection } from "@/components";
+import type { HomepageSection } from "../components";
 
 /**
  * useAdminSections

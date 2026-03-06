@@ -1,9 +1,8 @@
 "use client";
 
-import { Pagination, EmptyState } from "@/components/ui";
-import { ProductGrid, ProductSortBar } from "@/components/products";
+import { Pagination, EmptyState, ProductGrid, ProductSortBar } from "@/components";
 import { useTranslations } from "next-intl";
-import type { ProductSortValue } from "@/components/products";
+import type { ProductSortValue } from "@/components";
 import type { ProductDocument } from "@/db/schema";
 
 const PAGE_SIZE = 24;

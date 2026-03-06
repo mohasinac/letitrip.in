@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { UserTabs } from "@/components";
+import { UserTabs } from "@/features/user";
 
 export const metadata = {
   title: "My Account - LetItRip",

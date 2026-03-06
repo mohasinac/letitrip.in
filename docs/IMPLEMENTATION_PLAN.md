@@ -2,7 +2,7 @@
 
 > **Source of truth**: [BUSINESS_AND_COMPONENTS.md](./BUSINESS_AND_COMPONENTS.md)  
 > **Goal**: Make `src/components/` a pure generic primitive library — zero business logic. Move all ~105 domain-coupled components into `src/features/<domain>/components/`.  
-> **Current state**: 0% complete. All business dirs still in `src/components/`.  
+> **Current state**: Phase 0 ~90% (1 deletion pending), Phase 1 100%, Phase 2 P2-1–P2-6 done / P2-7–P2-15 not started, Phase 3–5 not started. Business dirs `products/`, `auctions/`, `user/`, `seller/`, `cart/`, `checkout/` migrated; Tier 1 shared primitives (ProductCard, ProductGrid, ProductFilters, ProductSortBar, AuctionCard, AuctionGrid, AddressCard, AddressForm, WishlistButton, ProfileHeader, ProfileStatsGrid, EmailVerificationCard, PhoneVerificationCard, ProfileInfoForm, PasswordChangeForm, AccountInfoCard) retained in `src/components/` per architecture rules.  
 > **Progress tracking**: After each task commit, mark the corresponding `☐` → `✅` in [BUSINESS_AND_COMPONENTS.md §12](./BUSINESS_AND_COMPONENTS.md#12-tracking-checklist).
 
 ---
@@ -726,7 +726,7 @@ Translation keys — add under `"filters"` namespace (already defined in P1-17):
 
 ---
 
-### P2-2 · `components/products/` → `features/products/components/`
+### ✅ P2-2 · `components/products/` → `features/products/components/`
 
 **Files to move**: `ProductCard.tsx`, `ProductGrid.tsx`, `ProductFilters.tsx`, `ProductActions.tsx`, `ProductInfo.tsx`, `ProductReviews.tsx`, `ProductSortBar.tsx`, `ProductFeatureBadges.tsx`, `RelatedProducts.tsx`, `AddToCartButton.tsx`
 
@@ -738,9 +738,11 @@ Translation keys — add under `"filters"` namespace (already defined in P1-17):
 
 **Git commit**: `refactor: phase 2.2 - move product components to features/products`
 
+> **Note**: ProductCard, ProductGrid, ProductFilters, ProductSortBar retained in `src/components/products/` (Tier 1 — used across multiple features). Feature views (ProductInfo, ProductReviews, ProductActions, ProductFeatureBadges, RelatedProducts, AddToCartButton) moved to features only.
+
 ---
 
-### P2-3 · `components/auctions/` → `features/products/components/`
+### ✅ P2-3 · `components/auctions/` → `features/products/components/`
 
 > Auctions are part of the `products` feature (same domain).
 
@@ -751,9 +753,11 @@ Translation keys — add under `"filters"` namespace (already defined in P1-17):
 
 **Git commit**: `refactor: phase 2.3 - move auction components to features/products`
 
+> **Note**: AuctionCard, AuctionGrid retained in `src/components/auctions/` (Tier 1 — used by search/categories). BidHistory, PlaceBidForm, AuctionDetailView moved to features only.
+
 ---
 
-### P2-4 · `components/user/**` → `features/user/components/`
+### ✅ P2-4 · `components/user/**` → `features/user/components/`
 
 **Files to move** (flatten all sub-dirs into `features/user/components/`):
 
@@ -773,9 +777,11 @@ Translation keys — add under `"filters"` namespace (already defined in P1-17):
 
 **Git commit**: `refactor: phase 2.4 - move user components to features/user`
 
+> **Note**: AddressCard, AddressForm, WishlistButton, ProfileHeader, ProfileStatsGrid, EmailVerificationCard, PhoneVerificationCard, ProfileInfoForm, PasswordChangeForm, AccountInfoCard retained in `src/components/user/` (Tier 1 — explicitly listed in copilot Rule 7). Views (OrderTrackingView, PublicProfileView, NotificationItem, NotificationsBulkActions, UserTabs) moved to features only.
+
 ---
 
-### P2-5 · `components/seller/` → `features/seller/components/`
+### ✅ P2-5 · `components/seller/` → `features/seller/components/`
 
 **Files to move**: `SellerStorefrontView.tsx`, `SellerAnalyticsStats.tsx`, `SellerPayoutHistoryTable.tsx`, `SellerPayoutRequestForm.tsx`, `SellerPayoutStats.tsx`, `SellerRevenueChart.tsx`, `SellerTabs.tsx`, `SellerTopProducts.tsx`, `PayoutTableColumns.tsx`
 
@@ -785,7 +791,7 @@ Translation keys — add under `"filters"` namespace (already defined in P1-17):
 
 ---
 
-### P2-6 · `components/cart/` + `components/checkout/` → `features/cart/components/`
+### ✅ P2-6 · `components/cart/` + `components/checkout/` → `features/cart/components/`
 
 **Files to move from `cart/`**: `CartItemList.tsx`, `CartItemRow.tsx`, `CartSummary.tsx`, `PromoCodeInput.tsx`
 

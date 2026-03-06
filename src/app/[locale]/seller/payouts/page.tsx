@@ -9,14 +9,13 @@
 
 import { useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { Heading, Text } from "@/components";
 import {
   SellerPayoutStats,
   SellerPayoutRequestForm,
   SellerPayoutHistoryTable,
-  Heading,
-  Text,
-} from "@/components";
-import type { PayoutSummary, PayoutRecord } from "@/components";
+} from "@/features/seller";
+import type { PayoutSummary, PayoutRecord } from "@/features/seller";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";

@@ -10,17 +10,16 @@ import {
   Button,
   Caption,
   Card,
-  CarouselSlideForm,
   DataTable,
   DrawerFormFooter,
-  getCarouselTableColumns,
   MediaImage,
   SideDrawer,
   StatusBadge,
   Text,
   useToast,
 } from "@/components";
-import type { CarouselSlide, DrawerMode } from "@/components";
+import { CarouselSlideForm, getCarouselTableColumns } from ".";
+import type { CarouselSlide, DrawerMode } from ".";
 
 interface Props {
   action?: string[];

@@ -1,15 +1,11 @@
-/**
- * User Components Index
- *
- * Components for user section pages.
- */
-
-export { default as UserTabs } from "./UserTabs";
+export { AddressCard } from "./AddressCard";
+export { AddressForm } from "./AddressForm";
 export { WishlistButton } from "./WishlistButton";
-
-// Phase 3: User shared components
-export * from "./addresses";
-export * from "./settings";
-export * from "./profile";
-export * from "./notifications";
-export * from "./orders";
+export { ProfileHeader } from "./ProfileHeader";
+export { ProfileStatsGrid } from "./ProfileStatsGrid";
+export { EmailVerificationCard } from "./EmailVerificationCard";
+export { PhoneVerificationCard } from "./PhoneVerificationCard";
+export { ProfileInfoForm } from "./ProfileInfoForm";
+export type { ProfileInfoData } from "./ProfileInfoForm";
+export { PasswordChangeForm } from "./PasswordChangeForm";
+export { AccountInfoCard } from "./AccountInfoCard";

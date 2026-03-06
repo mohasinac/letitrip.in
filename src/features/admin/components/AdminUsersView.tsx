@@ -26,12 +26,10 @@ import {
   StatusBadge,
   TablePagination,
   Text,
-  UserDetailDrawer,
-  UserFilters,
   useToast,
-  useUserTableColumns,
 } from "@/components";
-import type { AdminUser, UserTab } from "@/components";
+import { UserDetailDrawer, UserFilters, useUserTableColumns } from ".";
+import type { AdminUser, UserTab } from ".";
 
 interface AdminUsersViewProps {
   action?: string[];

@@ -27,13 +27,12 @@ import {
   FilterFacetSection,
   ListingLayout,
   Search,
-  useOrderTableColumns,
-  OrderStatusForm,
   StatusBadge,
   TablePagination,
   Text,
 } from "@/components";
-import type { OrderStatusFormState } from "@/components";
+import { useOrderTableColumns, OrderStatusForm } from ".";
+import type { OrderStatusFormState } from ".";
 import type { OrderDocument } from "@/db/schema";
 import { formatCurrency, formatDate } from "@/utils";
 

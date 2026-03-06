@@ -20,14 +20,13 @@ import {
   Card,
   DataTable,
   DrawerFormFooter,
-  SectionForm,
   SideDrawer,
   StatusBadge,
   Text,
-  useSectionTableColumns,
   useToast,
 } from "@/components";
-import type { HomepageSection, SectionDrawerMode } from "@/components";
+import { SectionForm, useSectionTableColumns } from ".";
+import type { HomepageSection, SectionDrawerMode } from ".";
 
 interface AdminSectionsViewProps {
   action?: string[];

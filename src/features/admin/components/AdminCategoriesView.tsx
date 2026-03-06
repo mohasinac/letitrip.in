@@ -16,18 +16,16 @@ import {
   AdminPageHeader,
   Button,
   Card,
-  CategoryForm,
   CategoryTreeView,
   DataTable,
   DrawerFormFooter,
-  flattenCategories,
-  getCategoryTableColumns,
   ListingLayout,
   SideDrawer,
   Text,
 } from "@/components";
 import { useToast } from "@/components";
-import type { Category, CategoryDrawerMode } from "@/components";
+import { CategoryForm, flattenCategories, getCategoryTableColumns } from ".";
+import type { Category, CategoryDrawerMode } from ".";
 
 interface AdminCategoriesViewProps {
   action?: string[];

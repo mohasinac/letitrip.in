@@ -12,13 +12,13 @@ import {
   SideDrawer,
   DataTable,
   AdminPageHeader,
-  useBidTableColumns,
   TablePagination,
   Text,
   Caption,
   Span,
   StatusBadge,
 } from "@/components";
+import { useBidTableColumns } from ".";
 import { formatCurrency, formatDate } from "@/utils";
 import type { BidDocument } from "@/db/schema";
 

@@ -2,7 +2,7 @@
 
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { adminService } from "@/services";
-import type { AdminUser } from "@/components";
+import type { AdminUser } from "../components";
 
 interface UserListMeta {
   page: number;

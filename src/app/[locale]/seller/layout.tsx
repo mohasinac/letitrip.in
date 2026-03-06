@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
-import { SellerTabs, Main, Heading, Text, BlockHeader } from "@/components";
+import { Main, Heading, Text, BlockHeader } from "@/components";
+import { SellerTabs } from "@/features/seller";
 import { THEME_CONSTANTS } from "@/constants";
 
 export const metadata = {

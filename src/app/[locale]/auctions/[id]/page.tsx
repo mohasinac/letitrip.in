@@ -6,7 +6,7 @@
  */
 
 import { use } from "react";
-import { AuctionDetailView } from "@/components";
+import { AuctionDetailView } from "@/features/products";
 
 interface Props {
   params: Promise<{ id: string }>;

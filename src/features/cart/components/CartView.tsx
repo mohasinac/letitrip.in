@@ -3,13 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import type { CartDocument } from "@/db/schema";
-import {
-  CartItemList,
-  CartSummary,
-  PromoCodeInput,
-  Main,
-  Heading,
-} from "@/components";
+import { Main, Heading } from "@/components";
+import { CartItemList } from "./CartItemList";
+import { CartSummary } from "./CartSummary";
+import { PromoCodeInput } from "./PromoCodeInput";
 import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
 import { cartService } from "@/services";
 import { useTranslations } from "next-intl";

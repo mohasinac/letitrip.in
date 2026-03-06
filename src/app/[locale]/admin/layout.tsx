@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
-import { AdminTabs, Main, Heading, Text, BlockHeader } from "@/components";
+import { Main, Heading, Text, BlockHeader } from "@/components";
+import { AdminTabs } from "@/features/admin";
 import { THEME_CONSTANTS } from "@/constants";
 
 export const metadata = {

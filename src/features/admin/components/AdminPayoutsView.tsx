@@ -12,13 +12,12 @@ import {
   DataTable,
   AdminPageHeader,
   DrawerFormFooter,
-  getPayoutTableColumns,
-  PayoutStatusForm,
   StatusBadge,
   Text,
   Caption,
 } from "@/components";
-import type { PayoutStatusFormState } from "@/components";
+import { getPayoutTableColumns, PayoutStatusForm } from ".";
+import type { PayoutStatusFormState } from ".";
 import { formatCurrency, formatDate, isSameMonth, nowMs } from "@/utils";
 import type { PayoutDocument } from "@/db/schema";
 

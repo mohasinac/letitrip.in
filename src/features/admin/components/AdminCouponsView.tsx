@@ -24,10 +24,6 @@ import {
   AdminPageHeader,
   DrawerFormFooter,
   ConfirmDeleteModal,
-  getCouponTableColumns,
-  CouponForm,
-  couponToFormState,
-  formStateToCouponPayload,
   StatusBadge,
   TablePagination,
   AdminFilterBar,
@@ -35,7 +31,8 @@ import {
   Text,
 } from "@/components";
 import { formatDate } from "@/utils";
-import type { CouponFormState } from "@/components";
+import { getCouponTableColumns, CouponForm, couponToFormState, formStateToCouponPayload } from ".";
+import type { CouponFormState } from ".";
 import type { CouponDocument } from "@/db/schema";
 
 interface AdminCouponsViewProps {

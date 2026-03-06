@@ -2,7 +2,7 @@
 
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { faqService } from "@/services";
-import type { FAQ } from "@/components";
+import type { FAQ } from "../components";
 
 interface FAQsListResponse {
   items: FAQ[];

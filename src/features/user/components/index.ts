@@ -10,3 +10,8 @@ export { ChatWindow } from "./ChatWindow";
 export { ChatList } from "./ChatList";
 export { MessagesView } from "./MessagesView";
 export { BecomeSellerView } from "./BecomeSellerView";
+export { default as UserTabs } from "./UserTabs";
+export { OrderTrackingView } from "./OrderTrackingView";
+export { PublicProfileView } from "./PublicProfileView";
+export { NotificationItem } from "./NotificationItem";
+export { NotificationsBulkActions } from "./NotificationsBulkActions";
