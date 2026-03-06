@@ -43,15 +43,19 @@ describe("useAdminPayouts", () => {
     }));
   });
 
-  it("calls adminService.listPayouts with encoded filter", () => {
-    renderHook(() => useAdminPayouts("pending"));
+  it("calls adminService.listPayouts with sieve query string", () => {
+    renderHook(() =>
+      useAdminPayouts("filters=status%3D%3Dpending&sorts=-createdAt"),
+    );
     expect(adminService.listPayouts).toHaveBeenCalled();
   });
 
-  it("uses queryKey ['admin', 'payouts', statusFilter]", () => {
-    renderHook(() => useAdminPayouts("pending"));
+  it("uses queryKey ['admin', 'payouts', sieveParams]", () => {
+    renderHook(() => useAdminPayouts("filters=status%3D%3Dpending"));
     expect(useApiQuery).toHaveBeenCalledWith(
-      expect.objectContaining({ queryKey: ["admin", "payouts", "pending"] }),
+      expect.objectContaining({
+        queryKey: ["admin", "payouts", "filters=status%3D%3Dpending"],
+      }),
     );
   });
 

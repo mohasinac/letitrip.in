@@ -15,6 +15,9 @@ export const SUCCESS_MESSAGES = {
     LOGIN_SUCCESS: "Welcome back!",
     LOGOUT_SUCCESS: "You have been logged out successfully",
     REGISTER_SUCCESS: "Account created successfully",
+    GOOGLE_LOGIN_SUCCESS: "Signed in with Google successfully",
+    APPLE_LOGIN_SUCCESS: "Signed in with Apple successfully",
+    OAUTH_SESSION_CREATED: "Authentication successful",
   },
 
   // User/Profile Success

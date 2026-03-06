@@ -8,22 +8,42 @@
 
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";
+import {
+  useAuth,
+  useApiQuery,
+  useApiMutation,
+  useMessage,
+  useUrlTable,
+} from "@/hooks";
 import { useTranslations } from "next-intl";
 import { notificationService } from "@/services";
-import { Spinner, EmptyState } from "@/components";
+import {
+  ActiveFilterChips,
+  EmptyState,
+  FilterFacetSection,
+  Heading,
+  ListingLayout,
+  Search,
+  Spinner,
+  TablePagination,
+  Text,
+} from "@/components";
+import type { ActiveFilter } from "@/components";
 import { NotificationItem } from "./NotificationItem";
 import { NotificationsBulkActions } from "./NotificationsBulkActions";
 import type { NotificationDocument } from "@/db/schema";
 
-const { themed, spacing, flex } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
+
+const PAGE_SIZE = 20;
 
 interface NotificationsResponse {
   notifications: NotificationDocument[];
   unreadCount: number;
+  meta?: { total: number; totalPages: number; page: number };
 }
 
 const bellIcon = (
@@ -48,13 +68,71 @@ export function UserNotificationsView() {
   const { showSuccess, showError } = useMessage();
   const tNotifications = useTranslations("notifications");
 
+  const table = useUrlTable({ defaults: { pageSize: String(PAGE_SIZE) } });
+  const searchQ = table.get("q");
+  const readFilter = table.get("readStatus");
+  const page = table.getNumber("page", 1);
+
+  // ── Staged filter state ────────────────────────────────────────────────
+  const [stagedReadStatus, setStagedReadStatus] = useState<string[]>(
+    readFilter ? [readFilter] : [],
+  );
+
+  useEffect(() => {
+    setStagedReadStatus(readFilter ? [readFilter] : []);
+  }, [readFilter]);
+
+  const handleFilterApply = useCallback(() => {
+    table.set("readStatus", stagedReadStatus[0] ?? "");
+  }, [stagedReadStatus, table]);
+
+  const handleFilterClear = useCallback(() => {
+    setStagedReadStatus([]);
+    table.setMany({ readStatus: "", q: "" });
+  }, [table]);
+
+  const readStatusOptions = useMemo(
+    () => [
+      { value: "unread", label: tNotifications("filterUnread") },
+      { value: "read", label: tNotifications("filterRead") },
+    ],
+    [tNotifications],
+  );
+
+  const activeFilters = useMemo<ActiveFilter[]>(
+    () =>
+      readFilter
+        ? [
+            {
+              key: "readStatus",
+              label: tNotifications("filterLabel"),
+              value:
+                readStatusOptions.find((o) => o.value === readFilter)?.label ??
+                readFilter,
+            },
+          ]
+        : [],
+    [readFilter, readStatusOptions, tNotifications],
+  );
+
   useEffect(() => {
     if (!authLoading && !user) router.push(ROUTES.AUTH.LOGIN);
   }, [user, authLoading, router]);
 
+  const queryParams = useMemo(() => {
+    const p = new URLSearchParams({
+      page: String(page),
+      pageSize: String(PAGE_SIZE),
+    });
+    if (searchQ) p.set("q", searchQ);
+    if (readFilter === "read") p.set("isRead", "true");
+    if (readFilter === "unread") p.set("isRead", "false");
+    return p.toString();
+  }, [page, searchQ, readFilter]);
+
   const { data, isLoading, refetch } = useApiQuery<NotificationsResponse>({
-    queryKey: ["notifications", "page"],
-    queryFn: () => notificationService.list("limit=50"),
+    queryKey: ["notifications", "page", queryParams],
+    queryFn: () => notificationService.list(queryParams),
     enabled: !!user,
     cacheTTL: 0,
   });
@@ -119,20 +197,74 @@ export function UserNotificationsView() {
 
   const notifications = data?.notifications ?? [];
   const unreadCount = data?.unreadCount ?? 0;
+  const totalPages = data?.meta?.totalPages ?? 1;
+  const total = data?.meta?.total ?? notifications.length;
 
   return (
-    <div className={`container mx-auto px-4 py-8 max-w-3xl ${spacing.stack}`}>
-      <NotificationsBulkActions
-        unreadCount={unreadCount}
-        isMarkingAll={isMarkingAll}
-        onMarkAllRead={handleMarkAllRead}
-      />
-
-      {isLoading ? (
-        <div className={`${flex.center} py-16`}>
-          <Spinner size="lg" />
+    <ListingLayout
+      headerSlot={
+        <div>
+          <Heading level={3}>{tNotifications("title")}</Heading>
+          <Text variant="secondary" className="mt-1">
+            {unreadCount > 0
+              ? tNotifications("unreadCount", { count: unreadCount })
+              : tNotifications("subtitle")}
+          </Text>
         </div>
-      ) : notifications.length === 0 ? (
+      }
+      searchSlot={
+        <Search
+          value={searchQ}
+          onChange={(v) => table.set("q", v)}
+          placeholder={tNotifications("searchPlaceholder")}
+          onClear={() => table.set("q", "")}
+        />
+      }
+      filterContent={
+        <FilterFacetSection
+          title={tNotifications("filterLabel")}
+          options={readStatusOptions}
+          selected={stagedReadStatus}
+          onChange={setStagedReadStatus}
+          selectionMode="single"
+          searchable={false}
+        />
+      }
+      filterActiveCount={activeFilters.length}
+      onFilterApply={handleFilterApply}
+      onFilterClear={handleFilterClear}
+      activeFiltersSlot={
+        activeFilters.length > 0 ? (
+          <ActiveFilterChips
+            filters={activeFilters}
+            onRemove={(key) => table.set(key, "")}
+            onClearAll={handleFilterClear}
+          />
+        ) : undefined
+      }
+      actionsSlot={
+        <NotificationsBulkActions
+          unreadCount={unreadCount}
+          isMarkingAll={isMarkingAll}
+          onMarkAllRead={handleMarkAllRead}
+        />
+      }
+      paginationSlot={
+        totalPages > 1 ? (
+          <TablePagination
+            total={total}
+            currentPage={page}
+            totalPages={totalPages}
+            pageSize={PAGE_SIZE}
+            onPageChange={table.setPage}
+            onPageSizeChange={(n) => table.set("pageSize", String(n))}
+            pageSizeOptions={[10, 20, 50]}
+          />
+        ) : undefined
+      }
+      loading={isLoading}
+    >
+      {!isLoading && notifications.length === 0 ? (
         <EmptyState
           icon={bellIcon}
           title={tNotifications("empty")}
@@ -142,16 +274,23 @@ export function UserNotificationsView() {
         <div
           className={`rounded-xl border ${themed.border} overflow-hidden divide-y ${themed.border}`}
         >
-          {notifications.map((n) => (
-            <NotificationItem
-              key={n.id}
-              notification={n}
-              onMarkRead={handleMarkRead}
-              onDelete={handleDelete}
-            />
-          ))}
+          {isLoading
+            ? Array.from({ length: PAGE_SIZE }).map((_, i) => (
+                <div
+                  key={i}
+                  className="animate-pulse h-16 bg-gray-100 dark:bg-gray-800"
+                />
+              ))
+            : notifications.map((n) => (
+                <NotificationItem
+                  key={n.id}
+                  notification={n}
+                  onMarkRead={handleMarkRead}
+                  onDelete={handleDelete}
+                />
+              ))}
         </div>
       )}
-    </div>
+    </ListingLayout>
   );
 }

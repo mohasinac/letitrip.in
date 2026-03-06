@@ -4,11 +4,11 @@ import {
   Breadcrumbs,
   BreadcrumbItem,
   Heading,
-  ProductImageGallery,
   Span,
   Text,
   TextLink,
 } from "@/components";
+import { ProductImageGallery } from "./ProductImageGallery";
 import { ProductActions } from "./ProductActions";
 import { ProductInfo } from "./ProductInfo";
 import { ProductReviews } from "./ProductReviews";
@@ -120,8 +120,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
     product.status === "sold" ||
     product.availableQuantity === 0;
 
-  const statusLabel =
-    product.status === "sold" ? t("sold") : t("outOfStock");
+  const statusLabel = product.status === "sold" ? t("sold") : t("outOfStock");
 
   return (
     <div className={`min-h-screen ${themed.bgSecondary}`}>
@@ -215,4 +214,3 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
     </div>
   );
 }
-

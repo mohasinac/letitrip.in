@@ -225,13 +225,13 @@ export const addressesSeedData: AddressSeedData[] = [
   },
 
   // ============================================
-  // Meera Nair's Addresses
+  // Vikram Nair's Addresses
   // ============================================
   {
     id: "addr-meera-home-1707400012",
-    userId: "user-meera-nair-meera",
+    userId: "user-vikram-nair-vikram",
     label: "Home",
-    fullName: "Meera Nair",
+    fullName: "Vikram Nair",
     phone: "+919876543280",
     addressLine1: "88/4, MG Road",
     addressLine2: "Near Broadway",
@@ -246,7 +246,7 @@ export const addressesSeedData: AddressSeedData[] = [
   },
   {
     id: "addr-meera-parents-1707400013",
-    userId: "user-meera-nair-meera",
+    userId: "user-vikram-nair-vikram",
     label: "Parents",
     fullName: "Suresh Nair",
     phone: "+914842334455",
@@ -299,5 +299,146 @@ export const addressesSeedData: AddressSeedData[] = [
     isDefault: true,
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2024-01-01T00:00:00Z"),
+  },
+
+  // ============================================
+  // Jane Smith — Delhi address (matches her orders)
+  // ============================================
+  {
+    id: "addr-jane-delhi-1707400018",
+    userId: "user-jane-smith-janes",
+    label: "Delhi Flat",
+    fullName: "Jane Smith",
+    phone: "+919876543212",
+    addressLine1: "Flat 7B, Lajpat Nagar II",
+    addressLine2: "Near Central Market",
+    city: "New Delhi",
+    state: "Delhi",
+    postalCode: "110024",
+    country: "India",
+    isDefault: false,
+    createdAt: new Date("2025-11-01T10:00:00Z"),
+    updatedAt: new Date("2025-11-01T10:00:00Z"),
+  },
+
+  // ============================================
+  // Fashion Boutique's Business Address
+  // ============================================
+  {
+    id: "addr-fashion-boutique-biz-1707400019",
+    userId: "user-fashion-boutique-fashionb",
+    label: "Studio",
+    fullName: "Fashion Boutique",
+    phone: "+919876543240",
+    addressLine1: "Studio 14, Linking Road",
+    addressLine2: "Bandra West",
+    city: "Mumbai",
+    state: "Maharashtra",
+    postalCode: "400050",
+    country: "India",
+    isDefault: true,
+    createdAt: new Date("2024-06-01T09:00:00Z"),
+    updatedAt: new Date("2024-06-01T09:00:00Z"),
+  },
+
+  // ============================================
+  // Home Essentials' Warehouse Address
+  // ============================================
+  {
+    id: "addr-home-essentials-warehouse-1707400020",
+    userId: "user-home-essentials-homeesse",
+    label: "Warehouse",
+    fullName: "Home Essentials",
+    phone: "+919876543250",
+    addressLine1: "Plot 22, RIICO Industrial Area",
+    addressLine2: "Sitapura",
+    city: "Jaipur",
+    state: "Rajasthan",
+    postalCode: "302022",
+    country: "India",
+    isDefault: true,
+    createdAt: new Date("2024-07-01T10:00:00Z"),
+    updatedAt: new Date("2024-07-01T10:00:00Z"),
+  },
+
+  // ============================================
+  // Ananya Bose's Address
+  // ============================================
+  {
+    id: "addr-ananya-home-1707400021",
+    userId: "user-ananya-bose-ananya",
+    label: "Home",
+    fullName: "Ananya Bose",
+    phone: "+919876543291",
+    addressLine1: "43, Lake Town, Block B",
+    addressLine2: "Near Bidhan Nagar",
+    city: "Kolkata",
+    state: "West Bengal",
+    postalCode: "700089",
+    country: "India",
+    isDefault: true,
+    createdAt: new Date("2025-10-15T10:00:00Z"),
+    updatedAt: new Date("2025-10-15T10:00:00Z"),
+  },
+
+  // ============================================
+  // Pooja Mehta's Address
+  // ============================================
+  {
+    id: "addr-pooja-home-1707400022",
+    userId: "user-pooja-mehta-pooja",
+    label: "Home",
+    fullName: "Pooja Mehta",
+    phone: "+919876543292",
+    addressLine1: "15, Pali Hill",
+    addressLine2: "Bandra West",
+    city: "Mumbai",
+    state: "Maharashtra",
+    postalCode: "400050",
+    country: "India",
+    isDefault: true,
+    createdAt: new Date("2025-11-10T10:00:00Z"),
+    updatedAt: new Date("2025-11-10T10:00:00Z"),
+  },
+
+  // ============================================
+  // Ravi Kumar's Address
+  // ============================================
+  {
+    id: "addr-ravi-home-1707400023",
+    userId: "user-ravi-kumar-ravi",
+    label: "Home",
+    fullName: "Ravi Kumar",
+    phone: "+919876543293",
+    addressLine1: "78, Sector 20, Chandigarh",
+    addressLine2: "",
+    landmark: "Near Elante Mall",
+    city: "Chandigarh",
+    state: "Punjab",
+    postalCode: "160020",
+    country: "India",
+    isDefault: true,
+    createdAt: new Date("2025-12-01T10:00:00Z"),
+    updatedAt: new Date("2025-12-01T10:00:00Z"),
+  },
+
+  // ============================================
+  // Sneha Gupta's Address
+  // ============================================
+  {
+    id: "addr-sneha-home-1707400024",
+    userId: "user-sneha-gupta-sneha",
+    label: "Home",
+    fullName: "Sneha Gupta",
+    phone: "+919876543294",
+    addressLine1: "32, Gomti Nagar, Sector 3",
+    addressLine2: "",
+    city: "Lucknow",
+    state: "Uttar Pradesh",
+    postalCode: "226010",
+    country: "India",
+    isDefault: true,
+    createdAt: new Date("2026-01-05T10:00:00Z"),
+    updatedAt: new Date("2026-01-05T10:00:00Z"),
   },
 ];

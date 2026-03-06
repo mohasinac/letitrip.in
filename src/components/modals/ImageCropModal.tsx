@@ -221,6 +221,7 @@ export function ImageCropModal({
           <div className={`${flex.rowCenter} gap-3`}>
             <Button
               type="button"
+              variant="ghost"
               onClick={() => setZoom(Math.max(0.1, zoom - 0.1))}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
               aria-label={UI_LABELS.AVATAR.ZOOM_OUT}
@@ -251,6 +252,7 @@ export function ImageCropModal({
 
             <Button
               type="button"
+              variant="ghost"
               onClick={() => setZoom(Math.min(3, zoom + 0.1))}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
               aria-label={UI_LABELS.AVATAR.ZOOM_IN}
@@ -275,6 +277,7 @@ export function ImageCropModal({
           <div className="flex gap-2">
             <Button
               type="button"
+              variant="ghost"
               onClick={() => setZoom(0.5)}
               className="px-3 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
@@ -282,6 +285,7 @@ export function ImageCropModal({
             </Button>
             <Button
               type="button"
+              variant="ghost"
               onClick={() => setZoom(1)}
               className="px-3 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
@@ -289,6 +293,7 @@ export function ImageCropModal({
             </Button>
             <Button
               type="button"
+              variant="ghost"
               onClick={() => setZoom(1.5)}
               className="px-3 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
@@ -296,6 +301,7 @@ export function ImageCropModal({
             </Button>
             <Button
               type="button"
+              variant="ghost"
               onClick={() => setZoom(2)}
               className="px-3 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
@@ -341,6 +347,7 @@ export function ImageCropModal({
           </Span>
           <Button
             type="button"
+            variant="ghost"
             onClick={handleReset}
             className="text-primary-600 dark:text-primary-400 hover:underline"
           >

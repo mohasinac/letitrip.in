@@ -61,6 +61,7 @@ export function getCategoryTableColumns(
     actions: (cat: Category) => (
       <div className="flex gap-2">
         <Button
+          variant="ghost"
           onClick={(e) => {
             e.stopPropagation();
             onEdit(cat);
@@ -70,6 +71,7 @@ export function getCategoryTableColumns(
           {UI_LABELS.ACTIONS.EDIT}
         </Button>
         <Button
+          variant="ghost"
           onClick={(e) => {
             e.stopPropagation();
             onDelete(cat);

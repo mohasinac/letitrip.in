@@ -36,6 +36,21 @@ jest.mock("@/components", () => ({
   StatusBadge: ({ label }: any) => (
     <span data-testid="status-badge">{label}</span>
   ),
+  Heading: ({ children, className }: any) => (
+    <div className={className}>{children}</div>
+  ),
+  Text: ({ children, className }: any) => (
+    <p className={className}>{children}</p>
+  ),
+  Caption: ({ children, className }: any) => (
+    <span className={className}>{children}</span>
+  ),
+  Label: ({ children, className }: any) => (
+    <label className={className}>{children}</label>
+  ),
+  AvatarDisplay: ({ displayName, alt }: any) => (
+    <div data-testid="avatar-display">{displayName || alt}</div>
+  ),
 }));
 
 const mockUser = {
@@ -138,4 +153,3 @@ describe("UserDetailDrawer", () => {
     expect(screen.queryByTestId("side-drawer")).not.toBeInTheDocument();
   });
 });
-

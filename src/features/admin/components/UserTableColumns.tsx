@@ -8,8 +8,13 @@
  * Uses RoleBadge, StatusBadge from @/components and formatDate from @/utils.
  */
 
-import Image from "next/image";
-import { Button, RoleBadge, Span, StatusBadge } from "@/components";
+import {
+  Button,
+  MediaAvatar,
+  RoleBadge,
+  Span,
+  StatusBadge,
+} from "@/components";
 import { useTranslations } from "next-intl";
 import { formatDate } from "@/utils";
 import type { AdminUser } from "./User.types";
@@ -34,15 +39,11 @@ export function useUserTableColumns(
         render: (user: AdminUser) => (
           <div className="flex items-center gap-2">
             {user.photoURL ? (
-              <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                <Image
-                  src={user.photoURL}
-                  alt={(user.displayName || user.email) ?? "User"}
-                  fill
-                  className="object-cover"
-                  sizes="32px"
-                />
-              </div>
+              <MediaAvatar
+                src={user.photoURL}
+                alt={(user.displayName || user.email) ?? "User"}
+                size="sm"
+              />
             ) : (
               <div
                 className={`w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 ${flex.center} text-sm font-medium`}

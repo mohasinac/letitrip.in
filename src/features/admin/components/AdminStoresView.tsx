@@ -8,20 +8,21 @@
 
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   AdminPageHeader,
-  AdminFilterBar,
   Badge,
   Button,
   Caption,
   Card,
   ConfirmDeleteModal,
   DataTable,
-  Input,
   StatusBadge,
   TablePagination,
   Text,
+  ListingLayout,
+  Search,
+  FilterFacetSection,
 } from "@/components";
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -68,6 +69,14 @@ export function AdminStoresView() {
     message: "",
     onConfirm: async () => {},
   });
+
+  const [stagedStoreStatus, setStagedStoreStatus] = useState<string[]>(
+    activeTab !== "all" ? [activeTab] : [],
+  );
+
+  useEffect(() => {
+    setStagedStoreStatus(activeTab !== "all" ? [activeTab] : []);
+  }, [activeTab]);
 
   // Build Sieve filter string
   const filtersArr: string[] = [];
@@ -204,14 +213,6 @@ export function AdminStoresView() {
     },
   ];
 
-  // ---------- status tabs ----------
-  const STATUS_TABS = [
-    { key: "all", label: t("filterAll") },
-    { key: "pending", label: t("filterPending") },
-    { key: "approved", label: t("filterApproved") },
-    { key: "rejected", label: t("filterRejected") },
-  ];
-
   return (
     <div className={spacing.stack}>
       <AdminPageHeader
@@ -219,65 +220,71 @@ export function AdminStoresView() {
         subtitle={`${t("subtitle")} — ${total} ${t("total")}`}
       />
 
-      {/* Tab filter row */}
-      <div className="flex flex-wrap gap-2">
-        {STATUS_TABS.map((tab) => (
-          <Button
-            key={tab.key}
-            variant={activeTab === tab.key ? "primary" : "ghost"}
-            size="sm"
-            onClick={() => {
-              table.set("storeStatus", tab.key === "all" ? "" : tab.key);
-            }}
-          >
-            {tab.label}
-          </Button>
-        ))}
-      </div>
-
-      <AdminFilterBar>
-        <Input
-          type="text"
-          placeholder={tActions("search")}
-          value={searchTerm}
-          onChange={(e) => table.set("q", e.target.value)}
+      <ListingLayout
+        searchSlot={
+          <Search
+            value={searchTerm}
+            onChange={(v) => table.set("q", v)}
+            placeholder={t("searchPlaceholder")}
+          />
+        }
+        filterContent={
+          <FilterFacetSection
+            title={t("colStatus")}
+            options={[
+              { value: "pending", label: t("filterPending") },
+              { value: "approved", label: t("filterApproved") },
+              { value: "rejected", label: t("filterRejected") },
+            ]}
+            selected={stagedStoreStatus}
+            onChange={setStagedStoreStatus}
+          />
+        }
+        filterActiveCount={activeTab !== "all" ? 1 : 0}
+        onFilterApply={() =>
+          table.set("storeStatus", stagedStoreStatus[0] ?? "")
+        }
+        onFilterClear={() => {
+          setStagedStoreStatus([]);
+          table.setMany({ storeStatus: "", q: "" });
+        }}
+        paginationSlot={
+          <TablePagination
+            total={total}
+            currentPage={data?.page ?? 1}
+            pageSize={data?.pageSize ?? 25}
+            totalPages={data?.totalPages ?? 1}
+            onPageChange={(p) => table.setPage(p)}
+            onPageSizeChange={(ps) => table.set("pageSize", String(ps))}
+          />
+        }
+      >
+        <DataTable<AdminStoreItem>
+          data={stores}
+          columns={columns}
+          keyExtractor={(s) => s.uid}
+          loading={isLoading}
+          emptyMessage={t("noStores")}
+          externalPagination
+          showViewToggle
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          onViewModeChange={(mode) => table.set("view", mode)}
+          mobileCardRender={(store) => (
+            <Card className="p-4 space-y-2">
+              <Text weight="medium" size="sm" className="line-clamp-1">
+                {store.publicProfile?.storeName ?? store.displayName}
+              </Text>
+              <Caption className="truncate">{store.email}</Caption>
+              <div className="flex items-center justify-between">
+                <Caption>
+                  {t("soldCount", { count: store.stats?.itemsSold ?? 0 })}
+                </Caption>
+                <StatusBadge status={store.storeStatus} />
+              </div>
+            </Card>
+          )}
         />
-      </AdminFilterBar>
-
-      <DataTable<AdminStoreItem>
-        data={stores}
-        columns={columns}
-        keyExtractor={(s) => s.uid}
-        loading={isLoading}
-        emptyMessage={t("noStores")}
-        externalPagination
-        showViewToggle
-        viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
-        onViewModeChange={(mode) => table.set("view", mode)}
-        mobileCardRender={(store) => (
-          <Card className="p-4 space-y-2">
-            <Text weight="medium" size="sm" className="line-clamp-1">
-              {store.publicProfile?.storeName ?? store.displayName}
-            </Text>
-            <Caption className="truncate">{store.email}</Caption>
-            <div className="flex items-center justify-between">
-              <Caption>
-                {t("soldCount", { count: store.stats?.itemsSold ?? 0 })}
-              </Caption>
-              <StatusBadge status={store.storeStatus} />
-            </div>
-          </Card>
-        )}
-      />
-
-      <TablePagination
-        total={total}
-        currentPage={data?.page ?? 1}
-        pageSize={data?.pageSize ?? 25}
-        totalPages={data?.totalPages ?? 1}
-        onPageChange={(p) => table.setPage(p)}
-        onPageSizeChange={(ps) => table.set("pageSize", String(ps))}
-      />
+      </ListingLayout>
 
       <ConfirmDeleteModal
         isOpen={confirmState.open}

@@ -10,7 +10,7 @@
 
 import { useState, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useMessage, useUrlTable } from "@/hooks";
+import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
 import { useAdminBlog } from "@/features/admin/hooks";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -18,12 +18,12 @@ import {
   AdminPageHeader,
   Badge,
   Button,
+  BlogFilters,
   Caption,
   Card,
   ConfirmDeleteModal,
   DataTable,
   DrawerFormFooter,
-  FilterFacetSection,
   ListingLayout,
   MediaImage,
   Search,
@@ -76,21 +76,9 @@ export function AdminBlogView() {
   );
   const initialFormRef = useRef<string>("");
 
-  // ── Staged filter state ──────────────────────────────────────────────
-  const [stagedStatus, setStagedStatus] = useState<string[]>(
-    statusFilter ? [statusFilter] : [],
-  );
-
-  const handleFilterApply = useCallback(() => {
-    table.setMany({ status: stagedStatus[0] ?? "", page: "1" });
-  }, [stagedStatus, table]);
-
-  const handleFilterClear = useCallback(() => {
-    setStagedStatus([]);
-    table.setMany({ status: "", page: "1" });
-  }, [table]);
-
-  const filterActiveCount = statusFilter ? 1 : 0;
+  // ── Pending filter state (staged until Apply is clicked) ─────────────
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, ["status", "category", "isFeatured"]);
 
   const {
     data,
@@ -293,18 +281,10 @@ export function AdminBlogView() {
             options={sortOptions}
           />
         }
-        filterContent={
-          <FilterFacetSection
-            title={tStatus("all")}
-            options={statusOptions}
-            selected={stagedStatus}
-            onChange={setStagedStatus}
-            searchable={false}
-          />
-        }
+        filterContent={<BlogFilters table={pendingTable} />}
         filterActiveCount={filterActiveCount}
-        onFilterApply={handleFilterApply}
-        onFilterClear={handleFilterClear}
+        onFilterApply={onFilterApply}
+        onFilterClear={onFilterClear}
         loading={isLoading}
         errorSlot={
           error ? (
@@ -324,9 +304,7 @@ export function AdminBlogView() {
           emptyMessage={t("empty")}
           emptyTitle={t("emptySubtitle")}
           showViewToggle
-          viewMode={
-            (table.get("view") || "table") as "table" | "grid" | "list"
-          }
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(post: BlogPostDocument) => (
             <Card className="overflow-hidden cursor-pointer">

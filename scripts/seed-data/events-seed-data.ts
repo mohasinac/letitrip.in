@@ -85,7 +85,7 @@ export const eventsSeedData: EventSeed[] = [
     title: "What Outdoor Gear Should We Feature Next Month?",
     description:
       "<p>We want to feature the category YOU care about most in March. Cast your vote and shape what appears on the LetItRip homepage next month!</p>",
-    status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
+    status: EVENT_FIELDS.STATUS_VALUES.ENDED,
     startsAt: new Date("2026-02-15T00:00:00Z"),
     endsAt: new Date("2026-02-28T23:59:59Z"),
     pollConfig: {
@@ -228,7 +228,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     eventId: "event-community-poll-gear-2026-poll",
     userId: "user-john-doe-johndoe",
     userDisplayName: "John Doe",
-    userEmail: "john.doe@example.com",
+    userEmail: "john@letitrip.in",
     pollVotes: ["opt-camping"],
     pollComment: "Really keen to see more camping gear featured!",
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
@@ -239,7 +239,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     eventId: "event-community-poll-gear-2026-poll",
     userId: "user-jane-smith-janes",
     userDisplayName: "Jane Smith",
-    userEmail: "jane.smith@example.com",
+    userEmail: "jane@letitrip.in",
     pollVotes: ["opt-climbing"],
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
     submittedAt: new Date("2026-02-17T14:30:00Z"),
@@ -249,7 +249,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     eventId: "event-community-poll-gear-2026-poll",
     userId: "user-mike-johnson-mikejohn",
     userDisplayName: "Mike Johnson",
-    userEmail: "mike.johnson@example.com",
+    userEmail: "mike@letitrip.in",
     pollVotes: ["opt-cycling"],
     pollComment: "MTB accessories are underrepresented on the platform.",
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
@@ -262,7 +262,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     eventId: "event-platform-experience-survey-2026-survey",
     userId: "user-john-doe-johndoe",
     userDisplayName: "John Doe",
-    userEmail: "john.doe@example.com",
+    userEmail: "john@letitrip.in",
     formResponses: {
       "sf-overall": 5,
       "sf-discovery": "Search engine",
@@ -276,7 +276,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     eventId: "event-platform-experience-survey-2026-survey",
     userId: "user-jane-smith-janes",
     userDisplayName: "Jane Smith",
-    userEmail: "jane.smith@example.com",
+    userEmail: "jane@letitrip.in",
     formResponses: {
       "sf-overall": 4,
       "sf-discovery": "Friend / family",

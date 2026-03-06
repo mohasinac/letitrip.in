@@ -11,18 +11,12 @@
 import { Suspense, useMemo } from "react";
 import { Grid3X3 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {
-  CategoryGrid,
-  EmptyState,
-  Heading,
-  ListingLayout,
-  Search,
-  Text,
-} from "@/components";
+import { EmptyState, Heading, ListingLayout, Search, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useApiQuery, useUrlTable } from "@/hooks";
 import { categoryService } from "@/services";
 import type { CategoryDocument } from "@/db/schema";
+import { CategoryGrid } from "./CategoryGrid";
 
 interface CategoriesApiResponse {
   data: CategoryDocument[];

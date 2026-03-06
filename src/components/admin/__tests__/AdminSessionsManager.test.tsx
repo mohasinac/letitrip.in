@@ -1,6 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import type React from "react";
-import { AdminSessionsManager } from "@/components";
+import { AdminSessionsManager } from "@/features/admin/components/AdminSessionsManager";
+
+jest.mock("next-intl", () => ({
+  useTranslations: (_ns: string) => (key: string) => key,
+}));
 
 jest.mock("@/hooks", () => ({
   useAdminSessions: () => ({

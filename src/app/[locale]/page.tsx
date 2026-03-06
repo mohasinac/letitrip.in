@@ -4,7 +4,7 @@ import {
   HeroCarousel,
   WelcomeSection,
   TrustFeaturesSection,
-} from "@/components";
+} from "@/features/homepage";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
 
 export const metadata: Metadata = genMetadata({
@@ -17,54 +17,53 @@ export const metadata: Metadata = genMetadata({
 // Below-fold sections — dynamically imported to reduce initial JS bundle
 const TopCategoriesSection = dynamic(
   () =>
-    import("@/components/homepage").then((m) => ({
+    import("@/features/homepage").then((m) => ({
       default: m.TopCategoriesSection,
     })),
   { ssr: true },
 );
 const FeaturedProductsSection = dynamic(
   () =>
-    import("@/components/homepage").then((m) => ({
+    import("@/features/homepage").then((m) => ({
       default: m.FeaturedProductsSection,
     })),
   { ssr: true },
 );
 const FeaturedAuctionsSection = dynamic(
   () =>
-    import("@/components/homepage").then((m) => ({
+    import("@/features/homepage").then((m) => ({
       default: m.FeaturedAuctionsSection,
     })),
   { ssr: true },
 );
 const AdvertisementBanner = dynamic(
   () =>
-    import("@/components/homepage").then((m) => ({
+    import("@/features/homepage").then((m) => ({
       default: m.AdvertisementBanner,
     })),
   { ssr: true },
 );
 const CustomerReviewsSection = dynamic(
   () =>
-    import("@/components/homepage").then((m) => ({
+    import("@/features/homepage").then((m) => ({
       default: m.CustomerReviewsSection,
     })),
   { ssr: true },
 );
 const WhatsAppCommunitySection = dynamic(
   () =>
-    import("@/components/homepage").then((m) => ({
+    import("@/features/homepage").then((m) => ({
       default: m.WhatsAppCommunitySection,
     })),
   { ssr: true },
 );
 const FAQSection = dynamic(
-  () =>
-    import("@/components/homepage").then((m) => ({ default: m.FAQSection })),
+  () => import("@/features/homepage").then((m) => ({ default: m.FAQSection })),
   { ssr: true },
 );
 const BlogArticlesSection = dynamic(
   () =>
-    import("@/components/homepage").then((m) => ({
+    import("@/features/homepage").then((m) => ({
       default: m.BlogArticlesSection,
     })),
   { ssr: true },

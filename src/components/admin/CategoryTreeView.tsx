@@ -67,6 +67,7 @@ function TreeNode({
         {/* Expand/Collapse Icon */}
         <Button
           type="button"
+          variant="ghost"
           onClick={onToggle}
           className={`
             flex-shrink-0 w-5 h-5 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300
@@ -111,6 +112,7 @@ function TreeNode({
         {/* Category Name */}
         <Button
           type="button"
+          variant="ghost"
           onClick={() => onSelect?.(node)}
           className={`flex-1 text-left text-sm font-medium ${THEME_CONSTANTS.themed.textPrimary} truncate`}
         >
@@ -144,6 +146,7 @@ function TreeNode({
           {onEdit && (
             <Button
               type="button"
+              variant="ghost"
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit(node);
@@ -169,6 +172,7 @@ function TreeNode({
           {onDelete && (
             <Button
               type="button"
+              variant="ghost"
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(node);

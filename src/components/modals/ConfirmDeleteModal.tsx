@@ -13,7 +13,35 @@ interface ConfirmDeleteModalProps {
   confirmText?: string;
   cancelText?: string;
   isDeleting?: boolean;
+  /**
+   * Controls icon colour and confirm-button variant.
+   * - `"danger"`  — red icon + danger button (default; use for delete / destructive bulk actions)
+   * - `"warning"` — amber icon + warning button (use for reversible bulk actions)
+   * - `"primary"` — blue icon + primary button (use for non-destructive bulk actions: publish, approve)
+   */
+  variant?: "danger" | "warning" | "primary";
 }
+
+const VARIANT_STYLES = {
+  danger: {
+    iconBg: "bg-red-100 dark:bg-red-900/20",
+    iconColor: "text-red-600 dark:text-red-500",
+    buttonVariant: "danger" as const,
+    loadingText: "Deleting...",
+  },
+  warning: {
+    iconBg: "bg-amber-100 dark:bg-amber-900/20",
+    iconColor: "text-amber-600 dark:text-amber-500",
+    buttonVariant: "warning" as const,
+    loadingText: "Processing...",
+  },
+  primary: {
+    iconBg: "bg-blue-100 dark:bg-blue-900/20",
+    iconColor: "text-blue-600 dark:text-blue-500",
+    buttonVariant: "primary" as const,
+    loadingText: "Processing...",
+  },
+} as const;
 
 export default function ConfirmDeleteModal({
   isOpen,
@@ -24,7 +52,9 @@ export default function ConfirmDeleteModal({
   confirmText = "Delete",
   cancelText = "Cancel",
   isDeleting = false,
+  variant = "danger",
 }: ConfirmDeleteModalProps) {
+  const styles = VARIANT_STYLES[variant];
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
@@ -65,10 +95,10 @@ export default function ConfirmDeleteModal({
           {/* Icon */}
           <div className="flex justify-center">
             <div
-              className={`w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/20 ${flex.center}`}
+              className={`w-12 h-12 rounded-full ${styles.iconBg} ${flex.center}`}
             >
               <svg
-                className="w-6 h-6 text-red-600 dark:text-red-500"
+                className={`w-6 h-6 ${styles.iconColor}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -100,11 +130,12 @@ export default function ConfirmDeleteModal({
               {cancelText}
             </Button>
             <Button
+              variant={styles.buttonVariant}
               onClick={onConfirm}
               disabled={isDeleting}
-              className="flex-1 bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800"
+              className="flex-1"
             >
-              {isDeleting ? "Deleting..." : confirmText}
+              {isDeleting ? styles.loadingText : confirmText}
             </Button>
           </div>
         </Card>

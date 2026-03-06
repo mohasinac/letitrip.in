@@ -33,6 +33,37 @@ jest.mock("@/components", () => ({
   ),
   FormField: ({ label, name }: any) => <input aria-label={label} name={name} />,
   Alert: ({ message }: any) => <div role="alert">{message}</div>,
+  Input: ({
+    "aria-label": ariaLabel,
+    name,
+    type,
+    value,
+    onChange,
+    ...rest
+  }: any) => (
+    <input
+      aria-label={ariaLabel}
+      name={name}
+      type={type}
+      value={value}
+      onChange={onChange}
+    />
+  ),
+  Label: ({ children, className }: any) => (
+    <label className={className}>{children}</label>
+  ),
+  Select: ({ options, value, onChange, name }: any) => (
+    <select name={name} value={value} onChange={onChange}>
+      {options?.map((o: any) => (
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
+      ))}
+    </select>
+  ),
+  Text: ({ children, className }: any) => (
+    <p className={className}>{children}</p>
+  ),
 }));
 
 jest.mock("../EventTypeConfig/SaleConfigForm", () => ({

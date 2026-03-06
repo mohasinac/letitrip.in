@@ -138,6 +138,86 @@
           "message": { ".validate": "!newData.exists() || newData.isString()" }
         }
       }
+    },
+
+    // ============================================================
+    // Auth Event Bridge — pre-session OAuth & login signal channel
+    // ============================================================
+    // Used by Google/Apple OAuth popup flow and payment webhooks.
+    //
+    // Flow:
+    //   1. Client calls POST /api/auth/event/init (no session required)
+    //      → server creates this node { status:'pending', createdAt }
+    //      → server issues a per-event custom token with { authEventId: eventId }
+    //   2. Client signInWithCustomToken(realtimeApp, customToken)
+    //      → subscribes read-only to /auth_events/{eventId}
+    //   3. After OAuth completes / fails, the server API callback route
+    //      writes { status:'success' } or { status:'error', error:'...' }
+    //      and sets the __session cookie on the redirect response.
+    //   4. Client RTDB handler fires → calls router.refresh() to load session.
+    //
+    // The custom token encodes ONLY the specific eventId — no other paths.
+    // Cleanup: Firebase Function cleanupAuthEvents runs every 5 min to
+    // delete events older than 3 min, preventing RTDB accumulation.
+    // ============================================================
+    "auth_events": {
+      "$eventId": {
+        // Readable ONLY if the custom token was issued for this exact eventId.
+        // No session cookie is required — the custom token IS the auth credential.
+        ".read": "auth != null && auth.token.authEventId == $eventId",
+        // ALL writes are Admin-only (Next.js API routes via Admin SDK).
+        ".write": false
+      }
+    },
+
+    // ============================================================
+    // Payment Event Bridge — Razorpay webhook signal channel
+    // ============================================================
+    // Same pattern as auth_events but for payment confirmations.
+    //
+    // Flow:
+    //   1. Client calls POST /api/payments/event/init (requires session)
+    //      → server creates /payment_events/{eventId} { status:'pending' }
+    //      → issues custom token with { paymentEventId: eventId }
+    //   2. Client subscribes read-only to /payment_events/{eventId}
+    //   3. Razorpay webhook hits /api/payments/webhook
+    //      → verifies HMAC → updates Firestore order
+    //      → writes { status:'success', orderId } to /payment_events/{eventId}
+    //   4. Client RTDB handler fires → navigates to order confirmation.
+    // ============================================================
+    "payment_events": {
+      "$eventId": {
+        ".read": "auth != null && auth.token.paymentEventId == $eventId",
+        ".write": false
+      }
+    },
+
+    // ============================================================
+    // Bulk Action Result Bridge — async bulk job signal channel
+    // ============================================================
+    // Used when bulk API routes process items asynchronously and push
+    // the final BulkActionResult to RTDB rather than keeping the HTTP
+    // request open.
+    //
+    // Flow:
+    //   1. Client calls POST /api/.../bulk → server starts async work,
+    //      creates /bulk_events/{jobId} { status:'pending' },
+    //      and returns { jobId, customToken } immediately.
+    //   2. Client signInWithCustomToken(realtimeApp, customToken)
+    //      → subscribes read-only to /bulk_events/{jobId}.
+    //   3. Server writes progress/final { status:'success', ...BulkActionResult }
+    //      or { status:'failed', error:'...' } when done.
+    //   4. Client RTDB handler fires → shows result toast, clears selection.
+    //
+    // The custom token encodes ONLY { bulkJobId: jobId } — no other paths.
+    // Cleanup: Firebase Function cleanupBulkEvents deletes nodes older
+    // than 15 minutes to prevent RTDB accumulation.
+    // ============================================================
+    "bulk_events": {
+      "$jobId": {
+        ".read": "auth != null && auth.token.bulkJobId == $jobId",
+        ".write": false
+      }
     }
   }
 }

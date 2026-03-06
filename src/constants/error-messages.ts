@@ -30,6 +30,18 @@ export const ERROR_MESSAGES = {
     WRONG_PASSWORD: "Incorrect email or password. Please try again.",
     EMAIL_IN_USE: "An account with this email already exists. Try signing in.",
     INVALID_SIGNATURE: "Invalid webhook signature.",
+    /** Auth event bridge — pre-session OAuth signal channel */
+    AUTH_EVENT_MISSING: "Authentication event not found or already used.",
+    AUTH_EVENT_EXPIRED: "Authentication event has expired. Please try again.",
+    OAUTH_STATE_INVALID: "OAuth state parameter is invalid or missing.",
+    OAUTH_CODE_EXCHANGE_FAILED: "Failed to exchange OAuth authorisation code.",
+    OAUTH_USER_INFO_FAILED: "Failed to retrieve user info from OAuth provider.",
+    APPLE_TOKEN_INVALID: "Apple ID token could not be verified.",
+    GOOGLE_TOKEN_INVALID: "Google ID token could not be verified.",
+    PAYMENT_EVENT_MISSING: "Payment event not found or already used.",
+    SIGNIN_INIT_FAILED: "Failed to initialise sign-in. Please try again.",
+    SIGNIN_CONNECTION_LOST: "Sign-in connection lost. Please try again.",
+    SIGNIN_TIMED_OUT: "Sign-in timed out. Please try again.",
   },
 
   // Validation Errors
@@ -131,6 +143,7 @@ export const ERROR_MESSAGES = {
     SERVER_CONFIG_ERROR: "Server configuration error",
     NOT_IMPLEMENTED: "This feature is not yet implemented",
     TRY_AGAIN: "Something went wrong. Please try again in a moment.",
+    RATE_LIMIT_EXCEEDED: "Too many requests. Please try again later.",
   },
 
   // Network Errors
@@ -323,6 +336,14 @@ export const ERROR_MESSAGES = {
     PRODUCT_UNAVAILABLE: "One or more products are no longer available",
     INSUFFICIENT_STOCK: "Insufficient stock for one or more items",
     PAYMENT_FAILED: "Payment processing failed",
+    PAYMENT_DECLINED: "Payment was declined.",
+    PAYMENT_TRACKING_INIT_FAILED:
+      "Failed to initialise payment tracking. Please check your order status.",
+    PAYMENT_TRACKING_CONNECTION_LOST:
+      "Payment tracking connection lost. Please check your order status.",
+    PAYMENT_TRACKING_TIMED_OUT:
+      "Payment confirmation timed out. Please check your order status.",
+    PAYMENT_NOT_COMPLETED: "Payment was not completed. Please try again.",
   },
   COUPON: {
     NOT_FOUND: "Coupon not found",
@@ -479,8 +500,10 @@ export const ERROR_MESSAGES = {
     CUSTOM_PRICE_REQUIRED: "A shipping price is required for custom shipping",
     CARRIER_REQUIRED: "Carrier name is required for custom shipping",
     SHIPROCKET_CREDS_REQUIRED: "Shiprocket email and password are required",
-    SHIPROCKET_AUTH_FAILED: "Failed to authenticate with Shiprocket — check your credentials",
-    PICKUP_ADDRESS_REQUIRED: "A verified pickup address is required before shipping with Shiprocket",
+    SHIPROCKET_AUTH_FAILED:
+      "Failed to authenticate with Shiprocket — check your credentials",
+    PICKUP_ADDRESS_REQUIRED:
+      "A verified pickup address is required before shipping with Shiprocket",
     PICKUP_VERIFICATION_FAILED: "Pickup address OTP verification failed",
     PICKUP_ADD_FAILED: "Failed to add pickup address in Shiprocket",
     ORDER_CREATE_FAILED: "Failed to create shipment in Shiprocket",
@@ -488,7 +511,8 @@ export const ERROR_MESSAGES = {
     PICKUP_SCHEDULE_FAILED: "Failed to schedule pickup with Shiprocket",
     TRACKING_FAILED: "Failed to fetch tracking details",
     INVALID_TRACKING_URL: "Please provide a valid tracking URL",
-    CARRIER_NAME_REQUIRED: "Carrier name is required when providing tracking details",
+    CARRIER_NAME_REQUIRED:
+      "Carrier name is required when providing tracking details",
     ORDER_ALREADY_SHIPPED: "This order has already been marked as shipped",
     ORDER_NOT_SHIPPABLE: "Only confirmed orders can be shipped",
     ORDER_NOT_FOUND: "Order not found or does not belong to your store",
@@ -507,8 +531,19 @@ export const ERROR_MESSAGES = {
   // Bulk order action errors
   BULK_ORDER: {
     NO_ORDERS_SELECTED: "Please select at least one order",
-    NO_ELIGIBLE_ORDERS: "None of the selected orders are eligible for a payout request",
-    PAYOUT_REQUEST_FAILED: "Failed to submit payout request for selected orders",
-    ALREADY_REQUESTED: "A payout has already been requested for some of the selected orders",
+    NO_ELIGIBLE_ORDERS:
+      "None of the selected orders are eligible for a payout request",
+    PAYOUT_REQUEST_FAILED:
+      "Failed to submit payout request for selected orders",
+    ALREADY_REQUESTED:
+      "A payout has already been requested for some of the selected orders",
+  },
+
+  // Realtime Event Bridge errors (useRealtimeEvent generic defaults)
+  REALTIME: {
+    INIT_FAILED: "Failed to initialise real-time connection. Please try again.",
+    CONNECTION_LOST: "Real-time connection lost. Please try again.",
+    TIMED_OUT: "The operation timed out. Please try again.",
+    OPERATION_FAILED: "The operation did not complete. Please try again.",
   },
 } as const;

@@ -666,6 +666,70 @@ export interface ApiErrorResponse {
 // MEDIA UPLOAD TYPES
 // ============================================
 
+// ============================================
+// BULK ACTION TYPES
+// ============================================
+
+/**
+ * A single item that failed during a bulk operation.
+ */
+export interface BulkActionItemFailure {
+  id: string;
+  /** Human-readable reason — never contains stack traces or internal details */
+  reason: string;
+}
+
+/**
+ * Summary counters for a completed bulk operation.
+ */
+export interface BulkActionSummary {
+  /** Total number of IDs submitted */
+  total: number;
+  succeeded: number;
+  /** Items skipped because they were already in the target state or not owned by the caller */
+  skipped: number;
+  failed: number;
+}
+
+/**
+ * Standard response envelope returned by every `/bulk` endpoint.
+ *
+ * `TData` is the optional action-specific extra payload
+ * (e.g. `{ payoutId }` for `request_payout`).
+ */
+export interface BulkActionResult<TData = Record<string, unknown>> {
+  action: string;
+  summary: BulkActionSummary;
+  succeeded: string[];
+  skipped: string[];
+  failed: BulkActionItemFailure[];
+  data?: TData;
+}
+
+/**
+ * Minimal base shape every bulk endpoint request body must satisfy.
+ * Extend with a discriminated union on `action` + Zod in the API route.
+ */
+export interface BulkActionPayload {
+  action: string;
+  ids: string[];
+}
+
+/**
+ * Response shape when a bulk operation is queued as an async job.
+ * The client subscribes to /bulk_events/{jobId} via useBulkEvent to
+ * receive the final BulkActionResult when processing completes.
+ */
+export interface BulkActionJob {
+  /** RTDB node identifier — pass to `useBulkEvent.subscribe(jobId, customToken)`. */
+  jobId: string;
+  /**
+   * Firebase custom token scoped to `{ bulkJobId: jobId }`.
+   * Required by `useBulkEvent` to authenticate the RTDB subscription.
+   */
+  customToken: string;
+}
+
 /**
  * Media upload request with chunking and progress tracking
  */

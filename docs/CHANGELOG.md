@@ -7,9 +7,313 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [2026-03-06] — Architecture Refactor: Feature Module Extraction & Shared Filter/Layout Primitives
+
+### Added
+
+- **Feature modules created** for five domains previously living under `src/components/`:
+  - `src/features/about/` — `AboutView`, `AboutSection`, `TeamSection`, `StatsSection`, `ValuesSection`, `HistorySection` with `index.ts` barrel.
+  - `src/features/contact/` — `ContactView`, `ContactForm`, `ContactInfo` with `index.ts` barrel.
+  - `src/features/faq/` — `FAQPageContent`, `FAQAccordion`, `FAQCategorySidebar`, `FAQHelpfulButtons`, `FAQSortDropdown`, `RelatedFAQs`, `ContactCTA` with `index.ts` barrel.
+  - `src/features/homepage/` — `HomepageView`, `HeroCarousel`, `FeaturedProductsSection`, `FeaturedAuctionsSection`, `TopCategoriesSection`, `BlogArticlesSection`, `CustomerReviewsSection`, `FAQSection`, `AdvertisementBanner`, `SectionCarousel`, `SiteFeaturesSection`, `TrustFeaturesSection`, `TrustIndicatorsSection`, `WelcomeSection`, `WhatsAppCommunitySection`, `HomepageSkeleton` with `index.ts` barrel.
+  - `src/features/promotions/` — `PromotionsView`, `CouponCard`, `ProductSection` with `index.ts` barrel.
+  - All source pages (`about`, `contact`, `faqs`, `promotions`, `page.tsx`) updated to import from the new feature barrels.
+
+- **Components relocated to correct feature modules** (moved from `src/components/ui/` or `src/components/{domain}/`):
+  - `AddressSelectorCreate` → `src/features/user/components/AddressSelectorCreate.tsx` — inline address-creation widget for checkout/profile flows.
+  - `NotificationBell` → `src/features/user/components/NotificationBell.tsx` — notification icon + dropdown with unread badge.
+  - `CategorySelectorCreate` → `src/features/categories/components/CategorySelectorCreate.tsx` — inline category-creation widget for product forms.
+  - `EventBanner` → `src/features/events/components/EventBanner.tsx` — contextual event promotion banner.
+  - `ProductImageGallery` → `src/features/products/components/ProductImageGallery.tsx` — image carousel/lightbox for product detail pages.
+  - `SearchFiltersRow` + `SearchResultsSection` → `src/features/search/components/` (two new components, fully tested).
+
+- **`src/components/filters/` — 17 Tier-1 shared filter panel components** (`BidFilters`, `BlogFilters`, `CarouselFilters`, `CategoryFilters`, `CouponFilters`, `EventEntryFilters`, `EventFilters`, `FaqFilters`, `HomepageSectionFilters`, `NewsletterFilters`, `NotificationFilters`, `OrderFilters`, `PayoutFilters`, `ReviewFilters`, `RipCoinFilters`, `SessionFilters`, `UserFilters`).
+  - Each wraps the domain's sort + filter fields using `useTranslations("filters")` and `@/components` primitives.
+  - All exported from `src/components/filters/index.ts`; barrel re-exported from `src/components/index.ts`.
+  - Test suite in `src/components/filters/__tests__/`.
+
+- **Layout wrapper components** added to `src/components/layout/`:
+  - `BottomNavLayout.tsx` — wraps `<BottomNavbar>` in a sticky bottom shell with safe-area padding.
+  - `FooterLayout.tsx` — wraps `<Footer>` with outer padding and `<Section>` semantics.
+  - `NavbarLayout.tsx` — header shell that renders `<MainNavbar>` with sticky/blur styling.
+  - `SidebarLayout.tsx` — left-rail layout with collapsible `<Sidebar>` + main content area.
+  - `TitleBarLayout.tsx` — page-level title bar shell rendering `<TitleBar>` with slot support.
+  - All exported from `src/components/layout/index.ts`.
+
+- **`src/hooks/useBulkAction.ts`** — Orchestrates a bulk-action request lifecycle.
+  - Accepts a `perform` async function, manages `loading / error / result` state, exposes `execute` and `reset`.
+  - Exported from `@/hooks` with tests in `src/hooks/__tests__/useBulkAction.test.ts`.
+
+- **`src/hooks/useBulkSelection.ts`** — Multi-select state manager for data tables.
+  - Tracks a `Set<string>` of selected IDs; exposes `toggle`, `selectAll`, `clearAll`, `isSelected`, `selectedCount`.
+  - Exported from `@/hooks` with tests in `src/hooks/__tests__/useBulkSelection.test.ts`.
+
+- **`src/hooks/usePendingTable.ts`** — Staged filter state bridge for filter panels with an explicit Apply button.
+  - Composes `usePendingFilters` + `useUrlTable`; returns `pendingTable`, `filterActiveCount`, `onFilterApply`, `onFilterClear`.
+  - Exported from `@/hooks` with tests in `src/hooks/__tests__/usePendingTable.test.ts`.
+
+- **`ERROR_MESSAGES.REALTIME.*`** — New section in `src/constants/error-messages.ts`:
+  - `INIT_FAILED`, `CONNECTION_LOST`, `TIMED_OUT`, `OPERATION_FAILED` — used by `useRealtimeEvent` defaults.
+- **`ERROR_MESSAGES.AUTH`** additions: `SIGNIN_INIT_FAILED`, `SIGNIN_CONNECTION_LOST`, `SIGNIN_TIMED_OUT` — used by `useAuthEvent`.
+- **`ERROR_MESSAGES.CHECKOUT`** additions: `PAYMENT_DECLINED`, `PAYMENT_TRACKING_INIT_FAILED`, `PAYMENT_TRACKING_CONNECTION_LOST`, `PAYMENT_TRACKING_TIMED_OUT`, `PAYMENT_NOT_COMPLETED` — used by `usePaymentEvent` and the payment webhook.
+
+- **i18n** — Extended `messages/en.json` and `messages/hi.json` (383 additions each, in sync):
+  - `filters.*` — all filter-panel field labels, boolean display values, status labels.
+  - `userAccount.*` — account info card labels (`accountInfo`, `emailAddress`, `userId`, `accountCreated`, `lastLogin`, `never`).
+  - `notifications.*` — `error`, `subtitle`, `unreadCount`, `searchPlaceholder`, `filterLabel`, `filterUnread`, `filterRead`.
+
+### Removed
+
+- **`src/components/about/`** — deleted; replaced by `src/features/about/`.
+- **`src/components/contact/`** — deleted; replaced by `src/features/contact/`.
+- **`src/components/faq/`** — deleted (10 files + tests); replaced by `src/features/faq/`.
+- **`src/components/homepage/`** — deleted (18 files + tests); replaced by `src/features/homepage/`.
+- **`src/components/promotions/`** — deleted (4 files + tests); replaced by `src/features/promotions/`.
+- **`src/components/search/`** — deleted (4 files + tests); replaced by `src/features/search/components/`.
+- **`src/components/ui/AddressSelectorCreate.tsx`**, **`CategorySelectorCreate.tsx`**, **`EventBanner.tsx`**, **`NotificationBell.tsx`** — deleted; moved to correct feature modules.
+- **`src/components/products/ProductImageGallery.tsx`** — deleted; moved to `src/features/products/`.
+- **`src/components/products/ProductFilters.tsx`** — deleted; replaced by `src/components/filters/` tier-1 primitives.
+
+### Fixed
+
+- **`src/hooks/useRealtimeEvent.ts`** — `DEFAULT_MESSAGES` was hardcoded English strings; replaced with `ERROR_MESSAGES.REALTIME.*` constants.
+- **`src/hooks/useAuthEvent.ts`** — message overrides were hardcoded English strings; replaced with `ERROR_MESSAGES.AUTH.SIGNIN_*` constants.
+- **`src/hooks/usePaymentEvent.ts`** — message overrides were hardcoded English strings; replaced with `ERROR_MESSAGES.CHECKOUT.PAYMENT_TRACKING_*` constants.
+- **`src/app/api/payment/webhook/route.ts`** — `"Payment was declined."` was a hardcoded string; replaced with `ERROR_MESSAGES.CHECKOUT.PAYMENT_DECLINED`.
+
+---
+
+## [2026-03-06] — Seed Data — Full Relationship Enrichment Pass
+
+### Fixed
+
+- **`carousel-slides-seed-data.ts`** — Fixed hard break: `createdBy` was `"user_admin_001"` (old underscore format, non-existent user) on all 6 slides → corrected to `"user-admin-user-admin"`.
+- **`events-seed-data.ts`** — Community gear poll (`event-community-poll-gear-2026-poll`) status was `ACTIVE` despite ending 28 Feb → set to `ENDED`.
+- **`site-settings-seed-data.ts`** — Return policy feature text was "7-Day Return Policy" → updated to "14-Day Return Policy" (synced with blog post `blog-buyer-seller-protection-policy-updates-updates`).
+- **`coupons-seed-data.ts`** — SAVE20, ELECTRONICS15, MEGA1000, BUY2GET1, IPHONE100, TECHHUB15 all had `isActive: true` after expiry → set to `false`. Fixed invalid date `2026-02-29` (Feb 2026 is not a leap year) on TECHHUB15 → `2026-02-28`.
+- **`addresses-seed-data.ts`** — `addr-meera-home-1707400012` had `fullName: "Meera Nair"` after user was renamed to Vikram Nair → corrected to `"Vikram Nair"`.
+
+### Added
+
+- **`coupons-seed-data.ts`** — Added `FASHION10` (coupon-FASHION-MAR10) for Fashion Boutique and `HOME15` (coupon-HOME-ESSENTIALS-MAR) for Home Essentials — both active March 2026.
+- **`addresses-seed-data.ts`** — Added addresses for 6 previously unaddressed users: Fashion Boutique (Studio, Bandra), Home Essentials (Warehouse, Jaipur), Ananya Bose (Kolkata), Pooja Mehta (Mumbai), Ravi Kumar (Chandigarh), Sneha Gupta (Lucknow). Added Jane Smith's Delhi address to align with her existing orders.
+- **`sessions-seed-data.ts`** — Added 7 new active sessions: Fashion Boutique seller, Vikram Nair (active), Raj Patel (active), Ananya Bose (iOS), Pooja Mehta (desktop), Ravi Kumar (Android), Sneha Gupta (Firefox).
+- **`reviews-seed-data.ts`** — Added 4 reviews from new buyers: Ananya Bose (iPhone), Pooja Mehta (Kurti), Ravi Kumar (MacBook Pro), Sneha Gupta (Cookware Set).
+- **`notifications-seed-data.ts`** — Added welcome notifications for Ananya, Pooja, Ravi, Sneha. Added bid/auction notifications for PS5, Hermès scarf, MacBook M3, Dyson V15 auctions. Added auction-ending alert for TechHub seller.
+- **`categories-seed-data.ts`** — Populated all `auctionIds` arrays with all 20 auction product IDs across their correct categories. Updated `auctionCount`, `totalAuctionCount`, and `totalItemCount` for all 11 affected categories (electronics root, mobiles, smartphones, laptops, audio, cameras, fashion root, mens-fashion, womens-fashion, home-kitchen, sports-outdoors).
+- **`blog-posts-seed-data.ts`** — Added March 2026 "Auction Spotlight" post (`blog-march-2026-auction-spotlight-news`) by moderator Riya Sharma, covering all 20 live auctions.
+
+---
+
+## [2026-03-06] — `useBulkEvent`: RTDB Bridge for Bulk Actions
+
+### Added
+
+- **`src/hooks/useBulkEvent.ts`** — Thin domain wrapper over `useRealtimeEvent` for the `bulk_events` RTDB channel.
+  - Follows the same pattern as `useAuthEvent` and `usePaymentEvent`.
+  - For long-running bulk operations the server can process items asynchronously, write the final `BulkActionResult` to RTDB, and return `{ jobId, customToken }` immediately from the HTTP route. The client subscribes via this hook.
+  - Generic `<TData>` parameter threads through to `BulkActionResult<TData>` for typed `result.data`.
+  - `extractBulkResult` extractor maps the raw RTDB snapshot to `BulkActionResult` — returns `null` for payloads missing `action` or `summary` (defensive guard).
+  - Timeout: **10 minutes** — generous headroom for the maximum 100-item batch.
+  - Re-exports `RealtimeEventStatus` as `BulkEventStatus` so callers don't need a separate import.
+  - Exported from `@/hooks` barrel: `useBulkEvent`, `UseBulkEventReturn`, `BulkEventStatus`.
+  - Covered by **19 tests** in `src/hooks/__tests__/useBulkEvent.test.ts`.
+
+- **`src/types/api.ts`** — Added `BulkActionJob` interface.
+  - Shape returned by async bulk API routes instead of the full `BulkActionResult`.
+  - `{ jobId: string; customToken: string }` — pass both to `useBulkEvent.subscribe`.
+
+- **`src/lib/firebase/realtime-db.ts`** — Added `BULK_EVENTS: 'bulk_events'` to `RTDB_PATHS`.
+
+- **`database.rules.json`** — Added `bulk_events` security rules.
+  - Client may read a job node only if the custom token encodes `{ bulkJobId: jobId }` matching that exact `$jobId`.
+  - All writes are Admin-only (backend API routes via Admin SDK).
+  - Cleanup strategy documented: Firebase Function `cleanupBulkEvents` (to be added) deletes nodes older than 15 minutes.
 
 ### Changed
+
+- **`src/hooks/useRealtimeEvent.ts`** — Added `BULK: "bulk"` to `RealtimeEventType` const object.
+
+---
+
+## [2026-03-06] — `useRealtimeEvent`: Generic RTDB Event Bridge Hook
+
+### Added
+
+- **`src/hooks/useRealtimeEvent.ts`** — Generic RTDB event bridge hook shared by all event subscriptions.
+  - `RealtimeEventType` const object: `AUTH | PAYMENT | CHAT | BID` — identifies which bridge a hook instance handles; used for logging and future routing logic.
+  - `RealtimeEventStatus` const object: `IDLE | SUBSCRIBING | PENDING | SUCCESS | FAILED | TIMEOUT` — unified status state machine for all RTDB event bridges.
+  - Generic `<TData>` payload support via optional `extractData?: (raw: RTDBEventPayload) => TData | null` — allows auth (no payload) and payment (`orderIds`) to share the same hook without losing type safety.
+  - `configRef` pattern: config is captured in a ref at mount and treated as static, preventing stale closure bugs while keeping `useEffect` deps clean.
+  - Normalises raw RTDB `status === "error"` → `RealtimeEventStatus.FAILED` so legacy server-written payloads continue to work.
+  - Exported from `@/hooks` barrel: `useRealtimeEvent`, `RealtimeEventType`, `RealtimeEventStatus`, `UseRealtimeEventConfig`, `UseRealtimeEventReturn`, `RTDBEventPayload`, `RealtimeEventMessages`.
+  - Covered by 13 tests in `src/hooks/__tests__/useRealtimeEvent.test.ts`.
+
+### Changed
+
+- **`src/hooks/useAuthEvent.ts`** refactored as a thin domain wrapper over `useRealtimeEvent`.
+  - Reduced from ~185 lines to ~65 lines.
+  - **Breaking**: terminal failure status renamed from `"error"` to `"failed"` to match `RealtimeEventStatus.FAILED`. The hook's `AuthEventStatus` type re-exports `RealtimeEventStatus` for backward-compatible typing. All internal callers (`useAuth.ts`) already use `"failed"`.
+- **`src/hooks/usePaymentEvent.ts`** refactored as a thin domain wrapper over `useRealtimeEvent`.
+  - Reduced from ~210 lines to ~65 lines.
+  - Domain-specific `extractOrderIds` extractor maps `raw.orderIds` to `data: string[] | null`.
+- **`docs/AUTH.md`** — State machine diagram and code example updated: `"error"` → `"failed"`.
+- **`docs/PAYMENT.md`** — `usePaymentEvent` section updated to document the `useRealtimeEvent` base and the `RealtimeEventStatus` enum.
+- **`docs/GUIDE.md`** — Hook reference updated for `useAuthEvent`, `usePaymentEvent`, and new `useRealtimeEvent`.
+
+---
+
+## [Unreleased-prev]
+
+### Added
+
+- **`docs/BULK_ACTIONS.md` — comprehensive bulk actions specification**
+  - Documents every bulk action endpoint (existing and planned) across admin, seller, and user tiers.
+  - Covers: conventions, route naming, request/response shape, RBAC matrix, per-domain action tables, repository quick reference, `unitOfWork` patterns, Zod schema templates, API endpoint and message constants to add, and the full 132-route API file inventory.
+  - Existing implementations documented: `POST /api/seller/orders/bulk` (`request_payout`), `PATCH /api/notifications/read-all`.
+  - New route files to create: 16 bulk endpoints across admin, seller, and user domains.
+
+- **`ConfirmDeleteModal` — `variant` prop for bulk-action confirmations**
+  - New `variant?: "danger" | "warning" | "primary"` prop (default: `"danger"`).
+  - `"danger"`: red icon + `danger` button + "Deleting..." loading text (existing behaviour — no breaking change).
+  - `"warning"`: amber icon + `warning` button + "Processing..." loading text — for reversible bulk actions (archive, cancel).
+  - `"primary"`: blue icon + `primary` button + "Processing..." loading text — for non-destructive bulk actions (publish, approve).
+  - Use `ConfirmDeleteModal` for all bulk-action confirmations (not just deletes) by passing the appropriate `variant` + custom `title`, `message`, and `confirmText`.
+  - Tests updated in `src/components/modals/__tests__/ConfirmDeleteModal.test.tsx`.
+  - `docs/GUIDE.md` updated with full variant table and usage examples.
+
+- **`MediaAvatar` Tier 1 media primitive** (`src/components/media/MediaAvatar.tsx`)
+  - New component for displaying user / seller / brand profile pictures.
+  - Accepts `src?: string`, `alt: string`, `size?: 'sm'|'md'|'lg'|'xl'`, `className?: string`.
+  - Manages its own circular sizing — no wrapper div needed at call sites.
+  - Exported from `@/components` via `src/components/media/index.ts`.
+  - Tested in `src/components/media/__tests__/MediaAvatar.test.tsx` (8 tests).
+
+### Fixed
+
+- **Rule 28 (Media primitives) violations resolved** across 14 files:
+  - Replaced all raw `import Image from "next/image"` + `<Image fill>` usages with `<MediaImage>`, `<MediaAvatar>`, or `<MediaVideo>` from `@/components` in:
+    - `src/features/blog/components/BlogPostView.tsx`
+    - `src/features/homepage/components/FeaturedProductsSection.tsx`
+    - `src/features/homepage/components/FeaturedAuctionsSection.tsx`
+    - `src/features/homepage/components/TopCategoriesSection.tsx`
+    - `src/features/homepage/components/HeroCarousel.tsx` (also fixed raw `<video>` → `<MediaVideo>`)
+    - `src/features/cart/components/CartItemRow.tsx`
+    - `src/features/cart/components/CheckoutOrderReview.tsx`
+    - `src/features/admin/components/UserTableColumns.tsx`
+    - `src/features/admin/components/CarouselTableColumns.tsx`
+    - `src/components/products/ProductTableColumns.tsx`
+    - `src/features/products/components/ProductReviews.tsx`
+    - `src/features/user/components/PublicProfileView.tsx`
+    - `src/features/seller/components/SellerStorefrontView.tsx`
+    - `src/components/categories/CategoryForm.tsx`
+
+- **Rule 33 (i18n) violations resolved** — hardcoded English strings in JSX replaced with `useTranslations()`:
+  - `BlogPostView.tsx`: breadcrumb "Blog", views count suffix, back button text.
+  - `FeaturedProductsSection.tsx`: "Featured" badge label.
+  - `FeaturedAuctionsSection.tsx`: "No end date", "Ended", bid count string.
+  - `TopCategoriesSection.tsx`: "{n} products" product count string.
+  - `CarouselTableColumns.tsx`: column headers (Cards, Title, Image, Status), status labels (Active, Inactive), action labels.
+  - `CategoryForm.tsx`: "Slug", "Description" form field labels, "Category Image" label and `ImageUpload` props, "Recommended: 400x300px" helper text. Added `useTranslations("adminCategories")`.
+  - `ProductReviews.tsx`: review photo `alt` text (was templateLiteral, now `t("reviewPhotoAlt")`).
+
+- **`CarouselTableColumns` converted from factory to hook** (`getCarouselTableColumns` → `useCarouselTableColumns`):
+  - Added `"use client"` directive; now a proper React hook with `useTranslations` inside.
+  - Updated `AdminCarouselView.tsx`, `index.ts` barrel, and 2 test files accordingly.
+
+- **Translation keys added** to both `messages/en.json` and `messages/hi.json`:
+  - `blog.viewsLabel`
+  - `homepage.promoted`, `homepage.auctionNoEndDate`, `homepage.auctionEnded`, `homepage.bidCount`, `homepage.categoryProductCount`
+  - `products.reviewPhotoAlt`
+  - `adminCarousel.colCards`, `adminCarousel.colTitle`, `adminCarousel.colImage`, `adminCarousel.colStatus`, `adminCarousel.statusActive`, `adminCarousel.statusInactive`
+  - `adminCategories.slug`, `adminCategories.description`, `adminCategories.categoryImage`, `adminCategories.imageRecommended`
+
+  - `POST /api/payment/event/init` — Requires session. Accepts `{ razorpayOrderId }`, creates `/payment_events/{razorpayOrderId}` node in Realtime DB with `status:'pending'`, issues a per-event custom token with claim `{ paymentEventId: razorpayOrderId }`. The Razorpay order ID is the node key so the webhook can signal it directly with no secondary lookup.
+  - `src/hooks/usePaymentEvent.ts` — Client hook. Subscribes to `/payment_events/{eventId}` via Realtime DB custom token on the secondary `realtimeApp` instance. States: `'idle' | 'subscribing' | 'pending' | 'success' | 'failed' | 'timeout'` with a 5-minute hard timeout. Returns `{ status, error, orderIds, subscribe, reset }`.
+  - `src/services/payment-event.service.ts` — `paymentEventService.initPaymentEvent(razorpayOrderId)` calls `POST /api/payment/event/init`.
+  - `functions/src/jobs/cleanupPaymentEvents.ts` — Cloud Function (every 5 min) — deletes stale RTDB `payment_events` nodes older than 15 minutes.
+  - `API_ENDPOINTS.PAYMENT.EVENT_INIT` constant added.
+  - `usePaymentEvent` and `PaymentEventStatus` exported from `@/hooks`.
+  - `paymentEventService` and `PaymentEventResponse` exported from `@/services`.
+  - `cleanupPaymentEvents` exported from `functions/src/index.ts` and added to dispatch table.
+
+### Changed
+
+- **`POST /api/payment/verify`** — After successful order creation, signals `/payment_events/{razorpayOrderId}` with `{ status:'success', orderIds }` via Admin RTDB (fire-and-forget; non-critical if it fails).
+- **`POST /api/payment/webhook`** — On `payment.captured`: signals RTDB `{ status:'success' }` as a fallback for the client. On `payment.failed`: signals RTDB `{ status:'failed', error }` so `usePaymentEvent` can surface the decline to the user.
+  - `POST /api/auth/event/init` — Creates a Realtime DB auth event node and issues a per-event custom token (synthetic UID `auth_event_{uuid}`, claim `{ authEventId }`, 5-min TTL). No session required.
+  - `GET /api/auth/google/start` — Validates the `eventId`, checks RTDB pending status, redirects popup to Google's OAuth consent screen.
+  - `GET /api/auth/google/callback` — Full server-side code exchange with `google-auth-library`; finds/creates Firebase Auth user and Firestore profile; exchanges custom token for ID token; creates session cookie; writes RTDB outcome; redirects popup to `/auth/close`.
+  - `GET /api/auth/apple/start` — Same as Google start but targets Apple's Sign In endpoint with `response_mode=form_post`.
+  - `POST /api/auth/apple/callback` — Apple's `form_post` callback. Verifies `id_token` using Apple's JWKS, finds/creates user, creates session cookie, writes RTDB outcome.
+  - `src/app/[locale]/auth/close/page.tsx` — Popup close page (`window.close()` in `useEffect`). Shows brief translated status while closing.
+  - `src/hooks/useAuthEvent.ts` — Client hook. Subscribes to `/auth_events/{eventId}` via Realtime DB custom token auth on the secondary `realtimeApp` instance. Handles `'idle' | 'subscribing' | 'pending' | 'success' | 'error' | 'timeout'` states with a 2-minute hard timeout and full cleanup on terminal state.
+  - `src/services/auth-event.service.ts` — `authEventService.initAuthEvent()` calling `POST /api/auth/event/init`.
+  - `functions/src/jobs/cleanupAuthEvents.ts` — Cloud Function (every 5 min) — deletes stale RTDB `auth_events` nodes older than 3 minutes.
+  - `SCHEDULES.EVERY_5_MIN` added to `functions/src/config/constants.ts`.
+  - `database.rules.json` — Added `auth_events` (client read-only, scoped to `auth.token.authEventId == $eventId`) and `payment_events` (same pattern for future payment bridge) rules.
+  - `RTDB_PATHS.AUTH_EVENTS` and `RTDB_PATHS.PAYMENT_EVENTS` added to `src/lib/firebase/realtime-db.ts`.
+  - `API_ENDPOINTS.AUTH`: `EVENT_INIT`, `GOOGLE_START`, `GOOGLE_CALLBACK`, `APPLE_START`, `APPLE_CALLBACK`.
+  - `ERROR_MESSAGES.AUTH`: `AUTH_EVENT_MISSING`, `AUTH_EVENT_EXPIRED`, `OAUTH_STATE_INVALID`, `OAUTH_CODE_EXCHANGE_FAILED`, `OAUTH_USER_INFO_FAILED`, `APPLE_TOKEN_INVALID`, `GOOGLE_TOKEN_INVALID`, `PAYMENT_EVENT_MISSING`.
+  - `SUCCESS_MESSAGES.AUTH`: `GOOGLE_LOGIN_SUCCESS`, `APPLE_LOGIN_SUCCESS`, `OAUTH_SESSION_CREATED`.
+  - `ERROR_MESSAGES.GENERIC.RATE_LIMIT_EXCEEDED` constant added.
+  - `messages/en.json` and `messages/hi.json` — Added `auth.oauth` namespace with keys: `signInWithGoogle`, `signInWithApple`, `signingIn`, `authSuccess`, `authTimeout`, `closing`, `closeError`.
+
+### Fixed
+
+- `AdminCouponsView` and `AdminFaqsView` — removed duplicate `filterActiveCount` redeclarations (stale dead code; the value was already supplied by `usePendingTable`).
+
+- **Rule 33 (i18n) — hardcoded strings replaced with `useTranslations` in 7 components** — All user-visible hardcoded English strings in the following files were replaced with `next-intl` `useTranslations()` calls:
+  - `src/features/cart/components/CartItemRow.tsx` — `aria-label` decrease/increase quantity buttons.
+  - `src/features/stores/components/StoreNavTabs.tsx` — `aria-label` on the store `<Nav>`.
+  - `src/features/admin/components/AdminSessionsManager.tsx` — Error state title/body, 4 stats-card labels and values (raw `<div>` → `<Text>`), table section heading and description, "Revoke" / "Revoke All" button labels.
+  - `src/features/admin/components/UserDetailDrawer.tsx` — "No name" fallback, "Email Not Verified" caption, all field label captions (User ID, Login Count, Joined, Last Login), "Never" fallback, login count pluralisation, and role-button labels (via `tRoles` on the `roles` namespace).
+  - `src/features/events/components/EventFormDrawer.tsx` — Validation error string "Title is required."
+  - `src/features/user/components/PublicProfileView.tsx` — "Auction" badge text, "on" conjunction in "reviewed on" copy.
+  - `src/components/user/AccountInfoCard.tsx` — Section heading "Account Information" and all four field labels (Email Address, User ID, Account Created, Last Login); "Never" fallback for null dates.
+- **New i18n keys added to `messages/en.json` and `messages/hi.json`** — Added identical-structure keys under the following namespaces to support the above fixes:
+  - `adminSessions`: `loadErrorTitle`, `loadError`, `revoke`, `revokeAll`
+  - `adminUsers`: `noName`, `loginTimesCount` (ICU plural)
+  - `adminEvents.form`: `titleRequired`
+  - `profile`: `auctionBadge`, `reviewedOn`
+- **Test mocks updated to match component changes** — Four test files had incomplete `@/components` mocks or missing `next-intl` mocks that caused failures when the components began using `next-intl` and Typography primitives (`Text`, `Heading`, `Caption`, `Label`, `AvatarDisplay`):
+  - `src/features/admin/components/__tests__/AdminSessionsManager.test.tsx` — Changed barrel import to direct import (breaking circular reference); added `next-intl` mock.
+  - `src/components/admin/__tests__/AdminSessionsManager.test.tsx` — Same fix.
+  - `src/features/admin/components/__tests__/UserDetailDrawer.test.tsx` — Added `Heading`, `Text`, `Caption`, `Label`, `AvatarDisplay` to `@/components` mock.
+  - `src/features/events/components/__tests__/EventFormDrawer.test.tsx` — Added `Input`, `Label`, `Select`, `Text` to `@/components` mock.
+
+### Added
+
+- **Filter section components for all repositories** — Added 17 new Tier 1 filter panel components in `src/components/filters/` (plus a barrel `index.ts` and export via `src/components/index.ts`). Each accepts a `table: UrlTable` prop and renders `FilterFacetSection` items for every filterable enum/boolean field in the repository's `SIEVE_FIELDS`, plus a `RangeFilter` for numeric/date ranges. Each also exports a `XXX_SORT_OPTIONS` constant array. New components: `UserFilters`, `OrderFilters` (with `variant="admin"|"seller"` prop), `ReviewFilters`, `BlogFilters`, `CategoryFilters`, `BidFilters`, `SessionFilters`, `FaqFilters`, `CouponFilters`, `EventFilters`, `EventEntryFilters`, `CarouselFilters`, `HomepageSectionFilters`, `NewsletterFilters`, `NotificationFilters`, `PayoutFilters`, `RipCoinFilters`. The existing `ProductFilters` is also exported through the new barrel.
+- **~170 new `filters` i18n keys** — Added to both `messages/en.json` and `messages/hi.json` under the `filters` namespace: all enum value labels, boolean label pairs, section title keys, and placeholder strings used by the new filter components.
+- **17 filter component test suites** — Added `__tests__/*.test.tsx` files in `src/components/filters/__tests__/` for all 17 new filter components (37 tests total, all passing).
+
+### Changed
+
+- **`StoreProductsView` migrated to new `ProductFilters`** — `src/features/stores/components/StoreProductsView.tsx` now uses the new `ProductFilters` (table-based API) instead of the deleted legacy version. Pass `table={table}` and `categoryOptions` instead of individual prop callbacks.
+
+### Removed
+
+- **Legacy `src/components/products/ProductFilters.tsx` deleted** — Superseded by `src/components/filters/ProductFilters.tsx` (the modern `UrlTable`-based sieve filter). Its test file was also removed.
+
+- **Sieve Query System documentation** — Added comprehensive `### Sieve Query System` section in `docs/GUIDE.md` (§7 Repositories) covering: `SieveModel` interface, filter operators table, sort syntax, `FirebaseSieveResult` shape, `SIEVE_FIELDS` definition pattern, per-repository filterable/sortable field reference (Product, Order, Review, Blog, Bid, Notification, User), standard GET list API route pattern, `useUrlTable` + service call integration pattern, and comparison of `sieveQuery()` vs `applySieveToArray()`.
+
+- **Firebase composite indexes** — Added 14 new composite indexes to `firestore.indexes.json` to support Sieve sort/filter operations: 7 `orders` indexes (`sellerId+createdAt`, `sellerId+status+createdAt`, `sellerId+paymentStatus+createdAt`, `sellerId+paymentMethod+createdAt`, `sellerId+status+paymentStatus+createdAt`, `sellerId+totalPrice DESC/ASC`); 5 `products` indexes (`status+price ASC/DESC`, `status+category+price ASC/DESC`, `isAuction+status+currentBid DESC`, `isAuction+status+bidCount DESC`); 2 `reviews` indexes (`status+rating DESC`, `status+rating+createdAt DESC`).
+
+- **Hindi translations parity (`messages/hi.json`)** — Added missing keys across 8 namespaces to match `en.json`: `notifications` (subtitle, unreadCount, searchPlaceholder, filterLabel, filterUnread, filterRead), `products` (priceUnder500, price500to2000, price2000to10000, priceOver10000, colTitle, colPrice, colStatus), `auctions` (colTitle, colCurrentBid, colEnds, colBids), `orders` (colProduct), `blog` (colTitle, colAuthor, colPublishedAt), `reviews` (colUser, colProduct, colDate), `sellerAuctions` (6 sort labels), `sellerOrders` (payment status/method filter labels and sort labels).
+
+### Changed
+
+- **Listing pages — unified `ListingLayout` pattern** — Migrated all public, seller, and user listing views to the `ListingLayout` component pattern with: `FilterDrawer` + `FilterFacetSection` filter groups, staged filter state (applied on button click, not on every URL change), `ActiveFilterChips` row, `Search` via `useUrlTable`, `SortDropdown`, view toggle (`DataTable` `showViewToggle`), and `TablePagination`. Affected views: `ProductsView`, `AuctionsView`, `SellerAuctionsView`, `CategoryProductsView`, `BlogListView`, `ReviewsListView`, `SellerOrdersView`, `UserOrdersView`, `UserNotificationsView`.
+
+- **Color palette redesign — Lime Green (light) / Hot Pink (dark)** — Swapped brand color tokens to match Beyblade artwork references:
+  - `primary` = Lime Green (600=`#509c02`) — light mode accent; `secondary` = Hot Pink/Magenta (500=`#e91e8c`) — dark mode accent. Former primary cobalt blue extracted to new `cobalt` token.
+  - `tailwind.config.js`: primary/secondary palettes swapped; added `cobalt` color scale; added `./src/features/**` to Tailwind content scan; updated `boxShadow.glow` to lime, added `glow-pink` for dark mode.
+  - `globals.css`: light-mode `--color-primary` = `80 156 2` (lime); dark-mode `--color-primary` = `233 30 140` (hot pink).
+  - `src/constants/theme.ts`: `colors.button.primary` changed from zinc-based to `bg-primary-600 dark:bg-secondary-500 dark:text-white`; `colors.button.secondary` similarly updated; `accent.primary` — fixed critical `dark:text-primary-950` (dark green text on pink, invisible) → `dark:text-white`; chat bubble `mine` same fix; form `checkmark` same fix; `colors.brand.logo` updated to use `cobalt-600/700` to preserve blue logo.
+- **Homepage FAQ bug fix** — `FAQSection.tsx`: Question `<Button>` was missing `variant="ghost"`, causing it to defaulting to `primary` variant which in dark mode applied a cream background with the child `<Span>`'s white text becoming invisible (white-on-white). Added `variant="ghost"`. Also replaced hardcoded `bg-blue-600` "View All" link classes with `THEME_CONSTANTS.accent.primary`.
+- **FAQAccordion hover bug fix** — `FAQAccordion.tsx`: Template literal `hover:${THEME_CONSTANTS.themed.bgTertiary}` expanded to `hover:bg-zinc-100 dark:bg-slate-800` where the `dark:` class had no `hover:` prefix, making every row permanently darker in dark mode. Replaced with `${THEME_CONSTANTS.themed.hover}` (`hover:bg-zinc-100 dark:hover:bg-slate-800`).
+- **CategoriesListView import fix** — `CategoryGrid` was incorrectly imported from `@/components` (Tier 1); corrected to relative import `./CategoryGrid` within the feature (pre-existing TS error, now fixed).
 
 - **P2-2 – P2-6: Feature-module migration (architecture)** — Migrated domain view components from `src/components/` into their respective `src/features/<domain>/components/` directories following the three-tier architecture:
   - **P2-2 products**: `ProductInfo`, `ProductReviews`, `ProductActions`, `ProductFeatureBadges`, `RelatedProducts`, `AddToCartButton` → `features/products/components/`. `ProductCard`, `ProductGrid`, `ProductFilters`, `ProductSortBar` retained in `src/components/products/` (Tier 1 — used cross-feature).
@@ -340,8 +644,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `src/components/events/EventCard.tsx` — added video-first media: renders `<MediaVideo autoPlayMuted loop>` when `event.video` is set; falls back to `<MediaImage className="...">`.
 - `src/features/seller/components/SellerProductCard.tsx` — added video badge overlay and video-first display: renders `<MediaVideo autoPlayMuted loop>` when `product.video` is set; falls back to `<MediaImage className="...">`.
 - `src/types/admin.ts` — added optional `video?: VideoData` field to `AdminProduct` type to match `ProductDocument`.
-
-
 
 ## [Unreleased-2] — Raw HTML Primitive Audit & Fix (Part 3)
 

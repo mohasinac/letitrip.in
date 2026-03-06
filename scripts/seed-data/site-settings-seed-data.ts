@@ -107,7 +107,7 @@ export const siteSettingsSeedData: Partial<SiteSettingsDocument> = {
     {
       id: "feature_005",
       name: "Easy Returns",
-      description: "7-Day Return Policy",
+      description: "14-Day Return Policy",
       icon: "↩️",
       enabled: true,
     },

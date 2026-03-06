@@ -2,13 +2,8 @@
 
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import {
-  ContactInfoSidebar,
-  ContactForm,
-  Heading,
-  Text,
-  Section,
-} from "@/components";
+import { ContactInfoSidebar, ContactForm } from "@/features/contact";
+import { Heading, Text, Section } from "@/components";
 
 const { themed, page } = THEME_CONSTANTS;
 

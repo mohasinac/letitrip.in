@@ -47,8 +47,14 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
     () => [
       { value: PRODUCT_SORT_VALUES.NEWEST, label: tProducts("sortNewest") },
       { value: PRODUCT_SORT_VALUES.OLDEST, label: tProducts("sortOldest") },
-      { value: PRODUCT_SORT_VALUES.PRICE_LOW, label: tProducts("sortPriceLow") },
-      { value: PRODUCT_SORT_VALUES.PRICE_HIGH, label: tProducts("sortPriceHigh") },
+      {
+        value: PRODUCT_SORT_VALUES.PRICE_LOW,
+        label: tProducts("sortPriceLow"),
+      },
+      {
+        value: PRODUCT_SORT_VALUES.PRICE_HIGH,
+        label: tProducts("sortPriceHigh"),
+      },
       { value: PRODUCT_SORT_VALUES.NAME_AZ, label: tProducts("sortNameAZ") },
       { value: PRODUCT_SORT_VALUES.NAME_ZA, label: tProducts("sortNameZA") },
     ],
@@ -72,7 +78,14 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
     if (q) sp.set("q", q);
 
     return sp.toString();
-  }, [pageParam, sortParam, categoryParam, minPriceParam, maxPriceParam, table]);
+  }, [
+    pageParam,
+    sortParam,
+    categoryParam,
+    minPriceParam,
+    maxPriceParam,
+    table,
+  ]);
 
   const { data, isLoading, error } = useStoreProducts(storeSlug, apiParams);
 
@@ -86,7 +99,9 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
     if (!items.length) return [];
     const cats = new Set(
       items
-        .map((p) => (p as Record<string, unknown>).category as string | undefined)
+        .map(
+          (p) => (p as Record<string, unknown>).category as string | undefined,
+        )
         .filter(Boolean),
     );
     return [...cats].sort() as string[];
@@ -136,15 +151,8 @@ export function StoreProductsView({ storeSlug }: StoreProductsViewProps) {
       }
       filterContent={
         <ProductFilters
-          category={categoryParam}
-          categories={allCategories}
-          minPrice={minPriceParam}
-          maxPrice={maxPriceParam}
-          onCategoryChange={(v) => table.set("category", v)}
-          onMinPriceChange={(v) => table.set("minPrice", v)}
-          onMaxPriceChange={(v) => table.set("maxPrice", v)}
-          onClear={clearFilters}
-          hasActiveFilters={hasActiveFilters}
+          table={table}
+          categoryOptions={allCategories.map((c) => ({ value: c, label: c }))}
         />
       }
       filterActiveCount={activeFilters.length}

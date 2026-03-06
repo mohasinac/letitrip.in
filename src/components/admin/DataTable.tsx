@@ -42,6 +42,7 @@ interface DataTableProps<T> {
   // Mobile view
   mobileCardRender?: (item: T) => ReactNode;
   // Custom empty state
+  emptyState?: ReactNode;
   emptyIcon?: ReactNode;
   emptyTitle?: string;
   // Table enhancements
@@ -77,6 +78,7 @@ export function DataTable<T extends Record<string, any>>({
   pageSize = 10,
   showPagination = true,
   mobileCardRender,
+  emptyState,
   emptyIcon,
   emptyTitle,
   stickyHeader = false,
@@ -173,6 +175,9 @@ export function DataTable<T extends Record<string, any>>({
   }
 
   if (data.length === 0) {
+    if (emptyState) {
+      return <>{emptyState}</>;
+    }
     return (
       <div
         className={`border ${THEME_CONSTANTS.themed.borderColor} rounded-lg overflow-hidden`}

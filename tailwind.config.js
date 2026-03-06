@@ -6,6 +6,7 @@ module.exports = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/constants/**/*.{js,ts,jsx,tsx}",
+    "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   safelist: [
     // Zinc neutrals (light mode)
@@ -38,23 +39,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Theme Colors - Vibrant palette for better personality
+        // Theme Colors — dual-mode palette inspired by Beyblade artwork
         primary: {
-          // Cobalt Blue — deep royal blue (Beyblade body)
-          50: "#eef5ff",
-          100: "#d9e8ff",
-          200: "#bcd4ff",
-          300: "#8eb9ff",
-          400: "#5992ff",
-          500: "#3570fc",
-          600: "#1a55f2",
-          700: "#1343de",
-          800: "#1536b4",
-          900: "#18318e",
-          950: "#111e58",
-        },
-        secondary: {
-          // Chartreuse/Lime Green — vibrant energy (Beyblade blades)
+          // Lime Green — light mode energy accent (Beyblade green blades)
           50: "#f3ffe3",
           100: "#e4ffc5",
           200: "#c8ff90",
@@ -66,6 +53,34 @@ module.exports = {
           800: "#345e0d",
           900: "#2c5011",
           950: "#142d03",
+        },
+        secondary: {
+          // Hot Pink / Magenta — dark mode accent (pink Beyblade blades)
+          50: "#fdf0f8",
+          100: "#fce2f2",
+          200: "#fac6e6",
+          300: "#f79dd2",
+          400: "#f063b9",
+          500: "#e91e8c",
+          600: "#d4107a",
+          700: "#b00d66",
+          800: "#900f56",
+          900: "#771249",
+          950: "#480525",
+        },
+        cobalt: {
+          // Cobalt Blue — former primary, used for links & nav accents
+          50: "#eef5ff",
+          100: "#d9e8ff",
+          200: "#bcd4ff",
+          300: "#8eb9ff",
+          400: "#5992ff",
+          500: "#3570fc",
+          600: "#1a55f2",
+          700: "#1343de",
+          800: "#1536b4",
+          900: "#18318e",
+          950: "#111e58",
         },
         accent: {
           // Metallic Steel — silver edges (Beyblade frame)
@@ -99,7 +114,8 @@ module.exports = {
       },
       boxShadow: {
         soft: "0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)",
-        glow: "0 0 20px rgba(53, 112, 252, 0.5)",
+        glow: "0 0 20px rgba(80, 156, 2, 0.45)",
+        "glow-pink": "0 0 20px rgba(233, 30, 140, 0.5)",
         "inner-soft": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)",
       },
       transitionDuration: {

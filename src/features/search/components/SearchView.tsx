@@ -7,7 +7,6 @@ import {
   FilterDrawer,
   FilterFacetSection,
   ActiveFilterChips,
-  SearchResultsSection,
   EmptyState,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
@@ -17,6 +16,7 @@ import { useTranslations } from "next-intl";
 import { useUrlTable } from "@/hooks";
 import { useSearch } from "@/features/search";
 import type { ProductSortValue } from "@/components";
+import { SearchResultsSection } from "./SearchResultsSection";
 
 const { themed, spacing, page } = THEME_CONSTANTS;
 
@@ -112,6 +112,7 @@ export function SearchView() {
           value={table.get("q")}
           onChange={(v) => table.set("q", v)}
           placeholder={t("searchInputPlaceholder")}
+          deferred={false}
           debounceMs={DEBOUNCE_MS}
           className="w-full h-12"
         />

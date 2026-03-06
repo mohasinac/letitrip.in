@@ -60,7 +60,7 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
     validity: {
       startDate: new Date("2026-02-01T00:00:00Z"),
       endDate: new Date("2026-02-28T23:59:59Z"),
-      isActive: true,
+      isActive: false,
     },
     restrictions: {
       firstTimeUserOnly: false,
@@ -94,7 +94,7 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
     validity: {
       startDate: new Date("2026-02-05T00:00:00Z"),
       endDate: new Date("2026-02-20T23:59:59Z"),
-      isActive: true,
+      isActive: false,
     },
     restrictions: {
       applicableCategories: ["category-electronics"],
@@ -163,7 +163,7 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
     validity: {
       startDate: new Date("2026-02-01T00:00:00Z"),
       endDate: new Date("2026-02-15T23:59:59Z"),
-      isActive: true,
+      isActive: false,
     },
     restrictions: {
       firstTimeUserOnly: false,
@@ -242,7 +242,7 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
     validity: {
       startDate: new Date("2026-02-01T00:00:00Z"),
       endDate: new Date("2026-02-28T23:59:59Z"),
-      isActive: true,
+      isActive: false,
     },
     restrictions: {
       applicableCategories: [
@@ -282,7 +282,7 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
     validity: {
       startDate: new Date("2026-02-05T00:00:00Z"),
       endDate: new Date("2026-02-15T23:59:59Z"),
-      isActive: true,
+      isActive: false,
     },
     restrictions: {
       applicableProducts: [
@@ -356,8 +356,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
     },
     validity: {
       startDate: new Date("2026-02-01T00:00:00Z"),
-      endDate: new Date("2026-02-29T23:59:59Z"),
-      isActive: true,
+      endDate: new Date("2026-02-28T23:59:59Z"),
+      isActive: false,
     },
     restrictions: {
       applicableSellers: ["user-techhub-electronics-electron"],
@@ -403,6 +403,80 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2026-02-22T10:00:00Z"),
     updatedAt: new Date("2026-02-22T10:00:00Z"),
+    stats: {
+      totalUses: 0,
+      totalRevenue: 0,
+      totalDiscount: 0,
+    },
+  },
+
+  // Fashion Boutique — seller-specific March sale coupon
+  {
+    id: "coupon-FASHION-MAR10",
+    code: "FASHION10",
+    name: "Fashion Boutique March Offer",
+    description: "10% off all Fashion Boutique products in March",
+    type: "percentage",
+    discount: {
+      value: 10,
+      maxDiscount: 1500,
+      minPurchase: 1000,
+    },
+    usage: {
+      totalLimit: 300,
+      perUserLimit: 2,
+      currentUsage: 0,
+    },
+    validity: {
+      startDate: new Date("2026-03-01T00:00:00Z"),
+      endDate: new Date("2026-03-31T23:59:59Z"),
+      isActive: true,
+    },
+    restrictions: {
+      applicableSellers: ["user-fashion-boutique-fashionb"],
+      firstTimeUserOnly: false,
+      combineWithSellerCoupons: false,
+    },
+    createdBy: "user-admin-user-admin",
+    createdAt: new Date("2026-02-25T10:00:00Z"),
+    updatedAt: new Date("2026-02-25T10:00:00Z"),
+    stats: {
+      totalUses: 0,
+      totalRevenue: 0,
+      totalDiscount: 0,
+    },
+  },
+
+  // Home Essentials — seller-specific coupon for home & sports categories
+  {
+    id: "coupon-HOME-ESSENTIALS-MAR",
+    code: "HOME15",
+    name: "Home Essentials March Deal",
+    description: "15% off Home Essentials products above ₹2000",
+    type: "percentage",
+    discount: {
+      value: 15,
+      maxDiscount: 2000,
+      minPurchase: 2000,
+    },
+    usage: {
+      totalLimit: 200,
+      perUserLimit: 1,
+      currentUsage: 0,
+    },
+    validity: {
+      startDate: new Date("2026-03-01T00:00:00Z"),
+      endDate: new Date("2026-03-31T23:59:59Z"),
+      isActive: true,
+    },
+    restrictions: {
+      applicableSellers: ["user-home-essentials-homeesse"],
+      firstTimeUserOnly: false,
+      combineWithSellerCoupons: false,
+    },
+    createdBy: "user-admin-user-admin",
+    createdAt: new Date("2026-02-25T10:00:00Z"),
+    updatedAt: new Date("2026-02-25T10:00:00Z"),
     stats: {
       totalUses: 0,
       totalRevenue: 0,

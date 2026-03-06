@@ -11,8 +11,8 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useMessage, useUrlTable } from "@/hooks";
-import { useAdminProducts } from "@/features/admin/hooks";
+import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
+import { useAdminProducts, useAdminCategories } from "@/features/admin/hooks";
 import { ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { useTranslations } from "next-intl";
@@ -23,9 +23,9 @@ import {
   Card,
   DataTable,
   DrawerFormFooter,
-  FilterFacetSection,
   ListingLayout,
   MediaImage,
+  ProductFilters,
   Search,
   SideDrawer,
   StatusBadge,
@@ -43,42 +43,45 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
   const router = useRouter();
   const t = useTranslations("adminProducts");
   const tActions = useTranslations("actions");
-  const tStatus = useTranslations("status");
   const { showError } = useMessage();
   const table = useUrlTable({
     defaults: { pageSize: "25", sort: "-createdAt" },
   });
   const searchTerm = table.get("q");
   const statusFilter = table.get("status");
+  const categoryFilter = table.get("category");
+  const conditionFilter = table.get("condition");
+  const brandFilter = table.get("brand");
+  const minPrice = table.get("minPrice");
+  const maxPrice = table.get("maxPrice");
 
-  // ── Staged filter state (applied on button click, not live) ─────────
-  const [stagedStatus, setStagedStatus] = useState<string[]>(
-    statusFilter ? [statusFilter] : [],
-  );
+  // ── Pending filter state (values staged until Apply is clicked) ──────
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, [
+      "status",
+      "category",
+      "condition",
+      "brand",
+      "minPrice",
+      "maxPrice",
+    ]);
 
-  // Sync staged state when URL changes externally (back/forward nav)
-  useEffect(() => {
-    setStagedStatus(statusFilter ? [statusFilter] : []);
-  }, [statusFilter]);
-
-  const handleFilterApply = useCallback(() => {
-    table.setMany({
-      status: stagedStatus[0] ?? "",
-      page: "1",
-    });
-  }, [stagedStatus, table]);
-
-  const handleFilterClear = useCallback(() => {
-    setStagedStatus([]);
-    table.setMany({ status: "", page: "1" });
-  }, [table]);
-
-  const filterActiveCount = statusFilter ? 1 : 0;
+  // ── Category options from API ────────────────────────────────────────
+  const { data: categoriesData } = useAdminCategories();
+  const categoryOptions = (categoriesData?.categories ?? []).map((c) => ({
+    value: c.id,
+    label: c.name,
+  }));
 
   // ── Data fetching ───────────────────────────────────────────────────
   const filtersArr: string[] = [];
   if (searchTerm) filtersArr.push(`title@=*${searchTerm}`);
   if (statusFilter) filtersArr.push(`status==${statusFilter}`);
+  if (categoryFilter) filtersArr.push(`category==${categoryFilter}`);
+  if (conditionFilter) filtersArr.push(`condition==${conditionFilter}`);
+  if (brandFilter) filtersArr.push(`brand@=*${brandFilter}`);
+  if (minPrice) filtersArr.push(`price>=${minPrice}`);
+  if (maxPrice) filtersArr.push(`price<=${maxPrice}`);
 
   const {
     data,
@@ -256,16 +259,6 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
       <DrawerFormFooter onCancel={handleCloseDrawer} onSubmit={handleSave} />
     );
 
-  // ── Status filter options for FilterFacetSection ─────────────────────
-  const statusOptions = useMemo(
-    () => [
-      { value: "draft", label: tStatus("draft") },
-      { value: "published", label: tStatus("published") },
-      { value: "archived", label: tStatus("archived") },
-    ],
-    [tStatus],
-  );
-
   return (
     <>
       <ListingLayout
@@ -285,17 +278,15 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
           />
         }
         filterContent={
-          <FilterFacetSection
-            title={t("formStatus")}
-            options={statusOptions}
-            selected={stagedStatus}
-            onChange={setStagedStatus}
-            searchable={false}
+          <ProductFilters
+            table={pendingTable}
+            showStatus
+            categoryOptions={categoryOptions}
           />
         }
         filterActiveCount={filterActiveCount}
-        onFilterApply={handleFilterApply}
-        onFilterClear={handleFilterClear}
+        onFilterApply={onFilterApply}
+        onFilterClear={onFilterClear}
         loading={isLoading}
         errorSlot={
           error ? (
@@ -304,7 +295,9 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
                 <Text variant="error" className="mb-4">
                   {error.message}
                 </Text>
-                <Button onClick={() => refetch()}>{tActions("retry")}</Button>
+                <Button variant="outline" onClick={() => refetch()}>
+                  {tActions("retry")}
+                </Button>
               </div>
             </Card>
           ) : undefined
@@ -328,9 +321,7 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
           actions={actions}
           externalPagination
           showViewToggle
-          viewMode={
-            (table.get("view") || "table") as "table" | "grid" | "list"
-          }
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(product) => (
             <Card

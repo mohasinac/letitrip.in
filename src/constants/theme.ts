@@ -114,7 +114,7 @@ export const THEME_CONSTANTS = {
       "hover:shadow-md dark:hover:shadow-xl cursor-pointer transition-shadow duration-200",
     /** Chat message bubble variants */
     chatBubble: {
-      mine: "bg-primary-600 text-white dark:bg-secondary-500 dark:text-primary-950 rounded-2xl rounded-br-sm",
+      mine: "bg-primary-600 text-white dark:bg-secondary-500 dark:text-white rounded-2xl rounded-br-sm",
       theirs: "bg-gray-100 dark:bg-slate-800 rounded-2xl rounded-bl-sm",
     },
   },
@@ -378,7 +378,8 @@ export const THEME_CONSTANTS = {
    * Vibrant accent colors for CTAs and highlighting
    */
   accent: {
-    primary: "bg-primary-600 hover:bg-primary-700 text-white dark:bg-secondary-500 dark:hover:bg-secondary-600 dark:text-primary-950",
+    primary:
+      "bg-primary-600 hover:bg-primary-700 text-white dark:bg-secondary-500 dark:hover:bg-secondary-400 dark:text-white",
     primarySoft:
       "bg-primary-50 text-primary-700 dark:bg-secondary-900/30 dark:text-secondary-300",
     secondary: "bg-secondary-600 hover:bg-secondary-700 text-white",
@@ -502,7 +503,7 @@ export const THEME_CONSTANTS = {
   colors: {
     // Brand colors
     brand: {
-      logo: "bg-gradient-to-br from-primary-600 to-primary-700",
+      logo: "bg-gradient-to-br from-cobalt-600 to-cobalt-700",
       logoText: "text-white",
     },
     // Badge colors
@@ -553,9 +554,9 @@ export const THEME_CONSTANTS = {
     // Button colors — flat design, no gradients, clean hover states
     button: {
       primary:
-        "bg-zinc-900 text-white hover:bg-zinc-700 active:bg-zinc-800 shadow-sm focus:ring-zinc-500 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:active:bg-zinc-300 dark:focus:ring-zinc-400",
+        "bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-sm focus:ring-primary-500/30 dark:bg-secondary-500 dark:text-white dark:hover:bg-secondary-400 dark:active:bg-secondary-600 dark:focus:ring-secondary-400/30",
       secondary:
-        "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 shadow-sm focus:ring-zinc-500",
+        "bg-primary-700 text-white hover:bg-primary-600 active:bg-primary-800 shadow-md focus:ring-primary-500 dark:bg-secondary-700 dark:text-white dark:hover:bg-secondary-600 dark:active:bg-secondary-800 dark:focus:ring-secondary-500",
       outline:
         "border border-zinc-200 dark:border-slate-700 bg-white dark:bg-transparent text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-slate-800 focus:ring-zinc-400",
       ghost:
@@ -568,9 +569,11 @@ export const THEME_CONSTANTS = {
     },
     // Form colors
     form: {
-      checked: "checked:bg-primary-600 checked:border-primary-600 dark:checked:bg-secondary-500 dark:checked:border-secondary-500",
-      radioChecked: "checked:border-primary-600 checked:border-[6px] dark:checked:border-secondary-500",
-      checkmark: "text-white dark:text-primary-950",
+      checked:
+        "checked:bg-primary-600 checked:border-primary-600 dark:checked:bg-secondary-500 dark:checked:border-secondary-500",
+      radioChecked:
+        "checked:border-primary-600 checked:border-[6px] dark:checked:border-secondary-500",
+      checkmark: "text-white dark:text-white",
       required: "text-red-500",
       focusRing:
         "focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-secondary-400 dark:focus:ring-offset-slate-900",
@@ -613,28 +616,36 @@ export const THEME_CONSTANTS = {
     },
     // Icon button hovers
     iconButton: {
-      onPrimary: "hover:bg-zinc-100 dark:hover:bg-slate-800 active:bg-zinc-200 dark:active:bg-slate-700",
+      onPrimary:
+        "hover:bg-zinc-100 dark:hover:bg-slate-800 active:bg-zinc-200 dark:active:bg-slate-700",
       onLight:
         "hover:bg-zinc-100 dark:hover:bg-slate-800 active:bg-zinc-200 dark:active:bg-slate-700",
     },
     // Colors for elements rendered on the chrome (navbar, sidebar, titlebar)
     onPrimary: {
-      text:            "text-zinc-900 dark:text-zinc-50",
-      textMuted:       "text-zinc-500 dark:text-zinc-400",
-      textWeak:        "text-zinc-600 dark:text-zinc-400",
-      textSubtle:      "text-zinc-500 dark:text-zinc-500",
-      textIcon:        "text-zinc-400 dark:text-zinc-500",
-      textFaint:       "text-zinc-400 dark:text-zinc-500",
-      brandHover:      "text-zinc-900 dark:text-zinc-50 group-hover:text-zinc-600 dark:group-hover:text-zinc-300",
-      navItemActive:   "bg-zinc-100 dark:bg-slate-800 text-zinc-900 dark:text-zinc-50 shadow-sm",
-      navItemInactive: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-slate-800 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors",
-      iconBgActive:    "bg-zinc-100 dark:bg-slate-700",
-      iconBgInactive:  "bg-transparent group-hover:bg-zinc-100 dark:group-hover:bg-slate-800",
-      divider:         "h-px flex-1 border-zinc-200 dark:border-slate-700",
-      sectionLabel:    "text-zinc-400 dark:text-zinc-500",
-      logoutBtn:       "bg-zinc-100 dark:bg-slate-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400",
-      ghostOutlineBtn: "bg-transparent text-zinc-700 dark:text-zinc-300 border-2 border-zinc-200 dark:border-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800",
-      settingsRow:     "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-slate-800 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors",
+      text: "text-zinc-900 dark:text-zinc-50",
+      textMuted: "text-zinc-500 dark:text-zinc-400",
+      textWeak: "text-zinc-600 dark:text-zinc-400",
+      textSubtle: "text-zinc-500 dark:text-zinc-500",
+      textIcon: "text-zinc-400 dark:text-zinc-500",
+      textFaint: "text-zinc-400 dark:text-zinc-500",
+      brandHover:
+        "text-zinc-900 dark:text-zinc-50 group-hover:text-zinc-600 dark:group-hover:text-zinc-300",
+      navItemActive:
+        "bg-zinc-100 dark:bg-slate-800 text-zinc-900 dark:text-zinc-50 shadow-sm",
+      navItemInactive:
+        "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-slate-800 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors",
+      iconBgActive: "bg-zinc-100 dark:bg-slate-700",
+      iconBgInactive:
+        "bg-transparent group-hover:bg-zinc-100 dark:group-hover:bg-slate-800",
+      divider: "h-px flex-1 border-zinc-200 dark:border-slate-700",
+      sectionLabel: "text-zinc-400 dark:text-zinc-500",
+      logoutBtn:
+        "bg-zinc-100 dark:bg-slate-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400",
+      ghostOutlineBtn:
+        "bg-transparent text-zinc-700 dark:text-zinc-300 border-2 border-zinc-200 dark:border-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800",
+      settingsRow:
+        "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-slate-800 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors",
     },
   },
 

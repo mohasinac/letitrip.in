@@ -10,7 +10,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useUrlTable } from "@/hooks";
+import { useUrlTable, usePendingTable } from "@/hooks";
 import { useAdminUsers } from "@/features/admin/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -21,14 +21,17 @@ import {
   Card,
   ConfirmDeleteModal,
   DataTable,
+  ListingLayout,
   RoleBadge,
+  Search,
   Span,
   StatusBadge,
   TablePagination,
   Text,
   useToast,
+  UserFilters,
 } from "@/components";
-import { UserDetailDrawer, UserFilters, useUserTableColumns } from ".";
+import { UserDetailDrawer, useUserTableColumns } from ".";
 import type { AdminUser, UserTab } from ".";
 
 interface AdminUsersViewProps {
@@ -46,7 +49,24 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
   });
   const activeTab = (table.get("tab") || "all") as UserTab;
   const searchTerm = table.get("q");
-  const roleFilter = table.get("role") || "all";
+  const roleFilter = table.get("role");
+  const emailVerifiedFilter = table.get("emailVerified");
+  const disabledFilter = table.get("disabled");
+  const storeStatusFilter = table.get("storeStatus");
+  const createdFrom = table.get("createdFrom");
+  const createdTo = table.get("createdTo");
+
+  // ── Pending filter state (staged until Apply is clicked) ──────────────
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, [
+      "role",
+      "emailVerified",
+      "disabled",
+      "storeStatus",
+      "createdFrom",
+      "createdTo",
+    ]);
+
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -61,10 +81,16 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
   // Build Sieve filter string
   const filtersArr: string[] = [];
   if (activeTab === "active") filtersArr.push("disabled==false");
-  if (activeTab === "banned") filtersArr.push("disabled==true");
+  else if (activeTab === "banned") filtersArr.push("disabled==true");
+  else if (disabledFilter) filtersArr.push(`disabled==${disabledFilter}`);
   if (activeTab === "admins") filtersArr.push("role==admin");
-  else if (roleFilter !== "all") filtersArr.push(`role==${roleFilter}`);
+  else if (roleFilter) filtersArr.push(`role==${roleFilter}`);
   if (searchTerm) filtersArr.push(`(displayName|email)@=*${searchTerm}`);
+  if (emailVerifiedFilter)
+    filtersArr.push(`emailVerified==${emailVerifiedFilter}`);
+  if (storeStatusFilter) filtersArr.push(`storeStatus==${storeStatusFilter}`);
+  if (createdFrom) filtersArr.push(`createdAt>=${createdFrom}`);
+  if (createdTo) filtersArr.push(`createdAt<=${createdTo}`);
   const filtersParam = filtersArr.join(",");
 
   const {
@@ -194,29 +220,59 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
           subtitle={`${t("subtitle")} (${total} total)`}
         />
 
-        <UserFilters
-          activeTab={activeTab}
-          onTabChange={(tab) => table.set("tab", tab)}
-          searchTerm={searchTerm}
-          onSearchChange={(v) => table.set("q", v)}
-          roleFilter={roleFilter}
-          onRoleFilterChange={(r) => table.set("role", r)}
-          isAdminsTab={activeTab === "admins"}
-        />
-
-        {isLoading ? (
-          <Card>
-            <div className="text-center py-8">{tLoading("default")}</div>
-          </Card>
-        ) : error ? (
-          <Card>
-            <div className="text-center py-8">
-              <Text className="text-red-600 mb-4">{error.message}</Text>
-              <Button onClick={() => refetch()}>{tActions("retry")}</Button>
+        <ListingLayout
+          statusTabsSlot={
+            <div className="flex flex-wrap gap-2">
+              {(["all", "active", "banned", "admins"] as UserTab[]).map(
+                (tab) => (
+                  <Button
+                    key={tab}
+                    variant={activeTab === tab ? "primary" : "ghost"}
+                    size="sm"
+                    onClick={() => table.set("tab", tab === "all" ? "" : tab)}
+                  >
+                    {t(`tab_${tab}`)}
+                  </Button>
+                ),
+              )}
             </div>
-          </Card>
-        ) : (
-          <>
+          }
+          searchSlot={
+            <Search
+              value={searchTerm}
+              onChange={(v) => table.set("q", v)}
+              placeholder={t("searchPlaceholder")}
+            />
+          }
+          filterContent={<UserFilters table={pendingTable} />}
+          filterActiveCount={filterActiveCount}
+          onFilterApply={onFilterApply}
+          onFilterClear={onFilterClear}
+          paginationSlot={
+            <TablePagination
+              currentPage={data?.meta?.page ?? 1}
+              totalPages={data?.meta?.totalPages ?? 1}
+              pageSize={table.getNumber("pageSize", 25)}
+              total={data?.meta?.total ?? 0}
+              onPageChange={table.setPage}
+              onPageSizeChange={table.setPageSize}
+            />
+          }
+        >
+          {isLoading ? (
+            <Card>
+              <div className="text-center py-8">{tLoading("default")}</div>
+            </Card>
+          ) : error ? (
+            <Card>
+              <div className="text-center py-8">
+                <Text className="text-red-600 mb-4">{error.message}</Text>
+                <Button variant="outline" onClick={() => refetch()}>
+                  {tActions("retry")}
+                </Button>
+              </div>
+            </Card>
+          ) : (
             <DataTable
               data={users}
               columns={columns}
@@ -225,7 +281,9 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
               actions={actions}
               externalPagination
               showViewToggle
-              viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+              viewMode={
+                (table.get("view") || "table") as "table" | "grid" | "list"
+              }
               onViewModeChange={(mode) => table.set("view", mode)}
               mobileCardRender={(user) => (
                 <Card
@@ -235,33 +293,31 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center flex-shrink-0">
                       <Span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
-                        {(user.displayName ?? user.email ?? "U")[0].toUpperCase()}
+                        {(user.displayName ??
+                          user.email ??
+                          "U")[0].toUpperCase()}
                       </Span>
                     </div>
                     <div className="min-w-0 flex-1">
                       <Text weight="medium" size="sm" className="truncate">
                         {user.displayName ?? "—"}
                       </Text>
-                      <Caption className="truncate">{user.email ?? "—"}</Caption>
+                      <Caption className="truncate">
+                        {user.email ?? "—"}
+                      </Caption>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <RoleBadge role={user.role} />
-                    <StatusBadge status={user.disabled ? "inactive" : "active"} />
+                    <StatusBadge
+                      status={user.disabled ? "inactive" : "active"}
+                    />
                   </div>
                 </Card>
               )}
             />
-            <TablePagination
-              currentPage={data?.meta?.page ?? 1}
-              totalPages={data?.meta?.totalPages ?? 1}
-              pageSize={table.getNumber("pageSize", 25)}
-              total={data?.meta?.total ?? 0}
-              onPageChange={table.setPage}
-              onPageSizeChange={table.setPageSize}
-            />
-          </>
-        )}
+          )}
+        </ListingLayout>
       </div>
 
       <UserDetailDrawer

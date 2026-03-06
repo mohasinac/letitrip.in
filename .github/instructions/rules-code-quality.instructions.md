@@ -1,0 +1,70 @@
+---
+applyTo: "src/**"
+description: "No alert/confirm, structured logging, no backward compatibility, build verification, tests as you go. Rules 22, 23, 24, 26, 27."
+---
+
+# Code Quality Rules
+
+## RULE 22: No Native Dialogs
+
+| ❌ Never       | ✅ Use instead                           |
+| -------------- | ---------------------------------------- |
+| `alert(msg)`   | `useMessage()` from `@/hooks`            |
+| `confirm(msg)` | `ConfirmDeleteModal` from `@/components` |
+| `prompt(msg)`  | Custom form in `Modal`                   |
+
+## RULE 23: Structured Logging
+
+`console.log()` is FORBIDDEN in production code.
+
+| Context             | Use            | Import                |
+| ------------------- | -------------- | --------------------- |
+| Client-side         | `logger`       | `@/classes`           |
+| Server / API routes | `serverLogger` | `@/lib/server-logger` |
+
+## RULE 24: No Backward Compatibility
+
+Delete old code when replacing it. No exceptions.
+
+- No `@deprecated` JSDoc stubs — delete the code
+- No compatibility shims (`export const formatPrice = formatCurrency` — update call sites instead)
+- No dual implementations or feature flags for old behaviour
+- Modern JS/CSS only — no polyfills, no `@supports` fallbacks, no manual vendor prefixes
+
+## RULE 26: Build Verification (mandatory after EVERY change)
+
+Run in this exact order — never skip steps:
+
+```powershell
+# 1. Type-check changed file(s)
+npx tsc --noEmit src/path/to/changed-file.tsx
+
+# 2. Full type-check
+npx tsc --noEmit
+
+# 3. Production build
+npm run build
+```
+
+All three must pass with 0 errors before the task is done. Never hand back with outstanding TS errors or a failing build.
+
+## RULE 27: Tests As You Go
+
+- **New file** → create `__tests__/<filename>.test.ts(x)` alongside it
+- **Modified file** → update existing test to cover the change
+- **Deleted file** → delete its test file
+- Tests live next to code: `src/features/products/hooks/__tests__/useProducts.test.ts`
+- After writing tests: `npm test -- --testPathPattern=<changed-file>`
+- Do NOT batch test-writing — write each test when each file is done
+
+```typescript
+// Pattern
+describe("useProducts", () => {
+  it("returns product list on success", async () => {
+    /* arrange/act/assert */
+  });
+  it("propagates error state", async () => {
+    /* arrange/act/assert */
+  });
+});
+```

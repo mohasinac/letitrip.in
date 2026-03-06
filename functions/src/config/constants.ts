@@ -38,6 +38,12 @@ export const SCHEDULES = {
   /** Payout batch sweep — early morning before business hours */
   DAILY_0600: "0 6 * * *",
 
+  /**
+   * Auth event cleanup — every 5 minutes.
+   * Removes stale RTDB auth_events nodes (older than 3 min) from abandoned popup sessions.
+   */
+  EVERY_5_MIN: "every 5 minutes",
+
   /** Abandoned cart prune — Sunday 04:00 UTC */
   WEEKLY_SUN_0400: "0 4 * * 0",
 

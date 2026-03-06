@@ -92,7 +92,11 @@ export function SellerCreateProductView() {
             >
               {t("cancel")}
             </Button>
-            <Button type="submit" disabled={isLoading || !product.title}>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isLoading || !product.title}
+            >
               {isLoading ? t("saving") : t("saveListing")}
             </Button>
           </div>

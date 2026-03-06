@@ -4,10 +4,10 @@ import { useApiQuery } from "@/hooks";
 import { blogService } from "@/services";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import {
   Card,
   Button,
+  MediaImage,
   Spinner,
   Heading,
   Text,
@@ -78,13 +78,11 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
       {/* Cover image */}
       {post.coverImage && (
         <div className="relative h-72 md:h-96 overflow-hidden">
-          <Image
+          <MediaImage
             src={post.coverImage}
             alt={post.title}
-            fill
+            size="hero"
             priority
-            className="object-cover"
-            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         </div>
@@ -99,7 +97,7 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
             href={ROUTES.PUBLIC.BLOG}
             className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           >
-            Blog
+            {t("title")}
           </TextLink>
           <Span>/</Span>
           <Span className="capitalize">{post.category}</Span>
@@ -145,7 +143,9 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
                 {t("publishedOn")} {formatDate(post.publishedAt)}
               </Span>
             )}
-            <Span variant="secondary">{post.views} views</Span>
+            <Span variant="secondary">
+              {post.views} {t("viewsLabel")}
+            </Span>
           </div>
         </div>
 
@@ -188,14 +188,13 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
                   className="block group"
                 >
                   <Card className="hover:shadow-md transition-shadow duration-200 overflow-hidden">
-                  {rel.coverImage && (
+                    {rel.coverImage && (
                       <div className="relative h-32 overflow-hidden">
-                        <Image
+                        <MediaImage
                           src={rel.coverImage}
                           alt={rel.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          sizes="(max-width: 640px) 100vw, 33vw"
+                          size="card"
+                          className="group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
                     )}
@@ -220,7 +219,7 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
         {/* Back link */}
         <div className="mt-10 pt-8 border-t border-gray-200 dark:border-gray-700">
           <TextLink href={ROUTES.PUBLIC.BLOG}>
-            <Button variant="outline">&larr; {tActions("back")} to Blog</Button>
+            <Button variant="outline">{t("backToBlog")}</Button>
           </TextLink>
         </div>
       </div>

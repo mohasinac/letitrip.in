@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import FAQPage from "../page";
 
 // Mock the FAQ components
-jest.mock("@/components/faq/FAQCategorySidebar", () => ({
+jest.mock("@/features/faq/components/FAQCategorySidebar", () => ({
   FAQCategorySidebar: ({
     selectedCategory,
     onCategorySelect,
@@ -25,20 +25,7 @@ jest.mock("@/components/faq/FAQCategorySidebar", () => ({
   },
 }));
 
-jest.mock("@/components/faq/FAQSearchBar", () => ({
-  FAQSearchBar: ({ query, onSearch, onClear }: any) => (
-    <div data-testid="faq-search-bar">
-      <input
-        data-testid="search-input"
-        value={query}
-        onChange={(e) => onSearch(e.target.value)}
-      />
-      <button onClick={onClear}>Clear</button>
-    </div>
-  ),
-}));
-
-jest.mock("@/components/faq/FAQSortDropdown", () => ({
+jest.mock("@/features/faq/components/FAQSortDropdown", () => ({
   FAQSortDropdown: ({ sortOption, onSortChange }: any) => (
     <div data-testid="faq-sort-dropdown">
       <select
@@ -54,7 +41,7 @@ jest.mock("@/components/faq/FAQSortDropdown", () => ({
   ),
 }));
 
-jest.mock("@/components/faq/FAQAccordion", () => ({
+jest.mock("@/features/faq/components/FAQAccordion", () => ({
   FAQAccordion: ({ faqs }: any) =>
     faqs.length === 0 ? (
       <div data-testid="faq-accordion">
@@ -72,7 +59,7 @@ jest.mock("@/components/faq/FAQAccordion", () => ({
     ),
 }));
 
-jest.mock("@/components/faq/ContactCTA", () => ({
+jest.mock("@/features/faq/components/ContactCTA", () => ({
   ContactCTA: () => <div data-testid="contact-cta">Contact Support</div>,
 }));
 

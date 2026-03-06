@@ -122,6 +122,7 @@ export default function BackgroundSettings({
             {(["color", "gradient", "image", "video"] as const).map((type) => (
               <Button
                 key={type}
+                variant="ghost"
                 onClick={() => updateConfig({ type })}
                 className={`px-4 py-3 rounded-lg border-2 transition-all capitalize ${
                   config.type === type
@@ -190,6 +191,7 @@ export default function BackgroundSettings({
                 {gradientPresets.map((preset) => (
                   <Button
                     key={preset.name}
+                    variant="ghost"
                     onClick={() => updateConfig({ value: preset.value })}
                     className={`relative h-20 rounded-lg border-2 ${THEME_CONSTANTS.themed.border} hover:border-blue-500 overflow-hidden transition-all group`}
                     style={{ background: preset.value }}

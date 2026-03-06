@@ -8,15 +8,19 @@
 
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useMemo, useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import {
+  ActiveFilterChips,
   Spinner,
-  Input,
   DataTable,
-  AdminFilterBar,
+  FilterFacetSection,
+  ListingLayout,
+  Search,
+  SortDropdown,
   TablePagination,
 } from "@/components";
+import type { ActiveFilter } from "@/components";
 import { Gavel } from "lucide-react";
 import { useAuth, useApiQuery, useUrlTable } from "@/hooks";
 import { sellerService } from "@/services";
@@ -52,12 +56,46 @@ function SellerAuctionsContent() {
   }, [user, authLoading, router]);
 
   const q = table.get("q");
+  const statusFilter = table.get("status");
   const page = table.getNumber("page", 1);
   const pageSize = table.getNumber("pageSize", 24);
   const sorts = table.get("sorts") || "-createdAt";
 
+  const sortOptions = useMemo(
+    () => [
+      { value: "-createdAt", label: t("sortNewest") },
+      { value: "createdAt", label: t("sortOldest") },
+      { value: "auctionEndDate", label: t("sortEndingSoon") },
+      { value: "-auctionEndDate", label: t("sortEndingLatest") },
+      { value: "price", label: t("sortPriceLow") },
+      { value: "-price", label: t("sortPriceHigh") },
+    ],
+    [t],
+  );
+
+  const activeFilters = useMemo<ActiveFilter[]>(() => {
+    if (!statusFilter) return [];
+    const opts = [
+      { value: "draft", label: t("filterStatusDraft") },
+      { value: "published", label: t("filterStatusActive") },
+      { value: "ended", label: t("filterStatusEnded") },
+      { value: "cancelled", label: t("filterStatusCancelled") },
+    ];
+    const label =
+      opts.find((o) => o.value === statusFilter)?.label ?? statusFilter;
+    return [{ key: "status", label: t("filterStatusLabel"), value: label }];
+  }, [statusFilter, t]);
+
+  const [stagedStatus, setStagedStatus] = useState<string[]>(
+    statusFilter ? [statusFilter] : [],
+  );
+  useEffect(() => {
+    setStagedStatus(statusFilter ? [statusFilter] : []);
+  }, [statusFilter]);
+
   const filtersArr = ["isAuction==true"];
-  if (q) filtersArr.push(`title_=${q}`);
+  if (q) filtersArr.push(`title@=*${q}`);
+  if (statusFilter) filtersArr.push(`status==${statusFilter}`);
   const params = new URLSearchParams({
     filters: filtersArr.join(","),
     sorts,
@@ -83,46 +121,86 @@ function SellerAuctionsContent() {
 
   return (
     <div className={spacing.stack}>
-      <AdminFilterBar withCard={false}>
-        <Input
-          type="search"
-          value={q}
-          onChange={(e) => table.set("q", e.target.value)}
-          placeholder={t("searchPlaceholder")}
-        />
-      </AdminFilterBar>
-
-      <DataTable
-        columns={columns}
-        data={items}
-        keyExtractor={(item) => item.id}
-        loading={isLoading || authLoading}
-        emptyIcon={<Gavel className="w-16 h-16" />}
-        emptyTitle={t("noAuctions")}
-        showViewToggle
-        viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
-        onViewModeChange={(m) => table.set("view", m)}
-        mobileCardRender={(item) => (
-          <SellerProductCard
-            product={item as any}
-            onEdit={(p) =>
-              router.push(`${ROUTES.SELLER.PRODUCTS}/${p.id}/edit`)
-            }
-            onDelete={() => {}}
+      <ListingLayout
+        searchSlot={
+          <Search
+            value={q}
+            onChange={(v) => table.set("q", v)}
+            placeholder={t("searchPlaceholder")}
           />
-        )}
-      />
-
-      {total > 0 && (
-        <TablePagination
-          total={total}
-          currentPage={page}
-          totalPages={Math.ceil(total / pageSize)}
-          pageSize={pageSize}
-          onPageChange={(p) => table.setPage(p)}
-          onPageSizeChange={(n) => table.set("pageSize", String(n))}
+        }
+        filterContent={
+          <FilterFacetSection
+            title={t("filterStatusLabel")}
+            options={[
+              { value: "draft", label: t("filterStatusDraft") },
+              { value: "published", label: t("filterStatusActive") },
+              { value: "ended", label: t("filterStatusEnded") },
+              { value: "cancelled", label: t("filterStatusCancelled") },
+            ]}
+            selected={stagedStatus}
+            onChange={setStagedStatus}
+          />
+        }
+        filterActiveCount={statusFilter ? 1 : 0}
+        onFilterApply={() => table.setMany({ status: stagedStatus[0] ?? "" })}
+        onFilterClear={() => {
+          setStagedStatus([]);
+          table.setMany({ status: "", q: "" });
+        }}
+        sortSlot={
+          <SortDropdown
+            value={sorts}
+            onChange={table.setSort}
+            options={sortOptions}
+          />
+        }
+        activeFiltersSlot={
+          activeFilters.length > 0 ? (
+            <ActiveFilterChips
+              filters={activeFilters}
+              onRemove={(key) => table.set(key, "")}
+              onClearAll={() => {
+                setStagedStatus([]);
+                table.setMany({ status: "" });
+              }}
+            />
+          ) : undefined
+        }
+        paginationSlot={
+          total > 0 ? (
+            <TablePagination
+              total={total}
+              currentPage={page}
+              totalPages={Math.ceil(total / pageSize)}
+              pageSize={pageSize}
+              onPageChange={(p) => table.setPage(p)}
+              onPageSizeChange={(n) => table.set("pageSize", String(n))}
+            />
+          ) : undefined
+        }
+      >
+        <DataTable
+          columns={columns}
+          data={items}
+          keyExtractor={(item) => item.id}
+          loading={isLoading || authLoading}
+          emptyIcon={<Gavel className="w-16 h-16" />}
+          emptyTitle={t("noAuctions")}
+          showViewToggle
+          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
+          onViewModeChange={(m) => table.set("view", m)}
+          mobileCardRender={(item) => (
+            <SellerProductCard
+              product={item as any}
+              onEdit={(p) =>
+                router.push(`${ROUTES.SELLER.PRODUCTS}/${p.id}/edit`)
+              }
+              onDelete={() => {}}
+            />
+          )}
         />
-      )}
+      </ListingLayout>
     </div>
   );
 }

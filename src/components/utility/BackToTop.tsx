@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { THEME_CONSTANTS } from "@/constants";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components";
 
 /**
@@ -24,6 +25,7 @@ interface BackToTopProps {
 
 export default function BackToTop({ sidebarOpen = false }: BackToTopProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const t = useTranslations("accessibility");
 
   useEffect(() => {
     const toggleVisibility = () => {
@@ -72,7 +74,7 @@ export default function BackToTop({ sidebarOpen = false }: BackToTopProps) {
         group
         ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"}
       `}
-      aria-label="Back to top"
+      aria-label={t("backToTop")}
     >
       <svg
         className="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-y-1 transition-transform"

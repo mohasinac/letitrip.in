@@ -12,6 +12,7 @@
  * - Error handling
  * - Accessibility
  * - Keyboard interaction (Escape to close)
+ * - variant prop (danger / warning / primary) — icon colours, button variant, loading text
  */
 
 import React from "react";
@@ -197,6 +198,90 @@ describe("ConfirmDeleteModal", () => {
         expect(removeButton).toBeInTheDocument();
         expect(keepButton).toBeInTheDocument();
       }
+    });
+  });
+
+  describe("variant prop", () => {
+    it("defaults to danger variant — shows confirmText as-is", () => {
+      render(
+        <ConfirmDeleteModal
+          isOpen={true}
+          title="Delete 3 items"
+          message="This cannot be undone."
+          confirmText="Delete"
+          onConfirm={mockOnConfirm}
+          onClose={mockOnClose}
+        />,
+      );
+      expect(
+        screen.getByRole("button", { name: /delete/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("primary variant — shows confirmText for non-destructive bulk actions", () => {
+      render(
+        <ConfirmDeleteModal
+          isOpen={true}
+          title="Publish 5 items?"
+          message="All 5 selected products will be published."
+          confirmText="Publish"
+          variant="primary"
+          onConfirm={mockOnConfirm}
+          onClose={mockOnClose}
+        />,
+      );
+      expect(
+        screen.getByRole("button", { name: /publish/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("warning variant — shows confirmText for reversible bulk actions", () => {
+      render(
+        <ConfirmDeleteModal
+          isOpen={true}
+          title="Archive 3 items?"
+          message="Items can be restored from the archive."
+          confirmText="Archive"
+          variant="warning"
+          onConfirm={mockOnConfirm}
+          onClose={mockOnClose}
+        />,
+      );
+      expect(
+        screen.getByRole("button", { name: /archive/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("danger variant shows 'Deleting…' while isDeleting is true", () => {
+      render(
+        <ConfirmDeleteModal
+          isOpen={true}
+          title="Delete"
+          message="Confirm?"
+          confirmText="Delete"
+          variant="danger"
+          isDeleting={true}
+          onConfirm={mockOnConfirm}
+          onClose={mockOnClose}
+        />,
+      );
+      expect(screen.getByText("Deleting...")).toBeInTheDocument();
+    });
+
+    it("primary variant shows 'Processing…' while isDeleting is true", () => {
+      render(
+        <ConfirmDeleteModal
+          isOpen={true}
+          title="Publish"
+          message="Confirm?"
+          confirmText="Publish"
+          variant="primary"
+          isDeleting={true}
+          onConfirm={mockOnConfirm}
+          onClose={mockOnClose}
+        />,
+      );
+      expect(screen.getByText("Processing...")).toBeInTheDocument();
     });
   });
 });

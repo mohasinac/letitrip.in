@@ -39,6 +39,7 @@ The `ListingLayout` refactor demonstrated the correct pattern:
 4. **Pages** in `src/app/` — thin shells (< 150 lines) that render a single feature view.
 
 Currently, `src/components/` contains **~105 BUSINESS files** that import domain schemas, domain hooks, or domain services. These must be either:
+
 - **Moved** into `src/features/<domain>/components/` as-is (if the component is entirely business-specific), or
 - **Split** into a generic primitive (stays in `src/components/`) + a business wrapper (moves to `src/features/<domain>/components/`).
 
@@ -155,11 +156,11 @@ src/features/<domain>/components/        ← Tier 2: business views + business s
 
 ## 3. Classification Criteria
 
-| Classification | Definition | Example |
-|----------------|-----------|---------|
-| **GENERIC** | No domain types (`*Document`, `*Status`), no domain hooks (`useAuth`, `useAddToCart`, `useProducts`, etc.), no domain services, no domain routes/endpoints. Only React, THEME_CONSTANTS, Tier 1 hooks (`useClickOutside`, `useSwipe`, etc.), and Tier 1 utilities (`formatCurrency`, `cn`, etc.). | `Button`, `Card`, `ListingLayout`, `DataTable` |
-| **BUSINESS** | Imports domain schema types, domain hooks, domain services, or domain-specific constants. Tied to LetItRip business logic. | `ProductCard`, `CartSummary`, `AdminOrdersView` |
-| **MIXED** | Structurally generic but references site-specific constants (`ROUTES`, `SITE_CONFIG`, `MAIN_NAV_ITEMS`, `TRUST_FEATURES`). No schema types. | `Footer`, `MainNavbar`, `TrustFeaturesSection` |
+| Classification | Definition                                                                                                                                                                                                                                                                                        | Example                                         |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| **GENERIC**    | No domain types (`*Document`, `*Status`), no domain hooks (`useAuth`, `useAddToCart`, `useProducts`, etc.), no domain services, no domain routes/endpoints. Only React, THEME_CONSTANTS, Tier 1 hooks (`useClickOutside`, `useSwipe`, etc.), and Tier 1 utilities (`formatCurrency`, `cn`, etc.). | `Button`, `Card`, `ListingLayout`, `DataTable`  |
+| **BUSINESS**   | Imports domain schema types, domain hooks, domain services, or domain-specific constants. Tied to LetItRip business logic.                                                                                                                                                                        | `ProductCard`, `CartSummary`, `AdminOrdersView` |
+| **MIXED**      | Structurally generic but references site-specific constants (`ROUTES`, `SITE_CONFIG`, `MAIN_NAV_ITEMS`, `TRUST_FEATURES`). No schema types.                                                                                                                                                       | `Footer`, `MainNavbar`, `TrustFeaturesSection`  |
 
 ---
 
@@ -167,78 +168,78 @@ src/features/<domain>/components/        ← Tier 2: business views + business s
 
 ### 4.1 `src/components/` — Full File Count
 
-| Directory | Files | Generic | Business | Mixed |
-|-----------|-------|---------|----------|-------|
-| `ui/` | 34 | 28 | 4 | 2 |
-| `forms/` | 9 | 9 | 0 | 0 |
-| `typography/` | 2 | 2 | 0 | 0 |
-| `semantic/` | 1 | 1 | 0 | 0 |
-| `media/` | 2 | 2 | 0 | 0 |
-| `feedback/` | 3 | 3 | 0 | 0 |
-| `modals/` | 3 | 3 | 0 | 0 |
-| `utility/` | 4 | 4 | 0 | 0 |
-| `layout/` | 9 | 4 | 3 | 2 |
-| `auth/` | 2 | 2 | 0 | 0 |
-| `providers/` | 1 | 1 | 0 | 0 |
-| `admin/` (top-level) | 16 | 10 | 4 | 2 |
-| `admin/` (sub-dirs) | 32 | 4 | 28 | 0 |
-| `products/` | 11 | 1 | 9 | 1 |
-| `auctions/` | 5 | 0 | 5 | 0 |
-| `blog/` | 3 | 0 | 3 | 0 |
-| `cart/` | 4 | 0 | 4 | 0 |
-| `checkout/` | 9 | 3 | 4 | 2 |
-| `categories/` | 2 | 0 | 2 | 0 |
-| `homepage/` | 15 | 1 | 11 | 3 |
-| `reviews/` | 1 | 0 | 1 | 0 |
-| `seller/` | 9 | 0 | 8 | 1 |
-| `search/` | 2 | 0 | 2 | 0 |
-| `contact/` | 2 | 0 | 1 | 1 |
-| `faq/` | 8 | 1 | 5 | 2 |
-| `promotions/` | 2 | 0 | 2 | 0 |
-| `about/` | 1 | 0 | 0 | 1 |
-| `user/` (all subdirs) | 14 | 2 | 12 | 0 |
-| Root files | 6 | 6 | 0 | 0 |
-| **TOTAL** | **~200** | **~86** | **~105** | **~14** |
+| Directory             | Files    | Generic | Business | Mixed   |
+| --------------------- | -------- | ------- | -------- | ------- |
+| `ui/`                 | 34       | 28      | 4        | 2       |
+| `forms/`              | 9        | 9       | 0        | 0       |
+| `typography/`         | 2        | 2       | 0        | 0       |
+| `semantic/`           | 1        | 1       | 0        | 0       |
+| `media/`              | 2        | 2       | 0        | 0       |
+| `feedback/`           | 3        | 3       | 0        | 0       |
+| `modals/`             | 3        | 3       | 0        | 0       |
+| `utility/`            | 4        | 4       | 0        | 0       |
+| `layout/`             | 9        | 4       | 3        | 2       |
+| `auth/`               | 2        | 2       | 0        | 0       |
+| `providers/`          | 1        | 1       | 0        | 0       |
+| `admin/` (top-level)  | 16       | 10      | 4        | 2       |
+| `admin/` (sub-dirs)   | 32       | 4       | 28       | 0       |
+| `products/`           | 11       | 1       | 9        | 1       |
+| `auctions/`           | 5        | 0       | 5        | 0       |
+| `blog/`               | 3        | 0       | 3        | 0       |
+| `cart/`               | 4        | 0       | 4        | 0       |
+| `checkout/`           | 9        | 3       | 4        | 2       |
+| `categories/`         | 2        | 0       | 2        | 0       |
+| `homepage/`           | 15       | 1       | 11       | 3       |
+| `reviews/`            | 1        | 0       | 1        | 0       |
+| `seller/`             | 9        | 0       | 8        | 1       |
+| `search/`             | 2        | 0       | 2        | 0       |
+| `contact/`            | 2        | 0       | 1        | 1       |
+| `faq/`                | 8        | 1       | 5        | 2       |
+| `promotions/`         | 2        | 0       | 2        | 0       |
+| `about/`              | 1        | 0       | 0        | 1       |
+| `user/` (all subdirs) | 14       | 2       | 12       | 0       |
+| Root files            | 6        | 6       | 0        | 0       |
+| **TOTAL**             | **~200** | **~86** | **~105** | **~14** |
 
 ### 4.2 `src/features/` — Existing Components (Already in Place)
 
 These files already live in the correct feature directories. The migration will ADD files alongside these existing views.
 
-| Feature | Existing Components | Count |
-|---------|--------------------|-------|
-| `admin/` | AdminAnalyticsView, AdminBidsView, AdminBlogView, AdminCarouselView, AdminCategoriesView, AdminCouponsView, AdminEventsView, AdminFaqsView, AdminMediaView, AdminOrdersView, AdminPayoutsView, AdminProductsView, AdminReviewsView, AdminSectionsView, AdminSiteView, AdminStoresView, AdminUsersView, DemoSeedView | 18 |
-| `products/` | AuctionsView, ProductDetailView, ProductsView | 3 |
-| `seller/` | SellerAddressesView, SellerAuctionsView, SellerCreateProductView, SellerDashboardView, SellerEditProductView, SellerOrdersView, SellerPayoutSettingsView, SellerProductCard, SellerProductsView, SellerQuickActions, SellerRecentListings, SellerShippingView, SellersListView, SellerStatCard, SellerStoreView | 15 |
-| `user/` | BecomeSellerView, BuyRipCoinsModal, ChatList, ChatWindow, MessagesView, OrderDetailView, RipCoinsWallet, UserAddressesView, UserEditAddressView, UserNotificationsView, UserOrdersView, UserSettingsView | 12 |
-| `auth/` | AuthSocialButtons, ForgotPasswordView, LoginForm, RegisterForm, ResetPasswordView, VerifyEmailView | 6 |
-| `cart/` | CartView | 1 |
-| `search/` | SearchView | 1 |
-| `blog/` | BlogListView, BlogPostView | 2 |
-| `categories/` | CategoriesListView, CategoryProductsView | 2 |
-| `events/` | EntryReviewDrawer, EventCard, EventEntriesTable, EventFormDrawer, EventLeaderboard, EventParticipateView, EventsListView, EventsTable, EventStatsBanner, EventStatusBadge, FeedbackEventSection, PollVotingSection, SurveyEventSection, SurveyFieldBuilder, EventTypeConfig/ | 15+ |
-| `stores/` | StoreAboutView, StoreAuctionsView, StoreCard, StoreHeader, StoreNavTabs, StoreProductsView, StoreReviewsView, StoresListView | 8 |
-| `reviews/` | ReviewsListView | 1 |
-| `wishlist/` | WishlistView | 1 |
+| Feature       | Existing Components                                                                                                                                                                                                                                                                                                 | Count |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| `admin/`      | AdminAnalyticsView, AdminBidsView, AdminBlogView, AdminCarouselView, AdminCategoriesView, AdminCouponsView, AdminEventsView, AdminFaqsView, AdminMediaView, AdminOrdersView, AdminPayoutsView, AdminProductsView, AdminReviewsView, AdminSectionsView, AdminSiteView, AdminStoresView, AdminUsersView, DemoSeedView | 18    |
+| `products/`   | AuctionsView, ProductDetailView, ProductsView                                                                                                                                                                                                                                                                       | 3     |
+| `seller/`     | SellerAddressesView, SellerAuctionsView, SellerCreateProductView, SellerDashboardView, SellerEditProductView, SellerOrdersView, SellerPayoutSettingsView, SellerProductCard, SellerProductsView, SellerQuickActions, SellerRecentListings, SellerShippingView, SellersListView, SellerStatCard, SellerStoreView     | 15    |
+| `user/`       | BecomeSellerView, BuyRipCoinsModal, ChatList, ChatWindow, MessagesView, OrderDetailView, RipCoinsWallet, UserAddressesView, UserEditAddressView, UserNotificationsView, UserOrdersView, UserSettingsView                                                                                                            | 12    |
+| `auth/`       | AuthSocialButtons, ForgotPasswordView, LoginForm, RegisterForm, ResetPasswordView, VerifyEmailView                                                                                                                                                                                                                  | 6     |
+| `cart/`       | CartView                                                                                                                                                                                                                                                                                                            | 1     |
+| `search/`     | SearchView                                                                                                                                                                                                                                                                                                          | 1     |
+| `blog/`       | BlogListView, BlogPostView                                                                                                                                                                                                                                                                                          | 2     |
+| `categories/` | CategoriesListView, CategoryProductsView                                                                                                                                                                                                                                                                            | 2     |
+| `events/`     | EntryReviewDrawer, EventCard, EventEntriesTable, EventFormDrawer, EventLeaderboard, EventParticipateView, EventsListView, EventsTable, EventStatsBanner, EventStatusBadge, FeedbackEventSection, PollVotingSection, SurveyEventSection, SurveyFieldBuilder, EventTypeConfig/                                        | 15+   |
+| `stores/`     | StoreAboutView, StoreAuctionsView, StoreCard, StoreHeader, StoreNavTabs, StoreProductsView, StoreReviewsView, StoresListView                                                                                                                                                                                        | 8     |
+| `reviews/`    | ReviewsListView                                                                                                                                                                                                                                                                                                     | 1     |
+| `wishlist/`   | WishlistView                                                                                                                                                                                                                                                                                                        | 1     |
 
 ### 4.3 Orphan / Empty Files to Delete Immediately
 
 These empty files in `src/components/admin/` are leftover shells:
 
-| File | Size | Action |
-|------|------|--------|
-| `src/components/admin/UserFilters.tsx` | 0 bytes | DELETE |
-| `src/components/admin/FaqForm.tsx` | 0 bytes | DELETE |
+| File                                        | Size    | Action |
+| ------------------------------------------- | ------- | ------ |
+| `src/components/admin/UserFilters.tsx`      | 0 bytes | DELETE |
+| `src/components/admin/FaqForm.tsx`          | 0 bytes | DELETE |
 | `src/components/admin/PayoutStatusForm.tsx` | 0 bytes | DELETE |
 
 ---
 
 ## 5. Classification Summary
 
-| Classification | Count | Action |
-|----------------|-------|--------|
-| **GENERIC** | ~86 | No change — already correct in `src/components/` |
-| **BUSINESS** | ~105 | Move to `src/features/<domain>/components/` |
-| **MIXED** | ~14 | Genericize (accept data via props) or move to features |
+| Classification | Count | Action                                                 |
+| -------------- | ----- | ------------------------------------------------------ |
+| **GENERIC**    | ~86   | No change — already correct in `src/components/`       |
+| **BUSINESS**   | ~105  | Move to `src/features/<domain>/components/`            |
+| **MIXED**      | ~14   | Genericize (accept data via props) or move to features |
 
 ---
 
@@ -247,46 +248,59 @@ These empty files in `src/components/admin/` are leftover shells:
 These files stay exactly where they are. They import ONLY React, THEME_CONSTANTS, Tier 1 hooks, and Tier 1 utilities.
 
 ### `src/components/forms/` (9 files) ✅
+
 Checkbox, Form, Input, Radio, Select, Slider, Textarea, Toggle + index.ts
 
 ### `src/components/typography/` (2 files) ✅
+
 Typography (Heading, Text, Caption, Label, Span), TextLink
 
 ### `src/components/semantic/` (1 file) ✅
+
 Semantic (Section, Article, Main, Aside, Nav, BlockHeader, BlockFooter, Ul, Ol, Li)
 
 ### `src/components/media/` (2 files) ✅
+
 MediaImage, MediaVideo
 
 ### `src/components/feedback/` (3 files) ✅
+
 Alert, Modal, Toast
 
 ### `src/components/modals/` (3 files) ✅
+
 ConfirmDeleteModal, ImageCropModal, UnsavedChangesModal
 
 ### `src/components/utility/` (4 files) ✅
+
 BackToTop, BackgroundRenderer, ResponsiveView, Search
 
 ### `src/components/ui/` (28 of 34 files) ✅
+
 - Accordion, ActiveFilterChips, Avatar, Badge, BulkActionBar, Button, Card, Divider, Dropdown, EmptyState, FilterDrawer, FilterFacetSection, HorizontalScroller, ImageGallery, ListingLayout, Menu, Pagination, Progress, SectionTabs, SideDrawer, Skeleton, SkipToMain, SortDropdown, Spinner, StatusBadge, TablePagination, Tabs, Tooltip
 - Also generic: useHorizontalAutoScroll.ts, useHorizontalScrollDrag.ts
 
 ### `src/components/admin/` top-level generics ✅
+
 - AdminFilterBar, AdminPageHeader, AdminStatsCards, DataTable, DrawerFormFooter, RichTextEditor, GridEditor, CategoryTreeView, BackgroundSettings
 - admin/dashboard/AdminDashboardSkeleton, RecentActivityCard
 - admin/reviews/ReviewStars
 - admin/media/MediaTableColumns, MediaOperationForm
 
 ### `src/components/auth/` (infrastructure — stays Tier 1) ✅
+
 - ProtectedRoute, RoleGate — these are auth infrastructure used across ALL features, not domain business logic
 
 ### `src/components/providers/` (infrastructure — stays Tier 1) ✅
+
 - MonitoringProvider
 
 ### Root-level generics ✅
+
 - ErrorBoundary, FormField, PasswordStrengthIndicator, AvatarUpload, AvatarDisplay, LayoutClient, ZodSetup
 
 ### Misc generics inside business directories ✅ (will be extracted)
+
 - checkout/CheckoutStepper → extract to `ui/StepperNav`
 - checkout/OrderSuccessHero → extract to `ui/` or keep co-located
 - homepage/HomepageSkeleton → extract to `ui/` or move with feature
@@ -300,195 +314,195 @@ BackToTop, BackgroundRenderer, ResponsiveView, Search
 
 ### 7.1 `src/components/products/` → `src/features/products/components/`
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **ProductCard.tsx** | Imports `ProductDocument`, `useWishlistToggle`, `useAddToCart` | MOVE |
-| **ProductGrid.tsx** | Imports `ProductDocument`, renders `ProductCard` | MOVE |
-| **ProductFilters.tsx** | Imports `CategoryDocument` | MOVE |
-| **ProductActions.tsx** | Imports `ProductDocument`, `useAddToCart`, `useWishlistToggle`, `useAuth` | MOVE |
-| **ProductInfo.tsx** | Imports `ProductDocument` | MOVE |
-| **ProductReviews.tsx** | Imports `ReviewDocument`, `reviewService` | MOVE |
-| **ProductSortBar.tsx** | Imports `ProductSortValue` domain type | MOVE |
-| **ProductFeatureBadges.tsx** | Imports `ProductDocument` | MOVE |
-| **RelatedProducts.tsx** | Imports `useRelatedProducts` domain hook | MOVE |
-| **AddToCartButton.tsx** | Imports `useAddToCart` domain hook | MOVE |
-| **ProductImageGallery.tsx** | GENERIC but duplicate of `ui/ImageGallery` | DELETE (use `ImageGallery`) |
+| File                         | Reason                                                                    | Strategy                    |
+| ---------------------------- | ------------------------------------------------------------------------- | --------------------------- |
+| **ProductCard.tsx**          | Imports `ProductDocument`, `useWishlistToggle`, `useAddToCart`            | MOVE                        |
+| **ProductGrid.tsx**          | Imports `ProductDocument`, renders `ProductCard`                          | MOVE                        |
+| **ProductFilters.tsx**       | Imports `CategoryDocument`                                                | MOVE                        |
+| **ProductActions.tsx**       | Imports `ProductDocument`, `useAddToCart`, `useWishlistToggle`, `useAuth` | MOVE                        |
+| **ProductInfo.tsx**          | Imports `ProductDocument`                                                 | MOVE                        |
+| **ProductReviews.tsx**       | Imports `ReviewDocument`, `reviewService`                                 | MOVE                        |
+| **ProductSortBar.tsx**       | Imports `ProductSortValue` domain type                                    | MOVE                        |
+| **ProductFeatureBadges.tsx** | Imports `ProductDocument`                                                 | MOVE                        |
+| **RelatedProducts.tsx**      | Imports `useRelatedProducts` domain hook                                  | MOVE                        |
+| **AddToCartButton.tsx**      | Imports `useAddToCart` domain hook                                        | MOVE                        |
+| **ProductImageGallery.tsx**  | GENERIC but duplicate of `ui/ImageGallery`                                | DELETE (use `ImageGallery`) |
 
 **Result**: Delete `src/components/products/` entirely.
 
 ### 7.2 `src/components/auctions/` → `src/features/products/components/`
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **AuctionCard.tsx** | Imports `ProductDocument`, `BidDocument`, `useCountdown`, `useWishlistToggle` | MOVE |
-| **AuctionGrid.tsx** | Imports `ProductDocument`, `BidDocument` | MOVE |
-| **AuctionDetailView.tsx** | Imports `ProductDocument`, `BidDocument` — full view | MOVE |
-| **BidHistory.tsx** | Imports `BidDocument` | MOVE |
-| **PlaceBidForm.tsx** | Imports `usePlaceBid` domain hook | MOVE |
+| File                      | Reason                                                                        | Strategy |
+| ------------------------- | ----------------------------------------------------------------------------- | -------- |
+| **AuctionCard.tsx**       | Imports `ProductDocument`, `BidDocument`, `useCountdown`, `useWishlistToggle` | MOVE     |
+| **AuctionGrid.tsx**       | Imports `ProductDocument`, `BidDocument`                                      | MOVE     |
+| **AuctionDetailView.tsx** | Imports `ProductDocument`, `BidDocument` — full view                          | MOVE     |
+| **BidHistory.tsx**        | Imports `BidDocument`                                                         | MOVE     |
+| **PlaceBidForm.tsx**      | Imports `usePlaceBid` domain hook                                             | MOVE     |
 
 **Result**: Delete `src/components/auctions/` entirely.
 
 ### 7.3 `src/components/blog/` → `src/features/blog/components/`
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **BlogCard.tsx** | Imports `BlogPostDocument` | MOVE |
-| **BlogCategoryTabs.tsx** | Imports `BlogPostCategory` | MOVE |
-| **BlogFeaturedCard.tsx** | Imports `BlogPostDocument` | MOVE |
+| File                     | Reason                     | Strategy |
+| ------------------------ | -------------------------- | -------- |
+| **BlogCard.tsx**         | Imports `BlogPostDocument` | MOVE     |
+| **BlogCategoryTabs.tsx** | Imports `BlogPostCategory` | MOVE     |
+| **BlogFeaturedCard.tsx** | Imports `BlogPostDocument` | MOVE     |
 
 **Result**: Delete `src/components/blog/` entirely.
 
 ### 7.4 `src/components/cart/` → `src/features/cart/components/`
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **CartItemList.tsx** | Imports `CartItemDocument` | MOVE |
-| **CartItemRow.tsx** | Imports `CartItemDocument` | MOVE |
-| **CartSummary.tsx** | Imports `CartItemDocument` | MOVE |
-| **PromoCodeInput.tsx** | Imports `useCouponValidate` | MOVE |
+| File                   | Reason                      | Strategy |
+| ---------------------- | --------------------------- | -------- |
+| **CartItemList.tsx**   | Imports `CartItemDocument`  | MOVE     |
+| **CartItemRow.tsx**    | Imports `CartItemDocument`  | MOVE     |
+| **CartSummary.tsx**    | Imports `CartItemDocument`  | MOVE     |
+| **PromoCodeInput.tsx** | Imports `useCouponValidate` | MOVE     |
 
 **Result**: Delete `src/components/cart/` entirely.
 
 ### 7.5 `src/components/checkout/` → `src/features/cart/components/`
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **CheckoutView.tsx** | Imports `useCheckout`, `useRazorpay`, `useSiteSettings`, `SiteSettingsDocument` | MOVE |
-| **CheckoutAddressStep.tsx** | Imports `AddressDocument`, `CartItemDocument` | MOVE |
-| **CheckoutOrderReview.tsx** | Imports `CartItemDocument` | MOVE |
-| **CheckoutSuccessView.tsx** | Imports `OrderDocument` | MOVE |
-| **OrderSuccessActions.tsx** | Uses `ROUTES.USER.ORDER_DETAIL` (domain routes) | MOVE |
-| **OrderSuccessCard.tsx** | Imports `OrderDocument` | MOVE |
-| **OrderSummaryPanel.tsx** | Cart-specific layout, uses `formatCurrency` on cart items | MOVE |
-| **CheckoutStepper.tsx** | Already GENERIC | EXTRACT to `src/components/ui/StepperNav.tsx` (rename) |
-| **OrderSuccessHero.tsx** | Already GENERIC (only THEME_CONSTANTS + Typography) | EXTRACT if reusable, else move with group |
+| File                        | Reason                                                                          | Strategy                                               |
+| --------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| **CheckoutView.tsx**        | Imports `useCheckout`, `useRazorpay`, `useSiteSettings`, `SiteSettingsDocument` | MOVE                                                   |
+| **CheckoutAddressStep.tsx** | Imports `AddressDocument`, `CartItemDocument`                                   | MOVE                                                   |
+| **CheckoutOrderReview.tsx** | Imports `CartItemDocument`                                                      | MOVE                                                   |
+| **CheckoutSuccessView.tsx** | Imports `OrderDocument`                                                         | MOVE                                                   |
+| **OrderSuccessActions.tsx** | Uses `ROUTES.USER.ORDER_DETAIL` (domain routes)                                 | MOVE                                                   |
+| **OrderSuccessCard.tsx**    | Imports `OrderDocument`                                                         | MOVE                                                   |
+| **OrderSummaryPanel.tsx**   | Cart-specific layout, uses `formatCurrency` on cart items                       | MOVE                                                   |
+| **CheckoutStepper.tsx**     | Already GENERIC                                                                 | EXTRACT to `src/components/ui/StepperNav.tsx` (rename) |
+| **OrderSuccessHero.tsx**    | Already GENERIC (only THEME_CONSTANTS + Typography)                             | EXTRACT if reusable, else move with group              |
 
 **Result**: Delete `src/components/checkout/` entirely. Generic bits extracted first.
 
 ### 7.6 `src/components/categories/` → `src/features/categories/components/`
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **CategoryCard.tsx** | Imports `CategoryDocument` | MOVE |
-| **CategoryGrid.tsx** | Imports `CategoryDocument` | MOVE |
+| File                 | Reason                     | Strategy |
+| -------------------- | -------------------------- | -------- |
+| **CategoryCard.tsx** | Imports `CategoryDocument` | MOVE     |
+| **CategoryGrid.tsx** | Imports `CategoryDocument` | MOVE     |
 
 **Result**: Delete `src/components/categories/` entirely.
 
 ### 7.7 `src/components/homepage/` → `src/features/homepage/components/` (NEW feature)
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **HeroCarousel.tsx** | Imports `CarouselSlideDocument`, `useHeroCarousel` | MOVE |
-| **FeaturedProductsSection.tsx** | Imports `useFeaturedProducts`, renders `ProductCard` | MOVE |
-| **FeaturedAuctionsSection.tsx** | Imports `useFeaturedAuctions` | MOVE |
-| **TopCategoriesSection.tsx** | Imports `useTopCategories` | MOVE |
-| **CustomerReviewsSection.tsx** | Imports `useHomepageReviews` | MOVE |
-| **BlogArticlesSection.tsx** | Imports `blogService`, `BlogPostDocument` | MOVE |
-| **FAQSection.tsx** | Imports `useHomepageSections` | MOVE |
-| **WelcomeSection.tsx** | Imports `useHomepageSections` | MOVE |
-| **WhatsAppCommunitySection.tsx** | Imports `useHomepageSections` | MOVE |
-| **AdvertisementBanner.tsx** | Imports `BannerSectionConfig` | MOVE |
-| **SectionCarousel.tsx** | Imports `ProductDocument` | MOVE |
-| **SiteFeaturesSection.tsx** | MIXED — imports `SITE_FEATURES` constant | MOVE (page composition) |
-| **TrustFeaturesSection.tsx** | MIXED — imports `TRUST_FEATURES` constant | MOVE (page composition) |
-| **TrustIndicatorsSection.tsx** | MIXED — imports `TRUST_INDICATORS` constant | MOVE (page composition) |
-| **HomepageSkeleton.tsx** | GENERIC — only `THEME_CONSTANTS` + `Section` | MOVE with group |
+| File                             | Reason                                               | Strategy                |
+| -------------------------------- | ---------------------------------------------------- | ----------------------- |
+| **HeroCarousel.tsx**             | Imports `CarouselSlideDocument`, `useHeroCarousel`   | MOVE                    |
+| **FeaturedProductsSection.tsx**  | Imports `useFeaturedProducts`, renders `ProductCard` | MOVE                    |
+| **FeaturedAuctionsSection.tsx**  | Imports `useFeaturedAuctions`                        | MOVE                    |
+| **TopCategoriesSection.tsx**     | Imports `useTopCategories`                           | MOVE                    |
+| **CustomerReviewsSection.tsx**   | Imports `useHomepageReviews`                         | MOVE                    |
+| **BlogArticlesSection.tsx**      | Imports `blogService`, `BlogPostDocument`            | MOVE                    |
+| **FAQSection.tsx**               | Imports `useHomepageSections`                        | MOVE                    |
+| **WelcomeSection.tsx**           | Imports `useHomepageSections`                        | MOVE                    |
+| **WhatsAppCommunitySection.tsx** | Imports `useHomepageSections`                        | MOVE                    |
+| **AdvertisementBanner.tsx**      | Imports `BannerSectionConfig`                        | MOVE                    |
+| **SectionCarousel.tsx**          | Imports `ProductDocument`                            | MOVE                    |
+| **SiteFeaturesSection.tsx**      | MIXED — imports `SITE_FEATURES` constant             | MOVE (page composition) |
+| **TrustFeaturesSection.tsx**     | MIXED — imports `TRUST_FEATURES` constant            | MOVE (page composition) |
+| **TrustIndicatorsSection.tsx**   | MIXED — imports `TRUST_INDICATORS` constant          | MOVE (page composition) |
+| **HomepageSkeleton.tsx**         | GENERIC — only `THEME_CONSTANTS` + `Section`         | MOVE with group         |
 
 **Result**: Delete `src/components/homepage/` entirely. Create `src/features/homepage/`.
 
 ### 7.8 `src/components/reviews/` → `src/features/reviews/components/`
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **ReviewCard.tsx** | Imports `ReviewDocument` | MOVE |
+| File               | Reason                   | Strategy |
+| ------------------ | ------------------------ | -------- |
+| **ReviewCard.tsx** | Imports `ReviewDocument` | MOVE     |
 
 **Result**: Delete `src/components/reviews/` entirely.
 
 ### 7.9 `src/components/seller/` → `src/features/seller/components/`
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **SellerStorefrontView.tsx** | Imports `UserDocument`, `ProductDocument` | MOVE |
-| **SellerAnalyticsStats.tsx** | Seller-specific analytics rendering | MOVE |
-| **SellerPayoutHistoryTable.tsx** | Payout domain data | MOVE |
-| **SellerPayoutRequestForm.tsx** | Payout domain form | MOVE |
-| **SellerPayoutStats.tsx** | Imports `PayoutSummary` type | MOVE |
-| **SellerRevenueChart.tsx** | Revenue domain data | MOVE |
-| **SellerTabs.tsx** | Imports `ROUTES` (seller-specific routes) | MOVE |
-| **SellerTopProducts.tsx** | Product domain data | MOVE |
-| **PayoutTableColumns.tsx** | Payout domain column defs | MOVE |
+| File                             | Reason                                    | Strategy |
+| -------------------------------- | ----------------------------------------- | -------- |
+| **SellerStorefrontView.tsx**     | Imports `UserDocument`, `ProductDocument` | MOVE     |
+| **SellerAnalyticsStats.tsx**     | Seller-specific analytics rendering       | MOVE     |
+| **SellerPayoutHistoryTable.tsx** | Payout domain data                        | MOVE     |
+| **SellerPayoutRequestForm.tsx**  | Payout domain form                        | MOVE     |
+| **SellerPayoutStats.tsx**        | Imports `PayoutSummary` type              | MOVE     |
+| **SellerRevenueChart.tsx**       | Revenue domain data                       | MOVE     |
+| **SellerTabs.tsx**               | Imports `ROUTES` (seller-specific routes) | MOVE     |
+| **SellerTopProducts.tsx**        | Product domain data                       | MOVE     |
+| **PayoutTableColumns.tsx**       | Payout domain column defs                 | MOVE     |
 
 **Result**: Delete `src/components/seller/` entirely.
 
 ### 7.10 `src/components/search/` → `src/features/search/components/`
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **SearchFiltersRow.tsx** | Imports `CategoryDocument` | MOVE |
-| **SearchResultsSection.tsx** | Imports `ProductDocument`, renders `ProductGrid` | MOVE |
+| File                         | Reason                                           | Strategy |
+| ---------------------------- | ------------------------------------------------ | -------- |
+| **SearchFiltersRow.tsx**     | Imports `CategoryDocument`                       | MOVE     |
+| **SearchResultsSection.tsx** | Imports `ProductDocument`, renders `ProductGrid` | MOVE     |
 
 **Result**: Delete `src/components/search/` entirely.
 
 ### 7.11 `src/components/contact/` → `src/features/contact/components/` (NEW feature)
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **ContactForm.tsx** | Imports `useContactSubmit` domain hook | MOVE |
-| **ContactInfoSidebar.tsx** | MIXED — imports `SITE_CONFIG` | MOVE (page composition) |
+| File                       | Reason                                 | Strategy                |
+| -------------------------- | -------------------------------------- | ----------------------- |
+| **ContactForm.tsx**        | Imports `useContactSubmit` domain hook | MOVE                    |
+| **ContactInfoSidebar.tsx** | MIXED — imports `SITE_CONFIG`          | MOVE (page composition) |
 
 **Result**: Delete `src/components/contact/`. Create `src/features/contact/`.
 
 ### 7.12 `src/components/faq/` → `src/features/faq/components/` (NEW feature)
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **FAQPageContent.tsx** | Imports `FAQDocument`, `useFaqVote` | MOVE |
-| **FAQAccordion.tsx** | Imports `StaticFAQItem` domain type | MOVE |
-| **FAQCategorySidebar.tsx** | Imports `FAQCategoryKey` | MOVE |
-| **FAQHelpfulButtons.tsx** | Imports `useFaqVote` domain hook | MOVE |
-| **FAQSortDropdown.tsx** | MIXED — `FAQSortOption` domain type | MOVE |
-| **RelatedFAQs.tsx** | Imports `FAQDocument` | MOVE |
-| **ContactCTA.tsx** | MIXED — imports `ROUTES.CONTACT` | MOVE |
-| **FAQSearchBar.tsx** | GENERIC — just wraps `Search` component | DELETE (use `Search` directly) |
+| File                       | Reason                                  | Strategy                       |
+| -------------------------- | --------------------------------------- | ------------------------------ |
+| **FAQPageContent.tsx**     | Imports `FAQDocument`, `useFaqVote`     | MOVE                           |
+| **FAQAccordion.tsx**       | Imports `StaticFAQItem` domain type     | MOVE                           |
+| **FAQCategorySidebar.tsx** | Imports `FAQCategoryKey`                | MOVE                           |
+| **FAQHelpfulButtons.tsx**  | Imports `useFaqVote` domain hook        | MOVE                           |
+| **FAQSortDropdown.tsx**    | MIXED — `FAQSortOption` domain type     | MOVE                           |
+| **RelatedFAQs.tsx**        | Imports `FAQDocument`                   | MOVE                           |
+| **ContactCTA.tsx**         | MIXED — imports `ROUTES.CONTACT`        | MOVE                           |
+| **FAQSearchBar.tsx**       | GENERIC — just wraps `Search` component | DELETE (use `Search` directly) |
 
 **Result**: Delete `src/components/faq/`. Create `src/features/faq/`.
 
 ### 7.13 `src/components/promotions/` → `src/features/promotions/components/` (NEW feature)
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **CouponCard.tsx** | Imports `CouponDocument` | MOVE |
-| **ProductSection.tsx** | Imports `ProductDocument` | MOVE |
+| File                   | Reason                    | Strategy |
+| ---------------------- | ------------------------- | -------- |
+| **CouponCard.tsx**     | Imports `CouponDocument`  | MOVE     |
+| **ProductSection.tsx** | Imports `ProductDocument` | MOVE     |
 
 **Result**: Delete `src/components/promotions/`. Create `src/features/promotions/`.
 
 ### 7.14 `src/components/about/` → `src/features/about/components/` (NEW feature)
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **AboutView.tsx** | MIXED — page-specific composition. Uses `ROUTES`, site-specific content. Already a view. | MOVE |
+| File              | Reason                                                                                   | Strategy |
+| ----------------- | ---------------------------------------------------------------------------------------- | -------- |
+| **AboutView.tsx** | MIXED — page-specific composition. Uses `ROUTES`, site-specific content. Already a view. | MOVE     |
 
 **Result**: Delete `src/components/about/`. Create `src/features/about/`.
 
 ### 7.15 `src/components/user/` → `src/features/user/components/`
 
-| File | Reason | Strategy |
-|------|--------|----------|
-| **WishlistButton.tsx** | Imports `useWishlistToggle`, `useAuth` | MOVE |
-| **UserTabs.tsx** | Imports `useAuth`, `ROUTES` | MOVE |
-| **addresses/AddressCard.tsx** | Imports `AddressDocument` | MOVE |
-| **addresses/AddressForm.tsx** | Address domain form fields | MOVE |
-| **orders/OrderTrackingView.tsx** | Imports `OrderDocument`, `OrderStatus` | MOVE |
-| **profile/ProfileHeader.tsx** | Imports `UserRole` from `@/types/auth` | MOVE |
-| **profile/ProfileStatsGrid.tsx** | Interface hardcodes `{ orders, wishlist, addresses }` — domain shape | MOVE (see §9 for generic extraction) |
-| **profile/PublicProfileView.tsx** | Imports `UserDocument`, `ProductDocument` | MOVE |
-| **settings/AccountInfoCard.tsx** | Imports `useAuth` | MOVE |
-| **settings/EmailVerificationCard.tsx** | Imports `useApiMutation`, `API_ENDPOINTS` | MOVE |
-| **settings/PasswordChangeForm.tsx** | Imports `useApiMutation`, `API_ENDPOINTS`, `calculatePasswordStrength` | MOVE |
-| **settings/PhoneVerificationCard.tsx** | Imports `useApiMutation`, `API_ENDPOINTS` | MOVE |
-| **settings/ProfileInfoForm.tsx** | Imports `useAuth`, `useProfile` | MOVE |
-| **notifications/NotificationItem.tsx** | Imports `NotificationDocument` | MOVE |
-| **notifications/NotificationsBulkActions.tsx** | GENERIC in imports but user-notification-specific in intent | MOVE with group |
+| File                                           | Reason                                                                 | Strategy                             |
+| ---------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------ |
+| **WishlistButton.tsx**                         | Imports `useWishlistToggle`, `useAuth`                                 | MOVE                                 |
+| **UserTabs.tsx**                               | Imports `useAuth`, `ROUTES`                                            | MOVE                                 |
+| **addresses/AddressCard.tsx**                  | Imports `AddressDocument`                                              | MOVE                                 |
+| **addresses/AddressForm.tsx**                  | Address domain form fields                                             | MOVE                                 |
+| **orders/OrderTrackingView.tsx**               | Imports `OrderDocument`, `OrderStatus`                                 | MOVE                                 |
+| **profile/ProfileHeader.tsx**                  | Imports `UserRole` from `@/types/auth`                                 | MOVE                                 |
+| **profile/ProfileStatsGrid.tsx**               | Interface hardcodes `{ orders, wishlist, addresses }` — domain shape   | MOVE (see §9 for generic extraction) |
+| **profile/PublicProfileView.tsx**              | Imports `UserDocument`, `ProductDocument`                              | MOVE                                 |
+| **settings/AccountInfoCard.tsx**               | Imports `useAuth`                                                      | MOVE                                 |
+| **settings/EmailVerificationCard.tsx**         | Imports `useApiMutation`, `API_ENDPOINTS`                              | MOVE                                 |
+| **settings/PasswordChangeForm.tsx**            | Imports `useApiMutation`, `API_ENDPOINTS`, `calculatePasswordStrength` | MOVE                                 |
+| **settings/PhoneVerificationCard.tsx**         | Imports `useApiMutation`, `API_ENDPOINTS`                              | MOVE                                 |
+| **settings/ProfileInfoForm.tsx**               | Imports `useAuth`, `useProfile`                                        | MOVE                                 |
+| **notifications/NotificationItem.tsx**         | Imports `NotificationDocument`                                         | MOVE                                 |
+| **notifications/NotificationsBulkActions.tsx** | GENERIC in imports but user-notification-specific in intent            | MOVE with group                      |
 
 **Result**: Delete business files from `src/components/user/`. Move to `src/features/user/components/`.
 
@@ -496,23 +510,23 @@ BackToTop, BackgroundRenderer, ResponsiveView, Search
 
 All admin sub-directory files are BUSINESS — they import domain schema types. They should live alongside their existing admin views in `src/features/admin/components/`.
 
-| Sub-directory | Files to Move |
-|---------------|--------------|
-| **products/** | ProductForm, ProductTableColumns, types.ts |
-| **orders/** | OrderTableColumns, OrderStatusForm |
-| **users/** | UserTableColumns, UserFilters, UserDetailDrawer, types.ts |
-| **carousel/** | CarouselSlideForm, CarouselTableColumns, types.ts |
-| **categories/** | CategoryForm, CategoryTableColumns, types.ts |
-| **blog/** | BlogForm, BlogTableColumns |
-| **sections/** | SectionForm, SectionTableColumns, types.ts |
-| **reviews/** | ReviewDetailView, ReviewTableColumns, types.ts (keep ReviewStars as generic) |
-| **faqs/** | FaqForm, FaqTableColumns, types.ts |
-| **coupons/** | CouponForm, CouponTableColumns |
-| **bids/** | BidTableColumns |
-| **site/** | SiteBasicInfoForm, SiteContactForm, SiteSocialLinksForm |
-| **payouts/** | PayoutStatusForm, PayoutTableColumns |
-| **dashboard/** | QuickActionsGrid (MIXED — uses `ROUTES`) |
-| **top-level** | AdminTabs, AdminSessionsManager, SessionTableColumns |
+| Sub-directory   | Files to Move                                                                |
+| --------------- | ---------------------------------------------------------------------------- |
+| **products/**   | ProductForm, ProductTableColumns, types.ts                                   |
+| **orders/**     | OrderTableColumns, OrderStatusForm                                           |
+| **users/**      | UserTableColumns, UserFilters, UserDetailDrawer, types.ts                    |
+| **carousel/**   | CarouselSlideForm, CarouselTableColumns, types.ts                            |
+| **categories/** | CategoryForm, CategoryTableColumns, types.ts                                 |
+| **blog/**       | BlogForm, BlogTableColumns                                                   |
+| **sections/**   | SectionForm, SectionTableColumns, types.ts                                   |
+| **reviews/**    | ReviewDetailView, ReviewTableColumns, types.ts (keep ReviewStars as generic) |
+| **faqs/**       | FaqForm, FaqTableColumns, types.ts                                           |
+| **coupons/**    | CouponForm, CouponTableColumns                                               |
+| **bids/**       | BidTableColumns                                                              |
+| **site/**       | SiteBasicInfoForm, SiteContactForm, SiteSocialLinksForm                      |
+| **payouts/**    | PayoutStatusForm, PayoutTableColumns                                         |
+| **dashboard/**  | QuickActionsGrid (MIXED — uses `ROUTES`)                                     |
+| **top-level**   | AdminTabs, AdminSessionsManager, SessionTableColumns                         |
 
 **Also move from `ui/`:**
 | File | Destination | Reason |
@@ -530,17 +544,17 @@ All admin sub-directory files are BUSINESS — they import domain schema types. 
 
 ### 7.17 `src/components/layout/` — Must Be Split
 
-| File | Current | Strategy |
-|------|---------|----------|
-| **BottomNavbar.tsx** | BUSINESS — imports `useAuth`, `ROUTES`, `SITE_CONFIG` | SPLIT: extract generic `BottomNavLayout` (items + active state via props). Business config moves to `LayoutClient`. |
-| **Sidebar.tsx** | BUSINESS — imports `useAuth`, `useLogout`, `hasAnyRole`, `MAIN_NAV_ITEMS` | SPLIT: extract generic `SidebarLayout` (items, user slot, logo via props). Auth injected via props. |
-| **TitleBar.tsx** | BUSINESS — imports `useAuth`, `SITE_CONFIG` | SPLIT: extract generic `TitleBarLayout` (brandName, user slot via props). |
-| **Footer.tsx** | MIXED — imports `SITE_CONFIG`, `ROUTES` | SPLIT: extract generic `FooterLayout` (link groups, brand info via props). Config from `LayoutClient`. |
-| **MainNavbar.tsx** | MIXED — imports `MAIN_NAV_ITEMS` | SPLIT: extract generic `NavbarLayout` (items via props). Config from `LayoutClient`. |
-| **Breadcrumbs.tsx** | GENERIC ✅ | Stay |
-| **AutoBreadcrumbs.tsx** | GENERIC ✅ | Stay |
-| **NavItem.tsx** | GENERIC ✅ | Stay |
-| **LocaleSwitcher.tsx** | GENERIC ✅ | Stay |
+| File                    | Current                                                                   | Strategy                                                                                                            |
+| ----------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **BottomNavbar.tsx**    | BUSINESS — imports `useAuth`, `ROUTES`, `SITE_CONFIG`                     | SPLIT: extract generic `BottomNavLayout` (items + active state via props). Business config moves to `LayoutClient`. |
+| **Sidebar.tsx**         | BUSINESS — imports `useAuth`, `useLogout`, `hasAnyRole`, `MAIN_NAV_ITEMS` | SPLIT: extract generic `SidebarLayout` (items, user slot, logo via props). Auth injected via props.                 |
+| **TitleBar.tsx**        | BUSINESS — imports `useAuth`, `SITE_CONFIG`                               | SPLIT: extract generic `TitleBarLayout` (brandName, user slot via props).                                           |
+| **Footer.tsx**          | MIXED — imports `SITE_CONFIG`, `ROUTES`                                   | SPLIT: extract generic `FooterLayout` (link groups, brand info via props). Config from `LayoutClient`.              |
+| **MainNavbar.tsx**      | MIXED — imports `MAIN_NAV_ITEMS`                                          | SPLIT: extract generic `NavbarLayout` (items via props). Config from `LayoutClient`.                                |
+| **Breadcrumbs.tsx**     | GENERIC ✅                                                                | Stay                                                                                                                |
+| **AutoBreadcrumbs.tsx** | GENERIC ✅                                                                | Stay                                                                                                                |
+| **NavItem.tsx**         | GENERIC ✅                                                                | Stay                                                                                                                |
+| **LocaleSwitcher.tsx**  | GENERIC ✅                                                                | Stay                                                                                                                |
 
 ---
 
@@ -550,11 +564,11 @@ These files reference site-specific constants (`ROUTES`, `SITE_CONFIG`, `TRUST_F
 
 ### Decision Framework
 
-| Component Category | Decision | Rationale |
-|-------------------|----------|-----------|
-| **Layout chrome** (Footer, Navbar, Sidebar, TitleBar, BottomNav) | **GENERICIZE** — accept data via props | These render on every page. Making them accept items, brand, user via props makes them truly reusable. `LayoutClient` injects the site-specific config. |
-| **Page sections** (SiteFeaturesSection, TrustFeaturesSection, TrustIndicatorsSection, AboutView) | **MOVE to features** | These are page-specific compositions. They don't render on every page — they render on exactly one page. They belong in the feature they serve. |
-| **Route-aware components** (OrderSuccessActions, ContactCTA, FAQSortDropdown, SellerTabs, QuickActionsGrid, AdminTabs) | **MOVE to features** | Using `ROUTES.*` makes them navigation-aware which is fine for Tier 1, but these components serve a single domain. They are domain compositions, not shared primitives. |
+| Component Category                                                                                                     | Decision                               | Rationale                                                                                                                                                               |
+| ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Layout chrome** (Footer, Navbar, Sidebar, TitleBar, BottomNav)                                                       | **GENERICIZE** — accept data via props | These render on every page. Making them accept items, brand, user via props makes them truly reusable. `LayoutClient` injects the site-specific config.                 |
+| **Page sections** (SiteFeaturesSection, TrustFeaturesSection, TrustIndicatorsSection, AboutView)                       | **MOVE to features**                   | These are page-specific compositions. They don't render on every page — they render on exactly one page. They belong in the feature they serve.                         |
+| **Route-aware components** (OrderSuccessActions, ContactCTA, FAQSortDropdown, SellerTabs, QuickActionsGrid, AdminTabs) | **MOVE to features**                   | Using `ROUTES.*` makes them navigation-aware which is fine for Tier 1, but these components serve a single domain. They are domain compositions, not shared primitives. |
 
 ---
 
@@ -562,23 +576,23 @@ These files reference site-specific constants (`ROUTES`, `SITE_CONFIG`, `TRUST_F
 
 Before moving business components, check if they contain reusable UI patterns that should become new Tier 1 generics.
 
-| New Generic | Source | Location | Props Pattern |
-|-------------|--------|----------|---------------|
-| **`StepperNav`** | `checkout/CheckoutStepper` | `ui/StepperNav.tsx` | `steps: { number, label }[], currentStep: number` |
-| **`StatsGrid`** | `user/profile/ProfileStatsGrid` | `ui/StatsGrid.tsx` | `stats: { label: string, value: number, icon: ReactNode, colorClass?: string }[]` — fully dynamic, no hardcoded field names |
-| **`RatingDisplay`** | `admin/reviews/ReviewStars` | `ui/RatingDisplay.tsx` | `rating: number, size?: 'sm' \| 'md' \| 'lg'` — renamed for clarity (already generic internally) |
-| **`CountdownDisplay`** | `AuctionCard` countdown logic | `ui/CountdownDisplay.tsx` | `targetDate: Date, format?: 'dhms' \| 'hms' \| 'auto'` — renders `useCountdown` output visually |
-| **`PriceDisplay`** | `ProductCard` price rendering | `ui/PriceDisplay.tsx` | `amount: number, currency?: string, originalAmount?: number, variant?: 'compact' \| 'detail'` — handles formatting, strikethrough, discount badge |
-| **`ItemRow`** | `cart/CartItemRow` layout | `ui/ItemRow.tsx` | `image: string, title: string, subtitle?: string, rightSlot: ReactNode, actions?: ReactNode` — horizontal image + text + actions row |
-| **`SummaryCard`** | `cart/CartSummary` layout | `ui/SummaryCard.tsx` | `lines: { label, value }[], total: { label, value }, action?: ReactNode` — order/invoice summary pattern |
+| New Generic            | Source                          | Location                  | Props Pattern                                                                                                                                     |
+| ---------------------- | ------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`StepperNav`**       | `checkout/CheckoutStepper`      | `ui/StepperNav.tsx`       | `steps: { number, label }[], currentStep: number`                                                                                                 |
+| **`StatsGrid`**        | `user/profile/ProfileStatsGrid` | `ui/StatsGrid.tsx`        | `stats: { label: string, value: number, icon: ReactNode, colorClass?: string }[]` — fully dynamic, no hardcoded field names                       |
+| **`RatingDisplay`**    | `admin/reviews/ReviewStars`     | `ui/RatingDisplay.tsx`    | `rating: number, size?: 'sm' \| 'md' \| 'lg'` — renamed for clarity (already generic internally)                                                  |
+| **`CountdownDisplay`** | `AuctionCard` countdown logic   | `ui/CountdownDisplay.tsx` | `targetDate: Date, format?: 'dhms' \| 'hms' \| 'auto'` — renders `useCountdown` output visually                                                   |
+| **`PriceDisplay`**     | `ProductCard` price rendering   | `ui/PriceDisplay.tsx`     | `amount: number, currency?: string, originalAmount?: number, variant?: 'compact' \| 'detail'` — handles formatting, strikethrough, discount badge |
+| **`ItemRow`**          | `cart/CartItemRow` layout       | `ui/ItemRow.tsx`          | `image: string, title: string, subtitle?: string, rightSlot: ReactNode, actions?: ReactNode` — horizontal image + text + actions row              |
+| **`SummaryCard`**      | `cart/CartSummary` layout       | `ui/SummaryCard.tsx`      | `lines: { label, value }[], total: { label, value }, action?: ReactNode` — order/invoice summary pattern                                          |
 
 ### Genericize Existing Components
 
-| Component | Current Issue | Fix |
-|-----------|---------------|-----|
-| **`ui/RoleBadge`** | Imports `UserRole` from `@/types/auth` | Change prop to `role: string`, define color map internally for common values or accept `colorMap?: Record<string, string>`. |
-| **`admin/ImageUpload`** | Imports `useMediaUpload` hook | Change to accept `onUpload: (file: File) => Promise<string>` callback. Callers pass `useMediaUpload().upload`. |
-| **`admin/MediaUploadField`** | Same — imports `useMediaUpload` | Same fix. |
+| Component                    | Current Issue                          | Fix                                                                                                                         |
+| ---------------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **`ui/RoleBadge`**           | Imports `UserRole` from `@/types/auth` | Change prop to `role: string`, define color map internally for common values or accept `colorMap?: Record<string, string>`. |
+| **`admin/ImageUpload`**      | Imports `useMediaUpload` hook          | Change to accept `onUpload: (file: File) => Promise<string>` callback. Callers pass `useMediaUpload().upload`.              |
+| **`admin/MediaUploadField`** | Same — imports `useMediaUpload`        | Same fix.                                                                                                                   |
 
 ---
 
@@ -587,18 +601,23 @@ Before moving business components, check if they contain reusable UI patterns th
 For each domain, follow this exact sequence:
 
 ### Step 1: Identify Generic Extractables
+
 Scan the business component for any reusable UI pattern (see §9). If found, extract the generic first.
 
 ### Step 2: Extract Generic Primitive
+
 Create the new generic component in `src/components/ui/`. Export from `src/components/ui/index.ts` and `src/components/index.ts`.
 
 ### Step 3: Move Business Files to Feature
+
 Move each file to `src/features/<domain>/components/`. Update internal imports to use the new generic primitive where applicable.
 
 ### Step 4: Update Feature Barrel
+
 Add exports to `src/features/<domain>/components/index.ts` (create if needed) and `src/features/<domain>/index.ts`.
 
 ### Step 5: Update All Importers
+
 Find all files that import the moved component from `@/components` and update to import from `@/features/<domain>`.
 
 ```bash
@@ -607,14 +626,17 @@ grep -rn "from '@/components'" src/ --include="*.tsx" --include="*.ts" | grep "P
 ```
 
 ### Step 6: Remove Export from Components Barrel
+
 Remove the moved export from `src/components/<domain>/index.ts`. Once the directory is empty, delete the directory and remove `export * from "./<domain>"` from `src/components/index.ts`.
 
 ### Step 7: Update Index Files
+
 - Remove barrel export from `src/components/index.ts`
 - Ensure `src/features/<domain>/index.ts` re-exports everything needed
 - Feature views already import their sub-components from relative paths, so most existing import chains are internal
 
 ### Step 8: Verify
+
 ```bash
 npx tsc --noEmit src/features/<domain>/    # type-check the moved files
 npx tsc --noEmit                            # full check
@@ -627,12 +649,15 @@ npm test -- --testPathPattern=<domain>       # run relevant tests
 ## 11. Execution Phases
 
 ### Phase 0: Cleanup (Immediate)
+
 - Delete 3 orphan empty files in `src/components/admin/`
 - Delete duplicate `ProductImageGallery` (use `ui/ImageGallery`)
 - Delete unnecessary `FAQSearchBar` wrapper (use `Search` directly)
 
 ### Phase 1: Create New Generic Primitives
+
 Extract ~7 new generic components before moving anything (see §9):
+
 1. `StepperNav` from `CheckoutStepper`
 2. `StatsGrid` from `ProfileStatsGrid`
 3. `RatingDisplay` from `ReviewStars` (rename)
@@ -642,41 +667,46 @@ Extract ~7 new generic components before moving anything (see §9):
 7. `SummaryCard` from `CartSummary` layout pattern
 
 Genericize 3 existing:
+
 1. `RoleBadge` → drop `UserRole` import
 2. `ImageUpload` → accept upload handler via props
 3. `MediaUploadField` → accept upload handler via props
 
 ### Phase 2: Move Domain Component Directories (largest impact)
+
 Move entire business directories. Priority order:
 
-| # | Source | Destination | File Count |
-|---|--------|-------------|-----------|
-| 1 | `components/admin/**` sub-dirs | `features/admin/components/` | ~32 |
-| 2 | `components/products/` | `features/products/components/` | 10 |
-| 3 | `components/auctions/` | `features/products/components/` | 5 |
-| 4 | `components/user/**` | `features/user/components/` | ~14 |
-| 5 | `components/seller/` | `features/seller/components/` | 9 |
-| 6 | `components/cart/` + `components/checkout/` | `features/cart/components/` | ~11 |
-| 7 | `components/blog/` | `features/blog/components/` | 3 |
-| 8 | `components/categories/` | `features/categories/components/` | 2 |
-| 9 | `components/reviews/` | `features/reviews/components/` | 1 |
-| 10 | `components/search/` | `features/search/components/` | 2 |
-| 11 | `components/homepage/` | `features/homepage/components/` (NEW) | 15 |
-| 12 | `components/faq/` | `features/faq/components/` (NEW) | 7 |
-| 13 | `components/contact/` | `features/contact/components/` (NEW) | 2 |
-| 14 | `components/promotions/` | `features/promotions/components/` (NEW) | 2 |
-| 15 | `components/about/` | `features/about/components/` (NEW) | 1 |
+| #   | Source                                      | Destination                             | File Count |
+| --- | ------------------------------------------- | --------------------------------------- | ---------- |
+| 1   | `components/admin/**` sub-dirs              | `features/admin/components/`            | ~32        |
+| 2   | `components/products/`                      | `features/products/components/`         | 10         |
+| 3   | `components/auctions/`                      | `features/products/components/`         | 5          |
+| 4   | `components/user/**`                        | `features/user/components/`             | ~14        |
+| 5   | `components/seller/`                        | `features/seller/components/`           | 9          |
+| 6   | `components/cart/` + `components/checkout/` | `features/cart/components/`             | ~11        |
+| 7   | `components/blog/`                          | `features/blog/components/`             | 3          |
+| 8   | `components/categories/`                    | `features/categories/components/`       | 2          |
+| 9   | `components/reviews/`                       | `features/reviews/components/`          | 1          |
+| 10  | `components/search/`                        | `features/search/components/`           | 2          |
+| 11  | `components/homepage/`                      | `features/homepage/components/` (NEW)   | 15         |
+| 12  | `components/faq/`                           | `features/faq/components/` (NEW)        | 7          |
+| 13  | `components/contact/`                       | `features/contact/components/` (NEW)    | 2          |
+| 14  | `components/promotions/`                    | `features/promotions/components/` (NEW) | 2          |
+| 15  | `components/about/`                         | `features/about/components/` (NEW)      | 1          |
 
 ### Phase 3: Move Misplaced UI Components
-| Source | Destination |
-|--------|-------------|
-| `ui/AddressSelectorCreate` | `features/user/components/` |
+
+| Source                      | Destination                       |
+| --------------------------- | --------------------------------- |
+| `ui/AddressSelectorCreate`  | `features/user/components/`       |
 | `ui/CategorySelectorCreate` | `features/categories/components/` |
-| `ui/EventBanner` | `features/events/components/` |
-| `ui/NotificationBell` | `features/user/components/` |
+| `ui/EventBanner`            | `features/events/components/`     |
+| `ui/NotificationBell`       | `features/user/components/`       |
 
 ### Phase 4: Genericize Layout Components
+
 Split 5 layout files into generic + config:
+
 1. `BottomNavbar` → `BottomNavLayout` (generic) + config in `LayoutClient`
 2. `Sidebar` → `SidebarLayout` (generic) + config in `LayoutClient`
 3. `TitleBar` → `TitleBarLayout` (generic) + config in `LayoutClient`
@@ -684,6 +714,7 @@ Split 5 layout files into generic + config:
 5. `MainNavbar` → `NavbarLayout` (generic) + config in `LayoutClient`
 
 ### Phase 5: Clean Up Barrel Exports
+
 - Remove all domain re-exports from `src/components/index.ts`:
   ```diff
   - export * from "./products";
@@ -706,6 +737,7 @@ Split 5 layout files into generic + config:
 - Ensure each feature's `index.ts` exports its components
 
 ### Phase 6: Full Verification
+
 ```bash
 npx tsc --noEmit          # 0 errors
 npm run build             # 0 errors
@@ -718,118 +750,126 @@ npm test                  # all pass
 
 Track each domain migration as it proceeds. Mark ✅ when complete.
 
-> **Last verified**: 2026-03-06
+> **Last verified**: 2026-03-06, P2-7–P2-11 completed 2026-03-06, P2-12–P2-15 + P3-1 completed 2026-03-06
 
 ### Phase 0: Cleanup
-| Task | Status |
-|------|--------|
-| Delete `admin/UserFilters.tsx` (empty) | ✅ |
-| Delete `admin/FaqForm.tsx` (empty) | ✅ |
-| Delete `admin/PayoutStatusForm.tsx` (empty) | ✅ |
+
+| Task                                                                 | Status                |
+| -------------------------------------------------------------------- | --------------------- |
+| Delete `admin/UserFilters.tsx` (empty)                               | ✅                    |
+| Delete `admin/FaqForm.tsx` (empty)                                   | ✅                    |
+| Delete `admin/PayoutStatusForm.tsx` (empty)                          | ✅                    |
 | Delete `products/ProductImageGallery.tsx` (dup of `ui/ImageGallery`) | ☐ — file still exists |
-| Delete `faq/FAQSearchBar.tsx` (unnecessary wrapper) | ✅ |
+| Delete `faq/FAQSearchBar.tsx` (unnecessary wrapper)                  | ✅                    |
 
 ### Phase 1: New Generics (P1-1 – P1-10)
-| Generic | Extracted From | Status |
-|---------|---------------|--------|
-| `ui/StepperNav` | `checkout/CheckoutStepper` | ✅ |
-| `ui/StatsGrid` | `user/profile/ProfileStatsGrid` | ✅ |
-| `ui/RatingDisplay` | `admin/reviews/ReviewStars` | ✅ |
-| `ui/CountdownDisplay` | `AuctionCard` pattern | ✅ |
-| `ui/PriceDisplay` | `ProductCard` pattern | ✅ |
-| `ui/ItemRow` | `cart/CartItemRow` pattern | ✅ |
-| `ui/SummaryCard` | `cart/CartSummary` pattern | ✅ |
-| Genericize `RoleBadge` | Drop `UserRole` import | ✅ |
-| Genericize `ImageUpload` | Accept `onUpload` handler prop | ✅ |
-| Genericize `MediaUploadField` | Accept `onUpload` handler prop | ✅ |
+
+| Generic                       | Extracted From                  | Status |
+| ----------------------------- | ------------------------------- | ------ |
+| `ui/StepperNav`               | `checkout/CheckoutStepper`      | ✅     |
+| `ui/StatsGrid`                | `user/profile/ProfileStatsGrid` | ✅     |
+| `ui/RatingDisplay`            | `admin/reviews/ReviewStars`     | ✅     |
+| `ui/CountdownDisplay`         | `AuctionCard` pattern           | ✅     |
+| `ui/PriceDisplay`             | `ProductCard` pattern           | ✅     |
+| `ui/ItemRow`                  | `cart/CartItemRow` pattern      | ✅     |
+| `ui/SummaryCard`              | `cart/CartSummary` pattern      | ✅     |
+| Genericize `RoleBadge`        | Drop `UserRole` import          | ✅     |
+| Genericize `ImageUpload`      | Accept `onUpload` handler prop  | ✅     |
+| Genericize `MediaUploadField` | Accept `onUpload` handler prop  | ✅     |
 
 ### Phase 1: Camera + Filter Primitives (P1-11 – P1-18)
-| Item | Description | Status |
-|------|-------------|--------|
-| `hooks/useCamera` | Device camera hook (P1-11) | ✅ |
-| `ui/CameraCapture` | In-page viewfinder primitive (P1-12) | ✅ |
-| `ImageUpload captureSource` | Camera capture extension (P1-13) | ✅ |
-| `MediaUploadField captureSource` | Camera capture extension (P1-14) | ✅ |
-| `FilterFacetSection` multi-select | `maxSelections`, `showSelectAll`, `selectionMode` (P1-15) | ✅ |
-| `hooks/usePendingFilters` | Deferred filter state (P1-16) | ✅ |
-| `FilterDrawer pendingCount` | Deferred apply mode (P1-17) | ✅ |
-| `AdminFilterBar deferred` | Deferred apply + Apply/Reset buttons (P1-18) | ✅ |
+
+| Item                              | Description                                               | Status |
+| --------------------------------- | --------------------------------------------------------- | ------ |
+| `hooks/useCamera`                 | Device camera hook (P1-11)                                | ✅     |
+| `ui/CameraCapture`                | In-page viewfinder primitive (P1-12)                      | ✅     |
+| `ImageUpload captureSource`       | Camera capture extension (P1-13)                          | ✅     |
+| `MediaUploadField captureSource`  | Camera capture extension (P1-14)                          | ✅     |
+| `FilterFacetSection` multi-select | `maxSelections`, `showSelectAll`, `selectionMode` (P1-15) | ✅     |
+| `hooks/usePendingFilters`         | Deferred filter state (P1-16)                             | ✅     |
+| `FilterDrawer pendingCount`       | Deferred apply mode (P1-17)                               | ✅     |
+| `AdminFilterBar deferred`         | Deferred apply + Apply/Reset buttons (P1-18)              | ✅     |
 
 > ⚠️ **Rule 24 violation**: `features/admin/components/ReviewStars.tsx` is a backward-compat re-export shim (`export { RatingDisplay as ReviewStars }`). Must be deleted and all callers updated to use `RatingDisplay` directly.
 
 ### Phase 2: Move Business Directories
-| Domain | Generic Extract | Move Files | Update Imports | Delete Source | Verified |
-|--------|----------------|------------|----------------|---------------|----------|
-| admin sub-dirs | — (N/A) | ✅ | ✅ | ✅ | ✅ |
-| products | ✅ PriceDisplay | ☐ | ☐ | ☐ | ☐ |
-| auctions | ✅ CountdownDisplay | ☐ | ☐ | ☐ | ☐ |
-| user | ✅ StatsGrid | ☐ | ☐ | ☐ | ☐ |
-| seller | — (N/A) | ☐ | ☐ | ☐ | ☐ |
-| cart + checkout | ✅ StepperNav, ItemRow, SummaryCard | ☐ | ☐ | ☐ | ☐ |
-| blog | — (N/A) | ☐ | ☐ | ☐ | ☐ |
-| categories | — (N/A) | ☐ | ☐ | ☐ | ☐ |
-| reviews | ✅ RatingDisplay | ☐ | ☐ | ☐ | ☐ |
-| search | — (N/A) | ☐ | ☐ | ☐ | ☐ |
-| homepage (NEW) | — (N/A) | ☐ | ☐ | ☐ | ☐ |
-| faq (NEW) | — (N/A) | ☐ | ☐ | ☐ | ☐ |
-| contact (NEW) | — (N/A) | ☐ | ☐ | ☐ | ☐ |
-| promotions (NEW) | — (N/A) | ☐ | ☐ | ☐ | ☐ |
-| about (NEW) | — (N/A) | ☐ | ☐ | ☐ | ☐ |
+
+| Domain           | Generic Extract                     | Move Files | Update Imports | Delete Source | Verified |
+| ---------------- | ----------------------------------- | ---------- | -------------- | ------------- | -------- |
+| admin sub-dirs   | — (N/A)                             | ✅         | ✅             | ✅            | ✅       |
+| products         | ✅ PriceDisplay                     | ☐          | ☐              | ☐             | ☐        |
+| auctions         | ✅ CountdownDisplay                 | ☐          | ☐              | ☐             | ☐        |
+| user             | ✅ StatsGrid                        | ☐          | ☐              | ☐             | ☐        |
+| seller           | — (N/A)                             | ☐          | ☐              | ☐             | ☐        |
+| cart + checkout  | ✅ StepperNav, ItemRow, SummaryCard | ☐          | ☐              | ☐             | ☐        |
+| blog             | — (N/A)                             | ✅         | ✅             | ✅            | ✅       |
+| categories       | — (N/A)                             | ✅         | ✅             | ✅            | ✅       |
+| reviews          | ✅ RatingDisplay                    | ✅         | ✅             | ✅            | ✅       |
+| search           | — (N/A)                             | ✅         | ✅             | ✅            | ✅       |
+| homepage (NEW)   | — (N/A)                             | ✅         | ✅             | ✅            | ✅       |
+| faq (NEW)        | — (N/A)                             | ✅         | ✅             | ✅            | ✅       |
+| contact (NEW)    | — (N/A)                             | ✅         | ✅             | ✅            | ✅       |
+| promotions (NEW) | — (N/A)                             | ✅         | ✅             | ✅            | ✅       |
+| about (NEW)      | — (N/A)                             | ✅         | ✅             | ✅            | ✅       |
 
 ### Phase 3: Misplaced UI
-| File | Destination | Status |
-|------|-------------|--------|
-| `ui/AddressSelectorCreate` | `features/user/` | ☐ — still in `ui/` |
-| `ui/CategorySelectorCreate` | `features/categories/` | ☐ — still in `ui/` |
-| `ui/EventBanner` | `features/events/` | ☐ — still in `ui/` |
-| `ui/NotificationBell` | `features/user/` | ☐ — still in `ui/` |
+
+| File                        | Destination            | Status |
+| --------------------------- | ---------------------- | ------ |
+| `ui/AddressSelectorCreate`  | `features/user/`       | ✅     |
+| `ui/CategorySelectorCreate` | `features/categories/` | ✅     |
+| `ui/EventBanner`            | `features/events/`     | ✅     |
+| `ui/NotificationBell`       | `features/user/`       | ✅     |
 
 ### Phase 4: Layout Genericization
-| File | Generic Name | Status |
-|------|-------------|--------|
-| BottomNavbar | BottomNavLayout | ☐ |
-| Sidebar | SidebarLayout | ☐ |
-| TitleBar | TitleBarLayout | ☐ |
-| Footer | FooterLayout | ☐ |
-| MainNavbar | NavbarLayout | ☐ |
+
+| File         | Generic Name    | Status |
+| ------------ | --------------- | ------ |
+| BottomNavbar | BottomNavLayout | ✅     |
+| Sidebar      | SidebarLayout   | ✅     |
+| TitleBar     | TitleBarLayout  | ☐      |
+| Footer       | FooterLayout    | ☐      |
+| MainNavbar   | NavbarLayout    | ☐      |
 
 ### Phase 5: Barrel Cleanup
-| Task | Status |
-|------|--------|
-| Remove domain exports from `components/index.ts` | ☐ — blocked by Phase 2 |
+
+| Task                                                          | Status                 |
+| ------------------------------------------------------------- | ---------------------- |
+| Remove domain exports from `components/index.ts`              | ☐ — blocked by Phase 2 |
 | Remove admin sub-dir exports from `components/admin/index.ts` | ☐ — blocked by Phase 2 |
-| Remove user sub-dir exports from `components/user/index.ts` | ☐ — blocked by Phase 2 |
-| Verify all feature `index.ts` barrels complete | ☐ |
+| Remove user sub-dir exports from `components/user/index.ts`   | ☐ — blocked by Phase 2 |
+| Verify all feature `index.ts` barrels complete                | ☐                      |
 
 ### Phase 6: Verification
-| Task | Status |
-|------|--------|
-| `npx tsc --noEmit` → 0 errors | ☐ |
-| `npm run build` → 0 errors | ☐ |
-| `npm test` → all pass | ☐ |
+
+| Task                          | Status |
+| ----------------------------- | ------ |
+| `npx tsc --noEmit` → 0 errors | ☐      |
+| `npm run build` → 0 errors    | ☐      |
+| `npm test` → all pass         | ☐      |
 
 ---
 
 ## New Feature Directories to Create
 
-| New Feature Dir | Source | Structure Needed |
-|----------------|--------|-----------------|
-| `src/features/homepage/` | `src/components/homepage/` | `components/`, `hooks/`, `index.ts` |
-| `src/features/faq/` | `src/components/faq/` | `components/`, `hooks/`, `index.ts` |
-| `src/features/contact/` | `src/components/contact/` | `components/`, `hooks/`, `index.ts` |
-| `src/features/promotions/` | `src/components/promotions/` | `components/`, `index.ts` |
-| `src/features/about/` | `src/components/about/` | `components/`, `index.ts` |
+| New Feature Dir            | Source                       | Structure Needed                    |
+| -------------------------- | ---------------------------- | ----------------------------------- |
+| `src/features/homepage/`   | `src/components/homepage/`   | `components/`, `hooks/`, `index.ts` |
+| `src/features/faq/`        | `src/components/faq/`        | `components/`, `hooks/`, `index.ts` |
+| `src/features/contact/`    | `src/components/contact/`    | `components/`, `hooks/`, `index.ts` |
+| `src/features/promotions/` | `src/components/promotions/` | `components/`, `index.ts`           |
+| `src/features/about/`      | `src/components/about/`      | `components/`, `index.ts`           |
 
 ---
 
 ## File Count Impact
 
-| Location | Before | After |
-|----------|--------|-------|
-| `src/components/` total | ~200 files | ~86 files (only generics) |
-| `src/features/` total | ~90 files | ~209 files |
-| Net new files | — | ~7 new generics; everything else is a pure move |
-| Net deleted files | — | ~5 (empty orphans + duplicates) |
+| Location                | Before     | After                                           |
+| ----------------------- | ---------- | ----------------------------------------------- |
+| `src/components/` total | ~200 files | ~86 files (only generics)                       |
+| `src/features/` total   | ~90 files  | ~209 files                                      |
+| Net new files           | —          | ~7 new generics; everything else is a pure move |
+| Net deleted files       | —          | ~5 (empty orphans + duplicates)                 |
 
 ---
 
@@ -857,26 +897,30 @@ After migration, update import paths in consuming files:
 
 ```tsx
 // BEFORE — domain component from @/components
-import { ProductCard, ProductGrid } from '@/components';
-import { CartSummary, CartItemRow } from '@/components';
-import { BlogCard } from '@/components';
-import { CategoryCard } from '@/components';
-import { AuctionCard } from '@/components';
+import { ProductCard, ProductGrid } from "@/components";
+import { CartSummary, CartItemRow } from "@/components";
+import { BlogCard } from "@/components";
+import { CategoryCard } from "@/components";
+import { AuctionCard } from "@/components";
 
 // AFTER — domain component from @/features/<domain>
-import { ProductCard, ProductGrid } from '@/features/products';
-import { CartSummary, CartItemRow } from '@/features/cart';
-import { BlogCard } from '@/features/blog';
-import { CategoryCard } from '@/features/categories';
-import { AuctionCard } from '@/features/products'; // auctions are part of products feature
+import { ProductCard, ProductGrid } from "@/features/products";
+import { CartSummary, CartItemRow } from "@/features/cart";
+import { BlogCard } from "@/features/blog";
+import { CategoryCard } from "@/features/categories";
+import { AuctionCard } from "@/features/products"; // auctions are part of products feature
 
 // UNCHANGED — generic primitives still from @/components
-import { Button, Card, Badge, DataTable, ListingLayout } from '@/components';
-import { Heading, Text, Caption } from '@/components';
-import { Section, Nav, Ul, Li } from '@/components';
-import { Alert, Modal, Toast } from '@/components';
-import { AdminPageHeader, AdminFilterBar, DrawerFormFooter } from '@/components';
-import { Search, SortDropdown, FilterFacetSection } from '@/components';
+import { Button, Card, Badge, DataTable, ListingLayout } from "@/components";
+import { Heading, Text, Caption } from "@/components";
+import { Section, Nav, Ul, Li } from "@/components";
+import { Alert, Modal, Toast } from "@/components";
+import {
+  AdminPageHeader,
+  AdminFilterBar,
+  DrawerFormFooter,
+} from "@/components";
+import { Search, SortDropdown, FilterFacetSection } from "@/components";
 ```
 
 ---
@@ -888,229 +932,229 @@ import { Search, SortDropdown, FilterFacetSection } from '@/components';
 <details>
 <summary><b>src/components/ui/ (34 files)</b></summary>
 
-| File | Class | Reason |
-|------|-------|--------|
-| Accordion.tsx | GENERIC | Only THEME_CONSTANTS + React state |
-| ActiveFilterChips.tsx | GENERIC | Only THEME_CONSTANTS + generic UI |
-| AddressSelectorCreate.tsx | **BUSINESS** | Imports `useAddressSelector`, `AddressFormData` → move to `features/user/` |
-| Avatar.tsx | GENERIC | Only Image + THEME_CONSTANTS |
-| Badge.tsx | GENERIC | Only THEME_CONSTANTS |
-| BulkActionBar.tsx | GENERIC | Only THEME_CONSTANTS + generic UI |
-| Button.tsx | GENERIC | Only React + `classNames` |
-| Card.tsx | GENERIC | Only THEME_CONSTANTS |
+| File                       | Class        | Reason                                                                        |
+| -------------------------- | ------------ | ----------------------------------------------------------------------------- |
+| Accordion.tsx              | GENERIC      | Only THEME_CONSTANTS + React state                                            |
+| ActiveFilterChips.tsx      | GENERIC      | Only THEME_CONSTANTS + generic UI                                             |
+| AddressSelectorCreate.tsx  | **BUSINESS** | Imports `useAddressSelector`, `AddressFormData` → move to `features/user/`    |
+| Avatar.tsx                 | GENERIC      | Only Image + THEME_CONSTANTS                                                  |
+| Badge.tsx                  | GENERIC      | Only THEME_CONSTANTS                                                          |
+| BulkActionBar.tsx          | GENERIC      | Only THEME_CONSTANTS + generic UI                                             |
+| Button.tsx                 | GENERIC      | Only React + `classNames`                                                     |
+| Card.tsx                   | GENERIC      | Only THEME_CONSTANTS                                                          |
 | CategorySelectorCreate.tsx | **BUSINESS** | Imports `useCategories`, `useCreateCategory` → move to `features/categories/` |
-| Divider.tsx | GENERIC | Only THEME_CONSTANTS |
-| Dropdown.tsx | GENERIC | Only React + `useClickOutside` |
-| EmptyState.tsx | GENERIC | Only THEME_CONSTANTS + generic UI |
-| EventBanner.tsx | **BUSINESS** | Imports `usePublicEvents` → move to `features/events/` |
-| FilterDrawer.tsx | GENERIC | Only THEME_CONSTANTS + generic UI |
-| FilterFacetSection.tsx | GENERIC | Only THEME_CONSTANTS + `formatNumber` |
-| HorizontalScroller.tsx | GENERIC | Only React + THEME_CONSTANTS |
-| ImageGallery.tsx | GENERIC | Only `useSwipe`, `useGesture` |
-| ListingLayout.tsx | GENERIC | Only THEME_CONSTANTS + generic slots |
-| Menu.tsx | GENERIC | Only React + `useClickOutside`, `useKeyPress` |
-| NotificationBell.tsx | **BUSINESS** | Imports `useNotifications`, `NotificationDocument` → move to `features/user/` |
-| Pagination.tsx | GENERIC | Only THEME_CONSTANTS + generic UI |
-| Progress.tsx | GENERIC | Only THEME_CONSTANTS |
-| RoleBadge.tsx | **MIXED** | Imports `UserRole` — genericize to accept `string` |
-| SectionTabs.tsx | GENERIC | Only THEME_CONSTANTS + Link |
-| SideDrawer.tsx | GENERIC | Only React + `preventBodyScroll` |
-| Skeleton.tsx | GENERIC | Only THEME_CONSTANTS |
-| SkipToMain.tsx | GENERIC | Only React |
-| SortDropdown.tsx | GENERIC | Only THEME_CONSTANTS + generic UI |
-| Spinner.tsx | GENERIC | Only THEME_CONSTANTS |
-| StatusBadge.tsx | GENERIC | Only imports `Badge` |
-| TablePagination.tsx | GENERIC | Only THEME_CONSTANTS + `formatNumber` |
-| Tabs.tsx | GENERIC | Only THEME_CONSTANTS |
-| Tooltip.tsx | GENERIC | Only React + THEME_CONSTANTS |
-| useHorizontalAutoScroll.ts | GENERIC | Pure scroll utility |
-| useHorizontalScrollDrag.ts | GENERIC | Pure scroll utility |
+| Divider.tsx                | GENERIC      | Only THEME_CONSTANTS                                                          |
+| Dropdown.tsx               | GENERIC      | Only React + `useClickOutside`                                                |
+| EmptyState.tsx             | GENERIC      | Only THEME_CONSTANTS + generic UI                                             |
+| EventBanner.tsx            | **BUSINESS** | Imports `usePublicEvents` → move to `features/events/`                        |
+| FilterDrawer.tsx           | GENERIC      | Only THEME_CONSTANTS + generic UI                                             |
+| FilterFacetSection.tsx     | GENERIC      | Only THEME_CONSTANTS + `formatNumber`                                         |
+| HorizontalScroller.tsx     | GENERIC      | Only React + THEME_CONSTANTS                                                  |
+| ImageGallery.tsx           | GENERIC      | Only `useSwipe`, `useGesture`                                                 |
+| ListingLayout.tsx          | GENERIC      | Only THEME_CONSTANTS + generic slots                                          |
+| Menu.tsx                   | GENERIC      | Only React + `useClickOutside`, `useKeyPress`                                 |
+| NotificationBell.tsx       | **BUSINESS** | Imports `useNotifications`, `NotificationDocument` → move to `features/user/` |
+| Pagination.tsx             | GENERIC      | Only THEME_CONSTANTS + generic UI                                             |
+| Progress.tsx               | GENERIC      | Only THEME_CONSTANTS                                                          |
+| RoleBadge.tsx              | **MIXED**    | Imports `UserRole` — genericize to accept `string`                            |
+| SectionTabs.tsx            | GENERIC      | Only THEME_CONSTANTS + Link                                                   |
+| SideDrawer.tsx             | GENERIC      | Only React + `preventBodyScroll`                                              |
+| Skeleton.tsx               | GENERIC      | Only THEME_CONSTANTS                                                          |
+| SkipToMain.tsx             | GENERIC      | Only React                                                                    |
+| SortDropdown.tsx           | GENERIC      | Only THEME_CONSTANTS + generic UI                                             |
+| Spinner.tsx                | GENERIC      | Only THEME_CONSTANTS                                                          |
+| StatusBadge.tsx            | GENERIC      | Only imports `Badge`                                                          |
+| TablePagination.tsx        | GENERIC      | Only THEME_CONSTANTS + `formatNumber`                                         |
+| Tabs.tsx                   | GENERIC      | Only THEME_CONSTANTS                                                          |
+| Tooltip.tsx                | GENERIC      | Only React + THEME_CONSTANTS                                                  |
+| useHorizontalAutoScroll.ts | GENERIC      | Pure scroll utility                                                           |
+| useHorizontalScrollDrag.ts | GENERIC      | Pure scroll utility                                                           |
 
 </details>
 
 <details>
 <summary><b>src/components/admin/ top-level (16 files)</b></summary>
 
-| File | Class | Reason |
-|------|-------|--------|
-| AdminFilterBar.tsx | GENERIC | Only THEME_CONSTANTS + generic wrapper |
-| AdminPageHeader.tsx | GENERIC | Only THEME_CONSTANTS + breadcrumbs |
-| AdminStatsCards.tsx | GENERIC | Only THEME_CONSTANTS + `formatNumber` |
-| AdminTabs.tsx | **BUSINESS** | Imports `ROUTES` (admin-specific routes) → move |
-| AdminSessionsManager.tsx | **BUSINESS** | Session management domain → move |
-| BackgroundSettings.tsx | GENERIC | Only React + Image + THEME_CONSTANTS |
-| CategoryTreeView.tsx | GENERIC | Only THEME_CONSTANTS + `classNames` |
-| DataTable.tsx | GENERIC | Only THEME_CONSTANTS + generic table |
-| DrawerFormFooter.tsx | GENERIC | Only generic UI components |
-| FaqForm.tsx | **EMPTY** | 0 bytes → DELETE |
-| GridEditor.tsx | GENERIC | Only generic UI + THEME_CONSTANTS |
-| ImageUpload.tsx | **MIXED** | Imports `useMediaUpload` → genericize |
-| MediaUploadField.tsx | **MIXED** | Imports `useMediaUpload` → genericize |
-| PayoutStatusForm.tsx | **EMPTY** | 0 bytes → DELETE |
-| RichTextEditor.tsx | GENERIC | Only TipTap + THEME_CONSTANTS |
-| SessionTableColumns.tsx | **BUSINESS** | Imports `SessionDocument` → move |
-| UserFilters.tsx | **EMPTY** | 0 bytes → DELETE |
+| File                     | Class        | Reason                                          |
+| ------------------------ | ------------ | ----------------------------------------------- |
+| AdminFilterBar.tsx       | GENERIC      | Only THEME_CONSTANTS + generic wrapper          |
+| AdminPageHeader.tsx      | GENERIC      | Only THEME_CONSTANTS + breadcrumbs              |
+| AdminStatsCards.tsx      | GENERIC      | Only THEME_CONSTANTS + `formatNumber`           |
+| AdminTabs.tsx            | **BUSINESS** | Imports `ROUTES` (admin-specific routes) → move |
+| AdminSessionsManager.tsx | **BUSINESS** | Session management domain → move                |
+| BackgroundSettings.tsx   | GENERIC      | Only React + Image + THEME_CONSTANTS            |
+| CategoryTreeView.tsx     | GENERIC      | Only THEME_CONSTANTS + `classNames`             |
+| DataTable.tsx            | GENERIC      | Only THEME_CONSTANTS + generic table            |
+| DrawerFormFooter.tsx     | GENERIC      | Only generic UI components                      |
+| FaqForm.tsx              | **EMPTY**    | 0 bytes → DELETE                                |
+| GridEditor.tsx           | GENERIC      | Only generic UI + THEME_CONSTANTS               |
+| ImageUpload.tsx          | **MIXED**    | Imports `useMediaUpload` → genericize           |
+| MediaUploadField.tsx     | **MIXED**    | Imports `useMediaUpload` → genericize           |
+| PayoutStatusForm.tsx     | **EMPTY**    | 0 bytes → DELETE                                |
+| RichTextEditor.tsx       | GENERIC      | Only TipTap + THEME_CONSTANTS                   |
+| SessionTableColumns.tsx  | **BUSINESS** | Imports `SessionDocument` → move                |
+| UserFilters.tsx          | **EMPTY**    | 0 bytes → DELETE                                |
 
 </details>
 
 <details>
 <summary><b>src/components/admin/ sub-directories (32 files)</b></summary>
 
-| Dir / File | Class | Action |
-|------------|-------|--------|
-| products/ProductForm.tsx | BUSINESS | MOVE |
-| products/ProductTableColumns.tsx | BUSINESS | MOVE |
-| products/types.ts | BUSINESS | MOVE |
-| orders/OrderTableColumns.tsx | BUSINESS | MOVE |
-| orders/OrderStatusForm.tsx | BUSINESS | MOVE |
-| users/UserTableColumns.tsx | BUSINESS | MOVE |
-| users/UserFilters.tsx | BUSINESS | MOVE |
-| users/UserDetailDrawer.tsx | BUSINESS | MOVE |
-| users/types.ts | BUSINESS | MOVE |
-| carousel/CarouselSlideForm.tsx | BUSINESS | MOVE |
-| carousel/CarouselTableColumns.tsx | BUSINESS | MOVE |
-| carousel/types.ts | BUSINESS | MOVE |
-| categories/CategoryForm.tsx | BUSINESS | MOVE |
-| categories/CategoryTableColumns.tsx | BUSINESS | MOVE |
-| categories/types.ts | BUSINESS | MOVE |
-| blog/BlogForm.tsx | BUSINESS | MOVE |
-| blog/BlogTableColumns.tsx | BUSINESS | MOVE |
-| sections/SectionForm.tsx | BUSINESS | MOVE |
-| sections/SectionTableColumns.tsx | BUSINESS | MOVE |
-| sections/types.ts | BUSINESS | MOVE |
-| reviews/ReviewDetailView.tsx | BUSINESS | MOVE |
-| reviews/ReviewStars.tsx | **GENERIC** | RENAME to `RatingDisplay`, stay in `ui/` |
-| reviews/ReviewTableColumns.tsx | BUSINESS | MOVE |
-| reviews/types.ts | BUSINESS | MOVE |
-| faqs/FaqForm.tsx | BUSINESS | MOVE |
-| faqs/FaqTableColumns.tsx | BUSINESS | MOVE |
-| faqs/types.ts | BUSINESS | MOVE |
-| coupons/CouponForm.tsx | BUSINESS | MOVE |
-| coupons/CouponTableColumns.tsx | BUSINESS | MOVE |
-| bids/BidTableColumns.tsx | BUSINESS | MOVE |
-| site/SiteBasicInfoForm.tsx | BUSINESS | MOVE |
-| site/SiteContactForm.tsx | BUSINESS | MOVE |
-| site/SiteSocialLinksForm.tsx | BUSINESS | MOVE |
-| payouts/PayoutStatusForm.tsx | BUSINESS | MOVE |
-| payouts/PayoutTableColumns.tsx | BUSINESS | MOVE |
-| dashboard/AdminDashboardSkeleton.tsx | GENERIC | Stay |
-| dashboard/QuickActionsGrid.tsx | MIXED | MOVE (uses `ROUTES`) |
-| dashboard/RecentActivityCard.tsx | GENERIC | Stay |
-| media/MediaTableColumns.tsx | GENERIC | Stay |
-| media/MediaOperationForm.tsx | GENERIC | Stay |
+| Dir / File                           | Class       | Action                                   |
+| ------------------------------------ | ----------- | ---------------------------------------- |
+| products/ProductForm.tsx             | BUSINESS    | MOVE                                     |
+| products/ProductTableColumns.tsx     | BUSINESS    | MOVE                                     |
+| products/types.ts                    | BUSINESS    | MOVE                                     |
+| orders/OrderTableColumns.tsx         | BUSINESS    | MOVE                                     |
+| orders/OrderStatusForm.tsx           | BUSINESS    | MOVE                                     |
+| users/UserTableColumns.tsx           | BUSINESS    | MOVE                                     |
+| users/UserFilters.tsx                | BUSINESS    | MOVE                                     |
+| users/UserDetailDrawer.tsx           | BUSINESS    | MOVE                                     |
+| users/types.ts                       | BUSINESS    | MOVE                                     |
+| carousel/CarouselSlideForm.tsx       | BUSINESS    | MOVE                                     |
+| carousel/CarouselTableColumns.tsx    | BUSINESS    | MOVE                                     |
+| carousel/types.ts                    | BUSINESS    | MOVE                                     |
+| categories/CategoryForm.tsx          | BUSINESS    | MOVE                                     |
+| categories/CategoryTableColumns.tsx  | BUSINESS    | MOVE                                     |
+| categories/types.ts                  | BUSINESS    | MOVE                                     |
+| blog/BlogForm.tsx                    | BUSINESS    | MOVE                                     |
+| blog/BlogTableColumns.tsx            | BUSINESS    | MOVE                                     |
+| sections/SectionForm.tsx             | BUSINESS    | MOVE                                     |
+| sections/SectionTableColumns.tsx     | BUSINESS    | MOVE                                     |
+| sections/types.ts                    | BUSINESS    | MOVE                                     |
+| reviews/ReviewDetailView.tsx         | BUSINESS    | MOVE                                     |
+| reviews/ReviewStars.tsx              | **GENERIC** | RENAME to `RatingDisplay`, stay in `ui/` |
+| reviews/ReviewTableColumns.tsx       | BUSINESS    | MOVE                                     |
+| reviews/types.ts                     | BUSINESS    | MOVE                                     |
+| faqs/FaqForm.tsx                     | BUSINESS    | MOVE                                     |
+| faqs/FaqTableColumns.tsx             | BUSINESS    | MOVE                                     |
+| faqs/types.ts                        | BUSINESS    | MOVE                                     |
+| coupons/CouponForm.tsx               | BUSINESS    | MOVE                                     |
+| coupons/CouponTableColumns.tsx       | BUSINESS    | MOVE                                     |
+| bids/BidTableColumns.tsx             | BUSINESS    | MOVE                                     |
+| site/SiteBasicInfoForm.tsx           | BUSINESS    | MOVE                                     |
+| site/SiteContactForm.tsx             | BUSINESS    | MOVE                                     |
+| site/SiteSocialLinksForm.tsx         | BUSINESS    | MOVE                                     |
+| payouts/PayoutStatusForm.tsx         | BUSINESS    | MOVE                                     |
+| payouts/PayoutTableColumns.tsx       | BUSINESS    | MOVE                                     |
+| dashboard/AdminDashboardSkeleton.tsx | GENERIC     | Stay                                     |
+| dashboard/QuickActionsGrid.tsx       | MIXED       | MOVE (uses `ROUTES`)                     |
+| dashboard/RecentActivityCard.tsx     | GENERIC     | Stay                                     |
+| media/MediaTableColumns.tsx          | GENERIC     | Stay                                     |
+| media/MediaOperationForm.tsx         | GENERIC     | Stay                                     |
 
 </details>
 
 <details>
 <summary><b>src/components/products/ (11 files)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
-| ProductCard.tsx | BUSINESS | MOVE to `features/products/` |
-| ProductGrid.tsx | BUSINESS | MOVE |
-| ProductFilters.tsx | BUSINESS | MOVE |
-| ProductActions.tsx | BUSINESS | MOVE |
-| ProductInfo.tsx | BUSINESS | MOVE |
-| ProductImageGallery.tsx | GENERIC (duplicate) | DELETE (use `ui/ImageGallery`) |
-| ProductReviews.tsx | BUSINESS | MOVE |
-| ProductSortBar.tsx | MIXED | MOVE |
-| ProductFeatureBadges.tsx | BUSINESS | MOVE |
-| RelatedProducts.tsx | BUSINESS | MOVE |
-| AddToCartButton.tsx | BUSINESS | MOVE |
+| File                     | Class               | Action                         |
+| ------------------------ | ------------------- | ------------------------------ |
+| ProductCard.tsx          | BUSINESS            | MOVE to `features/products/`   |
+| ProductGrid.tsx          | BUSINESS            | MOVE                           |
+| ProductFilters.tsx       | BUSINESS            | MOVE                           |
+| ProductActions.tsx       | BUSINESS            | MOVE                           |
+| ProductInfo.tsx          | BUSINESS            | MOVE                           |
+| ProductImageGallery.tsx  | GENERIC (duplicate) | DELETE (use `ui/ImageGallery`) |
+| ProductReviews.tsx       | BUSINESS            | MOVE                           |
+| ProductSortBar.tsx       | MIXED               | MOVE                           |
+| ProductFeatureBadges.tsx | BUSINESS            | MOVE                           |
+| RelatedProducts.tsx      | BUSINESS            | MOVE                           |
+| AddToCartButton.tsx      | BUSINESS            | MOVE                           |
 
 </details>
 
 <details>
 <summary><b>src/components/auctions/ (5 files)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
-| AuctionCard.tsx | BUSINESS | MOVE to `features/products/` |
-| AuctionGrid.tsx | BUSINESS | MOVE |
-| AuctionDetailView.tsx | BUSINESS | MOVE |
-| BidHistory.tsx | BUSINESS | MOVE |
-| PlaceBidForm.tsx | BUSINESS | MOVE |
+| File                  | Class    | Action                       |
+| --------------------- | -------- | ---------------------------- |
+| AuctionCard.tsx       | BUSINESS | MOVE to `features/products/` |
+| AuctionGrid.tsx       | BUSINESS | MOVE                         |
+| AuctionDetailView.tsx | BUSINESS | MOVE                         |
+| BidHistory.tsx        | BUSINESS | MOVE                         |
+| PlaceBidForm.tsx      | BUSINESS | MOVE                         |
 
 </details>
 
 <details>
 <summary><b>src/components/blog/ (3 files)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
-| BlogCard.tsx | BUSINESS | MOVE to `features/blog/` |
-| BlogCategoryTabs.tsx | BUSINESS | MOVE |
-| BlogFeaturedCard.tsx | BUSINESS | MOVE |
+| File                 | Class    | Action                   |
+| -------------------- | -------- | ------------------------ |
+| BlogCard.tsx         | BUSINESS | MOVE to `features/blog/` |
+| BlogCategoryTabs.tsx | BUSINESS | MOVE                     |
+| BlogFeaturedCard.tsx | BUSINESS | MOVE                     |
 
 </details>
 
 <details>
 <summary><b>src/components/cart/ (4 files)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
-| CartItemList.tsx | BUSINESS | MOVE to `features/cart/` |
-| CartItemRow.tsx | BUSINESS | MOVE |
-| CartSummary.tsx | BUSINESS | MOVE |
-| PromoCodeInput.tsx | BUSINESS | MOVE |
+| File               | Class    | Action                   |
+| ------------------ | -------- | ------------------------ |
+| CartItemList.tsx   | BUSINESS | MOVE to `features/cart/` |
+| CartItemRow.tsx    | BUSINESS | MOVE                     |
+| CartSummary.tsx    | BUSINESS | MOVE                     |
+| PromoCodeInput.tsx | BUSINESS | MOVE                     |
 
 </details>
 
 <details>
 <summary><b>src/components/checkout/ (9 files)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
-| CheckoutView.tsx | BUSINESS | MOVE to `features/cart/` |
-| CheckoutAddressStep.tsx | BUSINESS | MOVE |
-| CheckoutOrderReview.tsx | BUSINESS | MOVE |
-| CheckoutStepper.tsx | GENERIC | EXTRACT → `ui/StepperNav` |
-| CheckoutSuccessView.tsx | BUSINESS | MOVE |
-| OrderSuccessActions.tsx | MIXED | MOVE |
-| OrderSuccessCard.tsx | BUSINESS | MOVE |
-| OrderSuccessHero.tsx | GENERIC | EXTRACT or move with group |
-| OrderSummaryPanel.tsx | MIXED | MOVE |
+| File                    | Class    | Action                     |
+| ----------------------- | -------- | -------------------------- |
+| CheckoutView.tsx        | BUSINESS | MOVE to `features/cart/`   |
+| CheckoutAddressStep.tsx | BUSINESS | MOVE                       |
+| CheckoutOrderReview.tsx | BUSINESS | MOVE                       |
+| CheckoutStepper.tsx     | GENERIC  | EXTRACT → `ui/StepperNav`  |
+| CheckoutSuccessView.tsx | BUSINESS | MOVE                       |
+| OrderSuccessActions.tsx | MIXED    | MOVE                       |
+| OrderSuccessCard.tsx    | BUSINESS | MOVE                       |
+| OrderSuccessHero.tsx    | GENERIC  | EXTRACT or move with group |
+| OrderSummaryPanel.tsx   | MIXED    | MOVE                       |
 
 </details>
 
 <details>
 <summary><b>src/components/categories/ (2 files)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
+| File             | Class    | Action                         |
+| ---------------- | -------- | ------------------------------ |
 | CategoryCard.tsx | BUSINESS | MOVE to `features/categories/` |
-| CategoryGrid.tsx | BUSINESS | MOVE |
+| CategoryGrid.tsx | BUSINESS | MOVE                           |
 
 </details>
 
 <details>
 <summary><b>src/components/homepage/ (15 files)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
-| HeroCarousel.tsx | BUSINESS | MOVE to `features/homepage/` (NEW) |
-| FeaturedProductsSection.tsx | BUSINESS | MOVE |
-| FeaturedAuctionsSection.tsx | BUSINESS | MOVE |
-| TopCategoriesSection.tsx | BUSINESS | MOVE |
-| CustomerReviewsSection.tsx | BUSINESS | MOVE |
-| BlogArticlesSection.tsx | BUSINESS | MOVE |
-| FAQSection.tsx | BUSINESS | MOVE |
-| WelcomeSection.tsx | BUSINESS | MOVE |
-| WhatsAppCommunitySection.tsx | BUSINESS | MOVE |
-| AdvertisementBanner.tsx | BUSINESS | MOVE |
-| SectionCarousel.tsx | BUSINESS | MOVE |
-| SiteFeaturesSection.tsx | MIXED | MOVE |
-| TrustFeaturesSection.tsx | MIXED | MOVE |
-| TrustIndicatorsSection.tsx | MIXED | MOVE |
-| HomepageSkeleton.tsx | GENERIC | MOVE with group |
+| File                         | Class    | Action                             |
+| ---------------------------- | -------- | ---------------------------------- |
+| HeroCarousel.tsx             | BUSINESS | MOVE to `features/homepage/` (NEW) |
+| FeaturedProductsSection.tsx  | BUSINESS | MOVE                               |
+| FeaturedAuctionsSection.tsx  | BUSINESS | MOVE                               |
+| TopCategoriesSection.tsx     | BUSINESS | MOVE                               |
+| CustomerReviewsSection.tsx   | BUSINESS | MOVE                               |
+| BlogArticlesSection.tsx      | BUSINESS | MOVE                               |
+| FAQSection.tsx               | BUSINESS | MOVE                               |
+| WelcomeSection.tsx           | BUSINESS | MOVE                               |
+| WhatsAppCommunitySection.tsx | BUSINESS | MOVE                               |
+| AdvertisementBanner.tsx      | BUSINESS | MOVE                               |
+| SectionCarousel.tsx          | BUSINESS | MOVE                               |
+| SiteFeaturesSection.tsx      | MIXED    | MOVE                               |
+| TrustFeaturesSection.tsx     | MIXED    | MOVE                               |
+| TrustIndicatorsSection.tsx   | MIXED    | MOVE                               |
+| HomepageSkeleton.tsx         | GENERIC  | MOVE with group                    |
 
 </details>
 
 <details>
 <summary><b>src/components/reviews/ (1 file)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
+| File           | Class    | Action                      |
+| -------------- | -------- | --------------------------- |
 | ReviewCard.tsx | BUSINESS | MOVE to `features/reviews/` |
 
 </details>
@@ -1118,71 +1162,71 @@ import { Search, SortDropdown, FilterFacetSection } from '@/components';
 <details>
 <summary><b>src/components/seller/ (9 files)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
-| SellerStorefrontView.tsx | BUSINESS | MOVE to `features/seller/` |
-| SellerAnalyticsStats.tsx | BUSINESS | MOVE |
-| SellerPayoutHistoryTable.tsx | BUSINESS | MOVE |
-| SellerPayoutRequestForm.tsx | BUSINESS | MOVE |
-| SellerPayoutStats.tsx | BUSINESS | MOVE |
-| SellerRevenueChart.tsx | BUSINESS | MOVE |
-| SellerTabs.tsx | MIXED | MOVE |
-| SellerTopProducts.tsx | BUSINESS | MOVE |
-| PayoutTableColumns.tsx | BUSINESS | MOVE |
+| File                         | Class    | Action                     |
+| ---------------------------- | -------- | -------------------------- |
+| SellerStorefrontView.tsx     | BUSINESS | MOVE to `features/seller/` |
+| SellerAnalyticsStats.tsx     | BUSINESS | MOVE                       |
+| SellerPayoutHistoryTable.tsx | BUSINESS | MOVE                       |
+| SellerPayoutRequestForm.tsx  | BUSINESS | MOVE                       |
+| SellerPayoutStats.tsx        | BUSINESS | MOVE                       |
+| SellerRevenueChart.tsx       | BUSINESS | MOVE                       |
+| SellerTabs.tsx               | MIXED    | MOVE                       |
+| SellerTopProducts.tsx        | BUSINESS | MOVE                       |
+| PayoutTableColumns.tsx       | BUSINESS | MOVE                       |
 
 </details>
 
 <details>
 <summary><b>src/components/search/ (2 files)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
-| SearchFiltersRow.tsx | BUSINESS | MOVE to `features/search/` |
-| SearchResultsSection.tsx | BUSINESS | MOVE |
+| File                     | Class    | Action                     |
+| ------------------------ | -------- | -------------------------- |
+| SearchFiltersRow.tsx     | BUSINESS | MOVE to `features/search/` |
+| SearchResultsSection.tsx | BUSINESS | MOVE                       |
 
 </details>
 
 <details>
 <summary><b>src/components/contact/ (2 files)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
-| ContactForm.tsx | BUSINESS | MOVE to `features/contact/` (NEW) |
-| ContactInfoSidebar.tsx | MIXED | MOVE |
+| File                   | Class    | Action                            |
+| ---------------------- | -------- | --------------------------------- |
+| ContactForm.tsx        | BUSINESS | MOVE to `features/contact/` (NEW) |
+| ContactInfoSidebar.tsx | MIXED    | MOVE                              |
 
 </details>
 
 <details>
 <summary><b>src/components/faq/ (8 files)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
-| FAQPageContent.tsx | BUSINESS | MOVE to `features/faq/` (NEW) |
-| FAQAccordion.tsx | BUSINESS | MOVE |
-| FAQCategorySidebar.tsx | BUSINESS | MOVE |
-| FAQHelpfulButtons.tsx | BUSINESS | MOVE |
-| FAQSortDropdown.tsx | MIXED | MOVE |
-| RelatedFAQs.tsx | BUSINESS | MOVE |
-| ContactCTA.tsx | MIXED | MOVE |
-| FAQSearchBar.tsx | GENERIC | DELETE (use `Search` directly) |
+| File                   | Class    | Action                         |
+| ---------------------- | -------- | ------------------------------ |
+| FAQPageContent.tsx     | BUSINESS | MOVE to `features/faq/` (NEW)  |
+| FAQAccordion.tsx       | BUSINESS | MOVE                           |
+| FAQCategorySidebar.tsx | BUSINESS | MOVE                           |
+| FAQHelpfulButtons.tsx  | BUSINESS | MOVE                           |
+| FAQSortDropdown.tsx    | MIXED    | MOVE                           |
+| RelatedFAQs.tsx        | BUSINESS | MOVE                           |
+| ContactCTA.tsx         | MIXED    | MOVE                           |
+| FAQSearchBar.tsx       | GENERIC  | DELETE (use `Search` directly) |
 
 </details>
 
 <details>
 <summary><b>src/components/promotions/ (2 files)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
-| CouponCard.tsx | BUSINESS | MOVE to `features/promotions/` (NEW) |
-| ProductSection.tsx | BUSINESS | MOVE |
+| File               | Class    | Action                               |
+| ------------------ | -------- | ------------------------------------ |
+| CouponCard.tsx     | BUSINESS | MOVE to `features/promotions/` (NEW) |
+| ProductSection.tsx | BUSINESS | MOVE                                 |
 
 </details>
 
 <details>
 <summary><b>src/components/about/ (1 file)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
+| File          | Class | Action                          |
+| ------------- | ----- | ------------------------------- |
 | AboutView.tsx | MIXED | MOVE to `features/about/` (NEW) |
 
 </details>
@@ -1190,40 +1234,40 @@ import { Search, SortDropdown, FilterFacetSection } from '@/components';
 <details>
 <summary><b>src/components/user/ (14 files)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
-| WishlistButton.tsx | BUSINESS | MOVE to `features/user/` |
-| UserTabs.tsx | BUSINESS | MOVE |
-| addresses/AddressCard.tsx | BUSINESS | MOVE |
-| addresses/AddressForm.tsx | BUSINESS | MOVE |
-| orders/OrderTrackingView.tsx | BUSINESS | MOVE |
-| profile/ProfileHeader.tsx | BUSINESS | MOVE |
-| profile/ProfileStatsGrid.tsx | BUSINESS | MOVE (extract `StatsGrid` generic first) |
-| profile/PublicProfileView.tsx | BUSINESS | MOVE |
-| settings/AccountInfoCard.tsx | BUSINESS | MOVE |
-| settings/EmailVerificationCard.tsx | BUSINESS | MOVE |
-| settings/PasswordChangeForm.tsx | BUSINESS | MOVE |
-| settings/PhoneVerificationCard.tsx | BUSINESS | MOVE |
-| settings/ProfileInfoForm.tsx | BUSINESS | MOVE |
-| notifications/NotificationItem.tsx | BUSINESS | MOVE |
-| notifications/NotificationsBulkActions.tsx | BUSINESS | MOVE with group |
+| File                                       | Class    | Action                                   |
+| ------------------------------------------ | -------- | ---------------------------------------- |
+| WishlistButton.tsx                         | BUSINESS | MOVE to `features/user/`                 |
+| UserTabs.tsx                               | BUSINESS | MOVE                                     |
+| addresses/AddressCard.tsx                  | BUSINESS | MOVE                                     |
+| addresses/AddressForm.tsx                  | BUSINESS | MOVE                                     |
+| orders/OrderTrackingView.tsx               | BUSINESS | MOVE                                     |
+| profile/ProfileHeader.tsx                  | BUSINESS | MOVE                                     |
+| profile/ProfileStatsGrid.tsx               | BUSINESS | MOVE (extract `StatsGrid` generic first) |
+| profile/PublicProfileView.tsx              | BUSINESS | MOVE                                     |
+| settings/AccountInfoCard.tsx               | BUSINESS | MOVE                                     |
+| settings/EmailVerificationCard.tsx         | BUSINESS | MOVE                                     |
+| settings/PasswordChangeForm.tsx            | BUSINESS | MOVE                                     |
+| settings/PhoneVerificationCard.tsx         | BUSINESS | MOVE                                     |
+| settings/ProfileInfoForm.tsx               | BUSINESS | MOVE                                     |
+| notifications/NotificationItem.tsx         | BUSINESS | MOVE                                     |
+| notifications/NotificationsBulkActions.tsx | BUSINESS | MOVE with group                          |
 
 </details>
 
 <details>
 <summary><b>src/components/layout/ (9 files)</b></summary>
 
-| File | Class | Action |
-|------|-------|--------|
-| AutoBreadcrumbs.tsx | GENERIC | Stay |
-| BottomNavbar.tsx | BUSINESS | SPLIT → generic `BottomNavLayout` + config |
-| Breadcrumbs.tsx | GENERIC | Stay |
-| Footer.tsx | MIXED | SPLIT → generic `FooterLayout` + config |
-| LocaleSwitcher.tsx | GENERIC | Stay |
-| MainNavbar.tsx | MIXED | SPLIT → generic `NavbarLayout` + config |
-| NavItem.tsx | GENERIC | Stay |
-| Sidebar.tsx | BUSINESS | SPLIT → generic `SidebarLayout` + config |
-| TitleBar.tsx | BUSINESS | SPLIT → generic `TitleBarLayout` + config |
+| File                | Class    | Action                                     |
+| ------------------- | -------- | ------------------------------------------ |
+| AutoBreadcrumbs.tsx | GENERIC  | Stay                                       |
+| BottomNavbar.tsx    | BUSINESS | SPLIT → generic `BottomNavLayout` + config |
+| Breadcrumbs.tsx     | GENERIC  | Stay                                       |
+| Footer.tsx          | MIXED    | SPLIT → generic `FooterLayout` + config    |
+| LocaleSwitcher.tsx  | GENERIC  | Stay                                       |
+| MainNavbar.tsx      | MIXED    | SPLIT → generic `NavbarLayout` + config    |
+| NavItem.tsx         | GENERIC  | Stay                                       |
+| Sidebar.tsx         | BUSINESS | SPLIT → generic `SidebarLayout` + config   |
+| TitleBar.tsx        | BUSINESS | SPLIT → generic `TitleBarLayout` + config  |
 
 </details>
 
@@ -1239,14 +1283,14 @@ import { Search, SortDropdown, FilterFacetSection } from '@/components';
 
 **Current fields**: `id`, `productId`, `productTitle`, `userId`, `userName`, `sellerId`, `status`, `rating`, `verified`, `helpfulCount`, `featured`, `reportCount`, `updatedAt`, `createdAt`
 
-| Add field | canFilter | canSort | Notes |
-|-----------|:---------:|:-------:|-------|
-| `orderId` | ✓ | ✗ | Store on the review doc at write time. Allows "find all reviews for an order". |
-| `categoryId` | ✓ | ✗ | Denormalize from the product at review-write time. |
-| `categoryName` | ✓ | ✓ | Displayable category label — used in admin facet dropdowns. |
-| `productSlug` | ✓ | ✗ | SEO-friendly product filter when `productId` is not user-facing. |
-| `isEdited` | ✓ | ✗ | Flag set when buyer edits their review after initial submission. |
-| `hasMedia` | ✓ | ✗ | `true` when the review contains image/video attachments — common facet. |
+| Add field      | canFilter | canSort | Notes                                                                          |
+| -------------- | :-------: | :-----: | ------------------------------------------------------------------------------ |
+| `orderId`      |     ✓     |    ✗    | Store on the review doc at write time. Allows "find all reviews for an order". |
+| `categoryId`   |     ✓     |    ✗    | Denormalize from the product at review-write time.                             |
+| `categoryName` |     ✓     |    ✓    | Displayable category label — used in admin facet dropdowns.                    |
+| `productSlug`  |     ✓     |    ✗    | SEO-friendly product filter when `productId` is not user-facing.               |
+| `isEdited`     |     ✓     |    ✗    | Flag set when buyer edits their review after initial submission.               |
+| `hasMedia`     |     ✓     |    ✗    | `true` when the review contains image/video attachments — common facet.        |
 
 **Remove nothing** — existing fields are all useful.
 
@@ -1258,15 +1302,15 @@ import { Search, SortDropdown, FilterFacetSection } from '@/components';
 
 **Current fields** (non-auction): `id`, `title`, `slug`, `category`, `subcategory`, `brand`, `condition`, `status`, `sellerId`, `sellerName`, `featured`, `isAuction`, `isPromoted`, `price`, `stockQuantity`, `viewCount`, `currentBid`, `bidCount`, `createdAt`, `updatedAt`, `auctionEndDate`, `startingBid`, `buyNowPrice`, `minBidIncrement`, `autoExtendable`, `reservePrice`, `tags`, `features`, `insurance`, `currency`
 
-| Add field | canFilter | canSort | Notes |
-|-----------|:---------:|:-------:|-------|
-| `averageRating` | ✓ | ✓ | Denormalized from review aggregates (updated by Function trigger). |
-| `reviewCount` | ✓ | ✓ | Denormalized from review aggregates. |
-| `hasVideo` | ✓ | ✗ | `true` when the product has at least one video media item. |
-| `location` | ✓ | ✗ | City/state string for geo-filtered browsing (optional, if sellers provide it). |
-| `shippingAvailable` | ✓ | ✗ | `true` when the seller offers delivery; `false` = pickup only. |
-| `isVerifiedSeller` | ✓ | ✗ | Denormalized from seller's `storeStatus === 'verified'`. |
-| `sellerRating` | ✓ | ✓ | Denormalized from seller's `stats.averageRating`. |
+| Add field           | canFilter | canSort | Notes                                                                          |
+| ------------------- | :-------: | :-----: | ------------------------------------------------------------------------------ |
+| `averageRating`     |     ✓     |    ✓    | Denormalized from review aggregates (updated by Function trigger).             |
+| `reviewCount`       |     ✓     |    ✓    | Denormalized from review aggregates.                                           |
+| `hasVideo`          |     ✓     |    ✗    | `true` when the product has at least one video media item.                     |
+| `location`          |     ✓     |    ✗    | City/state string for geo-filtered browsing (optional, if sellers provide it). |
+| `shippingAvailable` |     ✓     |    ✗    | `true` when the seller offers delivery; `false` = pickup only.                 |
+| `isVerifiedSeller`  |     ✓     |    ✗    | Denormalized from seller's `storeStatus === 'verified'`.                       |
+| `sellerRating`      |     ✓     |    ✓    | Denormalized from seller's `stats.averageRating`.                              |
 
 **Remove nothing** — all current fields have valid use cases.
 
@@ -1278,14 +1322,15 @@ import { Search, SortDropdown, FilterFacetSection } from '@/components';
 
 Auctions reuse the same repository with an implicit `isAuction==true` pre-filter applied in the API route. The following fields are already present but need a planned `auctionStatus` denormalized field:
 
-| Add field | canFilter | canSort | Notes |
-|-----------|:---------:|:-------:|-------|
-| `auctionStatus` | ✓ | ✓ | Denormalized enum: `upcoming` / `live` / `ended`. Updated by a scheduled Function so queries can filter efficiently without date arithmetic. |
-| `hasReserve` | ✓ | ✗ | `true` when `reservePrice > 0`. Set at write time; avoids `reservePrice > 0` range query. |
-| `isExtended` | ✓ | ✗ | `true` when the auction has been auto-extended at least once. |
-| `winnerUserId` | ✓ | ✗ | Set once the auction settles. Enables "won auctions" filter. |
+| Add field       | canFilter | canSort | Notes                                                                                                                                        |
+| --------------- | :-------: | :-----: | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auctionStatus` |     ✓     |    ✓    | Denormalized enum: `upcoming` / `live` / `ended`. Updated by a scheduled Function so queries can filter efficiently without date arithmetic. |
+| `hasReserve`    |     ✓     |    ✗    | `true` when `reservePrice > 0`. Set at write time; avoids `reservePrice > 0` range query.                                                    |
+| `isExtended`    |     ✓     |    ✗    | `true` when the auction has been auto-extended at least once.                                                                                |
+| `winnerUserId`  |     ✓     |    ✗    | Set once the auction settles. Enables "won auctions" filter.                                                                                 |
 
 **Note**: "Time left" filters are best expressed as `auctionStatus==live` combined with `auctionEndDate` range queries rather than computed durations:
+
 - Ending < 1 h → `auctionEndDate<={now+1h}`
 - Ending today → `auctionEndDate<={endOfToday}`
 - Ending this week → `auctionEndDate<={endOfWeek}`
@@ -1298,12 +1343,12 @@ Auctions reuse the same repository with an implicit `isAuction==true` pre-filter
 
 **Current fields**: `name`, `slug`, `tier`, `isActive`, `isFeatured`, `isSearchable`, `parentId`, `order`, `metrics.productCount`, `metrics.totalItemCount`, `metrics.auctionCount`, `id`, `isLeaf`, `createdAt`
 
-| Add field | canFilter | canSort | Notes |
-|-----------|:---------:|:-------:|-------|
-| `parentName` | ✓ | ✓ | Denormalized parent display name — avoids join for filter labels. |
-| `depth` | ✓ | ✓ | Nesting level (0 = root). Easier than inferring from `tier`. |
-| `hasImage` | ✓ | ✗ | `true` when a cover image is uploaded — admin completeness filter. |
-| `metrics.activeProductCount` | ✓ | ✓ | Published products only, separate from `totalItemCount`. |
+| Add field                    | canFilter | canSort | Notes                                                              |
+| ---------------------------- | :-------: | :-----: | ------------------------------------------------------------------ |
+| `parentName`                 |     ✓     |    ✓    | Denormalized parent display name — avoids join for filter labels.  |
+| `depth`                      |     ✓     |    ✓    | Nesting level (0 = root). Easier than inferring from `tier`.       |
+| `hasImage`                   |     ✓     |    ✗    | `true` when a cover image is uploaded — admin completeness filter. |
+| `metrics.activeProductCount` |     ✓     |    ✓    | Published products only, separate from `totalItemCount`.           |
 
 **URL param names**: `tier`, `parentId`, `isFeatured`, `isActive`, `hasImage`, `minProducts`, `maxProducts`
 
@@ -1313,16 +1358,16 @@ Auctions reuse the same repository with an implicit `isAuction==true` pre-filter
 
 When the stores listing queries users with `role==seller`, these additional fields become relevant:
 
-| Add field | canFilter | canSort | Notes |
-|-----------|:---------:|:-------:|-------|
-| `storeName` | ✓ | ✓ | Distinct from `displayName`; the brand/shop name shown in listings. |
-| `stats.totalProducts` | ✓ | ✓ | Published product count — denormalized by Function trigger. |
-| `stats.totalSales` | ✓ | ✓ | Completed order count — denormalized. |
-| `stats.averageRating` | ✓ | ✓ | Average store rating — denormalized from reviews. |
-| `stats.reviewCount` | ✓ | ✓ | Total store review count. |
-| `isVerified` | ✓ | ✗ | `true` when admin has marked the store as verified. |
-| `location` | ✓ | ✓ | City/region for geo-filtered store browsing. |
-| `primaryCategory` | ✓ | ✓ | Main category the store sells in — useful for facet filtering. |
+| Add field             | canFilter | canSort | Notes                                                               |
+| --------------------- | :-------: | :-----: | ------------------------------------------------------------------- |
+| `storeName`           |     ✓     |    ✓    | Distinct from `displayName`; the brand/shop name shown in listings. |
+| `stats.totalProducts` |     ✓     |    ✓    | Published product count — denormalized by Function trigger.         |
+| `stats.totalSales`    |     ✓     |    ✓    | Completed order count — denormalized.                               |
+| `stats.averageRating` |     ✓     |    ✓    | Average store rating — denormalized from reviews.                   |
+| `stats.reviewCount`   |     ✓     |    ✓    | Total store review count.                                           |
+| `isVerified`          |     ✓     |    ✗    | `true` when admin has marked the store as verified.                 |
+| `location`            |     ✓     |    ✓    | City/region for geo-filtered store browsing.                        |
+| `primaryCategory`     |     ✓     |    ✓    | Main category the store sells in — useful for facet filtering.      |
 
 **URL param names** (stores page): `storeStatus`, `minRating`, `minProducts`, `isVerified`, `primaryCategory`, `location`
 
@@ -1332,13 +1377,13 @@ When the stores listing queries users with `role==seller`, these additional fiel
 
 **Current fields**: `id`, `title`, `slug`, `status`, `category`, `authorName`, `authorId`, `isFeatured`, `readTimeMinutes`, `views`, `publishedAt`, `updatedAt`, `tags`, `createdAt`
 
-| Add field | canFilter | canSort | Notes |
-|-----------|:---------:|:-------:|-------|
-| `commentCount` | ✓ | ✓ | Denormalized total comment count for "most discussed" sorts. |
-| `series` | ✓ | ✓ | Named blog series (e.g. "Trekking Basics") — groups multi-part posts. |
-| `difficulty` | ✓ | ✓ | Content difficulty rating (beginner/intermediate/advanced) — travel/guide blogs. |
-| `destination` | ✓ | ✓ | Geographic destination tag — key for a travel-focused site. |
-| `hasVideo` | ✓ | ✗ | `true` when the post contains embedded video. |
+| Add field      | canFilter | canSort | Notes                                                                            |
+| -------------- | :-------: | :-----: | -------------------------------------------------------------------------------- |
+| `commentCount` |     ✓     |    ✓    | Denormalized total comment count for "most discussed" sorts.                     |
+| `series`       |     ✓     |    ✓    | Named blog series (e.g. "Trekking Basics") — groups multi-part posts.            |
+| `difficulty`   |     ✓     |    ✓    | Content difficulty rating (beginner/intermediate/advanced) — travel/guide blogs. |
+| `destination`  |     ✓     |    ✓    | Geographic destination tag — key for a travel-focused site.                      |
+| `hasVideo`     |     ✓     |    ✗    | `true` when the post contains embedded video.                                    |
 
 **URL param names**: `category`, `tags`, `authorId`, `minReadTime`, `maxReadTime`, `isFeatured`, `dateFrom`, `dateTo`, `destination`, `series`
 
@@ -1348,16 +1393,16 @@ When the stores listing queries users with `role==seller`, these additional fiel
 
 **Current fields**: `type`, `status`, `title`, `createdBy`, `startsAt`, `endsAt`, `stats.totalEntries`, `stats.approvedEntries`, `stats.flaggedEntries`, `id`, `createdAt`
 
-| Add field | canFilter | canSort | Notes |
-|-----------|:---------:|:-------:|-------|
-| `slug` | ✓ | ✗ | SEO-friendly identifier used in deep-link filters. |
-| `tags` | ✓ | ✗ | Free-form topic tags (array-contains `@=` operator). |
-| `isFeatured` | ✓ | ✗ | Pinned to featured carousel. |
-| `isPublic` | ✓ | ✗ | `false` for invite-only or admin-only events. |
-| `prizePool` | ✓ | ✓ | Total prize/reward value — for "events with prizes" filter. |
-| `maxEntries` | ✓ | ✓ | Cap on participants — allows "has open spots" filter via `stats.totalEntries < maxEntries`. |
-| `location` | ✓ | ✓ | City/region for in-person event geo filtering. |
-| `updatedAt` | ✓ | ✓ | Missing from current config — add for recency sorts. |
+| Add field    | canFilter | canSort | Notes                                                                                       |
+| ------------ | :-------: | :-----: | ------------------------------------------------------------------------------------------- |
+| `slug`       |     ✓     |    ✗    | SEO-friendly identifier used in deep-link filters.                                          |
+| `tags`       |     ✓     |    ✗    | Free-form topic tags (array-contains `@=` operator).                                        |
+| `isFeatured` |     ✓     |    ✗    | Pinned to featured carousel.                                                                |
+| `isPublic`   |     ✓     |    ✗    | `false` for invite-only or admin-only events.                                               |
+| `prizePool`  |     ✓     |    ✓    | Total prize/reward value — for "events with prizes" filter.                                 |
+| `maxEntries` |     ✓     |    ✓    | Cap on participants — allows "has open spots" filter via `stats.totalEntries < maxEntries`. |
+| `location`   |     ✓     |    ✓    | City/region for in-person event geo filtering.                                              |
+| `updatedAt`  |     ✓     |    ✓    | Missing from current config — add for recency sorts.                                        |
 
 **URL param names**: `type`, `status`, `isFeatured`, `isPublic`, `tags`, `dateFrom`, `dateTo`, `hasOpenSpots`
 
@@ -1367,27 +1412,27 @@ When the stores listing queries users with `role==seller`, these additional fiel
 
 #### SELLER_SIEVE_FIELDS — additions
 
-| Add field | canFilter | canSort | Notes |
-|-----------|:---------:|:-------:|-------|
-| `couponCode` | ✓ | ✗ | Allows seller to filter orders that used a discount. |
-| `trackingNumber` | ✓ | ✗ | Filter orders by shipping tracking number. |
-| `isDisputed` | ✓ | ✗ | Flag for return/dispute raised by buyer. |
-| `shippingMethod` | ✓ | ✓ | Standard / Express / Pickup. |
-| `deliveryDate` | ✓ | ✓ | Expected or actual delivery date for range filters. |
-| `sellerName` | ✓ | ✓ | Needed if a seller manages multiple store front-names. |
+| Add field        | canFilter | canSort | Notes                                                  |
+| ---------------- | :-------: | :-----: | ------------------------------------------------------ |
+| `couponCode`     |     ✓     |    ✗    | Allows seller to filter orders that used a discount.   |
+| `trackingNumber` |     ✓     |    ✗    | Filter orders by shipping tracking number.             |
+| `isDisputed`     |     ✓     |    ✗    | Flag for return/dispute raised by buyer.               |
+| `shippingMethod` |     ✓     |    ✓    | Standard / Express / Pickup.                           |
+| `deliveryDate`   |     ✓     |    ✓    | Expected or actual delivery date for range filters.    |
+| `sellerName`     |     ✓     |    ✓    | Needed if a seller manages multiple store front-names. |
 
 #### ADMIN_SIEVE_FIELDS — additions
 
 Same as seller additions, plus:
 
-| Add field | canFilter | canSort | Notes |
-|-----------|:---------:|:-------:|-------|
-| `sellerName` | ✓ | ✓ | Seller display name for admin search. |
-| `couponCode` | ✓ | ✗ | Admin coupon redemption analytics. |
-| `deliveryDate` | ✓ | ✓ | SLA / fulfilment reporting. |
-| `isDisputed` | ✓ | ✗ | Dispute-management queue. |
-| `shippingMethod` | ✓ | ✓ | Operations analysis. |
-| `riskScore` | ✓ | ✓ | Fraud-detection score if integrated. |
+| Add field        | canFilter | canSort | Notes                                 |
+| ---------------- | :-------: | :-----: | ------------------------------------- |
+| `sellerName`     |     ✓     |    ✓    | Seller display name for admin search. |
+| `couponCode`     |     ✓     |    ✗    | Admin coupon redemption analytics.    |
+| `deliveryDate`   |     ✓     |    ✓    | SLA / fulfilment reporting.           |
+| `isDisputed`     |     ✓     |    ✗    | Dispute-management queue.             |
+| `shippingMethod` |     ✓     |    ✓    | Operations analysis.                  |
+| `riskScore`      |     ✓     |    ✓    | Fraud-detection score if integrated.  |
 
 **URL param names** (orders): `status`, `paymentStatus`, `paymentMethod`, `sellerId`, `dateFrom`, `dateTo`, `minPrice`, `maxPrice`, `isDisputed`, `shippingMethod`, `couponCode`
 
@@ -1397,16 +1442,16 @@ Same as seller additions, plus:
 
 Every resource whose listing page must support searching by ID, slug, or name should expose the following fields (all with `canFilter: true`, using the `_=` starts-with or `==` exact operator):
 
-| Resource | ID field | Slug field | Name/Title field |
-|----------|----------|-----------|-----------------|
-| Products | `id` ✓ | `slug` ✓ | `title` ✓ |
-| Auctions | `id` ✓ | `slug` ✓ | `title` ✓ |
-| Reviews | `id` ✓ | `productSlug` (add) | `productTitle` ✓ / `userName` ✓ |
-| Categories | `id` ✓ | `slug` ✓ | `name` ✓ |
-| Stores | `uid` ✓ | — | `storeName` (add) / `displayName` ✓ |
-| Blogs | `id` ✓ | `slug` ✓ | `title` ✓ |
-| Events | `id` ✓ | `slug` (add) | `title` ✓ |
-| Orders | `id` ✓ | — | `productTitle` ✓ / `userName` ✓ |
+| Resource   | ID field | Slug field          | Name/Title field                    |
+| ---------- | -------- | ------------------- | ----------------------------------- |
+| Products   | `id` ✓   | `slug` ✓            | `title` ✓                           |
+| Auctions   | `id` ✓   | `slug` ✓            | `title` ✓                           |
+| Reviews    | `id` ✓   | `productSlug` (add) | `productTitle` ✓ / `userName` ✓     |
+| Categories | `id` ✓   | `slug` ✓            | `name` ✓                            |
+| Stores     | `uid` ✓  | —                   | `storeName` (add) / `displayName` ✓ |
+| Blogs      | `id` ✓   | `slug` ✓            | `title` ✓                           |
+| Events     | `id` ✓   | `slug` (add)        | `title` ✓                           |
+| Orders     | `id` ✓   | —                   | `productTitle` ✓ / `userName` ✓     |
 
 The search `q` param is handled by the Sieve `_=` (starts-with) operator applied against the name/title field. Direct ID lookup uses `==` on the `id` field. The API routes should check `q` first as a name starts-with, then fall back to an exact-ID match when `q` matches the pattern of an ID/slug.
 
@@ -1418,12 +1463,12 @@ The search `q` param is handled by the Sieve `_=` (starts-with) operator applied
 
 ### 15.1 Tier 1 Generic Filter Primitives (stay in `src/components/filters/`)
 
-| File | Purpose | Notes |
-|------|---------|-------|
-| `RangeFilter.tsx` ✅ | Numeric or date min/max range | Already exists; supports `type="number"` and `type="date"` |
-| `DateRangeFilter.tsx` 🆕 | Purpose-built date range (two `<Input type="date">`) | Extract from `RangeFilter type="date"` into a dedicated component with locale-aware date formatting and "presets" (Today, This week, This month, Custom). Identical API to `RangeFilter` but adds preset buttons. |
-| `ToggleFilter.tsx` 🆕 | Single boolean on/off facet | Renders as a `Toggle` + label row; writes `table.set(key, checked ? 'true' : '')`. Used for "in stock only", "has video", "featured only", "verified seller". |
-| `StarRatingFilter.tsx` 🆕 | Minimum star rating selector | Renders 5 clickable stars; writes `minRating` param. Reusable across products, stores, events. |
+| File                      | Purpose                                              | Notes                                                                                                                                                                                                             |
+| ------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `RangeFilter.tsx` ✅      | Numeric or date min/max range                        | Already exists; supports `type="number"` and `type="date"`                                                                                                                                                        |
+| `DateRangeFilter.tsx` 🆕  | Purpose-built date range (two `<Input type="date">`) | Extract from `RangeFilter type="date"` into a dedicated component with locale-aware date formatting and "presets" (Today, This week, This month, Custom). Identical API to `RangeFilter` but adds preset buttons. |
+| `ToggleFilter.tsx` 🆕     | Single boolean on/off facet                          | Renders as a `Toggle` + label row; writes `table.set(key, checked ? 'true' : '')`. Used for "in stock only", "has video", "featured only", "verified seller".                                                     |
+| `StarRatingFilter.tsx` 🆕 | Minimum star rating selector                         | Renders 5 clickable stars; writes `minRating` param. Reusable across products, stores, events.                                                                                                                    |
 
 `ProductFilters.tsx` at `src/components/filters/ProductFilters.tsx` is **moved** to `src/features/products/components/ProductFilters.tsx` (it already appears in the §7.1 migration plan).
 
@@ -1644,7 +1689,7 @@ Search bar: q → title _=  or  id ==  or  slug ==
 ### 15.9 OrderFilters
 
 **Location**: `src/features/user/components/OrderFilters.tsx`  
-*(Consumed by `UserOrdersView`, `SellerOrdersView`, `AdminOrdersView` — role variant controlled via props)*
+_(Consumed by `UserOrdersView`, `SellerOrdersView`, `AdminOrdersView` — role variant controlled via props)_
 
 ```
 Props:
@@ -1676,20 +1721,20 @@ Search bar: q → productTitle _=  or  id ==  or  userName _=
 
 ### 15.10 Filter Component Placement Summary
 
-| Component | Location | Used by |
-|-----------|----------|---------|
-| `RangeFilter` | `src/components/filters/` ✅ | All filter forms |
-| `DateRangeFilter` 🆕 | `src/components/filters/` | ReviewFilters, BlogFilters, EventFilters, OrderFilters |
-| `ToggleFilter` 🆕 | `src/components/filters/` | ProductFilters, AuctionFilters, StoreFilters, etc. |
-| `StarRatingFilter` 🆕 | `src/components/filters/` | ReviewFilters, ProductFilters, StoreFilters |
-| `ProductFilters` (moved) | `src/features/products/components/` | ProductsView, SearchView (products tab) |
-| `AuctionFilters` 🆕 | `src/features/products/components/` | AuctionsView, SearchView (auctions tab) |
-| `ReviewFilters` 🆕 | `src/features/reviews/components/` | ReviewsListView, AdminReviewsView, SellerReviewsView |
-| `CategoryFilters` 🆕 | `src/features/categories/components/` | CategoriesListView, AdminCategoriesView |
-| `StoreFilters` 🆕 | `src/features/stores/components/` | StoresListView, SearchView (stores tab) |
-| `BlogFilters` 🆕 | `src/features/blog/components/` | BlogListView, AdminBlogView, SearchView (blogs tab) |
-| `EventFilters` 🆕 | `src/features/events/components/` | EventsListView, AdminEventsView, SearchView (events tab) |
-| `OrderFilters` 🆕 | `src/features/user/components/` | UserOrdersView, SellerOrdersView, AdminOrdersView |
+| Component                | Location                              | Used by                                                  |
+| ------------------------ | ------------------------------------- | -------------------------------------------------------- |
+| `RangeFilter`            | `src/components/filters/` ✅          | All filter forms                                         |
+| `DateRangeFilter` 🆕     | `src/components/filters/`             | ReviewFilters, BlogFilters, EventFilters, OrderFilters   |
+| `ToggleFilter` 🆕        | `src/components/filters/`             | ProductFilters, AuctionFilters, StoreFilters, etc.       |
+| `StarRatingFilter` 🆕    | `src/components/filters/`             | ReviewFilters, ProductFilters, StoreFilters              |
+| `ProductFilters` (moved) | `src/features/products/components/`   | ProductsView, SearchView (products tab)                  |
+| `AuctionFilters` 🆕      | `src/features/products/components/`   | AuctionsView, SearchView (auctions tab)                  |
+| `ReviewFilters` 🆕       | `src/features/reviews/components/`    | ReviewsListView, AdminReviewsView, SellerReviewsView     |
+| `CategoryFilters` 🆕     | `src/features/categories/components/` | CategoriesListView, AdminCategoriesView                  |
+| `StoreFilters` 🆕        | `src/features/stores/components/`     | StoresListView, SearchView (stores tab)                  |
+| `BlogFilters` 🆕         | `src/features/blog/components/`       | BlogListView, AdminBlogView, SearchView (blogs tab)      |
+| `EventFilters` 🆕        | `src/features/events/components/`     | EventsListView, AdminEventsView, SearchView (events tab) |
+| `OrderFilters` 🆕        | `src/features/user/components/`       | UserOrdersView, SellerOrdersView, AdminOrdersView        |
 
 All Tier 1 filter primitives are exported from `src/components/filters/index.ts` and re-exported from `src/components/index.ts`.
 
@@ -1722,16 +1767,16 @@ The global search is a site-wide feature that indexes all public content types a
 
 **Tab bar**:
 
-| Tab key | Label | Content |
-|---------|-------|---------|
-| `all` | All | Mixed top results from every type (no filters, no pagination) + site page shortcuts |
-| `products` | Products | Full `ProductsView` with `ProductFilters` |
-| `auctions` | Auctions | Full `AuctionsView` with `AuctionFilters` |
-| `categories` | Categories | Full `CategoriesListView` with `CategoryFilters` |
-| `stores` | Stores | Full `StoresListView` with `StoreFilters` |
-| `reviews` | Reviews | Full `ReviewsListView` with `ReviewFilters` |
-| `blogs` | Blogs | Full `BlogListView` with `BlogFilters` |
-| `events` | Events | Full `EventsListView` with `EventFilters` |
+| Tab key      | Label      | Content                                                                             |
+| ------------ | ---------- | ----------------------------------------------------------------------------------- |
+| `all`        | All        | Mixed top results from every type (no filters, no pagination) + site page shortcuts |
+| `products`   | Products   | Full `ProductsView` with `ProductFilters`                                           |
+| `auctions`   | Auctions   | Full `AuctionsView` with `AuctionFilters`                                           |
+| `categories` | Categories | Full `CategoriesListView` with `CategoryFilters`                                    |
+| `stores`     | Stores     | Full `StoresListView` with `StoreFilters`                                           |
+| `reviews`    | Reviews    | Full `ReviewsListView` with `ReviewFilters`                                         |
+| `blogs`      | Blogs      | Full `BlogListView` with `BlogFilters`                                              |
+| `events`     | Events     | Full `EventsListView` with `EventFilters`                                           |
 
 Tab state lives in URL: `?type=products`. Switching tab resets page to 1 but preserves `q`. Filters are tab-scoped — each type has its own filter param namespace so switching tabs does not bleed params.
 
@@ -1763,13 +1808,48 @@ A static constant `SITE_PAGES` lives at `src/constants/site-pages.ts`:
 // Pattern — each entry has a label, route, requiredRole,
 // and a list of keyword aliases that trigger suggestion display
 export const SITE_PAGES: SitePageEntry[] = [
-  { label: 'My Orders',          route: ROUTES.USER.ORDERS,       requiredRole: 'user',   keywords: ['my orders', 'order history', 'purchases'] },
-  { label: 'My Wishlist',         route: ROUTES.USER.WISHLIST,     requiredRole: 'user',   keywords: ['wishlist', 'saved items', 'favorites'] },
-  { label: 'My Addresses',        route: ROUTES.USER.ADDRESSES,    requiredRole: 'user',   keywords: ['address', 'delivery address', 'shipping'] },
-  { label: 'Seller Dashboard',    route: ROUTES.SELLER.DASHBOARD,  requiredRole: 'seller', keywords: ['seller dashboard', 'my store', 'sales'] },
-  { label: 'Seller Orders',       route: ROUTES.SELLER.ORDERS,     requiredRole: 'seller', keywords: ['seller orders', 'my orders', 'fulfil'] },
-  { label: 'Admin Dashboard',     route: ROUTES.ADMIN.DASHBOARD,   requiredRole: 'admin',  keywords: ['admin', 'dashboard'] },
-  { label: 'Admin Products',      route: ROUTES.ADMIN.PRODUCTS,    requiredRole: 'admin',  keywords: ['admin products', 'manage products'] },
+  {
+    label: "My Orders",
+    route: ROUTES.USER.ORDERS,
+    requiredRole: "user",
+    keywords: ["my orders", "order history", "purchases"],
+  },
+  {
+    label: "My Wishlist",
+    route: ROUTES.USER.WISHLIST,
+    requiredRole: "user",
+    keywords: ["wishlist", "saved items", "favorites"],
+  },
+  {
+    label: "My Addresses",
+    route: ROUTES.USER.ADDRESSES,
+    requiredRole: "user",
+    keywords: ["address", "delivery address", "shipping"],
+  },
+  {
+    label: "Seller Dashboard",
+    route: ROUTES.SELLER.DASHBOARD,
+    requiredRole: "seller",
+    keywords: ["seller dashboard", "my store", "sales"],
+  },
+  {
+    label: "Seller Orders",
+    route: ROUTES.SELLER.ORDERS,
+    requiredRole: "seller",
+    keywords: ["seller orders", "my orders", "fulfil"],
+  },
+  {
+    label: "Admin Dashboard",
+    route: ROUTES.ADMIN.DASHBOARD,
+    requiredRole: "admin",
+    keywords: ["admin", "dashboard"],
+  },
+  {
+    label: "Admin Products",
+    route: ROUTES.ADMIN.PRODUCTS,
+    requiredRole: "admin",
+    keywords: ["admin products", "manage products"],
+  },
   // … full list covers all major routes
 ];
 ```
@@ -1824,8 +1904,8 @@ src/features/search/
 
 ### 16.8 Accessibility & SEO
 
-- Each tab panel has `role="tabpanel"` with `aria-labelledby` pointing to its tab button.  
-- `<title>` and `<meta name="description">` are generated by `generateMetadata` using the `q` and `type` params.  
+- Each tab panel has `role="tabpanel"` with `aria-labelledby` pointing to its tab button.
+- `<title>` and `<meta name="description">` are generated by `generateMetadata` using the `q` and `type` params.
 - Results pages render with `noindex` when `q` is empty; indexed when `q` is non-empty and `type` is a specific tab.
 
 ---
@@ -1846,16 +1926,16 @@ All list state (search query, filters, sort, pagination, view mode, active tab) 
 
 Items on public listing pages (products, auctions, categories, stores, blog, events, search results) are **standard HTML links**. This gives correct behaviour for free:
 
-| Action | Behaviour |
-|--------|-----------|
-| Left click | Same tab — browser navigates, pushes to history |
-| Ctrl+Click (Windows/Linux) | New tab |
-| Cmd+Click (Mac) | New tab |
-| Middle-click | New tab |
-| Back button | Previous URL restored → all filters preserved |
-| Forward button | Forward URL restored |
-| Bookmark | Bookmarks the current filters + page |
-| Share URL | Full filter state shareable |
+| Action                     | Behaviour                                       |
+| -------------------------- | ----------------------------------------------- |
+| Left click                 | Same tab — browser navigates, pushes to history |
+| Ctrl+Click (Windows/Linux) | New tab                                         |
+| Cmd+Click (Mac)            | New tab                                         |
+| Middle-click               | New tab                                         |
+| Back button                | Previous URL restored → all filters preserved   |
+| Forward button             | Forward URL restored                            |
+| Bookmark                   | Bookmarks the current filters + page            |
+| Share URL                  | Full filter state shareable                     |
 
 **Implementation pattern** — item cards must use a real `<a>` element, not an `onClick` with `router.push()`:
 
@@ -1892,12 +1972,12 @@ The overlay-link pattern is the standard for cards that have multiple interactiv
 
 These pages intentionally diverge from the public pattern because actions open drawers instead of navigating:
 
-| Interaction | Behaviour |
-|-------------|-----------|
-| Row click on a `DataTable` row | Opens `SideDrawer` (edit/detail — no navigation) |
-| "View" action in row actions menu | Navigates to external detail page in same tab |
-| "Open in new tab" action | `window.open(ROUTES.PRODUCTS.DETAIL(slug), '_blank', 'noopener')` |
-| Filter / sort / pagination changes | `router.replace()` — no new history entry |
+| Interaction                        | Behaviour                                                         |
+| ---------------------------------- | ----------------------------------------------------------------- |
+| Row click on a `DataTable` row     | Opens `SideDrawer` (edit/detail — no navigation)                  |
+| "View" action in row actions menu  | Navigates to external detail page in same tab                     |
+| "Open in new tab" action           | `window.open(ROUTES.PRODUCTS.DETAIL(slug), '_blank', 'noopener')` |
+| Filter / sort / pagination changes | `router.replace()` — no new history entry                         |
 
 The distinction: admin/seller/user pages use `router.replace()` for all filter state changes (via `useUrlTable`) and `router.push()` only for deliberate navigation (Create → Edit page). This prevents the history stack from filling up with filter changes.
 
@@ -1906,7 +1986,8 @@ The distinction: admin/seller/user pages use `router.replace()` for all filter s
 Because `useUrlTable` always writes state to the URL (via `router.replace()`), the back button restores the exact URL the user was on before navigating to a detail page — filters, sort, page number, and view mode are all preserved without any localStorage or session storage.
 
 What this means in practice:
-1. User is on `/products?category=hiking&minPrice=500&page=3` 
+
+1. User is on `/products?category=hiking&minPrice=500&page=3`
 2. User clicks a product → navigates to `/products/my-product`
 3. User clicks back → browser restores `/products?category=hiking&minPrice=500&page=3`
 4. `useUrlTable` reads those params → the same filtered, paginated list appears
@@ -1922,7 +2003,7 @@ Next.js App Router restores scroll position by default when navigating back. For
 
 ### 17.6 Filter Drawer — Open State
 
-The `FilterDrawer` open/close state is **local `useState`** — not in the URL. This is intentional: the drawer being open or closed is a transient UI state that should not be bookmarked or shared. The filter *values* inside the drawer are always in the URL.
+The `FilterDrawer` open/close state is **local `useState`** — not in the URL. This is intentional: the drawer being open or closed is a transient UI state that should not be bookmarked or shared. The filter _values_ inside the drawer are always in the URL.
 
 ---
 
@@ -1942,12 +2023,12 @@ The `FilterDrawer` open/close state is **local `useState`** — not in the URL. 
 // src/components/ui/BulkActionBar.tsx  (already exists — Tier 1)
 interface BulkAction {
   id: string;
-  label: string;                        // translated by the feature view
+  label: string; // translated by the feature view
   icon?: ReactNode;
-  variant?: 'primary' | 'danger' | 'secondary';
+  variant?: "primary" | "danger" | "secondary";
   onClick: (selectedIds: string[]) => void;
-  disabled?: boolean;                   // derived from selected items' state
-  requiresConfirm?: boolean;            // true → ConfirmDeleteModal shown first
+  disabled?: boolean; // derived from selected items' state
+  requiresConfirm?: boolean; // true → ConfirmDeleteModal shown first
   confirmMessage?: string;
 }
 ```
@@ -1956,103 +2037,103 @@ The feature view builds the `actions` array, calling `useApiMutation` hooks for 
 
 ### 18.3 Products Bulk Actions
 
-| Action | Admin | Seller (own items) | Public |
-|--------|:-----:|:-----------------:|:------:|
-| Publish selected | ✓ | ✓ | — |
-| Archive selected | ✓ | ✓ | — |
-| Feature / Unfeature | ✓ | — | — |
-| Delete selected | ✓ | ✓ (draft only) | — |
-| Export CSV | ✓ | ✓ | — |
-| Assign category | ✓ | — | — |
+| Action              | Admin | Seller (own items) | Public |
+| ------------------- | :---: | :----------------: | :----: |
+| Publish selected    |   ✓   |         ✓          |   —    |
+| Archive selected    |   ✓   |         ✓          |   —    |
+| Feature / Unfeature |   ✓   |         —          |   —    |
+| Delete selected     |   ✓   |   ✓ (draft only)   |   —    |
+| Export CSV          |   ✓   |         ✓          |   —    |
+| Assign category     |   ✓   |         —          |   —    |
 
 **State constraint**: "Publish" disabled if any selected item is already published. "Delete" disabled if any selected item has associated orders.
 
 ### 18.4 Auctions Bulk Actions
 
-| Action | Admin | Seller (own items) | Public |
-|--------|:-----:|:-----------------:|:------:|
-| Extend deadline | ✓ | ✓ (live only) | — |
-| Cancel selected | ✓ | ✓ (upcoming only) | — |
-| Archive ended | ✓ | ✓ (ended only) | — |
-| Feature / Unfeature | ✓ | — | — |
-| Export CSV | ✓ | ✓ | — |
+| Action              | Admin | Seller (own items) | Public |
+| ------------------- | :---: | :----------------: | :----: |
+| Extend deadline     |   ✓   |   ✓ (live only)    |   —    |
+| Cancel selected     |   ✓   | ✓ (upcoming only)  |   —    |
+| Archive ended       |   ✓   |   ✓ (ended only)   |   —    |
+| Feature / Unfeature |   ✓   |         —          |   —    |
+| Export CSV          |   ✓   |         ✓          |   —    |
 
 **State constraint**: "Extend" disabled if any selected auction has already ended. "Cancel" disabled if bids exist on any selected auction (admin can override with extra confirmation).
 
 ### 18.5 Reviews Bulk Actions
 
-| Action | Admin | Seller (for own products) | User (own reviews) | Public |
-|--------|:-----:|:------------------------:|:-----------------:|:------:|
-| Approve selected | ✓ | — | — | — |
-| Reject selected | ✓ | — | — | — |
-| Feature / Unfeature | ✓ | — | — | — |
-| Delete selected | ✓ | — | ✓ (own only) | — |
-| Mark as spam | ✓ | ✓ (flag to admin) | — | — |
-| Export CSV | ✓ | — | — | — |
+| Action              | Admin | Seller (for own products) | User (own reviews) | Public |
+| ------------------- | :---: | :-----------------------: | :----------------: | :----: |
+| Approve selected    |   ✓   |             —             |         —          |   —    |
+| Reject selected     |   ✓   |             —             |         —          |   —    |
+| Feature / Unfeature |   ✓   |             —             |         —          |   —    |
+| Delete selected     |   ✓   |             —             |    ✓ (own only)    |   —    |
+| Mark as spam        |   ✓   |     ✓ (flag to admin)     |         —          |   —    |
+| Export CSV          |   ✓   |             —             |         —          |   —    |
 
 ### 18.6 Orders Bulk Actions
 
-| Action | Admin | Seller (own orders) | User (own orders) | Public |
-|--------|:-----:|:------------------:|:-----------------:|:------:|
-| Mark as Processing | — | ✓ (confirmed only) | — | — |
-| Mark as Shipped | ✓ | ✓ (processing only) | — | — |
-| Mark as Delivered | ✓ | — | — | — |
-| Cancel selected | ✓ | — | ✓ (pending only) | — |
-| Request Return | — | — | ✓ (delivered only) | — |
-| Export CSV | ✓ | ✓ | — | — |
-| Assign tracking number | ✓ | ✓ | — | — |
+| Action                 | Admin | Seller (own orders) | User (own orders)  | Public |
+| ---------------------- | :---: | :-----------------: | :----------------: | :----: |
+| Mark as Processing     |   —   | ✓ (confirmed only)  |         —          |   —    |
+| Mark as Shipped        |   ✓   | ✓ (processing only) |         —          |   —    |
+| Mark as Delivered      |   ✓   |          —          |         —          |   —    |
+| Cancel selected        |   ✓   |          —          |  ✓ (pending only)  |   —    |
+| Request Return         |   —   |          —          | ✓ (delivered only) |   —    |
+| Export CSV             |   ✓   |          ✓          |         —          |   —    |
+| Assign tracking number |   ✓   |          ✓          |         —          |   —    |
 
 **State constraint**: "Cancel" enabled only when ALL selected orders are in `pending` or `confirmed` status. Mixed-status selections disable the action with a tooltip.
 
 ### 18.7 Users Bulk Actions (Admin Only)
 
-| Action | Admin |
-|--------|:-----:|
-| Enable selected | ✓ |
-| Disable / Suspend | ✓ |
-| Assign role | ✓ |
-| Send email | ✓ |
-| Export CSV | ✓ |
-| Delete selected | ✓ (with strong confirm — "type DELETE to confirm") |
+| Action            |                       Admin                        |
+| ----------------- | :------------------------------------------------: |
+| Enable selected   |                         ✓                          |
+| Disable / Suspend |                         ✓                          |
+| Assign role       |                         ✓                          |
+| Send email        |                         ✓                          |
+| Export CSV        |                         ✓                          |
+| Delete selected   | ✓ (with strong confirm — "type DELETE to confirm") |
 
 ### 18.8 Blogs Bulk Actions
 
-| Action | Admin | Author (own posts) | Public |
-|--------|:-----:|:-----------------:|:------:|
-| Publish selected | ✓ | ✓ (own drafts) | — |
-| Archive selected | ✓ | ✓ (own only) | — |
-| Feature / Unfeature | ✓ | — | — |
-| Delete selected | ✓ | ✓ (draft only) | — |
-| Export CSV | ✓ | — | — |
+| Action              | Admin | Author (own posts) | Public |
+| ------------------- | :---: | :----------------: | :----: |
+| Publish selected    |   ✓   |   ✓ (own drafts)   |   —    |
+| Archive selected    |   ✓   |    ✓ (own only)    |   —    |
+| Feature / Unfeature |   ✓   |         —          |   —    |
+| Delete selected     |   ✓   |   ✓ (draft only)   |   —    |
+| Export CSV          |   ✓   |         —          |   —    |
 
 ### 18.9 Categories Bulk Actions (Admin Only)
 
-| Action | Admin |
-|--------|:-----:|
-| Activate selected | ✓ |
-| Deactivate selected | ✓ |
-| Feature / Unfeature | ✓ |
-| Delete selected | ✓ (leaf/empty only) |
-| Merge into another | ✓ |
+| Action              |        Admin        |
+| ------------------- | :-----------------: |
+| Activate selected   |          ✓          |
+| Deactivate selected |          ✓          |
+| Feature / Unfeature |          ✓          |
+| Delete selected     | ✓ (leaf/empty only) |
+| Merge into another  |          ✓          |
 
 **State constraint**: "Delete" disabled if any selected category has products. Merged categories transfer their products to the target category.
 
 ### 18.10 Events Bulk Actions (Admin Only)
 
-| Action | Admin |
-|--------|:-----:|
-| Publish selected | ✓ |
-| Close / End selected | ✓ |
-| Feature / Unfeature | ✓ |
-| Delete selected | ✓ (draft/ended only) |
-| Export entries CSV | ✓ |
+| Action               |        Admin         |
+| -------------------- | :------------------: |
+| Publish selected     |          ✓           |
+| Close / End selected |          ✓           |
+| Feature / Unfeature  |          ✓           |
+| Delete selected      | ✓ (draft/ended only) |
+| Export entries CSV   |          ✓           |
 
 ### 18.11 Notifications Bulk Actions (User)
 
-| Action | User |
-|--------|:----:|
-| Mark as read | ✓ |
-| Delete selected | ✓ |
+| Action           |              User               |
+| ---------------- | :-----------------------------: |
+| Mark as read     |                ✓                |
+| Delete selected  |                ✓                |
 | Mark all as read | ✓ (button, not selection-based) |
 
 ### 18.12 Entity-State Guard Pattern
@@ -2064,26 +2145,30 @@ Feature views evaluate the state of selected items before enabling actions. Use 
 const { selectedIds } = bulkState;
 const selectedItems = data.items.filter((i) => selectedIds.includes(i.id));
 
-const canCancel = selectedItems.length > 0
-  && selectedItems.every((o) => ['pending', 'confirmed'].includes(o.status));
+const canCancel =
+  selectedItems.length > 0 &&
+  selectedItems.every((o) => ["pending", "confirmed"].includes(o.status));
 
-const canShip = selectedItems.length > 0
-  && selectedItems.every((o) => o.status === 'processing');
+const canShip =
+  selectedItems.length > 0 &&
+  selectedItems.every((o) => o.status === "processing");
 
 const actions: BulkAction[] = [
   {
-    id: 'cancel',
-    label: t('bulkActions.cancel'),
-    variant: 'danger',
+    id: "cancel",
+    label: t("bulkActions.cancel"),
+    variant: "danger",
     disabled: !canCancel,
     requiresConfirm: true,
-    confirmMessage: t('bulkActions.cancelConfirm', { count: selectedIds.length }),
+    confirmMessage: t("bulkActions.cancelConfirm", {
+      count: selectedIds.length,
+    }),
     onClick: (ids) => cancelMutation.mutate(ids),
   },
   {
-    id: 'ship',
-    label: t('bulkActions.markShipped'),
-    variant: 'primary',
+    id: "ship",
+    label: t("bulkActions.markShipped"),
+    variant: "primary",
     disabled: !canShip,
     onClick: (ids) => shipMutation.mutate(ids),
   },
@@ -2093,6 +2178,7 @@ const actions: BulkAction[] = [
 ### 18.13 Bulk Action API Endpoints
 
 Each bulk action maps to a dedicated `PATCH /api/<resource>/bulk` or `DELETE /api/<resource>/bulk` endpoint that accepts `{ ids: string[], action: string, payload?: object }`. The endpoint:
+
 1. Verifies the session and role.
 2. Verifies each ID belongs to the caller (sellers can only bulk-action their own items).
 3. Validates the state constraint (e.g. all orders must be in `pending` before cancelling).

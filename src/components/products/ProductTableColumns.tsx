@@ -7,11 +7,10 @@
  * Column definitions hook for the admin Products DataTable.
  */
 
-import Image from "next/image";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { formatCurrency } from "@/utils";
-import { Button, Span } from "@/components";
+import { Button, MediaImage, Span } from "@/components";
 import type { AdminProduct } from "./Product.types";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -43,12 +42,10 @@ export function useProductTableColumns(
           <div className="flex items-center gap-2">
             {product.mainImage ? (
               <div className="relative w-8 h-8 rounded overflow-hidden flex-shrink-0">
-                <Image
+                <MediaImage
                   src={product.mainImage}
                   alt={product.title}
-                  fill
-                  className="object-cover"
-                  sizes="32px"
+                  size="thumbnail"
                 />
               </div>
             ) : (

@@ -3,14 +3,8 @@
 import { usePromotions } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import {
-  Spinner,
-  CouponCard,
-  ProductSection,
-  Heading,
-  Text,
-  Section,
-} from "@/components";
+import { CouponCard, ProductSection } from "@/features/promotions";
+import { Spinner, Heading, Text, Section } from "@/components";
 
 const { themed, typography, spacing, page } = THEME_CONSTANTS;
 

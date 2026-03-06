@@ -8,9 +8,9 @@
 
 "use client";
 
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useMessage, useUrlTable } from "@/hooks";
+import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
 import { useAdminCoupons } from "@/features/admin/hooks";
 import { ROUTES, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -19,19 +19,25 @@ import {
   Caption,
   Card,
   Button,
+  CouponFilters,
   SideDrawer,
   DataTable,
   AdminPageHeader,
   DrawerFormFooter,
   ConfirmDeleteModal,
+  ListingLayout,
+  Search,
   StatusBadge,
   TablePagination,
-  AdminFilterBar,
-  FormField,
   Text,
 } from "@/components";
 import { formatDate } from "@/utils";
-import { getCouponTableColumns, CouponForm, couponToFormState, formStateToCouponPayload } from ".";
+import {
+  getCouponTableColumns,
+  CouponForm,
+  couponToFormState,
+  formStateToCouponPayload,
+} from ".";
 import type { CouponFormState } from ".";
 import type { CouponDocument } from "@/db/schema";
 
@@ -51,8 +57,18 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
   });
   const searchTerm = table.get("q");
 
+  const typeFilter = table.get("type");
+  const statusFilter = table.get("validityIsActive");
+
+  // ── Pending filter state (staged until Apply is clicked) ─────────────
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, ["type", "validityIsActive"]);
+
   const filtersArr: string[] = [];
   if (searchTerm) filtersArr.push(`code@=*${searchTerm}`);
+  if (typeFilter) filtersArr.push(`type==${typeFilter}`);
+  if (statusFilter === "true") filtersArr.push("isActive==true");
+  else if (statusFilter === "false") filtersArr.push("isActive==false");
 
   const [drawerMode, setDrawerMode] = useState<DrawerMode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -182,16 +198,29 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
         onAction={handleCreate}
       />
 
-      <Card>
-        <AdminFilterBar>
-          <FormField
-            type="text"
-            name="search"
+      <ListingLayout
+        searchSlot={
+          <Search
             value={searchTerm}
-            onChange={(value) => table.set("q", value)}
+            onChange={(v) => table.set("q", v)}
             placeholder={t("searchPlaceholder")}
           />
-        </AdminFilterBar>
+        }
+        filterContent={<CouponFilters table={pendingTable} />}
+        filterActiveCount={filterActiveCount}
+        onFilterApply={onFilterApply}
+        onFilterClear={onFilterClear}
+        paginationSlot={
+          <TablePagination
+            currentPage={data?.meta?.page ?? 1}
+            totalPages={data?.meta?.totalPages ?? 1}
+            pageSize={table.getNumber("pageSize", 25)}
+            total={data?.meta?.total ?? 0}
+            onPageChange={table.setPage}
+            onPageSizeChange={table.setPageSize}
+          />
+        }
+      >
         <DataTable
           columns={columns}
           data={coupons}
@@ -206,10 +235,7 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(coupon) => (
             <Card className="p-4 space-y-2">
-              <Text
-                weight="medium"
-                className="font-mono tracking-wide"
-              >
+              <Text weight="medium" className="font-mono tracking-wide">
                 {coupon.code}
               </Text>
               <Caption className="truncate">{coupon.name}</Caption>
@@ -222,20 +248,15 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
                 </Caption>
               </div>
               <Caption>
-                {t("expiresLabel")}: {coupon.validity?.endDate ? formatDate(coupon.validity.endDate) : "—"}
+                {t("expiresLabel")}:{" "}
+                {coupon.validity?.endDate
+                  ? formatDate(coupon.validity.endDate)
+                  : "—"}
               </Caption>
             </Card>
           )}
         />
-        <TablePagination
-          currentPage={data?.meta?.page ?? 1}
-          totalPages={data?.meta?.totalPages ?? 1}
-          pageSize={table.getNumber("pageSize", 25)}
-          total={data?.meta?.total ?? 0}
-          onPageChange={table.setPage}
-          onPageSizeChange={table.setPageSize}
-        />
-      </Card>
+      </ListingLayout>
 
       {/* Create / Edit drawer */}
       <SideDrawer

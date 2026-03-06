@@ -164,7 +164,7 @@ export function EventFormDrawer({
 
   const handleSubmit = async () => {
     if (!form.title.trim()) {
-      setFormError("Title is required.");
+      setFormError(t("form.titleRequired"));
       return;
     }
     setFormError(null);

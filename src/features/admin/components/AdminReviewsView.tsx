@@ -9,6 +9,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { usePendingTable } from "@/hooks";
 import { useRouter } from "@/i18n/navigation";
 import { useUrlTable } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
@@ -23,18 +24,13 @@ import {
   AdminPageHeader,
   StatusBadge,
   TablePagination,
-  FilterFacetSection,
   ListingLayout,
+  ReviewFilters,
   Search,
   SortDropdown,
 } from "@/components";
 import { useToast } from "@/components";
-import {
-  Modal,
-  ConfirmDeleteModal,
-  Text,
-  Textarea,
-} from "@/components";
+import { Modal, ConfirmDeleteModal, Text, Textarea } from "@/components";
 import { getReviewTableColumns, ReviewRowActions, ReviewDetailView } from ".";
 import type { Review, ReviewStatus } from ".";
 
@@ -54,13 +50,12 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
   const t = useTranslations("adminReviews");
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
-  const tStatus = useTranslations("status");
   const { showToast } = useToast();
   const table = useUrlTable({
     defaults: { pageSize: "25", sort: "-createdAt", status: "pending" },
   });
   const statusFilter = (table.get("status") || "pending") as ReviewStatus;
-  const ratingFilter = table.get("rating") || "all";
+  const ratingFilter = table.get("rating");
   const searchTerm = table.get("q");
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
 
@@ -73,36 +68,15 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<Review | null>(null);
   const [bulkApproveConfirm, setBulkApproveConfirm] = useState(false);
 
-  // ── Staged filter state ──────────────────────────────────────────────
-  const [stagedStatus, setStagedStatus] = useState<string[]>(
-    statusFilter && statusFilter !== "all" ? [statusFilter] : [],
-  );
-  const [stagedRating, setStagedRating] = useState<string[]>(
-    ratingFilter && ratingFilter !== "all" ? [ratingFilter] : [],
-  );
-
-  const handleFilterApply = useCallback(() => {
-    table.setMany({
-      status: stagedStatus[0] ?? "",
-      rating: stagedRating[0] ?? "",
-      page: "1",
-    });
-  }, [stagedStatus, stagedRating, table]);
-
-  const handleFilterClear = useCallback(() => {
-    setStagedStatus([]);
-    setStagedRating([]);
-    table.setMany({ status: "", rating: "", page: "1" });
-  }, [table]);
-
-  const filterActiveCount =
-    (statusFilter && statusFilter !== "all" ? 1 : 0) +
-    (ratingFilter && ratingFilter !== "all" ? 1 : 0);
+  // ── Pending filter state (staged until Apply is clicked) ─────────────
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, ["status", "rating", "verified", "featured"]);
 
   // Build Sieve filter string
   const filtersArr: string[] = [];
-  if (statusFilter !== "all" && statusFilter) filtersArr.push(`status==${statusFilter}`);
-  if (ratingFilter !== "all" && ratingFilter) filtersArr.push(`rating==${ratingFilter}`);
+  if (statusFilter && statusFilter !== "all")
+    filtersArr.push(`status==${statusFilter}`);
+  if (ratingFilter) filtersArr.push(`rating==${ratingFilter}`);
   if (searchTerm) filtersArr.push(`(userName|userEmail)@=*${searchTerm}`);
   const filtersParam = filtersArr.join(",");
 
@@ -251,24 +225,6 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
     [t],
   );
 
-  const statusOptions = useMemo(
-    () => [
-      { value: "pending", label: t("pending") },
-      { value: "approved", label: t("approved") },
-      { value: "rejected", label: t("rejected") },
-    ],
-    [t],
-  );
-
-  const ratingOptions = useMemo(
-    () =>
-      [5, 4, 3, 2, 1].map((n) => ({
-        value: String(n),
-        label: `${n} ${n === 1 ? "Star" : "Stars"}`,
-      })),
-    [],
-  );
-
   if (selectedReview) {
     return (
       <ReviewDetailView
@@ -308,27 +264,10 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
             options={sortOptions}
           />
         }
-        filterContent={
-          <>
-            <FilterFacetSection
-              title={tStatus("all")}
-              options={statusOptions}
-              selected={stagedStatus}
-              onChange={setStagedStatus}
-              searchable={false}
-            />
-            <FilterFacetSection
-              title={t("rating")}
-              options={ratingOptions}
-              selected={stagedRating}
-              onChange={setStagedRating}
-              searchable={false}
-            />
-          </>
-        }
+        filterContent={<ReviewFilters table={pendingTable} />}
         filterActiveCount={filterActiveCount}
-        onFilterApply={handleFilterApply}
-        onFilterClear={handleFilterClear}
+        onFilterApply={onFilterApply}
+        onFilterClear={onFilterClear}
         paginationSlot={
           <TablePagination
             currentPage={data?.meta?.page ?? 1}
@@ -347,7 +286,9 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
                 <Text variant="error" className="mb-4">
                   {error.message}
                 </Text>
-                <Button onClick={() => refetch()}>{tActions("retry")}</Button>
+                <Button variant="outline" onClick={() => refetch()}>
+                  {tActions("retry")}
+                </Button>
               </div>
             </Card>
           ) : undefined
@@ -380,7 +321,10 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
               </Text>
               <Caption>{review.userName}</Caption>
               <div className="flex items-center justify-between">
-                <Badge>{"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}</Badge>
+                <Badge>
+                  {"★".repeat(review.rating)}
+                  {"☆".repeat(5 - review.rating)}
+                </Badge>
                 <StatusBadge status={review.status as any} />
               </div>
               <Caption className="line-clamp-2">{review.comment}</Caption>

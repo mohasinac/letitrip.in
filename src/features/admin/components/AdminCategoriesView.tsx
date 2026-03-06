@@ -273,7 +273,9 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
                 <Text variant="error" className="mb-4">
                   {error.message}
                 </Text>
-                <Button onClick={() => refetch()}>{tActions("retry")}</Button>
+                <Button variant="outline" onClick={() => refetch()}>
+                  {tActions("retry")}
+                </Button>
               </div>
             </Card>
           ) : undefined

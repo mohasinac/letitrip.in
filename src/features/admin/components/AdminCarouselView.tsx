@@ -18,7 +18,7 @@ import {
   Text,
   useToast,
 } from "@/components";
-import { CarouselSlideForm, getCarouselTableColumns } from ".";
+import { CarouselSlideForm, useCarouselTableColumns } from ".";
 import type { CarouselSlide, DrawerMode } from ".";
 
 interface Props {
@@ -182,7 +182,7 @@ export function AdminCarouselView({ action }: Props) {
         ? t("deleteSlide")
         : t("editSlide");
 
-  const { columns, actions } = getCarouselTableColumns(
+  const { columns, actions } = useCarouselTableColumns(
     handleEdit,
     handleDeleteDrawer,
   );
@@ -217,7 +217,9 @@ export function AdminCarouselView({ action }: Props) {
           <Card>
             <div className="text-center py-8">
               <Text className="text-red-600 mb-4">{error.message}</Text>
-              <Button onClick={() => refetch()}>{tActions("retry")}</Button>
+              <Button variant="outline" onClick={() => refetch()}>
+                {tActions("retry")}
+              </Button>
             </div>
           </Card>
         ) : (

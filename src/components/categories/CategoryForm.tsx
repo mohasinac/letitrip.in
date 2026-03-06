@@ -8,8 +8,15 @@
 
 "use client";
 
-import Image from "next/image";
-import { Checkbox, FormField, ImageUpload, Label, Span } from "@/components";
+import { useTranslations } from "next-intl";
+import {
+  Checkbox,
+  FormField,
+  ImageUpload,
+  Label,
+  MediaImage,
+  Span,
+} from "@/components";
 import { useMediaUpload } from "@/hooks";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { Category } from "./Category.types";
@@ -32,6 +39,7 @@ export function CategoryForm({
   isReadonly = false,
 }: CategoryFormProps) {
   const { upload } = useMediaUpload();
+  const t = useTranslations("adminCategories");
   const update = (partial: Partial<Category>) => {
     onChange({ ...category, ...partial });
   };
@@ -54,7 +62,7 @@ export function CategoryForm({
 
       <FormField
         name="slug"
-        label="Slug"
+        label={t("slug")}
         type="text"
         value={category.slug || ""}
         onChange={(value) => update({ slug: value })}
@@ -63,7 +71,7 @@ export function CategoryForm({
 
       <FormField
         name="description"
-        label="Description"
+        label={t("description")}
         type="textarea"
         rows={3}
         value={category.description || ""}
@@ -76,24 +84,21 @@ export function CategoryForm({
           currentImage={category.imageUrl}
           onUpload={(file) => upload(file, "categories")}
           onChange={(url) => update({ imageUrl: url })}
-          label="Category Image"
-          helperText="Recommended: 400x300px"
+          label={t("categoryImage")}
+          helperText={t("imageRecommended")}
         />
       )}
 
       {category.imageUrl && isReadonly && (
         <div>
           <Label className={`block ${typography.label} mb-2`}>
-            Category Image
+            {t("categoryImage")}
           </Label>
           <div className="relative h-32 w-40 overflow-hidden rounded">
-            <Image
+            <MediaImage
               src={category.imageUrl}
-              alt={category.name || "Category"}
-              fill
-              className="object-cover"
-              sizes="160px"
-              unoptimized
+              alt={category.name || ""}
+              size="card"
             />
           </div>
         </div>

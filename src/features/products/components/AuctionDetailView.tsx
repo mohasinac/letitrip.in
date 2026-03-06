@@ -15,7 +15,6 @@ import {
   Button,
   Divider,
   Heading,
-  ProductImageGallery,
   Span,
   Text,
   TextLink,
@@ -24,6 +23,7 @@ import {
   Ul,
   Li,
 } from "@/components";
+import { ProductImageGallery } from "./ProductImageGallery";
 import { BidHistory } from "./BidHistory";
 import { PlaceBidForm } from "./PlaceBidForm";
 import { ProductFeatureBadges } from "./ProductFeatureBadges";

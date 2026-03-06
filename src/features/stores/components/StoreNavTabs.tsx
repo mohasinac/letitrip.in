@@ -52,7 +52,7 @@ export function StoreNavTabs({ storeSlug }: StoreNavTabsProps) {
       <div className={`${page.container.wide}`}>
         <Nav
           className={`flex gap-0 ${overflow.xAuto}`}
-          aria-label="Store sections"
+          aria-label={t("navAriaLabel")}
         >
           {tabs.map((tab) => {
             const isActive =

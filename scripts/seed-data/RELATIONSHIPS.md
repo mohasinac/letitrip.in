@@ -21,63 +21,104 @@ The data must be seeded in this order to maintain referential integrity:
 
 ### Users
 
-**Total: 8 users** (1 admin, 3 customers, 3 sellers, 1 disabled)
+**Total: 19 users** (1 admin, 1 moderator, 3 sellers, 10 buyers, 4 edge-case users)
 
-| User ID                           | Type     | Orders | Reviews | Products Sold | Bids        | Status |
-| --------------------------------- | -------- | ------ | ------- | ------------- | ----------- | ------ |
-| user-john-doe-johndoe             | Customer | 4      | 5       | 0             | 3           | Active |
-| user-jane-smith-janes             | Customer | 4      | 6       | 0             | 3 (winning) | Active |
-| user-mike-johnson-mikejohn        | Customer | 5      | 6       | 0             | 3           | Active |
-| user-techhub-electronics-electron | Seller   | 7      | 10      | 7             | 0           | Active |
-| user-fashion-boutique-fashionb    | Seller   | 5      | 3       | 2             | 0           | Active |
-| user-home-essentials-homeesse     | Seller   | 3      | 2       | 2             | 0           | Active |
-
-**Stats Consistency:**
-
-- Order counts match actual orders in orders collection
-- Review counts match actual reviews in reviews collection
-- itemsSold matches products created by that seller
-- auctionsWon = 0 for all (auction ongoing, not ended yet)
+| User ID                           | Email                       | Role      | Notes                                |
+| --------------------------------- | --------------------------- | --------- | ------------------------------------ |
+| user-admin-user-admin             | admin@letitrip.in           | admin     | Platform administrator               |
+| user-moderator-mod-user           | moderator@letitrip.in       | moderator | Riya Sharma — content moderation     |
+| user-techhub-electronics-electron | techhub@letitrip.in         | seller    | storeSlug: store-techhub-electronics |
+| user-fashion-boutique-fashionb    | fashion@letitrip.in         | seller    | storeSlug: store-fashion-boutique    |
+| user-home-essentials-homeesse     | home@letitrip.in            | seller    | storeSlug: store-home-essentials     |
+| user-john-doe-johndoe             | john@letitrip.in            | user      | Active buyer, bidder                 |
+| user-jane-smith-janes             | jane@letitrip.in            | user      | Active buyer, winning bidder         |
+| user-mike-johnson-mikejohn        | mike@letitrip.in            | user      | Active buyer, bidder                 |
+| user-priya-sharma-priya           | priya@letitrip.in           | user      | Active buyer                         |
+| user-raj-patel-rajpatel           | raj@letitrip.in             | user      | Active buyer, bidder                 |
+| user-vikram-nair-vikram           | vikram@letitrip.in          | user      | Active buyer, bidder                 |
+| user-ananya-bose-ananya           | ananya@letitrip.in          | user      | New buyer — vintage collector        |
+| user-pooja-mehta-pooja            | pooja@letitrip.in           | user      | New buyer — home décor               |
+| user-ravi-kumar-ravi              | ravi@letitrip.in            | user      | New buyer — fitness/sports           |
+| user-sneha-gupta-sneha            | sneha@letitrip.in           | user      | New buyer — electronics              |
+| user-pending-seller-pendingsl     | pending.seller@letitrip.in  | seller    | Edge case: storeStatus=pending       |
+| user-rejected-seller-rejectsl     | rejected.seller@letitrip.in | seller    | Edge case: storeStatus=rejected      |
+| user-unverified-new-user          | newuser@letitrip.in         | user      | Edge case: emailVerified=false       |
+| user-phone-only-phoneuser         | (none)                      | user      | Edge case: phone-only auth           |
 
 ### Products
 
-**Total: 10 products** (9 regular + 1 auction)
+**Total: 50 products** (20 auctions + 30 regular/draft/discontinued/sold)
 
-| Product ID                           | Category        | Seller   | Status       | Orders        | Reviews |
-| ------------------------------------ | --------------- | -------- | ------------ | ------------- | ------- |
-| product-iphone-15-pro-max-...        | Smartphones     | TechHub  | published    | 1             | 1       |
-| product-samsung-galaxy-s24-ultra-... | Smartphones     | TechHub  | published    | 1             | 1       |
-| product-google-pixel-8-pro-...       | Smartphones     | TechHub  | published    | 1             | 1       |
-| product-macbook-pro-16-m3-max-...    | Laptops         | TechHub  | published    | 1             | 1       |
-| product-dell-xps-15-...              | Laptops         | TechHub  | published    | 2             | 1       |
-| product-mens-cotton-casual-shirt-... | Men's Fashion   | Fashion  | published    | 2             | 1       |
-| product-womens-ethnic-kurti-...      | Women's Fashion | Fashion  | published    | 1             | 1       |
-| product-non-stick-cookware-set-...   | Home & Kitchen  | Home Ess | published    | 1             | 1       |
-| product-yoga-mat-...                 | Sports          | Home Ess | published    | 2             | 1       |
-| auction-vintage-canon-ae-1-...       | Cameras         | TechHub  | published    | 0             | 1       |
-| product-sony-wh-1000xm5-...          | Audio           | TechHub  | out_of_stock | 1 (cancelled) | 0       |
+#### Active Auctions (20)
 
-**Auction Details:**
+| Product ID (shortened)              | Ends         | Seller          | CurrentBid | Bids |
+| ----------------------------------- | ------------ | --------------- | ---------- | ---- |
+| auction-ps5-slim-gaming-console-... | Mar 7, 2026  | TechHub         | ₹52,000    | 9    |
+| auction-airpods-pro2-audio-...      | Mar 8, 2026  | TechHub         | ₹21,500    | 6    |
+| auction-swiss-titanium-watch-...    | Mar 8, 2026  | Fashion         | ₹1,75,000  | 4    |
+| auction-bose700-headphones-...      | Mar 8, 2026  | Home Essentials | ₹28,000    | 5    |
+| auction-vintage-denim-jacket-...    | Mar 9, 2026  | Fashion         | ₹11,000    | 7    |
+| auction-pioneer-hifi-system-...     | Mar 9, 2026  | Home Essentials | ₹41,000    | 5    |
+| auction-vintage-leica-camera-...    | Mar 10, 2026 | TechHub         | ₹97,500    | 5    |
+| auction-limited-air-jordan-...      | Mar 11, 2026 | Fashion         | ₹38,000    | 11   |
+| auction-supreme-box-logo-tee-...    | Mar 11, 2026 | Fashion         | ₹27,000    | 5    |
+| auction-trek-domane-road-bike-...   | Mar 12, 2026 | Home Essentials | ₹68,000    | 4    |
+| auction-hermes-silk-scarf-...       | Mar 13, 2026 | Fashion         | ₹48,000    | 3    |
+| auction-vintage-canon-ae-1-...      | Mar 14, 2026 | TechHub         | ₹22,000    | 8    |
+| auction-sony-alpha-7iv-camera-...   | Mar 14, 2026 | TechHub         | ₹2,15,000  | 3    |
+| auction-babolat-tennis-racket-...   | Mar 14, 2026 | Home Essentials | ₹60,000    | 4    |
+| auction-nikon-z30-mirrorless-...    | Mar 15, 2026 | TechHub         | ₹57,000    | 2    |
+| auction-dyson-v15-vacuum-...        | Mar 15, 2026 | Home Essentials | ₹38,000    | 3    |
+| product-macbook-pro-m3-auction-...  | Mar 16, 2026 | TechHub         | ₹1,15,000  | 7    |
+| auction-iphone15-sealed-bundle-...  | Mar 16, 2026 | TechHub         | ₹93,000    | 2    |
+| auction-designer-kanjeevaram-...    | Mar 16, 2026 | Fashion         | ₹27,000    | 2    |
+| auction-weber-charcoal-grill-...    | Mar 16, 2026 | Home Essentials | ₹18,000    | 0    |
 
-- ID: auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1
-- Starting Bid: ₹15,000
-- Current Bid: ₹22,000 (by Jane Smith)
-- Bid Count: 8 bids
-- End Date: Feb 20, 2026 (still active)
-- Status: published, isAuction: true
+Note:
 
-### Orders
+- Auctions ending Mar 7–9 = "closing soon"
+- Auctions ending Mar 12–16 = "live"
+- 4 products have `video` field (PS5, Sony A7 IV, TAG Heuer Watch, Bose 700)
 
-**Total: 12 orders**
+### Bids
 
-**Status Distribution:**
+**Total: ~70+ bids** across 20 auction products
 
-- Delivered: 3 orders
-- Shipped: 2 orders
-- Confirmed: 2 orders
-- Pending: 2 orders
-- Cancelled: 2 orders
-- Returned: 1 order
+**Original auctions (5 products from earlier seed):**
+
+- Canon AE-1: 8 bids (John, Jane, Mike rotating — Jane winning at ₹22,000)
+- MacBook M3: 7 bids (multiple bidders — currently ₹1,15,000)
+- Leica M6: 5 bids (current bid ₹97,500)
+- Air Jordan Chicago: 11 bids (Vikram winning at ₹38,000, autoMax ₹45,000)
+
+**New auction bids (16 new auctions):**
+
+- Each "closing soon" auction (Mar 7–9) has 3–9 bids
+- Each "live" auction (Mar 12–16) has 0–4 bids
+- New bidders: ananya, vikram, pooja, ravi, sneha alongside john, jane, mike, raj
+
+### Categories
+
+**Total: 13 categories** (4 root, 9 children)
+
+**Category Tree with Product Counts:**
+
+```
+Electronics [~25 total]
+├── Mobiles & Accessories [smartphones + bundles]
+├── Laptops & Computers [laptops + tablets]
+├── Audio [earphones + headphones + hi-fi]
+├── Gaming [consoles]
+└── Cameras & Photography [film + mirrorless]
+
+Fashion [~13 total]
+├── Men's Fashion [shirts + sneakers + watches + jackets + tees]
+└── Women's Fashion [kurtis + sarees + scarves]
+
+Home & Kitchen [~7 total] — includes sports/fitness products
+
+Sports & Outdoors [~5 total] — bikes, tennis, yoga, gym, cricket
+```
 
 **By User:**
 

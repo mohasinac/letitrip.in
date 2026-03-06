@@ -46,6 +46,7 @@ export function UserDetailDrawer({
   onDelete,
 }: UserDetailDrawerProps) {
   const t = useTranslations("adminUsers");
+  const tRoles = useTranslations("roles");
   if (!user) return null;
 
   return (
@@ -72,7 +73,7 @@ export function UserDetailDrawer({
           />
           <div className="flex-1">
             <Heading level={2} className="text-xl">
-              {user.displayName || "No name"}
+              {user.displayName || t("noName")}
             </Heading>
             <Text variant="secondary">{user.email}</Text>
             <div className="flex gap-2 mt-2 flex-wrap">
@@ -82,7 +83,7 @@ export function UserDetailDrawer({
                 label={user.disabled ? t("banned") : t("active")}
               />
               {!user.emailVerified && (
-                <StatusBadge status="warning" label="Email Not Verified" />
+                <StatusBadge status="warning" label={t("emailNotVerified")} />
               )}
             </div>
           </div>
@@ -93,23 +94,25 @@ export function UserDetailDrawer({
           className={`grid grid-cols-2 gap-4 pt-4 border-t ${themed.border}`}
         >
           <div>
-            <Caption>User ID</Caption>
+            <Caption>{t("fields.userId")}</Caption>
             <Text className="font-mono break-all" size="sm">
               {user.uid}
             </Text>
           </div>
           <div>
-            <Caption>Login Count</Caption>
-            <Text>{user.metadata?.loginCount || 0} times</Text>
+            <Caption>{t("fields.loginCount")}</Caption>
+            <Text>
+              {t("loginTimesCount", { count: user.metadata?.loginCount || 0 })}
+            </Text>
           </div>
           <div>
-            <Caption>Joined</Caption>
+            <Caption>{t("fields.joined")}</Caption>
             <Text>{formatDateTime(user.createdAt)}</Text>
           </div>
           <div>
-            <Caption>Last Login</Caption>
+            <Caption>{t("fields.lastLogin")}</Caption>
             <Text>
-              {user.lastLoginAt ? formatDateTime(user.lastLoginAt) : "Never"}
+              {user.lastLoginAt ? formatDateTime(user.lastLoginAt) : t("never")}
             </Text>
           </div>
         </div>
@@ -126,7 +129,7 @@ export function UserDetailDrawer({
                 variant={user.role === role ? "primary" : "outline"}
                 size="sm"
               >
-                {role.charAt(0).toUpperCase() + role.slice(1)}
+                {tRoles(role)}
               </Button>
             ))}
           </div>

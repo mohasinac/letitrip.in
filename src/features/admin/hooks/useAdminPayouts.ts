@@ -6,20 +6,23 @@ import type { PayoutDocument } from "@/db/schema";
 
 interface PayoutsResponse {
   payouts: PayoutDocument[];
-  meta?: { total: number };
+  meta?: {
+    total: number;
+    page?: number;
+    pageSize?: number;
+    totalPages?: number;
+  };
 }
 
 /**
  * useAdminPayouts
- * Fetches payouts filtered by `statusFilter` and exposes an update mutation.
+ * Fetches payouts using a full Sieve query string and exposes an update mutation.
  */
-export function useAdminPayouts(statusFilter: string) {
-  const queryFnParam = statusFilter
-    ? `?filters=${encodeURIComponent(`status==${statusFilter}`)}`
-    : "";
+export function useAdminPayouts(sieveParams: string) {
+  const queryFnParam = sieveParams ? `?${sieveParams}` : "";
 
   const query = useApiQuery<PayoutsResponse>({
-    queryKey: ["admin", "payouts", statusFilter],
+    queryKey: ["admin", "payouts", sieveParams],
     queryFn: () => adminService.listPayouts(queryFnParam),
   });
 

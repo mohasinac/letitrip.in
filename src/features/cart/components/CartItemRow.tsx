@@ -1,7 +1,13 @@
 ﻿"use client";
 
-import Image from "next/image";
-import { Button, Caption, Span, Text, TextLink } from "@/components";
+import {
+  Button,
+  Caption,
+  MediaImage,
+  Span,
+  Text,
+  TextLink,
+} from "@/components";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
@@ -36,12 +42,11 @@ export function CartItemRow({
       >
         <div className="relative w-20 h-20 sm:w-24 sm:h-24 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
           {item.productImage ? (
-            <Image
+            <MediaImage
               src={item.productImage}
               alt={item.productTitle}
-              fill
-              className="object-cover hover:scale-105 transition-transform"
-              sizes="96px"
+              size="thumbnail"
+              className="hover:scale-105 transition-transform"
             />
           ) : (
             <div
@@ -74,7 +79,7 @@ export function CartItemRow({
               onClick={() => onUpdateQuantity(item.itemId, item.quantity - 1)}
               disabled={item.quantity <= 1 || isUpdating}
               className={`w-7 h-7 ${flex.center} rounded-lg border ${themed.border} ${themed.textPrimary} hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition-colors`}
-              aria-label="Decrease quantity"
+              aria-label={t("decreaseQty")}
             >
               −
             </Button>
@@ -88,7 +93,7 @@ export function CartItemRow({
               onClick={() => onUpdateQuantity(item.itemId, item.quantity + 1)}
               disabled={isUpdating}
               className={`w-7 h-7 ${flex.center} rounded-lg border ${themed.border} ${themed.textPrimary} hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition-colors`}
-              aria-label="Increase quantity"
+              aria-label={t("increaseQty")}
             >
               +
             </Button>

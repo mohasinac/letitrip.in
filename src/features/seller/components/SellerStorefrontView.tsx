@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -9,6 +8,7 @@ import {
   AvatarDisplay,
   EmptyState,
   Heading,
+  MediaImage,
   TextLink,
 } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
@@ -203,12 +203,10 @@ export function SellerStorefrontView({
                 >
                   <div className="relative aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
                     {product.mainImage ? (
-                      <Image
+                      <MediaImage
                         src={product.mainImage}
                         alt={product.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                        size="card"
                       />
                     ) : (
                       <div

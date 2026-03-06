@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
@@ -13,6 +12,8 @@ import {
   Heading,
   HorizontalScroller,
   Label,
+  MediaAvatar,
+  MediaImage,
   Section,
   Span,
   Text,
@@ -372,15 +373,11 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
               <div className={`${flex.betweenStart} gap-3`}>
                 <div className="flex items-center gap-3">
                   {review.userAvatar ? (
-                    <div className="relative w-9 h-9 rounded-full overflow-hidden shrink-0">
-                      <Image
-                        src={review.userAvatar}
-                        alt={review.userName}
-                        fill
-                        className="object-cover"
-                        sizes="36px"
-                      />
-                    </div>
+                    <MediaAvatar
+                      src={review.userAvatar}
+                      alt={review.userName}
+                      size="sm"
+                    />
                   ) : (
                     <div
                       className={`w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900/40 ${flex.center} shrink-0`}
@@ -427,12 +424,10 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                       key={idx}
                       className="relative shrink-0 w-16 h-16 rounded-lg overflow-hidden"
                     >
-                      <Image
+                      <MediaImage
                         src={img}
-                        alt={`Review photo ${idx + 1}`}
-                        fill
-                        className="object-cover"
-                        sizes="64px"
+                        alt={t("reviewPhotoAlt", { index: idx + 1 })}
+                        size="thumbnail"
                       />
                     </div>
                   ))}

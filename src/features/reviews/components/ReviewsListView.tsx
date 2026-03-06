@@ -7,10 +7,12 @@
  * with rating filter, sort, and search — all URL-driven via useUrlTable.
  */
 
-import { Suspense, useCallback, useMemo } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
+  ActiveFilterChips,
+  DataTable,
   EmptyState,
   FilterFacetSection,
   Heading,
@@ -20,6 +22,7 @@ import {
   TablePagination,
   Text,
 } from "@/components";
+import type { ActiveFilter } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useApiQuery, useUrlTable } from "@/hooks";
 import { reviewService } from "@/services";
@@ -132,7 +135,29 @@ function ReviewsListContent() {
 
   const filterActiveCount = ratingFilter ? 1 : 0;
 
+  // ── Staged filter state ────────────────────────────────────────────
+  const [stagedRating, setStagedRating] = useState<string[]>(
+    ratingFilter ? [ratingFilter] : [],
+  );
+
+  useEffect(() => {
+    setStagedRating(ratingFilter ? [ratingFilter] : []);
+  }, [ratingFilter]);
+
+  const handleFilterApply = useCallback(() => {
+    table.set("rating", stagedRating[0] || "");
+  }, [stagedRating, table]);
+
+  const activeFilters = useMemo<ActiveFilter[]>(() => {
+    if (!ratingFilter) return [];
+    const label =
+      ratingOptions.find((o) => o.value === ratingFilter)?.label ??
+      ratingFilter;
+    return [{ key: "rating", label: t("filterRating"), value: label }];
+  }, [ratingFilter, ratingOptions, t]);
+
   const handleClearFilters = useCallback(() => {
+    setStagedRating([]);
     table.clear(["q", "rating", "sorts"]);
   }, [table]);
 
@@ -169,12 +194,23 @@ function ReviewsListContent() {
             <FilterFacetSection
               title={t("filterRating")}
               options={ratingOptions}
-              selected={ratingFilter ? [ratingFilter] : []}
-              onChange={(vals) => table.set("rating", vals[0] || "")}
+              selected={stagedRating}
+              onChange={setStagedRating}
+              selectionMode="single"
             />
           }
           filterActiveCount={filterActiveCount}
+          onFilterApply={handleFilterApply}
           onFilterClear={handleClearFilters}
+          activeFiltersSlot={
+            activeFilters.length > 0 ? (
+              <ActiveFilterChips
+                filters={activeFilters}
+                onRemove={(key) => table.set(key, "")}
+                onClearAll={handleClearFilters}
+              />
+            ) : undefined
+          }
           paginationSlot={
             totalPages > 1 ? (
               <TablePagination
@@ -194,29 +230,39 @@ function ReviewsListContent() {
               title={t("noReviewsFound")}
               description={t("noReviewsSubtitle")}
             />
-          ) : !isLoading && paged.length === 0 ? (
-            <EmptyState
-              icon={<Star className="w-16 h-16" />}
-              title={t("noReviewsFound")}
-              description={t("noReviewsSubtitle")}
-              actionLabel={
-                search || ratingFilter ? tActions("clearAll") : undefined
-              }
-              onAction={search || ratingFilter ? handleClearFilters : undefined}
-            />
           ) : (
-            <div className={THEME_CONSTANTS.grid.cols3}>
-              {isLoading
-                ? Array.from({ length: pageSize }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700 aspect-[4/3]"
-                    />
-                  ))
-                : paged.map((review) => (
-                    <ReviewCard key={review.id} review={review} />
-                  ))}
-            </div>
+            <DataTable
+              data={paged}
+              keyExtractor={(item) => item.id}
+              loading={isLoading}
+              columns={[
+                { key: "userName", header: t("colUser") },
+                { key: "productTitle", header: t("colProduct") },
+                { key: "rating", header: t("filterRating") },
+                { key: "createdAt", header: t("colDate") },
+              ]}
+              showViewToggle
+              viewMode={
+                (table.get("view") || "grid") as "table" | "grid" | "list"
+              }
+              onViewModeChange={(m) => table.set("view", m)}
+              emptyState={
+                <EmptyState
+                  icon={<Star className="w-16 h-16" />}
+                  title={t("noReviewsFound")}
+                  description={t("noReviewsSubtitle")}
+                  actionLabel={
+                    search || ratingFilter ? tActions("clearAll") : undefined
+                  }
+                  onAction={
+                    search || ratingFilter ? handleClearFilters : undefined
+                  }
+                />
+              }
+              mobileCardRender={(review) => (
+                <ReviewCard review={review as any} />
+              )}
+            />
           )}
         </ListingLayout>
       </div>

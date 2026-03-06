@@ -23,8 +23,8 @@
     --border-light: 244 244 245;     /* zinc-100 */
 
     /* Brand Colors */
-    --color-primary: 26 85 242;      /* primary-600 (cobalt blue) */
-    --color-primary-hover: 19 67 222; /* primary-700 */
+    --color-primary: 80 156 2;       /* primary-600 (lime green) */
+    --color-primary-hover: 62 119 8; /* primary-700 */
     --color-secondary: 39 39 42;     /* zinc-800 */
 
     /* UI Element Colors */
@@ -52,9 +52,9 @@
     --border-primary: 51 65 85;      /* slate-700 */
     --border-light: 30 41 59;        /* slate-800 */
 
-    /* Brand Colors (Dark Mode) — lime green hero accent */
-    --color-primary: 101 196 8;      /* secondary-500 (lime green) */
-    --color-primary-hover: 132 225 34; /* secondary-400 */
+    /* Brand Colors (Dark Mode) — hot pink hero accent */
+    --color-primary: 233 30 140;     /* secondary-500 (hot pink) */
+    --color-primary-hover: 240 99 185; /* secondary-400 */
     --color-secondary: 212 212 216;  /* zinc-300 */
 
     /* UI Element Colors (Dark Mode) */

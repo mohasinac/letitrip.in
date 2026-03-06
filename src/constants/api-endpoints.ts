@@ -17,6 +17,19 @@ export const API_ENDPOINTS = {
     CREATE_SESSION: "/api/auth/session",
     SESSION_ACTIVITY: "/api/auth/session/activity",
     SESSION_VALIDATE: "/api/auth/session/validate",
+    /**
+     * POST — Creates RTDB auth event node + issues per-event custom token.
+     * No session required.  Used as the first step in every OAuth popup flow.
+     */
+    EVENT_INIT: "/api/auth/event/init",
+    /** GET — Redirects to Google's OAuth consent screen. Opens in a popup. */
+    GOOGLE_START: "/api/auth/google/start",
+    /** GET — Google OAuth redirect callback (server-side code exchange). */
+    GOOGLE_CALLBACK: "/api/auth/google/callback",
+    /** GET — Redirects to Apple's OAuth consent screen. Opens in a popup. */
+    APPLE_START: "/api/auth/apple/start",
+    /** POST — Apple Sign In redirect callback (form_post response type). */
+    APPLE_CALLBACK: "/api/auth/apple/callback",
   },
 
   // User endpoints ✅ All routes exist
@@ -238,6 +251,7 @@ export const API_ENDPOINTS = {
     CREATE_ORDER: "/api/payment/create-order", // POST - Create Razorpay order
     VERIFY: "/api/payment/verify", // POST - Verify payment & place orders
     WEBHOOK: "/api/payment/webhook", // POST - Razorpay webhook events
+    EVENT_INIT: "/api/payment/event/init", // POST - Init RTDB payment event node
   },
 
   // Coupon endpoints

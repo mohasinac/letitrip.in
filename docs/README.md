@@ -9,8 +9,11 @@ This repository now keeps a smaller, core set of documentation files.
 - [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Common patterns and shortcuts
 - [CHANGELOG.md](./CHANGELOG.md) - Project history and updates (February 2026 onward)
 - [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md) - Archived version history (v1.0.0–v1.2.0, January–February 2026)
+- [AUTH.md](./AUTH.md) - Authentication architecture and OAuth popup bridge
+- [PAYMENT.md](./PAYMENT.md) - Payment architecture and Razorpay integration
 - [SECURITY.md](./SECURITY.md) - Security practices and policy
 - [RBAC.md](./RBAC.md) - Role-based access control
+- [BULK_ACTIONS.md](./BULK_ACTIONS.md) - Bulk action endpoints specification (existing + planned)
 - [ERROR_HANDLING.md](./ERROR_HANDLING.md) - Error architecture and patterns
 - [STYLING_GUIDE.md](./STYLING_GUIDE.md) - Styling and UI standards
 

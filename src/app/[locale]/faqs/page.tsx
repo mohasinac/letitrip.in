@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { THEME_CONSTANTS } from "@/constants";
-import { FAQPageContent } from "@/components";
+import { FAQPageContent } from "@/features/faq";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("faq");

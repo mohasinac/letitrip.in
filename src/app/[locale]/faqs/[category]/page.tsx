@@ -2,7 +2,7 @@ import { redirect } from "@/i18n/navigation";
 import { Suspense } from "react";
 import { FAQ_CATEGORIES, ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { FAQCategoryKey } from "@/constants";
-import { FAQPageContent } from "@/components";
+import { FAQPageContent } from "@/features/faq";
 
 interface Props {
   params: Promise<{ locale: string; category: string }>;

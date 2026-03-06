@@ -22,15 +22,21 @@ import {
   ProductForm,
   useProductTableColumns,
   EmptyState,
-  FilterFacetSection,
   ActiveFilterChips,
   ListingLayout,
   Search,
   SortDropdown,
+  ProductFilters,
 } from "@/components";
 import type { ActiveFilter, AdminProduct } from "@/components";
 import { Store } from "lucide-react";
-import { useAuth, useMessage, useUrlTable } from "@/hooks";
+import {
+  useAuth,
+  useMessage,
+  useUrlTable,
+  usePendingTable,
+  useCategories,
+} from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useSellerProducts } from "../hooks";
@@ -99,25 +105,20 @@ function SellerProductsContent() {
   const [isFormDirty, setIsFormDirty] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  // ── Staged filter state (applied on button click) ────────────────────
-  const [stagedStatus, setStagedStatus] = useState<string[]>(
-    statusParam ? [statusParam] : [],
-  );
-
-  useEffect(() => {
-    setStagedStatus(statusParam ? [statusParam] : []);
-  }, [statusParam]);
-
-  const handleFilterApply = useCallback(() => {
-    table.setMany({ status: stagedStatus[0] ?? "", page: "1" });
-  }, [stagedStatus, table]);
-
-  const handleFilterClear = useCallback(() => {
-    setStagedStatus([]);
-    table.setMany({ status: "", page: "1" });
-  }, [table]);
-
-  const filterActiveCount = statusParam ? 1 : 0;
+  // ── Filter state (pending until Apply) ─────────────────────────────
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, [
+      "status",
+      "category",
+      "condition",
+      "minPrice",
+      "maxPrice",
+    ]);
+  const { categories } = useCategories();
+  const categoryOptions = categories.map((c) => ({
+    value: c.id,
+    label: c.name,
+  }));
 
   const {
     data,
@@ -194,7 +195,12 @@ function SellerProductsContent() {
     if (succeeded === selectedIds.length) {
       showSuccess(tActions("bulkSuccess", { count: succeeded }));
     } else if (succeeded > 0) {
-      showError(tActions("bulkPartialSuccess", { success: succeeded, total: selectedIds.length }));
+      showError(
+        tActions("bulkPartialSuccess", {
+          success: succeeded,
+          total: selectedIds.length,
+        }),
+      );
     } else {
       showError(tActions("bulkFailed"));
     }
@@ -206,14 +212,21 @@ function SellerProductsContent() {
     async (status: string) => {
       const results = await Promise.allSettled(
         selectedIds.map((id) =>
-          updateMutation.mutate({ id, status } as Partial<AdminProduct> & { id: string }),
+          updateMutation.mutate({ id, status } as Partial<AdminProduct> & {
+            id: string;
+          }),
         ),
       );
       const succeeded = results.filter((r) => r.status === "fulfilled").length;
       if (succeeded === selectedIds.length) {
         showSuccess(tActions("bulkSuccess", { count: succeeded }));
       } else if (succeeded > 0) {
-        showError(tActions("bulkPartialSuccess", { success: succeeded, total: selectedIds.length }));
+        showError(
+          tActions("bulkPartialSuccess", {
+            success: succeeded,
+            total: selectedIds.length,
+          }),
+        );
       } else {
         showError(tActions("bulkFailed"));
       }
@@ -285,26 +298,32 @@ function SellerProductsContent() {
           />
         }
         filterContent={
-          <FilterFacetSection
-            title={t("filterStatusTitle")}
-            options={STATUS_OPTIONS}
-            selected={stagedStatus}
-            onChange={setStagedStatus}
-            searchable={false}
+          <ProductFilters
+            table={pendingTable}
+            showStatus
+            categoryOptions={categoryOptions}
           />
         }
         filterActiveCount={filterActiveCount}
-        onFilterApply={handleFilterApply}
-        onFilterClear={handleFilterClear}
+        onFilterApply={onFilterApply}
+        onFilterClear={onFilterClear}
         activeFiltersSlot={activeFiltersSlot}
         selectedCount={selectedIds.length}
         onClearSelection={() => setSelectedIds([])}
         bulkActions={
           <>
-            <Button variant="primary" size="sm" onClick={() => handleBulkStatusChange("published")}>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => handleBulkStatusChange("published")}
+            >
               {tActions("bulkPublish", { count: selectedIds.length })}
             </Button>
-            <Button variant="outline" size="sm" onClick={() => handleBulkStatusChange("archived")}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleBulkStatusChange("archived")}
+            >
               {tActions("bulkArchive", { count: selectedIds.length })}
             </Button>
             <Button variant="danger" size="sm" onClick={handleBulkDelete}>

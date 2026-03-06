@@ -113,8 +113,8 @@ export function AdminSessionsManager() {
 
   if (error) {
     return (
-      <Alert variant="error" title="Error">
-        Failed to load sessions. Please try again.
+      <Alert variant="error" title={t("loadErrorTitle")}>
+        {t("loadError")}
       </Alert>
     );
   }
@@ -127,45 +127,45 @@ export function AdminSessionsManager() {
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
         <Card className="p-4">
-          <div className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
-            Active Sessions
-          </div>
-          <div className="text-3xl font-bold mt-2">
+          <Text variant="secondary" size="sm">
+            {t("stats.active")}
+          </Text>
+          <Text weight="bold" className="text-3xl mt-2">
             {stats?.totalActive || 0}
-          </div>
+          </Text>
         </Card>
         <Card className="p-4">
-          <div className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
-            Unique Users
-          </div>
-          <div className="text-3xl font-bold mt-2">
+          <Text variant="secondary" size="sm">
+            {t("stats.uniqueUsers")}
+          </Text>
+          <Text weight="bold" className="text-3xl mt-2">
             {stats?.uniqueUsers || 0}
-          </div>
+          </Text>
         </Card>
         <Card className="p-4">
-          <div className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
-            Recent Activity (24h)
-          </div>
-          <div className="text-3xl font-bold mt-2">
+          <Text variant="secondary" size="sm">
+            {t("stats.recentActivity")}
+          </Text>
+          <Text weight="bold" className="text-3xl mt-2">
             {stats?.recentActivity || 0}
-          </div>
+          </Text>
         </Card>
         <Card className="p-4">
-          <div className={`text-sm ${THEME_CONSTANTS.themed.textSecondary}`}>
-            Expired Sessions
-          </div>
-          <div className="text-3xl font-bold mt-2">
+          <Text variant="secondary" size="sm">
+            {t("stats.expired")}
+          </Text>
+          <Text weight="bold" className="text-3xl mt-2">
             {stats?.totalExpired || 0}
-          </div>
+          </Text>
         </Card>
       </div>
 
       {/* Sessions Table */}
       <Card>
         <div className={`p-4 border-b ${THEME_CONSTANTS.themed.borderColor}`}>
-          <Heading level={3}>Active Sessions</Heading>
+          <Heading level={3}>{t("tableTitle")}</Heading>
           <Text variant="secondary" size="sm" className="mt-1">
-            Monitor and manage user sessions across all devices
+            {t("description")}
           </Text>
         </div>
 
@@ -183,7 +183,7 @@ export function AdminSessionsManager() {
                   onClick={() => handleRevokeSession(session.id)}
                   disabled={revokeSession.isLoading}
                 >
-                  Revoke
+                  {t("revoke")}
                 </Button>
                 <Button
                   size="sm"
@@ -196,7 +196,7 @@ export function AdminSessionsManager() {
                   }
                   disabled={revokeUserSessions.isLoading}
                 >
-                  Revoke All
+                  {t("revokeAll")}
                 </Button>
               </div>
             ) : null

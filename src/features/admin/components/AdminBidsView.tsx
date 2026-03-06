@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useUrlTable } from "@/hooks";
+import { useUrlTable, usePendingTable } from "@/hooks";
 import { useAdminBids } from "@/features/admin/hooks";
 import { ROUTES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   Card,
-  Button,
   SideDrawer,
   DataTable,
   AdminPageHeader,
@@ -17,6 +16,9 @@ import {
   Caption,
   Span,
   StatusBadge,
+  ListingLayout,
+  Search,
+  BidFilters,
 } from "@/components";
 import { useBidTableColumns } from ".";
 import { formatCurrency, formatDate } from "@/utils";
@@ -45,10 +47,22 @@ export function AdminBidsView({ action }: Props) {
   const [selectedBid, setSelectedBid] = useState<BidDocument | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const filtersParam = statusFilter ? `status==${statusFilter}` : undefined;
+  const searchTerm = table.get("q");
+  const minAmount = table.get("minAmount");
+  const maxAmount = table.get("maxAmount");
+
+  // ── Pending filter state (staged until Apply is clicked) ─────────────
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, ["status", "isWinning", "minAmount", "maxAmount"]);
+
+  const filtersArr: string[] = [];
+  if (statusFilter) filtersArr.push(`status==${statusFilter}`);
+  if (minAmount) filtersArr.push(`bidAmount>=${minAmount}`);
+  if (maxAmount) filtersArr.push(`bidAmount<=${maxAmount}`);
+  if (searchTerm) filtersArr.push(`productTitle@=*${searchTerm}`);
 
   const { data, isLoading, error } = useAdminBids(
-    table.buildSieveParams(filtersParam ?? ""),
+    table.buildSieveParams(filtersArr.join(",")),
   );
 
   const bids = data?.bids || [];
@@ -104,21 +118,29 @@ export function AdminBidsView({ action }: Props) {
         ))}
       </div>
 
-      {/* Status filter tabs */}
-      <div className="flex flex-wrap gap-2">
-        {STATUS_TABS.map((tab) => (
-          <Button
-            key={tab.key}
-            variant={statusFilter === tab.key ? "primary" : "outline"}
-            size="sm"
-            onClick={() => table.set("status", tab.key)}
-          >
-            {tab.label}
-          </Button>
-        ))}
-      </div>
-
-      <Card>
+      <ListingLayout
+        searchSlot={
+          <Search
+            value={searchTerm}
+            onChange={(v) => table.set("q", v)}
+            placeholder={t("searchPlaceholder")}
+          />
+        }
+        filterContent={<BidFilters table={pendingTable} />}
+        filterActiveCount={filterActiveCount}
+        onFilterApply={onFilterApply}
+        onFilterClear={onFilterClear}
+        paginationSlot={
+          <TablePagination
+            currentPage={data?.meta?.page ?? 1}
+            totalPages={data?.meta?.totalPages ?? 1}
+            pageSize={table.getNumber("pageSize", 25)}
+            total={data?.meta?.total ?? 0}
+            onPageChange={table.setPage}
+            onPageSizeChange={table.setPageSize}
+          />
+        }
+      >
         <DataTable
           columns={columns}
           data={bids}
@@ -148,15 +170,7 @@ export function AdminBidsView({ action }: Props) {
             </Card>
           )}
         />
-        <TablePagination
-          currentPage={data?.meta?.page ?? 1}
-          totalPages={data?.meta?.totalPages ?? 1}
-          pageSize={table.getNumber("pageSize", 25)}
-          total={data?.meta?.total ?? 0}
-          onPageChange={table.setPage}
-          onPageSizeChange={table.setPageSize}
-        />
-      </Card>
+      </ListingLayout>
 
       {/* Bid detail drawer — read-only */}
       <SideDrawer

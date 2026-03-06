@@ -45,3 +45,4 @@ export { FeedbackEventSection } from "./components/FeedbackEventSection";
 export { EventLeaderboard } from "./components/EventLeaderboard";
 export { EventParticipateView } from "./components/EventParticipateView";
 export { EventsListView } from "./components/EventsListView";
+export { EventBanner } from "./components/EventBanner";

@@ -49,7 +49,7 @@ jest.mock("@/components", () => ({
     <div data-testid="data-table">{columns?.length ?? 0} cols</div>
   ),
   DrawerFormFooter: () => <div data-testid="drawer-footer" />,
-  getCarouselTableColumns: () => [{ key: "title", header: "Title" }],
+  useCarouselTableColumns: () => ({ columns: [], actions: () => null }),
   CarouselSlideForm: () => <div data-testid="carousel-form" />,
   useToast: () => ({ showToast: jest.fn() }),
 }));

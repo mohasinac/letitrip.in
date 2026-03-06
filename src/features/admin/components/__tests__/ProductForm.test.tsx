@@ -29,6 +29,31 @@ jest.mock("@/lib/api-client", () => ({
   apiClient: { get: jest.fn(), post: jest.fn() },
 }));
 
+jest.mock("@/features/user", () => ({
+  AddressSelectorCreate: ({
+    label,
+    value,
+    onChange,
+  }: {
+    label: string;
+    value: string;
+    onChange: (id: string) => void;
+    disabled?: boolean;
+  }) => (
+    <div data-testid="address-selector">
+      <label>{label}</label>
+      <select
+        data-testid="address-select"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        <option value="">Select address</option>
+        <option value="addr-1">Home — Mumbai</option>
+      </select>
+    </div>
+  ),
+}));
+
 jest.mock("@/components", () => ({
   FormField: ({
     name,
@@ -78,28 +103,6 @@ jest.mock("@/components", () => ({
       >
         <option value="">Select category</option>
         <option value="cat-1">Electronics</option>
-      </select>
-    </div>
-  ),
-  AddressSelectorCreate: ({
-    label,
-    value,
-    onChange,
-  }: {
-    label: string;
-    value: string;
-    onChange: (id: string) => void;
-    disabled?: boolean;
-  }) => (
-    <div data-testid="address-selector">
-      <label>{label}</label>
-      <select
-        data-testid="address-select"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        <option value="">Select address</option>
-        <option value="addr-1">Home — Mumbai</option>
       </select>
     </div>
   ),
@@ -260,4 +263,3 @@ describe("ProductForm", () => {
     ).toBeInTheDocument();
   });
 });
-

@@ -7,8 +7,16 @@
  */
 
 // Products (shared with seller — sourced from Tier 1)
-export { ProductForm, useProductTableColumns, PRODUCT_STATUS_OPTIONS } from "@/components";
-export type { AdminProduct, ProductStatus, ProductDrawerMode } from "@/components";
+export {
+  ProductForm,
+  useProductTableColumns,
+  PRODUCT_STATUS_OPTIONS,
+} from "@/components";
+export type {
+  AdminProduct,
+  ProductStatus,
+  ProductDrawerMode,
+} from "@/components";
 
 // Orders
 export { useOrderTableColumns } from "./OrderTableColumns";
@@ -16,18 +24,21 @@ export { OrderStatusForm } from "./OrderStatusForm";
 export type { OrderStatusFormState } from "./OrderStatusForm";
 
 // Users
-export { UserFilters } from "./UserFilters";
 export { useUserTableColumns } from "./UserTableColumns";
 export { UserDetailDrawer } from "./UserDetailDrawer";
 export type { AdminUser, UserTab } from "./User.types";
 
 // Carousel
 export { CarouselSlideForm } from "./CarouselSlideForm";
-export { getCarouselTableColumns } from "./CarouselTableColumns";
+export { useCarouselTableColumns } from "./CarouselTableColumns";
 export type { CarouselSlide, DrawerMode, GridCard } from "./Carousel.types";
 
 // Categories (shared with CategorySelectorCreate — sourced from Tier 1)
-export { CategoryForm, getCategoryTableColumns, flattenCategories } from "@/components";
+export {
+  CategoryForm,
+  getCategoryTableColumns,
+  flattenCategories,
+} from "@/components";
 export type { Category, CategoryDrawerMode } from "@/components";
 
 // Blog
@@ -54,7 +65,11 @@ export { FAQ_CATEGORIES, VARIABLE_PLACEHOLDERS } from "./Faq.types";
 export type { FAQ, FaqDrawerMode } from "./Faq.types";
 
 // Coupons
-export { CouponForm, couponToFormState, formStateToCouponPayload } from "./CouponForm";
+export {
+  CouponForm,
+  couponToFormState,
+  formStateToCouponPayload,
+} from "./CouponForm";
 export { getCouponTableColumns } from "./CouponTableColumns";
 export type { CouponFormState } from "./CouponForm";
 

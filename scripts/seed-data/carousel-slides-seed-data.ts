@@ -73,7 +73,7 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     ],
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-08T00:00:00Z"),
-    createdBy: "user_admin_001",
+    createdBy: "user-admin-user-admin",
   },
 
   // Slide 2: Electronics Sale
@@ -140,7 +140,7 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     ],
     createdAt: new Date("2026-02-01T00:00:00Z"),
     updatedAt: new Date("2026-02-08T00:00:00Z"),
-    createdBy: "user_admin_001",
+    createdBy: "user-admin-user-admin",
   },
 
   // Slide 3: Fashion Collection
@@ -190,7 +190,7 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     ],
     createdAt: new Date("2026-02-05T00:00:00Z"),
     updatedAt: new Date("2026-02-08T00:00:00Z"),
-    createdBy: "user_admin_001",
+    createdBy: "user-admin-user-admin",
   },
 
   // Slide 4: Special Offers (with video)
@@ -248,7 +248,7 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     ],
     createdAt: new Date("2026-02-07T00:00:00Z"),
     updatedAt: new Date("2026-02-08T00:00:00Z"),
-    createdBy: "user_admin_001",
+    createdBy: "user-admin-user-admin",
   },
 
   // Slide 5: Auction Spotlight
@@ -310,7 +310,7 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     ],
     createdAt: new Date("2026-02-08T00:00:00Z"),
     updatedAt: new Date("2026-02-08T00:00:00Z"),
-    createdBy: "user_admin_001",
+    createdBy: "user-admin-user-admin",
   },
 
   // Inactive Slide (for testing)
@@ -327,6 +327,6 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     cards: [],
     createdAt: new Date("2026-01-15T00:00:00Z"),
     updatedAt: new Date("2026-01-20T00:00:00Z"),
-    createdBy: "user_admin_001",
+    createdBy: "user-admin-user-admin",
   },
 ];

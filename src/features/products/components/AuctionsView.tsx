@@ -13,14 +13,15 @@
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActiveFilterChips,
-  AuctionGrid,
+  AuctionCard,
   Button,
+  DataTable,
   FilterFacetSection,
   Heading,
   ListingLayout,
-  Pagination,
   Search,
   SortDropdown,
+  TablePagination,
   Text,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
@@ -117,7 +118,12 @@ function AuctionsContent() {
     if (succeeded === selectedIds.length) {
       showSuccess(tActions("bulkSuccess", { count: succeeded }));
     } else if (succeeded > 0) {
-      showError(tActions("bulkPartialSuccess", { success: succeeded, total: selectedIds.length }));
+      showError(
+        tActions("bulkPartialSuccess", {
+          success: succeeded,
+          total: selectedIds.length,
+        }),
+      );
     } else {
       showError(tActions("bulkFailed"));
     }
@@ -190,30 +196,62 @@ function AuctionsContent() {
           onClearSelection={() => setSelectedIds([])}
           bulkActions={
             user ? (
-              <Button variant="primary" size="sm" onClick={handleBulkAddToWishlist}>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleBulkAddToWishlist}
+              >
                 {tActions("bulkAddToWishlist", { count: selectedIds.length })}
               </Button>
             ) : undefined
           }
           paginationSlot={
-            totalPages > 1 ? (
-              <div className="flex justify-center">
-                <Pagination
-                  currentPage={page}
-                  totalPages={totalPages}
-                  onPageChange={table.setPage}
-                />
-              </div>
+            total > 0 ? (
+              <TablePagination
+                total={total}
+                currentPage={page}
+                totalPages={totalPages}
+                pageSize={PAGE_SIZE}
+                onPageChange={table.setPage}
+                onPageSizeChange={(n) => table.set("pageSize", String(n))}
+                pageSizeOptions={[12, 24, 48]}
+              />
             ) : undefined
           }
         >
-          <AuctionGrid
-            auctions={auctions}
+          <DataTable
+            data={auctions}
+            keyExtractor={(item) => item.id}
             loading={isLoading}
-            skeletonCount={PAGE_SIZE}
+            columns={[
+              { key: "title", header: t("colTitle") },
+              { key: "currentBid", header: t("colCurrentBid") },
+              { key: "auctionEndDate", header: t("colEnds") },
+              { key: "bidCount", header: t("colBids") },
+            ]}
+            showViewToggle
+            viewMode={
+              (table.get("view") || "grid") as "table" | "grid" | "list"
+            }
+            onViewModeChange={(m) => table.set("view", m)}
             selectable={!!user}
             selectedIds={selectedIds}
             onSelectionChange={setSelectedIds}
+            mobileCardRender={(item) => (
+              <AuctionCard
+                product={item as any}
+                variant={
+                  (table.get("view") || "grid") === "list" ? "list" : "grid"
+                }
+                selectable={!!user}
+                isSelected={selectedIds.includes(item.id)}
+                onSelect={(id, sel) =>
+                  setSelectedIds((prev) =>
+                    sel ? [...prev, id] : prev.filter((x) => x !== id),
+                  )
+                }
+              />
+            )}
           />
         </ListingLayout>
       </div>

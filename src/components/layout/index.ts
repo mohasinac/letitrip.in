@@ -29,6 +29,32 @@ export { default as BottomNavbar } from "./BottomNavbar";
 // Reusable Navigation Item
 export { default as NavItem } from "./NavItem";
 
+// ==================== GENERIC LAYOUT SHELLS ====================
+
+// Fixed bottom mobile navigation shell
+export { BottomNavLayout } from "./BottomNavLayout";
+export type { BottomNavLayoutProps } from "./BottomNavLayout";
+
+// Right slide-out sidebar shell
+export { SidebarLayout } from "./SidebarLayout";
+export type { SidebarLayoutProps } from "./SidebarLayout";
+
+// Top sticky title-bar shell
+export { TitleBarLayout } from "./TitleBarLayout";
+export type { TitleBarLayoutProps } from "./TitleBarLayout";
+
+// Site footer shell
+export { FooterLayout } from "./FooterLayout";
+export type {
+  FooterLayoutProps,
+  FooterLinkGroup,
+  FooterSocialLink,
+} from "./FooterLayout";
+
+// Main horizontal navbar shell
+export { NavbarLayout } from "./NavbarLayout";
+export type { NavbarLayoutProps, NavbarLayoutItem } from "./NavbarLayout";
+
 // ==================== FOOTER ====================
 
 // Site Footer

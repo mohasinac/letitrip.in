@@ -100,6 +100,21 @@ export type { RazorpayOptions, RazorpayPaymentResponse } from "./useRazorpay";
 export { useBreakpoint } from "./useBreakpoint";
 export { useRealtimeBids } from "./useRealtimeBids";
 export type { RealtimeBidData, UseRealtimeBidsReturn } from "./useRealtimeBids";
+export { useRealtimeEvent } from "./useRealtimeEvent";
+export type {
+  UseRealtimeEventReturn,
+  UseRealtimeEventConfig,
+  RealtimeEventMessages,
+  RTDBEventPayload,
+} from "./useRealtimeEvent";
+export { RealtimeEventType, RealtimeEventStatus } from "./useRealtimeEvent";
+export { useAuthEvent } from "./useAuthEvent";
+export type { UseAuthEventReturn, AuthEventStatus } from "./useAuthEvent";
+export { usePaymentEvent } from "./usePaymentEvent";
+export type {
+  UsePaymentEventReturn,
+  PaymentEventStatus,
+} from "./usePaymentEvent";
 
 // Phase 2: URL-driven list/table state
 export { useUrlTable } from "./useUrlTable";
@@ -184,3 +199,19 @@ export type {
   UsePendingFiltersOptions,
   UsePendingFiltersReturn,
 } from "./usePendingFilters";
+export { usePendingTable } from "./usePendingTable";
+export type { PendingTable, UsePendingTableReturn } from "./usePendingTable";
+
+// Bulk action hooks
+export { useBulkSelection } from "./useBulkSelection";
+export type {
+  UseBulkSelectionOptions,
+  UseBulkSelectionReturn,
+} from "./useBulkSelection";
+export { useBulkAction } from "./useBulkAction";
+export type {
+  UseBulkActionOptions,
+  UseBulkActionReturn,
+} from "./useBulkAction";
+export { useBulkEvent } from "./useBulkEvent";
+export type { UseBulkEventReturn, BulkEventStatus } from "./useBulkEvent";

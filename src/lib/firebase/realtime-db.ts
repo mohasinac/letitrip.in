@@ -1,6 +1,6 @@
 /**
  * Firebase Realtime Database Helpers
- * 
+ *
  * Utilities for real-time data synchronization using Firebase Realtime Database.
  * Perfect for presence detection, live chat, and real-time notifications.
  */
@@ -21,17 +21,39 @@ import {
   serverTimestamp,
   DatabaseReference,
   Unsubscribe,
-} from 'firebase/database';
-import { realtimeDb } from './config';
+} from "firebase/database";
+import { realtimeDb } from "./config";
 
 /**
  * Realtime database paths
  */
 export const RTDB_PATHS = {
-  PRESENCE: 'presence',
-  CHAT: 'chat',
-  NOTIFICATIONS: 'notifications',
-  LIVE_UPDATES: 'live_updates',
+  PRESENCE: "presence",
+  CHAT: "chat",
+  NOTIFICATIONS: "notifications",
+  LIVE_UPDATES: "live_updates",
+  /**
+   * Pre-session OAuth & login signal channel.
+   * Nodes are written by API routes (Admin SDK), read once by the client
+   * via a per-event custom token.  Cleaned up by the cleanupAuthEvents
+   * Firebase Function every 5 minutes.
+   */
+  AUTH_EVENTS: "auth_events",
+  /**
+   * Razorpay webhook signal channel.
+   * Nodes are written by the payment webhook route (Admin SDK), read once
+   * by the client via a per-event custom token.
+   */
+  PAYMENT_EVENTS: "payment_events",
+  /**
+   * Bulk action result signal channel.
+   * Nodes are written by bulk API routes (Admin SDK) after processing;
+   * the client subscribes via a per-job custom token issued with
+   * { bulkJobId: jobId } claim to scope access to exactly one node.
+   * Cleanup: Firebase Function cleanupBulkEvents deletes nodes older
+   * than 15 minutes to prevent RTDB accumulation.
+   */
+  BULK_EVENTS: "bulk_events",
 } as const;
 
 /**
@@ -40,10 +62,10 @@ export const RTDB_PATHS = {
 export async function setUserPresence(
   userId: string,
   isOnline: boolean,
-  additionalData?: Record<string, any>
+  additionalData?: Record<string, any>,
 ): Promise<void> {
   const presenceRef = ref(realtimeDb, `${RTDB_PATHS.PRESENCE}/${userId}`);
-  
+
   const presenceData = {
     online: isOnline,
     lastSeen: serverTimestamp(),
@@ -67,10 +89,10 @@ export async function setUserPresence(
  */
 export function listenToUserPresence(
   userId: string,
-  callback: (presence: { online: boolean; lastSeen: number | null }) => void
+  callback: (presence: { online: boolean; lastSeen: number | null }) => void,
 ): Unsubscribe {
   const presenceRef = ref(realtimeDb, `${RTDB_PATHS.PRESENCE}/${userId}`);
-  
+
   return onValue(presenceRef, (snapshot) => {
     const data = snapshot.val();
     callback(data || { online: false, lastSeen: null });
@@ -84,10 +106,10 @@ export async function sendChatMessage(
   chatId: string,
   userId: string,
   message: string,
-  metadata?: Record<string, any>
+  metadata?: Record<string, any>,
 ): Promise<string> {
   const chatRef = ref(realtimeDb, `${RTDB_PATHS.CHAT}/${chatId}/messages`);
-  
+
   const messageData = {
     userId,
     message,
@@ -97,7 +119,7 @@ export async function sendChatMessage(
 
   const newMessageRef = push(chatRef);
   await set(newMessageRef, messageData);
-  
+
   return newMessageRef.key!;
 }
 
@@ -106,12 +128,23 @@ export async function sendChatMessage(
  */
 export function listenToChatMessages(
   chatId: string,
-  callback: (messages: Array<{ id: string; userId: string; message: string; timestamp: number }>) => void,
-  limit: number = 50
+  callback: (
+    messages: Array<{
+      id: string;
+      userId: string;
+      message: string;
+      timestamp: number;
+    }>,
+  ) => void,
+  limit: number = 50,
 ): Unsubscribe {
   const chatRef = ref(realtimeDb, `${RTDB_PATHS.CHAT}/${chatId}/messages`);
-  const chatQuery = query(chatRef, orderByChild('timestamp'), limitToLast(limit));
-  
+  const chatQuery = query(
+    chatRef,
+    orderByChild("timestamp"),
+    limitToLast(limit),
+  );
+
   return onValue(chatQuery, (snapshot) => {
     const messages: any[] = [];
     snapshot.forEach((childSnapshot) => {
@@ -132,12 +165,15 @@ export async function sendNotification(
   notification: {
     title: string;
     message: string;
-    type: 'info' | 'success' | 'warning' | 'error';
+    type: "info" | "success" | "warning" | "error";
     data?: Record<string, any>;
-  }
+  },
 ): Promise<void> {
-  const notificationsRef = ref(realtimeDb, `${RTDB_PATHS.NOTIFICATIONS}/${userId}`);
-  
+  const notificationsRef = ref(
+    realtimeDb,
+    `${RTDB_PATHS.NOTIFICATIONS}/${userId}`,
+  );
+
   const notificationData = {
     ...notification,
     timestamp: serverTimestamp(),
@@ -153,11 +189,25 @@ export async function sendNotification(
  */
 export function listenToNotifications(
   userId: string,
-  callback: (notifications: Array<{ id: string; title: string; message: string; read: boolean }>) => void
+  callback: (
+    notifications: Array<{
+      id: string;
+      title: string;
+      message: string;
+      read: boolean;
+    }>,
+  ) => void,
 ): Unsubscribe {
-  const notificationsRef = ref(realtimeDb, `${RTDB_PATHS.NOTIFICATIONS}/${userId}`);
-  const notificationsQuery = query(notificationsRef, orderByChild('timestamp'), limitToLast(20));
-  
+  const notificationsRef = ref(
+    realtimeDb,
+    `${RTDB_PATHS.NOTIFICATIONS}/${userId}`,
+  );
+  const notificationsQuery = query(
+    notificationsRef,
+    orderByChild("timestamp"),
+    limitToLast(20),
+  );
+
   return onValue(notificationsQuery, (snapshot) => {
     const notifications: any[] = [];
     snapshot.forEach((childSnapshot) => {
@@ -175,9 +225,12 @@ export function listenToNotifications(
  */
 export async function markNotificationAsRead(
   userId: string,
-  notificationId: string
+  notificationId: string,
 ): Promise<void> {
-  const notificationRef = ref(realtimeDb, `${RTDB_PATHS.NOTIFICATIONS}/${userId}/${notificationId}`);
+  const notificationRef = ref(
+    realtimeDb,
+    `${RTDB_PATHS.NOTIFICATIONS}/${userId}/${notificationId}`,
+  );
   await update(notificationRef, { read: true });
 }
 
@@ -186,10 +239,10 @@ export async function markNotificationAsRead(
  */
 export async function sendLiveUpdate(
   updateType: string,
-  data: Record<string, any>
+  data: Record<string, any>,
 ): Promise<void> {
   const updateRef = ref(realtimeDb, `${RTDB_PATHS.LIVE_UPDATES}/${updateType}`);
-  
+
   const updateData = {
     ...data,
     timestamp: serverTimestamp(),
@@ -203,10 +256,10 @@ export async function sendLiveUpdate(
  */
 export function listenToLiveUpdates(
   updateType: string,
-  callback: (data: any) => void
+  callback: (data: any) => void,
 ): Unsubscribe {
   const updateRef = ref(realtimeDb, `${RTDB_PATHS.LIVE_UPDATES}/${updateType}`);
-  
+
   return onValue(updateRef, (snapshot) => {
     callback(snapshot.val());
   });
@@ -232,7 +285,10 @@ export async function readData(path: string): Promise<any> {
 /**
  * Generic update operation
  */
-export async function updateData(path: string, updates: Record<string, any>): Promise<void> {
+export async function updateData(
+  path: string,
+  updates: Record<string, any>,
+): Promise<void> {
   const dataRef = ref(realtimeDb, path);
   await update(dataRef, updates);
 }
@@ -250,7 +306,7 @@ export async function deleteData(path: string): Promise<void> {
  */
 export function listenToData(
   path: string,
-  callback: (data: any) => void
+  callback: (data: any) => void,
 ): Unsubscribe {
   const dataRef = ref(realtimeDb, path);
   return onValue(dataRef, (snapshot) => {

@@ -15,7 +15,7 @@ jest.mock("@/i18n/navigation", () => ({
 }));
 
 // Mock the FAQPageContent component
-jest.mock("@/components/faq", () => ({
+jest.mock("@/features/faq", () => ({
   FAQPageContent: ({ initialCategory }: { initialCategory: string }) => (
     <div data-testid="faq-page-content" data-category={initialCategory}>
       FAQ Page Content

@@ -10,9 +10,9 @@
 
 "use client";
 
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useUrlTable, useMessage } from "@/hooks";
+import { useUrlTable, useMessage, usePendingTable } from "@/hooks";
 import { useAdminOrders } from "@/features/admin/hooks";
 import { ROUTES, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -24,8 +24,8 @@ import {
   DataTable,
   AdminPageHeader,
   DrawerFormFooter,
-  FilterFacetSection,
   ListingLayout,
+  OrderFilters,
   Search,
   StatusBadge,
   TablePagination,
@@ -43,43 +43,48 @@ interface AdminOrdersViewProps {
 export function AdminOrdersView({ action }: AdminOrdersViewProps) {
   const router = useRouter();
   const t = useTranslations("adminOrders");
-  const tStatus = useTranslations("status");
   const { showSuccess, showError } = useMessage();
 
   const table = useUrlTable({
     defaults: { pageSize: "25", sort: "-createdAt" },
   });
   const statusFilter = table.get("status");
+  const paymentStatusFilter = table.get("paymentStatus");
+  const payoutStatusFilter = table.get("payoutStatus");
+  const minAmount = table.get("minAmount");
+  const maxAmount = table.get("maxAmount");
+  const dateFrom = table.get("dateFrom");
+  const dateTo = table.get("dateTo");
 
+  // ── Pending filter state (values staged until Apply is clicked) ──────
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, [
+      "status",
+      "paymentStatus",
+      "payoutStatus",
+      "minAmount",
+      "maxAmount",
+      "dateFrom",
+      "dateTo",
+    ]);
   const [selectedOrder, setSelectedOrder] = useState<OrderDocument | null>(
     null,
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [formState, setFormState] = useState<OrderStatusFormState | null>(null);
 
-  // ── Staged filter state (applied on button click) ────────────────────
-  const [stagedStatus, setStagedStatus] = useState<string[]>(
-    statusFilter ? [statusFilter] : [],
-  );
-
-  useEffect(() => {
-    setStagedStatus(statusFilter ? [statusFilter] : []);
-  }, [statusFilter]);
-
-  const handleFilterApply = useCallback(() => {
-    table.setMany({ status: stagedStatus[0] ?? "", page: "1" });
-  }, [stagedStatus, table]);
-
-  const handleFilterClear = useCallback(() => {
-    setStagedStatus([]);
-    table.setMany({ status: "", page: "1" });
-  }, [table]);
-
-  const filterActiveCount = statusFilter ? 1 : 0;
-
   // ── Data fetching ───────────────────────────────────────────────────
-  const filtersParam = statusFilter ? `status==${statusFilter}` : undefined;
-  const sieveParams = table.buildSieveParams(filtersParam ?? "");
+  const filtersArr: string[] = [];
+  if (statusFilter) filtersArr.push(`status==${statusFilter}`);
+  if (paymentStatusFilter)
+    filtersArr.push(`paymentStatus==${paymentStatusFilter}`);
+  if (payoutStatusFilter)
+    filtersArr.push(`payoutStatus==${payoutStatusFilter}`);
+  if (minAmount) filtersArr.push(`totalPrice>=${minAmount}`);
+  if (maxAmount) filtersArr.push(`totalPrice<=${maxAmount}`);
+  if (dateFrom) filtersArr.push(`createdAt>=${dateFrom}`);
+  if (dateTo) filtersArr.push(`createdAt<=${dateTo}`);
+  const sieveParams = table.buildSieveParams(filtersArr.join(","));
 
   const { data, isLoading, error, refetch, updateMutation } =
     useAdminOrders(sieveParams);
@@ -165,18 +170,6 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
     </div>
   );
 
-  // ── Filter facet options ────────────────────────────────────────────
-  const statusOptions = useMemo(
-    () => [
-      { value: "pending", label: tStatus("pending") },
-      { value: "confirmed", label: t("filterConfirmed") },
-      { value: "shipped", label: t("filterShipped") },
-      { value: "delivered", label: t("filterDelivered") },
-      { value: "cancelled", label: tStatus("cancelled") },
-    ],
-    [t, tStatus],
-  );
-
   const { columns } = useOrderTableColumns(handleView);
 
   return (
@@ -196,18 +189,10 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
             placeholder={t("searchPlaceholder")}
           />
         }
-        filterContent={
-          <FilterFacetSection
-            title={tStatus("all")}
-            options={statusOptions}
-            selected={stagedStatus}
-            onChange={setStagedStatus}
-            searchable={false}
-          />
-        }
+        filterContent={<OrderFilters table={pendingTable} variant="admin" />}
         filterActiveCount={filterActiveCount}
-        onFilterApply={handleFilterApply}
-        onFilterClear={handleFilterClear}
+        onFilterApply={onFilterApply}
+        onFilterClear={onFilterClear}
         loading={isLoading}
         errorSlot={
           error ? (
@@ -237,9 +222,7 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
           keyExtractor={(order: OrderDocument) => order.id}
           externalPagination
           showViewToggle
-          viewMode={
-            (table.get("view") || "table") as "table" | "grid" | "list"
-          }
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(order) => (
             <Card className="p-4 space-y-2">

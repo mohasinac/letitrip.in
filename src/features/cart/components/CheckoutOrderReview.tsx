@@ -1,12 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import type { CartItemDocument, AddressDocument } from "@/db/schema";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
-import { Heading, Text, Span, Button, Caption, Ol, Li } from "@/components";
+import {
+  Heading,
+  Text,
+  Span,
+  Button,
+  Caption,
+  MediaImage,
+  Ol,
+  Li,
+} from "@/components";
 
 const { themed, flex } = THEME_CONSTANTS;
 
@@ -88,12 +96,10 @@ export function CheckoutOrderReview({
             <div key={item.itemId} className="flex items-center gap-3 p-3">
               {item.productImage ? (
                 <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-800">
-                  <Image
+                  <MediaImage
                     src={item.productImage}
                     alt={item.productTitle}
-                    fill
-                    className="object-cover"
-                    sizes="56px"
+                    size="thumbnail"
                   />
                 </div>
               ) : (

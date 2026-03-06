@@ -9,12 +9,11 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useMessage, useUrlTable } from "@/hooks";
+import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
 import { ROUTES } from "@/constants";
 import { useAdminFaqs } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
-  AdminFilterBar,
   AdminPageHeader,
   Badge,
   Button,
@@ -22,7 +21,10 @@ import {
   Card,
   DataTable,
   DrawerFormFooter,
+  FaqFilters,
   FormField,
+  ListingLayout,
+  Search,
   SideDrawer,
   StatusBadge,
   TablePagination,
@@ -53,12 +55,20 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
     defaults: { pageSize: "50", sort: "-priority,order" },
   });
   const searchTerm = table.get("q");
+  const categoryFilter = table.get("category");
+  const isActiveFilter = table.get("isActive");
 
-  const faqsParams = new URLSearchParams();
-  faqsParams.set("sorts", table.get("sort") || "-priority,order");
-  faqsParams.set("page", table.get("page") || "1");
-  faqsParams.set("pageSize", table.get("pageSize") || "50");
-  if (searchTerm) faqsParams.set("search", searchTerm);
+  // ── Pending filter state (staged until Apply is clicked) ─────────────
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, ["category", "isActive"]);
+
+  const filtersArr: string[] = [];
+  if (searchTerm) filtersArr.push(`question@=*${searchTerm}`);
+  if (categoryFilter) filtersArr.push(`category==${categoryFilter}`);
+  if (isActiveFilter === "true") filtersArr.push("isActive==true");
+  else if (isActiveFilter === "false") filtersArr.push("isActive==false");
+
+  const faqsParams = table.buildSieveParams(filtersArr.join(","));
 
   const {
     data,
@@ -68,7 +78,7 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
     createMutation,
     updateMutation,
     deleteMutation,
-  } = useAdminFaqs(faqsParams.toString());
+  } = useAdminFaqs(faqsParams);
 
   const faqs = Array.isArray(data)
     ? (data as FAQ[])
@@ -237,28 +247,46 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
           onAction={handleCreate}
         />
 
-        {isLoading ? (
-          <Card>
-            <div className="text-center py-8">{tLoading("default")}</div>
-          </Card>
-        ) : error ? (
-          <Card>
-            <div className="text-center py-8">
-              <Text className="text-red-600 mb-4">{error.message}</Text>
-              <Button onClick={() => refetch()}>{tActions("retry")}</Button>
-            </div>
-          </Card>
-        ) : (
-          <>
-            <AdminFilterBar>
-              <FormField
-                type="text"
-                name="search"
-                value={searchTerm}
-                onChange={(value) => table.set("q", value)}
-                placeholder={t("searchPlaceholder")}
+        <ListingLayout
+          searchSlot={
+            <Search
+              value={searchTerm}
+              onChange={(v) => table.set("q", v)}
+              placeholder={t("searchPlaceholder")}
+            />
+          }
+          filterContent={<FaqFilters table={pendingTable} />}
+          filterActiveCount={filterActiveCount}
+          onFilterApply={onFilterApply}
+          onFilterClear={onFilterClear}
+          paginationSlot={
+            (faqMeta?.totalPages ?? 1) > 1 ? (
+              <TablePagination
+                currentPage={faqMeta?.page ?? 1}
+                totalPages={faqMeta?.totalPages ?? 1}
+                pageSize={faqMeta?.pageSize ?? 50}
+                total={faqMeta?.total ?? faqs.length}
+                onPageChange={table.setPage}
+                onPageSizeChange={table.setPageSize}
+                isLoading={isLoading}
               />
-            </AdminFilterBar>
+            ) : undefined
+          }
+        >
+          {isLoading ? (
+            <Card>
+              <div className="text-center py-8">{tLoading("default")}</div>
+            </Card>
+          ) : error ? (
+            <Card>
+              <div className="text-center py-8">
+                <Text className="text-red-600 mb-4">{error.message}</Text>
+                <Button variant="outline" onClick={() => refetch()}>
+                  {tActions("retry")}
+                </Button>
+              </div>
+            </Card>
+          ) : (
             <DataTable
               data={faqs}
               columns={columns}
@@ -267,7 +295,9 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
               actions={actions}
               externalPagination
               showViewToggle
-              viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+              viewMode={
+                (table.get("view") || "table") as "table" | "grid" | "list"
+              }
               onViewModeChange={(mode) => table.set("view", mode)}
               mobileCardRender={(faq) => (
                 <Card
@@ -279,9 +309,7 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
                   </Text>
                   <div className="flex items-center justify-between">
                     <Badge>{faq.category}</Badge>
-                    {faq.featured && (
-                      <StatusBadge status="active" />
-                    )}
+                    {faq.featured && <StatusBadge status="active" />}
                   </div>
                   <Caption>
                     ❤ {faq.helpfulCount ?? 0} · 👁 {faq.viewCount ?? 0}
@@ -289,19 +317,8 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
                 </Card>
               )}
             />
-            {(faqMeta?.totalPages ?? 1) > 1 && (
-              <TablePagination
-                currentPage={faqMeta?.page ?? 1}
-                totalPages={faqMeta?.totalPages ?? 1}
-                pageSize={faqMeta?.pageSize ?? 50}
-                total={faqMeta?.total ?? faqs.length}
-                onPageChange={table.setPage}
-                onPageSizeChange={table.setPageSize}
-                isLoading={isLoading}
-              />
-            )}
-          </>
-        )}
+          )}
+        </ListingLayout>
       </div>
 
       {editingFAQ && (

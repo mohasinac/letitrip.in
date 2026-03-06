@@ -102,23 +102,8 @@ export * from "./auctions";
 // ==================== CATEGORIES ====================
 export * from "./categories";
 
-// ==================== PROMOTIONS ====================
-export * from "./promotions";
-
-// ==================== CONTACT ====================
-export * from "./contact";
-
-// ==================== SEARCH ====================
-export * from "./search";
-
-// ==================== FAQ ====================
-export * from "./faq";
-
-// ==================== HOMEPAGE ====================
-export * from "./homepage";
-
-// ==================== ABOUT ====================
-export * from "./about";
+// ==================== FILTERS ====================
+export * from "./filters";
 
 // ==================== SETUP UTILITIES ====================
 // Zod global error map (renders nothing, side-effect only)

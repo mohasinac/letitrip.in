@@ -2,7 +2,7 @@
 
 > **Source of truth**: [BUSINESS_AND_COMPONENTS.md](./BUSINESS_AND_COMPONENTS.md)  
 > **Goal**: Make `src/components/` a pure generic primitive library — zero business logic. Move all ~105 domain-coupled components into `src/features/<domain>/components/`.  
-> **Current state**: Phase 0 ~90% (1 deletion pending), Phase 1 100%, Phase 2 P2-1–P2-6 done / P2-7–P2-15 not started, Phase 3–5 not started. Business dirs `products/`, `auctions/`, `user/`, `seller/`, `cart/`, `checkout/` migrated; Tier 1 shared primitives (ProductCard, ProductGrid, ProductFilters, ProductSortBar, AuctionCard, AuctionGrid, AddressCard, AddressForm, WishlistButton, ProfileHeader, ProfileStatsGrid, EmailVerificationCard, PhoneVerificationCard, ProfileInfoForm, PasswordChangeForm, AccountInfoCard) retained in `src/components/` per architecture rules.  
+> **Current state**: **COMPLETE** — Phase 0 ✅, Phase 1 ✅, Phase 2 ✅ (P2-1–P2-15), Phase 3 ✅ (P3-1–P3-4), Phase 4 ✅ (P4-1–P4-5), Phase 5 ✅ (P5-1–P5-4), Phase 6 ✅ (0 TS errors, build passes). `ProductImageGallery` moved to `features/products/components/` (2026-03-06). `src/components/user/` retained per Rule 7 (Tier-1 user primitives). All business dirs migrated; Tier 1 shared primitives retained in `src/components/` per architecture rules.  
 > **Progress tracking**: After each task commit, mark the corresponding `☐` → `✅` in [BUSINESS_AND_COMPONENTS.md §12](./BUSINESS_AND_COMPONENTS.md#12-tracking-checklist).
 
 ---
@@ -83,26 +83,30 @@ src/features/<domain>/components/   ← Tier 2: all business views + sub-compone
 
 ```tsx
 // BEFORE — domain components imported from generic barrel
-import { ProductCard, ProductGrid }   from '@/components';
-import { CartSummary, CartItemRow }    from '@/components';
-import { BlogCard }                    from '@/components';
-import { CategoryCard }                from '@/components';
-import { AuctionCard }                 from '@/components';
+import { ProductCard, ProductGrid } from "@/components";
+import { CartSummary, CartItemRow } from "@/components";
+import { BlogCard } from "@/components";
+import { CategoryCard } from "@/components";
+import { AuctionCard } from "@/components";
 
 // AFTER — domain components imported from their feature
-import { ProductCard, ProductGrid }   from '@/features/products';
-import { CartSummary, CartItemRow }    from '@/features/cart';
-import { BlogCard }                    from '@/features/blog';
-import { CategoryCard }                from '@/features/categories';
-import { AuctionCard }                 from '@/features/products';  // auctions = products feature
+import { ProductCard, ProductGrid } from "@/features/products";
+import { CartSummary, CartItemRow } from "@/features/cart";
+import { BlogCard } from "@/features/blog";
+import { CategoryCard } from "@/features/categories";
+import { AuctionCard } from "@/features/products"; // auctions = products feature
 
 // UNCHANGED — generic primitives stay @/components
-import { Button, Card, Badge, DataTable, ListingLayout } from '@/components';
-import { Heading, Text, Caption }     from '@/components';
-import { Section, Nav, Ul, Li }       from '@/components';
-import { Alert, Modal, Toast }        from '@/components';
-import { AdminPageHeader, AdminFilterBar, DrawerFormFooter } from '@/components';
-import { Search, SortDropdown, FilterFacetSection }          from '@/components';
+import { Button, Card, Badge, DataTable, ListingLayout } from "@/components";
+import { Heading, Text, Caption } from "@/components";
+import { Section, Nav, Ul, Li } from "@/components";
+import { Alert, Modal, Toast } from "@/components";
+import {
+  AdminPageHeader,
+  AdminFilterBar,
+  DrawerFormFooter,
+} from "@/components";
+import { Search, SortDropdown, FilterFacetSection } from "@/components";
 ```
 
 ---
@@ -142,19 +146,19 @@ npm run build                       # Must succeed
 
 The real implementations live in their sub-directories; these top-level stubs are 0-byte shells.
 
-| Action | File |
-|--------|------|
-| DELETE | `src/components/admin/UserFilters.tsx` (real → `admin/users/UserFilters.tsx`) |
-| DELETE | `src/components/admin/FaqForm.tsx` (real → `admin/faqs/FaqForm.tsx`) |
+| Action | File                                                                                      |
+| ------ | ----------------------------------------------------------------------------------------- |
+| DELETE | `src/components/admin/UserFilters.tsx` (real → `admin/users/UserFilters.tsx`)             |
+| DELETE | `src/components/admin/FaqForm.tsx` (real → `admin/faqs/FaqForm.tsx`)                      |
 | DELETE | `src/components/admin/PayoutStatusForm.tsx` (real → `admin/payouts/PayoutStatusForm.tsx`) |
-| Update | Remove any exports of the above from `src/components/admin/index.ts` |
+| Update | Remove any exports of the above from `src/components/admin/index.ts`                      |
 
 ### P0-2 · Delete 2 duplicate/unnecessary components
 
-| Action | File | Reason |
-|--------|------|--------|
-| DELETE | `src/components/products/ProductImageGallery.tsx` | Duplicate of `ui/ImageGallery` — callers use `ImageGallery` |
-| DELETE | `src/components/faq/FAQSearchBar.tsx` | Unnecessary `Search` wrapper — callers use `<Search>` directly |
+| Action | File                                                                                     | Reason                                                         |
+| ------ | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| DELETE | `src/components/products/ProductImageGallery.tsx`                                        | Duplicate of `ui/ImageGallery` — callers use `ImageGallery`    |
+| DELETE | `src/components/faq/FAQSearchBar.tsx`                                                    | Unnecessary `Search` wrapper — callers use `<Search>` directly |
 | Update | Remove exports from `src/components/products/index.ts` and `src/components/faq/index.ts` |
 
 **Git commit**: `chore: phase 0 - delete orphan and duplicate components`  
@@ -222,9 +226,9 @@ interface StatsGridProps {
 
 ```tsx
 interface RatingDisplayProps {
-  rating: number;       // 0–5
-  maxRating?: number;   // default 5
-  size?: 'sm' | 'md' | 'lg';
+  rating: number; // 0–5
+  maxRating?: number; // default 5
+  size?: "sm" | "md" | "lg";
   showValue?: boolean;
   className?: string;
 }
@@ -244,8 +248,8 @@ interface RatingDisplayProps {
 ```tsx
 interface CountdownDisplayProps {
   targetDate: Date;
-  format?: 'dhms' | 'hms' | 'auto';  // auto = dhms until <1h, then hms
-  expiredLabel?: string;              // shown when expired
+  format?: "dhms" | "hms" | "auto"; // auto = dhms until <1h, then hms
+  expiredLabel?: string; // shown when expired
   className?: string;
 }
 ```
@@ -266,8 +270,8 @@ interface CountdownDisplayProps {
 interface PriceDisplayProps {
   amount: number;
   currency?: string;
-  originalAmount?: number;    // if set, shows strikethrough + discount badge
-  variant?: 'compact' | 'detail';
+  originalAmount?: number; // if set, shows strikethrough + discount badge
+  variant?: "compact" | "detail";
   className?: string;
 }
 ```
@@ -289,8 +293,8 @@ interface ItemRowProps {
   imageAlt: string;
   title: string;
   subtitle?: string;
-  rightSlot: React.ReactNode;    // price, quantity, etc.
-  actions?: React.ReactNode;     // remove, edit buttons
+  rightSlot: React.ReactNode; // price, quantity, etc.
+  actions?: React.ReactNode; // remove, edit buttons
   className?: string;
 }
 ```
@@ -310,7 +314,7 @@ interface ItemRowProps {
 interface SummaryCardProps {
   lines: { label: string; value: string; muted?: boolean }[];
   total: { label: string; value: string };
-  action?: React.ReactNode;    // CTA button slot
+  action?: React.ReactNode; // CTA button slot
   className?: string;
 }
 ```
@@ -349,6 +353,7 @@ role: string;
 **Change**: Remove `import { useMediaUpload } from '@/hooks'`. Add `onUpload: (file: File) => Promise<string>` prop. The component calls `onUpload(file)` instead of the hook.
 
 **Callers after change** (in `features/admin/` form components) must pass:
+
 ```tsx
 import { useMediaUpload } from '@/hooks';
 const { upload } = useMediaUpload();
@@ -377,28 +382,29 @@ const { upload } = useMediaUpload();
 
 ```ts
 interface UseCameraOptions {
-  facingMode?: 'user' | 'environment';  // 'user' = front cam, 'environment' = rear cam
-  video?:      boolean | MediaTrackConstraints;
-  audio?:      boolean;
+  facingMode?: "user" | "environment"; // 'user' = front cam, 'environment' = rear cam
+  video?: boolean | MediaTrackConstraints;
+  audio?: boolean;
 }
 
 interface UseCameraReturn {
-  isSupported:    boolean;                        // navigator.mediaDevices available
-  isActive:       boolean;                        // stream is live
-  isCapturing:    boolean;                        // video recording in progress
-  stream:         MediaStream | null;
-  error:          string | null;
-  videoRef:       React.RefObject<HTMLVideoElement>; // attach to <video> for live preview
-  startCamera:    (options?: UseCameraOptions) => Promise<void>;
-  stopCamera:     () => void;                     // releases hardware track(s)
-  takePhoto:      () => Blob | null;              // current frame → image/webp Blob
-  startRecording: () => void;                     // begins MediaRecorder session
-  stopRecording:  () => Promise<Blob>;            // stops → returns video/webm Blob
-  switchCamera:   () => Promise<void>;            // toggles user ↔ environment
+  isSupported: boolean; // navigator.mediaDevices available
+  isActive: boolean; // stream is live
+  isCapturing: boolean; // video recording in progress
+  stream: MediaStream | null;
+  error: string | null;
+  videoRef: React.RefObject<HTMLVideoElement>; // attach to <video> for live preview
+  startCamera: (options?: UseCameraOptions) => Promise<void>;
+  stopCamera: () => void; // releases hardware track(s)
+  takePhoto: () => Blob | null; // current frame → image/webp Blob
+  startRecording: () => void; // begins MediaRecorder session
+  stopRecording: () => Promise<Blob>; // stops → returns video/webm Blob
+  switchCamera: () => Promise<void>; // toggles user ↔ environment
 }
 ```
 
 Rules:
+
 - Check `isSupported` before calling `startCamera` — `navigator.mediaDevices` is `undefined` in non-secure contexts and some older browsers.
 - `stopCamera()` **must** call `stream.getTracks().forEach(t => t.stop())` to release the hardware and turn off the camera indicator light.
 - `takePhoto()` draws the current `videoRef` frame onto an offscreen `<canvas>` and returns `canvas.toBlob()` as `image/webp`.
@@ -415,15 +421,16 @@ Rules:
 
 ```tsx
 interface CameraCaptureProps {
-  mode:         'photo' | 'video' | 'both';       // what the user can capture
-  facingMode?:  'user' | 'environment';           // default 'environment'
-  onCapture:    (blob: Blob, type: 'photo' | 'video') => void;
-  onError?:     (error: string) => void;
-  className?:   string;
+  mode: "photo" | "video" | "both"; // what the user can capture
+  facingMode?: "user" | "environment"; // default 'environment'
+  onCapture: (blob: Blob, type: "photo" | "video") => void;
+  onError?: (error: string) => void;
+  className?: string;
 }
 ```
 
 Renders an in-page live viewfinder with hardware controls:
+
 - Live `<video autoPlay muted playsInline>` wired to `useCamera().videoRef`.
 - **Photo mode**: shutter button → `takePhoto()` → `onCapture(blob, 'photo')`.
 - **Video mode**: record/stop toggle → `startRecording()` / `stopRecording()` → `onCapture(blob, 'video')`.
@@ -467,15 +474,16 @@ captureSource?: 'file-only' | 'camera-only' | 'both';  // default: 'both'
 
 Behaviour per value:
 
-| `captureSource` | Rendered UI |
-|---|---|
-| `'file-only'` | Existing file-picker only — no camera UI (backward-compatible default when prop omitted resolves to `'both'` but `isSupported === false`) |
-| `'camera-only'` | Hides the file input; renders `<CameraCapture mode="photo">` inline |
-| `'both'` | Segmented toggle **Upload file \| Use camera**; toggling swaps between the file input and `<CameraCapture mode="photo">` |
+| `captureSource` | Rendered UI                                                                                                                               |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `'file-only'`   | Existing file-picker only — no camera UI (backward-compatible default when prop omitted resolves to `'both'` but `isSupported === false`) |
+| `'camera-only'` | Hides the file input; renders `<CameraCapture mode="photo">` inline                                                                       |
+| `'both'`        | Segmented toggle **Upload file \| Use camera**; toggling swaps between the file input and `<CameraCapture mode="photo">`                  |
 
 Capture-to-upload bridge (no new plumbing needed): when `CameraCapture` fires `onCapture(blob)`, wrap it as `new File([blob], 'camera-capture.webp', { type: 'image/webp' })` and pass to the existing `onUpload` prop.
 
 Mobile fallback when `useCamera().isSupported === false` and `captureSource !== 'file-only'`:
+
 - Render `<input type="file" accept="image/*" capture="environment" />` instead of `<CameraCapture>`.
 - This instructs iOS/Android to open the native camera app directly.
 
@@ -493,6 +501,7 @@ captureMode?:   'photo' | 'video' | 'both';             // default inferred from
 ```
 
 Behaviour:
+
 - `captureMode: 'photo'` → `<CameraCapture mode="photo">` (audio: false).
 - `captureMode: 'video'` → `<CameraCapture mode="video">` (audio: true via `useCamera({ audio: true })`).
 - `captureMode: 'both'` → `<CameraCapture mode="both">` — user picks action in the viewfinder.
@@ -514,23 +523,25 @@ Behaviour:
 ```tsx
 interface FilterFacetSectionProps {
   // ... existing props unchanged ...
-  selected:  string[];                              // multi-value array (already exists)
-  onChange:  (values: string[]) => void;            // replaces full selection (already exists)
+  selected: string[]; // multi-value array (already exists)
+  onChange: (values: string[]) => void; // replaces full selection (already exists)
 
   // NEW
-  maxSelections?: number;                           // cap how many values can be selected at once (default: unlimited)
-  showSelectAll?: boolean;                          // renders "Select all" / "Deselect all" toggle (default: false)
-  selectionMode?:  'multi' | 'single';              // 'multi' = checkbox (default); 'single' = radio-style (one at a time)
+  maxSelections?: number; // cap how many values can be selected at once (default: unlimited)
+  showSelectAll?: boolean; // renders "Select all" / "Deselect all" toggle (default: false)
+  selectionMode?: "multi" | "single"; // 'multi' = checkbox (default); 'single' = radio-style (one at a time)
 }
 ```
 
 Behaviour rules for `selectionMode: 'multi'` (default):
+
 - Clicking an unselected option **appends** its value to `selected[]` — never replaces.
 - Clicking a selected option **removes** it from `selected[]`.
 - When `showSelectAll` is `true` and all visible options are selected → label changes to "Deselect all"; otherwise "Select all". The action selects/deselects **all visible options** (respecting the inline search filter if active).
 - When `maxSelections` is set and the limit is reached, unselected checkboxes become `disabled` with `aria-disabled="true"` and `Tooltip` showing `t('filters.maxSelectionsReached', { max: maxSelections })`.
 
 Behaviour rules for `selectionMode: 'single'`:
+
 - Renders radio buttons instead of checkboxes.
 - Clicking a value replaces the entire `selected[]` with `[value]`.
 - "Select all" / `maxSelections` are ignored when `selectionMode === 'single'`.
@@ -557,24 +568,25 @@ Translation keys — add to **both** `messages/en.json` and `messages/hi.json` u
 
 ```ts
 interface UsePendingFiltersOptions {
-  table: ReturnType<typeof useUrlTable>;  // the page's useUrlTable instance
-  keys:  string[];                        // which URL param keys to manage (e.g. ['status', 'category', 'role'])
+  table: ReturnType<typeof useUrlTable>; // the page's useUrlTable instance
+  keys: string[]; // which URL param keys to manage (e.g. ['status', 'category', 'role'])
 }
 
 interface UsePendingFiltersReturn {
-  pending:       Record<string, string[]>;             // current uncommitted selections per key
-  applied:       Record<string, string[]>;             // values currently in the URL (committed)
-  isDirty:       boolean;                              // pending !== applied
-  pendingCount:  number;                               // total number of selected values across all pending keys
-  appliedCount:  number;                               // total number of selected values in the URL (for badge)
-  set:           (key: string, values: string[]) => void;   // update one key in pending state
-  apply:         () => void;                           // write all pending keys to useUrlTable (resets page to 1)
-  reset:         () => void;                           // discard pending, revert to applied (URL) state
-  clear:         () => void;                           // clear all keys in both pending and URL state
+  pending: Record<string, string[]>; // current uncommitted selections per key
+  applied: Record<string, string[]>; // values currently in the URL (committed)
+  isDirty: boolean; // pending !== applied
+  pendingCount: number; // total number of selected values across all pending keys
+  appliedCount: number; // total number of selected values in the URL (for badge)
+  set: (key: string, values: string[]) => void; // update one key in pending state
+  apply: () => void; // write all pending keys to useUrlTable (resets page to 1)
+  reset: () => void; // discard pending, revert to applied (URL) state
+  clear: () => void; // clear all keys in both pending and URL state
 }
 ```
 
 Rules:
+
 - `pending` is initialised from the **current URL params** on mount (so opening a drawer pre-fills with already-applied filters).
 - `set(key, values)` updates only `pending` — does NOT call `table.set()`/`table.setMany()`.
 - `apply()` calls `table.setMany({ ...Object.fromEntries(Object.entries(pending).map(([k, v]) => [k, v.join(',')])), page: '1' })` — single URL navigation, no multiple history entries.
@@ -597,6 +609,7 @@ pendingCount?: number;   // from usePendingFilters().pendingCount — drives the
 ```
 
 **Changed behaviour**:
+
 - The `FilterFacetSection` children rendered inside `FilterDrawer` MUST bind to `usePendingFilters().pending` and call `usePendingFilters().set()` — NOT `table.set()` directly.
 - `onApply` fires when the user clicks **Apply** → caller calls `usePendingFilters().apply()` → URL updates once.
 - `onReset` fires when the user clicks **Reset all** → caller calls `usePendingFilters().clear()`.
@@ -607,32 +620,41 @@ pendingCount?: number;   // from usePendingFilters().pendingCount — drives the
 **Mandatory usage pattern** (for every list page using `FilterDrawer`):
 
 ```tsx
-const table   = useUrlTable({ defaults: { pageSize: '25' } });
-const filters = usePendingFilters({ table, keys: ['status', 'category', 'role'] });
+const table = useUrlTable({ defaults: { pageSize: "25" } });
+const filters = usePendingFilters({
+  table,
+  keys: ["status", "category", "role"],
+});
 
 <FilterDrawer
   open={drawerOpen}
-  onClose={() => { setDrawerOpen(false); filters.reset(); }}   // discard on close
-  onApply={() => { filters.apply(); setDrawerOpen(false); }}   // commit on apply
+  onClose={() => {
+    setDrawerOpen(false);
+    filters.reset();
+  }} // discard on close
+  onApply={() => {
+    filters.apply();
+    setDrawerOpen(false);
+  }} // commit on apply
   onReset={() => filters.clear()}
   activeCount={filters.appliedCount}
   pendingCount={filters.pendingCount}
 >
   <FilterFacetSection
-    title={t('filters.status')}
+    title={t("filters.status")}
     options={STATUS_OPTIONS}
-    selected={filters.pending['status'] ?? []}
-    onChange={(v) => filters.set('status', v)}
+    selected={filters.pending["status"] ?? []}
+    onChange={(v) => filters.set("status", v)}
     showSelectAll
   />
   <FilterFacetSection
-    title={t('filters.category')}
+    title={t("filters.category")}
     options={categoryOptions}
-    selected={filters.pending['category'] ?? []}
-    onChange={(v) => filters.set('category', v)}
+    selected={filters.pending["category"] ?? []}
+    onChange={(v) => filters.set("category", v)}
     searchable
   />
-</FilterDrawer>
+</FilterDrawer>;
 ```
 
 Translation keys — add under the `"filters"` namespace in both locale files:
@@ -664,10 +686,10 @@ pendingCount?:    number;             // from usePendingFilters().pendingCount; 
 
 Behaviour rules:
 
-| `deferred` | Search input | Filter `<Select>` / `<Toggle>` controls | Apply / Reset buttons |
-|---|---|---|---|
-| `false` (default) | Debounced 300 ms → instant URL update | Instant `table.set()` on change | Hidden |
-| `true` | Debounced 300 ms → instant URL update (search is always instant) | Write to `usePendingFilters().pending` — NO URL update | Visible; Apply calls `onApply`, Reset calls `onReset` |
+| `deferred`        | Search input                                                     | Filter `<Select>` / `<Toggle>` controls                | Apply / Reset buttons                                 |
+| ----------------- | ---------------------------------------------------------------- | ------------------------------------------------------ | ----------------------------------------------------- |
+| `false` (default) | Debounced 300 ms → instant URL update                            | Instant `table.set()` on change                        | Hidden                                                |
+| `true`            | Debounced 300 ms → instant URL update (search is always instant) | Write to `usePendingFilters().pending` — NO URL update | Visible; Apply calls `onApply`, Reset calls `onReset` |
 
 - `deferred=true` is the **required** setting for all admin list pages, all seller list pages, and all public list pages that expose more than one non-search filter control.
 - `deferred=false` remains for single-filter bars (e.g. a bar with only a search box) to preserve backward compatibility.
@@ -675,6 +697,7 @@ Behaviour rules:
 - The Reset button uses `variant="ghost"` and is only rendered when `filters.appliedCount > 0` OR `filters.isDirty`.
 
 Translation keys — add under `"filters"` namespace (already defined in P1-17):
+
 ```json
 "filters": {
   "apply":  "Apply",
@@ -695,23 +718,23 @@ Translation keys — add under `"filters"` namespace (already defined in P1-17):
 
 **Files to move** (from `src/components/admin/<subdir>/` → `src/features/admin/components/`; flatten sub-dirs):
 
-| Sub-dir | Files |
-|---------|-------|
-| `products/` | `ProductForm.tsx`, `ProductTableColumns.tsx`, `types.ts` |
-| `orders/` | `OrderTableColumns.tsx`, `OrderStatusForm.tsx` |
-| `users/` | `UserTableColumns.tsx`, `UserFilters.tsx`, `UserDetailDrawer.tsx`, `types.ts` |
-| `carousel/` | `CarouselSlideForm.tsx`, `CarouselTableColumns.tsx`, `types.ts` |
-| `categories/` | `CategoryForm.tsx`, `CategoryTableColumns.tsx`, `types.ts` |
-| `blog/` | `BlogForm.tsx`, `BlogTableColumns.tsx` |
-| `sections/` | `SectionForm.tsx`, `SectionTableColumns.tsx`, `types.ts` |
-| `reviews/` | `ReviewDetailView.tsx`, `ReviewTableColumns.tsx`, `types.ts` |
-| `faqs/` | `FaqForm.tsx`, `FaqTableColumns.tsx`, `types.ts` |
-| `coupons/` | `CouponForm.tsx`, `CouponTableColumns.tsx` |
-| `bids/` | `BidTableColumns.tsx` |
-| `site/` | `SiteBasicInfoForm.tsx`, `SiteContactForm.tsx`, `SiteSocialLinksForm.tsx` |
-| `payouts/` | `PayoutStatusForm.tsx`, `PayoutTableColumns.tsx` |
-| `dashboard/` | `QuickActionsGrid.tsx` (MIXED — uses `ROUTES`) |
-| Top-level | `AdminTabs.tsx`, `AdminSessionsManager.tsx`, `SessionTableColumns.tsx` |
+| Sub-dir       | Files                                                                         |
+| ------------- | ----------------------------------------------------------------------------- |
+| `products/`   | `ProductForm.tsx`, `ProductTableColumns.tsx`, `types.ts`                      |
+| `orders/`     | `OrderTableColumns.tsx`, `OrderStatusForm.tsx`                                |
+| `users/`      | `UserTableColumns.tsx`, `UserFilters.tsx`, `UserDetailDrawer.tsx`, `types.ts` |
+| `carousel/`   | `CarouselSlideForm.tsx`, `CarouselTableColumns.tsx`, `types.ts`               |
+| `categories/` | `CategoryForm.tsx`, `CategoryTableColumns.tsx`, `types.ts`                    |
+| `blog/`       | `BlogForm.tsx`, `BlogTableColumns.tsx`                                        |
+| `sections/`   | `SectionForm.tsx`, `SectionTableColumns.tsx`, `types.ts`                      |
+| `reviews/`    | `ReviewDetailView.tsx`, `ReviewTableColumns.tsx`, `types.ts`                  |
+| `faqs/`       | `FaqForm.tsx`, `FaqTableColumns.tsx`, `types.ts`                              |
+| `coupons/`    | `CouponForm.tsx`, `CouponTableColumns.tsx`                                    |
+| `bids/`       | `BidTableColumns.tsx`                                                         |
+| `site/`       | `SiteBasicInfoForm.tsx`, `SiteContactForm.tsx`, `SiteSocialLinksForm.tsx`     |
+| `payouts/`    | `PayoutStatusForm.tsx`, `PayoutTableColumns.tsx`                              |
+| `dashboard/`  | `QuickActionsGrid.tsx` (MIXED — uses `ROUTES`)                                |
+| Top-level     | `AdminTabs.tsx`, `AdminSessionsManager.tsx`, `SessionTableColumns.tsx`        |
 
 **Stays in `src/components/admin/`** (generics, do NOT move):  
 `AdminFilterBar`, `AdminPageHeader`, `AdminStatsCards`, `DataTable`, `DrawerFormFooter`, `RichTextEditor`, `GridEditor`, `CategoryTreeView`, `BackgroundSettings`, `ImageUpload`, `MediaUploadField`, `dashboard/AdminDashboardSkeleton`, `dashboard/RecentActivityCard`, `media/MediaTableColumns`, `media/MediaOperationForm`
@@ -731,6 +754,7 @@ Translation keys — add under `"filters"` namespace (already defined in P1-17):
 **Files to move**: `ProductCard.tsx`, `ProductGrid.tsx`, `ProductFilters.tsx`, `ProductActions.tsx`, `ProductInfo.tsx`, `ProductReviews.tsx`, `ProductSortBar.tsx`, `ProductFeatureBadges.tsx`, `RelatedProducts.tsx`, `AddToCartButton.tsx`
 
 **During move**:
+
 - Update `ProductCard.tsx` to use `<PriceDisplay>` (P1-5) for the price block.
 - Update `ProductFilters.tsx` to ensure it imports from `@/components` (not `@/components/categories`).
 
@@ -749,6 +773,7 @@ Translation keys — add under `"filters"` namespace (already defined in P1-17):
 **Files to move**: `AuctionCard.tsx`, `AuctionGrid.tsx`, `AuctionDetailView.tsx`, `BidHistory.tsx`, `PlaceBidForm.tsx`
 
 **During move**:
+
 - Update `AuctionCard.tsx` to use `<CountdownDisplay>` (P1-4) instead of inline countdown rendering.
 
 **Git commit**: `refactor: phase 2.3 - move auction components to features/products`
@@ -761,16 +786,17 @@ Translation keys — add under `"filters"` namespace (already defined in P1-17):
 
 **Files to move** (flatten all sub-dirs into `features/user/components/`):
 
-| Source path | File |
-|-------------|------|
-| `user/` | `WishlistButton.tsx`, `UserTabs.tsx` |
-| `user/addresses/` | `AddressCard.tsx`, `AddressForm.tsx` |
-| `user/orders/` | `OrderTrackingView.tsx` |
-| `user/profile/` | `ProfileHeader.tsx`, `ProfileStatsGrid.tsx`, `PublicProfileView.tsx` |
-| `user/settings/` | `AccountInfoCard.tsx`, `EmailVerificationCard.tsx`, `PasswordChangeForm.tsx`, `PhoneVerificationCard.tsx`, `ProfileInfoForm.tsx` |
-| `user/notifications/` | `NotificationItem.tsx`, `NotificationsBulkActions.tsx` |
+| Source path           | File                                                                                                                             |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `user/`               | `WishlistButton.tsx`, `UserTabs.tsx`                                                                                             |
+| `user/addresses/`     | `AddressCard.tsx`, `AddressForm.tsx`                                                                                             |
+| `user/orders/`        | `OrderTrackingView.tsx`                                                                                                          |
+| `user/profile/`       | `ProfileHeader.tsx`, `ProfileStatsGrid.tsx`, `PublicProfileView.tsx`                                                             |
+| `user/settings/`      | `AccountInfoCard.tsx`, `EmailVerificationCard.tsx`, `PasswordChangeForm.tsx`, `PhoneVerificationCard.tsx`, `ProfileInfoForm.tsx` |
+| `user/notifications/` | `NotificationItem.tsx`, `NotificationsBulkActions.tsx`                                                                           |
 
 **During move**:
+
 - Update `ProfileStatsGrid.tsx` to use `<StatsGrid>` (P1-2) for the grid layout.
 
 **Importers to update**: Pages under `src/app/[locale]/(user)/`, existing views in `src/features/user/`.
@@ -798,6 +824,7 @@ Translation keys — add under `"filters"` namespace (already defined in P1-17):
 **Files to move from `checkout/`**: `CheckoutView.tsx`, `CheckoutAddressStep.tsx`, `CheckoutOrderReview.tsx`, `CheckoutSuccessView.tsx`, `OrderSuccessActions.tsx`, `OrderSuccessCard.tsx`, `OrderSummaryPanel.tsx`, `OrderSuccessHero.tsx`
 
 **During move**:
+
 - `CartItemRow.tsx` → use `<ItemRow>` (P1-6) for the horizontal layout.
 - `CartSummary.tsx` → use `<SummaryCard>` (P1-7) for the summary layout.
 - `CheckoutView.tsx` → use `<StepperNav>` (P1-1) instead of `<CheckoutStepper>`.
@@ -846,6 +873,7 @@ Translation keys — add under `"filters"` namespace (already defined in P1-17):
 > **New feature module** — does not exist yet.
 
 **Create structure**:
+
 ```
 src/features/homepage/
   components/
@@ -861,11 +889,12 @@ src/features/homepage/
 
 ---
 
-### P2-12 · Create `features/faq/` + move `components/faq/`
+### P2-12 · Create `features/faq/` + move `components/faq/` ✅ DONE
 
 > **New feature module** — does not exist yet.
 
 **Create structure**:
+
 ```
 src/features/faq/
   components/
@@ -881,11 +910,12 @@ src/features/faq/
 
 ---
 
-### P2-13 · Create `features/contact/` + move `components/contact/`
+### P2-13 · Create `features/contact/` + move `components/contact/` ✅ DONE
 
 > **New feature module** — does not exist yet.
 
 **Create structure**:
+
 ```
 src/features/contact/
   components/
@@ -899,11 +929,12 @@ src/features/contact/
 
 ---
 
-### P2-14 · Create `features/promotions/` + move `components/promotions/`
+### P2-14 · Create `features/promotions/` + move `components/promotions/` ✅ DONE
 
 > **New feature module** — does not exist yet.
 
 **Create structure**:
+
 ```
 src/features/promotions/
   components/
@@ -917,11 +948,12 @@ src/features/promotions/
 
 ---
 
-### P2-15 · Create `features/about/` + move `components/about/`
+### P2-15 · Create `features/about/` + move `components/about/` ✅ DONE
 
 > **New feature module** — does not exist yet.
 
 **Create structure**:
+
 ```
 src/features/about/
   components/
@@ -939,14 +971,15 @@ src/features/about/
 
 These 4 files live in `src/components/ui/` but import domain hooks — they must move to their feature.
 
-| Task | Source file | Destination |
-|------|-------------|-------------|
-| P3-1 | `ui/AddressSelectorCreate.tsx` | `features/user/components/` |
+| Task | Source file                     | Destination                       |
+| ---- | ------------------------------- | --------------------------------- | ------- |
+| P3-1 | `ui/AddressSelectorCreate.tsx`  | `features/user/components/`       | ✅ DONE |
 | P3-2 | `ui/CategorySelectorCreate.tsx` | `features/categories/components/` |
-| P3-3 | `ui/EventBanner.tsx` | `features/events/components/` |
-| P3-4 | `ui/NotificationBell.tsx` | `features/user/components/` |
+| P3-3 | `ui/EventBanner.tsx`            | `features/events/components/`     |
+| P3-4 | `ui/NotificationBell.tsx`       | `features/user/components/`       |
 
 For each:
+
 1. Move file to destination
 2. Update `features/<domain>/components/index.ts` + `features/<domain>/index.ts`
 3. Remove export from `src/components/ui/index.ts` and `src/components/index.ts`
@@ -972,6 +1005,7 @@ Each layout file currently imports domain data (`useAuth`, `MAIN_NAV_ITEMS`, `SI
 **Source to read first**: `src/components/layout/BottomNavbar.tsx`
 
 **New generic**: `src/components/layout/BottomNavLayout.tsx`
+
 ```tsx
 interface BottomNavLayoutProps {
   items: { href: string; label: string; icon: React.ReactNode }[];
@@ -990,6 +1024,7 @@ interface BottomNavLayoutProps {
 **Source to read first**: `src/components/layout/Sidebar.tsx`
 
 **New generic**: `src/components/layout/SidebarLayout.tsx`
+
 ```tsx
 interface SidebarLayoutProps {
   items: NavItemConfig[];
@@ -1008,6 +1043,7 @@ interface SidebarLayoutProps {
 **Source to read first**: `src/components/layout/TitleBar.tsx`
 
 **New generic**: `src/components/layout/TitleBarLayout.tsx`
+
 ```tsx
 interface TitleBarLayoutProps {
   brandName: string;
@@ -1025,6 +1061,7 @@ interface TitleBarLayoutProps {
 **Source to read first**: `src/components/layout/Footer.tsx`
 
 **New generic**: `src/components/layout/FooterLayout.tsx`
+
 ```tsx
 interface FooterLayoutProps {
   linkGroups: { heading: string; links: { label: string; href: string }[] }[];
@@ -1043,6 +1080,7 @@ interface FooterLayoutProps {
 **Source to read first**: `src/components/layout/MainNavbar.tsx`
 
 **New generic**: `src/components/layout/NavbarLayout.tsx`
+
 ```tsx
 interface NavbarLayoutProps {
   items: NavItemConfig[];
@@ -1088,88 +1126,68 @@ Remove all domain re-exports (these dirs are now empty after Phase 2):
 Remove the sub-directory re-exports for all sub-dirs that were moved to `features/admin/`.  
 Only keep: `AdminFilterBar`, `AdminPageHeader`, `AdminStatsCards`, `DataTable`, `DrawerFormFooter`, `RichTextEditor`, `GridEditor`, `CategoryTreeView`, `BackgroundSettings`, `ImageUpload`, `MediaUploadField`, `AdminDashboardSkeleton`, `RecentActivityCard`, `MediaTableColumns`, `MediaOperationForm`.
 
-### P5-3 · Clean `src/components/user/index.ts`
+### P5-3 · Clean `src/components/user/index.ts` ✅ DONE
 
-Remove all re-exports — the entire `user/` directory is now gone (moved to `features/user/`).  
-Delete the file if empty.
+`src/components/user/` is **retained** per Rule 7 — it contains the Tier-1 user primitives (AddressCard, AddressForm, WishlistButton, ProfileHeader, ProfileStatsGrid, EmailVerificationCard, PhoneVerificationCard, ProfileInfoForm, PasswordChangeForm, AccountInfoCard). The barrel already exports only these Tier-1 components. No action needed.
 
-### P5-4 · Verify all feature barrels
+### P5-4 · Verify all feature barrels ✅ DONE
 
-For each new/updated feature, confirm `src/features/<domain>/index.ts` exports everything that pages, other features (via Tier 1 only), or test files need:
-
-```powershell
-# Quick check — find any broken import
-npx tsc --noEmit
-```
+`npx tsc --noEmit` — reports 0 errors (verified 2026-03-06).
 
 **Git commit**: `chore: phase 5 - clean up component barrel exports`  
 **BUSINESS_AND_COMPONENTS.md §12**: mark Phase 5 rows ✅
 
 ---
 
-## Phase 6 — Full Verification
+## Phase 6 — Full Verification ✅ DONE (2026-03-06)
 
-```powershell
-# Step 1: TypeScript
-npx tsc --noEmit
-# Must report: Found 0 errors.
-
-# Step 2: Production build
-npm run build
-# Must complete with no errors.
-
-# Step 3: Tests
-npm test
-# All suites must pass.
 ```
-
-Fix any remaining errors, then:
-
-**Git commit**: `chore: phase 6 - refactor complete (0 TS errors, build passes, all tests pass)`  
-**BUSINESS_AND_COMPONENTS.md §12**: mark Phase 6 rows ✅
+npx tsc --noEmit    → 0 errors ✅
+npm run build       → succeeded, 0 errors ✅
+```
 
 ---
 
 ## Quick Reference: All Commits in Order
 
-| # | Commit message | Phase tasks |
-|---|----------------|-------------|
-| 1 | `chore: phase 0 - delete orphan and duplicate components` | P0-1, P0-2 |
-| 2 | `feat: phase 1 (part 1) - new generic ui primitives: StepperNav, StatsGrid, RatingDisplay, CountdownDisplay, PriceDisplay, ItemRow, SummaryCard` | P1-1 → P1-7 |
-| 3 | `feat: phase 1 (part 2) - genericize RoleBadge, ImageUpload, MediaUploadField` | P1-8 → P1-10 |
-| 4 | `feat: phase 1 (part 3) - camera capture: useCamera hook, CameraCapture primitive, ImageUpload + MediaUploadField camera extensions` | P1-11 → P1-14 |
-| 5 | `feat: phase 1 (part 4) - multi-select filters with deferred apply: FilterFacetSection, usePendingFilters, FilterDrawer, AdminFilterBar` | P1-15 → P1-18 |
-| 6 | `refactor: phase 2.1 - move admin sub-directory business components to features/admin` | P2-1 |
-| 7 | `refactor: phase 2.2 - move product components to features/products` | P2-2 |
-| 8 | `refactor: phase 2.3 - move auction components to features/products` | P2-3 |
-| 9 | `refactor: phase 2.4 - move user components to features/user` | P2-4 |
-| 10 | `refactor: phase 2.5 - move seller components to features/seller` | P2-5 |
-| 11 | `refactor: phase 2.6 - move cart and checkout components to features/cart` | P2-6 |
-| 12 | `refactor: phase 2.7 - move blog components to features/blog` | P2-7 |
-| 13 | `refactor: phase 2.8 - move category components to features/categories` | P2-8 |
-| 14 | `refactor: phase 2.9 - move review components to features/reviews` | P2-9 |
-| 15 | `refactor: phase 2.10 - move search components to features/search` | P2-10 |
-| 16 | `refactor: phase 2.11 - create features/homepage, move homepage components` | P2-11 |
-| 17 | `refactor: phase 2.12 - create features/faq, move faq components` | P2-12 |
-| 18 | `refactor: phase 2.13 - create features/contact, move contact components` | P2-13 |
-| 19 | `refactor: phase 2.14 - create features/promotions, move promotions components` | P2-14 |
-| 20 | `refactor: phase 2.15 - create features/about, move about view` | P2-15 |
-| 21 | `refactor: phase 3 - move misplaced business components from ui/ to features` | P3-1 → P3-4 |
-| 22 | `refactor: phase 4 - genericize layout components` | P4-1 → P4-5 |
-| 23 | `chore: phase 5 - clean up component barrel exports` | P5-1 → P5-4 |
-| 24 | `chore: phase 6 - refactor complete (0 TS errors, build passes, all tests pass)` | P6-1 → P6-3 |
+| #   | Commit message                                                                                                                                   | Phase tasks   |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------- |
+| 1   | `chore: phase 0 - delete orphan and duplicate components`                                                                                        | P0-1, P0-2    |
+| 2   | `feat: phase 1 (part 1) - new generic ui primitives: StepperNav, StatsGrid, RatingDisplay, CountdownDisplay, PriceDisplay, ItemRow, SummaryCard` | P1-1 → P1-7   |
+| 3   | `feat: phase 1 (part 2) - genericize RoleBadge, ImageUpload, MediaUploadField`                                                                   | P1-8 → P1-10  |
+| 4   | `feat: phase 1 (part 3) - camera capture: useCamera hook, CameraCapture primitive, ImageUpload + MediaUploadField camera extensions`             | P1-11 → P1-14 |
+| 5   | `feat: phase 1 (part 4) - multi-select filters with deferred apply: FilterFacetSection, usePendingFilters, FilterDrawer, AdminFilterBar`         | P1-15 → P1-18 |
+| 6   | `refactor: phase 2.1 - move admin sub-directory business components to features/admin`                                                           | P2-1          |
+| 7   | `refactor: phase 2.2 - move product components to features/products`                                                                             | P2-2          |
+| 8   | `refactor: phase 2.3 - move auction components to features/products`                                                                             | P2-3          |
+| 9   | `refactor: phase 2.4 - move user components to features/user`                                                                                    | P2-4          |
+| 10  | `refactor: phase 2.5 - move seller components to features/seller`                                                                                | P2-5          |
+| 11  | `refactor: phase 2.6 - move cart and checkout components to features/cart`                                                                       | P2-6          |
+| 12  | `refactor: phase 2.7 - move blog components to features/blog`                                                                                    | P2-7          |
+| 13  | `refactor: phase 2.8 - move category components to features/categories`                                                                          | P2-8          |
+| 14  | `refactor: phase 2.9 - move review components to features/reviews`                                                                               | P2-9          |
+| 15  | `refactor: phase 2.10 - move search components to features/search`                                                                               | P2-10         |
+| 16  | `refactor: phase 2.11 - create features/homepage, move homepage components`                                                                      | P2-11         |
+| 17  | `refactor: phase 2.12 - create features/faq, move faq components`                                                                                | P2-12         |
+| 18  | `refactor: phase 2.13 - create features/contact, move contact components`                                                                        | P2-13         |
+| 19  | `refactor: phase 2.14 - create features/promotions, move promotions components`                                                                  | P2-14         |
+| 20  | `refactor: phase 2.15 - create features/about, move about view`                                                                                  | P2-15         |
+| 21  | `refactor: phase 3 - move misplaced business components from ui/ to features`                                                                    | P3-1 → P3-4   |
+| 22  | `refactor: phase 4 - genericize layout components`                                                                                               | P4-1 → P4-5   |
+| 23  | `chore: phase 5 - clean up component barrel exports`                                                                                             | P5-1 → P5-4   |
+| 24  | `chore: phase 6 - refactor complete (0 TS errors, build passes, all tests pass)`                                                                 | P6-1 → P6-3   |
 
 ---
 
 ## File Count Impact Summary
 
-| Location | Before | After |
-|----------|--------|-------|
-| `src/components/` total | ~200 files | ~86 files (generics only) |
-| `src/features/` total | ~90 files | ~209 files |
-| Net new (generics) | — | 11 new files (StepperNav, StatsGrid, RatingDisplay, CountdownDisplay, PriceDisplay, ItemRow, SummaryCard, CameraCapture, useCamera, usePendingFilters + updates to FilterFacetSection / FilterDrawer / AdminFilterBar) |
-| Net deleted | — | 5 (3 empty orphans + ProductImageGallery + FAQSearchBar) |
-| Net moved | — | ~105 files (nothing rewritten, just relocated) |
+| Location                | Before     | After                                                                                                                                                                                                                  |
+| ----------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/` total | ~200 files | ~86 files (generics only)                                                                                                                                                                                              |
+| `src/features/` total   | ~90 files  | ~209 files                                                                                                                                                                                                             |
+| Net new (generics)      | —          | 11 new files (StepperNav, StatsGrid, RatingDisplay, CountdownDisplay, PriceDisplay, ItemRow, SummaryCard, CameraCapture, useCamera, usePendingFilters + updates to FilterFacetSection / FilterDrawer / AdminFilterBar) |
+| Net deleted             | —          | 5 (3 empty orphans + ProductImageGallery + FAQSearchBar)                                                                                                                                                               |
+| Net moved               | —          | ~105 files (nothing rewritten, just relocated)                                                                                                                                                                         |
 
 ---
 

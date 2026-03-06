@@ -20,7 +20,7 @@ jest.mock("next/dynamic", () => {
   };
 });
 
-jest.mock("@/components/homepage", () => ({
+jest.mock("@/features/homepage/components", () => ({
   HeroCarousel: () => <div data-testid="hero-carousel" />,
   WelcomeSection: () => <div data-testid="welcome-section" />,
   TrustFeaturesSection: () => <div data-testid="trust-features" />,

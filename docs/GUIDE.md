@@ -1964,6 +1964,172 @@ if (Object.keys(errors).length === 0) {
 **Location**: `src/repositories/`  
 **Import**: `import { repositoryName } from '@/repositories'`
 
+---
+
+### Sieve Query System (`src/lib/query/firebase-sieve.ts`)
+
+The **Sieve** pattern provides Firestore-native filtering, sorting, and pagination via a URL-friendly DSL. Every list endpoint that accepts `filters`, `sorts`, `page`, or `pageSize` uses this system.
+
+#### SieveModel — URL Query Parameters
+
+```ts
+interface SieveModel {
+  filters?: string; // comma-separated filter expressions
+  sorts?: string; // comma-separated sort fields (prefix - = descending)
+  page?: string; // 1-based page number (default: "1")
+  pageSize?: string; // records per page (default: "25", max: "100")
+}
+```
+
+All four parameters come directly from URL query params (managed by `useUrlTable` on the client):
+
+```
+GET /api/products?filters=status==published,category==electronics&sorts=-createdAt&page=2&pageSize=25
+```
+
+#### Filter Operators
+
+| Operator | Meaning                | Example             |
+| -------- | ---------------------- | ------------------- |
+| `==`     | equals                 | `status==published` |
+| `!=`     | not equals             | `status!=draft`     |
+| `>`      | greater than           | `price>1000`        |
+| `<`      | less than              | `price<5000`        |
+| `>=`     | greater than or equal  | `price>=500`        |
+| `<=`     | less than or equal     | `price<=2000`       |
+| `@=`     | array-contains (exact) | `tags@=electronics` |
+| `_=`     | starts-with (string)   | `title_=Shoe`       |
+
+Multiple filters use comma separation (AND logic):
+
+```
+filters=status==published,category==footwear,price>=500
+```
+
+#### Sort Syntax
+
+```
+sorts=-createdAt           // createdAt descending
+sorts=price                // price ascending
+sorts=-createdAt,title     // createdAt desc, title asc
+```
+
+#### FirebaseSieveResult — Paginated Response Shape
+
+```ts
+interface FirebaseSieveResult<T> {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
+}
+```
+
+#### Defining `SIEVE_FIELDS` in a Repository
+
+Every repository that supports `list()` declares which fields are filterable and sortable:
+
+```ts
+import type { FirebaseSieveFields } from '@/lib/query/firebase-sieve';
+
+static readonly SIEVE_FIELDS: FirebaseSieveFields = {
+  title:     { canFilter: true, canSort: true },
+  price:     { canFilter: true, canSort: true },
+  status:    { canFilter: true, canSort: false },
+  createdAt: { canFilter: true, canSort: true },
+};
+```
+
+Then `list()` calls the inherited `sieveQuery()` method:
+
+```ts
+async list(model: SieveModel) {
+  return this.sieveQuery<ProductDocument>(model, ProductRepository.SIEVE_FIELDS);
+}
+
+// With pre-filter (scope to one seller's documents)
+async listForSeller(sellerId: string, model: SieveModel) {
+  return this.sieveQuery<OrderDocument>(model, OrderRepository.SIEVE_FIELDS, {
+    baseQuery: this.getCollection().where('sellerId', '==', sellerId),
+  });
+}
+```
+
+#### Sieve-Capable Fields per Repository
+
+| Repository                   | Filterable fields                                                                                                                                                                      | Sortable fields                         |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| **ProductRepository**        | category, subcategory, brand, condition, status, isAuction, price, currentBid, bidCount, auctionEndDate, startingBid, featured, isPromoted, sellerId, sellerName, createdAt, updatedAt | all filterable                          |
+| **OrderRepository** (seller) | status, paymentStatus, paymentMethod, totalPrice, orderDate, productTitle, userName                                                                                                    | status, totalPrice, createdAt           |
+| **ReviewRepository**         | rating, status, verified, featured, helpfulCount, createdAt                                                                                                                            | rating, helpfulCount, createdAt         |
+| **BlogRepository**           | category, status, isFeatured, tags, readTimeMinutes, publishedAt, createdAt                                                                                                            | publishedAt, createdAt, readTimeMinutes |
+| **BidRepository**            | status, bidAmount, isWinning, createdAt                                                                                                                                                | bidAmount, createdAt                    |
+| **NotificationRepository**   | isRead, type, createdAt                                                                                                                                                                | createdAt                               |
+| **UserRepository** (admin)   | role, disabled, emailVerified, storeStatus, createdAt                                                                                                                                  | createdAt, displayName                  |
+
+#### API Route — Standard GET List Pattern
+
+```ts
+import type { SieveModel } from "@/lib/query/firebase-sieve";
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = request.nextUrl;
+  const model: SieveModel = {
+    filters: searchParams.get("filters") ?? undefined,
+    sorts: searchParams.get("sorts") ?? "-createdAt",
+    page: searchParams.get("page") ?? "1",
+    pageSize: searchParams.get("pageSize") ?? "25",
+  };
+
+  // Merge named params into filters string
+  const filtersArr: string[] = [];
+  const status = searchParams.get("status");
+  if (status) filtersArr.push(`status==${status}`);
+  if (model.filters) filtersArr.push(model.filters);
+  model.filters = filtersArr.join(",") || undefined;
+
+  const result = await productRepository.list(model);
+  return successResponse(result);
+}
+```
+
+#### Client — `useUrlTable` + Service Call
+
+```ts
+const table = useUrlTable({
+  defaults: { pageSize: "25", sorts: "-createdAt" },
+});
+
+const queryParams = useMemo(() => {
+  const p = new URLSearchParams({
+    page: String(table.getNumber("page", 1)),
+    pageSize: String(table.getNumber("pageSize", 25)),
+    sorts: table.get("sorts") || "-createdAt",
+  });
+  const status = table.get("status");
+  if (status) p.set("filters", `status==${status}`);
+  return p.toString();
+}, [table]);
+
+const { data } = useApiQuery({
+  queryKey: ["products", queryParams],
+  queryFn: () => productService.list(queryParams),
+});
+```
+
+#### Important: `sieveQuery` vs `applySieveToArray`
+
+|                 | `sieveQuery()` (repository method)   | `applySieveToArray()` (helper)    |
+| --------------- | ------------------------------------ | --------------------------------- |
+| **Where**       | Repository `list()` methods          | Legacy/in-memory fallback only    |
+| **How**         | Firestore-native queries + count     | Loads full collection into memory |
+| **Scalability** | O(pageSize) reads regardless of size | O(N) — reads entire collection    |
+| **New code**    | ✅ Always use this                   | ❌ Never for new collection lists |
+
+---
+
 ### BaseRepository
 
 **File**: `base.repository.ts`  
@@ -2395,23 +2561,23 @@ if (Object.keys(errors).length === 0) {
 
 **Available constants**:
 
-| Constant                  | Collection       | Key fields                                                                                                                                                                                                  |
-| ------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `USER_FIELDS`             | users            | UID, EMAIL, ROLE, DISPLAY_NAME, PHONE_NUMBER, PHONE_VERIFIED, PHOTO_URL, AVATAR_METADATA, PASSWORD_HASH, EMAIL_VERIFIED, DISABLED, PUBLIC_PROFILE, STATS, METADATA, AVATAR.\*, PROFILE.\*, STAT.\*, META.\* |
-| `TOKEN_FIELDS`            | tokens           | ID, USER_ID, EMAIL, TOKEN, EXPIRES_AT, CREATED_AT, USED, USED_AT                                                                                                                                            |
+| Constant                  | Collection       | Key fields                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `USER_FIELDS`             | users            | UID, EMAIL, ROLE, DISPLAY_NAME, PHONE_NUMBER, PHONE_VERIFIED, PHOTO_URL, AVATAR_METADATA, PASSWORD_HASH, EMAIL_VERIFIED, DISABLED, PUBLIC_PROFILE, STATS, METADATA, AVATAR.\*, PROFILE.\*, STAT.\*, META.\*                                                                                                                                                                                                            |
+| `TOKEN_FIELDS`            | tokens           | ID, USER_ID, EMAIL, TOKEN, EXPIRES_AT, CREATED_AT, USED, USED_AT                                                                                                                                                                                                                                                                                                                                                       |
 | `PRODUCT_FIELDS`          | products         | ID, TITLE, DESCRIPTION, CATEGORY, PRICE, SELLER_ID, STATUS, IMAGES, VIDEO, FEATURED, TAGS, IS_AUCTION, CONDITION, INSURANCE, INSURANCE_COST, SHIPPING_PAID_BY, RESERVE_PRICE, BUY_NOW_PRICE, MIN_BID_INCREMENT, AUTO_EXTENDABLE, AUCTION_EXTENSION_MINUTES, AUCTION_ORIGINAL_END_DATE, AUCTION_SHIPPING_PAID_BY, CONDITION_VALUES.\*, SHIPPING_PAID_BY_VALUES.\*, AUCTION_SHIPPING_PAID_BY_VALUES.\*, STATUS_VALUES.\* |
-| `ORDER_FIELDS`            | orders           | ID, PRODUCT_ID, USER_ID, QUANTITY, TOTAL_PRICE, STATUS, PAYMENT_STATUS, SHIPPING_ADDRESS, STATUS_VALUES.\*, PAYMENT_STATUS_VALUES.\*                                                                        |
-| `REVIEW_FIELDS`           | reviews          | ID, PRODUCT_ID, USER_ID, RATING, TITLE, COMMENT, STATUS, HELPFUL_COUNT, VERIFIED, FEATURED, STATUS_VALUES.\*                                                                                                |
-| `BID_FIELDS`              | bids             | ID, PRODUCT_ID, USER_ID, BID_AMOUNT, STATUS, IS_WINNING, BID_DATE, STATUS_VALUES.\*                                                                                                                         |
-| `SESSION_FIELDS`          | sessions         | ID, USER_ID, DEVICE_INFO, LOCATION, IS_ACTIVE, LAST_ACTIVITY, EXPIRES_AT, REVOKED_AT, REVOKED_BY, DEVICE.\*, LOC.\*                                                                                         |
-| `CAROUSEL_FIELDS`         | carouselSlides   | ID, TITLE, ORDER, ACTIVE, MEDIA, LINK, MOBILE_MEDIA, CARDS                                                                                                                                                  |
-| `CATEGORY_FIELDS`         | categories       | ID, NAME, SLUG, DESCRIPTION, ROOT_ID, PARENT_IDS, CHILDREN_IDS, TIER, PATH, ORDER, IS_LEAF, METRICS, METRIC.\*                                                                                              |
-| `COUPON_FIELDS`           | coupons          | ID, CODE, NAME, TYPE, DISCOUNT, USAGE, VALIDITY, TYPE_VALUES.\*, USAGE_FIELDS.\*, VALIDITY_FIELDS.\*                                                                                                        |
-| `FAQ_FIELDS`              | faqs             | ID, QUESTION, ANSWER, CATEGORY, ORDER, TAGS, STATS, STAT.\*, SEO_FIELDS.\*, CATEGORY_VALUES.\*                                                                                                              |
-| `HOMEPAGE_SECTION_FIELDS` | homepageSections | ID, TYPE, ORDER, ENABLED, CONFIG, TYPE_VALUES.\*                                                                                                                                                            |
-| `SITE_SETTINGS_FIELDS`    | siteSettings     | ID, SITE_NAME, MOTTO, LOGO, CONTACT, CONTACT_FIELDS.\*, SOCIAL_LINKS, EMAIL_SETTINGS, SEO, FEATURES, LEGAL_PAGES                                                                                            |
-| `COMMON_FIELDS`           | (shared)         | ID, CREATED_AT, UPDATED_AT, CREATED_BY, STATUS, IS_ACTIVE, ORDER                                                                                                                                            |
-| `SCHEMA_DEFAULTS`         | (defaults)       | USER_ROLE (`"user"`), CURRENCY (`"INR"`), UNKNOWN_USER_AGENT, UNKNOWN_USER, ANONYMOUS_USER, DEFAULT_DISPLAY_NAME, ADMIN_EMAIL                                                                               |
+| `ORDER_FIELDS`            | orders           | ID, PRODUCT_ID, USER_ID, QUANTITY, TOTAL_PRICE, STATUS, PAYMENT_STATUS, SHIPPING_ADDRESS, STATUS_VALUES.\*, PAYMENT_STATUS_VALUES.\*                                                                                                                                                                                                                                                                                   |
+| `REVIEW_FIELDS`           | reviews          | ID, PRODUCT_ID, USER_ID, RATING, TITLE, COMMENT, STATUS, HELPFUL_COUNT, VERIFIED, FEATURED, STATUS_VALUES.\*                                                                                                                                                                                                                                                                                                           |
+| `BID_FIELDS`              | bids             | ID, PRODUCT_ID, USER_ID, BID_AMOUNT, STATUS, IS_WINNING, BID_DATE, STATUS_VALUES.\*                                                                                                                                                                                                                                                                                                                                    |
+| `SESSION_FIELDS`          | sessions         | ID, USER_ID, DEVICE_INFO, LOCATION, IS_ACTIVE, LAST_ACTIVITY, EXPIRES_AT, REVOKED_AT, REVOKED_BY, DEVICE.\*, LOC.\*                                                                                                                                                                                                                                                                                                    |
+| `CAROUSEL_FIELDS`         | carouselSlides   | ID, TITLE, ORDER, ACTIVE, MEDIA, LINK, MOBILE_MEDIA, CARDS                                                                                                                                                                                                                                                                                                                                                             |
+| `CATEGORY_FIELDS`         | categories       | ID, NAME, SLUG, DESCRIPTION, ROOT_ID, PARENT_IDS, CHILDREN_IDS, TIER, PATH, ORDER, IS_LEAF, METRICS, METRIC.\*                                                                                                                                                                                                                                                                                                         |
+| `COUPON_FIELDS`           | coupons          | ID, CODE, NAME, TYPE, DISCOUNT, USAGE, VALIDITY, TYPE_VALUES.\*, USAGE_FIELDS.\*, VALIDITY_FIELDS.\*                                                                                                                                                                                                                                                                                                                   |
+| `FAQ_FIELDS`              | faqs             | ID, QUESTION, ANSWER, CATEGORY, ORDER, TAGS, STATS, STAT.\*, SEO_FIELDS.\*, CATEGORY_VALUES.\*                                                                                                                                                                                                                                                                                                                         |
+| `HOMEPAGE_SECTION_FIELDS` | homepageSections | ID, TYPE, ORDER, ENABLED, CONFIG, TYPE_VALUES.\*                                                                                                                                                                                                                                                                                                                                                                       |
+| `SITE_SETTINGS_FIELDS`    | siteSettings     | ID, SITE_NAME, MOTTO, LOGO, CONTACT, CONTACT_FIELDS.\*, SOCIAL_LINKS, EMAIL_SETTINGS, SEO, FEATURES, LEGAL_PAGES                                                                                                                                                                                                                                                                                                       |
+| `COMMON_FIELDS`           | (shared)         | ID, CREATED_AT, UPDATED_AT, CREATED_BY, STATUS, IS_ACTIVE, ORDER                                                                                                                                                                                                                                                                                                                                                       |
+| `SCHEMA_DEFAULTS`         | (defaults)       | USER_ROLE (`"user"`), CURRENCY (`"INR"`), UNKNOWN_USER_AGENT, UNKNOWN_USER, ANONYMOUS_USER, DEFAULT_DISPLAY_NAME, ADMIN_EMAIL                                                                                                                                                                                                                                                                                          |
 
 **Usage**:
 
@@ -3457,15 +3623,15 @@ import {
 **Purpose**: Tier 1 primitive for ALL static image rendering (products, blog, categories, carousel, etc.).  
 **Props**:
 
-| Prop | Type | Default | Notes |
-|---|---|---|---|
-| `src` | `string \| undefined` | — | When undefined, renders emoji fallback |
-| `alt` | `string` | — | Required; used as aria-label on fallback too |
-| `size` | `'thumbnail' \| 'card' \| 'hero' \| 'banner' \| 'gallery' \| 'avatar'` | `'card'` | Controls `sizes` hint passed to Next.js Image |
-| `priority` | `boolean` | `false` | Pass `true` for above-the-fold hero images |
-| `objectFit` | `'cover' \| 'contain'` | `'cover'` | |
-| `fallback` | `string` | per-size emoji | Override fallback emoji |
-| `className` | `string` | — | Forwarded to outer wrapper |
+| Prop        | Type                                                                   | Default        | Notes                                         |
+| ----------- | ---------------------------------------------------------------------- | -------------- | --------------------------------------------- |
+| `src`       | `string \| undefined`                                                  | —              | When undefined, renders emoji fallback        |
+| `alt`       | `string`                                                               | —              | Required; used as aria-label on fallback too  |
+| `size`      | `'thumbnail' \| 'card' \| 'hero' \| 'banner' \| 'gallery' \| 'avatar'` | `'card'`       | Controls `sizes` hint passed to Next.js Image |
+| `priority`  | `boolean`                                                              | `false`        | Pass `true` for above-the-fold hero images    |
+| `objectFit` | `'cover' \| 'contain'`                                                 | `'cover'`      |                                               |
+| `fallback`  | `string`                                                               | per-size emoji | Override fallback emoji                       |
+| `className` | `string`                                                               | —              | Forwarded to outer wrapper                    |
 
 **Usage**: Parent must be `relative overflow-hidden` with a defined size (width + aspect or height).
 
@@ -3483,24 +3649,48 @@ import {
 
 **Fallback emojis by size**: `thumbnail` → 🖼️, `card` → 📦, `hero` → 🌅, `banner` → 🎨, `gallery` → 🖼️, `avatar` → 👤.
 
+#### MediaAvatar
+
+**File**: `src/components/media/MediaAvatar.tsx`  
+**Purpose**: Tier 1 primitive for ALL user / seller / brand profile picture display. Manages its own circular sizing — no wrapper div needed at the call site.  
+**Props**:
+
+| Prop        | Type                           | Default | Notes                                      |
+| ----------- | ------------------------------ | ------- | ------------------------------------------ |
+| `src`       | `string \| undefined`          | —       | When undefined, renders 👤 fallback        |
+| `alt`       | `string`                       | —       | Required for accessibility                 |
+| `size`      | `'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'`  | `sm`=32px, `md`=40px, `lg`=56px, `xl`=80px |
+| `className` | `string`                       | —       | Forwarded to the outer circle wrapper      |
+
+```tsx
+// Tiny avatar next to a reviewer name
+<MediaAvatar src={review.userAvatar} alt={review.userName} size="sm" />
+
+// Medium avatar in a table cell
+<MediaAvatar src={user.photoURL} alt={user.displayName} />
+
+// Large profile avatar
+<MediaAvatar src={seller.avatarUrl} alt={seller.displayName} size="xl" />
+```
+
 #### MediaVideo
 
 **File**: `src/components/media/MediaVideo.tsx`  
 **Purpose**: Tier 1 primitive for ALL video rendering.  
 **Props**:
 
-| Prop | Type | Default | Notes |
-|---|---|---|---|
-| `src` | `string \| undefined` | — | When undefined, renders 🎬 fallback |
-| `thumbnailUrl` | `string` | — | Set as video `poster` |
-| `alt` | `string` | `'Video'` | Used on fallback aria-label |
-| `controls` | `boolean` | `true` | |
-| `autoPlayMuted` | `boolean` | `false` | Applies `autoPlay muted playsInline` |
-| `loop` | `boolean` | `false` | |
-| `trimStart` | `number` | — | Seconds; seeks video `currentTime` on load |
-| `trimEnd` | `number` | — | Seconds; pauses and resets at this point |
-| `objectFit` | `'cover' \| 'contain'` | `'cover'` | |
-| `className` | `string` | — | Forwarded to outer wrapper |
+| Prop            | Type                   | Default   | Notes                                      |
+| --------------- | ---------------------- | --------- | ------------------------------------------ |
+| `src`           | `string \| undefined`  | —         | When undefined, renders 🎬 fallback        |
+| `thumbnailUrl`  | `string`               | —         | Set as video `poster`                      |
+| `alt`           | `string`               | `'Video'` | Used on fallback aria-label                |
+| `controls`      | `boolean`              | `true`    |                                            |
+| `autoPlayMuted` | `boolean`              | `false`   | Applies `autoPlay muted playsInline`       |
+| `loop`          | `boolean`              | `false`   |                                            |
+| `trimStart`     | `number`               | —         | Seconds; seeks video `currentTime` on load |
+| `trimEnd`       | `number`               | —         | Seconds; pauses and resets at this point   |
+| `objectFit`     | `'cover' \| 'contain'` | `'cover'` |                                            |
+| `className`     | `string`               | —         | Forwarded to outer wrapper                 |
 
 ```tsx
 // Auction product demo video
@@ -3556,8 +3746,39 @@ import {
 #### ConfirmDeleteModal
 
 **File**: `ConfirmDeleteModal.tsx`  
-**Purpose**: Confirmation modal for deletions  
-**Props**: `isOpen`, `onClose`, `onConfirm`, `title`, `message`
+**Purpose**: Confirmation modal for deletions and bulk-action confirmations  
+**Props**: `isOpen`, `onClose`, `onConfirm`, `title?`, `message?`, `confirmText?`, `cancelText?`, `isDeleting?`, `variant?`
+
+| `variant`            | Icon  | Button    | Loading text      | When to use                                     |
+| -------------------- | ----- | --------- | ----------------- | ----------------------------------------------- |
+| `"danger"` (default) | Red   | `danger`  | `"Deleting..."`   | Delete / destructive bulk actions               |
+| `"warning"`          | Amber | `warning` | `"Processing..."` | Reversible bulk actions (archive, cancel)       |
+| `"primary"`          | Blue  | `primary` | `"Processing..."` | Non-destructive bulk actions (publish, approve) |
+
+```tsx
+// Bulk delete — danger (default)
+<ConfirmDeleteModal
+  isOpen={bulkDeleteOpen}
+  title={t('bulkDeleteTitle', { count: selectedIds.length })}
+  message={t('bulkDeleteMessage')}
+  confirmText={tActions('delete')}
+  isDeleting={isBulkProcessing}
+  onConfirm={handleBulkDelete}
+  onClose={() => setBulkDeleteOpen(false)}
+/>
+
+// Bulk publish — primary (non-destructive)
+<ConfirmDeleteModal
+  isOpen={bulkPublishOpen}
+  variant="primary"
+  title={t('bulkPublishTitle', { count: selectedIds.length })}
+  message={t('bulkPublishMessage')}
+  confirmText={tActions('bulkPublish', { count: selectedIds.length })}
+  isDeleting={isBulkProcessing}
+  onConfirm={handleBulkPublish}
+  onClose={() => setBulkPublishOpen(false)}
+/>
+```
 
 #### ImageCropModal
 
@@ -3787,67 +4008,92 @@ import {
 **Purpose**: Universal listing-page shell that wires together the toolbar (search, view toggle, sort, action buttons), collapsible filter sidebar (desktop), fullscreen filter overlay (mobile), and bulk-action bar. All content slots are `ReactNode` props so the parent stays thin.
 
 Key behaviours:
+
 - **Desktop sidebar**: collapses/expands via the "Show/Hide filters" toggle button without shifting the content grid. Width transitions from `w-60 xl:w-64` → `w-0` with `overflow-hidden`.
 - **Mobile overlay**: tapping "Filters" opens a `fixed inset-0 z-50` fullscreen panel. Applying filters or committing a search auto-closes the overlay. Escape key also closes it. Body scroll is locked while open.
 - **Bulk action bar**: `BulkActionBar` is auto-rendered below the toolbar whenever `selectedCount > 0`. Pass `bulkActions` as children (`<Button>` elements) and `onClearSelection` to wire up the ✕ button.
 
 **Props**:
 
-| Prop | Type | Default | Purpose |
-|------|------|---------|---------|
-| `filterContent` | `ReactNode` | — | `FilterFacetSection` groups rendered in both sidebar and mobile overlay |
-| `filterActiveCount` | `number` | `0` | Badge count on the mobile filter trigger button |
-| `filterTitle` | `string` | `"Filters"` | Mobile overlay panel title |
-| `onFilterApply` | `() => void` | — | Called when user taps "Apply" in the mobile overlay |
-| `onFilterClear` | `() => void` | — | Called when user taps "Clear all" in the mobile overlay |
-| `searchSlot` | `ReactNode` | — | `<Search>` component (fills available toolbar width) |
-| `sortSlot` | `ReactNode` | — | `<SortDropdown>` placed right of the search bar |
-| `viewToggleSlot` | `ReactNode` | — | Grid/list/table view toggle buttons |
-| `actionsSlot` | `ReactNode` | — | Extra toolbar actions (e.g. "Create", "Export") |
-| `selectedCount` | `number` | `0` | When > 0 shows `BulkActionBar` |
-| `onClearSelection` | `() => void` | — | Wired to the ✕ button inside `BulkActionBar` |
-| `bulkActions` | `ReactNode` | — | `<Button>` elements rendered inside `BulkActionBar` |
-| `defaultSidebarOpen` | `boolean` | `true` | Initial desktop sidebar state |
-| `className` | `string` | — | Additional classes on the root wrapper |
-| `children` | `ReactNode` | — | The data grid / table content area |
+| Prop                 | Type         | Default     | Purpose                                                                 |
+| -------------------- | ------------ | ----------- | ----------------------------------------------------------------------- |
+| `filterContent`      | `ReactNode`  | —           | `FilterFacetSection` groups rendered in both sidebar and mobile overlay |
+| `filterActiveCount`  | `number`     | `0`         | Badge count on the mobile filter trigger button                         |
+| `filterTitle`        | `string`     | `"Filters"` | Mobile overlay panel title                                              |
+| `onFilterApply`      | `() => void` | —           | Called when user taps "Apply" in the mobile overlay                     |
+| `onFilterClear`      | `() => void` | —           | Called when user taps "Clear all" in the mobile overlay                 |
+| `searchSlot`         | `ReactNode`  | —           | `<Search>` component (fills available toolbar width)                    |
+| `sortSlot`           | `ReactNode`  | —           | `<SortDropdown>` placed right of the search bar                         |
+| `viewToggleSlot`     | `ReactNode`  | —           | Grid/list/table view toggle buttons                                     |
+| `actionsSlot`        | `ReactNode`  | —           | Extra toolbar actions (e.g. "Create", "Export")                         |
+| `selectedCount`      | `number`     | `0`         | When > 0 shows `BulkActionBar`                                          |
+| `onClearSelection`   | `() => void` | —           | Wired to the ✕ button inside `BulkActionBar`                            |
+| `bulkActions`        | `ReactNode`  | —           | `<Button>` elements rendered inside `BulkActionBar`                     |
+| `defaultSidebarOpen` | `boolean`    | `true`      | Initial desktop sidebar state                                           |
+| `className`          | `string`     | —           | Additional classes on the root wrapper                                  |
+| `children`           | `ReactNode`  | —           | The data grid / table content area                                      |
 
 ```tsx
-import { ListingLayout, Search, SortDropdown, DataTable, Button } from '@/components';
-import { FilterFacetSection } from '@/components';
-import { useUrlTable } from '@/hooks';
-import { useTranslations } from 'next-intl';
+import {
+  ListingLayout,
+  Search,
+  SortDropdown,
+  DataTable,
+  Button,
+} from "@/components";
+import { FilterFacetSection } from "@/components";
+import { useUrlTable } from "@/hooks";
+import { useTranslations } from "next-intl";
 
 export function ProductsView() {
-  const t = useTranslations('productsPage');
-  const table = useUrlTable({ defaults: { pageSize: '24', sorts: '-createdAt' } });
+  const t = useTranslations("productsPage");
+  const table = useUrlTable({
+    defaults: { pageSize: "24", sorts: "-createdAt" },
+  });
   const { data, loading } = useProducts(table.params.toString());
 
   return (
     <ListingLayout
       filterContent={
         <FilterFacetSection
-          title={t('filters.category')}
+          title={t("filters.category")}
           options={categoryOptions}
-          selected={table.get('category').split(',')}
-          onChange={(v) => table.set('category', v.join(','))}
+          selected={table.get("category").split(",")}
+          onChange={(v) => table.set("category", v.join(","))}
         />
       }
       filterActiveCount={activeFilterCount}
-      onFilterApply={() => {/* no-op — filters already in URL */}}
-      onFilterClear={() => table.setMany({ category: '', status: '' })}
+      onFilterApply={() => {
+        /* no-op — filters already in URL */
+      }}
+      onFilterClear={() => table.setMany({ category: "", status: "" })}
       searchSlot={
-        <Search value={table.get('q')} onChange={(v) => table.set('q', v)} />
+        <Search value={table.get("q")} onChange={(v) => table.set("q", v)} />
       }
-      sortSlot={<SortDropdown value={table.get('sorts')} onChange={table.setSort} options={PRODUCT_SORT_OPTIONS} />}
+      sortSlot={
+        <SortDropdown
+          value={table.get("sorts")}
+          onChange={table.setSort}
+          options={PRODUCT_SORT_OPTIONS}
+        />
+      }
       selectedCount={selectedIds.length}
       onClearSelection={() => setSelectedIds([])}
       bulkActions={
         <Button variant="danger" size="sm" onClick={handleBulkDelete}>
-          {t('bulkDelete')}
+          {t("bulkDelete")}
         </Button>
       }
     >
-      <DataTable columns={columns} data={data?.items ?? []} loading={loading} selectable selectedIds={selectedIds} onSelectionChange={setSelectedIds} mobileCardRender={(p) => <ProductCard product={p} />} />
+      <DataTable
+        columns={columns}
+        data={data?.items ?? []}
+        loading={loading}
+        selectable
+        selectedIds={selectedIds}
+        onSelectionChange={setSelectedIds}
+        mobileCardRender={(p) => <ProductCard product={p} />}
+      />
     </ListingLayout>
   );
 }
@@ -3863,11 +4109,11 @@ Public pages pass cart/wishlist actions; seller and admin pages pass delete/expo
 
 **Props**:
 
-| Prop | Type | Purpose |
-|------|------|---------|
-| `selectedCount` | `number` | Number of selected items. Bar is hidden (returns `null`) when 0. |
-| `onClearSelection` | `() => void` | Called by the ✕ button to deselect all items. |
-| `children` | `ReactNode` | One or more `<Button>` elements for bulk operations. |
+| Prop               | Type         | Purpose                                                          |
+| ------------------ | ------------ | ---------------------------------------------------------------- |
+| `selectedCount`    | `number`     | Number of selected items. Bar is hidden (returns `null`) when 0. |
+| `onClearSelection` | `() => void` | Called by the ✕ button to deselect all items.                    |
+| `children`         | `ReactNode`  | One or more `<Button>` elements for bulk operations.             |
 
 ```tsx
 // Public listing — cart/wishlist bulk actions
@@ -4968,6 +5214,8 @@ All static pages follow the same pattern: hero gradient header → content secti
 | `cartService`             | `get()`, `addItem(data)`, `removeItem(itemId)`, `updateItem(itemId,data)`                                                                                                                                                                                                                                                                                                                                                            |
 | `categoryService`         | `list(params?)`, `getBySlug(slug)`, `create(data)`, `update(id,data)`, `delete(id)`                                                                                                                                                                                                                                                                                                                                                  |
 | `checkoutService`         | `placeOrder(data)`, `createPaymentOrder(data)`, `verifyPayment(data)`                                                                                                                                                                                                                                                                                                                                                                |
+| `authEventService`        | `initAuthEvent()` — Creates RTDB `auth_events/{uuid}` node + per-event custom token (no session required). Used internally by `useGoogleLogin` / `useAppleLogin`.                                                                                                                                                                                                                                                                    |
+| `paymentEventService`     | `initPaymentEvent(razorpayOrderId)` — Creates RTDB `payment_events/{razorpayOrderId}` node + per-event custom token (session required). Call after `createPaymentOrder`; then pass the returned `{ eventId, customToken }` to `usePaymentEvent.subscribe()`.                                                                                                                                                                         |
 | `contactService`          | `send(data)`                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `demoService`             | `seed(payload)` — triggers the demo seed API endpoint                                                                                                                                                                                                                                                                                                                                                                                |
 | `couponService`           | `list(sieveQuery?)`, `create(data)`, `update(id,data)`, `delete(id)`, `validate({code,orderTotal?})`                                                                                                                                                                                                                                                                                                                                 |
@@ -5007,6 +5255,9 @@ For detailed documentation with usage examples, best practices, and contribution
 - Gesture hooks (useSwipe, useGesture, useLongPress)
 - UI interaction hooks (useClickOutside, useKeyPress)
 - Storage upload, messaging, and unsaved changes hooks
+- **`useRealtimeEvent<TData>`** — Generic RTDB event bridge hook. All RTDB event subscriptions are built on this. Accepts `UseRealtimeEventConfig<TData>` with `type` (`RealtimeEventType.*`), `rtdbPath`, optional `timeoutMs`, `extractData`, and `messages`. Returns `{ status, error, data, subscribe, reset }`. Use `RealtimeEventType` and `RealtimeEventStatus` const objects (both exported from `@/hooks`) for all type/status comparisons.
+- **`useAuthEvent`** — Thin domain wrapper over `useRealtimeEvent`. RTDB bridge for OAuth popup flows. Call `subscribe(eventId, customToken)` after `authEventService.initAuthEvent()`. States (via `RealtimeEventStatus`): `idle | subscribing | pending | success | failed | timeout`.
+- **`usePaymentEvent`** — Thin domain wrapper over `useRealtimeEvent`. RTDB bridge for Razorpay payment outcomes. Call `subscribe(eventId, customToken)` after `paymentEventService.initPaymentEvent(razorpayOrderId)`. States (via `RealtimeEventStatus`): `idle | subscribing | pending | success | failed | timeout`. Returns `orderIds: string[] | null` on success.
 
 ### Utils Documentation
 

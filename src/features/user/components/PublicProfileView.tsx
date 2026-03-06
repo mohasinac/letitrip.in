@@ -1,12 +1,12 @@
 ﻿"use client";
 
-import Image from "next/image";
 import {
   AvatarDisplay,
   Badge,
   Card,
   EmptyState,
   Heading,
+  MediaImage,
   Span,
   Text,
   TextLink,
@@ -83,12 +83,10 @@ function SellerProductsSection({
             >
               <div className="relative aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
                 {product.mainImage ? (
-                  <Image
+                  <MediaImage
                     src={product.mainImage}
                     alt={product.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    size="card"
                   />
                 ) : (
                   <div
@@ -107,7 +105,7 @@ function SellerProductsSection({
                 </Text>
                 {product.isAuction && (
                   <Badge variant="warning" className="mt-1 text-xs">
-                    Auction
+                    {tProfile("auctionBadge")}
                   </Badge>
                 )}
               </div>
@@ -189,7 +187,7 @@ function SellerReviewsSection({
                   </Text>
                   {review.productTitle && (
                     <Text variant="secondary" className="text-xs mt-2">
-                      on{" "}
+                      {tProfile("reviewedOn")}{" "}
                       <TextLink
                         href={`/products/${review.productId}`}
                         className="text-primary-600 hover:underline"

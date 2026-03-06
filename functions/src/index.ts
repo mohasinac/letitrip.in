@@ -22,6 +22,8 @@
  * │  productStatsSync       — 01:00 UTC       recompute avg ratings          │
  * │  cartPrune              — Sun 04:00 UTC   remove stale carts             │
  * │  notificationPrune      — Mon 01:00 UTC   remove old read notifications  │
+ * │  cleanupAuthEvents      — every 5 min    purge stale RTDB auth events    │
+ * │  cleanupPaymentEvents   — every 5 min    purge stale RTDB payment events │
  * ├─────────────────────────────────────────────────────────────────────┤
  * │  Firestore Triggers                                                 │
  * ├─────────────────────────────────────────────────────────────────────┤
@@ -40,6 +42,8 @@ export { payoutBatch } from "./jobs/payoutBatch";
 export { productStatsSync } from "./jobs/productStatsSync";
 export { cartPrune } from "./jobs/cartPrune";
 export { notificationPrune } from "./jobs/notificationPrune";
+export { cleanupAuthEvents } from "./jobs/cleanupAuthEvents";
+export { cleanupPaymentEvents } from "./jobs/cleanupPaymentEvents";
 
 // ── Firestore triggers ────────────────────────────────────────────────────
 export { onBidPlaced } from "./triggers/onBidPlaced";

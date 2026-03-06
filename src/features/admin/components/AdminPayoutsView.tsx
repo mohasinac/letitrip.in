@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useMessage } from "@/hooks";
+import { useState, useCallback, useEffect } from "react";
+import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
 import { useAdminPayouts } from "@/features/admin/hooks";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   Card,
-  Button,
   SideDrawer,
   DataTable,
   AdminPageHeader,
@@ -15,6 +14,10 @@ import {
   StatusBadge,
   Text,
   Caption,
+  TablePagination,
+  ListingLayout,
+  Search,
+  PayoutFilters,
 } from "@/components";
 import { getPayoutTableColumns, PayoutStatusForm } from ".";
 import type { PayoutStatusFormState } from ".";
@@ -25,21 +28,25 @@ const { spacing } = THEME_CONSTANTS;
 
 interface PayoutsResponse {
   payouts: PayoutDocument[];
-  meta: { total: number };
+  meta: {
+    total: number;
+    page?: number;
+    pageSize?: number;
+    totalPages?: number;
+  };
 }
 
 export function AdminPayoutsView() {
   const { showSuccess, showError } = useMessage();
   const t = useTranslations("adminPayouts");
-  const STATUS_TABS = [
-    { key: "", label: t("filterAll") },
-    { key: "pending", label: t("filterPending") },
-    { key: "processing", label: t("filterProcessing") },
-    { key: "completed", label: t("filterCompleted") },
-    { key: "failed", label: t("filterFailed") },
-  ];
 
-  const [statusFilter, setStatusFilter] = useState("");
+  const table = useUrlTable({
+    defaults: { pageSize: "25", sorts: "-requestedAt" },
+  });
+  const statusFilter = table.get("status");
+  const paymentMethodFilter = table.get("paymentMethod");
+  const searchTerm = table.get("q");
+
   const [selectedPayout, setSelectedPayout] = useState<PayoutDocument | null>(
     null,
   );
@@ -47,10 +54,30 @@ export function AdminPayoutsView() {
   const [formState, setFormState] = useState<PayoutStatusFormState | null>(
     null,
   );
-  const [viewMode, setViewMode] = useState<"table" | "grid" | "list">("table");
 
-  const { data, isLoading, error, refetch, updateMutation } =
-    useAdminPayouts(statusFilter);
+  const minAmount = table.get("minAmount");
+  const maxAmount = table.get("maxAmount");
+
+  // ── Pending filter state (staged until Apply is clicked) ─────────────
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, [
+      "status",
+      "paymentMethod",
+      "minAmount",
+      "maxAmount",
+    ]);
+
+  const filtersArr: string[] = [];
+  if (statusFilter) filtersArr.push(`status==${statusFilter}`);
+  if (paymentMethodFilter)
+    filtersArr.push(`paymentMethod==${paymentMethodFilter}`);
+  if (minAmount) filtersArr.push(`amount>=${minAmount}`);
+  if (maxAmount) filtersArr.push(`amount<=${maxAmount}`);
+  if (searchTerm) filtersArr.push(`sellerName@=*${searchTerm}`);
+
+  const { data, isLoading, error, refetch, updateMutation } = useAdminPayouts(
+    table.buildSieveParams(filtersArr.join(",")),
+  );
 
   const payouts = data?.payouts ?? [];
 
@@ -164,20 +191,29 @@ export function AdminPayoutsView() {
       )}
 
       {/* Status filter tabs */}
-      <div className="flex flex-wrap gap-2">
-        {STATUS_TABS.map((tab) => (
-          <Button
-            key={tab.key}
-            variant={statusFilter === tab.key ? "primary" : "outline"}
-            size="sm"
-            onClick={() => setStatusFilter(tab.key)}
-          >
-            {tab.label}
-          </Button>
-        ))}
-      </div>
-
-      <Card>
+      <ListingLayout
+        searchSlot={
+          <Search
+            value={searchTerm}
+            onChange={(v) => table.set("q", v)}
+            placeholder={t("searchPlaceholder")}
+          />
+        }
+        filterContent={<PayoutFilters table={pendingTable} />}
+        filterActiveCount={filterActiveCount}
+        onFilterApply={onFilterApply}
+        onFilterClear={onFilterClear}
+        paginationSlot={
+          <TablePagination
+            currentPage={data?.meta?.page ?? 1}
+            totalPages={data?.meta?.totalPages ?? 1}
+            pageSize={table.getNumber("pageSize", 25)}
+            total={data?.meta?.total ?? 0}
+            onPageChange={table.setPage}
+            onPageSizeChange={table.setPageSize}
+          />
+        }
+      >
         <DataTable
           columns={columns}
           data={payouts}
@@ -185,11 +221,13 @@ export function AdminPayoutsView() {
           emptyMessage={error ? ERROR_MESSAGES.PAYOUT.FETCH_FAILED : t("empty")}
           keyExtractor={(p: PayoutDocument) => p.id}
           showViewToggle
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(payout) => (
             <Card className="p-4 space-y-2">
-              <Text weight="medium" size="sm">{payout.sellerName}</Text>
+              <Text weight="medium" size="sm">
+                {payout.sellerName}
+              </Text>
               <Caption className="truncate">{payout.sellerEmail}</Caption>
               <div className="flex items-center justify-between">
                 <Text weight="semibold" size="sm">
@@ -201,7 +239,7 @@ export function AdminPayoutsView() {
             </Card>
           )}
         />
-      </Card>
+      </ListingLayout>
 
       {/* Update payout status drawer */}
       <SideDrawer

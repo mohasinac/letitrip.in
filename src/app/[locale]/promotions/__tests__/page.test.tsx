@@ -34,8 +34,7 @@ jest.mock("@/lib/api-client", () => ({
   apiClient: { get: jest.fn().mockResolvedValue({}) },
 }));
 
-jest.mock("@/components", () => ({
-  Spinner: () => <div data-testid="spinner" />,
+jest.mock("@/features/promotions", () => ({
   CouponCard: ({ coupon }: { coupon: any }) => (
     <div data-testid={`coupon-${coupon.id}`}>{coupon.code}</div>
   ),
@@ -49,6 +48,10 @@ jest.mock("@/components", () => ({
       ))}
     </div>
   ),
+}));
+
+jest.mock("@/components", () => ({
+  Spinner: () => <div data-testid="spinner" />,
 }));
 
 jest.mock("@/constants", () => ({

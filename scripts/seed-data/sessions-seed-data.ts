@@ -155,7 +155,7 @@ export const sessionsSeedData: SessionDocument[] = [
   // ── Active: Artisan Crafts Co. seller — Edge Windows Desktop ─────────────
   {
     id: "session-artisan-edge-win-001",
-    userId: "user-artisan-crafts-artisan",
+    userId: "user-home-essentials-homeesse",
     deviceInfo: {
       userAgent:
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0",
@@ -236,7 +236,7 @@ export const sessionsSeedData: SessionDocument[] = [
   // Tests: admin revoke session API, security audit UI
   {
     id: "session-meera-suspicious-revoked-admin-001",
-    userId: "user-meera-nair-meera",
+    userId: "user-vikram-nair-vikram",
     deviceInfo: {
       userAgent:
         "Mozilla/5.0 (Linux; Android 9; SM-J730F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Mobile Safari/537.36",
@@ -252,5 +252,138 @@ export const sessionsSeedData: SessionDocument[] = [
     isActive: false,
     revokedAt: new Date("2026-02-15T09:00:00Z"),
     revokedBy: "admin", // Admin revoked after security review
+  },
+
+  // ── Active: Fashion Boutique seller — Chrome Android ─────────────────────
+  {
+    id: "session-fashion-chrome-android-001",
+    userId: "user-fashion-boutique-fashionb",
+    deviceInfo: {
+      userAgent:
+        "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36",
+      browser: "Chrome 122",
+      os: "Android 14",
+      device: "Mobile",
+      ip: "203.0.113.90",
+    },
+    location: { country: "India", city: "Mumbai" },
+    createdAt: new Date("2026-03-01T08:00:00Z"),
+    lastActivity: new Date("2026-03-05T16:00:00Z"),
+    expiresAt: new Date("2026-03-31T08:00:00Z"),
+    isActive: true,
+  },
+
+  // ── Active: Vikram Nair — Chrome Mobile ──────────────────────────────────
+  {
+    id: "session-vikram-chrome-mobile-001",
+    userId: "user-vikram-nair-vikram",
+    deviceInfo: {
+      userAgent:
+        "Mozilla/5.0 (Linux; Android 13; OnePlus 11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Mobile Safari/537.36",
+      browser: "Chrome 121",
+      os: "Android 13",
+      device: "Mobile",
+      ip: "203.0.113.91",
+    },
+    location: { country: "India", city: "Kochi" },
+    createdAt: new Date("2026-02-28T12:00:00Z"),
+    lastActivity: new Date("2026-03-05T10:30:00Z"),
+    expiresAt: new Date("2026-03-28T12:00:00Z"),
+    isActive: true,
+  },
+
+  // ── Active: Raj Patel — Chrome Desktop ───────────────────────────────────
+  {
+    id: "session-raj-chrome-desktop-active-001",
+    userId: "user-raj-patel-rajpatel",
+    deviceInfo: {
+      userAgent:
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+      browser: "Chrome 122",
+      os: "Windows 11",
+      device: "Desktop",
+      ip: "203.0.113.92",
+    },
+    location: { country: "India", city: "Ahmedabad" },
+    createdAt: new Date("2026-03-01T07:00:00Z"),
+    lastActivity: new Date("2026-03-05T19:00:00Z"),
+    expiresAt: new Date("2026-03-31T07:00:00Z"),
+    isActive: true,
+  },
+
+  // ── Active: Ananya Bose — Safari iOS ─────────────────────────────────────
+  {
+    id: "session-ananya-safari-ios-001",
+    userId: "user-ananya-bose-ananya",
+    deviceInfo: {
+      userAgent:
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3 Mobile/15E148 Safari/604.1",
+      browser: "Safari 17",
+      os: "iOS 17.3",
+      device: "Mobile",
+      ip: "203.0.113.93",
+    },
+    location: { country: "India", city: "Kolkata" },
+    createdAt: new Date("2026-02-20T11:00:00Z"),
+    lastActivity: new Date("2026-03-05T14:00:00Z"),
+    expiresAt: new Date("2026-03-20T11:00:00Z"),
+    isActive: true,
+  },
+
+  // ── Active: Pooja Mehta — Chrome Desktop ─────────────────────────────────
+  {
+    id: "session-pooja-chrome-desktop-001",
+    userId: "user-pooja-mehta-pooja",
+    deviceInfo: {
+      userAgent:
+        "Mozilla/5.0 (Windows NT 11.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+      browser: "Chrome 122",
+      os: "Windows 11",
+      device: "Desktop",
+      ip: "203.0.113.94",
+    },
+    location: { country: "India", city: "Mumbai" },
+    createdAt: new Date("2026-02-22T09:00:00Z"),
+    lastActivity: new Date("2026-03-04T20:00:00Z"),
+    expiresAt: new Date("2026-03-22T09:00:00Z"),
+    isActive: true,
+  },
+
+  // ── Active: Ravi Kumar — Chrome Android ──────────────────────────────────
+  {
+    id: "session-ravi-chrome-android-001",
+    userId: "user-ravi-kumar-ravi",
+    deviceInfo: {
+      userAgent:
+        "Mozilla/5.0 (Linux; Android 14; Samsung Galaxy S24) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36",
+      browser: "Chrome 122",
+      os: "Android 14",
+      device: "Mobile",
+      ip: "203.0.113.95",
+    },
+    location: { country: "India", city: "Chandigarh" },
+    createdAt: new Date("2026-02-25T15:00:00Z"),
+    lastActivity: new Date("2026-03-05T08:00:00Z"),
+    expiresAt: new Date("2026-03-25T15:00:00Z"),
+    isActive: true,
+  },
+
+  // ── Active: Sneha Gupta — Firefox Desktop ────────────────────────────────
+  {
+    id: "session-sneha-firefox-desktop-001",
+    userId: "user-sneha-gupta-sneha",
+    deviceInfo: {
+      userAgent:
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0",
+      browser: "Firefox 124",
+      os: "Windows 10",
+      device: "Desktop",
+      ip: "203.0.113.96",
+    },
+    location: { country: "India", city: "Lucknow" },
+    createdAt: new Date("2026-02-28T16:00:00Z"),
+    lastActivity: new Date("2026-03-05T11:00:00Z"),
+    expiresAt: new Date("2026-03-28T16:00:00Z"),
+    isActive: true,
   },
 ];

@@ -1,25 +1,29 @@
 /**
- * CarouselTableColumns
- * Path: src/components/admin/carousel/CarouselTableColumns.tsx
+ * useCarouselTableColumns
+ * Path: src/features/admin/components/CarouselTableColumns.tsx
  *
- * Column definitions for the admin carousel DataTable.
- * Uses StatusBadge from @/components and UI_LABELS from @/constants.
+ * Column definitions hook for the admin carousel DataTable.
+ * Uses StatusBadge, MediaImage from @/components and useTranslations from next-intl.
  */
 
-import Image from "next/image";
-import { StatusBadge, Button, Text } from "@/components";
-import { UI_LABELS } from "@/constants";
+"use client";
+
+import { useTranslations } from "next-intl";
+import { StatusBadge, Button, Text, MediaImage } from "@/components";
 import type { CarouselSlide } from "./Carousel.types";
 
-export function getCarouselTableColumns(
+export function useCarouselTableColumns(
   onEdit: (slide: CarouselSlide) => void,
   onDelete: (slide: CarouselSlide) => void,
 ) {
+  const t = useTranslations("adminCarousel");
+  const tActions = useTranslations("actions");
+
   return {
     columns: [
       {
         key: "cards",
-        header: "Cards",
+        header: t("colCards"),
         width: "80px",
         render: (slide: CarouselSlide) => (
           <Text variant="secondary" size="sm">
@@ -29,36 +33,30 @@ export function getCarouselTableColumns(
       },
       {
         key: "title",
-        header: "Title",
+        header: t("colTitle"),
         sortable: true,
       },
       {
         key: "imageUrl",
-        header: "Image",
+        header: t("colImage"),
         render: (slide: CarouselSlide) => (
           <div className="relative h-12 w-20 overflow-hidden rounded flex-shrink-0">
-            <Image
+            <MediaImage
               src={slide.imageUrl}
               alt={slide.title}
-              fill
-              className="object-cover"
-              sizes="80px"
+              size="thumbnail"
             />
           </div>
         ),
       },
       {
         key: "isActive",
-        header: UI_LABELS.TABLE.STATUS,
+        header: t("colStatus"),
         sortable: true,
         render: (slide: CarouselSlide) => (
           <StatusBadge
             status={slide.isActive ? "active" : "inactive"}
-            label={
-              slide.isActive
-                ? UI_LABELS.STATUS.ACTIVE
-                : UI_LABELS.STATUS.INACTIVE
-            }
+            label={slide.isActive ? t("statusActive") : t("statusInactive")}
           />
         ),
       },
@@ -72,7 +70,7 @@ export function getCarouselTableColumns(
           }}
           className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
         >
-          {UI_LABELS.ACTIONS.EDIT}
+          {tActions("edit")}
         </Button>
         <Button
           onClick={(e) => {
@@ -81,7 +79,7 @@ export function getCarouselTableColumns(
           }}
           className="text-red-600 hover:text-red-800 dark:text-red-400"
         >
-          {UI_LABELS.ACTIONS.DELETE}
+          {tActions("delete")}
         </Button>
       </div>
     ),

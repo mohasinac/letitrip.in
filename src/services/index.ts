@@ -47,3 +47,5 @@ export * from "./newsletter.service";
 export * from "./realtime-token.service";
 export * from "./ripcoin.service";
 export * from "./chat.service";
+export * from "./auth-event.service";
+export * from "./payment-event.service";

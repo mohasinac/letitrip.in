@@ -3,6 +3,7 @@
 import { Card, Text, Heading } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
+import { useTranslations } from "next-intl";
 
 /**
  * AccountInfoCard Component
@@ -36,22 +37,23 @@ export function AccountInfoCard({
   className = "",
 }: AccountInfoCardProps) {
   const { spacing, themed } = THEME_CONSTANTS;
+  const t = useTranslations("userAccount");
 
   const formatDateValue = (date: Date | string | null | undefined) => {
-    if (!date) return "Never";
+    if (!date) return t("never");
     return formatDate(typeof date === "string" ? new Date(date) : date);
   };
 
   return (
     <Card className={`${spacing.cardPadding} ${className}`}>
       <div className={spacing.stack}>
-        <Heading level={3}>Account Information</Heading>
+        <Heading level={3}>{t("accountInfo")}</Heading>
 
         <div className={`${spacing.stackSmall} ${themed.textSecondary}`}>
           {/* Email */}
           <div>
             <Text size="xs" variant="secondary">
-              Email Address
+              {t("emailAddress")}
             </Text>
             <Text size="sm" className="font-mono mt-1">
               {email}
@@ -61,7 +63,7 @@ export function AccountInfoCard({
           {/* User ID */}
           <div>
             <Text size="xs" variant="secondary">
-              User ID
+              {t("userId")}
             </Text>
             <Text size="sm" className="font-mono mt-1 break-all">
               {uid}
@@ -71,7 +73,7 @@ export function AccountInfoCard({
           {/* Account Created */}
           <div>
             <Text size="xs" variant="secondary">
-              Account Created
+              {t("accountCreated")}
             </Text>
             <Text size="sm" className="mt-1">
               {formatDateValue(createdAt)}
@@ -81,7 +83,7 @@ export function AccountInfoCard({
           {/* Last Login */}
           <div>
             <Text size="xs" variant="secondary">
-              Last Login
+              {t("lastLogin")}
             </Text>
             <Text size="sm" className="mt-1">
               {formatDateValue(lastLoginAt)}

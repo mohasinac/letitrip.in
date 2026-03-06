@@ -48,6 +48,7 @@ export default function LocaleSwitcher() {
         return (
           <Button
             key={loc}
+            variant="ghost"
             onClick={() => switchLocale(loc as Locale)}
             aria-pressed={isActive}
             title={t(loc as "en" | "hi")}

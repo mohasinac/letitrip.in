@@ -13,6 +13,7 @@ import { BookOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   ActiveFilterChips,
+  DataTable,
   EmptyState,
   FilterFacetSection,
   Heading,
@@ -196,22 +197,35 @@ function BlogListContent() {
             />
           ) : (
             <div className={THEME_CONSTANTS.spacing.stack}>
-              {/* Featured post at top on page 1 */}
-              {featuredPost && <BlogFeaturedCard post={featuredPost} />}
+              {/* Featured post at top on page 1 (grid/list views only) */}
+              {featuredPost && (table.get("view") || "grid") !== "table" && (
+                <BlogFeaturedCard post={featuredPost} />
+              )}
 
-              {/* Card grid */}
-              <div className={THEME_CONSTANTS.grid.cols3}>
-                {isLoading
-                  ? Array.from({ length: PAGE_SIZE }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700 aspect-[4/3]"
-                      />
-                    ))
-                  : regularPosts.map((post) => (
-                      <BlogCard key={post.id} post={post} />
-                    ))}
-              </div>
+              <DataTable
+                data={regularPosts}
+                keyExtractor={(item) => item.id}
+                loading={isLoading}
+                columns={[
+                  { key: "title", header: t("colTitle") },
+                  { key: "category", header: t("filterCategory") },
+                  { key: "authorName", header: t("colAuthor") },
+                  { key: "publishedAt", header: t("colPublishedAt") },
+                ]}
+                showViewToggle
+                viewMode={
+                  (table.get("view") || "grid") as "table" | "grid" | "list"
+                }
+                onViewModeChange={(m) => table.set("view", m)}
+                emptyState={
+                  <EmptyState
+                    icon={<BookOpen className="w-16 h-16" />}
+                    title={t("noArticlesFound")}
+                    description={t("noArticlesSubtitle")}
+                  />
+                }
+                mobileCardRender={(post) => <BlogCard post={post as any} />}
+              />
             </div>
           )}
         </ListingLayout>

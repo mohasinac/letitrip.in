@@ -18,13 +18,14 @@
  * ```
  */
 
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useApiMutation } from "./useApiMutation";
-import { authService } from "@/services";
+import { useAuthEvent } from "./useAuthEvent";
+import { authService, authEventService } from "@/services";
 import { ERROR_MESSAGES } from "@/constants";
 import { NotFoundError } from "@/lib/errors";
+import { useRouter } from "@/i18n/navigation";
 import {
-  signInWithGoogle,
-  signInWithApple,
   resetPassword as firebaseResetPassword,
   applyEmailVerificationCode,
   getCurrentUser,
@@ -100,39 +101,136 @@ export function useLogin(options?: {
 }
 
 /**
- * Hook for Google OAuth login.
- * Uses Firebase client SDK for OAuth popup, session is created automatically via auth-helpers.
+ * Hook for Google OAuth login via the RTDB popup bridge.
+ * Flow:
+ *  1. POST /api/auth/event/init → get eventId + customToken
+ *  2. Open /api/auth/google/start?eventId=... in a popup window
+ *  3. Subscribe to RTDB /auth_events/{eventId} via useAuthEvent
+ *  4. On success: router.refresh() picks up __session cookie, then onSuccess fires
  */
 export function useGoogleLogin(options?: {
   onSuccess?: () => void;
   onError?: (error: any) => void;
 }) {
-  return useApiMutation<any, void>({
-    mutationFn: async () => {
-      await signInWithGoogle();
-      return { success: true };
-    },
-    onSuccess: options?.onSuccess,
-    onError: options?.onError,
-  });
+  const router = useRouter();
+  const authEvent = useAuthEvent();
+  const [initiating, setInitiating] = useState(false);
+
+  // Stable refs so the effect closure never goes stale
+  const onSuccessRef = useRef(options?.onSuccess);
+  const onErrorRef = useRef(options?.onError);
+  useEffect(() => {
+    onSuccessRef.current = options?.onSuccess;
+  }, [options?.onSuccess]);
+  useEffect(() => {
+    onErrorRef.current = options?.onError;
+  }, [options?.onError]);
+
+  useEffect(() => {
+    if (authEvent.status === "success") {
+      router.refresh();
+      onSuccessRef.current?.();
+    } else if (
+      authEvent.status === "failed" ||
+      authEvent.status === "timeout"
+    ) {
+      onErrorRef.current?.(
+        new Error(authEvent.error ?? "Sign-in failed. Please try again."),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authEvent.status]);
+
+  const mutate = useCallback(async () => {
+    try {
+      setInitiating(true);
+      authEvent.reset();
+      const { eventId, customToken } = await authEventService.initAuthEvent();
+      window.open(
+        `/api/auth/google/start?eventId=${encodeURIComponent(eventId)}`,
+        "oauth_google",
+        "width=500,height=660,left=400,top=100",
+      );
+      authEvent.subscribe(eventId, customToken);
+    } catch (err) {
+      onErrorRef.current?.(
+        err instanceof Error ? err : new Error("Failed to start sign-in."),
+      );
+    } finally {
+      setInitiating(false);
+    }
+  }, [authEvent]);
+
+  const isLoading =
+    initiating ||
+    authEvent.status === "subscribing" ||
+    authEvent.status === "pending";
+
+  return { mutate, isLoading };
 }
 
 /**
- * Hook for Apple OAuth login.
- * Uses Firebase client SDK for OAuth popup, session is created automatically via auth-helpers.
+ * Hook for Apple Sign In via the RTDB popup bridge.
+ * Identical flow to useGoogleLogin but targets /api/auth/apple/start.
  */
 export function useAppleLogin(options?: {
   onSuccess?: () => void;
   onError?: (error: any) => void;
 }) {
-  return useApiMutation<any, void>({
-    mutationFn: async () => {
-      await signInWithApple();
-      return { success: true };
-    },
-    onSuccess: options?.onSuccess,
-    onError: options?.onError,
-  });
+  const router = useRouter();
+  const authEvent = useAuthEvent();
+  const [initiating, setInitiating] = useState(false);
+
+  const onSuccessRef = useRef(options?.onSuccess);
+  const onErrorRef = useRef(options?.onError);
+  useEffect(() => {
+    onSuccessRef.current = options?.onSuccess;
+  }, [options?.onSuccess]);
+  useEffect(() => {
+    onErrorRef.current = options?.onError;
+  }, [options?.onError]);
+
+  useEffect(() => {
+    if (authEvent.status === "success") {
+      router.refresh();
+      onSuccessRef.current?.();
+    } else if (
+      authEvent.status === "failed" ||
+      authEvent.status === "timeout"
+    ) {
+      onErrorRef.current?.(
+        new Error(authEvent.error ?? "Sign-in failed. Please try again."),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authEvent.status]);
+
+  const mutate = useCallback(async () => {
+    try {
+      setInitiating(true);
+      authEvent.reset();
+      const { eventId, customToken } = await authEventService.initAuthEvent();
+      window.open(
+        `/api/auth/apple/start?eventId=${encodeURIComponent(eventId)}`,
+        "oauth_apple",
+        "width=500,height=660,left=400,top=100",
+      );
+      authEvent.subscribe(eventId, customToken);
+    } catch (err) {
+      onErrorRef.current?.(
+        err instanceof Error ? err : new Error("Failed to start sign-in."),
+      );
+    } finally {
+      setInitiating(false);
+    }
+  }, [authEvent]);
+
+  const isLoading =
+    initiating ||
+    authEvent.status === "subscribing" ||
+    authEvent.status === "pending";
+
+  return { mutate, isLoading };
 }
 
 /**

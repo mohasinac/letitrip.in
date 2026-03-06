@@ -16,8 +16,10 @@ import { useRouter } from "@/i18n/navigation";
 import { useAuth, useUrlTable } from "@/hooks";
 import { useUserOrders } from "../hooks";
 import {
+  ActiveFilterChips,
   Button,
   Card,
+  DataTable,
   EmptyState,
   Heading,
   ListingLayout,
@@ -31,6 +33,7 @@ import {
   TabsTrigger,
   Text,
 } from "@/components";
+import type { ActiveFilter } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 
@@ -101,6 +104,22 @@ function UserOrdersContent() {
     [tOrders],
   );
 
+  const activeFilters = useMemo<ActiveFilter[]>(
+    () =>
+      statusFilter
+        ? [
+            {
+              key: "status",
+              label: tOrders("tabAll"),
+              value:
+                STATUS_TABS.find((t) => t.key === statusFilter)?.label ??
+                statusFilter,
+            },
+          ]
+        : [],
+    [statusFilter, tOrders],
+  );
+
   if (loading) {
     return (
       <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
@@ -168,77 +187,118 @@ function UserOrdersContent() {
           />
         ) : undefined
       }
+      activeFiltersSlot={
+        activeFilters.length > 0 ? (
+          <ActiveFilterChips
+            filters={activeFilters}
+            onRemove={(key) => table.set(key, "")}
+            onClearAll={() => table.set("status", "")}
+          />
+        ) : undefined
+      }
       loading={isLoading}
     >
-      {!isLoading && orders.length === 0 ? (
-        <EmptyState
-          icon={<ShoppingBag className="w-16 h-16" />}
-          title={tOrders("noOrders")}
-          description={tOrders("emptySubtitle")}
-          actionLabel={tActions("browseProducts")}
-          onAction={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
-        />
-      ) : (
-        <div className={THEME_CONSTANTS.spacing.stack}>
-          {orders.map((order) => (
-            <Card
-              key={order.id}
-              className={THEME_CONSTANTS.spacing.cardPadding}
+      <DataTable
+        data={orders}
+        keyExtractor={(o) => o.id ?? ""}
+        loading={isLoading}
+        columns={[
+          { key: "productTitle", header: tOrders("colProduct") },
+          {
+            key: "id",
+            header: tOrders("orderNumber"),
+            render: (o) => (
+              <Text size="sm" className="font-mono">
+                #{(o.id ?? "").slice(0, 8).toUpperCase()}
+              </Text>
+            ),
+          },
+          {
+            key: "status",
+            header: tOrders("tabAll"),
+            render: (o) => (
+              <StatusBadge
+                status={STATUS_MAP[o.status] ?? "pending"}
+                label={o.status.charAt(0).toUpperCase() + o.status.slice(1)}
+              />
+            ),
+          },
+          {
+            key: "totalPrice",
+            header: tOrders("sortHighest"),
+            render: (o) => (
+              <Text weight="semibold">
+                {formatCurrency(o.totalPrice, o.currency)}
+              </Text>
+            ),
+          },
+        ]}
+        showViewToggle
+        viewMode={(table.get("view") || "list") as "table" | "grid" | "list"}
+        onViewModeChange={(m) => table.set("view", m)}
+        emptyState={
+          <EmptyState
+            icon={<ShoppingBag className="w-16 h-16" />}
+            title={tOrders("noOrders")}
+            description={tOrders("emptySubtitle")}
+            actionLabel={tActions("browseProducts")}
+            onAction={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
+          />
+        }
+        mobileCardRender={(order) => (
+          <Card className={THEME_CONSTANTS.spacing.cardPadding}>
+            <div
+              className={`flex flex-col md:flex-row md:items-center md:justify-between ${THEME_CONSTANTS.spacing.gap.md}`}
             >
+              <div className={THEME_CONSTANTS.spacing.stackSmall}>
+                <Heading level={6}>{order.productTitle}</Heading>
+                <Text className={THEME_CONSTANTS.typography.caption}>
+                  {tOrders("orderNumber")} #
+                  {(order.id ?? "").slice(0, 8).toUpperCase()}
+                </Text>
+                <Text className={THEME_CONSTANTS.typography.caption}>
+                  {tOrders("placedOn")} {formatDate(order.orderDate)}
+                </Text>
+              </div>
               <div
-                className={`flex flex-col md:flex-row md:items-center md:justify-between ${THEME_CONSTANTS.spacing.gap.md}`}
+                className={`flex items-center flex-wrap ${THEME_CONSTANTS.spacing.gap.md}`}
               >
-                <div className={THEME_CONSTANTS.spacing.stackSmall}>
-                  <Heading level={6}>{order.productTitle}</Heading>
-                  <Text className={THEME_CONSTANTS.typography.caption}>
-                    {tOrders("orderNumber")} #
-                    {order.id.slice(0, 8).toUpperCase()}
-                  </Text>
-                  <Text className={THEME_CONSTANTS.typography.caption}>
-                    {tOrders("placedOn")} {formatDate(order.orderDate)}
-                  </Text>
-                </div>
-                <div
-                  className={`flex items-center flex-wrap ${THEME_CONSTANTS.spacing.gap.md}`}
-                >
-                  <Text className="font-semibold">
-                    {formatCurrency(order.totalPrice, order.currency)}
-                  </Text>
-                  <StatusBadge
-                    status={STATUS_MAP[order.status]}
-                    label={
-                      order.status.charAt(0).toUpperCase() +
-                      order.status.slice(1)
-                    }
-                  />
-                  {order.status === "delivered" && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        router.push(
-                          `${ROUTES.PUBLIC.PRODUCT_DETAIL(order.productId)}#write-review`,
-                        )
-                      }
-                    >
-                      {tOrders("writeReview")}
-                    </Button>
-                  )}
+                <Text className="font-semibold">
+                  {formatCurrency(order.totalPrice, order.currency)}
+                </Text>
+                <StatusBadge
+                  status={STATUS_MAP[order.status] ?? "pending"}
+                  label={
+                    order.status.charAt(0).toUpperCase() + order.status.slice(1)
+                  }
+                />
+                {order.status === "delivered" && (
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
                     onClick={() =>
-                      router.push(ROUTES.USER.ORDER_DETAIL(order.id))
+                      router.push(
+                        `${ROUTES.PUBLIC.PRODUCT_DETAIL(order.productId)}#write-review`,
+                      )
                     }
                   >
-                    {tOrders("viewOrder")}
+                    {tOrders("writeReview")}
                   </Button>
-                </div>
+                )}
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() =>
+                    router.push(ROUTES.USER.ORDER_DETAIL(order.id ?? ""))
+                  }
+                >
+                  {tOrders("viewOrder")}
+                </Button>
               </div>
-            </Card>
-          ))}
-        </div>
-      )}
+            </div>
+          </Card>
+        )}
+      />
     </ListingLayout>
   );
 }

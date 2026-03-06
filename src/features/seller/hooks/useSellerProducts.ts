@@ -19,6 +19,10 @@ export function useSellerProducts(
 ) {
   const searchParam = table.get("q");
   const statusParam = table.get("status");
+  const categoryParam = table.get("category");
+  const conditionParam = table.get("condition");
+  const minPriceParam = table.get("minPrice");
+  const maxPriceParam = table.get("maxPrice");
   const page = table.getNumber("page", 1);
   const sortParam = table.get("sort") || "-createdAt";
 
@@ -27,13 +31,27 @@ export function useSellerProducts(
     const filtersArr = [`sellerId==${userId}`];
     if (searchParam) filtersArr.push(`title@=*${searchParam}`);
     if (statusParam) filtersArr.push(`status==${statusParam}`);
+    if (categoryParam) filtersArr.push(`category==${categoryParam}`);
+    if (conditionParam) filtersArr.push(`condition==${conditionParam}`);
+    if (minPriceParam) filtersArr.push(`price>=${minPriceParam}`);
+    if (maxPriceParam) filtersArr.push(`price<=${maxPriceParam}`);
     return new URLSearchParams({
       filters: filtersArr.join(","),
       pageSize: String(PAGE_SIZE),
       page: String(page),
       sorts: sortParam,
     }).toString();
-  }, [userId, searchParam, page, sortParam, statusParam]);
+  }, [
+    userId,
+    searchParam,
+    page,
+    sortParam,
+    statusParam,
+    categoryParam,
+    conditionParam,
+    minPriceParam,
+    maxPriceParam,
+  ]);
 
   const { data, isLoading, refetch } = useApiQuery<{
     items: AdminProduct[];

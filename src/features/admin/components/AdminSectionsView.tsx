@@ -228,7 +228,9 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
           <Card>
             <div className="text-center py-8">
               <Text className="text-red-600 mb-4">{error.message}</Text>
-              <Button onClick={() => refetch()}>{tActions("retry")}</Button>
+              <Button variant="outline" onClick={() => refetch()}>
+                {tActions("retry")}
+              </Button>
             </div>
           </Card>
         ) : (
@@ -247,12 +249,14 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
                 onClick={() => handleEdit(section)}
               >
                 <div className="flex items-center justify-between">
-                    <Badge>{section.type}</Badge>
+                  <Badge>{section.type}</Badge>
                   <StatusBadge
                     status={section.enabled ? "active" : "inactive"}
                   />
                 </div>
-                <Text weight="medium" size="sm">{section.title}</Text>
+                <Text weight="medium" size="sm">
+                  {section.title}
+                </Text>
                 {section.description && (
                   <Caption className="line-clamp-2">
                     {section.description}

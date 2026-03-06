@@ -59,14 +59,6 @@ export { StatusBadge } from "./StatusBadge";
 export { RoleBadge } from "./RoleBadge";
 export { EmptyState } from "./EmptyState";
 
-// Phase 9: Inline Create Selectors
-export { CategorySelectorCreate } from "./CategorySelectorCreate";
-export type { CategorySelectorCreateProps } from "./CategorySelectorCreate";
-export { AddressSelectorCreate } from "./AddressSelectorCreate";
-export type { AddressSelectorCreateProps } from "./AddressSelectorCreate";
-export { default as NotificationBell } from "./NotificationBell";
-export { EventBanner } from "./EventBanner";
-
 // Phase 10: Generic Layout Primitives
 export { StepperNav } from "./StepperNav";
 export type { StepperNavProps } from "./StepperNav";

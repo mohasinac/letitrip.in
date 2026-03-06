@@ -18,7 +18,7 @@ import {
   Caption,
   Card,
   DataTable,
-  FilterFacetSection,
+  EventFilters,
   ListingLayout,
   MediaImage,
   Search,
@@ -31,7 +31,7 @@ import {
 import { formatDate } from "@/utils";
 import { ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useUrlTable, useMessage } from "@/hooks";
+import { useUrlTable, useMessage, usePendingTable } from "@/hooks";
 import {
   useEvents,
   useEventsTableColumns,
@@ -51,7 +51,6 @@ export function AdminEventsView() {
   const router = useRouter();
   const t = useTranslations("adminEvents");
   const tActions = useTranslations("actions");
-  const tEventStatus = useTranslations("eventStatus");
   const table = useUrlTable({
     defaults: { pageSize: "25", sort: "-createdAt" },
   });
@@ -64,32 +63,12 @@ export function AdminEventsView() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isBulkProcessing, setIsBulkProcessing] = useState(false);
 
-  // ── Staged filter state ──────────────────────────────────────────────
+  // ── Filter state (pending until Apply) ─────────────────────────────
   const typeFilter = table.get("type");
   const statusFilter = table.get("status");
-  const [stagedType, setStagedType] = useState<string[]>(
-    typeFilter ? [typeFilter] : [],
-  );
-  const [stagedStatus, setStagedStatus] = useState<string[]>(
-    statusFilter ? [statusFilter] : [],
-  );
 
-  const handleFilterApply = useCallback(() => {
-    table.setMany({
-      type: stagedType[0] ?? "",
-      status: stagedStatus[0] ?? "",
-      page: "1",
-    });
-  }, [stagedType, stagedStatus, table]);
-
-  const handleFilterClear = useCallback(() => {
-    setStagedType([]);
-    setStagedStatus([]);
-    table.setMany({ type: "", status: "", page: "1" });
-  }, [table]);
-
-  const filterActiveCount =
-    (typeFilter ? 1 : 0) + (statusFilter ? 1 : 0);
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, ["type", "status"]);
 
   const params = table.params.toString();
   const { events, total, page, pageSize, totalPages, isLoading, refetch } =
@@ -112,12 +91,13 @@ export function AdminEventsView() {
       setIsBulkProcessing(true);
       try {
         await Promise.allSettled(
-          selectedIds.map((id) =>
-            changeStatusMutation.mutate({ id, status }),
-          ),
+          selectedIds.map((id) => changeStatusMutation.mutate({ id, status })),
         );
         showSuccess(
-          tActions("bulkSuccess", { action: status, count: selectedIds.length }),
+          tActions("bulkSuccess", {
+            action: status,
+            count: selectedIds.length,
+          }),
         );
         setSelectedIds([]);
         await refetch();
@@ -127,7 +107,14 @@ export function AdminEventsView() {
         setIsBulkProcessing(false);
       }
     },
-    [selectedIds, changeStatusMutation, refetch, showSuccess, showError, tActions],
+    [
+      selectedIds,
+      changeStatusMutation,
+      refetch,
+      showSuccess,
+      showError,
+      tActions,
+    ],
   );
 
   const handleBulkDelete = useCallback(async () => {
@@ -159,9 +146,12 @@ export function AdminEventsView() {
     setDrawerOpen(true);
   }, []);
 
-  const handleEntries = useCallback((event: EventDocument) => {
-    router.push(ROUTES.ADMIN.EVENT_ENTRIES(event.id));
-  }, [router]);
+  const handleEntries = useCallback(
+    (event: EventDocument) => {
+      router.push(ROUTES.ADMIN.EVENT_ENTRIES(event.id));
+    },
+    [router],
+  );
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
@@ -183,27 +173,6 @@ export function AdminEventsView() {
         label: t(o.key),
       })),
     [t],
-  );
-
-  const typeOptions = useMemo(
-    () => [
-      { value: "sale", label: t("typeSale") },
-      { value: "offer", label: t("typeOffer") },
-      { value: "poll", label: t("typePoll") },
-      { value: "survey", label: t("typeSurvey") },
-      { value: "feedback", label: t("typeFeedback") },
-    ],
-    [t],
-  );
-
-  const statusOptions = useMemo(
-    () => [
-      { value: "draft", label: tEventStatus("draft") },
-      { value: "active", label: tEventStatus("active") },
-      { value: "paused", label: tEventStatus("paused") },
-      { value: "ended", label: tEventStatus("ended") },
-    ],
-    [tEventStatus],
   );
 
   return (
@@ -235,27 +204,10 @@ export function AdminEventsView() {
             options={sortOptions}
           />
         }
-        filterContent={
-          <>
-            <FilterFacetSection
-              title={t("allTypes")}
-              options={typeOptions}
-              selected={stagedType}
-              onChange={setStagedType}
-              searchable={false}
-            />
-            <FilterFacetSection
-              title={t("allStatuses")}
-              options={statusOptions}
-              selected={stagedStatus}
-              onChange={setStagedStatus}
-              searchable={false}
-            />
-          </>
-        }
+        filterContent={<EventFilters table={pendingTable} />}
         filterActiveCount={filterActiveCount}
-        onFilterApply={handleFilterApply}
-        onFilterClear={handleFilterClear}
+        onFilterApply={onFilterApply}
+        onFilterClear={onFilterClear}
         selectedCount={selectedIds.length}
         onClearSelection={() => setSelectedIds([])}
         bulkActions={

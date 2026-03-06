@@ -174,6 +174,38 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
 
   // ── Draft ─────────────────────────────────────────────────────────────
   {
+    id: "blog-march-2026-auction-spotlight-news",
+    title: "March Auction Spotlight: 20 Exceptional Items Up for Bid",
+    slug: "march-2026-auction-spotlight",
+    excerpt:
+      "From a signed Babolat tennis racket to a sealed iPhone 15 Pro Max bundle — March 2026 brings our biggest and most diverse auction lineup yet. Here's everything live right now.",
+    content: `<h2>Why This Month's Auctions Are Special</h2><p>March 2026 marks the most diverse auction month in LetItRip's history. We have 20 active auctions spanning electronics, fashion, home, and sports — with competitive opening bids and items that simply can't be found at retail.</p><h2>Electronics — Bid for the Best Tech</h2><p><strong>PS5 Slim Gaming Console</strong> — Barely used, all accessories included. Closing 7 March. <strong>AirPods Pro 2</strong> and <strong>Bose 700 Headphones</strong> both closing 8 March — perfect if you're in the market for premium audio. <strong>MacBook Pro M3 14"</strong> — factory-sealed, closing 16 March with multiple active bidders.</p><h2>Fashion — Rare & Collectible</h2><p>Fashion Boutique has listed a signed pair of <strong>Air Jordan 1 Retro High OG</strong> sneakers, a collector-grade <strong>Hermès Silk Twilly Scarf</strong>, and a handwoven <strong>Designer Kanjeevaram Silk Saree</strong> — all authenticated and closing mid-March.</p><h2>Sports & Home — Premium & Practical</h2><p>Home Essentials brings a <strong>Trek Domane SL 5 Road Bike</strong>, a <strong>Babolat Pure Aero Tennis Racket (signed)</strong>, and a <strong>Dyson V15 Detect Vacuum</strong> — all at starting bids well below retail.</p><h2>How to Bid</h2><p>Visit the <a href="/auctions">Auctions page</a>, sign in, and place your bid. You'll be notified instantly if outbid so you never miss a chance to win.</p>`,
+    coverImage:
+      "https://images.unsplash.com/photo-1505253468034-514d2507d914?w=1200&h=630&fit=crop",
+    category: BLOG_POST_FIELDS.CATEGORY_VALUES.NEWS,
+    tags: [
+      "auctions",
+      "march-2026",
+      "electronics",
+      "fashion",
+      "sports",
+      "spotlight",
+    ],
+    isFeatured: true,
+    status: BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
+    publishedAt: new Date("2026-03-01T09:00:00Z"),
+    authorId: "user-moderator-mod-user",
+    authorName: "Riya Sharma",
+    readTimeMinutes: 5,
+    views: 2104,
+    metaTitle: "March 2026 Auction Spotlight — 20 Items Live Now | LetItRip",
+    metaDescription:
+      "Explore LetItRip's biggest auction month: 20 live auctions across electronics, fashion, sports, and home. Bid now before they close.",
+    createdAt: new Date("2026-02-28T14:00:00Z"),
+    updatedAt: new Date("2026-03-01T09:00:00Z"),
+  },
+
+  {
     id: "blog-camping-checklist-essentials-2026-guides-draft",
     title: "The Ultimate Camping Checklist for 2026",
     slug: "ultimate-camping-checklist-2026",

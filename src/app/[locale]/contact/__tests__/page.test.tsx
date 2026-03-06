@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 // contact/page.tsx is a thin wrapper around ContactForm + ContactInfoSidebar
-jest.mock("@/components", () => ({
+jest.mock("@/features/contact", () => ({
   ContactInfoSidebar: () => <div data-testid="contact-info-sidebar" />,
   ContactForm: () => (
     <div data-testid="contact-form">
@@ -13,6 +13,8 @@ jest.mock("@/components", () => ({
     </div>
   ),
 }));
+
+jest.mock("@/components", () => ({}));
 
 jest.mock("@/constants", () => ({
   UI_LABELS: {

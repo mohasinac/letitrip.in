@@ -10,13 +10,13 @@
 import {
   FormField,
   Checkbox,
-  CategorySelectorCreate,
-  AddressSelectorCreate,
   ImageUpload,
   Heading,
   Text,
   Alert,
 } from "@/components";
+import { CategorySelectorCreate } from "@/features/categories";
+import { AddressSelectorCreate } from "@/features/user";
 import { useMediaUpload } from "@/hooks";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
@@ -297,7 +297,9 @@ export function ProductForm({
               label={t("formReservePrice")}
               type="number"
               value={String(product.reservePrice ?? "")}
-              onChange={(value) => update({ reservePrice: Number(value) || undefined })}
+              onChange={(value) =>
+                update({ reservePrice: Number(value) || undefined })
+              }
               disabled={isReadonly}
               placeholder="0"
               helpText={t("formReservePriceHelp")}
@@ -307,7 +309,9 @@ export function ProductForm({
               label={t("formBuyNowPrice")}
               type="number"
               value={String(product.buyNowPrice ?? "")}
-              onChange={(value) => update({ buyNowPrice: Number(value) || undefined })}
+              onChange={(value) =>
+                update({ buyNowPrice: Number(value) || undefined })
+              }
               disabled={isReadonly}
               placeholder="0"
               helpText={t("formBuyNowPriceHelp")}
@@ -319,7 +323,9 @@ export function ProductForm({
             label={t("formMinBidIncrement")}
             type="number"
             value={String(product.minBidIncrement ?? "")}
-            onChange={(value) => update({ minBidIncrement: Number(value) || undefined })}
+            onChange={(value) =>
+              update({ minBidIncrement: Number(value) || undefined })
+            }
             disabled={isReadonly}
             placeholder="0"
             helpText={t("formMinBidIncrementHelp")}
@@ -333,7 +339,8 @@ export function ProductForm({
             value={product.auctionShippingPaidBy || "winner"}
             onChange={(value) =>
               update({
-                auctionShippingPaidBy: value as AdminProduct["auctionShippingPaidBy"],
+                auctionShippingPaidBy:
+                  value as AdminProduct["auctionShippingPaidBy"],
               })
             }
             disabled={isReadonly}
@@ -344,7 +351,11 @@ export function ProductForm({
           />
 
           {/* Advanced Auction Options */}
-          <Text variant="secondary" weight="semibold" className={spacing.margin.top.sm}>
+          <Text
+            variant="secondary"
+            weight="semibold"
+            className={spacing.margin.top.sm}
+          >
             {t("sectionAuctionAdvanced")}
           </Text>
 

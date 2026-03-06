@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { Text } from "@/components";
+import { useTranslations } from "next-intl";
 import Button from "../ui/Button";
 
 /**
@@ -14,8 +15,11 @@ import Button from "../ui/Button";
  * title bar. Features auto-focus, ESC key support, and Enter key submission.
  *
  * **Inline mode**: A controlled search input for filter toolbars and list
- * pages. Activated by passing `value` + `onChange`. Calls `onChange` after
- * `debounceMs` (default 300 ms) to avoid API calls on every keystroke.
+ * pages. Activated by passing `value` + `onChange`.
+ *
+ * By default the inline mode is **deferred**: `onChange` fires only when the
+ * user presses Enter or clicks the search submit button. Pass `deferred={false}`
+ * to revert to the legacy live-debounced behaviour (e.g. site-wide SearchView).
  *
  * @component
  * @example Overlay mode
@@ -26,14 +30,22 @@ import Button from "../ui/Button";
  *   onSearch={(query) => handleSearch(query)}
  * />
  * ```
- * @example Inline mode (use with useUrlTable)
+ * @example Inline deferred mode (listing pages — default)
  * ```tsx
- * import { searchService } from '@/services';
  * <Search
  *   value={table.get("q")}
  *   onChange={(v) => table.set("q", v)}
- *   placeholder={UI_PLACEHOLDERS.SEARCH}
- *   onClear={() => table.set("q", "")}
+ *   placeholder={t("searchPlaceholder")}
+ * />
+ * ```
+ * @example Inline live mode (site-wide search page)
+ * ```tsx
+ * <Search
+ *   deferred={false}
+ *   value={table.get("q")}
+ *   onChange={(v) => table.set("q", v)}
+ *   placeholder={t("searchPlaceholder")}
+ *   debounceMs={400}
  * />
  * ```
  */
@@ -46,10 +58,15 @@ interface SearchProps {
   // ── Inline mode (activated when `value` is provided) ────────────────────────
   /** Controlled value from `useUrlTable`. Providing this enables inline mode. */
   value?: string;
-  /** Called with debounce after the user types. Write back via `table.set("q", v)`. */
+  /** Called when the user submits (deferred) or after debounce (live). */
   onChange?: (v: string) => void;
   placeholder?: string;
-  /** Debounce delay in ms. Default: `300`. */
+  /**
+   * When `true` (default), `onChange` fires only when the user presses Enter
+   * or clicks the search button. Set to `false` for live debounced behaviour.
+   */
+  deferred?: boolean;
+  /** Debounce delay in ms. Only used when `deferred={false}`. Default: `300`. */
   debounceMs?: number;
   /** Called after the clear button is pressed (in addition to `onChange("")`). */
   onClear?: () => void;
@@ -63,11 +80,13 @@ export default function Search({
   value,
   onChange,
   placeholder,
+  deferred = true,
   debounceMs = 300,
   onClear,
   className,
 }: SearchProps) {
   const isInlineMode = value !== undefined;
+  const t = useTranslations("search");
 
   // ── Shared state ────────────────────────────────────────────────────────────
   const [query, setQuery] = useState(isInlineMode ? value : "");
@@ -101,11 +120,25 @@ export default function Search({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
-  // ── Inline: debounced onChange ───────────────────────────────────────────────
+  // ── Inline: debounced onChange (live mode only) ─────────────────────────────
   const handleInlineChange = (v: string) => {
     setQuery(v);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => onChange?.(v), debounceMs);
+    if (!deferred) {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => onChange?.(v), debounceMs);
+    }
+  };
+
+  // ── Inline: deferred submit (Enter key or button click) ─────────────────────
+  const handleDeferredSubmit = () => {
+    onChange?.(query);
+  };
+
+  // ── Inline: clear — always instant ──────────────────────────────────────────
+  const handleClear = () => {
+    setQuery("");
+    onChange?.("");
+    onClear?.();
   };
 
   // ── Overlay handlers ─────────────────────────────────────────────────────────
@@ -121,25 +154,54 @@ export default function Search({
   if (isInlineMode) {
     return (
       <div className={`relative flex items-center ${className ?? ""}`}>
-        <svg
-          className="absolute left-3 w-4 h-4 text-gray-400 pointer-events-none"
-          aria-hidden="true"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
+        {/* Leading search icon (non-deferred) or submit button (deferred) */}
+        {deferred ? (
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleDeferredSubmit}
+            aria-label={t("ariaLabel")}
+            className="absolute left-0 px-3 h-full rounded-l-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+          >
+            <svg
+              className="w-4 h-4"
+              aria-hidden="true"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </Button>
+        ) : (
+          <svg
+            className="absolute left-3 w-4 h-4 text-gray-400 pointer-events-none"
+            aria-hidden="true"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        )}
         <input
           ref={inputRef}
           type="search"
           value={query}
           onChange={(e) => handleInlineChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (deferred && e.key === "Enter") handleDeferredSubmit();
+          }}
           placeholder={placeholder}
           className={`${THEME_CONSTANTS.input.base} ${THEME_CONSTANTS.themed.bgInput} ${THEME_CONSTANTS.themed.border} ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.placeholder} ${THEME_CONSTANTS.themed.focusRing} w-full pl-9${query ? " pr-9" : ""}`}
         />
@@ -147,13 +209,9 @@ export default function Search({
           <Button
             type="button"
             variant="ghost"
-            onClick={() => {
-              setQuery("");
-              onChange?.("");
-              onClear?.();
-            }}
+            onClick={handleClear}
             className="absolute right-3 p-0.5 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
-            aria-label="Clear search"
+            aria-label={t("clearAriaLabel")}
           >
             <svg
               className="w-4 h-4"
@@ -228,7 +286,7 @@ export default function Search({
               variant="ghost"
               onClick={() => onClose?.()}
               className={`p-2.5 md:p-3 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onLight} flex-shrink-0`}
-              aria-label="Close search"
+              aria-label={t("closeAriaLabel")}
             >
               <svg
                 className={`w-6 h-6 md:w-7 md:h-7 ${THEME_CONSTANTS.colors.icon.titleBar}`}

@@ -28,6 +28,8 @@ import { ValidationError, NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { sendOrderConfirmationEmail } from "@/lib/email";
+import { getAdminRealtimeDb } from "@/lib/firebase/admin";
+import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
 import type { AddressDocument } from "@/db/schema";
 
 const verifySchema = z.object({
@@ -188,6 +190,17 @@ export async function POST(request: NextRequest) {
     serverLogger.info(
       `Payment verified & ${orderIds.length} orders placed for user ${user.uid} — payment ${razorpay_payment_id}`,
     );
+
+    // Signal the RTDB payment event node so usePaymentEvent can navigate the UI.
+    // Fire-and-forget — a failed signal is non-critical (webhook provides fallback).
+    getAdminRealtimeDb()
+      .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${razorpay_order_id}`)
+      .update({ status: "success", orderIds, updatedAt: Date.now() })
+      .catch((err) =>
+        serverLogger.warn("Payment event RTDB signal failed (non-critical)", {
+          err,
+        }),
+      );
 
     return successResponse(
       { orderIds, total, itemCount: orderIds.length },

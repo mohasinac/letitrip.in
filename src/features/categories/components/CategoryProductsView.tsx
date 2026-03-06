@@ -1,11 +1,12 @@
 ﻿"use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Star, Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   ActiveFilterChips,
   Button,
+  DataTable,
   FilterFacetSection,
   Heading,
   HorizontalScroller,
@@ -14,7 +15,7 @@ import {
   MediaImage,
   Nav,
   PRODUCT_SORT_VALUES,
-  ProductGrid,
+  ProductCard,
   Search,
   SortDropdown,
   Span,
@@ -62,36 +63,57 @@ export function CategoryProductsView({ slug }: Props) {
     },
   });
 
-  const sort = (table.get("sort") || PRODUCT_SORT_VALUES.NEWEST) as ProductSortValue;
+  const sort = (table.get("sort") ||
+    PRODUCT_SORT_VALUES.NEWEST) as ProductSortValue;
   const page = table.getNumber("page", 1);
   const priceRange = table.get("priceRange");
   const activeTab = table.get("tab") || "products";
+
+  // ── Staged filter state ──────────────────────────────────────────────
+  const [stagedPriceRange, setStagedPriceRange] = useState<string[]>(
+    priceRange ? [priceRange] : [],
+  );
+
+  useEffect(() => {
+    setStagedPriceRange(priceRange ? [priceRange] : []);
+  }, [priceRange]);
+
+  const handleFilterApply = useCallback(() => {
+    table.set("priceRange", stagedPriceRange[0] ?? "");
+  }, [stagedPriceRange, table]);
+
+  const handleFilterClearAll = useCallback(() => {
+    setStagedPriceRange([]);
+    table.setMany({ priceRange: "", q: "" });
+  }, [table]);
 
   /* ---- Fetch category + children ---- */
   const { category, children, isLoading: catLoading } = useCategoryDetail(slug);
 
   /* ---- Fetch products ---- */
-  const {
-    products,
-    totalProducts,
-    totalPages,
-    prodLoading,
-  } = useCategoryProducts(slug, {
-    sort,
-    page,
-    pageSize: PAGE_SIZE,
-    priceRange,
-    search: table.get("q") || undefined,
-    cacheKey: table.params.toString(),
-  });
+  const { products, totalProducts, totalPages, prodLoading } =
+    useCategoryProducts(slug, {
+      sort,
+      page,
+      pageSize: PAGE_SIZE,
+      priceRange,
+      search: table.get("q") || undefined,
+      cacheKey: table.params.toString(),
+    });
 
   /* ---- Sort options ---- */
   const sortOptions = useMemo(
     () => [
       { value: PRODUCT_SORT_VALUES.NEWEST, label: tProducts("sortNewest") },
       { value: PRODUCT_SORT_VALUES.OLDEST, label: tProducts("sortOldest") },
-      { value: PRODUCT_SORT_VALUES.PRICE_LOW, label: tProducts("sortPriceLow") },
-      { value: PRODUCT_SORT_VALUES.PRICE_HIGH, label: tProducts("sortPriceHigh") },
+      {
+        value: PRODUCT_SORT_VALUES.PRICE_LOW,
+        label: tProducts("sortPriceLow"),
+      },
+      {
+        value: PRODUCT_SORT_VALUES.PRICE_HIGH,
+        label: tProducts("sortPriceHigh"),
+      },
       { value: PRODUCT_SORT_VALUES.NAME_AZ, label: tProducts("sortNameAZ") },
       { value: PRODUCT_SORT_VALUES.NAME_ZA, label: tProducts("sortNameZA") },
     ],
@@ -118,14 +140,11 @@ export function CategoryProductsView({ slug }: Props) {
 
   const handleClearFilter = useCallback(
     (key: string) => {
+      if (key === "priceRange") setStagedPriceRange([]);
       table.set(key, "");
     },
     [table],
   );
-
-  const handleClearAll = useCallback(() => {
-    table.setMany({ priceRange: "", q: "" });
-  }, [table]);
 
   /* ---- Loading state ---- */
   if (catLoading) {
@@ -139,7 +158,9 @@ export function CategoryProductsView({ slug }: Props) {
   /* ---- Not found state ---- */
   if (!category) {
     return (
-      <div className={`max-w-7xl mx-auto px-4 py-20 text-center ${spacing.stack}`}>
+      <div
+        className={`max-w-7xl mx-auto px-4 py-20 text-center ${spacing.stack}`}
+      >
         <Text size="lg" weight="medium">
           {t("noCategories")}
         </Text>
@@ -159,7 +180,9 @@ export function CategoryProductsView({ slug }: Props) {
   }));
 
   return (
-    <Main className={`${THEME_CONSTANTS.page.container["2xl"]} py-6 sm:py-10 space-y-6`}>
+    <Main
+      className={`${THEME_CONSTANTS.page.container["2xl"]} py-6 sm:py-10 space-y-6`}
+    >
       {/* ═══════════════ Category Hero ═══════════════ */}
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
         {/* Category image */}
@@ -171,7 +194,9 @@ export function CategoryProductsView({ slug }: Props) {
               size="card"
             />
           ) : (
-            <div className={`${flex.center} w-full h-full bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20`}>
+            <div
+              className={`${flex.center} w-full h-full bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20`}
+            >
               <Span className="text-6xl">{category.display?.icon ?? "🗂️"}</Span>
             </div>
           )}
@@ -256,7 +281,10 @@ export function CategoryProductsView({ slug }: Props) {
         <TabsContent value="products">
           <div className="pt-4">
             {/* Breadcrumb */}
-            <Nav aria-label="Breadcrumb" className={`text-sm ${themed.textSecondary} mb-4`}>
+            <Nav
+              aria-label="Breadcrumb"
+              className={`text-sm ${themed.textSecondary} mb-4`}
+            >
               <TextLink
                 href={ROUTES.PUBLIC.CATEGORIES}
                 className="hover:text-indigo-600 dark:hover:text-indigo-400"
@@ -292,14 +320,15 @@ export function CategoryProductsView({ slug }: Props) {
                 <FilterFacetSection
                   title={t("filterPrice")}
                   options={priceBucketOptions}
-                  selected={priceRange ? [priceRange] : []}
-                  onChange={(vals) => table.set("priceRange", vals[0] ?? "")}
+                  selected={stagedPriceRange}
+                  onChange={setStagedPriceRange}
+                  selectionMode="single"
                   searchable={false}
                 />
               }
               filterActiveCount={activeFilters.length}
-              onFilterApply={() => table.setPage(1)}
-              onFilterClear={handleClearAll}
+              onFilterApply={handleFilterApply}
+              onFilterClear={handleFilterClearAll}
               sortSlot={
                 <SortDropdown
                   value={sort}
@@ -312,7 +341,7 @@ export function CategoryProductsView({ slug }: Props) {
                   <ActiveFilterChips
                     filters={activeFilters}
                     onRemove={handleClearFilter}
-                    onClearAll={handleClearAll}
+                    onClearAll={handleFilterClearAll}
                   />
                 ) : undefined
               }
@@ -330,27 +359,43 @@ export function CategoryProductsView({ slug }: Props) {
                 ) : undefined
               }
             >
-              {prodLoading ? (
-                <ProductGrid
-                  products={[]}
-                  loading
-                  skeletonCount={PAGE_SIZE}
-                />
-              ) : products.length === 0 ? (
-                <div className={`${flex.centerCol} py-16 text-center`}>
-                  <Text size="lg" weight="medium">
-                    {t("noProductsIn", { name: category.name })}
-                  </Text>
-                  <TextLink
-                    href={ROUTES.PUBLIC.CATEGORIES}
-                    className="mt-3 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
-                  >
-                    {t("backToCategories")}
-                  </TextLink>
-                </div>
-              ) : (
-                <ProductGrid products={products} />
-              )}
+              <DataTable
+                data={products}
+                keyExtractor={(item) => item.id}
+                loading={prodLoading}
+                columns={[
+                  { key: "title", header: tProducts("colTitle") },
+                  { key: "price", header: tProducts("colPrice") },
+                  { key: "category", header: tProducts("filterCategory") },
+                  { key: "status", header: tProducts("colStatus") },
+                ]}
+                showViewToggle
+                viewMode={
+                  (table.get("view") || "grid") as "table" | "grid" | "list"
+                }
+                onViewModeChange={(m) => table.set("view", m)}
+                emptyState={
+                  <div className={`${flex.centerCol} py-16 text-center`}>
+                    <Text size="lg" weight="medium">
+                      {t("noProductsIn", { name: category.name })}
+                    </Text>
+                    <TextLink
+                      href={ROUTES.PUBLIC.CATEGORIES}
+                      className="mt-3 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+                    >
+                      {t("backToCategories")}
+                    </TextLink>
+                  </div>
+                }
+                mobileCardRender={(item) => (
+                  <ProductCard
+                    product={item as any}
+                    variant={
+                      (table.get("view") || "grid") === "list" ? "list" : "grid"
+                    }
+                  />
+                )}
+              />
             </ListingLayout>
           </div>
         </TabsContent>

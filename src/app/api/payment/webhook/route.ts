@@ -22,6 +22,8 @@ import { handleApiError } from "@/lib/errors/error-handler";
 import { AuthenticationError, ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
+import { getAdminRealtimeDb } from "@/lib/firebase/admin";
+import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
 
 export async function POST(request: NextRequest) {
   try {
@@ -61,8 +63,8 @@ export async function POST(request: NextRequest) {
     // Handle events
     switch (event.event) {
       case "payment.captured": {
-        // Payment was captured — orders should already be confirmed via /verify
-        // This acts as a fallback confirmation
+        // Payment was captured — orders should already be confirmed via /verify.
+        // Signal the RTDB node as a fallback in case the client lost connectivity.
         const payment = (
           event.payload as {
             payment?: { entity?: { id?: string; order_id?: string } };
@@ -71,11 +73,19 @@ export async function POST(request: NextRequest) {
         serverLogger.info(
           `payment.captured: paymentId=${payment?.id} orderId=${payment?.order_id}`,
         );
+        if (payment?.order_id) {
+          getAdminRealtimeDb()
+            .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${payment.order_id}`)
+            .update({ status: "success", updatedAt: Date.now() })
+            .catch((err) =>
+              serverLogger.warn("payment.captured RTDB signal failed", { err }),
+            );
+        }
         break;
       }
 
       case "payment.failed": {
-        // Log failed payments for monitoring
+        // Signal the RTDB node so usePaymentEvent can show the failure to the user.
         const payment = (
           event.payload as {
             payment?: {
@@ -90,6 +100,20 @@ export async function POST(request: NextRequest) {
         serverLogger.warn(
           `payment.failed: paymentId=${payment?.id} reason=${payment?.error_description}`,
         );
+        if (payment?.order_id) {
+          getAdminRealtimeDb()
+            .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${payment.order_id}`)
+            .update({
+              status: "failed",
+              error:
+                payment.error_description ??
+                ERROR_MESSAGES.CHECKOUT.PAYMENT_DECLINED,
+              updatedAt: Date.now(),
+            })
+            .catch((err) =>
+              serverLogger.warn("payment.failed RTDB signal failed", { err }),
+            );
+        }
         break;
       }
 

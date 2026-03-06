@@ -30,6 +30,12 @@ jest.mock("@/utils", () => ({
   debounce: (fn: any) => fn,
 }));
 
+jest.mock("../SearchResultsSection", () => ({
+  SearchResultsSection: ({ results }: any) => (
+    <div data-testid="search-results">{(results ?? []).length} results</div>
+  ),
+}));
+
 jest.mock("@/components", () => ({
   FilterDrawer: ({ children, trigger }: any) => (
     <div data-testid="filter-drawer">
@@ -41,9 +47,6 @@ jest.mock("@/components", () => ({
     <div data-testid="facet-section">{title}</div>
   ),
   ActiveFilterChips: () => <div data-testid="active-chips" />,
-  SearchResultsSection: ({ results }: any) => (
-    <div data-testid="search-results">{(results ?? []).length} results</div>
-  ),
   EmptyState: ({ title }: any) => <div data-testid="empty-state">{title}</div>,
   PRODUCT_SORT_VALUES: { NEWEST: "-createdAt" },
 }));

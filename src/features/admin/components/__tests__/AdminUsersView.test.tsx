@@ -51,15 +51,17 @@ jest.mock("@/components", () => ({
   TablePagination: () => <div data-testid="table-pagination" />,
   ConfirmDeleteModal: ({ isOpen }: any) =>
     isOpen ? <div data-testid="confirm-delete" /> : null,
-  UserFilters: ({ onSearch }: any) => (
-    <div data-testid="user-filters">
-      <input
-        data-testid="search-input"
-        onChange={(e) => onSearch?.(e.target.value)}
-        placeholder="Search"
-      />
-    </div>
+  ListingLayout: ({ children }: any) => (
+    <div data-testid="listing-layout">{children}</div>
   ),
+  Search: ({ onChange }: any) => (
+    <input
+      data-testid="search-input"
+      onChange={(e) => onChange?.(e.target.value)}
+      placeholder="Search"
+    />
+  ),
+  FilterFacetSection: () => <div data-testid="filter-facet-section" />,
   useUserTableColumns: () => [
     { key: "email", header: "Email" },
     { key: "role", header: "Role" },

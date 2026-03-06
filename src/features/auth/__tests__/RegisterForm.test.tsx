@@ -40,6 +40,21 @@ jest.mock("@/components", () => ({
     </label>
   ),
   PasswordStrengthIndicator: () => <div data-testid="password-strength" />,
+  Heading: ({ children }: { children: React.ReactNode }) => <h2>{children}</h2>,
+  Text: ({ children }: { children: React.ReactNode }) => <p>{children}</p>,
+  Label: ({ children }: { children: React.ReactNode }) => (
+    <label>{children}</label>
+  ),
+  Span: ({ children }: { children: React.ReactNode }) => (
+    <span>{children}</span>
+  ),
+  TextLink: ({
+    children,
+    href,
+  }: {
+    children: React.ReactNode;
+    href: string;
+  }) => <a href={href}>{children}</a>,
 }));
 
 describe("RegisterForm", () => {
