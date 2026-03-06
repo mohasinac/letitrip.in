@@ -755,11 +755,14 @@ export default function Sidebar({
                         }
                       `}
                       >
-                        <Span
-                          className={`${flex.rowCenter} ${isActive ? colors.onPrimary.text : colors.onPrimary.textIcon}`}
+                        <svg
+                          className={`w-5 h-5 ${isActive ? colors.onPrimary.text : colors.onPrimary.textIcon}`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
                         >
                           {item.icon}
-                        </Span>
+                        </svg>
                       </div>
                       <Span
                         className={`${THEME_CONSTANTS.typography.small} font-medium flex-1`}
