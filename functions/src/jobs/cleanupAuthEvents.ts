@@ -15,7 +15,7 @@
  */
 
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { getRtdb } from "../config/firebase-admin";
+import { getRtdb, auth } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { SCHEDULES, REGION } from "../config/constants";
 
@@ -59,9 +59,16 @@ export const cleanupAuthEvents = onSchedule(
         return;
       }
 
-      // Delete each stale node individually (Realtime DB has no batch delete)
+      // Delete each stale node individually (Realtime DB has no batch delete).
+      // Also delete the synthetic Firebase Auth user created when the client
+      // signed in with the per-event custom token.
       await Promise.all(
-        staleIds.map((id) => getRtdb().ref(`auth_events/${id}`).remove()),
+        staleIds.flatMap((id) => [
+          getRtdb().ref(`auth_events/${id}`).remove(),
+          auth.deleteUser(`auth_event_${id}`).catch(() => {
+            // Non-fatal — user may not exist if signInWithCustomToken was never called
+          }),
+        ]),
       );
 
       logInfo(JOB, "Auth events cleanup complete", {

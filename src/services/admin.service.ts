@@ -99,4 +99,19 @@ export const adminService = {
   /** PATCH — approve or reject a seller store */
   updateStoreStatus: (uid: string, action: "approve" | "reject") =>
     apiClient.patch(API_ENDPOINTS.ADMIN.STORE_BY_UID(uid), { action }),
+
+  /** POST — bulk re-index all published products into Algolia */
+  algoliaSync: () => apiClient.post(API_ENDPOINTS.ADMIN.ALGOLIA_SYNC),
+
+  /** POST — bulk index static pages/categories/blog/events into Algolia nav index */
+  algoliaSyncPages: () =>
+    apiClient.post(API_ENDPOINTS.ADMIN.ALGOLIA_SYNC_PAGES),
+
+  /** POST — clear all records from the Algolia products index */
+  algoliaClearProducts: () =>
+    apiClient.post(API_ENDPOINTS.ADMIN.ALGOLIA_CLEAR_PRODUCTS),
+
+  /** POST — clear all records from the Algolia pages_nav index */
+  algoliaClearPages: () =>
+    apiClient.post(API_ENDPOINTS.ADMIN.ALGOLIA_CLEAR_PAGES),
 };

@@ -162,6 +162,92 @@ export async function deleteProductFromIndex(productId: string): Promise<void> {
   });
 }
 
+/**
+ * Clears ALL objects from the given Algolia index without deleting
+ * the index itself (settings and configuration are preserved).
+ *
+ * @param indexName - The Algolia index to clear
+ */
+export async function clearAlgoliaIndex(
+  indexName: string,
+): Promise<{ cleared: true }> {
+  const client = getAlgoliaAdminClient();
+  await client.clearObjects({ indexName });
+  return { cleared: true };
+}
+
+// ── Navigation / pages index ──────────────────────────────────────────────────
+
+export const ALGOLIA_PAGES_INDEX_NAME =
+  process.env.NEXT_PUBLIC_ALGOLIA_PAGES_INDEX_NAME ?? "pages_nav";
+
+/** Record shape for the `pages_nav` navigation-suggestions index */
+export interface AlgoliaNavRecord {
+  /** URL path, e.g. "/blog/my-post" — used as objectID */
+  objectID: string;
+  title: string;
+  subtitle?: string;
+  type: "page" | "category" | "blog" | "event";
+  url: string;
+  image?: string;
+  /** Higher = ranked earlier in suggestions */
+  priority: number;
+}
+
+/**
+ * Bulk-saves navigation page records to the `pages_nav` Algolia index.
+ * Server-side only — uses the admin client.
+ */
+export async function indexNavPages(
+  records: AlgoliaNavRecord[],
+): Promise<{ indexed: number }> {
+  const client = getAlgoliaAdminClient();
+  await client.saveObjects({
+    indexName: ALGOLIA_PAGES_INDEX_NAME,
+    objects: records as unknown as Record<string, unknown>[],
+  });
+  return { indexed: records.length };
+}
+
+// ── Browser-safe search client (uses NEXT_PUBLIC_* keys) ─────────────────────
+
+const _publicAppId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? "";
+const _searchKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY ?? "";
+
+export function isAlgoliaBrowserConfigured(): boolean {
+  return Boolean(_publicAppId && _searchKey);
+}
+
+let _browserClient: ReturnType<typeof algoliasearch> | null = null;
+
+function getAlgoliaBrowserClient(): ReturnType<typeof algoliasearch> | null {
+  if (!isAlgoliaBrowserConfigured()) return null;
+  if (!_browserClient) {
+    _browserClient = algoliasearch(_publicAppId, _searchKey);
+  }
+  return _browserClient;
+}
+
+/**
+ * Browser-safe: searches the `pages_nav` Algolia index for navigation
+ * suggestions. Returns an empty array when Algolia is not configured.
+ *
+ * @param query - The user's search query
+ * @param limit - Maximum number of suggestions to return (default 6)
+ */
+export async function searchNavPages(
+  query: string,
+  limit = 6,
+): Promise<AlgoliaNavRecord[]> {
+  const client = getAlgoliaBrowserClient();
+  if (!client || !query.trim()) return [];
+  const result = await client.searchSingleIndex<AlgoliaNavRecord>({
+    indexName: ALGOLIA_PAGES_INDEX_NAME,
+    searchParams: { query, hitsPerPage: limit },
+  });
+  return result.hits;
+}
+
 // ── Search ────────────────────────────────────────────────────────────────────
 
 export interface AlgoliaSearchParams {

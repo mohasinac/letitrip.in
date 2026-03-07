@@ -213,6 +213,10 @@ export type {
 export { usePendingTable } from "./usePendingTable";
 export type { PendingTable, UsePendingTableReturn } from "./usePendingTable";
 
+// Search: navigation suggestions
+export { useNavSuggestions } from "./useNavSuggestions";
+export type { AlgoliaNavRecord } from "./useNavSuggestions";
+
 // Bulk action hooks
 export { useBulkSelection } from "./useBulkSelection";
 export type {

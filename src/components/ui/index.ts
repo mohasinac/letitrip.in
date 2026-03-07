@@ -96,3 +96,11 @@ export type { CameraCaptureProps } from "./CameraCapture";
 
 // Accessibility
 export { SkipToMain } from "./SkipToMain";
+
+// Generic dynamic select (react-select-like, portal-based)
+export { DynamicSelect } from "./DynamicSelect";
+export type {
+  DynamicSelectOption,
+  AsyncPage,
+  DynamicSelectProps,
+} from "./DynamicSelect";

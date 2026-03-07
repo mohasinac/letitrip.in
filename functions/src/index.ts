@@ -29,6 +29,7 @@
  * ├─────────────────────────────────────────────────────────────────────┤
  * │  onBidPlaced        — bids/{id} onCreate                            │
  * │  onOrderStatusChange— orders/{id} onUpdate                          │
+ * │  onProductWrite     — products/{id} onWrite → Algolia sync           │
  * └─────────────────────────────────────────────────────────────────────┘
  */
 
@@ -48,3 +49,4 @@ export { cleanupPaymentEvents } from "./jobs/cleanupPaymentEvents";
 // ── Firestore triggers ────────────────────────────────────────────────────
 export { onBidPlaced } from "./triggers/onBidPlaced";
 export { onOrderStatusChange } from "./triggers/onOrderStatusChange";
+export { onProductWrite } from "./triggers/onProductWrite";

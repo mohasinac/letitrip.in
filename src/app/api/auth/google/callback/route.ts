@@ -73,6 +73,14 @@ async function writeOutcomeAndClose(
       } catch {
         // Non-fatal — cleanup function will handle it
       }
+      // Delete the synthetic Auth user created when the client signed in with the
+      // per-event custom token.  Failures are non-fatal; the user has no email/
+      // password and poses no security risk, but leaving them pollutes Auth.
+      try {
+        await getAdminAuth().deleteUser(`auth_event_${eventId}`);
+      } catch {
+        // Non-fatal — user may not exist if signInWithCustomToken was never called
+      }
     }, 10_000);
   } catch (writeErr) {
     serverLogger.error("Failed to write auth event outcome to RTDB", {

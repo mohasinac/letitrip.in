@@ -12,9 +12,7 @@ export function FeaturedPreOrdersSection() {
   const tActions = useTranslations("actions");
   const { data, isLoading } = useFeaturedPreOrders();
 
-  const preOrders: ProductDocument[] = Array.isArray(data)
-    ? data
-    : ((data as unknown as { items?: ProductDocument[] })?.items ?? []);
+  const preOrders: ProductDocument[] = data ?? [];
 
   // Hide section entirely when there are no pre-orders and not loading
   if (!isLoading && preOrders.length === 0) return null;

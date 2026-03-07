@@ -1,17 +1,86 @@
 {
-  "generatedAt": "2026-03-07T15:33:37.099Z",
-  "scannedFiles": 1522,
-  "totalViolations": 0,
-  "autoFixableCount": 0,
+  "generatedAt": "2026-03-07T18:32:19.925Z",
+  "scannedFiles": 1530,
+  "totalViolations": 1,
+  "autoFixableCount": 1,
   "summary": {
-    "byCode": [],
+    "byCode": [
+      {
+        "code": "ARCH-001",
+        "count": 1,
+        "severity": "warning",
+        "autoFixable": true
+      }
+    ],
     "bySeverity": {
       "error": 0,
-      "warning": 0,
+      "warning": 1,
       "info": 0
     },
-    "byCategory": [],
-    "topFiles": []
+    "byCategory": [
+      {
+        "category": "ARCH",
+        "count": 1
+      }
+    ],
+    "topFiles": [
+      {
+        "file": "src/app/api/faqs/route.ts",
+        "count": 1
+      }
+    ]
   },
-  "violations": []
+  "violations": [
+    {
+      "id": "V00001",
+      "code": "ARCH-001",
+      "severity": "warning",
+      "autoFixable": true,
+      "rule": "Deep non-barrel import",
+      "description": "Must import from barrel exports (index.ts) only. Never import from sub-paths like @/components/ui/Button or @/utils/validators/email.",
+      "ruleRef": "rules-architecture.instructions.md — RULE 2",
+      "file": "src/app/api/faqs/route.ts",
+      "line": 25,
+      "col": 30,
+      "message": "Deep import '@/helpers/data/sieve.helper' — use the barrel index instead",
+      "snippet": "import { applySieveToArray } from \"@/helpers/data/sieve.helper\";",
+      "context": [
+        {
+          "lineNumber": 22,
+          "content": "  getSearchParams,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 23,
+          "content": "  getStringParam,",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 24,
+          "content": "} from \"@/lib/api/request-helpers\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 25,
+          "content": "import { applySieveToArray } from \"@/helpers/data/sieve.helper\";",
+          "isViolation": true
+        },
+        {
+          "lineNumber": 26,
+          "content": "import { faqCreateSchema } from \"@/lib/validation/schemas\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 27,
+          "content": "import { invalidateCache } from \"@/lib/api/cache-middleware\";",
+          "isViolation": false
+        },
+        {
+          "lineNumber": 28,
+          "content": "import { createApiHandler } from \"@/lib/api/api-handler\";",
+          "isViolation": false
+        }
+      ]
+    }
+  ]
 }

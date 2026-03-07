@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useHomepageSections } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
@@ -11,6 +12,7 @@ import type {
 } from "@/db/schema";
 
 export function WelcomeSection() {
+  const t = useTranslations("homepage");
   const router = useRouter();
   const { data, isLoading } = useHomepageSections("type=welcome&enabled=true");
 
@@ -33,7 +35,25 @@ export function WelcomeSection() {
   }
 
   if (!data?.[0]) {
-    return null;
+    return (
+      <Section
+        className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
+      >
+        <div className="w-full text-center">
+          <Heading
+            level={1}
+            className={`${THEME_CONSTANTS.typography.h1} ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
+          >
+            {t("heroTitle")}
+          </Heading>
+          <Text
+            className={`${THEME_CONSTANTS.typography.body} text-lg ${THEME_CONSTANTS.themed.textSecondary}`}
+          >
+            {t("heroSubtitle")}
+          </Text>
+        </div>
+      </Section>
+    );
   }
 
   const section = data[0];

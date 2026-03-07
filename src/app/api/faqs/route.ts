@@ -22,7 +22,8 @@ import {
   getSearchParams,
   getStringParam,
 } from "@/lib/api/request-helpers";
-import { applySieveToArray } from "@/helpers/data/sieve.helper";
+// eslint-disable-next-line -- sieve.helper uses node:url so is intentionally excluded from the barrel
+import { applySieveToArray } from "@/helpers/data/sieve.helper"; // @rule-ignore ARCH-001
 import { faqCreateSchema } from "@/lib/validation/schemas";
 import { invalidateCache } from "@/lib/api/cache-middleware";
 import { createApiHandler } from "@/lib/api/api-handler";

@@ -20,7 +20,8 @@ import {
   useToast,
 } from "@/components";
 import { useApiQuery, useApiMutation } from "@/hooks";
-import { siteSettingsService } from "@/services";
+import { siteSettingsService, adminService } from "@/services";
+import { API_ENDPOINTS } from "@/constants";
 import {
   SiteBasicInfoForm,
   SiteContactForm,
@@ -92,6 +93,25 @@ export function AdminSiteView() {
 
   const isSaving = updateMutation.isLoading;
 
+  // ── Algolia sync state ────────────────────────────────────────────────────
+  const [algoliaProductsLoading, setAlgoliaProductsLoading] = useState(false);
+  const [algoliaPagesLoading, setAlgoliaPagesLoading] = useState(false);
+
+  const handleAlgoliaSync = async (
+    fn: () => Promise<unknown>,
+    setter: (v: boolean) => void,
+  ) => {
+    setter(true);
+    try {
+      const result = (await fn()) as { indexed?: number } | undefined;
+      showToast(`✅ Indexed ${result?.indexed ?? 0} records`, "success");
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : "Sync failed", "error");
+    } finally {
+      setter(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className={`${THEME_CONSTANTS.spacing.stack} sm:space-y-6 w-full`}>
@@ -150,6 +170,48 @@ export function AdminSiteView() {
       <SiteSocialLinksForm settings={settings} onChange={setSettings} />
 
       <SiteCommissionsForm settings={settings} onChange={setSettings} />
+
+      {/* Algolia Search Tools */}
+      <Card>
+        <div className="p-4 sm:p-6">
+          <Text className="font-semibold text-base mb-1">
+            {t("algoliaTitle")}
+          </Text>
+          <Text variant="secondary" size="sm" className="mb-4">
+            {t("algoliaSubtitle")}
+          </Text>
+          <div className="flex flex-wrap gap-3">
+            <Button
+              variant="outline"
+              onClick={() =>
+                handleAlgoliaSync(
+                  adminService.algoliaSync,
+                  setAlgoliaProductsLoading,
+                )
+              }
+              disabled={algoliaProductsLoading}
+            >
+              {algoliaProductsLoading
+                ? "⏳ Syncing products…"
+                : "🔄 Sync Products → Algolia"}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() =>
+                handleAlgoliaSync(
+                  adminService.algoliaSyncPages,
+                  setAlgoliaPagesLoading,
+                )
+              }
+              disabled={algoliaPagesLoading}
+            >
+              {algoliaPagesLoading
+                ? "⏳ Syncing pages…"
+                : "🔄 Sync Pages → Algolia"}
+            </Button>
+          </div>
+        </div>
+      </Card>
 
       {/* Floating Save Button for Mobile */}
       <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-30 block sm:hidden">

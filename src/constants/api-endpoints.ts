@@ -102,6 +102,9 @@ export const API_ENDPOINTS = {
     BLOG_BY_ID: (id: string) => `/api/admin/blog/${id}`, // GET/PATCH/DELETE
     /** ✅ Algolia sync endpoint */
     ALGOLIA_SYNC: "/api/admin/algolia/sync", // POST - Bulk sync products to Algolia
+    ALGOLIA_SYNC_PAGES: "/api/admin/algolia/sync-pages", // POST - Bulk sync nav pages to Algolia
+    ALGOLIA_CLEAR_PRODUCTS: "/api/admin/algolia/clear-products", // POST - Clear products index
+    ALGOLIA_CLEAR_PAGES: "/api/admin/algolia/clear-pages", // POST - Clear pages_nav index
     /** ✅ Admin analytics */
     ANALYTICS: "/api/admin/analytics", // GET - Revenue + orders charts for admin
     /** ✅ Admin payouts */
@@ -214,6 +217,7 @@ export const API_ENDPOINTS = {
   DEMO: {
     SEED: "/api/demo/seed", // POST - Seed database with test data
     SEED_STATUS: "/api/demo/seed", // GET - Per-collection seed counts (seed IDs only)
+    ALGOLIA: "/api/demo/algolia", // POST - Dev-only Algolia sync/clear without auth
   },
 
   // Cart endpoints

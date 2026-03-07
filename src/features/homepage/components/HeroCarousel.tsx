@@ -24,11 +24,11 @@ export function HeroCarousel() {
   const tA11y = useTranslations("accessibility");
   const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const slidesRef = useRef<HTMLDivElement>(null);
   const isScrollingRef = useRef(false);
+  const isMobile = useMediaQuery("(max-width: 767px)");
   const prefersReducedMotion = useMediaQuery(
     "(prefers-reduced-motion: reduce)",
   );
@@ -40,14 +40,6 @@ export function HeroCarousel() {
       ?.filter((s) => s.active)
       ?.sort((a, b) => a.order - b.order)
       ?.slice(0, 5) || [];
-
-  // Detect mobile on client-side
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
 
   const goToSlide = useCallback((index: number) => {
     const el = slidesRef.current;
@@ -138,7 +130,7 @@ export function HeroCarousel() {
   return (
     <Section
       ref={sectionRef}
-      className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9]"
+      className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] overflow-hidden"
       aria-roledescription="carousel"
       aria-label={tA11y("heroCarouselAriaLabel")}
       onKeyDown={handleKeyDown}
@@ -159,7 +151,7 @@ export function HeroCarousel() {
         gap={0}
         scrollContainerRef={slidesRef}
         onScroll={handleSlidesScroll}
-        className={`${position.fill} ${THEME_CONSTANTS.utilities.scrollbarThinX}`}
+        className={position.fill}
       >
         {slides.map((slide, slideIndex) => (
           <div
@@ -248,7 +240,7 @@ export function HeroCarousel() {
                         )}
                         {card.content?.title && (
                           <Heading
-                            level={3}
+                            level={2}
                             className="text-[11px] md:text-2xl lg:text-3xl font-bold !text-white mb-0.5 md:mb-3 line-clamp-1 md:line-clamp-2 drop-shadow-md"
                           >
                             {card.content.title}

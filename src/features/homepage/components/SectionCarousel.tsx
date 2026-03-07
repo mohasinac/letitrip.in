@@ -144,13 +144,15 @@ export function SectionCarousel<T = unknown>({
       {/* Background image + overlay */}
       {hasBg && backgroundImage && (
         <>
-          <MediaImage src={backgroundImage} alt="" size="hero" />
+          <div className="absolute inset-0 overflow-hidden">
+            <MediaImage src={backgroundImage} alt="" size="hero" />
+          </div>
           <div className="absolute inset-0 bg-black/55" />
         </>
       )}
 
       {/* Content — sits above the background */}
-      <div className="relative z-10 w-full max-w-screen-2xl mx-auto">
+      <div className="relative z-10 w-full max-w-7xl mx-auto">
         {/* Header */}
         <div className={`text-center mb-6 ${spacing.stack}`}>
           <Heading

@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb, getAdminAuth } from "@/lib/firebase/admin";
 import { serverLogger } from "@/lib/server-logger";
 import {
+  isAlgoliaConfigured,
+  clearAlgoliaIndex,
+  ALGOLIA_INDEX_NAME,
+  ALGOLIA_PAGES_INDEX_NAME,
+} from "@/lib/search/algolia";
+import {
   usersSeedData,
   addressesSeedData,
   categoriesSeedData,
@@ -613,6 +619,36 @@ export async function POST(request: NextRequest) {
             err,
           );
           totalErrors++;
+        }
+      }
+
+      // Clear Algolia indexes for affected collections
+      if (isAlgoliaConfigured()) {
+        const shouldClearProducts = collectionsToProcess.includes("products");
+        const shouldClearPages =
+          collectionsToProcess.includes("categories") ||
+          collectionsToProcess.includes("blogPosts") ||
+          collectionsToProcess.includes("events");
+
+        if (shouldClearProducts) {
+          try {
+            await clearAlgoliaIndex(ALGOLIA_INDEX_NAME);
+            serverLogger.info(
+              "Algolia products index cleared after seed delete",
+            );
+          } catch (err) {
+            serverLogger.error("Failed to clear Algolia products index:", err);
+          }
+        }
+        if (shouldClearPages) {
+          try {
+            await clearAlgoliaIndex(ALGOLIA_PAGES_INDEX_NAME);
+            serverLogger.info(
+              "Algolia pages_nav index cleared after seed delete",
+            );
+          } catch (err) {
+            serverLogger.error("Failed to clear Algolia pages_nav index:", err);
+          }
         }
       }
 

@@ -12,9 +12,7 @@ export function FeaturedAuctionsSection() {
   const tActions = useTranslations("actions");
   const { data, isLoading } = useFeaturedAuctions();
 
-  const auctions: ProductDocument[] = Array.isArray(data)
-    ? data
-    : ((data as unknown as { items?: ProductDocument[] })?.items ?? []);
+  const auctions: ProductDocument[] = data ?? [];
 
   // Hide section entirely when there are no auctions and not loading
   if (!isLoading && auctions.length === 0) return null;

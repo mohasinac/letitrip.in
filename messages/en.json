@@ -1269,7 +1269,9 @@
     "minPrice": "Min price",
     "maxPrice": "Max price",
     "categoryFilter": "Category",
-    "allCategories": "All Categories"
+    "allCategories": "All Categories",
+    "searching": "Searching...",
+    "browseProducts": "Search \u201c{q}\u201d in products \u2192"
   },
   "categories": {
     "title": "Categories",
@@ -2182,7 +2184,9 @@
     "platformShippingPercentHint": "Applied for Shiprocket shipping",
     "platformShippingFixedMin": "Min Shipping Fee (Rs.)",
     "platformShippingFixedMinHint": "Minimum fee — charged if percentage is lower",
-    "shippingFeeRule": "For Shiprocket: platform charges max(order x %, minimum Rs. fixed)"
+    "shippingFeeRule": "For Shiprocket: platform charges max(order x %, minimum Rs. fixed)",
+    "algoliaTitle": "Algolia Search Index",
+    "algoliaSubtitle": "Manually trigger a full re-index for products or navigation pages. The trigger runs automatically on product changes, but use these if records appear out of sync."
   },
   "adminFeatureFlags": {
     "title": "Feature Flags",

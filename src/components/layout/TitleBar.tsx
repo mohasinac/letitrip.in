@@ -7,7 +7,7 @@ import { TitleBarLayout } from "./TitleBarLayout";
 import { TranslatePanel } from "./TranslatePanel";
 import { TTSButton } from "./TTSButton";
 import { TextLink, Span } from "@/components";
-import { Sprout } from "lucide-react";
+import { Sprout, SearchCode } from "lucide-react";
 
 /**
  * TitleBar Component
@@ -60,16 +60,28 @@ export default function TitleBar(props: TitleBarProps) {
       }
       devSlot={
         isDev ? (
-          <TextLink
-            href={ROUTES.DEMO.SEED}
-            className={`p-2 rounded-xl transition-colors flex items-center gap-1.5 border border-dashed border-yellow-400/60 hover:bg-yellow-400/10 ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
-            aria-label="Seed data (dev only)"
-          >
-            <Sprout className="w-4 h-4 text-yellow-400" />
-            <Span className="text-xs font-semibold text-yellow-400 hidden lg:inline">
-              Seed
-            </Span>
-          </TextLink>
+          <>
+            <TextLink
+              href={ROUTES.DEMO.SEED}
+              className={`p-2 rounded-xl transition-colors flex items-center gap-1.5 border border-dashed border-yellow-400/60 hover:bg-yellow-400/10 ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
+              aria-label="Seed data (dev only)"
+            >
+              <Sprout className="w-4 h-4 text-yellow-400" />
+              <Span className="text-xs font-semibold text-yellow-400 hidden lg:inline">
+                Seed
+              </Span>
+            </TextLink>
+            <TextLink
+              href={ROUTES.DEMO.ALGOLIA}
+              className={`p-2 rounded-xl transition-colors flex items-center gap-1.5 border border-dashed border-orange-400/60 hover:bg-orange-400/10 ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
+              aria-label="Algolia dashboard (dev only)"
+            >
+              <SearchCode className="w-4 h-4 text-orange-400" />
+              <Span className="text-xs font-semibold text-orange-400 hidden lg:inline">
+                Algolia
+              </Span>
+            </TextLink>
+          </>
         ) : undefined
       }
     />

@@ -32,6 +32,10 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "picsum.photos", // Seed data placeholder images
+      },
+      {
+        protocol: "https",
         hostname: "api.dicebear.com", // Avatar placeholders
       },
     ],

@@ -11,8 +11,7 @@ export const SEO_CONFIG = {
   // Site-wide defaults
   siteName: "LetItRip",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://letitrip.in",
-  defaultTitle:
-    "LetItRip — Multi-Seller E-commerce & Auction Platform | Shop, Bid & Sell",
+  defaultTitle: "LetItRip — Shop, Bid & Win | India's Multi-Seller Marketplace",
   defaultDescription:
     "Shop unique products, join live auctions, and sell from your own store on LetItRip — India's multi-seller marketplace for deals, bidding, and discovery.",
   defaultImage: "/og-image.jpg",
@@ -22,8 +21,7 @@ export const SEO_CONFIG = {
   // Page-specific metadata
   pages: {
     home: {
-      title:
-        "LetItRip — Multi-Seller E-commerce & Auction Platform | Shop, Bid & Sell",
+      title: "LetItRip — Shop, Bid & Win | India's Multi-Seller Marketplace",
       description:
         "Shop unique products, join live auctions, and sell from your own store on LetItRip — India's multi-seller marketplace for deals, bidding, and discovery.",
       keywords: [
@@ -260,7 +258,9 @@ export function generateMetadata(config: {
     : `${SEO_CONFIG.siteUrl}${image}`;
 
   return {
-    title: fullTitle,
+    // Use absolute to bypass the root layout's title template ("%s | LetItRip").
+    // generateMetadata already constructs the full branded title.
+    title: { absolute: fullTitle },
     description,
     keywords: keywords.join(", "),
     authors: author ? [{ name: author }] : undefined,

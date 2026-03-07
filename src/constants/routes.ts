@@ -130,6 +130,7 @@ export const ROUTES = {
   // Demo Routes (dev-only)
   DEMO: {
     SEED: "/demo/seed",
+    ALGOLIA: "/demo/algolia",
   },
 
   // Blog Routes

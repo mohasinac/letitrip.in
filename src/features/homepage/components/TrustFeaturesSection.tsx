@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ShieldCheck, Truck, RotateCcw, Headphones } from "lucide-react";
 import { THEME_CONSTANTS, TRUST_FEATURES } from "@/constants";
 import type { TrustFeatureItem } from "@/constants";
@@ -62,6 +63,7 @@ function TrustFeatureCard({
 
 // ─── Section ──────────────────────────────────────────────────────────────────
 export function TrustFeaturesSection() {
+  const t = useTranslations("homepage");
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -90,6 +92,14 @@ export function TrustFeaturesSection() {
       className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
       <div className="w-full">
+        <div className="text-center mb-6">
+          <Heading
+            level={2}
+            className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary}`}
+          >
+            {t("whyChooseUs")}
+          </Heading>
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4 md:gap-6">
           {TRUST_FEATURES.map((item, index) => (
             <TrustFeatureCard

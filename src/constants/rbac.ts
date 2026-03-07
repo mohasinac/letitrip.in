@@ -101,7 +101,7 @@ export const RBAC_CONFIG: Record<string, RouteAccessConfig> = {
   },
   [ROUTES.ADMIN.USERS]: {
     path: ROUTES.ADMIN.USERS,
-    allowedRoles: ["admin", "moderator"], // Moderators can view users
+    allowedRoles: ["admin"],
     requireEmailVerified: true,
     requireActiveAccount: true,
     redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
@@ -115,28 +115,28 @@ export const RBAC_CONFIG: Record<string, RouteAccessConfig> = {
   },
   [ROUTES.ADMIN.CAROUSEL]: {
     path: ROUTES.ADMIN.CAROUSEL,
-    allowedRoles: ["admin", "moderator"], // Moderators can manage content
+    allowedRoles: ["admin"],
     requireEmailVerified: true,
     requireActiveAccount: true,
     redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
   },
   [ROUTES.ADMIN.SECTIONS]: {
     path: ROUTES.ADMIN.SECTIONS,
-    allowedRoles: ["admin", "moderator"],
+    allowedRoles: ["admin"],
     requireEmailVerified: true,
     requireActiveAccount: true,
     redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
   },
   [ROUTES.ADMIN.CATEGORIES]: {
     path: ROUTES.ADMIN.CATEGORIES,
-    allowedRoles: ["admin", "moderator"],
+    allowedRoles: ["admin"],
     requireEmailVerified: true,
     requireActiveAccount: true,
     redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
   },
   [ROUTES.ADMIN.FAQS]: {
     path: ROUTES.ADMIN.FAQS,
-    allowedRoles: ["admin", "moderator"],
+    allowedRoles: ["admin"],
     requireEmailVerified: true,
     requireActiveAccount: true,
     redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
@@ -150,7 +150,7 @@ export const RBAC_CONFIG: Record<string, RouteAccessConfig> = {
   },
   [ROUTES.ADMIN.BIDS]: {
     path: ROUTES.ADMIN.BIDS,
-    allowedRoles: ["admin", "moderator"],
+    allowedRoles: ["admin"],
     requireEmailVerified: true,
     requireActiveAccount: true,
     redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
@@ -164,14 +164,14 @@ export const RBAC_CONFIG: Record<string, RouteAccessConfig> = {
   },
   [ROUTES.ADMIN.ANALYTICS]: {
     path: ROUTES.ADMIN.ANALYTICS,
-    allowedRoles: ["admin", "moderator"],
+    allowedRoles: ["admin"],
     requireEmailVerified: true,
     requireActiveAccount: true,
     redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
   },
   [ROUTES.ADMIN.PAYOUTS]: {
     path: ROUTES.ADMIN.PAYOUTS,
-    allowedRoles: ["admin", "moderator"],
+    allowedRoles: ["admin"],
     requireEmailVerified: true,
     requireActiveAccount: true,
     redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
@@ -192,7 +192,7 @@ export const RBAC_CONFIG: Record<string, RouteAccessConfig> = {
   // ============================================================================
   [ROUTES.SELLER.DASHBOARD]: {
     path: ROUTES.SELLER.DASHBOARD,
-    allowedRoles: ["seller", "admin", "moderator"],
+    allowedRoles: ["seller", "admin"],
     requireEmailVerified: true,
     requireActiveAccount: true,
     redirectTo: ROUTES.ERRORS.UNAUTHORIZED,

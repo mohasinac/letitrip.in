@@ -226,6 +226,11 @@ const RULES = [
       !isScriptFile(p),
     check(filePath, lines, rawLines) {
       const violations = [];
+      // Known intentional exceptions: modules that use Node.js built-ins and
+      // are explicitly documented as "import directly" in their barrel comment.
+      const ALLOWED_DEEP_IMPORTS = [
+        "@/helpers/data/sieve.helper", // requires node:url — intentionally excluded from barrel
+      ];
       // Barrel paths allowed: @/components, @/hooks, @/utils, @/helpers,
       // @/classes, @/services, @/constants, @/repositories, @/types, @/contexts, @/db/schema, @/lib/errors
       const deepImport =
@@ -233,6 +238,10 @@ const RULES = [
       lines.forEach((line, i) => {
         let m;
         while ((m = deepImport.exec(line)) !== null) {
+          if (ALLOWED_DEEP_IMPORTS.includes(m[1])) {
+            deepImport.lastIndex = 0;
+            continue;
+          }
           violations.push({
             line: i + 1,
             col: m.index + 1,

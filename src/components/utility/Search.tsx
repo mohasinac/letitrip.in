@@ -1,10 +1,27 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS } from "@/constants";
-import { Text } from "@/components";
+import { Li, Text, Ul } from "@/components";
 import { useTranslations } from "next-intl";
 import Button from "../ui/Button";
+import { useNavSuggestions } from "@/hooks";
+import type { AlgoliaNavRecord } from "@/hooks";
+
+const NAV_TYPE_ICON: Record<AlgoliaNavRecord["type"], string> = {
+  page: "📄",
+  category: "🗂️",
+  blog: "✍️",
+  event: "🎉",
+};
+
+const NAV_TYPE_BADGE: Record<AlgoliaNavRecord["type"], string> = {
+  page: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300",
+  category: "bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300",
+  blog: "bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-300",
+  event: "bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-300",
+};
 
 /**
  * Search Component
@@ -139,6 +156,17 @@ export default function Search({
     setQuery("");
     onChange?.("");
     onClear?.();
+  };
+
+  // ── Overlay: nav suggestions ─────────────────────────────────────────────────
+  const router = useRouter();
+  const { suggestions, isLoading: suggestionsLoading } = useNavSuggestions(
+    isInlineMode ? "" : query,
+  );
+
+  const handleSuggestionClick = (record: AlgoliaNavRecord) => {
+    onClose?.();
+    router.push(record.url);
   };
 
   // ── Overlay handlers ─────────────────────────────────────────────────────────
@@ -307,15 +335,74 @@ export default function Search({
             </Button>
           </div>
 
-          {/* Search Results Preview */}
+          {/* Navigation Suggestions Preview */}
           {query && (
             <div
-              className={`mt-4 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.border} rounded-xl p-4 max-h-96 overflow-y-auto`}
+              className={`mt-3 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.border} rounded-xl overflow-hidden`}
             >
-              <Text variant="secondary" size="sm">
-                Searching for "{query}"...
-              </Text>
-              {/* Add your search results here */}
+              {suggestionsLoading ? (
+                <div className="px-4 py-3">
+                  <Text variant="secondary" size="sm">
+                    {t("searching")}
+                  </Text>
+                </div>
+              ) : suggestions.length > 0 ? (
+                <Ul>
+                  {suggestions.map((s) => (
+                    <Li key={s.objectID}>
+                      <button
+                        type="button"
+                        onClick={() => handleSuggestionClick(s)}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-left ${THEME_CONSTANTS.themed.hover} transition-colors border-b ${THEME_CONSTANTS.themed.border} last:border-b-0`}
+                      >
+                        <span className="text-sm">{NAV_TYPE_ICON[s.type]}</span>
+                        <div className="flex-1 min-w-0">
+                          <Text size="sm" className="font-medium truncate">
+                            {s.title}
+                          </Text>
+                          {s.subtitle && (
+                            <Text
+                              variant="secondary"
+                              size="xs"
+                              className="truncate"
+                            >
+                              {s.subtitle}
+                            </Text>
+                          )}
+                        </div>
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded-full ${NAV_TYPE_BADGE[s.type]}`}
+                        >
+                          {s.type}
+                        </span>
+                      </button>
+                    </Li>
+                  ))}
+                </Ul>
+              ) : null}
+              {/* Always show "search products" footer */}
+              <button
+                type="button"
+                onClick={handleOverlaySearch}
+                className={`w-full flex items-center gap-2 px-4 py-3 text-left ${THEME_CONSTANTS.themed.hover} transition-colors ${suggestions.length > 0 ? `border-t ${THEME_CONSTANTS.themed.border}` : ""}`}
+              >
+                <svg
+                  className={`w-4 h-4 flex-shrink-0 ${THEME_CONSTANTS.colors.icon.muted}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                <Text size="sm" className="font-medium">
+                  {t("browseProducts", { q: query })}
+                </Text>
+              </button>
             </div>
           )}
         </div>

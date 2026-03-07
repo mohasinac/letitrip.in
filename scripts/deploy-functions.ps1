@@ -35,7 +35,10 @@ Write-Host ""
 Write-Host "Installing dependencies..." -ForegroundColor Yellow
 Push-Location $FnDir
 try {
-    npm ci --prefer-offline 2>&1 | Out-Host
+    $prevPref = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    npm ci --prefer-offline 2>&1 | Where-Object { $_ -notmatch "EBADENGINE" } | Out-Host
+    $ErrorActionPreference = $prevPref
     if ($LASTEXITCODE -ne 0) { throw "npm ci failed" }
 }
 finally {

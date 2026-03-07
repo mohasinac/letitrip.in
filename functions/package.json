@@ -18,6 +18,7 @@
     "lint:fix": "eslint src --ext .ts --fix"
   },
   "dependencies": {
+    "algoliasearch": "^5.49.0",
     "firebase-admin": "^13.6.1",
     "firebase-functions": "^6.3.2"
   },
