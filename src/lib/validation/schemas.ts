@@ -539,7 +539,6 @@ export const siteSettingsUpdateSchema = z
         sellerRegistration: z.boolean(),
         preOrders: z.boolean(),
       })
-      .partial()
       .optional(),
     commissions: z
       .object({

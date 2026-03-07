@@ -22,7 +22,7 @@ import {
   getSearchParams,
   getStringParam,
 } from "@/lib/api/request-helpers";
-import { applySieveToArray } from "@/helpers";
+import { applySieveToArray } from "@/helpers/data/sieve.helper";
 import { faqCreateSchema } from "@/lib/validation/schemas";
 import { invalidateCache } from "@/lib/api/cache-middleware";
 import { createApiHandler } from "@/lib/api/api-handler";
