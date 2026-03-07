@@ -137,6 +137,13 @@ export function CategoryForm({
           disabled={isReadonly}
           label={LABELS.SHOW_ON_HOMEPAGE}
         />
+
+        <Checkbox
+          checked={category.isBrand || false}
+          onChange={(e) => update({ isBrand: e.target.checked })}
+          disabled={isReadonly}
+          label={LABELS.IS_BRAND}
+        />
       </div>
 
       <FormField

@@ -1,4 +1,4 @@
-export { BlogCard, CATEGORY_BADGE } from "./BlogCard";
+export { BlogCard, CATEGORY_BADGE } from "@/components";
 export { BlogFeaturedCard } from "./BlogFeaturedCard";
 export { BlogCategoryTabs, BLOG_CATEGORY_TABS } from "./BlogCategoryTabs";
 export { BlogListView } from "./BlogListView";

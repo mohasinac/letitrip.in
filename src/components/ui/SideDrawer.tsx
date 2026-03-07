@@ -245,7 +245,9 @@ export default function SideDrawer({
             className={`fixed z-[60] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md ${themed.bgPrimary} ${borderRadius.xl} shadow-2xl p-6`}
           >
             <div className={`${flex.rowStart} gap-3 mb-4`}>
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
+              <div
+                className={`flex-shrink-0 w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 ${flex.center}`}
+              >
                 <svg
                   className="w-5 h-5 text-yellow-600 dark:text-yellow-400"
                   fill="none"

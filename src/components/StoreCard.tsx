@@ -12,7 +12,7 @@ import {
   Span,
   TextLink,
 } from "@/components";
-import type { StoreListItem } from "../types";
+import type { StoreListItem } from "@/types/stores";
 
 const { flex, themed } = THEME_CONSTANTS;
 
@@ -32,7 +32,7 @@ export function StoreCard({
   const t = useTranslations("storesPage");
 
   const href = ROUTES.PUBLIC.STORE_DETAIL(store.storeSlug);
-  const name = store.storeName || store.displayName;
+  const name = store.storeName || store.displayName || "";
 
   return (
     <TextLink href={href} className="group block focus:outline-none">
@@ -66,7 +66,7 @@ export function StoreCard({
                 checked={selected}
                 onChange={(e) => {
                   e.stopPropagation();
-                  onSelect?.(store.uid, e.target.checked);
+                  onSelect?.(store.ownerId, e.target.checked);
                 }}
                 className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer bg-white/80"
               />

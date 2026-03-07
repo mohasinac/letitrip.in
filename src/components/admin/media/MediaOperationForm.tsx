@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { FormField, Button, Card, Text } from "@/components";
-import { UI_LABELS } from "@/constants";
+import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+
+const { spacing } = THEME_CONSTANTS;
 
 interface CropData {
   sourceUrl: string;
@@ -53,7 +55,7 @@ export function MediaOperationForm({
     return (
       <Card className="p-6">
         <Text className="text-lg font-semibold mb-4">{LABELS.CROP_IMAGE}</Text>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className={spacing.stack}>
           {/* Source URL */}
           <FormField
             label={LABELS.SOURCE_URL}
@@ -154,7 +156,7 @@ export function MediaOperationForm({
   return (
     <Card className="p-6">
       <Text className="text-lg font-semibold mb-4">{LABELS.TRIM_VIDEO}</Text>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className={spacing.stack}>
         {/* Source URL */}
         <FormField
           label={LABELS.SOURCE_URL}

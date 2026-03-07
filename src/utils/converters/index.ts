@@ -4,7 +4,7 @@
  * Centralized export for all converter utilities
  */
 
-// Export all from type.converter except deepClone (deprecated - use from @/helpers instead)
+// Export all from type.converter except deleted deprecated functions
 export {
   stringToBoolean,
   booleanToString,
@@ -12,12 +12,8 @@ export {
   objectToArray,
   queryStringToObject,
   objectToQueryString,
-  csvToArray,
-  arrayToCsv,
   firestoreTimestampToDate,
   dateToISOString,
-  flattenObject,
-  unflattenObject,
 } from "./type.converter";
 
 // Cookie utilities

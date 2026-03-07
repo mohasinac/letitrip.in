@@ -14,7 +14,14 @@ import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useUrlTable, useMessage, usePendingTable } from "@/hooks";
 import { useAdminOrders } from "@/features/admin/hooks";
-import { ROUTES, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import {
+  ROUTES,
+  ERROR_MESSAGES,
+  SUCCESS_MESSAGES,
+  THEME_CONSTANTS,
+} from "@/constants";
+
+const { flex } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -222,11 +229,11 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
           keyExtractor={(order: OrderDocument) => order.id}
           externalPagination
           showViewToggle
-          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(order) => (
             <Card className="p-4 space-y-2">
-              <div className="flex items-center justify-between">
+              <div className={`${flex.between}`}>
                 <Caption className="font-mono text-xs">
                   #{(order.id ?? "").slice(-8).toUpperCase()}
                 </Caption>
@@ -236,7 +243,7 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
                 {order.productTitle}
               </Text>
               <Caption>{order.userName}</Caption>
-              <div className="flex items-center justify-between pt-1">
+              <div className={`${flex.between} pt-1`}>
                 <Caption>{formatDate(order.createdAt)}</Caption>
                 <Text weight="bold" size="sm">
                   {formatCurrency(order.totalPrice)}

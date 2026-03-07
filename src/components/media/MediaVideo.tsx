@@ -19,6 +19,9 @@
 
 import { useRef, useEffect } from "react";
 import { Span } from "../typography";
+import { THEME_CONSTANTS } from "@/constants";
+
+const { flex } = THEME_CONSTANTS;
 
 export interface MediaVideoProps {
   /** Video URL. When undefined the fallback placeholder is rendered. */
@@ -83,7 +86,7 @@ export function MediaVideo({
   if (!src) {
     return (
       <div
-        className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-400 text-4xl"
+        className={`absolute inset-0 ${flex.center} bg-gray-100 dark:bg-gray-800 text-gray-400 text-4xl`}
         role="img"
         aria-label={alt}
       >

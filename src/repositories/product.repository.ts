@@ -16,6 +16,7 @@ import type {
 import {
   createProductId,
   createAuctionId,
+  createPreOrderId,
   PRODUCT_COLLECTION,
   PRODUCT_FIELDS,
 } from "@/db/schema";
@@ -40,7 +41,15 @@ class ProductRepository extends BaseRepository<ProductDocument> {
           return createAuctionId({
             name: input.title,
             category: input.category,
-            condition: "new", // Default, should come from input
+            condition: "new",
+            sellerName: input.sellerName,
+            count,
+          });
+        } else if (input.isPreOrder) {
+          return createPreOrderId({
+            name: input.title,
+            category: input.category,
+            condition: "new",
             sellerName: input.sellerName,
             count,
           });
@@ -48,7 +57,7 @@ class ProductRepository extends BaseRepository<ProductDocument> {
           return createProductId({
             name: input.title,
             category: input.category,
-            condition: "new", // Default, should come from input
+            condition: "new",
             sellerName: input.sellerName,
             count,
           });
@@ -135,6 +144,30 @@ class ProductRepository extends BaseRepository<ProductDocument> {
    */
   async findAuctions(): Promise<ProductDocument[]> {
     return this.findBy(PRODUCT_FIELDS.IS_AUCTION, true);
+  }
+
+  /**
+   * Find pre-order products
+   */
+  async findPreOrders(): Promise<ProductDocument[]> {
+    return this.findBy(PRODUCT_FIELDS.IS_PRE_ORDER, true);
+  }
+
+  /**
+   * Find active pre-orders (delivery date in the future)
+   */
+  async findActivePreOrders(): Promise<ProductDocument[]> {
+    const now = new Date();
+    const snapshot = await this.db
+      .collection(this.collection)
+      .where(PRODUCT_FIELDS.IS_PRE_ORDER, "==", true)
+      .where(PRODUCT_FIELDS.PRE_ORDER_DELIVERY_DATE, ">=", now)
+      .get();
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as ProductDocument[];
   }
 
   /**
@@ -268,6 +301,7 @@ class ProductRepository extends BaseRepository<ProductDocument> {
     sellerName: { canFilter: true, canSort: true },
     featured: { canFilter: true, canSort: false },
     isAuction: { canFilter: true, canSort: false },
+    isPreOrder: { canFilter: true, canSort: false },
     isPromoted: { canFilter: true, canSort: false },
     price: { canFilter: true, canSort: true },
     stockQuantity: { canFilter: true, canSort: true },
@@ -283,6 +317,14 @@ class ProductRepository extends BaseRepository<ProductDocument> {
     minBidIncrement: { canFilter: true, canSort: false },
     autoExtendable: { canFilter: true, canSort: false },
     reservePrice: { canFilter: true, canSort: true },
+    // pre-order-specific
+    preOrderDeliveryDate: { canFilter: true, canSort: true },
+    preOrderDepositPercent: { canFilter: true, canSort: false },
+    preOrderDepositAmount: { canFilter: true, canSort: true },
+    preOrderMaxQuantity: { canFilter: true, canSort: true },
+    preOrderCurrentCount: { canFilter: true, canSort: true },
+    preOrderProductionStatus: { canFilter: true, canSort: false },
+    preOrderCancellable: { canFilter: true, canSort: false },
     // product metadata
     tags: { canFilter: true, canSort: false },
     features: { canFilter: true, canSort: false },

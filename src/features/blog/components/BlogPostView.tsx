@@ -14,7 +14,7 @@ import {
   Span,
   TextLink,
 } from "@/components";
-import { BlogCard } from "./BlogCard";
+import { BlogCard } from "@/components";
 import { formatDate } from "@/utils";
 import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
 
@@ -190,7 +190,7 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
         )}
 
         {/* Back link */}
-        <div className="mt-10 pt-8 border-t border-gray-200 dark:border-gray-700">
+        <div className={`mt-10 pt-8 border-t ${themed.border}`}>
           <TextLink href={ROUTES.PUBLIC.BLOG}>
             <Button variant="outline">{t("backToBlog")}</Button>
           </TextLink>

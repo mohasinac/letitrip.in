@@ -29,6 +29,7 @@ export * from "./review.repository";
 export * from "./session.repository";
 export * from "./bid.repository";
 export * from "./cart.repository";
+export * from "./store.repository";
 
 // Platform configuration repositories
 export * from "./site-settings.repository";
@@ -58,6 +59,7 @@ export { siteSettingsRepository } from "./site-settings.repository";
 export { carouselRepository } from "./carousel.repository";
 export { homepageSectionsRepository } from "./homepage-sections.repository";
 export { categoriesRepository } from "./categories.repository";
+export { storeRepository } from "./store.repository";
 export { couponsRepository } from "./coupons.repository";
 export { faqsRepository } from "./faqs.repository";
 export { addressRepository } from "./address.repository";

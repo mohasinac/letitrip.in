@@ -9,6 +9,7 @@
 
 import { getAdminDb } from "@/lib/firebase/admin";
 import { serverLogger } from "@/lib/server-logger";
+import { USER_COLLECTION } from "@/db/schema";
 
 export interface WishlistItem {
   productId: string;
@@ -20,7 +21,7 @@ class WishlistRepository {
 
   private getUserWishlistRef(uid: string) {
     return getAdminDb()
-      .collection("users")
+      .collection(USER_COLLECTION)
       .doc(uid)
       .collection(this.subcollection);
   }

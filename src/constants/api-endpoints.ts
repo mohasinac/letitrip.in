@@ -42,15 +42,6 @@ export const API_ENDPOINTS = {
       REMOVE: (productId: string) => `/api/user/wishlist/${productId}`,
       CHECK: (productId: string) => `/api/user/wishlist/${productId}`,
     },
-    /** @deprecated Use top-level API_ENDPOINTS.ADDRESSES instead (identical paths) */
-    ADDRESSES: {
-      LIST: "/api/user/addresses",
-      CREATE: "/api/user/addresses",
-      GET_BY_ID: (id: string) => `/api/user/addresses/${id}`,
-      UPDATE: (id: string) => `/api/user/addresses/${id}`,
-      DELETE: (id: string) => `/api/user/addresses/${id}`,
-      SET_DEFAULT: (id: string) => `/api/user/addresses/${id}/set-default`,
-    },
   },
 
   // Profile endpoints ✅ All routes exist
@@ -61,12 +52,8 @@ export const API_ENDPOINTS = {
       `/api/products?filters=sellerId==${userId},status==published&sorts=-createdAt&pageSize=6`,
     GET_STOREFRONT_PRODUCTS: (userId: string) =>
       `/api/products?filters=sellerId==${userId},status==published&sorts=-createdAt&pageSize=12`,
-    /** @deprecated Use API_ENDPOINTS.USER.PROFILE with PATCH */
-    UPDATE: "/api/user/profile",
     ADD_PHONE: "/api/profile/add-phone",
     VERIFY_PHONE: "/api/profile/verify-phone",
-    /** @deprecated Use API_ENDPOINTS.USER.CHANGE_PASSWORD */
-    UPDATE_PASSWORD: "/api/user/change-password",
     DELETE_ACCOUNT: "/api/profile/delete-account",
   },
 

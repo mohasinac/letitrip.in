@@ -1,2 +1,2 @@
-export { ReviewCard } from "./ReviewCard";
+export { ReviewCard } from "@/components";
 export { ReviewsListView } from "./ReviewsListView";

@@ -13,8 +13,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ref, onValue, off, type DatabaseReference } from "firebase/database";
-import { realtimeDb } from "@/lib/firebase/config";
+import { ref, onValue, type DatabaseReference } from "firebase/database";
+import { realtimeDb } from "@/lib/firebase/realtime";
 import { logger } from "@/classes";
 
 export interface RealtimeBidData {
@@ -87,7 +87,7 @@ export function useRealtimeBids(
     );
 
     return () => {
-      off(bidRef);
+      unsubscribe();
     };
   }, [productId]);
 

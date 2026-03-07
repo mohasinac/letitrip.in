@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { logger } from "@/classes";
-import { useFaqVote } from "@/hooks";
+import { useFaqVote, useMessage } from "@/hooks";
 import { Button, Span, Text } from "@/components";
 
 const { flex } = THEME_CONSTANTS;
@@ -29,6 +29,7 @@ export function FAQHelpfulButtons({
   );
 
   const mutation = useFaqVote();
+  const { showError } = useMessage();
 
   const handleVote = async (isHelpful: boolean) => {
     if (mutation.isLoading || userVote) return;
@@ -49,6 +50,7 @@ export function FAQHelpfulButtons({
       }
     } catch (error) {
       logger.error(ERROR_MESSAGES.FAQ.VOTE_FAILED, error);
+      showError(ERROR_MESSAGES.FAQ.VOTE_FAILED);
     }
   };
 

@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { Button, Checkbox, Input, Label, Select } from "@/components";
 import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import type { PollConfig } from "@/db/schema";
+
+const { spacing } = THEME_CONSTANTS;
 
 interface PollConfigFormProps {
   value: Partial<PollConfig>;
@@ -42,7 +45,7 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className={spacing.stack}>
       <div className="space-y-2">
         <Label>Poll Options</Label>
         {options.map((opt, idx) => (

@@ -4,7 +4,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { ReviewCard } from "../ReviewCard";
+import { ReviewCard } from "@/components";
 import type { ReviewDocument } from "@/db/schema";
 
 jest.mock("next-intl", () => ({

@@ -198,6 +198,40 @@ export function SessionProvider({ children }: SessionProviderProps) {
     [getSessionIdFromCookie],
   );
 
+  // Fetch user profile from server session cookie only (no Firebase SDK user required).
+  // Used for server-side auth flows (Google OAuth, Apple OAuth) where the client SDK
+  // is never signed in directly.
+  const fetchUserProfileFromServer =
+    useCallback(async (): Promise<SessionUser | null> => {
+      try {
+        const data = await sessionService.getProfile();
+        const currentSessionId = getSessionIdFromCookie();
+        return {
+          uid: data.uid,
+          email: data.email || null,
+          emailVerified: data.emailVerified || false,
+          displayName: data.displayName || null,
+          photoURL: data.photoURL || null,
+          phoneNumber: data.phoneNumber || null,
+          role: data.role || "user",
+          disabled: data.disabled,
+          createdAt: data.createdAt ? new Date(data.createdAt) : undefined,
+          updatedAt: data.updatedAt ? new Date(data.updatedAt) : undefined,
+          sessionId: currentSessionId || undefined,
+          phoneVerified: data.phoneVerified,
+          avatarMetadata: data.avatarMetadata?.url
+            ? {
+                url: data.avatarMetadata.url,
+                position: data.avatarMetadata.position || { x: 50, y: 50 },
+                zoom: data.avatarMetadata.zoom || 1,
+              }
+            : null,
+        };
+      } catch {
+        return null;
+      }
+    }, [getSessionIdFromCookie]);
+
   // Update session activity
   const updateSessionActivity = useCallback(async () => {
     const currentSessionId = getSessionIdFromCookie();
@@ -216,14 +250,27 @@ export function SessionProvider({ children }: SessionProviderProps) {
     updateSessionActivityRef.current = updateSessionActivity;
   }, [updateSessionActivity]);
 
-  // Refresh user data
+  // Refresh user data — falls back to server-session hydration when Firebase SDK
+  // is not signed in (e.g. after Google OAuth or server-side registration).
   const refreshUser = useCallback(async () => {
     const currentAuth = getCurrentUser();
     if (currentAuth) {
       const userData = await fetchUserProfile(currentAuth);
       setUser(userData);
+    } else if (hasSessionCookie()) {
+      const userData = await fetchUserProfileFromServer();
+      if (userData) {
+        setUser(userData);
+        const sid = getSessionIdFromCookie();
+        if (sid) setSessionId(sid);
+      }
     }
-  }, [fetchUserProfile]);
+  }, [
+    fetchUserProfile,
+    fetchUserProfileFromServer,
+    hasSessionCookie,
+    getSessionIdFromCookie,
+  ]);
 
   // Refresh session (validate with server)
   const refreshSession = useCallback(async () => {
@@ -242,15 +289,17 @@ export function SessionProvider({ children }: SessionProviderProps) {
   // Sign out
   const signOut = useCallback(async () => {
     try {
-      // Sign out from Firebase first
-      await firebaseSignOut();
-
-      // Clear session on server (with cookies)
+      // Clear server session FIRST — this removes __session_id before firebaseSignOut()
+      // triggers onAuthStateChanged(null). If __session_id is still present when that
+      // callback fires, the "server-session fallback" logic would re-login the user.
       try {
         await authService.logout();
       } catch (error) {
         logger.error(ERROR_MESSAGES.SESSION.SERVER_LOGOUT_ERROR, { error });
       }
+
+      // Now sign out of Firebase SDK (triggers onAuthStateChanged with null)
+      await firebaseSignOut();
 
       // Clear state immediately
       setUser(null);
@@ -329,7 +378,24 @@ export function SessionProvider({ children }: SessionProviderProps) {
           5 * 60 * 1000,
         );
       } else {
-        // No auth user - clear everything
+        // No Firebase SDK user.
+        // If a session cookie exists this is a server-set session (Google/Apple OAuth,
+        // server-side registration) — try to hydrate state from the server session.
+        if (hasSessionCookie()) {
+          const serverUser = await fetchUserProfileFromServer();
+          if (thisVersion !== authVersion) return;
+          if (serverUser) {
+            setUser(serverUser);
+            const sid = getSessionIdFromCookie();
+            if (sid) setSessionId(sid);
+            setLoading(false);
+            return;
+          }
+          // Profile fetch failed — session is invalid, clear everything
+          deleteCookie("__session");
+          deleteCookie("__session_id");
+        }
+
         setUser(null);
         setSessionId(null);
 
@@ -337,12 +403,6 @@ export function SessionProvider({ children }: SessionProviderProps) {
         if (activityUpdateRef.current) {
           clearInterval(activityUpdateRef.current);
           activityUpdateRef.current = null;
-        }
-
-        // Clear cookies if they still exist
-        if (hasSessionCookie()) {
-          deleteCookie("__session");
-          deleteCookie("__session_id");
         }
       }
 

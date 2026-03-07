@@ -43,6 +43,8 @@ async function dispatchPayout(entry: {
     const keyId = process.env.RAZORPAY_KEY_ID ?? "";
     const keySecret = process.env.RAZORPAY_KEY_SECRET ?? "";
     const accountNumber = process.env.RAZORPAY_ACCOUNT_NUMBER ?? "";
+    const apiBaseUrl =
+      process.env.RAZORPAY_API_BASE_URL ?? "https://api.razorpay.com/v1";
 
     if (!keyId || !keySecret || !accountNumber) {
       throw new ConfigurationError(
@@ -91,7 +93,7 @@ async function dispatchPayout(entry: {
       narration: `LetItRip payout for seller ${payout.sellerId}`,
     };
 
-    const response = await fetch("https://api.razorpay.com/v1/payouts", {
+    const response = await fetch(`${apiBaseUrl}/payouts`, {
       method: "POST",
       headers: {
         Authorization: `Basic ${basicAuth}`,

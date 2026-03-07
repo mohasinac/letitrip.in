@@ -1,7 +1,10 @@
 "use client";
 
 import { Checkbox } from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
 import { SurveyFieldBuilder } from "../SurveyFieldBuilder";
+
+const { spacing } = THEME_CONSTANTS;
 import type { SurveyConfig } from "@/db/schema";
 
 interface SurveyConfigFormProps {
@@ -11,7 +14,7 @@ interface SurveyConfigFormProps {
 
 export function SurveyConfigForm({ value, onChange }: SurveyConfigFormProps) {
   return (
-    <div className="space-y-4">
+    <div className={spacing.stack}>
       <Checkbox
         id="entryReview"
         checked={value.entryReviewRequired ?? false}

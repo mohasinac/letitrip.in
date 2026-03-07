@@ -121,7 +121,9 @@ function SuccessState() {
   return (
     <Card className={`${spacing.padding.lg} text-center max-w-xl mx-auto`}>
       <div className={`${flex.colCenter} gap-4`}>
-        <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-3xl">
+        <div
+          className={`w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 ${flex.center} text-3xl`}
+        >
           ??
         </div>
         <Badge variant="success">{t("badge")}</Badge>

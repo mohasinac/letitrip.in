@@ -15,6 +15,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Button, Heading, Text } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { logger } from "@/classes";
+import { nowISO } from "@/utils";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -28,7 +29,7 @@ export default function Error({ error, reset }: ErrorProps) {
       message: error.message,
       stack: error.stack,
       digest: error.digest,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       type: "runtime-error",
     });
   }, [error]);

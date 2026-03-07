@@ -170,6 +170,35 @@ export function generateAuctionId(input: GenerateAuctionIdInput): string {
 }
 
 // ============================================
+// PRE-ORDER ID GENERATION
+// ============================================
+
+export interface GeneratePreOrderIdInput {
+  name: string;
+  category: string;
+  condition: "new" | "used" | "refurbished";
+  sellerName: string;
+  count?: number; // Auto-increment count for duplicate names
+}
+
+/**
+ * Generate pre-order ID: preorder-{name}-{category}-{condition}-{seller-name}-{count}
+ *
+ * Examples:
+ * - preorder-macbook-pro-m4-laptops-new-techstore-1
+ * - preorder-limited-sneaker-footwear-new-brandshop-1
+ */
+export function generatePreOrderId(input: GeneratePreOrderIdInput): string {
+  const nameSlug = slugify(input.name);
+  const categorySlug = slugify(input.category);
+  const conditionSlug = input.condition.toLowerCase();
+  const sellerSlug = slugify(input.sellerName);
+  const count = input.count || 1;
+
+  return `preorder-${nameSlug}-${categorySlug}-${conditionSlug}-${sellerSlug}-${count}`;
+}
+
+// ============================================
 // REVIEW ID GENERATION
 // ============================================
 
@@ -347,76 +376,6 @@ export function generateBidId(input: GenerateBidIdInput): string {
   const random = input.random || generateRandomString(6);
 
   return `bid-${productSlug}-${userSlug}-${dateStr}-${random}`;
-}
-
-// ============================================
-// BARCODE GENERATION
-// ============================================
-
-/**
- * Generate barcode-compatible string from ID
- * - Converts ID to numeric string suitable for barcode encoding
- * - Uses simple character-to-number mapping
- *
- * This is a placeholder - actual barcode generation should use
- * a proper library like jsbarcode or barcode-generator
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function generateBarcodeFromId(id: string): string {
-  // Convert string to numeric representation
-  let numeric = "";
-  for (let i = 0; i < id.length; i++) {
-    const char = id.charAt(i);
-    if (char >= "0" && char <= "9") {
-      numeric += char;
-    } else {
-      // Convert letter to number (a=10, b=11, ..., z=35)
-      const code = char.charCodeAt(0);
-      if (code >= 97 && code <= 122) {
-        numeric += (code - 87).toString();
-      }
-    }
-  }
-
-  // Pad or truncate to standard barcode length (12-13 digits for EAN/UPC)
-  return numeric.padEnd(12, "0").substring(0, 12);
-}
-
-// ============================================
-// QR CODE DATA GENERATION
-// ============================================
-
-/**
- * Generate QR code data from ID
- * - Returns full URL for the entity
- * - QR code libraries can encode this URL
- *
- * This is a placeholder - actual QR generation should use
- * a proper library like qrcode or react-qr-code
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function generateQRCodeData(
-  id: string,
-  baseUrl: string = "https://letitrip.in",
-): string {
-  // Determine entity type from ID prefix
-  const prefix = id.split("-")[0];
-
-  const urlMap: Record<string, string> = {
-    product: `/products/${id}`,
-    auction: `/auctions/${id}`,
-    category: `/categories/${id}`,
-    order: `/orders/${id}`,
-    user: `/profile/${id}`,
-    review: `/reviews/${id}`,
-    faq: `/faqs/${id}`,
-    coupon: `/coupons/${id}`,
-  };
-
-  const path = urlMap[prefix] || `/${id}`;
-  return `${baseUrl}${path}`;
 }
 
 // ============================================

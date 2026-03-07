@@ -5,7 +5,7 @@
  */
 
 import { UserRole } from "@/types/auth";
-import { ROLE_HIERARCHY } from "@/constants/rbac";
+import { ROLE_HIERARCHY } from "@/constants";
 import { isTokenExpired, getTokenTimeRemaining } from "./token.helper";
 
 /**

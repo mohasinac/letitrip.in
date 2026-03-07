@@ -84,7 +84,7 @@ export function FilterFacetSection({
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
 
   const groupId = useId();
-  const { themed, spacing } = THEME_CONSTANTS;
+  const { themed, spacing, flex } = THEME_CONSTANTS;
   const t = useTranslations("filters");
   const tTable = useTranslations("table");
 
@@ -131,7 +131,10 @@ export function FilterFacetSection({
   /** ↑/↓ keyboard navigation between inputs */
   const handleOptionsKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
-    const inputType = selectionMode === "single" ? 'input[type="radio"]' : 'input[type="checkbox"]';
+    const inputType =
+      selectionMode === "single"
+        ? 'input[type="radio"]'
+        : 'input[type="checkbox"]';
     const inputs = Array.from(
       e.currentTarget.querySelectorAll<HTMLInputElement>(inputType),
     );
@@ -169,7 +172,7 @@ export function FilterFacetSection({
           {title}
           {selected.length > 0 && (
             <Span
-              className={`inline-flex items-center justify-center w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
+              className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
             >
               {selected.length}
             </Span>
@@ -212,28 +215,30 @@ export function FilterFacetSection({
           )}
 
           {/* Select all / Deselect all — multi mode only */}
-          {showSelectAll && selectionMode === "multi" && visibleOptions.length > 0 && (
-            <div className="mb-1 flex items-center justify-between">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={handleSelectAll}
-                className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline p-0 h-auto"
-              >
-                {allVisibleSelected ? t("deselectAll") : t("selectAll")}
-              </Button>
-              {selected.length > 0 && (
+          {showSelectAll &&
+            selectionMode === "multi" &&
+            visibleOptions.length > 0 && (
+              <div className={`mb-1 ${flex.between}`}>
                 <Button
                   type="button"
                   variant="ghost"
-                  onClick={() => onChange([])}
-                  className="text-xs text-gray-500 dark:text-gray-400 hover:underline p-0 h-auto"
+                  onClick={handleSelectAll}
+                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline p-0 h-auto"
                 >
-                  {t("clearSection")}
+                  {allVisibleSelected ? t("deselectAll") : t("selectAll")}
                 </Button>
-              )}
-            </div>
-          )}
+                {selected.length > 0 && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => onChange([])}
+                    className="text-xs text-gray-500 dark:text-gray-400 hover:underline p-0 h-auto"
+                  >
+                    {t("clearSection")}
+                  </Button>
+                )}
+              </div>
+            )}
 
           {/* Options */}
           {visibleOptions.length === 0 ? (
@@ -260,7 +265,9 @@ export function FilterFacetSection({
                     />
                     <Span className="text-sm flex-1">{opt.label}</Span>
                     {opt.count !== undefined && (
-                      <Span className={`text-xs ${themed.textSecondary} tabular-nums`}>
+                      <Span
+                        className={`text-xs ${themed.textSecondary} tabular-nums`}
+                      >
                         {formatNumber(opt.count)}
                       </Span>
                     )}

@@ -98,7 +98,7 @@ export function ResetPasswordView() {
           <Heading level={4} className="mb-2">
             {t("resetPassword.success")}
           </Heading>
-          <Text className="text-gray-600 mb-6">
+          <Text variant="secondary" className="mb-6">
             {t("resetPassword.successMessage")}
           </Text>
           <Button
@@ -120,9 +120,7 @@ export function ResetPasswordView() {
           <Heading level={4} className="mb-2">
             {t("resetPassword.pageTitle")}
           </Heading>
-          <Text className="text-gray-600">
-            {t("resetPassword.subtitleShort")}
-          </Text>
+          <Text variant="secondary">{t("resetPassword.subtitleShort")}</Text>
         </div>
 
         {(error || tokenError) && (
@@ -190,7 +188,7 @@ export function ResetPasswordView() {
         </form>
 
         <div className="mt-6 text-center">
-          <Text className="text-gray-600 text-sm">
+          <Text variant="secondary" size="sm">
             {t("forgotPassword.rememberPassword")}{" "}
             <TextLink
               href={ROUTES.AUTH.LOGIN}

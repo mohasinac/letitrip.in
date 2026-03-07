@@ -8,8 +8,10 @@ import type { UserRole } from "@/types/auth";
 import {
   generateProductId,
   generateAuctionId,
+  generatePreOrderId,
   type GenerateProductIdInput,
   type GenerateAuctionIdInput,
+  type GeneratePreOrderIdInput,
 } from "@/utils";
 
 // ============================================
@@ -44,6 +46,7 @@ export interface ProductDocument {
 
   status: ProductStatus;
   sellerId: string; // User who created the product
+  storeId?: string; // Store this product belongs to (references stores/{storeId})
   sellerName: string;
   sellerEmail: string;
   featured: boolean;
@@ -80,6 +83,16 @@ export interface ProductDocument {
 
   // Auction shipping — who pays for shipping (seller or auction winner)
   auctionShippingPaidBy?: "seller" | "winner";
+
+  // Pre-order fields (optional — for pre-order items)
+  isPreOrder?: boolean;
+  preOrderDeliveryDate?: Date; // Expected delivery / dispatch date
+  preOrderDepositPercent?: number; // % of price paid upfront (e.g. 20)
+  preOrderDepositAmount?: number; // Calculated deposit amount in currency
+  preOrderMaxQuantity?: number; // Maximum units available for pre-order
+  preOrderCurrentCount?: number; // Current pre-order reservations
+  preOrderProductionStatus?: "upcoming" | "in_production" | "ready_to_ship"; // Manufacturing stage
+  preOrderCancellable?: boolean; // Whether buyers can cancel before dispatch
 
   // Advertisement fields
   isPromoted?: boolean;
@@ -125,6 +138,7 @@ export const PRODUCT_INDEXED_FIELDS = [
   "category", // For category-based searches
   "featured", // For featured product queries
   "isAuction", // For auction filtering
+  "isPreOrder", // For pre-order filtering
   "isPromoted", // For promoted/advertisement filtering
   "createdAt", // For sorting by creation date
 ] as const;
@@ -170,6 +184,7 @@ export const DEFAULT_PRODUCT_DATA: Partial<ProductDocument> = {
   tags: [],
   availableQuantity: 0,
   isAuction: false,
+  isPreOrder: false,
   isPromoted: false,
   bidCount: 0,
   condition: "new",
@@ -214,6 +229,14 @@ export const PRODUCT_PUBLIC_FIELDS = [
   "autoExtendable",
   "auctionExtensionMinutes",
   "auctionShippingPaidBy",
+  "isPreOrder",
+  "preOrderDeliveryDate",
+  "preOrderDepositPercent",
+  "preOrderDepositAmount",
+  "preOrderMaxQuantity",
+  "preOrderCurrentCount",
+  "preOrderProductionStatus",
+  "preOrderCancellable",
   "condition",
   "insurance",
   "insuranceCost",
@@ -255,6 +278,13 @@ export const PRODUCT_UPDATABLE_FIELDS = [
   "reservePrice",
   "buyNowPrice",
   "minBidIncrement",
+  "isPreOrder",
+  "preOrderDeliveryDate",
+  "preOrderDepositPercent",
+  "preOrderDepositAmount",
+  "preOrderMaxQuantity",
+  "preOrderProductionStatus",
+  "preOrderCancellable",
   "seoTitle",
   "seoDescription",
   "seoKeywords",
@@ -305,6 +335,7 @@ export const productQueryHelpers = {
   published: () => ["status", "==", "published"] as const,
   available: () => ["availableQuantity", ">", 0] as const,
   auctions: () => ["isAuction", "==", true] as const,
+  preOrders: () => ["isPreOrder", "==", true] as const,
   promoted: () => ["isPromoted", "==", true] as const,
   activeAuction: (date: Date) => ["auctionEndDate", ">=", date] as const,
 } as const;
@@ -353,4 +384,25 @@ export function createAuctionId(
   input: Omit<GenerateAuctionIdInput, "count"> & { count?: number },
 ): string {
   return generateAuctionId(input as GenerateAuctionIdInput);
+}
+
+/**
+ * Generate SEO-friendly pre-order ID
+ * Pattern: preorder-{name}-{category}-{condition}-{seller-name}-{count}
+ *
+ * @param input - Pre-order details
+ * @returns SEO-friendly pre-order ID
+ *
+ * Example: createPreOrderId({
+ *   name: "MacBook Pro M4",
+ *   category: "Laptops",
+ *   condition: "new",
+ *   sellerName: "TechStore",
+ *   count: 1
+ * }) → "preorder-macbook-pro-m4-laptops-new-techstore-1"
+ */
+export function createPreOrderId(
+  input: Omit<GeneratePreOrderIdInput, "count"> & { count?: number },
+): string {
+  return generatePreOrderId(input as GeneratePreOrderIdInput);
 }

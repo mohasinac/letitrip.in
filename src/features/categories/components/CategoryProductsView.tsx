@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useMemo } from "react";
 import { Star, Heart } from "lucide-react";
@@ -28,7 +28,7 @@ import {
   TextLink,
 } from "@/components";
 import type { ActiveFilter, ProductSortValue } from "@/components";
-import { RangeFilter } from "@/components/filters";
+import { RangeFilter } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useUrlTable, usePendingTable } from "@/hooks";
 import { useCategoryDetail } from "../hooks/useCategoryDetail";
@@ -141,7 +141,7 @@ export function CategoryProductsView({ slug }: Props) {
   if (!category) {
     return (
       <div
-        className={`max-w-7xl mx-auto px-4 py-20 text-center ${spacing.stack}`}
+        className={`${THEME_CONSTANTS.page.container["2xl"]} py-20 text-center ${spacing.stack}`}
       >
         <Text size="lg" weight="medium">
           {t("noCategories")}
@@ -352,6 +352,7 @@ export function CategoryProductsView({ slug }: Props) {
                   { key: "status", header: tProducts("colStatus") },
                 ]}
                 showViewToggle
+                showTableView={false}
                 viewMode={
                   (table.get("view") || "grid") as "table" | "grid" | "list"
                 }

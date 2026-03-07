@@ -47,6 +47,24 @@ export const productService = {
       `${API_ENDPOINTS.PRODUCTS.LIST}${params ? `?${params}` : "?filters=isAuction==true,status==published&sorts=auctionEndDate"}`,
     ),
 
+  /** Homepage featured pre-orders (active, sorted by delivery date) */
+  getFeaturedPreOrders: () =>
+    apiClient.get(
+      `${API_ENDPOINTS.PRODUCTS.LIST}?filters=isPreOrder==true,status==published&sorts=preOrderDeliveryDate&pageSize=6`,
+    ),
+
+  /** Latest published pre-orders (for homepage fallback) */
+  getLatestPreOrders: (pageSize = 12) =>
+    apiClient.get(
+      `${API_ENDPOINTS.PRODUCTS.LIST}?isPreOrder=true&status=published&sorts=-createdAt&pageSize=${pageSize}`,
+    ),
+
+  /** List live pre-orders with optional Sieve filter/sort/pagination query string */
+  listPreOrders: (params?: string) =>
+    apiClient.get(
+      `${API_ENDPOINTS.PRODUCTS.LIST}${params ? `?${params}` : "?filters=isPreOrder==true,status==published&sorts=preOrderDeliveryDate"}`,
+    ),
+
   /** Related products by category, excluding a given product ID */
   getRelated: (categoryId: string, excludeId: string, limit = 6) =>
     apiClient.get(

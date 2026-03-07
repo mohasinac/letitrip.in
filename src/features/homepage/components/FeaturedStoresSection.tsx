@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useFeaturedStores } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { StoreCard } from "@/features/stores";
+import { StoreCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";
 
 export function FeaturedStoresSection() {
@@ -27,7 +27,7 @@ export function FeaturedStoresSection() {
       gap={12}
       autoScroll
       autoScrollInterval={4500}
-      keyExtractor={(s) => s.uid}
+      keyExtractor={(s) => s.id}
       isLoading={isLoading}
       skeletonCount={5}
       className={THEME_CONSTANTS.themed.bgPrimary}

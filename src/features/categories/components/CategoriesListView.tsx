@@ -34,7 +34,10 @@ function CategoriesListContent() {
     queryFn: () => categoryService.list("flat=true"),
   });
 
-  const allCategories = useMemo(() => data?.data ?? [], [data]);
+  const allCategories = useMemo(
+    () => (data?.data ?? []).filter((c) => !c.isBrand),
+    [data],
+  );
   const total = allCategories.length;
 
   const displayed = useMemo(() => {

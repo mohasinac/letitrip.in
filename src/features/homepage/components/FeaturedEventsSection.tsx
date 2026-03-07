@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useFeaturedEvents } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { EventCard } from "@/features/events";
+import { EventCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";
 
 export function FeaturedEventsSection() {

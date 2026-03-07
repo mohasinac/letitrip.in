@@ -3,10 +3,7 @@
 import { useState, useCallback } from "react";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { demoService } from "@/services";
-import type {
-  SeedCollectionStatus,
-  SeedOperationResult,
-} from "@/services/demo.service";
+import type { SeedCollectionStatus, SeedOperationResult } from "@/services";
 
 export type SeedCollectionName =
   | "users"

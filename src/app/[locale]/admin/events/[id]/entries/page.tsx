@@ -9,9 +9,11 @@ import {
   Select,
   TablePagination,
 } from "@/components";
-import { ROUTES } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
+
+const { spacing } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
-import { useUrlTable, useMessage } from "@/hooks";
+import { useUrlTable } from "@/hooks";
 import {
   useEvent,
   useEventEntries,
@@ -32,7 +34,6 @@ export default function AdminEventEntriesPage() {
   const [reviewEntry, setReviewEntry] = useState<EventEntryDocument | null>(
     null,
   );
-  const { showSuccess } = useMessage();
   const t = useTranslations("adminEvents");
   const tEmpty = useTranslations("empty");
 
@@ -69,7 +70,7 @@ export default function AdminEventEntriesPage() {
         />
       )}
 
-      <div className="space-y-4 mt-4">
+      <div className={`${spacing.stack} mt-4`}>
         <AdminFilterBar columns={2}>
           <Select
             value={table.get("reviewStatus")}

@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import NotificationBell from "../NotificationBell";
+import { NotificationBell } from "@/components";
 
 // --- Mocks ---
 jest.mock("next-intl", () => ({

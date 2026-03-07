@@ -14,6 +14,8 @@ import type { OrderDocument, OrderStatus, PaymentStatus } from "@/db/schema";
 
 const LABELS = UI_LABELS.ADMIN.ORDERS;
 
+const { spacing, themed } = THEME_CONSTANTS;
+
 const ORDER_STATUS_OPTIONS: { value: OrderStatus; label: string }[] = [
   { value: "pending", label: "Pending" },
   { value: "confirmed", label: "Confirmed" },
@@ -59,7 +61,7 @@ export function OrderStatusForm({ order, onChange }: OrderStatusFormProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className={spacing.stack}>
       {/* Read-only order info */}
       <div
         className={`rounded-lg border ${THEME_CONSTANTS.themed.border} p-4 space-y-2 text-sm`}

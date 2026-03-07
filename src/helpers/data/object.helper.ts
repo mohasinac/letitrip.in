@@ -115,56 +115,6 @@ export function isEmptyObject(obj: Record<string, any>): boolean {
 }
 
 /**
- * Gets a nested property value using dot notation
- *
- * @param obj - The object to query
- * @param path - The property path (e.g., 'user.address.city')
- * @returns The value at the path, or undefined if not found
- *
- * @example
- * ```typescript
- * const data = { user: { address: { city: 'NYC' } } };
- * const city = getNestedValue<string>(data, 'user.address.city');
- * console.log(city); // 'NYC'
- * ```
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function getNestedValue<T>(obj: any, path: string): T | undefined {
-  return path.split(".").reduce((current, key) => current?.[key], obj);
-}
-
-/**
- * Sets a nested property value using dot notation, creating intermediate objects as needed
- *
- * @param obj - The object to modify
- * @param path - The property path (e.g., 'user.address.city')
- * @param value - The value to set
- *
- * @example
- * ```typescript
- * const data = {};
- * setNestedValue(data, 'user.address.city', 'NYC');
- * console.log(data); // { user: { address: { city: 'NYC' } } }
- * ```
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function setNestedValue(obj: any, path: string, value: any): void {
-  const keys = path.split(".");
-  const lastKey = keys.pop()!;
-
-  const target = keys.reduce((current, key) => {
-    if (!(key in current)) {
-      current[key] = {};
-    }
-    return current[key];
-  }, obj);
-
-  target[lastKey] = value;
-}
-
-/**
  * Creates a deep clone of an object, handling nested objects and arrays
  * Properly handles null values, arrays, and deeply nested structures
  *
@@ -194,13 +144,6 @@ export function deepClone<T>(obj: T): T {
   });
 
   return cloned;
-}
-
-/**
- * @deprecated Use deepClone instead. This is an alias for backward compatibility.
- */
-export function deepCloneObject<T>(obj: T): T {
-  return deepClone(obj);
 }
 
 /**
@@ -276,31 +219,4 @@ export function cleanObject<T extends Record<string, any>>(
 
     return acc;
   }, {} as Partial<T>);
-}
-
-/**
- * Swaps the keys and values of an object
- *
- * @param obj - The object to invert
- * @returns A new object with keys and values swapped
- *
- * @example
- * ```typescript
- * const codes = { US: 'United States', UK: 'United Kingdom' };
- * const inverted = invertObject(codes);
- * console.log(inverted); // { 'United States': 'US', 'United Kingdom': 'UK' }
- * ```
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function invertObject(
-  obj: Record<string, string>,
-): Record<string, string> {
-  return Object.entries(obj).reduce(
-    (acc, [key, value]) => {
-      acc[value] = key;
-      return acc;
-    },
-    {} as Record<string, string>,
-  );
 }

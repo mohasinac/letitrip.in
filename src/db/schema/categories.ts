@@ -73,6 +73,9 @@ export interface CategoryDocument {
   isFeatured: boolean; // Requires totalItemCount >= 8
   featuredPriority?: number; // Order in featured categories (lower = higher priority)
 
+  // Brand Flag — brand-only categories are excluded from public category listings
+  isBrand?: boolean;
+
   // SEO & Metadata
   seo: CategorySEO;
 
@@ -116,6 +119,7 @@ export const CATEGORIES_INDEXED_FIELDS = [
   "isLeaf", // For leaf category queries
   "isFeatured", // For featured categories
   "featuredPriority", // For sorting featured categories
+  "isBrand", // For brand category filtering
   "isActive", // For active categories
   "isSearchable", // For search filtering
   "createdBy", // For admin filtering
@@ -170,6 +174,7 @@ export const DEFAULT_CATEGORY_DATA: Partial<CategoryDocument> = {
   isLeaf: true,
   order: 0,
   isFeatured: false,
+  isBrand: false,
   isActive: true,
   isSearchable: true,
   metrics: {
@@ -208,6 +213,7 @@ export const CATEGORIES_PUBLIC_FIELDS = [
   "metrics.totalItemCount",
   "isFeatured",
   "featuredPriority",
+  "isBrand",
   "seo",
   "display",
   "isActive",
@@ -224,6 +230,7 @@ export const CATEGORIES_UPDATABLE_FIELDS = [
   "order",
   "isFeatured",
   "featuredPriority",
+  "isBrand",
   "seo",
   "display",
   "isActive",
@@ -255,6 +262,7 @@ export type CategoryUpdateInput = Partial<
     | "order"
     | "isFeatured"
     | "featuredPriority"
+    | "isBrand"
     | "seo"
     | "display"
     | "isActive"
@@ -294,6 +302,7 @@ export const categoryQueryHelpers = {
   children: (parentId: string) =>
     ["parentIds", "array-contains", parentId] as const,
   featured: () => ["isFeatured", "==", true] as const,
+  brands: () => ["isBrand", "==", true] as const,
   active: () => ["isActive", "==", true] as const,
   searchable: () => ["isSearchable", "==", true] as const,
   byCreator: (userId: string) => ["createdBy", "==", userId] as const,

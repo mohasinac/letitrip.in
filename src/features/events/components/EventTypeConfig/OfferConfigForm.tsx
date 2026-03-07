@@ -1,7 +1,10 @@
 "use client";
 
 import { FormField } from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
 import type { OfferConfig } from "@/db/schema";
+
+const { spacing } = THEME_CONSTANTS;
 
 interface OfferConfigFormProps {
   value: Partial<OfferConfig>;
@@ -13,7 +16,7 @@ export function OfferConfigForm({ value, onChange }: OfferConfigFormProps) {
     onChange({ ...value, [k]: v });
 
   return (
-    <div className="space-y-4">
+    <div className={spacing.stack}>
       <FormField
         label="Coupon ID"
         name="couponId"

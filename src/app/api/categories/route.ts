@@ -37,6 +37,7 @@ import { createApiHandler } from "@/lib/api/api-handler";
  * - rootId: string (optional, get specific tree)
  * - parentId: string (optional, get children of parent)
  * - featured: boolean (optional, get only featured)
+ * - isBrand: boolean (optional, get only brand categories)
  * - includeMetrics: boolean (optional, include product counts)
  * - flat: boolean (optional, return flat list instead of tree)
  *
@@ -57,6 +58,7 @@ export const GET = createApiHandler({
     const parentId = getStringParam(searchParams, "parentId");
     const slug = getStringParam(searchParams, "slug");
     const featured = getBooleanParam(searchParams, "featured") === true;
+    const brandsOnly = getBooleanParam(searchParams, "isBrand") === true;
     const flat = getBooleanParam(searchParams, "flat") === true;
     const tierParam = searchParams.get("tier");
     const tier =
@@ -73,6 +75,20 @@ export const GET = createApiHandler({
         throw new NotFoundError(ERROR_MESSAGES.CATEGORY.NOT_FOUND);
       }
       return successResponse(category);
+    }
+
+    // Brands-only listing (for homepage brands section)
+    if (brandsOnly) {
+      let brands = await categoriesRepository.getBrandCategories();
+      if (pageSize > 0) brands = brands.slice(0, pageSize);
+      const brandsResponse = successResponse(brands, undefined, 200, {
+        total: brands.length,
+      });
+      brandsResponse.headers.set(
+        "Cache-Control",
+        "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
+      );
+      return brandsResponse;
     }
 
     // Tier-based flat list (e.g. ?tier=0 for root categories on homepage)
@@ -97,7 +113,7 @@ export const GET = createApiHandler({
       // Get direct children of specific parent — Firestore-native
       categories = await categoriesRepository.getChildren(parentId);
     } else if (featured) {
-      // Get featured categories
+      // Get featured categories (brands excluded at repository level)
       categories = await categoriesRepository.findBy("isFeatured", true);
     } else if (rootId) {
       // Get categories by root ID
@@ -110,10 +126,11 @@ export const GET = createApiHandler({
     // Sort by order
     categories.sort((a, b) => a.order - b.order);
 
-    // Return flat list or tree structure
+    // For public flat list, filter out brands
     if (flat) {
-      const flatResponse = successResponse(categories, undefined, 200, {
-        total: categories.length,
+      const publicCategories = categories.filter((c) => !c.isBrand);
+      const flatResponse = successResponse(publicCategories, undefined, 200, {
+        total: publicCategories.length,
       });
       flatResponse.headers.set(
         "Cache-Control",
@@ -122,7 +139,7 @@ export const GET = createApiHandler({
       return flatResponse;
     }
 
-    // Build tree structure — buildTree fetches its own optimised query
+    // Build tree structure — buildTree fetches its own optimised query (brands excluded)
     const tree = await categoriesRepository.buildTree(rootId);
 
     const treeResponse = successResponse(tree, undefined, 200, {

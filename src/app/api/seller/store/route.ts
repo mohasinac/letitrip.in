@@ -1,18 +1,20 @@
 /**
- * GET  /api/seller/store
- * PATCH /api/seller/store
+ * GET   /api/seller/store  — Get the authenticated seller's StoreDocument
+ * POST  /api/seller/store  — Create the seller's store (first-time setup)
+ * PATCH /api/seller/store  — Update an existing store
  *
- * Get and update the authenticated seller's store profile.
- * Store data is embedded in the UserDocument.publicProfile + storeSlug fields.
+ * Store data lives in the `stores` Firestore collection as a separate document.
+ * UserDocument keeps storeId + storeSlug as indexed convenience fields.
  */
 
 import { z } from "zod";
-import { userRepository } from "@/repositories";
+import { storeRepository, userRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { createApiHandler } from "@/lib/api/api-handler";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { slugify } from "@/utils";
+import { ApiError, NotFoundError } from "@/lib/errors";
 
 // ─── GET ─────────────────────────────────────────────────────────────────────
 
@@ -20,16 +22,60 @@ export const GET = createApiHandler({
   auth: true,
   roles: ["seller", "admin"],
   handler: async ({ user }) => {
-    return successResponse({
-      uid: user!.uid,
-      storeSlug: user!.storeSlug ?? null,
-      storeStatus: user!.storeStatus ?? "pending",
-      publicProfile: user!.publicProfile ?? null,
-    });
+    const store = await storeRepository.findByOwnerId(user!.uid);
+    return successResponse({ store: store ?? null });
   },
 });
 
-// ─── PATCH ────────────────────────────────────────────────────────────────────
+// ─── POST — first-time store creation ────────────────────────────────────────
+
+const createStoreSchema = z.object({
+  storeName: z.string().min(2).max(80),
+  storeDescription: z.string().max(500).optional().or(z.literal("")),
+  storeCategory: z.string().max(80).optional().or(z.literal("")),
+});
+
+export const POST = createApiHandler<(typeof createStoreSchema)["_output"]>({
+  auth: true,
+  roles: ["seller", "admin"],
+  schema: createStoreSchema,
+  handler: async ({ user, body }) => {
+    const existing = await storeRepository.findByOwnerId(user!.uid);
+    if (existing) {
+      throw new ApiError(409, "Store already exists for this seller");
+    }
+
+    const { storeName, storeDescription, storeCategory } = body!;
+    const slugBase = slugify(`${storeName} ${user!.displayName ?? user!.uid}`);
+    const storeSlug = `store-${slugBase}`.slice(0, 80);
+
+    const store = await storeRepository.create({
+      storeSlug,
+      ownerId: user!.uid,
+      storeName,
+      storeDescription: storeDescription || undefined,
+      storeCategory: storeCategory || undefined,
+      isPublic: false,
+      status: "pending",
+    });
+
+    // Mirror storeId + storeSlug onto UserDocument for indexed lookups
+    await userRepository.update(user!.uid, {
+      storeId: store.id,
+      storeSlug: store.storeSlug,
+      storeStatus: "pending",
+    } as Parameters<typeof userRepository.update>[1]);
+
+    serverLogger.info("Seller created store", {
+      uid: user!.uid,
+      storeSlug: store.storeSlug,
+    });
+
+    return successResponse({ store }, SUCCESS_MESSAGES.USER.STORE_UPDATED);
+  },
+});
+
+// ─── PATCH — update existing store ───────────────────────────────────────────
 
 const updateStoreSchema = z.object({
   storeName: z.string().min(2).max(80).optional(),
@@ -37,8 +83,8 @@ const updateStoreSchema = z.object({
   storeCategory: z.string().max(80).optional().or(z.literal("")),
   storeLogoURL: z.string().url().optional().or(z.literal("")),
   storeBannerURL: z.string().url().optional().or(z.literal("")),
-  storeReturnPolicy: z.string().max(2000).optional().or(z.literal("")),
-  storeShippingPolicy: z.string().max(2000).optional().or(z.literal("")),
+  returnPolicy: z.string().max(2000).optional().or(z.literal("")),
+  shippingPolicy: z.string().max(2000).optional().or(z.literal("")),
   bio: z.string().max(300).optional().or(z.literal("")),
   website: z.string().url().optional().or(z.literal("")),
   location: z.string().max(100).optional().or(z.literal("")),
@@ -60,14 +106,19 @@ export const PATCH = createApiHandler<(typeof updateStoreSchema)["_output"]>({
   roles: ["seller", "admin"],
   schema: updateStoreSchema,
   handler: async ({ user, body }) => {
+    const store = await storeRepository.findByOwnerId(user!.uid);
+    if (!store) {
+      throw new NotFoundError("Store not found. Create a store first.");
+    }
+
     const {
       storeName,
       storeDescription,
       storeCategory,
       storeLogoURL,
       storeBannerURL,
-      storeReturnPolicy,
-      storeShippingPolicy,
+      returnPolicy,
+      shippingPolicy,
       bio,
       website,
       location,
@@ -77,66 +128,27 @@ export const PATCH = createApiHandler<(typeof updateStoreSchema)["_output"]>({
       isPublic,
     } = body!;
 
-    // Merge incoming fields into existing publicProfile (preserve unrelated fields)
-    const existing = user!.publicProfile ?? {
-      isPublic: true,
-      showEmail: false,
-      showPhone: false,
-      showOrders: true,
-      showWishlist: true,
-    };
-
-    const updatedProfile = {
-      ...existing,
+    const updated = await storeRepository.updateStore(store.storeSlug, {
       ...(storeName !== undefined && { storeName }),
       ...(storeDescription !== undefined && { storeDescription }),
       ...(storeCategory !== undefined && { storeCategory }),
       ...(storeLogoURL !== undefined && { storeLogoURL }),
       ...(storeBannerURL !== undefined && { storeBannerURL }),
-      ...(storeReturnPolicy !== undefined && { storeReturnPolicy }),
-      ...(storeShippingPolicy !== undefined && { storeShippingPolicy }),
+      ...(returnPolicy !== undefined && { returnPolicy }),
+      ...(shippingPolicy !== undefined && { shippingPolicy }),
       ...(bio !== undefined && { bio }),
       ...(website !== undefined && { website }),
       ...(location !== undefined && { location }),
       ...(socialLinks !== undefined && {
-        socialLinks: { ...existing.socialLinks, ...socialLinks },
+        socialLinks: { ...store.socialLinks, ...socialLinks },
       }),
       ...(isVacationMode !== undefined && { isVacationMode }),
       ...(vacationMessage !== undefined && { vacationMessage }),
       ...(isPublic !== undefined && { isPublic }),
-    };
-
-    // Regenerate storeSlug when storeName changes and no slug exists yet
-    let newStoreSlug = user!.storeSlug;
-    if (storeName && !user!.storeSlug) {
-      const base = slugify(`${storeName} ${user!.displayName ?? user!.uid}`);
-      newStoreSlug = `store-${base}`.slice(0, 80);
-    }
-
-    // Mark store as pending admin review if not already approved —
-    // approval status can only be set by an admin via /api/admin/stores/[uid]
-    const storeStatusUpdate =
-      user!.storeStatus !== "approved"
-        ? { storeStatus: "pending" as const }
-        : {};
-
-    const updatedUser = await userRepository.update(user!.uid, {
-      publicProfile: updatedProfile,
-      ...(newStoreSlug ? { storeSlug: newStoreSlug } : {}),
-      ...storeStatusUpdate,
-    } as any);
-
-    serverLogger.info("Seller store updated", {
-      uid: user!.uid,
-      storeSlug: newStoreSlug,
     });
 
     return successResponse(
-      {
-        uid: updatedUser.uid,
-        storeSlug: updatedUser.storeSlug ?? null,
-        publicProfile: updatedUser.publicProfile ?? null,
-      },
+      { store: updated },
       SUCCESS_MESSAGES.USER.STORE_UPDATED,
     );
   },

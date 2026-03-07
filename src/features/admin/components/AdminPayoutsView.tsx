@@ -24,7 +24,7 @@ import type { PayoutStatusFormState } from ".";
 import { formatCurrency, formatDate, isSameMonth, nowMs } from "@/utils";
 import type { PayoutDocument } from "@/db/schema";
 
-const { spacing } = THEME_CONSTANTS;
+const { spacing, flex } = THEME_CONSTANTS;
 
 interface PayoutsResponse {
   payouts: PayoutDocument[];
@@ -185,7 +185,7 @@ export function AdminPayoutsView() {
             >
               {failedThisMonth}
             </Text>
-            <Caption className="mt-0.5">this month</Caption>
+            <Caption className="mt-0.5">{t("thisMonth")}</Caption>
           </Card>
         </div>
       )}
@@ -221,7 +221,7 @@ export function AdminPayoutsView() {
           emptyMessage={error ? ERROR_MESSAGES.PAYOUT.FETCH_FAILED : t("empty")}
           keyExtractor={(p: PayoutDocument) => p.id}
           showViewToggle
-          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(payout) => (
             <Card className="p-4 space-y-2">
@@ -229,7 +229,7 @@ export function AdminPayoutsView() {
                 {payout.sellerName}
               </Text>
               <Caption className="truncate">{payout.sellerEmail}</Caption>
-              <div className="flex items-center justify-between">
+              <div className={`${flex.between}`}>
                 <Text weight="semibold" size="sm">
                   {formatCurrency(payout.amount)}
                 </Text>

@@ -13,6 +13,7 @@
 - Chain commands with `;` — NEVER `&&`
 - Use backslash paths in terminal; forward slashes in imports
 - **NEVER write scripts to fix source files** — use `multi_replace_string_in_file` / `replace_string_in_file` only
+- **PowerShell/Python writes to `src/`, `messages/`, or `scripts/seed-data/` require explicit UTF-8-no-BOM encoding, double-verification of the command before execution, and a corruption check after writing** — see Rule 28-B in `rules-code-quality.instructions.md`.
 
 ## Stack
 

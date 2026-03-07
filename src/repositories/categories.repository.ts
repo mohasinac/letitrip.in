@@ -47,12 +47,25 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
     tier: { canFilter: true, canSort: true },
     isActive: { canFilter: true, canSort: false },
     isFeatured: { canFilter: true, canSort: false },
+    isBrand: { canFilter: true, canSort: false },
     isSearchable: { canFilter: true, canSort: false },
     parentId: { canFilter: true, canSort: false },
     order: { canFilter: true, canSort: true },
-    'metrics.productCount': { path: 'metrics.productCount', canFilter: true, canSort: true },
-    'metrics.totalItemCount': { path: 'metrics.totalItemCount', canFilter: true, canSort: true },
-    'metrics.auctionCount': { path: 'metrics.auctionCount', canFilter: true, canSort: true },
+    "metrics.productCount": {
+      path: "metrics.productCount",
+      canFilter: true,
+      canSort: true,
+    },
+    "metrics.totalItemCount": {
+      path: "metrics.totalItemCount",
+      canFilter: true,
+      canSort: true,
+    },
+    "metrics.auctionCount": {
+      path: "metrics.auctionCount",
+      canFilter: true,
+      canSort: true,
+    },
     id: { canFilter: true, canSort: false },
     isLeaf: { canFilter: true, canSort: false },
     createdAt: { canFilter: true, canSort: true },
@@ -193,9 +206,9 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
         .orderBy("order", "asc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument,
-      );
+      return snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument)
+        .filter((c) => !c.isBrand);
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve root categories: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -241,9 +254,9 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
         .orderBy("order", "asc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument,
-      );
+      return snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument)
+        .filter((c) => !c.isBrand);
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve categories by tier: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -320,12 +333,38 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
         .orderBy("featuredPriority", "asc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument,
-      );
+      return snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument)
+        .filter((c) => !c.isBrand);
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve featured categories: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+    }
+  }
+
+  /**
+   * Get all brand categories (isBrand = true), sorted by order
+   *
+   * @param limit - Maximum number of brands to return (0 = all)
+   * @returns Promise<CategoryDocument[]>
+   */
+  async getBrandCategories(limit = 0): Promise<CategoryDocument[]> {
+    try {
+      const snapshot = await this.db
+        .collection(this.collection)
+        .where("isBrand", "==", true)
+        .where("isActive", "==", true)
+        .orderBy("order", "asc")
+        .get();
+
+      const brands = snapshot.docs.map(
+        (doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument,
+      );
+      return limit > 0 ? brands.slice(0, limit) : brands;
+    } catch (error) {
+      throw new DatabaseError(
+        `Failed to retrieve brand categories: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
@@ -504,9 +543,9 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
           .orderBy(CATEGORY_FIELDS.TIER, "asc")
           .orderBy(CATEGORY_FIELDS.ORDER, "asc")
           .get();
-        categories = snapshot.docs.map(
-          (doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument,
-        );
+        categories = snapshot.docs
+          .map((doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument)
+          .filter((c) => !c.isBrand);
       }
 
       return buildCategoryTree(categories, rootId);

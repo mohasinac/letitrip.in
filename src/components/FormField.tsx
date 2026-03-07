@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Form Field Component
  *
  * Reusable form field with label, input, error, and validation
@@ -24,6 +24,7 @@ export interface FormFieldProps {
     | "password"
     | "tel"
     | "number"
+    | "datetime-local"
     | "textarea"
     | "select";
   value?: string;

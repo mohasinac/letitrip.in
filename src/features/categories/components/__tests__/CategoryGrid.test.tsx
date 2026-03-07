@@ -2,7 +2,8 @@ import { render, screen } from "@testing-library/react";
 import { CategoryGrid } from "../CategoryGrid";
 import type { CategoryDocument } from "@/db/schema";
 
-jest.mock("../CategoryCard", () => ({
+jest.mock("@/components", () => ({
+  ...jest.requireActual("@/components"),
   CategoryCard: ({ category }: { category: CategoryDocument }) => (
     <div data-testid="category-card">{category.name}</div>
   ),

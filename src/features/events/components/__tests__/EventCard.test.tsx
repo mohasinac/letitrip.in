@@ -4,7 +4,7 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import type React from "react";
-import { EventCard } from "../EventCard";
+import { EventCard } from "@/components";
 
 jest.mock("next/link", () => ({
   __esModule: true,
@@ -123,7 +123,7 @@ describe("EventCard", () => {
     const links = screen.getAllByRole("link");
     expect(links.length).toBeGreaterThanOrEqual(2);
     links.forEach((link) =>
-      expect(link).toHaveAttribute("href", "/events/evt-1")
+      expect(link).toHaveAttribute("href", "/events/evt-1"),
     );
   });
 

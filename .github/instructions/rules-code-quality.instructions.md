@@ -48,6 +48,38 @@ npm run build
 
 All three must pass with 0 errors before the task is done. Never hand back with outstanding TS errors or a failing build.
 
+## RULE 28-B: Protect Source Files from Encoding Corruption
+
+PowerShell and Python scripts are **permitted** to read or process source files, but must never write back to them in a way that corrupts encoding.
+
+Why: PowerShell and Python can corrupt UTF-8 files by writing BOM, wrong CRLF line endings, wrong encoding, or truncating Unicode characters (e.g. Hindi/Devanagari). This has previously corrupted `messages/hi.json`.
+
+### Preferred tools for file edits
+
+| Task                          | Correct tool                                              |
+| ----------------------------- | --------------------------------------------------------- |
+| Edit a source / message file  | `replace_string_in_file` / `multi_replace_string_in_file` |
+| Add/remove a JSON field       | `replace_string_in_file`                                  |
+| Batch edits across many files | `multi_replace_string_in_file`                            |
+| Create a brand-new file       | `create_file` tool                                        |
+
+### When PowerShell or Python scripts write to source files
+
+Scripts MAY write to `src/`, `messages/`, or `scripts/seed-data/` if **all** of the following are satisfied:
+
+1. **Encoding is explicit and safe** — use `-Encoding utf8NoBOM` (PowerShell) or `encoding='utf-8'` without BOM (Python)
+2. **Double-verify before execution** — review the exact command/script output twice to confirm no encoding issues before the write runs
+3. **Corruption check after write** — immediately verify the written file (open in editor or diff against original) to confirm no garbled characters, BOM, or CRLF changes
+
+### Banned patterns (always)
+
+- ❌ `Set-Content`, `Out-File`, `Add-Content` without explicit `-Encoding utf8NoBOM`
+- ❌ `python -c "open(...).write(...)"` without explicit `encoding='utf-8'`
+- ❌ `sed -i`, `awk`, `jq` piped into source files via shell without encoding verification
+- ❌ Any script that silently overwrites a source file without a pre-execution review step
+
+---
+
 ## RULE 27: Tests As You Go
 
 - **New file** → create `__tests__/<filename>.test.ts(x)` alongside it

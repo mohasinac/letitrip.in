@@ -20,6 +20,7 @@ export type StoreProductItem = Pick<
   | "currentBid"
   | "isPromoted"
   | "slug"
+  | "availableQuantity"
 >;
 
 /**
@@ -42,6 +43,7 @@ export type StoreAuctionItem = Pick<
   | "currentBid"
   | "bidCount"
   | "featured"
+  | "status"
 >;
 
 /** Sieve page result for store products */
@@ -64,31 +66,23 @@ export interface StoreAuctionsResponse {
   hasMore: boolean;
 }
 
-/**
- * Public store data returned by /api/stores endpoints.
- * Sensitive fields (email, phone, etc.) are stripped server-side.
- */
-export interface StoreListItem {
-  uid: string;
-  storeSlug: string;
-  displayName: string;
-  /** From publicProfile.storeName — falls back to displayName */
-  storeName: string;
-  storeDescription?: string;
-  storeCategory?: string;
-  storeLogoURL?: string;
-  storeBannerURL?: string;
-  photoURL?: string;
-  totalProducts?: number;
-  totalReviews?: number;
-  averageRating?: number;
-  createdAt?: string;
-}
+import type { StoreListItem } from "@/types/stores";
+export type { StoreListItem };
 
 export interface StoreDetail extends StoreListItem {
   bio?: string;
   location?: string;
   website?: string;
+  socialLinks?: {
+    twitter?: string;
+    instagram?: string;
+    facebook?: string;
+    linkedin?: string;
+  };
+  returnPolicy?: string;
+  shippingPolicy?: string;
+  isVacationMode?: boolean;
+  vacationMessage?: string;
 }
 
 export interface StoreReviewsData {

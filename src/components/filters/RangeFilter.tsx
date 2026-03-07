@@ -36,7 +36,7 @@ function DualSlider({
   step = 1,
   prefix = "",
 }: DualSliderProps) {
-  const { themed } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
   const id = useId().replace(/:/g, "");
 
   const range = maxBound - minBound || 1;
@@ -67,7 +67,7 @@ function DualSlider({
   return (
     <div className="w-full space-y-2">
       {/* Current range value labels */}
-      <div className="flex items-center justify-between">
+      <div className={`${flex.between}`}>
         <Span
           className={`text-sm font-semibold tabular-nums ${themed.textPrimary}`}
         >
@@ -122,7 +122,7 @@ function DualSlider({
       </div>
 
       {/* Bound labels */}
-      <div className="flex items-center justify-between">
+      <div className={`${flex.between}`}>
         <Span className={`text-xs ${themed.textSecondary}`}>
           {prefix}
           {minBound}
@@ -261,7 +261,7 @@ export function RangeFilter({
   className = "",
 }: RangeFilterProps) {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
-  const { themed, spacing } = THEME_CONSTANTS;
+  const { themed, spacing, flex } = THEME_CONSTANTS;
   const t = useTranslations("filters");
 
   const canShowSlider =
@@ -290,7 +290,7 @@ export function RangeFilter({
           {title}
           {hasValue && (
             <Span
-              className={`inline-flex items-center justify-center w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
+              className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
               aria-label={t("activeCount", { count: 1 })}
             >
               1

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * LoginForm — full login form including email/password fields,
  * social sign-in options, and auth redirect logic.
  *
@@ -33,7 +33,11 @@ export function LoginForm() {
   const t = useTranslations("auth");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || ROUTES.USER.PROFILE;
+  const rawCallbackUrl = searchParams.get("callbackUrl");
+  const callbackUrl =
+    rawCallbackUrl && rawCallbackUrl.startsWith("/")
+      ? rawCallbackUrl
+      : ROUTES.USER.PROFILE;
   const { user, loading: authLoading } = useAuth();
 
   const [formData, setFormData] = useState({

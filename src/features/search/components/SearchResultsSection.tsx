@@ -28,6 +28,7 @@ type ProductCardData = Pick<
   | "currentBid"
   | "isPromoted"
   | "slug"
+  | "availableQuantity"
 >;
 
 interface SearchResultsSectionProps {

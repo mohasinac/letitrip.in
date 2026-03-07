@@ -124,7 +124,7 @@ export default function NotificationBell() {
         {/* Unread badge */}
         {unreadCount > 0 && (
           <Span
-            className={`absolute -top-1 -right-1 ${THEME_CONSTANTS.colors.notification.badge} text-xs min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full font-semibold shadow-md`}
+            className={`absolute -top-1 -right-1 ${THEME_CONSTANTS.colors.notification.badge} text-xs min-w-[20px] h-5 px-1.5 ${flex.center} rounded-full font-semibold shadow-md`}
           >
             {unreadCount > 99 ? "99+" : unreadCount}
           </Span>

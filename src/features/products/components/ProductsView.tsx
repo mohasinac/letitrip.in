@@ -14,7 +14,7 @@ import {
   EmptyState,
   Button,
 } from "@/components";
-import { ProductFilters } from "@/components/filters";
+import { ProductFilters } from "@/components";
 import type { ActiveFilter } from "@/components";
 import { Heading, Text, TextLink } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
@@ -25,6 +25,7 @@ import {
   useMessage,
   useCategories,
   usePendingTable,
+  useBrands,
 } from "@/hooks";
 import { useProducts } from "../hooks";
 import { wishlistService } from "@/services";
@@ -44,6 +45,7 @@ export function ProductsView() {
   const categoryParam = table.get("category");
   const minPriceParam = table.get("minPrice");
   const maxPriceParam = table.get("maxPrice");
+  const brandParam = table.get("brand");
   const searchQuery = table.get("q");
   const sortParam = table.get("sort") || PRODUCT_SORT_VALUES.NEWEST;
   const pageParam = table.getNumber("page", 1);
@@ -54,7 +56,7 @@ export function ProductsView() {
     filterActiveCount: pendingFilterCount,
     onFilterApply,
     onFilterClear,
-  } = usePendingTable(table, ["category", "minPrice", "maxPrice"]);
+  } = usePendingTable(table, ["category", "minPrice", "maxPrice", "brand"]);
 
   const sortOptions = useMemo(
     () => [
@@ -79,6 +81,7 @@ export function ProductsView() {
     if (minPriceParam) params.set("minPrice", minPriceParam);
     if (maxPriceParam) params.set("maxPrice", maxPriceParam);
     if (categoryParam) params.set("category", categoryParam); // Sieve handles cat1|cat2 as OR
+    if (brandParam) params.set("brand", brandParam);
     return params.toString();
   }, [
     sortParam,
@@ -87,6 +90,7 @@ export function ProductsView() {
     minPriceParam,
     maxPriceParam,
     categoryParam,
+    brandParam,
   ]);
 
   const {
@@ -97,6 +101,7 @@ export function ProductsView() {
   } = useProducts(apiParams);
 
   const { categories: allCategories } = useCategories();
+  const { brandOptions } = useBrands();
   const categoryNameMap = useMemo(
     () => new Map(allCategories.map((c) => [c.id, c.name])),
     [allCategories],
@@ -197,6 +202,7 @@ export function ProductsView() {
             <ProductFilters
               table={pendingTable}
               categoryOptions={allCategoryOptions}
+              brandOptions={brandOptions}
             />
           }
           filterActiveCount={pendingFilterCount}

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AdminSiteView
  *
  * Tier 2 — feature component.
@@ -21,7 +21,12 @@ import {
 } from "@/components";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { siteSettingsService } from "@/services";
-import { SiteBasicInfoForm, SiteContactForm, SiteSocialLinksForm } from ".";
+import {
+  SiteBasicInfoForm,
+  SiteContactForm,
+  SiteSocialLinksForm,
+  SiteCommissionsForm,
+} from ".";
 import type { SiteSettingsDocument } from "@/db/schema";
 
 export function AdminSiteView() {
@@ -143,6 +148,8 @@ export function AdminSiteView() {
       <SiteContactForm settings={settings} onChange={setSettings} />
 
       <SiteSocialLinksForm settings={settings} onChange={setSettings} />
+
+      <SiteCommissionsForm settings={settings} onChange={setSettings} />
 
       {/* Floating Save Button for Mobile */}
       <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-30 block sm:hidden">

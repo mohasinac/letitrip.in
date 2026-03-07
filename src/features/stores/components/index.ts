@@ -1,4 +1,3 @@
-export * from "./StoreCard";
 export * from "./StoresListView";
 export * from "./StoreHeader";
 export * from "./StoreNavTabs";

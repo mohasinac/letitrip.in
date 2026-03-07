@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useHomepageReviews, useSwipe } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { Button, Heading, Section, Text, TextLink } from "@/components";
-import { ReviewCard } from "@/features/reviews";
+import { ReviewCard } from "@/components";
 
 export function CustomerReviewsSection() {
   const t = useTranslations("homepage");

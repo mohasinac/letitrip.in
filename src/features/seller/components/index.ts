@@ -9,6 +9,7 @@ export { SellerQuickActions } from "./SellerQuickActions";
 export { SellerRecentListings } from "./SellerRecentListings";
 export { SellersListView } from "./SellersListView";
 export { SellerStoreView } from "./SellerStoreView";
+export { SellerStoreSetupView } from "./SellerStoreSetupView";
 export { SellerAuctionsView } from "./SellerAuctionsView";
 export { SellerShippingView } from "./SellerShippingView";
 export { SellerPayoutSettingsView } from "./SellerPayoutSettingsView";

@@ -26,9 +26,9 @@ import {
 } from "@/components";
 import type { ActiveFilter } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { useApiQuery, usePendingTable, useUrlTable } from "@/hooks";
+import { useApiQuery, usePendingTable, useUrlTable, useBrands } from "@/hooks";
 import { reviewService } from "@/services";
-import { ReviewCard } from "./ReviewCard";
+import { ReviewCard } from "@/components";
 import type { ReviewDocument } from "@/db/schema";
 
 const PAGE_SIZE = 12;
@@ -51,6 +51,7 @@ function ReviewsListContent() {
   const search = table.get("q");
   const sortParam = table.get("sorts") || "-rating";
   const ratingFilter = table.get("rating");
+  const brandFilter = table.get("brand");
 
   // Server-side: rating filter + sort. Client-side: search + pagination over fetched set.
   const queryParams = useMemo(() => {
@@ -72,15 +73,23 @@ function ReviewsListContent() {
   // Client-side search only (rating + sort are server-side)
   const displayed = useMemo(() => {
     const q = (search || "").trim().toLowerCase();
-    if (!q) return allReviews;
-    return allReviews.filter(
-      (r) =>
-        (r.comment || "").toLowerCase().includes(q) ||
-        (r.title || "").toLowerCase().includes(q) ||
-        (r.userName || "").toLowerCase().includes(q) ||
-        (r.productTitle || "").toLowerCase().includes(q),
-    );
-  }, [allReviews, search]);
+    const b = (brandFilter || "").trim();
+    return allReviews.filter((r) => {
+      if (
+        q &&
+        !(r.comment || "").toLowerCase().includes(q) &&
+        !(r.title || "").toLowerCase().includes(q) &&
+        !(r.userName || "").toLowerCase().includes(q) &&
+        !(r.productTitle || "").toLowerCase().includes(q)
+      ) {
+        return false;
+      }
+      if (b && (r as any).brandId !== b) {
+        return false;
+      }
+      return true;
+    });
+  }, [allReviews, search, brandFilter]);
 
   const total = data?.meta?.total ?? allReviews.length;
   const page = table.getNumber("page", 1);
@@ -102,24 +111,38 @@ function ReviewsListContent() {
     [t],
   );
 
-  const filterActiveCount = ratingFilter ? 1 : 0;
+  const filterActiveCount = (ratingFilter ? 1 : 0) + (brandFilter ? 1 : 0);
 
-  // ── Staged filter state via usePendingTable ───────────────────────
+  // ── Staged filter state via usePendingTable ───────────────────
   const {
     pendingTable,
     onFilterApply,
     onFilterClear: handleClearFilters,
-  } = usePendingTable(table, ["rating"]);
+  } = usePendingTable(table, ["rating", "brand"]);
+
+  const { brandOptions } = useBrands();
 
   const activeFilters = useMemo<ActiveFilter[]>(() => {
-    if (!ratingFilter) return [];
-    const label = getFilterLabel(ratingOptions, ratingFilter) ?? ratingFilter;
-    return [{ key: "rating", label: t("filterRating"), value: label }];
-  }, [ratingFilter, ratingOptions, t]);
+    const filters: ActiveFilter[] = [];
+    if (ratingFilter) {
+      const label = getFilterLabel(ratingOptions, ratingFilter) ?? ratingFilter;
+      filters.push({ key: "rating", label: t("filterRating"), value: label });
+    }
+    if (brandFilter) {
+      filters.push({
+        key: "brand",
+        label: t("filterBrand"),
+        value:
+          brandOptions.find((b) => b.value === brandFilter)?.label ??
+          brandFilter,
+      });
+    }
+    return filters;
+  }, [ratingFilter, brandFilter, ratingOptions, brandOptions, t]);
 
   const handleClearAll = useCallback(() => {
     handleClearFilters();
-    table.clear(["q", "rating", "sorts"]);
+    table.clear(["q", "rating", "brand", "sorts"]);
   }, [handleClearFilters, table]);
 
   return (
@@ -152,7 +175,11 @@ function ReviewsListContent() {
             />
           }
           filterContent={
-            <ReviewFilters table={pendingTable} variant="public" />
+            <ReviewFilters
+              table={pendingTable}
+              variant="public"
+              brandOptions={brandOptions}
+            />
           }
           filterActiveCount={filterActiveCount}
           onFilterApply={onFilterApply}

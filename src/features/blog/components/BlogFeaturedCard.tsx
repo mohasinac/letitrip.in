@@ -3,7 +3,7 @@
 import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
 import { ROUTES, UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
-import { CATEGORY_BADGE } from "./BlogCard";
+import { CATEGORY_BADGE } from "@/components";
 import type { BlogPostDocument } from "@/db/schema";
 
 const LABELS = UI_LABELS.ADMIN.BLOG;

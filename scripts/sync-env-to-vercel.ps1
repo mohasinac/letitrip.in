@@ -155,14 +155,17 @@ function Add-VercelEnv {
     Set-Content -Path $tempFile -Value $Value -NoNewline
     
     $allOk = $true
+    # Use node to pipe without CRLF — PowerShell always appends \r\n which
+    # Vercel CLI stores as literal "\r\n" text, corrupting env var values.
+    $escapedPath = $tempFile -replace '\\', '\\\\'
     foreach ($env in $environments) {
-        $result = Get-Content $tempFile | vercel env add $Name $env --force 2>&1 | Out-String
+        $result = node -e "process.stdout.write(require('fs').readFileSync('$escapedPath','utf8'))" | vercel env add $Name $env --force 2>&1 | Out-String
         if ($LASTEXITCODE -ne 0) {
             # Check if it's a "already exists" error - try remove then add
             if ($result -match "already exists") {
                 vercel env rm $Name $env --yes 2>&1 | Out-Null
                 Start-Sleep -Milliseconds 300
-                $result = Get-Content $tempFile | vercel env add $Name $env --force 2>&1 | Out-String
+                $result = node -e "process.stdout.write(require('fs').readFileSync('$escapedPath','utf8'))" | vercel env add $Name $env --force 2>&1 | Out-String
                 if ($LASTEXITCODE -ne 0) {
                     Write-Host "    [FAILED] $env - $($result.Trim())" -ForegroundColor Red
                     $allOk = $false

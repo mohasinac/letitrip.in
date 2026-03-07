@@ -66,7 +66,9 @@ export function CategoryCard({
               <Span className="text-5xl leading-none">{display.icon}</Span>
             </div>
           ) : (
-            <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600">
+            <div
+              className={`${flex.center} w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600`}
+            >
               <Span className="text-4xl font-bold text-white/90 select-none">
                 {name.charAt(0).toUpperCase()}
               </Span>
@@ -94,7 +96,9 @@ export function CategoryCard({
 
           {/* Featured star — top right */}
           {isFeatured && (
-            <div className="absolute top-2 right-2 z-10 w-7 h-7 rounded-full bg-yellow-400 flex items-center justify-center shadow">
+            <div
+              className={`absolute top-2 right-2 z-10 w-7 h-7 rounded-full bg-yellow-400 ${flex.center} shadow`}
+            >
               <Star
                 className="w-4 h-4 text-yellow-900 fill-yellow-900"
                 aria-hidden="true"

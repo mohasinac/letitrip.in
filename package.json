@@ -16,7 +16,10 @@
     "type-check": "tsc --noEmit",
     "pre-commit": "lint-staged",
     "prepare": "husky",
-    "seed:faqs": "tsx scripts/seed-faqs.ts"
+    "seed:faqs": "tsx scripts/seed-faqs.ts",
+    "check:violations": "node scripts/check-violations.js",
+    "fix:violations": "node scripts/fix-violations.js",
+    "fix:violations:apply": "node scripts/fix-violations.js --apply"
   },
   "dependencies": {
     "@auth/firebase-adapter": "^2.11.1",

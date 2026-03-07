@@ -65,11 +65,11 @@ export default function SellerPayoutsPage() {
   const payouts = data?.payouts ?? [];
 
   const handleRequestPayout = async (payload: Record<string, unknown>) => {
-    const result = await requestPayout(payload);
-    if (result) {
+    try {
+      await requestPayout(payload);
       showSuccess(t("statusPending"));
       refetch();
-    } else {
+    } catch {
       showError(t("noEarnings"));
     }
   };

@@ -60,13 +60,20 @@ export function usePaymentOtp(phoneNumber: string | null): UsePaymentOtpReturn {
       setOtpState("sending");
       setError(null);
 
-      // 1. Server-side gate: check daily SMS limit before touching Firebase.
+      // 1. Server-side gate: checks per-user 15-min cooldown AND the daily SMS quota.
       try {
         await checkoutService.requestOtpGrant();
       } catch (err: unknown) {
         logger.warn("Payment OTP grant denied", { err });
         if (err instanceof ApiClientError && err.status === 429) {
-          setError("daily_limit");
+          // The server returns the specific message — surface it directly so the
+          // UI can show "wait X minutes" vs "daily limit reached".
+          const serverMsg = err instanceof Error ? err.message : undefined;
+          if (serverMsg && !serverMsg.toLowerCase().includes("daily")) {
+            setError(serverMsg); // e.g. "Please wait 12 minutes before requesting another OTP."
+          } else {
+            setError("daily_limit");
+          }
         } else {
           setError(
             err instanceof Error

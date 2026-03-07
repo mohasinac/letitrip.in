@@ -14,16 +14,16 @@
 | [SECURITY.md](./SECURITY.md)                   | Security practices, OWASP compliance                                                                  |
 | [STYLING_GUIDE.md](./STYLING_GUIDE.md)         | Styling standards, THEME_CONSTANTS usage                                                              |
 | [BULK_ACTIONS.md](./BULK_ACTIONS.md)           | Bulk action API specification                                                                         |
-| [CHANGELOG.md](./CHANGELOG.md)                 | Version history (March 2026 onward)                                                                   |
-| [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md) | Archived history (v1.0.0 – v1.2.0, January–February 2026)                                             |
+| [CHANGELOG.md](./CHANGELOG.md)                 | Version history                                                                                       |
 
 ## Related Root Files
 
-| File                                                                  | Purpose                                                   |
-| --------------------------------------------------------------------- | --------------------------------------------------------- |
-| [README.md](../README.md)                                             | Application overview, stack, architecture, setup, scripts |
-| [CONTRIBUTING.md](../CONTRIBUTING.md)                                 | Contribution workflow                                     |
-| [.github/copilot-instructions.md](../.github/copilot-instructions.md) | Mandatory coding rules and architecture constraints       |
+| File                                                                              | Purpose                                                        |
+| --------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| [# LetItRip.in — Full Platform Plan.md](../# LetItRip.in — Full Platform Plan.md) | Complete platform plan — site map, schema, features, API index |
+| [README.md](../README.md)                                                         | Application overview, stack, architecture, setup, scripts      |
+| [CONTRIBUTING.md](../CONTRIBUTING.md)                                             | Contribution workflow                                          |
+| [.github/copilot-instructions.md](../.github/copilot-instructions.md)             | Mandatory coding rules and architecture constraints            |
 
 ## Notes
 

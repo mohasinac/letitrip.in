@@ -25,7 +25,7 @@ export function EventLeaderboard({
 
   const RANK_STYLES = [
     "bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200",
-    "bg-gray-50 dark:bg-gray-800/50 border-gray-200",
+    `${themed.bgSecondary} border-gray-200`,
     "bg-orange-50 dark:bg-orange-950/30 border-orange-200",
   ];
 

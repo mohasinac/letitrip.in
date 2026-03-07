@@ -40,6 +40,7 @@ export const SITE_CONFIG = {
     home: ROUTES.HOME,
     products: ROUTES.PUBLIC.PRODUCTS,
     auctions: ROUTES.PUBLIC.AUCTIONS,
+    preOrders: ROUTES.PUBLIC.PRE_ORDERS,
     sellers: ROUTES.PUBLIC.SELLERS, // kept for "Sell on LetItRip" page
     stores: ROUTES.PUBLIC.STORES, // storefront directory
     events: ROUTES.PUBLIC.EVENTS,

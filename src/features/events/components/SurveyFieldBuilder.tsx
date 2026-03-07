@@ -32,7 +32,7 @@ export function SurveyFieldBuilder({
   const t = useTranslations("adminEvents");
   const tActions = useTranslations("actions");
   const tFieldTypes = useTranslations("formFieldTypes");
-  const { flex } = THEME_CONSTANTS;
+  const { flex, themed } = THEME_CONSTANTS;
   const addField = () => onChange([...fields, emptyField(fields.length)]);
 
   const updateField = (id: string, patch: Partial<SurveyFormField>) =>
@@ -67,7 +67,7 @@ export function SurveyFieldBuilder({
       {fields.map((field, idx) => (
         <div
           key={field.id}
-          className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 space-y-3"
+          className={`border ${themed.border} rounded-lg p-3 space-y-3`}
         >
           <div className="flex items-center gap-2">
             <div className="flex-1">

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Zod Validation Schemas for API Requests
  *
  * Centralized request validation using Zod
@@ -400,6 +400,7 @@ export const categoryCreateSchema = categoryBaseSchema;
 export const categoryUpdateSchema = categoryBaseSchema.partial().extend({
   order: z.number().int().nonnegative().optional(),
   isFeatured: z.boolean().optional(),
+  isBrand: z.boolean().optional(),
 });
 
 /**
@@ -514,6 +515,40 @@ export const siteSettingsUpdateSchema = z
         }),
       )
       .max(50)
+      .optional(),
+    payment: z
+      .object({
+        razorpayEnabled: z.boolean(),
+        upiManualEnabled: z.boolean(),
+        codEnabled: z.boolean(),
+      })
+      .optional(),
+    featureFlags: z
+      .object({
+        chats: z.boolean(),
+        smsVerification: z.boolean(),
+        translations: z.boolean(),
+        wishlists: z.boolean(),
+        auctions: z.boolean(),
+        reviews: z.boolean(),
+        events: z.boolean(),
+        blog: z.boolean(),
+        coupons: z.boolean(),
+        notifications: z.boolean(),
+        ripcoin: z.boolean(),
+        sellerRegistration: z.boolean(),
+        preOrders: z.boolean(),
+      })
+      .partial()
+      .optional(),
+    commissions: z
+      .object({
+        razorpayFeePercent: z.number().min(0).max(100),
+        codDepositPercent: z.number().min(0).max(100),
+        sellerShippingFixed: z.number().min(0),
+        platformShippingPercent: z.number().min(0).max(100),
+        platformShippingFixedMin: z.number().min(0),
+      })
       .optional(),
   })
   .partial();

@@ -123,7 +123,7 @@ export function PayoutStatusForm({ payout, onChange }: PayoutStatusFormProps) {
           </Span>
         </div>
         {payout.notes && (
-          <div className="pt-1 border-t border-dashed border-gray-200 dark:border-gray-700">
+          <div className={`pt-1 border-t border-dashed ${themed.border}`}>
             <Text variant="secondary" size="xs" className="italic">
               "{payout.notes}"
             </Text>

@@ -11,7 +11,8 @@ export const SEO_CONFIG = {
   // Site-wide defaults
   siteName: "LetItRip",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://letitrip.in",
-  defaultTitle: "LetItRip — Multi-Seller E-commerce & Auction Platform | Shop, Bid & Sell",
+  defaultTitle:
+    "LetItRip — Multi-Seller E-commerce & Auction Platform | Shop, Bid & Sell",
   defaultDescription:
     "Shop unique products, join live auctions, and sell from your own store on LetItRip — India's multi-seller marketplace for deals, bidding, and discovery.",
   defaultImage: "/og-image.jpg",
@@ -21,7 +22,8 @@ export const SEO_CONFIG = {
   // Page-specific metadata
   pages: {
     home: {
-      title: "LetItRip — Multi-Seller E-commerce & Auction Platform | Shop, Bid & Sell",
+      title:
+        "LetItRip — Multi-Seller E-commerce & Auction Platform | Shop, Bid & Sell",
       description:
         "Shop unique products, join live auctions, and sell from your own store on LetItRip — India's multi-seller marketplace for deals, bidding, and discovery.",
       keywords: [
@@ -52,6 +54,17 @@ export const SEO_CONFIG = {
       description:
         "Participate in exciting auctions. Bid on unique items and win amazing deals.",
       keywords: ["auctions", "bidding", "deals", "online auctions"],
+    },
+    preOrders: {
+      title: "Pre-Orders - Reserve Before It Ships",
+      description:
+        "Reserve exclusive items before they\'re available. Pre-order new products and limited editions now.",
+      keywords: [
+        "pre-order",
+        "reserve",
+        "limited edition",
+        "upcoming products",
+      ],
     },
     products: {
       title: "Products - Shop Amazing Deals",
@@ -144,7 +157,13 @@ export const SEO_CONFIG = {
       title: "Seller Directory — Browse Trusted Sellers",
       description:
         "Browse our network of trusted sellers on LetItRip. Discover unique shops and products from verified merchants.",
-      keywords: ["sellers", "shops", "directory", "marketplace", "verified sellers"],
+      keywords: [
+        "sellers",
+        "shops",
+        "directory",
+        "marketplace",
+        "verified sellers",
+      ],
     },
     events: {
       title: "Events — Upcoming Sales, Drops & Community Events",
@@ -192,7 +211,12 @@ export const SEO_CONFIG = {
       title: "Track Your Order — LetItRip",
       description:
         "Track your order in real-time. Enter your order ID to see the latest shipping and delivery status.",
-      keywords: ["track order", "order tracking", "shipping status", "delivery"],
+      keywords: [
+        "track order",
+        "order tracking",
+        "shipping status",
+        "delivery",
+      ],
     },
   },
 } as const;

@@ -55,6 +55,15 @@ export interface OrderDocument {
   cancellationReason?: string;
   refundAmount?: number;
   refundStatus?: RefundStatus;
+  // ─── Platform commission & payment split ──────────────────────────────────
+  /** Platform fee charged on this order (e.g. 5% Razorpay fee) */
+  platformFee?: number;
+  /** For COD orders: portion collected upfront (default 10% of totalPrice) */
+  depositAmount?: number;
+  /** For COD orders: remaining amount due on delivery */
+  codRemainingAmount?: number;
+  /** Shipping fee added to the buyer's order total */
+  shippingFee?: number;
   // ─── Shipping fulfilment fields ────────────────────────────────────────
   /** How this order is shipped — determined by the seller's store shipping config */
   shippingMethod?: ShippingMethod;

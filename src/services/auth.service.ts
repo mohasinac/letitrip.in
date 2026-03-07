@@ -13,8 +13,12 @@ export const authService = {
     apiClient.post(API_ENDPOINTS.AUTH.LOGIN, data),
 
   /** Register a new user */
-  register: (data: { email: string; password: string; displayName: string }) =>
-    apiClient.post(API_ENDPOINTS.AUTH.REGISTER, data),
+  register: (data: {
+    email: string;
+    password: string;
+    displayName: string;
+    acceptTerms: boolean;
+  }) => apiClient.post(API_ENDPOINTS.AUTH.REGISTER, data),
 
   /** Log out and destroy the session */
   logout: () => apiClient.post(API_ENDPOINTS.AUTH.LOGOUT, {}),

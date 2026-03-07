@@ -2,7 +2,8 @@
  * PATCH /api/admin/stores/[uid]
  *
  * Admin endpoint — approve or reject a seller's store.
- * Only accessible by admin-role users.
+ * Updates both the StoreDocument.status (stores collection) and
+ * UserDocument.storeStatus (users collection) to keep them in sync.
  *
  * Body:
  *   action: "approve" | "reject"
@@ -14,7 +15,7 @@ import { createApiHandler } from "@/lib/api/api-handler";
 import { successResponse, ApiErrors } from "@/lib/api-response";
 import { NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { userRepository } from "@/repositories";
+import { userRepository, storeRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 
 const storeActionSchema = z.object({
@@ -49,15 +50,26 @@ export const PATCH = createApiHandler({
     }
 
     const { action } = validation.data;
-
     const storeStatus: "approved" | "rejected" =
       action === "approve" ? "approved" : "rejected";
+    const storeDocStatus: "active" | "rejected" =
+      action === "approve" ? "active" : "rejected";
+
     const successMsg =
       action === "approve"
         ? SUCCESS_MESSAGES.ADMIN.STORE_APPROVED
         : SUCCESS_MESSAGES.ADMIN.STORE_REJECTED;
 
+    // Update user approval flag
     await userRepository.updateStoreApproval(uid, storeStatus);
+
+    // Update the actual StoreDocument status
+    if (seller.storeId) {
+      const storeSlug = seller.storeSlug;
+      if (storeSlug) {
+        await storeRepository.setStatus(storeSlug, storeDocStatus);
+      }
+    }
 
     serverLogger.info("Admin updated store approval", {
       uid,

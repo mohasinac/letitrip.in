@@ -68,8 +68,11 @@ interface BankFormProps {
   defaultMasked: string;
   isSaving: boolean;
   onSave: (bank: {
-    accountHolderName: string; accountNumber: string;
-    ifscCode: string; bankName: string; accountType: "savings" | "current";
+    accountHolderName: string;
+    accountNumber: string;
+    ifscCode: string;
+    bankName: string;
+    accountType: "savings" | "current";
   }) => void;
 }
 
@@ -177,7 +180,9 @@ function BankForm({ defaultMasked, isSaving, onSave }: BankFormProps) {
 
 export function SellerPayoutSettingsView() {
   const t = useTranslations("sellerPayoutSettings");
-  const [selectedMethod, setSelectedMethod] = useState<"upi" | "bank_transfer" | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<
+    "upi" | "bank_transfer" | null
+  >(null);
 
   const {
     payoutDetails,
@@ -202,7 +207,11 @@ export function SellerPayoutSettingsView() {
       <AdminPageHeader
         title={t("pageTitle")}
         subtitle={t("pageSubtitle")}
-        badge={isConfigured ? <Badge variant="success">{t("configured")}</Badge> : undefined}
+        badge={
+          isConfigured ? (
+            <Badge variant="success">{t("configured")}</Badge>
+          ) : undefined
+        }
       />
 
       {!isConfigured && (
@@ -213,17 +222,20 @@ export function SellerPayoutSettingsView() {
 
       {/* Method selector */}
       <Card className="p-6">
-        <Heading level={3} className="mb-4">{t("methodHeading")}</Heading>
+        <Heading level={3} className="mb-4">
+          {t("methodHeading")}
+        </Heading>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {(["upi", "bank_transfer"] as const).map((method) => (
-            <button
+            <Button
               key={method}
               type="button"
+              variant="ghost"
               onClick={() => setSelectedMethod(method)}
-              className={`p-4 rounded-xl border-2 text-left transition-colors ${
+              className={`p-4 h-auto items-start flex-col text-left whitespace-normal border-2 w-full gap-0 ${
                 activeMethod === method
                   ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20"
-                  : `border-gray-200 dark:border-gray-700 ${themed.bgPrimary} hover:border-indigo-300`
+                  : `${themed.border} ${themed.bgPrimary} hover:border-indigo-300`
               }`}
             >
               <Text weight="semibold" className="mb-1">
@@ -232,7 +244,7 @@ export function SellerPayoutSettingsView() {
               <Text variant="secondary" size="sm">
                 {method === "upi" ? t("methodUpiDesc") : t("methodBankDesc")}
               </Text>
-            </button>
+            </Button>
           ))}
         </div>
       </Card>
@@ -240,7 +252,9 @@ export function SellerPayoutSettingsView() {
       {/* UPI form */}
       {activeMethod === "upi" && (
         <Card className="p-6">
-          <Heading level={3} className="mb-4">{t("upiHeading")}</Heading>
+          <Heading level={3} className="mb-4">
+            {t("upiHeading")}
+          </Heading>
           <UpiForm
             defaultUpiId={payoutDetails?.upiId ?? ""}
             isSaving={isSaving}
@@ -252,11 +266,20 @@ export function SellerPayoutSettingsView() {
       {/* Bank transfer form */}
       {activeMethod === "bank_transfer" && (
         <Card className="p-6">
-          <Heading level={3} className="mb-4">{t("bankHeading")}</Heading>
+          <Heading level={3} className="mb-4">
+            {t("bankHeading")}
+          </Heading>
           <BankForm
-            defaultMasked={payoutDetails?.bankAccount?.accountNumberMasked ?? ""}
+            defaultMasked={
+              payoutDetails?.bankAccount?.accountNumberMasked ?? ""
+            }
             isSaving={isSaving}
-            onSave={(bank) => updatePayoutSettings({ method: "bank_transfer", bankAccount: bank })}
+            onSave={(bank) =>
+              updatePayoutSettings({
+                method: "bank_transfer",
+                bankAccount: bank,
+              })
+            }
           />
         </Card>
       )}

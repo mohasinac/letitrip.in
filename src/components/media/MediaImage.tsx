@@ -20,6 +20,9 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Span } from "../typography";
+import { THEME_CONSTANTS } from "@/constants";
+
+const { flex } = THEME_CONSTANTS;
 
 // ----- `sizes` hints per display context -----------------------------------------------
 // Matches the breakpoint + column-count patterns used in grids across the app.
@@ -93,7 +96,7 @@ export function MediaImage({
   if (!src || hasError) {
     return (
       <div
-        className={`absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-400 text-4xl${className ? ` ${className}` : ""}`}
+        className={`absolute inset-0 ${flex.center} bg-gray-100 dark:bg-gray-800 text-gray-400 text-4xl${className ? ` ${className}` : ""}`}
         role="img"
         aria-label={alt}
       >

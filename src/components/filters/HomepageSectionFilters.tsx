@@ -23,6 +23,7 @@ export function HomepageSectionFilters({ table }: HomepageSectionFiltersProps) {
     { value: "welcome", label: t("sectionTypeWelcome") },
     { value: "trust_indicators", label: t("sectionTypeTrustIndicators") },
     { value: "categories", label: t("sectionTypeCategories") },
+    { value: "brands", label: t("sectionTypeBrands") },
     { value: "products", label: t("sectionTypeProducts") },
     { value: "auctions", label: t("sectionTypeAuctions") },
     { value: "banner", label: t("sectionTypeBanner") },

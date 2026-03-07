@@ -32,11 +32,8 @@ export { useAdminStats } from "./useAdminStats";
 export { useMessage } from "./useMessage";
 export {
   useAdminSessions,
-  useUserSessions,
   useRevokeSession,
   useRevokeUserSessions,
-  useMySessions,
-  useRevokeMySession,
 } from "./useSessions";
 
 export { useClickOutside } from "./useClickOutside";
@@ -135,10 +132,13 @@ export type {
 export { useHeroCarousel } from "./useHeroCarousel";
 export { useFeaturedProducts } from "./useFeaturedProducts";
 export { useFeaturedAuctions } from "./useFeaturedAuctions";
+export { useFeaturedPreOrders } from "./useFeaturedPreOrders";
 export { useFeaturedStores } from "./useFeaturedStores";
 export { useFeaturedEvents } from "./useFeaturedEvents";
 export { useHomepageReviews } from "./useHomepageReviews";
 export { useTopCategories } from "./useTopCategories";
+export { useTopBrands } from "./useTopBrands";
+export { useBrands } from "./useBrands";
 export { useSiteSettings } from "./useSiteSettings";
 export { useHomepageSections } from "./useHomepageSections";
 

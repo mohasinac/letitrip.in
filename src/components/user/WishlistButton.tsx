@@ -13,7 +13,12 @@
 import { useCallback } from "react";
 import { useAuth, useMessage } from "@/hooks";
 import { useRouter } from "@/i18n/navigation";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import {
+  ROUTES,
+  THEME_CONSTANTS,
+  SUCCESS_MESSAGES,
+  ERROR_MESSAGES,
+} from "@/constants";
 import { useTranslations } from "next-intl";
 import { useWishlistToggle } from "@/hooks";
 import { Button } from "@/components";
@@ -41,7 +46,7 @@ export function WishlistButton({
   size = "md",
 }: WishlistButtonProps) {
   const { user } = useAuth();
-  const { showError } = useMessage();
+  const { showSuccess, showError } = useMessage();
   const router = useRouter();
   const {
     inWishlist,
@@ -62,10 +67,20 @@ export function WishlistButton({
         return;
       }
 
+      const wasInWishlist = inWishlist;
       try {
         await toggle();
+        showSuccess(
+          wasInWishlist
+            ? SUCCESS_MESSAGES.WISHLIST.REMOVED
+            : SUCCESS_MESSAGES.WISHLIST.ADDED,
+        );
       } catch {
-        // Silently ignore errors — wishlist state reverts automatically
+        showError(
+          wasInWishlist
+            ? ERROR_MESSAGES.WISHLIST.REMOVE_FAILED
+            : ERROR_MESSAGES.WISHLIST.ADD_FAILED,
+        );
       }
     },
     [user, showError, t, router, toggle],

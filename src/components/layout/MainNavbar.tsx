@@ -9,11 +9,11 @@ const NAV_TRANSLATION_KEYS = [
   "home",
   "products",
   "auctions",
+  "preOrders",
   "categories",
   "stores",
   "events",
   "blog",
-  "promotions",
   "reviews",
 ] as const;
 

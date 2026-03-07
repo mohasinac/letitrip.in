@@ -8,8 +8,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { nowISO } from "@/utils";
 import { Input, Select, Textarea, Toggle } from "@/components";
-import { UI_LABELS } from "@/constants";
+import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+
+const { spacing } = THEME_CONSTANTS;
 import type { CouponDocument } from "@/db/schema";
 
 const LABELS = UI_LABELS.ADMIN.COUPONS;
@@ -84,7 +87,7 @@ export function formStateToCouponPayload(form: CouponFormState) {
       isActive: form.isActive,
       startDate: form.startDate
         ? new Date(form.startDate).toISOString()
-        : new Date().toISOString(),
+        : nowISO(),
       ...(form.endDate
         ? { endDate: new Date(form.endDate).toISOString() }
         : {}),
@@ -121,7 +124,7 @@ export function CouponForm({ initialData, onChange, isEdit }: CouponFormProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className={spacing.stack}>
       <Input
         label={LABELS.CODE_LABEL}
         value={form.code}

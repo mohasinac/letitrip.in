@@ -30,6 +30,7 @@ type RelatedProduct = Pick<
   | "isPromoted"
   | "slug"
   | "category"
+  | "availableQuantity"
 >;
 
 interface RelatedProductsResponse {

@@ -67,7 +67,8 @@ export type RipCoinTransactionType =
   | "return"
   | "refund"
   | "admin_grant"
-  | "admin_deduct";
+  | "admin_deduct"
+  | "earn_purchase";
 
 export const RIPCOIN_COLLECTION = "ripcoins" as const;
 
@@ -116,6 +117,9 @@ export const RIPCOIN_MAX_PACKS = 1000;
 
 /** 1 RipCoin = ₹1 of bid value */
 export const RIPCOIN_BID_VALUE_RS = 1;
+
+/** Earn rate: ₹10 spent on a purchase = 1 RipCoin credited */
+export const RIPCOIN_EARN_RATE = 10;
 
 /** Grace period (ms) after auction win before coins are forfeited */
 export const RIPCOIN_PAYMENT_GRACE_MS = 3 * 24 * 60 * 60 * 1000; // 3 days

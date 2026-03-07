@@ -91,7 +91,9 @@ export default async function SellerGuidePage() {
           ))}
         </div>
 
-        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 flex flex-wrap gap-6 text-sm">
+        <div
+          className={`mt-12 pt-8 border-t ${themed.border} flex flex-wrap gap-6 text-sm`}
+        >
           <TextLink
             href={ROUTES.PUBLIC.HELP}
             className="text-indigo-600 dark:text-indigo-400 hover:underline"

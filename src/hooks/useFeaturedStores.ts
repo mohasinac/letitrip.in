@@ -2,10 +2,10 @@
 
 import { useApiQuery } from "./useApiQuery";
 import { storeService } from "@/services";
-import type { StoreListItem } from "@/features/stores";
+import type { StoreListItem } from "@/types/stores";
 
-interface PaginatedResult {
-  items: StoreListItem[];
+interface PaginatedResult<T = unknown> {
+  items: T[];
   total: number;
   page: number;
   pageSize: number;
@@ -18,11 +18,11 @@ interface PaginatedResult {
  * Fetches top approved stores for the homepage featured stores section.
  */
 export function useFeaturedStores() {
-  return useApiQuery<PaginatedResult>({
+  return useApiQuery<PaginatedResult<StoreListItem>>({
     queryKey: ["stores", "featured"],
     queryFn: () =>
-      storeService.listStores(
-        "pageSize=12&sorts=-createdAt",
-      ) as Promise<PaginatedResult>,
+      storeService.listStores("pageSize=12&sorts=-createdAt") as Promise<
+        PaginatedResult<StoreListItem>
+      >,
   });
 }

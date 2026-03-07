@@ -17,6 +17,7 @@ export * from "./reviews";
 export * from "./bids";
 export * from "./sessions";
 export * from "./cart";
+export * from "./stores";
 
 // Platform configuration schemas
 export * from "./site-settings";

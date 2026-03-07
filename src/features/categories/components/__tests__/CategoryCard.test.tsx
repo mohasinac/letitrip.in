@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { CategoryCard } from "../CategoryCard";
+import { CategoryCard } from "@/components";
 import type { CategoryDocument } from "@/db/schema";
 
 jest.mock("next-intl", () => ({

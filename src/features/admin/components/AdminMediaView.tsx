@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useApiMutation } from "@/hooks";
+import { nowMs } from "@/utils";
 import { mediaService } from "@/services";
 import { useTranslations } from "next-intl";
 import {
@@ -46,8 +47,8 @@ export function AdminMediaView() {
           status: "completed",
           outputUrl: result.data.url,
           format: data.outputFormat || "jpeg",
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: new Date(nowMs()),
+          updatedAt: new Date(nowMs()),
         };
         setRecentOperations((prev) => [newOp, ...prev.slice(0, 9)]);
         showToast(t("cropSuccess"), "success");
@@ -72,8 +73,8 @@ export function AdminMediaView() {
           status: "completed",
           outputUrl: result.data.url,
           format: data.outputFormat || "mp4",
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: new Date(nowMs()),
+          updatedAt: new Date(nowMs()),
         };
         setRecentOperations((prev) => [newOp, ...prev.slice(0, 9)]);
         showToast(t("trimSuccess"), "success");

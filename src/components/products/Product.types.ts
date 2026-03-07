@@ -50,6 +50,13 @@ export interface AdminProduct {
   isPromoted?: boolean;
   promotionEndDate?: string;
   pickupAddressId?: string;
+  // Pre-order fields
+  isPreOrder?: boolean;
+  preOrderDeliveryDate?: string; // ISO date string — ETA for delivery
+  preOrderDepositPercent?: number;
+  preOrderMaxQuantity?: number;
+  preOrderProductionStatus?: "upcoming" | "in_production" | "ready_to_ship";
+  preOrderCancellable?: boolean;
   createdAt: string;
   updatedAt: string;
 }

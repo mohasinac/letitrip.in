@@ -12,7 +12,7 @@ import { Main } from "./semantic/Semantic";
 import { BackgroundRenderer } from "./utility";
 import { logger } from "@/classes";
 import { useSiteSettings } from "@/hooks";
-import { EventBanner } from "@/features/events";
+import { EventBanner } from "@/components";
 import UnsavedChangesModal from "./modals/UnsavedChangesModal";
 
 /**

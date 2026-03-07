@@ -38,11 +38,12 @@ export { SurveyConfigForm } from "./components/EventTypeConfig/SurveyConfigForm"
 export { FeedbackConfigForm } from "./components/EventTypeConfig/FeedbackConfigForm";
 
 // Public-facing components
-export { EventCard } from "./components/EventCard";
+export { EventCard } from "@/components";
 export { PollVotingSection } from "./components/PollVotingSection";
 export { SurveyEventSection } from "./components/SurveyEventSection";
 export { FeedbackEventSection } from "./components/FeedbackEventSection";
 export { EventLeaderboard } from "./components/EventLeaderboard";
 export { EventParticipateView } from "./components/EventParticipateView";
 export { EventsListView } from "./components/EventsListView";
-export { EventBanner } from "./components/EventBanner";
+export { EventBanner } from "@/components";
+export { AdminEventsView } from "./components/AdminEventsView";

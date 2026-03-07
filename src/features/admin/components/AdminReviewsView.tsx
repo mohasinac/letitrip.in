@@ -12,8 +12,10 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { usePendingTable } from "@/hooks";
 import { useRouter } from "@/i18n/navigation";
 import { useUrlTable } from "@/hooks";
-import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useAdminReviews } from "@/features/admin/hooks";
+
+const { flex } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
 import {
   Badge,
@@ -142,6 +144,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
         data: { status: "approved" },
       });
       await refetch();
+      showToast(SUCCESS_MESSAGES.REVIEW.APPROVED, "success");
       handleBackToList();
     } catch {
       showToast(t("approveFailed"), "error");
@@ -161,6 +164,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
         data: { status: "rejected", rejectionReason: reason },
       });
       await refetch();
+      showToast(SUCCESS_MESSAGES.REVIEW.REJECTED, "success");
       handleBackToList();
     } catch {
       showToast(t("rejectFailed"), "error");
@@ -178,6 +182,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
     try {
       await deleteMutation.mutate(deleteConfirm.id);
       await refetch();
+      showToast(SUCCESS_MESSAGES.REVIEW.DELETED, "success");
       handleBackToList();
     } catch {
       showToast(t("deleteFailed"), "error");
@@ -208,6 +213,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
         ),
       );
       await refetch();
+      showToast(SUCCESS_MESSAGES.REVIEW.BULK_APPROVED, "success");
     } catch {
       showToast(t("approveFailed"), "error");
     }
@@ -305,7 +311,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
           )}
           externalPagination
           showViewToggle
-          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(review) => (
             <Card
@@ -316,7 +322,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
                 {review.productName}
               </Text>
               <Caption>{review.userName}</Caption>
-              <div className="flex items-center justify-between">
+              <div className={`${flex.between}`}>
                 <Badge>
                   {"★".repeat(review.rating)}
                   {"☆".repeat(5 - review.rating)}

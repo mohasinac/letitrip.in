@@ -36,6 +36,7 @@ export default function AdminTabs() {
     { href: ROUTES.ADMIN.PAYOUTS, label: t("payoutsAdmin") },
 
     { href: ROUTES.ADMIN.EVENTS, label: t("eventsAdmin") },
+    { href: ROUTES.ADMIN.FEATURE_FLAGS, label: t("featureFlags") },
   ];
   return <SectionTabs tabs={tabs} variant="admin" />;
 }

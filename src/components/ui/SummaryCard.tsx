@@ -2,7 +2,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { classNames } from "@/helpers";
 import { Card, Span, Divider } from "@/components";
 
-const { themed, flex } = THEME_CONSTANTS;
+const { themed, flex, spacing } = THEME_CONSTANTS;
 
 export interface SummaryLine {
   label: string;
@@ -26,12 +26,7 @@ export function SummaryCard({
   className,
 }: SummaryCardProps) {
   return (
-    <Card
-      className={classNames(
-        "p-5 space-y-4",
-        className,
-      )}
-    >
+    <Card className={classNames(`p-5 ${spacing.stack}`, className)}>
       {/* Line items */}
       <div className="space-y-2">
         {lines.map((line, i) => (

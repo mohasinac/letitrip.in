@@ -4,7 +4,7 @@ import { successResponse } from "@/lib/api-response";
 import { ValidationError, NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import {
-  userRepository,
+  storeRepository,
   productRepository,
   reviewRepository,
 } from "@/repositories";
@@ -25,17 +25,13 @@ export async function GET(
       throw new ValidationError(ERROR_MESSAGES.VALIDATION.FAILED);
     }
 
-    const seller = await userRepository.findByStoreSlug(storeSlug);
-    if (
-      !seller ||
-      (seller.role !== "seller" && seller.role !== "admin") ||
-      seller.storeStatus !== "approved"
-    ) {
+    const storeDoc = await storeRepository.findBySlug(storeSlug);
+    if (!storeDoc || storeDoc.status !== "active" || !storeDoc.isPublic) {
       throw new NotFoundError(ERROR_MESSAGES.USER.NOT_FOUND);
     }
 
-    // Fetch all products for this seller
-    const allProducts = await productRepository.findBySeller(seller.uid);
+    // Fetch all products for this store's owner
+    const allProducts = await productRepository.findBySeller(storeDoc.ownerId);
     const publishedProducts = allProducts
       .filter((p) => p.status === "published")
       .slice(0, 20); // cap to avoid excessive reads

@@ -1,6 +1,6 @@
 import React from "react";
-import { Card, Spinner } from "@/components/ui";
-import { Text } from "@/components/typography";
+import { Card, Spinner } from "@/components";
+import { Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 const { enhancedCard, spacing, themed, flex } = THEME_CONSTANTS;

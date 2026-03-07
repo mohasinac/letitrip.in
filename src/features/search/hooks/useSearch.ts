@@ -20,6 +20,7 @@ type ProductCardData = Pick<
   | "currentBid"
   | "isPromoted"
   | "slug"
+  | "availableQuantity"
 >;
 
 export interface SearchResponse {

@@ -22,6 +22,13 @@ const TopCategoriesSection = dynamic(
     })),
   { ssr: true },
 );
+const TopBrandsSection = dynamic(
+  () =>
+    import("@/features/homepage").then((m) => ({
+      default: m.TopBrandsSection,
+    })),
+  { ssr: true },
+);
 const FeaturedProductsSection = dynamic(
   () =>
     import("@/features/homepage").then((m) => ({
@@ -33,6 +40,13 @@ const FeaturedAuctionsSection = dynamic(
   () =>
     import("@/features/homepage").then((m) => ({
       default: m.FeaturedAuctionsSection,
+    })),
+  { ssr: true },
+);
+const FeaturedPreOrdersSection = dynamic(
+  () =>
+    import("@/features/homepage").then((m) => ({
+      default: m.FeaturedPreOrdersSection,
     })),
   { ssr: true },
 );
@@ -90,8 +104,10 @@ export default function Page() {
       <HeroCarousel />
       <TrustFeaturesSection />
       <TopCategoriesSection />
+      <TopBrandsSection />
       <FeaturedProductsSection />
       <FeaturedAuctionsSection />
+      <FeaturedPreOrdersSection />
       <FeaturedStoresSection />
       <FeaturedEventsSection />
       <AdvertisementBanner />

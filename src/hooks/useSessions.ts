@@ -51,18 +51,6 @@ export function useAdminSessions(limit = 100) {
 }
 
 /**
- * Fetch sessions for specific user (admin only)
- * @deprecated No user-facing sessions UI exists. Feature planned for future implementation.
- */
-export function useUserSessions(userId: string | null) {
-  return useApiQuery<SessionsResponse>({
-    queryKey: ["user-sessions", userId || ""],
-    queryFn: () => adminService.listSessions(`userId=${userId}`),
-    enabled: !!userId,
-  });
-}
-
-/**
  * Revoke a session (admin)
  */
 export function useRevokeSession() {
@@ -83,30 +71,5 @@ export function useRevokeUserSessions() {
     { userId: string }
   >({
     mutationFn: async ({ userId }) => adminService.revokeUserSessions(userId),
-  });
-}
-
-/**
- * Get my sessions (user)
- * @deprecated No user-facing sessions UI exists. Feature planned for future implementation.
- */
-export function useMySessions() {
-  return useApiQuery<UserSessionsResponse>({
-    queryKey: ["my-sessions"],
-    queryFn: () => sessionService.listMySessions(),
-  });
-}
-
-/**
- * Revoke my session (user)
- * @deprecated No user-facing sessions UI exists. Feature planned for future implementation.
- */
-export function useRevokeMySession() {
-  return useApiMutation<
-    { success: boolean; message: string },
-    { sessionId: string }
-  >({
-    mutationFn: async ({ sessionId }) =>
-      sessionService.revokeSession(sessionId),
   });
 }

@@ -65,7 +65,9 @@ export function WhatsAppCommunitySection() {
 
           <div className="relative z-10 text-center">
             {/* WhatsApp Icon */}
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm mb-6 mx-auto">
+            <div
+              className={`inline-${THEME_CONSTANTS.flex.center} w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm mb-6 mx-auto`}
+            >
               <MessageCircle className="w-10 h-10 text-white" />
             </div>
 

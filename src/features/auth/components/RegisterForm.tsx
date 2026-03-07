@@ -37,7 +37,11 @@ export function RegisterForm() {
   const t = useTranslations("auth");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || ROUTES.USER.PROFILE;
+  const rawCallbackUrl = searchParams.get("callbackUrl");
+  const callbackUrl =
+    rawCallbackUrl && rawCallbackUrl.startsWith("/")
+      ? rawCallbackUrl
+      : ROUTES.USER.PROFILE;
   const { user, loading: authLoading } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -134,6 +138,7 @@ export function RegisterForm() {
       email: formData.email.trim(),
       password: formData.password,
       displayName: formData.displayName.trim() || undefined,
+      acceptTerms: formData.acceptTerms,
     });
   };
 

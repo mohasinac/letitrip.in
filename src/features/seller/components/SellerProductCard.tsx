@@ -32,8 +32,12 @@ export function SellerProductCard({
           fallback="📦"
         />
         {product.video?.url && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <Span className="bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm leading-none">
+          <div
+            className={`absolute inset-0 ${flex.center} pointer-events-none`}
+          >
+            <Span
+              className={`bg-black/50 text-white rounded-full w-8 h-8 ${flex.center} text-sm leading-none`}
+            >
               ▶
             </Span>
           </div>

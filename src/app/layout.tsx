@@ -1,7 +1,7 @@
 import "./globals.css";
 import { getLocale } from "next-intl/server";
 import type { Metadata, Viewport } from "next";
-import { SEO_CONFIG } from "@/constants/seo";
+import { SEO_CONFIG } from "@/constants";
 import { organizationJsonLd, searchBoxJsonLd } from "@/lib/seo";
 
 export const viewport: Viewport = {

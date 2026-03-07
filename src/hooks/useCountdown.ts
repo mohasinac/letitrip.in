@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { nowMs } from "@/utils";
 
 /**
  * useCountdown — tracks time remaining until a future date.
@@ -36,7 +37,7 @@ export function useCountdown(
     if (!endDate) return null;
     const ms = resolveMs(endDate);
     if (Number.isNaN(ms)) return null;
-    const diff = ms - Date.now();
+    const diff = ms - nowMs();
     if (diff <= 0) return null;
     return {
       days: Math.floor(diff / (1000 * 60 * 60 * 24)),

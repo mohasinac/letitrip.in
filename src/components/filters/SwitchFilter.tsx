@@ -39,7 +39,7 @@ export function SwitchFilter({
   className = "",
 }: SwitchFilterProps) {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
-  const { themed, spacing } = THEME_CONSTANTS;
+  const { themed, spacing, flex } = THEME_CONSTANTS;
 
   return (
     <div
@@ -56,7 +56,9 @@ export function SwitchFilter({
         <Span className="flex items-center gap-2">
           {title}
           {checked && (
-            <Span className="inline-flex items-center justify-center w-5 h-5 text-xs rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">
+            <Span
+              className={`inline-${flex.center} w-5 h-5 text-xs rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300`}
+            >
               1
             </Span>
           )}
@@ -78,7 +80,7 @@ export function SwitchFilter({
       </Button>
 
       {!isCollapsed && (
-        <div className="mt-2 flex items-center justify-between gap-4">
+        <div className={`mt-2 ${flex.between} gap-4`}>
           <Span className={`text-sm ${themed.textSecondary} leading-snug`}>
             {label}
           </Span>

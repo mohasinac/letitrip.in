@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { FilterFacetSection } from "@/components";
 import { SwitchFilter } from "./SwitchFilter";
-import type { UrlTable } from "./ProductFilters";
+import type { UrlTable, FacetOption } from "./ProductFilters";
 
 export const REVIEW_SORT_OPTIONS = [
   { value: "-createdAt", key: "sortNewest" },
@@ -17,11 +17,14 @@ export interface ReviewFiltersProps {
   /** "admin" (default) shows status, rating, verified, featured.
    *  "public" shows rating only. */
   variant?: "admin" | "public";
+  /** Optional brand options for filter by brand */
+  brandOptions?: FacetOption[];
 }
 
 export function ReviewFilters({
   table,
   variant = "admin",
+  brandOptions,
 }: ReviewFiltersProps) {
   const t = useTranslations("filters");
 
@@ -67,6 +70,18 @@ export function ReviewFilters({
         searchable={false}
         defaultCollapsed={variant === "admin"}
       />
+
+      {brandOptions && brandOptions.length > 0 && (
+        <FilterFacetSection
+          title={t("brand")}
+          options={brandOptions}
+          selected={table.get("brand") ? [table.get("brand")] : []}
+          onChange={(vals) => table.set("brand", vals[0] ?? "")}
+          searchable={brandOptions.length > 6}
+          selectionMode="single"
+          defaultCollapsed={true}
+        />
+      )}
 
       {variant === "admin" && (
         <>

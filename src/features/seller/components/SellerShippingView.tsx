@@ -33,10 +33,19 @@ interface CustomShippingFormProps {
   defaultCarrier: string;
   defaultPrice: number;
   isSaving: boolean;
-  onSave: (data: { method: "custom"; customCarrierName: string; customShippingPrice: number }) => void;
+  onSave: (data: {
+    method: "custom";
+    customCarrierName: string;
+    customShippingPrice: number;
+  }) => void;
 }
 
-function CustomShippingForm({ defaultCarrier, defaultPrice, isSaving, onSave }: CustomShippingFormProps) {
+function CustomShippingForm({
+  defaultCarrier,
+  defaultPrice,
+  isSaving,
+  onSave,
+}: CustomShippingFormProps) {
   const t = useTranslations("sellerShipping");
   const [carrier, setCarrier] = useState(defaultCarrier);
   const [price, setPrice] = useState(String(defaultPrice || ""));
@@ -134,18 +143,36 @@ interface PickupAddressFormProps {
   isSaving: boolean;
   isVerified: boolean;
   onSave: (address: {
-    locationName: string; name: string; email: string; phone: string;
-    address: string; address2?: string; city: string; state: string;
-    pincode: string; country: string;
+    locationName: string;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    address2?: string;
+    city: string;
+    state: string;
+    pincode: string;
+    country: string;
   }) => void;
 }
 
-function PickupAddressForm({ isSaving, isVerified, onSave }: PickupAddressFormProps) {
+function PickupAddressForm({
+  isSaving,
+  isVerified,
+  onSave,
+}: PickupAddressFormProps) {
   const t = useTranslations("sellerShipping");
   const [form, setForm] = useState({
-    locationName: "", name: "", email: "", phone: "",
-    address: "", address2: "", city: "", state: "",
-    pincode: "", country: "India",
+    locationName: "",
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    address2: "",
+    city: "",
+    state: "",
+    pincode: "",
+    country: "India",
   });
   const set = (key: string, v: string) => setForm((f) => ({ ...f, [key]: v }));
 
@@ -159,18 +186,72 @@ function PickupAddressForm({ isSaving, isVerified, onSave }: PickupAddressFormPr
 
   return (
     <div className={spacing.stack}>
-      <FormField type="text" name="locationName" label={t("pickupLocationName")} value={form.locationName} onChange={(v) => set("locationName", v)} />
-      <FormField type="text" name="contactName" label={t("pickupContactName")} value={form.name} onChange={(v) => set("name", v)} />
+      <FormField
+        type="text"
+        name="locationName"
+        label={t("pickupLocationName")}
+        value={form.locationName}
+        onChange={(v) => set("locationName", v)}
+      />
+      <FormField
+        type="text"
+        name="contactName"
+        label={t("pickupContactName")}
+        value={form.name}
+        onChange={(v) => set("name", v)}
+      />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <FormField type="email" name="pickupEmail" label={t("pickupEmail")} value={form.email} onChange={(v) => set("email", v)} />
-        <FormField type="tel" name="pickupPhone" label={t("pickupPhone")} value={form.phone} onChange={(v) => set("phone", v)} />
+        <FormField
+          type="email"
+          name="pickupEmail"
+          label={t("pickupEmail")}
+          value={form.email}
+          onChange={(v) => set("email", v)}
+        />
+        <FormField
+          type="tel"
+          name="pickupPhone"
+          label={t("pickupPhone")}
+          value={form.phone}
+          onChange={(v) => set("phone", v)}
+        />
       </div>
-      <FormField type="text" name="address" label={t("pickupAddress")} value={form.address} onChange={(v) => set("address", v)} />
-      <FormField type="text" name="address2" label={t("pickupAddress2")} value={form.address2} onChange={(v) => set("address2", v)} />
+      <FormField
+        type="text"
+        name="address"
+        label={t("pickupAddress")}
+        value={form.address}
+        onChange={(v) => set("address", v)}
+      />
+      <FormField
+        type="text"
+        name="address2"
+        label={t("pickupAddress2")}
+        value={form.address2}
+        onChange={(v) => set("address2", v)}
+      />
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <FormField type="text" name="city" label={t("pickupCity")} value={form.city} onChange={(v) => set("city", v)} />
-        <FormField type="text" name="state" label={t("pickupState")} value={form.state} onChange={(v) => set("state", v)} />
-        <FormField type="text" name="pincode" label={t("pickupPincode")} value={form.pincode} onChange={(v) => set("pincode", v)} />
+        <FormField
+          type="text"
+          name="city"
+          label={t("pickupCity")}
+          value={form.city}
+          onChange={(v) => set("city", v)}
+        />
+        <FormField
+          type="text"
+          name="state"
+          label={t("pickupState")}
+          value={form.state}
+          onChange={(v) => set("state", v)}
+        />
+        <FormField
+          type="text"
+          name="pincode"
+          label={t("pickupPincode")}
+          value={form.pincode}
+          onChange={(v) => set("pincode", v)}
+        />
       </div>
       <Button
         variant="primary"
@@ -193,14 +274,22 @@ interface OtpModalProps {
   onClose: () => void;
 }
 
-function OtpModal({ open, pickupLocationId, isVerifying, onVerify, onClose }: OtpModalProps) {
+function OtpModal({
+  open,
+  pickupLocationId,
+  isVerifying,
+  onVerify,
+  onClose,
+}: OtpModalProps) {
   const t = useTranslations("sellerShipping");
   const [otp, setOtp] = useState("");
 
   return (
     <Modal isOpen={open} onClose={onClose} title={t("otpModalTitle")} size="sm">
       <div className={spacing.stack}>
-        <Text variant="secondary" size="sm">{t("otpModalDesc")}</Text>
+        <Text variant="secondary" size="sm">
+          {t("otpModalDesc")}
+        </Text>
         <FormField
           type="number"
           name="otp"
@@ -210,7 +299,9 @@ function OtpModal({ open, pickupLocationId, isVerifying, onVerify, onClose }: Ot
           placeholder="000000"
         />
         <div className={`${flex.end} gap-2`}>
-          <Button variant="outline" onClick={onClose} disabled={isVerifying}>{t("cancel")}</Button>
+          <Button variant="outline" onClick={onClose} disabled={isVerifying}>
+            {t("cancel")}
+          </Button>
           <Button
             variant="primary"
             isLoading={isVerifying}
@@ -230,9 +321,15 @@ function OtpModal({ open, pickupLocationId, isVerifying, onVerify, onClose }: Ot
 
 export function SellerShippingView() {
   const t = useTranslations("sellerShipping");
-  const [selectedMethod, setSelectedMethod] = useState<"custom" | "shiprocket" | null>(null);
-  const [otpModal, setOtpModal] = useState<{ open: boolean; locationId: number | null }>({
-    open: false, locationId: null,
+  const [selectedMethod, setSelectedMethod] = useState<
+    "custom" | "shiprocket" | null
+  >(null);
+  const [otpModal, setOtpModal] = useState<{
+    open: boolean;
+    locationId: number | null;
+  }>({
+    open: false,
+    locationId: null,
   });
 
   const {
@@ -261,31 +358,42 @@ export function SellerShippingView() {
       <AdminPageHeader
         title={t("pageTitle")}
         subtitle={t("pageSubtitle")}
-        badge={isConfigured ? <Badge variant="success">{t("configured")}</Badge> : undefined}
+        badge={
+          isConfigured ? (
+            <Badge variant="success">{t("configured")}</Badge>
+          ) : undefined
+        }
       />
 
       {/* Method selector */}
       <Card className="p-6">
-        <Heading level={3} className="mb-4">{t("methodHeading")}</Heading>
+        <Heading level={3} className="mb-4">
+          {t("methodHeading")}
+        </Heading>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {(["custom", "shiprocket"] as const).map((method) => (
-            <button
+            <Button
               key={method}
               type="button"
+              variant="ghost"
               onClick={() => setSelectedMethod(method)}
-              className={`p-4 rounded-xl border-2 text-left transition-colors ${
+              className={`p-4 h-auto items-start flex-col text-left whitespace-normal border-2 w-full gap-0 ${
                 activeMethod === method
                   ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20"
-                  : `border-gray-200 dark:border-gray-700 ${themed.bgPrimary} hover:border-indigo-300`
+                  : `${themed.border} ${themed.bgPrimary} hover:border-indigo-300`
               }`}
             >
               <Text weight="semibold" className="mb-1">
-                {method === "custom" ? t("methodCustomTitle") : t("methodShiprocketTitle")}
+                {method === "custom"
+                  ? t("methodCustomTitle")
+                  : t("methodShiprocketTitle")}
               </Text>
               <Text variant="secondary" size="sm">
-                {method === "custom" ? t("methodCustomDesc") : t("methodShiprocketDesc")}
+                {method === "custom"
+                  ? t("methodCustomDesc")
+                  : t("methodShiprocketDesc")}
               </Text>
-            </button>
+            </Button>
           ))}
         </div>
       </Card>
@@ -293,7 +401,9 @@ export function SellerShippingView() {
       {/* Custom shipping config */}
       {activeMethod === "custom" && (
         <Card className="p-6">
-          <Heading level={3} className="mb-4">{t("customHeading")}</Heading>
+          <Heading level={3} className="mb-4">
+            {t("customHeading")}
+          </Heading>
           <CustomShippingForm
             defaultCarrier={shippingConfig?.customCarrierName ?? ""}
             defaultPrice={shippingConfig?.customShippingPrice ?? 0}
@@ -307,21 +417,32 @@ export function SellerShippingView() {
       {activeMethod === "shiprocket" && (
         <>
           <Card className="p-6">
-            <Heading level={3} className="mb-1">{t("srCredsHeading")}</Heading>
-            <Text variant="secondary" size="sm" className="mb-4">{t("srCredsDesc")}</Text>
+            <Heading level={3} className="mb-1">
+              {t("srCredsHeading")}
+            </Heading>
+            <Text variant="secondary" size="sm" className="mb-4">
+              {t("srCredsDesc")}
+            </Text>
             <SrCredsForm
               isTokenValid={isTokenValid}
               isSaving={isSaving}
               onSave={(creds) =>
-                updateShipping({ method: "shiprocket", shiprocketCredentials: creds })
+                updateShipping({
+                  method: "shiprocket",
+                  shiprocketCredentials: creds,
+                })
               }
             />
           </Card>
 
           {isTokenValid && (
             <Card className="p-6">
-              <Heading level={3} className="mb-1">{t("pickupHeading")}</Heading>
-              <Text variant="secondary" size="sm" className="mb-4">{t("pickupDesc")}</Text>
+              <Heading level={3} className="mb-1">
+                {t("pickupHeading")}
+              </Heading>
+              <Text variant="secondary" size="sm" className="mb-4">
+                {t("pickupDesc")}
+              </Text>
               <PickupAddressForm
                 isSaving={isSaving}
                 isVerified={shippingConfig?.pickupAddress?.isVerified ?? false}

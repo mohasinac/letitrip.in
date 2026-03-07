@@ -21,7 +21,7 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { ChatList } from "./ChatList";
 import { ChatWindow } from "./ChatWindow";
 
-const { spacing } = THEME_CONSTANTS;
+const { spacing, flex, themed } = THEME_CONSTANTS;
 
 export function MessagesView() {
   const t = useTranslations("chat");
@@ -58,7 +58,9 @@ export function MessagesView() {
         </div>
       ) : (
         /* Desktop: empty state when no chat selected */
-        <div className="hidden md:flex items-center justify-center text-gray-400 dark:text-gray-600 border border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+        <div
+          className={`hidden md:${flex.center} text-gray-400 dark:text-gray-600 border border-dashed ${themed.border} rounded-xl`}
+        >
           {t("selectRoom")}
         </div>
       )}

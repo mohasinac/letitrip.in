@@ -19,6 +19,9 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Text } from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
+
+const { flex } = THEME_CONSTANTS;
 
 export default function AuthClosePage() {
   const searchParams = useSearchParams();
@@ -44,7 +47,7 @@ export default function AuthClosePage() {
   if (closed) return null;
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className={`${flex.center} min-h-screen`}>
       {errorCode ? (
         <Text variant="error">{t("closeError")}</Text>
       ) : (

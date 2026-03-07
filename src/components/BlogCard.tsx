@@ -81,7 +81,9 @@ export function BlogCard({
 
           {/* Featured star — top right */}
           {post.isFeatured && (
-            <div className="absolute top-2 right-2 z-10 w-7 h-7 rounded-full bg-yellow-400 flex items-center justify-center shadow">
+            <div
+              className={`absolute top-2 right-2 z-10 w-7 h-7 rounded-full bg-yellow-400 ${flex.center} shadow`}
+            >
               <Star
                 className="w-4 h-4 text-yellow-900 fill-yellow-900"
                 aria-hidden="true"

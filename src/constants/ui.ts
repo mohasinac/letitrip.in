@@ -595,6 +595,7 @@ export const UI_LABELS = {
       NONE_ROOT: "None (Root Category)",
       SHOW_ON_HOMEPAGE: "Show on Homepage",
       ENABLED: "Enabled",
+      IS_BRAND: "Brand Category",
       TREE_VIEW: "Tree",
       TABLE_VIEW: "Table",
     },

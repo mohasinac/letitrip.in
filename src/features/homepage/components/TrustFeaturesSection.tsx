@@ -39,7 +39,9 @@ function TrustFeatureCard({
       }}
     >
       {/* Icon circle */}
-      <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-indigo-50 dark:bg-indigo-900/30 mb-4 mx-auto">
+      <div
+        className={`inline-${THEME_CONSTANTS.flex.center} w-14 h-14 rounded-full bg-indigo-50 dark:bg-indigo-900/30 mb-4 mx-auto`}
+      >
         <Icon className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
       </div>
 

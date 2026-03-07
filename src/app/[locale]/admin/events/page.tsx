@@ -1,4 +1,4 @@
-import { AdminEventsView } from "@/features/admin";
+import { AdminEventsView } from "@/features/events";
 
 export default function AdminEventsPage() {
   return <AdminEventsView />;

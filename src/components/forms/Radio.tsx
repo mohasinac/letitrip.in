@@ -133,7 +133,12 @@ export default function RadioGroup({
           <Text
             className={`mt-1.5 ${typography.small} ${themed.textError} ${flex.rowCenter} gap-1`}
           >
-            <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <svg
+              className="w-4 h-4 flex-shrink-0"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+            >
               <path
                 fillRule="evenodd"
                 d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
@@ -216,14 +221,14 @@ export default function RadioGroup({
                   )}
                 >
                   {isSelected && (
-                    <div className="w-full h-full rounded-full flex items-center justify-center">
+                    <div
+                      className={`w-full h-full rounded-full ${flex.center}`}
+                    >
                       <div className="w-1.5 h-1.5 rounded-full bg-white dark:bg-slate-950" />
                     </div>
                   )}
                 </div>
-                <Span className="text-sm font-medium">
-                  {option.label}
-                </Span>
+                <Span className="text-sm font-medium">{option.label}</Span>
               </div>
             </label>
           );
@@ -234,7 +239,12 @@ export default function RadioGroup({
         <Text
           className={`mt-1.5 ${typography.small} ${themed.textError} ${flex.rowCenter} gap-1`}
         >
-          <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <svg
+            className="w-4 h-4 flex-shrink-0"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            aria-hidden="true"
+          >
             <path
               fillRule="evenodd"
               d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"

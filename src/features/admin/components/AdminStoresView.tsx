@@ -26,7 +26,7 @@ import {
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, useMessage, usePendingTable } from "@/hooks";
-import { StoreFilters } from "@/components/filters";
+import { StoreFilters } from "@/components";
 import { useAdminStores } from "@/features/admin/hooks";
 import type { AdminStoreItem } from "@/features/admin/hooks";
 import { formatDate } from "@/utils";
@@ -40,7 +40,7 @@ interface Column {
   width?: string;
 }
 
-const { spacing } = THEME_CONSTANTS;
+const { spacing, flex } = THEME_CONSTANTS;
 
 type StoreAction = "approve" | "reject";
 
@@ -246,7 +246,7 @@ export function AdminStoresView() {
           emptyMessage={t("noStores")}
           externalPagination
           showViewToggle
-          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(store) => (
             <Card className="p-4 space-y-2">
@@ -254,7 +254,7 @@ export function AdminStoresView() {
                 {store.publicProfile?.storeName ?? store.displayName}
               </Text>
               <Caption className="truncate">{store.email}</Caption>
-              <div className="flex items-center justify-between">
+              <div className={`${flex.between}`}>
                 <Caption>
                   {t("soldCount", { count: store.stats?.itemsSold ?? 0 })}
                 </Caption>

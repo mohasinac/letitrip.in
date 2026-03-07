@@ -23,10 +23,10 @@ import {
   getFilterLabel,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
-import { EventFilters } from "@/components/filters";
+import { EventFilters } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useUrlTable, usePublicEvents, usePendingTable } from "@/hooks";
-import { EventCard } from "./EventCard";
+import { EventCard } from "@/components";
 
 const PAGE_SIZE = 24;
 

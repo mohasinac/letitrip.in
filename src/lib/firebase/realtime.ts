@@ -47,3 +47,10 @@ export const realtimeApp =
  * Use this (NOT `realtimeDb` from `@/lib/firebase/config`) for chat subscriptions.
  */
 export const chatRealtimeDb = getDatabase(realtimeApp);
+
+/**
+ * Public Realtime Database instance (default Firebase app).
+ * Use this for unauthenticated public paths (e.g. /auction-bids/{productId}).
+ * Prefer importing from here instead of @/lib/firebase/config in client code.
+ */
+export { realtimeDb } from "./config";

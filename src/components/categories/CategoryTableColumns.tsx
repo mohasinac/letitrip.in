@@ -6,7 +6,9 @@
  */
 
 import { Button, Span, StatusBadge } from "@/components";
-import { UI_LABELS } from "@/constants";
+import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
+
+const { flex } = THEME_CONSTANTS;
 import type { Category } from "./Category.types";
 
 export function getCategoryTableColumns(
@@ -29,7 +31,7 @@ export function getCategoryTableColumns(
               />
             ) : (
               <div
-                className="w-full h-full flex items-center justify-center text-base"
+                className={`w-full h-full ${flex.center} text-base`}
                 style={{ backgroundColor: cat.display?.color ?? "#94a3b8" }}
               >
                 {cat.display?.icon ?? "🗂️"}

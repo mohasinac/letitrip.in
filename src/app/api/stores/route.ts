@@ -1,10 +1,8 @@
-import { NextRequest } from "next/server";
 import { successResponse } from "@/lib/api-response";
-import { userRepository } from "@/repositories";
-import { USER_FIELDS } from "@/db/schema";
+import { storeRepository } from "@/repositories";
 import { createApiHandler } from "@/lib/api/api-handler";
 import type { SieveModel } from "@/lib/query/firebase-sieve";
-import type { UserDocument } from "@/db/schema";
+import type { StoreDocument } from "@/db/schema";
 
 export const GET = createApiHandler({
   handler: async ({ request }) => {
@@ -19,35 +17,30 @@ export const GET = createApiHandler({
 
     const filtersArr: string[] = [];
     const q = searchParams.get("q");
-    if (q) filtersArr.push(`displayName_=${q}`);
+    if (q) filtersArr.push(`storeName_=${q}`);
     if (model.filters) filtersArr.push(model.filters);
     model.filters = filtersArr.join(",") || undefined;
 
-    const result = await userRepository.listSellers(model);
+    const result = await storeRepository.listStores(model);
 
-    const stores = result.items.map((user: UserDocument) => ({
-      uid: user.uid,
-      displayName: user.displayName,
-      photoURL: user.photoURL,
-      avatarMetadata: user.avatarMetadata,
-      role: user.role,
-      createdAt: user.createdAt,
-      storeSlug: user.storeSlug,
-      publicProfile: user.publicProfile
-        ? {
-            isPublic: user.publicProfile.isPublic,
-            bio: user.publicProfile.bio,
-            location: user.publicProfile.location,
-            storeName: user.publicProfile.storeName,
-            storeDescription: user.publicProfile.storeDescription,
-            storeCategory: user.publicProfile.storeCategory,
-            storeLogoURL: user.publicProfile.storeLogoURL,
-            storeBannerURL: user.publicProfile.storeBannerURL,
-          }
-        : undefined,
-      stats: user.stats,
+    const items = result.items.map((store: StoreDocument) => ({
+      id: store.id,
+      storeSlug: store.storeSlug,
+      ownerId: store.ownerId,
+      storeName: store.storeName,
+      storeDescription: store.storeDescription,
+      storeCategory: store.storeCategory,
+      storeLogoURL: store.storeLogoURL,
+      storeBannerURL: store.storeBannerURL,
+      status: store.status,
+      isPublic: store.isPublic,
+      totalProducts: store.stats?.totalProducts ?? 0,
+      itemsSold: store.stats?.itemsSold ?? 0,
+      totalReviews: store.stats?.totalReviews ?? 0,
+      averageRating: store.stats?.averageRating,
+      createdAt: store.createdAt,
     }));
 
-    return successResponse({ ...result, items: stores });
+    return successResponse({ ...result, items });
   },
 });

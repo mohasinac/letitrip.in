@@ -32,11 +32,12 @@ export interface UserDocument {
   createdAt: Date;
   updatedAt: Date;
 
-  // Store identity (set when a user becomes a seller)
-  storeSlug?: string; // Indexed, URL-safe slug — format: store-<storeName>-<sellerName>
-  storeStatus?: "pending" | "approved" | "rejected"; // Admin-controlled approval state — gates public store visibility
+  // Store identity (set when a user is granted seller role)
+  storeId?: string; // Reference to stores/{storeId} — populated after store setup
+  storeSlug?: string; // Convenience copy of storeSlug for URL routing (mirrors StoreDocument.storeSlug)
+  storeStatus?: "pending" | "approved" | "rejected"; // Admin-controlled approval state
 
-  // Public profile settings
+  // Public profile settings (user-level — NOT store data)
   publicProfile?: {
     isPublic: boolean; // Whether profile is publicly viewable
     showEmail: boolean; // Show email on public profile
@@ -53,16 +54,16 @@ export interface UserDocument {
       linkedin?: string;
     };
     // Store-specific fields (populated when role = 'seller')
-    storeName?: string; // Display name for the store
-    storeDescription?: string; // Store description / tagline
-    storeCategory?: string; // Primary product category
-    storeLogoURL?: string; // Optional separate store logo
-    storeBannerURL?: string; // Optional store banner image
-    storeReturnPolicy?: string; // Return & refund policy text
-    storeShippingPolicy?: string; // Shipping info / estimated delivery text
-    // Vacation mode (seller pauses all listings)
-    isVacationMode?: boolean; // Hides listings and shows vacation banner
-    vacationMessage?: string; // Custom message shown to buyers
+    // Denormalized here for convenience; canonical source is StoreDocument.
+    storeName?: string;
+    storeDescription?: string;
+    storeCategory?: string;
+    storeLogoURL?: string;
+    storeBannerURL?: string;
+    storeReturnPolicy?: string;
+    storeShippingPolicy?: string;
+    isVacationMode?: boolean;
+    vacationMessage?: string;
   };
 
   // User statistics (for public display)
@@ -97,7 +98,7 @@ export interface UserDocument {
 
 // ─── Seller Shipping Config ──────────────────────────────────────────────────
 
-export type SellerShippingMethod = 'custom' | 'shiprocket';
+export type SellerShippingMethod = "custom" | "shiprocket";
 
 export interface SellerPickupAddress {
   /** Short nickname used as Shiprocket location identifier */
@@ -140,7 +141,7 @@ export interface SellerShippingConfig {
 
 // ─── Seller Payout Details ─────────────────────────────────────────────────
 
-export type SellerPayoutMethod = 'upi' | 'bank_transfer';
+export type SellerPayoutMethod = "upi" | "bank_transfer";
 
 export interface SellerBankAccount {
   accountHolderName: string;
@@ -150,7 +151,7 @@ export interface SellerBankAccount {
   accountNumberMasked: string;
   ifscCode: string;
   bankName: string;
-  accountType: 'savings' | 'current';
+  accountType: "savings" | "current";
 }
 
 export interface SellerPayoutDetails {

@@ -29,6 +29,7 @@
 
 import React from "react";
 import { useTranslations } from "next-intl";
+import { Tag } from "lucide-react";
 import { THEME_CONSTANTS } from "@/constants";
 import type { UserRole } from "@/types/auth";
 import type { AvatarMetadata } from "@/db/schema";
@@ -59,6 +60,7 @@ export interface TitleBarLayoutProps {
   logoHref: string;
   cartHref: string;
   profileHref: string;
+  promotionsHref: string;
   user: TitleBarUser | null;
   /** Live cart item count — shown in badge when > 0. */
   cartCount?: number;
@@ -78,6 +80,7 @@ export function TitleBarLayout({
   logoHref,
   cartHref,
   profileHref,
+  promotionsHref,
   user,
   cartCount = 0,
   notificationSlot,
@@ -86,6 +89,7 @@ export function TitleBarLayout({
 }: TitleBarLayoutProps) {
   const { colors, layout, zIndex, flex } = THEME_CONSTANTS;
   const tA = useTranslations("accessibility");
+  const tNav = useTranslations("nav");
 
   return (
     <BlockHeader
@@ -111,6 +115,17 @@ export function TitleBarLayout({
 
         {/* Right Side Icons */}
         <div className={`${flex.rowCenter} gap-2 ml-auto`}>
+          {/* Promotions quick-access link */}
+          <TextLink
+            href={promotionsHref}
+            className={`hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-colors text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/20`}
+            aria-label={tNav("promotions")}
+          >
+            <Tag className="w-4 h-4" aria-hidden="true" />
+            <Span variant="inherit" className="hidden lg:inline">
+              {tNav("promotions")}
+            </Span>
+          </TextLink>
           {/* Cart — hidden on mobile (available in bottom nav) */}
           <TextLink
             href={cartHref}
@@ -167,7 +182,7 @@ export function TitleBarLayout({
           {/* User Profile — hidden on mobile (available in bottom nav) */}
           <TextLink
             href={profileHref}
-            className={`hidden md:flex items-center justify-center rounded-xl transition-colors ${user ? "" : `p-2 md:p-2.5 ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}`}
+            className={`hidden md:${flex.center} rounded-xl transition-colors ${user ? "" : `p-2 md:p-2.5 ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}`}
             aria-label={tA("userIcon")}
           >
             {user ? (

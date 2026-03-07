@@ -34,6 +34,7 @@ export interface ProductCardProps {
     | "currentBid"
     | "isPromoted"
     | "slug"
+    | "availableQuantity"
   >;
   className?: string;
   /** "grid" (default): vertical card. "list": horizontal card. */
@@ -73,7 +74,10 @@ export function ProductCard({
   });
 
   const isOutOfStock =
-    product.status === "out_of_stock" || product.status === "sold";
+    product.status === "out_of_stock" ||
+    product.status === "sold" ||
+    (product.availableQuantity !== undefined &&
+      product.availableQuantity === 0);
   const displayPrice = product.isAuction
     ? (product.currentBid ?? product.price)
     : product.price;
@@ -162,7 +166,9 @@ export function ProductCard({
           <div
             className={`${position.fill} ${flex.center} pointer-events-none`}
           >
-            <Span className="bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center text-xs leading-none">
+            <Span
+              className={`bg-black/50 text-white rounded-full w-8 h-8 ${flex.center} text-xs leading-none`}
+            >
               ▶
             </Span>
           </div>
@@ -197,12 +203,12 @@ export function ProductCard({
             variant="ghost"
             onClick={handleSelect}
             aria-label={isSelected ? t("deselectItem") : t("selectItem")}
-            className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/90 dark:bg-gray-800/90 flex items-center justify-center shadow border border-gray-200 dark:border-gray-600 hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors z-10 p-0"
+            className={`absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/90 dark:bg-gray-800/90 ${flex.center} shadow border border-gray-200 dark:border-gray-600 hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors z-10 p-0`}
           >
             {isSelected ? (
               <Span
                 variant="inherit"
-                className="w-4 h-4 rounded bg-indigo-600 flex items-center justify-center"
+                className={`w-4 h-4 rounded bg-indigo-600 ${flex.center}`}
               >
                 <svg
                   viewBox="0 0 10 8"

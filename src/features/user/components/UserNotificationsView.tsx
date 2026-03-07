@@ -146,6 +146,7 @@ export function UserNotificationsView() {
       try {
         await markRead(id);
         refetch();
+        showSuccess(tNotifications("markRead"));
       } catch {
         showError(tNotifications("error"));
       }

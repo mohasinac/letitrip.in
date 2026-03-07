@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { ROUTES } from "@/constants";
+import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
+
+const { flex } = THEME_CONSTANTS;
 import { useAdminCarousel } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
@@ -156,6 +158,12 @@ export function AdminCarouselView({ action }: Props) {
         });
       }
       await refetch();
+      showToast(
+        drawerMode === "create"
+          ? SUCCESS_MESSAGES.CAROUSEL.CREATED
+          : SUCCESS_MESSAGES.CAROUSEL.UPDATED,
+        "success",
+      );
       handleCloseDrawer();
     } catch {
       showToast(t("saveFailed"), "error");
@@ -167,6 +175,7 @@ export function AdminCarouselView({ action }: Props) {
     try {
       await deleteMutation.mutate(editingSlide.id);
       await refetch();
+      showToast(SUCCESS_MESSAGES.CAROUSEL.DELETED, "success");
       handleCloseDrawer();
     } catch {
       showToast(t("deleteFailed"), "error");
@@ -248,7 +257,7 @@ export function AdminCarouselView({ action }: Props) {
                   <Text weight="medium" size="sm" className="line-clamp-1">
                     {slide.title}
                   </Text>
-                  <div className="flex items-center justify-between">
+                  <div className={`${flex.between}`}>
                     <Caption>#{slide.order}</Caption>
                     <StatusBadge
                       status={slide.isActive ? "active" : "inactive"}

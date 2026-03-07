@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect, RefObject } from "react";
+import { nowMs } from "@/utils";
 
 /**
  * Swipe direction types
@@ -130,7 +131,7 @@ export function useSwipe<T extends HTMLElement = HTMLElement>(
       touchStartRef.current = {
         x: touch.clientX,
         y: touch.clientY,
-        time: Date.now(),
+        time: nowMs(),
       };
       isSwiping.current = true;
       onSwipeStartRef.current?.();
@@ -154,7 +155,7 @@ export function useSwipe<T extends HTMLElement = HTMLElement>(
       const touch = e.changedTouches[0];
       const deltaX = touch.clientX - touchStartRef.current.x;
       const deltaY = touch.clientY - touchStartRef.current.y;
-      const deltaTime = Date.now() - touchStartRef.current.time;
+      const deltaTime = nowMs() - touchStartRef.current.time;
 
       processSwipe(deltaX, deltaY, deltaTime);
 
@@ -169,7 +170,7 @@ export function useSwipe<T extends HTMLElement = HTMLElement>(
       touchStartRef.current = {
         x: e.clientX,
         y: e.clientY,
-        time: Date.now(),
+        time: nowMs(),
       };
       isSwiping.current = true;
       onSwipeStartRef.current?.();
@@ -191,7 +192,7 @@ export function useSwipe<T extends HTMLElement = HTMLElement>(
 
       const deltaX = e.clientX - touchStartRef.current.x;
       const deltaY = e.clientY - touchStartRef.current.y;
-      const deltaTime = Date.now() - touchStartRef.current.time;
+      const deltaTime = nowMs() - touchStartRef.current.time;
 
       processSwipe(deltaX, deltaY, deltaTime);
 

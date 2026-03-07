@@ -15,25 +15,25 @@ export default function Footer() {
     {
       platform: "facebook",
       href: SITE_CONFIG.social.facebook,
-      icon: <Facebook className="w-5 h-5" />,
+      icon: <Facebook className="w-5 h-5 text-blue-600 dark:text-blue-400" />,
       ariaLabel: "Facebook",
     },
     {
       platform: "instagram",
       href: SITE_CONFIG.social.instagram,
-      icon: <Instagram className="w-5 h-5" />,
+      icon: <Instagram className="w-5 h-5 text-pink-500 dark:text-pink-400" />,
       ariaLabel: "Instagram",
     },
     {
       platform: "twitter",
       href: SITE_CONFIG.social.twitter,
-      icon: <Twitter className="w-5 h-5" />,
+      icon: <Twitter className="w-5 h-5 text-sky-500 dark:text-sky-400" />,
       ariaLabel: "Twitter",
     },
     {
       platform: "linkedin",
       href: SITE_CONFIG.social.linkedin,
-      icon: <Linkedin className="w-5 h-5" />,
+      icon: <Linkedin className="w-5 h-5 text-blue-700 dark:text-blue-500" />,
       ariaLabel: "LinkedIn",
     },
   ];

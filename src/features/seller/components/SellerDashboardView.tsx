@@ -12,7 +12,7 @@ import { useEffect, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Package, Store, Gavel, FileText } from "lucide-react";
 import { Spinner, EmptyState } from "@/components";
-import { Heading, Text } from "@/components/typography";
+import { Heading, Text } from "@/components";
 import { useAuth, useApiQuery, useMessage } from "@/hooks";
 import { sellerService } from "@/services";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";

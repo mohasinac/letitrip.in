@@ -19,6 +19,7 @@ export interface Category {
   order: number;
   enabled: boolean;
   showOnHomepage: boolean;
+  isBrand?: boolean;
   metrics: {
     productCount: number;
     totalProductCount: number;

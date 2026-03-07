@@ -20,7 +20,7 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { RIPCOIN_PACKAGES } from "@/db/schema";
 import { useRouter } from "@/i18n/navigation";
 
-const { spacing, flex } = THEME_CONSTANTS;
+const { spacing, flex, themed } = THEME_CONSTANTS;
 
 export function RipCoinsPurchaseView() {
   const t = useTranslations("ripcoinsWallet.buy");
@@ -89,7 +89,7 @@ export function RipCoinsPurchaseView() {
                 "rounded-xl border-2 p-5 text-left transition-all w-full",
                 isSelected
                   ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 shadow-md"
-                  : "border-gray-200 dark:border-gray-700 hover:border-indigo-300 hover:shadow-sm",
+                  : `${themed.border} hover:border-indigo-300 hover:shadow-sm`,
               ].join(" ")}
             >
               <div className={`${flex.between} items-start mb-2`}>
@@ -150,9 +150,7 @@ export function RipCoinsPurchaseView() {
               </Text>
             </div>
           )}
-          <div
-            className={`${flex.between} pt-2 border-t border-gray-200 dark:border-gray-700`}
-          >
+          <div className={`${flex.between} pt-2 border-t ${themed.border}`}>
             <Caption>{t("total")}</Caption>
             <Heading level={4} className="text-indigo-600 dark:text-indigo-400">
               {selectedPkg.totalCoins.toLocaleString()} RC

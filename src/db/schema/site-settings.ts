@@ -40,12 +40,25 @@ export interface SiteSettingsDocument {
     email: string;
     phone: string;
     address: string;
-    upiVpa?: string;        // Business UPI Virtual Payment Address, e.g. "letitrip@upi"
+    upiVpa?: string; // Business UPI Virtual Payment Address, e.g. "letitrip@upi"
     whatsappNumber?: string; // WhatsApp number with country code, e.g. "+919876543210"
   };
   payment: {
     razorpayEnabled: boolean;
     upiManualEnabled: boolean;
+    codEnabled: boolean;
+  };
+  commissions: {
+    /** Platform fee on Razorpay orders as a percentage (default 5) */
+    razorpayFeePercent: number;
+    /** Upfront deposit percentage for COD orders (default 10) */
+    codDepositPercent: number;
+    /** Fixed platform commission (₹) for seller-custom shipping (default 50) */
+    sellerShippingFixed: number;
+    /** Platform shipping fee as percentage for Shiprocket/platform shipping (default 10) */
+    platformShippingPercent: number;
+    /** Minimum platform shipping fee in ₹ for Shiprocket/platform shipping (default 50) */
+    platformShippingFixedMin: number;
   };
   socialLinks: {
     facebook?: string;
@@ -71,6 +84,21 @@ export interface SiteSettingsDocument {
     icon: string;
     enabled: boolean;
   }[];
+  featureFlags: {
+    chats: boolean;
+    smsVerification: boolean;
+    translations: boolean;
+    wishlists: boolean;
+    auctions: boolean;
+    reviews: boolean;
+    events: boolean;
+    blog: boolean;
+    coupons: boolean;
+    notifications: boolean;
+    ripcoin: boolean;
+    sellerRegistration: boolean;
+    preOrders: boolean;
+  };
   legalPages: {
     termsOfService: string; // Rich text JSON
     privacyPolicy: string;
@@ -97,6 +125,116 @@ export interface SiteSettingsDocument {
   createdAt: Date;
   updatedAt: Date;
 }
+
+/**
+ * Strongly-typed key union for featureFlags
+ */
+export type FeatureFlagKey = keyof SiteSettingsDocument["featureFlags"];
+
+/**
+ * Metadata descriptor for each feature flag — used to render admin UI
+ */
+export interface FeatureFlagMeta {
+  key: FeatureFlagKey;
+  labelKey: string; // i18n key
+  descKey: string; // i18n key
+  icon: string;
+  category: "platform" | "payment";
+}
+
+export const FEATURE_FLAG_META: FeatureFlagMeta[] = [
+  {
+    key: "chats",
+    labelKey: "chats",
+    descKey: "chatsDesc",
+    icon: "💬",
+    category: "platform",
+  },
+  {
+    key: "smsVerification",
+    labelKey: "smsVerification",
+    descKey: "smsVerificationDesc",
+    icon: "📱",
+    category: "platform",
+  },
+  {
+    key: "translations",
+    labelKey: "translations",
+    descKey: "translationsDesc",
+    icon: "🌐",
+    category: "platform",
+  },
+  {
+    key: "wishlists",
+    labelKey: "wishlists",
+    descKey: "wishlistsDesc",
+    icon: "❤️",
+    category: "platform",
+  },
+  {
+    key: "auctions",
+    labelKey: "auctions",
+    descKey: "auctionsDesc",
+    icon: "🔨",
+    category: "platform",
+  },
+  {
+    key: "reviews",
+    labelKey: "reviews",
+    descKey: "reviewsDesc",
+    icon: "⭐",
+    category: "platform",
+  },
+  {
+    key: "events",
+    labelKey: "events",
+    descKey: "eventsDesc",
+    icon: "🎉",
+    category: "platform",
+  },
+  {
+    key: "blog",
+    labelKey: "blog",
+    descKey: "blogDesc",
+    icon: "📝",
+    category: "platform",
+  },
+  {
+    key: "coupons",
+    labelKey: "coupons",
+    descKey: "couponsDesc",
+    icon: "🏷️",
+    category: "platform",
+  },
+  {
+    key: "notifications",
+    labelKey: "notifications",
+    descKey: "notificationsDesc",
+    icon: "🔔",
+    category: "platform",
+  },
+  {
+    key: "ripcoin",
+    labelKey: "ripcoin",
+    descKey: "ripcoinDesc",
+    icon: "🪙",
+    category: "platform",
+  },
+  {
+    key: "sellerRegistration",
+    labelKey: "sellerRegistration",
+    descKey: "sellerRegistrationDesc",
+    icon: "🏪",
+    category: "platform",
+  },
+  {
+    key: "preOrders",
+    labelKey: "preOrders",
+    descKey: "preOrdersDesc",
+    icon: "📦",
+    category: "platform",
+  },
+] as const;
 
 export const SITE_SETTINGS_COLLECTION = "siteSettings" as const;
 
@@ -139,6 +277,14 @@ export const DEFAULT_SITE_SETTINGS_DATA: Partial<SiteSettingsDocument> = {
   payment: {
     razorpayEnabled: true,
     upiManualEnabled: true,
+    codEnabled: true,
+  },
+  commissions: {
+    razorpayFeePercent: 5,
+    codDepositPercent: 10,
+    sellerShippingFixed: 50,
+    platformShippingPercent: 10,
+    platformShippingFixedMin: 50,
   },
   background: {
     light: {
@@ -184,6 +330,21 @@ export const DEFAULT_SITE_SETTINGS_DATA: Partial<SiteSettingsDocument> = {
       "multi-seller",
     ],
     ogImage: "/og-image.png",
+  },
+  featureFlags: {
+    chats: true,
+    smsVerification: true,
+    translations: true,
+    wishlists: true,
+    auctions: true,
+    reviews: true,
+    events: true,
+    blog: true,
+    coupons: true,
+    notifications: true,
+    ripcoin: true,
+    sellerRegistration: true,
+    preOrders: false,
   },
   features: [
     {
@@ -247,9 +408,11 @@ export const SITE_SETTINGS_PUBLIC_FIELDS = [
   "contact.upiVpa",
   "contact.whatsappNumber",
   "payment",
+  "commissions",
   "socialLinks",
   "seo",
   "features",
+  "featureFlags",
   "faq.variables",
 ] as const;
 
@@ -263,10 +426,12 @@ export const SITE_SETTINGS_UPDATABLE_FIELDS = [
   "background",
   "contact",
   "payment",
+  "commissions",
   "socialLinks",
   "emailSettings",
   "seo",
   "features",
+  "featureFlags",
   "legalPages",
   "shipping",
   "returns",

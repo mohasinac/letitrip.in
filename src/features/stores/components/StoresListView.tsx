@@ -13,8 +13,8 @@ import {
   Text,
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
+import { StoreCard } from "@/components";
 import { useStores } from "../hooks";
-import { StoreCard } from "./StoreCard";
 
 const PAGE_SIZE = 24;
 
@@ -40,7 +40,8 @@ export function StoresListView() {
   const sortParam = table.get("sorts") || "-createdAt";
 
   const sortOptions = useMemo(
-    () => STORE_SORT_OPTIONS_KEYS.map((o) => ({ value: o.value, label: t(o.key) })),
+    () =>
+      STORE_SORT_OPTIONS_KEYS.map((o) => ({ value: o.value, label: t(o.key) })),
     [t],
   );
 
@@ -101,7 +102,9 @@ export function StoresListView() {
               icon={<Store className="w-16 h-16" />}
               title={table.get("q") ? t("emptySearch.title") : t("empty.title")}
               description={
-                table.get("q") ? t("emptySearch.description") : t("empty.description")
+                table.get("q")
+                  ? t("emptySearch.description")
+                  : t("empty.description")
               }
               actionLabel={table.get("q") ? tActions("clearAll") : undefined}
               onAction={table.get("q") ? handleClearFilters : undefined}

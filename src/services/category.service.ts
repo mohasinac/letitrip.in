@@ -18,6 +18,12 @@ export const categoryService = {
   listTopLevel: (limit = 12) =>
     apiClient.get(`${API_ENDPOINTS.CATEGORIES.LIST}?tier=0&pageSize=${limit}`),
 
+  /** List brand categories (isBrand = true) for homepage brands section */
+  listBrands: (limit = 12) =>
+    apiClient.get(
+      `${API_ENDPOINTS.CATEGORIES.LIST}?isBrand=true&pageSize=${limit}`,
+    ),
+
   /** Get a single category by ID */
   getById: (id: string) =>
     apiClient.get(API_ENDPOINTS.CATEGORIES.GET_BY_ID(id)),

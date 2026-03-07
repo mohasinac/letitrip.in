@@ -22,6 +22,10 @@ import { handleApiError } from "@/lib/errors/error-handler";
 import { serverLogger } from "@/lib/server-logger";
 import type { ShiprocketWebhookPayload } from "@/lib/shiprocket/types";
 
+// Vercel Hobby max is 60 s; Firestore read + write fits well within that.
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 // ─── Shiprocket → our internal order status mapping ──────────────────────────
 
 const SHIPPED_STATUSES = new Set([
@@ -46,7 +50,10 @@ const CANCELLED_STATUSES = new Set([
 
 function verifyShiprocketSignature(body: string, signature: string): boolean {
   const secret = process.env.SHIPROCKET_WEBHOOK_SECRET;
-  if (!secret) return true; // Skip verification if no secret configured
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") return false; // Block if secret missing in production
+    return true; // Allow in dev/test when secret is not configured
+  }
   const expected = createHmac("sha256", secret).update(body).digest("hex");
   return expected === signature;
 }
@@ -66,18 +73,16 @@ export async function POST(request: NextRequest) {
     }
 
     const payload = JSON.parse(rawBody) as ShiprocketWebhookPayload;
-    const {
-      order_id: srOrderId,
-      current_status: status,
-      awb,
-    } = payload;
+    const { order_id: srOrderId, current_status: status, awb } = payload;
 
     if (!srOrderId || !status) {
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
     // Build standard Shiprocket tracking URL if AWB is present
-    const trackingUrl = awb ? `https://shiprocket.co/tracking/${awb}` : undefined;
+    const trackingUrl = awb
+      ? `https://shiprocket.co/tracking/${awb}`
+      : undefined;
 
     // Find matching order by shiprocketOrderId numeric field
     const orders = await orderRepository.findBy("shiprocketOrderId", srOrderId);
@@ -102,7 +107,10 @@ export async function POST(request: NextRequest) {
       updates.status = "delivered";
       updates.deliveryDate = new Date();
       updates.payoutStatus = "eligible";
-      serverLogger.info("Shiprocket webhook: order delivered", { orderId, srOrderId });
+      serverLogger.info("Shiprocket webhook: order delivered", {
+        orderId,
+        srOrderId,
+      });
     } else if (SHIPPED_STATUSES.has(status)) {
       if (order.status !== "delivered") {
         updates.status = "shipped";
@@ -116,7 +124,10 @@ export async function POST(request: NextRequest) {
       // Do not override status automatically on cancellation — admin handles manually
     }
 
-    await orderRepository.update(orderId, updates as Partial<import("@/db/schema").OrderDocument>);
+    await orderRepository.update(
+      orderId,
+      updates as Partial<import("@/db/schema").OrderDocument>,
+    );
 
     serverLogger.info("Shiprocket webhook processed", {
       orderId,
@@ -127,7 +138,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ received: true }, { status: 200 });
   } catch (error) {
-    serverLogger.error("Shiprocket webhook error", { error, rawBody: rawBody.slice(0, 500) });
+    serverLogger.error("Shiprocket webhook error", {
+      error,
+      rawBody: rawBody.slice(0, 500),
+    });
     return handleApiError(error);
   }
 }

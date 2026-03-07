@@ -18,8 +18,18 @@
  */
 
 import { z } from "zod";
-import { verifyPaymentSignature } from "@/lib/payment/razorpay";
-import { unitOfWork } from "@/repositories";
+import {
+  verifyPaymentSignature,
+  fetchRazorpayOrder,
+  paiseToRupees,
+} from "@/lib/payment/razorpay";
+import {
+  unitOfWork,
+  siteSettingsRepository,
+  userRepository,
+  ripcoinRepository,
+} from "@/repositories";
+import { RIPCOIN_EARN_RATE } from "@/db/schema";
 import { successResponse } from "@/lib/api-response";
 import { ValidationError, NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -36,6 +46,8 @@ const verifySchema = z.object({
   razorpay_signature: z.string().min(1),
   addressId: z.string().min(1),
   notes: z.string().max(500).optional(),
+  /** Platform fee calculated by create-order — re-validated server-side */
+  platformFee: z.number().nonnegative().optional(),
 });
 
 function formatShippingAddress(a: AddressDocument): string {
@@ -64,6 +76,16 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
       addressId,
       notes,
     } = body!;
+
+    // Fetch commission config to recalculate platform fee server-side.
+    const siteSettings = await siteSettingsRepository.getSingleton();
+    const razorpayFeePercent =
+      siteSettings?.commissions?.razorpayFeePercent ?? 5;
+    const commissions = siteSettings?.commissions ?? {
+      sellerShippingFixed: 50,
+      platformShippingPercent: 10,
+      platformShippingFixedMin: 50,
+    };
 
     // 3. Verify Razorpay signature
     const isValid = verifyPaymentSignature({
@@ -109,6 +131,28 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
       }
     }
 
+    // 6b. Validate the Razorpay order amount against the server-calculated cart total.
+    //     Prevents price-tampering: a user could call create-order with amount=1, pay ₹1,
+    //     then call verify to fulfil the full-priced cart.
+    {
+      const cartSubtotal = productChecks.reduce(
+        (sum, { item }) => sum + item.price * item.quantity,
+        0,
+      );
+      const expectedPlatformFee =
+        Math.round(cartSubtotal * (razorpayFeePercent / 100) * 100) / 100;
+      const expectedPaymentAmountRs = cartSubtotal + expectedPlatformFee;
+      const rzpOrderRecord = await fetchRazorpayOrder(razorpay_order_id);
+      const paidAmountRs = paiseToRupees(rzpOrderRecord.amount);
+      // Allow ₹1 rounding tolerance.
+      if (paidAmountRs < expectedPaymentAmountRs - 1) {
+        serverLogger.warn(
+          `Payment amount mismatch for user ${user!.uid}: paid ₹${paidAmountRs}, expected ≥ ₹${expectedPaymentAmountRs}`,
+        );
+        throw new ValidationError(ERROR_MESSAGES.CHECKOUT.PAYMENT_FAILED);
+      }
+    }
+
     // 7. Group items by sellerId → one order per store (payment verified — status = "paid")
     const userName = user!.displayName ?? user!.email ?? "Unknown User";
     const userEmail = user!.email ?? "";
@@ -130,7 +174,33 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
         (sum, { item }) => sum + item.price * item.quantity,
         0,
       );
-      total += groupTotal;
+
+      // ── Shipping fee (same logic as checkout route) ──────────────────────
+      let shippingFee = 0;
+      const sellerId = firstItem.sellerId;
+      if (sellerId) {
+        const sellerUser = await userRepository.findById(sellerId);
+        const shippingConfig = sellerUser?.shippingConfig;
+        if (shippingConfig?.isConfigured) {
+          if (shippingConfig.method === "custom") {
+            shippingFee = shippingConfig.customShippingPrice ?? 0;
+          } else if (shippingConfig.method === "shiprocket") {
+            const percentFee =
+              groupTotal * (commissions.platformShippingPercent / 100);
+            shippingFee = Math.max(
+              percentFee,
+              commissions.platformShippingFixedMin,
+            );
+          }
+        }
+      }
+
+      // ── Razorpay platform fee ────────────────────────────────────────────
+      const platformFee =
+        Math.round(groupTotal * (razorpayFeePercent / 100) * 100) / 100;
+      const orderTotal = groupTotal + shippingFee;
+
+      total += orderTotal;
 
       const orderItems = group.map(({ item }) => ({
         productId: item.productId,
@@ -152,7 +222,7 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
         userEmail,
         quantity: totalQuantity,
         unitPrice: firstItem.price,
-        totalPrice: groupTotal,
+        totalPrice: orderTotal,
         currency: firstItem.currency ?? "INR",
         sellerId: firstItem.sellerId || undefined,
         sellerName: firstItem.sellerName || undefined,
@@ -163,6 +233,8 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
         paymentId: razorpay_payment_id,
         shippingAddress,
         notes,
+        platformFee,
+        shippingFee: shippingFee > 0 ? shippingFee : undefined,
       });
 
       orderIds.push(order.id);
@@ -177,7 +249,7 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
               ? `${orderItems.length} items`
               : firstItem.productTitle,
           quantity: totalQuantity,
-          totalPrice: groupTotal,
+          totalPrice: orderTotal,
           currency: firstItem.currency ?? "INR",
           shippingAddress,
           paymentMethod: "online",
@@ -198,7 +270,31 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
       unitOfWork.carts.updateInBatch(batch, user!.uid, { items: [] } as any);
     });
 
-    // 10. Send confirmation emails (fire-and-forget)
+    // 10. Credit RipCoins earned from this purchase (1 coin per ₹10 spent)
+    {
+      const earnedCoins = Math.floor(total / RIPCOIN_EARN_RATE);
+      if (earnedCoins > 0) {
+        try {
+          const userDoc = await userRepository.findById(user!.uid);
+          const balanceBefore = userDoc?.ripcoinBalance ?? 0;
+          await userRepository.incrementRipCoinBalance(user!.uid, earnedCoins);
+          await ripcoinRepository.create({
+            userId: user!.uid,
+            type: "earn_purchase",
+            coins: earnedCoins,
+            balanceBefore,
+            balanceAfter: balanceBefore + earnedCoins,
+            notes: `Earned from orders: ${orderIds.join(", ")}`,
+          });
+        } catch (err) {
+          serverLogger.warn("RipCoin earn credit failed (non-critical)", {
+            err,
+          });
+        }
+      }
+    }
+
+    // 11. Send confirmation emails (fire-and-forget)
     if (emailsToSend.length > 0) {
       Promise.all(emailsToSend.map((e) => sendOrderConfirmationEmail(e))).catch(
         (err) => serverLogger.error("Order confirmation email error:", err),

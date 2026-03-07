@@ -158,6 +158,19 @@ export interface RazorpayRefundResult {
  * Creates a full refund for a Razorpay payment.
  * amount in paise; omit to refund the full amount.
  */
+/**
+ * Fetches an existing Razorpay order by ID.
+ * Used in payment verification to validate that the amount paid matches the
+ * server-calculated cart total, preventing price-tampering attacks.
+ */
+export async function fetchRazorpayOrder(
+  orderId: string,
+): Promise<RazorpayOrder> {
+  const razorpay = getRazorpay();
+  const order = await razorpay.orders.fetch(orderId);
+  return order as unknown as RazorpayOrder;
+}
+
 export async function createRazorpayRefund(
   paymentId: string,
   amountPaise?: number,

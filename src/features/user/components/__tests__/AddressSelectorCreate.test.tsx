@@ -104,7 +104,7 @@ jest.mock("@/constants", () => ({
   },
 }));
 
-import { AddressSelectorCreate } from "../AddressSelectorCreate";
+import { AddressSelectorCreate } from "@/components";
 
 describe("AddressSelectorCreate", () => {
   beforeEach(() => {

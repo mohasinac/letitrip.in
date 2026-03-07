@@ -11,7 +11,9 @@ import {
   Text,
   Textarea,
 } from "@/components";
-import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
+
+const { spacing } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
 import { useMessage } from "@/hooks";
 import { useFeedbackSubmit } from "../hooks/useFeedbackSubmit";
@@ -61,7 +63,7 @@ export function FeedbackEventSection({
   };
 
   return (
-    <div className="space-y-4">
+    <div className={spacing.stack}>
       {feedbackConfig.formFields.map((field: SurveyFormField) => (
         <div key={field.id}>
           <Label className="block mb-1">

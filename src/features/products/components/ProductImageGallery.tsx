@@ -194,10 +194,12 @@ export function ProductImageGallery({
               />
               {item.type === "video" && (
                 <Span
-                  className="absolute inset-0 flex items-center justify-center bg-black/40 text-white"
+                  className={`absolute inset-0 ${flex.center} bg-black/40 text-white`}
                   aria-hidden="true"
                 >
-                  <Span className="w-7 h-7 rounded-full bg-white/90 text-indigo-600 flex items-center justify-center text-sm font-bold">
+                  <Span
+                    className={`w-7 h-7 rounded-full bg-white/90 text-indigo-600 ${flex.center} text-sm font-bold`}
+                  >
                     ▶
                   </Span>
                 </Span>

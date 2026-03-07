@@ -10,7 +10,7 @@ import { useTranslations } from "next-intl";
 import { CategoryDocument } from "@/db/schema";
 import { THEME_CONSTANTS } from "@/constants";
 import { Heading, Span, Text } from "@/components";
-import { CategoryCard } from "./CategoryCard";
+import { CategoryCard } from "@/components";
 
 const { spacing } = THEME_CONSTANTS;
 

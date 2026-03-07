@@ -21,6 +21,7 @@ type RelatedProduct = Pick<
   | "isPromoted"
   | "slug"
   | "category"
+  | "availableQuantity"
 >;
 
 interface RelatedProductsResponse {
@@ -49,7 +50,7 @@ export function useRelatedProducts(
   const params = `pageSize=${limit}&filters=status==published,category==${encodeURIComponent(category)},isAuction==${isAuction}&sorts=-createdAt`;
 
   return useApiQuery<RelatedProductsResponse>({
-    queryKey: ["related-products", category, excludeId, isAuction],
+    queryKey: ["related-products", category, excludeId, String(isAuction)],
     queryFn: () => productService.list(params),
     enabled: Boolean(category),
     cacheTTL: 5 * 60 * 1000,

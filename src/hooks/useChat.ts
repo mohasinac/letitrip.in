@@ -27,6 +27,7 @@ import { getAuth, signInWithCustomToken } from "firebase/auth";
 import { realtimeApp, chatRealtimeDb } from "@/lib/firebase/realtime";
 import { realtimeTokenService, chatService } from "@/services";
 import { logger } from "@/classes";
+import { nowMs } from "@/utils";
 import { useApiQuery } from "./useApiQuery";
 import { useApiMutation } from "./useApiMutation";
 
@@ -68,7 +69,7 @@ export function useChat(chatId: string | null): UseChatReturn {
       // (Re-)fetch token if it has expired or is within 60s of expiry
       const shouldRefresh =
         !tokenExpiresAtRef.current ||
-        tokenExpiresAtRef.current - Date.now() < 60_000;
+        tokenExpiresAtRef.current - nowMs() < 60_000;
 
       if (shouldRefresh) {
         const tokenResponse = await realtimeTokenService.getToken();

@@ -10,6 +10,7 @@
 "use client";
 
 import { useState } from "react";
+import { nowMs } from "@/utils";
 import {
   Button,
   Checkbox,
@@ -25,13 +26,13 @@ import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { CarouselSlide, GridCard } from "./Carousel.types";
 
-const { spacing, themed, borderRadius } = THEME_CONSTANTS;
+const { spacing, themed, borderRadius, flex } = THEME_CONSTANTS;
 
 type CellKey = `${number},${number}`;
 
 function makeNewCard(gridRow: 1 | 2, gridCol: 1 | 2 | 3): GridCard {
   return {
-    id: `card-${gridRow}-${gridCol}-${Date.now()}`,
+    id: `card-${gridRow}-${gridCol}-${nowMs()}`,
     gridRow,
     gridCol,
     background: { type: "color", value: "#3b82f6" },
@@ -64,10 +65,7 @@ export function CarouselSlideForm({
   const update = (partial: Partial<CarouselSlide>) =>
     onChange({ ...slide, ...partial });
 
-  const getCard = (
-    gridRow: 1 | 2,
-    gridCol: 1 | 2 | 3,
-  ): GridCard | undefined =>
+  const getCard = (gridRow: 1 | 2, gridCol: 1 | 2 | 3): GridCard | undefined =>
     slide.cards.find((c) => c.gridRow === gridRow && c.gridCol === gridCol);
 
   const upsertCard = (card: GridCard) => {
@@ -93,8 +91,7 @@ export function CarouselSlideForm({
   const cardCount = (slide.cards ?? []).length;
 
   /** True when the given row already has a card placed in any column */
-  const rowHasCard = (row: 1 | 2) =>
-    slide.cards.some((c) => c.gridRow === row);
+  const rowHasCard = (row: 1 | 2) => slide.cards.some((c) => c.gridRow === row);
 
   return (
     <div className={spacing.stack}>
@@ -186,10 +183,10 @@ export function CarouselSlideForm({
                   >
                     {/* Cell header */}
                     <div
-                      className={`flex items-center justify-between px-3 py-2 ${
+                      className={`${flex.between} px-3 py-2 ${
                         card
                           ? "bg-indigo-50 dark:bg-indigo-900/20"
-                          : "bg-gray-50 dark:bg-gray-800/50"
+                          : themed.bgSecondary
                       }`}
                     >
                       <Text size="xs" weight="medium">
@@ -238,7 +235,7 @@ export function CarouselSlideForm({
                     {/* Empty state */}
                     {!card && (
                       <div
-                        className={`py-6 flex items-center justify-center ${
+                        className={`py-6 ${flex.center} ${
                           !isReadonly ? "cursor-pointer" : ""
                         }`}
                         onClick={
@@ -301,11 +298,11 @@ function CardEditor({
   onChange: (card: GridCard) => void;
 }) {
   const t = useTranslations("adminCarousel");
-  const update = (partial: Partial<GridCard>) => onChange({ ...card, ...partial });
+  const update = (partial: Partial<GridCard>) =>
+    onChange({ ...card, ...partial });
 
-  const updateContent = (
-    partial: Partial<NonNullable<GridCard["content"]>>,
-  ) => update({ content: { ...card.content, ...partial } });
+  const updateContent = (partial: Partial<NonNullable<GridCard["content"]>>) =>
+    update({ content: { ...card.content, ...partial } });
 
   const updateButton = (
     index: number,
@@ -327,7 +324,7 @@ function CardEditor({
       buttons: [
         ...(card.buttons ?? []),
         {
-          id: `btn-${Date.now()}`,
+          id: `btn-${nowMs()}`,
           text: "",
           link: "",
           variant: "primary" as const,
@@ -509,8 +506,9 @@ function CardEditor({
                 value={btn.variant}
                 onChange={(e) =>
                   updateButton(i, {
-                    variant:
-                      e.target.value as NonNullable<GridCard["buttons"]>[number]["variant"],
+                    variant: e.target.value as NonNullable<
+                      GridCard["buttons"]
+                    >[number]["variant"],
                   })
                 }
                 options={[

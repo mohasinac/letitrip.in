@@ -67,7 +67,9 @@ export default async function PrivacyPage() {
           </Section>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700 flex gap-6 text-sm">
+        <div
+          className={`mt-12 pt-8 border-t ${themed.border} flex gap-6 text-sm`}
+        >
           <TextLink href={ROUTES.PUBLIC.TERMS}>{t("termsOfService")}</TextLink>
           <TextLink href={ROUTES.PUBLIC.CONTACT}>{t("contactUs")}</TextLink>
         </div>

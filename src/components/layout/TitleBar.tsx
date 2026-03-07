@@ -1,9 +1,11 @@
-﻿"use client";
+"use client";
 
 import { SITE_CONFIG, ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useAuth, useCartCount } from "@/hooks";
-import { NotificationBell } from "@/features/user";
+import { NotificationBell } from "@/components";
 import { TitleBarLayout } from "./TitleBarLayout";
+import { TranslatePanel } from "./TranslatePanel";
+import { TTSButton } from "./TTSButton";
 import { TextLink, Span } from "@/components";
 import { Sprout } from "lucide-react";
 
@@ -46,9 +48,16 @@ export default function TitleBar(props: TitleBarProps) {
       logoHref={SITE_CONFIG.nav.home}
       cartHref={SITE_CONFIG.account.cart}
       profileHref={SITE_CONFIG.account.profile}
+      promotionsHref={SITE_CONFIG.nav.promotions}
       user={user}
       cartCount={cartCount}
-      notificationSlot={user ? <NotificationBell /> : undefined}
+      notificationSlot={
+        <>
+          <TranslatePanel />
+          <TTSButton />
+          {user && <NotificationBell />}
+        </>
+      }
       devSlot={
         isDev ? (
           <TextLink

@@ -65,10 +65,10 @@ export function ForgotPasswordView() {
             <Heading level={4} className="mb-2">
               {t("forgotPassword.checkEmail")}
             </Heading>
-            <Text className="text-gray-600 mb-6">
+            <Text variant="secondary" className="mb-6">
               {t("forgotPassword.resetLinkSentTo", { email })}
             </Text>
-            <Text className="text-gray-500 mb-6 block text-sm">
+            <Text variant="secondary" size="sm" className="mb-6 block">
               {t("forgotPassword.linkExpires")}
             </Text>
           </div>
@@ -105,7 +105,7 @@ export function ForgotPasswordView() {
           <Heading level={4} className="mb-2">
             {t("forgotPassword.pageTitle")}
           </Heading>
-          <Text className="text-gray-600">{t("forgotPassword.subtitle")}</Text>
+          <Text variant="secondary">{t("forgotPassword.subtitle")}</Text>
         </div>
 
         {error && (
@@ -141,7 +141,7 @@ export function ForgotPasswordView() {
         </form>
 
         <div className="mt-6 text-center">
-          <Text className="text-gray-600 text-sm">
+          <Text variant="secondary" size="sm">
             {t("forgotPassword.rememberPassword")}{" "}
             <TextLink
               href={ROUTES.AUTH.LOGIN}

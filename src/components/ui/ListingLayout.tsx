@@ -140,7 +140,7 @@ export function ListingLayout({
   const t = useTranslations("filters");
   const tActions = useTranslations("actions");
 
-  const { themed } = THEME_CONSTANTS;
+  const { themed, flex, spacing } = THEME_CONSTANTS;
 
   const hasFilter = Boolean(filterContent);
   const panelTitle = filterTitle ?? t("title");
@@ -177,7 +177,7 @@ export function ListingLayout({
   };
 
   return (
-    <div className={`w-full space-y-4 ${className}`}>
+    <div className={`w-full ${spacing.stack} ${className}`}>
       {/* ─────────────────────── Header ─────────────────────── */}
       {headerSlot}
 
@@ -202,7 +202,7 @@ export function ListingLayout({
               {t("title")}
               {filterActiveCount > 0 && (
                 <Span
-                  className={`inline-flex items-center justify-center w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
+                  className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
                   aria-label={t("activeCount", { count: filterActiveCount })}
                 >
                   {filterActiveCount}
@@ -224,7 +224,7 @@ export function ListingLayout({
               {t("title")}
               {filterActiveCount > 0 && (
                 <Span
-                  className={`inline-flex items-center justify-center w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
+                  className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
                   aria-label={t("activeCount", { count: filterActiveCount })}
                 >
                   {filterActiveCount}
@@ -293,7 +293,7 @@ export function ListingLayout({
             >
               {/* Panel header */}
               <div
-                className={`flex items-center justify-between px-4 py-3 border-b ${themed.border} ${themed.bgSecondary}`}
+                className={`${flex.between} px-4 py-3 border-b ${themed.border} ${themed.bgSecondary}`}
               >
                 <Text weight="semibold" size="sm">
                   {panelTitle}
@@ -312,7 +312,9 @@ export function ListingLayout({
               </div>
 
               {/* Scrollable facets */}
-              <div className="px-3 py-3 max-h-[calc(100vh-220px)] overflow-y-auto space-y-4">
+              <div
+                className={`px-3 py-3 max-h-[calc(100vh-220px)] overflow-y-auto ${spacing.stack}`}
+              >
                 {filterContent}
               </div>
 
@@ -386,7 +388,7 @@ export function ListingLayout({
           >
             {/* Header */}
             <div
-              className={`flex items-center justify-between px-4 py-3 border-b ${themed.border} flex-shrink-0`}
+              className={`${flex.between} px-4 py-3 border-b ${themed.border} flex-shrink-0`}
             >
               <Text weight="semibold">
                 {panelTitle}
@@ -418,7 +420,9 @@ export function ListingLayout({
             </div>
 
             {/* Scrollable facets */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+            <div
+              className={`flex-1 overflow-y-auto px-4 py-4 ${spacing.stack}`}
+            >
               {filterContent}
             </div>
 

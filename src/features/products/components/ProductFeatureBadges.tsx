@@ -73,7 +73,8 @@ export function ProductFeatureBadges({
       icon: <Star className="w-4 h-4" />,
       label: t("featured"),
       colorClass: "text-amber-700 dark:text-amber-300",
-      bgClass: "bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800",
+      bgClass:
+        "bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800",
     });
   }
 
@@ -83,7 +84,8 @@ export function ProductFeatureBadges({
       icon: <Zap className="w-4 h-4" />,
       label: t("fasterDelivery"),
       colorClass: "text-orange-700 dark:text-orange-300",
-      bgClass: "bg-orange-50 dark:bg-orange-900/30 border-orange-200 dark:border-orange-800",
+      bgClass:
+        "bg-orange-50 dark:bg-orange-900/30 border-orange-200 dark:border-orange-800",
     });
   }
 
@@ -93,7 +95,8 @@ export function ProductFeatureBadges({
       icon: <Award className="w-4 h-4" />,
       label: t("ratedSeller"),
       colorClass: "text-indigo-700 dark:text-indigo-300",
-      bgClass: "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-800",
+      bgClass:
+        "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-800",
     });
   }
 
@@ -113,7 +116,8 @@ export function ProductFeatureBadges({
       icon: <Package className="w-4 h-4" />,
       label: `${t("condition")}: ${t(conditionKey)}`,
       colorClass: "text-blue-700 dark:text-blue-300",
-      bgClass: "bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800",
+      bgClass:
+        "bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800",
     });
   }
 
@@ -123,7 +127,8 @@ export function ProductFeatureBadges({
       icon: <RotateCcw className="w-4 h-4" />,
       label: t("returnable"),
       colorClass: "text-teal-700 dark:text-teal-300",
-      bgClass: "bg-teal-50 dark:bg-teal-900/30 border-teal-200 dark:border-teal-800",
+      bgClass:
+        "bg-teal-50 dark:bg-teal-900/30 border-teal-200 dark:border-teal-800",
     });
   }
 
@@ -133,7 +138,8 @@ export function ProductFeatureBadges({
       icon: <Truck className="w-4 h-4" />,
       label: t("freeShipping"),
       colorClass: "text-emerald-700 dark:text-emerald-300",
-      bgClass: "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800",
+      bgClass:
+        "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800",
     });
   }
 
@@ -143,7 +149,8 @@ export function ProductFeatureBadges({
       icon: <CreditCard className="w-4 h-4" />,
       label: t("codAvailable"),
       colorClass: "text-purple-700 dark:text-purple-300",
-      bgClass: "bg-purple-50 dark:bg-purple-900/30 border-purple-200 dark:border-purple-800",
+      bgClass:
+        "bg-purple-50 dark:bg-purple-900/30 border-purple-200 dark:border-purple-800",
     });
   }
 
@@ -153,7 +160,8 @@ export function ProductFeatureBadges({
       icon: <Heart className="w-4 h-4" />,
       label: t("wishlistCount", { count: wishlistCount }),
       colorClass: "text-pink-700 dark:text-pink-300",
-      bgClass: "bg-pink-50 dark:bg-pink-900/30 border-pink-200 dark:border-pink-800",
+      bgClass:
+        "bg-pink-50 dark:bg-pink-900/30 border-pink-200 dark:border-pink-800",
     });
   }
 
@@ -166,7 +174,7 @@ export function ProductFeatureBadges({
         category: categoryName,
       }),
       colorClass: "text-gray-700 dark:text-gray-300",
-      bgClass: "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700",
+      bgClass: `${themed.bgSecondary} ${themed.border}`,
     });
   }
 

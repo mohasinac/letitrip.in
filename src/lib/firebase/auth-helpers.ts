@@ -117,6 +117,26 @@ export async function signInWithEmail(
 }
 
 /**
+ * Sync Firebase client SDK auth state after server-side login.
+ * Signs in via Firebase SDK only — does NOT create a new session cookie.
+ * Use this when the server has already created the session (e.g. after server-side login).
+ */
+export async function syncFirebaseAuth(
+  email: string,
+  password: string,
+): Promise<UserCredential> {
+  try {
+    return await signInWithEmailAndPassword(auth, email, password);
+  } catch (error: any) {
+    logger.error("Firebase auth sync error", { error });
+    throw new AuthenticationError(
+      error.message || "Failed to sync authentication state",
+      { provider: "email", email },
+    );
+  }
+}
+
+/**
  * Register with email and password
  * Creates user profile, sends verification, and establishes session
  */
@@ -302,39 +322,6 @@ export async function reauthenticateWithPhone(
   } catch (error: any) {
     logger.error("Phone OTP confirm error", { error });
     throw error; // re-throw with original code so caller can inspect error.code
-  }
-}
-
-/**
- * Sign in with phone number
- * @deprecated Use `sendPhoneOtp` — this wrapper is kept for backward compatibility.
- * Requires reCAPTCHA verification
- */
-export async function signInWithPhone(
-  phoneNumber: string,
-  recaptchaContainerId: string,
-): Promise<any> {
-  try {
-    const recaptchaVerifier = new RecaptchaVerifier(
-      auth,
-      recaptchaContainerId,
-      {
-        size: "invisible",
-      },
-    );
-
-    const confirmationResult = await signInWithPhoneNumber(
-      auth,
-      phoneNumber,
-      recaptchaVerifier,
-    );
-    return confirmationResult;
-  } catch (error: any) {
-    logger.error("Phone sign in error", { error });
-    throw new AuthenticationError(
-      error.message || "Failed to sign in with phone",
-      { provider: "phone", phoneNumber },
-    );
   }
 }
 

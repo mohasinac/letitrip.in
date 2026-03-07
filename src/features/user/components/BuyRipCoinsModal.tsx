@@ -18,7 +18,7 @@ import {
 import { THEME_CONSTANTS } from "@/constants";
 import { RIPCOIN_PACKAGES } from "@/db/schema";
 
-const { spacing, flex } = THEME_CONSTANTS;
+const { spacing, flex, themed } = THEME_CONSTANTS;
 
 interface Props {
   open: boolean;
@@ -84,7 +84,7 @@ export function BuyRipCoinsModal({ open, onClose, onPurchaseSuccess }: Props) {
                   "rounded-xl border-2 p-4 text-left transition-all",
                   isSelected
                     ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40"
-                    : "border-gray-200 dark:border-gray-700 hover:border-indigo-300",
+                    : `${themed.border} hover:border-indigo-300`,
                 ].join(" ")}
               >
                 <div className={`${flex.between} mb-1`}>

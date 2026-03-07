@@ -25,7 +25,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ref, onValue, off, type DatabaseReference } from "firebase/database";
+import { ref, onValue, type DatabaseReference } from "firebase/database";
 import { getAuth, signInWithCustomToken, signOut } from "firebase/auth";
 import { realtimeApp, chatRealtimeDb } from "@/lib/firebase/realtime";
 import { logger } from "@/classes";
@@ -166,14 +166,16 @@ export function useRealtimeEvent<TData = undefined>(
   const [data, setData] = useState<TData | null>(null);
 
   const dbRefRef = useRef<DatabaseReference | null>(null);
+  const unsubscribeRef = useRef<(() => void) | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const eventIdRef = useRef<string | null>(null);
 
   const cleanup = useCallback(() => {
-    if (dbRefRef.current) {
-      off(dbRefRef.current);
-      dbRefRef.current = null;
+    if (unsubscribeRef.current) {
+      unsubscribeRef.current();
+      unsubscribeRef.current = null;
     }
+    dbRefRef.current = null;
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
@@ -227,7 +229,7 @@ export function useRealtimeEvent<TData = undefined>(
         const dbRef = ref(chatRealtimeDb, `${rtdbPath}/${eventId}`);
         dbRefRef.current = dbRef;
 
-        onValue(
+        unsubscribeRef.current = onValue(
           dbRef,
           (snapshot) => {
             if (!snapshot.exists()) return;

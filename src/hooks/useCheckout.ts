@@ -32,6 +32,7 @@ export interface CreateRazorpayOrderResponse {
 interface PlaceOrderPayload {
   addressId: string;
   paymentMethod: "cod" | "online" | "upi_manual";
+  notes?: string;
 }
 
 interface UseCheckoutOptions {

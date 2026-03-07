@@ -13,7 +13,9 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
 import { useAdminProducts, useAdminCategories } from "@/features/admin/hooks";
-import { ROUTES } from "@/constants";
+import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
+
+const { flex, spacing } = THEME_CONSTANTS;
 import { formatCurrency } from "@/utils";
 import { useTranslations } from "next-intl";
 import {
@@ -43,7 +45,7 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
   const router = useRouter();
   const t = useTranslations("adminProducts");
   const tActions = useTranslations("actions");
-  const { showError } = useMessage();
+  const { showSuccess, showError } = useMessage();
   const table = useUrlTable({
     defaults: { pageSize: "25", sort: "-createdAt" },
   });
@@ -217,6 +219,11 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
         });
       }
       await refetch();
+      showSuccess(
+        drawerMode === "create"
+          ? SUCCESS_MESSAGES.PRODUCT.CREATED
+          : SUCCESS_MESSAGES.PRODUCT.UPDATED,
+      );
       handleCloseDrawer();
     } catch {
       showError(t("saveFailed"));
@@ -228,6 +235,7 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
     try {
       await deleteMutation.mutate(editingProduct.id);
       await refetch();
+      showSuccess(SUCCESS_MESSAGES.PRODUCT.DELETED);
       handleCloseDrawer();
     } catch {
       showError(t("deleteFailed"));
@@ -321,7 +329,7 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
           actions={actions}
           externalPagination
           showViewToggle
-          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(product) => (
             <Card
@@ -339,7 +347,7 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
                 <Text weight="medium" size="sm" className="line-clamp-2">
                   {product.title}
                 </Text>
-                <div className="flex items-center justify-between gap-1">
+                <div className={`${flex.between} gap-1`}>
                   <StatusBadge status={product.status as any} />
                   <Caption className="font-semibold">
                     {formatCurrency(product.price)}
@@ -362,7 +370,7 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
           side="right"
         >
           {drawerMode === "delete" ? (
-            <div className="space-y-4">
+            <div className={spacing.stack}>
               <Text className="text-gray-700 dark:text-gray-300">
                 {t("confirmDelete")}
               </Text>

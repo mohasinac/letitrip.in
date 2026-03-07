@@ -38,6 +38,14 @@ export interface CategoriesSectionConfig {
   scrollInterval: number; // milliseconds
 }
 
+export interface BrandsSectionConfig {
+  title: string;
+  subtitle?: string;
+  maxBrands: number;
+  autoScroll: boolean;
+  scrollInterval: number;
+}
+
 export interface ProductsSectionConfig {
   title: string;
   subtitle?: string;
@@ -160,6 +168,7 @@ export type SectionType =
   | "welcome"
   | "trust-indicators"
   | "categories"
+  | "brands"
   | "products"
   | "auctions"
   | "banner"
@@ -176,6 +185,7 @@ export type SectionConfig =
   | WelcomeSectionConfig
   | TrustIndicatorsSectionConfig
   | CategoriesSectionConfig
+  | BrandsSectionConfig
   | ProductsSectionConfig
   | AuctionsSectionConfig
   | BannerSectionConfig
@@ -238,6 +248,7 @@ export const DEFAULT_SECTION_ORDER: Record<SectionType, number> = {
   welcome: 1,
   "trust-indicators": 3,
   categories: 2,
+  brands: 2,
   products: 4,
   auctions: 5,
   banner: 4,
@@ -308,6 +319,13 @@ export const DEFAULT_SECTION_CONFIGS: Record<SectionType, SectionConfig> = {
     autoScroll: true,
     scrollInterval: 5000,
   } as CategoriesSectionConfig,
+  brands: {
+    title: "Shop by Brand",
+    subtitle: "Browse our top brands",
+    maxBrands: 12,
+    autoScroll: false,
+    scrollInterval: 0,
+  } as BrandsSectionConfig,
   products: {
     title: "Featured Products",
     subtitle: "Discover our handpicked selection",

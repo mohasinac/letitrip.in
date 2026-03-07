@@ -123,7 +123,7 @@ export function CheckoutOtpModal({
         ) : otpState === "idle" ||
           (otpState === "error" && !verificationSent(error)) ? (
           /* ── Initial state: ask to send OTP ─────────────── */
-          <div className="space-y-4">
+          <div className={spacing.stack}>
             <Text variant="secondary">{t("otpModalDesc")}</Text>
             <Text size="sm" className="font-mono font-semibold">
               {maskPhone(phoneNumber)}
@@ -148,7 +148,7 @@ export function CheckoutOtpModal({
           </div>
         ) : (
           /* ── Code sent: input + verify ───────────────────── */
-          <div className="space-y-4">
+          <div className={spacing.stack}>
             <Text variant="secondary">
               {t("otpSentDesc", { phone: maskPhone(phoneNumber) })}
             </Text>

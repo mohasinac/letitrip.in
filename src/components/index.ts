@@ -99,6 +99,9 @@ export * from "./products";
 // ==================== AUCTIONS ====================
 export * from "./auctions";
 
+// ==================== PRE-ORDERS ====================
+export * from "./pre-orders";
+
 // ==================== CATEGORIES ====================
 export * from "./categories";
 
@@ -108,3 +111,12 @@ export * from "./filters";
 // ==================== SETUP UTILITIES ====================
 // Zod global error map (renders nothing, side-effect only)
 export { default as ZodSetup } from "./ZodSetup";
+
+// ==================== ELEVATED FEATURE COMPONENTS ====================
+// Purely presentational components elevated from features to Tier-1
+// so shared-tier layout components and other features can import them.
+export { BlogCard, CATEGORY_BADGE } from "./BlogCard";
+export { ReviewCard } from "./ReviewCard";
+export { EventCard } from "./EventCard";
+export { EventBanner } from "./EventBanner";
+export { StoreCard } from "./StoreCard";

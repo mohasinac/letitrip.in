@@ -24,8 +24,8 @@ import {
   getFilterLabel,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
-import { BlogFilters } from "@/components/filters";
-import { BlogCard } from "./BlogCard";
+import { BlogFilters } from "@/components";
+import { BlogCard } from "@/components";
 import { BlogFeaturedCard } from "./BlogFeaturedCard";
 import { BLOG_CATEGORY_TABS } from "./BlogCategoryTabs";
 import { THEME_CONSTANTS } from "@/constants";

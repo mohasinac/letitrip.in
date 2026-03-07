@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { ReactNode, useState, useMemo } from "react";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
@@ -33,10 +33,6 @@ interface DataTableProps<T> {
   emptyMessage?: string;
   actions?: (item: T) => ReactNode;
   // Pagination props
-  /** @deprecated Use externalPagination + <TablePagination> instead */
-  pageSize?: number;
-  /** @deprecated Use externalPagination + <TablePagination> instead */
-  showPagination?: boolean;
   /** When true, disables internal pagination — render <TablePagination> externally. Default: false */
   externalPagination?: boolean;
   // Mobile view
@@ -51,6 +47,8 @@ interface DataTableProps<T> {
   // View toggle
   /** Show Table / Grid / List mode toggle in the toolbar. Default: false */
   showViewToggle?: boolean;
+  /** Hide the Table option from the view toggle — only Grid and List shown. Default: false */
+  showTableView?: boolean;
   /** Controlled view mode. Use with onViewModeChange. */
   viewMode?: ViewMode;
   /** Uncontrolled default view mode. Default: 'table' */
@@ -75,8 +73,6 @@ export function DataTable<T extends Record<string, any>>({
   loading = false,
   emptyMessage,
   actions,
-  pageSize = 10,
-  showPagination = true,
   mobileCardRender,
   emptyState,
   emptyIcon,
@@ -85,8 +81,9 @@ export function DataTable<T extends Record<string, any>>({
   striped = false,
   externalPagination = false,
   showViewToggle = false,
+  showTableView = true,
   viewMode: controlledViewMode,
-  defaultViewMode = "grid",
+  defaultViewMode = "table",
   onViewModeChange,
   selectable = false,
   selectedIds = [],
@@ -154,13 +151,13 @@ export function DataTable<T extends Record<string, any>>({
 
   // Paginated data
   const paginatedData = useMemo(() => {
-    if (externalPagination || !showPagination) return sortedData;
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
+    if (externalPagination) return sortedData;
+    const startIndex = (currentPage - 1) * 10;
+    const endIndex = startIndex + 10;
     return sortedData.slice(startIndex, endIndex);
-  }, [sortedData, currentPage, pageSize, showPagination, externalPagination]);
+  }, [sortedData, currentPage, externalPagination]);
 
-  const totalPages = Math.ceil(sortedData.length / pageSize);
+  const totalPages = Math.ceil(sortedData.length / 10);
 
   if (loading) {
     return (
@@ -220,6 +217,39 @@ export function DataTable<T extends Record<string, any>>({
           role="toolbar"
           aria-label="View mode"
         >
+          {/* Table mode — admin/seller only, hidden on xs */}
+          {showTableView && (
+            <Button
+              type="button"
+              onClick={() => handleViewModeChange("table")}
+              aria-label={UI_LABELS.ADMIN.TABLE_VIEW ?? "Table view"}
+              aria-pressed={activeViewMode === "table"}
+              variant="ghost"
+              size="sm"
+              className={`hidden sm:${flex.center} p-2 rounded-lg ring-1 transition-colors ${
+                activeViewMode === "table"
+                  ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300"
+                  : `${THEME_CONSTANTS.themed.textSecondary} ring-gray-200 dark:ring-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800`
+              }`}
+            >
+              {/* Table icon */}
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 10h18M3 6h18M3 14h18M3 18h18"
+                />
+              </svg>
+            </Button>
+          )}
+
           {/* Grid mode */}
           <Button
             type="button"
@@ -228,7 +258,7 @@ export function DataTable<T extends Record<string, any>>({
             aria-pressed={activeViewMode === "grid"}
             variant="ghost"
             size="sm"
-            className={`flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${
+            className={`${flex.center} p-2 rounded-lg ring-1 transition-colors ${
               activeViewMode === "grid"
                 ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300"
                 : `${THEME_CONSTANTS.themed.textSecondary} ring-gray-200 dark:ring-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800`
@@ -259,7 +289,7 @@ export function DataTable<T extends Record<string, any>>({
             aria-pressed={activeViewMode === "list"}
             variant="ghost"
             size="sm"
-            className={`flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${
+            className={`${flex.center} p-2 rounded-lg ring-1 transition-colors ${
               activeViewMode === "list"
                 ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300"
                 : `${THEME_CONSTANTS.themed.textSecondary} ring-gray-200 dark:ring-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800`
@@ -504,7 +534,7 @@ export function DataTable<T extends Record<string, any>>({
       )}
 
       {/* Pagination */}
-      {!externalPagination && showPagination && totalPages > 1 && (
+      {!externalPagination && totalPages > 1 && (
         <div className="flex justify-center">
           <Pagination
             currentPage={currentPage}
@@ -556,7 +586,7 @@ function SelectableCard({
         ].join(" ")}
         onClick={(e) => e.stopPropagation()}
       >
-        <Label className="flex items-center justify-center cursor-pointer mb-0">
+        <Label className={`${flex.center} cursor-pointer mb-0`}>
           <input
             type="checkbox"
             className={[

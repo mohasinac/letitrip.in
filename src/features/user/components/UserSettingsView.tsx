@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth, useChangePassword, useResendVerification } from "@/hooks";
 import { profileService } from "@/services";
+import { nowMs } from "@/utils";
 import {
   Heading,
   Alert,
@@ -189,7 +190,7 @@ export function UserSettingsView() {
         <AccountInfoCard
           uid={profile.uid}
           email={profile.email || ""}
-          createdAt={profile.metadata?.creationTime || new Date()}
+          createdAt={profile.metadata?.creationTime || new Date(nowMs())}
           lastLoginAt={profile.metadata?.lastSignInTime}
         />
       </div>

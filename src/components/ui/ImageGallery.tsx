@@ -149,8 +149,7 @@ export default function ImageGallery({
       {/* Main Image Container */}
       <div
         ref={imageContainerRef}
-        className={`relative ${themed.bgSecondary} rounded-lg overflow-hidden touch-pan-y`}
-        style={{ userSelect: "none" }}
+        className={`relative ${themed.bgSecondary} rounded-lg overflow-hidden touch-pan-y select-none`}
       >
         {/* Image */}
         <div className="relative aspect-video md:aspect-[16/10] overflow-hidden">

@@ -16,7 +16,11 @@
  */
 
 import { z } from "zod";
-import { unitOfWork } from "@/repositories";
+import {
+  unitOfWork,
+  siteSettingsRepository,
+  userRepository,
+} from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { ValidationError, NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -59,6 +63,15 @@ export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
   schema: checkoutSchema,
   handler: async ({ user, body }) => {
     const { addressId, paymentMethod, notes } = body!;
+
+    // Fetch commission config from site settings (for deposit + shipping fees)
+    const siteSettings = await siteSettingsRepository.getSingleton();
+    const commissions = siteSettings?.commissions ?? {
+      codDepositPercent: 10,
+      sellerShippingFixed: 50,
+      platformShippingPercent: 10,
+      platformShippingFixedMin: 50,
+    };
 
     // 3. Load cart
     const cart = await unitOfWork.carts.getOrCreate(user!.uid);
@@ -126,6 +139,42 @@ export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
         0,
       );
 
+      // ── Shipping fee ──────────────────────────────────────────────────────
+      // Fetch seller's shipping config to determine shipping fee for this group.
+      let shippingFee = 0;
+      const sellerId = firstItem.sellerId;
+      if (sellerId) {
+        const sellerUser = await userRepository.findById(sellerId);
+        const shippingConfig = sellerUser?.shippingConfig;
+        if (shippingConfig?.isConfigured) {
+          if (shippingConfig.method === "custom") {
+            // Seller sets their own price; platform takes ₹50 commission (internal).
+            shippingFee = shippingConfig.customShippingPrice ?? 0;
+          } else if (shippingConfig.method === "shiprocket") {
+            // Platform charges: max(10% of order total, minimum fixed fee).
+            const percentFee =
+              groupTotal * (commissions.platformShippingPercent / 100);
+            shippingFee = Math.max(
+              percentFee,
+              commissions.platformShippingFixedMin,
+            );
+          }
+        }
+      }
+
+      // ── COD deposit ───────────────────────────────────────────────────────
+      const isCodLike =
+        paymentMethod === "cod" || paymentMethod === "upi_manual";
+      const depositAmount = isCodLike
+        ? Math.round(groupTotal * (commissions.codDepositPercent / 100) * 100) /
+          100
+        : undefined;
+      const codRemainingAmount = isCodLike
+        ? Math.round((groupTotal - (depositAmount ?? 0)) * 100) / 100
+        : undefined;
+
+      const orderTotal = groupTotal + shippingFee;
+
       const order = await unitOfWork.orders.create({
         productId: firstItem.productId,
         productTitle: firstItem.productTitle,
@@ -134,7 +183,7 @@ export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
         userEmail,
         quantity: totalQuantity,
         unitPrice: firstItem.price,
-        totalPrice: groupTotal,
+        totalPrice: orderTotal,
         currency: firstItem.currency ?? "INR",
         sellerId: firstItem.sellerId || undefined,
         sellerName: firstItem.sellerName || undefined,
@@ -144,6 +193,9 @@ export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
         paymentMethod,
         shippingAddress,
         notes,
+        shippingFee: shippingFee > 0 ? shippingFee : undefined,
+        depositAmount,
+        codRemainingAmount,
       });
 
       orderIds.push(order.id);
@@ -158,7 +210,7 @@ export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
               ? `${orderItems.length} items`
               : firstItem.productTitle,
           quantity: totalQuantity,
-          totalPrice: groupTotal,
+          totalPrice: orderTotal,
           currency: firstItem.currency ?? "INR",
           shippingAddress,
           paymentMethod,

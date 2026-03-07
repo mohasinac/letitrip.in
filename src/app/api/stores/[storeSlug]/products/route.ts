@@ -3,7 +3,7 @@ import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse } from "@/lib/api-response";
 import { ValidationError, NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
-import { userRepository, productRepository } from "@/repositories";
+import { storeRepository, productRepository } from "@/repositories";
 import type { SieveModel } from "@/lib/query/firebase-sieve";
 
 /**
@@ -21,12 +21,8 @@ export async function GET(
       throw new ValidationError(ERROR_MESSAGES.VALIDATION.FAILED);
     }
 
-    const seller = await userRepository.findByStoreSlug(storeSlug);
-    if (
-      !seller ||
-      (seller.role !== "seller" && seller.role !== "admin") ||
-      seller.storeStatus !== "approved"
-    ) {
+    const storeDoc = await storeRepository.findBySlug(storeSlug);
+    if (!storeDoc || storeDoc.status !== "active" || !storeDoc.isPublic) {
       throw new NotFoundError(ERROR_MESSAGES.USER.NOT_FOUND);
     }
 
@@ -38,9 +34,9 @@ export async function GET(
       pageSize: searchParams.get("pageSize") ?? "24",
     };
 
-    // Build filter: published non-auction products for this seller
+    // Build filter: published non-auction products for this store's owner
     const filtersArr = [
-      `sellerId==${seller.uid}`,
+      `sellerId==${storeDoc.ownerId}`,
       "status==published",
       "isAuction==false",
     ];
@@ -49,7 +45,7 @@ export async function GET(
     model.filters = filtersArr.join(",");
 
     const result = await productRepository.list(model, {
-      sellerId: seller.uid,
+      sellerId: storeDoc.ownerId,
       status: "published",
     });
 

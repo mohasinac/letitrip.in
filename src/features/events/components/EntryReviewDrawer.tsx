@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { SideDrawer, Button, FormField, Text, Caption } from "@/components";
-import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
+
+const { themed } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
 import { useMessage } from "@/hooks";
 import { useReviewEntry } from "../hooks/useEventMutations";
@@ -90,7 +92,7 @@ export function EntryReviewDrawer({
     >
       <div className="space-y-5 p-1">
         {/* Submitter info */}
-        <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-1">
+        <div className={`rounded-lg border ${themed.border} p-4 space-y-1`}>
           <Text weight="medium" size="sm">
             Submitted by
           </Text>

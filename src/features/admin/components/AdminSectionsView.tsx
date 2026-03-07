@@ -9,7 +9,9 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { ROUTES, SUCCESS_MESSAGES } from "@/constants";
+import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
+
+const { flex } = THEME_CONSTANTS;
 import { useAdminSections } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
@@ -251,7 +253,7 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
                 className="p-4 space-y-2 cursor-pointer"
                 onClick={() => handleEdit(section)}
               >
-                <div className="flex items-center justify-between">
+                <div className={`${flex.between}`}>
                   <Badge>{section.type}</Badge>
                   <StatusBadge
                     status={section.enabled ? "active" : "inactive"}

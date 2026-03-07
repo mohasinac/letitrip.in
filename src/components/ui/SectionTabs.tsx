@@ -59,7 +59,7 @@ export function SectionTabs({
     }
   };
 
-  const { themed, utilities } = THEME_CONSTANTS;
+  const { themed, utilities, flex } = THEME_CONSTANTS;
 
   return (
     <div
@@ -92,7 +92,7 @@ export function SectionTabs({
                       // Equal share of available width, never shrink below text
                       "flex-1 min-w-fit flex-shrink-0",
                       // Content layout
-                      "inline-flex items-center justify-center gap-1.5",
+                      `inline-${flex.center} gap-1.5`,
                       "whitespace-nowrap text-sm font-medium",
                       "px-3 sm:px-5 py-3",
                       // Bottom indicator via thick border

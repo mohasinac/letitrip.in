@@ -5,8 +5,8 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
-import { StoreCard } from "../StoreCard";
-import type { StoreListItem } from "../../types";
+import { StoreCard } from "@/components";
+import type { StoreListItem } from "@/types/stores";
 
 jest.mock("next-intl", () => ({
   useTranslations: () => (key: string, params?: Record<string, unknown>) => {
@@ -20,14 +20,20 @@ jest.mock("next-intl", () => ({
 
 jest.mock("next/link", () => ({
   __esModule: true,
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
-  ),
+  default: ({
+    children,
+    href,
+  }: {
+    children: React.ReactNode;
+    href: string;
+  }) => <a href={href}>{children}</a>,
 }));
 
 jest.mock("next/image", () => ({
   __esModule: true,
-  default: ({ alt, src }: { alt: string; src: string }) => <img alt={alt} src={src} />,
+  default: ({ alt, src }: { alt: string; src: string }) => (
+    <img alt={alt} src={src} />
+  ),
 }));
 
 jest.mock("@/i18n/navigation", () => ({
@@ -84,12 +90,20 @@ describe("StoreCard", () => {
   it("renders a link to the store page", () => {
     render(<StoreCard store={baseStore} />);
     const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", expect.stringContaining("himalaya-treks"));
+    expect(link).toHaveAttribute(
+      "href",
+      expect.stringContaining("himalaya-treks"),
+    );
   });
 
   it("renders checkbox when selectable is true", () => {
     render(
-      <StoreCard store={baseStore} selectable selected={false} onSelect={jest.fn()} />
+      <StoreCard
+        store={baseStore}
+        selectable
+        selected={false}
+        onSelect={jest.fn()}
+      />,
     );
     expect(screen.getByRole("checkbox")).toBeInTheDocument();
   });
@@ -102,7 +116,7 @@ describe("StoreCard", () => {
         selectable
         selected={false}
         onSelect={onSelect}
-      />
+      />,
     );
     await userEvent.click(screen.getByRole("checkbox"));
     expect(onSelect).toHaveBeenCalledWith("seller-1", true);

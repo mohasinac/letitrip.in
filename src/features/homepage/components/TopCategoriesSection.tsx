@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useTopCategories } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { CategoryCard } from "@/features/categories";
+import { CategoryCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";
 
 export function TopCategoriesSection() {

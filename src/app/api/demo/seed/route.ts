@@ -41,6 +41,7 @@ import {
   EVENT_ENTRIES_COLLECTION,
   SESSION_COLLECTION,
   CART_COLLECTION,
+  ADDRESS_SUBCOLLECTION,
 } from "@/db/schema";
 
 type CollectionName =
@@ -159,7 +160,7 @@ export async function GET(_request: NextRequest) {
                 db
                   .collection(USER_COLLECTION)
                   .doc(d.userId)
-                  .collection("addresses")
+                  .collection(ADDRESS_SUBCOLLECTION)
                   .doc(d.id),
               );
             if (refs.length > 0) {
@@ -355,7 +356,7 @@ export async function POST(request: NextRequest) {
                 const docRef = db
                   .collection(USER_COLLECTION)
                   .doc(userId)
-                  .collection("addresses")
+                  .collection(ADDRESS_SUBCOLLECTION)
                   .doc(id);
                 const docSnapshot = await docRef.get();
                 if (docSnapshot.exists) {
@@ -531,7 +532,7 @@ export async function POST(request: NextRequest) {
                 const docRef = db
                   .collection(USER_COLLECTION)
                   .doc(userId)
-                  .collection("addresses")
+                  .collection(ADDRESS_SUBCOLLECTION)
                   .doc(id);
                 const docSnapshot = await docRef.get();
 

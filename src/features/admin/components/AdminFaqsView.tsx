@@ -10,7 +10,9 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
-import { ROUTES, SUCCESS_MESSAGES } from "@/constants";
+import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
+
+const { flex } = THEME_CONSTANTS;
 import { useAdminFaqs } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
@@ -299,7 +301,7 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
               externalPagination
               showViewToggle
               viewMode={
-                (table.get("view") || "grid") as "table" | "grid" | "list"
+                (table.get("view") || "table") as "table" | "grid" | "list"
               }
               onViewModeChange={(mode) => table.set("view", mode)}
               mobileCardRender={(faq) => (
@@ -310,7 +312,7 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
                   <Text weight="medium" size="sm" className="line-clamp-2">
                     {faq.question}
                   </Text>
-                  <div className="flex items-center justify-between">
+                  <div className={`${flex.between}`}>
                     <Badge>{faq.category}</Badge>
                     {faq.featured && <StatusBadge status="active" />}
                   </div>

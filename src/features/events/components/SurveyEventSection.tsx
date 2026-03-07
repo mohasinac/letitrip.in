@@ -1,7 +1,9 @@
 "use client";
 
 import { Alert, Text, TextLink } from "@/components";
-import { ROUTES } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
+
+const { spacing } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/hooks";
 import type { EventDocument } from "@/db/schema";
@@ -21,7 +23,7 @@ export function SurveyEventSection({
 
   if (!user) {
     return (
-      <div className="space-y-4">
+      <div className={spacing.stack}>
         <Alert variant="info">{tEvents("loginToParticipate")}</Alert>
         <TextLink
           href={ROUTES.AUTH.LOGIN}
@@ -44,7 +46,7 @@ export function SurveyEventSection({
   }
 
   return (
-    <div className="space-y-4">
+    <div className={spacing.stack}>
       <Text size="sm" variant="secondary">
         Complete the survey to participate. Entries are reviewed before being
         counted.

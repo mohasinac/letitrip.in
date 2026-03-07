@@ -47,6 +47,11 @@ export function CategoryFilters({ table }: CategoryFiltersProps) {
     { value: "false", label: t("booleanFalse") },
   ];
 
+  const isBrandOptions = [
+    { value: "true", label: t("booleanFeatured") },
+    { value: "false", label: t("booleanNotFeatured") },
+  ];
+
   const selectedTier = table.get("tier") ? [table.get("tier")] : [];
   const selectedIsActive = table.get("isActive") ? [table.get("isActive")] : [];
   const selectedIsFeatured = table.get("isFeatured")
@@ -56,6 +61,7 @@ export function CategoryFilters({ table }: CategoryFiltersProps) {
     ? [table.get("isSearchable")]
     : [];
   const selectedIsLeaf = table.get("isLeaf") ? [table.get("isLeaf")] : [];
+  const selectedIsBrand = table.get("isBrand") ? [table.get("isBrand")] : [];
 
   return (
     <div>
@@ -104,6 +110,16 @@ export function CategoryFilters({ table }: CategoryFiltersProps) {
         options={isLeafOptions}
         selected={selectedIsLeaf}
         onChange={(vals) => table.set("isLeaf", vals[0] ?? "")}
+        searchable={false}
+        defaultCollapsed={true}
+        selectionMode="single"
+      />
+
+      <FilterFacetSection
+        title={t("isBrand")}
+        options={isBrandOptions}
+        selected={selectedIsBrand}
+        onChange={(vals) => table.set("isBrand", vals[0] ?? "")}
         searchable={false}
         defaultCollapsed={true}
         selectionMode="single"

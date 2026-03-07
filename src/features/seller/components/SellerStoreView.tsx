@@ -1,8 +1,12 @@
 /**
  * SellerStoreView
  *
- * Feature view for seller store profile / settings.
- * Sections: Store Details, Contact & Social, Policies, Vacation Mode.
+ * Main feature view for the seller's store settings page.
+ *
+ * - No store yet  â†’ renders SellerStoreSetupView (create form)
+ * - Store exists  â†’ renders the full edit form (StoreDocument fields)
+ *
+ * Sections: Store Details Â· Contact & Social Â· Policies Â· Vacation Mode
  */
 
 "use client";
@@ -19,6 +23,7 @@ import {
   Text,
   Caption,
   Label,
+  Span,
   Spinner,
   Divider,
   useToast,
@@ -27,8 +32,12 @@ import { useAuth } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useSellerStore } from "../hooks";
+import { SellerStoreSetupView } from "./SellerStoreSetupView";
+import type { StoreDocument } from "@/db/schema";
 
 const { themed, spacing, flex } = THEME_CONSTANTS;
+
+// â”€â”€â”€ Form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface StoreFormState {
   storeName: string;
@@ -43,8 +52,8 @@ interface StoreFormState {
   instagram: string;
   facebook: string;
   linkedin: string;
-  storeReturnPolicy: string;
-  storeShippingPolicy: string;
+  returnPolicy: string;
+  shippingPolicy: string;
   isVacationMode: boolean;
   vacationMessage: string;
   isPublic: boolean;
@@ -63,37 +72,63 @@ const EMPTY_FORM: StoreFormState = {
   instagram: "",
   facebook: "",
   linkedin: "",
-  storeReturnPolicy: "",
-  storeShippingPolicy: "",
+  returnPolicy: "",
+  shippingPolicy: "",
   isVacationMode: false,
   vacationMessage: "",
   isPublic: true,
 };
 
-function profileToForm(
-  profile: ReturnType<typeof useSellerStore>["publicProfile"],
-): StoreFormState {
-  if (!profile) return EMPTY_FORM;
+function storeToForm(store: StoreDocument): StoreFormState {
   return {
-    storeName: profile.storeName ?? "",
-    storeDescription: profile.storeDescription ?? "",
-    storeCategory: profile.storeCategory ?? "",
-    storeLogoURL: profile.storeLogoURL ?? "",
-    storeBannerURL: profile.storeBannerURL ?? "",
-    bio: profile.bio ?? "",
-    website: profile.website ?? "",
-    location: profile.location ?? "",
-    twitter: profile.socialLinks?.twitter ?? "",
-    instagram: profile.socialLinks?.instagram ?? "",
-    facebook: profile.socialLinks?.facebook ?? "",
-    linkedin: profile.socialLinks?.linkedin ?? "",
-    storeReturnPolicy: (profile as any).storeReturnPolicy ?? "",
-    storeShippingPolicy: (profile as any).storeShippingPolicy ?? "",
-    isVacationMode: (profile as any).isVacationMode ?? false,
-    vacationMessage: (profile as any).vacationMessage ?? "",
-    isPublic: profile.isPublic ?? true,
+    storeName: store.storeName ?? "",
+    storeDescription: store.storeDescription ?? "",
+    storeCategory: store.storeCategory ?? "",
+    storeLogoURL: store.storeLogoURL ?? "",
+    storeBannerURL: store.storeBannerURL ?? "",
+    bio: store.bio ?? "",
+    website: store.website ?? "",
+    location: store.location ?? "",
+    twitter: store.socialLinks?.twitter ?? "",
+    instagram: store.socialLinks?.instagram ?? "",
+    facebook: store.socialLinks?.facebook ?? "",
+    linkedin: store.socialLinks?.linkedin ?? "",
+    returnPolicy: store.returnPolicy ?? "",
+    shippingPolicy: store.shippingPolicy ?? "",
+    isVacationMode: store.isVacationMode ?? false,
+    vacationMessage: store.vacationMessage ?? "",
+    isPublic: store.isPublic ?? true,
   };
 }
+
+// â”€â”€â”€ Status badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+const STATUS_COLORS: Record<StoreDocument["status"], string> = {
+  pending:
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+  active:
+    "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+  suspended: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+  rejected: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+};
+
+function StatusBadge({
+  status,
+  label,
+}: {
+  status: StoreDocument["status"];
+  label: string;
+}) {
+  return (
+    <Span
+      className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${STATUS_COLORS[status]}`}
+    >
+      {label}
+    </Span>
+  );
+}
+
+// â”€â”€â”€ Main view â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function SellerStoreView() {
   const router = useRouter();
@@ -101,18 +136,17 @@ export function SellerStoreView() {
   const t = useTranslations("sellerStore");
   const { showToast } = useToast();
 
-  const { publicProfile, storeSlug, isLoading, isSaving, error, updateStore } =
-    useSellerStore();
+  const { store, isLoading, isSaving, error, updateStore } = useSellerStore();
 
   const [form, setForm] = useState<StoreFormState>(EMPTY_FORM);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  // Populate form once data loads
+  // Populate form once store data loads
   useEffect(() => {
-    if (publicProfile !== null && publicProfile !== undefined) {
-      setForm(profileToForm(publicProfile));
+    if (store) {
+      setForm(storeToForm(store));
     }
-  }, [publicProfile]);
+  }, [store]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -145,15 +179,15 @@ export function SellerStoreView() {
           facebook: form.facebook,
           linkedin: form.linkedin,
         },
-        storeReturnPolicy: form.storeReturnPolicy,
-        storeShippingPolicy: form.storeShippingPolicy,
+        returnPolicy: form.returnPolicy,
+        shippingPolicy: form.shippingPolicy,
         isVacationMode: form.isVacationMode,
         vacationMessage: form.vacationMessage,
         isPublic: form.isPublic,
       });
       showToast(SUCCESS_MESSAGES.USER.STORE_UPDATED, "success");
-    } catch (err: any) {
-      const msg = err?.message ?? t("saveFailed");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : t("saveFailed");
       setSaveError(msg);
       showToast(msg, "error");
     }
@@ -167,8 +201,35 @@ export function SellerStoreView() {
     );
   }
 
+  // â”€â”€ No store yet â†’ show setup flow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  if (!store) {
+    return <SellerStoreSetupView />;
+  }
+
+  // â”€â”€ Store exists â†’ full edit form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+  const statusLabel = {
+    pending: t("statusPending"),
+    active: t("statusActive"),
+    suspended: t("statusSuspended"),
+    rejected: t("statusRejected"),
+  }[store.status];
+
   return (
     <form onSubmit={handleSubmit} className={spacing.stack}>
+      {/* Status banner */}
+      {store.status === "pending" && (
+        <Alert variant="warning" title={t("storeStatusLabel")}>
+          {t("setupPendingBanner")}
+        </Alert>
+      )}
+
+      {store.status === "suspended" && (
+        <Alert variant="error" title={t("storeStatusLabel")}>
+          {t("statusSuspended")}
+        </Alert>
+      )}
+
       {/* Vacation mode banner */}
       {form.isVacationMode && (
         <Alert variant="warning" title={t("vacationActiveTitle")}>
@@ -178,22 +239,28 @@ export function SellerStoreView() {
 
       {saveError && <Alert variant="error">{saveError}</Alert>}
 
-      {/* ── Store Details ─────────────────────────────────────── */}
+      {/* â”€â”€ Store Details â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Card>
         <div className={spacing.stack}>
-          <div>
-            <Heading level={3}>{t("sectionStoreDetails")}</Heading>
-            <Text variant="secondary" size="sm" className="mt-0.5">
-              {t("sectionStoreDetailsSubtitle")}
-            </Text>
+          <div className={`${flex.between} gap-4`}>
+            <div>
+              <Heading level={3}>{t("sectionStoreDetails")}</Heading>
+              <Text variant="secondary" size="sm" className="mt-0.5">
+                {t("sectionStoreDetailsSubtitle")}
+              </Text>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Caption>{t("storeStatusLabel")}:</Caption>
+              <StatusBadge status={store.status} label={statusLabel} />
+            </div>
           </div>
 
-          {storeSlug && (
+          {store.storeSlug && (
             <div
               className={`flex items-center gap-2 px-3 py-2 rounded-lg ${themed.bgSecondary} border ${themed.borderColor}`}
             >
               <Caption>{t("storeUrlLabel")}</Caption>
-              <Caption className="font-mono">/stores/{storeSlug}</Caption>
+              <Caption className="font-mono">/stores/{store.storeSlug}</Caption>
             </div>
           )}
 
@@ -266,7 +333,7 @@ export function SellerStoreView() {
         </div>
       </Card>
 
-      {/* ── Contact & Social ──────────────────────────────────── */}
+      {/* â”€â”€ Contact & Social â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Card>
         <div className={spacing.stack}>
           <div>
@@ -326,7 +393,7 @@ export function SellerStoreView() {
         </div>
       </Card>
 
-      {/* ── Store Policies ────────────────────────────────────── */}
+      {/* â”€â”€ Store Policies â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Card>
         <div className={spacing.stack}>
           <div>
@@ -337,28 +404,28 @@ export function SellerStoreView() {
           </div>
 
           <FormField
-            name="storeReturnPolicy"
+            name="returnPolicy"
             label={t("returnPolicy")}
             type="textarea"
             rows={4}
-            value={form.storeReturnPolicy}
-            onChange={set("storeReturnPolicy")}
+            value={form.returnPolicy}
+            onChange={set("returnPolicy")}
             placeholder={t("returnPolicyPlaceholder")}
           />
 
           <FormField
-            name="storeShippingPolicy"
+            name="shippingPolicy"
             label={t("shippingPolicy")}
             type="textarea"
             rows={4}
-            value={form.storeShippingPolicy}
-            onChange={set("storeShippingPolicy")}
+            value={form.shippingPolicy}
+            onChange={set("shippingPolicy")}
             placeholder={t("shippingPolicyPlaceholder")}
           />
         </div>
       </Card>
 
-      {/* ── Vacation Mode ─────────────────────────────────────── */}
+      {/* â”€â”€ Vacation Mode â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Card>
         <div className={spacing.stack}>
           <div className={flex.between}>
@@ -389,7 +456,7 @@ export function SellerStoreView() {
         </div>
       </Card>
 
-      {/* ── Save ──────────────────────────────────────────────── */}
+      {/* â”€â”€ Save â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="flex justify-end">
         <Button
           type="submit"

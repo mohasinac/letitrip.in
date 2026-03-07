@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import {
@@ -44,10 +44,9 @@ export function FAQPageContent({
   // handleCategorySelect calls router.push, which updates the URL and causes
   // the page to re-render with the new initialCategory prop.
   const selectedCategory = initialCategory;
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const table = useUrlTable({ defaults: { sort: "helpful" } });
+  const table = useUrlTable({ defaults: { sort: "helpful", q: "" } });
   const sortOption = (table.get("sort") || "helpful") as FAQSortOption;
+  const searchQuery = table.get("q") || "";
 
   // Use static data — no API calls needed
   const allFAQs: StaticFAQItem[] = STATIC_FAQS;
@@ -126,7 +125,7 @@ export function FAQPageContent({
       <div className="mb-8">
         <Search
           value={searchQuery}
-          onChange={setSearchQuery}
+          onChange={(v) => table.set("q", v)}
           placeholder={t("searchPlaceholder")}
         />
       </div>
@@ -189,7 +188,7 @@ export function FAQPageContent({
 
       {/* Main Content Grid */}
       <div
-        className={`grid grid-cols-1 lg:grid-cols-12 ${THEME_CONSTANTS.spacing.gap.xl}`}
+        className={`grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-12 2xl:grid-cols-12 ${THEME_CONSTANTS.spacing.gap.xl}`}
       >
         {/* Sidebar (desktop only — 30% width) */}
         <div className="hidden lg:block lg:col-span-4 xl:col-span-3">

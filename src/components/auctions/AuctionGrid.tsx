@@ -23,6 +23,7 @@ type AuctionItem = Pick<
   | "currentBid"
   | "bidCount"
   | "featured"
+  | "status"
 >;
 
 interface AuctionGridProps {

@@ -15,8 +15,8 @@ import {
   Text,
   Alert,
 } from "@/components";
-import { CategorySelectorCreate } from "@/features/categories";
-import { AddressSelectorCreate } from "@/features/user";
+import { CategorySelectorCreate } from "@/components";
+import { AddressSelectorCreate } from "@/components";
 import { useMediaUpload } from "@/hooks";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
@@ -389,6 +389,97 @@ export function ProductForm({
               />
             </>
           )}
+        </>
+      )}
+
+      {/* Pre-order Settings */}
+      <Heading level={4} className={spacing.margin.top.md}>
+        {t("sectionPreOrderSettings")}
+      </Heading>
+
+      <Checkbox
+        label={t("formIsPreOrder")}
+        checked={!!product.isPreOrder}
+        onChange={(e) => update({ isPreOrder: e.target.checked })}
+        disabled={isReadonly}
+      />
+
+      {product.isPreOrder && (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              name="preOrderDeliveryDate"
+              label={t("formPreOrderDeliveryDate")}
+              type="datetime-local"
+              value={(() => {
+                const d = resolveDate(product.preOrderDeliveryDate);
+                if (!d) return "";
+                // Use YYYY-MM-DDTHH:MM format for datetime-local input
+                return d.toISOString().slice(0, 16);
+              })()}
+              onChange={(value) => update({ preOrderDeliveryDate: value })}
+              disabled={isReadonly}
+              helpText={t("formPreOrderDeliveryDateHelp")}
+            />
+            <FormField
+              name="preOrderDepositPercent"
+              label={t("formPreOrderDepositPercent")}
+              type="number"
+              value={String(product.preOrderDepositPercent ?? "")}
+              onChange={(value) =>
+                update({ preOrderDepositPercent: Number(value) || undefined })
+              }
+              disabled={isReadonly}
+              placeholder="20"
+              helpText={t("formPreOrderDepositPercentHelp")}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              name="preOrderMaxQuantity"
+              label={t("formPreOrderMaxQuantity")}
+              type="number"
+              value={String(product.preOrderMaxQuantity ?? "")}
+              onChange={(value) =>
+                update({ preOrderMaxQuantity: Number(value) || undefined })
+              }
+              disabled={isReadonly}
+              placeholder="0"
+              helpText={t("formPreOrderMaxQuantityHelp")}
+            />
+            <FormField
+              name="preOrderProductionStatus"
+              label={t("formPreOrderProductionStatus")}
+              type="select"
+              value={product.preOrderProductionStatus ?? "upcoming"}
+              onChange={(value) =>
+                update({
+                  preOrderProductionStatus:
+                    value as AdminProduct["preOrderProductionStatus"],
+                })
+              }
+              disabled={isReadonly}
+              options={[
+                { value: "upcoming", label: t("formPreOrderStatusUpcoming") },
+                {
+                  value: "in_production",
+                  label: t("formPreOrderStatusInProduction"),
+                },
+                {
+                  value: "ready_to_ship",
+                  label: t("formPreOrderStatusReadyToShip"),
+                },
+              ]}
+            />
+          </div>
+
+          <Checkbox
+            label={t("formPreOrderCancellable")}
+            checked={!!product.preOrderCancellable}
+            onChange={(e) => update({ preOrderCancellable: e.target.checked })}
+            disabled={isReadonly}
+          />
         </>
       )}
 

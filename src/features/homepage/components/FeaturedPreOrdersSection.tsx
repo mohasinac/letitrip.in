@@ -1,0 +1,40 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import { useFeaturedPreOrders } from "@/hooks";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import type { ProductDocument } from "@/db/schema";
+import { PreOrderCard } from "@/components";
+import { SectionCarousel } from "./SectionCarousel";
+
+export function FeaturedPreOrdersSection() {
+  const t = useTranslations("homepage");
+  const tActions = useTranslations("actions");
+  const { data, isLoading } = useFeaturedPreOrders();
+
+  const preOrders: ProductDocument[] = Array.isArray(data)
+    ? data
+    : ((data as unknown as { items?: ProductDocument[] })?.items ?? []);
+
+  // Hide section entirely when there are no pre-orders and not loading
+  if (!isLoading && preOrders.length === 0) return null;
+
+  return (
+    <SectionCarousel
+      title={t("featuredPreOrders")}
+      description={t("preOrdersSubtitle")}
+      viewMoreHref={ROUTES.PUBLIC.PRE_ORDERS}
+      viewMoreLabel={tActions("viewAllArrow")}
+      items={preOrders}
+      renderItem={(preOrder) => <PreOrderCard product={preOrder} />}
+      perView={{ base: 2, sm: 3, md: 4, xl: 5 }}
+      gap={12}
+      autoScroll
+      autoScrollInterval={4000}
+      keyExtractor={(p) => p.id}
+      isLoading={isLoading}
+      skeletonCount={5}
+      className={THEME_CONSTANTS.themed.bgPrimary}
+    />
+  );
+}

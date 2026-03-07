@@ -9,7 +9,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useAdminCategories } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
@@ -85,6 +85,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
       parentId: null,
       enabled: true,
       showOnHomepage: false,
+      isBrand: false,
       order: 0,
       display: { showInMenu: true, showInFooter: false },
     };
@@ -187,6 +188,12 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
         });
       }
       await refetch();
+      showToast(
+        drawerMode === "create"
+          ? SUCCESS_MESSAGES.CATEGORY.CREATED
+          : SUCCESS_MESSAGES.CATEGORY.UPDATED,
+        "success",
+      );
       handleCloseDrawer();
     } catch {
       showToast(t("saveFailed"), "error");
@@ -198,6 +205,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
     try {
       await deleteMutation.mutate(editingCategory.id);
       await refetch();
+      showToast(SUCCESS_MESSAGES.CATEGORY.DELETED, "success");
       handleCloseDrawer();
     } catch {
       showToast(t("deleteFailed"), "error");

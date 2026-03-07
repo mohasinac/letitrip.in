@@ -78,13 +78,13 @@ export default async function TrackOrderPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
             <TextLink
               href={ROUTES.AUTH.LOGIN}
-              className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-lg transition-colors"
+              className={`inline-${flex.center} gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-lg transition-colors`}
             >
               {t("signIn")}
             </TextLink>
             <TextLink
               href={ROUTES.USER.ORDERS}
-              className={`inline-flex items-center justify-center gap-2 ${themed.bgPrimary} border ${themed.border} ${themed.textPrimary} font-medium px-6 py-3 rounded-lg hover:opacity-80 transition-opacity`}
+              className={`inline-${flex.center} gap-2 ${themed.bgPrimary} border ${themed.border} ${themed.textPrimary} font-medium px-6 py-3 rounded-lg hover:opacity-80 transition-opacity`}
             >
               {t("viewOrders")}
             </TextLink>

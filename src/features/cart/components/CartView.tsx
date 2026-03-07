@@ -40,8 +40,8 @@ function CartPageSkeleton() {
       <div
         className={`h-8 w-48 rounded-lg mb-8 ${THEME_CONSTANTS.themed.bgSecondary}`}
       />
-      <div className="lg:grid lg:grid-cols-3 lg:gap-8">
-        <div className="lg:col-span-2 space-y-4">
+      <div className="lg:grid lg:grid-cols-3 lg:gap-8 xl:grid-cols-3 2xl:grid-cols-3">
+        <div className={`lg:col-span-2 ${spacing.stack}`}>
           {[1, 2, 3].map((i) => (
             <div
               key={i}
@@ -87,6 +87,7 @@ export function CartView() {
     mutationFn: ({ itemId, quantity }) =>
       cartService.updateItem(itemId, { quantity }),
     onSuccess: () => {
+      showSuccess(SUCCESS_MESSAGES.CART.ITEM_UPDATED);
       invalidateQueries(["cart"]);
       setUpdatingItemId(null);
     },
@@ -173,7 +174,7 @@ export function CartView() {
         <Heading level={1} className="mb-8">
           {t("title")}
         </Heading>
-        <div className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start">
+        <div className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start xl:grid-cols-3 2xl:grid-cols-3">
           {/* Items column */}
           <div className="lg:col-span-2 space-y-3">
             {guestItems.map((item) => (
@@ -241,7 +242,7 @@ export function CartView() {
         {t("title")}
       </Heading>
 
-      <div className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start">
+      <div className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start xl:grid-cols-3 2xl:grid-cols-3">
         {/* Left column: cart items */}
         <div className="lg:col-span-2">
           <CartItemList

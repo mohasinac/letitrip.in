@@ -95,7 +95,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                 ))}
               </div>
             </div>
-            <div className="animate-pulse space-y-4">
+            <div className={`animate-pulse ${spacing.stack}`}>
               <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
               <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl w-1/3" />

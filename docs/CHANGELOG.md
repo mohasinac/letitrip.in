@@ -7,6 +7,84 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Style: Eliminate All STYL-003 Violations (THEME_CONSTANTS)
+
+### Changed
+
+- **66 files across `src/app/`, `src/components/`, `src/features/`** — Eliminated all 143 STYL-003 violations. Every raw Tailwind string covered by THEME_CONSTANTS was replaced with the corresponding token. Files missing the import had it added; files with incomplete destructures had missing keys added.
+  - `flex items-center justify-center` → `${flex.center}`
+  - `flex items-center justify-between` → `${flex.between}`
+  - `space-y-4` → `${spacing.stack}`
+  - `border-gray-200 dark:border-gray-700` → `${themed.border}`
+  - `bg-gray-50 dark:bg-gray-800/50` → `${themed.bgSecondary}`
+  - `bg-white dark:bg-gray-900` → `${themed.bgPrimary}`
+  - `text-gray-600 dark:text-gray-400` → `${themed.textSecondary}`
+  - `max-w-7xl mx-auto px-4` → `${page.container["2xl"]}`
+
+### Fixed
+
+- **`src/features/cart/components/CheckoutView.tsx`** — Pre-existing JSX syntax error: `{/* Main content */}}` (double closing brace) corrected to `{/* Main content */}`.
+
+---
+
+## [Unreleased] — Bug Fixes: RTDB Cleanup, Payment Integrity, Email Total, Pre-Order Components
+
+### Fixed
+
+- **`src/hooks/useRealtimeBids.ts`** — Cleanup used `off(bidRef)` which removes **all** listeners on the RTDB path (including from other mounted components watching the same auction). Changed to call the `unsubscribe` function returned by `onValue`, which removes only this hook's listener. Removed now-unused `off` import.
+- **`src/hooks/useRealtimeEvent.ts`** — Same `off(dbRef)` pattern in the `cleanup` callback. Added `unsubscribeRef` (`useRef<(() => void) | null>(null)`) to store the return value of `onValue`; cleanup now calls `unsubscribeRef.current?.()` and sets it to `null`. Removed `off` import. Applies to all bridges built on this hook (`useAuthEvent`, `usePaymentEvent`).
+- **`src/app/api/payment/verify/route.ts`** — **Critical security fix**: the `/api/payment/create-order` route accepts a client-provided `amount`, making it possible to create a Razorpay order for ₹1, pay it, and still have orders fulfilled at full cart prices. Added server-side amount validation after product pre-checks: the Razorpay order is fetched via `fetchRazorpayOrder`, and the paid amount is compared against the server-calculated cart subtotal + platform fee (₹1 rounding tolerance). Mismatches are rejected with `PAYMENT_FAILED`.
+- **`src/lib/payment/razorpay.ts`** — Added `fetchRazorpayOrder(orderId)` helper (uses `razorpay.orders.fetch`) required by the verify-route amount check above.
+- **`src/app/api/checkout/route.ts`** — COD/UPI confirmation email was sending `totalPrice: groupTotal` (subtotal before shipping), while the order document stored `totalPrice: orderTotal` (subtotal + shipping fee). Email now correctly uses `totalPrice: orderTotal` so the amount shown to the user matches the amount recorded on the order.
+- **`src/features/products/components/PreOrderDetailView.tsx`** — Multiple TypeScript errors in newly created file:
+  - `Button asChild` is not a valid prop on the project's `Button` component — replaced both `asChild` usages with `useRouter` navigation (`onClick={() => router.push(...)}`); added `useRouter` import from `next/navigation`.
+  - `<ProductImageGallery product={product!} />` — component expects `mainImage`, `images`, `video`, `title`, `slug` props individually; fixed to pass them from the product object.
+  - `<ProductFeatureBadges product={product} />` — component expects individual feature flags (`featured`, `condition`, `isAuction`); fixed to pass them explicitly.
+  - `<Badge size="sm">` — `Badge` has no `size` prop; removed from both badge usages.
+  - `STATUS_COLORS` type included `"neutral"`, which is not a valid `Badge` variant; changed to `"default"`.
+  - Three `<AccordionItem>` usages were missing the required `value` prop; added `value="specifications"`, `value="features"`, `value="delivery-returns"`.
+- **`src/components/pre-orders/PreOrderGrid.tsx`** — `UI_LABELS.empty.noItems` (wrong case + key) corrected to `UI_LABELS.EMPTY.NO_ITEMS`.
+
+---
+
+## [Unreleased] — Seed Data: Reliable Media URLs + Review Media
+
+### Changed
+
+- **`src/db/seed-data/products-seed-data.ts`** — Replaced all Unsplash image/thumbnail URLs across all 50 products with deterministic `picsum.photos/seed/{keyword}/{w}/{h}` URLs. Covers `mainImage`, `images` arrays, and `video.thumbnailUrl` for the 4 products that include video (PS5 Slim, Sony Alpha 7 IV, TAG Heuer Carrera, Bose 700). Format also consolidated from multi-line to single-line `mainImage`.
+- **`src/db/seed-data/reviews-seed-data.ts`** — Added `userAvatar` (DiceBear avataaars SVG) to all 29 reviews. Added `images` arrays throughout (product photos via `picsum.photos` for high-value reviews; empty arrays elsewhere). Added `video` field (Google TV sample CDN + picsum thumbnail, 15s) to the featured iPhone 15 review. Added `featured: true` to 7 high-impact reviews (iPhone 15 Pro Max John, Samsung Galaxy S24 Ultra Jane, MacBook Pro John, Dell XPS 15 John, Vintage Canon Mike, Embroidered Anarkali Vikram, Pressure Cooker Jane).
+
+---
+
+## [Unreleased] — Store Entity Separated from Seller User
+
+### Added
+
+- **`src/db/schema/stores.ts`** — New `StoreDocument` schema for the `stores` Firestore collection. Doc ID = `storeSlug`. Fields: `ownerId`, `storeSlug`, `storeName`, `storeDescription`, `storeCategory`, `storeLogoURL`, `storeBannerURL`, `bio`, `website`, `location`, `socialLinks`, `returnPolicy`, `shippingPolicy`, `isVacationMode`, `vacationMessage`, `isPublic`, `status` (`"pending" | "active" | "suspended" | "rejected"`), `stats`.
+- **`src/repositories/store.repository.ts`** — New `StoreRepository` with `create()`, `findBySlug()`, `findByOwnerId()`, `updateStore()`, `setStatus()`, `listStores()` (active + public, for public pages), `listAllStores()` (admin, unfiltered).
+- **`src/features/seller/components/SellerStoreSetupView.tsx`** — New onboarding component shown to sellers who have not yet created their store. Calls `POST /api/seller/store` with `storeName`, `storeDescription`, `storeCategory`.
+- `messages/en.json` + `messages/hi.json` — Added `sellerStore` keys: `setupTitle`, `setupSubtitle`, `setupSubmit`, `setupSubmitting`, `setupFailed`, `setupPendingBanner`, `storeStatusLabel`, `statusPending`, `statusActive`, `statusSuspended`, `statusRejected`.
+
+### Changed
+
+- **`src/db/schema/users.ts`** — Added `storeId?: string`, `storeSlug?: string`, and `storeStatus?: "pending" | "approved" | "rejected"` to `UserDocument`.
+- **`src/app/api/seller/store/route.ts`** — GET now reads via `storeRepository.findByOwnerId()`; POST (new) creates the store document and mirrors `storeId / storeSlug / storeStatus` onto the user record; PATCH updates via `storeRepository.updateStore()` with `StoreDocument` field names (`returnPolicy`, `shippingPolicy`, not `storeReturnPolicy`).
+- **`src/app/api/stores/route.ts`** — Public listing now calls `storeRepository.listStores()` (filters `status === "active" && isPublic === true`).
+- **`src/app/api/stores/[storeSlug]/route.ts`** — Detail route uses `storeRepository.findBySlug()` and checks `status !== "active"`.
+- **`src/app/api/stores/[storeSlug]/products/route.ts`**, **`auctions/route.ts`**, **`reviews/route.ts`** — All three use `storeRepository.findBySlug()` then query products/reviews by `store.ownerId`.
+- **`src/app/api/admin/stores/route.ts`** — Admin listing uses `storeRepository.listAllStores()`; filter param renamed from `storeStatus` to `status`.
+- **`src/app/api/admin/stores/[uid]/route.ts`** — Approve/reject now updates both `userRepository.updateStoreApproval()` (user approval field) and `storeRepository.setStatus()` (store document status).
+- **`src/services/seller.service.ts`** — Added `createStore` method: `apiClient.post(API_ENDPOINTS.SELLER.STORE, data)`.
+- **`src/features/seller/hooks/useSellerStore.ts`** — Rewritten to work with `StoreDocument` shape; exposes `store`, `hasStore`, `storeSlug`, `storeStatus`, `isLoading`, `isCreating`, `isSaving`, `createStore`, `updateStore`, `refetch`.
+- **`src/features/seller/components/SellerStoreView.tsx`** — Rewritten: shows `SellerStoreSetupView` when `store === null`; edit form uses `StoreDocument` fields directly (no `publicProfile` nesting); status badge reflects `store.status`.
+- **`src/features/stores/types/index.ts`** — `StoreListItem` updated: `id`, `storeSlug`, `ownerId`, `storeName` are primary fields; stats flattened; deprecated `uid`, `displayName`, `photoURL` kept for `StoreCard` backwards compat.
+- **`src/features/stores/components/StoreCard.tsx`** — `keyExtractor`/`onSelect` updated to use `store.ownerId` instead of deprecated `store.uid`.
+- **`src/features/homepage/components/FeaturedStoresSection.tsx`** — `keyExtractor` updated to use `s.id` (required) instead of `s.uid` (deprecated optional).
+- **`src/features/admin/components/SiteCommissionsForm.tsx`** — `hint=` prop (non-existent) corrected to `helpText=` on all `FormField` usages.
+- **`src/db/seed-data/site-settings-seed-data.ts`** + **`scripts/seed-data/site-settings-seed-data.ts`** — Added missing `codEnabled: false` to payment config.
+
+---
+
 ## [Unreleased] — MediaLightbox: Full-Screen Image Viewer with Zoom & Pan
 
 ### Added

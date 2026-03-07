@@ -48,8 +48,13 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     },
     ref,
   ) {
-    const { input, themed } = THEME_CONSTANTS;
-    const charCount = typeof value === "string" ? value.length : typeof defaultValue === "string" ? defaultValue.length : 0;
+    const { input, themed, flex } = THEME_CONSTANTS;
+    const charCount =
+      typeof value === "string"
+        ? value.length
+        : typeof defaultValue === "string"
+          ? defaultValue.length
+          : 0;
 
     return (
       <div className="w-full">
@@ -70,13 +75,18 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
         />
 
-        <div className="flex items-center justify-between mt-1.5">
+        <div className={`${flex.between} mt-1.5`}>
           <div className="flex-1">
             {error && (
               <Text
                 className={`text-sm ${themed.textError} flex items-center gap-1`}
               >
-                <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <svg
+                  className="w-4 h-4 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                >
                   <path
                     fillRule="evenodd"
                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"

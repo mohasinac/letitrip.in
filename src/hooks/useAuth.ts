@@ -25,11 +25,12 @@ import { authService, authEventService } from "@/services";
 import { ERROR_MESSAGES } from "@/constants";
 import { NotFoundError } from "@/lib/errors";
 import { useRouter } from "@/i18n/navigation";
+import { useSession } from "@/contexts";
 import {
   resetPassword as firebaseResetPassword,
   applyEmailVerificationCode,
   getCurrentUser,
-  signInWithEmail,
+  syncFirebaseAuth,
 } from "@/lib/firebase/auth-helpers";
 
 // ============================================================================
@@ -45,6 +46,7 @@ interface RegisterData {
   email: string;
   password: string;
   displayName?: string;
+  acceptTerms: boolean;
 }
 
 interface ChangePasswordData {
@@ -90,8 +92,8 @@ export function useLogin(options?: {
         password: credentials.password,
       });
 
-      // 2. Sync client-side Firebase SDK so onAuthStateChanged fires
-      await signInWithEmail(credentials.email.trim(), credentials.password);
+      // 2. Sync client-side Firebase SDK so onAuthStateChanged fires (without creating a second session)
+      await syncFirebaseAuth(credentials.email.trim(), credentials.password);
 
       return { success: true };
     },
@@ -116,6 +118,7 @@ export function useGoogleLogin(options?: {
 }) {
   const router = useRouter();
   const authEvent = useAuthEvent();
+  const { refreshUser } = useSession();
   const [initiating, setInitiating] = useState(false);
 
   // Stable refs so the effect closure never goes stale
@@ -131,7 +134,12 @@ export function useGoogleLogin(options?: {
   useEffect(() => {
     if (authEvent.status === "success") {
       router.refresh();
-      onSuccessRef.current?.(authEvent.data);
+      // Hydrate SessionContext from the server session cookie before navigating.
+      // Google OAuth sets cookies server-side without signing in the Firebase client
+      // SDK, so we must explicitly refresh the user profile here.
+      refreshUser().then(() => {
+        onSuccessRef.current?.(authEvent.data);
+      });
     } else if (
       authEvent.status === "failed" ||
       authEvent.status === "timeout"
@@ -200,7 +208,13 @@ export function useRegister(options?: {
         email: data.email.trim(),
         password: data.password,
         displayName: data.displayName?.trim() || "",
+        acceptTerms: data.acceptTerms,
       });
+
+      // Sync Firebase client SDK so onAuthStateChanged fires in SessionContext.
+      // The server already created the session cookie — syncFirebaseAuth only
+      // signs in the client SDK without creating a duplicate session.
+      await syncFirebaseAuth(data.email.trim(), data.password);
 
       return { success: true, ...response };
     },

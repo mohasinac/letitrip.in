@@ -28,8 +28,24 @@ function getTodayIST(): string {
 export const POST = createApiHandler({
   auth: true,
   handler: async ({ user }) => {
-    const dateStr = getTodayIST();
+    // 1. Per-user 15-minute cooldown — checked via Firestore so it persists across
+    //    devices and server restarts (in-memory rate limiting is insufficient here).
+    const cooldown = await smsCounterRepository.checkAndSetUserCooldown(
+      user!.uid,
+    );
+    if (!cooldown.allowed) {
+      const minutesLeft = Math.ceil(cooldown.retryAfterSeconds / 60);
+      serverLogger.warn(
+        `OTP cooldown active for uid ${user!.uid} — retry in ${cooldown.retryAfterSeconds}s`,
+      );
+      throw new ApiError(
+        429,
+        `Please wait ${minutesLeft} minute${minutesLeft !== 1 ? "s" : ""} before requesting another OTP.`,
+      );
+    }
 
+    // 2. Daily global cap — protects the Firebase free-tier SMS quota (1 000/day IST).
+    const dateStr = getTodayIST();
     const { allowed, count } =
       await smsCounterRepository.checkAndIncrement(dateStr);
 

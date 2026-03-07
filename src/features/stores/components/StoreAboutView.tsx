@@ -2,7 +2,14 @@
 
 import { Globe, MapPin, Store } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { EmptyState, Spinner, Heading, Text, Card, TextLink } from "@/components";
+import {
+  EmptyState,
+  Spinner,
+  Heading,
+  Text,
+  Card,
+  TextLink,
+} from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useStoreBySlug } from "../hooks";
@@ -36,7 +43,7 @@ export function StoreAboutView({ storeSlug }: StoreAboutViewProps) {
 
   return (
     <div className={`${spacing.stack} max-w-2xl`}>
-      <Card className="p-6 space-y-4">
+      <Card className={`p-6 ${spacing.stack}`}>
         {/* Store name + description */}
         <div>
           <Heading level={2}>{store.storeName || store.displayName}</Heading>
@@ -86,10 +93,7 @@ export function StoreAboutView({ storeSlug }: StoreAboutViewProps) {
                 {t("about.website")}
               </dt>
               <dd>
-                <TextLink
-                  href={store.website}
-                  className="break-all"
-                >
+                <TextLink href={store.website} className="break-all">
                   {store.website}
                 </TextLink>
               </dd>

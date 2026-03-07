@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-03-07T15:33:37.099Z",
+  "scannedFiles": 1522,
+  "totalViolations": 0,
+  "autoFixableCount": 0,
+  "summary": {
+    "byCode": [],
+    "bySeverity": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "byCategory": [],
+    "topFiles": []
+  },
+  "violations": []
+}

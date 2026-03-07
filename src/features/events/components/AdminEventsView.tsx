@@ -29,7 +29,9 @@ import {
   ConfirmDeleteModal,
 } from "@/components";
 import { formatDate } from "@/utils";
-import { ROUTES } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
+
+const { flex } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
 import { useUrlTable, useMessage, usePendingTable } from "@/hooks";
 import {
@@ -261,7 +263,7 @@ export function AdminEventsView() {
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
           showViewToggle
-          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(event) => (
             <Card className="overflow-hidden cursor-pointer">
@@ -278,7 +280,7 @@ export function AdminEventsView() {
                 <Text weight="medium" size="sm" className="line-clamp-2">
                   {event.title}
                 </Text>
-                <div className="flex items-center justify-between">
+                <div className={`${flex.between}`}>
                   <Badge>{event.type}</Badge>
                   <StatusBadge status={event.status as any} />
                 </div>

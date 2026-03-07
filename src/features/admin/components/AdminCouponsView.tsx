@@ -12,7 +12,14 @@ import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
 import { useAdminCoupons } from "@/features/admin/hooks";
-import { ROUTES, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import {
+  ROUTES,
+  ERROR_MESSAGES,
+  SUCCESS_MESSAGES,
+  THEME_CONSTANTS,
+} from "@/constants";
+
+const { flex } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
 import {
   Badge,
@@ -232,7 +239,7 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
           keyExtractor={(c: CouponDocument) => c.id}
           externalPagination
           showViewToggle
-          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(coupon) => (
             <Card className="p-4 space-y-2">
@@ -240,7 +247,7 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
                 {coupon.code}
               </Text>
               <Caption className="truncate">{coupon.name}</Caption>
-              <div className="flex items-center justify-between">
+              <div className={`${flex.between}`}>
                 <Badge>{coupon.type}</Badge>
                 <Caption>
                   {t("usageCount", {

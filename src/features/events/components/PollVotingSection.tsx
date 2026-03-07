@@ -1,7 +1,9 @@
 ﻿"use client";
 
 import { useState, useCallback } from "react";
-import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
+
+const { spacing, themed } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
 import { useMessage, useAuth } from "@/hooks";
 import { Button, Checkbox, Label, Span, Text, Textarea } from "@/components";
@@ -60,7 +62,7 @@ export function PollVotingSection({
 
   if (voted) {
     return (
-      <div className="space-y-4">
+      <div className={spacing.stack}>
         <Text
           size="sm"
           weight="medium"
@@ -78,7 +80,7 @@ export function PollVotingSection({
                 className={`flex items-center gap-3 p-3 rounded-lg border ${
                   isSelected
                     ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
-                    : "border-gray-200 dark:border-gray-700"
+                    : themed.border
                 }`}
               >
                 <Span className="text-sm flex-1">{opt.label}</Span>
@@ -96,7 +98,7 @@ export function PollVotingSection({
   }
 
   return (
-    <div className="space-y-4">
+    <div className={spacing.stack}>
       <Text size="sm" variant="secondary">
         {pollConfig.allowMultiSelect
           ? "Select all that apply"
@@ -120,7 +122,7 @@ export function PollVotingSection({
               className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
                 isChecked
                   ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
-                  : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
+                  : `${themed.border} hover:border-gray-300`
               }`}
             >
               <Checkbox

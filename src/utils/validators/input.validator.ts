@@ -93,42 +93,6 @@ export function isNumeric(value: string): boolean {
 }
 
 /**
- * Validates that a string contains only alphabetic characters
- *
- * @param value - The string to validate
- * @returns True if the string contains only letters (a-z, A-Z)
- *
- * @example
- * ```typescript
- * console.log(isAlphabetic('Hello')); // true
- * console.log(isAlphabetic('Hello123')); // false
- * ```
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function isAlphabetic(value: string): boolean {
-  return /^[a-zA-Z]+$/.test(value);
-}
-
-/**
- * Validates that a string contains only alphanumeric characters
- *
- * @param value - The string to validate
- * @returns True if the string contains only letters and numbers
- *
- * @example
- * ```typescript
- * console.log(isAlphanumeric('Hello123')); // true
- * console.log(isAlphanumeric('Hello-123')); // false
- * ```
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function isAlphanumeric(value: string): boolean {
-  return /^[a-zA-Z0-9]+$/.test(value);
-}
-
-/**
  * Validates that a number falls within a specified range
  *
  * @param value - The number to validate
@@ -178,76 +142,4 @@ export function matchesPattern(value: string, pattern: RegExp): boolean {
  */
 export function isInList<T>(value: T, list: T[]): boolean {
   return list.includes(value);
-}
-
-/**
- * Validates a credit card number using the Luhn algorithm
- *
- * @param cardNumber - The credit card number to validate (with or without spaces/dashes)
- * @returns True if the credit card number is valid according to Luhn algorithm
- *
- * @example
- * ```typescript
- * console.log(isValidCreditCard('4532015112830366')); // true (valid Visa)
- * console.log(isValidCreditCard('1234567890123456')); // false
- * ```
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function isValidCreditCard(cardNumber: string): boolean {
-  const cleaned = cardNumber.replace(/\D/g, "");
-
-  if (cleaned.length < 13 || cleaned.length > 19) {
-    return false;
-  }
-
-  let sum = 0;
-  let isEven = false;
-
-  for (let i = cleaned.length - 1; i >= 0; i--) {
-    let digit = parseInt(cleaned[i], 10);
-
-    if (isEven) {
-      digit *= 2;
-      if (digit > 9) {
-        digit -= 9;
-      }
-    }
-
-    sum += digit;
-    isEven = !isEven;
-  }
-
-  return sum % 10 === 0;
-}
-
-/**
- * Validates a postal/zip code for different countries
- *
- * @param code - The postal code to validate
- * @param countryCode - The country code ('US', 'CA', 'UK', 'IN') (default: 'US')
- * @returns True if the postal code matches the country's format
- *
- * @example
- * ```typescript
- * console.log(isValidPostalCode('12345', 'US')); // true
- * console.log(isValidPostalCode('M5H 2N2', 'CA')); // true
- * console.log(isValidPostalCode('110001', 'IN')); // true
- * ```
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function isValidPostalCode(
-  code: string,
-  countryCode: string = "US",
-): boolean {
-  const patterns: Record<string, RegExp> = {
-    US: /^\d{5}(-\d{4})?$/,
-    CA: /^[A-Z]\d[A-Z] \d[A-Z]\d$/,
-    UK: /^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/,
-    IN: /^\d{6}$/,
-  };
-
-  const pattern = patterns[countryCode.toUpperCase()];
-  return pattern ? pattern.test(code) : true;
 }

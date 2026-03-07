@@ -44,7 +44,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
         <NavItem
           href={SITE_CONFIG.nav.home}
           label={t("home")}
-          icon={<Home className="w-5 h-5" />}
+          icon={<Home className="w-5 h-5 text-blue-500 dark:text-blue-400" />}
           isActive={pathname === SITE_CONFIG.nav.home}
           variant="vertical"
         />
@@ -55,7 +55,9 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
         <NavItem
           href={SITE_CONFIG.nav.products}
           label={t("products")}
-          icon={<ShoppingBag className="w-5 h-5" />}
+          icon={
+            <ShoppingBag className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
+          }
           isActive={pathname === SITE_CONFIG.nav.products}
           variant="vertical"
         />
@@ -71,7 +73,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-5 w-5 text-violet-500 dark:text-violet-400"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -101,7 +103,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-5 w-5 text-orange-500 dark:text-orange-400"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -162,7 +164,7 @@ export default function BottomNavbar({ onSearchToggle }: BottomNavbarProps) {
             icon={
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
+                className="h-5 w-5 text-rose-500 dark:text-rose-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

@@ -14,6 +14,8 @@ import { useUrlTable, usePendingTable } from "@/hooks";
 import { useAdminUsers } from "@/features/admin/hooks";
 import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
+
+const { flex } = THEME_CONSTANTS;
 import {
   AdminPageHeader,
   Button,
@@ -290,7 +292,7 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
               externalPagination
               showViewToggle
               viewMode={
-                (table.get("view") || "grid") as "table" | "grid" | "list"
+                (table.get("view") || "table") as "table" | "grid" | "list"
               }
               onViewModeChange={(mode) => table.set("view", mode)}
               mobileCardRender={(user) => (
@@ -299,7 +301,9 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
                   onClick={() => handleViewUser(user)}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center flex-shrink-0">
+                    <div
+                      className={`w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900 ${flex.center} flex-shrink-0`}
+                    >
                       <Span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
                         {(user.displayName ??
                           user.email ??
@@ -315,7 +319,7 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
                       </Caption>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className={`${flex.between}`}>
                     <RoleBadge role={user.role} />
                     <StatusBadge
                       status={user.disabled ? "inactive" : "active"}

@@ -14,9 +14,10 @@ import {
   MediaImage,
   Ol,
   Li,
+  Textarea,
 } from "@/components";
 
-const { themed, flex } = THEME_CONSTANTS;
+const { themed, flex, spacing } = THEME_CONSTANTS;
 
 export type CheckoutPaymentMethod = "cod" | "online" | "upi_manual";
 
@@ -29,6 +30,15 @@ interface CheckoutOrderReviewProps {
   onChangeAddress: () => void;
   /** Business UPI Virtual Payment Address from site settings */
   upiVpa?: string;
+  /** Platform fee (e.g. Razorpay 5%) — read from create-order response */
+  platformFee?: number;
+  /** Shipping fee for this checkout */
+  shippingFee?: number;
+  /** COD deposit amount (10% of subtotal) */
+  depositAmount?: number;
+  /** Notes for the seller */
+  notes: string;
+  onNotesChange: (notes: string) => void;
 }
 
 export function CheckoutOrderReview({
@@ -39,6 +49,11 @@ export function CheckoutOrderReview({
   onPaymentMethodChange,
   onChangeAddress,
   upiVpa,
+  platformFee = 0,
+  shippingFee = 0,
+  depositAmount,
+  notes,
+  onNotesChange,
 }: CheckoutOrderReviewProps) {
   const t = useTranslations("checkout");
   const tCart = useTranslations("cart");
@@ -238,7 +253,7 @@ export function CheckoutOrderReview({
               {/* Expanded UPI instructions panel */}
               {paymentMethod === "upi_manual" && (
                 <div
-                  className={`px-4 py-4 rounded-b-xl border-2 border-t-0 border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 space-y-4`}
+                  className={`px-4 py-4 rounded-b-xl border-2 border-t-0 border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 ${spacing.stack}`}
                 >
                   {/* UPI ID display + copy */}
                   <div
@@ -276,7 +291,7 @@ export function CheckoutOrderReview({
                       ].map((step, i) => (
                         <Li key={i} className="flex items-start gap-2">
                           <Span
-                            className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold mt-0.5"
+                            className={`flex-shrink-0 w-5 h-5 rounded-full bg-indigo-600 text-white text-xs ${flex.center} font-bold mt-0.5`}
                             variant="inherit"
                           >
                             {i + 1}
@@ -301,14 +316,103 @@ export function CheckoutOrderReview({
         </div>
       </div>
 
-      {/* Total */}
-      <div className={`${flex.between} pt-4 border-t ${themed.border}`}>
-        <Span weight="semibold" variant="primary">
-          {t("orderTotal")}
-        </Span>
-        <Span className="text-xl font-bold" variant="primary">
-          {formatCurrency(subtotal)}
-        </Span>
+      {/* Commission info banner */}
+      <div
+        className={`p-3 rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800`}
+      >
+        <Text size="xs" className="text-blue-700 dark:text-blue-300">
+          ℹ️ {t("commissionInfoNote")}
+        </Text>
+      </div>
+
+      {/* Order notes per seller */}
+      <div>
+        <Heading level={3} className="font-semibold mb-2">
+          {t("sellerNotesLabel")}
+        </Heading>
+        <Textarea
+          name="sellerNotes"
+          value={notes}
+          onChange={(e) => onNotesChange(e.target.value)}
+          placeholder={t("sellerNotesPlaceholder")}
+          rows={2}
+          maxLength={500}
+          className={`w-full text-sm rounded-xl border px-3 py-2 ${themed.border} ${themed.bgPrimary}`}
+        />
+        <Caption className="mt-1">{t("sellerNotesHint")}</Caption>
+      </div>
+
+      {/* Order summary with fee breakdown */}
+      <div className={`space-y-2 pt-4 border-t ${themed.border}`}>
+        <div className={flex.between}>
+          <Text size="sm" variant="secondary">
+            {t("subtotal")}
+          </Text>
+          <Text size="sm">{formatCurrency(subtotal)}</Text>
+        </div>
+        {shippingFee > 0 && (
+          <div className={flex.between}>
+            <Text size="sm" variant="secondary">
+              {t("shippingFee")}
+            </Text>
+            <Text size="sm">{formatCurrency(shippingFee)}</Text>
+          </div>
+        )}
+        {paymentMethod === "online" && platformFee > 0 && (
+          <div className={flex.between}>
+            <div>
+              <Text size="sm" variant="secondary">
+                {t("razorpayFeeLabel")}
+              </Text>
+              <Caption className="text-amber-600 dark:text-amber-400">
+                {t("razorpayFeeNote")}
+              </Caption>
+            </div>
+            <Text size="sm" className="text-amber-600 dark:text-amber-400">
+              +{formatCurrency(platformFee)}
+            </Text>
+          </div>
+        )}
+        {(paymentMethod === "cod" || paymentMethod === "upi_manual") &&
+          depositAmount != null && (
+            <div className="space-y-1">
+              <div className={flex.between}>
+                <Text size="sm" variant="secondary">
+                  {t("codDepositLabel")}
+                </Text>
+                <Text
+                  size="sm"
+                  className="text-orange-600 dark:text-orange-400"
+                >
+                  {formatCurrency(depositAmount)} {t("codDepositNow")}
+                </Text>
+              </div>
+              <div className={flex.between}>
+                <Text size="sm" variant="secondary">
+                  {t("codRemainingLabel")}
+                </Text>
+                <Text size="sm">
+                  {formatCurrency(subtotal + shippingFee - depositAmount)}{" "}
+                  {t("codRemainingOnDelivery")}
+                </Text>
+              </div>
+              <Text size="xs" className="text-amber-600 dark:text-amber-400">
+                ⚠ {t("codDepositNote")}
+              </Text>
+            </div>
+          )}
+        <div className={`${flex.between} pt-2 border-t ${themed.border}`}>
+          <Span weight="semibold" variant="primary">
+            {t("orderTotal")}
+          </Span>
+          <Span className="text-xl font-bold" variant="primary">
+            {formatCurrency(
+              subtotal +
+                shippingFee +
+                (paymentMethod === "online" ? platformFee : 0),
+            )}
+          </Span>
+        </div>
       </div>
     </div>
   );

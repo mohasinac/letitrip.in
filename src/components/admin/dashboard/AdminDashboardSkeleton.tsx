@@ -23,7 +23,7 @@ export function AdminDashboardSkeleton() {
       </div>
 
       {/* Stats grid skeleton — 6 cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
@@ -43,7 +43,7 @@ export function AdminDashboardSkeleton() {
       {/* Quick actions skeleton */}
       <div className="rounded-xl border border-gray-200 dark:border-gray-800 p-6">
         <div className={`${skeleton.heading} w-36 mb-4`} />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-3">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className={`${skeleton.base} h-10 rounded-lg`} />
           ))}
@@ -57,7 +57,7 @@ export function AdminDashboardSkeleton() {
           {Array.from({ length: 2 }).map((_, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50"
+              className={`${flex.center} gap-3 p-3 rounded-lg ${themed.bgSecondary}`}
             >
               <div
                 className={`${skeleton.base} w-10 h-10 rounded-full flex-shrink-0`}

@@ -25,6 +25,10 @@ import { serverLogger } from "@/lib/server-logger";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
 
+// Vercel Hobby max is 60 s; RTDB + signature work fits well within that.
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   try {
     const rawBody = await request.text();
@@ -74,12 +78,13 @@ export async function POST(request: NextRequest) {
           `payment.captured: paymentId=${payment?.id} orderId=${payment?.order_id}`,
         );
         if (payment?.order_id) {
-          getAdminRealtimeDb()
-            .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${payment.order_id}`)
-            .update({ status: "success", updatedAt: Date.now() })
-            .catch((err) =>
-              serverLogger.warn("payment.captured RTDB signal failed", { err }),
-            );
+          try {
+            await getAdminRealtimeDb()
+              .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${payment.order_id}`)
+              .update({ status: "success", updatedAt: Date.now() });
+          } catch (err) {
+            serverLogger.warn("payment.captured RTDB signal failed", { err });
+          }
         }
         break;
       }
@@ -101,18 +106,19 @@ export async function POST(request: NextRequest) {
           `payment.failed: paymentId=${payment?.id} reason=${payment?.error_description}`,
         );
         if (payment?.order_id) {
-          getAdminRealtimeDb()
-            .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${payment.order_id}`)
-            .update({
-              status: "failed",
-              error:
-                payment.error_description ??
-                ERROR_MESSAGES.CHECKOUT.PAYMENT_DECLINED,
-              updatedAt: Date.now(),
-            })
-            .catch((err) =>
-              serverLogger.warn("payment.failed RTDB signal failed", { err }),
-            );
+          try {
+            await getAdminRealtimeDb()
+              .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${payment.order_id}`)
+              .update({
+                status: "failed",
+                error:
+                  payment.error_description ??
+                  ERROR_MESSAGES.CHECKOUT.PAYMENT_DECLINED,
+                updatedAt: Date.now(),
+              });
+          } catch (err) {
+            serverLogger.warn("payment.failed RTDB signal failed", { err });
+          }
         }
         break;
       }

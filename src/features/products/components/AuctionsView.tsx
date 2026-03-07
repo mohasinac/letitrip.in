@@ -27,7 +27,7 @@ import {
 import type { ActiveFilter } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useUrlTable, useAuth, useMessage } from "@/hooks";
+import { useUrlTable, useAuth, useMessage, useBrands } from "@/hooks";
 import { useAuctions } from "../hooks";
 import { wishlistService } from "@/services";
 
@@ -64,27 +64,37 @@ function AuctionsContent() {
   const sort = table.get("sort") || "auctionEndDate";
   const page = table.getNumber("page", 1);
   const priceRange = table.get("priceRange");
+  const brandParam = table.get("brand");
   const searchQuery = table.get("q");
 
   // ── Staged filter state (applied on button click) ──────────────────────
   const [stagedPriceRange, setStagedPriceRange] = useState<string[]>(
     priceRange ? [priceRange] : [],
   );
+  const [stagedBrand, setStagedBrand] = useState<string[]>(
+    brandParam ? [brandParam] : [],
+  );
 
   useEffect(() => {
     setStagedPriceRange(priceRange ? [priceRange] : []);
-  }, [priceRange]);
+    setStagedBrand(brandParam ? [brandParam] : []);
+  }, [priceRange, brandParam]);
 
   const handleFilterApply = useCallback(() => {
-    table.setMany({ priceRange: stagedPriceRange[0] ?? "", page: "1" });
-  }, [stagedPriceRange, table]);
+    table.setMany({
+      priceRange: stagedPriceRange[0] ?? "",
+      brand: stagedBrand[0] ?? "",
+      page: "1",
+    });
+  }, [stagedPriceRange, stagedBrand, table]);
 
   const handleFilterClear = useCallback(() => {
     setStagedPriceRange([]);
-    table.setMany({ priceRange: "", page: "1" });
+    setStagedBrand([]);
+    table.setMany({ priceRange: "", brand: "", page: "1" });
   }, [table]);
 
-  const filterActiveCount = priceRange ? 1 : 0;
+  const filterActiveCount = (priceRange ? 1 : 0) + (brandParam ? 1 : 0);
 
   const [minBid, maxBid] = useMemo(() => {
     if (!priceRange) return ["", ""];
@@ -104,10 +114,12 @@ function AuctionsContent() {
       pageSize: String(PAGE_SIZE),
     });
     if (searchQuery) sp.set("q", searchQuery);
+    if (brandParam) sp.set("brand", brandParam);
     return sp.toString();
-  }, [minBid, maxBid, sort, page, searchQuery]);
+  }, [minBid, maxBid, sort, page, searchQuery, brandParam]);
 
   const { auctions, total, totalPages, isLoading } = useAuctions(auctionParams);
+  const { brandOptions } = useBrands();
 
   // ── Bulk wishlist handler ─────────────────────────────────────────
   const handleBulkAddToWishlist = useCallback(async () => {
@@ -131,17 +143,26 @@ function AuctionsContent() {
   }, [selectedIds, showSuccess, showError, tActions]);
 
   const activeFilters = useMemo<ActiveFilter[]>(() => {
-    if (!priceRange) return [];
-    return [
-      {
+    const filters: ActiveFilter[] = [];
+    if (priceRange) {
+      filters.push({
         key: "priceRange",
         label: t("filterBidRange"),
         value:
           PRICE_BUCKETS.find((b) => b.value === priceRange)?.label ??
           priceRange,
-      },
-    ];
-  }, [priceRange, t]);
+      });
+    }
+    if (brandParam) {
+      filters.push({
+        key: "brand",
+        label: t("filterBrand"),
+        value:
+          brandOptions.find((b) => b.value === brandParam)?.label ?? brandParam,
+      });
+    }
+    return filters;
+  }, [priceRange, brandParam, brandOptions, t]);
 
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
@@ -172,13 +193,26 @@ function AuctionsContent() {
             />
           }
           filterContent={
-            <FilterFacetSection
-              title={t("filterBidRange")}
-              options={PRICE_BUCKETS}
-              selected={stagedPriceRange}
-              onChange={setStagedPriceRange}
-              searchable={false}
-            />
+            <>
+              <FilterFacetSection
+                title={t("filterBidRange")}
+                options={PRICE_BUCKETS}
+                selected={stagedPriceRange}
+                onChange={setStagedPriceRange}
+                searchable={false}
+              />
+              {brandOptions.length > 0 && (
+                <FilterFacetSection
+                  title={t("filterBrand")}
+                  options={brandOptions}
+                  selected={stagedBrand}
+                  onChange={setStagedBrand}
+                  searchable={brandOptions.length > 6}
+                  selectionMode="single"
+                  defaultCollapsed={true}
+                />
+              )}
+            </>
           }
           filterActiveCount={filterActiveCount}
           onFilterApply={handleFilterApply}
@@ -187,8 +221,12 @@ function AuctionsContent() {
             activeFilters.length > 0 ? (
               <ActiveFilterChips
                 filters={activeFilters}
-                onRemove={() => table.set("priceRange", "")}
-                onClearAll={() => table.set("priceRange", "")}
+                onRemove={(key) =>
+                  key === "brand"
+                    ? table.set("brand", "")
+                    : table.set("priceRange", "")
+                }
+                onClearAll={() => table.setMany({ priceRange: "", brand: "" })}
               />
             ) : undefined
           }

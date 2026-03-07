@@ -37,7 +37,7 @@ import { BlogForm, useBlogTableColumns } from ".";
 import type { BlogFormData } from ".";
 import { formatDate } from "@/utils";
 
-const { themed, typography } = THEME_CONSTANTS;
+const { themed, typography, flex } = THEME_CONSTANTS;
 
 const DEFAULT_FORM: BlogFormData = {
   title: "",
@@ -320,7 +320,7 @@ export function AdminBlogView() {
           emptyMessage={t("empty")}
           emptyTitle={t("emptySubtitle")}
           showViewToggle
-          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(post: BlogPostDocument) => (
             <Card className="overflow-hidden cursor-pointer">
@@ -337,7 +337,7 @@ export function AdminBlogView() {
                 <Text weight="medium" size="sm" className="line-clamp-2">
                   {post.title}
                 </Text>
-                <div className="flex items-center justify-between">
+                <div className={`${flex.between}`}>
                   <Badge>{post.category}</Badge>
                   <StatusBadge status={post.status as any} />
                 </div>

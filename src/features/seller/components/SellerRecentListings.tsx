@@ -2,8 +2,8 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Card, Button } from "@/components/ui";
-import { Heading, Text } from "@/components/typography";
+import { Card, Button } from "@/components";
+import { Heading, Text } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import type { ProductDocument } from "@/db/schema";
 import { Span } from "@/components";

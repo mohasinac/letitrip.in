@@ -11,7 +11,9 @@ import {
   Select,
   Text,
 } from "@/components";
-import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
+import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
+
+const { themed } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
 import { useMessage } from "@/hooks";
 import { useCreateEvent, useUpdateEvent } from "../hooks/useEventMutations";
@@ -356,7 +358,7 @@ export function EventFormDrawer({
         </div>
 
         {/* Separator */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+        <div className={`border-t ${themed.border} pt-4`}>
           <Text weight="semibold" size="sm" className="mb-3 capitalize">
             {form.type} Configuration
           </Text>

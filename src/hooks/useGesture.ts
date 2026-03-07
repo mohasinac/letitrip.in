@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect, RefObject } from "react";
+import { nowMs } from "@/utils";
 
 /**
  * Gesture types supported
@@ -129,7 +130,7 @@ export function useGesture<T extends HTMLElement = HTMLElement>(
       touchStartRef.current = {
         x: touch.clientX,
         y: touch.clientY,
-        time: Date.now(),
+        time: nowMs(),
       };
 
       // Handle multi-touch gestures
@@ -179,11 +180,11 @@ export function useGesture<T extends HTMLElement = HTMLElement>(
       const touch = e.changedTouches[0];
       const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
       const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
-      const deltaTime = Date.now() - touchStartRef.current.time;
+      const deltaTime = nowMs() - touchStartRef.current.time;
 
       // Check for tap (minimal movement)
       if (deltaX < tapMovementThreshold && deltaY < tapMovementThreshold) {
-        const now = Date.now();
+        const now = nowMs();
         const timeSinceLastTap = now - lastTapRef.current;
 
         // Double tap detection
@@ -233,7 +234,7 @@ export function useGesture<T extends HTMLElement = HTMLElement>(
       touchStartRef.current = {
         x: e.clientX,
         y: e.clientY,
-        time: Date.now(),
+        time: nowMs(),
       };
     };
 
@@ -245,7 +246,7 @@ export function useGesture<T extends HTMLElement = HTMLElement>(
       const deltaY = Math.abs(e.clientY - touchStartRef.current.y);
 
       if (deltaX < tapMovementThreshold && deltaY < tapMovementThreshold) {
-        const now = Date.now();
+        const now = nowMs();
         const timeSinceLastTap = now - lastTapRef.current;
 
         if (onDoubleTapRef.current && timeSinceLastTap < doubleTapDelay) {

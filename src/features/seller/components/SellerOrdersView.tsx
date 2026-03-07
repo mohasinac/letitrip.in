@@ -50,7 +50,12 @@ import {
   useSellerShipping,
   useSellerPayoutSettings,
 } from "@/features/seller";
-import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
+import {
+  ROUTES,
+  THEME_CONSTANTS,
+  ERROR_MESSAGES,
+  SUCCESS_MESSAGES,
+} from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 import { sellerService } from "@/services";
 import type { OrderDocument } from "@/db/schema";
@@ -67,7 +72,7 @@ interface ShipOrderModalProps {
 
 function ShipOrderModal({ order, onClose, onShipped }: ShipOrderModalProps) {
   const t = useTranslations("sellerOrders");
-  const { showError } = useMessage();
+  const { showSuccess, showError } = useMessage();
   const [form, setForm] = useState({
     shippingCarrier: "",
     trackingNumber: "",
@@ -78,6 +83,7 @@ function ShipOrderModal({ order, onClose, onShipped }: ShipOrderModalProps) {
     mutationFn: (data: typeof form & { method: "custom" }) =>
       sellerService.shipOrder(order!.id!, data),
     onSuccess: () => {
+      showSuccess(SUCCESS_MESSAGES.SHIPPING.ORDER_SHIPPED);
       onShipped();
       onClose();
     },
@@ -607,11 +613,11 @@ function SellerOrdersContent() {
           onSelectionChange={setSelectedIds}
           actions={rowActions}
           showViewToggle
-          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(order) => (
             <Card className="p-4 space-y-2">
-              <div className="flex items-center justify-between">
+              <div className={`${flex.between}`}>
                 <Caption className="font-mono">
                   #{(order.id ?? "").slice(-8).toUpperCase()}
                 </Caption>
@@ -621,7 +627,7 @@ function SellerOrdersContent() {
                 {order.productTitle}
               </Text>
               <Caption>{order.userName}</Caption>
-              <div className="flex items-center justify-between">
+              <div className={`${flex.between}`}>
                 <Caption>{formatDate(order.createdAt)}</Caption>
                 <Text weight="semibold" size="sm">
                   {formatCurrency(order.totalPrice)}

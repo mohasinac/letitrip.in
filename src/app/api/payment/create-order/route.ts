@@ -12,6 +12,7 @@
 
 import { z } from "zod";
 import { createRazorpayOrder, rupeesToPaise } from "@/lib/payment/razorpay";
+import { siteSettingsRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { createApiHandler } from "@/lib/api/api-handler";
@@ -27,7 +28,16 @@ export const POST = createApiHandler<(typeof createOrderSchema)["_output"]>({
   schema: createOrderSchema,
   handler: async ({ user, body }) => {
     const { amount, currency, receipt } = body!;
-    const amountInPaise = rupeesToPaise(amount);
+
+    // Apply Razorpay processing fee from site settings (default 5%).
+    const siteSettings = await siteSettingsRepository.getSingleton();
+    const razorpayFeePercent =
+      siteSettings?.commissions?.razorpayFeePercent ?? 5;
+    const platformFee =
+      Math.round(amount * (razorpayFeePercent / 100) * 100) / 100;
+    const totalAmount = amount + platformFee;
+
+    const amountInPaise = rupeesToPaise(totalAmount);
 
     const razorpayOrder = await createRazorpayOrder({
       amount: amountInPaise,
@@ -37,7 +47,7 @@ export const POST = createApiHandler<(typeof createOrderSchema)["_output"]>({
     });
 
     serverLogger.info(
-      `Payment order created: ${razorpayOrder.id} for user ${user!.uid} — ₹${amount}`,
+      `Payment order created: ${razorpayOrder.id} for user ${user!.uid} — base ₹${amount} + fee ₹${platformFee} = ₹${totalAmount}`,
     );
 
     return successResponse({
@@ -45,6 +55,8 @@ export const POST = createApiHandler<(typeof createOrderSchema)["_output"]>({
       amount: razorpayOrder.amount,
       currency: razorpayOrder.currency,
       keyId: process.env.RAZORPAY_KEY_ID ?? "",
+      platformFee,
+      baseAmount: amount,
     });
   },
 });

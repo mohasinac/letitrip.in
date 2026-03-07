@@ -71,7 +71,7 @@ export default function Sidebar({
   const [supportOpen, setSupportOpen] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(true);
   const logoutMutation = useLogout();
-  const { showSuccess } = useMessage();
+  const { showSuccess, showError } = useMessage();
 
   const handleSignOut = async () => {
     try {
@@ -88,6 +88,7 @@ export default function Sidebar({
       router.push(ROUTES.AUTH.LOGIN);
     } catch (error) {
       logger.error(ERROR_MESSAGES.SESSION.SIGN_OUT_ERROR, error);
+      showError(ERROR_MESSAGES.SESSION.SIGN_OUT_ERROR);
       // Even on error, redirect to login (session might be cleared)
       onClose();
       router.push(ROUTES.AUTH.LOGIN);

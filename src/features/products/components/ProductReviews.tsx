@@ -24,11 +24,18 @@ import {
   useAuth,
   useApiMutation,
   useMessage,
+  useUrlTable,
 } from "@/hooks";
 import { reviewService } from "@/services";
 import type { ReviewDocument } from "@/db/schema";
 
-const { themed, borderRadius, rating: ratingTokens, flex } = THEME_CONSTANTS;
+const {
+  themed,
+  borderRadius,
+  rating: ratingTokens,
+  flex,
+  spacing,
+} = THEME_CONSTANTS;
 
 interface ReviewsResponse {
   data: ReviewDocument[];
@@ -261,7 +268,7 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className={`p-4 sm:p-6 ${themed.bgSecondary} ${borderRadius.xl} mb-6 space-y-4`}
+      className={`p-4 sm:p-6 ${themed.bgSecondary} ${borderRadius.xl} mb-6 ${spacing.stack}`}
     >
       <Heading level={4}>{t("reviewFormTitle")}</Heading>
 
@@ -318,7 +325,8 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
 export function ProductReviews({ productId }: ProductReviewsProps) {
   const t = useTranslations("products");
   const tActions = useTranslations("actions");
-  const [page, setPage] = useState(1);
+  const table = useUrlTable({ defaults: { page: "1" } });
+  const page = table.getNumber("page", 1);
   const pageSize = 10;
 
   const { data, isLoading, refetch } = useProductReviews(
@@ -344,7 +352,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
         productId={productId}
         onSuccess={() => {
           refetch();
-          setPage(1);
+          table.setPage(1);
         }}
       />
 
@@ -380,7 +388,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
       {/* Loading */}
       {isLoading && (
-        <div className="space-y-4">
+        <div className={spacing.stack}>
           {[1, 2, 3].map((i) => (
             <div
               key={i}
@@ -406,7 +414,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
       {/* Review list */}
       {!isLoading && reviews.length > 0 && (
-        <div className="space-y-4">
+        <div className={spacing.stack}>
           {reviews.map((review) => (
             <div
               key={review.id}
@@ -477,7 +485,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
           {meta && meta.totalPages > 1 && (
             <div className={`${flex.center} gap-2 pt-2`}>
               <Button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                onClick={() => table.setPage(Math.max(1, page - 1))}
                 disabled={page <= 1}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${themed.bgPrimary} ${themed.textPrimary} border ${themed.border}`}
               >
@@ -487,7 +495,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                 {page} / {meta.totalPages}
               </Span>
               <Button
-                onClick={() => setPage((p) => p + 1)}
+                onClick={() => table.setPage(page + 1)}
                 disabled={!meta.hasMore}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${themed.bgPrimary} ${themed.textPrimary} border ${themed.border}`}
               >

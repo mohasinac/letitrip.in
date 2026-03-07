@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Card, Button, Heading, Text } from "@/components";
-import { Alert } from "@/components/feedback";
-import { FormField } from "@/components/FormField";
+import { Alert } from "@/components";
+import { FormField } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";

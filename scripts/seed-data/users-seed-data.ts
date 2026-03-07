@@ -162,7 +162,8 @@ export const usersSeedData: Partial<UserDocument>[] = [
     phoneNumber: "+919876543214",
     phoneVerified: true,
     displayName: "TechHub Electronics",
-    photoURL: null,
+    photoURL:
+      "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop",
     avatarMetadata: null,
     role: "seller",
     emailVerified: true,
@@ -177,13 +178,25 @@ export const usersSeedData: Partial<UserDocument>[] = [
       showPhone: true,
       showOrders: false,
       showWishlist: false,
-      bio: "Authorized electronics seller",
+      bio: "Authorized reseller of top electronics brands — Apple, Samsung, Sony, and more.",
       location: "Mumbai, India",
       website: "https://techhub.example.com",
       socialLinks: {
         facebook: "https://facebook.com/techhub",
         instagram: "https://instagram.com/techhub",
       },
+      storeName: "TechHub Electronics",
+      storeDescription:
+        "Your one-stop shop for the latest gadgets, smartphones, laptops, and accessories from top brands.",
+      storeCategory: "electronics",
+      storeLogoURL:
+        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop",
+      storeBannerURL:
+        "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&h=400&fit=crop",
+      storeReturnPolicy:
+        "7-day hassle-free returns on all products. Electronics must be in original packaging for a full refund.",
+      storeShippingPolicy:
+        "Free shipping on orders above ₹999. Standard delivery in 3-5 business days. Express delivery available.",
     },
     stats: {
       totalOrders: 7,
@@ -204,7 +217,8 @@ export const usersSeedData: Partial<UserDocument>[] = [
     phoneNumber: "+919876543215",
     phoneVerified: true,
     displayName: "Fashion Boutique",
-    photoURL: null,
+    photoURL:
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
     avatarMetadata: null,
     role: "seller",
     emailVerified: true,
@@ -219,9 +233,25 @@ export const usersSeedData: Partial<UserDocument>[] = [
       showPhone: true,
       showOrders: false,
       showWishlist: false,
-      bio: "Trendy fashion and accessories",
+      bio: "Bringing you the finest in contemporary fashion, ethnic wear, and designer accessories.",
       location: "Delhi, India",
       website: "https://fashionboutique.example.com",
+      socialLinks: {
+        instagram: "https://instagram.com/fashionboutiquein",
+        facebook: "https://facebook.com/fashionboutiquein",
+      },
+      storeName: "Fashion Boutique",
+      storeDescription:
+        "Curated collection of trendy fashion, ethnic wear, and premium accessories for every occasion.",
+      storeCategory: "fashion",
+      storeLogoURL:
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
+      storeBannerURL:
+        "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&h=400&fit=crop",
+      storeReturnPolicy:
+        "14-day returns on unworn items with original tags attached. Exchange available within 30 days.",
+      storeShippingPolicy:
+        "Free shipping on all orders above ₹599. Express delivery in 1-2 business days available at checkout.",
     },
     stats: {
       totalOrders: 5,
@@ -242,7 +272,8 @@ export const usersSeedData: Partial<UserDocument>[] = [
     phoneNumber: "+919876543216",
     phoneVerified: true,
     displayName: "Home Essentials",
-    photoURL: null,
+    photoURL:
+      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop",
     avatarMetadata: null,
     role: "seller",
     emailVerified: true,
@@ -257,8 +288,25 @@ export const usersSeedData: Partial<UserDocument>[] = [
       showPhone: true,
       showOrders: false,
       showWishlist: false,
-      bio: "Quality home products",
+      bio: "Bringing warmth and style to every room with premium home décor and kitchenware.",
       location: "Pune, India",
+      website: "https://homeessentials.example.com",
+      socialLinks: {
+        instagram: "https://instagram.com/homeessentialsin",
+        facebook: "https://facebook.com/homeessentialsin",
+      },
+      storeName: "Home Essentials",
+      storeDescription:
+        "Premium home décor, kitchenware, and lifestyle products for a beautiful modern home.",
+      storeCategory: "home",
+      storeLogoURL:
+        "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop",
+      storeBannerURL:
+        "https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=1600&h=400&fit=crop",
+      storeReturnPolicy:
+        "10-day returns accepted on all products. Damaged or defective items replaced at no extra cost.",
+      storeShippingPolicy:
+        "Free shipping on orders above ₹1499. Fragile items packed securely. Delivery in 3-7 business days.",
     },
     stats: {
       totalOrders: 3,

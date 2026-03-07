@@ -6,6 +6,8 @@ import { useUrlTable, usePendingTable } from "@/hooks";
 import { useAdminBids } from "@/features/admin/hooks";
 import { ROUTES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
+
+const { flex, spacing } = THEME_CONSTANTS;
 import {
   Card,
   SideDrawer,
@@ -155,7 +157,7 @@ export function AdminBidsView({ action }: Props) {
           keyExtractor={(bid: BidDocument) => bid.id}
           externalPagination
           showViewToggle
-          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(bid) => (
             <Card className="p-4 space-y-2">
@@ -163,7 +165,7 @@ export function AdminBidsView({ action }: Props) {
                 {bid.productTitle}
               </Text>
               <Caption>{bid.userName}</Caption>
-              <div className="flex items-center justify-between">
+              <div className={`${flex.between}`}>
                 <Text weight="bold" size="sm">
                   {formatCurrency(bid.bidAmount)}
                 </Text>
@@ -183,7 +185,7 @@ export function AdminBidsView({ action }: Props) {
         side="right"
       >
         {selectedBid && (
-          <div className="flex flex-col h-full p-4 space-y-4">
+          <div className={`flex flex-col h-full p-4 ${spacing.stack}`}>
             {/* Product */}
             <div>
               <Caption className="uppercase tracking-wide font-semibold">

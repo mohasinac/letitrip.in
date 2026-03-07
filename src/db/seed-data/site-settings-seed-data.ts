@@ -44,6 +44,7 @@ export const siteSettingsSeedData: Partial<SiteSettingsDocument> = {
   payment: {
     razorpayEnabled: true,
     upiManualEnabled: true,
+    codEnabled: false,
   },
   socialLinks: {
     facebook: "https://facebook.com/letitrip",

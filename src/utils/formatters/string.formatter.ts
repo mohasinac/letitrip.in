@@ -40,92 +40,6 @@ export function capitalizeWords(str: string): string {
 }
 
 /**
- * Converts a string to camelCase format
- *
- * @param str - The string to convert
- * @returns The string in camelCase format
- *
- * @example
- * ```typescript
- * const result = toCamelCase('Hello World');
- * console.log(result); // 'helloWorld'
- * ```
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function toCamelCase(str: string): string {
-  return str
-    .replace(/(?:^\w|[A-Z]|\b\w)/g, (letter, index) =>
-      index === 0 ? letter.toLowerCase() : letter.toUpperCase(),
-    )
-    .replace(/\s+/g, "");
-}
-
-/**
- * Converts a string to PascalCase format
- *
- * @param str - The string to convert
- * @returns The string in PascalCase format
- *
- * @example
- * ```typescript
- * const result = toPascalCase('hello world');
- * console.log(result); // 'HelloWorld'
- * ```
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function toPascalCase(str: string): string {
-  return str
-    .replace(/(?:^\w|[A-Z]|\b\w)/g, (letter) => letter.toUpperCase())
-    .replace(/\s+/g, "");
-}
-
-/**
- * Converts a string to snake_case format
- *
- * @param str - The string to convert
- * @returns The string in snake_case format
- *
- * @example
- * ```typescript
- * const result = toSnakeCase('helloWorld');
- * console.log(result); // 'hello_world'
- * ```
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function toSnakeCase(str: string): string {
-  return str
-    .replace(/([A-Z])/g, "_$1")
-    .toLowerCase()
-    .replace(/^_/, "")
-    .replace(/\s+/g, "_");
-}
-
-/**
- * Converts a string to kebab-case format
- *
- * @param str - The string to convert
- * @returns The string in kebab-case format
- *
- * @example
- * ```typescript
- * const result = toKebabCase('helloWorld');
- * console.log(result); // 'hello-world'
- * ```
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function toKebabCase(str: string): string {
-  return str
-    .replace(/([A-Z])/g, "-$1")
-    .toLowerCase()
-    .replace(/^-/, "")
-    .replace(/\s+/g, "-");
-}
-
-/**
  * Truncates a string to a maximum length and adds a suffix if truncated
  *
  * @param str - The string to truncate
@@ -302,42 +216,6 @@ export function randomString(length: number = 10): string {
  */
 export function isEmptyString(str: string | null | undefined): boolean {
   return !str || str.trim().length === 0;
-}
-
-/**
- * Counts the number of words in a string
- *
- * @param str - The string to count words in
- * @returns The number of words in the string
- *
- * @example
- * ```typescript
- * const count = wordCount('Hello world from TypeScript');
- * console.log(count); // 4
- * ```
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function wordCount(str: string): number {
-  return str.trim().split(/\s+/).length;
-}
-
-/**
- * Reverses the characters in a string
- *
- * @param str - The string to reverse
- * @returns The reversed string
- *
- * @example
- * ```typescript
- * const result = reverse('hello');
- * console.log(result); // 'olleh'
- * ```
- *
- * @deprecated Not currently used in the codebase. Retained for potential future use.
- */
-export function reverse(str: string): string {
-  return str.split("").reverse().join("");
 }
 
 // ============================================

@@ -1,8 +1,8 @@
 /**
  * GET /api/admin/stores
  *
- * Admin endpoint — paginated list of all sellers with store data,
- * filterable by storeStatus (pending | approved | rejected).
+ * Admin endpoint — paginated list of all stores, filterable by status.
+ * Uses storeRepository (stores collection) as the source of truth.
  */
 
 import { NextRequest } from "next/server";
@@ -13,8 +13,8 @@ import {
   getSearchParams,
   getStringParam,
 } from "@/lib/api/request-helpers";
-import { userRepository } from "@/repositories";
-import type { UserDocument } from "@/db/schema";
+import { storeRepository } from "@/repositories";
+import type { StoreDocument } from "@/db/schema";
 import type { SieveModel } from "@/lib/query/firebase-sieve";
 
 export const GET = createApiHandler({
@@ -30,16 +30,15 @@ export const GET = createApiHandler({
     });
     const sorts = getStringParam(searchParams, "sorts") || "-createdAt";
 
-    // Build Sieve filter — always scoped to sellers, optional storeStatus filter
     const filtersArr: string[] = [];
-    const storeStatus = getStringParam(searchParams, "storeStatus");
-    if (storeStatus && storeStatus !== "all") {
-      filtersArr.push(`storeStatus==${storeStatus}`);
+    const statusFilter = getStringParam(searchParams, "storeStatus");
+    if (statusFilter && statusFilter !== "all") {
+      filtersArr.push(`status==${statusFilter}`);
     }
     const extraFilters = getStringParam(searchParams, "filters");
     if (extraFilters) filtersArr.push(extraFilters);
     const q = getStringParam(searchParams, "q");
-    if (q) filtersArr.push(`displayName_=${q}`);
+    if (q) filtersArr.push(`storeName_=${q}`);
 
     const model: SieveModel = {
       filters: filtersArr.join(",") || undefined,
@@ -48,37 +47,27 @@ export const GET = createApiHandler({
       pageSize,
     };
 
-    const result = await userRepository.listSellersForAdmin(model);
+    const result = await storeRepository.listAllStores(model);
 
-    // Strip sensitive fields — expose only store-relevant data
-    const stores = result.items.map((user: UserDocument) => ({
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName,
-      photoURL: user.photoURL,
-      avatarMetadata: user.avatarMetadata,
-      role: user.role,
-      disabled: user.disabled,
-      emailVerified: user.emailVerified,
-      createdAt: user.createdAt,
-      storeSlug: user.storeSlug ?? null,
-      storeStatus: user.storeStatus ?? "pending",
-      publicProfile: user.publicProfile
-        ? {
-            isPublic: user.publicProfile.isPublic,
-            bio: user.publicProfile.bio,
-            location: user.publicProfile.location,
-            storeName: user.publicProfile.storeName,
-            storeDescription: user.publicProfile.storeDescription,
-            storeCategory: user.publicProfile.storeCategory,
-            storeLogoURL: user.publicProfile.storeLogoURL,
-            storeBannerURL: user.publicProfile.storeBannerURL,
-            storeReturnPolicy: user.publicProfile.storeReturnPolicy,
-            storeShippingPolicy: user.publicProfile.storeShippingPolicy,
-            isVacationMode: user.publicProfile.isVacationMode,
-          }
-        : null,
-      stats: user.stats ?? null,
+    const stores = result.items.map((store: StoreDocument) => ({
+      id: store.id,
+      storeSlug: store.storeSlug,
+      ownerId: store.ownerId,
+      storeName: store.storeName,
+      storeDescription: store.storeDescription,
+      storeCategory: store.storeCategory,
+      storeLogoURL: store.storeLogoURL,
+      storeBannerURL: store.storeBannerURL,
+      status: store.status,
+      isPublic: store.isPublic,
+      isVacationMode: store.isVacationMode,
+      returnPolicy: store.returnPolicy,
+      shippingPolicy: store.shippingPolicy,
+      bio: store.bio,
+      location: store.location,
+      stats: store.stats ?? null,
+      createdAt: store.createdAt,
+      updatedAt: store.updatedAt,
     }));
 
     return successResponse({ ...result, items: stores });

@@ -61,6 +61,7 @@ export const GET = createApiHandler({
     const maxPrice = maxPriceRaw !== null ? Number(maxPriceRaw) : undefined;
     const inStock = getBooleanParam(searchParams, "inStock");
     const isAuction = getBooleanParam(searchParams, "isAuction");
+    const isPreOrder = getBooleanParam(searchParams, "isPreOrder");
     const featured = getBooleanParam(searchParams, "featured");
 
     const compoundFilters: string[] = [];
@@ -76,6 +77,8 @@ export const GET = createApiHandler({
     if (inStock === true) compoundFilters.push("stockQuantity>0");
     if (isAuction !== undefined)
       compoundFilters.push(`isAuction==${isAuction}`);
+    if (isPreOrder !== undefined)
+      compoundFilters.push(`isPreOrder==${isPreOrder}`);
     if (featured === true) compoundFilters.push("featured==true");
 
     // Explicit Sieve `filters` DSL string appended last (highest precedence)

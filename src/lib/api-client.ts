@@ -68,7 +68,7 @@ class ApiClient {
 
   constructor() {
     this.baseURL = process.env.NEXT_PUBLIC_API_URL || "";
-    this.defaultTimeout = 30000; // 30 seconds
+    this.defaultTimeout = 120000; // 2 minutes
   }
 
   /**

@@ -14,8 +14,8 @@
 import { defineRouting } from "next-intl/routing";
 
 export const routing = defineRouting({
-  /** Supported locales — en (English) and hi (Hindi) */
-  locales: ["en", "hi"] as const,
+  /** Supported locales — en (English), in (Hindi), mh (Marathi), ts (Telugu), tn (Tamil) */
+  locales: ["en", "in", "mh", "ts", "tn"] as const,
 
   /** Default locale — English pages have no URL prefix */
   defaultLocale: "en",

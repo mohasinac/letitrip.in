@@ -46,6 +46,10 @@ export const sellerService = {
   /** Get the authenticated seller's store profile */
   getStore: () => apiClient.get(API_ENDPOINTS.SELLER.STORE),
 
+  /** Create the seller's store for the first time (POST) */
+  createStore: (data: unknown) =>
+    apiClient.post(API_ENDPOINTS.SELLER.STORE, data),
+
   /** Update the authenticated seller's store profile */
   updateStore: (data: unknown) =>
     apiClient.patch(API_ENDPOINTS.SELLER.STORE, data),

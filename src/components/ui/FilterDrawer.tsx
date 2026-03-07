@@ -22,11 +22,9 @@ interface FilterDrawerProps {
   onApply?: () => void;
   /**
    * Called when the user clicks "Reset all".
-   * Replaces the old `onClearAll` prop (backward-compatible alias retained).
+   * Replaces the old `onClearAll` prop.
    */
   onReset?: () => void;
-  /** @deprecated Use onReset instead */
-  onClearAll?: () => void;
   /** Number of currently active (URL-committed) filters — shows a badge on the trigger */
   activeCount?: number;
   /**
@@ -76,7 +74,6 @@ export function FilterDrawer({
   onClose,
   onApply,
   onReset,
-  onClearAll,
   activeCount = 0,
   pendingCount,
   title,
@@ -87,7 +84,7 @@ export function FilterDrawer({
   const t = useTranslations("filters");
   const tActions = useTranslations("actions");
 
-  const { themed, borderRadius, spacing } = THEME_CONSTANTS;
+  const { themed, borderRadius, spacing, flex } = THEME_CONSTANTS;
 
   // Controlled vs uncontrolled open state
   const isControlled = controlledOpen !== undefined;
@@ -109,9 +106,8 @@ export function FilterDrawer({
     if (!isControlled) setInternalOpen(false);
   };
 
-  // Support both onReset (new) and onClearAll (deprecated alias)
   const handleReset = () => {
-    (onReset ?? onClearAll)?.();
+    onReset?.();
   };
 
   const footer = (
@@ -156,7 +152,7 @@ export function FilterDrawer({
           {t("title")}
           {activeCount > 0 && (
             <Span
-              className={`inline-flex items-center justify-center w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
+              className={`inline-${flex.center} w-5 h-5 text-xs rounded-full ${THEME_CONSTANTS.badge.active}`}
               aria-label={t("activeCount", { count: activeCount })}
             >
               {activeCount}

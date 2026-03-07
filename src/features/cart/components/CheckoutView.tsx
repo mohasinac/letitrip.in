@@ -29,7 +29,7 @@ import { Button, Heading, Main } from "@/components";
 import { formatCurrency } from "@/utils";
 import type { SiteSettingsDocument } from "@/db/schema";
 
-const { themed, typography, page } = THEME_CONSTANTS;
+const { themed, typography, page, spacing } = THEME_CONSTANTS;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -44,6 +44,8 @@ interface CreateRazorpayOrderResponse {
   amount: number;
   currency: string;
   keyId: string;
+  platformFee?: number;
+  baseAmount?: number;
 }
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
@@ -57,8 +59,8 @@ function CheckoutSkeleton() {
       <div
         className={`h-6 w-full rounded-lg mb-8 ${THEME_CONSTANTS.themed.bgSecondary}`}
       />
-      <div className="lg:grid lg:grid-cols-3 lg:gap-8">
-        <div className="lg:col-span-2 space-y-4">
+      <div className="lg:grid lg:grid-cols-3 lg:gap-8 xl:grid-cols-3 2xl:grid-cols-3">
+        <div className={`lg:col-span-2 ${spacing.stack}`}>
           {[1, 2, 3].map((i) => (
             <div
               key={i}
@@ -86,6 +88,7 @@ export function CheckoutView() {
   const { data: siteSettingsData } = useSiteSettings<{
     contact?: SiteSettingsDocument["contact"];
     payment?: SiteSettingsDocument["payment"];
+    commissions?: SiteSettingsDocument["commissions"];
   }>();
   const upiVpa = siteSettingsData?.contact?.upiVpa;
   const whatsappNumber = siteSettingsData?.contact?.whatsappNumber;
@@ -105,6 +108,8 @@ export function CheckoutView() {
     useState<CheckoutPaymentMethod>("cod");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
+  const [sellerNotes, setSellerNotes] = useState("");
+  const [platformFee, setPlatformFee] = useState(0);
 
   const {
     addressQuery: { data: addrData, isLoading: addrLoading },
@@ -142,6 +147,14 @@ export function CheckoutView() {
   const subtotal = cartData?.subtotal ?? 0;
   const itemCount = cartData?.itemCount ?? 0;
 
+  // Deposit amount for COD/UPI payments — 10% by default, configurable via site settings.
+  const codDepositPercent =
+    siteSettingsData?.commissions?.codDepositPercent ?? 10;
+  const depositAmount =
+    paymentMethod === "cod" || paymentMethod === "upi_manual"
+      ? Math.round(subtotal * (codDepositPercent / 100) * 100) / 100
+      : undefined;
+
   // Redirect to cart if it's empty
   if (items.length === 0) {
     router.replace(ROUTES.USER.CART);
@@ -165,11 +178,16 @@ export function CheckoutView() {
     if (!selectedAddressId) return;
 
     if (paymentMethod === "cod") {
-      placeCodOrder({ addressId: selectedAddressId, paymentMethod: "cod" });
+      placeCodOrder({
+        addressId: selectedAddressId,
+        paymentMethod: "cod",
+        notes: sellerNotes || undefined,
+      });
     } else if (paymentMethod === "upi_manual") {
       placeCodOrder({
         addressId: selectedAddressId,
         paymentMethod: "upi_manual",
+        notes: sellerNotes || undefined,
       });
       // WhatsApp redirect is handled in onPlaceCodOrderSuccess
     } else {
@@ -179,6 +197,9 @@ export function CheckoutView() {
           amount: subtotal,
           currency: "INR",
         })) as CreateRazorpayOrderResponse;
+
+        // Capture the platform fee returned by the server for display
+        if (rzpOrder.platformFee) setPlatformFee(rzpOrder.platformFee);
 
         const paymentResult = await openRazorpay({
           key: rzpOrder.keyId,
@@ -196,6 +217,7 @@ export function CheckoutView() {
           razorpay_payment_id: paymentResult.razorpay_payment_id,
           razorpay_signature: paymentResult.razorpay_signature,
           addressId: selectedAddressId,
+          notes: sellerNotes || undefined,
         })) as PlaceOrderResponse;
 
         const primaryOrderId = verifyResult?.orderIds?.[0] ?? "";
@@ -220,6 +242,8 @@ export function CheckoutView() {
     verifyPayment,
     subtotal,
     itemCount,
+    sellerNotes,
+    setPlatformFee,
     router,
     showError,
   ]);
@@ -259,7 +283,7 @@ export function CheckoutView() {
       {/* Stepper */}
       <StepperNav steps={STEPS} currentStep={step} />
 
-      <div className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start">
+      <div className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start xl:grid-cols-3 2xl:grid-cols-3">
         {/* Main content */}
         <div className="lg:col-span-2">
           {step === 1 && (
@@ -298,6 +322,10 @@ export function CheckoutView() {
                 onPaymentMethodChange={setPaymentMethod}
                 onChangeAddress={() => setStep(1)}
                 upiVpa={upiVpa}
+                platformFee={platformFee}
+                depositAmount={depositAmount}
+                notes={sellerNotes}
+                onNotesChange={setSellerNotes}
               />
               {/* Place order button */}
               <div className="mt-6 flex justify-between items-center">

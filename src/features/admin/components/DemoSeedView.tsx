@@ -31,6 +31,8 @@ interface CollectionGroup {
   collections: CollectionName[];
 }
 
+const { themed } = THEME_CONSTANTS;
+
 const COLLECTION_GROUPS: CollectionGroup[] = [
   {
     label: "Auth & Users",
@@ -38,8 +40,7 @@ const COLLECTION_GROUPS: CollectionGroup[] = [
     color: "text-violet-700 dark:text-violet-300",
     headerBg:
       "bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800",
-    chipBg:
-      "border-gray-200 dark:border-gray-700 hover:border-violet-300 dark:hover:border-violet-700",
+    chipBg: `${themed.border} hover:border-violet-300 dark:hover:border-violet-700`,
     chipSelected:
       "border-violet-500 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300",
     collections: ["users", "addresses", "sessions"],
@@ -50,8 +51,7 @@ const COLLECTION_GROUPS: CollectionGroup[] = [
     color: "text-emerald-700 dark:text-emerald-300",
     headerBg:
       "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800",
-    chipBg:
-      "border-gray-200 dark:border-gray-700 hover:border-emerald-300 dark:hover:border-emerald-700",
+    chipBg: `${themed.border} hover:border-emerald-300 dark:hover:border-emerald-700`,
     chipSelected:
       "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300",
     collections: [
@@ -70,8 +70,7 @@ const COLLECTION_GROUPS: CollectionGroup[] = [
     color: "text-sky-700 dark:text-sky-300",
     headerBg:
       "bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-800",
-    chipBg:
-      "border-gray-200 dark:border-gray-700 hover:border-sky-300 dark:hover:border-sky-700",
+    chipBg: `${themed.border} hover:border-sky-300 dark:hover:border-sky-700`,
     chipSelected:
       "border-sky-500 bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300",
     collections: [
@@ -88,8 +87,7 @@ const COLLECTION_GROUPS: CollectionGroup[] = [
     color: "text-amber-700 dark:text-amber-300",
     headerBg:
       "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800",
-    chipBg:
-      "border-gray-200 dark:border-gray-700 hover:border-amber-300 dark:hover:border-amber-700",
+    chipBg: `${themed.border} hover:border-amber-300 dark:hover:border-amber-700`,
     chipSelected:
       "border-amber-500 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300",
     collections: [
@@ -320,7 +318,7 @@ export function DemoSeedView() {
               return (
                 <div
                   key={group.label}
-                  className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700"
+                  className={`rounded-xl overflow-hidden border ${themed.border}`}
                 >
                   {/* Group header */}
                   <Button
@@ -367,7 +365,9 @@ export function DemoSeedView() {
                   </Button>
 
                   {/* Group chips */}
-                  <div className="p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 bg-white dark:bg-gray-900">
+                  <div
+                    className={`p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 ${themed.bgPrimary}`}
+                  >
                     {group.collections.map((col) => {
                       const isSelected = selectedCollections.includes(col);
                       const colStatus = statusMap[col];
@@ -524,11 +524,15 @@ export function DemoSeedView() {
         </div>
 
         {/* ── Info footer ── */}
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 px-5 py-4">
+        <div
+          className={`rounded-xl border ${themed.border} ${themed.bgSecondary} px-5 py-4`}
+        >
           <Caption className="font-semibold uppercase tracking-wider mb-2">
             How it works
           </Caption>
-          <Ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
+          <Ul
+            className={`text-sm ${themed.textSecondary} space-y-1 list-disc list-inside`}
+          >
             <Li>
               All operations target specific document IDs from seed files —
               never a whole collection
