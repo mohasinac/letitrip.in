@@ -45,10 +45,21 @@ import type { UserRole } from "@/types/auth";
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+export interface AuthEventSuccessPayload {
+  status: "success";
+  isNewUser: boolean;
+  uid: string;
+  role: string;
+}
+
+export type AuthEventOutcome =
+  | AuthEventSuccessPayload
+  | { status: "error"; error?: string };
+
 /** Write event outcome to RTDB and redirect popup to close page. */
 async function writeOutcomeAndClose(
   eventId: string,
-  outcome: { status: "success" | "error"; error?: string },
+  outcome: AuthEventOutcome,
   origin: string,
 ): Promise<NextResponse> {
   try {
@@ -176,6 +187,7 @@ export async function GET(request: NextRequest) {
     // Step 2: Find or create the Firebase Auth user
     const adminAuth = getAdminAuth();
     let firebaseUid: string;
+    let isNewUser = false;
     try {
       // Try to find by Google provider UID first
       const existingUser = await adminAuth.getUserByEmail(email);
@@ -192,6 +204,7 @@ export async function GET(request: NextRequest) {
         throw lookupErr;
       }
       // New user — create Firebase Auth account
+      isNewUser = true;
       const newUser = await adminAuth.createUser({
         email,
         displayName: name ?? email.split("@")[0],
@@ -203,9 +216,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Step 3: Ensure Firestore profile exists
+    let userRole: UserRole = SCHEMA_DEFAULTS.USER_ROLE;
     const existingProfile = await userRepository.findById(firebaseUid);
     if (!existingProfile) {
-      const role: UserRole =
+      isNewUser = true;
+      userRole =
         email === SCHEMA_DEFAULTS.ADMIN_EMAIL
           ? "admin"
           : SCHEMA_DEFAULTS.USER_ROLE;
@@ -217,8 +232,11 @@ export async function GET(request: NextRequest) {
           name ?? email.split("@")[0] ?? SCHEMA_DEFAULTS.DEFAULT_DISPLAY_NAME,
         photoURL: picture ?? null,
         emailVerified: !!email_verified,
-        role,
+        role: userRole,
       });
+    } else {
+      userRole =
+        (existingProfile.role as UserRole) ?? SCHEMA_DEFAULTS.USER_ROLE;
     }
 
     // Step 4: custom token → Firebase ID token → session cookie
@@ -262,8 +280,13 @@ export async function GET(request: NextRequest) {
       ),
     });
 
-    // Step 6: Signal success to the main window via RTDB
-    await writeOutcomeAndClose(eventId, { status: "success" }, origin);
+    // Step 6: Signal success to the main window via RTDB (include user info so
+    // the client knows whether this was a first-time sign-up or a returning login)
+    await writeOutcomeAndClose(
+      eventId,
+      { status: "success", isNewUser, uid: firebaseUid, role: userRole },
+      origin,
+    );
 
     // Build the close-page redirect response and attach the session cookies
     const closeUrl = `${origin}/auth/close`;
@@ -298,12 +321,10 @@ export async function GET(request: NextRequest) {
     if (state && UUID_REGEX.test(state)) {
       try {
         const db = getAdminRealtimeDb();
-        await db
-          .ref(`${RTDB_PATHS.AUTH_EVENTS}/${state}`)
-          .update({
-            status: "error",
-            error: ERROR_MESSAGES.AUTH.SIGN_IN_FAILED,
-          });
+        await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${state}`).update({
+          status: "error",
+          error: ERROR_MESSAGES.AUTH.SIGN_IN_FAILED,
+        });
       } catch {
         // ignore secondary failure
       }

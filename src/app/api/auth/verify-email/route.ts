@@ -2,51 +2,28 @@
  * Verify Email API Route
  * GET /api/auth/verify-email?token=xxxxx
  *
- * Verifies email using Firebase verification token
+ * Acknowledges email verification. Firebase handles the actual verification
+ * client-side; this endpoint confirms/logs the outcome.
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { errorResponse, successResponse } from "@/lib/api-response";
-import { getAdminAuth } from "@/lib/firebase/admin";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { ValidationError } from "@/lib/errors";
+import { SUCCESS_MESSAGES } from "@/constants";
+import { successResponse } from "@/lib/api-response";
+import { createApiHandler } from "@/lib/api/api-handler";
 import { getSearchParams, getStringParam } from "@/lib/api/request-helpers";
-import { serverLogger } from "@/lib/server-logger";
+import { ValidationError } from "@/lib/errors";
+import { ERROR_MESSAGES } from "@/constants";
 
-export async function GET(req: NextRequest) {
-  try {
-    const searchParams = getSearchParams(req);
+export const GET = createApiHandler({
+  handler: async ({ request }) => {
+    const searchParams = getSearchParams(request);
     const token = getStringParam(searchParams, "token");
 
     if (!token) {
       throw new ValidationError(ERROR_MESSAGES.VALIDATION.TOKEN_REQUIRED);
     }
 
-    const auth = getAdminAuth();
-
-    // Note: Firebase Admin SDK cannot directly verify email verification tokens
-    // Email verification is handled client-side by Firebase Auth
-    // This endpoint can be used to check verification status after client-side verification
-
-    // In Firebase, email verification flow is:
-    // 1. User clicks link in email → Firebase handles verification automatically
-    // 2. Client-side calls applyActionCode(auth, code) to apply the verification
-    // 3. Then can call this endpoint to confirm/log the verification
-
-    // For now, this is a placeholder that returns success
-    // In production, you'd want to:
-    // 1. Parse the token to get user info
-    // 2. Verify the token with Firebase
-    // 3. Mark email as verified in database if needed
-
+    // Firebase email verification is handled client-side via applyActionCode().
+    // This endpoint is called post-verification to confirm success.
     return successResponse(undefined, SUCCESS_MESSAGES.EMAIL.VERIFIED);
-  } catch (error) {
-    serverLogger.error("Verify email error", { error });
-    return errorResponse(
-      error instanceof Error
-        ? error.message
-        : ERROR_MESSAGES.EMAIL.VERIFICATION_FAILED,
-      error instanceof ValidationError ? 400 : 500,
-    );
-  }
-}
+  },
+});

@@ -13,8 +13,8 @@
 import { Suspense, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/hooks";
-import { Spinner } from "@/components";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { Spinner, EmptyState } from "@/components";
+import { ROUTES, THEME_CONSTANTS, FEATURE_FLAGS } from "@/constants";
 import { MessagesView } from "@/features/user";
 
 const { flex, page } = THEME_CONSTANTS;
@@ -38,6 +38,17 @@ export default function UserMessagesPage() {
   }
 
   if (!user) return null;
+
+  if (!FEATURE_FLAGS.CHAT_ENABLED) {
+    return (
+      <div className={`${flex.hCenter} ${page.empty}`}>
+        <EmptyState
+          title="Chat Coming Soon"
+          description="Messaging between buyers and sellers will be available shortly."
+        />
+      </div>
+    );
+  }
 
   return (
     <Suspense fallback={<Spinner />}>

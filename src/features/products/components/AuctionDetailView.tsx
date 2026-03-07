@@ -36,7 +36,7 @@ import {
   useAuctionDetail,
   useWishlistToggle,
 } from "@/hooks";
-import { formatCurrency, formatDate } from "@/utils";
+import { formatCurrency, formatDate, resolveDate } from "@/utils";
 
 const { themed, borderRadius, flex, page, spacing } = THEME_CONSTANTS;
 
@@ -277,7 +277,11 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                 </Text>
               )}
               {product.auctionEndDate && (
-                <time dateTime={new Date(product.auctionEndDate).toISOString()}>
+                <time
+                  dateTime={
+                    resolveDate(product.auctionEndDate)?.toISOString() ?? ""
+                  }
+                >
                   <Text size="xs" variant="muted" className="mt-2">
                     {t("auctionEnds")}: {formatDate(product.auctionEndDate)}
                   </Text>

@@ -39,9 +39,10 @@ export function UserSettingsView() {
 
   useEffect(() => {
     if (!loading && !profile) {
+      showToast(ERROR_MESSAGES.AUTH.UNAUTHORIZED, "error");
       router.push(ROUTES.AUTH.LOGIN);
     }
-  }, [profile, loading, router]);
+  }, [profile, loading, router, showToast]);
 
   const { mutate: changePassword, isLoading: isChangingPassword } =
     useChangePassword({

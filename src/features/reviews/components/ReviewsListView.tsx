@@ -7,36 +7,31 @@
  * with rating filter, sort, and search — all URL-driven via useUrlTable.
  */
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useMemo } from "react";
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   ActiveFilterChips,
   DataTable,
   EmptyState,
-  FilterFacetSection,
   Heading,
   ListingLayout,
+  REVIEW_SORT_OPTIONS,
+  ReviewFilters,
   Search,
   SortDropdown,
   TablePagination,
   Text,
+  getFilterLabel,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { useApiQuery, useUrlTable } from "@/hooks";
+import { useApiQuery, usePendingTable, useUrlTable } from "@/hooks";
 import { reviewService } from "@/services";
 import { ReviewCard } from "./ReviewCard";
 import type { ReviewDocument } from "@/db/schema";
 
 const PAGE_SIZE = 12;
-
-const REVIEW_SORT_OPTIONS_KEYS = [
-  { value: "-createdAt", key: "sortNewest" },
-  { value: "createdAt", key: "sortOldest" },
-  { value: "-rating", key: "sortHighestRated" },
-  { value: "rating", key: "sortLowestRated" },
-] as const;
 
 interface ReviewsApiResponse {
   data: ReviewDocument[];
@@ -57,70 +52,44 @@ function ReviewsListContent() {
   const sortParam = table.get("sorts") || "-rating";
   const ratingFilter = table.get("rating");
 
+  // Server-side: rating filter + sort. Client-side: search + pagination over fetched set.
   const queryParams = useMemo(() => {
     const p = new URLSearchParams();
-    p.set("featured", "true");
-    p.set("pageSize", "50");
+    p.set("latest", "true");
+    p.set("pageSize", "200");
+    p.set("sorts", sortParam);
+    if (ratingFilter) p.set("filters", `rating==${ratingFilter}`);
     return p.toString();
-  }, []);
+  }, [ratingFilter, sortParam]);
 
   const { data, isLoading, error } = useApiQuery<ReviewsApiResponse>({
-    queryKey: ["reviews", "featured", queryParams],
+    queryKey: ["reviews", "all", queryParams],
     queryFn: () => reviewService.list(queryParams),
   });
 
   const allReviews = useMemo(() => data?.data ?? [], [data]);
 
-  // Client-side filter + sort + search (featured reviews are a small set)
+  // Client-side search only (rating + sort are server-side)
   const displayed = useMemo(() => {
-    let filtered = [...allReviews];
-
-    // Rating filter
-    if (ratingFilter) {
-      const minRating = Number(ratingFilter);
-      if (!isNaN(minRating)) {
-        filtered = filtered.filter((r) => r.rating === minRating);
-      }
-    }
-
-    // Search
     const q = (search || "").trim().toLowerCase();
-    if (q) {
-      filtered = filtered.filter(
-        (r) =>
-          (r.comment || "").toLowerCase().includes(q) ||
-          (r.title || "").toLowerCase().includes(q) ||
-          (r.userName || "").toLowerCase().includes(q) ||
-          (r.productTitle || "").toLowerCase().includes(q),
-      );
-    }
+    if (!q) return allReviews;
+    return allReviews.filter(
+      (r) =>
+        (r.comment || "").toLowerCase().includes(q) ||
+        (r.title || "").toLowerCase().includes(q) ||
+        (r.userName || "").toLowerCase().includes(q) ||
+        (r.productTitle || "").toLowerCase().includes(q),
+    );
+  }, [allReviews, search]);
 
-    // Sort
-    filtered.sort((a, b) => {
-      const desc = sortParam.startsWith("-");
-      const field = desc ? sortParam.slice(1) : sortParam;
-      const aVal =
-        field === "rating" ? a.rating : new Date(a.createdAt).getTime();
-      const bVal =
-        field === "rating" ? b.rating : new Date(b.createdAt).getTime();
-      return desc ? bVal - aVal : aVal - bVal;
-    });
-
-    return filtered;
-  }, [allReviews, ratingFilter, search, sortParam]);
-
-  const total = allReviews.length;
+  const total = data?.meta?.total ?? allReviews.length;
   const page = table.getNumber("page", 1);
   const pageSize = table.getNumber("pageSize", PAGE_SIZE);
   const paged = displayed.slice((page - 1) * pageSize, page * pageSize);
   const totalPages = Math.ceil(displayed.length / pageSize) || 1;
 
   const sortOptions = useMemo(
-    () =>
-      REVIEW_SORT_OPTIONS_KEYS.map((o) => ({
-        value: o.value,
-        label: t(o.key),
-      })),
+    () => REVIEW_SORT_OPTIONS.map((o) => ({ value: o.value, label: t(o.key) })),
     [t],
   );
 
@@ -135,31 +104,23 @@ function ReviewsListContent() {
 
   const filterActiveCount = ratingFilter ? 1 : 0;
 
-  // ── Staged filter state ────────────────────────────────────────────
-  const [stagedRating, setStagedRating] = useState<string[]>(
-    ratingFilter ? [ratingFilter] : [],
-  );
-
-  useEffect(() => {
-    setStagedRating(ratingFilter ? [ratingFilter] : []);
-  }, [ratingFilter]);
-
-  const handleFilterApply = useCallback(() => {
-    table.set("rating", stagedRating[0] || "");
-  }, [stagedRating, table]);
+  // ── Staged filter state via usePendingTable ───────────────────────
+  const {
+    pendingTable,
+    onFilterApply,
+    onFilterClear: handleClearFilters,
+  } = usePendingTable(table, ["rating"]);
 
   const activeFilters = useMemo<ActiveFilter[]>(() => {
     if (!ratingFilter) return [];
-    const label =
-      ratingOptions.find((o) => o.value === ratingFilter)?.label ??
-      ratingFilter;
+    const label = getFilterLabel(ratingOptions, ratingFilter) ?? ratingFilter;
     return [{ key: "rating", label: t("filterRating"), value: label }];
   }, [ratingFilter, ratingOptions, t]);
 
-  const handleClearFilters = useCallback(() => {
-    setStagedRating([]);
+  const handleClearAll = useCallback(() => {
+    handleClearFilters();
     table.clear(["q", "rating", "sorts"]);
-  }, [table]);
+  }, [handleClearFilters, table]);
 
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
@@ -191,23 +152,17 @@ function ReviewsListContent() {
             />
           }
           filterContent={
-            <FilterFacetSection
-              title={t("filterRating")}
-              options={ratingOptions}
-              selected={stagedRating}
-              onChange={setStagedRating}
-              selectionMode="single"
-            />
+            <ReviewFilters table={pendingTable} variant="public" />
           }
           filterActiveCount={filterActiveCount}
-          onFilterApply={handleFilterApply}
-          onFilterClear={handleClearFilters}
+          onFilterApply={onFilterApply}
+          onFilterClear={handleClearAll}
           activeFiltersSlot={
             activeFilters.length > 0 ? (
               <ActiveFilterChips
                 filters={activeFilters}
                 onRemove={(key) => table.set(key, "")}
-                onClearAll={handleClearFilters}
+                onClearAll={handleClearAll}
               />
             ) : undefined
           }
@@ -241,11 +196,7 @@ function ReviewsListContent() {
                 { key: "rating", header: t("filterRating") },
                 { key: "createdAt", header: t("colDate") },
               ]}
-              showViewToggle
-              viewMode={
-                (table.get("view") || "grid") as "table" | "grid" | "list"
-              }
-              onViewModeChange={(m) => table.set("view", m)}
+              defaultViewMode="grid"
               emptyState={
                 <EmptyState
                   icon={<Star className="w-16 h-16" />}
@@ -254,9 +205,7 @@ function ReviewsListContent() {
                   actionLabel={
                     search || ratingFilter ? tActions("clearAll") : undefined
                   }
-                  onAction={
-                    search || ratingFilter ? handleClearFilters : undefined
-                  }
+                  onAction={search || ratingFilter ? handleClearAll : undefined}
                 />
               }
               mobileCardRender={(review) => (

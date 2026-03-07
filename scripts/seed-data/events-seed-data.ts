@@ -34,8 +34,7 @@ export const eventsSeedData: EventSeed[] = [
     status: EVENT_FIELDS.STATUS_VALUES.ENDED,
     startsAt: new Date("2026-01-24T00:00:00Z"),
     endsAt: new Date("2026-01-26T23:59:59Z"),
-    coverImageUrl:
-      "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1200&h=400&fit=crop",
+    coverImageUrl: "https://picsum.photos/seed/india-travel/1200/400",
     saleConfig: {
       discountPercent: 20,
       bannerText: "Republic Day Sale — 20% Off Sitewide 🇮🇳",
@@ -61,8 +60,7 @@ export const eventsSeedData: EventSeed[] = [
     status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
     startsAt: new Date("2026-03-01T00:00:00Z"),
     endsAt: new Date("2026-03-15T23:59:59Z"),
-    coverImageUrl:
-      "https://images.unsplash.com/photo-1549992948-c9c9a70e77e1?w=1200&h=400&fit=crop",
+    coverImageUrl: "https://picsum.photos/seed/food-festival/1200/400",
     offerConfig: {
       couponId: "coupon-HOLI15",
       displayCode: "HOLI15",
@@ -100,6 +98,7 @@ export const eventsSeedData: EventSeed[] = [
       ],
       resultsVisibility: "after_vote",
     },
+    coverImageUrl: "https://picsum.photos/seed/tech-conference/1200/400",
     stats: {
       totalEntries: 312,
       approvedEntries: 312,
@@ -159,6 +158,7 @@ export const eventsSeedData: EventSeed[] = [
         } as SurveyFormField,
       ],
     },
+    coverImageUrl: "https://picsum.photos/seed/startup-meetup/1200/400",
     stats: {
       totalEntries: 2418,
       approvedEntries: 2418,
@@ -208,6 +208,7 @@ export const eventsSeedData: EventSeed[] = [
         } as SurveyFormField,
       ],
     },
+    coverImageUrl: "https://picsum.photos/seed/business-workshop/1200/400",
     stats: {
       totalEntries: 74,
       approvedEntries: 74,
@@ -216,6 +217,260 @@ export const eventsSeedData: EventSeed[] = [
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2026-01-28T11:00:00Z"),
     updatedAt: new Date("2026-02-27T16:00:00Z"),
+  },
+
+  // 6. Active Sale — Women's Day 15% off Fashion + Beauty
+  {
+    id: "event-womens-day-sale-2026-sale",
+    type: EVENT_FIELDS.TYPE_VALUES.SALE,
+    title: "Women's Day Sale — 15% Off Fashion & Beauty",
+    description:
+      "<p>Celebrate International Women's Day with <strong>15% off</strong> everything in Fashion and Beauty & Health. Valid 8–10 March 2026.</p>",
+    status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
+    startsAt: new Date("2026-03-08T00:00:00Z"),
+    endsAt: new Date("2026-03-10T23:59:59Z"),
+    coverImageUrl: "https://picsum.photos/seed/photography-event/1200/400",
+    saleConfig: {
+      discountPercent: 15,
+      bannerText: "💜 Women's Day — 15% off Fashion & Beauty this weekend",
+      affectedCategories: ["category-fashion", "category-beauty-health"],
+    },
+    stats: {
+      totalEntries: 0,
+      approvedEntries: 0,
+      flaggedEntries: 0,
+    },
+    createdBy: "user-admin-user-admin",
+    createdAt: new Date("2026-03-01T10:00:00Z"),
+    updatedAt: new Date("2026-03-01T10:00:00Z"),
+  },
+
+  // 7. Draft Sale — Diwali 40% off sitewide (future)
+  {
+    id: "event-diwali-sale-2026-sale",
+    type: EVENT_FIELDS.TYPE_VALUES.SALE,
+    title: "Diwali Grand Sale 2026 — Up to 40% Off",
+    description:
+      "<p>Our biggest sale of the year is coming! Enjoy <strong>up to 40% off</strong> across every category on LetItRip. Mark your calendars — 20–28 Oct 2026.</p>",
+    status: EVENT_FIELDS.STATUS_VALUES.DRAFT,
+    startsAt: new Date("2026-10-20T00:00:00Z"),
+    endsAt: new Date("2026-10-28T23:59:59Z"),
+    coverImageUrl: "https://picsum.photos/seed/hackathon-coding/1200/400",
+    saleConfig: {
+      discountPercent: 40,
+      bannerText: "🪔 Diwali Sale is coming — Up to 40% off sitewide!",
+      affectedCategories: [],
+    },
+    stats: {
+      totalEntries: 0,
+      approvedEntries: 0,
+      flaggedEntries: 0,
+    },
+    createdBy: "user-admin-user-admin",
+    createdAt: new Date("2026-03-15T09:00:00Z"),
+    updatedAt: new Date("2026-03-15T09:00:00Z"),
+  },
+
+  // 8. Active Offer — Sports Season coupon giveaway
+  {
+    id: "event-sports-season-offer-2026-offer",
+    type: EVENT_FIELDS.TYPE_VALUES.OFFER,
+    title: "Sports Season Deal — 10% Off with SPORT10",
+    description:
+      "<p>Gear up for the sporting season! Use code <strong>SPORT10</strong> at checkout to get 10% off all Sports & Outdoors products. Valid on orders over ₹500.</p>",
+    status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
+    startsAt: new Date("2026-04-01T00:00:00Z"),
+    endsAt: new Date("2026-05-31T23:59:59Z"),
+    coverImageUrl: "https://picsum.photos/seed/sports-fitness/1200/400",
+    offerConfig: {
+      couponId: "coupon-SPORT10",
+      displayCode: "SPORT10",
+      bannerText:
+        "🏅 Sports Season — Use SPORT10 for 10% off Sports & Outdoors",
+    },
+    stats: {
+      totalEntries: 0,
+      approvedEntries: 0,
+      flaggedEntries: 0,
+    },
+    createdBy: "user-admin-user-admin",
+    createdAt: new Date("2026-03-20T10:00:00Z"),
+    updatedAt: new Date("2026-03-20T10:00:00Z"),
+  },
+
+  // 9. Active Poll — Favourite Electronics Brand
+  {
+    id: "event-favourite-brand-poll-2026-poll",
+    type: EVENT_FIELDS.TYPE_VALUES.POLL,
+    title: "Your Favourite Electronics Brand on LetItRip",
+    description:
+      "<p>Which electronics brand do you trust most? Cast your vote and see live results — everyone can see the tally as it updates!</p>",
+    status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
+    startsAt: new Date("2026-03-01T00:00:00Z"),
+    endsAt: new Date("2026-04-30T23:59:59Z"),
+    coverImageUrl: "https://picsum.photos/seed/technology-chip/1200/400",
+    pollConfig: {
+      allowMultiSelect: false,
+      allowComment: false,
+      options: [
+        { id: "opt-samsung", label: "Samsung" },
+        { id: "opt-apple", label: "Apple" },
+        { id: "opt-sony", label: "Sony" },
+        { id: "opt-oneplus", label: "OnePlus" },
+        { id: "opt-lg", label: "LG" },
+        { id: "opt-other", label: "Other" },
+      ],
+      resultsVisibility: "always",
+    },
+    stats: {
+      totalEntries: 4,
+      approvedEntries: 4,
+      flaggedEntries: 0,
+    },
+    createdBy: "user-admin-user-admin",
+    createdAt: new Date("2026-02-25T14:00:00Z"),
+    updatedAt: new Date("2026-03-10T11:00:00Z"),
+  },
+
+  // 10. Active Survey — Shopping Experience with leaderboard + points
+  {
+    id: "event-shopping-experience-survey-2026-survey",
+    type: EVENT_FIELDS.TYPE_VALUES.SURVEY,
+    title: "Tell Us About Your Shopping Experience — Earn Stars!",
+    description:
+      "<p>Complete this short survey and earn <strong>Stars</strong> on our leaderboard. Top contributors each month win exclusive LetItRip rewards!</p>",
+    status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
+    startsAt: new Date("2026-04-01T00:00:00Z"),
+    endsAt: new Date("2026-06-30T23:59:59Z"),
+    coverImageUrl: "https://picsum.photos/seed/webinar-online/1200/400",
+    surveyConfig: {
+      requireLogin: true,
+      maxEntriesPerUser: 1,
+      hasLeaderboard: true,
+      hasPointSystem: true,
+      pointsLabel: "Stars",
+      entryReviewRequired: true,
+      formFields: [
+        {
+          id: "sq-name",
+          type: "text",
+          label: "Your first name",
+          placeholder: "e.g. Priya",
+          required: true,
+          order: 1,
+        } as SurveyFormField,
+        {
+          id: "sq-rating",
+          type: "rating",
+          label: "How would you rate your overall shopping experience?",
+          required: true,
+          order: 2,
+        } as SurveyFormField,
+        {
+          id: "sq-category",
+          type: "radio",
+          label: "Which category do you shop in most?",
+          required: true,
+          options: [
+            "Electronics",
+            "Fashion",
+            "Home & Kitchen",
+            "Sports",
+            "Other",
+          ],
+          order: 3,
+        } as SurveyFormField,
+        {
+          id: "sq-features",
+          type: "checkbox",
+          label: "Which platform features do you use? (select all that apply)",
+          required: false,
+          options: [
+            "Wishlist",
+            "Product Reviews",
+            "Price Alerts",
+            "Deals & Events",
+            "Auction",
+          ],
+          order: 4,
+        } as SurveyFormField,
+        {
+          id: "sq-suggestion",
+          type: "textarea",
+          label: "What one feature would you most like to see added?",
+          placeholder: "Describe in a few sentences…",
+          required: false,
+          validation: { maxLength: 500 },
+          order: 5,
+        } as SurveyFormField,
+      ],
+    },
+    stats: {
+      totalEntries: 2,
+      approvedEntries: 1,
+      flaggedEntries: 0,
+    },
+    createdBy: "user-admin-user-admin",
+    createdAt: new Date("2026-03-25T09:00:00Z"),
+    updatedAt: new Date("2026-04-12T16:00:00Z"),
+  },
+
+  // 11. Active Feedback — App Experience (non-anonymous)
+  {
+    id: "event-app-experience-feedback-2026-feedback",
+    type: EVENT_FIELDS.TYPE_VALUES.FEEDBACK,
+    title: "Rate Your LetItRip App Experience",
+    description:
+      "<p>Tell us what you think about the LetItRip app. Your named feedback helps our team prioritise improvements — thank you for taking a moment!</p>",
+    status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
+    startsAt: new Date("2026-04-01T00:00:00Z"),
+    endsAt: new Date("2026-06-30T23:59:59Z"),
+    coverImageUrl: "https://picsum.photos/seed/mobile-developer/1200/400",
+    feedbackConfig: {
+      anonymous: false,
+      formFields: [
+        {
+          id: "afb-ease",
+          type: "rating",
+          label: "How easy is it to find what you're looking for?",
+          required: true,
+          order: 1,
+        } as SurveyFormField,
+        {
+          id: "afb-performance",
+          type: "radio",
+          label: "How would you rate the app's speed and performance?",
+          required: true,
+          options: ["Excellent", "Good", "Average", "Poor"],
+          order: 2,
+        } as SurveyFormField,
+        {
+          id: "afb-recommend",
+          type: "radio",
+          label: "Would you recommend LetItRip to a friend?",
+          required: true,
+          options: ["Definitely", "Probably", "Not sure", "No"],
+          order: 3,
+        } as SurveyFormField,
+        {
+          id: "afb-comments",
+          type: "textarea",
+          label: "Any other feedback for our team?",
+          placeholder: "Share your thoughts…",
+          required: false,
+          validation: { maxLength: 600 },
+          order: 4,
+        } as SurveyFormField,
+      ],
+    },
+    stats: {
+      totalEntries: 3,
+      approvedEntries: 3,
+      flaggedEntries: 0,
+    },
+    createdBy: "user-admin-user-admin",
+    createdAt: new Date("2026-03-25T09:00:00Z"),
+    updatedAt: new Date("2026-04-15T12:00:00Z"),
   },
 ];
 
@@ -323,5 +578,137 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     reviewedAt: new Date("2026-02-15T10:00:00Z"),
     reviewNote: "Spam submission — flagged",
     submittedAt: new Date("2026-02-15T09:55:00Z"),
+  },
+
+  // Brand Poll votes — event-favourite-brand-poll-2026-poll (#9)
+  {
+    id: "entry-poll-brand-john-samsung",
+    eventId: "event-favourite-brand-poll-2026-poll",
+    userId: "user-john-doe-johndoe",
+    userDisplayName: "John Doe",
+    userEmail: "john@letitrip.in",
+    pollVotes: ["opt-samsung"],
+    reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
+    submittedAt: new Date("2026-03-02T10:00:00Z"),
+  },
+  {
+    id: "entry-poll-brand-jane-apple",
+    eventId: "event-favourite-brand-poll-2026-poll",
+    userId: "user-jane-smith-janes",
+    userDisplayName: "Jane Smith",
+    userEmail: "jane@letitrip.in",
+    pollVotes: ["opt-apple"],
+    reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
+    submittedAt: new Date("2026-03-03T14:22:00Z"),
+  },
+  {
+    id: "entry-poll-brand-mike-sony",
+    eventId: "event-favourite-brand-poll-2026-poll",
+    userId: "user-mike-johnson-mikejohn",
+    userDisplayName: "Mike Johnson",
+    userEmail: "mike@letitrip.in",
+    pollVotes: ["opt-sony"],
+    reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
+    submittedAt: new Date("2026-03-04T09:10:00Z"),
+  },
+  {
+    id: "entry-poll-brand-fashionb-oneplus",
+    eventId: "event-favourite-brand-poll-2026-poll",
+    userId: "user-fashion-boutique-fashionb",
+    userDisplayName: "Fashion Boutique",
+    userEmail: "fashionb@letitrip.in",
+    pollVotes: ["opt-oneplus"],
+    reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
+    submittedAt: new Date("2026-03-05T16:45:00Z"),
+  },
+
+  // Survey responses — event-shopping-experience-survey-2026-survey (#10)
+  {
+    id: "entry-survey-shopping-john",
+    eventId: "event-shopping-experience-survey-2026-survey",
+    userId: "user-john-doe-johndoe",
+    userDisplayName: "John Doe",
+    userEmail: "john@letitrip.in",
+    formResponses: {
+      "sq-name": "John",
+      "sq-rating": 5,
+      "sq-category": "Electronics",
+      "sq-features": ["Wishlist", "Product Reviews", "Deals & Events"],
+      "sq-suggestion":
+        "A price-drop alert direct to WhatsApp would be fantastic.",
+    },
+    reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
+    reviewedBy: "user-admin-user-admin",
+    reviewedAt: new Date("2026-04-10T10:00:00Z"),
+    reviewNote: "Well-written response — awarded full Stars",
+    points: 95,
+    submittedAt: new Date("2026-04-05T11:30:00Z"),
+  },
+  {
+    id: "entry-survey-shopping-jane",
+    eventId: "event-shopping-experience-survey-2026-survey",
+    userId: "user-jane-smith-janes",
+    userDisplayName: "Jane Smith",
+    userEmail: "jane@letitrip.in",
+    formResponses: {
+      "sq-name": "Jane",
+      "sq-rating": 4,
+      "sq-category": "Fashion",
+      "sq-features": ["Wishlist", "Price Alerts"],
+      "sq-suggestion":
+        "Outfit-builder feature combining multiple products would be amazing.",
+    },
+    reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.PENDING,
+    submittedAt: new Date("2026-04-08T15:00:00Z"),
+  },
+
+  // App feedback — event-app-experience-feedback-2026-feedback (#11)
+  {
+    id: "entry-feedback-app-john",
+    eventId: "event-app-experience-feedback-2026-feedback",
+    userId: "user-john-doe-johndoe",
+    userDisplayName: "John Doe",
+    userEmail: "john@letitrip.in",
+    formResponses: {
+      "afb-ease": 5,
+      "afb-performance": "Excellent",
+      "afb-recommend": "Definitely",
+      "afb-comments":
+        "Love how fast searches load. The filter panel is intuitive.",
+    },
+    reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
+    submittedAt: new Date("2026-04-03T09:15:00Z"),
+  },
+  {
+    id: "entry-feedback-app-mike",
+    eventId: "event-app-experience-feedback-2026-feedback",
+    userId: "user-mike-johnson-mikejohn",
+    userDisplayName: "Mike Johnson",
+    userEmail: "mike@letitrip.in",
+    formResponses: {
+      "afb-ease": 3,
+      "afb-performance": "Average",
+      "afb-recommend": "Probably",
+      "afb-comments":
+        "Occasionally slow on category pages with lots of products.",
+    },
+    reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
+    submittedAt: new Date("2026-04-06T13:40:00Z"),
+  },
+  {
+    id: "entry-feedback-app-priya",
+    eventId: "event-app-experience-feedback-2026-feedback",
+    userId: "user-priya-sharma-priya",
+    userDisplayName: "Priya Sharma",
+    userEmail: "priya@letitrip.in",
+    formResponses: {
+      "afb-ease": 4,
+      "afb-performance": "Good",
+      "afb-recommend": "Definitely",
+      "afb-comments":
+        "Love the auction feature! Wish there were more live auctions.",
+    },
+    reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
+    submittedAt: new Date("2026-04-09T17:05:00Z"),
   },
 ];

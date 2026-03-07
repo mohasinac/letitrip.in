@@ -9,7 +9,7 @@ import type { HomepageSection } from "../components";
  * Fetches homepage sections and exposes create, update, and delete mutations.
  */
 export function useAdminSections() {
-  const query = useApiQuery<{ sections: HomepageSection[] }>({
+  const query = useApiQuery<HomepageSection[]>({
     queryKey: ["homepage-sections", "list"],
     queryFn: () => homepageSectionsService.list(),
   });

@@ -4,7 +4,7 @@
  * POST /api/payment/verify
  *
  * 1. Verifies Razorpay payment signature
- * 2. Creates application orders (one per cart item)
+ * 2. Groups cart items by sellerId → creates one application order per store
  * 3. Deducts product stock
  * 4. Clears the cart
  * 5. Returns { orderIds, total }
@@ -17,19 +17,17 @@
  *   notes                — Optional order notes
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { requireAuthFromRequest } from "@/lib/security/authorization";
 import { verifyPaymentSignature } from "@/lib/payment/razorpay";
 import { unitOfWork } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
-import { successResponse, ApiErrors } from "@/lib/api-response";
+import { successResponse } from "@/lib/api-response";
 import { ValidationError, NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { sendOrderConfirmationEmail } from "@/lib/email";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
+import { createApiHandler } from "@/lib/api/api-handler";
 import type { AddressDocument } from "@/db/schema";
 
 const verifySchema = z.object({
@@ -55,25 +53,17 @@ function formatShippingAddress(a: AddressDocument): string {
     .join(", ");
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    // 1. Auth
-    const user = await requireAuthFromRequest(request);
-
-    // 2. Validate body
-    const body = await request.json();
-    const validation = verifySchema.safeParse(body);
-    if (!validation.success) {
-      return ApiErrors.validationError(validation.error.issues);
-    }
-
+export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
+  auth: true,
+  schema: verifySchema,
+  handler: async ({ user, body }) => {
     const {
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,
       addressId,
       notes,
-    } = validation.data;
+    } = body!;
 
     // 3. Verify Razorpay signature
     const isValid = verifyPaymentSignature({
@@ -84,19 +74,19 @@ export async function POST(request: NextRequest) {
 
     if (!isValid) {
       serverLogger.warn(
-        `Payment signature verification failed for user ${user.uid}`,
+        `Payment signature verification failed for user ${user!.uid}`,
       );
       throw new ValidationError(ERROR_MESSAGES.CHECKOUT.PAYMENT_FAILED);
     }
 
     // 4. Load cart
-    const cart = await unitOfWork.carts.getOrCreate(user.uid);
+    const cart = await unitOfWork.carts.getOrCreate(user!.uid);
     if (!cart.items || cart.items.length === 0) {
       throw new ValidationError(ERROR_MESSAGES.CHECKOUT.CART_EMPTY);
     }
 
     // 5. Resolve address
-    const address = await unitOfWork.addresses.findById(user.uid, addressId);
+    const address = await unitOfWork.addresses.findById(user!.uid, addressId);
     if (!address) {
       throw new NotFoundError(ERROR_MESSAGES.CHECKOUT.ADDRESS_REQUIRED);
     }
@@ -119,30 +109,54 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 7. Create orders (payment already verified — status = "paid")
-    const userName = user.displayName ?? user.email ?? "Unknown User";
-    const userEmail = user.email ?? "";
+    // 7. Group items by sellerId → one order per store (payment verified — status = "paid")
+    const userName = user!.displayName ?? user!.email ?? "Unknown User";
+    const userEmail = user!.email ?? "";
+
+    const byStore = new Map<string, typeof productChecks>();
+    for (const check of productChecks) {
+      const key = check.item.sellerId || "unknown";
+      if (!byStore.has(key)) byStore.set(key, []);
+      byStore.get(key)!.push(check);
+    }
+
     const orderIds: string[] = [];
     let total = 0;
     const emailsToSend: Parameters<typeof sendOrderConfirmationEmail>[0][] = [];
 
-    for (const { item, product } of productChecks) {
-      if (!product) continue;
+    for (const group of byStore.values()) {
+      const firstItem = group[0].item;
+      const groupTotal = group.reduce(
+        (sum, { item }) => sum + item.price * item.quantity,
+        0,
+      );
+      total += groupTotal;
 
-      const unitPrice = item.price;
-      const totalPrice = unitPrice * item.quantity;
-      total += totalPrice;
-
-      const order = await unitOfWork.orders.create({
+      const orderItems = group.map(({ item }) => ({
         productId: item.productId,
         productTitle: item.productTitle,
-        userId: user.uid,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        totalPrice: item.price * item.quantity,
+      }));
+      const totalQuantity = group.reduce(
+        (sum, { item }) => sum + item.quantity,
+        0,
+      );
+
+      const order = await unitOfWork.orders.create({
+        productId: firstItem.productId,
+        productTitle: firstItem.productTitle,
+        userId: user!.uid,
         userName,
         userEmail,
-        quantity: item.quantity,
-        unitPrice,
-        totalPrice,
-        currency: item.currency ?? "INR",
+        quantity: totalQuantity,
+        unitPrice: firstItem.price,
+        totalPrice: groupTotal,
+        currency: firstItem.currency ?? "INR",
+        sellerId: firstItem.sellerId || undefined,
+        sellerName: firstItem.sellerName || undefined,
+        items: orderItems,
         status: "confirmed",
         paymentStatus: "paid",
         paymentMethod: "online",
@@ -158,12 +172,16 @@ export async function POST(request: NextRequest) {
           to: userEmail,
           userName,
           orderId: order.id,
-          productTitle: item.productTitle,
-          quantity: item.quantity,
-          totalPrice,
-          currency: item.currency ?? "INR",
+          productTitle:
+            orderItems.length > 1
+              ? `${orderItems.length} items`
+              : firstItem.productTitle,
+          quantity: totalQuantity,
+          totalPrice: groupTotal,
+          currency: firstItem.currency ?? "INR",
           shippingAddress,
           paymentMethod: "online",
+          items: orderItems,
         });
       }
     }
@@ -177,7 +195,7 @@ export async function POST(request: NextRequest) {
           availableQuantity: product.availableQuantity - item.quantity,
         } as any);
       }
-      unitOfWork.carts.updateInBatch(batch, user.uid, { items: [] } as any);
+      unitOfWork.carts.updateInBatch(batch, user!.uid, { items: [] } as any);
     });
 
     // 10. Send confirmation emails (fire-and-forget)
@@ -188,7 +206,7 @@ export async function POST(request: NextRequest) {
     }
 
     serverLogger.info(
-      `Payment verified & ${orderIds.length} orders placed for user ${user.uid} — payment ${razorpay_payment_id}`,
+      `Payment verified & ${orderIds.length} store order(s) placed for user ${user!.uid} — payment ${razorpay_payment_id}`,
     );
 
     // Signal the RTDB payment event node so usePaymentEvent can navigate the UI.
@@ -206,8 +224,5 @@ export async function POST(request: NextRequest) {
       { orderIds, total, itemCount: orderIds.length },
       SUCCESS_MESSAGES.CHECKOUT.PAYMENT_RECEIVED,
     );
-  } catch (error) {
-    serverLogger.error("POST /api/payment/verify error:", error);
-    return handleApiError(error);
-  }
-}
+  },
+});

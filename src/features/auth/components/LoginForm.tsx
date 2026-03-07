@@ -24,7 +24,7 @@ import {
 } from "@/components";
 import { ERROR_MESSAGES, ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useAuth, useLogin, useGoogleLogin, useAppleLogin } from "@/hooks";
+import { useAuth, useLogin, useGoogleLogin } from "@/hooks";
 import { AuthSocialButtons } from "./AuthSocialButtons";
 
 const { themed, spacing, flex, page } = THEME_CONSTANTS;
@@ -53,12 +53,7 @@ export function LoginForm() {
     onError: (err) => setError(err.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED),
   });
 
-  const { mutate: appleLogin, isLoading: appleLoading } = useAppleLogin({
-    onSuccess: () => {},
-    onError: (err) => setError(err.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED),
-  });
-
-  const loading = loginLoading || googleLoading || appleLoading;
+  const loading = loginLoading || googleLoading;
 
   useEffect(() => {
     if (!authLoading && user) router.push(callbackUrl);
@@ -77,11 +72,6 @@ export function LoginForm() {
     setError(null);
     await googleLogin();
   }, [googleLogin]);
-
-  const handleApple = useCallback(async () => {
-    setError(null);
-    await appleLogin();
-  }, [appleLogin]);
 
   if (authLoading) {
     return (
@@ -200,11 +190,7 @@ export function LoginForm() {
           </Button>
         </form>
 
-        <AuthSocialButtons
-          onGoogle={handleGoogle}
-          onApple={handleApple}
-          disabled={loading}
-        />
+        <AuthSocialButtons onGoogle={handleGoogle} disabled={loading} />
       </div>
     </div>
   );

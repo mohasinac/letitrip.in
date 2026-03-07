@@ -12,19 +12,16 @@ const { themed, typography } = THEME_CONSTANTS;
 export function BlogFeaturedCard({ post }: { post: BlogPostDocument }) {
   return (
     <div className="mb-10">
-      <TextLink
-        href={`${ROUTES.PUBLIC.BLOG}/${post.slug}`}
-        className="block group"
-      >
+      <TextLink href={`${ROUTES.PUBLIC.BLOG}/${post.slug}`} className="block">
         <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
           <div className="md:flex">
             {post.coverImage && (
-              <div className="md:w-1/2 relative h-64 md:min-h-[320px] overflow-hidden">
+              <div className="group/img md:w-1/2 relative h-64 md:min-h-[320px] overflow-hidden">
                 <MediaImage
                   src={post.coverImage}
                   alt={post.title}
                   size="hero"
-                  className="group-hover:scale-105 transition-transform duration-300"
+                  className="group-hover/img:scale-105 transition-transform duration-300"
                 />
               </div>
             )}
@@ -41,7 +38,7 @@ export function BlogFeaturedCard({ post }: { post: BlogPostDocument }) {
               </div>
               <Heading
                 level={2}
-                className={`${typography.h3} ${themed.textPrimary} mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors`}
+                className={`${typography.h3} ${themed.textPrimary} mb-3 group-hover/img:text-indigo-600 dark:group-hover/img:text-indigo-400 transition-colors`}
               >
                 {post.title}
               </Heading>

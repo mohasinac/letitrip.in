@@ -21,7 +21,7 @@ import {
   eventEntriesSeedData,
   sessionsSeedData,
   cartsSeedData,
-} from "../../../../../scripts/seed-data";
+} from "@/db/seed-data";
 import {
   USER_COLLECTION,
   PRODUCT_COLLECTION,
@@ -113,6 +113,117 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   carts: cartsSeedData,
 };
 
+/** Recursively remove keys whose value is `undefined` so Firestore doesn't reject them. */
+function stripUndefined(obj: any): any {
+  if (Array.isArray(obj)) return obj.map(stripUndefined);
+  if (obj !== null && typeof obj === "object") {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([, v]) => v !== undefined)
+        .map(([k, v]) => [k, stripUndefined(v)]),
+    );
+  }
+  return obj;
+}
+
+export async function GET(_request: NextRequest) {
+  if (process.env.NODE_ENV !== "development") {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "This API is only available in development mode",
+      },
+      { status: 403 },
+    );
+  }
+
+  try {
+    const db = getAdminDb();
+
+    const collections = await Promise.all(
+      (Object.keys(SEED_DATA_MAP) as CollectionName[]).map(async (colName) => {
+        const seedData = SEED_DATA_MAP[colName];
+        const seedCount = seedData.length;
+
+        if (seedCount === 0) {
+          return { name: colName, seedCount: 0, existingCount: 0 };
+        }
+
+        let existingCount = 0;
+
+        try {
+          if (colName === "addresses") {
+            const refs = (seedData as any[])
+              .filter((d) => d.userId && d.id)
+              .map((d) =>
+                db
+                  .collection(USER_COLLECTION)
+                  .doc(d.userId)
+                  .collection("addresses")
+                  .doc(d.id),
+              );
+            if (refs.length > 0) {
+              const snaps = await db.getAll(...refs);
+              existingCount = snaps.filter((s) => s.exists).length;
+            }
+          } else if (colName === "siteSettings") {
+            const snap = await db
+              .collection(COLLECTION_MAP[colName])
+              .doc("global")
+              .get();
+            existingCount = snap.exists ? 1 : 0;
+          } else if (colName === "users") {
+            const refs = (seedData as any[])
+              .filter((d) => d.uid)
+              .map((d) => db.collection(COLLECTION_MAP[colName]).doc(d.uid));
+            if (refs.length > 0) {
+              const snaps = await db.getAll(...refs);
+              existingCount = snaps.filter((s) => s.exists).length;
+            }
+          } else if (colName === "faqs") {
+            // FAQs use generated IDs — build them the same way the POST handler does
+            const { generateFAQId } = await import("@/utils");
+            const refs = (seedData as any[]).map((faq: any) => {
+              const id = generateFAQId({
+                category: faq.category,
+                question: faq.question,
+              });
+              return db.collection(COLLECTION_MAP[colName]).doc(id);
+            });
+            if (refs.length > 0) {
+              const snaps = await db.getAll(...refs);
+              existingCount = snaps.filter((s) => s.exists).length;
+            }
+          } else {
+            const refs = (seedData as any[])
+              .filter((d) => d.id)
+              .map((d) => db.collection(COLLECTION_MAP[colName]).doc(d.id));
+            if (refs.length > 0) {
+              const snaps = await db.getAll(...refs);
+              existingCount = snaps.filter((s) => s.exists).length;
+            }
+          }
+        } catch (err) {
+          serverLogger.error(`Error checking status for ${colName}:`, err);
+        }
+
+        return { name: colName, seedCount, existingCount };
+      }),
+    );
+
+    return NextResponse.json({ success: true, data: { collections } });
+  } catch (error) {
+    serverLogger.error("Seed status API error:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: error instanceof Error ? error.message : "An error occurred",
+      },
+      { status: 500 },
+    );
+  }
+}
+
 export async function POST(request: NextRequest) {
   // Double check environment
   if (process.env.NODE_ENV !== "development") {
@@ -142,7 +253,6 @@ export async function POST(request: NextRequest) {
     const auth = getAdminAuth();
 
     let totalCreated = 0;
-    let totalUpdated = 0;
     let totalDeleted = 0;
     let totalSkipped = 0;
     let totalErrors = 0;
@@ -174,7 +284,15 @@ export async function POST(request: NextRequest) {
                   disabled,
                 } = userData as any;
 
-                // Check if user exists in Auth
+                // Check if Firestore document already exists — skip if so
+                const docRef = db.collection(firestoreCollection).doc(uid);
+                const docSnapshot = await docRef.get();
+                if (docSnapshot.exists) {
+                  totalSkipped++;
+                  continue;
+                }
+
+                // Check if Auth user exists
                 let userExists = false;
                 try {
                   await auth.getUser(uid);
@@ -185,17 +303,17 @@ export async function POST(request: NextRequest) {
                   }
                 }
 
-                // Create or update Auth user
-                // Note: Firebase Auth validates photoURL and rejects null/empty strings
+                // Create Auth user if not present
+                // Note: Firebase Auth rejects null/empty strings for email, phoneNumber, photoURL
                 const authUserData: any = {
-                  email,
-                  phoneNumber,
                   displayName,
                   emailVerified,
                   disabled,
                 };
-
-                // Only include photoURL if it's a valid non-empty string
+                if (email && typeof email === "string")
+                  authUserData.email = email;
+                if (phoneNumber && typeof phoneNumber === "string")
+                  authUserData.phoneNumber = phoneNumber;
                 if (
                   photoURL &&
                   typeof photoURL === "string" &&
@@ -204,9 +322,7 @@ export async function POST(request: NextRequest) {
                   authUserData.photoURL = photoURL;
                 }
 
-                if (userExists) {
-                  await auth.updateUser(uid, authUserData);
-                } else {
+                if (!userExists) {
                   await auth.createUser({
                     uid,
                     ...authUserData,
@@ -214,27 +330,10 @@ export async function POST(request: NextRequest) {
                   });
                 }
 
-                // Check if Firestore document exists
-                const docRef = db.collection(firestoreCollection).doc(uid);
-                const docSnapshot = await docRef.get();
-                const docExists = docSnapshot.exists;
-
-                // Upsert Firestore document
-                const docData = { ...userData };
-                if (docData.createdAt instanceof Date) {
-                  docData.createdAt = docData.createdAt;
-                }
-                if (docData.updatedAt instanceof Date) {
-                  docData.updatedAt = docData.updatedAt;
-                }
-
-                await docRef.set(docData, { merge: true });
-
-                if (docExists) {
-                  totalUpdated++;
-                } else {
-                  totalCreated++;
-                }
+                // Write new Firestore document
+                const docData = stripUndefined({ ...userData });
+                await docRef.set(docData);
+                totalCreated++;
               } catch (err) {
                 serverLogger.error(`Error seeding user ${userData.uid}:`, err);
                 totalErrors++;
@@ -252,23 +351,20 @@ export async function POST(request: NextRequest) {
                   continue;
                 }
 
-                // Check if document exists
+                // Skip if document already exists
                 const docRef = db
                   .collection(USER_COLLECTION)
                   .doc(userId)
                   .collection("addresses")
                   .doc(id);
                 const docSnapshot = await docRef.get();
-                const exists = docSnapshot.exists;
-
-                // Upsert document
-                await docRef.set(data, { merge: true });
-
-                if (exists) {
-                  totalUpdated++;
-                } else {
-                  totalCreated++;
+                if (docSnapshot.exists) {
+                  totalSkipped++;
+                  continue;
                 }
+
+                await docRef.set(stripUndefined(data));
+                totalCreated++;
               } catch (err) {
                 serverLogger.error(`Error seeding address:`, err);
                 totalErrors++;
@@ -280,71 +376,66 @@ export async function POST(request: NextRequest) {
             if (settingsData) {
               const docRef = db.collection(firestoreCollection).doc("global");
               const docSnapshot = await docRef.get();
-              const exists = docSnapshot.exists;
-
-              await docRef.set(settingsData, { merge: true });
-
-              if (exists) {
-                totalUpdated++;
+              if (docSnapshot.exists) {
+                totalSkipped++;
               } else {
+                await docRef.set(stripUndefined(settingsData));
                 totalCreated++;
               }
             }
           } else {
-            // Regular collections
-            for (const docData of seedData) {
-              try {
-                let { id, ...data } = docData as any;
+            // Regular collections — bulk-check existence then batch write (500 per batch)
+            type WriteItem = {
+              docRef: FirebaseFirestore.DocumentReference;
+              data: Record<string, any>;
+            };
+            const items: WriteItem[] = [];
 
-                // Special handling for FAQs - generate ID if missing
-                if (!id && collectionName === "faqs") {
-                  const { generateFAQId } = await import("@/utils");
-                  id = generateFAQId({
-                    category: (docData as any).category,
-                    question: (docData as any).question,
-                  });
-                  if (!id) {
-                    serverLogger.error(
-                      `Failed to generate ID for FAQ: ${(docData as any).question}`,
-                    );
-                    totalErrors++;
-                    continue;
-                  }
-                } else if (!id) {
+            // Phase 1: resolve document IDs
+            for (const docData of seedData) {
+              let { id, ...data } = docData as any;
+
+              if (!id && collectionName === "faqs") {
+                const { generateFAQId } = await import("@/utils");
+                id = generateFAQId({
+                  category: (docData as any).category,
+                  question: (docData as any).question,
+                });
+                if (!id) {
                   serverLogger.error(
-                    `Document missing ID in ${collectionName}`,
+                    `Failed to generate ID for FAQ: ${(docData as any).question}`,
                   );
                   totalErrors++;
                   continue;
                 }
-
-                // Check if document exists
-                const docRef = db.collection(firestoreCollection).doc(id);
-                const docSnapshot = await docRef.get();
-                const exists = docSnapshot.exists;
-
-                // Convert Date objects properly
-                const processedData = { ...data };
-                Object.keys(processedData).forEach((key) => {
-                  if (processedData[key] instanceof Date) {
-                    processedData[key] = processedData[key];
-                  }
-                });
-
-                // Upsert document
-                await docRef.set(processedData, { merge: true });
-
-                if (exists) {
-                  totalUpdated++;
-                } else {
-                  totalCreated++;
-                }
-              } catch (err) {
-                serverLogger.error(
-                  `Error seeding document in ${collectionName}:`,
-                  err,
-                );
+              } else if (!id) {
+                serverLogger.error(`Document missing ID in ${collectionName}`);
                 totalErrors++;
+                continue;
+              }
+
+              items.push({
+                docRef: db.collection(firestoreCollection).doc(id),
+                data: stripUndefined(data),
+              });
+            }
+
+            if (items.length > 0) {
+              // Phase 2: bulk existence check
+              const snaps = await db.getAll(...items.map((i) => i.docRef));
+              const toWrite = items.filter((_, idx) => !snaps[idx].exists);
+              totalSkipped += items.length - toWrite.length;
+
+              // Phase 3: batch write in chunks of 500
+              const BATCH_LIMIT = 500;
+              for (let i = 0; i < toWrite.length; i += BATCH_LIMIT) {
+                const chunk = toWrite.slice(i, i + BATCH_LIMIT);
+                const batch = db.batch();
+                for (const { docRef, data } of chunk) {
+                  batch.set(docRef, data);
+                }
+                await batch.commit();
+                totalCreated += chunk.length;
               }
             }
           }
@@ -361,12 +452,14 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        message: `Successfully loaded seed data. Created ${totalCreated}, updated ${totalUpdated} documents.`,
-        details: {
-          created: totalCreated,
-          updated: totalUpdated,
-          errors: totalErrors,
-          collections: processedCollections,
+        data: {
+          message: `Successfully loaded seed data. Created ${totalCreated}, skipped ${totalSkipped} (already exist).`,
+          details: {
+            created: totalCreated,
+            skipped: totalSkipped,
+            errors: totalErrors,
+            collections: processedCollections,
+          },
         },
       });
     } else if (action === "delete") {
@@ -524,12 +617,14 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        message: `Successfully deleted seed data. Removed ${totalDeleted} documents${totalSkipped > 0 ? `, skipped ${totalSkipped} (not found)` : ""}.`,
-        details: {
-          deleted: totalDeleted,
-          skipped: totalSkipped,
-          errors: totalErrors,
-          collections: processedCollections,
+        data: {
+          message: `Successfully deleted seed data. Removed ${totalDeleted} documents${totalSkipped > 0 ? `, skipped ${totalSkipped} (not found)` : ""}.`,
+          details: {
+            deleted: totalDeleted,
+            skipped: totalSkipped,
+            errors: totalErrors,
+            collections: processedCollections,
+          },
         },
       });
     }

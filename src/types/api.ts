@@ -571,7 +571,9 @@ export interface HomepageSectionCreateRequest {
     | "whatsapp-community"
     | "faq"
     | "blog-articles"
-    | "newsletter";
+    | "newsletter"
+    | "stores"
+    | "events";
   title: string;
   order: number;
   enabled: boolean;

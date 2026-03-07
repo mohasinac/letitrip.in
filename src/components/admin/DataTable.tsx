@@ -86,7 +86,7 @@ export function DataTable<T extends Record<string, any>>({
   externalPagination = false,
   showViewToggle = false,
   viewMode: controlledViewMode,
-  defaultViewMode = "table",
+  defaultViewMode = "grid",
   onViewModeChange,
   selectable = false,
   selectedIds = [],
@@ -220,37 +220,6 @@ export function DataTable<T extends Record<string, any>>({
           role="toolbar"
           aria-label="View mode"
         >
-          {/* Table mode — hidden on xs */}
-          <Button
-            type="button"
-            onClick={() => handleViewModeChange("table")}
-            aria-label={UI_LABELS.ADMIN.TABLE_VIEW ?? "Table view"}
-            aria-pressed={activeViewMode === "table"}
-            variant="ghost"
-            size="sm"
-            className={`hidden sm:flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${
-              activeViewMode === "table"
-                ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300"
-                : `${THEME_CONSTANTS.themed.textSecondary} ring-gray-200 dark:ring-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800`
-            }`}
-          >
-            {/* Table icon */}
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.5}
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 10h18M3 6h18M3 14h18M3 18h18"
-              />
-            </svg>
-          </Button>
-
           {/* Grid mode */}
           <Button
             type="button"
@@ -316,8 +285,8 @@ export function DataTable<T extends Record<string, any>>({
       )}
 
       {/* Grid view */}
-      {showViewToggle && activeViewMode === "grid" && mobileCardRender && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+      {activeViewMode === "grid" && mobileCardRender && (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {paginatedData.map((item) => (
             <SelectableCard
               key={keyExtractor(item)}
@@ -339,7 +308,7 @@ export function DataTable<T extends Record<string, any>>({
       )}
 
       {/* List view */}
-      {showViewToggle && activeViewMode === "list" && mobileCardRender && (
+      {activeViewMode === "list" && mobileCardRender && (
         <div className="flex flex-col gap-2">
           {paginatedData.map((item) => (
             <SelectableCard
@@ -362,8 +331,8 @@ export function DataTable<T extends Record<string, any>>({
         </div>
       )}
 
-      {/* Mobile Card View (CSS-driven, only when NOT using view toggle) */}
-      {(!showViewToggle || activeViewMode === "table") && mobileCardRender && (
+      {/* Mobile Card View (CSS-driven, table mode only) */}
+      {activeViewMode === "table" && mobileCardRender && (
         <div className={`md:hidden ${THEME_CONSTANTS.spacing.stack}`}>
           {paginatedData.map((item) => (
             <SelectableCard
@@ -386,7 +355,7 @@ export function DataTable<T extends Record<string, any>>({
       )}
 
       {/* Desktop Table View */}
-      {(!showViewToggle || activeViewMode === "table") && (
+      {activeViewMode === "table" && (
         <div
           className={`border ${THEME_CONSTANTS.themed.borderColor} rounded-lg overflow-hidden`}
         >

@@ -67,6 +67,11 @@ export function AdminBlogView() {
     defaults: { pageSize: "25", sort: "-createdAt" },
   });
   const statusFilter = table.get("status");
+  const categoryFilter = table.get("category");
+  const isFeaturedFilter = table.get("isFeatured");
+  const searchTerm = table.get("q");
+  const sortParam = table.get("sort") || "-createdAt";
+  const pageParam = table.getNumber("page", 1);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogPostDocument | null>(null);
@@ -88,7 +93,18 @@ export function AdminBlogView() {
     createMutation,
     updateMutation,
     deleteMutation,
-  } = useAdminBlog(statusFilter);
+  } = useAdminBlog(
+    table.buildSieveParams(
+      [
+        statusFilter ? `status==${statusFilter}` : "",
+        categoryFilter ? `category==${categoryFilter}` : "",
+        isFeaturedFilter === "true" ? "isFeatured==true" : "",
+        searchTerm ? `title@=*${searchTerm}` : "",
+      ]
+        .filter(Boolean)
+        .join(","),
+    ),
+  );
 
   const allPosts: BlogPostDocument[] = data?.posts || [];
 
@@ -304,7 +320,7 @@ export function AdminBlogView() {
           emptyMessage={t("empty")}
           emptyTitle={t("emptySubtitle")}
           showViewToggle
-          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(post: BlogPostDocument) => (
             <Card className="overflow-hidden cursor-pointer">

@@ -5,7 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
-import { usePlaceBid } from "@/hooks";
+import { usePlaceBid, useMessage } from "@/hooks";
 import { Button, Input, Label, Span, Text } from "@/components";
 import type { BidDocument } from "@/db/schema";
 
@@ -32,6 +32,7 @@ export function PlaceBidForm({
   const t = useTranslations("auctions");
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
+  const { showSuccess, showError } = useMessage();
   const [bidAmount, setBidAmount] = useState<string>("");
   const { mutate: placeBidMutation, isLoading: isSubmitting } = usePlaceBid();
   const [error, setError] = useState<string | null>(null);
@@ -60,12 +61,14 @@ export function PlaceBidForm({
 
       setSuccess(true);
       setBidAmount("");
+      showSuccess(t("bidPlaced"));
       onBidPlaced?.(bid);
       // Refresh to show updated bid
       router.refresh();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : t("bidFailed");
       setError(message);
+      showError(message);
     }
   };
 

@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import {
   AdminPageHeader,
   Badge,
@@ -22,11 +22,11 @@ import {
   Text,
   ListingLayout,
   Search,
-  FilterFacetSection,
 } from "@/components";
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useUrlTable, useMessage } from "@/hooks";
+import { useUrlTable, useMessage, usePendingTable } from "@/hooks";
+import { StoreFilters } from "@/components/filters";
 import { useAdminStores } from "@/features/admin/hooks";
 import type { AdminStoreItem } from "@/features/admin/hooks";
 import { formatDate } from "@/utils";
@@ -60,7 +60,6 @@ export function AdminStoresView() {
     defaults: { pageSize: "25", sorts: "-createdAt" },
   });
 
-  const activeTab = table.get("storeStatus") || "all";
   const searchTerm = table.get("q");
 
   const [confirmState, setConfirmState] = useState<ConfirmState>({
@@ -70,17 +69,13 @@ export function AdminStoresView() {
     onConfirm: async () => {},
   });
 
-  const [stagedStoreStatus, setStagedStoreStatus] = useState<string[]>(
-    activeTab !== "all" ? [activeTab] : [],
-  );
-
-  useEffect(() => {
-    setStagedStoreStatus(activeTab !== "all" ? [activeTab] : []);
-  }, [activeTab]);
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, ["storeStatus"]);
 
   // Build Sieve filter string
+  const activeTab = table.get("storeStatus");
   const filtersArr: string[] = [];
-  if (activeTab !== "all") filtersArr.push(`storeStatus==${activeTab}`);
+  if (activeTab) filtersArr.push(`storeStatus==${activeTab}`);
   if (searchTerm)
     filtersArr.push(`(displayName|email|storeSlug)@=*${searchTerm}`);
   const filtersParam = filtersArr.join(",");
@@ -228,26 +223,10 @@ export function AdminStoresView() {
             placeholder={t("searchPlaceholder")}
           />
         }
-        filterContent={
-          <FilterFacetSection
-            title={t("colStatus")}
-            options={[
-              { value: "pending", label: t("filterPending") },
-              { value: "approved", label: t("filterApproved") },
-              { value: "rejected", label: t("filterRejected") },
-            ]}
-            selected={stagedStoreStatus}
-            onChange={setStagedStoreStatus}
-          />
-        }
-        filterActiveCount={activeTab !== "all" ? 1 : 0}
-        onFilterApply={() =>
-          table.set("storeStatus", stagedStoreStatus[0] ?? "")
-        }
-        onFilterClear={() => {
-          setStagedStoreStatus([]);
-          table.setMany({ storeStatus: "", q: "" });
-        }}
+        filterContent={<StoreFilters table={pendingTable} />}
+        filterActiveCount={filterActiveCount}
+        onFilterApply={onFilterApply}
+        onFilterClear={onFilterClear}
         paginationSlot={
           <TablePagination
             total={total}
@@ -267,7 +246,7 @@ export function AdminStoresView() {
           emptyMessage={t("noStores")}
           externalPagination
           showViewToggle
-          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(store) => (
             <Card className="p-4 space-y-2">

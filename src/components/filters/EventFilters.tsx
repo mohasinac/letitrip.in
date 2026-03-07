@@ -38,8 +38,12 @@ export function EventFilters({ table }: EventFiltersProps) {
     { value: "ended", label: t("eventStatusEnded") },
   ];
 
-  const selectedType = table.get("type") ? [table.get("type")] : [];
-  const selectedStatus = table.get("status") ? [table.get("status")] : [];
+  const selectedType = table.get("type")
+    ? table.get("type").split("|").filter(Boolean)
+    : [];
+  const selectedStatus = table.get("status")
+    ? table.get("status").split("|").filter(Boolean)
+    : [];
 
   return (
     <div>
@@ -47,20 +51,18 @@ export function EventFilters({ table }: EventFiltersProps) {
         title={t("type")}
         options={typeOptions}
         selected={selectedType}
-        onChange={(vals) => table.set("type", vals[0] ?? "")}
+        onChange={(vals) => table.set("type", vals.join("|"))}
         searchable={false}
         defaultCollapsed={false}
-        selectionMode="single"
       />
 
       <FilterFacetSection
         title={t("status")}
         options={statusOptions}
         selected={selectedStatus}
-        onChange={(vals) => table.set("status", vals[0] ?? "")}
+        onChange={(vals) => table.set("status", vals.join("|"))}
         searchable={false}
         defaultCollapsed={false}
-        selectionMode="single"
       />
 
       <RangeFilter

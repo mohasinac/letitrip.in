@@ -39,7 +39,7 @@ export function CategoryCard({
   return (
     <TextLink
       href={href}
-      className={`block group focus:outline-none ${className}`}
+      className={`block group/card focus:outline-none ${className}`}
     >
       <Card
         className={`h-full overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200${
@@ -47,19 +47,29 @@ export function CategoryCard({
         }`}
       >
         {/* ── Image area ── */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+        <div className="group/img relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
           {display?.coverImage ? (
             <MediaImage
               src={display.coverImage}
               alt={name}
               size="card"
-              className="group-hover:scale-105 transition-transform duration-300"
+              className="group-hover/img:scale-105 transition-transform duration-300"
             />
-          ) : (
+          ) : display?.icon ? (
             <div
-              className={`${flex.center} w-full h-full bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20`}
+              className={`${flex.center} w-full h-full`}
+              style={{
+                background:
+                  display.color ?? "linear-gradient(135deg,#6366f1,#a855f7)",
+              }}
             >
-              <Span className="text-5xl">{display?.icon ?? "🗂️"}</Span>
+              <Span className="text-5xl leading-none">{display.icon}</Span>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600">
+              <Span className="text-4xl font-bold text-white/90 select-none">
+                {name.charAt(0).toUpperCase()}
+              </Span>
             </div>
           )}
 
@@ -97,7 +107,7 @@ export function CategoryCard({
         <div className="flex flex-col flex-1 p-4 gap-1">
           <Heading
             level={3}
-            className={`text-base font-semibold ${themed.textPrimary} line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors`}
+            className={`text-base font-semibold ${themed.textPrimary} line-clamp-1 group-hover/img:text-indigo-600 dark:group-hover/img:text-indigo-400 transition-colors`}
           >
             {name}
           </Heading>
@@ -110,7 +120,7 @@ export function CategoryCard({
           <div className={`${flex.end} mt-2`}>
             <Span
               aria-hidden="true"
-              className="inline-block px-3 py-1 rounded-md text-xs font-semibold bg-amber-500 text-white group-hover:bg-amber-600 transition-colors"
+              className="inline-block px-3 py-1 rounded-md text-xs font-semibold bg-amber-500 text-white group-hover/img:bg-amber-600 transition-colors"
             >
               {t("view")}
             </Span>

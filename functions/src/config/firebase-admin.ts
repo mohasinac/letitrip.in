@@ -8,8 +8,18 @@ if (!admin.apps.length) {
 
 export const db = admin.firestore();
 export const auth = admin.auth();
-export const rtdb = admin.database();
 export const storage = admin.storage();
+
+// RTDB is lazily initialized — admin.database() requires FIREBASE_DATABASE_URL
+// which is only available inside the Firebase Functions runtime, not when the
+// Firebase CLI loads this module locally to introspect exports.
+let _rtdb: admin.database.Database | null = null;
+export function getRtdb(): admin.database.Database {
+  if (!_rtdb) {
+    _rtdb = admin.database();
+  }
+  return _rtdb;
+}
 
 // Convenience — used in every job to run batched writes
 export function newBatch() {

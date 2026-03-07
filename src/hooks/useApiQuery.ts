@@ -40,6 +40,37 @@ const inflightRequests = new Map<string, Promise<unknown>>();
 // Client-side cache instance (shared across all hook instances)
 const queryCache = CacheManager.getInstance(200);
 
+// ── Query invalidation event bus ─────────────────────────────────────────────
+// Allows mutations to tell active useApiQuery instances to refetch.
+type InvalidationListener = () => void;
+const invalidationListeners = new Map<string, Set<InvalidationListener>>();
+
+function subscribeInvalidation(cacheKey: string, cb: InvalidationListener) {
+  if (!invalidationListeners.has(cacheKey)) {
+    invalidationListeners.set(cacheKey, new Set());
+  }
+  invalidationListeners.get(cacheKey)!.add(cb);
+  return () => {
+    invalidationListeners.get(cacheKey)?.delete(cb);
+  };
+}
+
+/**
+ * Invalidate client-side query cache for the given keys and trigger
+ * a background refetch in every mounted useApiQuery that matches.
+ *
+ * @example
+ * invalidateQueries(["cart"]);           // single key
+ * invalidateQueries(["cart"], ["user"]); // multiple keys
+ */
+export function invalidateQueries(...queryKeys: string[][]) {
+  for (const key of queryKeys) {
+    const cacheKey = key.join(",");
+    queryCache.delete(cacheKey);
+    invalidationListeners.get(cacheKey)?.forEach((cb) => cb());
+  }
+}
+
 interface UseApiQueryOptions<TData> {
   queryKey: string[];
   queryFn: () => Promise<TData>;
@@ -186,6 +217,11 @@ export function useApiQuery<TData = any>(
     const interval = setInterval(() => fetchDataRef.current(), refetchInterval);
     return () => clearInterval(interval);
   }, [refetchInterval, enabled]);
+
+  // Subscribe to invalidation events for this cache key
+  useEffect(() => {
+    return subscribeInvalidation(cacheKey, () => fetchDataRef.current());
+  }, [cacheKey]);
 
   return {
     data,

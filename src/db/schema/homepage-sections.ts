@@ -118,6 +118,22 @@ export interface NewsletterSectionConfig {
   privacyLink: string;
 }
 
+export interface StoresSectionConfig {
+  title: string;
+  subtitle?: string;
+  maxStores: number;
+  autoScroll: boolean;
+  scrollInterval: number;
+}
+
+export interface EventsSectionConfig {
+  title: string;
+  subtitle?: string;
+  maxEvents: number;
+  autoScroll: boolean;
+  scrollInterval: number;
+}
+
 export interface BannerSectionConfig {
   height: "sm" | "md" | "lg" | "xl"; // 200px, 300px, 400px, 500px
   backgroundImage?: string;
@@ -152,7 +168,9 @@ export type SectionType =
   | "whatsapp-community"
   | "faq"
   | "blog-articles"
-  | "newsletter";
+  | "newsletter"
+  | "stores"
+  | "events";
 
 export type SectionConfig =
   | WelcomeSectionConfig
@@ -166,7 +184,9 @@ export type SectionConfig =
   | WhatsAppCommunitySectionConfig
   | FAQSectionConfig
   | BlogArticlesSectionConfig
-  | NewsletterSectionConfig;
+  | NewsletterSectionConfig
+  | StoresSectionConfig
+  | EventsSectionConfig;
 
 export interface HomepageSectionDocument {
   id: string;
@@ -227,6 +247,8 @@ export const DEFAULT_SECTION_ORDER: Record<SectionType, number> = {
   faq: 4,
   "blog-articles": 5,
   newsletter: 6,
+  stores: 7,
+  events: 8,
 };
 
 /**
@@ -360,6 +382,20 @@ export const DEFAULT_SECTION_CONFIGS: Record<SectionType, SectionConfig> = {
     privacyText: "We respect your privacy",
     privacyLink: "/privacy-policy",
   } as NewsletterSectionConfig,
+  stores: {
+    title: "Featured Stores",
+    subtitle: "Shop from our top sellers",
+    maxStores: 12,
+    autoScroll: true,
+    scrollInterval: 4500,
+  } as StoresSectionConfig,
+  events: {
+    title: "Upcoming Events",
+    subtitle: "Don't miss out",
+    maxEvents: 12,
+    autoScroll: true,
+    scrollInterval: 5000,
+  } as EventsSectionConfig,
 };
 
 /**

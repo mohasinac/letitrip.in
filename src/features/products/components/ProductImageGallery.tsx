@@ -5,12 +5,13 @@ import {
   Button,
   HorizontalScroller,
   MediaImage,
+  MediaLightbox,
   MediaVideo,
   Span,
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Expand } from "lucide-react";
 
 const { themed, borderRadius, flex } = THEME_CONSTANTS;
 
@@ -69,7 +70,19 @@ export function ProductImageGallery({
   ];
 
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const selected = allMedia[selectedIndex] ?? allMedia[0];
+
+  // Only image items are shown in the lightbox (videos play inline)
+  const lightboxItems = allMedia
+    .filter((m) => m.type === "image")
+    .map((m) => ({ src: m.src, alt: m.label }));
+  // Index within lightboxItems corresponding to the currently selected media
+  const lightboxIndex = Math.max(
+    0,
+    allMedia.slice(0, selectedIndex + 1).filter((m) => m.type === "image")
+      .length - 1,
+  );
 
   const goNext = useCallback(() => {
     setSelectedIndex((prev) => (prev + 1) % allMedia.length);
@@ -98,15 +111,35 @@ export function ProductImageGallery({
               controls
             />
           ) : (
-            <MediaImage
-              src={selected.src}
-              alt={`${title} - ${selected.label}`}
-              size="hero"
-              priority={selectedIndex === 0}
-              className="group-hover:scale-105 transition-transform duration-500"
-            />
+            <>
+              <MediaImage
+                src={selected.src}
+                alt={`${title} - ${selected.label}`}
+                size="hero"
+                priority={selectedIndex === 0}
+                className="group-hover:scale-105 transition-transform duration-500"
+              />
+              {/* Click overlay to open lightbox */}
+              <button
+                type="button"
+                aria-label={t("gallery.openLightbox")}
+                onClick={() => setLightboxOpen(true)}
+                className="absolute inset-0 cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset"
+              />
+            </>
           )}
         </div>
+
+        {/* Expand button (visible on hover, image only) */}
+        {selected?.type === "image" && (
+          <Button
+            onClick={() => setLightboxOpen(true)}
+            aria-label={t("gallery.openLightbox")}
+            className={`absolute top-2 right-2 w-8 h-8 p-0 min-h-0 ${flex.center} rounded-full bg-black/50 hover:bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm shadow border-0`}
+          >
+            <Expand className="w-4 h-4" />
+          </Button>
+        )}
 
         {/* Navigation arrows (visible on hover) */}
         {allMedia.length > 1 && (
@@ -173,6 +206,14 @@ export function ProductImageGallery({
           ))}
         </HorizontalScroller>
       )}
+
+      {/* Lightbox */}
+      <MediaLightbox
+        items={lightboxItems}
+        initialIndex={lightboxIndex}
+        isOpen={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+      />
     </div>
   );
 }

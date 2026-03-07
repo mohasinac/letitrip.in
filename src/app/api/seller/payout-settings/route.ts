@@ -11,14 +11,11 @@
  *   server-side and only returns the masked version to the client.
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
 import { userRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
-import { AuthorizationError } from "@/lib/errors";
-import { successResponse, ApiErrors } from "@/lib/api-response";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { successResponse } from "@/lib/api-response";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import type { SellerPayoutDetails } from "@/db/schema";
 
@@ -63,9 +60,10 @@ function maskAccountNumber(accountNumber: string): string {
  * Strip full account number from client response.
  * Only the masked version is returned.
  */
-function sanitisePayoutDetails(
-  details: SellerPayoutDetails | undefined,
-): Omit<SellerPayoutDetails, "bankAccount"> & {
+function sanitisePayoutDetails(details: SellerPayoutDetails | undefined): Omit<
+  SellerPayoutDetails,
+  "bankAccount"
+> & {
   bankAccount?: Omit<
     NonNullable<SellerPayoutDetails["bankAccount"]>,
     "accountNumber"
@@ -79,47 +77,26 @@ function sanitisePayoutDetails(
 
 // ─── GET ─────────────────────────────────────────────────────────────────────
 
-export async function GET() {
-  try {
-    const authUser = await requireAuth();
-    const user = await userRepository.findById(authUser.uid);
-
-    if (!user) {
-      throw new AuthorizationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-    }
-    if (user.role !== "seller" && user.role !== "admin") {
-      throw new AuthorizationError(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED);
-    }
-
+export const GET = createApiHandler({
+  auth: true,
+  roles: ["seller", "admin"],
+  handler: async ({ user }) => {
     return successResponse({
-      payoutDetails: sanitisePayoutDetails(user.payoutDetails),
+      payoutDetails: sanitisePayoutDetails(user!.payoutDetails),
     });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});
 
 // ─── PATCH ────────────────────────────────────────────────────────────────────
 
-export async function PATCH(request: NextRequest) {
-  try {
-    const authUser = await requireAuth();
-    const user = await userRepository.findById(authUser.uid);
-
-    if (!user) {
-      throw new AuthorizationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-    }
-    if (user.role !== "seller" && user.role !== "admin") {
-      throw new AuthorizationError(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED);
-    }
-
-    const body = await request.json();
-    const validation = updatePayoutSettingsSchema.safeParse(body);
-    if (!validation.success) {
-      return ApiErrors.validationError(validation.error.issues);
-    }
-
-    const data = validation.data;
+export const PATCH = createApiHandler<
+  (typeof updatePayoutSettingsSchema)["_output"]
+>({
+  auth: true,
+  roles: ["seller", "admin"],
+  schema: updatePayoutSettingsSchema,
+  handler: async ({ user, body }) => {
+    const data = body!;
     let payoutDetails: SellerPayoutDetails;
 
     if (data.method === "upi") {
@@ -141,10 +118,10 @@ export async function PATCH(request: NextRequest) {
       };
     }
 
-    await userRepository.update(authUser.uid, { payoutDetails });
+    await userRepository.update(user!.uid, { payoutDetails });
 
     serverLogger.info("Seller payout details updated", {
-      uid: authUser.uid,
+      uid: user!.uid,
       method: payoutDetails.method,
     });
 
@@ -152,7 +129,5 @@ export async function PATCH(request: NextRequest) {
       { payoutDetails: sanitisePayoutDetails(payoutDetails) },
       SUCCESS_MESSAGES.PAYOUT_SETTINGS.UPDATED,
     );
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

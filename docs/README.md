@@ -1,29 +1,31 @@
 # LetItRip Documentation
 
-This repository now keeps a smaller, core set of documentation files.
-
 ## Core Docs
 
-- [APPLICATION_GRAPH.md](./APPLICATION_GRAPH.md) - Full application page/component/hook/API dependency map
-- [GUIDE.md](./GUIDE.md) - Complete codebase reference
-- [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Common patterns and shortcuts
-- [CHANGELOG.md](./CHANGELOG.md) - Project history and updates (February 2026 onward)
-- [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md) - Archived version history (v1.0.0–v1.2.0, January–February 2026)
-- [AUTH.md](./AUTH.md) - Authentication architecture and OAuth popup bridge
-- [PAYMENT.md](./PAYMENT.md) - Payment architecture and Razorpay integration
-- [SECURITY.md](./SECURITY.md) - Security practices and policy
-- [RBAC.md](./RBAC.md) - Role-based access control
-- [BULK_ACTIONS.md](./BULK_ACTIONS.md) - Bulk action endpoints specification (existing + planned)
-- [ERROR_HANDLING.md](./ERROR_HANDLING.md) - Error architecture and patterns
-- [STYLING_GUIDE.md](./STYLING_GUIDE.md) - Styling and UI standards
+| File                                           | Purpose                                                                                               |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| [GUIDE.md](./GUIDE.md)                         | Complete code inventory — every function, hook, component, constant, schema, repository, API endpoint |
+| [QUICK_REFERENCE.md](./QUICK_REFERENCE.md)     | Canonical patterns and code snippets                                                                  |
+| [APPLICATION_GRAPH.md](./APPLICATION_GRAPH.md) | Full application page/component/hook/API dependency map                                               |
+| [AUTH.md](./AUTH.md)                           | Authentication architecture, session model, OAuth popup bridge                                        |
+| [RBAC.md](./RBAC.md)                           | Role-based access control — roles, config, protection patterns                                        |
+| [PAYMENT.md](./PAYMENT.md)                     | Razorpay integration, order flow, RTDB bridge                                                         |
+| [ERROR_HANDLING.md](./ERROR_HANDLING.md)       | Error architecture, logging, error pages                                                              |
+| [SECURITY.md](./SECURITY.md)                   | Security practices, OWASP compliance                                                                  |
+| [STYLING_GUIDE.md](./STYLING_GUIDE.md)         | Styling standards, THEME_CONSTANTS usage                                                              |
+| [BULK_ACTIONS.md](./BULK_ACTIONS.md)           | Bulk action API specification                                                                         |
+| [CHANGELOG.md](./CHANGELOG.md)                 | Version history (March 2026 onward)                                                                   |
+| [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md) | Archived history (v1.0.0 – v1.2.0, January–February 2026)                                             |
 
-## Related Root Docs
+## Related Root Files
 
-- [README.md](../README.md) - Project overview and setup
-- [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution workflow
-- [.github/copilot-instructions.md](../.github/copilot-instructions.md) - Mandatory coding rules
+| File                                                                  | Purpose                                                   |
+| --------------------------------------------------------------------- | --------------------------------------------------------- |
+| [README.md](../README.md)                                             | Application overview, stack, architecture, setup, scripts |
+| [CONTRIBUTING.md](../CONTRIBUTING.md)                                 | Contribution workflow                                     |
+| [.github/copilot-instructions.md](../.github/copilot-instructions.md) | Mandatory coding rules and architecture constraints       |
 
 ## Notes
 
-- Historical session/phase/status/report documents were intentionally removed to keep docs concise.
-- When adding new documentation, prefer extending one of the core docs above instead of creating standalone report files.
+- When adding documentation prefer extending an existing core doc rather than creating a new standalone file.
+- Historical session/phase/status/report files were intentionally removed to keep docs concise.

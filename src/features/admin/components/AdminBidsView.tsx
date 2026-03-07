@@ -55,11 +55,14 @@ export function AdminBidsView({ action }: Props) {
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, ["status", "isWinning", "minAmount", "maxAmount"]);
 
+  const isWinningFilter = table.get("isWinning");
+
   const filtersArr: string[] = [];
   if (statusFilter) filtersArr.push(`status==${statusFilter}`);
   if (minAmount) filtersArr.push(`bidAmount>=${minAmount}`);
   if (maxAmount) filtersArr.push(`bidAmount<=${maxAmount}`);
   if (searchTerm) filtersArr.push(`productTitle@=*${searchTerm}`);
+  if (isWinningFilter === "true") filtersArr.push("isWinning==true");
 
   const { data, isLoading, error } = useAdminBids(
     table.buildSieveParams(filtersArr.join(",")),
@@ -152,7 +155,7 @@ export function AdminBidsView({ action }: Props) {
           keyExtractor={(bid: BidDocument) => bid.id}
           externalPagination
           showViewToggle
-          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(bid) => (
             <Card className="p-4 space-y-2">

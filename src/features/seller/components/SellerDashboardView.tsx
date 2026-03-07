@@ -13,9 +13,9 @@ import { useRouter } from "@/i18n/navigation";
 import { Package, Store, Gavel, FileText } from "lucide-react";
 import { Spinner, EmptyState } from "@/components";
 import { Heading, Text } from "@/components/typography";
-import { useAuth, useApiQuery } from "@/hooks";
+import { useAuth, useApiQuery, useMessage } from "@/hooks";
 import { sellerService } from "@/services";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { ProductDocument } from "@/db/schema";
 import { SellerStatCard } from "./SellerStatCard";
@@ -39,13 +39,15 @@ const { themed, spacing, enhancedCard, flex } = THEME_CONSTANTS;
 export function SellerDashboardView() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { showError } = useMessage();
   const t = useTranslations("sellerDashboard");
 
   useEffect(() => {
     if (!authLoading && !user) {
+      showError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
       router.push(ROUTES.AUTH.LOGIN);
     }
-  }, [user, authLoading, router]);
+  }, [user, authLoading, router, showError]);
 
   const { data: productsData, isLoading: productsLoading } =
     useApiQuery<ProductsResponse>({

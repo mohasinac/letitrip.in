@@ -229,20 +229,14 @@ function AuctionsContent() {
               { key: "auctionEndDate", header: t("colEnds") },
               { key: "bidCount", header: t("colBids") },
             ]}
-            showViewToggle
-            viewMode={
-              (table.get("view") || "grid") as "table" | "grid" | "list"
-            }
-            onViewModeChange={(m) => table.set("view", m)}
+            defaultViewMode="grid"
             selectable={!!user}
             selectedIds={selectedIds}
             onSelectionChange={setSelectedIds}
             mobileCardRender={(item) => (
               <AuctionCard
                 product={item as any}
-                variant={
-                  (table.get("view") || "grid") === "list" ? "list" : "grid"
-                }
+                variant="grid"
                 selectable={!!user}
                 isSelected={selectedIds.includes(item.id)}
                 onSelect={(id, sel) =>

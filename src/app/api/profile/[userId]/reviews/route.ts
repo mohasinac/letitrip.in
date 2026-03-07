@@ -7,9 +7,10 @@
  * Fetches the seller's products and then reviews for each product.
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { productRepository, reviewRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
+import { successResponse, errorResponse } from "@/lib/api-response";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, UI_LABELS } from "@/constants";
@@ -24,10 +25,7 @@ interface RouteContext {
  * Returns up to 10 most recent approved reviews across all seller's products.
  * No auth required — public endpoint.
  */
-export async function GET(
-  _request: NextRequest,
-  context: RouteContext,
-): Promise<NextResponse> {
+export async function GET(_request: NextRequest, context: RouteContext) {
   try {
     // Rate limiting — public read endpoint
     const rateLimitResult = await applyRateLimit(
@@ -35,19 +33,13 @@ export async function GET(
       RateLimitPresets.API,
     );
     if (!rateLimitResult.success) {
-      return NextResponse.json(
-        { success: false, error: UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED },
-        { status: 429 },
-      );
+      return errorResponse(UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED, 429);
     }
 
     const { userId } = await context.params;
 
     if (!userId) {
-      return NextResponse.json(
-        { success: false, error: ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD },
-        { status: 400 },
-      );
+      return errorResponse(ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD, 400);
     }
 
     // Fetch seller's products
@@ -57,14 +49,11 @@ export async function GET(
     );
 
     if (publishedProducts.length === 0) {
-      return NextResponse.json({
-        success: true,
-        data: {
-          reviews: [],
-          averageRating: 0,
-          totalReviews: 0,
-          ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
-        },
+      return successResponse({
+        reviews: [],
+        averageRating: 0,
+        totalReviews: 0,
+        ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
       });
     }
 
@@ -116,14 +105,11 @@ export async function GET(
       returned: reviewsWithProduct.length,
     });
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        reviews: reviewsWithProduct,
-        averageRating: Math.round(averageRating * 10) / 10,
-        totalReviews,
-        ratingDistribution,
-      },
+    return successResponse({
+      reviews: reviewsWithProduct,
+      averageRating: Math.round(averageRating * 10) / 10,
+      totalReviews,
+      ratingDistribution,
     });
   } catch (error) {
     return handleApiError(error);

@@ -8,18 +8,20 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { StepperNav } from "@/components";
 import { CheckoutAddressStep } from "./CheckoutAddressStep";
 import { CheckoutOrderReview } from "./CheckoutOrderReview";
 import type { CheckoutPaymentMethod } from "./CheckoutOrderReview";
 import { OrderSummaryPanel } from "./OrderSummaryPanel";
+import { CheckoutOtpModal } from "./CheckoutOtpModal";
 import {
   useCheckout,
   useMessage,
   useRazorpay,
   useSiteSettings,
+  useAuth,
 } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -93,6 +95,8 @@ export function CheckoutView() {
     { number: 2, label: t("stepReview") },
   ];
 
+  const { user } = useAuth();
+
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     null,
@@ -100,6 +104,7 @@ export function CheckoutView() {
   const [paymentMethod, setPaymentMethod] =
     useState<CheckoutPaymentMethod>("cod");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
   const {
     addressQuery: { data: addrData, isLoading: addrLoading },
@@ -114,10 +119,13 @@ export function CheckoutView() {
         // Open WhatsApp with pre-filled payment confirmation message
         const msg = encodeURIComponent(
           `Hi! I've placed Order #${primaryOrderId} on LetItRip and paid ` +
-          `${formatCurrency(result.total)} via UPI to ${upiVpa ?? "our UPI ID"}. ` +
-          `Please confirm my payment. Thank you!`,
+            `${formatCurrency(result.total)} via UPI to ${upiVpa ?? "our UPI ID"}. ` +
+            `Please confirm my payment. Thank you!`,
         );
-        window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, "")}?text=${msg}`, "_blank");
+        window.open(
+          `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, "")}?text=${msg}`,
+          "_blank",
+        );
       }
       router.push(`${ROUTES.USER.CHECKOUT_SUCCESS}?orderId=${primaryOrderId}`);
     },
@@ -152,33 +160,26 @@ export function CheckoutView() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handlePlaceOrder = async () => {
-    if (!selectedAddressId) {
-      showError(ERROR_MESSAGES.CHECKOUT.ADDRESS_REQUIRED);
-      return;
-    }
-
-    setIsPlacingOrder(true);
+  /** Executes the actual order placement — called after OTP is verified. */
+  const executeOrder = useCallback(async () => {
+    if (!selectedAddressId) return;
 
     if (paymentMethod === "cod") {
-      // COD: directly create orders via /api/checkout
       placeCodOrder({ addressId: selectedAddressId, paymentMethod: "cod" });
     } else if (paymentMethod === "upi_manual") {
-      // UPI Manual: place order then open WhatsApp so customer can confirm payment
-      placeCodOrder(
-        { addressId: selectedAddressId, paymentMethod: "upi_manual" },
-      );
+      placeCodOrder({
+        addressId: selectedAddressId,
+        paymentMethod: "upi_manual",
+      });
       // WhatsApp redirect is handled in onPlaceCodOrderSuccess
     } else {
       // Online: Razorpay flow
       try {
-        // 1. Create Razorpay order on backend
         const rzpOrder = (await createPaymentOrder({
           amount: subtotal,
           currency: "INR",
         })) as CreateRazorpayOrderResponse;
 
-        // 2. Open Razorpay checkout modal
         const paymentResult = await openRazorpay({
           key: rzpOrder.keyId,
           amount: rzpOrder.amount,
@@ -190,7 +191,6 @@ export function CheckoutView() {
           handler: () => {}, // handled via Promise resolve in hook
         });
 
-        // 3. Verify payment & create orders
         const verifyResult = (await verifyPayment({
           razorpay_order_id: paymentResult.razorpay_order_id,
           razorpay_payment_id: paymentResult.razorpay_payment_id,
@@ -211,10 +211,46 @@ export function CheckoutView() {
         setIsPlacingOrder(false);
       }
     }
+  }, [
+    selectedAddressId,
+    paymentMethod,
+    placeCodOrder,
+    createPaymentOrder,
+    openRazorpay,
+    verifyPayment,
+    subtotal,
+    itemCount,
+    router,
+    showError,
+  ]);
+
+  const handlePlaceOrder = () => {
+    if (!selectedAddressId) {
+      showError(ERROR_MESSAGES.CHECKOUT.ADDRESS_REQUIRED);
+      return;
+    }
+    setIsPlacingOrder(true);
+    setShowOtpModal(true);
   };
+
+  const handleOtpVerified = useCallback(() => {
+    setShowOtpModal(false);
+    executeOrder();
+  }, [executeOrder]);
+
+  const handleOtpClose = useCallback(() => {
+    setShowOtpModal(false);
+    setIsPlacingOrder(false);
+  }, []);
 
   return (
     <Main className={`${page.container.lg} py-8`}>
+      <CheckoutOtpModal
+        isOpen={showOtpModal}
+        phoneNumber={user?.phoneNumber ?? null}
+        onVerified={handleOtpVerified}
+        onClose={handleOtpClose}
+      />
       {/* Heading */}
       <Heading level={1} className="mb-6">
         {t("title")}

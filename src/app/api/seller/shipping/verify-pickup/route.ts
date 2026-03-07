@@ -8,13 +8,11 @@
  * This endpoint verifies that OTP and marks the address as verified.
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
 import { userRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
-import { AuthorizationError, ValidationError } from "@/lib/errors";
-import { successResponse, ApiErrors } from "@/lib/api-response";
+import { ValidationError } from "@/lib/errors";
+import { successResponse } from "@/lib/api-response";
+import { createApiHandler } from "@/lib/api/api-handler";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { shiprocketVerifyPickupOTP } from "@/lib/shiprocket/client";
@@ -24,26 +22,13 @@ const verifyOTPSchema = z.object({
   pickupLocationId: z.number().int().positive(),
 });
 
-export async function POST(request: NextRequest) {
-  try {
-    const authUser = await requireAuth();
-    const user = await userRepository.findById(authUser.uid);
-
-    if (!user) {
-      throw new AuthorizationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-    }
-    if (user.role !== "seller" && user.role !== "admin") {
-      throw new AuthorizationError(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED);
-    }
-
-    const body = await request.json();
-    const validation = verifyOTPSchema.safeParse(body);
-    if (!validation.success) {
-      return ApiErrors.validationError(validation.error.issues);
-    }
-
-    const { otp, pickupLocationId } = validation.data;
-    const config = user.shippingConfig;
+export const POST = createApiHandler<(typeof verifyOTPSchema)["_output"]>({
+  auth: true,
+  roles: ["seller", "admin"],
+  schema: verifyOTPSchema,
+  handler: async ({ user, body }) => {
+    const { otp, pickupLocationId } = body!;
+    const config = user!.shippingConfig;
 
     if (!config || config.method !== "shiprocket") {
       throw new ValidationError(ERROR_MESSAGES.SHIPPING.NOT_CONFIGURED);
@@ -55,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     serverLogger.info("Verifying Shiprocket pickup OTP", {
-      uid: authUser.uid,
+      uid: user!.uid,
       pickupLocationId,
     });
 
@@ -87,10 +72,10 @@ export async function POST(request: NextRequest) {
       isConfigured: true,
     };
 
-    await userRepository.update(authUser.uid, { shippingConfig: updatedConfig });
+    await userRepository.update(user!.uid, { shippingConfig: updatedConfig });
 
     serverLogger.info("Shiprocket pickup address verified", {
-      uid: authUser.uid,
+      uid: user!.uid,
       pickupLocationId,
     });
 
@@ -98,7 +83,5 @@ export async function POST(request: NextRequest) {
       { isVerified: true },
       SUCCESS_MESSAGES.SHIPPING.PICKUP_VERIFIED,
     );
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

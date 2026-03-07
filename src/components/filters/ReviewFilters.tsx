@@ -2,24 +2,27 @@
 
 import { useTranslations } from "next-intl";
 import { FilterFacetSection } from "@/components";
+import { SwitchFilter } from "./SwitchFilter";
 import type { UrlTable } from "./ProductFilters";
 
 export const REVIEW_SORT_OPTIONS = [
-  { value: "-createdAt", label: "Newest First" },
-  { value: "createdAt", label: "Oldest First" },
-  { value: "-rating", label: "Rating: High to Low" },
-  { value: "rating", label: "Rating: Low to High" },
-  { value: "-helpfulCount", label: "Most Helpful" },
-  { value: "-reportCount", label: "Most Reported" },
-  { value: "userName", label: "Customer A–Z" },
-  { value: "productTitle", label: "Product A–Z" },
+  { value: "-createdAt", key: "sortNewest" },
+  { value: "createdAt", key: "sortOldest" },
+  { value: "-rating", key: "sortHighestRated" },
+  { value: "rating", key: "sortLowestRated" },
 ] as const;
 
 export interface ReviewFiltersProps {
   table: UrlTable;
+  /** "admin" (default) shows status, rating, verified, featured.
+   *  "public" shows rating only. */
+  variant?: "admin" | "public";
 }
 
-export function ReviewFilters({ table }: ReviewFiltersProps) {
+export function ReviewFilters({
+  table,
+  variant = "admin",
+}: ReviewFiltersProps) {
   const t = useTranslations("filters");
 
   const statusOptions = [
@@ -36,62 +39,54 @@ export function ReviewFilters({ table }: ReviewFiltersProps) {
     { value: "1", label: t("rating1Star") },
   ];
 
-  const verifiedOptions = [
-    { value: "true", label: t("booleanVerified") },
-    { value: "false", label: t("booleanUnverified") },
-  ];
-
-  const featuredOptions = [
-    { value: "true", label: t("booleanFeatured") },
-    { value: "false", label: t("booleanNotFeatured") },
-  ];
-
-  const selectedStatus = table.get("status") ? [table.get("status")] : [];
-  const selectedRating = table.get("rating") ? [table.get("rating")] : [];
-  const selectedVerified = table.get("verified") ? [table.get("verified")] : [];
-  const selectedFeatured = table.get("featured") ? [table.get("featured")] : [];
+  const selectedStatus = table.get("status")
+    ? table.get("status").split("|").filter(Boolean)
+    : [];
+  const selectedRating = table.get("rating")
+    ? table.get("rating").split("|").filter(Boolean)
+    : [];
 
   return (
     <div>
-      <FilterFacetSection
-        title={t("status")}
-        options={statusOptions}
-        selected={selectedStatus}
-        onChange={(vals) => table.set("status", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={false}
-        selectionMode="single"
-      />
+      {variant === "admin" && (
+        <FilterFacetSection
+          title={t("status")}
+          options={statusOptions}
+          selected={selectedStatus}
+          onChange={(vals) => table.set("status", vals.join("|"))}
+          searchable={false}
+          defaultCollapsed={false}
+        />
+      )}
 
       <FilterFacetSection
         title={t("rating")}
         options={ratingOptions}
         selected={selectedRating}
-        onChange={(vals) => table.set("rating", vals[0] ?? "")}
+        onChange={(vals) => table.set("rating", vals.join("|"))}
         searchable={false}
-        defaultCollapsed={true}
-        selectionMode="single"
+        defaultCollapsed={variant === "admin"}
       />
 
-      <FilterFacetSection
-        title={t("verified")}
-        options={verifiedOptions}
-        selected={selectedVerified}
-        onChange={(vals) => table.set("verified", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={true}
-        selectionMode="single"
-      />
+      {variant === "admin" && (
+        <>
+          <SwitchFilter
+            title={t("verified")}
+            label={t("showVerifiedOnly")}
+            checked={table.get("verified") === "true"}
+            onChange={(v) => table.set("verified", v ? "true" : "")}
+            defaultCollapsed={true}
+          />
 
-      <FilterFacetSection
-        title={t("featured")}
-        options={featuredOptions}
-        selected={selectedFeatured}
-        onChange={(vals) => table.set("featured", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={true}
-        selectionMode="single"
-      />
+          <SwitchFilter
+            title={t("featured")}
+            label={t("showFeaturedOnly")}
+            checked={table.get("featured") === "true"}
+            onChange={(v) => table.set("featured", v ? "true" : "")}
+            defaultCollapsed={true}
+          />
+        </>
+      )}
     </div>
   );
 }

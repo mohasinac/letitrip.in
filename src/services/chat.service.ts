@@ -37,4 +37,8 @@ export const chatService = {
       API_ENDPOINTS.CHAT.MESSAGES(chatId),
       { message },
     ),
+
+  /** DELETE: remove a chat room (soft-delete for user; hard-delete for admin group) */
+  deleteRoom: (chatId: string) =>
+    apiClient.delete<{ deleted: boolean }>(API_ENDPOINTS.CHAT.ROOM(chatId)),
 };

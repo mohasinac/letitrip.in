@@ -14,6 +14,7 @@ import {
   Label,
   MediaAvatar,
   MediaImage,
+  MediaLightbox,
   Section,
   Span,
   Text,
@@ -88,6 +89,48 @@ function RatingBar({
       </div>
       <Span className={`w-6 text-right ${themed.textSecondary}`}>{count}</Span>
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ReviewImages — thumbnail strip with per-review lightbox state
+// ---------------------------------------------------------------------------
+function ReviewImages({ images }: { images: string[] }) {
+  const t = useTranslations("products");
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const items = images.map((src, i) => ({
+    src,
+    alt: t("reviewPhotoAlt", { index: i + 1 }),
+  }));
+  return (
+    <>
+      <HorizontalScroller className="pb-1 pt-1">
+        {images.map((img, idx) => (
+          <Button
+            key={idx}
+            onClick={() => {
+              setLightboxIndex(idx);
+              setLightboxOpen(true);
+            }}
+            aria-label={t("reviewPhotoAlt", { index: idx + 1 })}
+            className="relative shrink-0 w-16 h-16 p-0 min-h-0 rounded-lg overflow-hidden cursor-zoom-in border-0 shadow-none"
+          >
+            <MediaImage
+              src={img}
+              alt={t("reviewPhotoAlt", { index: idx + 1 })}
+              size="thumbnail"
+            />
+          </Button>
+        ))}
+      </HorizontalScroller>
+      <MediaLightbox
+        items={items}
+        initialIndex={lightboxIndex}
+        isOpen={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+      />
+    </>
   );
 }
 
@@ -418,20 +461,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
               {/* Images */}
               {review.images && review.images.length > 0 && (
-                <HorizontalScroller className="pb-1 pt-1">
-                  {review.images.map((img, idx) => (
-                    <div
-                      key={idx}
-                      className="relative shrink-0 w-16 h-16 rounded-lg overflow-hidden"
-                    >
-                      <MediaImage
-                        src={img}
-                        alt={t("reviewPhotoAlt", { index: idx + 1 })}
-                        size="thumbnail"
-                      />
-                    </div>
-                  ))}
-                </HorizontalScroller>
+                <ReviewImages images={review.images} />
               )}
 
               {/* Helpful */}

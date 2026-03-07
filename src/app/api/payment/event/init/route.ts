@@ -30,79 +30,45 @@
  *  6. usePaymentEvent.status → 'success' → UI navigates to order confirmation
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth, getAdminRealtimeDb } from "@/lib/firebase/admin";
-import { handleApiError } from "@/lib/errors/error-handler";
-import { AuthenticationError, ValidationError } from "@/lib/errors";
 import { successResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES } from "@/constants";
-import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
 import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
-import { requireAuthFromRequest } from "@/lib/security/authorization";
 import { z } from "zod";
+import { createApiHandler } from "@/lib/api/api-handler";
 
 /** Client-side hard timeout communicated via expiresAt. */
-const EVENT_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const EVENT_TTL_MS = 5 * 60 * 1000;
 
 const bodySchema = z.object({
   razorpayOrderId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
 });
 
-export async function POST(request: NextRequest) {
-  try {
-    // Rate-limit — same budget as auth endpoints to prevent event farming
-    const rateLimitResult = await applyRateLimit(
-      request,
-      RateLimitPresets.AUTH,
-    );
-    if (!rateLimitResult.success) {
-      return NextResponse.json(
-        { success: false, error: ERROR_MESSAGES.GENERIC.RATE_LIMIT_EXCEEDED },
-        { status: 429 },
-      );
-    }
-
-    // Requires an active session
-    const user = await requireAuthFromRequest(request);
-    if (!user) {
-      throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-    }
-
-    // Validate body
-    const body = await request.json();
-    const parsed = bodySchema.safeParse(body);
-    if (!parsed.success) {
-      throw new ValidationError(ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD);
-    }
-    const { razorpayOrderId } = parsed.data;
-
-    // Write the pending node via Admin SDK (clients have write:false)
+export const POST = createApiHandler<(typeof bodySchema)["_output"]>({
+  auth: true,
+  rateLimit: RateLimitPresets.AUTH,
+  schema: bodySchema,
+  handler: async ({ user, body }) => {
+    const { razorpayOrderId } = body!;
     const db = getAdminRealtimeDb();
     await db
       .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${razorpayOrderId}`)
-      .set({ status: "pending", uid: user.uid, createdAt: Date.now() });
-
-    // Issue a per-event custom token scoped to this single RTDB path
+      .set({ status: "pending", uid: user!.uid, createdAt: Date.now() });
     const syntheticUid = `payment_event_${razorpayOrderId}`;
     const customToken = await getAdminAuth().createCustomToken(syntheticUid, {
       paymentEventId: razorpayOrderId,
     });
-
     const expiresAt = Date.now() + EVENT_TTL_MS;
-
     serverLogger.info("Payment event initialised", {
       razorpayOrderId,
-      uid: user.uid,
+      uid: user!.uid,
     });
-
     return successResponse({
       eventId: razorpayOrderId,
       customToken,
       expiresAt,
     });
-  } catch (error) {
-    serverLogger.error("POST /api/payment/event/init error", { error });
-    return handleApiError(error);
-  }
-}
+  },
+});

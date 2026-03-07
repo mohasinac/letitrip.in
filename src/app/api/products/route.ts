@@ -10,9 +10,8 @@
  * - Response-level metrics tracking (response time, error rate)
  */
 
-import { NextRequest } from "next/server";
 import { productRepository } from "@/repositories";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { slugify } from "@/utils";
 import { errorResponse, successResponse } from "@/lib/api-response";
 import {
@@ -21,42 +20,22 @@ import {
   getStringParam,
   getBooleanParam,
 } from "@/lib/api/request-helpers";
-import {
-  requireRoleFromRequest,
-  requireEmailVerified,
-} from "@/lib/security/authorization";
-import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  productCreateSchema,
-} from "@/lib/validation/schemas";
+import { requireEmailVerified } from "@/lib/security/authorization";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { productCreateSchema } from "@/lib/validation/schemas";
 import { serverLogger } from "@/lib/server-logger";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { sendNewProductSubmittedEmail } from "@/lib/email";
 import { SCHEMA_DEFAULTS } from "@/db/schema";
-import { NextResponse } from "next/server";
+import { createApiHandler } from "@/lib/api/api-handler";
 
 /**
  * GET /api/products
  *
  * Get list of products with pagination and filtering
  */
-export async function GET(request: NextRequest) {
-  try {
-    // Rate limiting — prevent scraping
-    const rateLimitResult = await applyRateLimit(
-      request,
-      RateLimitPresets.GENEROUS,
-    );
-    if (!rateLimitResult.success) {
-      return NextResponse.json(
-        { success: false, error: UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED },
-        { status: 429 },
-      );
-    }
-
-    // Parse query parameters
+export const GET = createApiHandler({
+  rateLimit: RateLimitPresets.GENEROUS,
+  handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });
     const pageSize = getNumberParam(searchParams, "pageSize", 20, {
@@ -104,13 +83,17 @@ export async function GET(request: NextRequest) {
     const mergedFilters =
       compoundFilters.length > 0 ? compoundFilters.join(",") : undefined;
 
+    // Multi-category: comma-separated `categories` param uses Firestore whereIn
+    const categoriesRaw = getStringParam(searchParams, "categories");
+    const categoriesIn = categoriesRaw
+      ? categoriesRaw.split(",").filter(Boolean)
+      : undefined;
+
     // Firestore-native query — no full collection scan
-    const sieveResult = await productRepository.list({
-      filters: mergedFilters,
-      sorts,
-      page,
-      pageSize,
-    });
+    const sieveResult = await productRepository.list(
+      { filters: mergedFilters, sorts, page, pageSize },
+      { categoriesIn },
+    );
 
     const response = successResponse({
       items: sieveResult.items,
@@ -125,11 +108,8 @@ export async function GET(request: NextRequest) {
       "public, max-age=60, s-maxage=120, stale-while-revalidate=60",
     );
     return response;
-  } catch (error) {
-    serverLogger.error(ERROR_MESSAGES.API.PRODUCTS_GET_ERROR, { error });
-    return handleApiError(error);
-  }
-}
+  },
+});
 
 /**
  * POST /api/products
@@ -154,59 +134,34 @@ export async function GET(request: NextRequest) {
  * ✅ Generates SEO-friendly slug from title (e.g. "vintage-camera-1700000000000")
  * ✅ Sends fire-and-forget admin notification email on successful submission
  */
-export async function POST(request: NextRequest) {
-  try {
-    // Require seller authentication
-    const user = await requireRoleFromRequest(request, [
-      "seller",
-      "moderator",
-      "admin",
-    ]);
-
-    // Sellers must verify their email before listing products
+export const POST = createApiHandler<(typeof productCreateSchema)["_output"]>({
+  auth: true,
+  roles: ["seller", "moderator", "admin"],
+  schema: productCreateSchema,
+  handler: async ({ user, body }) => {
     requireEmailVerified(user as unknown as Record<string, unknown>);
-
-    // Parse and validate body
-    const body = await request.json();
-    const validation = validateRequestBody(productCreateSchema, body);
-
-    if (!validation.success) {
-      return errorResponse(
-        ERROR_MESSAGES.VALIDATION.FAILED,
-        400,
-        formatZodErrors(validation.errors),
-      );
-    }
-
-    // Create product with seller ID, defaults, and SEO slug
-    const slug = `${slugify(validation.data.title).slice(0, 50)}-${Date.now()}`;
+    const slug = `${slugify(body!.title).slice(0, 50)}-${Date.now()}`;
     const product = await productRepository.create({
-      ...validation.data,
+      ...body!,
       slug,
-      sellerId: user.uid,
-      sellerName: user.displayName || user.email || "Unknown Seller",
-      sellerEmail: user.email || "",
+      sellerId: user!.uid,
+      sellerName: user!.displayName || user!.email || "Unknown Seller",
+      sellerEmail: user!.email || "",
       status: "draft" as any,
       featured: false,
       isPromoted: false,
     } as any);
-
-    // Fire-and-forget admin notification — do not await to keep response fast
     const adminEmail =
       process.env.ADMIN_NOTIFICATION_EMAIL || SCHEMA_DEFAULTS.ADMIN_EMAIL;
     sendNewProductSubmittedEmail(adminEmail, {
       id: product.id ?? (product as any).id,
-      title: (product as any).title ?? validation.data.title,
-      sellerName: user.displayName || user.email || "Unknown Seller",
-      sellerEmail: user.email || "",
-      category: validation.data.category,
+      title: (product as any).title ?? body!.title,
+      sellerName: user!.displayName || user!.email || "Unknown Seller",
+      sellerEmail: user!.email || "",
+      category: body!.category,
     }).catch((err) =>
       serverLogger.error(ERROR_MESSAGES.API.PRODUCTS_POST_ERROR, { err }),
     );
-
     return successResponse(product, SUCCESS_MESSAGES.PRODUCT.CREATED, 201);
-  } catch (error) {
-    serverLogger.error(ERROR_MESSAGES.API.PRODUCTS_POST_ERROR, { error });
-    return handleApiError(error);
-  }
-}
+  },
+});

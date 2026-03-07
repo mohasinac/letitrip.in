@@ -11,7 +11,7 @@
 "use client";
 
 import { useCallback } from "react";
-import { useAuth } from "@/hooks";
+import { useAuth, useMessage } from "@/hooks";
 import { useRouter } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -41,6 +41,7 @@ export function WishlistButton({
   size = "md",
 }: WishlistButtonProps) {
   const { user } = useAuth();
+  const { showError } = useMessage();
   const router = useRouter();
   const {
     inWishlist,
@@ -48,12 +49,15 @@ export function WishlistButton({
     toggle,
   } = useWishlistToggle(productId, initialInWishlist);
 
+  const t = useTranslations("wishlist");
+
   const handleToggle = useCallback(
     async (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
 
       if (!user) {
+        showError(t("loginRequired"));
         router.push(ROUTES.AUTH.LOGIN);
         return;
       }
@@ -64,10 +68,9 @@ export function WishlistButton({
         // Silently ignore errors — wishlist state reverts automatically
       }
     },
-    [user, router, toggle],
+    [user, showError, t, router, toggle],
   );
 
-  const t = useTranslations("wishlist");
   const label = inWishlist ? t("removeFromWishlist") : t("addToWishlist");
 
   return (

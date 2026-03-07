@@ -7,9 +7,10 @@ import {
   THEME_CONSTANTS,
   ROUTES,
   ERROR_MESSAGES,
+  SUCCESS_MESSAGES,
   MAIN_NAV_ITEMS,
 } from "@/constants";
-import { useSwipe, useAuth, useLogout } from "@/hooks";
+import { useSwipe, useAuth, useLogout, useMessage } from "@/hooks";
 import { logger } from "@/classes";
 import {
   AvatarDisplay,
@@ -70,6 +71,7 @@ export default function Sidebar({
   const [supportOpen, setSupportOpen] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(true);
   const logoutMutation = useLogout();
+  const { showSuccess } = useMessage();
 
   const handleSignOut = async () => {
     try {
@@ -78,6 +80,8 @@ export default function Sidebar({
 
       // Close sidebar first for better UX
       onClose();
+
+      showSuccess(SUCCESS_MESSAGES.AUTH.LOGOUT_SUCCESS);
 
       // Use router.push instead of window.location for better performance
       // This avoids full page reload and preserves Next.js app state

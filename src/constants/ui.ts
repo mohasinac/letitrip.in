@@ -327,7 +327,6 @@ export const UI_LABELS = {
       SIGN_IN: "Sign in",
       OR_CONTINUE_WITH: "Or continue with",
       GOOGLE: "Google",
-      APPLE: "Apple",
     },
 
     // Register page
@@ -347,7 +346,6 @@ export const UI_LABELS = {
       PASSWORDS_NO_MATCH: "Passwords do not match",
       MUST_ACCEPT_TERMS: "You must accept the terms and conditions",
       GOOGLE_REGISTER_FAILED: "Google registration failed",
-      APPLE_REGISTER_FAILED: "Apple registration failed",
     },
 
     // Forgot Password page

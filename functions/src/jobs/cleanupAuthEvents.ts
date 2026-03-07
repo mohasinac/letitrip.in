@@ -15,7 +15,7 @@
  */
 
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { rtdb } from "../config/firebase-admin";
+import { getRtdb } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { SCHEDULES, REGION } from "../config/constants";
 
@@ -36,7 +36,7 @@ export const cleanupAuthEvents = onSchedule(
     logInfo(JOB, "Starting auth events cleanup");
 
     try {
-      const snapshot = await rtdb.ref("auth_events").get();
+      const snapshot = await getRtdb().ref("auth_events").get();
 
       if (!snapshot.exists()) {
         logInfo(JOB, "No auth event nodes found");
@@ -61,7 +61,7 @@ export const cleanupAuthEvents = onSchedule(
 
       // Delete each stale node individually (Realtime DB has no batch delete)
       await Promise.all(
-        staleIds.map((id) => rtdb.ref(`auth_events/${id}`).remove()),
+        staleIds.map((id) => getRtdb().ref(`auth_events/${id}`).remove()),
       );
 
       logInfo(JOB, "Auth events cleanup complete", {

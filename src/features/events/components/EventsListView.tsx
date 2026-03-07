@@ -8,23 +8,24 @@
  * All state is URL-driven via useUrlTable.
  */
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useMemo } from "react";
 import { CalendarDays } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   ActiveFilterChips,
   EmptyState,
-  FilterFacetSection,
   Heading,
   ListingLayout,
   Search,
   SortDropdown,
   TablePagination,
   Text,
+  getFilterLabel,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
+import { EventFilters } from "@/components/filters";
 import { THEME_CONSTANTS } from "@/constants";
-import { useUrlTable, usePublicEvents } from "@/hooks";
+import { useUrlTable, usePublicEvents, usePendingTable } from "@/hooks";
 import { EventCard } from "./EventCard";
 
 const PAGE_SIZE = 24;
@@ -71,44 +72,15 @@ function EventsListContent() {
     [tTypes],
   );
 
-  // ── Staged filter state (applied on button click) ──────────────────────
-  const [stagedStatus, setStagedStatus] = useState<string[]>(
-    statusFilter ? [statusFilter] : [],
-  );
-  const [stagedType, setStagedType] = useState<string[]>(
-    typeFilter ? [typeFilter] : [],
-  );
-
-  useEffect(() => {
-    setStagedStatus(statusFilter ? [statusFilter] : []);
-  }, [statusFilter]);
-
-  useEffect(() => {
-    setStagedType(typeFilter ? [typeFilter] : []);
-  }, [typeFilter]);
-
-  const handleFilterApply = useCallback(() => {
-    table.setMany({
-      status: stagedStatus[0] ?? "",
-      type: stagedType[0] ?? "",
-      page: "1",
-    });
-  }, [stagedStatus, stagedType, table]);
-
-  const handleFilterClear = useCallback(() => {
-    setStagedStatus([]);
-    setStagedType([]);
-    table.setMany({ status: "", type: "", page: "1" });
-  }, [table]);
-
-  const filterActiveCount =
-    (statusFilter ? 1 : 0) + (typeFilter ? 1 : 0);
+  // ── Staged filter state via usePendingTable ───────────────────────────
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, ["status", "type"]);
 
   // ── API params ─────────────────────────────────────────────────────────
   const apiParams = useMemo(() => {
     const filterParts: string[] = [];
-    if (statusFilter) filterParts.push(`status=${statusFilter}`);
-    if (typeFilter) filterParts.push(`types=${typeFilter}`);
+    if (statusFilter) filterParts.push(`status==${statusFilter}`);
+    if (typeFilter) filterParts.push(`type==${typeFilter}`);
     const sp = new URLSearchParams({
       sorts: sortParam,
       page: String(page),
@@ -127,13 +99,11 @@ function EventsListContent() {
   const activeFilters = useMemo<ActiveFilter[]>(() => {
     const chips: ActiveFilter[] = [];
     if (statusFilter) {
-      const label =
-        statusOptions.find((o) => o.value === statusFilter)?.label ?? statusFilter;
+      const label = getFilterLabel(statusOptions, statusFilter) ?? statusFilter;
       chips.push({ key: "status", label: t("filterStatus"), value: label });
     }
     if (typeFilter) {
-      const label =
-        typeOptions.find((o) => o.value === typeFilter)?.label ?? typeFilter;
+      const label = getFilterLabel(typeOptions, typeFilter) ?? typeFilter;
       chips.push({ key: "type", label: t("filterType"), value: label });
     }
     return chips;
@@ -170,27 +140,10 @@ function EventsListContent() {
               options={sortOptions}
             />
           }
-          filterContent={
-            <>
-              <FilterFacetSection
-                title={t("filterStatus")}
-                options={statusOptions}
-                selected={stagedStatus}
-                onChange={setStagedStatus}
-                searchable={false}
-              />
-              <FilterFacetSection
-                title={t("filterType")}
-                options={typeOptions}
-                selected={stagedType}
-                onChange={setStagedType}
-                searchable={false}
-              />
-            </>
-          }
+          filterContent={<EventFilters table={pendingTable} />}
           filterActiveCount={filterActiveCount}
-          onFilterApply={handleFilterApply}
-          onFilterClear={handleFilterClear}
+          onFilterApply={onFilterApply}
+          onFilterClear={onFilterClear}
           activeFiltersSlot={
             activeFilters.length > 0 ? (
               <ActiveFilterChips
@@ -223,7 +176,7 @@ function EventsListContent() {
               onAction={
                 hasActiveFilters
                   ? () => {
-                      handleFilterClear();
+                      onFilterClear();
                       table.set("q", "");
                     }
                   : undefined

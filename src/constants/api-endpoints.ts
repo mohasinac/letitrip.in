@@ -26,10 +26,6 @@ export const API_ENDPOINTS = {
     GOOGLE_START: "/api/auth/google/start",
     /** GET — Google OAuth redirect callback (server-side code exchange). */
     GOOGLE_CALLBACK: "/api/auth/google/callback",
-    /** GET — Redirects to Apple's OAuth consent screen. Opens in a popup. */
-    APPLE_START: "/api/auth/apple/start",
-    /** POST — Apple Sign In redirect callback (form_post response type). */
-    APPLE_CALLBACK: "/api/auth/apple/callback",
   },
 
   // User endpoints ✅ All routes exist
@@ -230,6 +226,7 @@ export const API_ENDPOINTS = {
   // Demo/Development endpoints (dev-only)
   DEMO: {
     SEED: "/api/demo/seed", // POST - Seed database with test data
+    SEED_STATUS: "/api/demo/seed", // GET - Per-collection seed counts (seed IDs only)
   },
 
   // Cart endpoints
@@ -239,6 +236,7 @@ export const API_ENDPOINTS = {
     UPDATE_ITEM: (itemId: string) => `/api/cart/${itemId}`, // PATCH - Update item quantity
     REMOVE_ITEM: (itemId: string) => `/api/cart/${itemId}`, // DELETE - Remove item
     CLEAR: "/api/cart/clear", // DELETE - Clear entire cart
+    MERGE: "/api/cart/merge", // POST  - Merge guest cart after login
   },
 
   // Checkout endpoints
@@ -252,6 +250,7 @@ export const API_ENDPOINTS = {
     VERIFY: "/api/payment/verify", // POST - Verify payment & place orders
     WEBHOOK: "/api/payment/webhook", // POST - Razorpay webhook events
     EVENT_INIT: "/api/payment/event/init", // POST - Init RTDB payment event node
+    OTP_REQUEST: "/api/payment/otp/request", // POST - Check daily limit & allow OTP send
   },
 
   // Coupon endpoints
@@ -326,9 +325,10 @@ export const API_ENDPOINTS = {
   // RipCoins endpoints
   RIPCOINS: {
     BALANCE: "/api/ripcoins/balance", // GET  - Current balance + engaged coins
-    PURCHASE: "/api/ripcoins/purchase", // POST - Create Razorpay order for coin pack
+    PURCHASE: "/api/ripcoins/purchase", // POST - Create Razorpay order for coin package
     VERIFY: "/api/ripcoins/purchase/verify", // POST - Verify payment and credit coins
     HISTORY: "/api/ripcoins/history", // GET  - Transaction history
+    REFUND: "/api/ripcoins/refund", // POST - Refund a purchase transaction
   },
 
   // Shiprocket webhook
@@ -351,6 +351,12 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/api/notifications/${id}`, // DELETE - Delete one
     READ_ALL: "/api/notifications/read-all", // PATCH - Mark all as read
     UNREAD_COUNT: "/api/notifications/unread-count", // GET - Unread count
+  },
+
+  // Internal / tooling endpoints
+  CACHE: {
+    /** POST — Clear in-memory API caches. Auth: x-api-key = CACHE_REVALIDATION_SECRET */
+    REVALIDATE: "/api/cache/revalidate",
   },
 } as const;
 

@@ -8,13 +8,11 @@
  *     and optionally register a pickup address (which triggers OTP to seller's phone)
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
 import { userRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
-import { AuthorizationError, ValidationError } from "@/lib/errors";
-import { successResponse, ApiErrors } from "@/lib/api-response";
+import { ValidationError } from "@/lib/errors";
+import { successResponse } from "@/lib/api-response";
+import { createApiHandler } from "@/lib/api/api-handler";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import {
@@ -61,9 +59,10 @@ const updateShippingSchema = z.discriminatedUnion("method", [
 
 // ─── Helper: strip server-only fields before sending to client ───────────────
 
-function sanitiseConfig(
-  config: SellerShippingConfig | undefined,
-): Omit<SellerShippingConfig, "shiprocketToken" | "shiprocketTokenExpiry"> & {
+function sanitiseConfig(config: SellerShippingConfig | undefined): Omit<
+  SellerShippingConfig,
+  "shiprocketToken" | "shiprocketTokenExpiry"
+> & {
   shiprocketTokenExpiry?: string;
   isTokenValid?: boolean;
 } {
@@ -86,163 +85,143 @@ function sanitiseConfig(
 
 // ─── GET ─────────────────────────────────────────────────────────────────────
 
-export async function GET() {
-  try {
-    const authUser = await requireAuth();
-    const user = await userRepository.findById(authUser.uid);
-
-    if (!user) {
-      throw new AuthorizationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-    }
-    if (user.role !== "seller" && user.role !== "admin") {
-      throw new AuthorizationError(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED);
-    }
-
-    return successResponse({ shippingConfig: sanitiseConfig(user.shippingConfig) });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+export const GET = createApiHandler({
+  auth: true,
+  roles: ["seller", "admin"],
+  handler: async ({ user }) => {
+    return successResponse({
+      shippingConfig: sanitiseConfig(user!.shippingConfig),
+    });
+  },
+});
 
 // ─── PATCH ────────────────────────────────────────────────────────────────────
 
-export async function PATCH(request: NextRequest) {
-  try {
-    const authUser = await requireAuth();
-    const user = await userRepository.findById(authUser.uid);
+export const PATCH = createApiHandler<(typeof updateShippingSchema)["_output"]>(
+  {
+    auth: true,
+    roles: ["seller", "admin"],
+    schema: updateShippingSchema,
+    handler: async ({ user, body }) => {
+      const data = body!;
+      let config: SellerShippingConfig;
+      let otpPending = false;
+      let newPickupLocationId: number | undefined;
 
-    if (!user) {
-      throw new AuthorizationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-    }
-    if (user.role !== "seller" && user.role !== "admin") {
-      throw new AuthorizationError(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED);
-    }
+      if (data.method === "custom") {
+        config = {
+          method: "custom",
+          customShippingPrice: data.customShippingPrice,
+          customCarrierName: data.customCarrierName,
+          isConfigured: true,
+        };
+      } else {
+        // ── Shiprocket method ──────────────────────────────────────────────────
+        const existing = user!.shippingConfig;
+        let token = existing?.shiprocketToken;
+        let tokenExpiry = existing?.shiprocketTokenExpiry;
+        const existingEmail = existing?.shiprocketEmail;
 
-    const body = await request.json();
-    const validation = updateShippingSchema.safeParse(body);
-    if (!validation.success) {
-      return ApiErrors.validationError(validation.error.issues);
-    }
+        // Re-authenticate if credentials supplied or token is missing/expired
+        if (
+          data.shiprocketCredentials ||
+          !token ||
+          (tokenExpiry && new Date() >= new Date(tokenExpiry))
+        ) {
+          if (!data.shiprocketCredentials) {
+            throw new ValidationError(
+              ERROR_MESSAGES.SHIPPING.SHIPROCKET_CREDS_REQUIRED,
+            );
+          }
 
-    const data = validation.data;
-    let config: SellerShippingConfig;
-    let otpPending = false;
-    let newPickupLocationId: number | undefined;
+          serverLogger.info("Authenticating with Shiprocket", {
+            uid: user!.uid,
+            email: data.shiprocketCredentials.email,
+          });
 
-    if (data.method === "custom") {
-      config = {
-        method: "custom",
-        customShippingPrice: data.customShippingPrice,
-        customCarrierName: data.customCarrierName,
-        isConfigured: true,
-      };
-    } else {
-      // ── Shiprocket method ──────────────────────────────────────────────────
-      const existing = user.shippingConfig;
-      let token = existing?.shiprocketToken;
-      let tokenExpiry = existing?.shiprocketTokenExpiry;
-      const existingEmail = existing?.shiprocketEmail;
+          const authResult = await shiprocketAuthenticate({
+            email: data.shiprocketCredentials.email,
+            password: data.shiprocketCredentials.password,
+          }).catch((err: Error) => {
+            throw new ValidationError(
+              `${ERROR_MESSAGES.SHIPPING.SHIPROCKET_AUTH_FAILED}: ${err.message}`,
+            );
+          });
 
-      // Re-authenticate if credentials supplied or token is missing/expired
-      if (
-        data.shiprocketCredentials ||
-        !token ||
-        (tokenExpiry && new Date() >= new Date(tokenExpiry))
-      ) {
-        if (!data.shiprocketCredentials) {
-          throw new ValidationError(
-            ERROR_MESSAGES.SHIPPING.SHIPROCKET_CREDS_REQUIRED,
-          );
+          token = authResult.token;
+          tokenExpiry = new Date(Date.now() + SHIPROCKET_TOKEN_TTL_MS);
+          tokenExpiry = new Date(tokenExpiry);
         }
 
-        serverLogger.info("Authenticating with Shiprocket", {
-          uid: authUser.uid,
-          email: data.shiprocketCredentials.email,
-        });
+        const shiprocketEmail =
+          data.shiprocketCredentials?.email ?? existingEmail ?? "";
 
-        const authResult = await shiprocketAuthenticate({
-          email: data.shiprocketCredentials.email,
-          password: data.shiprocketCredentials.password,
-        }).catch((err: Error) => {
-          throw new ValidationError(
-            `${ERROR_MESSAGES.SHIPPING.SHIPROCKET_AUTH_FAILED}: ${err.message}`,
-          );
-        });
-
-        token = authResult.token;
-        tokenExpiry = new Date(Date.now() + SHIPROCKET_TOKEN_TTL_MS);
-        tokenExpiry = new Date(tokenExpiry);
-      }
-
-      const shiprocketEmail = data.shiprocketCredentials?.email ?? existingEmail ?? "";
-
-      config = {
-        method: "shiprocket",
-        shiprocketEmail,
-        shiprocketToken: token,
-        shiprocketTokenExpiry: tokenExpiry,
-        pickupAddress: existing?.pickupAddress,
-        isConfigured: Boolean(existing?.pickupAddress?.isVerified),
-      };
-
-      // Register new pickup address → triggers OTP
-      if (data.pickupAddress && token) {
-        serverLogger.info("Registering Shiprocket pickup address", {
-          uid: authUser.uid,
-          location: data.pickupAddress.locationName,
-        });
-
-        const pickupResult = await shiprocketAddPickupLocation(token, {
-          pickup_location: data.pickupAddress.locationName,
-          name: data.pickupAddress.name,
-          email: data.pickupAddress.email,
-          phone: data.pickupAddress.phone,
-          address: data.pickupAddress.address,
-          address_2: data.pickupAddress.address2 ?? "",
-          city: data.pickupAddress.city,
-          state: data.pickupAddress.state,
-          country: data.pickupAddress.country || "India",
-          pin_code: data.pickupAddress.pincode,
-        }).catch((err: Error) => {
-          throw new ValidationError(
-            `${ERROR_MESSAGES.SHIPPING.PICKUP_ADD_FAILED}: ${err.message}`,
-          );
-        });
-
-        newPickupLocationId = pickupResult.address?.pickup_location_id;
-        otpPending = true;
-
-        config.pickupAddress = {
-          ...data.pickupAddress,
-          isVerified: false,
-          shiprocketAddressId: newPickupLocationId,
+        config = {
+          method: "shiprocket",
+          shiprocketEmail,
+          shiprocketToken: token,
+          shiprocketTokenExpiry: tokenExpiry,
+          pickupAddress: existing?.pickupAddress,
+          isConfigured: Boolean(existing?.pickupAddress?.isVerified),
         };
-        config.isConfigured = false; // Not yet verified
+
+        // Register new pickup address → triggers OTP
+        if (data.pickupAddress && token) {
+          serverLogger.info("Registering Shiprocket pickup address", {
+            uid: user!.uid,
+            location: data.pickupAddress.locationName,
+          });
+
+          const pickupResult = await shiprocketAddPickupLocation(token, {
+            pickup_location: data.pickupAddress.locationName,
+            name: data.pickupAddress.name,
+            email: data.pickupAddress.email,
+            phone: data.pickupAddress.phone,
+            address: data.pickupAddress.address,
+            address_2: data.pickupAddress.address2 ?? "",
+            city: data.pickupAddress.city,
+            state: data.pickupAddress.state,
+            country: data.pickupAddress.country || "India",
+            pin_code: data.pickupAddress.pincode,
+          }).catch((err: Error) => {
+            throw new ValidationError(
+              `${ERROR_MESSAGES.SHIPPING.PICKUP_ADD_FAILED}: ${err.message}`,
+            );
+          });
+
+          newPickupLocationId = pickupResult.address?.pickup_location_id;
+          otpPending = true;
+
+          config.pickupAddress = {
+            ...data.pickupAddress,
+            isVerified: false,
+            shiprocketAddressId: newPickupLocationId,
+          };
+          config.isConfigured = false; // Not yet verified
+        }
       }
-    }
 
-    await userRepository.update(authUser.uid, { shippingConfig: config });
+      await userRepository.update(user!.uid, { shippingConfig: config });
 
-    const message = otpPending
-      ? SUCCESS_MESSAGES.SHIPPING.PICKUP_OTP_SENT
-      : SUCCESS_MESSAGES.SHIPPING.UPDATED;
+      const message = otpPending
+        ? SUCCESS_MESSAGES.SHIPPING.PICKUP_OTP_SENT
+        : SUCCESS_MESSAGES.SHIPPING.UPDATED;
 
-    serverLogger.info("Seller shipping config updated", {
-      uid: authUser.uid,
-      method: config.method,
-      isConfigured: config.isConfigured,
-      otpPending,
-    });
-
-    return successResponse(
-      {
-        shippingConfig: sanitiseConfig(config),
+      serverLogger.info("Seller shipping config updated", {
+        uid: user!.uid,
+        method: config.method,
+        isConfigured: config.isConfigured,
         otpPending,
-        pickupLocationId: newPickupLocationId,
-      },
-      message,
-    );
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+      });
+
+      return successResponse(
+        {
+          shippingConfig: sanitiseConfig(config),
+          otpPending,
+          pickupLocationId: newPickupLocationId,
+        },
+        message,
+      );
+    },
+  },
+);

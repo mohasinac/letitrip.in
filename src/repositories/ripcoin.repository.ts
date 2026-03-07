@@ -127,6 +127,42 @@ class RipCoinRepository extends BaseRepository<RipCoinTransactionDocument> {
       );
     }
   }
+
+  /**
+   * Find a single transaction by ID
+   */
+  async findById(id: string): Promise<RipCoinTransactionDocument | null> {
+    try {
+      const snap = await this.getCollection().doc(id).get();
+      if (!snap.exists) return null;
+      return { id: snap.id, ...snap.data() } as RipCoinTransactionDocument;
+    } catch (error) {
+      throw new DatabaseError(
+        `Failed to find ripcoin transaction: ${id}`,
+        error,
+      );
+    }
+  }
+
+  /**
+   * Mark a purchase transaction as refunded
+   */
+  async markRefunded(
+    id: string,
+    refundedAt: Date,
+    razorpayRefundId?: string,
+  ): Promise<void> {
+    try {
+      const update: Record<string, unknown> = { refunded: true, refundedAt };
+      if (razorpayRefundId) update.razorpayRefundId = razorpayRefundId;
+      await this.getCollection().doc(id).update(update);
+    } catch (error) {
+      throw new DatabaseError(
+        `Failed to mark transaction as refunded: ${id}`,
+        error,
+      );
+    }
+  }
 }
 
 export const ripcoinRepository = new RipCoinRepository();

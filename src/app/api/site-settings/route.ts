@@ -13,25 +13,18 @@
  * - Implement feature flag management
  */
 
-import { NextRequest } from "next/server";
 import { createHash } from "crypto";
+import { NextResponse } from "next/server";
 import { siteSettingsRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { errorResponse, successResponse } from "@/lib/api-response";
-import {
-  getUserFromRequest,
-  requireRoleFromRequest,
-} from "@/lib/security/authorization";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  siteSettingsUpdateSchema,
-} from "@/lib/validation/schemas";
-import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { successResponse } from "@/lib/api-response";
+import { getUserFromRequest } from "@/lib/security/authorization";
+import { siteSettingsUpdateSchema } from "@/lib/validation/schemas";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { serverLogger } from "@/lib/server-logger";
 import { sendSiteSettingsChangedEmail } from "@/lib/email";
 import { SCHEMA_DEFAULTS } from "@/db/schema";
+import { createApiHandler } from "@/lib/api/api-handler";
 
 /**
  * GET /api/site-settings
@@ -44,8 +37,8 @@ import { SCHEMA_DEFAULTS } from "@/db/schema";
  * TODO (Future): Support ETag for conditional requests — ✅ Done
  * TODO (Future): Integrate Redis for distributed caching
  */
-export async function GET(request: NextRequest) {
-  try {
+export const GET = createApiHandler({
+  handler: async ({ request }) => {
     // Fetch site settings (singleton pattern)
     const settings = await siteSettingsRepository.getSingleton();
 
@@ -83,7 +76,7 @@ export async function GET(request: NextRequest) {
     const etag = `"${createHash("md5").update(JSON.stringify(responseData)).digest("hex")}"`;
     const ifNoneMatch = request.headers.get("if-none-match");
     if (ifNoneMatch === etag) {
-      return new Response(null, {
+      return new NextResponse(null, {
         status: 304,
         headers: { ETag: etag, "Cache-Control": cacheControl },
       });
@@ -93,11 +86,8 @@ export async function GET(request: NextRequest) {
     response.headers.set("Cache-Control", cacheControl);
     response.headers.set("ETag", etag);
     return response;
-  } catch (error) {
-    serverLogger.error(ERROR_MESSAGES.API.SITE_SETTINGS_GET_ERROR, { error });
-    return errorResponse(ERROR_MESSAGES.ADMIN.LOAD_SETTINGS_FAILED, 500);
-  }
-}
+  },
+});
 
 /**
  * PATCH /api/site-settings
@@ -114,34 +104,22 @@ export async function GET(request: NextRequest) {
  * TODO (Future): Invalidate distributed caches (Redis)
  * TODO (Future): Send notification to all admins on settings change — ✅ Done
  */
-export async function PATCH(request: NextRequest) {
-  try {
-    // Require admin authentication
-    const user = await requireRoleFromRequest(request, ["admin"]);
-
-    // Parse and validate request body
-    const body = await request.json();
-    const validation = validateRequestBody(siteSettingsUpdateSchema, body);
-
-    if (!validation.success) {
-      return errorResponse(
-        ERROR_MESSAGES.VALIDATION.FAILED,
-        400,
-        formatZodErrors(validation.errors),
-      );
-    }
-
+export const PATCH = createApiHandler<
+  (typeof siteSettingsUpdateSchema)["_output"]
+>({
+  auth: true,
+  roles: ["admin"],
+  schema: siteSettingsUpdateSchema,
+  handler: async ({ user, body }) => {
     // Update settings in repository (singleton pattern)
-    const updatedSettings = await siteSettingsRepository.updateSingleton(
-      validation.data,
-    );
+    const updatedSettings = await siteSettingsRepository.updateSingleton(body!);
 
     // Audit log — record which admin changed what fields
     serverLogger.info(ERROR_MESSAGES.API.SITE_SETTINGS_AUDIT_LOG, {
-      adminId: user.uid,
-      adminEmail: user.email,
-      changedFields: Object.keys(validation.data),
-      changes: validation.data,
+      adminId: user!.uid,
+      adminEmail: user!.email,
+      changedFields: Object.keys(body!),
+      changes: body!,
       timestamp: new Date().toISOString(),
     });
 
@@ -150,8 +128,8 @@ export async function PATCH(request: NextRequest) {
       process.env.ADMIN_NOTIFICATION_EMAIL || SCHEMA_DEFAULTS.ADMIN_EMAIL;
     sendSiteSettingsChangedEmail({
       adminEmails: [adminEmail],
-      changedByEmail: user.email || adminEmail,
-      changedFields: Object.keys(validation.data),
+      changedByEmail: user!.email || adminEmail,
+      changedFields: Object.keys(body!),
     }).catch((err) =>
       serverLogger.error(
         ERROR_MESSAGES.API.SETTINGS_CHANGE_NOTIFICATION_ERROR,
@@ -163,8 +141,5 @@ export async function PATCH(request: NextRequest) {
       updatedSettings,
       SUCCESS_MESSAGES.ADMIN.SETTINGS_SAVED,
     );
-  } catch (error) {
-    serverLogger.error(ERROR_MESSAGES.API.SITE_SETTINGS_PATCH_ERROR, { error });
-    return handleApiError(error);
-  }
-}
+  },
+});

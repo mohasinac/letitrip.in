@@ -19,4 +19,11 @@ export const checkoutService = {
   /** Verify a Razorpay payment and complete the order */
   verifyPayment: (data: unknown) =>
     apiClient.post(API_ENDPOINTS.PAYMENT.VERIFY, data),
+
+  /**
+   * Request server permission to send an OTP.
+   * Atomically checks + increments the Firestore daily SMS counter.
+   * Throws ApiClientError(429) when the free-tier cap (1 000/day IST) is reached.
+   */
+  requestOtpGrant: () => apiClient.post(API_ENDPOINTS.PAYMENT.OTP_REQUEST, {}),
 };

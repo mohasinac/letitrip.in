@@ -6,6 +6,7 @@ export { UserNotificationsView } from "./UserNotificationsView";
 export { UserEditAddressView } from "./UserEditAddressView";
 export { RipCoinsWallet } from "./RipCoinsWallet";
 export { BuyRipCoinsModal } from "./BuyRipCoinsModal";
+export { RipCoinsPurchaseView } from "./RipCoinsPurchaseView";
 export { ChatWindow } from "./ChatWindow";
 export { ChatList } from "./ChatList";
 export { MessagesView } from "./MessagesView";

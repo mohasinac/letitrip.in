@@ -99,7 +99,7 @@ export function FAQSection() {
           {faqs.map((faq) => (
             <div
               key={faq.id}
-              className={`${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} overflow-hidden transition-all`}
+              className={`${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius["2xl"]} overflow-hidden transition-all`}
             >
               {/* Question Button */}
               <Button

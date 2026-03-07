@@ -25,7 +25,6 @@ jest.mock("@/hooks", () => ({
   useAuth: () => ({ user: null, loading: false }),
   useLogin: () => ({ mutate: jest.fn(), isLoading: false }),
   useGoogleLogin: () => ({ mutate: jest.fn(), isLoading: false }),
-  useAppleLogin: () => ({ mutate: jest.fn(), isLoading: false }),
 }));
 
 jest.mock("@/components", () => ({
@@ -77,16 +76,11 @@ describe("LoginForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders Google and Apple social buttons", () => {
+  it("renders Google social button", () => {
     render(<LoginForm />);
     expect(
       screen.getByRole("button", {
         name: new RegExp(UI_LABELS.AUTH.LOGIN.GOOGLE, "i"),
-      }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", {
-        name: new RegExp(UI_LABELS.AUTH.LOGIN.APPLE, "i"),
       }),
     ).toBeInTheDocument();
   });

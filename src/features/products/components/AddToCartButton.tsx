@@ -16,6 +16,8 @@ interface AddToCartButtonProps {
 
 export function AddToCartButton({
   productId,
+  productTitle,
+  price,
   isAuction = false,
   disabled = false,
   className = "",
@@ -32,7 +34,7 @@ export function AddToCartButton({
 
   const handleClick = () => {
     if (isAuction) return;
-    mutate({ productId, quantity: 1 });
+    mutate({ productId, quantity: 1, productTitle, price });
   };
 
   const label = isAuction

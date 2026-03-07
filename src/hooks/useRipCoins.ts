@@ -4,12 +4,7 @@
  * useRipCoins Hook
  *
  * Provides wallet balance query, coin purchase initiation,
- * and purchase verification via the RipCoins API.
- *
- * Usage:
- * ```tsx
- * const { balance, purchase, verifyPurchase, history } = useRipCoins();
- * ```
+ * purchase verification, refund, and history via the RipCoins API.
  */
 
 import { useApiQuery } from "./useApiQuery";
@@ -26,10 +21,10 @@ export function useRipCoinBalance() {
 }
 
 export function usePurchaseRipCoins() {
-  const { showSuccess, showError } = useMessage();
+  const { showError } = useMessage();
 
   return useApiMutation({
-    mutationFn: (packs: number) => ripcoinService.purchaseCoins(packs),
+    mutationFn: (packageId: string) => ripcoinService.purchaseCoins(packageId),
     onError: () => showError(ERROR_MESSAGES.RIPCOIN.PURCHASE_FAILED),
   });
 }
@@ -42,10 +37,21 @@ export function useVerifyRipCoinPurchase() {
       razorpayOrderId: string;
       razorpayPaymentId: string;
       razorpaySignature: string;
-      packs: number;
+      packageId: string;
     }) => ripcoinService.verifyPurchase(data),
     onSuccess: () => showSuccess(SUCCESS_MESSAGES.RIPCOIN.PURCHASE_COMPLETE),
     onError: () => showError(ERROR_MESSAGES.RIPCOIN.VERIFY_FAILED),
+  });
+}
+
+export function useRefundRipCoinPurchase() {
+  const { showSuccess, showError } = useMessage();
+
+  return useApiMutation({
+    mutationFn: (transactionId: string) =>
+      ripcoinService.refundPurchase(transactionId),
+    onSuccess: () => showSuccess(SUCCESS_MESSAGES.RIPCOIN.REFUND_COMPLETE),
+    onError: () => showError(ERROR_MESSAGES.RIPCOIN.REFUND_FAILED),
   });
 }
 

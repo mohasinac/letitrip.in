@@ -1,13 +1,12 @@
 ﻿"use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { Star, Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   ActiveFilterChips,
   Button,
   DataTable,
-  FilterFacetSection,
   Heading,
   HorizontalScroller,
   ListingLayout,
@@ -29,8 +28,9 @@ import {
   TextLink,
 } from "@/components";
 import type { ActiveFilter, ProductSortValue } from "@/components";
+import { RangeFilter } from "@/components/filters";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { useUrlTable } from "@/hooks";
+import { useUrlTable, usePendingTable } from "@/hooks";
 import { useCategoryDetail } from "../hooks/useCategoryDetail";
 import { useCategoryProducts } from "../hooks/useCategoryProducts";
 import type { CategoryDocument } from "@/db/schema";
@@ -38,13 +38,6 @@ import type { CategoryDocument } from "@/db/schema";
 const { themed, flex, spacing } = THEME_CONSTANTS;
 
 const PAGE_SIZE = 24;
-
-const PRICE_BUCKET_KEYS = [
-  { value: "0-500", labelKey: "priceUnder500" },
-  { value: "500-2000", labelKey: "price500to2000" },
-  { value: "2000-10000", labelKey: "price2000to10000" },
-  { value: "10000+", labelKey: "priceOver10000" },
-] as const;
 
 interface Props {
   slug: string;
@@ -66,26 +59,11 @@ export function CategoryProductsView({ slug }: Props) {
   const sort = (table.get("sort") ||
     PRODUCT_SORT_VALUES.NEWEST) as ProductSortValue;
   const page = table.getNumber("page", 1);
-  const priceRange = table.get("priceRange");
   const activeTab = table.get("tab") || "products";
 
   // ── Staged filter state ──────────────────────────────────────────────
-  const [stagedPriceRange, setStagedPriceRange] = useState<string[]>(
-    priceRange ? [priceRange] : [],
-  );
-
-  useEffect(() => {
-    setStagedPriceRange(priceRange ? [priceRange] : []);
-  }, [priceRange]);
-
-  const handleFilterApply = useCallback(() => {
-    table.set("priceRange", stagedPriceRange[0] ?? "");
-  }, [stagedPriceRange, table]);
-
-  const handleFilterClearAll = useCallback(() => {
-    setStagedPriceRange([]);
-    table.setMany({ priceRange: "", q: "" });
-  }, [table]);
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, ["minPrice", "maxPrice"]);
 
   /* ---- Fetch category + children ---- */
   const { category, children, isLoading: catLoading } = useCategoryDetail(slug);
@@ -96,7 +74,8 @@ export function CategoryProductsView({ slug }: Props) {
       sort,
       page,
       pageSize: PAGE_SIZE,
-      priceRange,
+      minPrice: table.get("minPrice") || undefined,
+      maxPrice: table.get("maxPrice") || undefined,
       search: table.get("q") || undefined,
       cacheKey: table.params.toString(),
     });
@@ -123,25 +102,28 @@ export function CategoryProductsView({ slug }: Props) {
   /* ---- Active filters ---- */
   const activeFilters = useMemo<ActiveFilter[]>(() => {
     const filters: ActiveFilter[] = [];
-    if (priceRange) {
-      const bucket = PRICE_BUCKET_KEYS.find((b) => b.value === priceRange);
-      filters.push({
-        key: "priceRange",
-        label: t("filterPrice"),
-        value: bucket ? t(bucket.labelKey) : priceRange,
-      });
+    const minPrice = table.get("minPrice");
+    const maxPrice = table.get("maxPrice");
+    if (minPrice || maxPrice) {
+      const label =
+        minPrice && maxPrice
+          ? `₹${minPrice} – ₹${maxPrice}`
+          : minPrice
+            ? `₹${minPrice}+`
+            : `Up to ₹${maxPrice}`;
+      filters.push({ key: "minPrice", label: t("filterPrice"), value: label });
     }
     const q = table.get("q");
     if (q) {
       filters.push({ key: "q", label: tActions("search"), value: q });
     }
     return filters;
-  }, [priceRange, table, t, tProducts]);
+  }, [table, t, tActions]);
 
   const handleClearFilter = useCallback(
     (key: string) => {
-      if (key === "priceRange") setStagedPriceRange([]);
-      table.set(key, "");
+      if (key === "minPrice") table.setMany({ minPrice: "", maxPrice: "" });
+      else table.set(key, "");
     },
     [table],
   );
@@ -173,11 +155,6 @@ export function CategoryProductsView({ slug }: Props) {
       </div>
     );
   }
-
-  const priceBucketOptions = PRICE_BUCKET_KEYS.map((b) => ({
-    value: b.value,
-    label: t(b.labelKey),
-  }));
 
   return (
     <Main
@@ -317,18 +294,23 @@ export function CategoryProductsView({ slug }: Props) {
                 />
               }
               filterContent={
-                <FilterFacetSection
+                <RangeFilter
                   title={t("filterPrice")}
-                  options={priceBucketOptions}
-                  selected={stagedPriceRange}
-                  onChange={setStagedPriceRange}
-                  selectionMode="single"
-                  searchable={false}
+                  minValue={pendingTable.get("minPrice")}
+                  maxValue={pendingTable.get("maxPrice")}
+                  onMinChange={(v) => pendingTable.set("minPrice", v)}
+                  onMaxChange={(v) => pendingTable.set("maxPrice", v)}
+                  prefix="₹"
+                  showSlider
+                  minBound={0}
+                  maxBound={500000}
+                  step={500}
+                  defaultCollapsed={false}
                 />
               }
-              filterActiveCount={activeFilters.length}
-              onFilterApply={handleFilterApply}
-              onFilterClear={handleFilterClearAll}
+              filterActiveCount={filterActiveCount}
+              onFilterApply={onFilterApply}
+              onFilterClear={onFilterClear}
               sortSlot={
                 <SortDropdown
                   value={sort}
@@ -341,7 +323,7 @@ export function CategoryProductsView({ slug }: Props) {
                   <ActiveFilterChips
                     filters={activeFilters}
                     onRemove={handleClearFilter}
-                    onClearAll={handleFilterClearAll}
+                    onClearAll={onFilterClear}
                   />
                 ) : undefined
               }

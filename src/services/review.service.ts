@@ -28,9 +28,7 @@ export const reviewService = {
 
   /** Fetch homepage customer reviews (approved, latest) */
   getHomepageReviews: () =>
-    apiClient.get(
-      `${API_ENDPOINTS.REVIEWS.LIST}?filters=status==approved&sorts=-createdAt&pageSize=6`,
-    ),
+    apiClient.get(`${API_ENDPOINTS.REVIEWS.LIST}?latest=true&pageSize=6`),
 
   /** Get a single review by ID */
   getById: (id: string) => apiClient.get(API_ENDPOINTS.REVIEWS.GET_BY_ID(id)),

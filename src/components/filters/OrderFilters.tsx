@@ -58,12 +58,14 @@ export function OrderFilters({ table, variant = "admin" }: OrderFiltersProps) {
     { value: "paid", label: t("orderPayoutPaid") },
   ];
 
-  const selectedStatus = table.get("status") ? [table.get("status")] : [];
+  const selectedStatus = table.get("status")
+    ? table.get("status").split("|").filter(Boolean)
+    : [];
   const selectedPaymentStatus = table.get("paymentStatus")
-    ? [table.get("paymentStatus")]
+    ? table.get("paymentStatus").split("|").filter(Boolean)
     : [];
   const selectedPayoutStatus = table.get("payoutStatus")
-    ? [table.get("payoutStatus")]
+    ? table.get("payoutStatus").split("|").filter(Boolean)
     : [];
 
   return (
@@ -72,20 +74,18 @@ export function OrderFilters({ table, variant = "admin" }: OrderFiltersProps) {
         title={t("status")}
         options={statusOptions}
         selected={selectedStatus}
-        onChange={(vals) => table.set("status", vals[0] ?? "")}
+        onChange={(vals) => table.set("status", vals.join("|"))}
         searchable={false}
         defaultCollapsed={false}
-        selectionMode="single"
       />
 
       <FilterFacetSection
         title={t("paymentStatus")}
         options={paymentStatusOptions}
         selected={selectedPaymentStatus}
-        onChange={(vals) => table.set("paymentStatus", vals[0] ?? "")}
+        onChange={(vals) => table.set("paymentStatus", vals.join("|"))}
         searchable={false}
         defaultCollapsed={true}
-        selectionMode="single"
       />
 
       {variant === "admin" && (
@@ -93,10 +93,9 @@ export function OrderFilters({ table, variant = "admin" }: OrderFiltersProps) {
           title={t("orderPayoutStatus")}
           options={payoutStatusOptions}
           selected={selectedPayoutStatus}
-          onChange={(vals) => table.set("payoutStatus", vals[0] ?? "")}
+          onChange={(vals) => table.set("payoutStatus", vals.join("|"))}
           searchable={false}
           defaultCollapsed={true}
-          selectionMode="single"
         />
       )}
 
@@ -107,6 +106,10 @@ export function OrderFilters({ table, variant = "admin" }: OrderFiltersProps) {
         onMinChange={(v) => table.set("minAmount", v)}
         onMaxChange={(v) => table.set("maxAmount", v)}
         prefix="₹"
+        showSlider
+        minBound={0}
+        maxBound={500000}
+        step={500}
         minPlaceholder={t("minAmount")}
         maxPlaceholder={t("maxAmount")}
         defaultCollapsed={true}

@@ -12,7 +12,13 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { Heart, ShoppingBag, Gavel, Grid3X3, Store } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useAuth, useApiQuery, useUrlTable, useMessage } from "@/hooks";
+import {
+  useAuth,
+  useApiQuery,
+  useUrlTable,
+  useMessage,
+  invalidateQueries,
+} from "@/hooks";
 import {
   Button,
   EmptyState,
@@ -28,7 +34,7 @@ import {
   Text,
   WishlistButton,
 } from "@/components";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { wishlistService, cartService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
@@ -75,9 +81,10 @@ function WishlistContent() {
 
   useEffect(() => {
     if (!authLoading && !user) {
+      showError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
       router.push(ROUTES.AUTH.LOGIN);
     }
-  }, [user, authLoading, router]);
+  }, [user, authLoading, router, showError]);
 
   const { data, isLoading } = useApiQuery<WishlistResponse>({
     queryKey: ["user", "wishlist"],
@@ -150,7 +157,12 @@ function WishlistContent() {
     if (succeeded === selectedIds.length) {
       showSuccess(tActions("bulkSuccess", { count: succeeded }));
     } else if (succeeded > 0) {
-      showError(tActions("bulkPartialSuccess", { success: succeeded, total: selectedIds.length }));
+      showError(
+        tActions("bulkPartialSuccess", {
+          success: succeeded,
+          total: selectedIds.length,
+        }),
+      );
     } else {
       showError(tActions("bulkFailed"));
     }
@@ -159,13 +171,21 @@ function WishlistContent() {
 
   const handleBulkAddToCart = useCallback(async () => {
     const results = await Promise.allSettled(
-      selectedIds.map((id) => cartService.addItem({ productId: id, quantity: 1 })),
+      selectedIds.map((id) =>
+        cartService.addItem({ productId: id, quantity: 1 }),
+      ),
     );
     const succeeded = results.filter((r) => r.status === "fulfilled").length;
+    if (succeeded > 0) invalidateQueries(["cart"]);
     if (succeeded === selectedIds.length) {
       showSuccess(tActions("bulkSuccess", { count: succeeded }));
     } else if (succeeded > 0) {
-      showError(tActions("bulkPartialSuccess", { success: succeeded, total: selectedIds.length }));
+      showError(
+        tActions("bulkPartialSuccess", {
+          success: succeeded,
+          total: selectedIds.length,
+        }),
+      );
     } else {
       showError(tActions("bulkFailed"));
     }
@@ -204,7 +224,9 @@ function WishlistContent() {
             {TAB_KEYS.map((tab) => (
               <TabsTrigger key={tab} value={tab}>
                 {TAB_ICONS[tab]}
-                {t(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}` as `tabProducts`)}
+                {t(
+                  `tab${tab.charAt(0).toUpperCase() + tab.slice(1)}` as `tabProducts`,
+                )}
               </TabsTrigger>
             ))}
           </TabsList>
@@ -238,7 +260,11 @@ function WishlistContent() {
             <Button variant="primary" size="sm" onClick={handleBulkAddToCart}>
               {tActions("bulkAddToCart", { count: selectedIds.length })}
             </Button>
-            <Button variant="danger" size="sm" onClick={handleBulkRemoveFromWishlist}>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={handleBulkRemoveFromWishlist}
+            >
               {tActions("bulkRemove", { count: selectedIds.length })}
             </Button>
           </>
@@ -271,7 +297,7 @@ function WishlistContent() {
             />
             {/* Wishlist remove button overlay */}
             {!isLoading && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4 absolute inset-0 pointer-events-none">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 absolute inset-0 pointer-events-none">
                 {displayedProducts.map((item) =>
                   item.product ? (
                     <div key={item.productId} className="relative">

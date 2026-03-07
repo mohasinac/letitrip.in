@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { FilterFacetSection } from "@/components";
+import { SwitchFilter } from "./SwitchFilter";
 import type { UrlTable } from "./ProductFilters";
 
 export const FAQ_SORT_OPTIONS = [
@@ -31,13 +32,9 @@ export function FaqFilters({ table }: FaqFiltersProps) {
     { value: "sellers", label: t("faqCategorySellers") },
   ];
 
-  const isActiveOptions = [
-    { value: "true", label: t("booleanActive") },
-    { value: "false", label: t("booleanInactive") },
-  ];
-
-  const selectedCategory = table.get("category") ? [table.get("category")] : [];
-  const selectedIsActive = table.get("isActive") ? [table.get("isActive")] : [];
+  const selectedCategory = table.get("category")
+    ? table.get("category").split("|").filter(Boolean)
+    : [];
 
   return (
     <div>
@@ -45,20 +42,17 @@ export function FaqFilters({ table }: FaqFiltersProps) {
         title={t("category")}
         options={categoryOptions}
         selected={selectedCategory}
-        onChange={(vals) => table.set("category", vals[0] ?? "")}
+        onChange={(vals) => table.set("category", vals.join("|"))}
         searchable={false}
         defaultCollapsed={false}
-        selectionMode="single"
       />
 
-      <FilterFacetSection
+      <SwitchFilter
         title={t("isActive")}
-        options={isActiveOptions}
-        selected={selectedIsActive}
-        onChange={(vals) => table.set("isActive", vals[0] ?? "")}
-        searchable={false}
+        label={t("showActiveOnly")}
+        checked={table.get("isActive") === "true"}
+        onChange={(v) => table.set("isActive", v ? "true" : "")}
         defaultCollapsed={true}
-        selectionMode="single"
       />
     </div>
   );

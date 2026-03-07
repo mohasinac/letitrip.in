@@ -157,3 +157,9 @@ export function useCreateChatRoom() {
       chatService.createOrGetRoom(data),
   });
 }
+
+export function useDeleteChatRoom() {
+  return useApiMutation({
+    mutationFn: (chatId: string) => chatService.deleteRoom(chatId),
+  });
+}

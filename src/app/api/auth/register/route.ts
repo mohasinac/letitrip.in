@@ -24,6 +24,7 @@ import type { UserRole } from "@/types/auth";
 import { createSessionCookie } from "@/lib/firebase/auth-server";
 import { sessionRepository, userRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
+import { errorResponse } from "@/lib/api-response";
 import { ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
 import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
@@ -53,10 +54,7 @@ export async function POST(request: NextRequest) {
       RateLimitPresets.AUTH,
     );
     if (!rateLimitResult.success) {
-      return NextResponse.json(
-        { success: false, error: UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED },
-        { status: 429 },
-      );
+      return errorResponse(UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED, 429);
     }
 
     const body = await request.json();

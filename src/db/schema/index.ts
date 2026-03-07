@@ -32,3 +32,4 @@ export * from "./events";
 export * from "./ripcoins";
 export * from "./chat";
 export * from "./newsletter-subscribers";
+export * from "./sms-counters";

@@ -432,6 +432,14 @@ export interface OrderConfirmationEmailParams {
   currency: string;
   shippingAddress: string;
   paymentMethod: string;
+  /** Per-store multi-item orders: list of all items in the order */
+  items?: Array<{
+    productId: string;
+    productTitle: string;
+    quantity: number;
+    unitPrice: number;
+    totalPrice: number;
+  }>;
 }
 
 export async function sendOrderConfirmationEmail(
@@ -447,6 +455,7 @@ export async function sendOrderConfirmationEmail(
     currency,
     shippingAddress,
     paymentMethod,
+    items,
   } = params;
 
   const orderUrl = `${SITE_URL}/user/orders/view/${orderId}`;
@@ -454,6 +463,51 @@ export async function sendOrderConfirmationEmail(
     style: "currency",
     currency,
   }).format(totalPrice);
+
+  // Build items table rows — used when multiple products are in one order
+  const itemsHtml =
+    items && items.length > 1
+      ? `
+        <table width="100%" cellpadding="8" cellspacing="0" border="0" style="border-collapse: collapse; margin-bottom: 8px;">
+          <thead>
+            <tr style="background-color: #e9ecef;">
+              <th style="text-align: left; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 12px;">Product</th>
+              <th style="text-align: center; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 12px;">Qty</th>
+              <th style="text-align: right; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 12px;">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items
+              .map(
+                (item, i) => `
+              <tr style="background-color: ${i % 2 === 0 ? "#ffffff" : "#f8f9fa"}; border-top: 1px solid #e9ecef;">
+                <td style="font-size: 14px; color: #333; padding: 8px 12px;">${item.productTitle}</td>
+                <td style="font-size: 14px; color: #333; text-align: center; padding: 8px 12px;">${item.quantity}</td>
+                <td style="font-size: 14px; color: #333; text-align: right; padding: 8px 12px;">${new Intl.NumberFormat("en-IN", { style: "currency", currency }).format(item.totalPrice)}</td>
+              </tr>`,
+              )
+              .join("")}
+          </tbody>
+        </table>`
+      : `
+        <tr>
+          <td style="color: #666; font-size: 14px;">Product</td>
+          <td style="color: #333; font-size: 14px;">${productTitle}</td>
+        </tr>
+        <tr>
+          <td style="color: #666; font-size: 14px;">Quantity</td>
+          <td style="color: #333; font-size: 14px;">${quantity}</td>
+        </tr>`;
+
+  const itemsText =
+    items && items.length > 1
+      ? items
+          .map(
+            (item) =>
+              `  • ${item.productTitle} × ${item.quantity} — ${new Intl.NumberFormat("en-IN", { style: "currency", currency }).format(item.totalPrice)}`,
+          )
+          .join("\n")
+      : `  Product: ${productTitle}\n  Quantity: ${quantity}`;
 
   try {
     const { data, error } = await resend.emails.send({
@@ -497,14 +551,17 @@ export async function sendOrderConfirmationEmail(
                           <td style="color: #666; font-size: 14px; width: 40%;">Order ID</td>
                           <td style="color: #333; font-size: 14px; font-weight: 600;">${orderId}</td>
                         </tr>
+                        ${
+                          items && items.length > 1
+                            ? `
                         <tr>
-                          <td style="color: #666; font-size: 14px;">Product</td>
-                          <td style="color: #333; font-size: 14px;">${productTitle}</td>
-                        </tr>
-                        <tr>
-                          <td style="color: #666; font-size: 14px;">Quantity</td>
-                          <td style="color: #333; font-size: 14px;">${quantity}</td>
-                        </tr>
+                          <td style="color: #666; font-size: 14px; vertical-align: top;" colspan="2">
+                            <div style="font-weight: 600; margin-bottom: 8px;">Items (${items.length})</div>
+                            ${itemsHtml}
+                          </td>
+                        </tr>`
+                            : itemsHtml
+                        }
                         <tr>
                           <td style="color: #666; font-size: 14px;">Total</td>
                           <td style="color: #333; font-size: 14px; font-weight: 700;">${formattedTotal}</td>
@@ -550,7 +607,7 @@ export async function sendOrderConfirmationEmail(
         </body>
         </html>
       `,
-      text: `Hi ${userName},\n\nYour order ${orderId} has been confirmed!\n\nProduct: ${productTitle}\nQuantity: ${quantity}\nTotal: ${formattedTotal}\nPayment: ${paymentMethod === "cod" ? "Cash on Delivery" : "Online Payment"}\nShip to: ${shippingAddress}\n\nView your order: ${orderUrl}\n\n© ${currentYear()} ${SITE_NAME}`,
+      text: `Hi ${userName},\n\nYour order ${orderId} has been confirmed!\n\n${itemsText}\nTotal: ${formattedTotal}\nPayment: ${paymentMethod === "cod" ? "Cash on Delivery" : "Online Payment"}\nShip to: ${shippingAddress}\n\nView your order: ${orderUrl}\n\n© ${currentYear()} ${SITE_NAME}`,
     });
 
     if (error) {

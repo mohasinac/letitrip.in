@@ -6,6 +6,7 @@ import {
   ZodSetup,
 } from "@/components";
 import { ThemeProvider, SessionProvider } from "@/contexts";
+import { GuestCartMergerEffect } from "@/features/cart";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getLocale } from "next-intl/server";
@@ -46,6 +47,7 @@ export default async function LocaleLayout({
         <ZodSetup />
         <ThemeProvider>
           <SessionProvider>
+            <GuestCartMergerEffect />
             <MonitoringProvider>
               <ToastProvider position="top-right">
                 <LayoutClient>{children}</LayoutClient>

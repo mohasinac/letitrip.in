@@ -6,45 +6,28 @@
  * Store data is embedded in the UserDocument.publicProfile + storeSlug fields.
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { verifySessionCookie } from "@/lib/firebase/auth-server";
 import { userRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
-import { AuthenticationError, AuthorizationError } from "@/lib/errors";
+import { successResponse } from "@/lib/api-response";
+import { createApiHandler } from "@/lib/api/api-handler";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { successResponse, ApiErrors } from "@/lib/api-response";
-import { getRequiredSessionCookie } from "@/lib/api/request-helpers";
 import { serverLogger } from "@/lib/server-logger";
 import { slugify } from "@/utils";
 
 // ─── GET ─────────────────────────────────────────────────────────────────────
 
-export async function GET(request: NextRequest) {
-  try {
-    const sessionCookie = getRequiredSessionCookie(request);
-    const decodedToken = await verifySessionCookie(sessionCookie);
-    if (!decodedToken) {
-      throw new AuthenticationError(ERROR_MESSAGES.AUTH.SESSION_EXPIRED);
-    }
-
-    const user = await userRepository.findById(decodedToken.uid);
-    if (!user) throw new AuthenticationError(ERROR_MESSAGES.DATABASE.NOT_FOUND);
-
-    if (user.role !== "seller" && user.role !== "admin") {
-      throw new AuthorizationError(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED);
-    }
-
+export const GET = createApiHandler({
+  auth: true,
+  roles: ["seller", "admin"],
+  handler: async ({ user }) => {
     return successResponse({
-      uid: user.uid,
-      storeSlug: user.storeSlug ?? null,
-      storeStatus: user.storeStatus ?? "pending",
-      publicProfile: user.publicProfile ?? null,
+      uid: user!.uid,
+      storeSlug: user!.storeSlug ?? null,
+      storeStatus: user!.storeStatus ?? "pending",
+      publicProfile: user!.publicProfile ?? null,
     });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});
 
 // ─── PATCH ────────────────────────────────────────────────────────────────────
 
@@ -72,27 +55,11 @@ const updateStoreSchema = z.object({
   isPublic: z.boolean().optional(),
 });
 
-export async function PATCH(request: NextRequest) {
-  try {
-    const sessionCookie = getRequiredSessionCookie(request);
-    const decodedToken = await verifySessionCookie(sessionCookie);
-    if (!decodedToken) {
-      throw new AuthenticationError(ERROR_MESSAGES.AUTH.SESSION_EXPIRED);
-    }
-
-    const user = await userRepository.findById(decodedToken.uid);
-    if (!user) throw new AuthenticationError(ERROR_MESSAGES.DATABASE.NOT_FOUND);
-
-    if (user.role !== "seller" && user.role !== "admin") {
-      throw new AuthorizationError(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED);
-    }
-
-    const rawBody = await request.json();
-    const validation = updateStoreSchema.safeParse(rawBody);
-    if (!validation.success) {
-      return ApiErrors.validationError(validation.error.issues);
-    }
-
+export const PATCH = createApiHandler<(typeof updateStoreSchema)["_output"]>({
+  auth: true,
+  roles: ["seller", "admin"],
+  schema: updateStoreSchema,
+  handler: async ({ user, body }) => {
     const {
       storeName,
       storeDescription,
@@ -108,10 +75,10 @@ export async function PATCH(request: NextRequest) {
       isVacationMode,
       vacationMessage,
       isPublic,
-    } = validation.data;
+    } = body!;
 
     // Merge incoming fields into existing publicProfile (preserve unrelated fields)
-    const existing = user.publicProfile ?? {
+    const existing = user!.publicProfile ?? {
       isPublic: true,
       showEmail: false,
       showPhone: false,
@@ -140,27 +107,27 @@ export async function PATCH(request: NextRequest) {
     };
 
     // Regenerate storeSlug when storeName changes and no slug exists yet
-    let newStoreSlug = user.storeSlug;
-    if (storeName && !user.storeSlug) {
-      const base = slugify(`${storeName} ${user.displayName ?? user.uid}`);
+    let newStoreSlug = user!.storeSlug;
+    if (storeName && !user!.storeSlug) {
+      const base = slugify(`${storeName} ${user!.displayName ?? user!.uid}`);
       newStoreSlug = `store-${base}`.slice(0, 80);
     }
 
     // Mark store as pending admin review if not already approved —
     // approval status can only be set by an admin via /api/admin/stores/[uid]
     const storeStatusUpdate =
-      user.storeStatus !== "approved"
+      user!.storeStatus !== "approved"
         ? { storeStatus: "pending" as const }
         : {};
 
-    const updatedUser = await userRepository.update(decodedToken.uid, {
+    const updatedUser = await userRepository.update(user!.uid, {
       publicProfile: updatedProfile,
       ...(newStoreSlug ? { storeSlug: newStoreSlug } : {}),
       ...storeStatusUpdate,
     } as any);
 
     serverLogger.info("Seller store updated", {
-      uid: decodedToken.uid,
+      uid: user!.uid,
       storeSlug: newStoreSlug,
     });
 
@@ -172,7 +139,5 @@ export async function PATCH(request: NextRequest) {
       },
       SUCCESS_MESSAGES.USER.STORE_UPDATED,
     );
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

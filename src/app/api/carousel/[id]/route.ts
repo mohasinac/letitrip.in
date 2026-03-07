@@ -1,234 +1,73 @@
 /**
  * Carousel API - Individual Slide Routes
  *
- * Handles individual carousel slide operations
+ * Handles individual carousel slide operations.
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { carouselRepository } from "@/repositories";
-import { requireRoleFromRequest } from "@/lib/security/authorization";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { successResponse, errorResponse } from "@/lib/api-response";
+import { carouselUpdateSchema } from "@/lib/validation/schemas";
+import { NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  carouselUpdateSchema,
-} from "@/lib/validation/schemas";
-import {
-  AuthenticationError,
-  AuthorizationError,
-  NotFoundError,
-} from "@/lib/errors";
-import { serverLogger } from "@/lib/server-logger";
+
+type IdParams = { id: string };
 
 /**
  * GET /api/carousel/[id]
- *
- * Get carousel slide by ID
- *
- * Public access
+ * Public — get a carousel slide by ID.
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    const { id } = await params;
-
-    // Fetch carousel slide
+export const GET = createApiHandler<never, IdParams>({
+  handler: async ({ params }) => {
+    const { id } = params!;
     const slide = await carouselRepository.findById(id);
-
-    if (!slide) {
-      throw new NotFoundError(ERROR_MESSAGES.CAROUSEL.NOT_FOUND);
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: slide,
-    });
-  } catch (error) {
-    const { id } = await params;
-    serverLogger.error(
-      `GET /api/carousel/${id} ${ERROR_MESSAGES.API.CAROUSEL_ID_GET_ERROR}`,
-      { error },
-    );
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.CAROUSEL.FETCH_FAILED },
-      { status: 500 },
-    );
-  }
-}
+    if (!slide) throw new NotFoundError(ERROR_MESSAGES.CAROUSEL.NOT_FOUND);
+    return successResponse(slide);
+  },
+});
 
 /**
  * PATCH /api/carousel/[id]
- *
- * Update carousel slide
- *
- * Requires admin authentication
+ * Admin only — update carousel slide; enforces max-5-active limit.
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    const { id } = await params;
-
-    // Require admin authentication
-    const user = await requireRoleFromRequest(request, ["admin"]);
-
-    // Fetch carousel slide
+export const PATCH = createApiHandler<
+  Partial<(typeof carouselUpdateSchema)["_output"]>,
+  IdParams
+>({
+  roles: ["admin"],
+  schema: carouselUpdateSchema,
+  handler: async ({ params, body }) => {
+    const { id } = params!;
     const slide = await carouselRepository.findById(id);
+    if (!slide) throw new NotFoundError(ERROR_MESSAGES.CAROUSEL.NOT_FOUND);
 
-    if (!slide) {
-      throw new NotFoundError(ERROR_MESSAGES.CAROUSEL.NOT_FOUND);
-    }
-
-    // Parse and validate request body
-    const body = await request.json();
-    const validation = validateRequestBody(carouselUpdateSchema, body);
-
-    if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
-      );
-    }
-
-    // Check active slides limit if activating this slide
-    if (validation.data.active && !slide.active) {
+    // Enforce max 5 active slides before activating a new one
+    if (body?.active && !slide.active) {
       const activeSlides = await carouselRepository.getActiveSlides();
       if (activeSlides.length >= 5) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: ERROR_MESSAGES.CAROUSEL.MAX_ACTIVE_REACHED,
-            details: {
-              currentActive: activeSlides.length,
-              maxAllowed: 5,
-              suggestion:
-                "Deactivate an existing slide before activating this one",
-            },
-          },
-          { status: 400 },
-        );
+        return errorResponse(ERROR_MESSAGES.CAROUSEL.MAX_ACTIVE_REACHED, 400, {
+          currentActive: activeSlides.length,
+          maxAllowed: 5,
+        });
       }
     }
 
-    // Update carousel slide
-    const updatedSlide = await carouselRepository.update(id, validation.data);
-
-    return NextResponse.json({
-      success: true,
-      data: updatedSlide,
-    });
-  } catch (error) {
-    const { id } = await params;
-    serverLogger.error(
-      `PATCH /api/carousel/${id} ${ERROR_MESSAGES.API.CAROUSEL_ID_PATCH_ERROR}`,
-      { error },
-    );
-
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
-    }
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.CAROUSEL.UPDATE_FAILED },
-      { status: 500 },
-    );
-  }
-}
+    const updatedSlide = await carouselRepository.update(id, body as any);
+    return successResponse(updatedSlide, SUCCESS_MESSAGES.CAROUSEL.UPDATED);
+  },
+});
 
 /**
  * DELETE /api/carousel/[id]
- *
- * Delete carousel slide
- *
- * Requires admin authentication
+ * Admin only — hard delete carousel slide.
  */
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    const { id } = await params;
-
-    // Require admin authentication
-    const user = await requireRoleFromRequest(request, ["admin"]);
-
-    // Fetch carousel slide
+export const DELETE = createApiHandler<never, IdParams>({
+  roles: ["admin"],
+  handler: async ({ params }) => {
+    const { id } = params!;
     const slide = await carouselRepository.findById(id);
-
-    if (!slide) {
-      throw new NotFoundError(ERROR_MESSAGES.CAROUSEL.NOT_FOUND);
-    }
-
-    // Delete carousel slide (hard delete - carousel slides can be removed)
+    if (!slide) throw new NotFoundError(ERROR_MESSAGES.CAROUSEL.NOT_FOUND);
     await carouselRepository.delete(id);
-
-    return NextResponse.json({
-      success: true,
-      message: SUCCESS_MESSAGES.CAROUSEL.DELETED,
-    });
-  } catch (error) {
-    const { id } = await params;
-    serverLogger.error(
-      `DELETE /api/carousel/${id} ${ERROR_MESSAGES.API.CAROUSEL_ID_DELETE_ERROR}`,
-      { error },
-    );
-
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
-    }
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.CAROUSEL.DELETE_FAILED },
-      { status: 500 },
-    );
-  }
-}
+    return successResponse(undefined, SUCCESS_MESSAGES.CAROUSEL.DELETED);
+  },
+});

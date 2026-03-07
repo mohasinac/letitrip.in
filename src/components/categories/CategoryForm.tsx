@@ -81,22 +81,24 @@ export function CategoryForm({
 
       {!isReadonly && (
         <ImageUpload
-          currentImage={category.imageUrl}
+          currentImage={category.display?.coverImage}
           onUpload={(file) => upload(file, "categories")}
-          onChange={(url) => update({ imageUrl: url })}
+          onChange={(url) =>
+            update({ display: { ...category.display, coverImage: url } })
+          }
           label={t("categoryImage")}
           helperText={t("imageRecommended")}
         />
       )}
 
-      {category.imageUrl && isReadonly && (
+      {category.display?.coverImage && isReadonly && (
         <div>
           <Label className={`block ${typography.label} mb-2`}>
             {t("categoryImage")}
           </Label>
           <div className="relative h-32 w-40 overflow-hidden rounded">
             <MediaImage
-              src={category.imageUrl}
+              src={category.display.coverImage}
               alt={category.name || ""}
               size="card"
             />

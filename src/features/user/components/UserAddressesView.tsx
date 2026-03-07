@@ -74,9 +74,10 @@ export function UserAddressesView() {
 
   useEffect(() => {
     if (!authLoading && !user) {
+      showError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
       router.push(ROUTES.AUTH.LOGIN);
     }
-  }, [user, authLoading, router]);
+  }, [user, authLoading, router, showError]);
 
   const handleEdit = (id: string) =>
     router.push(ROUTES.USER.ADDRESSES_EDIT(id));

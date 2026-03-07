@@ -5,15 +5,11 @@
  * Public endpoint (requires auth — validates per-user usage limits)
  */
 
-import { NextRequest } from "next/server";
-import { verifySessionCookie } from "@/lib/firebase/auth-server";
-import { AuthenticationError } from "@/lib/errors";
-import { handleApiError } from "@/lib/errors/error-handler";
-import { successResponse, errorResponse } from "@/lib/api-response";
-import { ERROR_MESSAGES } from "@/constants";
+import { successResponse } from "@/lib/api-response";
 import { couponsRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { z } from "zod";
+import { createApiHandler } from "@/lib/api/api-handler";
 
 const validateSchema = z.object({
   code: z.string().min(1),
@@ -27,37 +23,21 @@ const validateSchema = z.object({
  * Body: { code: string, orderTotal: number }
  * Returns: { valid: boolean, discountAmount: number, coupon?, error? }
  */
-export async function POST(request: NextRequest) {
-  try {
-    const sessionCookie = request.cookies.get("__session")?.value;
-    if (!sessionCookie)
-      throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-    const user = await verifySessionCookie(sessionCookie);
-    if (!user)
-      throw new AuthenticationError(ERROR_MESSAGES.AUTH.SESSION_EXPIRED);
-
-    const body = await request.json();
-    const validation = validateSchema.safeParse(body);
-    if (!validation.success) {
-      return errorResponse(ERROR_MESSAGES.VALIDATION.FAILED, 400);
-    }
-
-    const { code, orderTotal } = validation.data;
-
+export const POST = createApiHandler<(typeof validateSchema)["_output"]>({
+  auth: true,
+  schema: validateSchema,
+  handler: async ({ user, body }) => {
+    const { code, orderTotal } = body!;
     const result = await couponsRepository.validateCoupon(
       code,
-      user.uid,
+      user!.uid,
       orderTotal,
     );
-
     serverLogger.info("Coupon validation", {
       code,
-      userId: user.uid,
+      userId: user!.uid,
       valid: result.valid,
     });
-
     return successResponse(result);
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

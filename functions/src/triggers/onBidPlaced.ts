@@ -13,7 +13,7 @@
  *   5. Pushes a real-time alert to `notifications/{uid}` in Realtime DB.
  */
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
-import { db, rtdb } from "../config/firebase-admin";
+import { db, getRtdb } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { REGION, COLLECTIONS } from "../config/constants";
 import {
@@ -95,7 +95,7 @@ export const onBidPlaced = onDocumentCreated(
       // Separate from the Firestore batch; failure here is non-fatal.
       try {
         if (outbidUserId) {
-          await rtdb.ref(`notifications/${outbidUserId}`).push({
+          await getRtdb().ref(`notifications/${outbidUserId}`).push({
             type: "bid_outbid",
             productId: newBid.productId,
             productTitle: newBid.productTitle,
@@ -105,7 +105,7 @@ export const onBidPlaced = onDocumentCreated(
           });
         }
         // Also push to the product's realtime bid feed for all auction watchers
-        await rtdb.ref(`auction_bids/${newBid.productId}`).push({
+        await getRtdb().ref(`auction_bids/${newBid.productId}`).push({
           bidAmount: newBid.bidAmount,
           userId: newBid.userId,
           userName: newBid.userName,

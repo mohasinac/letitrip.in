@@ -6,18 +6,15 @@
  * Strategy: fetch seller's products → get product IDs → filter all orders
  */
 
-import { NextRequest } from "next/server";
-import { requireAuth } from "@/lib/firebase/auth-server";
 import { orderRepository, productRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse } from "@/lib/api-response";
+import { createApiHandler } from "@/lib/api/api-handler";
 import {
   getNumberParam,
   getSearchParams,
   getStringParam,
 } from "@/lib/api/request-helpers";
 import { serverLogger } from "@/lib/server-logger";
-import { ERROR_MESSAGES } from "@/constants";
 
 /**
  * GET /api/seller/orders
@@ -30,10 +27,9 @@ import { ERROR_MESSAGES } from "@/constants";
  *  - page     (number)  — page number (default 1)
  *  - pageSize (number)  — results per page (default 20)
  */
-export async function GET(request: NextRequest) {
-  try {
-    const user = await requireAuth();
-
+export const GET = createApiHandler({
+  auth: true,
+  handler: async ({ user, request }) => {
     const searchParams = getSearchParams(request);
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });
     const pageSize = getNumberParam(searchParams, "pageSize", 20, {
@@ -44,7 +40,7 @@ export async function GET(request: NextRequest) {
     const sorts = getStringParam(searchParams, "sorts") || "-orderDate";
 
     serverLogger.info("Seller orders list requested", {
-      sellerId: user.uid,
+      sellerId: user!.uid,
       filters,
       sorts,
       page,
@@ -52,7 +48,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Step 1: Get only this seller's products (indexed query, not findAll)
-    const sellerProducts = await productRepository.findBySeller(user.uid);
+    const sellerProducts = await productRepository.findBySeller(user!.uid);
     const sellerProductIds = sellerProducts.map((p) => p.id);
 
     if (sellerProductIds.length === 0) {
@@ -66,9 +62,7 @@ export async function GET(request: NextRequest) {
           hasMore: false,
         },
       });
-    }
-
-    // Step 2: Firestore-native Sieve query — no full orders scan
+    } // Step 2: Firestore-native Sieve query — no full orders scan
     const sieveResult = await orderRepository.listForSeller(sellerProductIds, {
       filters,
       sorts,
@@ -86,8 +80,5 @@ export async function GET(request: NextRequest) {
         hasMore: sieveResult.hasMore,
       },
     });
-  } catch (error) {
-    serverLogger.error(ERROR_MESSAGES.ORDER.FETCH_FAILED, { error });
-    return handleApiError(error);
-  }
-}
+  },
+});

@@ -380,7 +380,8 @@
       "authSuccess": "Signed in successfully",
       "authTimeout": "Sign-in timed out. Please try again.",
       "closing": "Closing window...",
-      "closeError": "Something went wrong. Please close this window and try again."
+      "closeError": "Something went wrong. Please close this window and try again.",
+      "redirecting": "Redirecting to sign-in provider..."
     }
   },
   "profile": {
@@ -434,6 +435,7 @@
     "empty": "Your wishlist is empty",
     "addToWishlist": "Add to Wishlist",
     "removeFromWishlist": "Remove from Wishlist",
+    "loginRequired": "Sign in to save items to your wishlist",
     "itemsCount": "Wishlist Items",
     "subtitleWithCount": "{count, plural, one {# item} other {# items}} saved",
     "tabProducts": "Products",
@@ -549,6 +551,9 @@
     "amountRange": "Amount Range",
     "minAmount": "Min amount",
     "maxAmount": "Max amount",
+    "from": "From",
+    "to": "To",
+    "clearRange": "Clear range",
     "minDate": "From date",
     "maxDate": "To date",
     "payoutPaymentMethod": "Payout Method",
@@ -570,6 +575,12 @@
     "booleanNotAuction": "Fixed Price",
     "booleanPromoted": "Promoted",
     "booleanNotPromoted": "Standard",
+    "showWinningOnly": "Winning bids only",
+    "showFeaturedOnly": "Featured items only",
+    "showActiveOnly": "Active only",
+    "showVerifiedOnly": "Verified reviews only",
+    "showEmailVerifiedOnly": "Verified email only",
+    "showDisabledOnly": "Disabled accounts only",
     "statusPublished": "Published",
     "statusDraft": "Draft",
     "statusOutOfStock": "Out of Stock",
@@ -652,6 +663,8 @@
     "sectionTypeFaq": "FAQ",
     "sectionTypeBlogArticles": "Blog Articles",
     "sectionTypeNewsletter": "Newsletter",
+    "sectionTypeStores": "Stores",
+    "sectionTypeEvents": "Events",
     "newsletterStatusActive": "Active",
     "newsletterStatusUnsubscribed": "Unsubscribed",
     "newsletterSourceFooter": "Footer",
@@ -823,6 +836,8 @@
     "removeFromWishlist": "Remove from Wishlist",
     "addedToWishlist": "Added to wishlist",
     "removedFromWishlist": "Removed from wishlist",
+    "loginToAddToCart": "Sign in to add items to your cart",
+    "loginToWishlist": "Sign in to save items to your wishlist",
     "productFeatures": "Product Highlights",
     "shortDescription": "About this product",
     "longDescription": "Detailed Description",
@@ -849,7 +864,15 @@
       "prevImage": "Previous image",
       "nextImage": "Next image",
       "videoThumbnail": "video",
-      "imageThumbnail": "image {n}"
+      "imageThumbnail": "image {n}",
+      "openLightbox": "Open image viewer",
+      "lightboxTitle": "Image viewer",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "resetZoom": "Reset zoom",
+      "enterFullscreen": "Enter fullscreen",
+      "exitFullscreen": "Exit fullscreen",
+      "close": "Close"
     }
   },
   "cart": {
@@ -879,7 +902,12 @@
     "shippingCalculated": "Calculated at checkout",
     "taxCalculated": "Calculated at checkout",
     "decreaseQty": "Decrease quantity",
-    "increaseQty": "Increase quantity"
+    "increaseQty": "Increase quantity",
+    "guestSubtitle": "Sign in to view your cart and complete your purchase",
+    "guestSignIn": "Sign In",
+    "guestCreateAccount": "Create Account",
+    "guestItemsSaved": "{count, plural, one {# item saved} other {# items saved}} — sign in to checkout",
+    "guestProceedToCheckout": "Proceed to Checkout"
   },
   "orders": {
     "title": "My Orders",
@@ -994,7 +1022,24 @@
     "upiStep2": "Pay {amount} to the UPI ID shown above",
     "upiStep3": "Place your order — we will confirm once payment is verified",
     "placeAndWhatsapp": "Place Order & Confirm on WhatsApp",
-    "upiPaymentNote": "Your order will be confirmed once we verify your payment via WhatsApp"
+    "upiPaymentNote": "Your order will be confirmed once we verify your payment via WhatsApp",
+    "otpModalTitle": "Verify Your Identity",
+    "otpModalDesc": "To confirm this purchase, enter the OTP we'll send to your registered phone.",
+    "otpSendBtn": "Send OTP",
+    "otpSending": "Sending...",
+    "otpSentDesc": "Enter the 6-digit OTP sent to {phone}",
+    "otpInputLabel": "OTP Code",
+    "otpInputPlaceholder": "000000",
+    "otpVerifyBtn": "Verify & Place Order",
+    "otpResendBtn": "Resend OTP",
+    "otpCancelBtn": "Cancel",
+    "otpNoPhone": "No phone number on your account.",
+    "otpAddPhone": "Please add and verify a phone number in your profile settings before placing an order.",
+    "otpGoToProfile": "Go to Profile Settings",
+    "otpErrorInvalid": "Invalid OTP. Please check and try again.",
+    "otpErrorExpired": "OTP has expired. Please request a new one.",
+    "otpErrorMismatch": "This phone number doesn't match your account.",
+    "otpErrorDailyLimit": "Daily OTP limit reached. Please try again tomorrow."
   },
   "orderSuccess": {
     "fallbackTitle": "Order Placed!",
@@ -1252,6 +1297,10 @@
     "customerReviews": "Customer Reviews",
     "categoriesTitle": "Shop by Category",
     "featuredProductsSubtitle": "Handpicked items just for you",
+    "featuredStores": "Featured Stores",
+    "featuredStoresSubtitle": "Explore top sellers and their collections",
+    "featuredEvents": "Events & Offers",
+    "featuredEventsSubtitle": "Participate in polls, sales, and exclusive events",
     "blogTitle": "From Our Blog",
     "blogSubtitle": "Tips, stories, and insights from the community",
     "featuresTitle": "Why Shop With Us?",
@@ -2356,6 +2405,13 @@
     "enabled": "Enabled",
     "descriptionPlaceholder": "Enter section description...",
     "configuration": "Configuration (JSON)",
+    "carouselSettings": "Carousel Settings",
+    "formSubtitle": "Subtitle",
+    "formMaxItems": "Max Items to Show",
+    "formAutoScroll": "Auto Scroll",
+    "formScrollInterval": "Scroll Interval (ms)",
+    "formItemsPerView": "Items Per Row (Desktop)",
+    "formMobileItemsPerView": "Items Per Row (Mobile)",
     "colStatus": "Status",
     "statusActive": "Active",
     "statusInactive": "Inactive",
@@ -2528,6 +2584,7 @@
       "contactTeam": "Contact Support Team"
     },
     "metaTitle": "FAQs - LetItRip",
+    "categoryMetaTitle": "{category} FAQs – LetItRip",
     "metaDescription": "Find answers to frequently asked questions about LetItRip platform, products, shipping, returns and more."
   },
   "unsavedChanges": {
@@ -2678,9 +2735,26 @@
     "available": "Available RipCoins",
     "engaged": "Engaged RipCoins",
     "engagedNote": "Locked in active bids",
+    "total": "Total RipCoins",
+    "totalNote": "Available + engaged",
     "buyTitle": "Top Up RipCoins",
     "buyNote": "10 RipCoins = ₹1. Use RipCoins to bid in auctions.",
     "buyButton": "Buy RipCoins",
+    "refunded": "Refunded",
+    "tabs": {
+      "all": "All",
+      "purchases": "Purchases"
+    },
+    "txType": {
+      "purchase": "Purchase",
+      "engage": "Bid Engaged",
+      "release": "Bid Released",
+      "forfeit": "Forfeited",
+      "return": "Returned",
+      "refund": "Refund",
+      "admin_grant": "Admin Credit",
+      "admin_deduct": "Admin Debit"
+    },
     "history": {
       "title": "Transaction History",
       "type": "Type",
@@ -2688,16 +2762,23 @@
       "description": "Description",
       "date": "Date",
       "empty": "No transactions yet",
-      "emptyDesc": "Your RipCoin transaction history will appear here."
+      "emptyDesc": "Your RipCoin transaction history will appear here.",
+      "viewListing": "View Listing",
+      "refund": "Refund",
+      "notEnoughToRefund": "Not enough available to refund"
     },
     "buy": {
       "title": "Buy RipCoins",
-      "packsLabel": "Select packs",
-      "packs": "Packs",
+      "packsLabel": "Select package",
       "coins": "RipCoins",
+      "bonus": "Bonus",
+      "bonusNote": "+{bonus} RC bonus included",
       "amount": "Amount",
+      "total": "Total you get",
+      "summary": "Order Summary",
       "payButton": "Pay ₹{amount}",
-      "infoNote": "1 pack = 10 RipCoins = ₹1. You can use RipCoins to bid in auctions. Coins locked in active bids are released when outbid or the auction ends.",
+      "cancel": "Cancel",
+      "infoNote": "10 RipCoins = ₹1. Use RipCoins to bid in auctions. Coins locked in active bids are released when outbid or when the auction ends.",
       "successMessage": "{coins} RipCoins credited! New balance: {balance} RC",
       "errorMessage": "Payment failed. Please try again."
     }
@@ -2715,7 +2796,10 @@
     "send": "Send",
     "backToList": "Back",
     "seller": "Seller",
-    "buyer": "Buyer"
+    "buyer": "Buyer",
+    "deleteRoom": "Delete conversation",
+    "deleteRoomConfirmTitle": "Delete this conversation?",
+    "deleteRoomConfirmMessage": "This will hide the conversation from your inbox. The other participant can still see it until they also delete it."
   },
   "becomeSeller": {
     "metaTitle": "Become a Seller",

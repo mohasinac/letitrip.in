@@ -37,6 +37,7 @@ import {
   Text,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
+import { getFilterLabel } from "@/components";
 import {
   useAuth,
   useUrlTable,
@@ -49,7 +50,7 @@ import {
   useSellerShipping,
   useSellerPayoutSettings,
 } from "@/features/seller";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 import { sellerService } from "@/services";
 import type { OrderDocument } from "@/db/schema";
@@ -280,8 +281,8 @@ function SellerOrdersContent() {
               key: "paymentStatus",
               label: t("colPayoutStatus"),
               value:
-                paymentStatusOptions.find((o) => o.value === paymentStatusParam)
-                  ?.label ?? paymentStatusParam,
+                getFilterLabel(paymentStatusOptions, paymentStatusParam) ??
+                paymentStatusParam,
             },
           ]
         : []),
@@ -291,8 +292,8 @@ function SellerOrdersContent() {
               key: "paymentMethod",
               label: t("colShipping"),
               value:
-                paymentMethodOptions.find((o) => o.value === paymentMethodParam)
-                  ?.label ?? paymentMethodParam,
+                getFilterLabel(paymentMethodOptions, paymentMethodParam) ??
+                paymentMethodParam,
             },
           ]
         : []),
@@ -307,8 +308,11 @@ function SellerOrdersContent() {
   );
 
   useEffect(() => {
-    if (!authLoading && !user) router.push(ROUTES.AUTH.LOGIN);
-  }, [user, authLoading, router]);
+    if (!authLoading && !user) {
+      showError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
+      router.push(ROUTES.AUTH.LOGIN);
+    }
+  }, [user, authLoading, router, showError]);
 
   const orderParams = useMemo(() => {
     const filterParts: string[] = [];
@@ -603,7 +607,7 @@ function SellerOrdersContent() {
           onSelectionChange={setSelectedIds}
           actions={rowActions}
           showViewToggle
-          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(order) => (
             <Card className="p-4 space-y-2">

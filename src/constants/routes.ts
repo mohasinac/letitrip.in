@@ -56,6 +56,7 @@ export const ROUTES = {
     FORGOT_PASSWORD: "/auth/forgot-password",
     RESET_PASSWORD: "/auth/reset-password",
     VERIFY_EMAIL: "/auth/verify-email",
+    OAUTH_LOADING: "/auth/oauth-loading",
   },
 
   // User Routes
@@ -71,6 +72,7 @@ export const ROUTES = {
     ORDER_TRACK: (id: string) => `/user/orders/${id}/track`,
     NOTIFICATIONS: "/user/notifications",
     RIPCOINS: "/user/ripcoins",
+    RIPCOINS_PURCHASE: "/user/ripcoins/purchase",
     MESSAGES: "/user/messages",
     BECOME_SELLER: "/user/become-seller",
     CART: "/cart",

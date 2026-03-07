@@ -3,8 +3,11 @@
 /**
  * RipCoinsWallet
  *
- * Displays the user's RipCoin balance, engaged coins, and purchase history.
- * Provides a "Buy RipCoins" entry point that opens the BuyRipCoinsModal.
+ * Displays the user's RipCoin balance (available, engaged, total),
+ * transaction history with tabs (All / Purchases), and per-row actions:
+ *   - purchase  → Refund button (or "Not enough available")
+ *   - engage    → View Listing button
+ *   - release   → shown as + credit, no action
  */
 
 import { useState } from "react";
@@ -20,13 +23,21 @@ import {
   DataTable,
   TablePagination,
   Spinner,
+  Tabs,
+  TabsList,
+  TabsTrigger,
 } from "@/components";
-import { THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
-import { useRipCoinBalance, useRipCoinHistory, useUrlTable } from "@/hooks";
-import { BuyRipCoinsModal } from "./BuyRipCoinsModal";
+import {
+  useRipCoinBalance,
+  useRipCoinHistory,
+  useRefundRipCoinPurchase,
+  useUrlTable,
+} from "@/hooks";
+import { useRouter } from "@/i18n/navigation";
 
-const { spacing } = THEME_CONSTANTS;
+const { spacing, flex } = THEME_CONSTANTS;
 
 type TxType =
   | "purchase"
@@ -35,19 +46,8 @@ type TxType =
   | "forfeit"
   | "return"
   | "refund"
-  | "admin_credit"
-  | "admin_debit";
-
-const TX_LABELS: Record<TxType, string> = {
-  purchase: "Purchase",
-  engage: "Bid Engaged",
-  release: "Bid Released",
-  forfeit: "Forfeited",
-  return: "Returned",
-  refund: "Refund",
-  admin_credit: "Admin Credit",
-  admin_debit: "Admin Debit",
-};
+  | "admin_grant"
+  | "admin_deduct";
 
 const TX_VARIANT: Record<
   TxType,
@@ -58,9 +58,9 @@ const TX_VARIANT: Record<
   release: "info",
   forfeit: "danger",
   return: "success",
-  refund: "success",
-  admin_credit: "success",
-  admin_debit: "danger",
+  refund: "info",
+  admin_grant: "success",
+  admin_deduct: "danger",
 };
 
 interface TxRow {
@@ -69,11 +69,20 @@ interface TxRow {
   coins: number;
   createdAt: string | { _seconds: number };
   description?: string;
+  notes?: string;
+  productId?: string;
+  productTitle?: string;
+  refunded?: boolean;
 }
+
+type HistoryTab = "all" | "purchases";
 
 export function RipCoinsWallet() {
   const t = useTranslations("ripcoinsWallet");
-  const [buyOpen, setBuyOpen] = useState(false);
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<HistoryTab>("all");
+  const [refundingId, setRefundingId] = useState<string | null>(null);
+
   const table = useUrlTable({
     defaults: { pageSize: "20", sorts: "-createdAt" },
   });
@@ -85,42 +94,78 @@ export function RipCoinsWallet() {
     isLoading: balanceLoading,
     refetch: refetchBalance,
   } = useRipCoinBalance();
+
+  const historyParams =
+    activeTab === "purchases"
+      ? `${table.params.toString()}&filters=type==purchase`
+      : table.params.toString();
+
   const {
     data: historyData,
     isLoading: historyLoading,
     refetch: refetchHistory,
-  } = useRipCoinHistory(table.params.toString());
+  } = useRipCoinHistory(historyParams);
 
-  const available =
-    (balanceData?.ripcoinBalance ?? 0) - (balanceData?.engagedRipcoins ?? 0);
+  const { mutate: refundPurchase } = useRefundRipCoinPurchase();
+
+  const available = balanceData?.ripcoinBalance ?? 0;
   const engaged = balanceData?.engagedRipcoins ?? 0;
-  const total: number = (historyData as { total?: number })?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const freeCoins = available - engaged;
+
+  const historyTotal: number = (historyData as { total?: number })?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(historyTotal / pageSize));
+
+  const handleRefund = async (txId: string) => {
+    setRefundingId(txId);
+    try {
+      await refundPurchase(txId);
+      void refetchBalance();
+      void refetchHistory();
+    } finally {
+      setRefundingId(null);
+    }
+  };
 
   const columns = [
     {
       key: "type",
       header: t("history.type"),
       render: (row: TxRow) => (
-        <Badge variant={TX_VARIANT[row.type] ?? "default"}>
-          {TX_LABELS[row.type] ?? row.type}
-        </Badge>
+        <div className="flex flex-col gap-1">
+          <Badge variant={TX_VARIANT[row.type] ?? "default"}>
+            {t(`txType.${row.type}` as Parameters<typeof t>[0])}
+          </Badge>
+          {row.type === "purchase" && row.refunded && (
+            <Caption className="text-xs text-gray-400">{t("refunded")}</Caption>
+          )}
+        </div>
       ),
     },
     {
       key: "coins",
       header: t("history.coins"),
-      render: (row: TxRow) => (
-        <Text weight="semibold" variant={row.coins >= 0 ? "success" : "error"}>
-          {row.coins >= 0 ? "+" : ""}
-          {row.coins} RC
-        </Text>
-      ),
+      render: (row: TxRow) => {
+        const isCredit =
+          row.type === "purchase" ||
+          row.type === "release" ||
+          row.type === "return" ||
+          row.type === "admin_grant";
+        return (
+          <Text weight="semibold" variant={isCredit ? "success" : "error"}>
+            {isCredit ? "+" : "-"}
+            {Math.abs(row.coins).toLocaleString()} RC
+          </Text>
+        );
+      },
     },
     {
       key: "description",
       header: t("history.description"),
-      render: (row: TxRow) => <Caption>{row.description ?? "â€”"}</Caption>,
+      render: (row: TxRow) => (
+        <Caption>
+          {row.notes ?? row.description ?? row.productTitle ?? "—"}
+        </Caption>
+      ),
     },
     {
       key: "createdAt",
@@ -134,13 +179,61 @@ export function RipCoinsWallet() {
         return <Caption>{formatDate(date)}</Caption>;
       },
     },
+    {
+      key: "actions",
+      header: "",
+      render: (row: TxRow) => {
+        if (row.type === "engage" && row.productId) {
+          return (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() =>
+                router.push(
+                  ROUTES.PUBLIC.PRODUCT_DETAIL(row.productId!) as never,
+                )
+              }
+            >
+              {t("history.viewListing")}
+            </Button>
+          );
+        }
+
+        if (row.type === "purchase" && !row.refunded) {
+          if (freeCoins < row.coins) {
+            return (
+              <Caption className="text-xs text-amber-600 dark:text-amber-400 whitespace-nowrap">
+                {t("history.notEnoughToRefund")}
+              </Caption>
+            );
+          }
+          return (
+            <Button
+              variant="danger"
+              size="sm"
+              isLoading={refundingId === row.id}
+              disabled={refundingId !== null}
+              onClick={() => handleRefund(row.id)}
+            >
+              {t("history.refund")}
+            </Button>
+          );
+        }
+
+        return null;
+      },
+    },
+  ];
+
+  const tabItems = [
+    { id: "all" as HistoryTab, label: t("tabs.all") },
+    { id: "purchases" as HistoryTab, label: t("tabs.purchases") },
   ];
 
   return (
-    <div className={`${spacing.stack}`}>
-      {/* Balance cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-        {/* Available */}
+    <div className={spacing.stack}>
+      {/* ── Balance stat cards ─────────────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className={`${spacing.padding.md} flex flex-col gap-2`}>
           <Caption>{t("available")}</Caption>
           {balanceLoading ? (
@@ -151,11 +244,10 @@ export function RipCoinsWallet() {
             </Heading>
           )}
           <Caption className="text-xs">
-            â‰ˆ â‚¹{(available / 10).toFixed(2)}
+            ≈ ₹{(available / 10).toFixed(2)}
           </Caption>
         </Card>
 
-        {/* Engaged */}
         <Card className={`${spacing.padding.md} flex flex-col gap-2`}>
           <Caption>{t("engaged")}</Caption>
           {balanceLoading ? (
@@ -168,32 +260,60 @@ export function RipCoinsWallet() {
           <Caption className="text-xs">{t("engagedNote")}</Caption>
         </Card>
 
-        {/* Buy CTA */}
-        <Card
-          className={`${spacing.padding.md} flex flex-col gap-3 justify-between`}
-        >
-          <div>
-            <Caption>{t("buyTitle")}</Caption>
-            <Text size="sm" variant="secondary" className="mt-1">
-              {t("buyNote")}
-            </Text>
-          </div>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => setBuyOpen(true)}
-            className="w-full sm:w-auto"
-          >
-            {t("buyButton")}
-          </Button>
+        <Card className={`${spacing.padding.md} flex flex-col gap-2`}>
+          <Caption>{t("total")}</Caption>
+          {balanceLoading ? (
+            <Skeleton className="h-8 w-24" />
+          ) : (
+            <Heading
+              level={2}
+              className="text-emerald-600 dark:text-emerald-400"
+            >
+              {(available + engaged).toLocaleString()} RC
+            </Heading>
+          )}
+          <Caption className="text-xs">{t("totalNote")}</Caption>
         </Card>
       </div>
 
-      {/* Transaction history */}
+      {/* ── Buy CTA ─────────────────────────────────────────────────── */}
+      <Card className={`${spacing.padding.md} ${flex.between} flex-wrap gap-3`}>
+        <div>
+          <Text weight="semibold">{t("buyTitle")}</Text>
+          <Text size="sm" variant="secondary" className="mt-0.5">
+            {t("buyNote")}
+          </Text>
+        </div>
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => router.push(ROUTES.USER.RIPCOINS_PURCHASE as never)}
+        >
+          {t("buyButton")}
+        </Button>
+      </Card>
+
+      {/* ── Transaction history ──────────────────────────────────────── */}
       <Card className={spacing.padding.md}>
-        <Heading level={3} className="mb-4">
-          {t("history.title")}
-        </Heading>
+        <div className={`${flex.between} flex-wrap gap-2 mb-4`}>
+          <Heading level={3}>{t("history.title")}</Heading>
+          <Tabs
+            value={activeTab}
+            onChange={(v) => {
+              setActiveTab(v as HistoryTab);
+              table.setPage(1);
+            }}
+            variant="line"
+          >
+            <TabsList>
+              {tabItems.map((tab) => (
+                <TabsTrigger key={tab.id} value={tab.id}>
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
 
         {historyLoading ? (
           <div className="flex justify-center py-8">
@@ -210,26 +330,17 @@ export function RipCoinsWallet() {
           />
         )}
 
-        {total > 0 && (
+        {historyTotal > 0 && (
           <TablePagination
             currentPage={page}
             totalPages={totalPages}
             pageSize={pageSize}
-            total={total}
+            total={historyTotal}
             onPageChange={(p) => table.setPage(p)}
             onPageSizeChange={(n) => table.set("pageSize", String(n))}
           />
         )}
       </Card>
-
-      <BuyRipCoinsModal
-        open={buyOpen}
-        onClose={() => setBuyOpen(false)}
-        onPurchaseSuccess={() => {
-          void refetchBalance();
-          void refetchHistory();
-        }}
-      />
     </div>
   );
 }

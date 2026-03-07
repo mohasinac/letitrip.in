@@ -12,8 +12,8 @@ import { requireAuth } from "@/lib/firebase/auth-server";
 import { chatRepository } from "@/repositories";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { handleApiError } from "@/lib/errors/error-handler";
-import { successResponse } from "@/lib/api-response";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { successResponse, errorResponse } from "@/lib/api-response";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, FEATURE_FLAGS } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import {
   ValidationError,
@@ -34,6 +34,8 @@ interface RouteParams {
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
+    if (!FEATURE_FLAGS.CHAT_ENABLED)
+      return errorResponse("Chat is temporarily unavailable", 503);
     const user = await requireAuth();
     const { chatId } = await params;
 
@@ -50,7 +52,17 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (!room) {
       throw new NotFoundError(ERROR_MESSAGES.CHAT.FETCH_FAILED);
     }
-    if (room.buyerId !== user.uid && room.sellerId !== user.uid) {
+
+    // Reject if the room was admin-deleted or the user has personally deleted it
+    if (room.adminDeleted || (room.deletedBy ?? []).includes(user.uid)) {
+      throw new NotFoundError(ERROR_MESSAGES.CHAT.FETCH_FAILED);
+    }
+
+    // Support both 1-1 (buyerId/sellerId) and group (participantIds) rooms
+    const participantIds = room.participantIds?.length
+      ? room.participantIds
+      : [room.buyerId, room.sellerId];
+    if (!participantIds.includes(user.uid)) {
       throw new AuthorizationError(ERROR_MESSAGES.CHAT.NOT_AUTHORIZED);
     }
 
@@ -61,7 +73,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     await msgRef.set({
       userId: user.uid,
-      userName: user.uid === room.buyerId ? room.buyerName : room.sellerName,
+      userName:
+        user.uid === room.buyerId
+          ? (room.buyerName ?? "Buyer")
+          : user.uid === room.sellerId
+            ? (room.sellerName ?? "Seller")
+            : (room.buyerName ?? "Member"),
       message,
       timestamp: Date.now(),
     });

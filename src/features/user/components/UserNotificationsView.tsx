@@ -8,15 +8,16 @@
 
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import {
   useAuth,
   useApiQuery,
   useApiMutation,
   useMessage,
   useUrlTable,
+  usePendingTable,
 } from "@/hooks";
 import { useTranslations } from "next-intl";
 import { notificationService } from "@/services";
@@ -32,6 +33,7 @@ import {
   Text,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
+import { getFilterLabel } from "@/components";
 import { NotificationItem } from "./NotificationItem";
 import { NotificationsBulkActions } from "./NotificationsBulkActions";
 import type { NotificationDocument } from "@/db/schema";
@@ -70,54 +72,42 @@ export function UserNotificationsView() {
 
   const table = useUrlTable({ defaults: { pageSize: String(PAGE_SIZE) } });
   const searchQ = table.get("q");
-  const readFilter = table.get("readStatus");
+  const isReadFilter = table.get("isRead");
   const page = table.getNumber("page", 1);
 
-  // ── Staged filter state ────────────────────────────────────────────────
-  const [stagedReadStatus, setStagedReadStatus] = useState<string[]>(
-    readFilter ? [readFilter] : [],
-  );
-
-  useEffect(() => {
-    setStagedReadStatus(readFilter ? [readFilter] : []);
-  }, [readFilter]);
-
-  const handleFilterApply = useCallback(() => {
-    table.set("readStatus", stagedReadStatus[0] ?? "");
-  }, [stagedReadStatus, table]);
-
-  const handleFilterClear = useCallback(() => {
-    setStagedReadStatus([]);
-    table.setMany({ readStatus: "", q: "" });
-  }, [table]);
+  // ── Staged filter state (via usePendingTable) ──────────────────────────────
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, ["isRead"]);
 
   const readStatusOptions = useMemo(
     () => [
-      { value: "unread", label: tNotifications("filterUnread") },
-      { value: "read", label: tNotifications("filterRead") },
+      { value: "false", label: tNotifications("filterUnread") },
+      { value: "true", label: tNotifications("filterRead") },
     ],
     [tNotifications],
   );
 
   const activeFilters = useMemo<ActiveFilter[]>(
     () =>
-      readFilter
+      isReadFilter
         ? [
             {
-              key: "readStatus",
+              key: "isRead",
               label: tNotifications("filterLabel"),
               value:
-                readStatusOptions.find((o) => o.value === readFilter)?.label ??
-                readFilter,
+                getFilterLabel(readStatusOptions, isReadFilter) ?? isReadFilter,
             },
           ]
         : [],
-    [readFilter, readStatusOptions, tNotifications],
+    [isReadFilter, readStatusOptions, tNotifications],
   );
 
   useEffect(() => {
-    if (!authLoading && !user) router.push(ROUTES.AUTH.LOGIN);
-  }, [user, authLoading, router]);
+    if (!authLoading && !user) {
+      showError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
+      router.push(ROUTES.AUTH.LOGIN);
+    }
+  }, [user, authLoading, router, showError]);
 
   const queryParams = useMemo(() => {
     const p = new URLSearchParams({
@@ -125,10 +115,9 @@ export function UserNotificationsView() {
       pageSize: String(PAGE_SIZE),
     });
     if (searchQ) p.set("q", searchQ);
-    if (readFilter === "read") p.set("isRead", "true");
-    if (readFilter === "unread") p.set("isRead", "false");
+    if (isReadFilter) p.set("isRead", isReadFilter);
     return p.toString();
-  }, [page, searchQ, readFilter]);
+  }, [page, searchQ, isReadFilter]);
 
   const { data, isLoading, refetch } = useApiQuery<NotificationsResponse>({
     queryKey: ["notifications", "page", queryParams],
@@ -224,21 +213,23 @@ export function UserNotificationsView() {
         <FilterFacetSection
           title={tNotifications("filterLabel")}
           options={readStatusOptions}
-          selected={stagedReadStatus}
-          onChange={setStagedReadStatus}
+          selected={
+            pendingTable.get("isRead") ? [pendingTable.get("isRead")] : []
+          }
+          onChange={(vals) => pendingTable.set("isRead", vals[0] ?? "")}
           selectionMode="single"
           searchable={false}
         />
       }
-      filterActiveCount={activeFilters.length}
-      onFilterApply={handleFilterApply}
-      onFilterClear={handleFilterClear}
+      filterActiveCount={filterActiveCount}
+      onFilterApply={onFilterApply}
+      onFilterClear={onFilterClear}
       activeFiltersSlot={
         activeFilters.length > 0 ? (
           <ActiveFilterChips
             filters={activeFilters}
             onRemove={(key) => table.set(key, "")}
-            onClearAll={handleFilterClear}
+            onClearAll={onFilterClear}
           />
         ) : undefined
       }

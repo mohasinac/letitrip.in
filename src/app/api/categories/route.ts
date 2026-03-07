@@ -13,29 +13,20 @@
  * - Implement SEO-friendly URL generation
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { categoriesRepository } from "@/repositories";
 import { errorResponse, successResponse } from "@/lib/api-response";
 import {
   getBooleanParam,
+  getNumberParam,
   getSearchParams,
   getStringParam,
 } from "@/lib/api/request-helpers";
-import { requireRoleFromRequest } from "@/lib/security/authorization";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  categoryCreateSchema,
-} from "@/lib/validation/schemas";
-import {
-  AuthenticationError,
-  AuthorizationError,
-  NotFoundError,
-} from "@/lib/errors";
-import { handleApiError } from "@/lib/errors/error-handler";
+import { categoryCreateSchema } from "@/lib/validation/schemas";
+import { NotFoundError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { CategoryCreateInput } from "@/db/schema/categories";
+import { createApiHandler } from "@/lib/api/api-handler";
 
 /**
  * GET /api/categories
@@ -59,15 +50,21 @@ import { CategoryCreateInput } from "@/db/schema/categories";
  * - Add caching with 5-minute TTL
  * - Add pagination for flat lists
  */
-export async function GET(request: NextRequest) {
-  try {
-    // Parse query parameters
+export const GET = createApiHandler({
+  handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const rootId = getStringParam(searchParams, "rootId");
     const parentId = getStringParam(searchParams, "parentId");
     const slug = getStringParam(searchParams, "slug");
     const featured = getBooleanParam(searchParams, "featured") === true;
     const flat = getBooleanParam(searchParams, "flat") === true;
+    const tierParam = searchParams.get("tier");
+    const tier =
+      tierParam !== null ? Number.parseInt(tierParam, 10) : undefined;
+    const pageSize = getNumberParam(searchParams, "pageSize", 0, {
+      min: 0,
+      max: 200,
+    });
 
     // Slug-based single-category lookup
     if (slug) {
@@ -76,6 +73,21 @@ export async function GET(request: NextRequest) {
         throw new NotFoundError(ERROR_MESSAGES.CATEGORY.NOT_FOUND);
       }
       return successResponse(category);
+    }
+
+    // Tier-based flat list (e.g. ?tier=0 for root categories on homepage)
+    if (typeof tier === "number" && !Number.isNaN(tier)) {
+      let tierCategories = await categoriesRepository.getCategoriesByTier(tier);
+      tierCategories.sort((a, b) => a.order - b.order);
+      if (pageSize > 0) tierCategories = tierCategories.slice(0, pageSize);
+      const tierResponse = successResponse(tierCategories, undefined, 200, {
+        total: tierCategories.length,
+      });
+      tierResponse.headers.set(
+        "Cache-Control",
+        "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
+      );
+      return tierResponse;
     }
 
     // Get categories based on filters
@@ -100,48 +112,31 @@ export async function GET(request: NextRequest) {
 
     // Return flat list or tree structure
     if (flat) {
-      return NextResponse.json(
-        {
-          success: true,
-          data: categories,
-          meta: {
-            total: categories.length,
-          },
-        },
-        {
-          headers: {
-            "Cache-Control":
-              "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
-          },
-        },
+      const flatResponse = successResponse(categories, undefined, 200, {
+        total: categories.length,
+      });
+      flatResponse.headers.set(
+        "Cache-Control",
+        "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
       );
+      return flatResponse;
     }
 
     // Build tree structure — buildTree fetches its own optimised query
     const tree = await categoriesRepository.buildTree(rootId);
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: tree,
-        meta: {
-          // When a parentId/rootId/featured filter is active, categories holds
-          // the filtered set. For the default (no filter) tree path, use tree.length.
-          total: categories.length > 0 ? categories.length : tree.length,
-        },
-      },
-      {
-        headers: {
-          "Cache-Control":
-            "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
-        },
-      },
+    const treeResponse = successResponse(tree, undefined, 200, {
+      // When a parentId/rootId/featured filter is active, categories holds
+      // the filtered set. For the default (no filter) tree path, use tree.length.
+      total: categories.length > 0 ? categories.length : tree.length,
+    });
+    treeResponse.headers.set(
+      "Cache-Control",
+      "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
     );
-  } catch (error) {
-    serverLogger.error("GET /api/categories error", { error });
-    return errorResponse(ERROR_MESSAGES.CATEGORY.FETCH_FAILED, 500);
-  }
-}
+    return treeResponse;
+  },
+});
 
 /**
  * POST /api/categories
@@ -166,66 +161,40 @@ export async function GET(request: NextRequest) {
  * - Send notification on category creation
  * - Implement category templates
  */
-export async function POST(request: NextRequest) {
-  try {
-    // Require admin authentication
-    const user = await requireRoleFromRequest(request, ["admin"]);
-
-    // Parse and validate request body
-    const body = await request.json();
-    const validation = validateRequestBody(categoryCreateSchema, body);
-
-    if (!validation.success) {
-      return errorResponse(
-        ERROR_MESSAGES.VALIDATION.FAILED,
-        400,
-        formatZodErrors(validation.errors),
-      );
-    }
-
-    // Create category with hierarchy calculation
+export const POST = createApiHandler<(typeof categoryCreateSchema)["_output"]>({
+  auth: true,
+  roles: ["admin"],
+  schema: categoryCreateSchema,
+  handler: async ({ user, body }) => {
     const categoryData: CategoryCreateInput = {
-      ...validation.data,
-      createdBy: user.uid,
+      ...body!,
+      createdBy: user!.uid,
       isActive: true,
       isSearchable: true,
       order: 0,
       isFeatured: false,
       featuredPriority: 0,
-      rootId: "", // Will be calculated by createWithHierarchy
-      parentIds: validation.data.parentId ? [validation.data.parentId] : [],
+      rootId: "",
+      parentIds: body!.parentId ? [body!.parentId] : [],
       childrenIds: [],
-      tier: 0, // Will be calculated
-      path: "", // Will be calculated
-      slug: "", // Will be calculated
+      tier: 0,
+      path: "",
+      slug: "",
       seo: {
-        title: validation.data.seo?.title || validation.data.name,
+        title: body!.seo?.title || body!.name,
         description:
-          validation.data.seo?.description ||
-          validation.data.description ||
-          `Browse ${validation.data.name} category`,
-        keywords: validation.data.seo?.keywords || [],
+          body!.seo?.description ||
+          body!.description ||
+          `Browse ${body!.name} category`,
+        keywords: body!.seo?.keywords || [],
       },
-      display: validation.data.display || {
+      display: body!.display || {
         showInMenu: true,
         showInFooter: false,
       },
     };
-
     const category =
       await categoriesRepository.createWithHierarchy(categoryData);
-
     return successResponse(category, SUCCESS_MESSAGES.CATEGORY.CREATED, 201);
-  } catch (error) {
-    if (error instanceof AuthenticationError) {
-      return errorResponse(error.message, 401);
-    }
-
-    if (error instanceof AuthorizationError) {
-      return errorResponse(error.message, 403);
-    }
-
-    serverLogger.error("POST /api/categories error", { error });
-    return errorResponse(ERROR_MESSAGES.CATEGORY.CREATE_FAILED, 500);
-  }
-}
+  },
+});

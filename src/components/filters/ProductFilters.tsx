@@ -56,14 +56,20 @@ export function ProductFilters({
     { value: "archived", label: t("statusArchived") },
   ];
 
-  const selectedCategories = table.get("category") ? [table.get("category")] : [];
+  const selectedCategories = table.get("category")
+    ? table.get("category").split("|").filter(Boolean)
+    : [];
   const selectedBrands = table.get("brand") ? [table.get("brand")] : [];
   const selectedSellers = table.get("seller") ? [table.get("seller")] : [];
-  const selectedConditions = table.get("condition") ? [table.get("condition")] : [];
-  const selectedTags = table.get("tags")
-    ? table.get("tags").split(",").filter(Boolean)
+  const selectedConditions = table.get("condition")
+    ? table.get("condition").split("|").filter(Boolean)
     : [];
-  const selectedStatuses = table.get("status") ? [table.get("status")] : [];
+  const selectedTags = table.get("tags")
+    ? table.get("tags").split("|").filter(Boolean)
+    : [];
+  const selectedStatuses = table.get("status")
+    ? table.get("status").split("|").filter(Boolean)
+    : [];
 
   return (
     <div>
@@ -72,7 +78,7 @@ export function ProductFilters({
           title={t("category")}
           options={categoryOptions}
           selected={selectedCategories}
-          onChange={(vals) => table.set("category", vals[0] ?? "")}
+          onChange={(vals) => table.set("category", vals.join("|"))}
           searchable={categoryOptions.length > 6}
           defaultCollapsed={true}
         />
@@ -82,7 +88,7 @@ export function ProductFilters({
         title={t("condition")}
         options={conditionOptions}
         selected={selectedConditions}
-        onChange={(vals) => table.set("condition", vals[0] ?? "")}
+        onChange={(vals) => table.set("condition", vals.join("|"))}
         searchable={false}
         defaultCollapsed={true}
       />
@@ -94,6 +100,10 @@ export function ProductFilters({
         onMinChange={(v) => table.set("minPrice", v)}
         onMaxChange={(v) => table.set("maxPrice", v)}
         prefix="₹"
+        showSlider
+        minBound={0}
+        maxBound={500000}
+        step={500}
         minPlaceholder={t("minPrice")}
         maxPlaceholder={t("maxPrice")}
         defaultCollapsed={true}
@@ -126,7 +136,7 @@ export function ProductFilters({
           title={t("tags")}
           options={tagOptions}
           selected={selectedTags}
-          onChange={(vals) => table.set("tags", vals.join(","))}
+          onChange={(vals) => table.set("tags", vals.join("|"))}
           searchable={tagOptions.length > 6}
           defaultCollapsed={true}
         />
@@ -137,7 +147,7 @@ export function ProductFilters({
           title={t("status")}
           options={statusOptions ?? defaultStatusOptions}
           selected={selectedStatuses}
-          onChange={(vals) => table.set("status", vals[0] ?? "")}
+          onChange={(vals) => table.set("status", vals.join("|"))}
           searchable={false}
           defaultCollapsed={true}
         />

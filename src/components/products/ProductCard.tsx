@@ -5,9 +5,14 @@ import { Star, Heart, ShoppingCart, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { MediaImage, Span, Text, TextLink, Button } from "@/components";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import {
+  ROUTES,
+  THEME_CONSTANTS,
+  SUCCESS_MESSAGES,
+  ERROR_MESSAGES,
+} from "@/constants";
 import { formatCurrency } from "@/utils";
-import { useAddToCart, useWishlistToggle } from "@/hooks";
+import { useAddToCart, useWishlistToggle, useMessage } from "@/hooks";
 import type { ProductDocument } from "@/db/schema";
 
 const { themed, borderRadius, flex, position } = THEME_CONSTANTS;
@@ -61,7 +66,11 @@ export function ProductCard({
     isLoading: wishlistLoading,
     toggle: toggleWishlist,
   } = useWishlistToggle(product.id, initialInWishlist);
-  const { mutate: addToCart, isLoading: cartLoading } = useAddToCart();
+  const { showSuccess, showError } = useMessage();
+  const { mutate: addToCart, isLoading: cartLoading } = useAddToCart({
+    onSuccess: () => showSuccess(SUCCESS_MESSAGES.CART.ITEM_ADDED),
+    onError: () => showError(ERROR_MESSAGES.CART.ADD_FAILED),
+  });
 
   const isOutOfStock =
     product.status === "out_of_stock" || product.status === "sold";
@@ -114,9 +123,15 @@ export function ProductCard({
   const handleAddToCart = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      addToCart({ productId: product.id, quantity: 1 });
+      addToCart({
+        productId: product.id,
+        quantity: 1,
+        productTitle: product.title,
+        productImage: product.mainImage ?? undefined,
+        price: displayPrice,
+      });
     },
-    [addToCart, product.id],
+    [addToCart, product.id, product.title, product.mainImage, displayPrice],
   );
 
   const handleBuyNow = useCallback(() => {
@@ -125,7 +140,7 @@ export function ProductCard({
 
   return (
     <div
-      className={`${themed.bgPrimary} ${borderRadius.lg} overflow-hidden border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:border-indigo-200 dark:hover:border-indigo-800 transition-all duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isOutOfStock ? "opacity-75" : ""} ${isSelected ? "ring-2 ring-indigo-500 dark:ring-indigo-400" : ""} ${className}`}
+      className={`${themed.bgPrimary} ${borderRadius.lg} overflow-hidden border transition-shadow transition-colors duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isOutOfStock ? "opacity-75" : ""} ${isSelected ? "ring-2 ring-indigo-500 dark:ring-indigo-400" : ""} ${hovered ? "shadow-xl border-indigo-200 dark:border-indigo-800" : "shadow-sm border-gray-100 dark:border-gray-800"} ${className}`}
     >
       {/* ── IMAGE SECTION ── */}
       <div

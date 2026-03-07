@@ -89,7 +89,7 @@ export function HeroCarousel() {
   if (isLoading) {
     return (
       <div
-        className={`relative w-full aspect-[16/9] md:aspect-[21/9] ${THEME_CONSTANTS.themed.bgTertiary} animate-pulse`}
+        className={`relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] ${THEME_CONSTANTS.themed.bgTertiary} animate-pulse`}
       >
         <div className={`${position.fill} ${flex.center}`}>
           <Text variant="secondary">{tLoading("default")}</Text>
@@ -138,7 +138,7 @@ export function HeroCarousel() {
   return (
     <Section
       ref={sectionRef}
-      className="relative w-full aspect-[16/9] md:aspect-[21/9]"
+      className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9]"
       aria-roledescription="carousel"
       aria-label={tA11y("heroCarouselAriaLabel")}
       onKeyDown={handleKeyDown}
@@ -216,52 +216,56 @@ export function HeroCarousel() {
                       ...getGridPosition(card),
                       ...getBackgroundStyle(card),
                       width: card.sizing?.widthPct
-                        ? `${card.sizing.widthPct}%`
-                        : "100%",
+                        ? `${isMobile ? Math.min(card.sizing.widthPct, 65) : card.sizing.widthPct}%`
+                        : isMobile
+                          ? "65%"
+                          : "100%",
                       height: card.sizing?.heightPct
-                        ? `${card.sizing.heightPct}%`
-                        : "100%",
+                        ? `${isMobile ? Math.min(card.sizing.heightPct, 55) : card.sizing.heightPct}%`
+                        : isMobile
+                          ? "55%"
+                          : "100%",
                       justifySelf: "center",
                       alignSelf: "center",
                     }}
                   >
                     {!card.isButtonOnly && (
                       <div
-                        className={`${position.fill} flex flex-col justify-end bg-gradient-to-t from-black/60 to-transparent ${
+                        className={`${position.fill} flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/30 to-transparent ${
                           card.sizing?.padding === "none"
                             ? "p-0"
                             : card.sizing?.padding === "sm"
-                              ? "p-2 md:p-3"
+                              ? "p-1.5 md:p-3"
                               : card.sizing?.padding === "lg"
-                                ? "p-6 md:p-8"
-                                : "p-4 md:p-6"
+                                ? "p-3 md:p-8"
+                                : "p-2 md:p-6"
                         }`}
                       >
                         {card.content?.subtitle && (
-                          <Text className="text-xs md:text-sm text-white/90 mb-1 md:mb-2">
+                          <Text className="hidden md:block text-xs md:text-sm !text-white/90 mb-0.5 md:mb-2 drop-shadow-sm">
                             {card.content.subtitle}
                           </Text>
                         )}
                         {card.content?.title && (
                           <Heading
                             level={3}
-                            className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-2 md:mb-3 line-clamp-2"
+                            className="text-[11px] md:text-2xl lg:text-3xl font-bold !text-white mb-0.5 md:mb-3 line-clamp-1 md:line-clamp-2 drop-shadow-md"
                           >
                             {card.content.title}
                           </Heading>
                         )}
                         {card.content?.description && (
-                          <Text className="text-xs md:text-sm lg:text-base text-white/80 mb-3 md:mb-4 line-clamp-1 md:line-clamp-2">
+                          <Text className="text-[10px] md:text-sm lg:text-base !text-white/80 mb-1 md:mb-4 line-clamp-1 drop-shadow-sm">
                             {card.content.description}
                           </Text>
                         )}
                         {(card.buttons?.length ?? 0) > 0 && (
-                          <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-wrap gap-1 md:gap-2">
                             {(card.buttons ?? []).map((btn) => (
                               <Button
                                 key={btn.id}
                                 variant={btn.variant}
-                                size={isMobile ? "sm" : "md"}
+                                size="sm"
                                 onClick={() => {
                                   if (btn.openInNewTab) {
                                     window.open(
@@ -335,7 +339,7 @@ export function HeroCarousel() {
         <>
           <Button
             variant="ghost"
-            className={`absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/80 hover:bg-white ${flex.center} shadow-lg transition-all z-10 p-0`}
+            className={`absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 hover:bg-black/60 dark:hover:bg-black/60 text-white dark:text-white ${flex.center} shadow-lg transition-all z-10 p-0`}
             onClick={goPrev}
             aria-label={tA11y("heroCarouselPrevSlide")}
           >
@@ -355,7 +359,7 @@ export function HeroCarousel() {
           </Button>
           <Button
             variant="ghost"
-            className={`absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/80 hover:bg-white ${flex.center} shadow-lg transition-all z-10 p-0`}
+            className={`absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 hover:bg-black/60 dark:hover:bg-black/60 text-white dark:text-white ${flex.center} shadow-lg transition-all z-10 p-0`}
             onClick={goNext}
             aria-label={tA11y("heroCarouselNextSlide")}
           >

@@ -20,11 +20,11 @@ import {
   getStringParam,
 } from "@/lib/api/request-helpers";
 import { serverLogger } from "@/lib/server-logger";
-import { handleApiError } from "@/lib/errors/error-handler";
+import { createApiHandler } from "@/lib/api/api-handler";
 import { isAlgoliaConfigured, algoliaSearch } from "@/lib/search/algolia";
 
-export async function GET(request: NextRequest) {
-  try {
+export const GET = createApiHandler({
+  handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const q = getStringParam(searchParams, "q") ?? "";
     const category = getStringParam(searchParams, "category");
@@ -37,7 +37,6 @@ export async function GET(request: NextRequest) {
       max: 100,
     });
 
-    // ── Algolia path ─────────────────────────────────────────────────────────
     if (isAlgoliaConfigured()) {
       const algoliaResult = await algoliaSearch({
         q,
@@ -48,14 +47,12 @@ export async function GET(request: NextRequest) {
         page,
         pageSize,
       });
-
       serverLogger.info("Search completed (Algolia)", {
         q: q || "(empty)",
         category: category || "(all)",
         total: algoliaResult.total,
         page: algoliaResult.page,
       });
-
       return successResponse({
         items: algoliaResult.items,
         q,
@@ -68,14 +65,11 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ── Firestore-native fallback path ───────────────────────────────────────
-    // Build Sieve filter string for structured filters + status guard
     const filterParts: string[] = ["status==published"];
     if (category) filterParts.push(`category==${category}`);
     if (minPrice > 0) filterParts.push(`price>=${minPrice}`);
     if (maxPrice > 0 && maxPrice >= minPrice)
       filterParts.push(`price<=${maxPrice}`);
-    // When a text query is present, use starts-with on title (full-text requires Algolia)
     if (q.trim()) filterParts.push(`title_=${q.trim()}`);
 
     const sieveResult = await productRepository.list({
@@ -104,8 +98,5 @@ export async function GET(request: NextRequest) {
       hasMore: sieveResult.hasMore,
       backend: "in-memory" as const,
     });
-  } catch (error) {
-    serverLogger.error("Search failed", { error });
-    return handleApiError(error);
-  }
-}
+  },
+});

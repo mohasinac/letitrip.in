@@ -7,16 +7,10 @@
  * Max addresses per user: 10
  */
 
-import { NextRequest } from "next/server";
-import { requireAuth } from "@/lib/firebase/auth-server";
 import { addressRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, errorResponse } from "@/lib/api-response";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  userAddressCreateSchema,
-} from "@/lib/validation/schemas";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { userAddressCreateSchema } from "@/lib/validation/schemas";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 
@@ -27,17 +21,13 @@ const MAX_ADDRESSES_PER_USER = 10;
  *
  * Returns all addresses for the authenticated user, ordered by createdAt desc.
  */
-export async function GET() {
-  try {
-    const user = await requireAuth();
-
-    const addresses = await addressRepository.findByUser(user.uid);
-
+export const GET = createApiHandler({
+  auth: true,
+  handler: async ({ user }) => {
+    const addresses = await addressRepository.findByUser(user!.uid);
     return successResponse(addresses);
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});
 
 /**
  * POST /api/user/addresses
@@ -46,24 +36,14 @@ export async function GET() {
  * Enforces a maximum of 10 addresses per user.
  * If isDefault is true, clears the default flag from all existing addresses.
  */
-export async function POST(request: NextRequest) {
-  try {
-    const user = await requireAuth();
-
-    // Parse + validate body
-    const body = await request.json();
-    const validation = validateRequestBody(userAddressCreateSchema, body);
-
-    if (!validation.success) {
-      return errorResponse(
-        ERROR_MESSAGES.VALIDATION.FAILED,
-        400,
-        formatZodErrors(validation.errors),
-      );
-    }
-
+export const POST = createApiHandler<
+  (typeof userAddressCreateSchema)["_output"]
+>({
+  auth: true,
+  schema: userAddressCreateSchema,
+  handler: async ({ user, body }) => {
     // Enforce address limit
-    const currentCount = await addressRepository.count(user.uid);
+    const currentCount = await addressRepository.count(user!.uid);
     if (currentCount >= MAX_ADDRESSES_PER_USER) {
       return errorResponse(
         `You can only store up to ${MAX_ADDRESSES_PER_USER} addresses`,
@@ -71,15 +51,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const address = await addressRepository.create(user.uid, validation.data);
+    const address = await addressRepository.create(user!.uid, body!);
 
     serverLogger.info("Address created via API", {
-      userId: user.uid,
+      userId: user!.uid,
       addressId: address.id,
     });
 
     return successResponse(address, SUCCESS_MESSAGES.ADDRESS.CREATED, 201);
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

@@ -153,32 +153,10 @@ export default function Search({
   // ── INLINE RENDER ────────────────────────────────────────────────────────────
   if (isInlineMode) {
     return (
-      <div className={`relative flex items-center ${className ?? ""}`}>
-        {/* Leading search icon (non-deferred) or submit button (deferred) */}
-        {deferred ? (
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleDeferredSubmit}
-            aria-label={t("ariaLabel")}
-            className="absolute left-0 px-3 h-full rounded-l-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
-          >
-            <svg
-              className="w-4 h-4"
-              aria-hidden="true"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </Button>
-        ) : (
+      <div className={`flex items-center gap-2 ${className ?? ""}`}>
+        {/* Input wrapper */}
+        <div className="relative flex-1 flex items-center">
+          {/* Leading search icon — decorative in deferred mode, functional in live mode */}
           <svg
             className="absolute left-3 w-4 h-4 text-gray-400 pointer-events-none"
             aria-hidden="true"
@@ -193,25 +171,50 @@ export default function Search({
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
             />
           </svg>
-        )}
-        <input
-          ref={inputRef}
-          type="search"
-          value={query}
-          onChange={(e) => handleInlineChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (deferred && e.key === "Enter") handleDeferredSubmit();
-          }}
-          placeholder={placeholder}
-          className={`${THEME_CONSTANTS.input.base} ${THEME_CONSTANTS.themed.bgInput} ${THEME_CONSTANTS.themed.border} ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.placeholder} ${THEME_CONSTANTS.themed.focusRing} w-full pl-9${query ? " pr-9" : ""}`}
-        />
-        {query && (
+          <input
+            ref={inputRef}
+            type="search"
+            value={query}
+            onChange={(e) => handleInlineChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (deferred && e.key === "Enter") handleDeferredSubmit();
+            }}
+            placeholder={placeholder}
+            className={`${THEME_CONSTANTS.input.base} ${THEME_CONSTANTS.themed.bgInput} ${THEME_CONSTANTS.themed.border} ${THEME_CONSTANTS.themed.textPrimary} ${THEME_CONSTANTS.themed.placeholder} ${THEME_CONSTANTS.themed.focusRing} w-full pl-9${query ? " pr-9" : ""}`}
+          />
+          {query && (
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={handleClear}
+              className="absolute right-3 p-0.5 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              aria-label={t("clearAriaLabel")}
+            >
+              <svg
+                className="w-4 h-4"
+                aria-hidden="true"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </Button>
+          )}
+        </div>
+        {/* Deferred submit button — visible beside the input, clickable alternative to Enter */}
+        {deferred && (
           <Button
             type="button"
             variant="ghost"
-            onClick={handleClear}
-            className="absolute right-3 p-0.5 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
-            aria-label={t("clearAriaLabel")}
+            onClick={handleDeferredSubmit}
+            aria-label={t("ariaLabel")}
+            className="flex-shrink-0 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           >
             <svg
               className="w-4 h-4"
@@ -224,7 +227,7 @@ export default function Search({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
           </Button>

@@ -9,7 +9,7 @@
  *      (confirmed, shipped, delivered).
  */
 import { onDocumentUpdated } from "firebase-functions/v2/firestore";
-import { rtdb } from "../config/firebase-admin";
+import { getRtdb } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { REGION, COLLECTIONS } from "../config/constants";
 import { notificationRepository } from "../repositories";
@@ -183,7 +183,7 @@ export const onOrderStatusChange = onDocumentUpdated(
 
       // ── Realtime DB push ─────────────────────────────────────────────────
       try {
-        await rtdb.ref(`notifications/${after.userId}`).push({
+        await getRtdb().ref(`notifications/${after.userId}`).push({
           type: config.type,
           orderId,
           productTitle: after.productTitle,

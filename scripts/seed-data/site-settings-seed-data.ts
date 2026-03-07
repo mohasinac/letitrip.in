@@ -72,8 +72,7 @@ export const siteSettingsSeedData: Partial<SiteSettingsDocument> = {
       "fashion",
       "home essentials",
     ],
-    ogImage:
-      "https://images.unsplash.com/photo-1607082349566-187342175e2f?w=1200&h=630&fit=crop",
+    ogImage: "https://picsum.photos/seed/shopping-sale/1200/630",
   },
   features: [
     {

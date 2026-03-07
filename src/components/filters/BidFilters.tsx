@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { FilterFacetSection } from "@/components";
 import { RangeFilter } from "./RangeFilter";
+import { SwitchFilter } from "./SwitchFilter";
 import type { UrlTable } from "./ProductFilters";
 
 export const BID_SORT_OPTIONS = [
@@ -33,9 +34,8 @@ export function BidFilters({ table }: BidFiltersProps) {
     { value: "false", label: t("booleanNotWinning") },
   ];
 
-  const selectedStatus = table.get("status") ? [table.get("status")] : [];
-  const selectedIsWinning = table.get("isWinning")
-    ? [table.get("isWinning")]
+  const selectedStatus = table.get("status")
+    ? table.get("status").split("|").filter(Boolean)
     : [];
 
   return (
@@ -44,20 +44,16 @@ export function BidFilters({ table }: BidFiltersProps) {
         title={t("status")}
         options={statusOptions}
         selected={selectedStatus}
-        onChange={(vals) => table.set("status", vals[0] ?? "")}
+        onChange={(vals) => table.set("status", vals.join("|"))}
         searchable={false}
         defaultCollapsed={false}
-        selectionMode="single"
       />
 
-      <FilterFacetSection
+      <SwitchFilter
         title={t("isWinning")}
-        options={isWinningOptions}
-        selected={selectedIsWinning}
-        onChange={(vals) => table.set("isWinning", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={true}
-        selectionMode="single"
+        label={t("showWinningOnly")}
+        checked={table.get("isWinning") === "true"}
+        onChange={(v) => table.set("isWinning", v ? "true" : "")}
       />
 
       <RangeFilter
@@ -68,6 +64,10 @@ export function BidFilters({ table }: BidFiltersProps) {
         onMinChange={(v) => table.set("minAmount", v)}
         onMaxChange={(v) => table.set("maxAmount", v)}
         prefix="₹"
+        showSlider
+        minBound={0}
+        maxBound={1000000}
+        step={1000}
         minPlaceholder={t("minAmount")}
         maxPlaceholder={t("maxAmount")}
         defaultCollapsed={true}

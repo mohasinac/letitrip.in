@@ -391,10 +391,10 @@ npx ts-node scripts/seed-all-data.ts -v
 - **Total Reviews**: 26+ (approved, pending, rejected)
 - **Total Bids**: 32+ covering all bid statuses (active, outbid, won, lost, **cancelled**)
 - **Total Categories**: 13 (4 root, 9 children)
-- **Total Coupons**: 11 (including HOLI15 linked to Holi event)
+- **Total Coupons**: 12 (including HOLI15 linked to Holi offer, SPORT10 linked to Sports Season offer)
 - **Total Blog Posts**: 8 (6 published, 1 draft, 1 archived)
-- **Total Events**: 5 (1 sale ended, 1 offer active, 1 poll active, 1 survey ended, 1 feedback active)
-- **Total Event Entries**: 8 (poll votes, survey responses, feedback submissions)
+- **Total Events**: 11 (2 sale ended/active + 1 draft, 2 offer active, 2 poll ended/active, 2 survey ended/active, 2 feedback active)
+- **Total Event Entries**: 19 (poll votes, survey responses, feedback submissions)
 - **Total Notifications**: 19+ covering all 15 `NotificationType` values
 - **Total Payouts**: 8 (completed, processing, pending, failed across 4 sellers)
 - **Active Auctions**: 3 (Canon AE-1, MacBook Pro M3, Leica M6, Air Jordan Chicago)
@@ -488,23 +488,40 @@ npx ts-node scripts/seed-all-data.ts -v
 
 ### Events (`events`) & Event Entries (`eventEntries`)
 
-5 events covering every `EventType` value:
+11 events covering every `EventType` value and all 4 statuses:
 
-| ID                                           | Type     | Status | Entries             |
-| -------------------------------------------- | -------- | ------ | ------------------- |
-| event-republic-day-sale-2026-sale            | sale     | ended  | 0                   |
-| event-holi-offer-2026-offer                  | offer    | active | 0                   |
-| event-community-poll-gear-2026-poll          | poll     | active | 3                   |
-| event-platform-experience-survey-2026-survey | survey   | ended  | 2418 (2 seeded)     |
-| event-seller-feedback-form-2026-feedback     | feedback | active | 3 (incl. 1 flagged) |
+| ID                                           | Type     | Status | Entries                          |
+| -------------------------------------------- | -------- | ------ | -------------------------------- |
+| event-republic-day-sale-2026-sale            | sale     | ended  | 0                                |
+| event-womens-day-sale-2026-sale              | sale     | active | 0                                |
+| event-diwali-sale-2026-sale                  | sale     | draft  | 0                                |
+| event-holi-offer-2026-offer                  | offer    | active | 0                                |
+| event-sports-season-offer-2026-offer         | offer    | active | 0                                |
+| event-community-poll-gear-2026-poll          | poll     | ended  | 3                                |
+| event-favourite-brand-poll-2026-poll         | poll     | active | 4                                |
+| event-platform-experience-survey-2026-survey | survey   | ended  | 2418 (2 seeded)                  |
+| event-shopping-experience-survey-2026-survey | survey   | active | 2 (1 approved+points, 1 pending) |
+| event-seller-feedback-form-2026-feedback     | feedback | active | 3 (incl. 1 flagged)              |
+| event-app-experience-feedback-2026-feedback  | feedback | active | 3                                |
 
 **Event Entry FK consistency:**
 
 - `entry-poll-gear-john-camping` → `user-john-doe-johndoe` ✅
 - `entry-poll-gear-jane-climbing` → `user-jane-smith-janes` ✅
 - `entry-poll-gear-mike-cycling` → `user-mike-johnson-mikejohn` ✅
-- `event-holi-offer-2026-offer.offerConfig.couponId` → `coupon-HOLI15` ✅ (added to coupons)
+- `event-holi-offer-2026-offer.offerConfig.couponId` → `coupon-HOLI15` ✅
 - `entry-feedback-seller-anon-flagged.reviewedBy` → `user-admin-user-admin` ✅
+- `entry-poll-brand-john-samsung` → `user-john-doe-johndoe` ✅
+- `entry-poll-brand-jane-apple` → `user-jane-smith-janes` ✅
+- `entry-poll-brand-mike-sony` → `user-mike-johnson-mikejohn` ✅
+- `entry-poll-brand-fashionb-oneplus` → `user-fashion-boutique-fashionb` ✅
+- `entry-survey-shopping-john.reviewedBy` → `user-admin-user-admin` ✅ (points: 95)
+- `entry-survey-shopping-jane` → reviewStatus: pending ✅
+- `entry-feedback-app-john` → `user-john-doe-johndoe` ✅
+- `entry-feedback-app-mike` → `user-mike-johnson-mikejohn` ✅
+- `entry-feedback-app-priya` → `user-priya-sharma-priya` ✅
+- `event-sports-season-offer-2026-offer.offerConfig.couponId` → `coupon-SPORT10` ✅
+- `event-womens-day-sale-2026-sale.saleConfig.affectedCategories` → `category-fashion`, `category-beauty-health` ✅
 
 ### Notifications (`notifications`)
 

@@ -3,9 +3,13 @@
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { useRelatedProducts } from "@/hooks";
-import { ProductCard } from "@/components";
+import {
+  ProductCard,
+  HorizontalScroller,
+  Heading,
+  Section,
+} from "@/components";
 import type { ProductDocument } from "@/db/schema";
-import { Heading, Section } from "@/components";
 
 const { themed } = THEME_CONSTANTS;
 
@@ -36,14 +40,23 @@ interface RelatedProductsResponse {
 interface RelatedProductsProps {
   category: string;
   excludeId: string;
+  isAuction?: boolean;
 }
 
-export function RelatedProducts({ category, excludeId }: RelatedProductsProps) {
+export function RelatedProducts({
+  category,
+  excludeId,
+  isAuction = false,
+}: RelatedProductsProps) {
   const t = useTranslations("products");
-  const { data, isLoading } = useRelatedProducts(category, excludeId, 8);
+  const { data, isLoading } = useRelatedProducts(
+    category,
+    excludeId,
+    8,
+    isAuction,
+  );
 
-  const products =
-    data?.items?.filter((p) => p.id !== excludeId) ?? [];
+  const products = data?.items?.filter((p) => p.id !== excludeId) ?? [];
 
   if (!isLoading && products.length === 0) return null;
 
@@ -54,7 +67,12 @@ export function RelatedProducts({ category, excludeId }: RelatedProductsProps) {
       </Heading>
 
       {isLoading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-3 md:gap-4">
+        <HorizontalScroller
+          perView={{ base: 2, sm: 3, md: 4, lg: 4, xl: 5 }}
+          gap={12}
+          showArrows={false}
+          showScrollbar
+        >
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
@@ -67,13 +85,18 @@ export function RelatedProducts({ category, excludeId }: RelatedProductsProps) {
               </div>
             </div>
           ))}
-        </div>
+        </HorizontalScroller>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-3 md:gap-4">
-          {products.slice(0, 4).map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        <HorizontalScroller
+          items={products}
+          renderItem={(product) => <ProductCard product={product} />}
+          keyExtractor={(p) => p.id}
+          perView={{ base: 2, sm: 3, md: 4, lg: 4, xl: 5 }}
+          gap={12}
+          showArrows
+          arrowSize="sm"
+          showScrollbar
+        />
       )}
     </Section>
   );

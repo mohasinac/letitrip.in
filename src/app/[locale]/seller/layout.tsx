@@ -1,13 +1,9 @@
+"use client";
+
 import { ReactNode } from "react";
-import { Main, Heading, Text, BlockHeader } from "@/components";
+import { Main, Heading, Text, BlockHeader, ProtectedRoute } from "@/components";
 import { SellerTabs } from "@/features/seller";
 import { THEME_CONSTANTS } from "@/constants";
-
-export const metadata = {
-  title: "Seller Dashboard - LetItRip",
-  description: "Manage your listings, auctions, and sales on LetItRip",
-  robots: { index: false, follow: false },
-};
 
 interface SellerLayoutProps {
   children: ReactNode;
@@ -22,35 +18,37 @@ interface SellerLayoutProps {
  */
 export default function SellerLayout({ children }: SellerLayoutProps) {
   return (
-    <div className="w-full space-y-0">
-      {/* Header */}
-      <BlockHeader
-        className={`${THEME_CONSTANTS.themed.bgSecondary} border-b ${THEME_CONSTANTS.themed.borderColor}`}
-      >
-        <div className="py-3 sm:py-4">
-          <Heading
-            level={1}
-            className={`text-xl sm:text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
-          >
-            Seller Dashboard
-          </Heading>
-          <Text size="xs" variant="secondary" className="sm:text-sm mt-1">
-            Manage your listings, auctions, and earnings
-          </Text>
-        </div>
-      </BlockHeader>
+    <ProtectedRoute requireAuth requireRole="seller">
+      <div className="w-full space-y-0">
+        {/* Header */}
+        <BlockHeader
+          className={`${THEME_CONSTANTS.themed.bgSecondary} border-b ${THEME_CONSTANTS.themed.borderColor}`}
+        >
+          <div className="py-3 sm:py-4">
+            <Heading
+              level={1}
+              className={`text-xl sm:text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
+            >
+              Seller Dashboard
+            </Heading>
+            <Text size="xs" variant="secondary" className="sm:text-sm mt-1">
+              Manage your listings, auctions, and earnings
+            </Text>
+          </div>
+        </BlockHeader>
 
-      {/* Tab Navigation */}
-      <div
-        className={`${THEME_CONSTANTS.themed.bgSecondary} border-b ${THEME_CONSTANTS.themed.borderColor} -mx-4 sm:-mx-6 lg:-mx-8`}
-      >
-        <div className="px-4 sm:px-6 lg:px-8">
-          <SellerTabs />
+        {/* Tab Navigation */}
+        <div
+          className={`${THEME_CONSTANTS.themed.bgSecondary} border-b ${THEME_CONSTANTS.themed.borderColor} -mx-4 sm:-mx-6 lg:-mx-8`}
+        >
+          <div className="px-4 sm:px-6 lg:px-8">
+            <SellerTabs />
+          </div>
         </div>
+
+        {/* Main Content */}
+        <Main className="py-4 sm:py-6">{children}</Main>
       </div>
-
-      {/* Main Content */}
-      <Main className="py-4 sm:py-6">{children}</Main>
-    </div>
+    </ProtectedRoute>
   );
 }

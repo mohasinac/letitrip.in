@@ -109,7 +109,9 @@ export function useLogin(options?: {
  *  4. On success: router.refresh() picks up __session cookie, then onSuccess fires
  */
 export function useGoogleLogin(options?: {
-  onSuccess?: () => void;
+  onSuccess?: (
+    data: { isNewUser: boolean; uid: string; role: string } | null,
+  ) => void;
   onError?: (error: any) => void;
 }) {
   const router = useRouter();
@@ -129,7 +131,7 @@ export function useGoogleLogin(options?: {
   useEffect(() => {
     if (authEvent.status === "success") {
       router.refresh();
-      onSuccessRef.current?.();
+      onSuccessRef.current?.(authEvent.data);
     } else if (
       authEvent.status === "failed" ||
       authEvent.status === "timeout"
@@ -142,81 +144,30 @@ export function useGoogleLogin(options?: {
   }, [authEvent.status]);
 
   const mutate = useCallback(async () => {
+    // Open the popup to the same-origin static page synchronously inside the
+    // user-gesture so browsers never block it as an unsolicited popup.
+    const popup = window.open(
+      `${window.location.origin}/auth.html`,
+      "oauth_google",
+      "width=500,height=660,left=400,top=100",
+    );
+    if (!popup) {
+      onErrorRef.current?.(
+        new Error("Popup blocked. Please allow popups for this site."),
+      );
+      return;
+    }
     try {
       setInitiating(true);
       authEvent.reset();
       const { eventId, customToken } = await authEventService.initAuthEvent();
-      window.open(
-        `/api/auth/google/start?eventId=${encodeURIComponent(eventId)}`,
-        "oauth_google",
-        "width=500,height=660,left=400,top=100",
-      );
+      const url = `${window.location.origin}/api/auth/google/start?eventId=${encodeURIComponent(eventId)}`;
+      // Write to localStorage — the storage event fires in auth.html (a different
+      // same-origin window) without needing any window reference or postMessage.
+      localStorage.setItem("letitrip_oauth_redirect", url);
       authEvent.subscribe(eventId, customToken);
     } catch (err) {
-      onErrorRef.current?.(
-        err instanceof Error ? err : new Error("Failed to start sign-in."),
-      );
-    } finally {
-      setInitiating(false);
-    }
-  }, [authEvent]);
-
-  const isLoading =
-    initiating ||
-    authEvent.status === "subscribing" ||
-    authEvent.status === "pending";
-
-  return { mutate, isLoading };
-}
-
-/**
- * Hook for Apple Sign In via the RTDB popup bridge.
- * Identical flow to useGoogleLogin but targets /api/auth/apple/start.
- */
-export function useAppleLogin(options?: {
-  onSuccess?: () => void;
-  onError?: (error: any) => void;
-}) {
-  const router = useRouter();
-  const authEvent = useAuthEvent();
-  const [initiating, setInitiating] = useState(false);
-
-  const onSuccessRef = useRef(options?.onSuccess);
-  const onErrorRef = useRef(options?.onError);
-  useEffect(() => {
-    onSuccessRef.current = options?.onSuccess;
-  }, [options?.onSuccess]);
-  useEffect(() => {
-    onErrorRef.current = options?.onError;
-  }, [options?.onError]);
-
-  useEffect(() => {
-    if (authEvent.status === "success") {
-      router.refresh();
-      onSuccessRef.current?.();
-    } else if (
-      authEvent.status === "failed" ||
-      authEvent.status === "timeout"
-    ) {
-      onErrorRef.current?.(
-        new Error(authEvent.error ?? "Sign-in failed. Please try again."),
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authEvent.status]);
-
-  const mutate = useCallback(async () => {
-    try {
-      setInitiating(true);
-      authEvent.reset();
-      const { eventId, customToken } = await authEventService.initAuthEvent();
-      window.open(
-        `/api/auth/apple/start?eventId=${encodeURIComponent(eventId)}`,
-        "oauth_apple",
-        "width=500,height=660,left=400,top=100",
-      );
-      authEvent.subscribe(eventId, customToken);
-    } catch (err) {
+      popup.close();
       onErrorRef.current?.(
         err instanceof Error ? err : new Error("Failed to start sign-in."),
       );

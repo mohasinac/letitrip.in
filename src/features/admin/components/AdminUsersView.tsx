@@ -12,7 +12,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useUrlTable, usePendingTable } from "@/hooks";
 import { useAdminUsers } from "@/features/admin/hooks";
-import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   AdminPageHeader,
@@ -152,6 +152,7 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
             data: { role: newRole },
           });
           await refetch();
+          showToast(SUCCESS_MESSAGES.ADMIN.USER_ROLE_UPDATED, "success");
           if (selectedUser?.uid === user.uid) {
             setSelectedUser({ ...user, role: newRole as AdminUser["role"] });
           }
@@ -176,6 +177,12 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
             data: { disabled: !user.disabled },
           });
           await refetch();
+          showToast(
+            user.disabled
+              ? SUCCESS_MESSAGES.ADMIN.USER_UNBANNED
+              : SUCCESS_MESSAGES.ADMIN.USER_BANNED,
+            "success",
+          );
           if (selectedUser?.uid === user.uid) {
             setSelectedUser({ ...user, disabled: !user.disabled });
           }
@@ -198,6 +205,7 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
         try {
           await deleteUserMutation.mutate(user.uid);
           await refetch();
+          showToast(SUCCESS_MESSAGES.ADMIN.USER_DELETED, "success");
           handleCloseDrawer();
         } catch {
           showToast(t("deleteFailed"), "error");
@@ -282,7 +290,7 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
               externalPagination
               showViewToggle
               viewMode={
-                (table.get("view") || "table") as "table" | "grid" | "list"
+                (table.get("view") || "grid") as "table" | "grid" | "list"
               }
               onViewModeChange={(mode) => table.set("view", mode)}
               mobileCardRender={(user) => (

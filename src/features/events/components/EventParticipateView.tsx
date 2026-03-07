@@ -19,6 +19,7 @@ import {
   Heading,
   Input,
   Label,
+  RadioGroup,
   Span,
   Spinner,
   Text,
@@ -129,6 +130,27 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
     }
 
     if (field.type === "select" || field.type === "radio") {
+      if (field.type === "radio") {
+        return (
+          <div key={field.id} className="mb-4">
+            <Label className="block mb-2">
+              {field.label}
+              {field.required && <Span className="text-red-500 ml-1">*</Span>}
+            </Label>
+            <RadioGroup
+              name={field.id}
+              value={value}
+              options={(field.options ?? []).map((opt) => ({
+                value: opt,
+                label: opt,
+              }))}
+              onChange={onChange}
+              orientation="horizontal"
+              variant="toggle"
+            />
+          </div>
+        );
+      }
       const options = [
         { value: "", label: t("selectOption") },
         ...(field.options?.map((opt) => ({ value: opt, label: opt })) ?? []),

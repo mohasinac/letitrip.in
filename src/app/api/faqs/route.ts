@@ -14,9 +14,8 @@
  * - Implement FAQ A/B testing
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { faqsRepository, siteSettingsRepository } from "@/repositories";
-import { errorResponse, successResponse } from "@/lib/api-response";
+import { successResponse } from "@/lib/api-response";
 import {
   getBooleanParam,
   getNumberParam,
@@ -24,20 +23,10 @@ import {
   getStringParam,
 } from "@/lib/api/request-helpers";
 import { applySieveToArray } from "@/helpers/data/sieve.helper";
-import { requireRoleFromRequest } from "@/lib/security/authorization";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  faqCreateSchema,
-} from "@/lib/validation/schemas";
-import { AuthenticationError, AuthorizationError } from "@/lib/errors";
-import {
-  withCache,
-  CachePresets,
-  invalidateCache,
-} from "@/lib/api/cache-middleware";
-import { serverLogger } from "@/lib/server-logger";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { faqCreateSchema } from "@/lib/validation/schemas";
+import { invalidateCache } from "@/lib/api/cache-middleware";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { SUCCESS_MESSAGES } from "@/constants";
 import { slugifyQuestion } from "@/db/schema";
 import type { FAQDocument } from "@/db/schema";
 
@@ -59,8 +48,8 @@ import type { FAQDocument } from "@/db/schema";
  * Ã¢Å“â€¦ Interpolates {{companyName}}, {{supportEmail}}, etc. from site settings
  * Ã¢Å“â€¦ Caching implemented with LONG preset (30 min TTL)
  */
-export const GET = withCache(async (request: NextRequest) => {
-  try {
+export const GET = createApiHandler({
+  handler: async ({ request }) => {
     // Parse query parameters
     const searchParams = getSearchParams(request);
     const category = getStringParam(searchParams, "category");
@@ -222,39 +211,29 @@ export const GET = withCache(async (request: NextRequest) => {
     }));
 
     // Return with cache headers
-    return NextResponse.json(
-      {
-        success: true,
-        data: interpolatedFAQs,
-        meta: {
-          total: sieveResult.total,
-          page: sieveResult.page,
-          pageSize: sieveResult.pageSize,
-          totalPages: sieveResult.totalPages,
-          hasMore: sieveResult.hasMore,
-          categories: [
-            "orders_payment",
-            "shipping_delivery",
-            "returns_refunds",
-            "product_information",
-            "account_security",
-            "technical_support",
-            "general",
-          ],
-        },
-      },
-      {
-        headers: {
-          "Cache-Control":
-            "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
-        },
-      },
+    const response = successResponse(interpolatedFAQs, undefined, undefined, {
+      total: sieveResult.total,
+      page: sieveResult.page,
+      pageSize: sieveResult.pageSize,
+      totalPages: sieveResult.totalPages,
+      hasMore: sieveResult.hasMore,
+      categories: [
+        "orders_payment",
+        "shipping_delivery",
+        "returns_refunds",
+        "product_information",
+        "account_security",
+        "technical_support",
+        "general",
+      ],
+    });
+    response.headers.set(
+      "Cache-Control",
+      "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
     );
-  } catch (error) {
-    serverLogger.error("GET /api/faqs error", { error });
-    return errorResponse(ERROR_MESSAGES.FAQ.FETCH_FAILED, 500);
-  }
-}, CachePresets.LONG);
+    return response;
+  },
+});
 
 /**
  * POST /api/faqs
@@ -278,23 +257,11 @@ export const GET = withCache(async (request: NextRequest) => {
  * Ã¢Å“â€¦ Returns created FAQ with 201 status
  * TODO (Future): Generate SEO-friendly slug for FAQ permalinks — ✅ Done
  */
-export async function POST(request: NextRequest) {
-  try {
-    // Require admin authentication
-    const user = await requireRoleFromRequest(request, ["admin"]);
-
-    // Parse and validate request body
-    const body = await request.json();
-    const validation = validateRequestBody(faqCreateSchema, body);
-
-    if (!validation.success) {
-      return errorResponse(
-        ERROR_MESSAGES.VALIDATION.FAILED,
-        400,
-        formatZodErrors(validation.errors),
-      );
-    }
-
+export const POST = createApiHandler<(typeof faqCreateSchema)["_output"]>({
+  auth: true,
+  roles: ["admin"],
+  schema: faqCreateSchema,
+  handler: async ({ user, body }) => {
     // Auto-assign order — single Firestore query, avoids full collection load
     const latestFAQ = await faqsRepository.list({
       sorts: "-order",
@@ -305,11 +272,11 @@ export async function POST(request: NextRequest) {
     const order = maxOrder + 1;
 
     // Create FAQ with admin as creator and SEO slug derived from the question
-    const seoSlug = slugifyQuestion(validation.data.question);
+    const seoSlug = slugifyQuestion(body!.question);
     const faq = await faqsRepository.create({
-      ...validation.data,
+      ...body!,
       order,
-      createdBy: user.uid,
+      createdBy: user!.uid,
       seo: { slug: seoSlug },
     } as any);
 
@@ -317,8 +284,5 @@ export async function POST(request: NextRequest) {
     invalidateCache("/api/faqs");
 
     return successResponse(faq, SUCCESS_MESSAGES.FAQ.CREATED, 201);
-  } catch (error) {
-    serverLogger.error("POST /api/faqs error", { error });
-    return errorResponse(ERROR_MESSAGES.FAQ.CREATE_FAILED, 500);
-  }
-}
+  },
+});

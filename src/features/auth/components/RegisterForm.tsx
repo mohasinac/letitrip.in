@@ -7,6 +7,7 @@
 
 import { useState, FormEvent, useCallback, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   Alert,
   Button,
@@ -27,7 +28,7 @@ import {
   THEME_CONSTANTS,
 } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useAuth, useRegister, useGoogleLogin, useAppleLogin } from "@/hooks";
+import { useAuth, useRegister, useGoogleLogin } from "@/hooks";
 import { AuthSocialButtons } from "./AuthSocialButtons";
 
 const { themed, spacing, flex, page } = THEME_CONSTANTS;
@@ -35,6 +36,8 @@ const { themed, spacing, flex, page } = THEME_CONSTANTS;
 export function RegisterForm() {
   const t = useTranslations("auth");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || ROUTES.USER.PROFILE;
   const { user, loading: authLoading } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -56,7 +59,7 @@ export function RegisterForm() {
         type: "success",
         text: SUCCESS_MESSAGES.AUTH.REGISTER_SUCCESS,
       });
-      setTimeout(() => router.push(ROUTES.USER.PROFILE), 1000);
+      setTimeout(() => router.push(callbackUrl), 1000);
     },
     onError: (err) =>
       setMessage({
@@ -66,7 +69,7 @@ export function RegisterForm() {
   });
 
   const { mutate: googleRegister, isLoading: googleLoading } = useGoogleLogin({
-    onSuccess: () => router.push(ROUTES.USER.PROFILE),
+    onSuccess: () => router.push(callbackUrl),
     onError: (err) =>
       setMessage({
         type: "error",
@@ -74,20 +77,11 @@ export function RegisterForm() {
       }),
   });
 
-  const { mutate: appleRegister, isLoading: appleLoading } = useAppleLogin({
-    onSuccess: () => router.push(ROUTES.USER.PROFILE),
-    onError: (err) =>
-      setMessage({
-        type: "error",
-        text: t("register.appleRegisterFailed"),
-      }),
-  });
-
-  const isLoading = registerLoading || googleLoading || appleLoading;
+  const isLoading = registerLoading || googleLoading;
 
   useEffect(() => {
-    if (!authLoading && user) router.push(ROUTES.USER.PROFILE);
-  }, [user, authLoading, router]);
+    if (!authLoading && user) router.push(callbackUrl);
+  }, [user, authLoading, router, callbackUrl]);
 
   const handleBlur = useCallback(
     (field: string) => () => setTouched((prev) => ({ ...prev, [field]: true })),
@@ -98,11 +92,6 @@ export function RegisterForm() {
     setMessage(null);
     await googleRegister();
   }, [googleRegister]);
-
-  const handleApple = useCallback(async () => {
-    setMessage(null);
-    await appleRegister();
-  }, [appleRegister]);
 
   if (authLoading) {
     return (
@@ -301,11 +290,7 @@ export function RegisterForm() {
           </Button>
         </form>
 
-        <AuthSocialButtons
-          onGoogle={handleGoogle}
-          onApple={handleApple}
-          disabled={isLoading}
-        />
+        <AuthSocialButtons onGoogle={handleGoogle} disabled={isLoading} />
       </div>
     </div>
   );

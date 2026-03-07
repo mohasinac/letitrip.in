@@ -27,6 +27,7 @@ import {
   Search,
   SortDropdown,
   ProductFilters,
+  getFilterLabel,
 } from "@/components";
 import type { ActiveFilter, AdminProduct } from "@/components";
 import { Store } from "lucide-react";
@@ -261,9 +262,7 @@ function SellerProductsContent() {
           {
             key: "status",
             label: "Status",
-            value:
-              STATUS_OPTIONS.find((o) => o.value === statusParam)?.label ??
-              statusParam,
+            value: getFilterLabel(STATUS_OPTIONS, statusParam) ?? statusParam,
           },
         ] satisfies ActiveFilter[]
       }
@@ -367,7 +366,7 @@ function SellerProductsContent() {
             externalPagination
             showViewToggle
             viewMode={
-              (table.get("view") || "table") as "table" | "grid" | "list"
+              (table.get("view") || "grid") as "table" | "grid" | "list"
             }
             onViewModeChange={(mode) => table.set("view", mode)}
             mobileCardRender={(product) => (

@@ -229,7 +229,7 @@ export interface HorizontalScrollerProps<T = unknown> {
   /**
    * Enable CSS scroll-snap per child item.
    * Adds `snap-x snap-mandatory` to the scroll container (children passthrough
-   * mode) or `snap-center` to each item wrapper (items mode).
+   * mode) or `snap-start` to each item wrapper (items mode).
    * Default: false
    */
   snapToItems?: boolean;
@@ -450,17 +450,22 @@ export function HorizontalScroller<T = unknown>({
 
   // â”€â”€â”€ Initial circular position â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+  // Double-RAF ensures the second frame fires after React has re-rendered items
+  // with their resolved widths (set by the ResizeObserver effect), so scrollWidth
+  // is accurate when we jump to the middle third.
   useEffect(() => {
     if (!circularScroll || items.length === 0) return;
     const el = scrollRef.current;
     if (!el) return;
     initializingRef.current = true;
     requestAnimationFrame(() => {
-      el.scrollLeft = el.scrollWidth / 3;
-      updateScrollEdges();
-      setTimeout(() => {
-        initializingRef.current = false;
-      }, 100);
+      requestAnimationFrame(() => {
+        el.scrollLeft = el.scrollWidth / 3;
+        updateScrollEdges();
+        setTimeout(() => {
+          initializingRef.current = false;
+        }, 100);
+      });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circularScroll, items.length]);
@@ -651,7 +656,7 @@ export function HorizontalScroller<T = unknown>({
               <div
                 key={key}
                 style={itemStyle}
-                className={snapToItems ? "snap-center" : undefined}
+                className={snapToItems ? "snap-start" : undefined}
               >
                 {renderItem(item, baseIndex)}
               </div>

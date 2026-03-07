@@ -1,41 +1,32 @@
 /**
  * POST /api/ripcoins/purchase/verify
  *
- * Verifies a Razorpay payment and credits RipCoins to the user's wallet.
+ * Verifies a Razorpay payment and credits RipCoins (base + bonus) to the user's wallet.
  * Idempotent — subsequent calls with the same razorpayOrderId are rejected.
  */
 
-import { NextRequest } from "next/server";
-import { requireAuth } from "@/lib/firebase/auth-server";
 import { userRepository, ripcoinRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, errorResponse } from "@/lib/api-response";
+import { createApiHandler } from "@/lib/api/api-handler";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { ValidationError } from "@/lib/errors";
 import { verifyPaymentSignature } from "@/lib/payment/razorpay";
-import { RIPCOIN_PACK_SIZE, RIPCOIN_PACK_PRICE_RS } from "@/db/schema";
+import { getRipCoinPackage } from "@/db/schema";
 import { z } from "zod";
 
 const verifySchema = z.object({
   razorpayOrderId: z.string().min(1),
   razorpayPaymentId: z.string().min(1),
   razorpaySignature: z.string().min(1),
-  packs: z.number().int().positive(),
+  packageId: z.string().min(1),
 });
 
-export async function POST(request: NextRequest) {
-  try {
-    const user = await requireAuth();
-
-    const body = await request.json();
-    const validation = verifySchema.safeParse(body);
-    if (!validation.success) {
-      throw new ValidationError(ERROR_MESSAGES.VALIDATION.FAILED);
-    }
-
-    const { razorpayOrderId, razorpayPaymentId, razorpaySignature, packs } =
-      validation.data;
+export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
+  auth: true,
+  schema: verifySchema,
+  handler: async ({ user, body }) => {
+    const { razorpayOrderId, razorpayPaymentId, razorpaySignature, packageId } =
+      body!;
 
     // Idempotency check — reject duplicate verifications
     const existing =
@@ -55,46 +46,51 @@ export async function POST(request: NextRequest) {
       return errorResponse(ERROR_MESSAGES.RIPCOIN.VERIFY_FAILED, 400);
     }
 
-    const coinsToCredit = packs * RIPCOIN_PACK_SIZE;
-    const amountPaidRs = packs * RIPCOIN_PACK_PRICE_RS;
+    const pkg = getRipCoinPackage(packageId);
+    if (!pkg) {
+      return errorResponse(ERROR_MESSAGES.RIPCOIN.INVALID_PACKAGE, 400);
+    }
+
+    const coinsToCredit = pkg.totalCoins; // base + bonus
 
     // Fetch current balance to record ledger snapshot
-    const userDoc = await userRepository.findById(user.uid);
+    const userDoc = await userRepository.findById(user!.uid);
     const balanceBefore = userDoc?.ripcoinBalance ?? 0;
     const balanceAfter = balanceBefore + coinsToCredit;
 
     // Credit coins — atomic increment on user document
-    await userRepository.incrementRipCoinBalance(user.uid, coinsToCredit);
+    await userRepository.incrementRipCoinBalance(user!.uid, coinsToCredit);
 
     // Record the purchase transaction in the ledger
     await ripcoinRepository.create({
-      userId: user.uid,
+      userId: user!.uid,
       type: "purchase",
       coins: coinsToCredit,
       balanceBefore,
       balanceAfter,
       razorpayOrderId,
       razorpayPaymentId,
-      amountPaid: amountPaidRs,
+      amountPaid: pkg.priceRs,
+      packageId: pkg.packageId,
+      bonusCoins: pkg.bonusCoins,
     });
 
     serverLogger.info("RipCoins purchase verified and credited", {
-      uid: user.uid,
-      packs,
+      uid: user!.uid,
+      packageId,
       coinsToCredit,
-      amountPaidRs,
+      bonusCoins: pkg.bonusCoins,
+      amountPaidRs: pkg.priceRs,
       razorpayOrderId,
     });
 
     return successResponse(
       {
         coinsCredited: coinsToCredit,
+        bonusCoins: pkg.bonusCoins,
         newBalance: balanceAfter,
       },
       SUCCESS_MESSAGES.RIPCOIN.PURCHASE_COMPLETE,
     );
-  } catch (error) {
-    serverLogger.error("POST /api/ripcoins/purchase/verify error", { error });
-    return handleApiError(error);
-  }
-}
+  },
+});

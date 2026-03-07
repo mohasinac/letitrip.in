@@ -33,6 +33,7 @@ interface CardProps {
   hover?: boolean;
   variant?:
     | "default"
+    | "primary"
     | "bordered"
     | "elevated"
     | "interactive"
@@ -47,6 +48,7 @@ interface CardProps {
     | "stat-rose"
     | "stat-emerald";
   className?: string;
+  style?: React.CSSProperties;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
@@ -55,12 +57,14 @@ export default function Card({
   hover = false,
   variant = "default",
   className = "",
+  style,
   onClick,
 }: CardProps) {
   const { card, themed, enhancedCard } = THEME_CONSTANTS;
 
   const variantClasses = {
     default: `${themed.bgSecondary} ${card.shadow}`,
+    primary: `${themed.bgPrimary} ${card.shadow}`,
     bordered: `${themed.bgSecondary} border-2 ${themed.border}`,
     elevated: `${themed.bgSecondary} ${card.shadowElevated}`,
     interactive: enhancedCard.interactive,
@@ -87,6 +91,7 @@ export default function Card({
         ${onClick ? "cursor-pointer" : ""}
         ${className}
       `}
+      style={style}
       onClick={onClick}
     >
       {children}

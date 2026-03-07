@@ -6,6 +6,7 @@ import {
   Button,
   Input,
   Label,
+  RadioGroup,
   Span,
   Text,
   Textarea,
@@ -75,6 +76,20 @@ export function FeedbackEventSection({
               }
               placeholder={field.placeholder}
               rows={4}
+            />
+          ) : field.type === "radio" ? (
+            <RadioGroup
+              name={field.id}
+              value={responses[field.id] ?? ""}
+              options={(field.options ?? []).map((opt) => ({
+                value: opt,
+                label: opt,
+              }))}
+              onChange={(val) =>
+                setResponses((r) => ({ ...r, [field.id]: val }))
+              }
+              orientation="horizontal"
+              variant="toggle"
             />
           ) : (
             <Input

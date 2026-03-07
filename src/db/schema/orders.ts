@@ -9,8 +9,20 @@ import { generateOrderId, type GenerateOrderIdInput } from "@/utils";
 // ============================================
 // 1. COLLECTION INTERFACE & NAME
 // ============================================
-export type ShippingMethod = 'custom' | 'shiprocket';
-export type OrderPayoutStatus = 'eligible' | 'requested' | 'paid';
+export type ShippingMethod = "custom" | "shiprocket";
+export type OrderPayoutStatus = "eligible" | "requested" | "paid";
+
+/**
+ * A single line-item within a per-store order.
+ * Used when multiple cart items from the same seller are grouped into one order.
+ */
+export interface OrderItem {
+  productId: string;
+  productTitle: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
 
 export interface OrderDocument {
   id: string;
@@ -21,6 +33,10 @@ export interface OrderDocument {
   userEmail: string;
   /** Seller who owns the product — indexed for efficient seller-order queries */
   sellerId?: string;
+  /** Seller display name — denormalized for display without extra fetches */
+  sellerName?: string;
+  /** All line items in this order (populated for multi-item per-store orders) */
+  items?: OrderItem[];
   quantity: number;
   unitPrice: number;
   totalPrice: number;

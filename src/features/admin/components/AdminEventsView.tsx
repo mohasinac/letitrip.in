@@ -261,7 +261,7 @@ export function AdminEventsView() {
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
           showViewToggle
-          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(event) => (
             <Card className="overflow-hidden cursor-pointer">

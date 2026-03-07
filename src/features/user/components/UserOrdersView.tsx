@@ -233,9 +233,7 @@ function UserOrdersContent() {
             ),
           },
         ]}
-        showViewToggle
-        viewMode={(table.get("view") || "list") as "table" | "grid" | "list"}
-        onViewModeChange={(m) => table.set("view", m)}
+        defaultViewMode="list"
         emptyState={
           <EmptyState
             icon={<ShoppingBag className="w-16 h-16" />}

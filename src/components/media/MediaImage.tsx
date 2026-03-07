@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * MediaImage
  *
@@ -16,6 +18,7 @@
  */
 
 import Image from "next/image";
+import { useState } from "react";
 import { Span } from "../typography";
 
 // ----- `sizes` hints per display context -----------------------------------------------
@@ -39,7 +42,13 @@ const FALLBACK_ICONS: Record<MediaImageSize, string> = {
   avatar: "👤",
 };
 
-export type MediaImageSize = "thumbnail" | "card" | "hero" | "banner" | "gallery" | "avatar";
+export type MediaImageSize =
+  | "thumbnail"
+  | "card"
+  | "hero"
+  | "banner"
+  | "gallery"
+  | "avatar";
 
 export interface MediaImageProps {
   /** Image URL. When undefined the fallback icon is rendered instead. */
@@ -77,10 +86,11 @@ export function MediaImage({
   fallback,
   className,
 }: MediaImageProps) {
+  const [hasError, setHasError] = useState(false);
   const icon = fallback ?? FALLBACK_ICONS[size];
   const fitClass = objectFit === "contain" ? "object-contain" : "object-cover";
 
-  if (!src) {
+  if (!src || hasError) {
     return (
       <div
         className={`absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-400 text-4xl${className ? ` ${className}` : ""}`}
@@ -93,7 +103,9 @@ export function MediaImage({
   }
 
   return (
-    <div className={`absolute inset-0 overflow-hidden${className ? ` ${className}` : ""}`}>
+    <div
+      className={`absolute inset-0 overflow-hidden${className ? ` ${className}` : ""}`}
+    >
       <Image
         src={src}
         alt={alt}
@@ -101,6 +113,7 @@ export function MediaImage({
         priority={priority}
         className={fitClass}
         sizes={SIZE_HINTS[size]}
+        onError={() => setHasError(true)}
       />
     </div>
   );

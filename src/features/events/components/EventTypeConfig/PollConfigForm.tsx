@@ -49,6 +49,7 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
           <div key={opt.id} className="flex items-center gap-2">
             <div className="flex-1">
               <Input
+                id={`poll-option-${opt.id}`}
                 type="text"
                 value={opt.label}
                 onChange={(e) => updateOption(opt.id, e.target.value)}
@@ -83,8 +84,11 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
         label="Allow comments"
       />
       <div>
-        <Label className="mb-1">Results Visibility</Label>
+        <Label htmlFor="poll-results-visibility" className="mb-1">
+          Results Visibility
+        </Label>
         <Select
+          id="poll-results-visibility"
           value={value.resultsVisibility ?? "always"}
           onChange={(e) =>
             setField(

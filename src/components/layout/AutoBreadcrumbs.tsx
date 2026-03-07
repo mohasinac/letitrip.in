@@ -46,6 +46,20 @@ const pathLabels: Record<string, string> = {
   view: "View",
   add: "Add",
   edit: "Edit",
+  categories: "Categories",
+  stores: "Stores",
+  events: "Events",
+  blog: "Blog",
+  seller: "Seller Dashboard",
+  sellers: "Sellers",
+  sections: "Homepage Sections",
+  site: "Site Settings",
+  faqs: "FAQs",
+  promotions: "Promotions",
+  reviews: "Reviews",
+  search: "Search",
+  checkout: "Checkout",
+  track: "Track Order",
 };
 
 export default function AutoBreadcrumbs() {
@@ -106,7 +120,7 @@ export default function AutoBreadcrumbs() {
       const href = localePrefix + "/" + segments.slice(0, index + 1).join("/");
       const label =
         pathLabels[segment] ||
-        segment.charAt(0).toUpperCase() + segment.slice(1);
+        segment.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
       return { label, href };
     }),
   ];

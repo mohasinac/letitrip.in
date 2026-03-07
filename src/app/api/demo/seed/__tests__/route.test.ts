@@ -199,15 +199,14 @@ describe("Demo Seed API", () => {
 
       expect(status).toBe(200);
       expect(body.success).toBe(true);
-      expect(body.details.created).toBe(1);
-      expect(body.details.updated).toBe(0);
+      expect(body.data.details.created).toBe(1);
+      expect(body.data.details.skipped).toBe(0);
       expect(mockDocRef.set).toHaveBeenCalledWith(
         expect.objectContaining({ name: "Electronics" }),
-        { merge: true },
       );
     });
 
-    it("should update existing documents", async () => {
+    it("should skip existing documents", async () => {
       mockDocSnapshot.exists = true;
 
       const request = buildRequest("/api/demo/seed", {
@@ -220,12 +219,9 @@ describe("Demo Seed API", () => {
 
       expect(status).toBe(200);
       expect(body.success).toBe(true);
-      expect(body.details.created).toBe(0);
-      expect(body.details.updated).toBe(1);
-      expect(mockDocRef.set).toHaveBeenCalledWith(
-        expect.objectContaining({ name: "Electronics" }),
-        { merge: true },
-      );
+      expect(body.data.details.created).toBe(0);
+      expect(body.data.details.skipped).toBeGreaterThan(0);
+      expect(mockDocRef.set).not.toHaveBeenCalled();
     });
 
     it("should handle users collection with Auth and Firestore", async () => {
@@ -258,7 +254,7 @@ describe("Demo Seed API", () => {
       expect(mockDocRef.set).toHaveBeenCalled();
     });
 
-    it("should update existing Auth users", async () => {
+    it("should skip users whose Firestore document already exists", async () => {
       mockAuth.getUser.mockResolvedValue({ uid: "test-user-1" });
       mockDocSnapshot.exists = true;
 
@@ -268,14 +264,11 @@ describe("Demo Seed API", () => {
       });
 
       const response = await POST(request);
+      const { body } = await parseResponse(response);
 
-      expect(mockAuth.updateUser).toHaveBeenCalledWith(
-        "test-user-1",
-        expect.objectContaining({
-          email: "test1@example.com",
-        }),
-      );
       expect(mockAuth.createUser).not.toHaveBeenCalled();
+      expect(mockDocRef.set).not.toHaveBeenCalled();
+      expect(body.data.details.skipped).toBeGreaterThan(0);
     });
 
     it("should handle siteSettings singleton", async () => {
@@ -296,7 +289,6 @@ describe("Demo Seed API", () => {
       expect(mockCollectionRef.doc).toHaveBeenCalledWith("global");
       expect(mockDocRef.set).toHaveBeenCalledWith(
         expect.objectContaining({ siteName: "LetItRip" }),
-        { merge: true },
       );
     });
 
@@ -328,7 +320,6 @@ describe("Demo Seed API", () => {
           label: "Home",
           fullName: "Test User 1",
         }),
-        { merge: true },
       );
     });
 
@@ -343,8 +334,8 @@ describe("Demo Seed API", () => {
 
       expect(status).toBe(200);
       expect(body.success).toBe(true);
-      expect(body.details.collections).toEqual(["categories", "products"]);
-      expect(body.details.created).toBe(2);
+      expect(body.data.details.collections).toEqual(["categories", "products"]);
+      expect(body.data.details.created).toBe(2);
     });
 
     it("should process all collections when none specified", async () => {
@@ -358,7 +349,7 @@ describe("Demo Seed API", () => {
 
       expect(status).toBe(200);
       expect(body.success).toBe(true);
-      expect(body.details.collections.length).toBeGreaterThan(1);
+      expect(body.data.details.collections.length).toBeGreaterThan(1);
     });
   });
 
@@ -376,8 +367,8 @@ describe("Demo Seed API", () => {
 
       expect(status).toBe(200);
       expect(body.success).toBe(true);
-      expect(body.details.deleted).toBe(1);
-      expect(body.details.skipped).toBe(0);
+      expect(body.data.details.deleted).toBe(1);
+      expect(body.data.details.skipped).toBe(0);
       expect(mockDocRef.delete).toHaveBeenCalled();
     });
 
@@ -394,8 +385,8 @@ describe("Demo Seed API", () => {
 
       expect(status).toBe(200);
       expect(body.success).toBe(true);
-      expect(body.details.deleted).toBe(0);
-      expect(body.details.skipped).toBe(1);
+      expect(body.data.details.deleted).toBe(0);
+      expect(body.data.details.skipped).toBe(1);
       expect(mockDocRef.delete).not.toHaveBeenCalled();
     });
 
@@ -419,7 +410,7 @@ describe("Demo Seed API", () => {
 
       // Should delete Firestore document
       expect(mockDocRef.delete).toHaveBeenCalled();
-      expect(body.details.deleted).toBe(1);
+      expect(body.data.details.deleted).toBe(1);
     });
 
     it("should handle missing Auth users gracefully", async () => {
@@ -487,7 +478,7 @@ describe("Demo Seed API", () => {
       expect(mockDb.collection).toHaveBeenCalledWith("users");
       expect(mockDocRef.collection).toHaveBeenCalledWith("addresses");
       expect(mockDocRef.delete).toHaveBeenCalled();
-      expect(body.details.deleted).toBe(1);
+      expect(body.data.details.deleted).toBe(1);
     });
   });
 
@@ -505,7 +496,7 @@ describe("Demo Seed API", () => {
 
       expect(status).toBe(200);
       expect(body.success).toBe(true);
-      expect(body.details.errors).toBeGreaterThan(0);
+      expect(body.data.details.errors).toBeGreaterThan(0);
     });
 
     it("should handle malformed request body", async () => {
@@ -535,12 +526,12 @@ describe("Demo Seed API", () => {
       const { body } = await parseResponse(response);
 
       expect(body).toHaveProperty("success");
-      expect(body).toHaveProperty("message");
-      expect(body).toHaveProperty("details");
-      expect(body.details).toHaveProperty("created");
-      expect(body.details).toHaveProperty("updated");
-      expect(body.details).toHaveProperty("errors");
-      expect(body.details).toHaveProperty("collections");
+      expect(body.data).toHaveProperty("message");
+      expect(body.data).toHaveProperty("details");
+      expect(body.data.details).toHaveProperty("created");
+      expect(body.data.details).toHaveProperty("skipped");
+      expect(body.data.details).toHaveProperty("errors");
+      expect(body.data.details).toHaveProperty("collections");
     });
 
     it("should return detailed metrics for delete", async () => {
@@ -555,12 +546,12 @@ describe("Demo Seed API", () => {
       const { body } = await parseResponse(response);
 
       expect(body).toHaveProperty("success");
-      expect(body).toHaveProperty("message");
-      expect(body).toHaveProperty("details");
-      expect(body.details).toHaveProperty("deleted");
-      expect(body.details).toHaveProperty("skipped");
-      expect(body.details).toHaveProperty("errors");
-      expect(body.details).toHaveProperty("collections");
+      expect(body.data).toHaveProperty("message");
+      expect(body.data).toHaveProperty("details");
+      expect(body.data.details).toHaveProperty("deleted");
+      expect(body.data.details).toHaveProperty("skipped");
+      expect(body.data.details).toHaveProperty("errors");
+      expect(body.data.details).toHaveProperty("collections");
     });
 
     it("should include skipped count in delete message when applicable", async () => {
@@ -574,8 +565,8 @@ describe("Demo Seed API", () => {
       const response = await POST(request);
       const { body } = await parseResponse(response);
 
-      expect(body.message).toContain("skipped");
-      expect(body.message).toContain("not found");
+      expect(body.data.message).toContain("skipped");
+      expect(body.data.message).toContain("not found");
     });
   });
 });

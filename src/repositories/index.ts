@@ -77,3 +77,5 @@ export * from "./ripcoin.repository";
 export { ripcoinRepository } from "./ripcoin.repository";
 export * from "./chat.repository";
 export { chatRepository } from "./chat.repository";
+export * from "./sms-counter.repository";
+export { smsCounterRepository } from "./sms-counter.repository";

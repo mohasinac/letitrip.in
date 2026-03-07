@@ -23,29 +23,25 @@
  * already set to 'requested' or 'paid' are silently skipped.
  */
 
-import { NextRequest } from "next/server";
-import { requireAuth } from "@/lib/firebase/auth-server";
-import { userRepository, orderRepository, payoutRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
-import { AuthorizationError } from "@/lib/errors";
+import {
+  userRepository,
+  orderRepository,
+  payoutRepository,
+} from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import type { OrderDocument } from "@/db/schema";
+import { createApiHandler } from "@/lib/api/api-handler";
 
 const PLATFORM_COMMISSION_RATE = 0.05; // 5 %
 
 // ─── Route ────────────────────────────────────────────────────────────────────
 
-export async function POST(request: NextRequest) {
-  try {
-    const authUser = await requireAuth();
-    const user = await userRepository.findById(authUser.uid);
-    if (!user || user.role !== "admin") {
-      throw new AuthorizationError(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED);
-    }
-
-    // ── 1. Fetch all eligible Shiprocket-delivered orders ──────────────────
+export const POST = createApiHandler({
+  auth: true,
+  roles: ["admin"],
+  handler: async () => {
     const eligibleOrders = await orderRepository.findBy(
       "payoutStatus",
       "eligible",
@@ -69,15 +65,14 @@ export async function POST(request: NextRequest) {
     }
 
     // ── 2. Group by sellerId ──────────────────────────────────────────────
-    const bySeller = shiprocketDelivered.reduce<Map<string, typeof shiprocketDelivered>>(
-      (map, order) => {
-        const id = order.sellerId!;
-        if (!map.has(id)) map.set(id, []);
-        map.get(id)!.push(order);
-        return map;
-      },
-      new Map(),
-    );
+    const bySeller = shiprocketDelivered.reduce<
+      Map<string, typeof shiprocketDelivered>
+    >((map, order) => {
+      const id = order.sellerId!;
+      if (!map.has(id)) map.set(id, []);
+      map.get(id)!.push(order);
+      return map;
+    }, new Map());
 
     const payoutSummaries: {
       sellerId: string;
@@ -102,8 +97,7 @@ export async function POST(request: NextRequest) {
       const grossAmount = orders.reduce((s, o) => s + (o.totalPrice ?? 0), 0);
       const platformFee =
         Math.round(grossAmount * PLATFORM_COMMISSION_RATE * 100) / 100;
-      const netAmount =
-        Math.round((grossAmount - platformFee) * 100) / 100;
+      const netAmount = Math.round((grossAmount - platformFee) * 100) / 100;
 
       const payoutData = {
         sellerId,
@@ -183,7 +177,5 @@ export async function POST(request: NextRequest) {
       },
       SUCCESS_MESSAGES.PAYOUT.WEEKLY_PROCESSED,
     );
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

@@ -3,12 +3,10 @@
  * GET /api/promotions — Returns promoted products, featured products and active coupons
  */
 
-import { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
 import { productRepository, couponsRepository } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { serverLogger } from "@/lib/server-logger";
+import { createApiHandler } from "@/lib/api/api-handler";
 
 /**
  * GET /api/promotions
@@ -18,8 +16,8 @@ import { serverLogger } from "@/lib/server-logger";
  *  - featuredProducts: published products with featured=true (limit 8)
  *  - activeCoupons: coupons with validity.isActive=true
  */
-export async function GET(_request: NextRequest): Promise<NextResponse> {
-  try {
+export const GET = createApiHandler({
+  handler: async () => {
     serverLogger.info("Promotions page data requested");
 
     const [promotedRaw, featuredRaw, activeCoupons] = await Promise.all([
@@ -28,7 +26,6 @@ export async function GET(_request: NextRequest): Promise<NextResponse> {
       couponsRepository.getActiveCoupons(),
     ]);
 
-    // Filter to published products only
     const promotedProducts = promotedRaw
       .filter((p) => p.status === "published")
       .slice(0, 12);
@@ -37,7 +34,6 @@ export async function GET(_request: NextRequest): Promise<NextResponse> {
       .filter((p) => p.status === "published")
       .slice(0, 8);
 
-    // Filter to coupons that are within validity window
     const now = new Date();
     const validCoupons = activeCoupons.filter((c) => {
       const startOk =
@@ -51,7 +47,5 @@ export async function GET(_request: NextRequest): Promise<NextResponse> {
       featuredProducts,
       activeCoupons: validCoupons,
     });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

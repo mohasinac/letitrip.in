@@ -14,6 +14,7 @@ import {
   Span,
   TextLink,
 } from "@/components";
+import { BlogCard } from "./BlogCard";
 import { formatDate } from "@/utils";
 import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
 
@@ -182,35 +183,7 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
             </Heading>
             <div className="grid sm:grid-cols-3 gap-4">
               {related.map((rel) => (
-                <TextLink
-                  key={rel.id}
-                  href={`${ROUTES.PUBLIC.BLOG}/${rel.slug}`}
-                  className="block group"
-                >
-                  <Card className="hover:shadow-md transition-shadow duration-200 overflow-hidden">
-                    {rel.coverImage && (
-                      <div className="relative h-32 overflow-hidden">
-                        <MediaImage
-                          src={rel.coverImage}
-                          alt={rel.title}
-                          size="card"
-                          className="group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                    )}
-                    <div className="p-4">
-                      <Heading
-                        level={3}
-                        className="text-sm font-semibold group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2"
-                      >
-                        {rel.title}
-                      </Heading>
-                      <Text size="xs" variant="secondary" className="mt-1">
-                        {post.readTimeMinutes} {t("readTime")}
-                      </Text>
-                    </div>
-                  </Card>
-                </TextLink>
+                <BlogCard key={rel.id} post={rel} />
               ))}
             </div>
           </div>

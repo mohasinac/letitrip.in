@@ -7,7 +7,13 @@ export interface Category {
   name: string;
   slug: string;
   description?: string;
-  imageUrl?: string;
+  display?: {
+    coverImage?: string;
+    icon?: string;
+    color?: string;
+    showInMenu?: boolean;
+    showInFooter?: boolean;
+  };
   parentId: string | null;
   tier: number;
   order: number;

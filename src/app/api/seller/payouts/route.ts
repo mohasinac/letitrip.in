@@ -5,12 +5,10 @@
  * POST /api/seller/payouts — Request a new payout
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { ValidationError } from "@/lib/errors";
-import { successResponse, ApiErrors } from "@/lib/api-response";
+import { successResponse } from "@/lib/api-response";
+import { createApiHandler } from "@/lib/api/api-handler";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
   productRepository,
@@ -91,10 +89,10 @@ async function computeSellerEarnings(sellerId: string) {
 
 // ─── GET — List payouts + earnings summary ─────────────────────────────────
 
-export async function GET(request: NextRequest) {
-  try {
-    const session = await requireAuth();
-    const uid = session.uid;
+export const GET = createApiHandler({
+  auth: true,
+  handler: async ({ user }) => {
+    const uid = user!.uid;
 
     const [payouts, earnings] = await Promise.all([
       payoutRepository.findBySeller(uid),
@@ -126,25 +124,19 @@ export async function GET(request: NextRequest) {
         eligibleOrderCount: earnings.eligibleOrders.length,
       },
     });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});
 
 // ─── POST — Request a new payout ───────────────────────────────────────────
 
-export async function POST(request: NextRequest) {
-  try {
-    const session = await requireAuth();
-    const uid = session.uid;
+export const POST = createApiHandler<(typeof payoutRequestSchema)["_output"]>({
+  auth: true,
+  schema: payoutRequestSchema,
+  handler: async ({ user, body }) => {
+    const uid = user!.uid;
 
-    // 1. Validate body
-    const body = await request.json();
-    const validation = payoutRequestSchema.safeParse(body);
-    if (!validation.success) {
-      return ApiErrors.validationError(validation.error.issues);
-    }
-    const { paymentMethod, bankAccount, upiId, notes } = validation.data;
+    // 1. Destructure validated body
+    const { paymentMethod, bankAccount, upiId, notes } = body!;
 
     // 2. Check for existing pending/processing payout
     const existing = await payoutRepository.findBySeller(uid);
@@ -161,9 +153,9 @@ export async function POST(request: NextRequest) {
       throw new ValidationError(ERROR_MESSAGES.PAYOUT.NO_EARNINGS);
     }
 
-    // 4. Resolve seller identity from session
-    const sellerName = session.name ?? session.email ?? uid;
-    const sellerEmail = session.email ?? "";
+    // 4. Resolve seller identity from UserDocument
+    const sellerName = user!.displayName ?? user!.email ?? uid;
+    const sellerEmail = user!.email ?? "";
 
     // 5. Create payout
     const payout = await payoutRepository.create({
@@ -183,7 +175,5 @@ export async function POST(request: NextRequest) {
     });
 
     return successResponse(payout, SUCCESS_MESSAGES.PAYOUT.CREATED);
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

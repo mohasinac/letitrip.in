@@ -25,7 +25,7 @@ import {
 import { useToast } from "@/components";
 import { SESSION_TABLE_COLUMNS } from "./SessionTableColumns";
 import { useTranslations } from "next-intl";
-import { THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
+import { THEME_CONSTANTS, ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { formatRelativeTime, formatDate, nowMs, isFuture } from "@/utils";
 import { useState } from "react";
 
@@ -71,6 +71,7 @@ export function AdminSessionsManager() {
       onConfirm: async () => {
         try {
           await revokeSession.mutate({ sessionId });
+          showToast(SUCCESS_MESSAGES.ADMIN.SESSION_REVOKED, "success");
           refetch();
         } catch (error) {
           showToast(ERROR_MESSAGES.ADMIN.REVOKE_SESSION_FAILED, "error");
@@ -91,6 +92,7 @@ export function AdminSessionsManager() {
       onConfirm: async () => {
         try {
           await revokeUserSessions.mutate({ userId });
+          showToast(SUCCESS_MESSAGES.ADMIN.SESSIONS_REVOKED, "success");
           refetch();
         } catch (error) {
           showToast(ERROR_MESSAGES.ADMIN.REVOKE_USER_SESSIONS_FAILED, "error");

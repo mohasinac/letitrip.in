@@ -25,6 +25,7 @@ import {
   StatusBadge,
   TablePagination,
   ListingLayout,
+  REVIEW_SORT_OPTIONS,
   ReviewFilters,
   Search,
   SortDropdown,
@@ -33,13 +34,6 @@ import { useToast } from "@/components";
 import { Modal, ConfirmDeleteModal, Text, Textarea } from "@/components";
 import { getReviewTableColumns, ReviewRowActions, ReviewDetailView } from ".";
 import type { Review, ReviewStatus } from ".";
-
-const REVIEW_SORT_OPTIONS_KEYS = [
-  { value: "-createdAt", key: "sortNewest" },
-  { value: "createdAt", key: "sortOldest" },
-  { value: "-rating", key: "sortHighestRated" },
-  { value: "rating", key: "sortLowestRated" },
-] as const;
 
 interface AdminReviewsViewProps {
   action?: string[];
@@ -72,12 +66,18 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, ["status", "rating", "verified", "featured"]);
 
+  const verifiedFilter = table.get("verified");
+  const featuredFilter = table.get("featured");
+
   // Build Sieve filter string
   const filtersArr: string[] = [];
   if (statusFilter && statusFilter !== "all")
     filtersArr.push(`status==${statusFilter}`);
   if (ratingFilter) filtersArr.push(`rating==${ratingFilter}`);
   if (searchTerm) filtersArr.push(`(userName|userEmail)@=*${searchTerm}`);
+  if (verifiedFilter === "true") filtersArr.push("verified==true");
+  else if (verifiedFilter === "false") filtersArr.push("verified==false");
+  if (featuredFilter === "true") filtersArr.push("featured==true");
   const filtersParam = filtersArr.join(",");
 
   const {
@@ -217,11 +217,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
   const pendingCount = reviews.filter((r) => r.status === "pending").length;
 
   const sortOptions = useMemo(
-    () =>
-      REVIEW_SORT_OPTIONS_KEYS.map((o) => ({
-        value: o.value,
-        label: t(o.key),
-      })),
+    () => REVIEW_SORT_OPTIONS.map((o) => ({ value: o.value, label: t(o.key) })),
     [t],
   );
 
@@ -309,7 +305,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
           )}
           externalPagination
           showViewToggle
-          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(review) => (
             <Card

@@ -16,28 +16,10 @@ import {
   Li,
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { demoService } from "@/services";
+import { useDemoSeed } from "@/features/admin/hooks";
+import type { SeedCollectionName } from "@/features/admin/hooks";
 
-type CollectionName =
-  | "users"
-  | "addresses"
-  | "categories"
-  | "products"
-  | "orders"
-  | "reviews"
-  | "bids"
-  | "coupons"
-  | "carouselSlides"
-  | "homepageSections"
-  | "siteSettings"
-  | "faqs"
-  | "notifications"
-  | "payouts"
-  | "blogPosts"
-  | "events"
-  | "eventEntries"
-  | "sessions"
-  | "carts";
+type CollectionName = SeedCollectionName;
 
 interface CollectionGroup {
   label: string;
@@ -47,19 +29,6 @@ interface CollectionGroup {
   chipBg: string;
   chipSelected: string;
   collections: CollectionName[];
-}
-
-interface SeedResponse {
-  success: boolean;
-  message: string;
-  details?: {
-    created?: number;
-    updated?: number;
-    deleted?: number;
-    skipped?: number;
-    errors?: number;
-    collections?: string[];
-  };
 }
 
 const COLLECTION_GROUPS: CollectionGroup[] = [
@@ -158,41 +127,44 @@ const COLLECTION_LABELS: Record<CollectionName, string> = {
   siteSettings: "Site Settings",
 };
 
+/** Expected item counts from the current seed files — used as pre-load reference. */
+const SEED_ITEM_COUNTS: Record<CollectionName, number> = {
+  users: 19,
+  addresses: 23,
+  sessions: 19,
+  products: 50,
+  orders: 25,
+  bids: 72,
+  carts: 5,
+  coupons: 14,
+  payouts: 7,
+  reviews: 29,
+  blogPosts: 9,
+  events: 11,
+  eventEntries: 17,
+  faqs: 103,
+  notifications: 31,
+  categories: 20,
+  carouselSlides: 23,
+  homepageSections: 17,
+  siteSettings: 1,
+};
+
 export function DemoSeedView() {
-  const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState<SeedResponse | null>(null);
   const [selectedCollections, setSelectedCollections] = useState<
     CollectionName[]
   >([]);
   const [confirmPending, setConfirmPending] = useState<
     "deleteAll" | "deleteSelected" | null
   >(null);
-  const [lastAction, setLastAction] = useState<"load" | "delete" | null>(null);
 
-  const handleSeedData = async (
+  const { statusMap, statusLoading, run, isLoading, lastAction, actionResult } =
+    useDemoSeed();
+
+  const handleSeedData = (
     action: "load" | "delete",
     collections?: CollectionName[],
-  ) => {
-    setLoading(true);
-    setResponse(null);
-    setLastAction(action);
-
-    try {
-      const data = await demoService.seed({
-        action,
-        collections: collections ?? ALL_COLLECTIONS,
-      });
-      setResponse(data as SeedResponse);
-    } catch (error) {
-      setResponse({
-        success: false,
-        message:
-          error instanceof Error ? error.message : "Unknown error occurred",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  ) => run(action, collections ?? ALL_COLLECTIONS);
 
   const toggleCollection = (collection: CollectionName) => {
     setSelectedCollections((prev) =>
@@ -273,139 +245,34 @@ export function DemoSeedView() {
 
           {/* Summary chips */}
           <div className="flex flex-wrap gap-3 mt-6">
-            {COLLECTION_GROUPS.map((g) => (
-              <div
-                key={g.label}
-                className="flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full text-xs text-gray-300"
-              >
-                <Span>{g.emoji}</Span>
-                <Span>{g.label}</Span>
-                <Span className="font-bold text-white">
-                  {g.collections.length}
-                </Span>
-              </div>
-            ))}
+            {COLLECTION_GROUPS.map((g) => {
+              const groupItemTotal = g.collections.reduce(
+                (sum, col) => sum + SEED_ITEM_COUNTS[col],
+                0,
+              );
+              return (
+                <div
+                  key={g.label}
+                  className="flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full text-xs text-gray-300"
+                >
+                  <Span>{g.emoji}</Span>
+                  <Span>{g.label}</Span>
+                  <Span className="font-bold text-white">{groupItemTotal}</Span>
+                </div>
+              );
+            })}
             <div className="flex items-center gap-1.5 px-3 py-1 bg-white/20 rounded-full text-xs font-semibold text-white">
-              {totalCount} collections total
+              {ALL_COLLECTIONS.reduce(
+                (sum, col) => sum + SEED_ITEM_COUNTS[col],
+                0,
+              )}{" "}
+              docs · {totalCount} collections
             </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6 mt-8">
-        {/* ── Loading overlay banner ── */}
-        {loading && (
-          <div className="flex items-center gap-3 px-5 py-4 bg-blue-600 text-white rounded-xl shadow-lg">
-            <Spinner size="sm" variant="white" />
-            <Span className="font-medium">
-              {lastAction === "load" ? "Loading" : "Deleting"} seed data…
-            </Span>
-            <Span className="text-blue-200 text-sm ml-auto">
-              This may take a moment
-            </Span>
-          </div>
-        )}
-
-        {/* ── Result panel ── */}
-        {response && !loading && (
-          <Card
-            className={`p-6 border-2 ${response.success ? "border-emerald-300 dark:border-emerald-700" : "border-red-300 dark:border-red-700"}`}
-          >
-            <div className="flex items-start gap-3 mb-5">
-              <Span className="text-2xl">{response.success ? "✅" : "❌"}</Span>
-              <div>
-                <Heading
-                  level={3}
-                  className={`font-bold text-lg ${THEME_CONSTANTS.themed.textPrimary}`}
-                >
-                  {response.success ? "Operation complete" : "Operation failed"}
-                </Heading>
-                <Text size="sm" variant="secondary" className="mt-0.5">
-                  {response.message}
-                </Text>
-              </div>
-            </div>
-
-            {response.details && (
-              <>
-                {/* Stat grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-                  {response.details.created !== undefined && (
-                    <div className="rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 p-4 text-center">
-                      <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                        {response.details.created}
-                      </div>
-                      <div className="text-xs text-emerald-700 dark:text-emerald-300 mt-1 font-medium">
-                        Created
-                      </div>
-                    </div>
-                  )}
-                  {response.details.updated !== undefined &&
-                    response.details.updated > 0 && (
-                      <div className="rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4 text-center">
-                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                          {response.details.updated}
-                        </div>
-                        <div className="text-xs text-blue-700 dark:text-blue-300 mt-1 font-medium">
-                          Updated
-                        </div>
-                      </div>
-                    )}
-                  {response.details.deleted !== undefined && (
-                    <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 text-center">
-                      <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-                        {response.details.deleted}
-                      </div>
-                      <div className="text-xs text-red-700 dark:text-red-300 mt-1 font-medium">
-                        Deleted
-                      </div>
-                    </div>
-                  )}
-                  {response.details.skipped !== undefined &&
-                    response.details.skipped > 0 && (
-                      <div className="rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 text-center">
-                        <div className="text-2xl font-bold text-gray-500 dark:text-gray-400">
-                          {response.details.skipped}
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">
-                          Skipped
-                        </div>
-                      </div>
-                    )}
-                  {response.details.errors !== undefined &&
-                    response.details.errors > 0 && (
-                      <div className="rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 p-4 text-center">
-                        <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                          {response.details.errors}
-                        </div>
-                        <div className="text-xs text-orange-700 dark:text-orange-300 mt-1 font-medium">
-                          Errors
-                        </div>
-                      </div>
-                    )}
-                </div>
-
-                {/* Collections processed */}
-                {response.details.collections &&
-                  response.details.collections.length > 0 && (
-                    <div>
-                      <Caption className="font-semibold uppercase tracking-wider mb-2">
-                        Collections processed
-                      </Caption>
-                      <div className="flex flex-wrap gap-2">
-                        {response.details.collections.map((col) => (
-                          <Badge key={col} variant="info" className="text-xs">
-                            {col}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-              </>
-            )}
-          </Card>
-        )}
-
         {/* ── Collection Selector ── */}
         <Card className="p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
@@ -427,7 +294,7 @@ export function DemoSeedView() {
                 onClick={selectAll}
                 variant="outline"
                 size="sm"
-                disabled={loading}
+                disabled={isLoading}
               >
                 Select all
               </Button>
@@ -435,7 +302,7 @@ export function DemoSeedView() {
                 onClick={deselectAll}
                 variant="outline"
                 size="sm"
-                disabled={loading || selCount === 0}
+                disabled={isLoading || selCount === 0}
               >
                 Clear
               </Button>
@@ -460,8 +327,8 @@ export function DemoSeedView() {
                     type="button"
                     variant="ghost"
                     onClick={() => toggleGroup(group)}
-                    disabled={loading}
-                    className={`w-full ${flex.between} px-4 py-3 ${group.headerBg} transition-opacity ${loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-80"}`}
+                    disabled={isLoading}
+                    className={`w-full ${flex.between} px-4 py-3 ${group.headerBg} transition-opacity ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:opacity-80"}`}
                   >
                     <div className="flex items-center gap-2">
                       <Span>{group.emoji}</Span>
@@ -503,32 +370,62 @@ export function DemoSeedView() {
                   <div className="p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 bg-white dark:bg-gray-900">
                     {group.collections.map((col) => {
                       const isSelected = selectedCollections.includes(col);
+                      const colStatus = statusMap[col];
+                      const seedCount = colStatus?.seedCount ?? null;
+                      const existingCount = colStatus?.existingCount ?? null;
+                      const allExist =
+                        seedCount !== null &&
+                        existingCount !== null &&
+                        existingCount === seedCount &&
+                        seedCount > 0;
+                      const noneExist =
+                        existingCount !== null && existingCount === 0;
                       return (
                         <div
                           key={col}
-                          onClick={() => !loading && toggleCollection(col)}
+                          onClick={() => !isLoading && toggleCollection(col)}
                           onKeyDown={(e) =>
-                            e.key === " " && !loading && toggleCollection(col)
+                            e.key === " " && !isLoading && toggleCollection(col)
                           }
                           role="checkbox"
                           aria-checked={isSelected}
                           tabIndex={0}
                           className={`
-                            flex items-center gap-2 px-3 py-2.5 rounded-lg border-2 cursor-pointer
+                            flex flex-col gap-1 px-3 py-2.5 rounded-lg border-2 cursor-pointer
                             transition-all duration-150 select-none
                             ${isSelected ? group.chipSelected : group.chipBg + " text-gray-700 dark:text-gray-300"}
-                            ${loading ? "opacity-50 cursor-not-allowed" : ""}
+                            ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
                           `}
                         >
-                          <Checkbox
-                            checked={isSelected}
-                            onChange={() => toggleCollection(col)}
-                            disabled={loading}
-                            className="w-3.5 h-3.5 shrink-0"
-                          />
-                          <Span className="text-sm font-medium leading-tight">
-                            {COLLECTION_LABELS[col]}
-                          </Span>
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              checked={isSelected}
+                              onChange={() => toggleCollection(col)}
+                              disabled={isLoading}
+                              className="w-3.5 h-3.5 shrink-0"
+                            />
+                            <Span className="text-sm font-medium leading-tight">
+                              {COLLECTION_LABELS[col]}
+                            </Span>
+                          </div>
+                          {/* Count row */}
+                          {statusLoading ? (
+                            <Span className="text-[10px] text-gray-400 pl-5">
+                              checking…
+                            </Span>
+                          ) : seedCount !== null ? (
+                            <Span
+                              className={`text-[10px] pl-5 font-medium ${
+                                allExist
+                                  ? "text-emerald-600 dark:text-emerald-400"
+                                  : noneExist
+                                    ? "text-gray-400 dark:text-gray-500"
+                                    : "text-amber-600 dark:text-amber-400"
+                              }`}
+                            >
+                              {existingCount}/{seedCount} seeded
+                            </Span>
+                          ) : null}
                         </div>
                       );
                     })}
@@ -555,10 +452,10 @@ export function DemoSeedView() {
             <div className="space-y-3">
               <Button
                 onClick={() => handleSeedData("load")}
-                disabled={loading}
+                disabled={isLoading}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold"
               >
-                {loading && lastAction === "load" ? (
+                {isLoading && lastAction === "load" ? (
                   <Span className={`${flex.center} gap-2`}>
                     <Spinner size="sm" variant="white" /> Loading…
                   </Span>
@@ -568,7 +465,7 @@ export function DemoSeedView() {
               </Button>
               <Button
                 onClick={() => handleSeedData("load", selectedCollections)}
-                disabled={loading || selCount === 0}
+                disabled={isLoading || selCount === 0}
                 variant="outline"
                 className="w-full border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
               >
@@ -579,6 +476,11 @@ export function DemoSeedView() {
               Upserts documents using seed IDs. Existing docs are merged, not
               overwritten.
             </Caption>
+            <LoadDeleteStatus
+              isLoading={isLoading && lastAction === "load"}
+              result={lastAction === "load" ? actionResult : null}
+              action="load"
+            />
           </Card>
 
           {/* Delete card */}
@@ -595,14 +497,14 @@ export function DemoSeedView() {
             <div className="space-y-3">
               <Button
                 onClick={() => setConfirmPending("deleteAll")}
-                disabled={loading}
+                disabled={isLoading}
                 className="w-full bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold"
               >
                 Delete All Collections
               </Button>
               <Button
                 onClick={() => setConfirmPending("deleteSelected")}
-                disabled={loading || selCount === 0}
+                disabled={isLoading || selCount === 0}
                 variant="outline"
                 className="w-full border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
               >
@@ -613,6 +515,11 @@ export function DemoSeedView() {
               Removes only documents matching seed IDs. Safe — won&apos;t touch
               non-seed data.
             </Caption>
+            <LoadDeleteStatus
+              isLoading={isLoading && lastAction === "delete"}
+              result={lastAction === "delete" ? actionResult : null}
+              action="delete"
+            />
           </Card>
         </div>
 
@@ -633,6 +540,25 @@ export function DemoSeedView() {
             <Li>
               Addresses are written as subcollections under their parent user
               document
+            </Li>
+            <Li>
+              FAQs use generated IDs (
+              <Span className="font-mono text-xs">
+                faq-{"{category}"}-{"{question-slug}"}
+              </Span>
+              ) — not stored directly in the seed file
+            </Li>
+            <Li>
+              Site Settings is a singleton stored at{" "}
+              <Span className="font-mono text-xs">siteSettings/global</Span>
+            </Li>
+            <Li>
+              Demo users are created with password{" "}
+              <Span className="font-mono text-xs">TempPass123!</Span>
+            </Li>
+            <Li>
+              19 users · 50 products (20 auctions) · 72 bids · 103 FAQs · 20
+              categories · 479 docs total
             </Li>
           </Ul>
         </div>
@@ -660,8 +586,96 @@ export function DemoSeedView() {
             : `Remove seed documents from: ${selectedCollections.map((c) => COLLECTION_LABELS[c]).join(", ")}.`
         }
         confirmText="Delete"
-        isDeleting={loading}
+        isDeleting={isLoading}
       />
+    </div>
+  );
+}
+
+// ── Inline status panel rendered below action buttons ───────────────────────
+interface LoadDeleteStatusProps {
+  isLoading: boolean;
+  result: {
+    success: boolean;
+    message: string;
+    details?: Record<string, any>;
+  } | null;
+  action: "load" | "delete";
+}
+
+function LoadDeleteStatus({
+  isLoading,
+  result,
+  action,
+}: LoadDeleteStatusProps) {
+  if (!isLoading && !result) return null;
+
+  if (isLoading) {
+    return (
+      <div className="mt-4 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+        <Spinner size="sm" />
+        <Span>{action === "load" ? "Loading" : "Deleting"} seed data…</Span>
+      </div>
+    );
+  }
+
+  if (!result) return null;
+
+  const { success, message, details } = result;
+
+  return (
+    <div
+      className={`mt-4 rounded-lg px-4 py-3 text-sm border ${
+        success
+          ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200"
+          : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200"
+      }`}
+    >
+      <div className="flex items-start gap-2">
+        <Span className="shrink-0">{success ? "✅" : "❌"}</Span>
+        <div className="min-w-0">
+          <Span className="font-medium block">{message}</Span>
+          {details && (
+            <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1.5">
+              {details.created != null && details.created > 0 && (
+                <Span className="text-xs">
+                  <Span className="font-bold">{details.created}</Span> created
+                </Span>
+              )}
+              {details.updated != null && details.updated > 0 && (
+                <Span className="text-xs">
+                  <Span className="font-bold">{details.updated}</Span> updated
+                </Span>
+              )}
+              {details.deleted != null && details.deleted > 0 && (
+                <Span className="text-xs">
+                  <Span className="font-bold">{details.deleted}</Span> deleted
+                </Span>
+              )}
+              {details.skipped != null && details.skipped > 0 && (
+                <Span className="text-xs">
+                  <Span className="font-bold">{details.skipped}</Span> skipped
+                </Span>
+              )}
+              {details.errors != null && details.errors > 0 && (
+                <Span className="text-xs text-orange-600 dark:text-orange-400">
+                  <Span className="font-bold">{details.errors}</Span> errors
+                </Span>
+              )}
+              {Array.isArray(details.collections) &&
+                details.collections.length > 0 && (
+                  <div className="w-full flex flex-wrap gap-1 mt-1">
+                    {(details.collections as string[]).map((col: string) => (
+                      <Badge key={col} variant="info" className="text-[10px]">
+                        {col}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

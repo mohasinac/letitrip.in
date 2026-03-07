@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signing in…</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #0f172a;
+      color: #94a3b8;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      gap: 20px;
+    }
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid #1e293b;
+      border-top-color: #e91e8c;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="spinner"></div>
+  <span>Redirecting to sign-in provider…</span>
+
+  <script>
+    (function () {
+      var origin = window.location.origin;
+      var KEY = "letitrip_oauth_redirect";
+
+      function navigate(url) {
+        // Only allow same-origin /api/auth/ paths to prevent open redirect
+        if (typeof url === "string" && url.startsWith(origin + "/api/auth/")) {
+          localStorage.removeItem(KEY);
+          window.location.replace(url);
+        }
+      }
+
+      // The main window sets KEY in localStorage after initAuthEvent() resolves.
+      // The storage event fires here (a different same-origin window) automatically.
+      window.addEventListener("storage", function (event) {
+        if (event.key === KEY && event.newValue) {
+          navigate(event.newValue);
+        }
+      });
+
+      // Handle the case where initAuthEvent() resolved BEFORE this page loaded
+      // (i.e. the key was already set in localStorage before we got here).
+      var existing = localStorage.getItem(KEY);
+      if (existing) {
+        navigate(existing);
+      }
+    })();
+  </script>
+</body>
+</html>

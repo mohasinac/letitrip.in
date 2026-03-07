@@ -100,7 +100,7 @@ export interface ListingLayoutProps {
   children: ReactNode;
 
   // ── Options ──────────────────────────────────────────────────────────────
-  /** Show the sidebar panel on desktop by default. Default: true */
+  /** Show the sidebar panel on desktop by default. Default: false */
   defaultSidebarOpen?: boolean;
   /** Additional className for the outer wrapper */
   className?: string;
@@ -128,7 +128,7 @@ export function ListingLayout({
   bulkActions,
   paginationSlot,
   children,
-  defaultSidebarOpen = true,
+  defaultSidebarOpen = false,
   className = "",
   loading = false,
   errorSlot,
@@ -216,9 +216,7 @@ export function ListingLayout({
               variant="outline"
               size="sm"
               onClick={() => setSidebarOpen((prev) => !prev)}
-              aria-label={
-                sidebarOpen ? t("hideFilters") : t("showFilters")
-              }
+              aria-label={sidebarOpen ? t("hideFilters") : t("showFilters")}
               aria-expanded={sidebarOpen}
               className="hidden lg:flex items-center gap-1.5"
             >
@@ -359,9 +357,7 @@ export function ListingLayout({
             <>
               {children}
               {/* Pagination */}
-              {paginationSlot && (
-                <div className="pt-2">{paginationSlot}</div>
-              )}
+              {paginationSlot && <div className="pt-2">{paginationSlot}</div>}
             </>
           )}
         </div>

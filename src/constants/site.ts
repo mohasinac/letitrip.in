@@ -88,3 +88,12 @@ export const SITE_CONFIG = {
     keywords: "e-commerce, marketplace, auctions, products, sellers",
   },
 } as const;
+
+/**
+ * Feature flags
+ * Set to false to disable a feature site-wide (API + UI).
+ */
+export const FEATURE_FLAGS = {
+  /** Chat / messaging between buyers and sellers */
+  CHAT_ENABLED: false,
+} as const;

@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { Suspense } from "react";
 import { FAQ_CATEGORIES, ROUTES, THEME_CONSTANTS } from "@/constants";
@@ -10,6 +12,21 @@ interface Props {
 
 export function generateStaticParams() {
   return Object.keys(FAQ_CATEGORIES).map((category) => ({ category }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { category } = await params;
+  const t = await getTranslations("faq");
+
+  if (!(category in FAQ_CATEGORIES)) {
+    return { title: t("metaTitle"), description: t("metaDescription") };
+  }
+
+  const key = category as FAQCategoryKey;
+  return {
+    title: t("categoryMetaTitle", { category: t(`category.${key}`) }),
+    description: t(`categoryDescription.${key}`),
+  };
 }
 
 export default async function FAQCategoryPage({ params }: Props) {

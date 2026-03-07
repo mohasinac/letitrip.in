@@ -306,7 +306,7 @@ class ProductRepository extends BaseRepository<ProductDocument> {
    */
   async list(
     model: SieveModel,
-    opts?: { sellerId?: string; status?: string },
+    opts?: { sellerId?: string; status?: string; categoriesIn?: string[] },
   ): Promise<FirebaseSieveResult<ProductDocument>> {
     let baseQuery = this.getCollection();
     if (opts?.status) {
@@ -321,6 +321,13 @@ class ProductRepository extends BaseRepository<ProductDocument> {
         PRODUCT_FIELDS.SELLER_ID,
         "==",
         opts.sellerId,
+      ) as any;
+    }
+    if (opts?.categoriesIn && opts.categoriesIn.length > 0) {
+      baseQuery = baseQuery.where(
+        PRODUCT_FIELDS.CATEGORY,
+        "in",
+        opts.categoriesIn,
       ) as any;
     }
     return this.sieveQuery<ProductDocument>(

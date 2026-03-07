@@ -58,7 +58,7 @@ The only exception is the Realtime Database, which the client may **subscribe to
 ### Session lifetime
 
 - **Max age**: 5 days (`maxAge: 60 * 60 * 24 * 5`)
-- **Activity refresh**: `PATCH /api/auth/session/activity` extends the cookie on each navigation (handled by middleware)
+- **Activity refresh**: `PATCH /api/auth/session/activity` extends the cookie on each navigation (handled by proxy)
 - **Revocation**: stored in Firestore `sessions` collection; `POST /api/auth/logout` marks it inactive and clears the cookies
 
 ### Session validation
@@ -367,7 +367,7 @@ See [RBAC.md](./RBAC.md) for full details. Summary:
 | `moderator` | Moderation tools                  |
 | `admin`     | All routes including `/admin/**`  |
 
-**Middleware** (`src/middleware.ts`) checks the session cookie on every request and redirects unauthenticated users.
+**Proxy** (`src/proxy.ts`) checks the session cookie on every request and redirects unauthenticated users.
 
 **Component guard**:
 

@@ -1,9 +1,11 @@
 ﻿"use client";
 
-import { SITE_CONFIG } from "@/constants";
-import { useAuth } from "@/hooks";
+import { SITE_CONFIG, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { useAuth, useCartCount } from "@/hooks";
 import { NotificationBell } from "@/features/user";
 import { TitleBarLayout } from "./TitleBarLayout";
+import { TextLink, Span } from "@/components";
+import { Sprout } from "lucide-react";
 
 /**
  * TitleBar Component
@@ -32,6 +34,9 @@ interface TitleBarProps {
 
 export default function TitleBar(props: TitleBarProps) {
   const { user } = useAuth();
+  const cartCount = useCartCount();
+
+  const isDev = process.env.NODE_ENV === "development";
 
   return (
     <TitleBarLayout
@@ -42,7 +47,22 @@ export default function TitleBar(props: TitleBarProps) {
       cartHref={SITE_CONFIG.account.cart}
       profileHref={SITE_CONFIG.account.profile}
       user={user}
+      cartCount={cartCount}
       notificationSlot={user ? <NotificationBell /> : undefined}
+      devSlot={
+        isDev ? (
+          <TextLink
+            href={ROUTES.DEMO.SEED}
+            className={`p-2 rounded-xl transition-colors flex items-center gap-1.5 border border-dashed border-yellow-400/60 hover:bg-yellow-400/10 ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
+            aria-label="Seed data (dev only)"
+          >
+            <Sprout className="w-4 h-4 text-yellow-400" />
+            <Span className="text-xs font-semibold text-yellow-400 hidden lg:inline">
+              Seed
+            </Span>
+          </TextLink>
+        ) : undefined
+      }
     />
   );
 }

@@ -10,11 +10,9 @@
  *  3. Aggregate totals, monthly breakdown (last 6 months), and top products
  */
 
-import { NextRequest } from "next/server";
-import { requireAuth } from "@/lib/firebase/auth-server";
 import { orderRepository, productRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse } from "@/lib/api-response";
+import { createApiHandler } from "@/lib/api/api-handler";
 import { serverLogger } from "@/lib/server-logger";
 import { formatMonthYear } from "@/utils";
 import type { OrderDocument } from "@/db/schema";
@@ -24,10 +22,10 @@ function normalizeDate(raw: Date | string | number): Date {
   return new Date(raw as string | number);
 }
 
-export async function GET(_request: NextRequest) {
-  try {
-    const user = await requireAuth();
-    const sellerId = user.uid;
+export const GET = createApiHandler({
+  auth: true,
+  handler: async ({ user }) => {
+    const sellerId = user!.uid;
 
     // 1. Fetch seller's products
     const products = await productRepository.findBySeller(sellerId);
@@ -132,7 +130,5 @@ export async function GET(_request: NextRequest) {
       revenueByMonth,
       topProducts,
     });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

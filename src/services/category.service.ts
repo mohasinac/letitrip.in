@@ -14,11 +14,9 @@ export const categoryService = {
       `${API_ENDPOINTS.CATEGORIES.LIST}${params ? `?${params}` : ""}`,
     ),
 
-  /** List top-level categories for homepage display */
+  /** List top-level (tier 0) categories for homepage display */
   listTopLevel: (limit = 12) =>
-    apiClient.get(
-      `${API_ENDPOINTS.CATEGORIES.LIST}?filters=tier==1&sorts=order&pageSize=${limit}`,
-    ),
+    apiClient.get(`${API_ENDPOINTS.CATEGORIES.LIST}?tier=0&pageSize=${limit}`),
 
   /** Get a single category by ID */
   getById: (id: string) =>
@@ -34,7 +32,9 @@ export const categoryService = {
 
   /** Get a single category by slug (public) */
   getBySlug: (slug: string) =>
-    apiClient.get(`${API_ENDPOINTS.CATEGORIES.LIST}?slug=${encodeURIComponent(slug)}`),
+    apiClient.get(
+      `${API_ENDPOINTS.CATEGORIES.LIST}?slug=${encodeURIComponent(slug)}`,
+    ),
 
   /** Get direct children of a category */
   getChildren: (parentId: string) =>

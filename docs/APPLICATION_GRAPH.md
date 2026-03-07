@@ -528,7 +528,7 @@ src/
 
 ### User Pages
 
-All user pages require authentication (`🔒`). Protected by middleware RBAC.
+All user pages require authentication (`🔒`). Protected by proxy RBAC.
 
 ---
 
@@ -735,7 +735,7 @@ All user pages require authentication (`🔒`). Protected by middleware RBAC.
 
 ### Seller Pages
 
-All seller pages require authentication + seller/admin role (`🏪🔒`). Protected by middleware RBAC.
+All seller pages require authentication + seller/admin role (`🏪🔒`). Protected by proxy RBAC.
 
 ---
 
@@ -850,7 +850,7 @@ All seller pages require authentication + seller/admin role (`🏪🔒`). Protec
 
 ### Admin Pages
 
-All admin pages require authentication + admin role (`👑🔒`). Protected by middleware RBAC.
+All admin pages require authentication + admin role (`👑🔒`). Protected by proxy RBAC.
 
 ---
 

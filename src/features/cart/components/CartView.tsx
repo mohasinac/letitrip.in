@@ -3,11 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import type { CartDocument } from "@/db/schema";
-import { Main, Heading } from "@/components";
+import { Main, Heading, Text, Button } from "@/components";
 import { CartItemList } from "./CartItemList";
 import { CartSummary } from "./CartSummary";
 import { PromoCodeInput } from "./PromoCodeInput";
-import { useApiQuery, useApiMutation, useMessage } from "@/hooks";
+import { GuestCartItemRow } from "./GuestCartItemRow";
+import {
+  useApiQuery,
+  useApiMutation,
+  useMessage,
+  useAuth,
+  useGuestCart,
+  invalidateQueries,
+} from "@/hooks";
 import { cartService } from "@/services";
 import { useTranslations } from "next-intl";
 import {
@@ -16,6 +24,7 @@ import {
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
 } from "@/constants";
+import { formatCurrency, setGuestReturnTo } from "@/utils";
 
 const { themed, spacing, typography, page } = THEME_CONSTANTS;
 
@@ -57,9 +66,18 @@ export function CartView() {
   const [discount, setDiscount] = useState(0);
   const [couponCode, setCouponCode] = useState<string | null>(null);
 
-  const { data, isLoading, refetch } = useApiQuery<CartApiResponse>({
+  const { user, loading: authLoading } = useAuth();
+  const {
+    items: guestItems,
+    count: guestCount,
+    remove: removeGuestItem,
+    updateQuantity: updateGuestQuantity,
+  } = useGuestCart();
+
+  const { data, isLoading } = useApiQuery<CartApiResponse>({
     queryKey: ["cart"],
     queryFn: () => cartService.get(),
+    enabled: !!user,
   });
 
   const { mutate: updateItem } = useApiMutation<
@@ -69,7 +87,7 @@ export function CartView() {
     mutationFn: ({ itemId, quantity }) =>
       cartService.updateItem(itemId, { quantity }),
     onSuccess: () => {
-      refetch();
+      invalidateQueries(["cart"]);
       setUpdatingItemId(null);
     },
     onError: () => {
@@ -82,7 +100,7 @@ export function CartView() {
     mutationFn: ({ itemId }) => cartService.removeItem(itemId),
     onSuccess: () => {
       showSuccess(SUCCESS_MESSAGES.CART.ITEM_REMOVED);
-      refetch();
+      invalidateQueries(["cart"]);
       setUpdatingItemId(null);
     },
     onError: () => {
@@ -106,7 +124,112 @@ export function CartView() {
     router.push(ROUTES.USER.CHECKOUT);
   };
 
-  if (isLoading) return <CartPageSkeleton />;
+  if (authLoading || (!!user && isLoading)) return <CartPageSkeleton />;
+
+  // Guest user — show items if they added any, otherwise sign-in gate
+  if (!user) {
+    if (guestCount === 0) {
+      return (
+        <Main className={`${page.container.xl} py-8`}>
+          <Heading level={1} className="mb-8">
+            {t("title")}
+          </Heading>
+          <div className="flex flex-col items-center justify-center py-16 text-center gap-4">
+            <Text className={themed.textSecondary}>{t("guestSubtitle")}</Text>
+            <div className="flex flex-wrap justify-center gap-3 mt-2">
+              <Button
+                onClick={() =>
+                  router.push(
+                    `${ROUTES.AUTH.LOGIN}?callbackUrl=${ROUTES.USER.CART}`,
+                  )
+                }
+              >
+                {t("guestSignIn")}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() =>
+                  router.push(
+                    `${ROUTES.AUTH.REGISTER}?callbackUrl=${ROUTES.USER.CART}`,
+                  )
+                }
+              >
+                {t("guestCreateAccount")}
+              </Button>
+            </div>
+          </div>
+        </Main>
+      );
+    }
+
+    const guestSubtotal = guestItems.reduce(
+      (sum, i) => sum + (i.price ?? 0) * i.quantity,
+      0,
+    );
+    const hasPrices = guestItems.some((i) => i.price != null);
+
+    return (
+      <Main className={`${page.container.xl} py-8`}>
+        <Heading level={1} className="mb-8">
+          {t("title")}
+        </Heading>
+        <div className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start">
+          {/* Items column */}
+          <div className="lg:col-span-2 space-y-3">
+            {guestItems.map((item) => (
+              <GuestCartItemRow
+                key={item.productId}
+                item={item}
+                onUpdateQuantity={updateGuestQuantity}
+                onRemove={removeGuestItem}
+              />
+            ))}
+          </div>
+
+          {/* Sign-in CTA panel */}
+          <div className={`mt-8 lg:mt-0 ${spacing.stack} lg:sticky lg:top-24`}>
+            <div
+              className={`p-6 rounded-xl border ${themed.bgPrimary} ${themed.border} flex flex-col gap-4`}
+            >
+              {hasPrices && (
+                <div className="flex justify-between">
+                  <Text size="sm">{t("subtotal")}</Text>
+                  <Text size="sm" weight="bold">
+                    {formatCurrency(guestSubtotal)}
+                  </Text>
+                </div>
+              )}
+              <Text size="sm" className={themed.textSecondary}>
+                {t("guestSubtitle")}
+              </Text>
+              <Button
+                onClick={() => {
+                  setGuestReturnTo(ROUTES.USER.CHECKOUT);
+                  router.push(
+                    `${ROUTES.AUTH.LOGIN}?callbackUrl=${ROUTES.USER.CART}`,
+                  );
+                }}
+                className="w-full"
+              >
+                {t("guestProceedToCheckout")}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() =>
+                  router.push(
+                    `${ROUTES.AUTH.REGISTER}?callbackUrl=${ROUTES.USER.CART}`,
+                  )
+                }
+                className="w-full"
+              >
+                {t("guestCreateAccount")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Main>
+    );
+  }
 
   const items = data?.cart?.items ?? [];
   const subtotal = data?.subtotal ?? 0;

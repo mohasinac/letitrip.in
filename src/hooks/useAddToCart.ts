@@ -1,11 +1,19 @@
 "use client";
 
+import { useCallback, useEffect, useRef } from "react";
 import { useApiMutation } from "./useApiMutation";
+import { invalidateQueries } from "./useApiQuery";
+import { useAuth } from "@/contexts";
 import { cartService } from "@/services";
+import { addToGuestCart } from "@/utils";
+import type { ApiClientError } from "@/lib/api-client";
 
 interface AddToCartPayload {
   productId: string;
   quantity: number;
+  productTitle?: string;
+  productImage?: string;
+  price?: number;
   [key: string]: unknown;
 }
 
@@ -18,14 +26,55 @@ interface UseAddToCartOptions {
  * useAddToCart
  * Mutation hook for adding a product to the shopping cart.
  *
+ * - Authenticated users: POSTs to /api/cart (server Firestore cart).
+ * - Guest users: writes to localStorage guest cart; items are merged into
+ *   the server cart automatically when the user signs in.
+ *
  * @example
  * const { mutate, isLoading } = useAddToCart({ onSuccess: () => showToast("Added!") });
  * mutate({ productId: 'prod-123', quantity: 1 });
  */
 export function useAddToCart(options?: UseAddToCartOptions) {
-  return useApiMutation<unknown, AddToCartPayload>({
+  const { user } = useAuth();
+
+  // Keep options in a ref so the mutate callback stays stable (no re-creation on re-render)
+  const optionsRef = useRef(options);
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
+
+  const serverMutation = useApiMutation<unknown, AddToCartPayload>({
     mutationFn: (data) => cartService.addItem(data),
-    onSuccess: options?.onSuccess,
-    onError: options?.onError,
+    onSuccess: () => {
+      invalidateQueries(["cart"]);
+      optionsRef.current?.onSuccess?.();
+    },
+    onError: (err: ApiClientError) => optionsRef.current?.onError?.(err),
   });
+
+  const mutate = useCallback(
+    async (data: AddToCartPayload): Promise<unknown> => {
+      if (user) {
+        // Authenticated: persist in server cart
+        return serverMutation.mutate(data);
+      }
+      // Guest: persist in localStorage; merged on next login
+      addToGuestCart(data.productId, data.quantity, {
+        productTitle: data.productTitle,
+        productImage: data.productImage,
+        price: data.price,
+      });
+      optionsRef.current?.onSuccess?.();
+      return undefined;
+    },
+    [user, serverMutation],
+  );
+
+  return {
+    mutate,
+    isLoading: serverMutation.isLoading,
+    error: serverMutation.error,
+    data: serverMutation.data,
+    reset: serverMutation.reset,
+  };
 }

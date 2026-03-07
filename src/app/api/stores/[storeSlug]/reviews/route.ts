@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { handleApiError } from "@/lib/errors/error-handler";
+import { successResponse } from "@/lib/api-response";
 import { ValidationError, NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import {
@@ -92,14 +93,11 @@ export async function GET(
       returned: reviewsWithProduct.length,
     });
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        reviews: reviewsWithProduct,
-        averageRating: Math.round(averageRating * 10) / 10,
-        totalReviews,
-        ratingDistribution,
-      },
+    return successResponse({
+      reviews: reviewsWithProduct,
+      averageRating: Math.round(averageRating * 10) / 10,
+      totalReviews,
+      ratingDistribution,
     });
   } catch (error) {
     return handleApiError(error);

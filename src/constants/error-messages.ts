@@ -36,7 +36,6 @@ export const ERROR_MESSAGES = {
     OAUTH_STATE_INVALID: "OAuth state parameter is invalid or missing.",
     OAUTH_CODE_EXCHANGE_FAILED: "Failed to exchange OAuth authorisation code.",
     OAUTH_USER_INFO_FAILED: "Failed to retrieve user info from OAuth provider.",
-    APPLE_TOKEN_INVALID: "Apple ID token could not be verified.",
     GOOGLE_TOKEN_INVALID: "Google ID token could not be verified.",
     PAYMENT_EVENT_MISSING: "Payment event not found or already used.",
     SIGNIN_INIT_FAILED: "Failed to initialise sign-in. Please try again.",
@@ -344,6 +343,7 @@ export const ERROR_MESSAGES = {
     PAYMENT_TRACKING_TIMED_OUT:
       "Payment confirmation timed out. Please check your order status.",
     PAYMENT_NOT_COMPLETED: "Payment was not completed. Please try again.",
+    OTP_DAILY_LIMIT: "OTP limit reached for today. Please try again tomorrow.",
   },
   COUPON: {
     NOT_FOUND: "Coupon not found",
@@ -475,10 +475,16 @@ export const ERROR_MESSAGES = {
     VERIFY_FAILED: "Failed to verify coin purchase payment",
     INSUFFICIENT_COINS: "Insufficient RipCoins — please top up your wallet",
     INVALID_PACK_COUNT:
-      "Invalid pack count — please select between 10 and 500 packs",
+      "Invalid pack count — please select between 10 and 1000 packs",
+    INVALID_PACKAGE: "Invalid RipCoin package selected",
     PAYMENT_ALREADY_USED: "This payment has already been applied",
     TRANSACTION_FAILED: "RipCoin transaction failed",
     HISTORY_FAILED: "Failed to fetch RipCoin transaction history",
+    REFUND_FAILED: "Failed to refund RipCoins",
+    REFUND_NOT_ELIGIBLE: "This transaction is not eligible for a refund",
+    REFUND_INSUFFICIENT_BALANCE:
+      "Not enough available RipCoins to process this refund",
+    ALREADY_REFUNDED: "This purchase has already been refunded",
   },
 
   // Chat errors
@@ -486,9 +492,11 @@ export const ERROR_MESSAGES = {
     FETCH_FAILED: "Failed to load chat",
     SEND_FAILED: "Failed to send message",
     ROOM_FAILED: "Failed to open chat room",
+    DELETE_FAILED: "Failed to delete chat",
     NOT_AUTHORIZED: "You are not a participant in this chat",
     MESSAGE_TOO_LONG: "Message exceeds the 1000 character limit",
     TOKEN_FAILED: "Failed to obtain realtime token",
+    ADMIN_ONLY_GROUP: "Only admins can create group chats",
   },
 
   // Shipping errors

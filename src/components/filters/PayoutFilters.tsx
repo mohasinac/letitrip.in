@@ -34,9 +34,11 @@ export function PayoutFilters({ table }: PayoutFiltersProps) {
     { value: "upi", label: t("payoutMethodUpi") },
   ];
 
-  const selectedStatus = table.get("status") ? [table.get("status")] : [];
+  const selectedStatus = table.get("status")
+    ? table.get("status").split("|").filter(Boolean)
+    : [];
   const selectedPaymentMethod = table.get("paymentMethod")
-    ? [table.get("paymentMethod")]
+    ? table.get("paymentMethod").split("|").filter(Boolean)
     : [];
 
   return (
@@ -45,20 +47,18 @@ export function PayoutFilters({ table }: PayoutFiltersProps) {
         title={t("status")}
         options={statusOptions}
         selected={selectedStatus}
-        onChange={(vals) => table.set("status", vals[0] ?? "")}
+        onChange={(vals) => table.set("status", vals.join("|"))}
         searchable={false}
         defaultCollapsed={false}
-        selectionMode="single"
       />
 
       <FilterFacetSection
         title={t("payoutPaymentMethod")}
         options={paymentMethodOptions}
         selected={selectedPaymentMethod}
-        onChange={(vals) => table.set("paymentMethod", vals[0] ?? "")}
+        onChange={(vals) => table.set("paymentMethod", vals.join("|"))}
         searchable={false}
         defaultCollapsed={true}
-        selectionMode="single"
       />
 
       <RangeFilter
@@ -69,6 +69,10 @@ export function PayoutFilters({ table }: PayoutFiltersProps) {
         onMinChange={(v) => table.set("minAmount", v)}
         onMaxChange={(v) => table.set("maxAmount", v)}
         prefix="₹"
+        showSlider
+        minBound={0}
+        maxBound={500000}
+        step={500}
         minPlaceholder={t("minAmount")}
         maxPlaceholder={t("maxAmount")}
         defaultCollapsed={true}

@@ -102,7 +102,7 @@ const nextConfig = {
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
               "connect-src 'self' https://*.googleapis.com https://*.google.com https://*.firebase.com https://*.firebaseio.com https://*.cloudfunctions.net",
-              "frame-src 'self' https://accounts.google.com https://appleid.apple.com",
+              "frame-src 'self' https://accounts.google.com",
             ].join("; "),
           },
         ],

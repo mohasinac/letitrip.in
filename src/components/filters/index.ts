@@ -1,3 +1,4 @@
+export * from "./filterUtils";
 export * from "./ProductFilters";
 export * from "./RangeFilter";
 export * from "./UserFilters";
@@ -17,3 +18,5 @@ export * from "./NewsletterFilters";
 export * from "./NotificationFilters";
 export * from "./PayoutFilters";
 export * from "./RipCoinFilters";
+export * from "./StoreFilters";
+export * from "./SwitchFilter";

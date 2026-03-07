@@ -21,13 +21,16 @@ interface BlogListMeta {
  * Fetches blog posts filtered by `statusFilter` and exposes
  * create, update, and delete mutations.
  */
-export function useAdminBlog(statusFilter: string) {
-  const filtersParam = statusFilter
-    ? `?filters=${encodeURIComponent(`status==${statusFilter}`)}&pageSize=200`
+export function useAdminBlog(sieveParams: string) {
+  // sieveParams may be a raw Sieve filter string OR a full query string (from buildSieveParams)
+  const filtersParam = sieveParams
+    ? sieveParams.startsWith("?")
+      ? sieveParams
+      : `?${sieveParams}`
     : "?pageSize=200";
 
   const query = useApiQuery<{ posts: BlogPostDocument[]; meta: BlogListMeta }>({
-    queryKey: ["admin", "blog", statusFilter],
+    queryKey: ["admin", "blog", sieveParams],
     queryFn: () => adminService.listBlog(filtersParam),
   });
 

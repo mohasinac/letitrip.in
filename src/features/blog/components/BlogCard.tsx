@@ -38,7 +38,7 @@ export function BlogCard({
   return (
     <TextLink
       href={`${ROUTES.PUBLIC.BLOG}/${post.slug}`}
-      className="block group focus:outline-none"
+      className="block group/card focus:outline-none"
     >
       <Card
         className={`h-full overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200${
@@ -46,13 +46,13 @@ export function BlogCard({
         }`}
       >
         {/* ── Image area ── */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+        <div className="group/img relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
           {post.coverImage ? (
             <MediaImage
               src={post.coverImage}
               alt={post.title}
               size="card"
-              className="group-hover:scale-105 transition-transform duration-300"
+              className="group-hover/img:scale-105 transition-transform duration-300"
             />
           ) : (
             <div className={`${flex.center} w-full h-full`}>
@@ -103,7 +103,7 @@ export function BlogCard({
         <div className="flex flex-col flex-1 p-4 gap-2">
           <Heading
             level={3}
-            className={`text-base sm:text-[17px] font-semibold leading-snug ${themed.textPrimary} line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors`}
+            className={`text-base sm:text-[17px] font-semibold leading-snug ${themed.textPrimary} line-clamp-2 group-hover/img:text-indigo-600 dark:group-hover/img:text-indigo-400 transition-colors`}
           >
             {post.title}
           </Heading>
@@ -132,7 +132,7 @@ export function BlogCard({
           {/* Continue Reading — visual-only; the outer <a> provides navigation */}
           <div
             aria-hidden="true"
-            className="mt-1 w-full text-center text-xs font-semibold text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-700 rounded-lg py-2 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/20 transition-colors"
+            className="mt-1 w-full text-center text-xs font-semibold text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-700 rounded-lg py-2 group-hover/img:bg-indigo-50 dark:group-hover/img:bg-indigo-900/20 transition-colors"
           >
             {t("continueReading")}
           </div>

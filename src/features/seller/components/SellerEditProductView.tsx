@@ -47,9 +47,10 @@ export function SellerEditProductView({ id }: SellerEditProductViewProps) {
 
   useEffect(() => {
     if (!authLoading && !user) {
+      showError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
       router.push(ROUTES.AUTH.LOGIN);
     }
-  }, [user, authLoading, router]);
+  }, [user, authLoading, router, showError]);
 
   const { data: productData, isLoading: productLoading } =
     useApiQuery<AdminProduct>({
@@ -104,7 +105,9 @@ export function SellerEditProductView({ id }: SellerEditProductViewProps) {
         returnPolicy: formData.returnPolicy || undefined,
         condition: formData.condition || "new",
         insurance: formData.insurance ?? false,
-        insuranceCost: formData.insurance ? (formData.insuranceCost ?? 0) : undefined,
+        insuranceCost: formData.insurance
+          ? (formData.insuranceCost ?? 0)
+          : undefined,
         shippingPaidBy: formData.shippingPaidBy || "buyer",
         isAuction: formData.isAuction ?? false,
         auctionEndDate: formData.auctionEndDate || undefined,
@@ -117,7 +120,7 @@ export function SellerEditProductView({ id }: SellerEditProductViewProps) {
           ? (formData.auctionExtensionMinutes ?? 5)
           : undefined,
         auctionShippingPaidBy: formData.isAuction
-          ? (formData.auctionShippingPaidBy || "winner")
+          ? formData.auctionShippingPaidBy || "winner"
           : undefined,
         status: formData.status,
       });

@@ -143,3 +143,28 @@ export function rupeesToPaise(rupees: number): number {
 export function paiseToRupees(paise: number): number {
   return paise / 100;
 }
+
+// ─── Refund ────────────────────────────────────────────────────────────────────
+
+export interface RazorpayRefundResult {
+  id: string;
+  payment_id: string;
+  amount: number;
+  currency: string;
+  status: string;
+}
+
+/**
+ * Creates a full refund for a Razorpay payment.
+ * amount in paise; omit to refund the full amount.
+ */
+export async function createRazorpayRefund(
+  paymentId: string,
+  amountPaise?: number,
+): Promise<RazorpayRefundResult> {
+  const razorpay = getRazorpay();
+  const opts: Record<string, unknown> = {};
+  if (amountPaise) opts.amount = amountPaise;
+  const refund = await razorpay.payments.refund(paymentId, opts as any);
+  return refund as unknown as RazorpayRefundResult;
+}

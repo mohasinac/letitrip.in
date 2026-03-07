@@ -40,9 +40,10 @@ export function FAQPageContent({
   const locale = useLocale();
   const router = useRouter();
 
-  const [selectedCategory, setSelectedCategory] = useState<
-    FAQCategoryKey | "all"
-  >(initialCategory);
+  // Derive directly from the URL-sourced prop — no local state.
+  // handleCategorySelect calls router.push, which updates the URL and causes
+  // the page to re-render with the new initialCategory prop.
+  const selectedCategory = initialCategory;
   const [searchQuery, setSearchQuery] = useState("");
 
   const table = useUrlTable({ defaults: { sort: "helpful" } });
@@ -97,7 +98,6 @@ export function FAQPageContent({
 
   // Navigate to the category URL path on selection
   const handleCategorySelect = (category: FAQCategoryKey | "all") => {
-    setSelectedCategory(category);
     if (category === "all") {
       router.push(ROUTES.PUBLIC.FAQS);
     } else {

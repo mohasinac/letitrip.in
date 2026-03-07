@@ -1,16 +1,17 @@
 /**
  * Standardized API Response Utilities
- * 
+ *
  * Provides consistent response formatting across all API routes
  */
 
-import { NextResponse } from 'next/server';
-import { ERROR_MESSAGES } from '@/constants';
+import { NextResponse } from "next/server";
+import { ERROR_MESSAGES } from "@/constants";
 
 export interface ApiSuccessResponse<T = any> {
   success: true;
   data?: T;
   message?: string;
+  meta?: Record<string, unknown>;
 }
 
 export interface ApiErrorResponse {
@@ -25,15 +26,17 @@ export interface ApiErrorResponse {
 export function successResponse<T>(
   data?: T,
   message?: string,
-  status: number = 200
+  status: number = 200,
+  meta?: Record<string, unknown>,
 ): NextResponse<ApiSuccessResponse<T>> {
   return NextResponse.json(
     {
       success: true,
       ...(data !== undefined && { data }),
       ...(message && { message }),
+      ...(meta && { meta }),
     },
-    { status }
+    { status },
   );
 }
 
@@ -43,7 +46,7 @@ export function successResponse<T>(
 export function errorResponse(
   error: string,
   status: number = 400,
-  details?: any
+  details?: any,
 ): NextResponse<ApiErrorResponse> {
   return NextResponse.json(
     {
@@ -51,7 +54,7 @@ export function errorResponse(
       error,
       ...(details && { details }),
     },
-    { status }
+    { status },
   );
 }
 
@@ -60,18 +63,20 @@ export function errorResponse(
  */
 export const ApiErrors = {
   unauthorized: () => errorResponse(ERROR_MESSAGES.AUTH.UNAUTHORIZED, 401),
-  
+
   forbidden: () => errorResponse(ERROR_MESSAGES.AUTH.FORBIDDEN, 403),
-  
-  notFound: (resource: string = 'Resource') =>
+
+  notFound: (resource: string = "Resource") =>
     errorResponse(`${resource} not found`, 404),
-    
-  badRequest: (message: string = ERROR_MESSAGES.GENERIC.BAD_REQUEST, details?: any) =>
-    errorResponse(message, 400, details),
-    
+
+  badRequest: (
+    message: string = ERROR_MESSAGES.GENERIC.BAD_REQUEST,
+    details?: any,
+  ) => errorResponse(message, 400, details),
+
   internalError: (message: string = ERROR_MESSAGES.GENERIC.INTERNAL_ERROR) =>
     errorResponse(message, 500),
-    
+
   validationError: (details: any) =>
     errorResponse(ERROR_MESSAGES.VALIDATION.INVALID_INPUT, 400, details),
 };

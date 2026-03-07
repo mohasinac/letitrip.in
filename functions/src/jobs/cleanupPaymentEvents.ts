@@ -15,7 +15,7 @@
  */
 
 import { onSchedule } from "firebase-functions/v2/scheduler";
-import { rtdb } from "../config/firebase-admin";
+import { getRtdb } from "../config/firebase-admin";
 import { logInfo, logError } from "../utils/logger";
 import { SCHEDULES, REGION } from "../config/constants";
 
@@ -36,7 +36,7 @@ export const cleanupPaymentEvents = onSchedule(
     logInfo(JOB, "Starting payment events cleanup");
 
     try {
-      const snapshot = await rtdb.ref("payment_events").get();
+      const snapshot = await getRtdb().ref("payment_events").get();
 
       if (!snapshot.exists()) {
         logInfo(JOB, "No payment event nodes found");
@@ -60,7 +60,7 @@ export const cleanupPaymentEvents = onSchedule(
       }
 
       await Promise.all(
-        staleIds.map((id) => rtdb.ref(`payment_events/${id}`).remove()),
+        staleIds.map((id) => getRtdb().ref(`payment_events/${id}`).remove()),
       );
 
       logInfo(JOB, "Payment events cleanup complete", {

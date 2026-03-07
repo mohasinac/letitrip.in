@@ -26,9 +26,12 @@ describe("ReviewFilters", () => {
     expect(screen.getByTestId("facet-featured")).toBeInTheDocument();
   });
 
-  it("exports REVIEW_SORT_OPTIONS with rating sort values", () => {
+  it("exports REVIEW_SORT_OPTIONS with rating sort values and i18n keys", () => {
     const values = REVIEW_SORT_OPTIONS.map((o) => o.value);
     expect(values).toContain("-rating");
     expect(values).toContain("rating");
+    const keys = REVIEW_SORT_OPTIONS.map((o) => o.key);
+    expect(keys).toContain("sortHighestRated");
+    expect(keys).toContain("sortLowestRated");
   });
 });

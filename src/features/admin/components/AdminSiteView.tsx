@@ -30,12 +30,12 @@ export function AdminSiteView() {
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
 
-  const { data, isLoading, error, refetch } = useApiQuery<{
-    data: SiteSettingsDocument;
-  }>({
-    queryKey: ["site-settings"],
-    queryFn: () => siteSettingsService.get(),
-  });
+  const { data, isLoading, error, refetch } = useApiQuery<SiteSettingsDocument>(
+    {
+      queryKey: ["site-settings"],
+      queryFn: () => siteSettingsService.get(),
+    },
+  );
 
   const updateMutation = useApiMutation<any, Partial<SiteSettingsDocument>>({
     mutationFn: (data) => siteSettingsService.update(data),
@@ -70,8 +70,8 @@ export function AdminSiteView() {
   });
 
   useEffect(() => {
-    if (data?.data) {
-      setSettings(data.data);
+    if (data) {
+      setSettings(data);
     }
   }, [data]);
 

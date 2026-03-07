@@ -3,32 +3,22 @@
 /**
  * BuyRipCoinsModal
  *
- * Lets the user choose a pack size (1–500 packs), shows the cost in ₹,
- * then triggers a Razorpay payment flow. On success, verification is done
- * via POST /api/ripcoins/purchase/verify, and the balance is refreshed.
- *
- * Economy:
- *   1 pack = 10 RipCoins = ₹1
- *   Min: 10 packs (100 RC / ₹10)
- *   Max: 500 packs (5000 RC / ₹500)
+ * Fixed-package RipCoin purchase modal. Shows 5 preset packages,
+ * then triggers a Razorpay payment flow on selection.
  */
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Modal, Heading, Text, Caption, Button, Slider } from "@/components";
+import { Modal, Heading, Text, Caption, Button, Badge } from "@/components";
 import {
   usePurchaseRipCoins,
   useVerifyRipCoinPurchase,
   useRazorpay,
 } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
+import { RIPCOIN_PACKAGES } from "@/db/schema";
 
 const { spacing, flex } = THEME_CONSTANTS;
-
-const MIN_PACKS = 10;
-const MAX_PACKS = 500;
-const COINS_PER_PACK = 10;
-const PRICE_PER_PACK_RS = 1;
 
 interface Props {
   open: boolean;
@@ -38,9 +28,9 @@ interface Props {
 
 export function BuyRipCoinsModal({ open, onClose, onPurchaseSuccess }: Props) {
   const t = useTranslations("ripcoinsWallet.buy");
-  const [packs, setPacks] = useState<number>(MIN_PACKS);
-  const coins = packs * COINS_PER_PACK;
-  const amountRs = packs * PRICE_PER_PACK_RS;
+  const [selectedPackageId, setSelectedPackageId] = useState<string>(
+    RIPCOIN_PACKAGES[0].packageId,
+  );
 
   const { mutate: purchaseCoins, isLoading: isCreatingOrder } =
     usePurchaseRipCoins();
@@ -49,76 +39,100 @@ export function BuyRipCoinsModal({ open, onClose, onPurchaseSuccess }: Props) {
   const { openRazorpay, isLoading: isRazorpayLoading } = useRazorpay();
 
   const isProcessing = isCreatingOrder || isVerifying || isRazorpayLoading;
+  const selectedPkg =
+    RIPCOIN_PACKAGES.find((p) => p.packageId === selectedPackageId) ??
+    RIPCOIN_PACKAGES[0];
 
   const handlePay = async () => {
     try {
-      // Step 1 — create Razorpay order
-      const order = await purchaseCoins(packs);
-
-      // Step 2 — open Razorpay modal
+      const order = await purchaseCoins(selectedPackageId);
       const payment = await openRazorpay({
         key: order.razorpayKeyId,
-        amount: order.amountRs * 100, // paise
+        amount: order.amountRs * 100,
         currency: order.currency ?? "INR",
         name: "LetItRip",
-        description: `${coins} RipCoins`,
+        description: `${order.totalCoins} RipCoins`,
         order_id: order.razorpayOrderId,
         handler: () => {},
       });
-
-      // Step 3 — verify on server
       await verifyPurchase({
         razorpayOrderId: order.razorpayOrderId,
         razorpayPaymentId: payment.razorpay_payment_id,
         razorpaySignature: payment.razorpay_signature,
-        packs,
+        packageId: selectedPackageId,
       });
-
       onPurchaseSuccess?.();
       onClose();
     } catch {
-      // errors handled by hook's onError callbacks
+      // errors handled by hook onError callbacks
     }
   };
 
   return (
     <Modal isOpen={open} onClose={onClose} title={t("title")}>
       <div className={spacing.stack}>
-        {/* Pack selector */}
-        <div>
-          <Text weight="medium" className="mb-1">
-            {t("packsLabel")}
-          </Text>
-          <Slider
-            min={MIN_PACKS}
-            max={MAX_PACKS}
-            step={MIN_PACKS}
-            value={packs}
-            onChange={(v) => setPacks(v)}
-          />
-          <div className="flex justify-between mt-1">
-            <Caption>{MIN_PACKS} packs</Caption>
-            <Caption>{MAX_PACKS} packs</Caption>
-          </div>
+        {/* Package cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {RIPCOIN_PACKAGES.map((pkg) => {
+            const isSelected = pkg.packageId === selectedPackageId;
+            return (
+              <button
+                key={pkg.packageId}
+                type="button"
+                onClick={() => setSelectedPackageId(pkg.packageId)}
+                className={[
+                  "rounded-xl border-2 p-4 text-left transition-all",
+                  isSelected
+                    ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40"
+                    : "border-gray-200 dark:border-gray-700 hover:border-indigo-300",
+                ].join(" ")}
+              >
+                <div className={`${flex.between} mb-1`}>
+                  <Heading
+                    level={4}
+                    className="text-indigo-700 dark:text-indigo-300"
+                  >
+                    {pkg.totalCoins.toLocaleString()} RC
+                  </Heading>
+                  {pkg.bonusPct > 0 && (
+                    <Badge variant="success">+{pkg.bonusPct}%</Badge>
+                  )}
+                </div>
+                <Caption>₹{pkg.priceRs.toLocaleString()}</Caption>
+                {pkg.bonusCoins > 0 && (
+                  <Caption className="text-xs text-emerald-600 dark:text-emerald-400">
+                    {t("bonusNote", { bonus: pkg.bonusCoins })}
+                  </Caption>
+                )}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Summary */}
+        {/* Selected summary */}
         <div className="rounded-lg bg-indigo-50 dark:bg-indigo-950/30 p-4 flex flex-col gap-1">
-          <div className={flex.between}>
-            <Caption>{t("packs")}</Caption>
-            <Text weight="semibold">{packs}</Text>
-          </div>
           <div className={flex.between}>
             <Caption>{t("coins")}</Caption>
             <Heading level={4} className="text-indigo-600 dark:text-indigo-400">
-              {coins.toLocaleString()} RC
+              {selectedPkg.totalCoins.toLocaleString()} RC
             </Heading>
           </div>
+          {selectedPkg.bonusCoins > 0 && (
+            <div className={flex.between}>
+              <Caption>{t("bonus")}</Caption>
+              <Text
+                weight="semibold"
+                className="text-emerald-600 dark:text-emerald-400"
+              >
+                +{selectedPkg.bonusCoins.toLocaleString()} RC
+              </Text>
+            </div>
+          )}
           <div
             className={`${flex.between} border-t border-indigo-200 dark:border-indigo-800 pt-1 mt-1`}
           >
             <Caption>{t("amount")}</Caption>
-            <Heading level={4}>₹{amountRs.toFixed(2)}</Heading>
+            <Heading level={4}>₹{selectedPkg.priceRs.toLocaleString()}</Heading>
           </div>
         </div>
 
@@ -134,7 +148,7 @@ export function BuyRipCoinsModal({ open, onClose, onPurchaseSuccess }: Props) {
           isLoading={isProcessing}
           disabled={isProcessing}
         >
-          {t("payButton", { amount: amountRs.toFixed(2) })}
+          {t("payButton", { amount: selectedPkg.priceRs.toLocaleString() })}
         </Button>
       </div>
     </Modal>

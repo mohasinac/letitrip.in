@@ -21,10 +21,6 @@ import type { ProductDocument } from "@/db/schema";
 
 const { themed, borderRadius, flex, page, spacing } = THEME_CONSTANTS;
 
-interface ProductResponse {
-  data: ProductDocument;
-}
-
 interface ProductDetailViewProps {
   slug: string;
 }
@@ -32,13 +28,15 @@ interface ProductDetailViewProps {
 export function ProductDetailView({ slug }: ProductDetailViewProps) {
   const t = useTranslations("products");
 
-  const { data, isLoading, error } = useApiQuery<ProductResponse>({
+  const {
+    data: product,
+    isLoading,
+    error,
+  } = useApiQuery<ProductDocument>({
     queryKey: ["product", slug],
     queryFn: () => productService.getById(slug),
     enabled: Boolean(slug),
   });
-
-  const product = data?.data;
 
   // Loading skeleton
   if (isLoading) {
@@ -206,7 +204,11 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
         </div>
 
         {/* ——— Related Products ——— */}
-        <RelatedProducts category={product.category} excludeId={product.id} />
+        <RelatedProducts
+          category={product.category}
+          excludeId={product.id}
+          isAuction={product.isAuction}
+        />
       </div>
 
       {/* Bottom padding for mobile sticky bar */}

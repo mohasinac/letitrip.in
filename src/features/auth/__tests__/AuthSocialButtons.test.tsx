@@ -19,23 +19,18 @@ jest.mock("@/components", () => ({
 }));
 
 describe("AuthSocialButtons", () => {
-  it("renders Google and Apple buttons", () => {
-    render(<AuthSocialButtons onGoogle={jest.fn()} onApple={jest.fn()} />);
+  it("renders Google button", () => {
+    render(<AuthSocialButtons onGoogle={jest.fn()} />);
 
     expect(
       screen.getByRole("button", {
         name: new RegExp(UI_LABELS.AUTH.LOGIN.GOOGLE, "i"),
       }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", {
-        name: new RegExp(UI_LABELS.AUTH.LOGIN.APPLE, "i"),
-      }),
-    ).toBeInTheDocument();
   });
 
   it("renders OR divider text", () => {
-    render(<AuthSocialButtons onGoogle={jest.fn()} onApple={jest.fn()} />);
+    render(<AuthSocialButtons onGoogle={jest.fn()} />);
 
     expect(
       screen.getByText(UI_LABELS.AUTH.LOGIN.OR_CONTINUE_WITH),
@@ -44,7 +39,7 @@ describe("AuthSocialButtons", () => {
 
   it("calls onGoogle when Google button is clicked", () => {
     const onGoogle = jest.fn();
-    render(<AuthSocialButtons onGoogle={onGoogle} onApple={jest.fn()} />);
+    render(<AuthSocialButtons onGoogle={onGoogle} />);
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -55,23 +50,8 @@ describe("AuthSocialButtons", () => {
     expect(onGoogle).toHaveBeenCalledTimes(1);
   });
 
-  it("calls onApple when Apple button is clicked", () => {
-    const onApple = jest.fn();
-    render(<AuthSocialButtons onGoogle={jest.fn()} onApple={onApple} />);
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: new RegExp(UI_LABELS.AUTH.LOGIN.APPLE, "i"),
-      }),
-    );
-
-    expect(onApple).toHaveBeenCalledTimes(1);
-  });
-
-  it("disables both buttons when disabled prop is true", () => {
-    render(
-      <AuthSocialButtons onGoogle={jest.fn()} onApple={jest.fn()} disabled />,
-    );
+  it("disables button when disabled prop is true", () => {
+    render(<AuthSocialButtons onGoogle={jest.fn()} disabled />);
 
     const buttons = screen.getAllByRole("button");
     buttons.forEach((btn) => expect(btn).toBeDisabled());

@@ -38,8 +38,11 @@ export function ProductActions({
   const { user } = useAuth();
   const router = useRouter();
 
-  const { inWishlist, isLoading: wishlistLoading, toggle: toggleWishlist } =
-    useWishlistToggle(productId);
+  const {
+    inWishlist,
+    isLoading: wishlistLoading,
+    toggle: toggleWishlist,
+  } = useWishlistToggle(productId);
 
   const { mutate: addToCart, isLoading: cartLoading } = useAddToCart({
     onSuccess: () => showSuccess(SUCCESS_MESSAGES.CART.ITEM_ADDED),
@@ -48,6 +51,7 @@ export function ProductActions({
 
   const handleAddToCart = () => {
     if (!user) {
+      showError(t("loginToAddToCart"));
       router.push(ROUTES.AUTH.LOGIN);
       return;
     }
@@ -57,6 +61,7 @@ export function ProductActions({
 
   const handleBuyNow = () => {
     if (!user) {
+      showError(t("loginToAddToCart"));
       router.push(ROUTES.AUTH.LOGIN);
       return;
     }
@@ -71,6 +76,7 @@ export function ProductActions({
 
   const handleWishlist = async () => {
     if (!user) {
+      showError(t("loginToWishlist"));
       router.push(ROUTES.AUTH.LOGIN);
       return;
     }
@@ -194,9 +200,7 @@ export function ProductActions({
             >
               <Span className={`${flex.center} gap-1.5`}>
                 <ShoppingCart className="w-4 h-4" aria-hidden="true" />
-                {isOutOfStock
-                  ? statusLabel ?? t("outOfStock")
-                  : cartLabel}
+                {isOutOfStock ? (statusLabel ?? t("outOfStock")) : cartLabel}
               </Span>
             </Button>
 

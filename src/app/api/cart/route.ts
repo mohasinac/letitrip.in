@@ -8,13 +8,13 @@
 
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { requireAuthFromRequest } from "@/lib/security/authorization";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, ApiErrors } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { cartRepository } from "@/repositories";
 import { productRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
+import { createApiHandler } from "@/lib/api/api-handler";
 
 // Validation schema for adding to cart
 const addToCartSchema = z.object({
@@ -22,47 +22,23 @@ const addToCartSchema = z.object({
   quantity: z.number().int().min(1, "quantity must be at least 1").max(99),
 });
 
-/**
- * GET /api/cart
- *
- * Returns the authenticated user's cart.
- * Creates an empty cart if one doesn't exist.
- */
-export async function GET(request: NextRequest) {
-  try {
-    const user = await requireAuthFromRequest(request);
-    const cart = await cartRepository.getOrCreate(user.uid);
+export const GET = createApiHandler({
+  auth: true,
+  handler: async ({ user }) => {
+    const cart = await cartRepository.getOrCreate(user!.uid);
     return successResponse({
       cart,
       itemCount: cartRepository.getItemCount(cart),
       subtotal: cartRepository.getSubtotal(cart),
     });
-  } catch (error) {
-    serverLogger.error(ERROR_MESSAGES.API.CART_GET_ERROR, { error });
-    return handleApiError(error);
-  }
-}
+  },
+});
 
-/**
- * POST /api/cart
- *
- * Add a product to the user's cart.
- * If the product already exists, increments quantity.
- *
- * Body: { productId: string, quantity: number }
- */
-export async function POST(request: NextRequest) {
-  try {
-    const user = await requireAuthFromRequest(request);
-
-    // Parse body
-    const body = await request.json();
-    const validation = addToCartSchema.safeParse(body);
-    if (!validation.success) {
-      return ApiErrors.validationError(validation.error.issues);
-    }
-
-    const { productId, quantity } = validation.data;
+export const POST = createApiHandler<(typeof addToCartSchema)["_output"]>({
+  auth: true,
+  schema: addToCartSchema,
+  handler: async ({ user, body }) => {
+    const { productId, quantity } = body!;
 
     // Validate product exists and is available
     const product = await productRepository.findById(productId);
@@ -83,7 +59,7 @@ export async function POST(request: NextRequest) {
       return ApiErrors.badRequest(ERROR_MESSAGES.CART.INSUFFICIENT_STOCK);
     }
 
-    const cart = await cartRepository.addItem(user.uid, {
+    const cart = await cartRepository.addItem(user!.uid, {
       productId: product.id,
       productTitle: product.title,
       productImage: product.mainImage,
@@ -104,27 +80,16 @@ export async function POST(request: NextRequest) {
       SUCCESS_MESSAGES.CART.ITEM_ADDED,
       201,
     );
-  } catch (error) {
-    serverLogger.error(ERROR_MESSAGES.API.CART_POST_ERROR, { error });
-    return handleApiError(error);
-  }
-}
+  },
+});
 
-/**
- * DELETE /api/cart
- *
- * Clear all items from the user's cart.
- */
-export async function DELETE(request: NextRequest) {
-  try {
-    const user = await requireAuthFromRequest(request);
-    const cart = await cartRepository.clearCart(user.uid);
+export const DELETE = createApiHandler({
+  auth: true,
+  handler: async ({ user }) => {
+    const cart = await cartRepository.clearCart(user!.uid);
     return successResponse(
       { cart, itemCount: 0, subtotal: 0 },
       SUCCESS_MESSAGES.CART.CLEARED,
     );
-  } catch (error) {
-    serverLogger.error(ERROR_MESSAGES.API.CART_GET_ERROR, { error });
-    return handleApiError(error);
-  }
-}
+  },
+});

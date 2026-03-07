@@ -8,27 +8,28 @@
  * All state is URL-driven via useUrlTable.
  */
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useMemo } from "react";
 import { BookOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   ActiveFilterChips,
   DataTable,
   EmptyState,
-  FilterFacetSection,
   Heading,
   ListingLayout,
   Search,
   SortDropdown,
   TablePagination,
   Text,
+  getFilterLabel,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
+import { BlogFilters } from "@/components/filters";
 import { BlogCard } from "./BlogCard";
 import { BlogFeaturedCard } from "./BlogFeaturedCard";
 import { BLOG_CATEGORY_TABS } from "./BlogCategoryTabs";
 import { THEME_CONSTANTS } from "@/constants";
-import { useUrlTable, useBlogPosts } from "@/hooks";
+import { useUrlTable, useBlogPosts, usePendingTable } from "@/hooks";
 
 const PAGE_SIZE = 24;
 
@@ -63,25 +64,9 @@ function BlogListContent() {
     [],
   );
 
-  // ── Staged filter state (applied on button click) ──────────────────────
-  const [stagedCategory, setStagedCategory] = useState<string[]>(
-    categoryFilter ? [categoryFilter] : [],
-  );
-
-  useEffect(() => {
-    setStagedCategory(categoryFilter ? [categoryFilter] : []);
-  }, [categoryFilter]);
-
-  const handleFilterApply = useCallback(() => {
-    table.setMany({ category: stagedCategory[0] ?? "", page: "1" });
-  }, [stagedCategory, table]);
-
-  const handleFilterClear = useCallback(() => {
-    setStagedCategory([]);
-    table.setMany({ category: "", page: "1" });
-  }, [table]);
-
-  const filterActiveCount = categoryFilter ? 1 : 0;
+  // ── Staged filter state via usePendingTable ───────────────────────────
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, ["category"]);
 
   // ── API params ─────────────────────────────────────────────────────────
   const queryParams = useMemo(() => {
@@ -109,8 +94,7 @@ function BlogListContent() {
   const activeFilters = useMemo<ActiveFilter[]>(() => {
     if (!categoryFilter) return [];
     const label =
-      categoryOptions.find((o) => o.value === categoryFilter)?.label ??
-      categoryFilter;
+      getFilterLabel(categoryOptions, categoryFilter) ?? categoryFilter;
     return [{ key: "category", label: t("filterCategory"), value: label }];
   }, [categoryFilter, categoryOptions, t]);
 
@@ -145,18 +129,10 @@ function BlogListContent() {
               options={sortOptions}
             />
           }
-          filterContent={
-            <FilterFacetSection
-              title={t("filterCategory")}
-              options={categoryOptions}
-              selected={stagedCategory}
-              onChange={setStagedCategory}
-              searchable={false}
-            />
-          }
+          filterContent={<BlogFilters table={pendingTable} variant="public" />}
           filterActiveCount={filterActiveCount}
-          onFilterApply={handleFilterApply}
-          onFilterClear={handleFilterClear}
+          onFilterApply={onFilterApply}
+          onFilterClear={onFilterClear}
           activeFiltersSlot={
             activeFilters.length > 0 ? (
               <ActiveFilterChips
@@ -189,7 +165,7 @@ function BlogListContent() {
               onAction={
                 hasActiveFilters
                   ? () => {
-                      handleFilterClear();
+                      onFilterClear();
                       table.set("q", "");
                     }
                   : undefined
@@ -197,10 +173,7 @@ function BlogListContent() {
             />
           ) : (
             <div className={THEME_CONSTANTS.spacing.stack}>
-              {/* Featured post at top on page 1 (grid/list views only) */}
-              {featuredPost && (table.get("view") || "grid") !== "table" && (
-                <BlogFeaturedCard post={featuredPost} />
-              )}
+              {featuredPost && <BlogFeaturedCard post={featuredPost} />}
 
               <DataTable
                 data={regularPosts}
@@ -212,11 +185,7 @@ function BlogListContent() {
                   { key: "authorName", header: t("colAuthor") },
                   { key: "publishedAt", header: t("colPublishedAt") },
                 ]}
-                showViewToggle
-                viewMode={
-                  (table.get("view") || "grid") as "table" | "grid" | "list"
-                }
-                onViewModeChange={(m) => table.set("view", m)}
+                defaultViewMode="grid"
                 emptyState={
                   <EmptyState
                     icon={<BookOpen className="w-16 h-16" />}

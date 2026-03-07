@@ -685,6 +685,8 @@ const homepageSectionBaseSchema = z.object({
     "faq",
     "blog-articles",
     "newsletter",
+    "stores",
+    "events",
   ]),
   title: z.string().min(1).max(200),
   order: z.number().int().nonnegative(),
@@ -998,6 +1000,56 @@ export const userFilterSchema = z.object({
   disabled: z.boolean().optional(),
   search: z.string().optional(),
 });
+
+// ============================================
+// AUTH & PROFILE SCHEMAS
+// ============================================
+
+/**
+ * Password reset schema — token (from email link) + new password
+ */
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Reset token is required"),
+  newPassword: passwordSchema,
+});
+
+/**
+ * Send email verification schema
+ */
+export const sendVerificationSchema = z.object({
+  email: emailSchema,
+});
+
+/**
+ * Add phone number schema
+ */
+export const addPhoneSchema = z.object({
+  phoneNumber: phoneSchema,
+});
+
+/**
+ * Verify phone OTP schema — verificationId from Firebase + 6-digit code
+ */
+export const verifyPhoneSchema = z.object({
+  verificationId: z.string().min(1, "Verification ID is required"),
+  code: z
+    .string()
+    .length(6, "Verification code must be exactly 6 digits")
+    .regex(/^\d+$/, "Verification code must contain only digits"),
+});
+
+/**
+ * Change password schema — no confirmPassword (client confirms before calling API)
+ */
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: passwordSchema,
+  })
+  .refine((data) => data.currentPassword !== data.newPassword, {
+    message: "New password must differ from current password",
+    path: ["newPassword"],
+  });
 
 // ============================================
 // HELPER FUNCTIONS

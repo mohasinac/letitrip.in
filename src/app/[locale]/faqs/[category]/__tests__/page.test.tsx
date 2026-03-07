@@ -1,7 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { redirect } from "@/i18n/navigation";
-import FAQCategoryPage, { generateStaticParams } from "../page";
+import FAQCategoryPage, {
+  generateStaticParams,
+  generateMetadata,
+} from "../page";
 import { FAQ_CATEGORIES, ROUTES } from "@/constants";
 
 // Mock @/i18n/navigation redirect
@@ -12,6 +15,29 @@ jest.mock("@/i18n/navigation", () => ({
     require("react").createElement("a", { href }, children),
   useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),
   usePathname: () => "/",
+}));
+
+// Mock next-intl/server getTranslations
+jest.mock("next-intl/server", () => ({
+  getTranslations: jest.fn(() =>
+    Promise.resolve((key: string, params?: Record<string, string>) => {
+      const map: Record<string, string> = {
+        metaTitle: "FAQs - LetItRip",
+        metaDescription: "Find answers to frequently asked questions.",
+        categoryMetaTitle: params?.category
+          ? `${params.category} FAQs – LetItRip`
+          : "FAQs – LetItRip",
+        "category.general": "General",
+        "category.shipping": "Shipping & Delivery",
+        "category.returns": "Returns & Refunds",
+        "categoryDescription.general":
+          "About our platform, services, and policies",
+        "categoryDescription.shipping":
+          "Delivery times, tracking, and shipping options",
+      };
+      return map[key] ?? key;
+    }),
+  ),
 }));
 
 // Mock the FAQPageContent component
@@ -79,5 +105,37 @@ describe("generateStaticParams", () => {
   it("returns at least 5 category entries", () => {
     const params = generateStaticParams();
     expect(params.length).toBeGreaterThanOrEqual(5);
+  });
+});
+
+describe("generateMetadata", () => {
+  it("returns category-specific title and description for a valid category", async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ locale: "en", category: "general" }),
+    });
+    expect(metadata.title).toBe("General FAQs – LetItRip");
+    expect(metadata.description).toBe(
+      "About our platform, services, and policies",
+    );
+  });
+
+  it("returns per-category description for shipping", async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ locale: "en", category: "shipping" }),
+    });
+    expect(metadata.title).toBe("Shipping & Delivery FAQs – LetItRip");
+    expect(metadata.description).toBe(
+      "Delivery times, tracking, and shipping options",
+    );
+  });
+
+  it("falls back to generic meta for an unknown category", async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ locale: "en", category: "unknown-cat" }),
+    });
+    expect(metadata.title).toBe("FAQs - LetItRip");
+    expect(metadata.description).toBe(
+      "Find answers to frequently asked questions.",
+    );
   });
 });

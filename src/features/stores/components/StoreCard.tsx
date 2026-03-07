@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, Package, MessageSquare } from "lucide-react";
+import { Star, ShoppingBag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import {
@@ -32,16 +32,17 @@ export function StoreCard({
   const t = useTranslations("storesPage");
 
   const href = ROUTES.PUBLIC.STORE_DETAIL(store.storeSlug);
+  const name = store.storeName || store.displayName;
 
   return (
     <TextLink href={href} className="group block focus:outline-none">
       <Card
-        className={`overflow-hidden h-full flex flex-col hover:shadow-md transition-shadow duration-200 group-focus-visible:ring-2 group-focus-visible:ring-indigo-500${
+        className={`overflow-hidden h-full flex flex-col hover:shadow-lg transition-all duration-200 group-focus-visible:ring-2 group-focus-visible:ring-indigo-500${
           selected ? " ring-2 ring-indigo-500" : ""
         }`}
       >
-        {/* ── Banner area ── */}
-        <div className="relative h-28 overflow-hidden bg-gradient-to-br from-indigo-400 to-purple-500 flex-shrink-0">
+        {/* ── Banner ── */}
+        <div className="relative aspect-[2/1] overflow-hidden bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-400 flex-shrink-0">
           {store.storeBannerURL && (
             <img
               src={store.storeBannerURL}
@@ -49,6 +50,9 @@ export function StoreCard({
               className="absolute inset-0 w-full h-full object-cover"
             />
           )}
+
+          {/* bottom gradient for readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
 
           {/* Checkbox — top left */}
           {selectable && (
@@ -58,7 +62,7 @@ export function StoreCard({
             >
               <input
                 type="checkbox"
-                aria-label={`Select ${store.storeName}`}
+                aria-label={`Select ${name}`}
                 checked={selected}
                 onChange={(e) => {
                   e.stopPropagation();
@@ -69,10 +73,19 @@ export function StoreCard({
             </div>
           )}
 
-          {/* Avatar — overlapping banner bottom */}
-          <div className="absolute -bottom-8 left-4">
-            <div className="w-16 h-16 rounded-full border-4 border-white dark:border-gray-800 overflow-hidden bg-white dark:bg-gray-800 shadow">
-              {store.storeLogoURL ?? store.photoURL ? (
+          {/* Category badge — top right */}
+          {store.storeCategory && (
+            <div className="absolute top-2 right-2 z-10">
+              <Span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/90 text-gray-700 dark:bg-black/60 dark:text-gray-200">
+                {store.storeCategory}
+              </Span>
+            </div>
+          )}
+
+          {/* Avatar — centred, overlapping banner bottom */}
+          <div className="absolute -bottom-7 left-1/2 -translate-x-1/2">
+            <div className="w-14 h-14 rounded-full border-[3px] border-white dark:border-gray-900 overflow-hidden shadow-md">
+              {(store.storeLogoURL ?? store.photoURL) ? (
                 <AvatarDisplay
                   cropData={{
                     url: (store.storeLogoURL ?? store.photoURL)!,
@@ -80,12 +93,14 @@ export function StoreCard({
                     zoom: 1,
                   }}
                   size="lg"
-                  alt={store.storeName}
+                  alt={name}
                 />
               ) : (
-                <div className={`${flex.center} w-full h-full bg-indigo-100 dark:bg-indigo-900/40`}>
-                  <Span className="text-2xl font-bold text-indigo-500">
-                    {(store.storeName || store.displayName).charAt(0).toUpperCase()}
+                <div
+                  className={`${flex.center} w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600`}
+                >
+                  <Span className="text-xl font-bold text-white">
+                    {name.charAt(0).toUpperCase()}
                   </Span>
                 </div>
               )}
@@ -94,57 +109,52 @@ export function StoreCard({
         </div>
 
         {/* ── Content ── */}
-        <div className="flex flex-col flex-1 px-4 pt-10 pb-4 gap-1">
-          {/* Name + rating */}
-          <div className={`${flex.between} gap-2`}>
-            <Heading
-              level={3}
-              className={`text-sm sm:text-base font-semibold ${themed.textPrimary} truncate`}
-            >
-              {store.storeName || store.displayName}
-            </Heading>
+        <div className="flex flex-col flex-1 items-center text-center px-3 pt-9 pb-4 gap-1">
+          {/* Name */}
+          <Heading
+            level={3}
+            className={`text-sm font-semibold ${themed.textPrimary} line-clamp-1 w-full`}
+          >
+            {name}
+          </Heading>
 
-            {typeof store.averageRating === "number" &&
-              store.averageRating > 0 && (
-                <div className={`${flex.rowCenter} gap-0.5 flex-shrink-0`}>
-                  <Star
-                    className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400"
-                    aria-hidden="true"
-                  />
-                  <Caption>{store.averageRating.toFixed(1)}</Caption>
-                </div>
-              )}
-          </div>
+          {/* Verified badge */}
+          <Span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 uppercase tracking-wide">
+            {t("sellerBadge")}
+          </Span>
 
           {/* Short description */}
           {store.storeDescription && (
-            <Text variant="secondary" size="sm" className="line-clamp-2">
+            <Text variant="secondary" size="sm" className="line-clamp-2 mt-0.5">
               {store.storeDescription}
             </Text>
           )}
 
-          {/* Stats */}
+          {/* Stats row */}
           <div
-            className={`${flex.rowCenter} gap-3 mt-auto pt-2 text-xs ${themed.textSecondary} border-t ${themed.border}`}
+            className={`${flex.rowCenter} gap-3 mt-auto pt-2 text-xs ${themed.textSecondary}`}
           >
-            {typeof store.totalReviews === "number" && store.totalReviews > 0 && (
-              <div className={`${flex.rowCenter} gap-1`}>
-                <MessageSquare
-                  className="w-3.5 h-3.5 flex-shrink-0"
-                  aria-hidden="true"
-                />
-                <Span>{t("itemsSold", { count: store.totalReviews })}</Span>
-              </div>
-            )}
-            {typeof store.totalProducts === "number" && (
-              <div className={`${flex.rowCenter} gap-1`}>
-                <Package
-                  className="w-3.5 h-3.5 flex-shrink-0"
-                  aria-hidden="true"
-                />
-                <Span>{t("availableProducts")}: {store.totalProducts}</Span>
-              </div>
-            )}
+            <div className={`${flex.rowCenter} gap-1`}>
+              <ShoppingBag
+                className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0"
+                aria-hidden="true"
+              />
+              <Span>
+                {t("productsCount", { count: store.totalProducts ?? 0 })}
+              </Span>
+            </div>
+            {typeof store.averageRating === "number" &&
+              store.averageRating > 0 && (
+                <div className={`${flex.rowCenter} gap-0.5`}>
+                  <Star
+                    className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 flex-shrink-0"
+                    aria-hidden="true"
+                  />
+                  <Caption className="font-medium">
+                    {store.averageRating.toFixed(1)}
+                  </Caption>
+                </div>
+              )}
           </div>
         </div>
       </Card>

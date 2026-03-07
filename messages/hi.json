@@ -380,7 +380,8 @@
       "authSuccess": "सफलतापूर्वक साइन इन हो गए",
       "authTimeout": "साइन इन का समय समाप्त हो गया। कृपया पुनः प्रयास करें।",
       "closing": "विंडो बंद हो रही है...",
-      "closeError": "कुछ गलत हो गया। कृपया यह विंडो बंद करें और पुनः प्रयास करें।"
+      "closeError": "कुछ गलत हो गया। कृपया यह विंडो बंद करें और पुनः प्रयास करें।",
+      "redirecting": "साइन-इन प्रदाता पर रीडायरेक्ट हो रहा है..."
     }
   },
   "profile": {
@@ -434,6 +435,7 @@
     "empty": "आपकी विशलिस्ट खाली है",
     "addToWishlist": "विशलिस्ट में जोड़ें",
     "removeFromWishlist": "विशलिस्ट से हटाएं",
+    "loginRequired": "विशलिस्ट में सहेजने के लिए साइन इन करें",
     "itemsCount": "विशलिस्ट आइटम",
     "subtitleWithCount": "{count, plural, one {# आइटम} other {# आइटम}} सहेजे गए",
     "tabProducts": "उत्पाद",
@@ -549,6 +551,9 @@
     "amountRange": "राशि सीमा",
     "minAmount": "न्यूनतम राशि",
     "maxAmount": "अधिकतम राशि",
+    "from": "न्यूनतम",
+    "to": "अधिकतम",
+    "clearRange": "रेंज साफ़ करें",
     "minDate": "से तिथि",
     "maxDate": "तक तिथि",
     "payoutPaymentMethod": "भुगतान विधि",
@@ -570,6 +575,12 @@
     "booleanNotAuction": "निश्चित मूल्य",
     "booleanPromoted": "प्रमोटेड",
     "booleanNotPromoted": "सामान्य",
+    "showWinningOnly": "केवल जीतने वाली बोलियाँ",
+    "showFeaturedOnly": "केवल फ़ीचर्ड आइटम",
+    "showActiveOnly": "केवल सक्रिय",
+    "showVerifiedOnly": "केवल सत्यापित समीक्षाएँ",
+    "showEmailVerifiedOnly": "केवल सत्यापित ईमेल",
+    "showDisabledOnly": "केवल अक्षम खाते",
     "statusPublished": "प्रकाशित",
     "statusDraft": "ड्राफ्ट",
     "statusOutOfStock": "स्टॉक खत्म",
@@ -652,6 +663,8 @@
     "sectionTypeFaq": "FAQ",
     "sectionTypeBlogArticles": "ब्लॉग लेख",
     "sectionTypeNewsletter": "न्यूज़लेटर",
+    "sectionTypeStores": "स्टोर्स",
+    "sectionTypeEvents": "इवेंट्स",
     "newsletterStatusActive": "सक्रिय",
     "newsletterStatusUnsubscribed": "सदस्यता रद्द",
     "newsletterSourceFooter": "फुटर",
@@ -823,6 +836,8 @@
     "removeFromWishlist": "विशलिस्ट से हटाएं",
     "addedToWishlist": "विशलिस्ट में जोड़ा गया",
     "removedFromWishlist": "विशलिस्ट से हटाया गया",
+    "loginToAddToCart": "कार्ट में जोड़ने के लिए साइन इन करें",
+    "loginToWishlist": "विशलिस्ट में सहेजने के लिए साइन इन करें",
     "productFeatures": "उत्पाद विशेषताएं",
     "shortDescription": "इस उत्पाद के बारे में",
     "longDescription": "विस्तृत विवरण",
@@ -849,7 +864,15 @@
       "prevImage": "पिछली छवि",
       "nextImage": "अगली छवि",
       "videoThumbnail": "वीडियो",
-      "imageThumbnail": "छवि {n}"
+      "imageThumbnail": "छवि {n}",
+      "openLightbox": "छवि दर्शक खोलें",
+      "lightboxTitle": "छवि दर्शक",
+      "zoomIn": "ज़ूम इन",
+      "zoomOut": "ज़ूम आउट",
+      "resetZoom": "ज़ूम रीसेट",
+      "enterFullscreen": "फुलस्क्रीन दर्ज करें",
+      "exitFullscreen": "फुलस्क्रीन से बाहर",
+      "close": "बंद करें"
     }
   },
   "cart": {
@@ -879,7 +902,12 @@
     "shippingCalculated": "चेकआउट पर गणना",
     "taxCalculated": "चेकआउट पर गणना",
     "decreaseQty": "मात्रा घटाएं",
-    "increaseQty": "मात्रा बढ़ाएं"
+    "increaseQty": "मात्रा बढ़ाएं",
+    "guestSubtitle": "अपना कार्ट देखने और खरीदारी पूरी करने के लिए साइन इन करें",
+    "guestSignIn": "साइन इन करें",
+    "guestCreateAccount": "खाता बनाएं",
+    "guestItemsSaved": "{count, plural, one {# आइटम} other {# आइटम}} सहेजा गया — चेकआउट के लिए साइन इन करें",
+    "guestProceedToCheckout": "चेकआउट पर जाएं"
   },
   "orders": {
     "title": "मेरे ऑर्डर",
@@ -994,7 +1022,24 @@
     "upiStep2": "उपर दिए UPI ID पर {amount} भेजें",
     "upiStep3": "ऑर्डर दें — भुगतान सत्यापित होने पर हम पुष्टि करेंगे",
     "placeAndWhatsapp": "ऑर्डर दें और WhatsApp पर पुष्टि करें",
-    "upiPaymentNote": "WhatsApp पर भुगतान सत्यापित होने पर आपका ऑर्डर सुनिश्चित किया जाएगा"
+    "upiPaymentNote": "WhatsApp पर भुगतान सत्यापित होने पर आपका ऑर्डर सुनिश्चित किया जाएगा",
+    "otpModalTitle": "अपनी पहचान सत्यापित करें",
+    "otpModalDesc": "इस खरीदारी की पुष्टि के लिए, हम आपके पंजीकृत फ़ोन पर OTP भेजेंगे।",
+    "otpSendBtn": "OTP भेजें",
+    "otpSending": "भेजा जा रहा है...",
+    "otpSentDesc": "{phone} पर भेजा गया 6 अंकों का OTP दर्ज करें",
+    "otpInputLabel": "OTP कोड",
+    "otpInputPlaceholder": "000000",
+    "otpVerifyBtn": "सत्यापित करें और ऑर्डर करें",
+    "otpResendBtn": "OTP फिर भेजें",
+    "otpCancelBtn": "रद्द करें",
+    "otpNoPhone": "आपके अकाउंट पर कोई फ़ोन नंबर नहीं है।",
+    "otpAddPhone": "ऑर्डर करने से पहले कृपया अपनी प्रोफ़ाइल सेटिंग में फ़ोन नंबर जोड़ें और सत्यापित करें।",
+    "otpGoToProfile": "प्रोफ़ाइल सेटिंग पर जाएं",
+    "otpErrorInvalid": "अमान्य OTP। कृपया जाँच कर पुनः प्रयास करें।",
+    "otpErrorExpired": "OTP समाप्त हो गया है। कृपया नया OTP माँगें।",
+    "otpErrorMismatch": "यह फ़ोन नंबर आपके अकाउंट से मेल नहीं खाता।",
+    "otpErrorDailyLimit": "आज की OTP सीमा समाप्त हो गई है। कृपया कल पुनः प्रयास करें।"
   },
   "orderSuccess": {
     "fallbackTitle": "ऑर्डर हो गया!",
@@ -1253,6 +1298,10 @@
     "customerReviews": "ग्राहक समीक्षाएं",
     "categoriesTitle": "श्रेणी के अनुसार खरीदारी करें",
     "featuredProductsSubtitle": "आपके लिए चुने गए विशेष उत्पाद",
+    "featuredStores": "विशेष स्टोर",
+    "featuredStoresSubtitle": "शीर्ष विक्रेताओं और उनके संग्रह देखें",
+    "featuredEvents": "इवेंट और ऑफर",
+    "featuredEventsSubtitle": "पोल, सेल और विशेष इवेंट में भाग लें",
     "blogTitle": "हमारे ब्लॉग से",
     "blogSubtitle": "समुदाय से टिप्स, कहानियां और अंतर्दृष्टि",
     "featuresTitle": "हमारे साथ क्यों खरीदारी करें?",
@@ -2357,6 +2406,13 @@
     "enabled": "सक्षम",
     "descriptionPlaceholder": "सेक्शन विवरण दर्ज करें...",
     "configuration": "कॉन्फ़िगरेशन (JSON)",
+    "carouselSettings": "कैरोसेल सेटिंग्स",
+    "formSubtitle": "उपशीर्षक",
+    "formMaxItems": "अधिकतम आइटम दिखाएं",
+    "formAutoScroll": "ऑटो स्क्रॉल",
+    "formScrollInterval": "स्क्रॉल अंतराल (ms)",
+    "formItemsPerView": "प्रति पंक्ति आइटम (डेस्कटॉप)",
+    "formMobileItemsPerView": "प्रति पंक्ति आइटम (मोबाइल)",
     "colStatus": "स्थिति",
     "statusActive": "सक्रिय",
     "statusInactive": "निष्क्रिय",
@@ -2529,6 +2585,7 @@
       "contactTeam": "सहायता टीम से संपर्क करें"
     },
     "metaTitle": "FAQs - LetItRip",
+    "categoryMetaTitle": "{category} FAQs – LetItRip",
     "metaDescription": "LetItRip प्लेटफ़ॉर्म, उत्पादों, शिपिंग, रिटर्न और अधिक के बारे में अक्सर पूछे जाने वाले प्रश्नों के उत्तर खोजें।"
   },
   "avatar": {
@@ -2679,9 +2736,26 @@
     "available": "उपलब्ध रिपकॉइन",
     "engaged": "लगे हुए रिपकॉइन",
     "engagedNote": "सक्रिय बोलियों में बंद",
+    "total": "कुल रिपकॉइन",
+    "totalNote": "उपलब्ध + लगे हुए",
     "buyTitle": "रिपकॉइन खरीदें",
     "buyNote": "10 रिपकॉइन = ₹1। नीलामी में बोली लगाने के लिए रिपकॉइन का उपयोग करें।",
     "buyButton": "रिपकॉइन खरीदें",
+    "refunded": "वापस किया गया",
+    "tabs": {
+      "all": "सभी",
+      "purchases": "खरीदारी"
+    },
+    "txType": {
+      "purchase": "खरीद",
+      "engage": "बोली लगाई",
+      "release": "बोली वापस",
+      "forfeit": "जब्त",
+      "return": "वापसी",
+      "refund": "रिफंड",
+      "admin_grant": "एडमिन क्रेडिट",
+      "admin_deduct": "एडमिन डेबिट"
+    },
     "history": {
       "title": "लेनदेन इतिहास",
       "type": "प्रकार",
@@ -2689,16 +2763,23 @@
       "description": "विवरण",
       "date": "दिनांक",
       "empty": "अभी तक कोई लेनदेन नहीं",
-      "emptyDesc": "आपका रिपकॉइन लेनदेन इतिहास यहां दिखाई देगा।"
+      "emptyDesc": "आपका रिपकॉइन लेनदेन इतिहास यहां दिखाई देगा।",
+      "viewListing": "लिस्टिंग देखें",
+      "refund": "वापसी करें",
+      "notEnoughToRefund": "वापसी के लिए पर्याप्त कॉइन नहीं"
     },
     "buy": {
       "title": "रिपकॉइन खरीदें",
-      "packsLabel": "पैक चुनें",
-      "packs": "पैक",
+      "packsLabel": "पैकेज चुनें",
       "coins": "रिपकॉइन",
+      "bonus": "बोनस",
+      "bonusNote": "+{bonus} RC बोनस शामिल",
       "amount": "राशि",
+      "total": "कुल मिलने वाले",
+      "summary": "ऑर्डर सारांश",
       "payButton": "₹{amount} का भुगतान करें",
-      "infoNote": "1 पैक = 10 रिपकॉइन = ₹1। जब आप किसी बोली में पीछे हो जाते हैं तो बंद कॉइन वापस कर दिए जाते हैं।",
+      "cancel": "रद्द करें",
+      "infoNote": "10 रिपकॉइन = ₹1। जब आप किसी बोली में पीछे हो जाते हैं तो बंद कॉइन वापस कर दिए जाते हैं।",
       "successMessage": "{coins} रिपकॉइन जमा हुए! नया बैलेंस: {balance} RC",
       "errorMessage": "भुगतान विफल। कृपया पुनः प्रयास करें।"
     }
@@ -2716,7 +2797,10 @@
     "send": "भेजें",
     "backToList": "वापस",
     "seller": "विक्रेता",
-    "buyer": "खरीदार"
+    "buyer": "खरीदार",
+    "deleteRoom": "बातचीत हटाएं",
+    "deleteRoomConfirmTitle": "यह बातचीत हटाएं?",
+    "deleteRoomConfirmMessage": "यह बातचीत आपके इनबॉक्स से छिप जाएगी। दूसरा प्रतिभागी इसे तब तक देख सकता है जब तक वे भी इसे नहीं हटाते।"
   },
   "becomeSeller": {
     "metaTitle": "विक्रेता बनें",

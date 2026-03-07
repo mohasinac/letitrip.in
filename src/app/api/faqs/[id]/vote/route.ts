@@ -1,111 +1,56 @@
 /**
  * FAQ Vote API Route
  *
- * Handle helpful/not helpful voting for FAQs
+ * Handle helpful / not-helpful voting for FAQs.
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { faqsRepository } from "@/repositories";
-import { requireAuthFromRequest } from "@/lib/security/authorization";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  faqVoteSchema,
-} from "@/lib/validation/schemas";
-import { AuthenticationError, NotFoundError } from "@/lib/errors";
-import { serverLogger } from "@/lib/server-logger";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { successResponse } from "@/lib/api-response";
+import { faqVoteSchema } from "@/lib/validation/schemas";
+import { NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+
+type IdParams = { id: string };
 
 /**
  * POST /api/faqs/[id]/vote
- *
- * Vote on FAQ (helpful/not helpful)
- * Requires authentication
+ * Requires authentication — vote helpful or not-helpful on a FAQ.
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    const { id } = await params;
+export const POST = createApiHandler<
+  (typeof faqVoteSchema)["_output"],
+  IdParams
+>({
+  auth: true,
+  schema: faqVoteSchema,
+  handler: async ({ params, body }) => {
+    const { id } = params!;
+    const { vote } = body!;
 
-    // Require authentication
-    const user = await requireAuthFromRequest(request);
-
-    // Check if FAQ exists
     const faq = await faqsRepository.findById(id);
-    if (!faq) {
-      throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
-    }
+    if (!faq) throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
 
-    // Parse and validate request body
-    const body = await request.json();
-    const validation = validateRequestBody(faqVoteSchema, body);
-
-    if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
-      );
-    }
-
-    const { vote } = validation.data;
-    const helpful = vote === "helpful"; // "not-helpful" is the other value
-
-    // Initialize stats if not present
+    const helpful = vote === "helpful";
     const stats = faq.stats || { views: 0, helpful: 0, notHelpful: 0 };
 
-    // Update vote counts
-    let updatedFAQ;
-    if (helpful) {
-      updatedFAQ = await faqsRepository.update(id, {
-        stats: {
-          ...stats,
-          helpful: (stats.helpful || 0) + 1,
-        },
-      });
-    } else {
-      updatedFAQ = await faqsRepository.update(id, {
-        stats: {
-          ...stats,
-          notHelpful: (stats.notHelpful || 0) + 1,
-        },
-      });
-    }
+    const updatedFAQ = await faqsRepository.update(id, {
+      stats: {
+        ...stats,
+        helpful: helpful ? (stats.helpful || 0) + 1 : stats.helpful || 0,
+        notHelpful: !helpful
+          ? (stats.notHelpful || 0) + 1
+          : stats.notHelpful || 0,
+      },
+    });
 
-    return NextResponse.json({
-      success: true,
-      data: {
+    return successResponse(
+      {
         helpful: updatedFAQ.stats?.helpful || 0,
         notHelpful: updatedFAQ.stats?.notHelpful || 0,
       },
-      message: helpful
+      helpful
         ? SUCCESS_MESSAGES.FAQ.VOTE_HELPFUL
         : SUCCESS_MESSAGES.FAQ.VOTE_NOT_HELPFUL,
-    });
-  } catch (error) {
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    serverLogger.error("POST /api/faqs/[id]/vote error", { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.REVIEW.VOTE_FAILED },
-      { status: 500 },
     );
-  }
-}
+  },
+});

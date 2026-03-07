@@ -10,7 +10,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
-import { ROUTES } from "@/constants";
+import { ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useAdminFaqs } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
@@ -47,7 +47,7 @@ interface AdminFaqsViewProps {
 
 export function AdminFaqsView({ action }: AdminFaqsViewProps) {
   const router = useRouter();
-  const { showError } = useMessage();
+  const { showError, showSuccess } = useMessage();
   const t = useTranslations("adminFaqs");
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
@@ -191,8 +191,10 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
     try {
       if (drawerMode === "create") {
         await createMutation.mutate(editingFAQ);
+        showSuccess(SUCCESS_MESSAGES.FAQ.CREATED);
       } else {
         await updateMutation.mutate({ id: editingFAQ.id!, data: editingFAQ });
+        showSuccess(SUCCESS_MESSAGES.FAQ.UPDATED);
       }
       await refetch();
       handleCloseDrawer();
@@ -205,6 +207,7 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
     if (!editingFAQ?.id) return;
     try {
       await deleteMutation.mutate(editingFAQ.id);
+      showSuccess(SUCCESS_MESSAGES.FAQ.DELETED);
       await refetch();
       handleCloseDrawer();
     } catch {
@@ -296,7 +299,7 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
               externalPagination
               showViewToggle
               viewMode={
-                (table.get("view") || "table") as "table" | "grid" | "list"
+                (table.get("view") || "grid") as "table" | "grid" | "list"
               }
               onViewModeChange={(mode) => table.set("view", mode)}
               mobileCardRender={(faq) => (

@@ -13,7 +13,6 @@
  * - Review analytics
  */
 
-import { NextRequest } from "next/server";
 import {
   reviewRepository,
   orderRepository,
@@ -26,19 +25,13 @@ import {
   getSearchParams,
   getStringParam,
 } from "@/lib/api/request-helpers";
-import { requireAuthFromRequest } from "@/lib/security/authorization";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES, UI_LABELS } from "@/constants";
-import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  reviewCreateSchema,
-} from "@/lib/validation/schemas";
-import { handleApiError } from "@/lib/errors/error-handler";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { reviewCreateSchema } from "@/lib/validation/schemas";
 import { serverLogger } from "@/lib/server-logger";
 import { sendNewReviewNotificationEmail } from "@/lib/email";
 import { SCHEMA_DEFAULTS } from "@/db/schema";
-import { NextResponse } from "next/server";
+import { createApiHandler } from "@/lib/api/api-handler";
 
 /**
  * GET /api/reviews
@@ -59,21 +52,13 @@ import { NextResponse } from "next/server";
  * Ã¢Å“â€¦ Cache-Control headers set (2 min public)
  * Ã¢Å“â€¦ Featured reviews shortcut (featured=true param, no productId required)
  */
-export async function GET(request: NextRequest) {
-  try {
-    // Rate limiting — public read endpoint
-    const rateLimitResult = await applyRateLimit(request, RateLimitPresets.API);
-    if (!rateLimitResult.success) {
-      return NextResponse.json(
-        { success: false, error: UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED },
-        { status: 429 },
-      );
-    }
-
-    // Parse query parameters
+export const GET = createApiHandler({
+  rateLimit: RateLimitPresets.API,
+  handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const productId = getStringParam(searchParams, "productId");
     const featured = getBooleanParam(searchParams, "featured") === true;
+    const latest = getBooleanParam(searchParams, "latest") === true;
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });
     const pageSize = getNumberParam(searchParams, "pageSize", 10, {
       min: 1,
@@ -85,25 +70,52 @@ export async function GET(request: NextRequest) {
     // Handle featured reviews query (no productId required)
     if (featured) {
       const featuredReviews = await reviewRepository.findFeatured(pageSize);
-      const response = NextResponse.json(
-        {
-          success: true,
-          data: featuredReviews,
-          meta: {
-            page: 1,
-            limit: pageSize,
-            total: featuredReviews.length,
-            totalPages: 1,
-            hasMore: false,
-          },
-        },
-        { status: 200 },
-      );
+      const response = successResponse(featuredReviews, undefined, 200, {
+        page: 1,
+        limit: pageSize,
+        total: featuredReviews.length,
+        totalPages: 1,
+        hasMore: false,
+      });
       response.headers.set(
         "Cache-Control",
         "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
       );
       return response;
+    }
+
+    // Handle latest/all approved reviews (no productId required)
+    // Supports sorts, filters (merged with status==approved), and higher pageSize
+    if (latest) {
+      const latestPageSize = getNumberParam(searchParams, "pageSize", 24, {
+        min: 1,
+        max: 200,
+      });
+      const baseFilter = "status==approved";
+      const combinedFilters = filters ? `${baseFilter},${filters}` : baseFilter;
+      const sieveResult = await reviewRepository.listAll({
+        filters: combinedFilters,
+        sorts,
+        page,
+        pageSize: latestPageSize,
+      });
+      const latestResponse = successResponse(
+        sieveResult.items,
+        undefined,
+        200,
+        {
+          page: sieveResult.page,
+          limit: sieveResult.pageSize,
+          total: sieveResult.total,
+          totalPages: sieveResult.totalPages,
+          hasMore: sieveResult.hasMore,
+        },
+      );
+      latestResponse.headers.set(
+        "Cache-Control",
+        "public, max-age=120, s-maxage=300, stale-while-revalidate=60",
+      );
+      return latestResponse;
     }
 
     // Require productId parameter for product-specific reviews
@@ -143,32 +155,22 @@ export async function GET(request: NextRequest) {
       pageSize,
     });
 
-    const response = NextResponse.json(
-      {
-        success: true,
-        data: sieveResult.items,
-        meta: {
-          page: sieveResult.page,
-          limit: sieveResult.pageSize,
-          total: sieveResult.total,
-          totalPages: sieveResult.totalPages,
-          hasMore: sieveResult.hasMore,
-          ratingDistribution,
-          averageRating: Math.round(averageRating * 10) / 10,
-        },
-      },
-      { status: 200 },
-    );
+    const response = successResponse(sieveResult.items, undefined, 200, {
+      page: sieveResult.page,
+      limit: sieveResult.pageSize,
+      total: sieveResult.total,
+      totalPages: sieveResult.totalPages,
+      hasMore: sieveResult.hasMore,
+      ratingDistribution,
+      averageRating: Math.round(averageRating * 10) / 10,
+    });
     response.headers.set(
       "Cache-Control",
       "public, max-age=120, s-maxage=300, stale-while-revalidate=60",
     );
     return response;
-  } catch (error) {
-    serverLogger.error(ERROR_MESSAGES.API.REVIEWS_GET_ERROR, { error });
-    return handleApiError(error);
-  }
-}
+  },
+});
 
 /**
  * POST /api/reviews
@@ -191,70 +193,50 @@ export async function GET(request: NextRequest) {
  * Ã¢Å"â€¦ Returns created review with 201 status
  * TODO (Future): Send notification to product seller and admins on new review — ✅ Done
  */
-export async function POST(request: NextRequest) {
-  try {
-    // Require authentication
-    const user = await requireAuthFromRequest(request);
-
-    // Parse and validate request body
-    const body = await request.json();
-    const validation = validateRequestBody(reviewCreateSchema, body);
-
-    if (!validation.success) {
-      return errorResponse(
-        ERROR_MESSAGES.VALIDATION.FAILED,
-        400,
-        formatZodErrors(validation.errors),
-      );
-    }
-
-    // Check if user already reviewed this product
+export const POST = createApiHandler<(typeof reviewCreateSchema)["_output"]>({
+  auth: true,
+  schema: reviewCreateSchema,
+  handler: async ({ user, body }) => {
     const existingReviews = await reviewRepository.findByProduct(
-      validation.data.productId,
+      body!.productId,
     );
-    const userReview = existingReviews.find((r) => r.userId === user.uid);
+    const userReview = existingReviews.find((r) => r.userId === user!.uid);
 
     if (userReview) {
       return errorResponse(ERROR_MESSAGES.REVIEW.ALREADY_REVIEWED, 400);
     }
 
-    // Verify user purchased the product before allowing a review
     const hasPurchased = await orderRepository.hasUserPurchased(
-      user.uid,
-      validation.data.productId,
+      user!.uid,
+      body!.productId,
     );
-
     if (!hasPurchased) {
       return errorResponse(ERROR_MESSAGES.REVIEW.PURCHASE_REQUIRED, 403);
     }
 
-    const verified = true; // Purchase confirmed — mark review as verified
-
-    // Create review with moderation status
     const review = await reviewRepository.create({
-      ...validation.data,
-      userId: user.uid,
-      userName: user.displayName || "Anonymous",
-      userAvatar: user.photoURL || undefined,
-      verified,
-      status: "pending" as any, // Requires moderation before appearing publicly
+      ...body!,
+      userId: user!.uid,
+      userName: user!.displayName || "Anonymous",
+      userAvatar: user!.photoURL || undefined,
+      verified: true,
+      status: "pending" as any,
     } as any);
 
-    // Fire-and-forget: notify seller + admin (do not await — keeps response fast)
     const adminEmail =
       process.env.ADMIN_NOTIFICATION_EMAIL || SCHEMA_DEFAULTS.ADMIN_EMAIL;
     productRepository
-      .findById(validation.data.productId)
+      .findById(body!.productId)
       .then((product) => {
         if (!product) return;
         return sendNewReviewNotificationEmail({
           sellerEmail: product.sellerEmail || adminEmail,
           adminEmail,
-          reviewerName: user.displayName || "Anonymous",
+          reviewerName: user!.displayName || "Anonymous",
           productTitle: product.title,
-          productId: (product as any).id ?? validation.data.productId,
-          rating: validation.data.rating,
-          comment: validation.data.comment,
+          productId: (product as any).id ?? body!.productId,
+          rating: body!.rating,
+          comment: body!.comment,
         });
       })
       .catch((err) =>
@@ -268,8 +250,5 @@ export async function POST(request: NextRequest) {
       SUCCESS_MESSAGES.REVIEW.SUBMITTED_PENDING_MODERATION,
       201,
     );
-  } catch (error) {
-    serverLogger.error(ERROR_MESSAGES.API.REVIEWS_POST_ERROR, { error });
-    return handleApiError(error);
-  }
-}
+  },
+});

@@ -44,11 +44,12 @@ export function useRelatedProducts(
   category: string,
   excludeId: string,
   limit = 8,
+  isAuction = false,
 ) {
-  const params = `pageSize=${limit}&filters=status==published,category==${encodeURIComponent(category)}&sorts=-createdAt`;
+  const params = `pageSize=${limit}&filters=status==published,category==${encodeURIComponent(category)},isAuction==${isAuction}&sorts=-createdAt`;
 
   return useApiQuery<RelatedProductsResponse>({
-    queryKey: ["related-products", category, excludeId],
+    queryKey: ["related-products", category, excludeId, isAuction],
     queryFn: () => productService.list(params),
     enabled: Boolean(category),
     cacheTTL: 5 * 60 * 1000,

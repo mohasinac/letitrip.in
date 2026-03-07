@@ -321,7 +321,7 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
           actions={actions}
           externalPagination
           showViewToggle
-          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(product) => (
             <Card

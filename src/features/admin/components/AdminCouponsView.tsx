@@ -67,8 +67,9 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
   const filtersArr: string[] = [];
   if (searchTerm) filtersArr.push(`code@=*${searchTerm}`);
   if (typeFilter) filtersArr.push(`type==${typeFilter}`);
-  if (statusFilter === "true") filtersArr.push("isActive==true");
-  else if (statusFilter === "false") filtersArr.push("isActive==false");
+  if (statusFilter === "true") filtersArr.push("validity.isActive==true");
+  else if (statusFilter === "false")
+    filtersArr.push("validity.isActive==false");
 
   const [drawerMode, setDrawerMode] = useState<DrawerMode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -231,7 +232,7 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
           keyExtractor={(c: CouponDocument) => c.id}
           externalPagination
           showViewToggle
-          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(coupon) => (
             <Card className="p-4 space-y-2">

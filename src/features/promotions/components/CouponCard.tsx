@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useMessage } from "@/hooks";
 import { Button, Card, Heading, Span, Text } from "@/components";
 import { useTranslations } from "next-intl";
-import { THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
 import type { CouponDocument } from "@/db/schema";
 
@@ -11,6 +12,7 @@ const { themed, flex } = THEME_CONSTANTS;
 
 export function CouponCard({ coupon }: { coupon: CouponDocument }) {
   const t = useTranslations("promotions");
+  const { showError } = useMessage();
   const [copied, setCopied] = useState(false);
 
   function getDiscountLabel(c: CouponDocument): string {
@@ -34,7 +36,7 @@ export function CouponCard({ coupon }: { coupon: CouponDocument }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback: no-op
+      showError(ERROR_MESSAGES.GENERIC.TRY_AGAIN);
     }
   };
 

@@ -21,15 +21,15 @@ export const DELETE = createApiHandler({
   schema: deleteAccountSchema,
   handler: async ({ user }) => {
     // Delete all user data (cascade delete)
-    await tokenRepository.email.deleteAllForUser(user.uid);
-    await tokenRepository.password.deleteAllForUser(user.uid);
+    await tokenRepository.email.deleteAllForUser(user!.uid);
+    await tokenRepository.password.deleteAllForUser(user!.uid);
 
     // Delete user's products and orders via repositories
-    await productRepository.deleteBySeller(user.uid);
-    await orderRepository.deleteByUser(user.uid);
+    await productRepository.deleteBySeller(user!.uid);
+    await orderRepository.deleteByUser(user!.uid);
 
-    await userRepository.delete(user.uid);
-    await getAdminAuth().deleteUser(user.uid);
+    await userRepository.delete(user!.uid);
+    await getAdminAuth().deleteUser(user!.uid);
 
     return successResponse(null, SUCCESS_MESSAGES.ACCOUNT.DELETED);
   },

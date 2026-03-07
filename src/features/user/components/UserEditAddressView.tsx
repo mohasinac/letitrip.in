@@ -56,9 +56,10 @@ export function UserEditAddressView() {
 
   useEffect(() => {
     if (!loading && !user) {
+      showToast(ERROR_MESSAGES.AUTH.UNAUTHORIZED, "error");
       router.push(ROUTES.AUTH.LOGIN);
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, showToast]);
 
   useEffect(() => {
     if (addressError) {

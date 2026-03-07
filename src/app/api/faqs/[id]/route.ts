@@ -1,69 +1,50 @@
 /**
  * FAQs [id] API Routes
  *
- * Individual FAQ operations with ownership checks
+ * Individual FAQ operations — GET (public), PATCH/DELETE (admin).
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { faqsRepository, siteSettingsRepository } from "@/repositories";
-import { requireRoleFromRequest } from "@/lib/security/authorization";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  faqUpdateSchema,
-} from "@/lib/validation/schemas";
-import {
-  AuthenticationError,
-  AuthorizationError,
-  NotFoundError,
-} from "@/lib/errors";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { successResponse } from "@/lib/api-response";
+import { faqUpdateSchema } from "@/lib/validation/schemas";
+import { NotFoundError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import type { FAQDocument } from "@/db/schema";
+
+type IdParams = { id: string };
 
 /**
  * GET /api/faqs/[id]
- *
- * Get FAQ by ID with variable interpolation
- * Public access
+ * Public — returns interpolated FAQ with site-setting variable substitution.
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    const { id } = await params;
+export const GET = createApiHandler<never, IdParams>({
+  handler: async ({ params }) => {
+    const { id } = params!;
 
-    // Fetch FAQ
     const faq = await faqsRepository.findById(id);
+    if (!faq) throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
 
-    if (!faq) {
-      throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
-    }
-
-    // Get site settings for variable interpolation
     const siteSettings = await siteSettingsRepository.getSingleton();
 
-    // Helper function to interpolate variables
-    const interpolateVariables = (
+    const interpolate = (
       text: string,
-      variables: Record<string, string | undefined>,
+      vars: Record<string, string | undefined>,
     ) => {
       let result = text;
-      Object.entries(variables).forEach(([key, value]) => {
-        if (value) {
-          const regex = new RegExp(`\\{\\{${key}\\}\\}`, "g");
-          result = result.replace(regex, value);
-        }
+      Object.entries(vars).forEach(([key, value]) => {
+        if (value)
+          result = result.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), value);
       });
       return result;
     };
 
-    // Interpolate variables in answer
-    const interpolatedFAQ = {
+    const interpolatedFAQ: FAQDocument = {
       ...faq,
       answer: {
         ...faq.answer,
-        text: interpolateVariables(faq.answer.text, {
+        text: interpolate(faq.answer.text, {
           companyName: siteSettings.siteName,
           supportEmail: siteSettings.contact.email,
           supportPhone: siteSettings.contact.phone,
@@ -73,7 +54,7 @@ export async function GET(
       },
     };
 
-    // Increment view count (async, non-blocking)
+    // Increment view count — fire-and-forget, non-blocking
     const currentStats = faq.stats || { views: 0, helpful: 0, notHelpful: 0 };
     faqsRepository
       .update(id, {
@@ -87,154 +68,40 @@ export async function GET(
         serverLogger.error("FAQ view count update failed", { error: err }),
       );
 
-    return NextResponse.json({
-      success: true,
-      data: interpolatedFAQ,
-    });
-  } catch (error) {
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    serverLogger.error("GET /api/faqs/[id] error", { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.FAQ.FETCH_FAILED },
-      { status: 500 },
-    );
-  }
-}
+    return successResponse(interpolatedFAQ);
+  },
+});
 
 /**
  * PATCH /api/faqs/[id]
- *
- * Update FAQ
- * Admin only
+ * Admin only — update FAQ fields.
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    const { id } = await params;
-    // Require admin authentication
-    const user = await requireRoleFromRequest(request, ["admin"]);
-
-    // Check if FAQ exists
+export const PATCH = createApiHandler<
+  Partial<(typeof faqUpdateSchema)["_output"]>,
+  IdParams
+>({
+  roles: ["admin"],
+  schema: faqUpdateSchema,
+  handler: async ({ params, body }) => {
+    const { id } = params!;
     const faq = await faqsRepository.findById(id);
-    if (!faq) {
-      throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
-    }
-
-    // Parse and validate request body
-    const body = await request.json();
-    const validation = validateRequestBody(faqUpdateSchema, body);
-
-    if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
-      );
-    }
-
-    // Update FAQ
-    const updatedFAQ = await faqsRepository.update(id, validation.data as any);
-
-    return NextResponse.json({
-      success: true,
-      data: updatedFAQ,
-      message: SUCCESS_MESSAGES.FAQ.UPDATED,
-    });
-  } catch (error) {
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
-    }
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    serverLogger.error("PATCH /api/faqs/[id] error", { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.FAQ.UPDATE_FAILED },
-      { status: 500 },
-    );
-  }
-}
+    if (!faq) throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
+    const updatedFAQ = await faqsRepository.update(id, body as any);
+    return successResponse(updatedFAQ, SUCCESS_MESSAGES.FAQ.UPDATED);
+  },
+});
 
 /**
  * DELETE /api/faqs/[id]
- *
- * Delete FAQ
- * Admin only
+ * Admin only — hard delete FAQ.
  */
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    const { id } = await params;
-    // Require admin authentication
-    const user = await requireRoleFromRequest(request, ["admin"]);
-
-    // Check if FAQ exists
+export const DELETE = createApiHandler<never, IdParams>({
+  roles: ["admin"],
+  handler: async ({ params }) => {
+    const { id } = params!;
     const faq = await faqsRepository.findById(id);
-    if (!faq) {
-      throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
-    }
-
-    // Hard delete FAQ (FAQs can be removed completely)
+    if (!faq) throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
     await faqsRepository.delete(id);
-
-    return NextResponse.json({
-      success: true,
-      message: SUCCESS_MESSAGES.FAQ.DELETED,
-    });
-  } catch (error) {
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
-      );
-    }
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
-    }
-
-    if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 404 },
-      );
-    }
-
-    serverLogger.error("DELETE /api/faqs/[id] error", { error });
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.FAQ.DELETE_FAILED },
-      { status: 500 },
-    );
-  }
-}
+    return successResponse(undefined, SUCCESS_MESSAGES.FAQ.DELETED);
+  },
+});

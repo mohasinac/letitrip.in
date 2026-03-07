@@ -36,6 +36,20 @@ const FeaturedAuctionsSection = dynamic(
     })),
   { ssr: true },
 );
+const FeaturedStoresSection = dynamic(
+  () =>
+    import("@/features/homepage").then((m) => ({
+      default: m.FeaturedStoresSection,
+    })),
+  { ssr: true },
+);
+const FeaturedEventsSection = dynamic(
+  () =>
+    import("@/features/homepage").then((m) => ({
+      default: m.FeaturedEventsSection,
+    })),
+  { ssr: true },
+);
 const AdvertisementBanner = dynamic(
   () =>
     import("@/features/homepage").then((m) => ({
@@ -78,6 +92,8 @@ export default function Page() {
       <TopCategoriesSection />
       <FeaturedProductsSection />
       <FeaturedAuctionsSection />
+      <FeaturedStoresSection />
+      <FeaturedEventsSection />
       <AdvertisementBanner />
       <CustomerReviewsSection />
       <WhatsAppCommunitySection />

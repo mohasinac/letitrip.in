@@ -27,6 +27,7 @@ import {
   signInWithPhoneNumber,
   GoogleAuthProvider,
   OAuthProvider,
+  PhoneAuthProvider,
   RecaptchaVerifier,
   sendEmailVerification,
   sendPasswordResetEmail,
@@ -241,8 +242,72 @@ export async function signInWithApple(): Promise<
   }
 }
 
+/** Module-level reCAPTCHA verifier — only one active instance allowed by Firebase. */
+let _phoneRecaptcha: RecaptchaVerifier | null = null;
+
+/**
+ * Send a phone OTP to the given number.
+ * Manages the reCAPTCHA verifier lifecycle internally — no Firebase imports needed
+ * in calling hooks/components.
+ *
+ * @returns verificationId — pass to `reauthenticateWithPhone` to confirm.
+ */
+export async function sendPhoneOtp(
+  phoneNumber: string,
+  recaptchaContainerId: string,
+): Promise<string> {
+  // Clear any stale verifier from a previous send attempt (e.g. Resend OTP).
+  if (_phoneRecaptcha) {
+    try {
+      _phoneRecaptcha.clear();
+    } catch {}
+    _phoneRecaptcha = null;
+  }
+
+  try {
+    const verifier = new RecaptchaVerifier(auth, recaptchaContainerId, {
+      size: "invisible",
+    });
+    _phoneRecaptcha = verifier;
+
+    const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
+    return result.verificationId;
+  } catch (error: any) {
+    logger.error("Phone OTP send error", { error });
+    throw new AuthenticationError(error.message || "Failed to send OTP", {
+      provider: "phone",
+      phoneNumber,
+    });
+  }
+}
+
+/**
+ * Re-authenticate the currently signed-in user with a phone OTP.
+ * Call this after `sendPhoneOtp` once the user has entered the 6-digit code.
+ *
+ * @param verificationId - returned from `sendPhoneOtp`
+ * @param code - 6-digit OTP entered by the user
+ */
+export async function reauthenticateWithPhone(
+  verificationId: string,
+  code: string,
+): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new AuthenticationError("You must be signed in to verify.");
+  }
+  try {
+    const credential = PhoneAuthProvider.credential(verificationId, code);
+    await reauthenticateWithCredential(user, credential);
+  } catch (error: any) {
+    logger.error("Phone OTP confirm error", { error });
+    throw error; // re-throw with original code so caller can inspect error.code
+  }
+}
+
 /**
  * Sign in with phone number
+ * @deprecated Use `sendPhoneOtp` — this wrapper is kept for backward compatibility.
  * Requires reCAPTCHA verification
  */
 export async function signInWithPhone(

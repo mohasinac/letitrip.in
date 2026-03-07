@@ -60,8 +60,12 @@ export interface TitleBarLayoutProps {
   cartHref: string;
   profileHref: string;
   user: TitleBarUser | null;
+  /** Live cart item count — shown in badge when > 0. */
+  cartCount?: number;
   /** Slot rendered between the search button and profile link (e.g. NotificationBell). */
   notificationSlot?: React.ReactNode;
+  /** Dev-only slot rendered just before the hamburger button. */
+  devSlot?: React.ReactNode;
   id?: string;
 }
 
@@ -75,7 +79,9 @@ export function TitleBarLayout({
   cartHref,
   profileHref,
   user,
+  cartCount = 0,
   notificationSlot,
+  devSlot,
   id = "title-bar",
 }: TitleBarLayoutProps) {
   const { colors, layout, zIndex, flex } = THEME_CONSTANTS;
@@ -124,11 +130,13 @@ export function TitleBarLayout({
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
               />
             </svg>
-            <Span
-              className={`absolute -top-1 -right-1 ${THEME_CONSTANTS.colors.notification.badge} text-xs min-w-[20px] h-5 px-1.5 ${flex.center} rounded-full font-semibold shadow-md`}
-            >
-              0
-            </Span>
+            {cartCount > 0 && (
+              <Span
+                className={`absolute -top-1 -right-1 ${THEME_CONSTANTS.colors.notification.badge} text-xs min-w-[20px] h-5 px-1.5 ${flex.center} rounded-full font-semibold shadow-md`}
+              >
+                {cartCount > 99 ? "99+" : cartCount}
+              </Span>
+            )}
           </TextLink>
 
           {/* Search — hidden on mobile (available in bottom nav) */}
@@ -205,6 +213,9 @@ export function TitleBarLayout({
               </svg>
             )}
           </TextLink>
+
+          {/* Dev-only slot (e.g. seed link) */}
+          {devSlot}
 
           {/* Hamburger Menu */}
           <Button

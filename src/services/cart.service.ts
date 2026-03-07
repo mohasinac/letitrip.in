@@ -28,4 +28,8 @@ export const cartService = {
 
   /** Clear the entire cart */
   clear: () => apiClient.delete(API_ENDPOINTS.CART.CLEAR),
+
+  /** Merge guest cart items (from localStorage) into the authenticated user's cart */
+  mergeGuestCart: (items: { productId: string; quantity: number }[]) =>
+    apiClient.post(API_ENDPOINTS.CART.MERGE, { items }),
 };

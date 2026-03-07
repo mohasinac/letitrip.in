@@ -86,6 +86,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
       enabled: true,
       showOnHomepage: false,
       order: 0,
+      display: { showInMenu: true, showInFooter: false },
     };
     setEditingCategory(newCat);
     initialFormRef.current = JSON.stringify(newCat);

@@ -15,8 +15,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     excerpt:
       "From the snow-capped trails of Himachal to the lush ghats of Kerala — discover the finest trekking routes India has to offer this year.",
     content: `<h2>1. Roopkund Trek, Uttarakhand</h2><p>Known as the 'Mystery Lake Trail', Roopkund sits at 5,029 m and rewards trekkers with panoramic Himalayan views and an eerie glacial lake containing ancient skeletal remains. Best season: May–June and September–October.</p><h2>2. Hampta Pass, Himachal Pradesh</h2><p>A dramatic crossover between the lush Kullu Valley and the stark Spiti landscape, Hampta Pass (4,270 m) is perfect for first-time high-altitude trekkers.</p><h2>3. Bali Pass, Uttarakhand</h2><p>One of the more demanding trails, Bali Pass connects the Yamunotri region to Har Ki Dun and offers unmatched views of the Swargarohini massif.</p><p>… and seven more incredible trails await inside.</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&h=630&fit=crop",
+    coverImage: "https://picsum.photos/seed/adventure-trek/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.GUIDES,
     tags: [
       "trekking",
@@ -47,8 +46,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     excerpt:
       "Overwhelmed by the sheer volume of gear options? This comprehensive checklist helps beginners pick the right boots, backpacks, and layers without breaking the bank.",
     content: `<h2>Why Gear Matters</h2><p>Poor gear choices are the number-one reason beginners abandon a trek mid-way. The right equipment keeps you safe, comfortable, and prepared for sudden weather changes.</p><h2>The Essential Checklist</h2><ul><li><strong>Boots:</strong> Waterproof ankle-support boots are non-negotiable for anything above 2,000 m.</li><li><strong>Backpack:</strong> A 40–50 L pack with a hip-belt distributes weight across your hips, not your shoulders.</li><li><strong>Base Layers:</strong> Merino wool or synthetic moisture-wicking fabrics — never cotton.</li><li><strong>Shell Jacket:</strong> A windproof, waterproof shell that packs down small.</li></ul><h2>Budget vs. Premium</h2><p>You don't need to blow ₹50,000 on your first kit. We break down which items are worth splurging on and where you can safely save.</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1551632811-561732d1e306?w=1200&h=630&fit=crop",
+    coverImage: "https://picsum.photos/seed/hiking-gear/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.TIPS,
     tags: [
       "gear",
@@ -79,8 +77,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     excerpt:
       "Today we're thrilled to announce our new live auction platform — the best way to score premium outdoor gear at prices set by the community.",
     content: `<h2>Introducing Live Auctions</h2><p>LetItRip's auction feature lets verified sellers list quality outdoor equipment — from vintage cameras to premium tents — and buyers bid in real time. Every listing is verified by our team before it goes live.</p><h2>How It Works</h2><ol><li>Browse open auctions on the <a href="/auctions">Auctions page</a>.</li><li>Place a bid — you'll be instantly notified if outbid.</li><li>Win the auction and check out securely within 24 hours.</li></ol><h2>Seller Benefits</h2><p>Sellers get competitive, market-driven prices without the race to the bottom. Payouts are processed within 3–5 business days after buyer confirmation.</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200&h=630&fit=crop",
+    coverImage: "https://picsum.photos/seed/auction-launch/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.NEWS,
     tags: ["auctions", "platform", "feature", "launch", "news"],
     isFeatured: false,
@@ -104,8 +101,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     excerpt:
       "We've strengthened our protection policies to give every transaction on LetItRip more confidence — here's a clear breakdown of what changed.",
     content: `<h2>Key Changes Effective 1 February 2026</h2><p><strong>Buyers:</strong> The return window for physical goods is extended from 7 to 14 days for all categories except digital items. Refunds are now processed within 5 business days — down from 10.</p><p><strong>Sellers:</strong> We've introduced a dispute resolution SLA; all buyer claims will be reviewed within 48 hours. Sellers with a dispute rate below 0.5% get a 'Trusted Seller' badge automatically.</p><h2>Why We Made These Changes</h2><p>Feedback from our community surveys — over 2,400 responses — made it clear that faster refunds and clearer dispute timelines were the top priorities. We listened.</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&h=630&fit=crop",
+    coverImage: "https://picsum.photos/seed/business-policy/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.UPDATES,
     tags: ["policy", "protection", "returns", "refunds", "updates"],
     isFeatured: false,
@@ -129,8 +125,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     excerpt:
       "You don't need a DSLR to take great listing photos. Learn how to use natural light, simple backgrounds, and your phone camera to make your products irresistible.",
     content: `<h2>Tip 1 — Chase Natural Light</h2><p>Place your product near a north-facing window for soft, diffused light with no harsh shadows. Golden hour (7–9 AM or 4–6 PM) gives warm tones that work beautifully for outdoor gear.</p><h2>Tip 2 — Keep Backgrounds Simple</h2><p>A plain white foam board costs ₹50 at any stationery shop. It removes distractions and makes your product the sole focus.</p><h2>Tip 3 — Shoot Multiple Angles</h2><p>Buyers want to see front, back, sides, close-ups of details, and any wear or damage. Aim for 6–8 photos per listing.</p><h2>Tip 4 — Use Portrait Mode Sparingly</h2><p>Portrait mode blurs backgrounds, but over-blurring hides useful context. Use it for hero shots only, not detail shots where sharpness is key.</p><h2>Tip 5 — Edit Minimally</h2><p>Adjust brightness and contrast only — never change colours. Buyers should receive exactly what they see in the photo.</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1200&h=630&fit=crop",
+    coverImage: "https://picsum.photos/seed/product-photography/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.TIPS,
     tags: ["seller", "photography", "listing", "tips", "product-photos"],
     isFeatured: false,
@@ -154,8 +149,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     excerpt:
       "Meet the outstanding community members who made January 2026 a record month — from our top-rated sellers to the most helpful reviewers.",
     content: `<h2>Top Sellers of January</h2><p><strong>TechHub Electronics</strong> — 47 orders fulfilled at a 4.9-star average. Their iPhone and Samsung listings consistently hit the featured section thanks to detailed descriptions and fast shipping.</p><p><strong>Fashion Boutique</strong> — specialising in sustainable clothing, they earned the 'Trusted Seller' badge in January with a zero-dispute month.</p><h2>Top Reviewers</h2><p><strong>John Doe</strong> — 4 in-depth reviews in January, each with detailed pros/cons and real-world usage context. John's review of the iPhone 15 Pro Max has been marked helpful by 24 community members.</p><h2>New Members</h2><p>330 new buyers and 18 new sellers joined LetItRip in January — a 34% month-on-month increase. Welcome to the community!</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=630&fit=crop",
+    coverImage: "https://picsum.photos/seed/community-team/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.COMMUNITY,
     tags: ["community", "spotlight", "sellers", "reviewers", "january-2026"],
     isFeatured: false,
@@ -180,8 +174,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     excerpt:
       "From a signed Babolat tennis racket to a sealed iPhone 15 Pro Max bundle — March 2026 brings our biggest and most diverse auction lineup yet. Here's everything live right now.",
     content: `<h2>Why This Month's Auctions Are Special</h2><p>March 2026 marks the most diverse auction month in LetItRip's history. We have 20 active auctions spanning electronics, fashion, home, and sports — with competitive opening bids and items that simply can't be found at retail.</p><h2>Electronics — Bid for the Best Tech</h2><p><strong>PS5 Slim Gaming Console</strong> — Barely used, all accessories included. Closing 7 March. <strong>AirPods Pro 2</strong> and <strong>Bose 700 Headphones</strong> both closing 8 March — perfect if you're in the market for premium audio. <strong>MacBook Pro M3 14"</strong> — factory-sealed, closing 16 March with multiple active bidders.</p><h2>Fashion — Rare & Collectible</h2><p>Fashion Boutique has listed a signed pair of <strong>Air Jordan 1 Retro High OG</strong> sneakers, a collector-grade <strong>Hermès Silk Twilly Scarf</strong>, and a handwoven <strong>Designer Kanjeevaram Silk Saree</strong> — all authenticated and closing mid-March.</p><h2>Sports & Home — Premium & Practical</h2><p>Home Essentials brings a <strong>Trek Domane SL 5 Road Bike</strong>, a <strong>Babolat Pure Aero Tennis Racket (signed)</strong>, and a <strong>Dyson V15 Detect Vacuum</strong> — all at starting bids well below retail.</p><h2>How to Bid</h2><p>Visit the <a href="/auctions">Auctions page</a>, sign in, and place your bid. You'll be notified instantly if outbid so you never miss a chance to win.</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1505253468034-514d2507d914?w=1200&h=630&fit=crop",
+    coverImage: "https://picsum.photos/seed/auction-spotlight/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.NEWS,
     tags: [
       "auctions",
@@ -232,8 +225,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     excerpt:
       "December's mega sale was our biggest ever — here's a look at the numbers, the bestsellers, and what the community loved most.",
     content: `<p>This post has been archived. For current deals and updates, visit our <a href="/blog">blog</a>.</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=1200&h=630&fit=crop",
+    coverImage: "https://picsum.photos/seed/festive-sale/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.COMMUNITY,
     tags: ["sale", "december", "2025", "recap"],
     isFeatured: false,

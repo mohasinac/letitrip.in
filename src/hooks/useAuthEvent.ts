@@ -34,34 +34,58 @@ import {
   RealtimeEventType,
   RealtimeEventStatus,
   useRealtimeEvent,
+  type RTDBEventPayload,
 } from "./useRealtimeEvent";
 import { ERROR_MESSAGES } from "@/constants";
 
 // Re-export so existing callers typed against AuthEventStatus continue to compile.
 export type { RealtimeEventStatus as AuthEventStatus };
 
+/** Data carried in the RTDB success payload for auth events. */
+export interface AuthEventData {
+  /** True when this was a first-time Google sign-up (account + profile were just created). */
+  isNewUser: boolean;
+  uid: string;
+  role: string;
+}
+
 export interface UseAuthEventReturn {
   status: RealtimeEventStatus;
   /** Error message from the server, present when status === 'failed'. */
   error: string | null;
+  /** Populated on status === 'success'. */
+  data: AuthEventData | null;
   subscribe: (eventId: string, customToken: string) => void;
   reset: () => void;
 }
 
-const AUTH_EVENT_TIMEOUT_MS = 2 * 60 * 1000;
+const AUTH_EVENT_TIMEOUT_MS = 5 * 60 * 1000;
+
+function extractAuthData(raw: RTDBEventPayload): AuthEventData | null {
+  if (
+    typeof raw.uid !== "string" ||
+    typeof raw.role !== "string" ||
+    typeof raw.isNewUser !== "boolean"
+  ) {
+    return null;
+  }
+  return { isNewUser: raw.isNewUser, uid: raw.uid, role: raw.role };
+}
 
 export function useAuthEvent(): UseAuthEventReturn {
-  const { status, error, subscribe, reset } = useRealtimeEvent<undefined>({
-    type: RealtimeEventType.AUTH,
-    rtdbPath: RTDB_PATHS.AUTH_EVENTS,
-    timeoutMs: AUTH_EVENT_TIMEOUT_MS,
-    messages: {
-      tokenFailure: ERROR_MESSAGES.AUTH.SIGNIN_INIT_FAILED,
-      connectionLost: ERROR_MESSAGES.AUTH.SIGNIN_CONNECTION_LOST,
-      timedOut: ERROR_MESSAGES.AUTH.SIGNIN_TIMED_OUT,
-      failure: ERROR_MESSAGES.AUTH.SIGN_IN_FAILED,
-    },
-  });
+  const { status, error, data, subscribe, reset } =
+    useRealtimeEvent<AuthEventData>({
+      type: RealtimeEventType.AUTH,
+      rtdbPath: RTDB_PATHS.AUTH_EVENTS,
+      timeoutMs: AUTH_EVENT_TIMEOUT_MS,
+      extractData: extractAuthData,
+      messages: {
+        tokenFailure: ERROR_MESSAGES.AUTH.SIGNIN_INIT_FAILED,
+        connectionLost: ERROR_MESSAGES.AUTH.SIGNIN_CONNECTION_LOST,
+        timedOut: ERROR_MESSAGES.AUTH.SIGNIN_TIMED_OUT,
+        failure: ERROR_MESSAGES.AUTH.SIGN_IN_FAILED,
+      },
+    });
 
-  return { status, error, subscribe, reset };
+  return { status, error, data, subscribe, reset };
 }

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ShieldCheck, Truck, RotateCcw, Headphones } from "lucide-react";
 import { THEME_CONSTANTS, TRUST_FEATURES } from "@/constants";
 import type { TrustFeatureItem } from "@/constants";
-import { Heading, Section, Text } from "@/components";
+import { Heading, Section, Text, Card } from "@/components";
 
 // ─── Icon resolver ───────────────────────────────────────────────────────────
 const ICON_MAP: Record<
@@ -30,9 +30,9 @@ function TrustFeatureCard({
   const Icon = ICON_MAP[item.iconName];
 
   return (
-    <div
-      className={`${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} ${THEME_CONSTANTS.spacing.padding.md} text-center
-        shadow-sm hover:shadow-md transition-all duration-300
+    <Card
+      variant="primary"
+      className={`${THEME_CONSTANTS.spacing.padding.md} text-center hover:shadow-md
         ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
       style={{
         transition: `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms, box-shadow 0.2s`,
@@ -54,7 +54,7 @@ function TrustFeatureCard({
       >
         {item.description}
       </Text>
-    </div>
+    </Card>
   );
 }
 

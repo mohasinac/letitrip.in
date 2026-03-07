@@ -1,17 +1,13 @@
 import { NextRequest } from "next/server";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse } from "@/lib/api-response";
 import { userRepository } from "@/repositories";
 import { USER_FIELDS } from "@/db/schema";
+import { createApiHandler } from "@/lib/api/api-handler";
 import type { SieveModel } from "@/lib/query/firebase-sieve";
 import type { UserDocument } from "@/db/schema";
 
-/**
- * GET /api/stores
- * Public endpoint — returns paginated list of active seller stores.
- */
-export async function GET(request: NextRequest) {
-  try {
+export const GET = createApiHandler({
+  handler: async ({ request }) => {
     const { searchParams } = request.nextUrl;
 
     const model: SieveModel = {
@@ -21,7 +17,6 @@ export async function GET(request: NextRequest) {
       pageSize: searchParams.get("pageSize") ?? "24",
     };
 
-    // Append any additional named params as Sieve filters
     const filtersArr: string[] = [];
     const q = searchParams.get("q");
     if (q) filtersArr.push(`displayName_=${q}`);
@@ -30,7 +25,6 @@ export async function GET(request: NextRequest) {
 
     const result = await userRepository.listSellers(model);
 
-    // Strip sensitive fields — return only public store data
     const stores = result.items.map((user: UserDocument) => ({
       uid: user.uid,
       displayName: user.displayName,
@@ -55,7 +49,5 @@ export async function GET(request: NextRequest) {
     }));
 
     return successResponse({ ...result, items: stores });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

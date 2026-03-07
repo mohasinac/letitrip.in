@@ -36,7 +36,11 @@ interface AuctionGridProps {
   onSelectionChange?: (ids: string[]) => void;
 }
 
-function AuctionCardSkeleton({ variant = "grid" }: { variant?: "grid" | "list" }) {
+function AuctionCardSkeleton({
+  variant = "grid",
+}: {
+  variant?: "grid" | "list";
+}) {
   if (variant === "list") {
     return (
       <div className="bg-gray-200 dark:bg-gray-700 rounded-xl overflow-hidden animate-pulse flex flex-row">
@@ -94,7 +98,7 @@ export function AuctionGrid({
   const containerClass =
     variant === "list"
       ? "flex flex-col gap-3"
-      : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4";
+      : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4";
 
   if (loading) {
     return (

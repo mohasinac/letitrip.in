@@ -36,7 +36,10 @@ interface UseCategoryProductsOptions {
   sort: string;
   page: number;
   pageSize: number;
-  priceRange?: string;
+  /** Minimum price filter (numeric string, e.g. "500") */
+  minPrice?: string;
+  /** Maximum price filter (numeric string, e.g. "10000") */
+  maxPrice?: string;
   search?: string;
   /** table.params.toString() — used as cache-key suffix for reactivity */
   cacheKey: string;
@@ -52,7 +55,8 @@ export function useCategoryProducts(
   slug: string,
   options: UseCategoryProductsOptions,
 ) {
-  const { sort, page, pageSize, priceRange, search, cacheKey } = options;
+  const { sort, page, pageSize, minPrice, maxPrice, search, cacheKey } =
+    options;
 
   /* ---- Fetch category by slug ---- */
   const { data: catData, isLoading: catLoading } =
@@ -67,18 +71,12 @@ export function useCategoryProducts(
   /* ---- Build products query params from category + options ---- */
   const productsParams = useMemo(() => {
     if (!category) return null;
-    const [minPrice, maxPrice] = (() => {
-      if (!priceRange) return ["", ""];
-      if (priceRange.endsWith("+")) return [priceRange.replace("+", ""), ""];
-      const parts = priceRange.split("-");
-      return [parts[0] ?? "", parts[1] ?? ""];
-    })();
     const filterParts = ["status==published", `category==${category.id}`];
     if (minPrice) filterParts.push(`price>=${minPrice}`);
     if (maxPrice) filterParts.push(`price<=${maxPrice}`);
     if (search) filterParts.push(`title_=${search}`);
     return `filters=${encodeURIComponent(filterParts.join(","))}&sorts=${encodeURIComponent(sort)}&page=${String(page)}&pageSize=${String(pageSize)}`;
-  }, [category, sort, page, pageSize, priceRange, search]);
+  }, [category, sort, page, pageSize, minPrice, maxPrice, search]);
 
   /* ---- Fetch products ---- */
   const {

@@ -14,12 +14,12 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     active: true,
     media: {
       type: "image",
-      url: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1920&h=1080&fit=crop",
+      url: "https://picsum.photos/seed/ecommerce-marketplace/1920/1080",
       alt: "Welcome to LetItRip - Your Marketplace",
     },
     mobileMedia: {
       type: "image",
-      url: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&h=1200&fit=crop",
+      url: "https://picsum.photos/seed/ecommerce-marketplace/800/1200",
       alt: "Welcome to LetItRip",
     },
     cards: [
@@ -84,7 +84,7 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     active: true,
     media: {
       type: "image",
-      url: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=1920&h=1080&fit=crop",
+      url: "https://picsum.photos/seed/tech-electronics/1920/1080",
       alt: "Electronics Mega Sale",
     },
     cards: [
@@ -119,8 +119,7 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
         gridCol: 3,
         background: {
           type: "image",
-          value:
-            "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&h=600&fit=crop",
+          value: "https://picsum.photos/seed/iphone15/600/600",
         },
         content: {
           title: "iPhone 15 Pro",
@@ -151,7 +150,7 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     active: true,
     media: {
       type: "image",
-      url: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1920&h=1080&fit=crop",
+      url: "https://picsum.photos/seed/womens-fashion/1920/1080",
       alt: "Latest Fashion Collection",
     },
     cards: [
@@ -203,8 +202,7 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
       type: "video",
       url: "https://assets.mixkit.co/videos/preview/mixkit-going-down-on-an-escalator-4549-large.mp4",
       alt: "Special Offers Video",
-      thumbnail:
-        "https://images.unsplash.com/photo-1607082349566-187342175e2f?w=1920&h=1080&fit=crop",
+      thumbnail: "https://picsum.photos/seed/shopping-sale/1920/1080",
     },
     cards: [
       {
@@ -259,7 +257,7 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     active: true,
     media: {
       type: "image",
-      url: "https://images.unsplash.com/photo-1505253468034-514d2507d914?w=1920&h=1080&fit=crop",
+      url: "https://picsum.photos/seed/live-auction/1920/1080",
       alt: "Live Auctions",
     },
     link: {
@@ -321,7 +319,7 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     active: false,
     media: {
       type: "image",
-      url: "https://images.unsplash.com/photo-1557821552-17105176677c?w=1920&h=1080&fit=crop",
+      url: "https://picsum.photos/seed/marketplace-online/1920/1080",
       alt: "Test Banner",
     },
     cards: [],

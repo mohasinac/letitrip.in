@@ -7,6 +7,190 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — MediaLightbox: Full-Screen Image Viewer with Zoom & Pan
+
+### Added
+
+- **`src/components/media/MediaLightbox.tsx`** — New Tier 1 media primitive. Full-screen lightbox overlay with: zoom in/out (toolbar buttons, mouse wheel, pinch-to-zoom), drag-to-pan when zoomed, browser fullscreen toggle, keyboard navigation (Escape, Arrow keys, +/-), swipe navigation on mobile, thumbnail strip, and image counter. Exports `MediaLightbox`, `MediaLightboxProps`, and `LightboxItem`.
+- **`src/components/media/index.ts`** — Exports `MediaLightbox`, `MediaLightboxProps`, and `LightboxItem`.
+- `messages/en.json` + `messages/hi.json` — Added `products.gallery` keys: `openLightbox`, `lightboxTitle`, `zoomIn`, `zoomOut`, `resetZoom`, `enterFullscreen`, `exitFullscreen`, `close`.
+
+### Changed
+
+- **`src/features/products/components/ProductImageGallery.tsx`** — Clicking any product/auction image (or the new expand button in the top-right corner) opens `MediaLightbox` with all images and the correct starting index. Videos are excluded from the lightbox (they play inline as before).
+
+---
+
+## [Unreleased] — BlogArticlesSection: Show Latest When No Featured Posts
+
+### Fixed
+
+- **`src/features/homepage/components/BlogArticlesSection.tsx`** — Section was returning `null` during `isLoading` (no skeleton visible), causing it to flash in after load. Replaced the combined `isLoading || articles.length === 0` guard with separate handling: a 4-column skeleton grid is shown while loading, and `null` is returned only after loading completes with zero articles. The existing featured→latest backfill logic (`blogService.getFeatured` → `blogService.getLatest` fill) already ensures the section never hides merely because no posts are marked featured.
+
+---
+
+## [Unreleased] — Admin Homepage Sections: Carousel Config UI + Stores/Events Support
+
+### Fixed
+
+- **`src/features/admin/components/AdminSectionsView.tsx`** — Default section type on "Create" was incorrectly set to the non-existent `"hero"`; fixed to `"welcome"`.
+
+### Changed
+
+- **`src/features/admin/components/SectionForm.tsx`** — Replaced the raw JSON textarea with structured config fields for all carousel-type sections (`categories`, `products`, `auctions`, `stores`, `events`, `reviews`). Each type gets typed form fields: subtitle, max-items (with per-type field name), auto-scroll toggle, scroll-interval, and (reviews only) items-per-view / mobile-items-per-view. Non-carousel types still use the JSON fallback editor.
+
+### Added
+
+- `messages/en.json` + `messages/hi.json` — Added `adminSections` keys: `carouselSettings`, `formSubtitle`, `formMaxItems`, `formAutoScroll`, `formScrollInterval`, `formItemsPerView`, `formMobileItemsPerView`.
+
+---
+
+## [Unreleased] — Homepage Featured Stores, Events & Carousel Fixes
+
+### Added
+
+- **`src/hooks/useFeaturedStores.ts`** — New hook fetching top approved stores for the homepage featured section.
+- **`src/hooks/useFeaturedEvents.ts`** — New hook fetching active events for the homepage featured section.
+- **`src/features/homepage/components/FeaturedStoresSection.tsx`** — Homepage section rendering featured stores via `SectionCarousel` + `StoreCard`.
+- **`src/features/homepage/components/FeaturedEventsSection.tsx`** — Homepage section rendering featured events via `SectionCarousel` + `EventCard`.
+- **`src/db/schema/homepage-sections.ts`** — Added `StoresSectionConfig` and `EventsSectionConfig` interfaces; added `"stores"` and `"events"` to `SectionType`, `SectionConfig`, `DEFAULT_SECTION_ORDER` (stores=7, events=8), and `DEFAULT_SECTION_CONFIGS`.
+- **`src/features/admin/components/Section.types.ts`** — Added `{ value: "stores", label: "Stores" }` and `{ value: "events", label: "Events" }` to `SECTION_TYPES` dropdown.
+- **`src/lib/validation/schemas.ts`** — Added `"stores"` and `"events"` to Zod enum in `homepageSectionBaseSchema`.
+- **`src/types/api.ts`** — Added `"stores"` and `"events"` to `HomepageSectionCreateRequest.type` union.
+- **`src/db/seed-data/homepage-sections-seed-data.ts`** + **`scripts/seed-data/homepage-sections-seed-data.ts`** — Added seed documents for `stores` (order 14) and `events` (order 15) sections.
+- `messages/en.json` + `messages/hi.json` — Added `featuredStores`, `featuredStoresSubtitle`, `featuredEvents`, `featuredEventsSubtitle` keys under `homepage`; added `sectionTypeStores` and `sectionTypeEvents` under `filters`.
+
+### Changed
+
+- **`src/features/homepage/components/TopCategoriesSection.tsx`** — Refactored to use `SectionCarousel` (same pattern as `FeaturedProductsSection`) instead of a custom `HorizontalScroller` + manual header layout.
+- **`src/features/homepage/components/HeroCarousel.tsx`** — Fixed mobile image focal behaviour: container aspect ratio changed from `aspect-[16/9]` to `aspect-[4/3] sm:aspect-[16/9]` so the carousel is taller on mobile and `object-cover` shows the centre of the image without distortion. Strengthened gradient overlay (`from-black/80 via-black/30`) for better text contrast. Applied `!text-white` / `!text-white/90` Tailwind important overrides to card title, subtitle, and description to ensure white text always wins over the Typography component's default theme colour. Added `drop-shadow-md/sm` to card text for legibility on light-background slides.
+- **`src/features/homepage/components/index.ts`** — Exported `FeaturedStoresSection` and `FeaturedEventsSection`.
+- **`src/hooks/index.ts`** — Exported `useFeaturedStores` and `useFeaturedEvents`.
+- **`src/app/[locale]/page.tsx`** — Added `FeaturedStoresSection` and `FeaturedEventsSection` dynamic imports and rendered them after `FeaturedAuctionsSection`.
+
+---
+
+## [Unreleased] — Firebase Admin RTDB URL Fix
+
+### Fixed
+
+- **`src/lib/firebase/admin.ts`** — Both init paths (service-account JSON and env-var) were constructing the Realtime Database URL as `https://{projectId}.firebaseio.com` — a legacy format only valid for very old Firebase projects. Modern databases use `https://{projectId}-default-rtdb.firebaseio.com` (or a regional URL). The Admin SDK was connecting to the wrong host, causing every `getAdminRealtimeDb()` call (auth event init, payment event init) to silently hang until the 30-second `apiClient` timeout fired and threw `ApiClientError: Request timeout`. Fixed to read `FIREBASE_ADMIN_DATABASE_URL` → `NEXT_PUBLIC_FIREBASE_DATABASE_URL` → constructed `-default-rtdb` fallback.
+
+---
+
+## [Unreleased] — Per-Store Order Splitting + Toast Feedback
+
+### Changed
+
+- `src/db/schema/orders.ts` — Added `OrderItem` interface (`productId`, `productTitle`, `quantity`, `unitPrice`, `totalPrice`); added `items?: OrderItem[]` and `sellerName?: string` fields to `OrderDocument` for multi-item per-store orders.
+- `src/app/api/checkout/route.ts` — Replaced one-order-per-cart-item loop with grouping by `sellerId`; now creates **one `OrderDocument` per store**. Each order carries an `items` array with all line items, summed `totalPrice` and `quantity`, and `sellerId`/`sellerName` for seller routing.
+- `src/app/api/payment/verify/route.ts` — Same per-store grouping logic applied to the Razorpay payment-verify flow.
+- `src/lib/email.ts` — `OrderConfirmationEmailParams` extended with optional `items` array; `sendOrderConfirmationEmail` renders a line-item table in the HTML email when the order contains multiple products.
+- `src/hooks/useMessage.ts` — Rewrote as thin wrapper over `useToast`; every `showSuccess`/`showError` call now triggers a global overlay toast.
+- `src/features/products/components/ProductActions.tsx`, `src/components/user/WishlistButton.tsx` — Auth-guard redirects now show an error toast before navigating to login.
+- Multiple views (admin, seller, user, wishlist, promotions) — Added missing success/error toasts for CRUD operations, auth guards, clipboard fallback, and logout.
+
+---
+
+## [2026-03-07] — API Route Refactor: `createApiHandler` Mandatory Adoption + TSC Clean
+
+### Changed
+
+All 64 JSON API routes have been migrated to the `createApiHandler` factory pattern. Routes previously using `requireAuth()`, `requireRoleFromRequest()`, `requireAuthFromRequest()`, `verifySessionCookie()`, or ad-hoc try/catch blocks now consistently export handlers via `createApiHandler`.
+
+**Pattern replaced (before):**
+
+```typescript
+export async function POST(request: NextRequest) {
+  const session = await requireAuth(request);
+  const body = await request.json();
+  try { ... } catch (e) { return handleApiError(e); }
+}
+```
+
+**Pattern adopted (after):**
+
+```typescript
+export const POST = createApiHandler<typeof schema._output>({
+  auth: true,
+  schema,
+  handler: async ({ user, body }) => successResponse(...),
+});
+```
+
+**Routes migrated this sprint:**
+
+| Group                | Routes                                                                                                            |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| RipCoins             | `balance`, `history`, `purchase`, `purchase/verify`                                                               |
+| Payment              | `create-order`, `verify`                                                                                          |
+| Checkout             | `checkout`                                                                                                        |
+| FAQs / Site Settings | `faqs`, `site-settings`                                                                                           |
+| Seller               | `analytics`, `orders`, `orders/bulk`, `payout-settings`, `payouts`, `shipping`, `shipping/verify-pickup`, `store` |
+| User                 | `addresses`, `become-seller`, `orders`, `sessions`, `wishlist`, `profile`                                         |
+
+> Routes that legitimately bypass `createApiHandler` (OAuth callbacks, Razorpay webhook, media upload/crop/trim, demo/seed, RTDB token) remain unchanged — they are explicitly listed as exceptions.
+
+### Fixed
+
+- **`RipCoinsWallet.tsx`** — File contained a complete duplicate implementation concatenated after the original. Duplicate was removed. The retained version uses `admin_grant`/`admin_deduct` (matching the schema), i18n keys for type labels, full tab-switching history view, and refund actions.
+- **`RipCoinsWallet.tsx` `handleRefund`** — Called `refundPurchase(txId, { onSettled, onSuccess })` with two arguments, but `useApiMutation.mutate` accepts only one. Converted to `async function` with `try/finally`.
+- **`chat/route.ts`** — `chatRepository.create()` call was missing required `ChatRoomCreateInput` fields `participantIds` and `isGroup`.
+- **`checkout/route.ts` / `payment/verify/route.ts`** — `user.uid` inside `unitOfWork.runBatch` callback lost narrowing; changed to `user!.uid`.
+- **`site-settings/route.ts`** — 304 Not Modified response used `new Response(null, {status:304})`; `createApiHandler` returns `NextResponse`, so changed to `new NextResponse(null, {status:304})` (added `NextResponse` import).
+- **`seller/payouts/route.ts`** — `session.name` (Firebase `DecodedIdToken`) replaced with `user!.displayName ?? user!.email` (`UserDocument`).
+
+### Added
+
+- **`docs/GUIDE.md §13`** — Completely rewritten with tables covering all 100+ routes grouped by domain, including `bids`, `blog`, `cart`, `chat`, `checkout`, `contact`, `events`, `newsletter`, `notifications`, `payment`, `ripcoins`, `realtime`, `search`, `seller`, `user`, `webhooks`, and `logs` — previously undocumented.
+- **`docs/GUIDE.md §14`** — Added `createApiHandler` documentation: execution order, handler context properties, type signature, import path, and updated `API Response` to reflect actual `successResponse`/`errorResponse`/`ApiErrors.*` signatures (replacing stale `success/error/paginated/created/updated/deleted` API).
+
+---
+
+## [2026-03-08] — Listing & Filter Documentation, Filter Utilities, SSOT Cleanup
+
+### Added
+
+- **`docs/LISTING_AND_FILTERS.md`** — Comprehensive reference for all 18 filter components, all listing views (public/seller/admin), URL param conventions, `useUrlTable` / `usePendingTable` API, filter primitives (`FilterFacetSection`, `SwitchFilter`, `RangeFilter`), and both staged-filter patterns.
+- **`src/components/filters/filterUtils.ts`** — `getFilterLabel(options, value)` and `getFilterValue(options, label)` utilities exported from `@/components`. Eliminates inline `.find().label` patterns at call sites.
+
+### Changed
+
+- **`ReviewFilters`** — `REVIEW_SORT_OPTIONS` moved here as single source of truth; format changed to `{ value, key }` (i18n key) instead of hardcoded labels. Added `variant?: "admin" | "public"` prop: admin shows all 4 facets, public shows rating only.
+- **`ReviewsListView`** — migrated from inline staged state to `usePendingTable`. Imports `REVIEW_SORT_OPTIONS` and `ReviewFilters` from `@/components`.
+- **`AdminReviewsView`** — removed local `REVIEW_SORT_OPTIONS_KEYS`; now imports `REVIEW_SORT_OPTIONS` from `@/components`.
+- **7 listing view files** — replaced 9 inline `.find((o) => o.value === x)?.label` patterns with `getFilterLabel()`.
+- **`FeaturedProductsSection`**, **`FeaturedAuctionsSection`**, **`TopCategoriesSection`**, **`BlogPostView` (related posts)** — replaced inline card implementations with canonical `ProductCard`, `AuctionCard`, `CategoryCard`, `BlogCard` components.
+
+---
+
+## [2026-03-07] — Category Seed Data: Cover Images & New Root Categories
+
+### Changed
+
+- **`scripts/seed-data/categories-seed-data.ts`** — Updated all existing root-category `coverImage` URLs from landscape (`w=1600&h=900`) to square (`w=800&h=800`) format to match the `aspect-square` card design in `TopCategoriesSection`.
+- **Sports & Outdoors** — Added missing `coverImage` (Unsplash `photo-1571019613454-1cb2f99b2d8b`) and `color: "#f97316"`.
+
+### Added
+
+- **6 new root categories** (tier 0, `isFeatured: true`) added to seed data with curated Unsplash cover images, brand colors, and full SEO metadata:
+  - **Beauty & Health** (`beauty-health`, order 5, `#ec4899`) — cosmetics/wellness
+  - **Books & Stationery** (`books-stationery`, order 6, `#f59e0b`) — books/office
+  - **Automotive** (`automotive`, order 7, `#6b7280`) — car accessories/parts
+  - **Jewelry & Accessories** (`jewelry-accessories`, order 8, `#d97706`) — fine jewelry/watches
+  - **Toys & Baby** (`toys-baby`, order 9, `#8b5cf6`) — toys/baby essentials
+  - **Food & Groceries** (`food-groceries`, order 10, `#059669`) — fresh produce/packaged foods
+
+---
+
+## [2026-03-06] — Proxy Rename: `middleware.ts` → `proxy.ts`
+
+### Changed
+
+- **`src/middleware.ts` renamed to `src/proxy.ts`** — Next.js 16 supports a configurable entry-point name via `next.config.js`. The locale detection / URL-rewriting entry-point was renamed from the default `middleware.ts` to `proxy.ts` to make its role explicit and avoid confusion with framework middleware conventions. All documentation updated: `GUIDE.md` (architecture tree + key files table), `AUTH.md` (RBAC section + session activity description), `APPLICATION_GRAPH.md` (all "Protected by middleware RBAC" → "proxy RBAC"), and inline JSDoc comments inside `proxy.ts` itself.
+
+---
+
 ## [2026-03-06] — Architecture Refactor: Feature Module Extraction & Shared Filter/Layout Primitives
 
 ### Added

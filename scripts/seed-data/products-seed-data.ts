@@ -18,12 +18,11 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 25,
     availableQuantity: 25,
-    mainImage:
-      "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&h=800&fit=crop",
+    mainImage: "https://picsum.photos/seed/iphone15/800/800",
     images: [
-      "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1678652197950-372d7e96f926?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1678911820864-e5c67c5d96ed?w=1200&h=800&fit=crop",
+      "https://picsum.photos/seed/iphone15/1200/800",
+      "https://picsum.photos/seed/apple-phone/1200/800",
+      "https://picsum.photos/seed/phone-display/1200/800",
     ],
     status: "published",
     sellerId: "user-techhub-electronics-electron",
@@ -60,11 +59,10 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 30,
     availableQuantity: 30,
-    mainImage:
-      "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=800&h=800&fit=crop",
+    mainImage: "https://picsum.photos/seed/samsung-galaxy/800/800",
     images: [
-      "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1591122947157-26bad3a117d2?w=1200&h=800&fit=crop",
+      "https://picsum.photos/seed/samsung-galaxy/1200/800",
+      "https://picsum.photos/seed/android-phone/1200/800",
     ],
     status: "published",
     sellerId: "user-techhub-electronics-electron",
@@ -96,11 +94,10 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 20,
     availableQuantity: 20,
-    mainImage:
-      "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&h=800&fit=crop",
+    mainImage: "https://picsum.photos/seed/google-pixel/800/800",
     images: [
-      "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=1200&h=800&fit=crop",
+      "https://picsum.photos/seed/google-pixel/1200/800",
+      "https://picsum.photos/seed/pixel-back/1200/800",
     ],
     status: "published",
     sellerId: "user-techhub-electronics-electron",
@@ -134,11 +131,10 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 10,
     availableQuantity: 10,
-    mainImage:
-      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop",
+    mainImage: "https://picsum.photos/seed/macbook-laptop/800/800",
     images: [
-      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=1200&h=800&fit=crop",
+      "https://picsum.photos/seed/macbook-laptop/1200/800",
+      "https://picsum.photos/seed/laptop-apple/1200/800",
     ],
     status: "published",
     sellerId: "user-techhub-electronics-electron",
@@ -171,11 +167,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 15,
     availableQuantity: 15,
-    mainImage:
-      "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/dell-xps/800/800",
+    images: ["https://picsum.photos/seed/dell-xps/1200/800"],
     status: "published",
     sellerId: "user-techhub-electronics-electron",
     sellerName: "TechHub Electronics",
@@ -208,11 +201,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 100,
     availableQuantity: 100,
-    mainImage:
-      "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/mens-shirt/800/800",
+    images: ["https://picsum.photos/seed/mens-shirt/1200/800"],
     status: "published",
     sellerId: "user-fashion-boutique-fashionb",
     sellerName: "Fashion Boutique",
@@ -244,11 +234,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 80,
     availableQuantity: 80,
-    mainImage:
-      "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/ethnic-kurti/800/800",
+    images: ["https://picsum.photos/seed/ethnic-kurti/1200/800"],
     status: "published",
     sellerId: "user-fashion-boutique-fashionb",
     sellerName: "Fashion Boutique",
@@ -280,11 +267,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 50,
     availableQuantity: 50,
-    mainImage:
-      "https://images.unsplash.com/photo-1584990347449-39b0ce4aa1f9?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1584990347449-39b0ce4aa1f9?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/kitchen-cookware/800/800",
+    images: ["https://picsum.photos/seed/kitchen-cookware/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -317,11 +301,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 75,
     availableQuantity: 75,
-    mainImage:
-      "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/yoga-mat/800/800",
+    images: ["https://picsum.photos/seed/yoga-mat/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -353,11 +334,10 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800&h=800&fit=crop",
+    mainImage: "https://picsum.photos/seed/film-camera/800/800",
     images: [
-      "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=1200&h=800&fit=crop",
+      "https://picsum.photos/seed/film-camera/1200/800",
+      "https://picsum.photos/seed/vintage-camera/1200/800",
     ],
     status: "published",
     sellerId: "user-techhub-electronics-electron",
@@ -405,11 +385,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 0,
     availableQuantity: 0,
-    mainImage:
-      "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/sony-headphones/800/800",
+    images: ["https://picsum.photos/seed/sony-headphones/1200/800"],
     status: "out_of_stock",
     sellerId: "user-techhub-electronics-electron",
     sellerName: "TechHub Electronics",
@@ -442,11 +419,10 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 80,
     availableQuantity: 75,
-    mainImage:
-      "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&h=800&fit=crop",
+    mainImage: "https://picsum.photos/seed/oxford-shirt/800/800",
     images: [
-      "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=1200&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1541746972996-4e0b0f43e02a?w=1200&h=800&fit=crop",
+      "https://picsum.photos/seed/oxford-shirt/1200/800",
+      "https://picsum.photos/seed/shirt-back/1200/800",
     ],
     status: "published",
     sellerId: "user-fashion-boutique-fashionb",
@@ -480,11 +456,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 60,
     availableQuantity: 55,
-    mainImage:
-      "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/mens-trousers/800/800",
+    images: ["https://picsum.photos/seed/mens-trousers/1200/800"],
     status: "published",
     sellerId: "user-fashion-boutique-fashionb",
     sellerName: "Fashion Boutique",
@@ -516,11 +489,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 35,
     availableQuantity: 30,
-    mainImage:
-      "https://images.unsplash.com/photo-1614253429340-98120bd6d753?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1614253429340-98120bd6d753?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/leather-derby/800/800",
+    images: ["https://picsum.photos/seed/leather-derby/1200/800"],
     status: "published",
     sellerId: "user-fashion-boutique-fashionb",
     sellerName: "Fashion Boutique",
@@ -554,11 +524,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 40,
     availableQuantity: 38,
-    mainImage:
-      "https://images.unsplash.com/photo-1583391733975-f47c28ce1930?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1583391733975-f47c28ce1930?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/anarkali-kurta/800/800",
+    images: ["https://picsum.photos/seed/anarkali-kurta/1200/800"],
     status: "published",
     sellerId: "user-fashion-boutique-fashionb",
     sellerName: "Fashion Boutique",
@@ -591,11 +558,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 55,
     availableQuantity: 50,
-    mainImage:
-      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/floral-dress/800/800",
+    images: ["https://picsum.photos/seed/floral-dress/1200/800"],
     status: "published",
     sellerId: "user-fashion-boutique-fashionb",
     sellerName: "Fashion Boutique",
@@ -631,11 +595,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 30,
     availableQuantity: 28,
-    mainImage:
-      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/leather-tote/800/800",
+    images: ["https://picsum.photos/seed/leather-tote/1200/800"],
     status: "published",
     sellerId: "user-fashion-boutique-fashionb",
     sellerName: "Fashion Boutique",
@@ -669,11 +630,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 45,
     availableQuantity: 42,
-    mainImage:
-      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/pressure-cooker/800/800",
+    images: ["https://picsum.photos/seed/pressure-cooker/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -706,11 +664,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 25,
     availableQuantity: 23,
-    mainImage:
-      "https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/nonstick-pan/800/800",
+    images: ["https://picsum.photos/seed/nonstick-pan/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -742,11 +697,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 18,
     availableQuantity: 15,
-    mainImage:
-      "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/air-purifier/800/800",
+    images: ["https://picsum.photos/seed/air-purifier/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -783,11 +735,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 12,
     availableQuantity: 10,
-    mainImage:
-      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/wood-furniture/800/800",
+    images: ["https://picsum.photos/seed/wood-furniture/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -821,11 +770,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 50,
     availableQuantity: 47,
-    mainImage:
-      "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/yoga-fitness/800/800",
+    images: ["https://picsum.photos/seed/yoga-fitness/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -863,11 +809,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 20,
     availableQuantity: 18,
-    mainImage:
-      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/gym-dumbbells/800/800",
+    images: ["https://picsum.photos/seed/gym-dumbbells/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -903,11 +846,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 30,
     availableQuantity: 28,
-    mainImage:
-      "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/cricket-sport/800/800",
+    images: ["https://picsum.photos/seed/cricket-sport/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -939,11 +879,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 22,
     availableQuantity: 19,
-    mainImage:
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/adidas-shoes/800/800",
+    images: ["https://picsum.photos/seed/adidas-shoes/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -981,11 +918,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 15,
     availableQuantity: 12,
-    mainImage:
-      "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/ipad-tablet/800/800",
+    images: ["https://picsum.photos/seed/ipad-tablet/1200/800"],
     status: "published",
     sellerId: "user-techhub-electronics-electron",
     sellerName: "TechHub Electronics",
@@ -1018,11 +952,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 20,
     availableQuantity: 18,
-    mainImage:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/classic-watch/800/800",
+    images: ["https://picsum.photos/seed/classic-watch/1200/800"],
     status: "published",
     sellerId: "user-techhub-electronics-electron",
     sellerName: "TechHub Electronics",
@@ -1059,11 +990,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 70,
     availableQuantity: 68,
-    mainImage:
-      "https://images.unsplash.com/photo-1625772452859-1c03d884f65d?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1625772452859-1c03d884f65d?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/usb-charger/800/800",
+    images: ["https://picsum.photos/seed/usb-charger/1200/800"],
     status: "published",
     sellerId: "user-techhub-electronics-electron",
     sellerName: "TechHub Electronics",
@@ -1097,11 +1025,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/macbook-auction/800/800",
+    images: ["https://picsum.photos/seed/macbook-auction/1200/800"],
     status: "published",
     sellerId: "user-techhub-electronics-electron",
     sellerName: "TechHub Electronics",
@@ -1151,11 +1076,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1606986628253-3c3d8c9da85c?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1606986628253-3c3d8c9da85c?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/vintage-camera/800/800",
+    images: ["https://picsum.photos/seed/leica-camera/1200/800"],
     status: "published",
     sellerId: "user-techhub-electronics-electron",
     sellerName: "TechHub Electronics",
@@ -1203,11 +1125,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/air-jordan/800/800",
+    images: ["https://picsum.photos/seed/air-jordan/1200/800"],
     status: "published",
     sellerId: "user-fashion-boutique-fashionb",
     sellerName: "Fashion Boutique",
@@ -1270,11 +1189,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 50,
     availableQuantity: 50,
-    mainImage:
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/trail-shoes/800/800",
+    images: ["https://picsum.photos/seed/trail-shoes/1200/800"],
     status: "draft", // ← seller is still setting up the listing
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -1314,11 +1230,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 0,
     availableQuantity: 0,
-    mainImage:
-      "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/earphones/800/800",
+    images: ["https://picsum.photos/seed/earphones/1200/800"],
     status: "discontinued", // ← admin marked discontinued; no new orders possible
     sellerId: "user-techhub-electronics-electron",
     sellerName: "TechHub Electronics",
@@ -1365,11 +1278,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 0,
-    mainImage:
-      "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/leather-journal/800/800",
+    images: ["https://picsum.photos/seed/leather-journal/1200/800"],
     status: "sold", // ← single unit, sold to a buyer (non-auction)
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -1421,15 +1331,11 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/gaming-console/800/800",
+    images: ["https://picsum.photos/seed/gaming-console/1200/800"],
     video: {
       url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-      thumbnailUrl:
-        "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=800&h=450&fit=crop",
+      thumbnailUrl: "https://picsum.photos/seed/gaming-console/800/450",
       duration: 15,
     },
     status: "published",
@@ -1479,11 +1385,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/airpods-pro/800/800",
+    images: ["https://picsum.photos/seed/airpods-pro/1200/800"],
     status: "published",
     sellerId: "user-techhub-electronics-electron",
     sellerName: "TechHub Electronics",
@@ -1533,15 +1436,11 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1606986628253-3c3d8c9da85c?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1606986628253-3c3d8c9da85c?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/mirrorless-camera/800/800",
+    images: ["https://picsum.photos/seed/mirrorless-camera/1200/800"],
     video: {
       url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-      thumbnailUrl:
-        "https://images.unsplash.com/photo-1606986628253-3c3d8c9da85c?w=800&h=450&fit=crop",
+      thumbnailUrl: "https://picsum.photos/seed/mirrorless-camera/800/450",
       duration: 15,
     },
     status: "published",
@@ -1589,11 +1488,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1683267523707-76e1e7e80af8?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1683267523707-76e1e7e80af8?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/nikon-camera/800/800",
+    images: ["https://picsum.photos/seed/nikon-camera/1200/800"],
     status: "published",
     sellerId: "user-techhub-electronics-electron",
     sellerName: "TechHub Electronics",
@@ -1639,11 +1535,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/iphone-bundle/800/800",
+    images: ["https://picsum.photos/seed/iphone-bundle/1200/800"],
     status: "published",
     sellerId: "user-techhub-electronics-electron",
     sellerName: "TechHub Electronics",
@@ -1691,15 +1584,11 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/luxury-watch/800/800",
+    images: ["https://picsum.photos/seed/luxury-watch/1200/800"],
     video: {
       url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
-      thumbnailUrl:
-        "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=800&h=450&fit=crop",
+      thumbnailUrl: "https://picsum.photos/seed/luxury-watch/800/450",
       duration: 60,
     },
     status: "published",
@@ -1760,11 +1649,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1542060748-10c28b62716f?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1542060748-10c28b62716f?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/denim-jacket/800/800",
+    images: ["https://picsum.photos/seed/denim-jacket/1200/800"],
     status: "published",
     sellerId: "user-fashion-boutique-fashionb",
     sellerName: "Fashion Boutique",
@@ -1813,11 +1699,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/streetwear-tee/800/800",
+    images: ["https://picsum.photos/seed/streetwear-tee/1200/800"],
     status: "published",
     sellerId: "user-fashion-boutique-fashionb",
     sellerName: "Fashion Boutique",
@@ -1875,11 +1758,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/silk-scarf/800/800",
+    images: ["https://picsum.photos/seed/silk-scarf/1200/800"],
     status: "published",
     sellerId: "user-fashion-boutique-fashionb",
     sellerName: "Fashion Boutique",
@@ -1937,11 +1817,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/silk-saree/800/800",
+    images: ["https://picsum.photos/seed/silk-saree/1200/800"],
     status: "published",
     sellerId: "user-fashion-boutique-fashionb",
     sellerName: "Fashion Boutique",
@@ -2001,15 +1878,11 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/wireless-headphones/800/800",
+    images: ["https://picsum.photos/seed/wireless-headphones/1200/800"],
     video: {
       url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
-      thumbnailUrl:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=450&fit=crop",
+      thumbnailUrl: "https://picsum.photos/seed/wireless-headphones/800/450",
       duration: 60,
     },
     status: "published",
@@ -2061,11 +1934,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1593078165898-d3b96ef75f2c?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1593078165898-d3b96ef75f2c?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/hifi-speakers/800/800",
+    images: ["https://picsum.photos/seed/hifi-speakers/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -2114,11 +1984,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/road-bicycle/800/800",
+    images: ["https://picsum.photos/seed/road-bicycle/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -2169,11 +2036,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/tennis-racket/800/800",
+    images: ["https://picsum.photos/seed/tennis-racket/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -2231,11 +2095,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/vacuum-cleaner/800/800",
+    images: ["https://picsum.photos/seed/vacuum-cleaner/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",
@@ -2285,11 +2146,8 @@ export const productsSeedData: Partial<ProductDocument>[] = [
     currency: "INR",
     stockQuantity: 1,
     availableQuantity: 1,
-    mainImage:
-      "https://images.unsplash.com/photo-1555685813-6f1c38e64a54?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1555685813-6f1c38e64a54?w=1200&h=800&fit=crop",
-    ],
+    mainImage: "https://picsum.photos/seed/charcoal-grill/800/800",
+    images: ["https://picsum.photos/seed/charcoal-grill/1200/800"],
     status: "published",
     sellerId: "user-home-essentials-homeesse",
     sellerName: "Home Essentials",

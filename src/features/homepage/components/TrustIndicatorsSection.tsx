@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { THEME_CONSTANTS, TRUST_INDICATORS } from "@/constants";
-import { Heading, Section, Text } from "@/components";
+import { Card, Heading, Section, Text } from "@/components";
 
 export function TrustIndicatorsSection() {
   return (
@@ -11,9 +11,10 @@ export function TrustIndicatorsSection() {
       <div className="w-full">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4 md:gap-8">
           {TRUST_INDICATORS.map((indicator, index) => (
-            <div
+            <Card
               key={index}
-              className={`text-center ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.lg} shadow-sm hover:shadow-md transition-shadow`}
+              variant="primary"
+              className={`text-center ${THEME_CONSTANTS.spacing.padding.md} hover:shadow-md transition-shadow`}
             >
               <div className="text-4xl md:text-5xl mb-2 md:mb-3">
                 {indicator.icon}
@@ -29,7 +30,7 @@ export function TrustIndicatorsSection() {
               >
                 {indicator.description}
               </Text>
-            </div>
+            </Card>
           ))}
         </div>
       </div>

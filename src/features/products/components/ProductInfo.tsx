@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { formatCurrency, formatDate } from "@/utils";
+import { formatCurrency, formatDate, resolveDate } from "@/utils";
 import {
   Badge,
   Heading,
@@ -17,14 +17,7 @@ import {
 } from "@/components";
 import { ProductFeatureBadges } from "./ProductFeatureBadges";
 import type { ProductDocument } from "@/db/schema";
-import {
-  Store,
-  Tag,
-  Eye,
-  Clock,
-  Truck,
-  RotateCcw,
-} from "lucide-react";
+import { Store, Tag, Eye, Clock, Truck, RotateCcw } from "lucide-react";
 
 const { themed, spacing, flex, borderRadius } = THEME_CONSTANTS;
 
@@ -96,7 +89,10 @@ export function ProductInfo({
     <div className="space-y-5">
       {/* ——— Product Name ——— */}
       <div>
-        <Heading level={1} className="text-xl sm:text-2xl lg:text-3xl font-bold leading-tight">
+        <Heading
+          level={1}
+          className="text-xl sm:text-2xl lg:text-3xl font-bold leading-tight"
+        >
           {title}
         </Heading>
 
@@ -164,10 +160,16 @@ export function ProductInfo({
                 </Text>
               )}
               {auctionEndDate && (
-                <Text size="sm" variant="secondary" className={`${flex.rowCenter} gap-1`}>
+                <Text
+                  size="sm"
+                  variant="secondary"
+                  className={`${flex.rowCenter} gap-1`}
+                >
                   <Clock className="w-3.5 h-3.5" aria-hidden="true" />
                   {t("auctionEnds")}{" "}
-                  <time dateTime={new Date(auctionEndDate).toISOString()}>
+                  <time
+                    dateTime={resolveDate(auctionEndDate)?.toISOString() ?? ""}
+                  >
                     <Span variant="primary" weight="medium">
                       {formatDate(auctionEndDate)}
                     </Span>
@@ -192,7 +194,11 @@ export function ProductInfo({
           </div>
         )}
         {viewCount !== undefined && viewCount > 0 && (
-          <Text size="xs" variant="muted" className={`${flex.rowCenter} gap-1 mt-2`}>
+          <Text
+            size="xs"
+            variant="muted"
+            className={`${flex.rowCenter} gap-1 mt-2`}
+          >
             <Eye className="w-3.5 h-3.5" aria-hidden="true" />
             {t("viewCount", { count: viewCount })}
           </Text>
@@ -206,9 +212,7 @@ export function ProductInfo({
         ratedSeller={false}
         condition={condition}
         returnable={Boolean(returnPolicy)}
-        freeShipping={
-          shippingInfo?.toLowerCase().includes("free") ?? false
-        }
+        freeShipping={shippingInfo?.toLowerCase().includes("free") ?? false}
         codAvailable={false}
         isAuction={isAuction}
       />
@@ -239,7 +243,10 @@ export function ProductInfo({
                 key={idx}
                 className={`${flex.rowCenter} gap-2 text-sm ${themed.textSecondary}`}
               >
-                <Span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" aria-hidden="true" />
+                <Span
+                  className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"
+                  aria-hidden="true"
+                />
                 {f}
               </Li>
             ))}
@@ -286,7 +293,10 @@ export function ProductInfo({
             <div className="space-y-3">
               {shippingInfo && (
                 <div className={`${flex.rowStart} gap-3`}>
-                  <Truck className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" aria-hidden="true" />
+                  <Truck
+                    className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5"
+                    aria-hidden="true"
+                  />
                   <div>
                     <Text weight="medium" size="sm">
                       {t("shipping")}
@@ -299,7 +309,10 @@ export function ProductInfo({
               )}
               {returnPolicy && (
                 <div className={`${flex.rowStart} gap-3`}>
-                  <RotateCcw className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" aria-hidden="true" />
+                  <RotateCcw
+                    className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5"
+                    aria-hidden="true"
+                  />
                   <div>
                     <Text weight="medium" size="sm">
                       {t("returnPolicy")}
@@ -332,4 +345,3 @@ export function ProductInfo({
     </div>
   );
 }
-

@@ -5,8 +5,6 @@
  * POST /api/bids              — Place a new bid (auth required)
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { requireAuth } from "@/lib/firebase/auth-server";
 import {
   bidRepository,
   productRepository,
@@ -15,13 +13,13 @@ import {
   ripcoinRepository,
 } from "@/repositories";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { getSearchParams, getStringParam } from "@/lib/api/request-helpers";
-import { ValidationError, NotFoundError } from "@/lib/errors";
+import { NotFoundError } from "@/lib/errors";
 import { z } from "zod";
+import { createApiHandler } from "@/lib/api/api-handler";
 
 const placeBidSchema = z.object({
   productId: z.string().min(1),
@@ -34,30 +32,17 @@ const placeBidSchema = z.object({
  *
  * Returns all bids for a given auction product, sorted by bidAmount desc.
  */
-export async function GET(request: NextRequest) {
-  try {
+export const GET = createApiHandler({
+  handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const productId = getStringParam(searchParams, "productId");
-
     if (!productId) {
       return errorResponse(ERROR_MESSAGES.VALIDATION.FAILED, 400);
     }
-
     const bids = await bidRepository.findByProductSorted(productId);
-
-    return NextResponse.json(
-      {
-        success: true,
-        data: bids,
-        meta: { total: bids.length },
-      },
-      { status: 200 },
-    );
-  } catch (error) {
-    serverLogger.error("GET /api/bids error", { error });
-    return handleApiError(error);
-  }
-}
+    return successResponse(bids, undefined, 200, { total: bids.length });
+  },
+});
 
 /**
  * POST /api/bids
@@ -69,17 +54,11 @@ export async function GET(request: NextRequest) {
  * - Auction must not have ended
  * - User must have enough RipCoins (1 RipCoin = ₹1 bid value)
  */
-export async function POST(request: NextRequest) {
-  try {
-    const user = await requireAuth();
-
-    const body = await request.json();
-    const validation = placeBidSchema.safeParse(body);
-    if (!validation.success) {
-      throw new ValidationError(ERROR_MESSAGES.VALIDATION.FAILED);
-    }
-
-    const { productId, bidAmount, autoMaxBid } = validation.data;
+export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
+  auth: true,
+  schema: placeBidSchema,
+  handler: async ({ user, body }) => {
+    const { productId, bidAmount, autoMaxBid } = body!;
 
     // Fetch the product
     const product = await productRepository.findById(productId);
@@ -104,7 +83,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Cannot bid on own auction
-    if (product.sellerId === user.uid) {
+    if (product.sellerId === user!.uid) {
       return errorResponse(ERROR_MESSAGES.BID.OWN_AUCTION, 403);
     }
 
@@ -120,7 +99,7 @@ export async function POST(request: NextRequest) {
 
     // ── RipCoin balance check ──────────────────────────────────────────────
     // 1 RipCoin = ₹1 bid value; user must hold at least bidAmount free coins.
-    const userDoc = await userRepository.findById(user.uid);
+    const userDoc = await userRepository.findById(user!.uid);
     const freeCoins =
       (userDoc?.ripcoinBalance ?? 0) - (userDoc?.engagedRipcoins ?? 0);
     if (freeCoins < bidAmount) {
@@ -130,15 +109,15 @@ export async function POST(request: NextRequest) {
     // Find the user's existing active bid for this product (coins may need releasing)
     const userPriorActiveBid = (
       await bidRepository.findBy("productId", productId)
-    ).find((b) => b.userId === user.uid && b.status === "active");
+    ).find((b) => b.userId === user!.uid && b.status === "active");
 
     // Create the bid
     const bid = await bidRepository.create({
       productId,
       productTitle: product.title,
-      userId: user.uid,
-      userName: user.name ?? user.email ?? "Anonymous",
-      userEmail: user.email ?? "",
+      userId: user!.uid,
+      userName: user!.displayName ?? user!.email ?? "Anonymous",
+      userEmail: user!.email ?? "",
       bidAmount,
       currency: product.currency || "INR",
       bidDate: new Date(),
@@ -166,7 +145,7 @@ export async function POST(request: NextRequest) {
     // ── RipCoin atomic balance update ─────────────────────────────────────
     // (a) Engage coins for the new bid: debit free balance, credit engaged pool
     await userRepository.incrementRipCoinBalance(
-      user.uid,
+      user!.uid,
       -bidAmount,
       bidAmount,
     );
@@ -175,7 +154,7 @@ export async function POST(request: NextRequest) {
     if (userPriorActiveBid?.engagedCoins) {
       const released = userPriorActiveBid.engagedCoins;
       await userRepository.incrementRipCoinBalance(
-        user.uid,
+        user!.uid,
         released,
         -released,
       );
@@ -185,9 +164,9 @@ export async function POST(request: NextRequest) {
         coinsStatus: "released",
       } as any);
 
-      const priorUserDoc = await userRepository.findById(user.uid);
+      const priorUserDoc = await userRepository.findById(user!.uid);
       await ripcoinRepository.create({
-        userId: user.uid,
+        userId: user!.uid,
         type: "release",
         coins: released,
         balanceBefore: (priorUserDoc?.ripcoinBalance ?? 0) - released,
@@ -201,9 +180,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Record "engage" transaction for the new bid
-    const freshUserDoc = await userRepository.findById(user.uid);
+    const freshUserDoc = await userRepository.findById(user!.uid);
     await ripcoinRepository.create({
-      userId: user.uid,
+      userId: user!.uid,
       type: "engage",
       coins: bidAmount,
       balanceBefore: (freshUserDoc?.ripcoinBalance ?? 0) + bidAmount,
@@ -239,14 +218,11 @@ export async function POST(request: NextRequest) {
     serverLogger.info("Bid placed with RipCoins engaged", {
       bidId: bid.id,
       productId,
-      userId: user.uid,
+      userId: user!.uid,
       bidAmount,
       engagedCoins: bidAmount,
     });
 
     return successResponse(bid, SUCCESS_MESSAGES.BID.PLACED, 201);
-  } catch (error) {
-    serverLogger.error("POST /api/bids error", { error });
-    return handleApiError(error);
-  }
-}
+  },
+});

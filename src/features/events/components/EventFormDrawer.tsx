@@ -287,8 +287,11 @@ export function EventFormDrawer({
 
         {/* Type selector */}
         <div>
-          <Label className="mb-1">Event Type</Label>
+          <Label htmlFor="event-type" className="mb-1">
+            Event Type
+          </Label>
           <Select
+            id="event-type"
             value={form.type}
             onChange={(e) => set("type", e.target.value as EventType)}
             disabled={isEdit}
@@ -307,16 +310,22 @@ export function EventFormDrawer({
         {/* Dates */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label className="mb-1">Starts At</Label>
+            <Label htmlFor="event-starts-at" className="mb-1">
+              Starts At
+            </Label>
             <Input
+              id="event-starts-at"
               type="datetime-local"
               value={form.startsAt}
               onChange={(e) => set("startsAt", e.target.value)}
             />
           </div>
           <div>
-            <Label className="mb-1">Ends At</Label>
+            <Label htmlFor="event-ends-at" className="mb-1">
+              Ends At
+            </Label>
             <Input
+              id="event-ends-at"
               type="datetime-local"
               value={form.endsAt}
               onChange={(e) => set("endsAt", e.target.value)}
@@ -334,8 +343,11 @@ export function EventFormDrawer({
         />
 
         <div>
-          <Label className="mb-1">Banner Image URL</Label>
+          <Label htmlFor="event-banner-url" className="mb-1">
+            Banner Image URL
+          </Label>
           <Input
+            id="event-banner-url"
             type="url"
             value={form.bannerImageUrl}
             onChange={(e) => set("bannerImageUrl", e.target.value)}

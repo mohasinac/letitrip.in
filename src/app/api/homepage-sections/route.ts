@@ -14,23 +14,14 @@
  * - Implement drag-and-drop reordering
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { homepageSectionsRepository } from "@/repositories";
 import { errorResponse, successResponse } from "@/lib/api-response";
 import { getBooleanParam, getSearchParams } from "@/lib/api/request-helpers";
-import {
-  getUserFromRequest,
-  requireRoleFromRequest,
-} from "@/lib/security/authorization";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  homepageSectionCreateSchema,
-} from "@/lib/validation/schemas";
-import { AuthenticationError, AuthorizationError } from "@/lib/errors";
-import { handleApiError } from "@/lib/errors/error-handler";
+import { getUserFromRequest } from "@/lib/security/authorization";
+import { homepageSectionCreateSchema } from "@/lib/validation/schemas";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
+import { createApiHandler } from "@/lib/api/api-handler";
 
 /**
  * GET /api/homepage-sections
@@ -46,9 +37,8 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
  * Ã¢Å“â€¦ Cache-Control headers set (5 min public / no-cache admin)
  * TODO (Future): Support personalization based on user segments
  */
-export async function GET(request: NextRequest) {
-  try {
-    // Parse query parameters
+export const GET = createApiHandler({
+  handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const includeDisabled =
       getBooleanParam(searchParams, "includeDisabled") === true;
@@ -69,29 +59,19 @@ export async function GET(request: NextRequest) {
     // Sort by order field (ascending - top to bottom)
     sections.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: sections,
-        meta: {
-          totalSections: sections.length,
-          enabledSections: sections.filter((s: any) => s.enabled).length,
-        },
-      },
-      {
-        headers: {
-          // Add cache headers for public access
-          "Cache-Control": includeDisabled
-            ? "private, no-cache" // Admin: no cache
-            : "public, max-age=300, s-maxage=600, stale-while-revalidate=120", // Public: 5-10 min cache + SWR
-        },
-      },
+    const sectionsResponse = successResponse(sections, undefined, 200, {
+      totalSections: sections.length,
+      enabledSections: sections.filter((s: any) => s.enabled).length,
+    });
+    sectionsResponse.headers.set(
+      "Cache-Control",
+      includeDisabled
+        ? "private, no-cache"
+        : "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
     );
-  } catch (error) {
-    serverLogger.error("GET /api/homepage-sections error", { error });
-    return errorResponse(ERROR_MESSAGES.SECTION.FETCH_FAILED, 500);
-  }
-}
+    return sectionsResponse;
+  },
+});
 
 /**
  * POST /api/homepage-sections
@@ -111,46 +91,23 @@ export async function GET(request: NextRequest) {
  * Ã¢Å“â€¦ Returns created section with 201 status
  * TODO (Future): Validate section-specific config structure per type
  */
-export async function POST(request: NextRequest) {
-  try {
-    // Require admin authentication
-    const user = await requireRoleFromRequest(request, ["admin"]);
-
-    // Parse and validate request body
-    const body = await request.json();
-    const validation = validateRequestBody(homepageSectionCreateSchema, body);
-
-    if (!validation.success) {
-      return errorResponse(
-        ERROR_MESSAGES.VALIDATION.FAILED,
-        400,
-        formatZodErrors(validation.errors),
-      );
-    }
-
-    // Auto-assign order position if not provided
+export const POST = createApiHandler<
+  (typeof homepageSectionCreateSchema)["_output"]
+>({
+  auth: true,
+  roles: ["admin"],
+  schema: homepageSectionCreateSchema,
+  handler: async ({ body }) => {
     const allSections = await homepageSectionsRepository.findAll();
     const maxOrder = allSections.reduce(
       (max, section) => Math.max(max, section.order || 0),
       0,
     );
-    const order =
-      validation.data.order !== undefined
-        ? validation.data.order
-        : maxOrder + 1;
-
-    // TODO (Future): Validate section-specific config based on type
-    // const sectionTypes = ['hero', 'featuredProducts', 'categories', 'testimonials', etc.]
-    // Validate config structure matches type requirements
-
-    // Create homepage section
+    const order = body!.order !== undefined ? body!.order : maxOrder + 1;
     const section = await homepageSectionsRepository.create({
-      ...validation.data,
+      ...body!,
       order,
     } as any);
-
     return successResponse(section, SUCCESS_MESSAGES.SECTION.CREATED, 201);
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

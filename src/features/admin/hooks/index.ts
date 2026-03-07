@@ -12,3 +12,4 @@ export * from "./useAdminReviews";
 export * from "./useAdminSections";
 export * from "./useAdminUsers";
 export * from "./useAdminStores";
+export * from "./useDemoSeed";

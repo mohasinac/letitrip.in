@@ -16,8 +16,10 @@ export interface RipCoinBalance {
 export interface RipCoinPurchaseInitResponse {
   razorpayOrderId: string;
   amountRs: number;
-  coinsToBuy: number;
-  packs: number;
+  coins: number;
+  bonusCoins: number;
+  totalCoins: number;
+  packageId: string;
   currency: string;
   razorpayKeyId: string;
 }
@@ -26,12 +28,19 @@ export interface RipCoinVerifyRequest {
   razorpayOrderId: string;
   razorpayPaymentId: string;
   razorpaySignature: string;
-  packs: number;
+  packageId: string;
 }
 
 export interface RipCoinVerifyResponse {
   coinsCredited: number;
+  bonusCoins: number;
   newBalance: number;
+}
+
+export interface RipCoinRefundResponse {
+  coinsRefunded: number;
+  newBalance: number;
+  razorpayRefundId?: string;
 }
 
 export const ripcoinService = {
@@ -39,16 +48,22 @@ export const ripcoinService = {
   getBalance: () =>
     apiClient.get<RipCoinBalance>(API_ENDPOINTS.RIPCOINS.BALANCE),
 
-  /** POST: create a Razorpay order for coin purchase */
-  purchaseCoins: (packs: number) =>
+  /** POST: create a Razorpay order for a fixed coin package */
+  purchaseCoins: (packageId: string) =>
     apiClient.post<RipCoinPurchaseInitResponse>(
       API_ENDPOINTS.RIPCOINS.PURCHASE,
-      { packs },
+      { packageId },
     ),
 
   /** POST: verify Razorpay signature and credit coins */
   verifyPurchase: (data: RipCoinVerifyRequest) =>
     apiClient.post<RipCoinVerifyResponse>(API_ENDPOINTS.RIPCOINS.VERIFY, data),
+
+  /** POST: refund a purchase transaction */
+  refundPurchase: (transactionId: string) =>
+    apiClient.post<RipCoinRefundResponse>(API_ENDPOINTS.RIPCOINS.REFUND, {
+      transactionId,
+    }),
 
   /** GET paginated transaction history */
   getHistory: (params?: string) =>

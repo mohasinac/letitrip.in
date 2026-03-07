@@ -43,7 +43,7 @@ export { THEME_CONSTANTS } from "./theme";
 export type { ThemeMode } from "./theme";
 
 // Site configuration
-export { SITE_CONFIG } from "./site";
+export { SITE_CONFIG, FEATURE_FLAGS } from "./site";
 
 // SEO configuration
 export {

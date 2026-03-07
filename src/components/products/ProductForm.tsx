@@ -20,6 +20,7 @@ import { AddressSelectorCreate } from "@/features/user";
 import { useMediaUpload } from "@/hooks";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
+import { resolveDate } from "@/utils";
 import type { AdminProduct } from "./Product.types";
 import { PRODUCT_STATUS_OPTIONS } from "./Product.types";
 
@@ -283,11 +284,15 @@ export function ProductForm({
             <FormField
               name="auctionEndDate"
               label={t("formAuctionEndDate")}
-              type="text"
-              value={product.auctionEndDate || ""}
+              type="datetime-local"
+              value={(() => {
+                const d = resolveDate(product.auctionEndDate);
+                if (!d) return "";
+                // datetime-local input requires "YYYY-MM-DDTHH:mm"
+                return d.toISOString().slice(0, 16);
+              })()}
               onChange={(value) => update({ auctionEndDate: value })}
               disabled={isReadonly}
-              placeholder="YYYY-MM-DDTHH:mm"
             />
           </div>
 

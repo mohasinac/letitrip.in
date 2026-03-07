@@ -1,25 +1,25 @@
 /**
- * next-intl Middleware — with crash-safe error handling
+ * next-intl Proxy — with crash-safe error handling
  *
  * Intercepts every non-asset, non-API request and:
  * 1. Detects the user's locale from the Accept-Language header / cookie / URL prefix.
  * 2. Redirects/rewrites the URL to include the correct locale prefix where needed.
  * 3. Sets the locale on the request so getLocale() / getMessages() work in server components.
  *
- * If the middleware itself throws (e.g. bad locale data, corrupted cookies, next-intl
+ * If the proxy itself throws (e.g. bad locale data, corrupted cookies, next-intl
  * internal error), the catch block logs the error and redirects to a static
  * `/error.html` that lives in /public — completely independent of the app framework.
  * Because `/error.html` has a file extension, it is excluded by the matcher and
- * will never re-enter the middleware, so redirect loops are impossible.
+ * will never re-enter the proxy, so redirect loops are impossible.
  *
- * Must be at src/middleware.ts (Next.js discovers it automatically).
+ * Must be at src/proxy.ts (Next.js 16 discovers it automatically).
  */
 
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 
-/** The next-intl locale middleware — created once, reused per request. */
+/** The next-intl locale proxy — created once, reused per request. */
 const intlMiddleware = createMiddleware(routing);
 
 export default function middleware(request: NextRequest): NextResponse {

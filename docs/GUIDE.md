@@ -2,7 +2,7 @@
 
 > **Complete Index of All Code, Snippets, Functions, Classes, Hooks, Components, and Database Schemas**
 
-**Last Updated**: March 4, 2026 (hooks & repositories sync)
+**Last Updated**: March 7, 2026 (API routes refactor — createApiHandler, full §13 endpoint index)
 **Status**: Comprehensive Reference for LetItRip.in Project
 
 ---
@@ -552,7 +552,7 @@ When ready to extract shared code into a library:
 
 ```
 src/
-  proxy.ts                   ← locale detection + URL rewriting (next-intl)
+  proxy.ts                    ← locale detection + URL rewriting (next-intl)
   i18n/
     routing.ts               ← defineRouting({ locales, defaultLocale, localePrefix })
     request.ts               ← getRequestConfig (per-request server config)
@@ -4764,153 +4764,333 @@ All static pages follow the same pattern: hero gradient header → content secti
 
 **Location**: `src/app/api/`
 
-### Authentication API
+> All JSON API routes use `createApiHandler` (see §14) except the explicitly listed auth, webhook, and media exceptions.
 
-- `POST /api/auth/login` - Login
-- `POST /api/auth/register` - Register
-- `POST /api/auth/logout` - Logout
-- `POST /api/auth/verify-email` - Verify email
-- `GET /api/auth/verify-email` - Verify email via token
-- `POST /api/auth/send-verification` - Resend verification email
-- `POST /api/auth/resend-verification` - Resend verification (legacy)
-- `POST /api/auth/forgot-password` - Request password reset
-- `PUT /api/auth/reset-password` - Reset password with token
-- `GET /api/auth/me` - Get current user
+### Auth API
 
-### User API
+| Method | Path                          | Auth    | Description                                                                |
+| ------ | ----------------------------- | ------- | -------------------------------------------------------------------------- |
+| `POST` | `/api/auth/login`             | —       | Email/password login; sets session cookie                                  |
+| `POST` | `/api/auth/register`          | —       | Register new user                                                          |
+| `POST` | `/api/auth/logout`            | —       | Clear session cookie                                                       |
+| `GET`  | `/api/auth/verify-email`      | —       | Verify email via token in query param                                      |
+| `POST` | `/api/auth/send-verification` | —       | Resend verification email                                                  |
+| `POST` | `/api/auth/forgot-password`   | —       | Request password reset link                                                |
+| `PUT`  | `/api/auth/reset-password`    | —       | Reset password with one-time token                                         |
+| `GET`  | `/api/auth/google/start`      | —       | Begin Google OAuth; redirects to Google                                    |
+| `GET`  | `/api/auth/google/callback`   | —       | Handle Google OAuth callback; sets session                                 |
+| `GET`  | `/api/auth/apple/start`       | —       | Begin Apple OAuth                                                          |
+| `POST` | `/api/auth/apple/callback`    | —       | Handle Apple OAuth callback                                                |
+| `POST` | `/api/auth/event/init`        | —       | Create RTDB `auth_events/{uuid}` node + custom token for OAuth pop-up flow |
+| `GET`  | `/api/auth/session/validate`  | —       | Validate session cookie; returns user payload                              |
+| `POST` | `/api/auth/session/activity`  | session | Update session `lastActiveAt`                                              |
 
-- `GET /api/users` - List users (admin)
-- `GET /api/users/:id` - Get user by ID
-- `PUT /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Delete user (admin)
-- `GET /api/users/:id/profile` - Get public profile
-- `POST /api/user/change-password` - Change password (authenticated)
+### Profile / User Identity API
 
-### Profile API
+| Method  | Path                            | Auth | Description                                                                             |
+| ------- | ------------------------------- | ---- | --------------------------------------------------------------------------------------- |
+| `GET`   | `/api/user/profile`             | ✅   | Get authenticated user's full profile                                                   |
+| `PATCH` | `/api/user/profile`             | ✅   | Update display name, bio, avatar URL, etc.; resets phone verification on country change |
+| `POST`  | `/api/profile/add-phone`        | ✅   | Validate and check phone number availability                                            |
+| `POST`  | `/api/profile/verify-phone`     | ✅   | Verify phone OTP and update Firestore flag                                              |
+| `POST`  | `/api/user/change-password`     | ✅   | Re-authenticate and change password                                                     |
+| `POST`  | `/api/profile/delete-account`   | ✅   | Delete the authenticated account and all its data                                       |
+| `GET`   | `/api/profile/[userId]`         | —    | Get public profile for any user                                                         |
+| `GET`   | `/api/profile/[userId]/reviews` | —    | Reviews left by a user                                                                  |
 
-- `GET /api/profile` - Get current user profile
-- `PUT /api/profile` - Update profile
-- `PUT /api/profile/avatar` - Update avatar
-- `PUT /api/profile/password` - Change password
-- `POST /api/profile/add-phone` - Validate and check phone number availability
-- `POST /api/profile/verify-phone` - Verify phone and update Firestore flag
+### Products API
 
-### Product API
+| Method   | Path                 | Auth            | Description                                           |
+| -------- | -------------------- | --------------- | ----------------------------------------------------- |
+| `GET`    | `/api/products`      | —               | List products with Sieve filtering/sorting/pagination |
+| `POST`   | `/api/products`      | ✅ seller/admin | Create a product listing                              |
+| `GET`    | `/api/products/[id]` | —               | Get a single product by Firestore ID                  |
+| `PATCH`  | `/api/products/[id]` | ✅ seller/admin | Update product fields                                 |
+| `DELETE` | `/api/products/[id]` | ✅ seller/admin | Delete a product                                      |
 
-- `GET /api/products` - List products
-- `GET /api/products/:id` - Get product
-- `POST /api/products` - Create product
-- `PUT /api/products/:id` - Update product
-- `DELETE /api/products/:id` - Delete product
-- `GET /api/products/:id/reviews` - Get product reviews
+### Reviews API
 
-### Order API
+| Method   | Path                     | Auth     | Description                       |
+| -------- | ------------------------ | -------- | --------------------------------- |
+| `GET`    | `/api/reviews`           | —        | List reviews with Sieve filtering |
+| `POST`   | `/api/reviews`           | ✅       | Create a review                   |
+| `GET`    | `/api/reviews/[id]`      | —        | Get a single review               |
+| `PATCH`  | `/api/reviews/[id]`      | ✅       | Update a review (owner only)      |
+| `DELETE` | `/api/reviews/[id]`      | ✅ admin | Delete review                     |
+| `POST`   | `/api/reviews/[id]/vote` | ✅       | Upvote/downvote a review          |
 
-- `GET /api/orders` - List orders
-- `GET /api/orders/:id` - Get order
-- `POST /api/orders` - Create order
-- `PUT /api/orders/:id` - Update order
-- `DELETE /api/orders/:id` - Delete order (admin)
-- `PUT /api/orders/:id/status` - Update order status
+### Categories API
 
-### Review API
+| Method   | Path                   | Auth     | Description                               |
+| -------- | ---------------------- | -------- | ----------------------------------------- |
+| `GET`    | `/api/categories`      | —        | List categories with optional tree format |
+| `POST`   | `/api/categories`      | ✅ admin | Create category                           |
+| `GET`    | `/api/categories/[id]` | —        | Get a single category                     |
+| `PATCH`  | `/api/categories/[id]` | ✅ admin | Update category                           |
+| `DELETE` | `/api/categories/[id]` | ✅ admin | Delete category                           |
 
-- `GET /api/reviews` - List reviews
-- `GET /api/reviews/:id` - Get review
-- `POST /api/reviews` - Create review
-- `PUT /api/reviews/:id` - Update review
-- `DELETE /api/reviews/:id` - Delete review
-- `POST /api/reviews/:id/vote` - Vote on review
+### Orders (Admin/Shared) API
 
-### Category API
+| Method  | Path                     | Auth               | Description                   |
+| ------- | ------------------------ | ------------------ | ----------------------------- |
+| `GET`   | `/api/admin/orders`      | ✅ admin/moderator | List all orders (Sieve)       |
+| `PATCH` | `/api/admin/orders/[id]` | ✅ admin           | Update order status or fields |
 
-- `GET /api/categories` - List categories
-- `GET /api/categories/tree` - Get category tree
-- `GET /api/categories/:id` - Get category
-- `POST /api/categories` - Create category (admin)
-- `PUT /api/categories/:id` - Update category (admin)
-- `DELETE /api/categories/:id` - Delete category (admin)
+### Coupons API
 
-### Coupon API
+| Method   | Path                    | Auth     | Description                                   |
+| -------- | ----------------------- | -------- | --------------------------------------------- |
+| `GET`    | `/api/coupons`          | ✅ admin | List coupons (Sieve)                          |
+| `POST`   | `/api/coupons`          | ✅ admin | Create coupon                                 |
+| `POST`   | `/api/coupons/validate` | ✅       | Validate a coupon code against an order total |
+| `GET`    | `/api/coupons/[id]`     | ✅ admin | Get single coupon                             |
+| `PATCH`  | `/api/coupons/[id]`     | ✅ admin | Update coupon                                 |
+| `DELETE` | `/api/coupons/[id]`     | ✅ admin | Delete coupon                                 |
 
-- `GET /api/coupons` - List coupons (admin)
-- `GET /api/coupons/validate/:code` - Validate coupon
-- `POST /api/coupons` - Create coupon (admin)
-- `PUT /api/coupons/:id` - Update coupon (admin)
-- `DELETE /api/coupons/:id` - Delete coupon (admin)
+### FAQs API
 
-### FAQ API
-
-- `GET /api/faqs` - List FAQs
-- `GET /api/faqs/:id` - Get FAQ
-- `POST /api/faqs` - Create FAQ (admin)
-- `PUT /api/faqs/:id` - Update FAQ (admin)
-- `DELETE /api/faqs/:id` - Delete FAQ (admin)
-- `POST /api/faqs/:id/vote` - Vote on FAQ
+| Method   | Path                  | Auth     | Description                                      |
+| -------- | --------------------- | -------- | ------------------------------------------------ |
+| `GET`    | `/api/faqs`           | —        | List FAQs (Sieve); `Cache-Control: s-maxage=300` |
+| `POST`   | `/api/faqs`           | ✅ admin | Create FAQ                                       |
+| `GET`    | `/api/faqs/[id]`      | —        | Get single FAQ                                   |
+| `PATCH`  | `/api/faqs/[id]`      | ✅ admin | Update FAQ                                       |
+| `DELETE` | `/api/faqs/[id]`      | ✅ admin | Delete FAQ                                       |
+| `POST`   | `/api/faqs/[id]/vote` | ✅       | Vote helpful/not-helpful on FAQ                  |
 
 ### Carousel API
 
-- `GET /api/carousel` - Get carousel slides
-- `POST /api/carousel` - Create slide (admin)
-- `PUT /api/carousel/:id` - Update slide (admin)
-- `PUT /api/carousel/reorder` - Reorder slides (admin)
-- `DELETE /api/carousel/:id` - Delete slide (admin)
+| Method   | Path                    | Auth     | Description                                |
+| -------- | ----------------------- | -------- | ------------------------------------------ |
+| `GET`    | `/api/carousel`         | —        | Get all carousel slides ordered by `order` |
+| `POST`   | `/api/carousel`         | ✅ admin | Create carousel slide                      |
+| `PUT`    | `/api/carousel/reorder` | ✅ admin | Batch-reorder slides                       |
+| `GET`    | `/api/carousel/[id]`    | ✅ admin | Get single slide                           |
+| `PATCH`  | `/api/carousel/[id]`    | ✅ admin | Update slide                               |
+| `DELETE` | `/api/carousel/[id]`    | ✅ admin | Delete slide                               |
 
 ### Homepage Sections API
 
-- `GET /api/homepage-sections` - Get homepage sections
-- `POST /api/homepage-sections` - Create section (admin)
-- `PUT /api/homepage-sections/:id` - Update section (admin)
-- `PUT /api/homepage-sections/reorder` - Reorder sections (admin)
-- `DELETE /api/homepage-sections/:id` - Delete section (admin)
+| Method   | Path                             | Auth     | Description                                  |
+| -------- | -------------------------------- | -------- | -------------------------------------------- |
+| `GET`    | `/api/homepage-sections`         | —        | Get all homepage sections ordered by `order` |
+| `POST`   | `/api/homepage-sections`         | ✅ admin | Create section                               |
+| `PUT`    | `/api/homepage-sections/reorder` | ✅ admin | Batch-reorder sections                       |
+| `GET`    | `/api/homepage-sections/[id]`    | ✅ admin | Get single section                           |
+| `PATCH`  | `/api/homepage-sections/[id]`    | ✅ admin | Update section                               |
+| `DELETE` | `/api/homepage-sections/[id]`    | ✅ admin | Delete section                               |
 
 ### Site Settings API
 
-- `GET /api/settings` - Get site settings
-- `PUT /api/settings` - Update site settings (admin)
+| Method  | Path                 | Auth           | Description                                                           |
+| ------- | -------------------- | -------------- | --------------------------------------------------------------------- |
+| `GET`   | `/api/site-settings` | — (ETag cache) | Get site settings; returns 304 when ETag matches; admins bypass cache |
+| `PATCH` | `/api/site-settings` | ✅ admin       | Update site settings; emails all admins on change                     |
 
 ### Admin API
 
-- `GET /api/admin/dashboard` - Get admin dashboard statistics (admin/moderator)
-- `GET /api/admin/users` - List users with search, role filter, disabled filter (admin/moderator)
-- `PATCH /api/admin/users/:uid` - Update user role, disabled status, displayName (admin)
-- `DELETE /api/admin/users/:uid` - Delete user (admin)
-- `GET /api/admin/sessions` - List all sessions with user details and stats (admin/moderator)
+| Method   | Path                              | Auth               | Description                                                 |
+| -------- | --------------------------------- | ------------------ | ----------------------------------------------------------- |
+| `GET`    | `/api/admin/dashboard`            | ✅ admin/moderator | Dashboard statistics (users, orders, revenue, top products) |
+| `GET`    | `/api/admin/analytics`            | ✅ admin/moderator | Detailed analytics with date range                          |
+| `GET`    | `/api/admin/users`                | ✅ admin/moderator | List users (Sieve + role filter)                            |
+| `PATCH`  | `/api/admin/users/[uid]`          | ✅ admin           | Update role, disabled status, or displayName                |
+| `DELETE` | `/api/admin/users/[uid]`          | ✅ admin           | Delete user account                                         |
+| `GET`    | `/api/admin/sessions`             | ✅ admin/moderator | List all sessions with user details and stats               |
+| `DELETE` | `/api/admin/sessions/[id]`        | ✅ admin           | Revoke a session                                            |
+| `POST`   | `/api/admin/sessions/revoke-user` | ✅ admin           | Revoke all sessions for a user                              |
+| `GET`    | `/api/admin/bids`                 | ✅ admin/moderator | List all bids (Sieve)                                       |
+| `GET`    | `/api/admin/blog`                 | ✅ admin/moderator | List all blog posts                                         |
+| `PATCH`  | `/api/admin/blog/[id]`            | ✅ admin           | Update blog post                                            |
+| `GET`    | `/api/admin/events/[id]`          | ✅ admin/moderator | Get event detail                                            |
+| `PATCH`  | `/api/admin/events/[id]`          | ✅ admin           | Update event                                                |
+| `GET`    | `/api/admin/newsletter/[id]`      | ✅ admin           | Get newsletter subscriber                                   |
+| `DELETE` | `/api/admin/newsletter/[id]`      | ✅ admin           | Delete subscriber                                           |
+| `GET`    | `/api/admin/payouts`              | ✅ admin           | List all payouts                                            |
+| `PATCH`  | `/api/admin/payouts/[id]`         | ✅ admin           | Approve or reject payout                                    |
+| `POST`   | `/api/admin/payouts/weekly`       | ✅ admin           | Trigger weekly payout batch                                 |
+| `PATCH`  | `/api/admin/products/[id]`        | ✅ admin           | Admin product update (approve, reject, feature)             |
+| `GET`    | `/api/admin/reviews`              | ✅ admin/moderator | List all reviews (Sieve)                                    |
+| `GET`    | `/api/admin/stores/[uid]`         | ✅ admin           | Get a seller's store                                        |
+| `GET`    | `/api/admin/coupons/[id]`         | ✅ admin           | Get single coupon                                           |
 
 ### Media API
 
-- `POST /api/media/upload` - Upload file to Firebase Cloud Storage (authenticated)
-- `POST /api/media/crop` - Crop an image using `sharp` (authenticated)
-- `POST /api/media/trim` - Trim a video using `ffmpeg` (authenticated)
+| Method | Path                | Auth | Description                                                        |
+| ------ | ------------------- | ---- | ------------------------------------------------------------------ |
+| `POST` | `/api/media/upload` | ✅   | Upload file to Firebase Cloud Storage; returns public download URL |
+| `POST` | `/api/media/crop`   | ✅   | Crop an image to specified dimensions using `sharp`                |
+| `POST` | `/api/media/trim`   | ✅   | Trim video file using `ffmpeg`                                     |
 
-### Session API
+### Bids API
 
-- `GET /api/sessions` - List all sessions (admin)
-- `GET /api/sessions/user/:userId` - Get user sessions (admin)
-- `GET /api/sessions/me` - Get my sessions
-- `DELETE /api/sessions/:id` - Revoke session
-- `DELETE /api/sessions/user/:userId` - Revoke all user sessions (admin)
+| Method | Path             | Auth | Description                                                              |
+| ------ | ---------------- | ---- | ------------------------------------------------------------------------ |
+| `GET`  | `/api/bids`      | —    | Returns all bids for a product (`?productId=`), sorted by bidAmount desc |
+| `POST` | `/api/bids`      | ✅   | Place a new bid (validates productId, bidAmount, optional autoMaxBid)    |
+| `GET`  | `/api/bids/[id]` | —    | Get a single bid by ID                                                   |
 
-### Upload API
+### Blog API
 
-- `POST /api/upload` - Upload file to Firebase Storage
+| Method | Path               | Auth | Description                                    |
+| ------ | ------------------ | ---- | ---------------------------------------------- |
+| `GET`  | `/api/blog`        | —    | List published blog posts (Sieve)              |
+| `GET`  | `/api/blog/[slug]` | —    | Get single post by slug; increments view count |
 
-### Seller Store API
+### Cart API
 
-- `GET /api/seller/store` — Get the authenticated seller's store profile (auth: seller/admin)
-- `PATCH /api/seller/store` — Update store settings; auto-generates `storeSlug` from `storeName` when none exists (auth: seller/admin)
+| Method   | Path                 | Auth | Description                                             |
+| -------- | -------------------- | ---- | ------------------------------------------------------- |
+| `GET`    | `/api/cart`          | ✅   | Get current user's cart with item count and subtotal    |
+| `POST`   | `/api/cart`          | ✅   | Add item to cart (`productId`, `quantity`)              |
+| `DELETE` | `/api/cart`          | ✅   | Clear entire cart                                       |
+| `POST`   | `/api/cart/merge`    | ✅   | Merge localStorage guest-cart items into Firestore cart |
+| `PATCH`  | `/api/cart/[itemId]` | ✅   | Update quantity of a single cart item                   |
+| `DELETE` | `/api/cart/[itemId]` | ✅   | Remove item from cart                                   |
+
+### Chat API
+
+| Method   | Path                          | Auth | Description                                                               |
+| -------- | ----------------------------- | ---- | ------------------------------------------------------------------------- |
+| `GET`    | `/api/chat`                   | ✅   | List all chat rooms the authenticated user is a participant in            |
+| `POST`   | `/api/chat`                   | ✅   | Create (or return existing) buyer↔seller chat room for a given order      |
+| `DELETE` | `/api/chat/[chatId]`          | ✅   | Soft-delete room for users; hard-delete for admins (`?adminDeleted=true`) |
+| `POST`   | `/api/chat/[chatId]/messages` | ✅   | Send a message to RTDB; updates Firestore `lastMessage` preview           |
+
+### Checkout API
+
+| Method | Path            | Auth | Description                                                                                          |
+| ------ | --------------- | ---- | ---------------------------------------------------------------------------------------------------- |
+| `POST` | `/api/checkout` | ✅   | Place orders from cart: validate address, check stock, create `OrderDocument` per seller, clear cart |
+
+### Contact API
+
+| Method | Path           | Auth                  | Description                               |
+| ------ | -------------- | --------------------- | ----------------------------------------- |
+| `POST` | `/api/contact` | — (strict rate limit) | Send contact message to support via email |
+
+### Events API
+
+| Method | Path                           | Auth | Description                                                    |
+| ------ | ------------------------------ | ---- | -------------------------------------------------------------- |
+| `GET`  | `/api/events`                  | —    | List active events (Sieve)                                     |
+| `GET`  | `/api/events/[id]`             | —    | Get single event (non-draft/non-paused); includes poll results |
+| `POST` | `/api/events/[id]/enter`       | ✅   | Enter an event (pay entry fee in RipCoins or payment)          |
+| `GET`  | `/api/events/[id]/leaderboard` | —    | Get event leaderboard                                          |
+
+### Newsletter API
+
+| Method | Path                        | Auth                  | Description                                                   |
+| ------ | --------------------------- | --------------------- | ------------------------------------------------------------- |
+| `POST` | `/api/newsletter/subscribe` | — (strict rate limit) | Subscribe email to newsletter; accepts optional `source` enum |
+
+### Notifications API
+
+| Method   | Path                              | Auth     | Description                               |
+| -------- | --------------------------------- | -------- | ----------------------------------------- |
+| `GET`    | `/api/notifications`              | ✅       | List user's notifications (paginated)     |
+| `POST`   | `/api/notifications`              | ✅ admin | Create a notification (admin/system only) |
+| `GET`    | `/api/notifications/unread-count` | ✅       | Get unread notification count             |
+| `PATCH`  | `/api/notifications/read-all`     | ✅       | Mark all user notifications as read       |
+| `PATCH`  | `/api/notifications/[id]`         | ✅       | Mark single notification as read          |
+| `DELETE` | `/api/notifications/[id]`         | ✅       | Delete single notification (owner only)   |
+
+### Payment API
+
+| Method | Path                        | Auth                        | Description                                                                         |
+| ------ | --------------------------- | --------------------------- | ----------------------------------------------------------------------------------- |
+| `POST` | `/api/payment/create-order` | ✅                          | Create Razorpay order; returns `razorpayOrderId`, amount in paise, `keyId`          |
+| `POST` | `/api/payment/verify`       | ✅                          | Verify Razorpay signature, create application orders, deduct stock, clear cart      |
+| `POST` | `/api/payment/event/init`   | ✅                          | Create RTDB `payment_events/{orderId}` node + custom token for RTDB payment polling |
+| `POST` | `/api/payment/webhook`      | — (raw, Razorpay signature) | Razorpay webhook: update order state on payment capture/failed events               |
+
+### RipCoins API
+
+| Method | Path                            | Auth | Description                                                                              |
+| ------ | ------------------------------- | ---- | ---------------------------------------------------------------------------------------- |
+| `GET`  | `/api/ripcoins/balance`         | ✅   | Returns `ripcoinBalance` and `engagedRipcoins`                                           |
+| `GET`  | `/api/ripcoins/history`         | ✅   | Paginated transaction history (Sieve)                                                    |
+| `POST` | `/api/ripcoins/purchase`        | ✅   | Initiate a RipCoin purchase via Razorpay (fixed packages: 100/500/1000/5000/10000 coins) |
+| `POST` | `/api/ripcoins/purchase/verify` | ✅   | Verify Razorpay payment, credit base + bonus coins; idempotent per `razorpayOrderId`     |
+| `POST` | `/api/ripcoins/refund`          | ✅   | Refund a RipCoin purchase: debit coins, trigger Razorpay refund                          |
+
+### Realtime API
+
+| Method | Path                  | Auth | Description                                                                         |
+| ------ | --------------------- | ---- | ----------------------------------------------------------------------------------- |
+| `POST` | `/api/realtime/token` | ✅   | Issue Firebase custom token scoped to the user's chat room IDs for RTDB read access |
+
+### Search API
+
+| Method | Path          | Auth | Description                                                                   |
+| ------ | ------------- | ---- | ----------------------------------------------------------------------------- |
+| `GET`  | `/api/search` | —    | Product full-text search; uses Algolia if configured, falls back to Firestore |
+
+### Seller API
+
+| Method  | Path                                 | Auth                      | Description                                                                          |
+| ------- | ------------------------------------ | ------------------------- | ------------------------------------------------------------------------------------ |
+| `GET`   | `/api/seller/store`                  | ✅ seller/admin           | Get the authenticated seller's store profile                                         |
+| `PATCH` | `/api/seller/store`                  | ✅ seller/admin           | Update store settings; auto-generates `storeSlug` from `storeName` when none exists  |
+| `GET`   | `/api/seller/analytics`              | ✅                        | Seller sales analytics: totals, monthly breakdown (last 6 months), top products      |
+| `GET`   | `/api/seller/orders`                 | ✅                        | List orders for the seller's products (Sieve)                                        |
+| `POST`  | `/api/seller/orders/bulk`            | ✅ seller/admin           | Bulk order actions — currently: `request_payout` on delivered custom-shipped orders  |
+| `GET`   | `/api/seller/products`               | ✅ seller/admin/moderator | List the seller's own product listings                                               |
+| `POST`  | `/api/seller/products`               | ✅ seller/admin           | Create a new product listing                                                         |
+| `GET`   | `/api/seller/payouts`                | ✅                        | List seller's payouts + earnings summary                                             |
+| `POST`  | `/api/seller/payouts`                | ✅                        | Request a new payout                                                                 |
+| `GET`   | `/api/seller/payout-settings`        | ✅ seller/admin           | Get seller's payout details (bank account numbers masked)                            |
+| `PATCH` | `/api/seller/payout-settings`        | ✅ seller/admin           | Save or update UPI ID / bank account details                                         |
+| `GET`   | `/api/seller/shipping`               | ✅ seller/admin           | Read current shipping config (Shiprocket token redacted)                             |
+| `PATCH` | `/api/seller/shipping`               | ✅ seller/admin           | Update shipping config (custom fixed price or Shiprocket auth + pickup registration) |
+| `POST`  | `/api/seller/shipping/verify-pickup` | ✅ seller/admin           | Verify Shiprocket pickup address OTP sent to seller's phone                          |
 
 ### Stores API (Public Storefront Directory)
 
-- `GET /api/stores` — Paginated list of active seller storefronts; supports `q`, `sorts`, `page`, `pageSize`
-- `GET /api/stores/[storeSlug]` — Public store profile by slug
-- `GET /api/stores/[storeSlug]/products` — Published products for a store; supports `sorts`, `page`, `pageSize`
-- `GET /api/stores/[storeSlug]/auctions` — Active auctions for a store; supports `sorts`, `page`, `pageSize`
-- `GET /api/stores/[storeSlug]/reviews` — Aggregated reviews for a store with `averageRating`, `totalReviews`, `ratingDistribution`
+| Method | Path                               | Auth | Description                                                                            |
+| ------ | ---------------------------------- | ---- | -------------------------------------------------------------------------------------- |
+| `GET`  | `/api/stores`                      | —    | Paginated list of active seller storefronts; supports `q`, `sorts`, `page`, `pageSize` |
+| `GET`  | `/api/stores/[storeSlug]`          | —    | Public store profile by slug                                                           |
+| `GET`  | `/api/stores/[storeSlug]/products` | —    | Published products for a store                                                         |
+| `GET`  | `/api/stores/[storeSlug]/auctions` | —    | Active auctions for a store                                                            |
+| `GET`  | `/api/stores/[storeSlug]/reviews`  | —    | Aggregated reviews with `averageRating`, `totalReviews`, `ratingDistribution`          |
+
+### User API
+
+| Method   | Path                             | Auth | Description                                                          |
+| -------- | -------------------------------- | ---- | -------------------------------------------------------------------- |
+| `GET`    | `/api/user/addresses`            | ✅   | List the user's saved addresses                                      |
+| `POST`   | `/api/user/addresses`            | ✅   | Create a new address (max 10 per user)                               |
+| `GET`    | `/api/user/addresses/[id]`       | ✅   | Get a single address (owner only)                                    |
+| `PATCH`  | `/api/user/addresses/[id]`       | ✅   | Update an address                                                    |
+| `DELETE` | `/api/user/addresses/[id]`       | ✅   | Delete an address                                                    |
+| `POST`   | `/api/user/become-seller`        | ✅   | Apply to become a seller — sets `role=seller`, `storeStatus=pending` |
+| `GET`    | `/api/user/orders`               | ✅   | List the user's orders (filterable by `?status=`)                    |
+| `GET`    | `/api/user/orders/[id]`          | ✅   | Get a single order (owner only)                                      |
+| `GET`    | `/api/user/sessions`             | ✅   | Get the user's active sessions (up to 20)                            |
+| `DELETE` | `/api/user/sessions/[id]`        | ✅   | Revoke a specific session                                            |
+| `GET`    | `/api/user/wishlist`             | ✅   | List wishlist items with enriched product details                    |
+| `POST`   | `/api/user/wishlist`             | ✅   | Add a product to the wishlist                                        |
+| `GET`    | `/api/user/wishlist/[productId]` | ✅   | Check if a product is in the wishlist (`{ inWishlist: boolean }`)    |
+| `DELETE` | `/api/user/wishlist/[productId]` | ✅   | Remove a product from the wishlist                                   |
+
+### Webhooks API
+
+| Method | Path                       | Auth             | Description                                                               |
+| ------ | -------------------------- | ---------------- | ------------------------------------------------------------------------- |
+| `POST` | `/api/webhooks/shiprocket` | — (token header) | Receive Shiprocket shipment status events; updates order `shippingStatus` |
+
+### Logs API
+
+| Method | Path              | Auth | Description                                                        |
+| ------ | ----------------- | ---- | ------------------------------------------------------------------ |
+| `POST` | `/api/logs/write` | —    | Receive client-side log entries and write them to server log files |
 
 ### Demo API
 
-- `POST /api/demo/seed` - Load or delete seed data (development only)
+| Method | Path             | Auth | Description                                                        |
+| ------ | ---------------- | ---- | ------------------------------------------------------------------ |
+| `POST` | `/api/demo/seed` | —    | Load or delete seed data (development only; blocked in production) |
 
 ---
 
@@ -4939,17 +5119,50 @@ All static pages follow the same pattern: hero gradient header → content secti
 
 ---
 
+### API Handler (`api/api-handler.ts`)
+
+**Purpose**: Mandatory `createApiHandler` wrapper — every JSON API route must export its handlers using this factory.
+
+```typescript
+export const POST = createApiHandler<InputType, ParamType>({
+  auth?: boolean,           // require session cookie
+  roles?: UserRole[],       // require role (implies auth:true)
+  rateLimit?: { limit, window },
+  schema?: ZodSchema,       // body validation; returns 400 on failure
+  handler: async ({ request, user, body, params }) => NextResponse,
+});
+```
+
+**Execution order**: rate-limit → auth → role check → body validation → `context.params` resolve → `handler` → `handleApiError` catch.
+
+**Handler context**:
+
+| Property  | Type                        | Present when                |
+| --------- | --------------------------- | --------------------------- |
+| `request` | `NextRequest`               | always                      |
+| `user`    | `UserDocument \| undefined` | `auth: true` or `roles` set |
+| `body`    | `TInput \| undefined`       | `schema` provided           |
+| `params`  | `TParams \| undefined`      | dynamic route (e.g. `[id]`) |
+
+**Import**: `import { createApiHandler } from "@/lib/api/api-handler"`
+
+---
+
 ### API Response (`api-response.ts`)
 
 **Purpose**: Standard API response formatters  
 **Functions**:
 
-- `success<T>(data, message?)` - Success response
-- `error(message, errors?, code?)` - Error response
-- `paginated<T>(data, pagination)` - Paginated response
-- `created<T>(data, message?)` - Resource created response
-- `updated<T>(data, message?)` - Resource updated response
-- `deleted(message?)` - Resource deleted response
+- `successResponse<T>(data?, message?, status?, meta?)` — `{ success: true, data?, message?, meta? }`
+- `errorResponse(error, status?, details?)` — `{ success: false, error, details? }`
+- `ApiErrors.unauthorized()` — 401
+- `ApiErrors.forbidden()` — 403
+- `ApiErrors.notFound(resource?)` — 404
+- `ApiErrors.badRequest(message?, details?)` — 400
+- `ApiErrors.internalError(message?)` — 500
+- `ApiErrors.validationError(details)` — 400 with Zod issue list
+
+**Interfaces**: `ApiSuccessResponse<T>`, `ApiErrorResponse`
 
 ---
 

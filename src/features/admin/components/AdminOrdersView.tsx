@@ -222,7 +222,7 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
           keyExtractor={(order: OrderDocument) => order.id}
           externalPagination
           showViewToggle
-          viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
+          viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}
           mobileCardRender={(order) => (
             <Card className="p-4 space-y-2">

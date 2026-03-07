@@ -16,6 +16,29 @@ export function getCategoryTableColumns(
   return {
     columns: [
       {
+        key: "image",
+        header: "",
+        render: (cat: Category) => (
+          <div className="w-9 h-9 rounded overflow-hidden flex-shrink-0">
+            {cat.display?.coverImage ? (
+              <img
+                src={cat.display.coverImage}
+                alt=""
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <div
+                className="w-full h-full flex items-center justify-center text-base"
+                style={{ backgroundColor: cat.display?.color ?? "#94a3b8" }}
+              >
+                {cat.display?.icon ?? "🗂️"}
+              </div>
+            )}
+          </div>
+        ),
+      },
+      {
         key: "name",
         header: UI_LABELS.TABLE.NAME,
         sortable: true,

@@ -1,127 +1,126 @@
 /**
  * API Handler Utilities
  *
- * Reusable utilities for API route handlers with:
- * - Authentication
- * - Rate limiting
- * - Validation
- * - Error handling
+ * Mandatory wrapper for all JSON API route handlers. Provides:
+ * - Authentication via session cookie (requireAuthFromRequest / requireRoleFromRequest)
+ * - Rate limiting returning standardised errorResponse(429)
+ * - Zod body validation returning ApiErrors.validationError on failure
+ * - Dynamic route params forwarded to handler
+ * - Centralised error handling via handleApiError
+ *
+ * @example
+ * ```typescript
+ * // Static route:
+ * export const POST = createApiHandler({
+ *   auth: true,
+ *   rateLimit: RateLimitPresets.AUTH,
+ *   schema: mySchema,
+ *   handler: async ({ user, body }) =>
+ *     successResponse(result, SUCCESS_MESSAGES.MY_MODULE.SUCCESS),
+ * });
+ *
+ * // Dynamic route (e.g. /api/items/[id]):
+ * export const GET = createApiHandler<never, { id: string }>({
+ *   handler: async ({ params }) => {
+ *     const { id } = params!;
+ *     ...
+ *   },
+ * });
+ * ```
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getAuthenticatedUser } from "@/lib/firebase/auth-server";
 import { applyRateLimit } from "@/lib/security/rate-limit";
-import { requireRole } from "@/lib/security/authorization";
+import {
+  requireAuthFromRequest,
+  requireRoleFromRequest,
+} from "@/lib/security/authorization";
 import { handleApiError } from "@/lib/errors/error-handler";
-import { AuthenticationError, ValidationError } from "@/lib/errors";
-import { UI_LABELS, ERROR_MESSAGES } from "@/constants";
-import { userRepository } from "@/repositories";
+import { errorResponse, ApiErrors } from "@/lib/api-response";
+import { UI_LABELS } from "@/constants";
 import type { UserRole } from "@/types/auth";
+import type { UserDocument } from "@/db/schema/users";
 
 interface RateLimitConfig {
   limit: number;
   window: number; // seconds
 }
 
-interface ApiHandlerOptions<TInput = any> {
-  /** Require authentication */
+interface ApiHandlerOptions<TInput = any, TParams = Record<string, string>> {
+  /** Require authentication (implied when roles is set) */
   auth?: boolean;
-  /** Required user roles */
+  /** Required user roles — implies auth: true */
   roles?: UserRole[];
   /** Rate limit configuration */
   rateLimit?: RateLimitConfig;
-  /** Zod validation schema */
+  /** Zod validation schema for the request body */
   schema?: z.ZodSchema<TInput>;
-  /** Handler function */
+  /** Handler function — receives typed request, user, body, and resolved route params */
   handler: (data: {
     request: NextRequest;
-    user?: any;
+    user?: UserDocument;
     body?: TInput;
+    params?: TParams;
   }) => Promise<NextResponse>;
 }
 
 /**
- * Create an API route handler with built-in auth, validation, and rate limiting
+ * Create a type-safe API route handler with built-in auth, validation, and error handling.
+ *
+ * For dynamic routes, provide the params type as the second generic:
+ *   createApiHandler<BodyType, { id: string }>({ ... })
  */
-export function createApiHandler<TInput = any>(
-  options: ApiHandlerOptions<TInput>,
-) {
-  return async (request: NextRequest): Promise<NextResponse> => {
+export function createApiHandler<
+  TInput = any,
+  TParams = Record<string, string>,
+>(options: ApiHandlerOptions<TInput, TParams>) {
+  return async (
+    request: NextRequest,
+    context: { params: Promise<TParams> },
+  ): Promise<NextResponse> => {
     try {
-      // Rate limiting
+      // 1. Rate limiting
       if (options.rateLimit) {
         const rateLimitResult = await applyRateLimit(
           request,
           options.rateLimit,
         );
         if (!rateLimitResult.success) {
-          return NextResponse.json(
-            {
-              success: false,
-              error: UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED,
-            },
-            { status: 429 },
-          );
+          return errorResponse(UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED, 429);
         }
       }
 
-      // Authentication
-      let user;
-      if (options.auth) {
-        const authUser = await getAuthenticatedUser();
-        if (!authUser) {
-          throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-        }
-
-        // Fetch user data from Firestore to get role
-        const firestoreUser = await userRepository.findById(authUser.uid);
-        if (!firestoreUser) {
-          throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-        }
-
-        // Merge auth token with Firestore data (Firestore role takes priority)
-        user = {
-          ...authUser,
-          role: firestoreUser.role || "user",
-          displayName: firestoreUser.displayName,
-          email: firestoreUser.email,
-          disabled: firestoreUser.disabled,
-        };
-
-        // Role-based authorization
-        if (options.roles && options.roles.length > 0) {
-          requireRole(user, options.roles);
-        }
+      // 2. Authentication / authorisation
+      let user: UserDocument | undefined;
+      if (options.roles && options.roles.length > 0) {
+        user = await requireRoleFromRequest(request, options.roles);
+      } else if (options.auth) {
+        user = await requireAuthFromRequest(request);
       }
 
-      // Body validation
-      let validatedBody;
+      // 3. Body validation
+      let validatedBody: TInput | undefined;
       if (options.schema) {
         const body = await request.json();
         const result = options.schema.safeParse(body);
-
         if (!result.success) {
-          throw new ValidationError(
-            ERROR_MESSAGES.VALIDATION.INVALID_INPUT,
-            result.error.flatten().fieldErrors as Record<string, string[]>,
-          );
+          return ApiErrors.validationError(result.error.issues);
         }
-
         validatedBody = result.data;
       }
 
-      // Call handler
+      // 4. Resolve dynamic route params
+      const resolvedParams = await context.params;
+
       return await options.handler({
         request,
         user,
         body: validatedBody,
+        params: resolvedParams,
       });
     } catch (error) {
       return handleApiError(error);
     }
   };
 }
-
-// successResponse and errorResponse have been removed.
-// Import from @/lib/api-response instead for standardized API responses.

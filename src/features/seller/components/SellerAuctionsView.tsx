@@ -19,12 +19,13 @@ import {
   Search,
   SortDropdown,
   TablePagination,
+  getFilterLabel,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
 import { Gavel } from "lucide-react";
-import { useAuth, useApiQuery, useUrlTable } from "@/hooks";
+import { useAuth, useApiQuery, useUrlTable, useMessage } from "@/hooks";
 import { sellerService } from "@/services";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { SellerProductCard } from "./SellerProductCard";
 import type { AdminProduct } from "@/components";
@@ -46,14 +47,18 @@ function SellerAuctionsContent() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const t = useTranslations("sellerAuctions");
+  const { showError } = useMessage();
 
   const table = useUrlTable({
     defaults: { pageSize: "24", sorts: "-createdAt" },
   });
 
   useEffect(() => {
-    if (!authLoading && !user) router.push(ROUTES.AUTH.LOGIN);
-  }, [user, authLoading, router]);
+    if (!authLoading && !user) {
+      showError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
+      router.push(ROUTES.AUTH.LOGIN);
+    }
+  }, [user, authLoading, router, showError]);
 
   const q = table.get("q");
   const statusFilter = table.get("status");
@@ -81,8 +86,7 @@ function SellerAuctionsContent() {
       { value: "ended", label: t("filterStatusEnded") },
       { value: "cancelled", label: t("filterStatusCancelled") },
     ];
-    const label =
-      opts.find((o) => o.value === statusFilter)?.label ?? statusFilter;
+    const label = getFilterLabel(opts, statusFilter) ?? statusFilter;
     return [{ key: "status", label: t("filterStatusLabel"), value: label }];
   }, [statusFilter, t]);
 

@@ -16,7 +16,6 @@ export const SUCCESS_MESSAGES = {
     LOGOUT_SUCCESS: "You have been logged out successfully",
     REGISTER_SUCCESS: "Account created successfully",
     GOOGLE_LOGIN_SUCCESS: "Signed in with Google successfully",
-    APPLE_LOGIN_SUCCESS: "Signed in with Apple successfully",
     OAUTH_SESSION_CREATED: "Authentication successful",
   },
 
@@ -205,6 +204,7 @@ export const SUCCESS_MESSAGES = {
 
   SESSION: {
     ACTIVITY_UPDATED: "Activity updated",
+    FETCHED: "Sessions fetched successfully",
   },
 
   // Media Success
@@ -279,12 +279,14 @@ export const SUCCESS_MESSAGES = {
     COINS_ENGAGED: "RipCoins locked for your bid",
     COINS_RELEASED: "RipCoins returned to your wallet",
     COINS_RETURNED: "RipCoins refunded after payment",
+    REFUND_COMPLETE: "RipCoins successfully refunded!",
   },
 
   // Chat success messages
   CHAT: {
     MESSAGE_SENT: "Message sent",
     ROOM_CREATED: "Chat opened",
+    ROOM_DELETED: "Chat deleted",
   },
 } as const;
 

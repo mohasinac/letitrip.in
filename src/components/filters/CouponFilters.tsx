@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { FilterFacetSection } from "@/components";
 import { RangeFilter } from "./RangeFilter";
+import { SwitchFilter } from "./SwitchFilter";
 import type { UrlTable } from "./ProductFilters";
 
 export const COUPON_SORT_OPTIONS = [
@@ -31,14 +32,8 @@ export function CouponFilters({ table }: CouponFiltersProps) {
     { value: "buy_x_get_y", label: t("couponTypeBuyXGetY") },
   ];
 
-  const isActiveOptions = [
-    { value: "true", label: t("booleanActive") },
-    { value: "false", label: t("booleanInactive") },
-  ];
-
-  const selectedType = table.get("type") ? [table.get("type")] : [];
-  const selectedIsActive = table.get("validityIsActive")
-    ? [table.get("validityIsActive")]
+  const selectedType = table.get("type")
+    ? table.get("type").split("|").filter(Boolean)
     : [];
 
   return (
@@ -47,20 +42,17 @@ export function CouponFilters({ table }: CouponFiltersProps) {
         title={t("type")}
         options={typeOptions}
         selected={selectedType}
-        onChange={(vals) => table.set("type", vals[0] ?? "")}
+        onChange={(vals) => table.set("type", vals.join("|"))}
         searchable={false}
         defaultCollapsed={false}
-        selectionMode="single"
       />
 
-      <FilterFacetSection
+      <SwitchFilter
         title={t("isActive")}
-        options={isActiveOptions}
-        selected={selectedIsActive}
-        onChange={(vals) => table.set("validityIsActive", vals[0] ?? "")}
-        searchable={false}
+        label={t("showActiveOnly")}
+        checked={table.get("validityIsActive") === "true"}
+        onChange={(v) => table.set("validityIsActive", v ? "true" : "")}
         defaultCollapsed={true}
-        selectionMode="single"
       />
 
       <RangeFilter

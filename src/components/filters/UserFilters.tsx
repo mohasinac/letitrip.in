@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { FilterFacetSection } from "@/components";
 import { RangeFilter } from "./RangeFilter";
+import { SwitchFilter } from "./SwitchFilter";
 import type { UrlTable } from "./ProductFilters";
 
 export const USER_SORT_OPTIONS = [
@@ -28,29 +29,17 @@ export function UserFilters({ table }: UserFiltersProps) {
     { value: "admin", label: t("roleAdmin") },
   ];
 
-  const emailVerifiedOptions = [
-    { value: "true", label: t("booleanVerified") },
-    { value: "false", label: t("booleanUnverified") },
-  ];
-
-  const disabledOptions = [
-    { value: "false", label: t("booleanActive") },
-    { value: "true", label: t("booleanDisabled") },
-  ];
-
   const storeStatusOptions = [
     { value: "pending", label: t("storeStatusPending") },
     { value: "approved", label: t("storeStatusApproved") },
     { value: "rejected", label: t("storeStatusRejected") },
   ];
 
-  const selectedRole = table.get("role") ? [table.get("role")] : [];
-  const selectedEmailVerified = table.get("emailVerified")
-    ? [table.get("emailVerified")]
+  const selectedRole = table.get("role")
+    ? table.get("role").split("|").filter(Boolean)
     : [];
-  const selectedDisabled = table.get("disabled") ? [table.get("disabled")] : [];
   const selectedStoreStatus = table.get("storeStatus")
-    ? [table.get("storeStatus")]
+    ? table.get("storeStatus").split("|").filter(Boolean)
     : [];
 
   return (
@@ -59,40 +48,34 @@ export function UserFilters({ table }: UserFiltersProps) {
         title={t("role")}
         options={roleOptions}
         selected={selectedRole}
-        onChange={(vals) => table.set("role", vals[0] ?? "")}
+        onChange={(vals) => table.set("role", vals.join("|"))}
         searchable={false}
         defaultCollapsed={false}
-        selectionMode="single"
       />
 
-      <FilterFacetSection
+      <SwitchFilter
         title={t("emailVerified")}
-        options={emailVerifiedOptions}
-        selected={selectedEmailVerified}
-        onChange={(vals) => table.set("emailVerified", vals[0] ?? "")}
-        searchable={false}
+        label={t("showEmailVerifiedOnly")}
+        checked={table.get("emailVerified") === "true"}
+        onChange={(v) => table.set("emailVerified", v ? "true" : "")}
         defaultCollapsed={true}
-        selectionMode="single"
       />
 
-      <FilterFacetSection
+      <SwitchFilter
         title={t("accountStatus")}
-        options={disabledOptions}
-        selected={selectedDisabled}
-        onChange={(vals) => table.set("disabled", vals[0] ?? "")}
-        searchable={false}
+        label={t("showDisabledOnly")}
+        checked={table.get("disabled") === "true"}
+        onChange={(v) => table.set("disabled", v ? "true" : "")}
         defaultCollapsed={true}
-        selectionMode="single"
       />
 
       <FilterFacetSection
         title={t("storeStatus")}
         options={storeStatusOptions}
         selected={selectedStoreStatus}
-        onChange={(vals) => table.set("storeStatus", vals[0] ?? "")}
+        onChange={(vals) => table.set("storeStatus", vals.join("|"))}
         searchable={false}
         defaultCollapsed={true}
-        selectionMode="single"
       />
 
       <RangeFilter

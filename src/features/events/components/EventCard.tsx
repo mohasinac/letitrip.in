@@ -1,9 +1,19 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
-import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
+import {
+  Card,
+  Checkbox,
+  Heading,
+  MediaImage,
+  Span,
+  Text,
+  TextLink,
+} from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import type { EventDocument } from "@/db/schema";
+
+const { themed, flex, position } = THEME_CONSTANTS;
 
 interface EventCardProps {
   event: EventDocument;
@@ -15,8 +25,6 @@ interface EventCardProps {
   onSelectionChange?: (id: string, checked: boolean) => void;
 }
 
-const { themed, flex } = THEME_CONSTANTS;
-
 export function EventCard({
   event,
   selectable,
@@ -26,7 +34,10 @@ export function EventCard({
   const t = useTranslations("events");
 
   const plainDescription = event.description
-    ? event.description.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
+    ? event.description
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
     : "";
 
   return (
@@ -37,31 +48,37 @@ export function EventCard({
     >
       {/* ── Image area ── */}
       <div className="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
-        {event.coverImageUrl ? (
-          <MediaImage
-            src={event.coverImageUrl}
-            alt={event.title}
-            size="card"
-          />
-        ) : (
-          <div
-            className={`${flex.center} w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600`}
-          >
-            <Span className="text-white text-5xl font-bold opacity-30">
-              {event.title.charAt(0).toUpperCase()}
-            </Span>
-          </div>
-        )}
+        <TextLink
+          href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}
+          className={`${position.fill} block z-0`}
+          variant="bare"
+        >
+          {event.coverImageUrl ? (
+            <MediaImage
+              src={event.coverImageUrl}
+              alt={event.title}
+              size="card"
+            />
+          ) : (
+            <div
+              className={`${flex.center} w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600`}
+            >
+              <Span className="text-white text-5xl font-bold opacity-30">
+                {event.title.charAt(0).toUpperCase()}
+              </Span>
+            </div>
+          )}
+        </TextLink>
 
         {/* Checkbox — top left */}
         {selectable && (
           <div className="absolute top-2 left-2 z-10">
-            <input
-              type="checkbox"
+            <Checkbox
+              id={`select-event-${event.id}`}
               aria-label={`Select ${event.title}`}
               checked={!!selected}
               onChange={(e) => onSelectionChange?.(event.id, e.target.checked)}
-              className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer bg-white/80"
+              className="bg-white/80"
             />
           </div>
         )}
@@ -95,11 +112,7 @@ export function EventCard({
         </TextLink>
 
         {plainDescription && (
-          <Text
-            size="sm"
-            variant="secondary"
-            className="line-clamp-3 flex-1"
-          >
+          <Text size="sm" variant="secondary" className="line-clamp-3 flex-1">
             {plainDescription}
           </Text>
         )}

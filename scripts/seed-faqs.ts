@@ -11,7 +11,7 @@
  *   - FIREBASE_ADMIN_KEY environment variable set
  */
 
-import { FAQ_SEED_DATA } from "./seed-data/faq-seed-data";
+import { FAQ_SEED_DATA } from "@/db/seed-data/faq-seed-data";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { FAQS_COLLECTION } from "@/db/schema/faqs";
 

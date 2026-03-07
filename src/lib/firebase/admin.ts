@@ -47,9 +47,12 @@ export function getAdminApp(): App {
           const serviceAccount = JSON.parse(
             fs.readFileSync(serviceAccountPath, "utf8"),
           );
+          const devDbUrl =
+            process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL ??
+            `https://${serviceAccount.project_id}-default-rtdb.firebaseio.com`;
           _adminApp = initializeApp({
             credential: cert(serviceAccountPath),
-            databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`,
+            databaseURL: devDbUrl,
           });
 
           // Initialize Firestore with settings BEFORE any other operations
@@ -68,6 +71,10 @@ export function getAdminApp(): App {
             "🔑 Initializing Firebase Admin with environment variables",
           );
           const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
+          const prodDbUrl =
+            process.env.FIREBASE_ADMIN_DATABASE_URL ??
+            process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL ??
+            `https://${projectId}-default-rtdb.firebaseio.com`;
           _adminApp = initializeApp({
             credential: cert({
               projectId,
@@ -77,7 +84,7 @@ export function getAdminApp(): App {
                 "\n",
               ),
             }),
-            databaseURL: `https://${projectId}.firebaseio.com`,
+            databaseURL: prodDbUrl,
           });
 
           // Initialize Firestore with settings BEFORE any other operations

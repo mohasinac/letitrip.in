@@ -9,7 +9,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { ROUTES } from "@/constants";
+import { ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useAdminSections } from "@/features/admin/hooks";
 import { useTranslations } from "next-intl";
 import {
@@ -57,7 +57,7 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
   const [viewMode, setViewMode] = useState<"table" | "grid" | "list">("table");
   const initialFormRef = useRef<string>("");
 
-  const sections = data?.sections || [];
+  const sections = data || [];
 
   const isDirty = useMemo(() => {
     if (!editingSection || drawerMode === "delete") return false;
@@ -73,7 +73,7 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
   const handleCreate = useCallback(() => {
     const newSection = {
       id: "",
-      type: "hero",
+      type: "welcome",
       title: "",
       enabled: true,
       order: sections.length + 1,
@@ -161,11 +161,13 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
     try {
       if (drawerMode === "create") {
         await createMutation.mutate(editingSection);
+        showToast(SUCCESS_MESSAGES.SECTION.CREATED, "success");
       } else {
         await updateMutation.mutate({
           id: editingSection.id!,
           data: editingSection,
         });
+        showToast(SUCCESS_MESSAGES.SECTION.UPDATED, "success");
       }
       await refetch();
       handleCloseDrawer();
@@ -178,6 +180,7 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
     if (!editingSection?.id) return;
     try {
       await deleteMutation.mutate(editingSection.id);
+      showToast(SUCCESS_MESSAGES.SECTION.DELETED, "success");
       await refetch();
       handleCloseDrawer();
     } catch {

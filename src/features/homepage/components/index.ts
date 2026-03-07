@@ -10,6 +10,8 @@ export { SiteFeaturesSection } from "./SiteFeaturesSection";
 export { TopCategoriesSection } from "./TopCategoriesSection";
 export { FeaturedProductsSection } from "./FeaturedProductsSection";
 export { FeaturedAuctionsSection } from "./FeaturedAuctionsSection";
+export { FeaturedStoresSection } from "./FeaturedStoresSection";
+export { FeaturedEventsSection } from "./FeaturedEventsSection";
 export { AdvertisementBanner } from "./AdvertisementBanner";
 export { CustomerReviewsSection } from "./CustomerReviewsSection";
 export { WhatsAppCommunitySection } from "./WhatsAppCommunitySection";

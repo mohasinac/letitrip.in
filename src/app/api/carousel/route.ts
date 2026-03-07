@@ -13,24 +13,15 @@
  * Done: Track slide analytics (views, clicks) — ✅ views fire-and-forget in GET (Phase 7 tech debt)
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { carouselRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { errorResponse, successResponse } from "@/lib/api-response";
 import { getBooleanParam, getSearchParams } from "@/lib/api/request-helpers";
-import {
-  getUserFromRequest,
-  requireRoleFromRequest,
-} from "@/lib/security/authorization";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  carouselCreateSchema,
-} from "@/lib/validation/schemas";
-import { AuthenticationError, AuthorizationError } from "@/lib/errors";
-import { handleApiError } from "@/lib/errors/error-handler";
+import { getUserFromRequest } from "@/lib/security/authorization";
+import { carouselCreateSchema } from "@/lib/validation/schemas";
 import { serverLogger } from "@/lib/server-logger";
 import type { GridCard } from "@/db/schema";
+import { createApiHandler } from "@/lib/api/api-handler";
 
 /**
  * GET /api/carousel
@@ -47,9 +38,8 @@ import type { GridCard } from "@/db/schema";
  * TODO (Future): Track views analytics per slide
  * Done: View count fire-and-forget tracking implemented below (Phase 7 tech debt)
  */
-export async function GET(request: NextRequest) {
-  try {
-    // Parse query parameters
+export const GET = createApiHandler({
+  handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const includeInactive =
       getBooleanParam(searchParams, "includeInactive") === true;
@@ -91,22 +81,16 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    return NextResponse.json(
-      { success: true, data: limitedSlides },
-      {
-        headers: {
-          // Add cache headers for public access
-          "Cache-Control": includeInactive
-            ? "private, no-cache" // Admin: no cache
-            : "public, max-age=300, s-maxage=600, stale-while-revalidate=120", // Public: 5-10 min cache + SWR
-        },
-      },
+    const response = successResponse(limitedSlides);
+    response.headers.set(
+      "Cache-Control",
+      includeInactive
+        ? "private, no-cache"
+        : "public, max-age=300, s-maxage=600, stale-while-revalidate=120",
     );
-  } catch (error) {
-    serverLogger.error(ERROR_MESSAGES.API.CAROUSEL_GET_ERROR, { error });
-    return errorResponse(ERROR_MESSAGES.CAROUSEL.FETCH_FAILED, 500);
-  }
-}
+    return response;
+  },
+});
 
 /**
  * POST /api/carousel
@@ -127,25 +111,12 @@ export async function GET(request: NextRequest) {
  * Ã¢Å“â€¦ Returns created slide with 201 status
  * TODO (Future): Validate grid card positions for overlaps in 9x9 grid
  */
-export async function POST(request: NextRequest) {
-  try {
-    // Require admin authentication
-    const user = await requireRoleFromRequest(request, ["admin"]);
-
-    // Parse and validate request body
-    const body = await request.json();
-    const validation = validateRequestBody(carouselCreateSchema, body);
-
-    if (!validation.success) {
-      return errorResponse(
-        ERROR_MESSAGES.VALIDATION.FAILED,
-        400,
-        formatZodErrors(validation.errors),
-      );
-    }
-
-    // Check active slides limit (max 5 active)
-    if (validation.data.active) {
+export const POST = createApiHandler<(typeof carouselCreateSchema)["_output"]>({
+  auth: true,
+  roles: ["admin"],
+  schema: carouselCreateSchema,
+  handler: async ({ user, body }) => {
+    if (body!.active) {
       const activeSlides = await carouselRepository.getActiveSlides();
       if (activeSlides.length >= 5) {
         return errorResponse(ERROR_MESSAGES.CAROUSEL.MAX_ACTIVE_REACHED, 400, {
@@ -156,20 +127,9 @@ export async function POST(request: NextRequest) {
         });
       }
     }
-
-    // TODO (Future): Validate grid card positions (no overlaps in 9x9 grid)
-    // const hasOverlap = validateGridPositions(validation.data.gridCards);
-    // if (hasOverlap) {
-    //   return NextResponse.json(
-    //     { success: false, error: 'Grid card positions overlap' },
-    //     { status: 400 }
-    //   );
-    // }
-
-    // Create carousel slide
     const slide = await carouselRepository.create({
-      ...validation.data,
-      cards: validation.data.gridCards.map((card, index) => ({
+      ...body!,
+      cards: body!.gridCards.map((card, index) => ({
         ...card,
         gridRow: card.gridRow as 1 | 2,
         gridCol: card.gridCol as 1 | 2 | 3,
@@ -182,11 +142,8 @@ export async function POST(request: NextRequest) {
         isButtonOnly: card.isButtonOnly ?? false,
         sizing: card.sizing as GridCard["sizing"],
       })),
-      createdBy: user.uid,
+      createdBy: user!.uid,
     });
-
     return successResponse(slide, SUCCESS_MESSAGES.CAROUSEL.CREATED, 201);
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

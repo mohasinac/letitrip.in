@@ -9,6 +9,10 @@
  * Or with specific collections only:
  * npx ts-node scripts/seed-all-data.ts --collections=users,products,categories
  *
+ * Cache clearing (requires a running Next.js server + CACHE_REVALIDATION_SECRET):
+ * npx ts-node scripts/seed-all-data.ts --clear-cache
+ * npx ts-node scripts/seed-all-data.ts --server-url=http://localhost:3000 --clear-cache
+ *
  * WARNING: This will overwrite existing data. Use with caution!
  */
 
@@ -33,7 +37,7 @@ import {
   payoutsSeedData,
   sessionsSeedData,
   cartsSeedData,
-} from "./seed-data";
+} from "@/db/seed-data";
 import {
   USER_COLLECTION,
   CATEGORIES_COLLECTION,
@@ -59,6 +63,8 @@ interface SeedOptions {
   collections?: string[];
   dryRun?: boolean;
   verbose?: boolean;
+  clearCache?: boolean;
+  serverUrl?: string;
 }
 
 /**
@@ -78,6 +84,10 @@ function parseArgs(): SeedOptions {
       options.dryRun = true;
     } else if (arg === "--verbose" || arg === "-v") {
       options.verbose = true;
+    } else if (arg === "--clear-cache") {
+      options.clearCache = true;
+    } else if (arg.startsWith("--server-url=")) {
+      options.serverUrl = arg.split("=")[1];
     }
   }
 
@@ -312,6 +322,95 @@ function convertDatesToTimestamps(obj: any): any {
 }
 
 /**
+ * Clear in-memory API caches on the running Next.js server.
+ *
+ * Calls POST /api/cache/revalidate with the collections that were seeded so
+ * the server evicts any stale cached responses immediately rather than waiting
+ * for the TTL to expire.
+ *
+ * Requires:
+ *   - CACHE_REVALIDATION_SECRET  env var (must match the server's value)
+ *   - A running Next.js server (NEXT_PUBLIC_APP_URL or --server-url arg)
+ */
+async function clearApiCaches(
+  collectionsToSeed: string[],
+  options: SeedOptions,
+): Promise<void> {
+  const secret = process.env.CACHE_REVALIDATION_SECRET;
+  if (!secret) {
+    console.warn(
+      "\n⚠️  CACHE_REVALIDATION_SECRET is not set — skipping cache clear.",
+    );
+    return;
+  }
+
+  const baseUrl =
+    options.serverUrl ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "http://localhost:3000";
+
+  const url = `${baseUrl}/api/cache/revalidate`;
+
+  // Determine which collections have cacheable API routes
+  const cacheableCollections = [
+    "categories",
+    "products",
+    "carouselSlides",
+    "homepageSections",
+    "siteSettings",
+    "faqs",
+    "reviews",
+    "blogPosts",
+    "events",
+    "coupons",
+  ];
+
+  const collectionsForCache = collectionsToSeed.filter((c) =>
+    cacheableCollections.includes(c),
+  );
+
+  const body =
+    collectionsForCache.length > 0
+      ? JSON.stringify({ collections: collectionsForCache })
+      : undefined;
+
+  console.log(`\n🗑️  Clearing API caches at ${url}...`);
+  if (options.verbose && collectionsForCache.length > 0) {
+    console.log(`   Collections: ${collectionsForCache.join(", ")}`);
+  }
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": secret,
+      },
+      body,
+    });
+
+    if (!response.ok) {
+      const text = await response.text().catch(() => String(response.status));
+      console.warn(`\n⚠️  Cache clear failed (${response.status}): ${text}`);
+      return;
+    }
+
+    const result = await response.json();
+    if (result.cleared === "all") {
+      console.log("✅ All API caches cleared.");
+    } else {
+      console.log(
+        `✅ Cleared cache paths: ${(result.cleared as string[]).join(", ")}`,
+      );
+    }
+  } catch (error: any) {
+    console.warn(
+      `\n⚠️  Could not reach server at ${url} — cache not cleared. (${error.message})`,
+    );
+  }
+}
+
+/**
  * Main seed function
  */
 async function seedAllData(options: SeedOptions) {
@@ -469,6 +568,11 @@ async function seedAllData(options: SeedOptions) {
     }
 
     console.log("\n✅ Database seeding completed successfully!\n");
+
+    // Clear API caches so stale responses are evicted immediately
+    if (options.clearCache && !options.dryRun) {
+      await clearApiCaches(collectionsToSeed, options);
+    }
   } catch (error) {
     console.error("\n❌ Error during seeding:", error);
     process.exit(1);

@@ -10,11 +10,9 @@
  * server-side when a checkout session is completed (future payment integration).
  */
 
-import { NextRequest } from "next/server";
-import { requireAuth } from "@/lib/firebase/auth-server";
 import { orderRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse } from "@/lib/api-response";
+import { createApiHandler } from "@/lib/api/api-handler";
 import { getSearchParams, getStringParam } from "@/lib/api/request-helpers";
 import type { OrderStatus } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";
@@ -34,10 +32,9 @@ const VALID_STATUSES: OrderStatus[] = [
  * Returns all orders for the authenticated user.
  * Optional query param: ?status=<OrderStatus>
  */
-export async function GET(request: NextRequest) {
-  try {
-    const user = await requireAuth();
-
+export const GET = createApiHandler({
+  auth: true,
+  handler: async ({ user, request }) => {
     const searchParams = getSearchParams(request);
     const statusParam = getStringParam(searchParams, "status");
 
@@ -45,10 +42,10 @@ export async function GET(request: NextRequest) {
 
     if (statusParam && VALID_STATUSES.includes(statusParam as OrderStatus)) {
       // Filter by status within this user's orders
-      const allOrders = await orderRepository.findByUser(user.uid);
+      const allOrders = await orderRepository.findByUser(user!.uid);
       orders = allOrders.filter((o) => o.status === statusParam);
     } else {
-      orders = await orderRepository.findByUser(user.uid);
+      orders = await orderRepository.findByUser(user!.uid);
     }
 
     // Sort by orderDate desc (Firestore index not guaranteed here)
@@ -58,7 +55,7 @@ export async function GET(request: NextRequest) {
     );
 
     serverLogger.info("Orders listed", {
-      userId: user.uid,
+      userId: user!.uid,
       count: orders.length,
     });
 
@@ -66,7 +63,5 @@ export async function GET(request: NextRequest) {
       orders,
       total: orders.length,
     });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

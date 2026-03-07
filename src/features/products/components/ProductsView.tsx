@@ -1,10 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { PackageSearch, Gavel } from "lucide-react";
 import {
   DataTable,
-  FilterFacetSection,
   ProductCard,
   Search,
   SortDropdown,
@@ -15,22 +14,22 @@ import {
   EmptyState,
   Button,
 } from "@/components";
+import { ProductFilters } from "@/components/filters";
 import type { ActiveFilter } from "@/components";
 import { Heading, Text, TextLink } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useUrlTable, useAuth, useMessage } from "@/hooks";
+import {
+  useUrlTable,
+  useAuth,
+  useMessage,
+  useCategories,
+  usePendingTable,
+} from "@/hooks";
 import { useProducts } from "../hooks";
 import { wishlistService } from "@/services";
 
 const PAGE_SIZE = 24;
-
-const PRICE_BUCKETS = [
-  { value: "0-500", labelKey: "priceUnder500" },
-  { value: "500-2000", labelKey: "price500to2000" },
-  { value: "2000-10000", labelKey: "price2000to10000" },
-  { value: "10000+", labelKey: "priceOver10000" },
-] as const;
 
 export function ProductsView() {
   const t = useTranslations("products");
@@ -41,40 +40,21 @@ export function ProductsView() {
   const table = useUrlTable({
     defaults: { pageSize: String(PAGE_SIZE), sort: PRODUCT_SORT_VALUES.NEWEST },
   });
+  // categoryParam may be comma-separated for multi-select, e.g. "cat1,cat2"
   const categoryParam = table.get("category");
-  const priceRange = table.get("priceRange");
+  const minPriceParam = table.get("minPrice");
+  const maxPriceParam = table.get("maxPrice");
   const searchQuery = table.get("q");
   const sortParam = table.get("sort") || PRODUCT_SORT_VALUES.NEWEST;
   const pageParam = table.getNumber("page", 1);
 
-  // ── Staged filter state ──────────────────────────────────────────────
-  const [stagedCategory, setStagedCategory] = useState<string[]>(
-    categoryParam ? [categoryParam] : [],
-  );
-  const [stagedPriceRange, setStagedPriceRange] = useState<string[]>(
-    priceRange ? [priceRange] : [],
-  );
-
-  useEffect(() => {
-    setStagedCategory(categoryParam ? [categoryParam] : []);
-  }, [categoryParam]);
-
-  useEffect(() => {
-    setStagedPriceRange(priceRange ? [priceRange] : []);
-  }, [priceRange]);
-
-  const handleFilterApply = useCallback(() => {
-    table.setMany({
-      category: stagedCategory[0] ?? "",
-      priceRange: stagedPriceRange[0] ?? "",
-    });
-  }, [stagedCategory, stagedPriceRange, table]);
-
-  const handleFilterClear = useCallback(() => {
-    setStagedCategory([]);
-    setStagedPriceRange([]);
-    table.setMany({ category: "", priceRange: "" });
-  }, [table]);
+  // ── Staged filter state via usePendingTable ───────────────────────────
+  const {
+    pendingTable,
+    filterActiveCount: pendingFilterCount,
+    onFilterApply,
+    onFilterClear,
+  } = usePendingTable(table, ["category", "minPrice", "maxPrice"]);
 
   const sortOptions = useMemo(
     () => [
@@ -88,36 +68,26 @@ export function ProductsView() {
     [t],
   );
 
-  const priceBucketOptions = useMemo(
-    () => PRICE_BUCKETS.map((b) => ({ value: b.value, label: t(b.labelKey) })),
-    [t],
-  );
-
-  const filtersStr = useMemo(() => {
-    const parts = ["status==published"];
-    if (categoryParam) parts.push(`category==${categoryParam}`);
-    if (priceRange) {
-      if (priceRange.endsWith("+")) {
-        parts.push(`price>=${priceRange.replace("+", "")}`);
-      } else {
-        const [min, max] = priceRange.split("-");
-        if (min) parts.push(`price>=${min}`);
-        if (max) parts.push(`price<=${max}`);
-      }
-    }
-    return parts.join(",");
-  }, [categoryParam, priceRange]);
-
   const apiParams = useMemo(() => {
     const params = new URLSearchParams({
       page: String(pageParam),
       pageSize: String(PAGE_SIZE),
       sorts: sortParam,
-      filters: filtersStr,
+      filters: "status==published,isAuction==false",
     });
     if (searchQuery) params.set("q", searchQuery);
+    if (minPriceParam) params.set("minPrice", minPriceParam);
+    if (maxPriceParam) params.set("maxPrice", maxPriceParam);
+    if (categoryParam) params.set("category", categoryParam); // Sieve handles cat1|cat2 as OR
     return params.toString();
-  }, [filtersStr, sortParam, pageParam, searchQuery]);
+  }, [
+    sortParam,
+    pageParam,
+    searchQuery,
+    minPriceParam,
+    maxPriceParam,
+    categoryParam,
+  ]);
 
   const {
     products,
@@ -126,11 +96,20 @@ export function ProductsView() {
     isLoading,
   } = useProducts(apiParams);
 
-  const allCategoriesFromData = useMemo(() => {
+  const { categories: allCategories } = useCategories();
+  const categoryNameMap = useMemo(
+    () => new Map(allCategories.map((c) => [c.id, c.name])),
+    [allCategories],
+  );
+
+  const allCategoryOptions = useMemo(() => {
     if (!products.length) return [];
     const cats = new Set(products.map((p) => p.category).filter(Boolean));
-    return [...cats].sort();
-  }, [products]);
+    return [...cats].sort().map((id) => ({
+      value: id,
+      label: categoryNameMap.get(id) ?? id,
+    }));
+  }, [products, categoryNameMap]);
 
   const activeFilters = useMemo<ActiveFilter[]>(
     () => [
@@ -139,23 +118,30 @@ export function ProductsView() {
             {
               key: "category",
               label: t("filterCategory"),
-              value: categoryParam,
+              value: categoryParam
+                .split("|")
+                .filter(Boolean)
+                .map((id) => categoryNameMap.get(id) ?? id)
+                .join(", "),
             },
           ]
         : []),
-      ...(priceRange
+      ...(minPriceParam || maxPriceParam
         ? [
             {
-              key: "priceRange",
+              key: "price",
               label: t("filterPriceRange"),
-              value:
-                priceBucketOptions.find((b) => b.value === priceRange)?.label ??
-                priceRange,
+              value: [
+                minPriceParam && `₹${minPriceParam}`,
+                maxPriceParam && `₹${maxPriceParam}`,
+              ]
+                .filter(Boolean)
+                .join(" – "),
             },
           ]
         : []),
     ],
-    [categoryParam, priceRange, priceBucketOptions, t],
+    [categoryParam, minPriceParam, maxPriceParam, categoryNameMap, t],
   );
 
   // ── Bulk wishlist handler ─────────────────────────────────────────
@@ -208,31 +194,14 @@ export function ProductsView() {
             />
           }
           filterContent={
-            <>
-              <FilterFacetSection
-                title={t("filterCategory")}
-                options={allCategoriesFromData.map((c) => ({
-                  value: c,
-                  label: c,
-                }))}
-                selected={stagedCategory}
-                onChange={setStagedCategory}
-                selectionMode="single"
-                searchable={allCategoriesFromData.length > 6}
-              />
-              <FilterFacetSection
-                title={t("filterPriceRange")}
-                options={priceBucketOptions}
-                selected={stagedPriceRange}
-                onChange={setStagedPriceRange}
-                selectionMode="single"
-                searchable={false}
-              />
-            </>
+            <ProductFilters
+              table={pendingTable}
+              categoryOptions={allCategoryOptions}
+            />
           }
-          filterActiveCount={activeFilters.length}
-          onFilterApply={handleFilterApply}
-          onFilterClear={handleFilterClear}
+          filterActiveCount={pendingFilterCount}
+          onFilterApply={onFilterApply}
+          onFilterClear={onFilterClear}
           sortSlot={
             <SortDropdown
               value={sortParam}
@@ -244,8 +213,14 @@ export function ProductsView() {
             activeFilters.length > 0 ? (
               <ActiveFilterChips
                 filters={activeFilters}
-                onRemove={(key) => table.set(key, "")}
-                onClearAll={handleFilterClear}
+                onRemove={(key) => {
+                  if (key === "price") {
+                    table.setMany({ minPrice: "", maxPrice: "" });
+                  } else {
+                    table.set(key, "");
+                  }
+                }}
+                onClearAll={onFilterClear}
               />
             ) : undefined
           }
@@ -280,17 +255,14 @@ export function ProductsView() {
             data={products}
             keyExtractor={(item) => item.id}
             loading={isLoading}
+            externalPagination
             columns={[
               { key: "title", header: t("colTitle") },
               { key: "price", header: t("colPrice") },
               { key: "category", header: t("filterCategory") },
               { key: "status", header: t("colStatus") },
             ]}
-            showViewToggle
-            viewMode={
-              (table.get("view") || "grid") as "table" | "grid" | "list"
-            }
-            onViewModeChange={(m) => table.set("view", m)}
+            defaultViewMode="grid"
             selectable={!!user}
             selectedIds={selectedIds}
             onSelectionChange={setSelectedIds}
@@ -302,17 +274,13 @@ export function ProductsView() {
                 actionLabel={
                   activeFilters.length > 0 ? tActions("clearAll") : undefined
                 }
-                onAction={
-                  activeFilters.length > 0 ? handleFilterClear : undefined
-                }
+                onAction={activeFilters.length > 0 ? onFilterClear : undefined}
               />
             }
             mobileCardRender={(item) => (
               <ProductCard
                 product={item as any}
-                variant={
-                  (table.get("view") || "grid") === "list" ? "list" : "grid"
-                }
+                variant="grid"
                 selectable={!!user}
                 isSelected={selectedIds.includes(item.id)}
                 onSelect={(id, sel) =>

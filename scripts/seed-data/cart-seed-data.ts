@@ -30,8 +30,7 @@ export const cartsSeedData: CartDocument[] = [
         productId:
           "product-iphone-15-pro-max-smartphones-new-techhub-electronics-1",
         productTitle: "iPhone 15 Pro Max — Natural Titanium 256GB",
-        productImage:
-          "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=400&fit=crop",
+        productImage: "https://picsum.photos/seed/iphone15/400/400",
         price: 134900,
         currency: "INR",
         quantity: 1,
@@ -45,8 +44,7 @@ export const cartsSeedData: CartDocument[] = [
         itemId: "cartitem-john-yoga-001",
         productId: "product-premium-yoga-mat-sports-new-sportszone-1",
         productTitle: "Liforme Original Yoga Mat — Grey",
-        productImage:
-          "https://images.unsplash.com/photo-1599447292325-2a765f31b759?w=400&h=400&fit=crop",
+        productImage: "https://picsum.photos/seed/yoga-fitness/400/400",
         price: 12500,
         currency: "INR",
         quantity: 1,
@@ -60,8 +58,7 @@ export const cartsSeedData: CartDocument[] = [
         itemId: "cartitem-john-charger-001",
         productId: "product-anker-usbc-charger-electronics-new-techhub-1",
         productTitle: "Anker 65W USB-C GaN II Charger",
-        productImage:
-          "https://images.unsplash.com/photo-1591209733349-e1b6e42f4e97?w=400&h=400&fit=crop",
+        productImage: "https://picsum.photos/seed/usb-charger/400/400",
         price: 2499,
         currency: "INR",
         quantity: 2, // quantity > 1 edge case
@@ -87,8 +84,7 @@ export const cartsSeedData: CartDocument[] = [
         productId:
           "product-womens-anarkali-kurta-fashion-new-fashionboutique-1",
         productTitle: "Embroidered Anarkali Kurta Set — Sky Blue",
-        productImage:
-          "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=400&fit=crop",
+        productImage: "https://picsum.photos/seed/silk-saree/400/400",
         price: 2899,
         currency: "INR",
         quantity: 1,
@@ -114,8 +110,7 @@ export const cartsSeedData: CartDocument[] = [
         itemId: "cartitem-mike-jordan-001",
         productId: "product-limited-air-jordan-sneakers-auction-artisan-1",
         productTitle: "Nike Air Jordan 1 Retro High OG 'Chicago' — AUCTION",
-        productImage:
-          "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop",
+        productImage: "https://picsum.photos/seed/air-jordan/400/400",
         price: 25000, // starting bid price captured at add time
         currency: "INR",
         quantity: 1,
@@ -129,8 +124,7 @@ export const cartsSeedData: CartDocument[] = [
         itemId: "cartitem-mike-cookware-001",
         productId: "product-nonstick-cookware-set-home-new-homeessentials-1",
         productTitle: "6-Piece Non-Stick Cookware Set",
-        productImage:
-          "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop",
+        productImage: "https://picsum.photos/seed/pressure-cooker/400/400",
         price: 3799,
         currency: "INR",
         quantity: 1,
@@ -156,8 +150,7 @@ export const cartsSeedData: CartDocument[] = [
         productId:
           "product-mens-cotton-casual-shirt-mens-fashion-new-fashion-boutique-1",
         productTitle: "Men's Premium Cotton Casual Shirt — Solid White",
-        productImage:
-          "https://images.unsplash.com/photo-1602810316693-3667c854239a?w=400&h=400&fit=crop",
+        productImage: "https://picsum.photos/seed/mens-shirt/400/400",
         price: 1299,
         currency: "INR",
         quantity: 3, // buying 3 (as gifts)
@@ -171,8 +164,7 @@ export const cartsSeedData: CartDocument[] = [
         itemId: "cartitem-priya-charger-001",
         productId: "product-anker-usbc-charger-electronics-new-techhub-1",
         productTitle: "Anker 65W USB-C GaN II Charger",
-        productImage:
-          "https://images.unsplash.com/photo-1591209733349-e1b6e42f4e97?w=400&h=400&fit=crop",
+        productImage: "https://picsum.photos/seed/usb-charger/400/400",
         price: 2499,
         currency: "INR",
         quantity: 1,

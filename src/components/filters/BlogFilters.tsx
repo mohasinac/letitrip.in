@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { FilterFacetSection } from "@/components";
+import { SwitchFilter } from "./SwitchFilter";
 import type { UrlTable } from "./ProductFilters";
 
 export const BLOG_SORT_OPTIONS = [
@@ -17,9 +18,11 @@ export const BLOG_SORT_OPTIONS = [
 
 export interface BlogFiltersProps {
   table: UrlTable;
+  /** "public" hides admin-only fields (status, isFeatured) */
+  variant?: "admin" | "public";
 }
 
-export function BlogFilters({ table }: BlogFiltersProps) {
+export function BlogFilters({ table, variant = "admin" }: BlogFiltersProps) {
   const t = useTranslations("filters");
 
   const statusOptions = [
@@ -36,48 +39,44 @@ export function BlogFilters({ table }: BlogFiltersProps) {
     { value: "community", label: t("blogCategoryCommunity") },
   ];
 
-  const featuredOptions = [
-    { value: "true", label: t("booleanFeatured") },
-    { value: "false", label: t("booleanNotFeatured") },
-  ];
-
-  const selectedStatus = table.get("status") ? [table.get("status")] : [];
-  const selectedCategory = table.get("category") ? [table.get("category")] : [];
-  const selectedFeatured = table.get("isFeatured")
-    ? [table.get("isFeatured")]
+  const selectedStatus = table.get("status")
+    ? table.get("status").split("|").filter(Boolean)
+    : [];
+  const selectedCategory = table.get("category")
+    ? table.get("category").split("|").filter(Boolean)
     : [];
 
   return (
     <div>
-      <FilterFacetSection
-        title={t("status")}
-        options={statusOptions}
-        selected={selectedStatus}
-        onChange={(vals) => table.set("status", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={false}
-        selectionMode="single"
-      />
+      {variant !== "public" && (
+        <FilterFacetSection
+          title={t("status")}
+          options={statusOptions}
+          selected={selectedStatus}
+          onChange={(vals) => table.set("status", vals.join("|"))}
+          searchable={false}
+          defaultCollapsed={false}
+        />
+      )}
 
       <FilterFacetSection
         title={t("category")}
         options={categoryOptions}
         selected={selectedCategory}
-        onChange={(vals) => table.set("category", vals[0] ?? "")}
+        onChange={(vals) => table.set("category", vals.join("|"))}
         searchable={false}
-        defaultCollapsed={true}
-        selectionMode="single"
+        defaultCollapsed={variant !== "public"}
       />
 
-      <FilterFacetSection
-        title={t("isFeatured")}
-        options={featuredOptions}
-        selected={selectedFeatured}
-        onChange={(vals) => table.set("isFeatured", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={true}
-        selectionMode="single"
-      />
+      {variant !== "public" && (
+        <SwitchFilter
+          title={t("isFeatured")}
+          label={t("showFeaturedOnly")}
+          checked={table.get("isFeatured") === "true"}
+          onChange={(v) => table.set("isFeatured", v ? "true" : "")}
+          defaultCollapsed={true}
+        />
+      )}
     </div>
   );
 }

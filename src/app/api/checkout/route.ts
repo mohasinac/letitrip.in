@@ -9,22 +9,20 @@
  *  3. Load cart & verify it has items
  *  4. Resolve & validate shipping address
  *  5. For each cart item: fetch product, check stock
- *  6. Create one OrderDocument per cart item
+ *  6. Group cart items by sellerId → create ONE OrderDocument per store
  *  7. Deduct availableQuantity from each product
  *  8. Clear the cart
  *  9. Return { orderIds, total, itemCount }
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { requireAuthFromRequest } from "@/lib/security/authorization";
 import { unitOfWork } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
-import { successResponse, ApiErrors } from "@/lib/api-response";
+import { successResponse } from "@/lib/api-response";
 import { ValidationError, NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { sendOrderConfirmationEmail } from "@/lib/email";
+import { createApiHandler } from "@/lib/api/api-handler";
 import type { AddressDocument } from "@/db/schema";
 
 // ─── Validation Schema ────────────────────────────────────────────────────────
@@ -56,27 +54,20 @@ function formatShippingAddress(a: AddressDocument): string {
 
 // ─── POST Handler ─────────────────────────────────────────────────────────────
 
-export async function POST(request: NextRequest) {
-  try {
-    // 1. Auth
-    const user = await requireAuthFromRequest(request);
-
-    // 2. Validate body
-    const body = await request.json();
-    const validation = checkoutSchema.safeParse(body);
-    if (!validation.success) {
-      return ApiErrors.validationError(validation.error.issues);
-    }
-    const { addressId, paymentMethod, notes } = validation.data;
+export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
+  auth: true,
+  schema: checkoutSchema,
+  handler: async ({ user, body }) => {
+    const { addressId, paymentMethod, notes } = body!;
 
     // 3. Load cart
-    const cart = await unitOfWork.carts.getOrCreate(user.uid);
+    const cart = await unitOfWork.carts.getOrCreate(user!.uid);
     if (!cart.items || cart.items.length === 0) {
       throw new ValidationError(ERROR_MESSAGES.CHECKOUT.CART_EMPTY);
     }
 
     // 4. Resolve shipping address (throws NotFoundError if missing)
-    const address = await unitOfWork.addresses.findById(user.uid, addressId);
+    const address = await unitOfWork.addresses.findById(user!.uid, addressId);
     if (!address) {
       throw new NotFoundError(ERROR_MESSAGES.CHECKOUT.ADDRESS_REQUIRED);
     }
@@ -99,33 +90,57 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 6. Create one order per cart item
-    const userName = user.displayName ?? user.email ?? "Unknown User";
-    const userEmail = user.email ?? "";
+    // 6. Group items by sellerId → one order per store
+    const userName = user!.displayName ?? user!.email ?? "Unknown User";
+    const userEmail = user!.email ?? "";
+
+    // Build seller → items map
+    const byStore = new Map<string, typeof productChecks>();
+    for (const check of productChecks) {
+      const key = check.item.sellerId || "unknown";
+      if (!byStore.has(key)) byStore.set(key, []);
+      byStore.get(key)!.push(check);
+    }
 
     const orderIds: string[] = [];
     let total = 0;
     const emailsToSend: Parameters<typeof sendOrderConfirmationEmail>[0][] = [];
 
-    for (const { item, product } of productChecks) {
-      if (!product) continue; // narrowing — already validated above
+    for (const group of byStore.values()) {
+      const firstItem = group[0].item;
+      const groupTotal = group.reduce(
+        (sum, { item }) => sum + item.price * item.quantity,
+        0,
+      );
+      total += groupTotal;
 
-      const unitPrice = item.price; // captured price at add-to-cart time
-      const totalPrice = unitPrice * item.quantity;
-      total += totalPrice;
-
-      const order = await unitOfWork.orders.create({
+      const orderItems = group.map(({ item }) => ({
         productId: item.productId,
         productTitle: item.productTitle,
-        userId: user.uid,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        totalPrice: item.price * item.quantity,
+      }));
+      const totalQuantity = group.reduce(
+        (sum, { item }) => sum + item.quantity,
+        0,
+      );
+
+      const order = await unitOfWork.orders.create({
+        productId: firstItem.productId,
+        productTitle: firstItem.productTitle,
+        userId: user!.uid,
         userName,
         userEmail,
-        quantity: item.quantity,
-        unitPrice,
-        totalPrice,
-        currency: item.currency ?? "INR",
+        quantity: totalQuantity,
+        unitPrice: firstItem.price,
+        totalPrice: groupTotal,
+        currency: firstItem.currency ?? "INR",
+        sellerId: firstItem.sellerId || undefined,
+        sellerName: firstItem.sellerName || undefined,
+        items: orderItems,
         status: "pending",
-        paymentStatus: paymentMethod === "cod" ? "pending" : "pending",
+        paymentStatus: "pending",
         paymentMethod,
         shippingAddress,
         notes,
@@ -138,12 +153,16 @@ export async function POST(request: NextRequest) {
           to: userEmail,
           userName,
           orderId: order.id,
-          productTitle: item.productTitle,
-          quantity: item.quantity,
-          totalPrice,
-          currency: item.currency ?? "INR",
+          productTitle:
+            orderItems.length > 1
+              ? `${orderItems.length} items`
+              : firstItem.productTitle,
+          quantity: totalQuantity,
+          totalPrice: groupTotal,
+          currency: firstItem.currency ?? "INR",
           shippingAddress,
           paymentMethod,
+          items: orderItems,
         });
       }
     }
@@ -157,7 +176,7 @@ export async function POST(request: NextRequest) {
           availableQuantity: product.availableQuantity - item.quantity,
         } as any);
       }
-      unitOfWork.carts.updateInBatch(batch, user.uid, { items: [] } as any);
+      unitOfWork.carts.updateInBatch(batch, user!.uid, { items: [] } as any);
     });
 
     // 9. Send confirmation emails (fire-and-forget)
@@ -168,7 +187,7 @@ export async function POST(request: NextRequest) {
     }
 
     serverLogger.info(
-      `POST /api/checkout: ${orderIds.length} orders placed for user ${user.uid}`,
+      `POST /api/checkout: ${orderIds.length} store order(s) placed for user ${user!.uid}`,
     );
 
     // 10. Return success
@@ -176,8 +195,5 @@ export async function POST(request: NextRequest) {
       { orderIds, total, itemCount: orderIds.length },
       SUCCESS_MESSAGES.CHECKOUT.ORDER_PLACED,
     );
-  } catch (error) {
-    serverLogger.error(`POST /api/checkout error:`, error);
-    return handleApiError(error);
-  }
-}
+  },
+});

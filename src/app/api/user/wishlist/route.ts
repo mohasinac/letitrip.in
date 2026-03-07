@@ -5,12 +5,10 @@
  * POST /api/user/wishlist — Add a product to the wishlist
  */
 
-import { NextRequest } from "next/server";
-import { requireAuth } from "@/lib/firebase/auth-server";
 import { wishlistRepository } from "@/repositories";
 import { productRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, errorResponse } from "@/lib/api-response";
+import { createApiHandler } from "@/lib/api/api-handler";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { z } from "zod";
@@ -24,11 +22,10 @@ const addSchema = z.object({
  *
  * Returns wishlist items with product details for the authenticated user.
  */
-export async function GET() {
-  try {
-    const user = await requireAuth();
-
-    const items = await wishlistRepository.getWishlistItems(user.uid);
+export const GET = createApiHandler({
+  auth: true,
+  handler: async ({ user }) => {
+    const items = await wishlistRepository.getWishlistItems(user!.uid);
 
     // Fetch product details for each wishlist item
     const productResults = await Promise.allSettled(
@@ -47,11 +44,8 @@ export async function GET() {
       items: enriched,
       meta: { total: enriched.length },
     });
-  } catch (error) {
-    serverLogger.error("GET /api/user/wishlist error", { error });
-    return handleApiError(error);
-  }
-}
+  },
+});
 
 /**
  * POST /api/user/wishlist
@@ -59,17 +53,11 @@ export async function GET() {
  * Body: { productId: string }
  * Adds a product to the user's wishlist (idempotent).
  */
-export async function POST(request: NextRequest) {
-  try {
-    const user = await requireAuth();
-
-    const body = await request.json();
-    const validation = addSchema.safeParse(body);
-    if (!validation.success) {
-      return errorResponse(ERROR_MESSAGES.VALIDATION.FAILED, 400);
-    }
-
-    const { productId } = validation.data;
+export const POST = createApiHandler<(typeof addSchema)["_output"]>({
+  auth: true,
+  schema: addSchema,
+  handler: async ({ user, body }) => {
+    const { productId } = body!;
 
     // Verify product exists
     const product = await productRepository.findById(productId);
@@ -77,11 +65,8 @@ export async function POST(request: NextRequest) {
       return errorResponse(ERROR_MESSAGES.PRODUCT.NOT_FOUND, 404);
     }
 
-    await wishlistRepository.addItem(user.uid, productId);
+    await wishlistRepository.addItem(user!.uid, productId);
 
     return successResponse({ productId }, SUCCESS_MESSAGES.WISHLIST.ADDED, 201);
-  } catch (error) {
-    serverLogger.error("POST /api/user/wishlist error", { error });
-    return handleApiError(error);
-  }
-}
+  },
+});

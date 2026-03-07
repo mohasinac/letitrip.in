@@ -13,7 +13,9 @@ jest.mock("@/hooks/useApiQuery", () => ({
 
 jest.mock("@/services", () => ({
   eventService: {
-    getLeaderboard: jest.fn().mockResolvedValue([]),
+    getLeaderboard: jest
+      .fn()
+      .mockResolvedValue({ leaderboard: [], pointsLabel: "Points" }),
   },
 }));
 

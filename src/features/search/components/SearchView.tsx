@@ -13,7 +13,7 @@ import type { ActiveFilter } from "@/components";
 import { Heading, Text, Main } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useUrlTable } from "@/hooks";
+import { useUrlTable, usePendingTable } from "@/hooks";
 import { useSearch } from "@/features/search";
 import type { ProductSortValue } from "@/components";
 import { SearchResultsSection } from "./SearchResultsSection";
@@ -21,7 +21,6 @@ import { SearchResultsSection } from "./SearchResultsSection";
 const { themed, spacing, page } = THEME_CONSTANTS;
 
 const PAGE_SIZE = 24;
-const DEBOUNCE_MS = 400;
 
 export function SearchView() {
   const t = useTranslations("search");
@@ -62,9 +61,8 @@ export function SearchView() {
     [topCategories],
   );
 
-  const activeFilterCount = [urlCategory, urlMinPrice, urlMaxPrice].filter(
-    Boolean,
-  ).length;
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, ["category", "minPrice", "maxPrice"]);
 
   const activeFilters = useMemo<ActiveFilter[]>(() => {
     const result: ActiveFilter[] = [];
@@ -92,8 +90,6 @@ export function SearchView() {
   }, [urlCategory, urlMinPrice, urlMaxPrice, topCategories]);
 
   const handleSortChange = (sort: string) => table.set("sort", sort);
-  const handleClearFilters = () =>
-    table.clear(["category", "minPrice", "maxPrice"]);
 
   const hasAnyFilter = !!(urlQ || urlCategory || urlMinPrice || urlMaxPrice);
 
@@ -112,22 +108,23 @@ export function SearchView() {
           value={table.get("q")}
           onChange={(v) => table.set("q", v)}
           placeholder={t("searchInputPlaceholder")}
-          deferred={false}
-          debounceMs={DEBOUNCE_MS}
           className="w-full h-12"
         />
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
         <FilterDrawer
-          activeCount={activeFilterCount}
-          onClearAll={handleClearFilters}
+          activeCount={filterActiveCount}
+          onApply={onFilterApply}
+          onReset={onFilterClear}
         >
           <FilterFacetSection
             title="Category"
             options={categoryOptions}
-            selected={urlCategory ? [urlCategory] : []}
-            onChange={(vals) => table.set("category", vals[0] ?? "")}
+            selected={
+              pendingTable.get("category") ? [pendingTable.get("category")] : []
+            }
+            onChange={(vals) => pendingTable.set("category", vals[0] ?? "")}
             searchable={categoryOptions.length > 6}
           />
         </FilterDrawer>
@@ -140,7 +137,7 @@ export function SearchView() {
               table.set(key, "");
             }
           }}
-          onClearAll={handleClearFilters}
+          onClearAll={onFilterClear}
         />
       </div>
 

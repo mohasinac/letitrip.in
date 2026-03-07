@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, SITE_FEATURES } from "@/constants";
-import { Heading, Section, Text } from "@/components";
+import { Card, Heading, Section, Text } from "@/components";
 
 export function SiteFeaturesSection() {
   const t = useTranslations("homepage");
@@ -29,9 +29,10 @@ export function SiteFeaturesSection() {
         {/* Features Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-6 md:gap-8">
           {SITE_FEATURES.map((feature) => (
-            <div
+            <Card
               key={feature.id}
-              className={`${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius.xl} ${THEME_CONSTANTS.spacing.padding.lg} text-center hover:shadow-lg transition-all group`}
+              variant="primary"
+              className={`${THEME_CONSTANTS.spacing.padding.lg} text-center hover:shadow-lg transition-all group`}
             >
               {/* Icon */}
               <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
@@ -52,7 +53,7 @@ export function SiteFeaturesSection() {
               >
                 {feature.description}
               </Text>
-            </div>
+            </Card>
           ))}
         </div>
       </div>

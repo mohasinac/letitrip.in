@@ -1,89 +1,41 @@
 /**
  * Carousel API - Reorder Endpoint
  *
- * Handles reordering carousel slides
+ * Reorders carousel slides by updating each slide's order field.
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { carouselRepository } from "@/repositories";
-import { requireRoleFromRequest } from "@/lib/security/authorization";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  carouselReorderSchema,
-} from "@/lib/validation/schemas";
-import { AuthenticationError, AuthorizationError } from "@/lib/errors";
-import { serverLogger } from "@/lib/server-logger";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { successResponse } from "@/lib/api-response";
+import { carouselReorderSchema } from "@/lib/validation/schemas";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 
 /**
  * POST /api/carousel/reorder
- *
- * Reorder carousel slides
- *
- * Body:
- * - slideIds: string[] (array of slide IDs in desired order)
- *
- * Requires admin authentication
+ * Admin only — reorder carousel slides by supplying IDs in desired order.
  */
-export async function POST(request: NextRequest) {
-  try {
-    // Require admin authentication
-    const user = await requireRoleFromRequest(request, ["admin"]);
+export const POST = createApiHandler<(typeof carouselReorderSchema)["_output"]>(
+  {
+    roles: ["admin"],
+    schema: carouselReorderSchema,
+    handler: async ({ body }) => {
+      const { slideIds } = body!;
 
-    // Parse and validate request body
-    const body = await request.json();
-    const validation = validateRequestBody(carouselReorderSchema, body);
-
-    if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: ERROR_MESSAGES.VALIDATION.FAILED,
-          errors: formatZodErrors(validation.errors),
-        },
-        { status: 400 },
+      // Update order for each slide in parallel (non-transactional; order is a display hint)
+      await Promise.all(
+        slideIds.map((slideId, index) =>
+          carouselRepository.update(slideId, { order: index + 1 }),
+        ),
       );
-    }
 
-    const { slideIds } = validation.data;
+      // Return updated slides sorted by new order
+      const updatedSlides = await carouselRepository.findAll();
+      updatedSlides.sort((a, b) => (a.order || 0) - (b.order || 0));
 
-    // Update order for each slide
-    const updatePromises = slideIds.map((slideId, index) =>
-      carouselRepository.update(slideId, { order: index + 1 }),
-    );
-
-    await Promise.all(updatePromises);
-
-    // Fetch updated slides in new order
-    const updatedSlides = await carouselRepository.findAll();
-    updatedSlides.sort((a, b) => (a.order || 0) - (b.order || 0));
-
-    return NextResponse.json({
-      success: true,
-      data: updatedSlides,
-      message: SUCCESS_MESSAGES.CAROUSEL.REORDERED,
-    });
-  } catch (error) {
-    serverLogger.error("POST /api/carousel/reorder error", { error });
-
-    if (error instanceof AuthenticationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 401 },
+      return successResponse(
+        updatedSlides,
+        SUCCESS_MESSAGES.CAROUSEL.REORDERED,
       );
-    }
-
-    if (error instanceof AuthorizationError) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 403 },
-      );
-    }
-
-    return NextResponse.json(
-      { success: false, error: ERROR_MESSAGES.CAROUSEL.REORDER_FAILED },
-      { status: 500 },
-    );
-  }
-}
+    },
+  },
+);

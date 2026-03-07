@@ -5,6 +5,25 @@
  */
 
 /**
+ * Resolve any date-like value (Date, ISO string, number, or Firestore Timestamp JSON)
+ * into a native Date object. Returns null for falsy or unparseable input.
+ */
+export function resolveDate(value: unknown): Date | null {
+  if (!value) return null;
+  if (value instanceof Date) return value;
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    "_seconds" in value &&
+    typeof (value as Record<string, unknown>)._seconds === "number"
+  ) {
+    return new Date((value as { _seconds: number })._seconds * 1000);
+  }
+  const d = new Date(value as string | number);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+/**
  * Formats a date to a locale-specific date string
  *
  * @param date - The date to format (Date object or ISO string)
@@ -19,11 +38,12 @@
  * ```
  */
 export function formatDate(
-  date: Date | string | number,
+  date: Date | string | number | unknown,
   format: "short" | "medium" | "long" | "full" = "medium",
   locale: string = "en-US",
 ): string {
-  const dateObj = date instanceof Date ? date : new Date(date);
+  const dateObj = resolveDate(date);
+  if (!dateObj) return "";
 
   const options: Intl.DateTimeFormatOptions = {};
 
@@ -69,16 +89,12 @@ export function formatDate(
  * ```
  */
 export function formatDateTime(
-  date: Date | string | number,
+  date: Date | string | number | unknown,
   format: "short" | "medium" | "long" | "full" = "medium",
   locale: string = "en-US",
 ): string {
-  const dateObj =
-    typeof date === "string"
-      ? new Date(date)
-      : typeof date === "number"
-        ? new Date(date)
-        : date;
+  const dateObj = resolveDate(date);
+  if (!dateObj) return "";
 
   const dateOptions: Intl.DateTimeFormatOptions = {};
   const timeOptions: Intl.DateTimeFormatOptions = {};

@@ -16,7 +16,7 @@ export type { UseSwipeOptions, SwipeDirection } from "./useSwipe";
 export { useGesture } from "./useGesture";
 export type { UseGestureOptions, GestureType } from "./useGesture";
 
-export { useApiQuery } from "./useApiQuery";
+export { useApiQuery, invalidateQueries } from "./useApiQuery";
 export { useApiMutation } from "./useApiMutation";
 export { useProfile } from "./useProfile";
 export { useProfileStats } from "./useProfileStats";
@@ -48,7 +48,6 @@ export type { UseKeyPressOptions, KeyModifiers } from "./useKeyPress";
 export {
   useLogin,
   useGoogleLogin,
-  useAppleLogin,
   useRegister,
   useVerifyEmail,
   useResendVerification,
@@ -110,6 +109,10 @@ export type {
 export { RealtimeEventType, RealtimeEventStatus } from "./useRealtimeEvent";
 export { useAuthEvent } from "./useAuthEvent";
 export type { UseAuthEventReturn, AuthEventStatus } from "./useAuthEvent";
+
+export { useGuestCart } from "./useGuestCart";
+export { useGuestCartMerge } from "./useGuestCartMerge";
+export { useCartCount } from "./useCartCount";
 export { usePaymentEvent } from "./usePaymentEvent";
 export type {
   UsePaymentEventReturn,
@@ -132,6 +135,8 @@ export type {
 export { useHeroCarousel } from "./useHeroCarousel";
 export { useFeaturedProducts } from "./useFeaturedProducts";
 export { useFeaturedAuctions } from "./useFeaturedAuctions";
+export { useFeaturedStores } from "./useFeaturedStores";
+export { useFeaturedEvents } from "./useFeaturedEvents";
 export { useHomepageReviews } from "./useHomepageReviews";
 export { useTopCategories } from "./useTopCategories";
 export { useSiteSettings } from "./useSiteSettings";
@@ -182,11 +187,17 @@ export {
   useRipCoinBalance,
   usePurchaseRipCoins,
   useVerifyRipCoinPurchase,
+  useRefundRipCoinPurchase,
   useRipCoinHistory,
 } from "./useRipCoins";
 
 // Chat hooks
-export { useChat, useChatRooms, useCreateChatRoom } from "./useChat";
+export {
+  useChat,
+  useChatRooms,
+  useCreateChatRoom,
+  useDeleteChatRoom,
+} from "./useChat";
 export type { ChatMessage, UseChatReturn } from "./useChat";
 
 // Seller application
