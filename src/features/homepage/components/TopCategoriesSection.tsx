@@ -6,10 +6,18 @@ import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { CategoryCard } from "@/components";
 import { SectionCarousel } from "./SectionCarousel";
 
-export function TopCategoriesSection() {
+interface TopCategoriesSectionProps {
+  initialCategories?: import("@/db/schema").CategoryDocument[];
+}
+
+export function TopCategoriesSection({
+  initialCategories,
+}: TopCategoriesSectionProps = {}) {
   const t = useTranslations("homepage");
   const tActions = useTranslations("actions");
-  const { data, isLoading } = useTopCategories(12);
+  const { data, isLoading } = useTopCategories(12, {
+    initialData: initialCategories,
+  });
 
   const categories = data || [];
 

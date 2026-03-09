@@ -19,7 +19,11 @@ import type { CarouselSlideDocument, GridCard } from "@/db/schema";
 
 const { flex, position } = THEME_CONSTANTS;
 
-export function HeroCarousel() {
+interface HeroCarouselProps {
+  initialSlides?: CarouselSlideDocument[];
+}
+
+export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
   const tLoading = useTranslations("loading");
   const tA11y = useTranslations("accessibility");
   const router = useRouter();
@@ -33,7 +37,7 @@ export function HeroCarousel() {
     "(prefers-reduced-motion: reduce)",
   );
 
-  const { data, isLoading } = useHeroCarousel();
+  const { data, isLoading } = useHeroCarousel({ initialData: initialSlides });
 
   const slides =
     data

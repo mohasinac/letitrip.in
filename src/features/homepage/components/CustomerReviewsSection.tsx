@@ -7,11 +7,19 @@ import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { Button, Heading, Section, Text, TextLink } from "@/components";
 import { ReviewCard } from "@/components";
 
-export function CustomerReviewsSection() {
+interface CustomerReviewsSectionProps {
+  initialReviews?: import("@/db/schema").ReviewDocument[];
+}
+
+export function CustomerReviewsSection({
+  initialReviews,
+}: CustomerReviewsSectionProps = {}) {
   const t = useTranslations("homepage");
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const { data, isLoading } = useHomepageReviews();
+  const { data, isLoading } = useHomepageReviews({
+    initialData: initialReviews,
+  });
 
   const reviews = data || [];
   const totalGroups = Math.ceil(reviews.length / 3);

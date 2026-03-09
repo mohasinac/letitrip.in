@@ -10,10 +10,14 @@ import type { CategoryDocument } from "@/db/schema";
  *
  * @param limit - Maximum number of categories to return (default: 12)
  */
-export function useTopCategories(limit = 12) {
+export function useTopCategories(
+  limit = 12,
+  options?: { initialData?: CategoryDocument[] },
+) {
   return useApiQuery<CategoryDocument[]>({
     queryKey: ["categories", "top", String(limit)],
     queryFn: () => categoryService.listTopLevel(limit),
     cacheTTL: 15 * 60 * 1000, // 15 minutes — categories change infrequently
+    initialData: options?.initialData,
   });
 }

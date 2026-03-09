@@ -7,6 +7,11 @@ import {
   StatsCounterSection,
 } from "@/features/homepage";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
+import {
+  carouselRepository,
+  categoriesRepository,
+  reviewRepository,
+} from "@/repositories";
 
 export const metadata: Metadata = genMetadata({
   title: SEO_CONFIG.pages.home.title,
@@ -104,16 +109,25 @@ const HowItWorksSection = dynamic(
     })),
   { ssr: true },
 );
-export default function Page() {
+export default async function Page() {
+  const [slides, categories, reviews] = await Promise.all([
+    carouselRepository.getActiveSlides().catch(() => []),
+    categoriesRepository
+      .getCategoriesByTier(0)
+      .then((c) => c.slice(0, 12))
+      .catch(() => []),
+    reviewRepository.findFeatured(18).catch(() => []),
+  ]);
+
   return (
     <div className="w-full space-y-0">
       {/* Homepage Sections - Rendered in Order */}
       <WelcomeSection />
-      <HeroCarousel />
+      <HeroCarousel initialSlides={slides} />
       <StatsCounterSection />
       <TrustFeaturesSection />
       <HowItWorksSection />
-      <TopCategoriesSection />
+      <TopCategoriesSection initialCategories={categories} />
       <TopBrandsSection />
       <FeaturedProductsSection />
       <FeaturedAuctionsSection />
@@ -121,7 +135,7 @@ export default function Page() {
       <FeaturedStoresSection />
       <FeaturedEventsSection />
       <AdvertisementBanner />
-      <CustomerReviewsSection />
+      <CustomerReviewsSection initialReviews={reviews} />
       <WhatsAppCommunitySection />
       <FAQSection />
       <BlogArticlesSection />
