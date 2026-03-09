@@ -4,6 +4,8 @@
  * Singleton class for event-driven communication
  */
 
+import { logger } from "./Logger";
+
 type EventCallback = (...args: any[]) => void;
 
 export interface EventSubscription {
@@ -85,7 +87,7 @@ export class EventBus {
       try {
         callback(...args);
       } catch (error) {
-        console.error(`Error in event handler for "${event}":`, error);
+        logger.error(`Error in event handler for "${event}":`, { error });
       }
     });
   }
