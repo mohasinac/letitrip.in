@@ -4,6 +4,9 @@
  * Generic queue implementation for task management
  */
 
+import { Logger } from "./Logger";
+const qLogger = Logger.getInstance();
+
 export interface QueueOptions {
   concurrency?: number;
   autoStart?: boolean;
@@ -61,7 +64,7 @@ export class Queue<T = any> {
         this.running--;
         this.process().catch((err) => {
           // Prevent unhandled promise rejections from the recursive tail call
-          console.error("Queue.process error", err);
+          qLogger.error("Queue.process error", { err });
         });
       }
     }

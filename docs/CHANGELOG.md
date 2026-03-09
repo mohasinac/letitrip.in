@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased] — Stage E6: SSR Phase 4 — Auth Session Cookie
+## [Unreleased] — Bug Fixes
+
+### Fixed
+
+- **`src/app/api/payment/verify/route.ts`** — §9.10 (P0): `cartSubtotal`, `groupTotal`, `orderItems.unitPrice`, and `order.unitPrice` now use the live `product.price` fetched from Firestore instead of the stale `item.price` snapshot stored in the cart at add-time. Prevents an undercharge when a seller raises a price after the item was added to the cart.
+- **`src/classes/Queue.ts`** — Rule 23: Replaced `console.error()` in recursive tail-call `.catch()` with `qLogger.error()` from `Logger.getInstance()`.
+
+---
 
 ### Added
 

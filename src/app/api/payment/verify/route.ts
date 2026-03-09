@@ -132,11 +132,11 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
     }
 
     // 6b. Validate the Razorpay order amount against the server-calculated cart total.
-    //     Prevents price-tampering: a user could call create-order with amount=1, pay ₹1,
-    //     then call verify to fulfil the full-priced cart.
+    //     Uses live product prices (not stale cart snapshot) to prevent undercharge
+    //     when a seller raises a price AFTER the item was added to the cart.
     {
       const cartSubtotal = productChecks.reduce(
-        (sum, { item }) => sum + item.price * item.quantity,
+        (sum, { item, product }) => sum + product!.price * item.quantity,
         0,
       );
       const expectedPlatformFee =
@@ -171,7 +171,7 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
     for (const group of byStore.values()) {
       const firstItem = group[0].item;
       const groupTotal = group.reduce(
-        (sum, { item }) => sum + item.price * item.quantity,
+        (sum, { item, product }) => sum + product!.price * item.quantity,
         0,
       );
 
@@ -202,12 +202,12 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
 
       total += orderTotal;
 
-      const orderItems = group.map(({ item }) => ({
+      const orderItems = group.map(({ item, product }) => ({
         productId: item.productId,
         productTitle: item.productTitle,
         quantity: item.quantity,
-        unitPrice: item.price,
-        totalPrice: item.price * item.quantity,
+        unitPrice: product!.price,
+        totalPrice: product!.price * item.quantity,
       }));
       const totalQuantity = group.reduce(
         (sum, { item }) => sum + item.quantity,
@@ -221,7 +221,7 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
         userName,
         userEmail,
         quantity: totalQuantity,
-        unitPrice: firstItem.price,
+        unitPrice: group[0].product!.price,
         totalPrice: orderTotal,
         currency: firstItem.currency ?? "INR",
         sellerId: firstItem.sellerId || undefined,
