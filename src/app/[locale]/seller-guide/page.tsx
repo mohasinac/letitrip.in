@@ -13,6 +13,8 @@ import {
   HeadphonesIcon,
 } from "lucide-react";
 
+export const revalidate = 3600;
+
 const { themed, flex, page } = THEME_CONSTANTS;
 
 export async function generateMetadata(): Promise<Metadata> {

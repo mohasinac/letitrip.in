@@ -10,7 +10,13 @@ description: "No direct fetch in UI, UI→Hook→Service→apiClient chain. Rule
 **The chain is fixed. No layer may be skipped.**
 
 ```
-Component → Hook (useApiQuery/useApiMutation) → Service fn (@/services) → apiClient → fetch
+Component → TanStack Query hook (useQuery/useMutation) → Service fn (@/services) → apiClient → fetch
+```
+
+For existing callers that use the legacy adapters, the chain is identical:
+
+```
+Component → useApiQuery/useApiMutation (TanStack adapters) → Service fn → apiClient → fetch
 ```
 
 ```typescript
@@ -18,15 +24,29 @@ Component → Hook (useApiQuery/useApiMutation) → Service fn (@/services) → 
 const res = await fetch("/api/products");
 
 // ❌ WRONG — apiClient directly in a hook's queryFn
-useApiQuery({ queryFn: () => apiClient.get(API_ENDPOINTS.PRODUCTS.LIST) });
+useQuery({ queryFn: () => apiClient.get(API_ENDPOINTS.PRODUCTS.LIST) });
 
-// ✅ RIGHT — named service in queryFn
+// ✅ RIGHT — named service in queryFn (TanStack Query direct)
+import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services";
-useApiQuery({ queryKey: ["products"], queryFn: () => productService.list() });
+const { data } = useQuery({
+  queryKey: ["products"],
+  queryFn: () => productService.list(),
+  staleTime: 5 * 60 * 1000,
+});
+
+// ✅ RIGHT — named service in queryFn (adapter, existing callers)
+import { useApiQuery } from "@/hooks";
+const { data } = useApiQuery({
+  queryKey: ["products"],
+  queryFn: () => productService.list(),
+});
 ```
 
 `apiClient` is ONLY allowed in `src/services/*.service.ts` and `src/features/<name>/services/*.service.ts`.  
 `fetch()` is ONLY allowed inside `apiClient` itself, or in API route handlers calling external APIs.
+
+**Server Components (SSR, E1/E2 ✅ complete):** async RSC pages call repositories directly — skip the service/apiClient layer entirely and pass `initialData` to the client view.
 
 ### Service File Pattern
 

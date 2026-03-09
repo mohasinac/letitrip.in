@@ -15,6 +15,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, usePendingTable } from "@/hooks";
 import { useSearch } from "@/features/search";
+import type { CategoryDocument } from "@/db/schema";
 import type { ProductSortValue } from "@/components";
 import { SearchResultsSection } from "./SearchResultsSection";
 
@@ -22,7 +23,11 @@ const { themed, spacing, page } = THEME_CONSTANTS;
 
 const PAGE_SIZE = 24;
 
-export function SearchView() {
+interface SearchViewProps {
+  initialCategories?: CategoryDocument[];
+}
+
+export function SearchView({ initialCategories }: SearchViewProps = {}) {
   const t = useTranslations("search");
   const table = useUrlTable({
     defaults: { sort: PRODUCT_SORT_VALUES.NEWEST, pageSize: String(PAGE_SIZE) },
@@ -48,8 +53,10 @@ export function SearchView() {
     return params.toString();
   }, [urlQ, urlCategory, urlMinPrice, urlMaxPrice, urlSort, urlPage]);
 
-  const { catData, products, total, totalPages, isLoading } =
-    useSearch(searchParams);
+  const { catData, products, total, totalPages, isLoading } = useSearch(
+    searchParams,
+    { initialCategories },
+  );
 
   const topCategories = useMemo(
     () => catData.filter((c) => c.tier === 1),

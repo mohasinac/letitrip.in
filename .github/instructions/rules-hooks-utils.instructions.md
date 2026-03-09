@@ -58,10 +58,54 @@ description: "Existing utils, helpers, and hooks — check before writing. Rules
 
 ## RULE 6: Existing Hooks (`@/hooks`)
 
+**Data fetching — TanStack Query (Stage C ✅ complete)**
+
+For **new** feature hooks, use `useQuery` / `useMutation` directly from `@tanstack/react-query`.
+`useApiQuery` / `useApiMutation` remain as thin adapters for existing callers — do NOT remove them.
+
+```tsx
+// ✅ Preferred for new hooks
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { productService } from "@/services";
+
+const { data, isLoading } = useQuery({
+  queryKey: ["products", filters],
+  queryFn: () => productService.list(filters),
+  staleTime: 5 * 60 * 1000,
+});
+
+// Invalidate after mutation
+const queryClient = useQueryClient();
+queryClient.invalidateQueries({ queryKey: ["products"] });
+```
+
+**Forms — react-hook-form + zodResolver (Stage D ✅ complete)**
+
+`src/hooks/useForm.ts` is **deleted**. `useForm` re-exported from `react-hook-form` via barrel.
+
+```tsx
+// ✅ Required pattern for all forms
+import { useForm } from "@/hooks"; // re-exports react-hook-form's useForm
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createProductSchema } from "@/db/schema/products";
+
+const {
+  register,
+  handleSubmit,
+  formState: { errors, isSubmitting },
+} = useForm({
+  resolver: zodResolver(createProductSchema),
+  defaultValues: { title: "", price: 0 },
+});
+```
+
 | Need                         | Hook                                                                                                                                                                 |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GET data                     | `useApiQuery(endpoint, options)`                                                                                                                                     |
-| POST/PUT/DELETE              | `useApiMutation(endpoint, options)`                                                                                                                                  |
+| GET data (new hooks)         | `useQuery(options)` from `@tanstack/react-query`; queryFn must call a service                                                                                        |
+| GET data (existing callers)  | `useApiQuery({ queryKey, queryFn, ... })` — TanStack adapter, backward compatible                                                                                    |
+| POST/PUT/DELETE (new hooks)  | `useMutation(options)` from `@tanstack/react-query`; mutationFn must call a service                                                                                  |
+| POST/PUT/DELETE (existing)   | `useApiMutation({ mutationFn, ... })` — TanStack adapter, backward compatible                                                                                        |
+| Invalidate cache             | `useQueryClient()` → `queryClient.invalidateQueries({ queryKey })` OR `invalidateQueries(key)` from `@/hooks`                                                        |
 | Auth state                   | `useAuth()` / `useSession()`                                                                                                                                         |
 | Login / Register             | `useLogin()` / `useRegister()`                                                                                                                                       |
 | Google / Apple OAuth         | `useGoogleLogin()` / `useAppleLogin()`                                                                                                                               |
@@ -72,7 +116,7 @@ description: "Existing utils, helpers, and hooks — check before writing. Rules
 | Profile stats                | `useProfileStats()`                                                                                                                                                  |
 | Public profile               | `usePublicProfile(uid)`                                                                                                                                              |
 | Become seller                | `useBecomeSeller()`                                                                                                                                                  |
-| Form state                   | `useForm(config)`                                                                                                                                                    |
+| Form state                   | `useForm({ resolver: zodResolver(schema), defaultValues })` — react-hook-form via `@/hooks`                                                                          |
 | Address form state           | `useAddressForm(initialData?)`                                                                                                                                       |
 | Address list                 | `useAddresses()`                                                                                                                                                     |
 | Single address               | `useAddress(id)`                                                                                                                                                     |

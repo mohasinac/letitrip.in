@@ -34,16 +34,22 @@ export interface SearchResponse {
   backend: "algolia" | "in-memory";
 }
 
+interface UseSearchOptions {
+  initialCategories?: CategoryDocument[];
+}
+
 /**
  * useSearch
  * Wraps `searchService.query(params)` + `categoryService.list()` for
  * the search page facets. `searchParams` is a pre-built URLSearchParams
  * query string produced by `useUrlTable` / `useMemo` in the component.
+ * `options.initialCategories` — server-prefetched category list for filter facets.
  */
-export function useSearch(searchParams: string) {
+export function useSearch(searchParams: string, options?: UseSearchOptions) {
   const { data: catData } = useApiQuery<CategoryDocument[]>({
     queryKey: ["categories", "flat"],
     queryFn: () => categoryService.list("flat=true"),
+    initialData: options?.initialCategories,
   });
 
   const { data: searchData, isLoading } = useApiQuery<SearchResponse>({

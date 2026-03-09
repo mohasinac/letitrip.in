@@ -13,13 +13,22 @@ interface ChildrenResponse {
   data: CategoryDocument[];
 }
 
+interface UseCategoryDetailOptions {
+  initialCategory?: CategoryDocument;
+  initialChildren?: CategoryDocument[];
+}
+
 /**
  * useCategoryDetail
  *
  * Fetches a single category by slug and its direct children subcategories.
  * Used by the category detail page header + subcategory scroller.
+ * `options.initialCategory` / `options.initialChildren` — server-prefetched data.
  */
-export function useCategoryDetail(slug: string) {
+export function useCategoryDetail(
+  slug: string,
+  options?: UseCategoryDetailOptions,
+) {
   /* ---- Fetch the category by slug ---- */
   const {
     data: catData,
@@ -29,19 +38,23 @@ export function useCategoryDetail(slug: string) {
     queryKey: ["categories", "slug", slug],
     queryFn: () => categoryService.getBySlug(slug),
     enabled: !!slug,
+    initialData: options?.initialCategory
+      ? { data: options.initialCategory }
+      : undefined,
   });
 
   const category = catData?.data ?? null;
 
   /* ---- Fetch direct children of this category ---- */
-  const {
-    data: childrenData,
-    isLoading: childrenLoading,
-  } = useApiQuery<ChildrenResponse>({
-    queryKey: ["categories", "children", category?.id ?? ""],
-    queryFn: () => categoryService.getChildren(category!.id),
-    enabled: !!category?.id,
-  });
+  const { data: childrenData, isLoading: childrenLoading } =
+    useApiQuery<ChildrenResponse>({
+      queryKey: ["categories", "children", category?.id ?? ""],
+      queryFn: () => categoryService.getChildren(category!.id),
+      enabled: !!category?.id,
+      initialData: options?.initialChildren
+        ? { success: true, data: options.initialChildren }
+        : undefined,
+    });
 
   const children = childrenData?.data ?? [];
 

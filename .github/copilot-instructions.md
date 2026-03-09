@@ -17,7 +17,7 @@
 
 ## Stack
 
-Next.js 16.1.1 (App Router) · TypeScript · Tailwind CSS · Firebase (Auth, Firestore, Storage, Realtime DB) · Resend · React Context + hooks
+Next.js 16.1.1 (App Router) · TypeScript · Tailwind CSS · Firebase (Auth, Firestore, Storage, Realtime DB) · Resend · TanStack Query v5 · react-hook-form v7 · React Context + hooks
 
 ---
 
@@ -60,9 +60,11 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 - **No raw HTML tags** — use `Heading`, `Text`, `Caption`, `Label`, `Span`, `TextLink`, `Button`, `Section`, `Nav`, `Ul`, `Li`… from `@/components`
 - **No hardcoded strings in JSX** — use `useTranslations()` from `next-intl`
 - **No Firebase client SDK** in UI code — Auth/Firestore/Storage are backend-only
-- **No `fetch()` or `apiClient` in components/hooks** — call a service function
+- **No `fetch()` or `apiClient` in components** — use `useQuery`/`useMutation` from `@tanstack/react-query` (preferred) or existing `useApiQuery`/`useApiMutation` wrappers; queryFn must call a service function
 - **No direct Firestore queries** in API routes — use repositories from `@/repositories`
 - **No file upload to Storage from browser** — stage locally → submit FormData to backend
+- **Forms use `react-hook-form` + `zodResolver`** — `useForm` from `react-hook-form`, resolver from `@hookform/resolvers/zod`, schema from `@/db/schema/`; no custom form state
+- **Server pages call repositories directly** — async RSC pages import from `@/repositories` and pass `initialData` to client views; no `useApiQuery` in page files
 - **Pages ≤ 150 lines** — extract to `src/features/<name>/components/<Domain>View.tsx`
 - **No `alert()`/`confirm()`** — use `useMessage()` / `ConfirmDeleteModal`
 - **No `console.log()`** — use `logger` (client) / `serverLogger` (API routes)
@@ -71,6 +73,23 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 - **Cron/triggers in `functions/src/`** — never inside Next.js API routes
 - **Delete old code when replacing** — no `@deprecated` stubs, no dual implementations
 - **Build must pass**: `npx tsc --noEmit` → `npm run build` before handing back
+
+## Migration State (as of 2026-03-09)
+
+| Stage | Description | Status |
+|-------|-------------|--------|
+| A | Security fixes (rate-limit, HMAC, MIME, CSP, apiClient, hydration) | ✅ Complete |
+| C | TanStack Query — `useApiQuery`/`useApiMutation` are now thin adapters; `QueryProvider` in root layout | ✅ Complete |
+| D | react-hook-form — `useForm` re-exported from `react-hook-form`; custom `useForm.ts` deleted | ✅ Complete |
+| E1 | SSR Phase 1 — blog/products/events/sellers: async RSC + `generateMetadata` | ✅ Complete |
+| E2 | SSR Phase 2 — homepage `initialData` pre-fetch | ✅ Complete |
+| E3 | SSR Phase 3 — listing pages (products, categories, stores, search) | ⏳ Pending |
+| E4 | SSR Phase 6 — static pages ISR | ⏳ Pending |
+| E5 | SSR Phase 7 — SEO: `generateMetadata` all pages, JSON-LD | ⏳ Pending |
+| E6 | SSR Phase 4 — auth session cookie (`__session`) | ⏳ Pending |
+| E7 | SSR Phase 5 — real-time SSE islands | ⏳ Pending |
+| F | Styling cleanup + `@lir/*` library extraction | ⏳ Pending |
+| G | Server Actions + repository fixes | ⏳ Pending |
 
 ---
 

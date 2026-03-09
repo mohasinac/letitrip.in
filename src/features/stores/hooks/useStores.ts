@@ -14,11 +14,15 @@ interface FirebaseSieveResult {
   hasMore: boolean;
 }
 
+interface UseStoresOptions {
+  initialData?: FirebaseSieveResult;
+}
+
 /**
  * Paginated, searchable list of all seller stores.
  * All filter/sort/page state lives in URL params via useUrlTable.
  */
-export function useStores() {
+export function useStores(options?: UseStoresOptions) {
   const table = useUrlTable({
     defaults: { pageSize: "24", sorts: "-createdAt" },
   });
@@ -39,6 +43,7 @@ export function useStores() {
   const query = useApiQuery<FirebaseSieveResult>({
     queryKey: ["stores", "list", params],
     queryFn: () => storeService.listStores(params),
+    initialData: options?.initialData,
   });
 
   return { query, table };

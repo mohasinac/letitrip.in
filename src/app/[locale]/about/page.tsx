@@ -2,6 +2,8 @@
 import { getTranslations } from "next-intl/server";
 import { AboutView } from "@/features/about";
 
+export const revalidate = 3600;
+
 export async function generateMetadata() {
   const t = await getTranslations("about");
   return {

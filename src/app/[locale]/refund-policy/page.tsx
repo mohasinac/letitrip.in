@@ -3,6 +3,8 @@ import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import { Heading, Text, Section, TextLink } from "@/components";
 import { getTranslations } from "next-intl/server";
 
+export const revalidate = 3600;
+
 const { themed, page } = THEME_CONSTANTS;
 
 export async function generateMetadata(): Promise<Metadata> {

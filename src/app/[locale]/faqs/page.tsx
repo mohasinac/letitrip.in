@@ -4,6 +4,8 @@ import { getTranslations } from "next-intl/server";
 import { THEME_CONSTANTS } from "@/constants";
 import { FAQPageContent } from "@/features/faq";
 
+export const revalidate = 3600;
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("faq");
   return {

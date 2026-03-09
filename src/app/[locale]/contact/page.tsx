@@ -1,14 +1,23 @@
-"use client";
-
-import { THEME_CONSTANTS } from "@/constants";
-import { useTranslations } from "next-intl";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { SITE_CONFIG, THEME_CONSTANTS } from "@/constants";
 import { ContactInfoSidebar, ContactForm } from "@/features/contact";
 import { Heading, Text, Section } from "@/components";
 
-const { themed, page } = THEME_CONSTANTS;
+export const revalidate = 3600;
 
-export default function ContactPage() {
-  const t = useTranslations("contact");
+const { page } = THEME_CONSTANTS;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("contact");
+  return {
+    title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
+    description: t("metaDescription"),
+  };
+}
+
+export default async function ContactPage() {
+  const t = await getTranslations("contact");
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}

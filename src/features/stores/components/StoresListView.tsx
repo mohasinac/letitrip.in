@@ -15,8 +15,22 @@ import {
 import { THEME_CONSTANTS } from "@/constants";
 import { StoreCard } from "@/components";
 import { useStores } from "../hooks";
+import type { StoreListItem } from "../types";
 
 const PAGE_SIZE = 24;
+
+interface StoresSieveResult {
+  items: StoreListItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
+}
+
+interface StoresListViewProps {
+  initialData?: StoresSieveResult;
+}
 
 const STORE_SORT_OPTIONS_KEYS = [
   { value: "-createdAt", key: "sortNewest" },
@@ -26,10 +40,10 @@ const STORE_SORT_OPTIONS_KEYS = [
   { value: "-productCount", key: "sortMostProducts" },
 ] as const;
 
-export function StoresListView() {
+export function StoresListView({ initialData }: StoresListViewProps = {}) {
   const t = useTranslations("storesPage");
   const tActions = useTranslations("actions");
-  const { query, table } = useStores();
+  const { query, table } = useStores({ initialData });
 
   const { data, isLoading, error } = query;
   const stores = data?.items ?? [];

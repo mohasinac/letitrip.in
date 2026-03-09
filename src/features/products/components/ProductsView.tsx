@@ -30,9 +30,15 @@ import {
 import { useProducts } from "../hooks";
 import { wishlistService } from "@/services";
 
+import type { ProductsListResult } from "../hooks";
+
 const PAGE_SIZE = 24;
 
-export function ProductsView() {
+interface ProductsViewProps {
+  initialData?: ProductsListResult;
+}
+
+export function ProductsView({ initialData }: ProductsViewProps = {}) {
   const t = useTranslations("products");
   const tActions = useTranslations("actions");
   const { user } = useAuth();
@@ -98,7 +104,7 @@ export function ProductsView() {
     total: totalItems,
     totalPages,
     isLoading,
-  } = useProducts(apiParams);
+  } = useProducts(apiParams, { initialData });
 
   const { categories: allCategories } = useCategories();
   const { brandOptions } = useBrands();

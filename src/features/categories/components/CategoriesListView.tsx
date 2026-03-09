@@ -18,24 +18,24 @@ import { categoryService } from "@/services";
 import type { CategoryDocument } from "@/db/schema";
 import { CategoryGrid } from "./CategoryGrid";
 
-interface CategoriesApiResponse {
-  data: CategoryDocument[];
-  meta: { total: number };
+interface CategoriesListContentProps {
+  initialData?: CategoryDocument[];
 }
 
-function CategoriesListContent() {
+function CategoriesListContent({ initialData }: CategoriesListContentProps) {
   const t = useTranslations("categories");
   const tActions = useTranslations("actions");
   const table = useUrlTable();
   const search = table.get("q");
 
-  const { data, isLoading } = useApiQuery<CategoriesApiResponse>({
+  const { data, isLoading } = useApiQuery<CategoryDocument[]>({
     queryKey: ["categories", "flat"],
     queryFn: () => categoryService.list("flat=true"),
+    initialData,
   });
 
   const allCategories = useMemo(
-    () => (data?.data ?? []).filter((c) => !c.isBrand),
+    () => (data ?? []).filter((c) => !c.isBrand),
     [data],
   );
   const total = allCategories.length;
@@ -111,10 +111,16 @@ function CategoriesListContent() {
   );
 }
 
-export function CategoriesListView() {
+interface CategoriesListViewProps {
+  initialData?: CategoryDocument[];
+}
+
+export function CategoriesListView({
+  initialData,
+}: CategoriesListViewProps = {}) {
   return (
     <Suspense>
-      <CategoriesListContent />
+      <CategoriesListContent initialData={initialData} />
     </Suspense>
   );
 }

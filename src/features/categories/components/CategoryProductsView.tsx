@@ -41,9 +41,15 @@ const PAGE_SIZE = 24;
 
 interface Props {
   slug: string;
+  initialCategory?: CategoryDocument;
+  initialChildren?: CategoryDocument[];
 }
 
-export function CategoryProductsView({ slug }: Props) {
+export function CategoryProductsView({
+  slug,
+  initialCategory,
+  initialChildren,
+}: Props) {
   const t = useTranslations("categories");
   const tProducts = useTranslations("products");
   const tActions = useTranslations("actions");
@@ -66,7 +72,14 @@ export function CategoryProductsView({ slug }: Props) {
     usePendingTable(table, ["minPrice", "maxPrice"]);
 
   /* ---- Fetch category + children ---- */
-  const { category, children, isLoading: catLoading } = useCategoryDetail(slug);
+  const {
+    category,
+    children,
+    isLoading: catLoading,
+  } = useCategoryDetail(slug, {
+    initialCategory,
+    initialChildren,
+  });
 
   /* ---- Fetch products ---- */
   const { products, totalProducts, totalPages, prodLoading } =

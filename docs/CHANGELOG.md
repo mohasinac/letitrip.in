@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage E5: SEO — `generateMetadata` + JSON-LD structured data
+
+### Added
+
+- **`src/app/[locale]/products/[slug]/page.tsx`** — Added `<script type="application/ld+json">` with `@type: "Product"` schema (name, description, image, sku, offers with price/currency/availability/seller, brand). Improved `generateMetadata` with canonical URL and full OG tags using `SITE_CONFIG.brand.name`.
+- **`src/app/[locale]/events/[id]/page.tsx`** — Added `<script type="application/ld+json">` with `@type: "Event"` schema (name, description, image, startDate from `startsAt`, endDate from `endsAt`, organizer). Improved `generateMetadata` with canonical, OG image from `coverImageUrl`.
+- **`src/app/[locale]/blog/page.tsx`** — Removed `"use client"`. Added `generateMetadata` using `getTranslations("blog")` and `SITE_CONFIG.brand.name`. Added `export const revalidate = 60`.
+- **`src/app/[locale]/events/page.tsx`** — Removed `"use client"`. Added `generateMetadata` using `getTranslations("events")` and `SITE_CONFIG.brand.name`.
+- **`src/app/[locale]/auctions/page.tsx`** — Added `generateMetadata` using `getTranslations("auctions")` and `SITE_CONFIG.brand.name`.
+- **`src/app/[locale]/pre-orders/page.tsx`** — Added `generateMetadata` using `getTranslations("preOrders")` and `SITE_CONFIG.brand.name`.
+
+---
+
+## [Unreleased] — Stage E4: SSR Phase 4 — Static Pages ISR
+
+### Added
+
+- **`export const revalidate = 3600`** — Added to all static content pages: `terms`, `privacy`, `cookies`, `refund-policy`, `help`, `seller-guide`, `about`, `faqs`.
+
+### Changed
+
+- **`src/app/[locale]/contact/page.tsx`** — Removed `"use client"`. Converted to `async` RSC using `getTranslations` from `next-intl/server`. Added `generateMetadata`. Added `export const revalidate = 3600`. Child components (`ContactInfoSidebar`, `ContactForm`) retain `"use client"` as islands.
+
+---
+
+## [Unreleased] — Stage E3: SSR Phase 3 — Listing Pages
+
+### Fixed
+
+- **`src/features/categories/components/CategoriesListView.tsx`** — Bug: categories always displayed empty. Root cause: type was annotated as `{ data: CategoryDocument[], meta: { total } }` but the categories flat API returns `CategoryDocument[]` directly. Fixed type to `CategoryDocument[]` and changed `data?.data ?? []` to `data ?? []`.
+
+### Changed
+
+- **`src/app/[locale]/products/page.tsx`** — Made `async` RSC. Prefetches first page of published products via `productRepository.list()`. Added `generateMetadata`. Passes `initialData` to `ProductsView`.
+- **`src/features/products/hooks/useProducts.ts`** — Added `UseProductsOptions { initialData? }` interface and `options?` parameter; forwarded to `useApiQuery`.
+- **`src/features/products/components/ProductsView.tsx`** — Added `ProductsViewProps { initialData? }` and `initialData` prop; passed to `useProducts`.
+- **`src/app/[locale]/categories/page.tsx`** — Made `async` RSC. Prefetches non-brand categories via `categoriesRepository.findAll()`. Added `generateMetadata`. Passes `initialData` to `CategoriesListView`.
+- **`src/features/categories/components/CategoriesListView.tsx`** — Added `initialData?: CategoryDocument[]` prop; passed to `useApiQuery`.
+- **`src/app/[locale]/stores/page.tsx`** — Made `async` RSC. Prefetches stores via `storeRepository.listStores()`. Added `mapStore()` helper to flatten nested `stats` object to `StoreListItem`. Passes `initialData` to `StoresListView`.
+- **`src/features/stores/hooks/useStores.ts`** — Added `UseStoresOptions { initialData? }` and `options?` parameter; forwarded to `useApiQuery`.
+- **`src/features/stores/components/StoresListView.tsx`** — Added `StoresListViewProps { initialData? }` and `initialData` prop; passed to `useStores`.
+- **`src/app/[locale]/search/page.tsx`** — Made `async` RSC. Prefetches categories for filter facets. Added `generateMetadata`. Passes `initialCategories` to `SearchView`.
+- **`src/features/search/hooks/useSearch.ts`** — Added `UseSearchOptions { initialCategories? }` and `options?` parameter; forwarded as `initialData` to the categories sub-query in `useApiQuery`.
+- **`src/features/search/components/SearchView.tsx`** — Added `SearchViewProps { initialCategories? }` prop; passed to `useSearch`.
+- **`src/app/[locale]/categories/[slug]/page.tsx`** — Made `async` RSC. Fetches category by slug then its children sequentially. Calls `notFound()` if category not found. Added `generateMetadata` with OG image from `category.seo.ogImage`. Passes `initialCategory` and `initialChildren` to `CategoryProductsView`.
+- **`src/features/categories/hooks/useCategoryDetail.ts`** — Added `UseCategoryDetailOptions { initialCategory?, initialChildren? }` and `options?` parameter; category wrapped as `{ data: initialCategory }` for `useApiQuery`.
+- **`src/features/categories/components/CategoryProductsView.tsx`** — Added `initialCategory?` and `initialChildren?` props; passed to `useCategoryDetail`.
+
+---
+
 ## [Unreleased] — Stage E2: SSR Phase 2 — Homepage Sections
 
 ### Changed
