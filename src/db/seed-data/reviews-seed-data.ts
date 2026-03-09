@@ -11,7 +11,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-iphone-15-pro-max-john-20260120",
     productId:
       "product-iphone-15-pro-max-smartphones-new-techhub-electronics-1",
-    productTitle: "iPhone 15 Pro Max",
+    productTitle: "Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=john-doe",
@@ -41,7 +41,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-samsung-galaxy-s24-ultra-jane-20260125",
     productId:
       "product-samsung-galaxy-s24-ultra-smartphones-new-techhub-electronics-1",
-    productTitle: "Samsung Galaxy S24 Ultra",
+    productTitle: "Super Saiyan Vegeta Final Flash 1/4 Scale Statue",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=jane-smith",
@@ -63,7 +63,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-google-pixel-8-pro-mike-20260131",
     productId:
       "product-google-pixel-8-pro-smartphones-new-techhub-electronics-1",
-    productTitle: "Google Pixel 8 Pro",
+    productTitle: "Ultra Instinct Goku Premium 1/6 Scale Figure",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike-johnson",
@@ -84,7 +84,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-macbook-pro-16-m3-max-john-20260126",
     productId:
       "product-macbook-pro-16-m3-max-laptops-computers-new-techhub-electronics-1",
-    productTitle: 'MacBook Pro 16" M3 Max',
+    productTitle: "Monkey D. Luffy Gear 5 Sun God 1/4 Scale Scene Figure",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=john-doe",
@@ -109,7 +109,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-dell-xps-15-jane-20260201",
     productId:
       "product-dell-xps-15-laptops-computers-new-techhub-electronics-1",
-    productTitle: "Dell XPS 15",
+    productTitle: "Roronoa Zoro Enma Slash Diorama 1/7 Scale",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=jane-smith",
@@ -130,7 +130,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-mens-cotton-casual-shirt-mike-20260205",
     productId:
       "product-mens-cotton-casual-shirt-mens-fashion-new-fashion-boutique-1",
-    productTitle: "Men's Cotton Casual Shirt",
+    productTitle: "Demon Slayer Tanjiro Kamado Graphic T-Shirt",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike-johnson",
@@ -150,7 +150,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-womens-ethnic-kurti-jane-20260207",
     productId:
       "product-womens-ethnic-kurti-womens-fashion-new-fashion-boutique-1",
-    productTitle: "Women's Ethnic Kurti",
+    productTitle: "Nezuko Kamado Pink Kimono Hoodie Dress",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=jane-smith",
@@ -171,7 +171,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-non-stick-cookware-set-john-20260208",
     productId:
       "product-non-stick-cookware-set-home-kitchen-new-home-essentials-1",
-    productTitle: "Non-Stick Cookware Set",
+    productTitle: "My Neighbour Totoro Nendoroid No.1234 Deluxe Set",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=john-doe",
@@ -192,7 +192,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-yoga-mat-with-carrying-bag-jane-20260209",
     productId:
       "product-yoga-mat-with-carrying-bag-sports-outdoors-new-home-essentials-1",
-    productTitle: "Yoga Mat with Carrying Bag",
+    productTitle: "Gundam RX-78-2 Perfect Grade 1/60 Model Kit",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=jane-smith",
@@ -215,7 +215,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-vintage-canon-ae-1-film-camera-mike-20260203",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Vintage Canon AE-1 Film Camera",
+    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike-johnson",
@@ -237,7 +237,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-iphone-15-pro-max-jane-20260204",
     productId:
       "product-iphone-15-pro-max-smartphones-new-techhub-electronics-1",
-    productTitle: "iPhone 15 Pro Max",
+    productTitle: "Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=jane-smith",
@@ -260,7 +260,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-samsung-galaxy-s24-ultra-mike-20260206",
     productId:
       "product-samsung-galaxy-s24-ultra-smartphones-new-techhub-electronics-1",
-    productTitle: "Samsung Galaxy S24 Ultra",
+    productTitle: "Super Saiyan Vegeta Final Flash 1/4 Scale Statue",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike-johnson",
@@ -280,7 +280,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-google-pixel-8-pro-jane-20260207",
     productId:
       "product-google-pixel-8-pro-smartphones-new-techhub-electronics-1",
-    productTitle: "Google Pixel 8 Pro",
+    productTitle: "Ultra Instinct Goku Premium 1/6 Scale Figure",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=jane-smith",
@@ -302,7 +302,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-macbook-pro-16-m3-max-mike-20260207",
     productId:
       "product-macbook-pro-16-m3-max-laptops-computers-new-techhub-electronics-1",
-    productTitle: 'MacBook Pro 16" M3 Max',
+    productTitle: "Monkey D. Luffy Gear 5 Sun God 1/4 Scale Scene Figure",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike-johnson",
@@ -327,7 +327,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-dell-xps-15-john-20260208",
     productId:
       "product-dell-xps-15-laptops-computers-new-techhub-electronics-1",
-    productTitle: "Dell XPS 15",
+    productTitle: "Roronoa Zoro Enma Slash Diorama 1/7 Scale",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=john-doe",
@@ -350,7 +350,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
   {
     id: "review-oxford-shirt-priya-20260205",
     productId: "product-mens-oxford-shirt-fashion-new-fashionboutique-1",
-    productTitle: "Classic Oxford Button-Down Shirt",
+    productTitle: "Attack on Titan Scout Regiment Cosplay Jacket",
     userId: "user-priya-sharma-priya",
     userName: "Priya Sharma",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=priya-sharma",
@@ -370,7 +370,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
   {
     id: "review-oxford-shirt-raj-20260207",
     productId: "product-mens-oxford-shirt-fashion-new-fashionboutique-1",
-    productTitle: "Classic Oxford Button-Down Shirt",
+    productTitle: "Attack on Titan Scout Regiment Cosplay Jacket",
     userId: "user-raj-patel-rajpatel",
     userName: "Raj Patel",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=raj-patel",
@@ -390,7 +390,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
   {
     id: "review-anarkali-meera-20260210",
     productId: "product-womens-anarkali-kurta-fashion-new-fashionboutique-1",
-    productTitle: "Embroidered Anarkali Kurta Set",
+    productTitle: "Sailor Moon Neo Queen Serenity Cosplay Dress Set",
     userId: "user-vikram-nair-vikram",
     userName: "Vikram Nair",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=vikram-nair",
@@ -414,7 +414,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
   {
     id: "review-pressure-cooker-jane-20260115",
     productId: "product-prestige-pressure-cooker-home-new-homeessentials-1",
-    productTitle: "Prestige Clip-on 5L Pressure Cooker",
+    productTitle: "Rem & Ram Re:Zero Nendoroid Duo Set",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=jane-smith",
@@ -435,7 +435,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
   {
     id: "review-pressure-cooker-john-20260120",
     productId: "product-prestige-pressure-cooker-home-new-homeessentials-1",
-    productTitle: "Prestige Clip-on 5L Pressure Cooker",
+    productTitle: "Rem & Ram Re:Zero Nendoroid Duo Set",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=john-doe",
@@ -455,7 +455,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
   {
     id: "review-yoga-mat-priya-20260212",
     productId: "product-premium-yoga-mat-sports-new-sportszone-1",
-    productTitle: "Liforme Original Yoga Mat",
+    productTitle: "Naruto Sage Mode Toad Sage 1/7 Scale PVC Figure",
     userId: "user-priya-sharma-priya",
     userName: "Priya Sharma",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=priya-sharma",
@@ -478,7 +478,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
   {
     id: "review-yoga-mat-meera-20260214",
     productId: "product-premium-yoga-mat-sports-new-sportszone-1",
-    productTitle: "Liforme Original Yoga Mat",
+    productTitle: "Naruto Sage Mode Toad Sage 1/7 Scale PVC Figure",
     userId: "user-vikram-nair-vikram",
     userName: "Vikram Nair",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=vikram-nair",
@@ -498,7 +498,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
   {
     id: "review-ipad-pro-mike-20260118",
     productId: "product-apple-ipad-pro-electronics-new-techhub-1",
-    productTitle: 'Apple iPad Pro 11" M2 (Wi-Fi, 256GB)',
+    productTitle: "Bleach Ichigo Bankai Tensa Zangetsu 1/6 Scale Figure",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike-johnson",
@@ -561,7 +561,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-iphone15-ananya-20260228",
     productId:
       "product-iphone-15-pro-max-smartphones-new-techhub-electronics-1",
-    productTitle: "iPhone 15 Pro Max",
+    productTitle: "Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure",
     userId: "user-ananya-bose-ananya",
     userName: "Ananya Bose",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=ananya-bose",
@@ -582,7 +582,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-kurti-pooja-20260301",
     productId:
       "product-womens-ethnic-kurti-womens-fashion-new-fashion-boutique-1",
-    productTitle: "Women's Ethnic Kurti",
+    productTitle: "Nezuko Kamado Pink Kimono Hoodie Dress",
     userId: "user-pooja-mehta-pooja",
     userName: "Pooja Mehta",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=pooja-mehta",
@@ -603,7 +603,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-macbook-ravi-20260302",
     productId:
       "product-macbook-pro-16-m3-max-laptops-computers-new-techhub-electronics-1",
-    productTitle: 'MacBook Pro 16" M3 Max',
+    productTitle: "Monkey D. Luffy Gear 5 Sun God 1/4 Scale Scene Figure",
     userId: "user-ravi-kumar-ravi",
     userName: "Ravi Kumar",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=ravi-kumar",
@@ -624,7 +624,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     id: "review-cookware-sneha-20260303",
     productId:
       "product-non-stick-cookware-set-home-kitchen-new-home-essentials-1",
-    productTitle: "Non-Stick Cookware Set",
+    productTitle: "My Neighbour Totoro Nendoroid No.1234 Deluxe Set",
     userId: "user-sneha-gupta-sneha",
     userName: "Sneha Gupta",
     userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sneha-gupta",

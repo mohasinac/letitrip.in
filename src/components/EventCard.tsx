@@ -2,6 +2,13 @@
 
 import { useTranslations } from "next-intl";
 import {
+  BarChart2,
+  ClipboardList,
+  Gift,
+  MessageSquare,
+  Tag,
+} from "lucide-react";
+import {
   Card,
   Checkbox,
   Heading,
@@ -11,9 +18,35 @@ import {
   TextLink,
 } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import type { EventDocument } from "@/db/schema";
+import type { EventType, EventDocument } from "@/db/schema";
 
 const { themed, flex, position } = THEME_CONSTANTS;
+
+const EVENT_TYPE_CONFIG: Record<
+  EventType,
+  { Icon: React.FC<{ className?: string }>; className: string }
+> = {
+  sale: {
+    Icon: Tag,
+    className: "bg-rose-600/90 text-white",
+  },
+  offer: {
+    Icon: Gift,
+    className: "bg-emerald-600/90 text-white",
+  },
+  poll: {
+    Icon: BarChart2,
+    className: "bg-blue-600/90 text-white",
+  },
+  survey: {
+    Icon: ClipboardList,
+    className: "bg-purple-600/90 text-white",
+  },
+  feedback: {
+    Icon: MessageSquare,
+    className: "bg-amber-600/90 text-white",
+  },
+};
 
 interface EventCardProps {
   event: EventDocument;
@@ -32,6 +65,10 @@ export function EventCard({
   onSelectionChange,
 }: EventCardProps) {
   const t = useTranslations("events");
+  const tTypes = useTranslations("eventTypes");
+
+  const typeConfig = EVENT_TYPE_CONFIG[event.type];
+  const TypeIcon = typeConfig.Icon;
 
   const plainDescription = event.description
     ? event.description
@@ -82,6 +119,16 @@ export function EventCard({
             />
           </div>
         )}
+
+        {/* Type badge — top right */}
+        <div className="absolute top-2 right-2 z-10">
+          <Span
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${typeConfig.className}`}
+          >
+            <TypeIcon className="w-3 h-3 flex-shrink-0" />
+            {tTypes(event.type)}
+          </Span>
+        </div>
 
         {/* Status badge — bottom left */}
         <div className="absolute bottom-2 left-2 z-10">

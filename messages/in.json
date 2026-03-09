@@ -867,6 +867,7 @@
     "colPrice": "कीमत",
     "colStatus": "स्थिति",
     "reviewPhotoAlt": "समीक्षा फ़ोटो {index}",
+    "typeBadge": "उत्पाद",
     "gallery": {
       "prevImage": "पिछली छवि",
       "nextImage": "अगली छवि",
@@ -1127,7 +1128,8 @@
     "colTitle": "शीर्षक",
     "colCurrentBid": "वर्तमान बोली",
     "colEnds": "समाप्त",
-    "colBids": "बोलियां"
+    "colBids": "बोलियां",
+    "typeBadge": "नीलामी"
   },
   "preOrders": {
     "title": "????-?????",
@@ -1269,7 +1271,9 @@
     "minPrice": "न्यूनतम कीमत",
     "maxPrice": "अधिकतम कीमत",
     "categoryFilter": "श्रेणी",
-    "allCategories": "सभी श्रेणियां"
+    "allCategories": "सभी श्रेणियां",
+    "searching": "Searching...",
+    "browseProducts": "Search \"{q}\" in products →"
   },
   "categories": {
     "title": "श्रेणियां",
@@ -1286,7 +1290,6 @@
     "featured": "विशेष",
     "productsCount": "{count, plural, one {# उत्पाद} other {# उत्पाद}}",
     "subcategoriesCount": "{count, plural, one {# उपश्रेणी} other {# उपश्रेणियां}}",
-    "viewCategory": "देखें",
     "productsTab": "उत्पाद",
     "auctionsTab": "नीलामी",
     "searchProducts": "{name} में उत्पाद खोजें…",
@@ -1299,7 +1302,9 @@
     "priceOver10000": "₹10,000 से अधिक",
     "addToWishlist": "विशलिस्ट में जोड़ें",
     "removeFromWishlist": "विशलिस्ट से हटाएं",
-    "view": "देखें"
+    "view": "देखें",
+    "brandBadge": "ब्रांड",
+    "categoryBadge": "श्रेणी"
   },
   "seller": {
     "dashboard": "विक्रेता डैशबोर्ड",
@@ -1410,7 +1415,30 @@
     "auctionNoEndDate": "कोई समाप्ति तिथि नहीं",
     "auctionEnded": "समाप्त",
     "bidCount": "{count, plural, one {# बोली} other {# बोलियां}}",
-    "categoryProductCount": "{count, plural, one {# उत्पाद} other {# उत्पाद}}"
+    "categoryProductCount": "{count, plural, one {# उत्पाद} other {# उत्पाद}}",
+    "statsProducts": "10,000+",
+    "statsProductsLabel": "सूचीबद्ध उत्पाद",
+    "statsSellers": "2,000+",
+    "statsSellersLabel": "सत्यापित विक्रेता",
+    "statsBuyers": "50,000+",
+    "statsBuyersLabel": "खुश खरीदार",
+    "statsRating": "4.8/5",
+    "statsRatingLabel": "औसत रेटिंग",
+    "howItWorksPill": "सरल और तेज़",
+    "howItWorksTitle": "LetItRip कैसे काम करता है",
+    "howItWorksSubtitle": "हज़ारों उत्पाद ब्राउज़ करें, एक्सक्लूसिव नीलामियों पर बोली लगाएं, और आपका ऑर्डर घर पर डिलीवर करें।",
+    "howItWorksStep1Title": "ब्राउज़ करें और खोजें",
+    "howItWorksStep1Desc": "भारत भर के सत्यापित विक्रेताओं से हज़ारों उत्पाद और लाइव नीलामियां एक्सप्लोर करें।",
+    "howItWorksStep2Title": "बोली लगाएं या खरीदें",
+    "howItWorksStep2Desc": "नीलामी में बोली लगाएं या फिक्स्ड प्राइस पर तुरंत खरीदें।",
+    "howItWorksStep3Title": "डिलीवरी पाएं",
+    "howItWorksStep3Desc": "रियल-टाइम ट्रैकिंग के साथ आपका ऑर्डर आपके दरवाज़े पर आएगा।",
+    "howItWorksCta": "शॉपिंग शुरू करें",
+    "bannerTag": "सीमित समय का ऑफर",
+    "bannerFallbackTitle": "अद्भुत डील्स खोजें",
+    "bannerFallbackSubtitle": "टॉप प्रोडक्ट्स खरीदें, एक्सक्लूसिव नीलामियों पर बोली लगाएं, और बेस्ट प्राइस पाएं।",
+    "bannerFallbackCta": "अभी खरीदें",
+    "bannerSecondaryCta": "नीलामियां देखें"
   },
   "footer": {
     "aboutUs": "हमारे बारे में",
@@ -1452,13 +1480,7 @@
     "heroCarouselNextSlide": "अगली स्लाइड",
     "closeSidebar": "साइडबार बंद करें",
     "sideNavigation": "साइट नेविगेशन",
-    "sidebarLinks": "नेवीगेशन लिंक",
-    "translateToggle": "पेज अनुवाद करें",
-    "translatePanelLabel": "पेज अनुवाद",
-    "translateLoading": "अनुवादक लोड हो रहा है…",
-    "ttsPlay": "पेज जोर से पढ़ें",
-    "ttsStop": "पढ़ना बंद करें",
-    "ttsPlaying": "पेज जोर से पढ़ा जा रहा है"
+    "sidebarLinks": "नेवीगेशन लिंक"
   },
   "locale": {
     "label": "भाषा",
@@ -2069,6 +2091,8 @@
     "freeShipping": "मुफ़्त शिपिंग",
     "buyXGetY": "X खरीदें Y पाएं",
     "specialOffer": "विशेष ऑफ़र",
+    "typePercentage": "% छूट",
+    "typeFixed": "फ्लैट छूट",
     "statusActive": "सक्रिय"
   },
   "adminSessions": {
@@ -2183,7 +2207,9 @@
     "platformShippingPercentHint": "Shiprocket ?????? ?? ??? ????",
     "platformShippingFixedMin": "??????? ?????? ????? (??.)",
     "platformShippingFixedMinHint": "??????? ????? � ??? ??????? ?? ?? ?? ???? ???? ??",
-    "shippingFeeRule": "Shiprocket ?? ???: ??????????? max(????? � %, ??????? ??. ???????) ???? ??"
+    "shippingFeeRule": "Shiprocket ?? ???: ??????????? max(????? � %, ??????? ??. ???????) ???? ??",
+    "algoliaTitle": "Algolia Search Index",
+    "algoliaSubtitle": "Manually trigger a full re-index for products or navigation pages. The trigger runs automatically on product changes, but use these if records appear out of sync."
   },
   "adminFeatureFlags": {
     "title": "फीचर फ्लैग्स",
@@ -2276,7 +2302,8 @@
       "lastLogin": "अंतिम लॉगिन"
     },
     "noName": "कोई नाम नहीं",
-    "loginTimesCount": "{count, plural, one {# बार} other {# बार}}"
+    "loginTimesCount": "{count, plural, one {# बार} other {# बार}}",
+    "title": "Users"
   },
   "adminProducts": {
     "title": "उत्पाद",
@@ -2571,7 +2598,17 @@
     "colImage": "छवि",
     "colStatus": "स्थिति",
     "statusActive": "सक्रिय",
-    "statusInactive": "निष्क्रिय"
+    "statusInactive": "निष्क्रिय",
+    "overlayMode": "Central Overlay",
+    "overlayModeSubtitle": "Render text + button centred over the background. Disables grid cards.",
+    "overlayTitle": "Title",
+    "overlaySubtitle": "Subtitle / Label",
+    "overlayDescription": "Description",
+    "overlayButton": "Button",
+    "enableButton": "Enable button",
+    "buttonText": "Button Text",
+    "buttonLink": "Button Link",
+    "openInNewTab": "Open in new tab"
   },
   "adminSections": {
     "title": "होमपेज सेक्शन",

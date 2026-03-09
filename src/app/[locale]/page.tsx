@@ -4,6 +4,7 @@ import {
   HeroCarousel,
   WelcomeSection,
   TrustFeaturesSection,
+  StatsCounterSection,
 } from "@/features/homepage";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
 
@@ -96,13 +97,22 @@ const BlogArticlesSection = dynamic(
     })),
   { ssr: true },
 );
+const HowItWorksSection = dynamic(
+  () =>
+    import("@/features/homepage").then((m) => ({
+      default: m.HowItWorksSection,
+    })),
+  { ssr: true },
+);
 export default function Page() {
   return (
     <div className="w-full space-y-0">
       {/* Homepage Sections - Rendered in Order */}
       <WelcomeSection />
       <HeroCarousel />
+      <StatsCounterSection />
       <TrustFeaturesSection />
+      <HowItWorksSection />
       <TopCategoriesSection />
       <TopBrandsSection />
       <FeaturedProductsSection />

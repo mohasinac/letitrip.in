@@ -266,6 +266,15 @@ export interface HorizontalScrollerProps<T = unknown> {
    * - 'lg': 48 px buttons with backdrop, for section carousels
    */
   arrowSize?: "sm" | "lg";
+
+  /**
+   * Minimum item width in px.
+   * When the dynamically computed item width (from `perView`) would fall below
+   * this value, items are clamped to this minimum and the container scrolls
+   * instead of squishing — prevents tiny items on small mobile screens.
+   * Default: 0 (no minimum)
+   */
+  minItemWidth?: number;
 }
 
 // â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -292,6 +301,7 @@ export function HorizontalScroller<T = unknown>({
   onScroll,
   showScrollbar = false,
   arrowSize = "sm",
+  minItemWidth = 0,
 }: HorizontalScrollerProps<T>) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -501,7 +511,9 @@ export function HorizontalScroller<T = unknown>({
 
       if (perViewProp) {
         const n = resolvePerView(perViewProp, available);
-        const w = Math.floor((available - (n - 1) * gap) / n);
+        const computed = Math.floor((available - (n - 1) * gap) / n);
+        const w =
+          minItemWidth > 0 ? Math.max(minItemWidth, computed) : computed;
         if (w > 0) {
           resolvedIWRef.current = w;
           setResolvedIW(w);
@@ -546,7 +558,7 @@ export function HorizontalScroller<T = unknown>({
         ref={scrollContainerRef}
         onScroll={onScroll}
         className={[
-          "flex overflow-x-auto touch-pan-x",
+          "flex overflow-x-auto touch-pan-x h-full",
           snapToItems ? "snap-x snap-mandatory" : "",
           showScrollbar ? utilities.scrollbarThinX : utilities.scrollbarHide,
           showScrollbar ? "pb-2" : "",

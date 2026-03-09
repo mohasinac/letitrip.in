@@ -4,8 +4,6 @@ import { SITE_CONFIG, ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useAuth, useCartCount } from "@/hooks";
 import { NotificationBell } from "@/components";
 import { TitleBarLayout } from "./TitleBarLayout";
-import { TranslatePanel } from "./TranslatePanel";
-import { TTSButton } from "./TTSButton";
 import { TextLink, Span } from "@/components";
 import { Sprout, SearchCode } from "lucide-react";
 
@@ -51,13 +49,7 @@ export default function TitleBar(props: TitleBarProps) {
       promotionsHref={SITE_CONFIG.nav.promotions}
       user={user}
       cartCount={cartCount}
-      notificationSlot={
-        <>
-          <TranslatePanel />
-          <TTSButton />
-          {user && <NotificationBell />}
-        </>
-      }
+      notificationSlot={<>{user && <NotificationBell />}</>}
       devSlot={
         isDev ? (
           <>

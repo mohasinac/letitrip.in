@@ -7,7 +7,7 @@
 
 "use client";
 
-import { Star } from "lucide-react";
+import { Star, Tag, Bookmark } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { CategoryDocument } from "@/db/schema";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
@@ -31,7 +31,7 @@ export function CategoryCard({
   className = "",
 }: CategoryCardProps) {
   const t = useTranslations("categories");
-  const { name, slug, display, metrics, isFeatured } = category;
+  const { name, slug, display, metrics, isFeatured, isBrand } = category;
   const productCount = metrics?.totalProductCount ?? metrics?.productCount ?? 0;
 
   const href = `${ROUTES.PUBLIC.CATEGORIES}/${slug}`;
@@ -105,6 +105,24 @@ export function CategoryCard({
               />
             </div>
           )}
+
+          {/* Type badge — bottom left */}
+          <div className="absolute bottom-2 left-2 z-10 pointer-events-none">
+            <Span
+              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
+                isBrand
+                  ? "bg-amber-600/90 text-white"
+                  : "bg-indigo-600/90 text-white"
+              }`}
+            >
+              {isBrand ? (
+                <Tag className="w-3 h-3 flex-shrink-0" />
+              ) : (
+                <Bookmark className="w-3 h-3 flex-shrink-0" />
+              )}
+              {isBrand ? t("brandBadge") : t("categoryBadge")}
+            </Span>
+          </div>
         </div>
 
         {/* ── Content ── */}

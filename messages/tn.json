@@ -867,6 +867,7 @@
     "colPrice": "விலை",
     "colStatus": "நிலை",
     "reviewPhotoAlt": "Review photo {index}",
+    "typeBadge": "தயாரிப்பு",
     "gallery": {
       "prevImage": "Previous image",
       "nextImage": "Next image",
@@ -1127,7 +1128,8 @@
     "colTitle": "Title",
     "colCurrentBid": "தற்போதைய ஏலம்",
     "colEnds": "Ends",
-    "colBids": "Bids"
+    "colBids": "Bids",
+    "typeBadge": "ஏலம்"
   },
   "preOrders": {
     "title": "முன்-ஆர்டர்கள்",
@@ -1269,7 +1271,9 @@
     "minPrice": "குறைந்தபட்ச விலை",
     "maxPrice": "அதிகபட்ச விலை",
     "categoryFilter": "வகை",
-    "allCategories": "அனைத்து வகைகள்"
+    "allCategories": "அனைத்து வகைகள்",
+    "searching": "Searching...",
+    "browseProducts": "Search \"{q}\" in products →"
   },
   "categories": {
     "title": "வகைகள்",
@@ -1298,7 +1302,9 @@
     "price2000to10000": "₹2,000 – ₹10,000",
     "priceOver10000": "Over ₹10,000",
     "addToWishlist": "Add to wishlist",
-    "removeFromWishlist": "Remove from wishlist"
+    "removeFromWishlist": "Remove from wishlist",
+    "brandBadge": "ப்ராண்ட்",
+    "categoryBadge": "வகை"
   },
   "seller": {
     "dashboard": "விற்பனையாளர் டாஷ்போர்டு",
@@ -1409,7 +1415,30 @@
     "auctionNoEndDate": "No end date",
     "auctionEnded": "முடிந்தது",
     "bidCount": "{count, plural, one {# bid} other {# bids}}",
-    "categoryProductCount": "{count, plural, one {# product} other {# products}}"
+    "categoryProductCount": "{count, plural, one {# product} other {# products}}",
+    "statsProducts": "10,000+",
+    "statsProductsLabel": "பட்டியலிடப்பட்ட பொருட்கள்",
+    "statsSellers": "2,000+",
+    "statsSellersLabel": "சரிபார்க்கப்பட்ட விற்பனையாளர்கள்",
+    "statsBuyers": "50,000+",
+    "statsBuyersLabel": "மகிழ்ச்சியான வாங்குபவர்கள்",
+    "statsRating": "4.8/5",
+    "statsRatingLabel": "சராசரி மதிப்பீடு",
+    "howItWorksPill": "எளிது மற்றும் வேகமானது",
+    "howItWorksTitle": "LetItRip எப்படி செயல்படுகிறது",
+    "howItWorksSubtitle": "ஆயிரக்கணக்கான பொருட்களை பார்க்கவும், ஏலங்களில் ஏலம் போடவும், உங்கள் ஆர்டரை வீட்டிலேயே பெறவும்.",
+    "howItWorksStep1Title": "பார்க்கவும் & கண்டுபிடிக்கவும்",
+    "howItWorksStep1Desc": "இந்தியா முழுவதும் verified sellers இடமிருந்து ஆயிரக்கணக்கான பொருட்கள் மற்றும் live auctions ஆராயுங்கள்.",
+    "howItWorksStep2Title": "ஏலம் போடவும் அல்லது வாங்கவும்",
+    "howItWorksStep2Desc": "Auction items ல் ஏலம் போடவும் அல்லது fixed price ல் உடனடியாக வாங்கவும்.",
+    "howItWorksStep3Title": "பொருளை பெறவும்",
+    "howItWorksStep3Desc": "Real-time tracking உடன் உங்கள் ஆர்டர் உங்கள் வீட்டிற்கு வரும்.",
+    "howItWorksCta": "கடைக்கு போகுங்கள்",
+    "bannerTag": "வரையறுக்கப்பட்ட நேர சலுகை",
+    "bannerFallbackTitle": "அற்புதமான சலுகைகளை கண்டுபிடிக்கவும்",
+    "bannerFallbackSubtitle": "சிறந்த பொருட்களை வாங்கவும், exclusive ஏலங்களில் ஏலம் போடவும், சிறந்த விலைகளை கண்டுபிடிக்கவும்.",
+    "bannerFallbackCta": "இப்போது வாங்கவும்",
+    "bannerSecondaryCta": "ஏலங்களை பார்க்கவும்"
   },
   "footer": {
     "aboutUs": "எங்களைப் பற்றி",
@@ -1451,13 +1480,7 @@
     "heroCarouselNextSlide": "Next slide",
     "closeSidebar": "Close sidebar",
     "sideNavigation": "Site navigation",
-    "sidebarLinks": "Navigation links",
-    "translateToggle": "Translate page",
-    "translatePanelLabel": "Page translation",
-    "translateLoading": "Loading translator…",
-    "ttsPlay": "Read page aloud",
-    "ttsStop": "Stop reading",
-    "ttsPlaying": "Reading page aloud"
+    "sidebarLinks": "Navigation links"
   },
   "locale": {
     "label": "மொழி",
@@ -2068,6 +2091,8 @@
     "freeShipping": "Free shipping",
     "buyXGetY": "Buy X Get Y",
     "specialOffer": "Special Offer",
+    "typePercentage": "% தள்ளுபடி",
+    "typeFixed": "நிலையான தள்ளுபடி",
     "statusActive": "செயலில்"
   },
   "adminSessions": {
@@ -2182,7 +2207,9 @@
     "platformShippingPercentHint": "Applied for Shiprocket shipping",
     "platformShippingFixedMin": "Min Shipping Fee (Rs.)",
     "platformShippingFixedMinHint": "Minimum fee — charged if percentage is lower",
-    "shippingFeeRule": "For Shiprocket: platform charges max(order x %, minimum Rs. fixed)"
+    "shippingFeeRule": "For Shiprocket: platform charges max(order x %, minimum Rs. fixed)",
+    "algoliaTitle": "Algolia Search Index",
+    "algoliaSubtitle": "Manually trigger a full re-index for products or navigation pages. The trigger runs automatically on product changes, but use these if records appear out of sync."
   },
   "adminFeatureFlags": {
     "title": "Feature Flags",
@@ -2571,7 +2598,17 @@
     "colImage": "Image",
     "colStatus": "நிலை",
     "statusActive": "செயலில்",
-    "statusInactive": "செயலற்றது"
+    "statusInactive": "செயலற்றது",
+    "overlayMode": "Central Overlay",
+    "overlayModeSubtitle": "Render text + button centred over the background. Disables grid cards.",
+    "overlayTitle": "Title",
+    "overlaySubtitle": "Subtitle / Label",
+    "overlayDescription": "Description",
+    "overlayButton": "Button",
+    "enableButton": "Enable button",
+    "buttonText": "Button Text",
+    "buttonLink": "Button Link",
+    "openInNewTab": "Open in new tab"
   },
   "adminSections": {
     "title": "Homepage Sections",

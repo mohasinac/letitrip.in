@@ -97,7 +97,9 @@ export function HeroCarousel() {
   const getBackgroundStyle = (card: GridCard) => {
     const { type, value } = card.background;
 
-    if (type === "color") {
+    if (type === "transparent") {
+      return { background: "transparent" };
+    } else if (type === "color") {
       return { backgroundColor: value };
     } else if (type === "gradient") {
       return { background: value };
@@ -156,7 +158,7 @@ export function HeroCarousel() {
         {slides.map((slide, slideIndex) => (
           <div
             key={slide.id}
-            className="snap-start flex-none w-full h-full relative"
+            className="snap-start flex-none w-full relative self-stretch bg-gray-900"
           >
             {/* Background Media */}
             <div className={position.fill}>
@@ -187,122 +189,164 @@ export function HeroCarousel() {
               )}
               <div className={`${position.fill} bg-black/10`} />
             </div>
-
-            {/* Grid Overlay with Cards */}
-            <div
-              className={`${position.fill} grid gap-2 md:gap-4 p-4 md:p-8`}
-              style={{
-                gridTemplateRows: "repeat(2, 1fr)",
-                // Mobile: single centred column. Desktop: 3-column layout.
-                gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-                justifyItems: isMobile ? "center" : undefined,
-                alignItems: isMobile ? "center" : undefined,
-              }}
-            >
-              {slide.cards.map((card) => {
-                return (
-                  <div
-                    key={card.id}
-                    className="relative rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105"
-                    style={{
-                      ...getGridPosition(card),
-                      ...getBackgroundStyle(card),
-                      width: card.sizing?.widthPct
-                        ? `${isMobile ? Math.min(card.sizing.widthPct, 65) : card.sizing.widthPct}%`
-                        : isMobile
-                          ? "65%"
-                          : "100%",
-                      height: card.sizing?.heightPct
-                        ? `${isMobile ? Math.min(card.sizing.heightPct, 55) : card.sizing.heightPct}%`
-                        : isMobile
-                          ? "55%"
-                          : "100%",
-                      justifySelf: "center",
-                      alignSelf: "center",
+            {/* Overlay mode — centred text + optional button; no cards */}
+            {slide.overlay ? (
+              <div
+                className={`${position.fill} ${flex.center} flex-col text-center px-6 md:px-16 lg:px-32`}
+              >
+                {slide.overlay.subtitle && (
+                  <Text className="text-xs md:text-sm !text-white/80 mb-1 md:mb-2 drop-shadow-sm uppercase tracking-widest">
+                    {slide.overlay.subtitle}
+                  </Text>
+                )}
+                {slide.overlay.title && (
+                  <Heading
+                    level={1}
+                    className="text-2xl md:text-5xl lg:text-6xl font-bold !text-white mb-2 md:mb-4 drop-shadow-lg"
+                  >
+                    {slide.overlay.title}
+                  </Heading>
+                )}
+                {slide.overlay.description && (
+                  <Text className="text-sm md:text-lg lg:text-xl !text-white/90 mb-4 md:mb-8 drop-shadow-sm max-w-2xl mx-auto">
+                    {slide.overlay.description}
+                  </Text>
+                )}
+                {slide.overlay.button && (
+                  <Button
+                    variant={slide.overlay.button.variant}
+                    size="sm"
+                    onClick={() => {
+                      const btn = slide.overlay!.button!;
+                      if (btn.openInNewTab) {
+                        window.open(btn.link, "_blank", "noopener,noreferrer");
+                      } else {
+                        router.push(btn.link);
+                      }
                     }}
                   >
-                    {!card.isButtonOnly && (
-                      <div
-                        className={`${position.fill} flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/30 to-transparent ${
-                          card.sizing?.padding === "none"
-                            ? "p-0"
-                            : card.sizing?.padding === "sm"
-                              ? "p-1.5 md:p-3"
-                              : card.sizing?.padding === "lg"
-                                ? "p-3 md:p-8"
-                                : "p-2 md:p-6"
-                        }`}
-                      >
-                        {card.content?.subtitle && (
-                          <Text className="hidden md:block text-xs md:text-sm !text-white/90 mb-0.5 md:mb-2 drop-shadow-sm">
-                            {card.content.subtitle}
-                          </Text>
-                        )}
-                        {card.content?.title && (
-                          <Heading
-                            level={2}
-                            className="text-[11px] md:text-2xl lg:text-3xl font-bold !text-white mb-0.5 md:mb-3 line-clamp-1 md:line-clamp-2 drop-shadow-md"
-                          >
-                            {card.content.title}
-                          </Heading>
-                        )}
-                        {card.content?.description && (
-                          <Text className="text-[10px] md:text-sm lg:text-base !text-white/80 mb-1 md:mb-4 line-clamp-1 drop-shadow-sm">
-                            {card.content.description}
-                          </Text>
-                        )}
-                        {(card.buttons?.length ?? 0) > 0 && (
-                          <div className="flex flex-wrap gap-1 md:gap-2">
-                            {(card.buttons ?? []).map((btn) => (
-                              <Button
-                                key={btn.id}
-                                variant={btn.variant}
-                                size="sm"
-                                onClick={() => {
-                                  if (btn.openInNewTab) {
-                                    window.open(
-                                      btn.link,
-                                      "_blank",
-                                      "noopener,noreferrer",
-                                    );
-                                  } else {
-                                    router.push(btn.link);
-                                  }
-                                }}
-                              >
-                                {btn.text}
-                              </Button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    {card.isButtonOnly && card.buttons?.[0] && (
-                      <Button
-                        variant="ghost"
-                        className={`${position.fill} ${flex.center} font-semibold text-white hover:bg-black/20 transition-colors rounded-none p-0`}
-                        onClick={() => {
-                          const btn = card.buttons![0];
-                          if (btn.openInNewTab) {
-                            window.open(
-                              btn.link,
-                              "_blank",
-                              "noopener,noreferrer",
-                            );
-                          } else {
-                            router.push(btn.link);
-                          }
-                        }}
-                      >
-                        <Span className="text-lg md:text-2xl">
-                          {card.buttons![0].text}
-                        </Span>
-                      </Button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                    {slide.overlay.button.text}
+                  </Button>
+                )}
+              </div>
+            ) : (
+              /* Grid Overlay with Cards */
+              <div
+                className={`${position.fill} grid gap-2 md:gap-4 p-4 md:p-8`}
+                style={{
+                  gridTemplateRows: "repeat(2, 1fr)",
+                  // Mobile: single centred column. Desktop: 3-column layout.
+                  gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+                  justifyItems: isMobile ? "center" : undefined,
+                  alignItems: isMobile ? "center" : undefined,
+                }}
+              >
+                {slide.cards.map((card) => {
+                  return (
+                    <div
+                      key={card.id}
+                      className="relative rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105"
+                      style={{
+                        ...getGridPosition(card),
+                        ...getBackgroundStyle(card),
+                        width: card.sizing?.widthPct
+                          ? `${isMobile ? Math.min(card.sizing.widthPct, 65) : card.sizing.widthPct}%`
+                          : isMobile
+                            ? "65%"
+                            : "100%",
+                        height: card.sizing?.heightPct
+                          ? `${isMobile ? Math.min(card.sizing.heightPct, 55) : card.sizing.heightPct}%`
+                          : isMobile
+                            ? "55%"
+                            : "100%",
+                        justifySelf: "center",
+                        alignSelf: "center",
+                      }}
+                    >
+                      {!card.isButtonOnly && (
+                        <div
+                          className={`${position.fill} flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/30 to-transparent ${
+                            card.sizing?.padding === "none"
+                              ? "p-0"
+                              : card.sizing?.padding === "sm"
+                                ? "p-1.5 md:p-3"
+                                : card.sizing?.padding === "lg"
+                                  ? "p-3 md:p-8"
+                                  : "p-2 md:p-6"
+                          }`}
+                        >
+                          {card.content?.subtitle && (
+                            <Text className="hidden md:block text-xs md:text-sm !text-white/90 mb-0.5 md:mb-2 drop-shadow-sm">
+                              {card.content.subtitle}
+                            </Text>
+                          )}
+                          {card.content?.title && (
+                            <Heading
+                              level={2}
+                              className="text-[11px] md:text-2xl lg:text-3xl font-bold !text-white mb-0.5 md:mb-3 line-clamp-1 md:line-clamp-2 drop-shadow-md"
+                            >
+                              {card.content.title}
+                            </Heading>
+                          )}
+                          {card.content?.description && (
+                            <Text className="text-[10px] md:text-sm lg:text-base !text-white/80 mb-1 md:mb-4 line-clamp-1 drop-shadow-sm">
+                              {card.content.description}
+                            </Text>
+                          )}
+                          {(card.buttons?.length ?? 0) > 0 && (
+                            <div className="flex flex-wrap gap-1 md:gap-2">
+                              {(card.buttons ?? []).map((btn) => (
+                                <Button
+                                  key={btn.id}
+                                  variant={btn.variant}
+                                  size="sm"
+                                  onClick={() => {
+                                    if (btn.openInNewTab) {
+                                      window.open(
+                                        btn.link,
+                                        "_blank",
+                                        "noopener,noreferrer",
+                                      );
+                                    } else {
+                                      router.push(btn.link);
+                                    }
+                                  }}
+                                >
+                                  {btn.text}
+                                </Button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {card.isButtonOnly && card.buttons?.[0] && (
+                        <Button
+                          variant="ghost"
+                          className={`${position.fill} ${flex.center} font-semibold text-white hover:bg-black/20 transition-colors rounded-none p-0`}
+                          onClick={() => {
+                            const btn = card.buttons![0];
+                            if (btn.openInNewTab) {
+                              window.open(
+                                btn.link,
+                                "_blank",
+                                "noopener,noreferrer",
+                              );
+                            } else {
+                              router.push(btn.link);
+                            }
+                          }}
+                        >
+                          <Span className="text-lg md:text-2xl">
+                            {card.buttons![0].text}
+                          </Span>
+                        </Button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}{" "}
+            {/* end overlay ternary */}
           </div>
         ))}
       </HorizontalScroller>

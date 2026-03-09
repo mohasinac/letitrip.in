@@ -161,9 +161,9 @@ export const usersSeedData: Partial<UserDocument>[] = [
     email: "techhub@letitrip.in",
     phoneNumber: "+919876543214",
     phoneVerified: true,
-    displayName: "TechHub Electronics",
+    displayName: "FigureVault JP",
     photoURL:
-      "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=400&fit=crop",
     avatarMetadata: null,
     role: "seller",
     emailVerified: true,
@@ -178,23 +178,23 @@ export const usersSeedData: Partial<UserDocument>[] = [
       showPhone: true,
       showOrders: false,
       showWishlist: false,
-      bio: "Authorized reseller of top electronics brands — Apple, Samsung, Sony, and more.",
+      bio: "Japan-based premium scale figures dealer — Bandai Spirits, MegaHouse, Kotobukiya and more.",
       location: "Mumbai, India",
-      website: "https://techhub.example.com",
+      website: "https://figurevaultjp.example.com",
       socialLinks: {
-        facebook: "https://facebook.com/techhub",
-        instagram: "https://instagram.com/techhub",
+        facebook: "https://facebook.com/figurevaultjp",
+        instagram: "https://instagram.com/figurevaultjp",
       },
-      storeName: "TechHub Electronics",
+      storeName: "FigureVault JP",
       storeDescription:
-        "Your one-stop shop for the latest gadgets, smartphones, laptops, and accessories from top brands.",
+        "Your premier source for authentic anime scale figures, limited editions, and rare collectibles direct from Japan.",
       storeCategory: "electronics",
       storeLogoURL:
-        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=400&fit=crop",
       storeBannerURL:
-        "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1600&h=400&fit=crop",
       storeReturnPolicy:
-        "7-day hassle-free returns on all products. Electronics must be in original packaging for a full refund.",
+        "7-day hassle-free returns on all items. Figures must be in original sealed packaging for a full refund.",
       storeShippingPolicy:
         "Free shipping on orders above ₹999. Standard delivery in 3-5 business days. Express delivery available.",
     },
@@ -216,9 +216,9 @@ export const usersSeedData: Partial<UserDocument>[] = [
     email: "fashion@letitrip.in",
     phoneNumber: "+919876543215",
     phoneVerified: true,
-    displayName: "Fashion Boutique",
+    displayName: "AnimeCraft Apparel",
     photoURL:
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1612810806695-30f7a8258391?w=400&h=400&fit=crop",
     avatarMetadata: null,
     role: "seller",
     emailVerified: true,
@@ -233,21 +233,21 @@ export const usersSeedData: Partial<UserDocument>[] = [
       showPhone: true,
       showOrders: false,
       showWishlist: false,
-      bio: "Bringing you the finest in contemporary fashion, ethnic wear, and designer accessories.",
+      bio: "Handcrafted cosplay outfits and anime apparel — Demon Slayer, Sailor Moon, Genshin Impact and more.",
       location: "Delhi, India",
-      website: "https://fashionboutique.example.com",
+      website: "https://animecraftapparel.example.com",
       socialLinks: {
-        instagram: "https://instagram.com/fashionboutiquein",
-        facebook: "https://facebook.com/fashionboutiquein",
+        instagram: "https://instagram.com/animecraftapparel",
+        facebook: "https://facebook.com/animecraftapparel",
       },
-      storeName: "Fashion Boutique",
+      storeName: "AnimeCraft Apparel",
       storeDescription:
-        "Curated collection of trendy fashion, ethnic wear, and premium accessories for every occasion.",
+        "Crafted cosplay costumes, anime hoodies, graphic tees, and accessories for every otaku.",
       storeCategory: "fashion",
       storeLogoURL:
-        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1612810806695-30f7a8258391?w=400&h=400&fit=crop",
       storeBannerURL:
-        "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1600&h=400&fit=crop",
       storeReturnPolicy:
         "14-day returns on unworn items with original tags attached. Exchange available within 30 days.",
       storeShippingPolicy:
@@ -271,9 +271,9 @@ export const usersSeedData: Partial<UserDocument>[] = [
     email: "home@letitrip.in",
     phoneNumber: "+919876543216",
     phoneVerified: true,
-    displayName: "Home Essentials",
+    displayName: "OtakuShelf Co",
     photoURL:
-      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400&h=400&fit=crop",
     avatarMetadata: null,
     role: "seller",
     emailVerified: true,
@@ -288,21 +288,21 @@ export const usersSeedData: Partial<UserDocument>[] = [
       showPhone: true,
       showOrders: false,
       showWishlist: false,
-      bio: "Bringing warmth and style to every room with premium home décor and kitchenware.",
+      bio: "Nendoroid sets, Gunpla kits, and collectible display pieces for the serious anime collector.",
       location: "Pune, India",
-      website: "https://homeessentials.example.com",
+      website: "https://otakushelfco.example.com",
       socialLinks: {
-        instagram: "https://instagram.com/homeessentialsin",
-        facebook: "https://facebook.com/homeessentialsin",
+        instagram: "https://instagram.com/otakushelfco",
+        facebook: "https://facebook.com/otakushelfco",
       },
-      storeName: "Home Essentials",
+      storeName: "OtakuShelf Co",
       storeDescription:
-        "Premium home décor, kitchenware, and lifestyle products for a beautiful modern home.",
+        "Nendoroids, Gunpla model kits, dioramas, and shelf-worthy collectibles for anime enthusiasts.",
       storeCategory: "home",
       storeLogoURL:
-        "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400&h=400&fit=crop",
       storeBannerURL:
-        "https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=1600&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1600&h=400&fit=crop",
       storeReturnPolicy:
         "10-day returns accepted on all products. Damaged or defective items replaced at no extra cost.",
       storeShippingPolicy:

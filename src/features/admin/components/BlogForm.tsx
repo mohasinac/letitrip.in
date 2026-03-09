@@ -13,10 +13,10 @@ import {
   FormField,
   ImageUpload,
   Label,
-  RichTextEditor,
   Span,
   Text,
 } from "@/components";
+import { RichTextEditor } from "./RichTextEditor";
 import { useMediaUpload } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
 import type {

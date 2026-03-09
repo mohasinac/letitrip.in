@@ -46,7 +46,7 @@ Before writing ANY markup, check `@/components` first. NEVER write raw `<h1>`–
 
 ### Other Key Components
 
-`Card`, `Badge`, `StatusBadge`, `RoleBadge`, `Alert`, `Modal`, `ConfirmDeleteModal` (prop `variant?: "danger"|"warning"|"primary"`), `ImageCropModal`, `Tooltip`, `Divider`, `LoadingSpinner`, `Skeleton`, `EmptyState`, `SideDrawer`, `BackToTop`, `LocaleSwitcher`, `AvatarDisplay`, `AvatarUpload`, `ImageUpload`, `MediaUploadField`, `PasswordStrengthIndicator`, `ErrorBoundary`, `ResponsiveView`, `HorizontalScroller` (carousel/tab strips), `SectionCarousel` (section with heading + HorizontalScroller), `RichTextEditor`, `Progress`, `Tabs`, `SectionTabs`, `Accordion`, `RatingDisplay`, `AdminPageHeader`, `AdminFilterBar`, `DrawerFormFooter`, `AddressForm`, `AddressCard`, `ProfileHeader`, `ProfileStatsGrid`, `SkipToMain`, `ReviewCard`, `ProductActions`, `ProductFeatureBadges`
+`Card`, `Badge`, `StatusBadge`, `RoleBadge`, `Alert`, `Modal`, `ConfirmDeleteModal` (prop `variant?: "danger"|"warning"|"primary"`), `ImageCropModal`, `Tooltip`, `Divider`, `LoadingSpinner`, `Skeleton`, `EmptyState`, `SideDrawer`, `BackToTop`, `LocaleSwitcher`, `AvatarDisplay`, `AvatarUpload`, `ImageUpload`, `MediaUploadField`, `PasswordStrengthIndicator`, `ErrorBoundary`, `ResponsiveView`, `HorizontalScroller` (carousel/tab strips), `SectionCarousel` (section with heading + HorizontalScroller), `RichTextEditor`, `Progress`, `Tabs`, `SectionTabs`, `Accordion`, `RatingDisplay`, `AdminPageHeader`, `AdminFilterBar`, `DrawerFormFooter`, `AddressForm`, `SkipToMain`, `ReviewCard`, `ProductActions`, `ProductFeatureBadges`
 
 ## RULE 31: Extend Primitives — Never Fork
 

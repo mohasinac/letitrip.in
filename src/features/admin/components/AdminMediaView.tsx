@@ -9,14 +9,14 @@ import {
   Card,
   AdminPageHeader,
   Button,
-  MediaOperationForm,
   DataTable,
-  getMediaTableColumns,
   useToast,
   Heading,
   Text,
 } from "@/components";
-import type { MediaOperation } from "@/components";
+import { MediaOperationForm } from "./MediaOperationForm";
+import { getMediaTableColumns } from "./MediaTableColumns";
+import type { MediaOperation } from "./MediaTableColumns";
 
 export function AdminMediaView() {
   const { showToast } = useToast();

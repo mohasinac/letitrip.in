@@ -7,6 +7,8 @@ export { TrustFeaturesSection } from "./TrustFeaturesSection";
 // Kept for backward-compat (tests + any external imports)
 export { TrustIndicatorsSection } from "./TrustIndicatorsSection";
 export { SiteFeaturesSection } from "./SiteFeaturesSection";
+export { StatsCounterSection } from "./StatsCounterSection";
+export { HowItWorksSection } from "./HowItWorksSection";
 export { TopCategoriesSection } from "./TopCategoriesSection";
 export { TopBrandsSection } from "./TopBrandsSection";
 export { FeaturedProductsSection } from "./FeaturedProductsSection";

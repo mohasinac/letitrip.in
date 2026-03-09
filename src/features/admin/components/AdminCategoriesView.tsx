@@ -16,13 +16,13 @@ import {
   AdminPageHeader,
   Button,
   Card,
-  CategoryTreeView,
   DataTable,
   DrawerFormFooter,
   ListingLayout,
   SideDrawer,
   Text,
 } from "@/components";
+import { CategoryTreeView } from "./CategoryTreeView";
 import { useToast } from "@/components";
 import { CategoryForm, flattenCategories, getCategoryTableColumns } from ".";
 import type { Category, CategoryDrawerMode } from ".";

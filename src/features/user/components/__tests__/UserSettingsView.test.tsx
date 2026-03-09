@@ -23,10 +23,20 @@ jest.mock("@/components", () => ({
   Alert: ({ children }: any) => <div role="alert">{children}</div>,
   Spinner: () => <div data-testid="spinner" />,
   useToast: () => ({ showToast: jest.fn() }),
+}));
+jest.mock("../EmailVerificationCard", () => ({
   EmailVerificationCard: () => <div data-testid="email-verify" />,
+}));
+jest.mock("../PhoneVerificationCard", () => ({
   PhoneVerificationCard: () => <div data-testid="phone-verify" />,
+}));
+jest.mock("../ProfileInfoForm", () => ({
   ProfileInfoForm: () => <div data-testid="profile-form" />,
+}));
+jest.mock("../PasswordChangeForm", () => ({
   PasswordChangeForm: () => <div data-testid="pw-form" />,
+}));
+jest.mock("../AccountInfoCard", () => ({
   AccountInfoCard: () => <div data-testid="account-info" />,
 }));
 jest.mock("@/constants", () => ({

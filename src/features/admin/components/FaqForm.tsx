@@ -17,10 +17,10 @@ import {
   FormField,
   Label,
   Li,
-  RichTextEditor,
   Text,
   Ul,
 } from "@/components";
+import { RichTextEditor } from "./RichTextEditor";
 import { THEME_CONSTANTS } from "@/constants";
 import type { FAQ } from "./Faq.types";
 import { FAQ_CATEGORIES, VARIABLE_PLACEHOLDERS } from "./Faq.types";

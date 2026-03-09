@@ -1,6 +1,13 @@
 "use client";
 
-import { Star } from "lucide-react";
+import {
+  Star,
+  Newspaper,
+  Lightbulb,
+  BookOpen,
+  Bell,
+  Users,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
@@ -18,6 +25,17 @@ export const CATEGORY_BADGE: Record<BlogPostCategory, string> = {
     "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300",
   community:
     "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300",
+};
+
+const CATEGORY_ICON: Record<
+  BlogPostCategory,
+  React.FC<{ className?: string }>
+> = {
+  news: Newspaper,
+  tips: Lightbulb,
+  guides: BookOpen,
+  updates: Bell,
+  community: Users,
 };
 
 interface BlogCardProps {
@@ -93,11 +111,17 @@ export function BlogCard({
 
           {/* Category badge — bottom left */}
           <div className="absolute bottom-2 left-2 z-10">
-            <Span
-              className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium capitalize ${CATEGORY_BADGE[post.category]}`}
-            >
-              {post.category}
-            </Span>
+            {(() => {
+              const CategoryIcon = CATEGORY_ICON[post.category];
+              return (
+                <Span
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium capitalize ${CATEGORY_BADGE[post.category]}`}
+                >
+                  <CategoryIcon className="w-3 h-3 flex-shrink-0" />
+                  {post.category}
+                </Span>
+              );
+            })()}
           </div>
         </div>
 

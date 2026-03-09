@@ -12,6 +12,7 @@ import {
   CarouselSlideCreateInput,
   CarouselSlideUpdateInput,
   MAX_ACTIVE_SLIDES,
+  DEFAULT_CAROUSEL_SLIDE_DATA,
   canActivateSlide,
   createCarouselId,
 } from "@/db/schema/carousel-slides";
@@ -68,6 +69,7 @@ class CarouselRepository extends BaseRepository<CarouselSlideDocument> {
     const id = createCarouselId(input.title);
 
     const slideData: Omit<CarouselSlideDocument, "id"> = {
+      ...DEFAULT_CAROUSEL_SLIDE_DATA,
       ...input,
       createdAt: new Date(),
       updatedAt: new Date(),

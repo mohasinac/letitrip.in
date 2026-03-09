@@ -185,10 +185,10 @@ export const onOrderStatusChange = onDocumentUpdated(
       try {
         await getRtdb().ref(`notifications/${after.userId}`).push({
           type: config.type,
-          orderId,
-          productTitle: after.productTitle,
-          status: newStatus,
+          title: config.title,
+          message: messageText,
           timestamp: Date.now(),
+          read: false,
         });
       } catch (rtdbError) {
         logError(TRIGGER, "Realtime DB push failed (non-fatal)", rtdbError);

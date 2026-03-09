@@ -26,7 +26,7 @@ import {
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, useMessage, usePendingTable } from "@/hooks";
-import { StoreFilters } from "@/components";
+import { StoreFilters } from "./StoreFilters";
 import { useAdminStores } from "@/features/admin/hooks";
 import type { AdminStoreItem } from "@/features/admin/hooks";
 import { formatDate } from "@/utils";

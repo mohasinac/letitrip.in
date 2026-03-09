@@ -11,7 +11,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-john-20260120-p3q7r2",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Vintage Canon AE-1 Film Camera",
+    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -28,7 +28,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-jane-20260121-k8m2n5",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Vintage Canon AE-1 Film Camera",
+    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userEmail: "jane@letitrip.in",
@@ -45,7 +45,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-mike-20260122-w4x9y1",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Vintage Canon AE-1 Film Camera",
+    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
@@ -62,7 +62,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-john-20260123-b7c1d4",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Vintage Canon AE-1 Film Camera",
+    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -80,7 +80,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-jane-20260125-e2f6g3",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Vintage Canon AE-1 Film Camera",
+    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userEmail: "jane@letitrip.in",
@@ -98,7 +98,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-mike-20260128-h5j9k2",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Vintage Canon AE-1 Film Camera",
+    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
@@ -116,7 +116,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-john-20260203-l8m3n6",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Vintage Canon AE-1 Film Camera",
+    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -134,7 +134,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     id: "bid-vintage-canon-ae-1-film-camera-jane-20260208-p4q8r7",
     productId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
-    productTitle: "Vintage Canon AE-1 Film Camera",
+    productTitle: "Gainax Evangelion Unit-01 Original Production Art",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userEmail: "jane@letitrip.in",
@@ -155,7 +155,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-macbook-m3-john-1-20260211-a1b2c3",
     productId: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    productTitle: 'MacBook Pro 14" M3 Pro (16GB/512GB) — AUCTION',
+    productTitle: "Dragon Ball Z Complete Son Goku Family Set — AUCTION",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -170,7 +170,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-macbook-m3-mike-1-20260211-d4e5f6",
     productId: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    productTitle: 'MacBook Pro 14" M3 Pro (16GB/512GB) — AUCTION',
+    productTitle: "Dragon Ball Z Complete Son Goku Family Set — AUCTION",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
@@ -185,7 +185,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-macbook-m3-raj-1-20260212-g7h8i9",
     productId: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    productTitle: 'MacBook Pro 14" M3 Pro (16GB/512GB) — AUCTION',
+    productTitle: "Dragon Ball Z Complete Son Goku Family Set — AUCTION",
     userId: "user-raj-patel-rajpatel",
     userName: "Raj Patel",
     userEmail: "raj@letitrip.in",
@@ -200,7 +200,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-macbook-m3-john-2-20260213-j1k2l3",
     productId: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    productTitle: 'MacBook Pro 14" M3 Pro (16GB/512GB) — AUCTION',
+    productTitle: "Dragon Ball Z Complete Son Goku Family Set — AUCTION",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -216,7 +216,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-macbook-m3-priya-1-20260214-m4n5o6",
     productId: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    productTitle: 'MacBook Pro 14" M3 Pro (16GB/512GB) — AUCTION',
+    productTitle: "Dragon Ball Z Complete Son Goku Family Set — AUCTION",
     userId: "user-priya-sharma-priya",
     userName: "Priya Sharma",
     userEmail: "priya@letitrip.in",
@@ -231,7 +231,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-macbook-m3-mike-2-20260115-p7q8r9",
     productId: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    productTitle: 'MacBook Pro 14" M3 Pro (16GB/512GB) — AUCTION',
+    productTitle: "Dragon Ball Z Complete Son Goku Family Set — AUCTION",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
@@ -247,7 +247,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-macbook-m3-raj-2-20260219-s1t2u3",
     productId: "product-macbook-pro-m3-auction-electronics-techhub-1",
-    productTitle: 'MacBook Pro 14" M3 Pro (16GB/512GB) — AUCTION',
+    productTitle: "Dragon Ball Z Complete Son Goku Family Set — AUCTION",
     userId: "user-raj-patel-rajpatel",
     userName: "Raj Patel",
     userEmail: "raj@letitrip.in",
@@ -262,13 +262,14 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     updatedAt: new Date("2026-02-19T09:45:00Z"),
   },
 
-  // ─── Vintage Leica Camera Auction Bids ────────────────────────────────────
+  // ─── NGE Evangelion Signed Poster Auction Bids ────────────────────────────
   // productId: product-vintage-leica-camera-auction-artisan-1
   // Starting: 85000, Current: 97500, Bids: 5
   {
     id: "bid-leica-m6-meera-1-20260206-v4w5x6",
     productId: "product-vintage-leica-camera-auction-artisan-1",
-    productTitle: "Vintage Leica M6 Film Camera — AUCTION",
+    productTitle:
+      "Neon Genesis Evangelion 1995 First-Run Signed Poster — AUCTION",
     userId: "user-vikram-nair-vikram",
     userName: "Vikram Nair",
     userEmail: "vikram@letitrip.in",
@@ -283,7 +284,8 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-leica-m6-john-1-20260208-y7z8a9",
     productId: "product-vintage-leica-camera-auction-artisan-1",
-    productTitle: "Vintage Leica M6 Film Camera — AUCTION",
+    productTitle:
+      "Neon Genesis Evangelion 1995 First-Run Signed Poster — AUCTION",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -298,7 +300,8 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-leica-m6-meera-2-20260211-b1c2d3",
     productId: "product-vintage-leica-camera-auction-artisan-1",
-    productTitle: "Vintage Leica M6 Film Camera — AUCTION",
+    productTitle:
+      "Neon Genesis Evangelion 1995 First-Run Signed Poster — AUCTION",
     userId: "user-vikram-nair-vikram",
     userName: "Vikram Nair",
     userEmail: "vikram@letitrip.in",
@@ -314,7 +317,8 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-leica-m6-jane-1-20260215-e4f5g6",
     productId: "product-vintage-leica-camera-auction-artisan-1",
-    productTitle: "Vintage Leica M6 Film Camera — AUCTION",
+    productTitle:
+      "Neon Genesis Evangelion 1995 First-Run Signed Poster — AUCTION",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userEmail: "jane@letitrip.in",
@@ -329,7 +333,8 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-leica-m6-meera-3-20260218-h7i8j9",
     productId: "product-vintage-leica-camera-auction-artisan-1",
-    productTitle: "Vintage Leica M6 Film Camera — AUCTION",
+    productTitle:
+      "Neon Genesis Evangelion 1995 First-Run Signed Poster — AUCTION",
     userId: "user-vikram-nair-vikram",
     userName: "Vikram Nair",
     userEmail: "vikram@letitrip.in",
@@ -350,7 +355,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-jordan-chicago-priya-1-20260208-k1l2m3",
     productId: "product-limited-air-jordan-sneakers-auction-artisan-1",
-    productTitle: "Nike Air Jordan 1 Retro High OG 'Chicago' — AUCTION",
+    productTitle: "One Piece Zoro Limited Edition Signed Art Print — AUCTION",
     userId: "user-priya-sharma-priya",
     userName: "Priya Sharma",
     userEmail: "priya@letitrip.in",
@@ -365,7 +370,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-jordan-chicago-raj-1-20260210-n4o5p6",
     productId: "product-limited-air-jordan-sneakers-auction-artisan-1",
-    productTitle: "Nike Air Jordan 1 Retro High OG 'Chicago' — AUCTION",
+    productTitle: "One Piece Zoro Limited Edition Signed Art Print — AUCTION",
     userId: "user-raj-patel-rajpatel",
     userName: "Raj Patel",
     userEmail: "raj@letitrip.in",
@@ -380,7 +385,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-jordan-chicago-priya-2-20260211-q7r8s9",
     productId: "product-limited-air-jordan-sneakers-auction-artisan-1",
-    productTitle: "Nike Air Jordan 1 Retro High OG 'Chicago' — AUCTION",
+    productTitle: "One Piece Zoro Limited Edition Signed Art Print — AUCTION",
     userId: "user-priya-sharma-priya",
     userName: "Priya Sharma",
     userEmail: "priya@letitrip.in",
@@ -396,7 +401,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-jordan-chicago-mike-1-20260213-t1u2v3",
     productId: "product-limited-air-jordan-sneakers-auction-artisan-1",
-    productTitle: "Nike Air Jordan 1 Retro High OG 'Chicago' — AUCTION",
+    productTitle: "One Piece Zoro Limited Edition Signed Art Print — AUCTION",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
@@ -411,7 +416,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-jordan-chicago-raj-2-20260215-w4x5y6",
     productId: "product-limited-air-jordan-sneakers-auction-artisan-1",
-    productTitle: "Nike Air Jordan 1 Retro High OG 'Chicago' — AUCTION",
+    productTitle: "One Piece Zoro Limited Edition Signed Art Print — AUCTION",
     userId: "user-raj-patel-rajpatel",
     userName: "Raj Patel",
     userEmail: "raj@letitrip.in",
@@ -427,7 +432,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-jordan-chicago-priya-3-20260217-z7a8b9",
     productId: "product-limited-air-jordan-sneakers-auction-artisan-1",
-    productTitle: "Nike Air Jordan 1 Retro High OG 'Chicago' — AUCTION",
+    productTitle: "One Piece Zoro Limited Edition Signed Art Print — AUCTION",
     userId: "user-priya-sharma-priya",
     userName: "Priya Sharma",
     userEmail: "priya@letitrip.in",
@@ -443,7 +448,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-jordan-chicago-raj-3-20260218-a1b2c3",
     productId: "product-limited-air-jordan-sneakers-auction-artisan-1",
-    productTitle: "Nike Air Jordan 1 Retro High OG 'Chicago' — AUCTION",
+    productTitle: "One Piece Zoro Limited Edition Signed Art Print — AUCTION",
     userId: "user-raj-patel-rajpatel",
     userName: "Raj Patel",
     userEmail: "raj@letitrip.in",
@@ -459,7 +464,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-jordan-chicago-priya-4-20260218-d4e5f6",
     productId: "product-limited-air-jordan-sneakers-auction-artisan-1",
-    productTitle: "Nike Air Jordan 1 Retro High OG 'Chicago' — AUCTION",
+    productTitle: "One Piece Zoro Limited Edition Signed Art Print — AUCTION",
     userId: "user-priya-sharma-priya",
     userName: "Priya Sharma",
     userEmail: "priya@letitrip.in",
@@ -475,7 +480,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-jordan-chicago-mike-2-20260219-g7h8i9",
     productId: "product-limited-air-jordan-sneakers-auction-artisan-1",
-    productTitle: "Nike Air Jordan 1 Retro High OG 'Chicago' — AUCTION",
+    productTitle: "One Piece Zoro Limited Edition Signed Art Print — AUCTION",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
@@ -491,7 +496,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-jordan-chicago-raj-4-20260219-j1k2l3",
     productId: "product-limited-air-jordan-sneakers-auction-artisan-1",
-    productTitle: "Nike Air Jordan 1 Retro High OG 'Chicago' — AUCTION",
+    productTitle: "One Piece Zoro Limited Edition Signed Art Print — AUCTION",
     userId: "user-raj-patel-rajpatel",
     userName: "Raj Patel",
     userEmail: "raj@letitrip.in",
@@ -507,7 +512,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-jordan-chicago-meera-1-20260219-c1d2e3",
     productId: "product-limited-air-jordan-sneakers-auction-artisan-1",
-    productTitle: "Nike Air Jordan 1 Retro High OG 'Chicago' — AUCTION",
+    productTitle: "One Piece Zoro Limited Edition Signed Art Print — AUCTION",
     userId: "user-vikram-nair-vikram",
     userName: "Vikram Nair",
     userEmail: "vikram@letitrip.in",
@@ -526,7 +531,7 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   {
     id: "bid-jordan-chicago-raj-cancelled-20260215-x9z1a4",
     productId: "product-limited-air-jordan-sneakers-auction-artisan-1",
-    productTitle: "Nike Air Jordan 1 Retro High OG 'Chicago' — AUCTION",
+    productTitle: "One Piece Zoro Limited Edition Signed Art Print — AUCTION",
     userId: "user-raj-patel-rajpatel",
     userName: "Raj Patel",
     userEmail: "raj@letitrip.in",

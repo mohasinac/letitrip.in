@@ -105,6 +105,11 @@ export function MediaImage({
     );
   }
 
+  const isSvg =
+    src.toLowerCase().endsWith(".svg") ||
+    src.includes("image/svg") ||
+    /\.svg(\?|$)/.test(src);
+
   return (
     <div
       className={`absolute inset-0 overflow-hidden${className ? ` ${className}` : ""}`}
@@ -117,6 +122,7 @@ export function MediaImage({
         className={fitClass}
         sizes={SIZE_HINTS[size]}
         onError={() => setHasError(true)}
+        unoptimized={isSvg}
       />
     </div>
   );

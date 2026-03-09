@@ -104,7 +104,6 @@ export function CarouselSlideForm({
         onChange={(value) => update({ title: value })}
         disabled={isReadonly}
       />
-
       <FormField
         name="description"
         label="Description"
@@ -114,7 +113,6 @@ export function CarouselSlideForm({
         onChange={(value) => update({ description: value })}
         disabled={isReadonly}
       />
-
       {!isReadonly && (
         <ImageUpload
           currentImage={slide.imageUrl}
@@ -124,7 +122,6 @@ export function CarouselSlideForm({
           helperText="Recommended: 1920×600 px"
         />
       )}
-
       <FormField
         name="linkUrl"
         label="Link URL (optional)"
@@ -133,7 +130,6 @@ export function CarouselSlideForm({
         onChange={(value) => update({ linkUrl: value })}
         disabled={isReadonly}
       />
-
       <div className="grid grid-cols-2 gap-4">
         <FormField
           name="order"
@@ -152,138 +148,312 @@ export function CarouselSlideForm({
           />
         </div>
       </div>
-
-      {/* -- 2×3 grid designer (max 2 cards) --------------------------- */}
+      {/* -- Central overlay (mutually exclusive with cards) --------- */}
       <div className={`border-t ${themed.border} pt-4`}>
-        <Heading level={3} className="mb-1">
-          {t("gridLayout")}
-        </Heading>
-        <Text variant="secondary" size="sm" className="mb-1">
-          {t("gridLayoutSubtitle")}
-        </Text>
-        <Text variant="muted" size="xs" className="mb-4">
-          {t("cardCount", { count: cardCount })}
-        </Text>
+        <div className={`${flex.between} mb-3`}>
+          <div>
+            <Heading level={3} className="mb-0.5">
+              {t("overlayMode")}
+            </Heading>
+            <Text variant="muted" size="xs">
+              {t("overlayModeSubtitle")}
+            </Text>
+          </div>
+          {!isReadonly && (
+            <Checkbox
+              checked={!!slide.overlay}
+              onChange={(e) =>
+                update({
+                  overlay: e.target.checked
+                    ? { title: "", subtitle: "", description: "" }
+                    : null,
+                  // Clear cards when switching to overlay mode
+                  ...(e.target.checked ? { cards: [] } : {}),
+                })
+              }
+              label=""
+            />
+          )}
+        </div>
 
-        {([1, 2] as const).map((row) => (
-          <div key={row} className="mb-5">
-            <Label className="block mb-2 text-xs font-semibold uppercase tracking-wide">
-              {row === 1 ? t("topRow") : t("bottomRow")}
-            </Label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {([1, 2, 3] as const).map((col) => {
-                const card = getCard(row, col);
-                const cellKey: CellKey = `${row},${col}`;
-                const isEditing = editingCell === cellKey;
-
-                return (
-                  <div
-                    key={col}
-                    className={`border ${themed.border} ${borderRadius.xl} overflow-hidden`}
-                  >
-                    {/* Cell header */}
-                    <div
-                      className={`${flex.between} px-3 py-2 ${
-                        card
-                          ? "bg-indigo-50 dark:bg-indigo-900/20"
-                          : themed.bgSecondary
-                      }`}
-                    >
-                      <Text size="xs" weight="medium">
-                        {colLabel(col)}
-                      </Text>
-                      {!isReadonly && (
-                        <div className="flex gap-1">
-                          {card ? (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  setEditingCell(isEditing ? null : cellKey)
-                                }
-                              >
-                                {t("editCard")}
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeCard(row, col)}
-                                className="text-red-500 hover:text-red-700"
-                              >
-                                {t("removeCard")}
-                              </Button>
-                            </>
-                          ) : (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              disabled={cardCount >= 2 || rowHasCard(row)}
-                              onClick={() => {
-                                if (cardCount >= 2 || rowHasCard(row)) return;
-                                upsertCard(makeNewCard(row, col));
-                                setEditingCell(cellKey);
-                              }}
-                            >
-                              {t("addCard")}
-                            </Button>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Empty state */}
-                    {!card && (
-                      <div
-                        className={`py-6 ${flex.center} ${
-                          !isReadonly ? "cursor-pointer" : ""
-                        }`}
-                        onClick={
-                          isReadonly || cardCount >= 2 || rowHasCard(row)
-                            ? undefined
-                            : () => {
-                                upsertCard(makeNewCard(row, col));
-                                setEditingCell(cellKey);
+        {slide.overlay && (
+          <div className="space-y-2">
+            <FormField
+              name="overlay-subtitle"
+              label={t("overlaySubtitle")}
+              type="text"
+              value={slide.overlay.subtitle ?? ""}
+              onChange={(val) =>
+                update({ overlay: { ...slide.overlay!, subtitle: val } })
+              }
+              disabled={isReadonly}
+            />
+            <FormField
+              name="overlay-title"
+              label={t("overlayTitle")}
+              type="text"
+              value={slide.overlay.title ?? ""}
+              onChange={(val) =>
+                update({ overlay: { ...slide.overlay!, title: val } })
+              }
+              disabled={isReadonly}
+            />
+            <FormField
+              name="overlay-description"
+              label={t("overlayDescription")}
+              type="textarea"
+              rows={2}
+              value={slide.overlay.description ?? ""}
+              onChange={(val) =>
+                update({ overlay: { ...slide.overlay!, description: val } })
+              }
+              disabled={isReadonly}
+            />
+            {/* Optional button */}
+            <div className={`border ${themed.border} rounded-lg p-3 space-y-2`}>
+              <div className={flex.between}>
+                <Label className="text-xs font-medium">
+                  {t("overlayButton")}
+                </Label>
+                {!isReadonly && (
+                  <Checkbox
+                    checked={!!slide.overlay.button}
+                    onChange={(e) =>
+                      update({
+                        overlay: {
+                          ...slide.overlay!,
+                          button: e.target.checked
+                            ? {
+                                id: `btn-overlay-${nowMs()}`,
+                                text: "",
+                                link: "",
+                                variant: "primary",
+                                openInNewTab: false,
                               }
-                        }
-                      >
-                        <Text variant="muted" size="xs">
-                          {t("emptyCell")}
-                        </Text>
-                      </div>
-                    )}
-
-                    {/* Card summary */}
-                    {card && !isEditing && (
-                      <div className="px-3 py-2 space-y-1">
-                        {card.content?.title && (
-                          <Text size="sm" weight="medium">
-                            {card.content.title}
-                          </Text>
-                        )}
-                        {card.content?.subtitle && (
-                          <Text size="xs" variant="secondary">
-                            {card.content.subtitle}
-                          </Text>
-                        )}
-                        <Text size="xs" variant="muted">
-                          {t("cardBackground")}: {card.background.type}
-                          {card.isButtonOnly ? ` · ${t("isButtonOnly")}` : ""}
-                        </Text>
-                      </div>
-                    )}
-
-                    {/* Inline card editor */}
-                    {card && isEditing && !isReadonly && (
-                      <CardEditor card={card} onChange={upsertCard} />
-                    )}
+                            : undefined,
+                        },
+                      })
+                    }
+                    label={t("enableButton")}
+                  />
+                )}
+              </div>
+              {slide.overlay.button && (
+                <div className="space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <FormField
+                      name="overlay-btn-text"
+                      label={t("buttonText")}
+                      type="text"
+                      value={slide.overlay.button.text}
+                      onChange={(val) =>
+                        update({
+                          overlay: {
+                            ...slide.overlay!,
+                            button: { ...slide.overlay!.button!, text: val },
+                          },
+                        })
+                      }
+                      disabled={isReadonly}
+                    />
+                    <FormField
+                      name="overlay-btn-link"
+                      label={t("buttonLink")}
+                      type="text"
+                      value={slide.overlay.button.link}
+                      onChange={(val) =>
+                        update({
+                          overlay: {
+                            ...slide.overlay!,
+                            button: { ...slide.overlay!.button!, link: val },
+                          },
+                        })
+                      }
+                      disabled={isReadonly}
+                    />
                   </div>
-                );
-              })}
+                  <div className="grid grid-cols-2 gap-2">
+                    <Select
+                      value={slide.overlay.button.variant}
+                      onChange={(e) =>
+                        update({
+                          overlay: {
+                            ...slide.overlay!,
+                            button: {
+                              ...slide.overlay!.button!,
+                              variant: e.target.value as
+                                | "primary"
+                                | "secondary"
+                                | "outline",
+                            },
+                          },
+                        })
+                      }
+                      options={[
+                        { value: "primary", label: t("variantPrimary") },
+                        { value: "secondary", label: t("variantSecondary") },
+                        { value: "outline", label: t("variantOutline") },
+                      ]}
+                    />
+                    <div className="flex items-end pb-1">
+                      <Checkbox
+                        checked={slide.overlay.button.openInNewTab}
+                        onChange={(e) =>
+                          update({
+                            overlay: {
+                              ...slide.overlay!,
+                              button: {
+                                ...slide.overlay!.button!,
+                                openInNewTab: e.target.checked,
+                              },
+                            },
+                          })
+                        }
+                        disabled={isReadonly}
+                        label={t("openInNewTab")}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        ))}
+        )}
       </div>
+      {/* -- 2×3 grid designer (max 2 cards) — hidden when overlay active */}
+      {!slide.overlay && (
+        <div className={`border-t ${themed.border} pt-4`}>
+          <Heading level={3} className="mb-1">
+            {t("gridLayout")}
+          </Heading>
+          <Text variant="secondary" size="sm" className="mb-1">
+            {t("gridLayoutSubtitle")}
+          </Text>
+          <Text variant="muted" size="xs" className="mb-4">
+            {t("cardCount", { count: cardCount })}
+          </Text>
+
+          {([1, 2] as const).map((row) => (
+            <div key={row} className="mb-5">
+              <Label className="block mb-2 text-xs font-semibold uppercase tracking-wide">
+                {row === 1 ? t("topRow") : t("bottomRow")}
+              </Label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {([1, 2, 3] as const).map((col) => {
+                  const card = getCard(row, col);
+                  const cellKey: CellKey = `${row},${col}`;
+                  const isEditing = editingCell === cellKey;
+
+                  return (
+                    <div
+                      key={col}
+                      className={`border ${themed.border} ${borderRadius.xl} overflow-hidden`}
+                    >
+                      {/* Cell header */}
+                      <div
+                        className={`${flex.between} px-3 py-2 ${
+                          card
+                            ? "bg-indigo-50 dark:bg-indigo-900/20"
+                            : themed.bgSecondary
+                        }`}
+                      >
+                        <Text size="xs" weight="medium">
+                          {colLabel(col)}
+                        </Text>
+                        {!isReadonly && (
+                          <div className="flex gap-1">
+                            {card ? (
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    setEditingCell(isEditing ? null : cellKey)
+                                  }
+                                >
+                                  {t("editCard")}
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removeCard(row, col)}
+                                  className="text-red-500 hover:text-red-700"
+                                >
+                                  {t("removeCard")}
+                                </Button>
+                              </>
+                            ) : (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={cardCount >= 2 || rowHasCard(row)}
+                                onClick={() => {
+                                  if (cardCount >= 2 || rowHasCard(row)) return;
+                                  upsertCard(makeNewCard(row, col));
+                                  setEditingCell(cellKey);
+                                }}
+                              >
+                                {t("addCard")}
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Empty state */}
+                      {!card && (
+                        <div
+                          className={`py-6 ${flex.center} ${
+                            !isReadonly ? "cursor-pointer" : ""
+                          }`}
+                          onClick={
+                            isReadonly || cardCount >= 2 || rowHasCard(row)
+                              ? undefined
+                              : () => {
+                                  upsertCard(makeNewCard(row, col));
+                                  setEditingCell(cellKey);
+                                }
+                          }
+                        >
+                          <Text variant="muted" size="xs">
+                            {t("emptyCell")}
+                          </Text>
+                        </div>
+                      )}
+
+                      {/* Card summary */}
+                      {card && !isEditing && (
+                        <div className="px-3 py-2 space-y-1">
+                          {card.content?.title && (
+                            <Text size="sm" weight="medium">
+                              {card.content.title}
+                            </Text>
+                          )}
+                          {card.content?.subtitle && (
+                            <Text size="xs" variant="secondary">
+                              {card.content.subtitle}
+                            </Text>
+                          )}
+                          <Text size="xs" variant="muted">
+                            {t("cardBackground")}: {card.background.type}
+                            {card.isButtonOnly ? ` · ${t("isButtonOnly")}` : ""}
+                          </Text>
+                        </div>
+                      )}
+
+                      {/* Inline card editor */}
+                      {card && isEditing && !isReadonly && (
+                        <CardEditor card={card} onChange={upsertCard} />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}{" "}
+      {/* end !slide.overlay */}
     </div>
   );
 }
@@ -341,7 +511,9 @@ function CardEditor({
         <Label className="block mb-1 text-xs font-medium">
           {t("cardBackground")}
         </Label>
-        <div className="grid grid-cols-2 gap-2">
+        <div
+          className={`grid gap-2 ${card.background.type !== "transparent" ? "grid-cols-2" : "grid-cols-1"}`}
+        >
           <Select
             value={card.background.type}
             onChange={(e) =>
@@ -356,18 +528,21 @@ function CardEditor({
               { value: "color", label: "Color" },
               { value: "gradient", label: "Gradient" },
               { value: "image", label: "Image URL" },
+              { value: "transparent", label: "Transparent" },
             ]}
           />
-          <FormField
-            name="bgValue"
-            label=""
-            type="text"
-            value={card.background.value}
-            onChange={(val) =>
-              update({ background: { ...card.background, value: val } })
-            }
-            placeholder={t("backgroundValue")}
-          />
+          {card.background.type !== "transparent" && (
+            <FormField
+              name="bgValue"
+              label=""
+              type="text"
+              value={card.background.value}
+              onChange={(val) =>
+                update({ background: { ...card.background, value: val } })
+              }
+              placeholder={t("backgroundValue")}
+            />
+          )}
         </div>
       </div>
 

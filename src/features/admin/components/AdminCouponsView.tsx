@@ -26,7 +26,6 @@ import {
   Caption,
   Card,
   Button,
-  CouponFilters,
   SideDrawer,
   DataTable,
   AdminPageHeader,
@@ -38,6 +37,7 @@ import {
   TablePagination,
   Text,
 } from "@/components";
+import { CouponFilters } from "./CouponFilters";
 import { formatDate } from "@/utils";
 import {
   getCouponTableColumns,

@@ -23,7 +23,6 @@ import {
   Card,
   DataTable,
   DrawerFormFooter,
-  FaqFilters,
   FormField,
   ListingLayout,
   Search,
@@ -32,6 +31,7 @@ import {
   TablePagination,
   Text,
 } from "@/components";
+import { FaqFilters } from "./FaqFilters";
 import { FaqForm, getFaqTableColumns } from ".";
 import type { FAQ, FaqDrawerMode } from ".";
 

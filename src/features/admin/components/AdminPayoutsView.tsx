@@ -17,8 +17,8 @@ import {
   TablePagination,
   ListingLayout,
   Search,
-  PayoutFilters,
 } from "@/components";
+import { PayoutFilters } from "./PayoutFilters";
 import { getPayoutTableColumns, PayoutStatusForm } from ".";
 import type { PayoutStatusFormState } from ".";
 import { formatCurrency, formatDate, isSameMonth, nowMs } from "@/utils";

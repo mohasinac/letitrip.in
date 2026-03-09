@@ -867,6 +867,7 @@
     "colPrice": "किंमत",
     "colStatus": "स्थिती",
     "reviewPhotoAlt": "Review photo {index}",
+    "typeBadge": "उत्पादन",
     "gallery": {
       "prevImage": "Previous image",
       "nextImage": "Next image",
@@ -1127,7 +1128,8 @@
     "colTitle": "शीर्षक",
     "colCurrentBid": "सध्याची बोली",
     "colEnds": "Ends",
-    "colBids": "बोली"
+    "colBids": "बोली",
+    "typeBadge": "लिलाव"
   },
   "preOrders": {
     "title": "प्री-ऑर्डर",
@@ -1269,7 +1271,9 @@
     "minPrice": "Min price",
     "maxPrice": "Max price",
     "categoryFilter": "श्रेणी",
-    "allCategories": "सर्व श्रेण्या"
+    "allCategories": "सर्व श्रेण्या",
+    "searching": "Searching...",
+    "browseProducts": "Search \"{q}\" in products →"
   },
   "categories": {
     "title": "श्रेण्या",
@@ -1298,7 +1302,9 @@
     "price2000to10000": "₹2,000 – ₹10,000",
     "priceOver10000": "Over ₹10,000",
     "addToWishlist": "Add to wishlist",
-    "removeFromWishlist": "Remove from wishlist"
+    "removeFromWishlist": "Remove from wishlist",
+    "brandBadge": "ब्रअंड",
+    "categoryBadge": "श्रेणी"
   },
   "seller": {
     "dashboard": "विक्रेता डॅशबोर्ड",
@@ -1409,7 +1415,30 @@
     "auctionNoEndDate": "No end date",
     "auctionEnded": "संपला",
     "bidCount": "{count, plural, one {# bid} other {# bids}}",
-    "categoryProductCount": "{count, plural, one {# product} other {# products}}"
+    "categoryProductCount": "{count, plural, one {# product} other {# products}}",
+    "statsProducts": "10,000+",
+    "statsProductsLabel": "उत्पादने",
+    "statsSellers": "2,000+",
+    "statsSellersLabel": "सत्यापित विक्रेते",
+    "statsBuyers": "50,000+",
+    "statsBuyersLabel": "आनंदी खरेदीदार",
+    "statsRating": "4.8/5",
+    "statsRatingLabel": "सरासरी रेटिंग",
+    "howItWorksPill": "सोपे आणि जलद",
+    "howItWorksTitle": "LetItRip कसे काम करते",
+    "howItWorksSubtitle": "हजारो उत्पादने ब्राउझ करा, एक्सक्लुझिव्ह लिलावांवर बोली लावा, आणि तुमचा ऑर्डर घरपोच मिळवा.",
+    "howItWorksStep1Title": "ब्राउझ करा",
+    "howItWorksStep1Desc": "भारतभरातील verified sellers कडून हजारो उत्पादने आणि live auctions एक्सप्लोर करा.",
+    "howItWorksStep2Title": "बोली लावा किंवा विकत घ्या",
+    "howItWorksStep2Desc": "Auction items वर बोली लावा किंवा fixed price ने लगेच खरेदी करा.",
+    "howItWorksStep3Title": "डिलिव्हरी मिळवा",
+    "howItWorksStep3Desc": "Real-time tracking सह तुमचा ऑर्डर तुमच्या दारापर्यंत पोहोचेल.",
+    "howItWorksCta": "खरेदी सुरू करा",
+    "bannerTag": "मर्यादित वेळेची ऑफर",
+    "bannerFallbackTitle": "अप्रतिम डील्स शोधा",
+    "bannerFallbackSubtitle": "टॉप उत्पादने खरेदी करा, एक्सक्लुझिव्ह लिलावांवर बोली लावा, आणि सर्वोत्तम किंमती मिळवा.",
+    "bannerFallbackCta": "आत्ता खरेदी करा",
+    "bannerSecondaryCta": "लिलाव पाहा"
   },
   "footer": {
     "aboutUs": "आमच्याबद्दल",
@@ -1451,13 +1480,7 @@
     "heroCarouselNextSlide": "Next slide",
     "closeSidebar": "Close sidebar",
     "sideNavigation": "Site navigation",
-    "sidebarLinks": "Navigation links",
-    "translateToggle": "Translate page",
-    "translatePanelLabel": "Page translation",
-    "translateLoading": "Loading translator…",
-    "ttsPlay": "Read page aloud",
-    "ttsStop": "Stop reading",
-    "ttsPlaying": "Reading page aloud"
+    "sidebarLinks": "Navigation links"
   },
   "locale": {
     "label": "भाषा",
@@ -2068,6 +2091,8 @@
     "freeShipping": "Free shipping",
     "buyXGetY": "Buy X Get Y",
     "specialOffer": "Special Offer",
+    "typePercentage": "% सूट",
+    "typeFixed": "Flat Off",
     "statusActive": "सक्रिय"
   },
   "adminSessions": {
@@ -2182,7 +2207,9 @@
     "platformShippingPercentHint": "Applied for Shiprocket shipping",
     "platformShippingFixedMin": "Min Shipping Fee (Rs.)",
     "platformShippingFixedMinHint": "Minimum fee — charged if percentage is lower",
-    "shippingFeeRule": "For Shiprocket: platform charges max(order x %, minimum Rs. fixed)"
+    "shippingFeeRule": "For Shiprocket: platform charges max(order x %, minimum Rs. fixed)",
+    "algoliaTitle": "Algolia Search Index",
+    "algoliaSubtitle": "Manually trigger a full re-index for products or navigation pages. The trigger runs automatically on product changes, but use these if records appear out of sync."
   },
   "adminFeatureFlags": {
     "title": "Feature Flags",
@@ -2571,7 +2598,17 @@
     "colImage": "Image",
     "colStatus": "स्थिती",
     "statusActive": "सक्रिय",
-    "statusInactive": "निष्क्रिय"
+    "statusInactive": "निष्क्रिय",
+    "overlayMode": "Central Overlay",
+    "overlayModeSubtitle": "Render text + button centred over the background. Disables grid cards.",
+    "overlayTitle": "Title",
+    "overlaySubtitle": "Subtitle / Label",
+    "overlayDescription": "Description",
+    "overlayButton": "Button",
+    "enableButton": "Enable button",
+    "buttonText": "Button Text",
+    "buttonLink": "Button Link",
+    "openInNewTab": "Open in new tab"
   },
   "adminSections": {
     "title": "Homepage Sections",

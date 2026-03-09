@@ -867,6 +867,7 @@
     "colPrice": "ధర",
     "colStatus": "స్థితి",
     "reviewPhotoAlt": "Review photo {index}",
+    "typeBadge": "ఉత్పత్తి",
     "gallery": {
       "prevImage": "Previous image",
       "nextImage": "Next image",
@@ -1127,7 +1128,8 @@
     "colTitle": "శీర్షిక",
     "colCurrentBid": "ప్రస్తుత బిడ్",
     "colEnds": "Ends",
-    "colBids": "బిడ్లు"
+    "colBids": "బిడ్లు",
+    "typeBadge": "వేలం"
   },
   "preOrders": {
     "title": "ప్రీ-ఆర్డర్లు",
@@ -1269,7 +1271,9 @@
     "minPrice": "Min price",
     "maxPrice": "Max price",
     "categoryFilter": "వర్గం",
-    "allCategories": "అన్ని వర్గాలు"
+    "allCategories": "అన్ని వర్గాలు",
+    "searching": "Searching...",
+    "browseProducts": "Search \"{q}\" in products →"
   },
   "categories": {
     "title": "వర్గాలు",
@@ -1298,7 +1302,9 @@
     "price2000to10000": "₹2,000 – ₹10,000",
     "priceOver10000": "Over ₹10,000",
     "addToWishlist": "Add to wishlist",
-    "removeFromWishlist": "Remove from wishlist"
+    "removeFromWishlist": "Remove from wishlist",
+    "brandBadge": "బ్రాండ్",
+    "categoryBadge": "వర్గం"
   },
   "seller": {
     "dashboard": "విక్రేత డాష్‌బోర్డ్",
@@ -1409,7 +1415,30 @@
     "auctionNoEndDate": "No end date",
     "auctionEnded": "ముగిసింది",
     "bidCount": "{count, plural, one {# bid} other {# bids}}",
-    "categoryProductCount": "{count, plural, one {# product} other {# products}}"
+    "categoryProductCount": "{count, plural, one {# product} other {# products}}",
+    "statsProducts": "10,000+",
+    "statsProductsLabel": "Listed Products",
+    "statsSellers": "2,000+",
+    "statsSellersLabel": "Verified Sellers",
+    "statsBuyers": "50,000+",
+    "statsBuyersLabel": "Happy Buyers",
+    "statsRating": "4.8/5",
+    "statsRatingLabel": "Average Rating",
+    "howItWorksPill": "Simple & Fast",
+    "howItWorksTitle": "LetItRip ఎలా పని చేస్తుంది",
+    "howItWorksSubtitle": "వేలాది ఉత్పత్తులను బ్రౌజ్ చేయండి, ప్రత్యేక వేలాలపై బిడ్ చేయండి, మరియు మీ ఆర్డర్ డెలివరీ అవుతుంది.",
+    "howItWorksStep1Title": "Browse & Discover",
+    "howItWorksStep1Desc": "భారతదేశం అంతటా verified sellers నుండి వేలాది ఉత్పత్తులు మరియు live auctions explore చేయండి.",
+    "howItWorksStep2Title": "Bid or Buy",
+    "howItWorksStep2Desc": "Auction items పై bid చేయండి లేదా fixed price లో వెంటనే కొనండి.",
+    "howItWorksStep3Title": "Get It Delivered",
+    "howItWorksStep3Desc": "Real-time tracking తో మీ ఆర్డర్ మీ తలుపు వద్దకు వస్తుంది.",
+    "howItWorksCta": "Shopping Start చేయండి",
+    "bannerTag": "Limited Time Offer",
+    "bannerFallbackTitle": "Amazing Deals కనుగొనండి",
+    "bannerFallbackSubtitle": "Top products shop చేయండి, exclusive auctions లో bid చేయండి, మరియు best prices కనుగొనండి.",
+    "bannerFallbackCta": "Shop Now",
+    "bannerSecondaryCta": "Auctions Browse చేయండి"
   },
   "footer": {
     "aboutUs": "మా గురించి",
@@ -1451,13 +1480,7 @@
     "heroCarouselNextSlide": "Next slide",
     "closeSidebar": "Close sidebar",
     "sideNavigation": "Site navigation",
-    "sidebarLinks": "Navigation links",
-    "translateToggle": "Translate page",
-    "translatePanelLabel": "Page translation",
-    "translateLoading": "Loading translator…",
-    "ttsPlay": "Read page aloud",
-    "ttsStop": "Stop reading",
-    "ttsPlaying": "Reading page aloud"
+    "sidebarLinks": "Navigation links"
   },
   "locale": {
     "label": "భాష",
@@ -2068,6 +2091,8 @@
     "freeShipping": "Free shipping",
     "buyXGetY": "Buy X Get Y",
     "specialOffer": "Special Offer",
+    "typePercentage": "% తగ్గింపు",
+    "typeFixed": "ఫ్లాట్ ఆఫ్",
     "statusActive": "సక్రియం"
   },
   "adminSessions": {
@@ -2182,7 +2207,9 @@
     "platformShippingPercentHint": "Applied for Shiprocket shipping",
     "platformShippingFixedMin": "Min Shipping Fee (Rs.)",
     "platformShippingFixedMinHint": "Minimum fee — charged if percentage is lower",
-    "shippingFeeRule": "For Shiprocket: platform charges max(order x %, minimum Rs. fixed)"
+    "shippingFeeRule": "For Shiprocket: platform charges max(order x %, minimum Rs. fixed)",
+    "algoliaTitle": "Algolia Search Index",
+    "algoliaSubtitle": "Manually trigger a full re-index for products or navigation pages. The trigger runs automatically on product changes, but use these if records appear out of sync."
   },
   "adminFeatureFlags": {
     "title": "Feature Flags",
@@ -2275,7 +2302,8 @@
       "lastLogin": "Last Login"
     },
     "noName": "No name",
-    "loginTimesCount": "{count, plural, one {# time} other {# times}}"
+    "loginTimesCount": "{count, plural, one {# time} other {# times}}",
+    "title": "Users"
   },
   "adminProducts": {
     "title": "ఉత్పత్తులు",
@@ -2570,7 +2598,17 @@
     "colImage": "Image",
     "colStatus": "స్థితి",
     "statusActive": "సక్రియం",
-    "statusInactive": "నిష్క్రియం"
+    "statusInactive": "నిష్క్రియం",
+    "overlayMode": "Central Overlay",
+    "overlayModeSubtitle": "Render text + button centred over the background. Disables grid cards.",
+    "overlayTitle": "Title",
+    "overlaySubtitle": "Subtitle / Label",
+    "overlayDescription": "Description",
+    "overlayButton": "Button",
+    "enableButton": "Enable button",
+    "buttonText": "Button Text",
+    "buttonLink": "Button Link",
+    "openInNewTab": "Open in new tab"
   },
   "adminSections": {
     "title": "Homepage Sections",

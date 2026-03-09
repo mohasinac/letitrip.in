@@ -61,8 +61,7 @@ export const eventsSeedData: EventSeed[] = [
     status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
     startsAt: new Date("2026-03-01T00:00:00Z"),
     endsAt: new Date("2026-03-15T23:59:59Z"),
-    coverImageUrl:
-      "https://images.unsplash.com/photo-1549992948-c9c9a70e77e1?w=1200&h=400&fit=crop",
+    coverImageUrl: "https://picsum.photos/seed/holi-festival/1200/400",
     offerConfig: {
       couponId: "coupon-HOLI15",
       displayCode: "HOLI15",

@@ -13,6 +13,9 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const nextConfig = {
   // Image optimization for Firebase Storage and other remote sources
   images: {
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy:
+      "default-src 'none'; style-src 'unsafe-inline'; sandbox;",
     remotePatterns: [
       {
         protocol: "https",

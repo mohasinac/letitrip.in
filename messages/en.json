@@ -867,6 +867,7 @@
     "colPrice": "Price",
     "colStatus": "Status",
     "reviewPhotoAlt": "Review photo {index}",
+    "typeBadge": "Product",
     "gallery": {
       "prevImage": "Previous image",
       "nextImage": "Next image",
@@ -1127,7 +1128,8 @@
     "colTitle": "Title",
     "colCurrentBid": "Current Bid",
     "colEnds": "Ends",
-    "colBids": "Bids"
+    "colBids": "Bids",
+    "typeBadge": "Auction"
   },
   "preOrders": {
     "title": "Pre-Orders",
@@ -1300,7 +1302,9 @@
     "price2000to10000": "₹2,000 – ₹10,000",
     "priceOver10000": "Over ₹10,000",
     "addToWishlist": "Add to wishlist",
-    "removeFromWishlist": "Remove from wishlist"
+    "removeFromWishlist": "Remove from wishlist",
+    "brandBadge": "Brand",
+    "categoryBadge": "Category"
   },
   "seller": {
     "dashboard": "Seller Dashboard",
@@ -1411,7 +1415,30 @@
     "auctionNoEndDate": "No end date",
     "auctionEnded": "Ended",
     "bidCount": "{count, plural, one {# bid} other {# bids}}",
-    "categoryProductCount": "{count, plural, one {# product} other {# products}}"
+    "categoryProductCount": "{count, plural, one {# product} other {# products}}",
+    "statsProducts": "10,000+",
+    "statsProductsLabel": "Products Listed",
+    "statsSellers": "2,000+",
+    "statsSellersLabel": "Verified Sellers",
+    "statsBuyers": "50,000+",
+    "statsBuyersLabel": "Happy Buyers",
+    "statsRating": "4.8/5",
+    "statsRatingLabel": "Average Rating",
+    "howItWorksPill": "Simple & Fast",
+    "howItWorksTitle": "How LetItRip Works",
+    "howItWorksSubtitle": "Browse thousands of products, bid on exclusive auctions, and get your order delivered — all in just three simple steps.",
+    "howItWorksStep1Title": "Browse & Discover",
+    "howItWorksStep1Desc": "Explore thousands of products and live auctions from verified sellers across India.",
+    "howItWorksStep2Title": "Bid or Buy",
+    "howItWorksStep2Desc": "Place a bid on auction items or buy instantly at a fixed price with secure checkout.",
+    "howItWorksStep3Title": "Get It Delivered",
+    "howItWorksStep3Desc": "Receive your order at your doorstep with real-time tracking and easy returns.",
+    "howItWorksCta": "Start Shopping",
+    "bannerTag": "Limited Time Offer",
+    "bannerFallbackTitle": "Discover Amazing Deals",
+    "bannerFallbackSubtitle": "Shop top products, bid on exclusive auctions, and find the best prices — all in one place.",
+    "bannerFallbackCta": "Shop Now",
+    "bannerSecondaryCta": "Browse Auctions"
   },
   "footer": {
     "aboutUs": "About Us",
@@ -1453,13 +1480,7 @@
     "heroCarouselNextSlide": "Next slide",
     "closeSidebar": "Close sidebar",
     "sideNavigation": "Site navigation",
-    "sidebarLinks": "Navigation links",
-    "translateToggle": "Translate page",
-    "translatePanelLabel": "Page translation",
-    "translateLoading": "Loading translator…",
-    "ttsPlay": "Read page aloud",
-    "ttsStop": "Stop reading",
-    "ttsPlaying": "Reading page aloud"
+    "sidebarLinks": "Navigation links"
   },
   "locale": {
     "label": "Language",
@@ -2070,6 +2091,8 @@
     "freeShipping": "Free shipping",
     "buyXGetY": "Buy X Get Y",
     "specialOffer": "Special Offer",
+    "typePercentage": "% Off",
+    "typeFixed": "Flat Off",
     "statusActive": "Active"
   },
   "adminSessions": {
@@ -2575,7 +2598,17 @@
     "colImage": "Image",
     "colStatus": "Status",
     "statusActive": "Active",
-    "statusInactive": "Inactive"
+    "statusInactive": "Inactive",
+    "overlayMode": "Central Overlay",
+    "overlayModeSubtitle": "Render text + button centred over the background. Disables grid cards.",
+    "overlayTitle": "Title",
+    "overlaySubtitle": "Subtitle / Label",
+    "overlayDescription": "Description",
+    "overlayButton": "Button",
+    "enableButton": "Enable button",
+    "buttonText": "Button Text",
+    "buttonLink": "Button Link",
+    "openInNewTab": "Open in new tab"
   },
   "adminSections": {
     "title": "Homepage Sections",

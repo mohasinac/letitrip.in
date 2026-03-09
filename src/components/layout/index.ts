@@ -65,7 +65,3 @@ export { default as Breadcrumbs, BreadcrumbItem } from "./Breadcrumbs";
 
 // Locale Switcher
 export { default as LocaleSwitcher } from "./LocaleSwitcher";
-
-// Accessibility tools (translate + TTS)
-export { TranslatePanel } from "./TranslatePanel";
-export { TTSButton } from "./TTSButton";

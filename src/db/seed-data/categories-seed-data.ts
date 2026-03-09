@@ -6,12 +6,12 @@
 import type { CategoryDocument } from "@/db/schema";
 
 export const categoriesSeedData: Partial<CategoryDocument>[] = [
-  // ROOT: Electronics
+  // ROOT: Scale Figures
   {
     id: "category-electronics",
-    name: "Electronics",
+    name: "Scale Figures",
     slug: "electronics",
-    description: "Latest tech and gadgets",
+    description: "Premium anime scale figures and collectibles",
     rootId: "category-electronics",
     parentIds: [],
     childrenIds: [
@@ -38,17 +38,23 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 1,
     seo: {
-      title: "Electronics - Latest Gadgets & Tech | LetItRip",
+      title: "Scale Figures — Anime Collectibles | LetItRip",
       description:
-        "Shop the latest electronics including mobiles, laptops, audio devices, and cameras",
-      keywords: ["electronics", "gadgets", "technology", "mobiles", "laptops"],
+        "Shop premium anime scale figures including Dragon Ball Z, One Piece, Demon Slayer, and more",
+      keywords: [
+        "anime figures",
+        "scale figures",
+        "collectibles",
+        "dragon ball",
+        "one piece",
+      ],
       ogImage:
-        "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=1200&h=630&fit=crop",
+        "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&h=630&fit=crop",
     },
     display: {
-      icon: "📱",
+      icon: "🎌",
       coverImage:
-        "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=800&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&h=800&fit=crop",
       color: "#3b82f6",
       showInMenu: true,
       showInFooter: true,
@@ -60,12 +66,12 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     updatedAt: new Date("2026-02-09T00:00:00Z"),
     ancestors: [],
   },
-  // Electronics > Mobiles & Accessories
+  // Scale Figures > Nendoroids & Chibis
   {
     id: "category-mobiles-accessories-electronics",
-    name: "Mobiles & Accessories",
+    name: "Nendoroids & Chibis",
     slug: "mobiles-accessories",
-    description: "Smartphones and accessories",
+    description: "Nendoroids, chibi figurines, and small-scale collectibles",
     rootId: "category-electronics",
     parentIds: ["category-electronics"],
     childrenIds: [
@@ -89,14 +95,21 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isFeatured: false,
     isBrand: false,
     seo: {
-      title: "Mobiles & Accessories | LetItRip",
-      description: "Browse smartphones and mobile accessories",
-      keywords: ["mobiles", "smartphones", "mobile accessories"],
+      title: "Nendoroids & Chibis | LetItRip",
+      description:
+        "Browse Nendoroids, chibi figurines, and small-scale anime collectibles",
+      keywords: [
+        "nendoroid",
+        "chibi",
+        "good smile company",
+        "mini figurine",
+        "anime",
+      ],
     },
     display: {
-      icon: "📱",
+      icon: "🫧",
       coverImage:
-        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1614108831137-558fffac9ead?w=800&h=800&fit=crop",
       showInMenu: true,
       showInFooter: false,
     },
@@ -105,14 +118,14 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
-    ancestors: [{ id: "category-electronics", name: "Electronics", tier: 0 }],
+    ancestors: [{ id: "category-electronics", name: "Scale Figures", tier: 0 }],
   },
-  // Electronics > Mobiles > Smartphones
+  // Scale Figures > Nendoroids > Dragon Ball Figures
   {
     id: "category-smartphones-mobiles-accessories",
-    name: "Smartphones",
+    name: "Dragon Ball Figures",
     slug: "smartphones",
-    description: "Latest smartphones",
+    description: "Dragon Ball Z and Dragon Ball Super scale figures",
     rootId: "category-electronics",
     parentIds: [
       "category-electronics",
@@ -141,14 +154,15 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 2,
     seo: {
-      title: "Smartphones - Latest Models | LetItRip",
-      description: "Shop the latest smartphones with best prices",
-      keywords: ["smartphones", "iphone", "samsung", "android"],
+      title: "Dragon Ball Figures — Goku, Vegeta & More | LetItRip",
+      description:
+        "Shop Dragon Ball Z and Super scale figures by Bandai Spirits, MegaHouse, and Banpresto",
+      keywords: ["dragon ball", "goku", "vegeta", "bandai", "scale figure"],
     },
     display: {
-      icon: "📱",
+      icon: "🔥",
       coverImage:
-        "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1608889825271-9696283b84bd?w=800&h=800&fit=crop",
       showInMenu: true,
       showInFooter: false,
     },
@@ -158,20 +172,20 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
     ancestors: [
-      { id: "category-electronics", name: "Electronics", tier: 0 },
+      { id: "category-electronics", name: "Scale Figures", tier: 0 },
       {
         id: "category-mobiles-accessories-electronics",
-        name: "Mobiles & Accessories",
+        name: "Nendoroids & Chibis",
         tier: 1,
       },
     ],
   },
-  // Electronics > Mobiles > Mobile Accessories
+  // Scale Figures > Nendoroids > Chibi Figurines
   {
     id: "category-mobile-accessories-mobiles-accessories",
-    name: "Mobile Accessories",
+    name: "Chibi Figurines",
     slug: "mobile-accessories",
-    description: "Cases, chargers, and more",
+    description: "Mini figurines, gashapon, and chibi collectibles",
     rootId: "category-electronics",
     parentIds: [
       "category-electronics",
@@ -195,14 +209,21 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isFeatured: false,
     isBrand: false,
     seo: {
-      title: "Mobile Accessories | LetItRip",
-      description: "Shop mobile cases, chargers, and accessories",
-      keywords: ["mobile accessories", "phone cases", "chargers"],
+      title: "Chibi Figurines & Mini Collectibles | LetItRip",
+      description:
+        "Shop Nendoroids, gashapon, mini figurines, and chibi anime collectibles",
+      keywords: [
+        "chibi",
+        "mini figurine",
+        "gashapon",
+        "spirited away",
+        "studio ghibli",
+      ],
     },
     display: {
-      icon: "🔌",
+      icon: "😊",
       coverImage:
-        "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=800&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1560762484-813fc97650a0?w=800&h=800&fit=crop",
       showInMenu: true,
       showInFooter: false,
     },
@@ -212,20 +233,20 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
     ancestors: [
-      { id: "category-electronics", name: "Electronics", tier: 0 },
+      { id: "category-electronics", name: "Scale Figures", tier: 0 },
       {
         id: "category-mobiles-accessories-electronics",
-        name: "Mobiles & Accessories",
+        name: "Nendoroids & Chibis",
         tier: 1,
       },
     ],
   },
-  // Electronics > Laptops & Computers
+  // Scale Figures > Premium Statues
   {
     id: "category-laptops-computers-electronics",
-    name: "Laptops & Computers",
+    name: "Premium Statues",
     slug: "laptops-computers",
-    description: "Laptops and peripherals",
+    description: "Large-scale One Piece, Bleach, and premium anime statues",
     rootId: "category-electronics",
     parentIds: ["category-electronics"],
     childrenIds: [],
@@ -250,14 +271,21 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 3,
     seo: {
-      title: "Laptops & Computers | LetItRip",
-      description: "Browse laptops and computers for work and gaming",
-      keywords: ["laptops", "computers", "desktop", "gaming pc"],
+      title: "Premium Anime Statues — One Piece, Bleach | LetItRip",
+      description:
+        "Browse large-scale One Piece, Bleach, and premium anime statues by Bandai Spirits and MegaHouse",
+      keywords: [
+        "one piece",
+        "bleach",
+        "premium statue",
+        "large scale",
+        "megahouse",
+      ],
     },
     display: {
-      icon: "💻",
+      icon: "🏆",
       coverImage:
-        "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1599409636295-e3cf3538f212?w=800&h=800&fit=crop",
       showInMenu: true,
       showInFooter: true,
     },
@@ -266,14 +294,14 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
-    ancestors: [{ id: "category-electronics", name: "Electronics", tier: 0 }],
+    ancestors: [{ id: "category-electronics", name: "Scale Figures", tier: 0 }],
   },
-  // Electronics > Audio
+  // Scale Figures > Limited Edition
   {
     id: "category-audio-electronics",
-    name: "Audio",
+    name: "Limited Edition Figures",
     slug: "audio",
-    description: "Headphones and speakers",
+    description: "Limited and sold-out exclusive anime figures",
     rootId: "category-electronics",
     parentIds: ["category-electronics"],
     childrenIds: [],
@@ -300,14 +328,21 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isFeatured: false,
     isBrand: false,
     seo: {
-      title: "Audio Equipment | LetItRip",
-      description: "Shop headphones, speakers, and audio devices",
-      keywords: ["headphones", "speakers", "audio", "earbuds"],
+      title: "Limited Edition Anime Figures | LetItRip",
+      description:
+        "Shop exclusive, limited-run anime figures — Alter Co., Union Creative, limited releases",
+      keywords: [
+        "limited edition",
+        "exclusive figure",
+        "alter co",
+        "sold out",
+        "rare anime",
+      ],
     },
     display: {
-      icon: "🎧",
+      icon: "⭐",
       coverImage:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1614108831137-558fffac9ead?w=800&h=800&fit=crop",
       showInMenu: true,
       showInFooter: false,
     },
@@ -316,14 +351,15 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
-    ancestors: [{ id: "category-electronics", name: "Electronics", tier: 0 }],
+    ancestors: [{ id: "category-electronics", name: "Scale Figures", tier: 0 }],
   },
-  // Electronics > Cameras
+  // Scale Figures > Signed Art & Collectibles
   {
     id: "category-cameras-photography-electronics",
-    name: "Cameras & Photography",
+    name: "Signed Art & Collectibles",
     slug: "cameras-photography",
-    description: "Cameras and accessories",
+    description:
+      "Signed production art, original cels, and rare anime collectibles",
     rootId: "category-electronics",
     parentIds: ["category-electronics"],
     childrenIds: [],
@@ -349,14 +385,21 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isFeatured: false,
     isBrand: false,
     seo: {
-      title: "Cameras & Photography | LetItRip",
-      description: "Browse DSLR, mirrorless, and action cameras",
-      keywords: ["cameras", "dslr", "mirrorless", "photography"],
+      title: "Signed Anime Art & Rare Collectibles | LetItRip",
+      description:
+        "Shop original production cels, signed posters, and rare anime collectibles from Gainax, Toei, and more",
+      keywords: [
+        "production cel",
+        "signed poster",
+        "evangelion",
+        "gainax",
+        "anime auction",
+      ],
     },
     display: {
-      icon: "📷",
+      icon: "🖼️",
       coverImage:
-        "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1578301978162-7aae4d755744?w=800&h=800&fit=crop",
       showInMenu: true,
       showInFooter: false,
     },
@@ -365,15 +408,15 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
-    ancestors: [{ id: "category-electronics", name: "Electronics", tier: 0 }],
+    ancestors: [{ id: "category-electronics", name: "Scale Figures", tier: 0 }],
   },
 
-  // ROOT: Fashion
+  // ROOT: Cosplay & Apparel
   {
     id: "category-fashion",
-    name: "Fashion",
+    name: "Cosplay & Apparel",
     slug: "fashion",
-    description: "Trendy clothing",
+    description: "Anime cosplay, apparel, and accessories",
     rootId: "category-fashion",
     parentIds: [],
     childrenIds: [
@@ -398,14 +441,21 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 4,
     seo: {
-      title: "Fashion - Clothing & Accessories | LetItRip",
-      description: "Shop the latest fashion trends for men and women",
-      keywords: ["fashion", "clothing", "apparel", "accessories"],
+      title: "Cosplay & Anime Apparel | LetItRip",
+      description:
+        "Shop anime cosplay outfits, graphic tees, hoodies, and official licensed apparel",
+      keywords: [
+        "cosplay",
+        "anime apparel",
+        "cosplay outfit",
+        "anime tee",
+        "hoodie",
+      ],
     },
     display: {
-      icon: "👗",
+      icon: "🎭",
       coverImage:
-        "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=800&h=800&fit=crop",
       color: "#ec4899",
       showInMenu: true,
       showInFooter: true,
@@ -417,12 +467,12 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     updatedAt: new Date("2026-02-09T00:00:00Z"),
     ancestors: [],
   },
-  // Fashion > Men's Fashion
+  // Cosplay > Men's Cosplay
   {
     id: "category-mens-fashion-fashion",
-    name: "Men's Fashion",
+    name: "Men's Cosplay",
     slug: "mens-fashion",
-    description: "Clothing for men",
+    description: "Cosplay sets, jackets, hoodies, and apparel for men",
     rootId: "category-fashion",
     parentIds: ["category-fashion"],
     childrenIds: [],
@@ -451,14 +501,21 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 5,
     seo: {
-      title: "Men's Fashion | LetItRip",
-      description: "Shop men's clothing and accessories",
-      keywords: ["mens fashion", "mens clothing", "mens wear"],
+      title: "Men's Cosplay & Anime Apparel | LetItRip",
+      description:
+        "Shop men's anime cosplay sets, Scout Regiment jackets, Akatsuki cloaks, and graphic hoodies",
+      keywords: [
+        "mens cosplay",
+        "anime jacket",
+        "attack on titan",
+        "naruto",
+        "akatsuki cloak",
+      ],
     },
     display: {
-      icon: "👔",
+      icon: "👘",
       coverImage:
-        "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=800&h=800&fit=crop",
       showInMenu: true,
       showInFooter: true,
     },
@@ -467,14 +524,14 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
-    ancestors: [{ id: "category-fashion", name: "Fashion", tier: 0 }],
+    ancestors: [{ id: "category-fashion", name: "Cosplay & Apparel", tier: 0 }],
   },
-  // Fashion > Women's Fashion
+  // Cosplay > Women's Cosplay
   {
     id: "category-womens-fashion-fashion",
-    name: "Women's Fashion",
+    name: "Women's Cosplay",
     slug: "womens-fashion",
-    description: "Clothing for women",
+    description: "Cosplay dresses, kimono sets, and anime apparel for women",
     rootId: "category-fashion",
     parentIds: ["category-fashion"],
     childrenIds: [],
@@ -501,9 +558,16 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 6,
     seo: {
-      title: "Women's Fashion | LetItRip",
-      description: "Shop women's clothing and accessories",
-      keywords: ["womens fashion", "womens clothing", "womens wear"],
+      title: "Women's Cosplay & Anime Apparel | LetItRip",
+      description:
+        "Shop women's cosplay dresses, Sailor Moon sets, Genshin Impact cosplay, and anime bags",
+      keywords: [
+        "womens cosplay",
+        "sailor moon",
+        "genshin impact",
+        "nezuko",
+        "cosplay dress",
+      ],
     },
     display: {
       icon: "👗",
@@ -517,15 +581,16 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
-    ancestors: [{ id: "category-fashion", name: "Fashion", tier: 0 }],
+    ancestors: [{ id: "category-fashion", name: "Cosplay & Apparel", tier: 0 }],
   },
 
-  // ROOT: Home & Kitchen
+  // ROOT: Collectibles & Display
   {
     id: "category-home-kitchen",
-    name: "Home & Kitchen",
+    name: "Collectibles & Display",
     slug: "home-kitchen",
-    description: "Home essentials",
+    description:
+      "Nendoroids, garage kits, art replicas, and display collectibles",
     rootId: "category-home-kitchen",
     parentIds: [],
     childrenIds: [],
@@ -552,14 +617,21 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 7,
     seo: {
-      title: "Home & Kitchen | LetItRip",
-      description: "Shop home and kitchen essentials",
-      keywords: ["home", "kitchen", "appliances", "furniture"],
+      title: "Anime Collectibles & Display Sets | LetItRip",
+      description:
+        "Shop Nendoroids, studio display sets, garage kits, 3D Maneuver Gear replicas and more",
+      keywords: [
+        "nendoroid",
+        "garage kit",
+        "collectible",
+        "display set",
+        "ghibli",
+      ],
     },
     display: {
-      icon: "🏠",
+      icon: "🎎",
       coverImage:
-        "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1614108831137-558fffac9ead?w=800&h=800&fit=crop",
       color: "#10b981",
       showInMenu: true,
       showInFooter: true,
@@ -572,12 +644,12 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     ancestors: [],
   },
 
-  // ROOT: Sports & Outdoors
+  // ROOT: Model Kits & Gunpla
   {
     id: "category-sports-outdoors",
-    name: "Sports & Outdoors",
+    name: "Model Kits & Gunpla",
     slug: "sports-outdoors",
-    description: "Sports equipment and gear",
+    description: "Gundam model kits, Gunpla, ship models, and poseable figures",
     rootId: "category-sports-outdoors",
     parentIds: [],
     childrenIds: [],
@@ -604,14 +676,21 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 8,
     seo: {
-      title: "Sports & Outdoors | LetItRip",
-      description: "Shop sports equipment and outdoor gear",
-      keywords: ["sports", "outdoors", "fitness", "camping"],
+      title: "Gunpla & Model Kits | LetItRip",
+      description:
+        "Shop Gundam Perfect Grade, Master Grade model kits, ship models, and Naruto Figures",
+      keywords: [
+        "gunpla",
+        "gundam",
+        "model kit",
+        "perfect grade",
+        "master grade",
+      ],
     },
     display: {
-      icon: "⚽",
+      icon: "🤖",
       coverImage:
-        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=800&fit=crop",
+        "https://images.unsplash.com/photo-1657664072470-99b02c2143f2?w=800&h=800&fit=crop",
       color: "#f97316",
       showInMenu: true,
       showInFooter: true,

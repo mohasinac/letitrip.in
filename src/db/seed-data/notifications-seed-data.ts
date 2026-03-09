@@ -34,7 +34,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.HIGH,
     title: "Order Placed Successfully",
     message:
-      "Your order for iPhone 15 Pro Max (₹1,34,900) has been placed. Estimated delivery: 18 Jan 2026.",
+      "Your order for Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure (₹1,34,900) has been placed. Estimated delivery: 18 Jan 2026.",
     actionUrl: "/user/orders/order-1-20260115-xk7m9p",
     actionLabel: "View Order",
     isRead: true,
@@ -53,7 +53,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.HIGH,
     title: "Your Order Has Been Shipped!",
     message:
-      "iPhone 15 Pro Max is on its way! Tracking: TRACK123456789. Expected delivery 18 Jan 2026.",
+      "Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure is on its way! Tracking: TRACK123456789. Expected delivery 18 Jan 2026.",
     actionUrl: "/user/orders/order-1-20260115-xk7m9p",
     actionLabel: "Track Order",
     isRead: true,
@@ -72,7 +72,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
     title: "Order Delivered — Please Leave a Review",
     message:
-      "Your iPhone 15 Pro Max has been delivered. Enjoying it? Leave a review and help other buyers make the right choice.",
+      "Your Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure has been delivered. Enjoying it? Leave a review and help other buyers make the right choice.",
     actionUrl:
       "/products/product-iphone-15-pro-max-smartphones-new-techhub-electronics-1",
     actionLabel: "Write a Review",
@@ -92,7 +92,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.LOW,
     title: "Your Review Has Been Approved",
     message:
-      "Your review of iPhone 15 Pro Max is now live. 24 community members have marked it as helpful!",
+      "Your review of Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure is now live. 24 community members have marked it as helpful!",
     actionUrl:
       "/products/product-iphone-15-pro-max-smartphones-new-techhub-electronics-1#reviews",
     actionLabel: "View Review",
@@ -112,7 +112,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.HIGH,
     title: "You've Been Outbid!",
     message:
-      "Someone placed a higher bid (₹16,500) on Vintage Canon AE-1 Film Camera. Bid again to stay in the race!",
+      "Someone placed a higher bid (₹16,500) on Gainax Evangelion Unit-01 Original Production Art. Bid again to stay in the race!",
     actionUrl:
       "/products/auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
     actionLabel: "Place a New Bid",
@@ -168,7 +168,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
     title: "Order Delivered — Please Leave a Review",
     message:
-      "Your Samsung Galaxy S24 Ultra has been delivered. Share your experience with the community!",
+      "Your Super Saiyan Vegeta Final Flash 1/4 Scale Statue has been delivered. Share your experience with the community!",
     actionUrl:
       "/products/product-samsung-galaxy-s24-ultra-smartphones-new-techhub-electronics-1",
     actionLabel: "Write a Review",
@@ -188,7 +188,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.HIGH,
     title: "You Won the Auction! 🏆",
     message:
-      "Congratulations! You won Vintage Canon AE-1 Film Camera with a bid of ₹19,500. Please complete payment within 24 hours.",
+      "Congratulations! You won Gainax Evangelion Unit-01 Original Production Art with a bid of ₹19,500. Please complete payment within 24 hours.",
     actionUrl:
       "/products/auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
     actionLabel: "Complete Payment",
@@ -224,7 +224,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
     title: "Auction Ended — Better Luck Next Time",
     message:
-      "The auction for Vintage Canon AE-1 Film Camera has ended. Your highest bid was ₹17,500. Check out similar items!",
+      "The auction for Gainax Evangelion Unit-01 Original Production Art has ended. Your highest bid was ₹17,500. Check out similar items!",
     actionUrl: "/products?category=cameras",
     actionLabel: "Browse Similar",
     isRead: false,
@@ -258,7 +258,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.HIGH,
     title: "New Order Received",
     message:
-      "You have a new order for iPhone 15 Pro Max (Qty: 1, ₹1,34,900). Ship within 24 hours to maintain your seller rating.",
+      "You have a new order for Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure (Qty: 1, ₹1,34,900). Ship within 24 hours to maintain your seller rating.",
     actionUrl: "/seller/orders/order-1-20260115-xk7m9p",
     actionLabel: "View Order",
     isRead: true,
@@ -274,9 +274,9 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     userId: "user-priya-sharma-priya",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.PRODUCT_AVAILABLE,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
-    title: "Back in Stock: iPhone 15 Pro Max",
+    title: "Back in Stock: Dragon Ball Goku 1/4 Scale Figure",
     message:
-      "Good news! iPhone 15 Pro Max is back in stock. Quantities are limited — grab yours before it sells out again.",
+      "Good news! Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure is back in stock. Quantities are limited — grab yours before it sells out again.",
     actionUrl:
       "/products/product-iphone-15-pro-max-smartphones-new-techhub-electronics-1",
     actionLabel: "Buy Now",
@@ -317,7 +317,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
     title: "Bid Placed Successfully",
     message:
-      "Your bid of ₹97,500 on Vintage Leica M6 Film Camera has been placed. You are currently the highest bidder. Auction ends 5 Mar 2026.",
+      "Your bid of ₹97,500 on Neon Genesis Evangelion 1995 Limited-Run Signed Poster has been placed. You are currently the highest bidder. Auction ends 5 Mar 2026.",
     actionUrl: "/products/product-vintage-leica-camera-auction-artisan-1",
     actionLabel: "View Auction",
     isRead: true,
@@ -335,9 +335,9 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     userId: "user-john-doe-johndoe",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.REVIEW_REPLIED,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.LOW,
-    title: "TechHub Electronics Replied to Your Review",
+    title: "FigureVault JP Replied to Your Review",
     message:
-      'TechHub Electronics replied to your review of iPhone 15 Pro Max: "Thank you for your wonderful feedback, John! We\'re glad the camera is exceeding expectations."',
+      'FigureVault JP replied to your review of Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure: "Thank you for your wonderful feedback, John! We\'re glad the camera is exceeding expectations."',
     actionUrl:
       "/products/product-iphone-15-pro-max-smartphones-new-techhub-electronics-1#reviews",
     actionLabel: "View Reply",
@@ -472,7 +472,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
     title: "Bid Placed Successfully",
     message:
-      'Your bid of ₹1,85,000 on MacBook Pro M3 14" has been placed. You are currently the highest bidder. Auction ends 16 Mar 2026.',
+      "Your bid of ₹1,85,000 on Dragon Ball Z Complete Son Goku Family Collector Set has been placed. You are currently the highest bidder. Auction ends 16 Mar 2026.",
     actionUrl: "/products/product-macbook-pro-m3-auction-electronics-techhub-1",
     actionLabel: "View Auction",
     isRead: true,

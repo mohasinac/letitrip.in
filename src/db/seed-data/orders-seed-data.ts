@@ -11,7 +11,7 @@ export const ordersSeedData: Partial<OrderDocument>[] = [
     id: "order-1-20260115-xk7m9p",
     productId:
       "product-iphone-15-pro-max-smartphones-new-techhub-electronics-1",
-    productTitle: "iPhone 15 Pro Max",
+    productTitle: "Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -36,7 +36,7 @@ export const ordersSeedData: Partial<OrderDocument>[] = [
     id: "order-1-20260120-b4n8q3",
     productId:
       "product-samsung-galaxy-s24-ultra-smartphones-new-techhub-electronics-1",
-    productTitle: "Samsung Galaxy S24 Ultra",
+    productTitle: "Super Saiyan Vegeta Final Flash 1/4 Scale Statue",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userEmail: "jane@letitrip.in",
@@ -60,7 +60,7 @@ export const ordersSeedData: Partial<OrderDocument>[] = [
     id: "order-2-20260125-r5t9w1",
     productId:
       "product-mens-cotton-casual-shirt-mens-fashion-new-fashion-boutique-1",
-    productTitle: "Men's Cotton Casual Shirt",
+    productTitle: "Demon Slayer Tanjiro Kamado Graphic T-Shirt",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
@@ -86,7 +86,7 @@ export const ordersSeedData: Partial<OrderDocument>[] = [
     id: "order-1-20260205-h2k6m4",
     productId:
       "product-macbook-pro-16-m3-max-laptops-computers-new-techhub-electronics-1",
-    productTitle: 'MacBook Pro 16" M3 Max',
+    productTitle: "Monkey D. Luffy Gear 5 Sun God 1/4 Scale Scene Figure",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -110,7 +110,7 @@ export const ordersSeedData: Partial<OrderDocument>[] = [
     id: "order-3-20260206-m3n7p5",
     productId:
       "product-womens-ethnic-kurti-womens-fashion-new-fashion-boutique-1",
-    productTitle: "Women's Ethnic Kurti",
+    productTitle: "Nezuko Kamado Pink Kimono Hoodie Dress",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userEmail: "jane@letitrip.in",
@@ -135,7 +135,7 @@ export const ordersSeedData: Partial<OrderDocument>[] = [
     id: "order-1-20260208-k2l4n8",
     productId:
       "product-non-stick-cookware-set-home-kitchen-new-home-essentials-1",
-    productTitle: "Non-Stick Cookware Set",
+    productTitle: "My Neighbour Totoro Nendoroid No.1234 Deluxe Set",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
@@ -156,7 +156,7 @@ export const ordersSeedData: Partial<OrderDocument>[] = [
     id: "order-3-20260208-v1w7x2",
     productId:
       "product-yoga-mat-with-carrying-bag-sports-outdoors-new-home-essentials-1",
-    productTitle: "Yoga Mat with Carrying Bag",
+    productTitle: "Gundam RX-78-2 Perfect Grade 1/60 Model Kit",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -180,7 +180,7 @@ export const ordersSeedData: Partial<OrderDocument>[] = [
     id: "order-1-20260209-d6f2h1",
     productId:
       "product-google-pixel-8-pro-smartphones-new-techhub-electronics-1",
-    productTitle: "Google Pixel 8 Pro",
+    productTitle: "Ultra Instinct Goku Premium 1/6 Scale Figure",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userEmail: "jane@letitrip.in",
@@ -202,7 +202,7 @@ export const ordersSeedData: Partial<OrderDocument>[] = [
     id: "order-1-20260128-t9u3v7",
     productId:
       "product-dell-xps-15-laptops-computers-new-techhub-electronics-1",
-    productTitle: "Dell XPS 15",
+    productTitle: "Roronoa Zoro Enma Slash Diorama 1/7 Scale",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
@@ -229,7 +229,7 @@ export const ordersSeedData: Partial<OrderDocument>[] = [
     id: "order-1-20260128-s4t7u1",
     productId:
       "product-mens-cotton-casual-shirt-mens-fashion-new-fashion-boutique-1",
-    productTitle: "Men's Cotton Casual Shirt",
+    productTitle: "Demon Slayer Tanjiro Kamado Graphic T-Shirt",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
@@ -260,7 +260,7 @@ export const ordersSeedData: Partial<OrderDocument>[] = [
     id: "order-1-20260208-z1x5c9",
     productId:
       "product-samsung-galaxy-s24-ultra-smartphones-new-techhub-electronics-1",
-    productTitle: "Samsung Galaxy S24 Ultra",
+    productTitle: "Super Saiyan Vegeta Final Flash 1/4 Scale Statue",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
@@ -284,7 +284,7 @@ export const ordersSeedData: Partial<OrderDocument>[] = [
     id: "order-5-20260201-w8y2a6",
     productId:
       "product-yoga-mat-with-carrying-bag-sports-outdoors-new-home-essentials-1",
-    productTitle: "Yoga Mat with Carrying Bag",
+    productTitle: "Gundam RX-78-2 Perfect Grade 1/60 Model Kit",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userEmail: "jane@letitrip.in",

@@ -155,5 +155,4 @@ if (!localeArg) {
   process.exit(1);
 }
 
-const fs = require("fs");
 generate(localeArg);

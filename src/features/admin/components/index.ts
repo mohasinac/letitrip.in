@@ -89,8 +89,69 @@ export type { PayoutStatusFormState } from "./PayoutStatusForm";
 
 // Dashboard
 export { QuickActionsGrid } from "./QuickActionsGrid";
+export { AdminDashboardView } from "./AdminDashboardView";
+export { AdminStatsCards } from "./AdminStatsCards";
+export { AdminDashboardSkeleton } from "./AdminDashboardSkeleton";
+export { RecentActivityCard } from "./RecentActivityCard";
+
+// Site management
+export { default as BackgroundSettings } from "./BackgroundSettings";
+export { GridEditor } from "./GridEditor";
+
+// Categories
+export { CategoryTreeView } from "./CategoryTreeView";
+
+// Media operations
+export { MediaOperationForm } from "./MediaOperationForm";
+export { getMediaTableColumns } from "./MediaTableColumns";
+export type { MediaOperation } from "./MediaTableColumns";
 
 // Admin UI (shared tab navigation + session management)
 export { default as AdminTabs } from "./AdminTabs";
 export { AdminSessionsManager } from "./AdminSessionsManager";
 export { SESSION_TABLE_COLUMNS } from "./SessionTableColumns";
+
+// Rich text editing
+export { RichTextEditor } from "./RichTextEditor";
+
+// Admin-only filters
+export { UserFilters, USER_SORT_OPTIONS } from "./UserFilters";
+export type { UserFiltersProps } from "./UserFilters";
+export { BidFilters, BID_SORT_OPTIONS } from "./BidFilters";
+export type { BidFiltersProps } from "./BidFilters";
+export { CouponFilters, COUPON_SORT_OPTIONS } from "./CouponFilters";
+export type { CouponFiltersProps } from "./CouponFilters";
+export { FaqFilters, FAQ_SORT_OPTIONS } from "./FaqFilters";
+export type { FaqFiltersProps } from "./FaqFilters";
+export { PayoutFilters, PAYOUT_SORT_OPTIONS } from "./PayoutFilters";
+export type { PayoutFiltersProps } from "./PayoutFilters";
+export { StoreFilters, STORE_SORT_OPTIONS } from "./StoreFilters";
+export type { StoreFiltersProps } from "./StoreFilters";
+export { CarouselFilters, CAROUSEL_SORT_OPTIONS } from "./CarouselFilters";
+export type { CarouselFiltersProps } from "./CarouselFilters";
+export { CategoryFilters, CATEGORY_SORT_OPTIONS } from "./CategoryFilters";
+export type { CategoryFiltersProps } from "./CategoryFilters";
+export { SessionFilters, SESSION_SORT_OPTIONS } from "./SessionFilters";
+export type { SessionFiltersProps } from "./SessionFilters";
+export {
+  HomepageSectionFilters,
+  HOMEPAGE_SECTION_SORT_OPTIONS,
+} from "./HomepageSectionFilters";
+export type { HomepageSectionFiltersProps } from "./HomepageSectionFilters";
+export {
+  NewsletterFilters,
+  NEWSLETTER_SORT_OPTIONS,
+} from "./NewsletterFilters";
+export type { NewsletterFiltersProps } from "./NewsletterFilters";
+export {
+  NotificationFilters,
+  NOTIFICATION_SORT_OPTIONS,
+} from "./NotificationFilters";
+export type { NotificationFiltersProps } from "./NotificationFilters";
+export { RipCoinFilters, RIPCOIN_SORT_OPTIONS } from "./RipCoinFilters";
+export type { RipCoinFiltersProps } from "./RipCoinFilters";
+export {
+  EventEntryFilters,
+  EVENT_ENTRY_SORT_OPTIONS,
+} from "./EventEntryFilters";
+export type { EventEntryFiltersProps } from "./EventEntryFilters";

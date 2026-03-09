@@ -32,8 +32,8 @@ import {
   TabsList,
   TabsTrigger,
   Text,
-  WishlistButton,
 } from "@/components";
+import { WishlistButton } from "./WishlistButton";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { wishlistService, cartService } from "@/services";
 import type { ProductDocument } from "@/db/schema";

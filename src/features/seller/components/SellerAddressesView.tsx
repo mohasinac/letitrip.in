@@ -18,7 +18,6 @@ import {
   useMessage,
 } from "@/hooks";
 import {
-  AddressCard,
   Button,
   ConfirmDeleteModal,
   EmptyState,
@@ -27,6 +26,7 @@ import {
   Spinner,
   Text,
 } from "@/components";
+import { AddressCard } from "@/features/user";
 import { useRouter } from "@/i18n/navigation";
 import {
   ROUTES,
@@ -121,10 +121,7 @@ export function SellerAddressesView() {
         }
       >
         {error ? (
-          <EmptyState
-            title={tLoading("failed")}
-            description={t("empty")}
-          />
+          <EmptyState title={tLoading("failed")} description={t("empty")} />
         ) : total === 0 ? (
           <EmptyState
             icon={<MapPin className="w-16 h-16" />}

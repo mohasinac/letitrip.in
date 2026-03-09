@@ -6,7 +6,7 @@
 import type { CarouselSlideDocument } from "@/db/schema";
 
 export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
-  // Slide 1: Welcome/Hero Slide
+  // Slide 1: Welcome/Hero Slide — full-slide central overlay (no cards)
   {
     id: "carousel-welcome-hero-slide-1707300000001",
     title: "Welcome Hero Slide",
@@ -14,65 +14,30 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     active: true,
     media: {
       type: "image",
-      url: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1920&h=1080&fit=crop",
-      alt: "Welcome to LetItRip - Your Marketplace",
+      url: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920&h=1080&fit=crop",
+      alt: "Welcome to LetItRip — Anime Figures & Collectibles",
     },
     mobileMedia: {
       type: "image",
-      url: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&h=1200&fit=crop",
+      url: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&h=1200&fit=crop",
       alt: "Welcome to LetItRip",
     },
-    cards: [
-      {
-        id: "card_001",
-        gridRow: 1,
-        gridCol: 1,
-        background: {
-          type: "gradient",
-          value:
-            "linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9))",
-        },
-        content: {
-          title: "Welcome to LetItRip",
-          subtitle: "Your Marketplace",
-          description: "Discover amazing products",
-        },
-        buttons: [
-          {
-            id: "btn_001",
-            text: "Shop Now",
-            link: "/products",
-            variant: "primary",
-            openInNewTab: false,
-          },
-          {
-            id: "btn_002",
-            text: "Learn More",
-            link: "/about",
-            variant: "outline",
-            openInNewTab: false,
-          },
-        ],
-        isButtonOnly: false,
+    cards: [],
+    overlay: {
+      subtitle: "Your Otaku Marketplace",
+      title: "Anime Figures & Collectibles",
+      description:
+        "Shop authentic scale figures, Nendoroids, Gunpla kits, and cosplay — bid on rare auctions and exclusive drops.",
+      button: {
+        id: "btn_overlay_001",
+        text: "Shop Now",
+        link: "/products",
+        variant: "primary",
+        openInNewTab: false,
       },
-      {
-        id: "card_002",
-        gridRow: 2,
-        gridCol: 3,
-        background: {
-          type: "color",
-          value: "#10b981",
-        },
-        content: {
-          title: "Free Shipping",
-          description: "On orders above ₹999",
-        },
-        buttons: [],
-        isButtonOnly: false,
-      },
-    ],
+    },
     createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    updatedAt: new Date("2026-03-08T00:00:00Z"),
     createdBy: "user-admin-user-admin",
   },
 
@@ -143,16 +108,16 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     createdBy: "user-admin-user-admin",
   },
 
-  // Slide 3: Fashion Collection
+  // Slide 3: Cosplay & Apparel
   {
     id: "carousel-special-offer-1707300000003",
-    title: "Fashion Collection",
+    title: "Cosplay & Apparel",
     order: 3,
     active: true,
     media: {
       type: "image",
-      url: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1920&h=1080&fit=crop",
-      alt: "Latest Fashion Collection",
+      url: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1920&h=1080&fit=crop",
+      alt: "Cosplay & Apparel Collection",
     },
     cards: [
       {
@@ -165,21 +130,21 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
             "linear-gradient(135deg, rgba(236, 72, 153, 0.9), rgba(219, 39, 119, 0.9))",
         },
         content: {
-          title: "Fashion Forward",
+          title: "Cosplay & Apparel",
           subtitle: "New Collection",
-          description: "Latest trends",
+          description: "Demon Slayer, Sailor Moon, Genshin Impact",
         },
         buttons: [
           {
             id: "btn_005",
-            text: "Shop Men's",
+            text: "Men's Cosplay",
             link: "/categories/mens-fashion",
             variant: "primary",
             openInNewTab: false,
           },
           {
             id: "btn_006",
-            text: "Shop Women's",
+            text: "Women's Cosplay",
             link: "/categories/womens-fashion",
             variant: "secondary",
             openInNewTab: false,
@@ -193,18 +158,18 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     createdBy: "user-admin-user-admin",
   },
 
-  // Slide 4: Special Offers (with video)
+  // Slide 4: Limited Edition Drops (with video)
   {
     id: "carousel-trending-now-1707300000004",
-    title: "Special Offers",
+    title: "Limited Edition Drops",
     order: 4,
     active: true,
     media: {
       type: "video",
       url: "https://assets.mixkit.co/videos/preview/mixkit-going-down-on-an-escalator-4549-large.mp4",
-      alt: "Special Offers Video",
+      alt: "Limited Edition Drops",
       thumbnail:
-        "https://images.unsplash.com/photo-1607082349566-187342175e2f?w=1920&h=1080&fit=crop",
+        "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1920&h=1080&fit=crop",
     },
     cards: [
       {
@@ -216,14 +181,14 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
           value: "#f59e0b",
         },
         content: {
-          title: "Limited Time Offers",
-          description: "Grab deals before they expire",
+          title: "Limited Edition",
+          description: "Rare figures — grab before they're gone",
         },
         buttons: [
           {
             id: "btn_007",
-            text: "View All Deals",
-            link: "/deals",
+            text: "View Limited Drops",
+            link: "/categories/audio-electronics",
             variant: "primary",
             openInNewTab: false,
           },
@@ -239,8 +204,8 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
           value: "linear-gradient(135deg, #ef4444, #dc2626)",
         },
         content: {
-          title: "Flash Sale",
-          description: "24 hours only!",
+          title: "Evangelion Unit-01",
+          description: "Garage Kit — Only 3 left!",
         },
         buttons: [],
         isButtonOnly: false,
@@ -251,16 +216,16 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
     createdBy: "user-admin-user-admin",
   },
 
-  // Slide 5: Auction Spotlight
+  // Slide 5: Live Figure Auctions
   {
     id: "carousel-seasonal-collection-1707300000005",
-    title: "Live Auctions",
+    title: "Live Figure Auctions",
     order: 5,
     active: true,
     media: {
       type: "image",
-      url: "https://images.unsplash.com/photo-1505253468034-514d2507d914?w=1920&h=1080&fit=crop",
-      alt: "Live Auctions",
+      url: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1920&h=1080&fit=crop",
+      alt: "Live Figure Auctions",
     },
     link: {
       url: "/auctions",
@@ -277,9 +242,9 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
             "linear-gradient(135deg, rgba(20, 184, 166, 0.9), rgba(13, 148, 136, 0.9))",
         },
         content: {
-          title: "Live Auctions",
+          title: "Live Figure Auctions",
           subtitle: "Bid & Win",
-          description: "Unique items up for auction",
+          description: "NGE Evangelion Signed Poster • Son Goku Family Set",
         },
         buttons: [
           {
@@ -301,8 +266,8 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
           value: "#ef4444",
         },
         content: {
-          title: "Ending Soon",
-          description: "2 hours left!",
+          title: "Auction Closing",
+          description: "NGE Poster — 2 hours left!",
         },
         buttons: [],
         isButtonOnly: false,

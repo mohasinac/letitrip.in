@@ -9,7 +9,7 @@ export interface GridCard {
   /** 1 = Left, 2 = Center, 3 = Right */
   gridCol: 1 | 2 | 3;
   background: {
-    type: "color" | "gradient" | "image";
+    type: "color" | "gradient" | "image" | "transparent";
     value: string;
   };
   content?: {
@@ -32,6 +32,19 @@ export interface GridCard {
   };
 }
 
+export interface CarouselSlideOverlay {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  button?: {
+    id: string;
+    text: string;
+    link: string;
+    variant: "primary" | "secondary" | "outline";
+    openInNewTab: boolean;
+  };
+}
+
 export interface CarouselSlide {
   id: string;
   title: string;
@@ -41,6 +54,11 @@ export interface CarouselSlide {
   isActive: boolean;
   order: number;
   cards: GridCard[];
+  /**
+   * When set, cards are ignored and text + button are rendered centred over the slide.
+   * Set to `null` to clear the overlay.
+   */
+  overlay?: CarouselSlideOverlay | null;
 }
 
 export type DrawerMode = "create" | "edit" | "delete" | null;

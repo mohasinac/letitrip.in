@@ -17,8 +17,8 @@ export interface GridCard {
   /** Column in the 3-column grid: 1 = Left, 2 = Center, 3 = Right */
   gridCol: 1 | 2 | 3;
   background: {
-    type: "color" | "gradient" | "image";
-    value: string; // hex color, gradient string, or image URL
+    type: "color" | "gradient" | "image" | "transparent";
+    value: string; // hex color, gradient string, or image URL (ignored for "transparent")
   };
   content?: {
     title?: string;
@@ -65,8 +65,24 @@ export interface CarouselSlideDocument {
     alt: string;
   };
   cards: GridCard[];
+  /**
+   * Optional full-slide overlay — mutually exclusive with cards.
+   * When set, no cards are rendered; text + optional button appear centred over the background.
+   */
+  overlay?: {
+    title?: string;
+    subtitle?: string;
+    description?: string;
+    button?: {
+      id: string;
+      text: string;
+      link: string;
+      variant: "primary" | "secondary" | "outline";
+      openInNewTab: boolean;
+    };
+  };
   /** Analytics counters — system-managed, not admin-settable */
-  stats?: {
+  analytics?: {
     views: number; // Total times this slide was served in the public carousel
     lastViewed?: Date; // Timestamp of the most recent public serve
   };
@@ -133,6 +149,7 @@ export const DEFAULT_CAROUSEL_SLIDE_DATA: Partial<CarouselSlideDocument> = {
   active: false,
   order: 0,
   cards: [],
+  overlay: undefined,
 };
 
 /**
@@ -147,6 +164,7 @@ export const CAROUSEL_SLIDES_PUBLIC_FIELDS = [
   "link",
   "mobileMedia",
   "cards",
+  "overlay",
   "stats",
 ] as const;
 
@@ -161,6 +179,7 @@ export const CAROUSEL_SLIDES_UPDATABLE_FIELDS = [
   "link",
   "mobileMedia",
   "cards",
+  "overlay",
 ] as const;
 
 // ============================================

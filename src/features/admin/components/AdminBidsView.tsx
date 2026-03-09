@@ -20,8 +20,8 @@ import {
   StatusBadge,
   ListingLayout,
   Search,
-  BidFilters,
 } from "@/components";
+import { BidFilters } from "./BidFilters";
 import { useBidTableColumns } from ".";
 import { formatCurrency, formatDate } from "@/utils";
 import type { BidDocument } from "@/db/schema";

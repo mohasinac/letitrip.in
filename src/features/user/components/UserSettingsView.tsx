@@ -4,18 +4,13 @@ import { useState, useEffect } from "react";
 import { useAuth, useChangePassword, useResendVerification } from "@/hooks";
 import { profileService } from "@/services";
 import { nowMs } from "@/utils";
-import {
-  Heading,
-  Alert,
-  Spinner,
-  useToast,
-  EmailVerificationCard,
-  PhoneVerificationCard,
-  ProfileInfoForm,
-  PasswordChangeForm,
-  AccountInfoCard,
-} from "@/components";
-import type { ProfileInfoData } from "@/components";
+import { Heading, Alert, Spinner, useToast } from "@/components";
+import { EmailVerificationCard } from "./EmailVerificationCard";
+import { PhoneVerificationCard } from "./PhoneVerificationCard";
+import { ProfileInfoForm } from "./ProfileInfoForm";
+import type { ProfileInfoData } from "./ProfileInfoForm";
+import { PasswordChangeForm } from "./PasswordChangeForm";
+import { AccountInfoCard } from "./AccountInfoCard";
 import { useRouter } from "@/i18n/navigation";
 import { logger } from "@/classes";
 import {

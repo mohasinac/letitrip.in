@@ -253,6 +253,14 @@ export function PreOrderCard({
             </Span>
           )}
         </div>
+
+        {/* Type badge — bottom right */}
+        <div className="absolute bottom-2 right-2 z-10 pointer-events-none">
+          <Span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-600/90 text-white">
+            <CalendarCheck className="w-3 h-3 flex-shrink-0" />
+            {t("preOrderBadge")}
+          </Span>
+        </div>
       </div>
 
       {/* ── INFO SECTION ── */}

@@ -11,14 +11,8 @@
 import { useState, useEffect } from "react";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import {
-  AdminPageHeader,
-  BackgroundSettings,
-  Button,
-  Card,
-  Text,
-  useToast,
-} from "@/components";
+import { AdminPageHeader, Button, Card, Text, useToast } from "@/components";
+import BackgroundSettings from "./BackgroundSettings";
 import { useApiQuery, useApiMutation } from "@/hooks";
 import { siteSettingsService, adminService } from "@/services";
 import { API_ENDPOINTS } from "@/constants";

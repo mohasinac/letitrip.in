@@ -360,17 +360,17 @@ export const THEME_CONSTANTS = {
     caption: "text-xs text-zinc-500 dark:text-zinc-400",
     overline:
       "text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400",
-    // Standard headings (moderated scale)
-    h1: "text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight",
-    h2: "text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight",
-    h3: "text-xl md:text-2xl lg:text-3xl font-bold tracking-tight",
-    h4: "text-lg md:text-xl font-bold",
+    // Standard headings (moderated scale) — font-display uses Bangers for anime aesthetic
+    h1: "text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight font-display",
+    h2: "text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight font-display",
+    h3: "text-xl md:text-2xl lg:text-3xl font-bold tracking-tight font-display",
+    h4: "text-lg md:text-xl font-bold font-display",
     h5: "text-lg md:text-xl font-medium",
     h6: "text-base md:text-lg font-medium",
     body: "text-base lg:text-lg",
     small: "text-sm lg:text-base",
     xs: "text-xs lg:text-sm",
-    display: "text-8xl md:text-9xl font-bold",
+    display: "text-8xl md:text-9xl font-bold font-display",
   },
 
   /**

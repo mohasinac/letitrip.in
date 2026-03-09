@@ -98,10 +98,11 @@
 
     "auction-bids": {
       "$productId": {
-        // Any authenticated user may subscribe to live bid data for an auction.
-        // Actual path used by useRealtimeBids: /auction-bids/${productId}
+        // Public real-time bid feed — no auth required.
+        // The hook useRealtimeBids uses the unauthenticated public RTDB instance
+        // so any visitor can watch live bids on an auction product page.
         // All writes are Admin-only via the backend bid placement API route.
-        ".read": "auth != null",
+        ".read": true,
         ".write": false,
         ".validate": "newData.hasChildren(['currentBid', 'bidCount'])",
         "currentBid": {

@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Star, Heart, ShoppingCart, Zap } from "lucide-react";
+import { Star, Heart, ShoppingCart, Zap, Package, Gavel } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { MediaImage, Span, Text, TextLink, Button } from "@/components";
@@ -260,6 +260,20 @@ export function ProductCard({
             </Span>
           </div>
         )}
+
+        {/* Type badge — bottom right */}
+        <div className="absolute bottom-2 right-2 z-10 pointer-events-none">
+          <Span
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${product.isAuction ? "bg-amber-600/90 text-white" : "bg-indigo-600/90 text-white"}`}
+          >
+            {product.isAuction ? (
+              <Gavel className="w-3 h-3 flex-shrink-0" />
+            ) : (
+              <Package className="w-3 h-3 flex-shrink-0" />
+            )}
+            {product.isAuction ? t("auction") : t("typeBadge")}
+          </Span>
+        </div>
       </div>
 
       {/* ── INFO SECTION ── */}

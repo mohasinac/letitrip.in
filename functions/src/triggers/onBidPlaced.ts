@@ -95,22 +95,22 @@ export const onBidPlaced = onDocumentCreated(
       // Separate from the Firestore batch; failure here is non-fatal.
       try {
         if (outbidUserId) {
-          await getRtdb().ref(`notifications/${outbidUserId}`).push({
-            type: "bid_outbid",
-            productId: newBid.productId,
-            productTitle: newBid.productTitle,
-            currentBid: newBid.bidAmount,
-            currency: newBid.currency,
-            timestamp: Date.now(),
-          });
+          await getRtdb()
+            .ref(`notifications/${outbidUserId}`)
+            .push({
+              type: "bid_outbid",
+              title: BID_MESSAGES.OUTBID_TITLE,
+              message: BID_MESSAGES.OUTBID_MESSAGE(
+                newBid.productTitle,
+                newBid.currency,
+                newBid.bidAmount,
+              ),
+              timestamp: Date.now(),
+              read: false,
+            });
         }
-        // Also push to the product's realtime bid feed for all auction watchers
-        await getRtdb().ref(`auction_bids/${newBid.productId}`).push({
-          bidAmount: newBid.bidAmount,
-          userId: newBid.userId,
-          userName: newBid.userName,
-          timestamp: Date.now(),
-        });
+        // Note: /auction-bids/{productId} is written by the API route (bids/route.ts)
+        // with the correct schema using .set(). No push needed here.
       } catch (rtdbError) {
         logError(TRIGGER, "Realtime DB push failed (non-fatal)", rtdbError);
       }

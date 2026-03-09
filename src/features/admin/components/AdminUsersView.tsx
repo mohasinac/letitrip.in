@@ -31,8 +31,8 @@ import {
   TablePagination,
   Text,
   useToast,
-  UserFilters,
 } from "@/components";
+import { UserFilters } from "./UserFilters";
 import { UserDetailDrawer, useUserTableColumns } from ".";
 import type { AdminUser, UserTab } from ".";
 

@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Architecture: Migrate Admin-Only Components to Feature Module (Run 3)
+
+### Moved
+
+- **`RichTextEditor`** — from `src/components/admin/` to `src/features/admin/components/`. Removed from `src/components/admin/index.ts`. Now imported locally by `BlogForm`, `FaqForm`, and `SectionForm`.
+- **14 admin-only filter components** — from `src/components/filters/` to `src/features/admin/components/`:
+  - `UserFilters`, `BidFilters`, `CouponFilters`, `FaqFilters`, `PayoutFilters`, `StoreFilters` (had active admin view consumers)
+  - `CarouselFilters`, `CategoryFilters`, `SessionFilters`, `HomepageSectionFilters`, `NewsletterFilters`, `NotificationFilters`, `RipCoinFilters`, `EventEntryFilters` (admin-domain stubs, no other feature consumers)
+- **13 test files** — corresponding `__tests__/*.test.tsx` files moved from `src/components/filters/__tests__/` to `src/features/admin/components/__tests__/`. Tests updated to fold `RangeFilter`/`SwitchFilter` mocks into the `@/components` mock block (matching the new import path).
+
+### Changed
+
+- **`src/components/filters/index.ts`** — Removed 14 admin-only filter exports. Remaining: `ProductFilters`, `OrderFilters`, `BlogFilters`, `ReviewFilters`, `EventFilters`, `RangeFilter`, `SwitchFilter`, `filterUtils`.
+- **`src/components/admin/index.ts`** — Removed `RichTextEditor` export.
+- **`src/features/admin/components/index.ts`** — Added exports for `RichTextEditor` and all 14 filter components (named exports + `Props` types + sort-option constants).
+- **9 consumer files** updated to import from local `./` instead of `@/components`:
+  - `BlogForm.tsx`, `FaqForm.tsx`, `SectionForm.tsx` → `RichTextEditor`
+  - `AdminUsersView.tsx` → `UserFilters`
+  - `AdminBidsView.tsx` → `BidFilters`
+  - `AdminCouponsView.tsx` → `CouponFilters`
+  - `AdminFaqsView.tsx` → `FaqFilters`
+  - `AdminPayoutsView.tsx` → `PayoutFilters`
+  - `AdminStoresView.tsx` → `StoreFilters`
+- **All moved filter files** — relative imports (`./RangeFilter`, `./SwitchFilter`, `type { UrlTable } from "./ProductFilters"`) converted to `@/components`.
+
+---
+
+## [Unreleased] — Remove Google Translate Button and TTS
+
+### Removed
+
+- `TranslatePanel` component (`src/components/layout/TranslatePanel.tsx`) — Google Translate widget panel and globe toggle button from the title bar.
+- `TTSButton` component (`src/components/layout/TTSButton.tsx`) — Text-to-speech accessibility button from the title bar.
+- Both exports removed from `src/components/layout/index.ts`.
+- `translateToggle`, `translatePanelLabel`, `translateLoading`, `ttsPlay`, `ttsStop`, `ttsPlaying` i18n keys removed from all locale message files (`en`, `in`, `mh`, `tn`, `ts`).
+
+---
+
+## [Unreleased] — Homepage Visual Refresh (eBay-Inspired Sections)
+
+### Added
+
+- **`src/features/homepage/components/StatsCounterSection.tsx`** — New homepage section displaying animated platform stats (products, sellers, buyers, avg rating) in a frosted-glass card with staggered scroll-in entrance. Placed after `HeroCarousel` to build instant social proof.
+- **`src/features/homepage/components/HowItWorksSection.tsx`** — New 3-step "Browse → Bid or Buy → Get Delivered" process section with numbered icon cards, connecting arrow lines on desktop, and scroll-triggered fade-in animation. Placed after `TrustFeaturesSection` to onboard new visitors.
+- **29 new i18n keys across `messages/en.json`, `messages/in.json`, `messages/ts.json`, `messages/mh.json`, `messages/tn.json`** — Stats values/labels, `howItWorks*` keys, `bannerTag`, `bannerFallback*`, `bannerSecondaryCta`.
+
+### Changed
+
+- **`src/features/homepage/components/AdvertisementBanner.tsx`** — Full redesign. Now renders a **split editorial layout** (image left, copy right) when the CMS banner has a `backgroundImage`, matching modern e-commerce editorial style (inspired by eBay's promotional banners). Fallback full-width gradient variant gains decorative blob overlays, a pill tag, and a secondary "Browse Auctions" CTA button for more visual richness. Replaced hardcoded strings with `useTranslations("homepage")`.
+- **`src/features/homepage/components/index.ts`** — Exported `StatsCounterSection` and `HowItWorksSection`.
+- **`src/app/[locale]/page.tsx`** — Added `StatsCounterSection` (after HeroCarousel), `HowItWorksSection` (after TrustFeaturesSection) to homepage render order. Both are statically imported; `HowItWorksSection` is dynamically imported for below-fold code-splitting.
+
+---
+
 ## [Unreleased] — Style: Eliminate All STYL-003 Violations (THEME_CONSTANTS)
 
 ### Changed

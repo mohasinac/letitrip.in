@@ -1,19 +1,57 @@
 "use client";
 
 import { useState } from "react";
+import { Gift, Percent, Truck, Tag } from "lucide-react";
 import { useMessage } from "@/hooks";
 import { Button, Card, Heading, Span, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
-import type { CouponDocument } from "@/db/schema";
+import type { CouponDocument, CouponType } from "@/db/schema";
 
 const { themed, flex } = THEME_CONSTANTS;
+
+const COUPON_TYPE_CONFIG: Record<
+  CouponType,
+  {
+    Icon: React.FC<{ className?: string }>;
+    className: string;
+    labelKey: string;
+  }
+> = {
+  percentage: {
+    Icon: Percent,
+    className:
+      "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
+    labelKey: "typePercentage",
+  },
+  fixed: {
+    Icon: Tag,
+    className:
+      "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+    labelKey: "typeFixed",
+  },
+  free_shipping: {
+    Icon: Truck,
+    className:
+      "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
+    labelKey: "freeShipping",
+  },
+  buy_x_get_y: {
+    Icon: Gift,
+    className:
+      "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
+    labelKey: "buyXGetY",
+  },
+};
 
 export function CouponCard({ coupon }: { coupon: CouponDocument }) {
   const t = useTranslations("promotions");
   const { showError } = useMessage();
   const [copied, setCopied] = useState(false);
+
+  const typeConfig = COUPON_TYPE_CONFIG[coupon.type];
+  const TypeIcon = typeConfig.Icon;
 
   function getDiscountLabel(c: CouponDocument): string {
     switch (c.type) {
@@ -49,9 +87,17 @@ export function CouponCard({ coupon }: { coupon: CouponDocument }) {
             {getDiscountLabel(coupon)}
           </Text>
         </div>
-        <Span className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 px-2 py-0.5 rounded-full text-xs font-medium">
-          {t("statusActive")}
-        </Span>
+        <div className="flex flex-col items-end gap-1">
+          <Span
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${typeConfig.className}`}
+          >
+            <TypeIcon className="w-3 h-3 flex-shrink-0" />
+            {t(typeConfig.labelKey as Parameters<typeof t>[0])}
+          </Span>
+          <Span className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 px-2 py-0.5 rounded-full text-xs font-medium">
+            {t("statusActive")}
+          </Span>
+        </div>
       </div>
 
       {coupon.description && (

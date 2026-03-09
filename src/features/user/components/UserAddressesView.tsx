@@ -18,7 +18,6 @@ import {
   useMessage,
 } from "@/hooks";
 import {
-  AddressCard,
   Button,
   ConfirmDeleteModal,
   EmptyState,
@@ -27,6 +26,7 @@ import {
   Spinner,
   Text,
 } from "@/components";
+import { AddressCard } from "./AddressCard";
 import { useRouter } from "@/i18n/navigation";
 import {
   ROUTES,
