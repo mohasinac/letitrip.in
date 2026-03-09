@@ -14,7 +14,7 @@
  */
 
 import { NextRequest } from "next/server";
-import { productRepository } from "@/repositories";
+import { productRepository, categoriesRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { PRODUCT_STATUS_TRANSITIONS } from "@/db/schema";
 import {
@@ -209,6 +209,22 @@ export async function DELETE(
       status: "discontinued",
       updatedAt: new Date(),
     });
+
+    // Update category metrics fire-and-forget (must not block the response)
+    const isAuction = product.isAuction ?? false;
+    categoriesRepository
+      .updateMetrics(
+        product.category,
+        isAuction ? 0 : -1,
+        isAuction ? -1 : 0,
+        id,
+      )
+      .catch((err) =>
+        serverLogger.error(
+          "Failed to update category metrics on product delete",
+          { err },
+        ),
+      );
 
     // Return success
     return successResponse(undefined, SUCCESS_MESSAGES.PRODUCT.DELETED);
