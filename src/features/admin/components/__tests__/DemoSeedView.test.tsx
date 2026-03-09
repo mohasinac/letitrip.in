@@ -2,10 +2,11 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { DemoSeedView } from "../DemoSeedView";
 
-// Mock the demoService to avoid API calls
-jest.mock("@/services", () => ({
-  demoService: {
-    seed: jest.fn().mockResolvedValue({ success: true, message: "Done" }),
+// Mock apiClient to avoid API calls
+jest.mock("@/lib/api-client", () => ({
+  apiClient: {
+    post: jest.fn().mockResolvedValue({ success: true, message: "Done" }),
+    get: jest.fn().mockResolvedValue({ collections: [] }),
   },
 }));
 

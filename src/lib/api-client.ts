@@ -184,11 +184,9 @@ class ApiClient {
         );
       }
 
-      if (onAbort) externalSignal?.removeEventListener("abort", onAbort);
       return data.data as T;
     } catch (error) {
       clearTimeout(timeoutId);
-      if (onAbort) externalSignal?.removeEventListener("abort", onAbort);
 
       // Handle abort errors (timeout or external cancellation)
       if (error instanceof Error && error.name === "AbortError") {
@@ -218,6 +216,8 @@ class ApiClient {
         error instanceof Error ? error.message : "An unexpected error occurred",
         500,
       );
+    } finally {
+      if (onAbort) externalSignal?.removeEventListener("abort", onAbort);
     }
   }
 

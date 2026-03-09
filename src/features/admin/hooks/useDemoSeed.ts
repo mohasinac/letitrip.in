@@ -2,8 +2,26 @@
 
 import { useState, useCallback } from "react";
 import { useApiQuery, useApiMutation } from "@/hooks";
-import { demoService } from "@/services";
-import type { SeedCollectionStatus, SeedOperationResult } from "@/services";
+import { apiClient } from "@/lib/api-client";
+import { API_ENDPOINTS } from "@/constants";
+
+export interface SeedCollectionStatus {
+  name: string;
+  seedCount: number;
+  existingCount: number;
+}
+
+export interface SeedOperationResult {
+  message: string;
+  details: {
+    created?: number;
+    updated?: number;
+    deleted?: number;
+    skipped?: number;
+    errors?: number;
+    collections?: string[];
+  };
+}
 
 export type SeedCollectionName =
   | "users"
@@ -39,7 +57,10 @@ export function useDemoSeed() {
   // GET current counts — re-runs after each successful operation
   const statusQuery = useApiQuery<{ collections: SeedCollectionStatus[] }>({
     queryKey: ["demo", "seed", "status"],
-    queryFn: () => demoService.getSeedStatus(),
+    queryFn: () =>
+      apiClient.get<{ collections: SeedCollectionStatus[] }>(
+        API_ENDPOINTS.DEMO.SEED_STATUS,
+      ),
     cacheTTL: 0, // always fresh
   });
 
@@ -47,7 +68,8 @@ export function useDemoSeed() {
     SeedOperationResult,
     { action: "load" | "delete"; collections?: SeedCollectionName[] }
   >({
-    mutationFn: (vars) => demoService.seed(vars),
+    mutationFn: (vars) =>
+      apiClient.post<SeedOperationResult>(API_ENDPOINTS.DEMO.SEED, vars),
     onSuccess: (data, vars) => {
       setLastAction(vars.action);
       setActionResult({ ...data, success: true });
