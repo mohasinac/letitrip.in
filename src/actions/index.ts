@@ -45,6 +45,7 @@ export {
 export {
   markNotificationReadAction,
   markAllNotificationsReadAction,
+  deleteNotificationAction,
 } from "./notification.actions";
 
 // Contact (public — no auth)

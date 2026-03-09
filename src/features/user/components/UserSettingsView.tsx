@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth, useChangePassword, useResendVerification } from "@/hooks";
-import { profileService } from "@/services";
+import { updateProfileAction } from "@/actions";
 import { nowMs } from "@/utils";
 import { Heading, Alert, Spinner, useToast } from "@/components";
 import { EmailVerificationCard } from "./EmailVerificationCard";
@@ -71,7 +71,7 @@ export function UserSettingsView() {
     setIsSaving(true);
     setMessage(null);
     try {
-      await profileService.update({
+      await updateProfileAction({
         displayName: data.displayName,
         phoneNumber: data.phone,
       });
@@ -94,7 +94,7 @@ export function UserSettingsView() {
   const handleAvatarUploadSuccess = async (url: string) => {
     if (!profile?.uid) return;
     try {
-      await profileService.update({ photoURL: url });
+      await updateProfileAction({ photoURL: url });
       showToast(SUCCESS_MESSAGES.USER.SETTINGS_SAVED, "success");
     } catch (error) {
       logger.error("Avatar upload error:", error);

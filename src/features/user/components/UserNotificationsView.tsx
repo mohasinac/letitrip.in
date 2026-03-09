@@ -22,6 +22,11 @@ import {
 import { useTranslations } from "next-intl";
 import { notificationService } from "@/services";
 import {
+  markNotificationReadAction,
+  deleteNotificationAction,
+  markAllNotificationsReadAction,
+} from "@/actions";
+import {
   ActiveFilterChips,
   EmptyState,
   FilterFacetSection,
@@ -127,18 +132,18 @@ export function UserNotificationsView() {
   });
 
   const { mutate: markRead } = useApiMutation<unknown, string>({
-    mutationFn: (id: string) => notificationService.markRead(id),
+    mutationFn: (id: string) => markNotificationReadAction(id),
   });
 
   const { mutate: deleteOne } = useApiMutation<unknown, string>({
-    mutationFn: (id: string) => notificationService.delete(id),
+    mutationFn: (id: string) => deleteNotificationAction(id),
   });
 
   const { mutate: markAllRead, isLoading: isMarkingAll } = useApiMutation<
     unknown,
     void
   >({
-    mutationFn: () => notificationService.markAllRead(),
+    mutationFn: () => markAllNotificationsReadAction(),
   });
 
   const handleMarkRead = useCallback(

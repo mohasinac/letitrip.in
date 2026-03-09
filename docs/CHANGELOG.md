@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage G1 cont.: deleteNotificationAction + Rule 20 fixes in UserNotificationsView / UserSettingsView
+
+### Added
+
+- **`src/actions/notification.actions.ts`** — Added `deleteNotificationAction(id)`: auth-required, rate-limited by uid (API preset), validates id, calls `notificationRepository.delete(id)`.
+- **`src/actions/index.ts`** — Barrel now re-exports `deleteNotificationAction`.
+
+### Fixed
+
+- **`src/features/user/components/UserNotificationsView.tsx`** — **Bug (Rule 20):** Three inline `useApiMutation` wrappers were calling `notificationService.markRead`, `notificationService.delete`, and `notificationService.markAllRead` directly. Now call `markNotificationReadAction`, `deleteNotificationAction`, and `markAllNotificationsReadAction` from `@/actions`. `notificationService` import retained for the read query only.
+- **`src/features/user/components/UserSettingsView.tsx`** — **Bug (Rule 20):** `handleProfileUpdate` and `handleAvatarUploadSuccess` called `profileService.update(...)` directly (not via a hook). Now call `updateProfileAction(...)` from `@/actions`. Removed `profileService` import.
+
+---
+
 ## [Unreleased] — Stage G1 cont.: Server Actions — Address, Bid, Coupon + Rule 20 fixes
 
 ### Added

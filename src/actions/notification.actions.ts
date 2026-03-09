@@ -47,3 +47,23 @@ export async function markAllNotificationsReadAction(): Promise<number> {
 
   return notificationRepository.markAllAsRead(user.uid);
 }
+
+/**
+ * Delete a single notification.
+ */
+export async function deleteNotificationAction(id: string): Promise<void> {
+  const user = await requireAuth();
+
+  const rl = await rateLimitByIdentifier(
+    `notifications:delete:${user.uid}`,
+    RateLimitPresets.API,
+  );
+  if (!rl.success)
+    throw new AuthorizationError("Too many requests. Please slow down.");
+
+  if (!id || typeof id !== "string") {
+    throw new ValidationError("Notification id is required");
+  }
+
+  await notificationRepository.delete(id);
+}
