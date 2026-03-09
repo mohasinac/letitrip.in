@@ -2,22 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
-import type { CartDocument } from "@/db/schema";
 import { Main, Heading, Text, Button } from "@/components";
 import { CartItemList } from "./CartItemList";
 import { CartSummary } from "./CartSummary";
 import { PromoCodeInput } from "./PromoCodeInput";
 import { GuestCartItemRow } from "./GuestCartItemRow";
+import { useMessage, useAuth, useGuestCart } from "@/hooks";
 import {
-  useApiQuery,
-  useApiMutation,
-  useMessage,
-  useAuth,
-  useGuestCart,
-} from "@/hooks";
-import { useQueryClient } from "@tanstack/react-query";
-import { updateCartItemAction, removeFromCartAction } from "@/actions";
-import { cartService } from "@/services";
+  useCart,
+  useUpdateCartItem,
+  useRemoveCartItem,
+} from "../hooks/useCartMutations";
 import { useTranslations } from "next-intl";
 import {
   ROUTES,
@@ -28,12 +23,6 @@ import {
 import { formatCurrency, setGuestReturnTo } from "@/utils";
 
 const { themed, spacing, typography, page } = THEME_CONSTANTS;
-
-interface CartApiResponse {
-  cart: CartDocument;
-  itemCount: number;
-  subtotal: number;
-}
 
 function CartPageSkeleton() {
   return (
@@ -62,7 +51,6 @@ export function CartView() {
   const router = useRouter();
   const t = useTranslations("cart");
   const { showError, showSuccess } = useMessage();
-  const queryClient = useQueryClient();
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [discount, setDiscount] = useState(0);
@@ -76,41 +64,29 @@ export function CartView() {
     updateQuantity: updateGuestQuantity,
   } = useGuestCart();
 
-  const { data, isLoading } = useApiQuery<CartApiResponse>({
-    queryKey: ["cart"],
-    queryFn: () => cartService.get(),
-    enabled: !!user,
-  });
+  const { data, isLoading } = useCart(!!user);
 
-  const { mutate: updateItem } = useApiMutation<
-    unknown,
-    { itemId: string; quantity: number }
-  >({
-    mutationFn: ({ itemId, quantity }) =>
-      updateCartItemAction(itemId, { quantity }),
-    onSuccess: () => {
+  const { mutate: updateItem } = useUpdateCartItem(
+    () => {
       showSuccess(SUCCESS_MESSAGES.CART.ITEM_UPDATED);
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
       setUpdatingItemId(null);
     },
-    onError: () => {
+    () => {
       showError(ERROR_MESSAGES.CART.UPDATE_FAILED);
       setUpdatingItemId(null);
     },
-  });
+  );
 
-  const { mutate: removeItem } = useApiMutation<unknown, { itemId: string }>({
-    mutationFn: ({ itemId }) => removeFromCartAction(itemId),
-    onSuccess: () => {
+  const { mutate: removeItem } = useRemoveCartItem(
+    () => {
       showSuccess(SUCCESS_MESSAGES.CART.ITEM_REMOVED);
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
       setUpdatingItemId(null);
     },
-    onError: () => {
+    () => {
       showError(ERROR_MESSAGES.CART.REMOVE_FAILED);
       setUpdatingItemId(null);
     },
-  });
+  );
 
   const handleUpdateQuantity = (itemId: string, quantity: number) => {
     setUpdatingItemId(itemId);

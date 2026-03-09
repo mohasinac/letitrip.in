@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage G1 cont.: Rule 20 fix in CartView
+
+### Added
+
+- **`src/features/cart/hooks/useCartMutations.ts`** — New hooks: `useCart(enabled)` (query wrapping `cartService.get()`), `useUpdateCartItem(onSuccess, onError)` (mutation wrapping `updateCartItemAction`), `useRemoveCartItem(onSuccess, onError)` (mutation wrapping `removeFromCartAction`). Invalidates `["cart"]` query on success.
+- **`src/features/cart/hooks/index.ts`** — New barrel exporting `useCart`, `useUpdateCartItem`, `useRemoveCartItem`, `usePaymentOtp`.
+- **`src/features/cart/index.ts`** — Now also exports hooks barrel.
+
+### Fixed
+
+- **`src/features/cart/components/CartView.tsx`** — **Bug (Rule 20):** Two inline `useApiMutation` calls (`updateCartItemAction`, `removeFromCartAction`) and `useApiQuery` with `cartService.get()` directly in the component. Replaced with `useCart()`, `useUpdateCartItem()`, `useRemoveCartItem()` hooks. Removed `useApiQuery`, `useApiMutation`, `useQueryClient`, `cartService`, `updateCartItemAction`, `removeFromCartAction`, `CartDocument` imports. Removed unused `CartApiResponse` interface.
+
+---
+
 ## [Unreleased] — Stage G1 cont.: Rule 20 fixes in AdminSiteView / ProductReviews / SellerOrdersView / UserNotificationsView
 
 ### Added
