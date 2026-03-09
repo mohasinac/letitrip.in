@@ -88,10 +88,11 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 | E5 | SSR Phase 7 — SEO: `generateMetadata` all pages, JSON-LD | ✅ Complete |
 | E6 | SSR Phase 4 — auth session cookie (`__session`) | ✅ Complete |
 | E7 | SSR Phase 5 — real-time SSE islands | ✅ Complete |
-| F | Styling cleanup + `@lir/*` library extraction | ⏳ Pending (F1 globals.css done) |
+| F | Styling cleanup + `@lir/*` library extraction | ⏳ In Progress (F1 complete — globals.css + gray-* audit; F2–F4 pending) |
 | G3 | Repository fixes — dead category-metrics.ts deleted; metrics wired in products API | ✅ Complete |
 | G4 | Schema adapters — dead schema.adapter.ts deleted | ✅ Complete |
-| G1 | Server Actions + services-to-actions migration | ⏳ Pending |
+| G5 | AES-256-GCM encrypted provider credentials in `siteSettings`; `SiteCredentialsForm`; DB-first `razorpay.ts`/`email.ts` | ✅ Complete |
+| G1 | Server Actions + services-to-actions migration | ⏳ In Progress (15+ actions done; pure-passthrough deletion pending) |
 
 ---
 

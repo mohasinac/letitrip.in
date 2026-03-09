@@ -76,35 +76,35 @@
 
 ## 1. Executive Summary
 
-| Priority | Area                      | Current State                                       | Problem                                                      | Action                                                                       |
-| -------- | ------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| **P0**   | Rate limiter              | In-memory `Map`                                     | Serverless: per-instance, dev bypass                         | Replace with Upstash Redis                                                   |
-| **P0**   | Webhook HMAC              | String `===` compare                                | Timing attack                                                | Use `timingSafeEqual`                                                        |
-| **P0**   | Razorpay HMAC             | String `===` compare                                | Timing attack on payment verify                              | Use `timingSafeEqual` — §9.9                                                 |
-| **P0**   | Payment verify            | Cart snapshot prices                                | Stale price enables undercharge                              | Use live `product.price` at order-creation — §9.10                           |
-| **P0**   | Media upload              | `file.type` check                                   | Browser-spoofable MIME                                       | Read magic bytes on server                                                   |
-| **P0**   | apiClient                 | `window.location.origin`                            | Crashes on server                                            | Env var fallback                                                             |
-| **P1**   | ThemeContext              | `useState("light")`, reads `localStorage` in effect | Flash on dark users; no SSR cookie                           | Write cookie on toggle, read in layout — §2.5                                |
-| **P1**   | ResponsiveView            | Different JSX trees                                 | Hydration mismatch                                           | CSS class toggle — §2.7                                                      |
-| **P1**   | useMediaQuery             | `useState(false)`                                   | Hydration mismatch, mobile flash                             | Lazy initializer — §9.2                                                      |
-| **P1**   | useWishlistToggle         | Optimistic, no rollback                             | UI stuck on wrong state after error                          | Rollback in catch — §9.1                                                     |
-| **P1**   | useApiQuery cache         | Module-level singleton                              | Prior user's data shown after sign-out                       | Clear on sign-out — §9.11                                                    |
-| **P1**   | useRazorpay               | `onerror` drops error                               | Silent failure, UX shows "ready"                             | Add `isError` state — §9.5                                                   |
-| **P2**   | useNotifications          | No `onSuccess` refetch                              | Stale unread badge after read                                | Call `refetch()` — §9.3                                                      |
-| **P2**   | useChat                   | `off()` without listener                            | Removes all RTDB subscribers                                 | Pass specific handler — §9.4                                                 |
-| **P2**   | apiClient AbortController | Listener never removed                              | Event listener memory leak                                   | Remove in `finally` — §9.6                                                   |
-| **P2**   | Data fetching             | Hand-rolled SWR                                     | ~350 LOC, no devtools                                        | TanStack Query                                                               |
-| **P2**   | Forms                     | Custom `useForm`                                    | No touched state, no Zod                                     | react-hook-form + zodResolver                                                |
-| **P3**   | Queue.process()           | Not `await`-ed recursion                            | Unhandled promise rejections                                 | Await or restructure — §9.7                                                  |
-| **P3**   | StorageManager            | Prefix ignored on 2nd+ call                         | Key namespace collisions                                     | Fix singleton API — §9.8                                                     |
-| **P3**   | Services layer            | 35 apiClient wrappers                               | Zero logic, 7-hop chain                                      | Future: Server Actions                                                       |
-| **P3**   | Token systems             | CSS vars + THEME_CONSTANTS + Tailwind               | Three sources of truth                                       | Consolidate to Tailwind                                                      |
-| **P3**   | SSR                       | 24 pages are `"use client"`                         | No SEO HTML, blank div                                       | Phased SSR migration                                                         |
-| **P3**   | Library extraction        | Everything in `src/`                                | Business and infra code tightly coupled to generic utilities | Extract `@lir/core`, `@lir/react`, `@lir/ui`, `@lir/http`, `@lir/next` — §10 |
-| **P4**   | CacheManager              | `maxSize` ignored                                   | Misconfiguration footgun                                     | Deleted at C4 (§7)                                                           |
-| **P4**   | Schema adapters           | 3 partial adapters                                  | Incomplete, `\|` defaults                                    | Fix at G4 (§7)                                                               |
-| **P4**   | EventBus                  | Parallel to TanStack invalidation                   | Two invalidation mechanisms                                  | Deleted at C4 (§7)                                                           |
-| **P4**   | TECH_DEBT.md              | Referenced in `next.config.js` comment              | File does not exist                                          | Create at H6 (§7)                                                            |
+| Priority | Area                      | Current State                                       | Problem                                                      | Action                                                                                   |
+| -------- | ------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| **P0**   | Rate limiter              | In-memory `Map`                                     | Serverless: per-instance, dev bypass                         | Replace with Upstash Redis                                                               |
+| **P0**   | Webhook HMAC              | String `===` compare                                | Timing attack                                                | Use `timingSafeEqual`                                                                    |
+| **P0**   | Razorpay HMAC             | String `===` compare                                | Timing attack on payment verify                              | Use `timingSafeEqual` — §9.9                                                             |
+| **P0**   | ~~Payment verify~~        | ~~Cart snapshot prices~~                            | ~~Stale price enables undercharge~~                          | ✅ Fixed 2026-03-10 — live `product.price` at create-order; §9.10                        |
+| **P0**   | Media upload              | `file.type` check                                   | Browser-spoofable MIME                                       | Read magic bytes on server                                                               |
+| **P0**   | apiClient                 | `window.location.origin`                            | Crashes on server                                            | Env var fallback                                                                         |
+| **P1**   | ThemeContext              | `useState("light")`, reads `localStorage` in effect | Flash on dark users; no SSR cookie                           | Write cookie on toggle, read in layout — §2.5                                            |
+| **P1**   | ResponsiveView            | Different JSX trees                                 | Hydration mismatch                                           | CSS class toggle — §2.7                                                                  |
+| **P1**   | useMediaQuery             | `useState(false)`                                   | Hydration mismatch, mobile flash                             | Lazy initializer — §9.2                                                                  |
+| **P1**   | useWishlistToggle         | Optimistic, no rollback                             | UI stuck on wrong state after error                          | Rollback in catch — §9.1                                                                 |
+| **P1**   | useApiQuery cache         | Module-level singleton                              | Prior user's data shown after sign-out                       | Clear on sign-out — §9.11                                                                |
+| **P1**   | useRazorpay               | `onerror` drops error                               | Silent failure, UX shows "ready"                             | Add `isError` state — §9.5                                                               |
+| **P2**   | useNotifications          | No `onSuccess` refetch                              | Stale unread badge after read                                | Call `refetch()` — §9.3                                                                  |
+| **P2**   | useChat                   | `off()` without listener                            | Removes all RTDB subscribers                                 | Pass specific handler — §9.4                                                             |
+| **P2**   | apiClient AbortController | Listener never removed                              | Event listener memory leak                                   | Remove in `finally` — §9.6                                                               |
+| **P2**   | Data fetching             | Hand-rolled SWR                                     | ~350 LOC, no devtools                                        | TanStack Query                                                                           |
+| **P2**   | Forms                     | Custom `useForm`                                    | No touched state, no Zod                                     | react-hook-form + zodResolver                                                            |
+| **P3**   | Queue.process()           | Not `await`-ed recursion                            | Unhandled promise rejections                                 | Await or restructure — §9.7                                                              |
+| **P3**   | StorageManager            | Prefix ignored on 2nd+ call                         | Key namespace collisions                                     | Fix singleton API — §9.8                                                                 |
+| **P3**   | Services layer            | 35 apiClient wrappers                               | Zero logic, 7-hop chain                                      | ⏳ G1 in progress — 15+ Server Actions converted; pure-passthrough deletion pending (H3) |
+| **P3**   | Token systems             | CSS vars + THEME_CONSTANTS + Tailwind               | Three sources of truth                                       | ⏳ F1 ✅ (globals.css + gray-\* audit done); F2–F4 pending                               |
+| **P3**   | SSR                       | 24 pages are `"use client"`                         | No SEO HTML, blank div                                       | Phased SSR migration                                                                     |
+| **P3**   | Library extraction        | Everything in `src/`                                | Business and infra code tightly coupled to generic utilities | Extract `@lir/core`, `@lir/react`, `@lir/ui`, `@lir/http`, `@lir/next` — §10             |
+| **P4**   | CacheManager              | `maxSize` ignored                                   | Misconfiguration footgun                                     | Deleted at C4 (§7)                                                                       |
+| **P4**   | Schema adapters           | 3 partial adapters                                  | Incomplete, `\|` defaults                                    | Fix at G4 (§7)                                                                           |
+| **P4**   | EventBus                  | Parallel to TanStack invalidation                   | Two invalidation mechanisms                                  | Deleted at C4 (§7)                                                                       |
+| **P4**   | ~~TECH_DEBT.md~~          | ~~Referenced in `next.config.js` comment~~          | ~~File does not exist~~                                      | ✅ Created 2026-03-10 — `docs/TECH_DEBT.md` (H6 ✅)                                      |
 
 ---
 
@@ -1452,7 +1452,12 @@ Copies files and creates new packages without modifying any app source. Safe to 
 
 > **E1 ✅** committed 2026-03-09 — blog/products/events/sellers async RSC + `generateMetadata`<br>
 > **E2 ✅** committed 2026-03-09 — homepage `initialData` pre-fetch (carousel, categories, reviews)<br>
-> E3–E7 pending.
+> **E3 ✅** committed 2026-03-09 — listing pages (products, categories, stores, search)<br>
+> **E4 ✅** committed 2026-03-09 — static pages `generateStaticParams` + ISR `revalidate = 3600`<br>
+> **E5 ✅** committed 2026-03-09 — SEO `generateMetadata` all pages, JSON-LD schemas, canonical links<br>
+> **E6 ✅** committed 2026-03-09 — auth session cookie `__session`; cookie-read in layout; `SessionProvider` init<br>
+> **E7 ✅** committed 2026-03-09 — SSE islands; RTDB client listeners replaced with `EventSource`<br>
+> **Stage E complete.**
 
 | Step | Action                                                                                           | §Ref   | Risk   | Effort | Prerequisite |
 | ---- | ------------------------------------------------------------------------------------------------ | ------ | ------ | ------ | ------------ |
@@ -1468,6 +1473,9 @@ Copies files and creates new packages without modifying any app source. Safe to 
 
 ### Stage F — Library: React & UI Extraction _(after C4 and D3)_
 
+> **F1 ✅** committed 2026-03-10 — dead CSS custom properties + `@layer components` block removed from `globals.css`; all `gray-*` Tailwind classes replaced across 90+ files with canonical zinc/slate palette; `gray-*` safelist removed from `tailwind.config.js`.
+> F2–F4 pending.
+
 Extract only the hooks and components that survive the TanStack Query and react-hook-form migrations.
 
 | Step | Action                                                                                         | §Ref  | Risk   | Effort | Prerequisite |
@@ -1481,27 +1489,38 @@ Extract only the hooks and components that survive the TanStack Query and react-
 
 ### Stage G — Server Actions & Repository Fixes _(after E6, E7)_
 
-| Step | Action                                                                                                                             | §Ref                                              | Risk | Effort | Prerequisite |
-| ---- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- | ---- | ------ | ------------ | --- |
-| G1   | Convert mutation services to Server Actions; identify and delete pure pass-through services                                        | §3.2, §8                                          | High | 4 days | E6, E7       |
-| G2   | `FilterPanel` — consolidate 14 admin filter components to config-driven pattern                                                    | §6.2                                              | Low  | 1 day  | —            |
-| G3   | Fix Repository singletons — add ESLint `no-restricted-imports` rule; move `batchUpdateAncestorMetrics` into `CategoriesRepository` | §3.4                                              | Low  | 4 hr   | —            |
-| G4   | Fix schema adapters — remove `                                                                                                     | default` fallbacks; fix root cause in Zod schemas | §3.7 | Medium | 4 hr         | —   |
+> **G3 ✅** committed 2026-03-09 — dead `category-metrics.ts` deleted; `batchUpdateAncestorMetrics` wired directly into `CategoriesRepository`<br>
+> **G4 ✅** committed 2026-03-09 — dead `schema.adapter.ts` deleted; `|` default fallbacks removed from Zod schemas<br>
+> **G5 ✅** committed 2026-03-10 — AES-256-GCM encrypted credential storage in `siteSettings` singleton; `src/lib/encryption.ts` (`encrypt`/`decrypt`/`maskSecret`); `getDecryptedCredentials()` / `getCredentialsMasked()` on `siteSettingsRepository`; `SiteCredentialsForm` admin UI; DB-first async credential resolution in `razorpay.ts` and `email.ts`; `SETTINGS_ENCRYPTION_KEY` env var required (64-char hex)<br>
+> G1 prerequisite (E6, E7) ✅ met — **unblocked**.
+
+| Step | Action                                                                                      | §Ref     | Risk | Effort | Prerequisite |
+| ---- | ------------------------------------------------------------------------------------------- | -------- | ---- | ------ | ------------ |
+| G1   | Convert mutation services to Server Actions; identify and delete pure pass-through services | §3.2, §8 | High | 4 days | E6, E7 ✅    |
+
+> **G1 in progress** (2026-03-09 → 2026-03-10) — 15+ Server Actions created (`cart`, `wishlist`, `review`, `notification`, `address`, `bid`, `coupon`, `contact`, `newsletter`, `faq`, `profile`, `becomeSeller`, `createCategory`, `revokeSession`, `deleteNotification`); 20+ hook mutations migrated to call Server Actions; Rule 20 violations fixed in `SellerCreateProductView`, `SellerEditProductView`, `EventParticipateView`, `AdminMediaView`, `AdminSiteView`, `UserNotificationsView`, `UserSettingsView`, `CartView`, `WishlistView`, `AuctionsView`, `PreOrdersView`, `ProductsView`, `CheckoutView`. Pure-passthrough service deletion (H3) pending.
+> | G2 | `FilterPanel` — consolidate 14 admin filter components to config-driven pattern | §6.2 | Low | 1 day | — |
+> | ~~G3~~ | ~~Fix Repository singletons — add ESLint `no-restricted-imports` rule; move `batchUpdateAncestorMetrics` into `CategoriesRepository`~~ | §3.4 | Low | 4 hr | — |
+> | ~~G4~~ | ~~Fix schema adapters — remove `\|` default fallbacks; fix root cause in Zod schemas~~ | §3.7 | Medium | 4 hr | — |
+> | ~~G5~~ | ~~AES-256-GCM encrypted storage for provider credentials in `siteSettings`; admin UI; DB-first async resolution~~ | — | Low | 1 day | — |
 
 ---
 
 ### Stage H — Dead Code & Publish _(as upstream stages complete)_
 
-| Step        | Action                                                                               | §Ref      | Risk | Effort | Prerequisite |
-| ----------- | ------------------------------------------------------------------------------------ | --------- | ---- | ------ | ------------ |
-| H1          | Remove `useApiQuery`, `useApiMutation`, `CacheManager`, `EventBus` barrel exports    | §8 wave-A | Low  | 1 hr   | C4           |
-| H2          | Remove `useForm.ts` barrel export                                                    | §8 wave-B | Low  | 30 min | D3           |
-| H3          | Delete pure pass-through services + `demo.service.ts`                                | §8 wave-C | Low  | 1 day  | G1           |
-| H4          | Delete dead CSS vars, `THEME_CONSTANTS` aliases, remove `gray-*` safelist            | §8 wave-D | Low  | 4 hr   | F1           |
-| H5          | Move `src/snippets/` → `docs/snippets/` or delete; confirm zero runtime imports      | §8 wave-E | Low  | 30 min | —            |
-| H6          | Create `docs/TECH_DEBT.md` (referenced in `next.config.js`)                          | §5 Ph7    | Low  | 30 min | —            |
-| H7          | Per-package `CHANGELOG.md`; configure `changesets`; publish `@lir/*` packages to npm | §10.4     | Low  | 1 day  | F4           |
-| H8 _(opt.)_ | Move `src/` → `apps/web/`; full monorepo restructure                                 | §10.1     | Low  | 1 day  | H7           |
+| Step   | Action                                                                              | §Ref      | Risk | Effort | Prerequisite |
+| ------ | ----------------------------------------------------------------------------------- | --------- | ---- | ------ | ------------ |
+| H1     | Remove `useApiQuery`, `useApiMutation`, `CacheManager`, `EventBus` barrel exports   | §8 wave-A | Low  | 1 hr   | C4           |
+| H2     | Remove `useForm.ts` barrel export                                                   | §8 wave-B | Low  | 30 min | D3           |
+| H3     | Delete pure pass-through services + `demo.service.ts`                               | §8 wave-C | Low  | 1 day  | G1           |
+| H4     | Delete dead CSS vars, `THEME_CONSTANTS` aliases, remove `gray-*` safelist           | §8 wave-D | Low  | 4 hr   | F1           |
+| ~~H5~~ | ~~Move `src/snippets/` → `docs/snippets/` or delete; confirm zero runtime imports~~ | §8 wave-E | Low  | 30 min | —            |
+| ~~H6~~ | ~~Create `docs/TECH_DEBT.md` (referenced in `next.config.js`)~~                     | §5 Ph7    | Low  | 30 min | —            |
+
+> **H5 ✅** committed 2026-03-10 — `src/snippets/` deleted (6 files); moved to `docs/snippets/`; barrel re-export removed from `src/index.ts`.<br>
+> **H6 ✅** committed 2026-03-10 — `docs/TECH_DEBT.md` created with TD-001 (Turbopack), TD-002 (useApiQuery adapters), TD-003 (service passthrough), TD-004 (THEME*CONSTANTS spacing aliases).
+> | H7 | Per-package `CHANGELOG.md`; configure `changesets`; publish `@lir/*` packages to npm | §10.4 | Low | 1 day | F4 |
+> | H8 *(opt.)\_ | Move `src/` → `apps/web/`; full monorepo restructure | §10.1 | Low | 1 day | H7 |
 
 ---
 
@@ -1831,7 +1850,7 @@ Also apply to `src/app/api/webhooks/shiprocket/route.ts` (§2.2).
 
 ---
 
-### 9.10 — Payment Verify Route — Stale Cart Prices
+### 9.10 — Payment Verify Route — Stale Cart Prices ✅ Fixed 2026-03-10
 
 **File:** `src/app/api/payment/verify/route.ts`
 
@@ -1856,6 +1875,8 @@ const liveSubtotal = liveProducts.reduce(
 ```
 
 Once the Razorpay order is created with the live price, the verify route's cross-check will reject any payment where the Razorpay order amount was based on a stale lower price.
+
+**Fix applied 2026-03-10:** `cartSubtotal`, `groupTotal`, `orderItems.unitPrice`, and `order.unitPrice` in `verify/route.ts` and `create-order/route.ts` now use live `product.price` fetched from Firestore instead of the stale `item.price` cart snapshot.
 
 ---
 

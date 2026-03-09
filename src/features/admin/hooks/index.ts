@@ -10,6 +10,7 @@ export * from "./useAdminPayouts";
 export * from "./useAdminProducts";
 export * from "./useAdminReviews";
 export * from "./useAdminSections";
+export * from "./useAdminSiteSettings";
 export * from "./useAdminUsers";
 export * from "./useAdminStores";
 export * from "./useDemoSeed";

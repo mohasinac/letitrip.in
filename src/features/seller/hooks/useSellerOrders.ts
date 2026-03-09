@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery, useAuth } from "@/hooks";
+import { useApiQuery, useApiMutation, useAuth } from "@/hooks";
 import { sellerService } from "@/services";
 import type { OrderDocument } from "@/db/schema";
 
@@ -38,4 +38,39 @@ export function useSellerOrders(params?: string) {
     error,
     refetch,
   };
+}
+
+// --- Ship Order (custom shipping) ---
+
+interface ShipOrderInput {
+  shippingCarrier: string;
+  trackingNumber: string;
+  trackingUrl: string;
+  method: "custom";
+}
+
+export function useShipOrder(
+  orderId: string,
+  onSuccess?: () => void,
+  onError?: (err: { message?: string }) => void,
+) {
+  return useApiMutation<unknown, ShipOrderInput>({
+    mutationFn: (data) => sellerService.shipOrder(orderId, data),
+    onSuccess,
+    onError,
+  });
+}
+
+// --- Bulk Request Payout ---
+
+export function useBulkRequestPayout(
+  onSuccess?: (res: unknown) => void,
+  onError?: (err: { message?: string }) => void,
+) {
+  return useApiMutation<unknown, string[]>({
+    mutationFn: (orderIds) =>
+      sellerService.bulkOrderAction({ action: "request_payout", orderIds }),
+    onSuccess,
+    onError,
+  });
 }

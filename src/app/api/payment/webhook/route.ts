@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     // Verify webhook signature
     let isValid = false;
     try {
-      isValid = verifyWebhookSignature(rawBody, signature);
+      isValid = await verifyWebhookSignature(rawBody, signature);
     } catch {
       serverLogger.warn(
         "Razorpay webhook: RAZORPAY_WEBHOOK_SECRET not configured — skipping signature check in dev",

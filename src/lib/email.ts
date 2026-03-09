@@ -7,13 +7,67 @@
 import { Resend } from "resend";
 import { serverLogger } from "@/lib/server-logger";
 import { formatDateTime, nowMs, currentYear } from "@/utils";
+import { siteSettingsRepository } from "@/repositories";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+/**
+ * Resolve the Resend API key: Firestore DB first, env var fallback.
+ * Returns a lazy Resend instance so the key is read fresh per-use,
+ * allowing admin key rotations without a server restart.
+ */
+async function getResend(): Promise<Resend> {
+  let apiKey = "";
+  try {
+    const creds = await siteSettingsRepository.getDecryptedCredentials();
+    apiKey = creds.resendApiKey || "";
+  } catch {
+    // DB unavailable — fall through to env var
+  }
+  return new Resend(apiKey || process.env.RESEND_API_KEY || "");
+}
 
-const FROM_EMAIL = process.env.EMAIL_FROM || "noreply@letitrip.in";
-const FROM_NAME = process.env.EMAIL_FROM_NAME || "Letitrip";
+async function getEmailConfig() {
+  const settings = await siteSettingsRepository
+    .getSingleton()
+    .catch(() => null);
+  return {
+    fromName:
+      settings?.emailSettings?.fromName ||
+      process.env.EMAIL_FROM_NAME ||
+      "Letitrip",
+    fromEmail:
+      settings?.emailSettings?.fromEmail ||
+      process.env.EMAIL_FROM ||
+      "noreply@letitrip.in",
+  };
+}
+
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "Letitrip";
 const SITE_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+/**
+ * Send an email using Resend with DB-first credential resolution.
+ * DB Resend API key takes precedence over RESEND_API_KEY env var.
+ * From address is resolved from Firestore emailSettings (DB) then env vars.
+ *
+ * Use this instead of calling `resend.emails.send()` directly.
+ */
+export async function sendEmail(
+  opts: Record<string, unknown> & { to: string | string[]; subject: string },
+): Promise<{ data: unknown; error: unknown }> {
+  const resend = await getResend();
+  const { fromName, fromEmail } = await getEmailConfig();
+  return resend.emails.send({
+    from: `${fromName} <${fromEmail}>`,
+    ...opts,
+  } as any) as any;
+}
+
+// ─── Module-level fallbacks for legacy functions ──────────────────────────────
+// These still read from env vars — existing email functions continue to work.
+// New email functions should use sendEmail() above for DB-first resolution.
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM_EMAIL = process.env.EMAIL_FROM || "noreply@letitrip.in";
+const FROM_NAME = process.env.EMAIL_FROM_NAME || "Letitrip";
 
 /**
  * Send email verification email

@@ -4,39 +4,67 @@
  * Server-side utility for Razorpay payment operations.
  * Only import this from API routes (never from client components).
  *
- * Required env vars:
- *   RAZORPAY_KEY_ID      — Razorpay API Key ID
- *   RAZORPAY_KEY_SECRET  — Razorpay API Key Secret
- *   RAZORPAY_WEBHOOK_SECRET — Razorpay webhook secret (for signature verification)
+ * Credential resolution order:
+ *   1. Firestore siteSettings.credentials (encrypted, admin-configurable via Admin › Site Settings)
+ *   2. Environment variables RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET / RAZORPAY_WEBHOOK_SECRET
  *
  * Client-side env var (for Razorpay checkout modal):
- *   NEXT_PUBLIC_RAZORPAY_KEY_ID — same as RAZORPAY_KEY_ID, exposed to browser
+ *   NEXT_PUBLIC_RAZORPAY_KEY_ID — exposed to browser; the key ID is also
+ *   returned dynamically via GET /api/site-settings (razorpayKeyId field).
  */
 
 import Razorpay from "razorpay";
 import { createHmac, timingSafeEqual } from "crypto";
 import { AppError } from "@/lib/errors";
+import { siteSettingsRepository } from "@/repositories";
 
-// ─── Singleton Razorpay instance ─────────────────────────────────────────────
+// ─── Credential Resolution ────────────────────────────────────────────────────
 
-let razorpayInstance: Razorpay | null = null;
+/**
+ * Resolve Razorpay credentials: Firestore DB first, env var fallback.
+ * Never throws — returns empty strings if both sources are unavailable
+ * (callers are responsible for the missing-credentials error).
+ */
+async function resolveRazorpayCredentials() {
+  let key_id = "";
+  let key_secret = "";
+  let webhookSecret = "";
 
-export function getRazorpay(): Razorpay {
-  if (!razorpayInstance) {
-    const key_id = process.env.RAZORPAY_KEY_ID;
-    const key_secret = process.env.RAZORPAY_KEY_SECRET;
-
-    if (!key_id || !key_secret) {
-      throw new AppError(
-        500,
-        "Razorpay credentials are missing. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env.local",
-        "RAZORPAY_CONFIG_ERROR",
-      );
-    }
-
-    razorpayInstance = new Razorpay({ key_id, key_secret });
+  try {
+    const creds = await siteSettingsRepository.getDecryptedCredentials();
+    key_id = creds.razorpayKeyId || "";
+    key_secret = creds.razorpayKeySecret || "";
+    webhookSecret = creds.razorpayWebhookSecret || "";
+  } catch {
+    // DB unavailable — fall through to env vars
   }
-  return razorpayInstance;
+
+  return {
+    key_id: key_id || process.env.RAZORPAY_KEY_ID || "",
+    key_secret: key_secret || process.env.RAZORPAY_KEY_SECRET || "",
+    webhookSecret: webhookSecret || process.env.RAZORPAY_WEBHOOK_SECRET || "",
+  };
+}
+
+// ─── Razorpay Instance ────────────────────────────────────────────────────────
+
+/**
+ * Returns a Razorpay SDK instance initialised with the current credentials.
+ * Credentials are resolved fresh each call so admin key rotations take effect
+ * on the next request without a server restart.
+ */
+async function getRazorpay(): Promise<Razorpay> {
+  const { key_id, key_secret } = await resolveRazorpayCredentials();
+
+  if (!key_id || !key_secret) {
+    throw new AppError(
+      500,
+      "Razorpay credentials are missing. Configure them in Admin › Site Settings › Credentials, or set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env.local",
+      "RAZORPAY_CONFIG_ERROR",
+    );
+  }
+
+  return new Razorpay({ key_id, key_secret });
 }
 
 // ─── Order Creation ────────────────────────────────────────────────────────────
@@ -65,7 +93,7 @@ export interface RazorpayOrder {
 export async function createRazorpayOrder(
   opts: RazorpayOrderOptions,
 ): Promise<RazorpayOrder> {
-  const razorpay = getRazorpay();
+  const razorpay = await getRazorpay();
   const order = await razorpay.orders.create({
     amount: opts.amount,
     currency: opts.currency ?? "INR",
@@ -87,12 +115,14 @@ export interface RazorpayPaymentResult {
  * Verifies Razorpay payment signature.
  * Uses HMAC-SHA256 over `{orderId}|{paymentId}` with the key secret.
  */
-export function verifyPaymentSignature(params: RazorpayPaymentResult): boolean {
-  const key_secret = process.env.RAZORPAY_KEY_SECRET;
+export async function verifyPaymentSignature(
+  params: RazorpayPaymentResult,
+): Promise<boolean> {
+  const { key_secret } = await resolveRazorpayCredentials();
   if (!key_secret) {
     throw new AppError(
       500,
-      "RAZORPAY_KEY_SECRET is not configured",
+      "Razorpay key secret is not configured",
       "RAZORPAY_CONFIG_ERROR",
     );
   }
@@ -115,15 +145,15 @@ export function verifyPaymentSignature(params: RazorpayPaymentResult): boolean {
  * Verifies Razorpay webhook signature.
  * Uses HMAC-SHA256 over the raw body with the webhook secret.
  */
-export function verifyWebhookSignature(
+export async function verifyWebhookSignature(
   rawBody: string,
   receivedSignature: string,
-): boolean {
-  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+): Promise<boolean> {
+  const { webhookSecret } = await resolveRazorpayCredentials();
   if (!webhookSecret) {
     throw new AppError(
       500,
-      "RAZORPAY_WEBHOOK_SECRET is not configured",
+      "Razorpay webhook secret is not configured",
       "RAZORPAY_CONFIG_ERROR",
     );
   }
@@ -173,7 +203,7 @@ export interface RazorpayRefundResult {
 export async function fetchRazorpayOrder(
   orderId: string,
 ): Promise<RazorpayOrder> {
-  const razorpay = getRazorpay();
+  const razorpay = await getRazorpay();
   const order = await razorpay.orders.fetch(orderId);
   return order as unknown as RazorpayOrder;
 }
@@ -182,7 +212,7 @@ export async function createRazorpayRefund(
   paymentId: string,
   amountPaise?: number,
 ): Promise<RazorpayRefundResult> {
-  const razorpay = getRazorpay();
+  const razorpay = await getRazorpay();
   const opts: Record<string, unknown> = {};
   if (amountPaise) opts.amount = amountPaise;
   const refund = await razorpay.payments.refund(paymentId, opts as any);

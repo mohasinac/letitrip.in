@@ -11,21 +11,9 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
-import {
-  useAuth,
-  useApiQuery,
-  useApiMutation,
-  useMessage,
-  useUrlTable,
-  usePendingTable,
-} from "@/hooks";
+import { useAuth, useMessage, useUrlTable, usePendingTable } from "@/hooks";
 import { useTranslations } from "next-intl";
-import { notificationService } from "@/services";
-import {
-  markNotificationReadAction,
-  deleteNotificationAction,
-  markAllNotificationsReadAction,
-} from "@/actions";
+import { useUserNotifications } from "../hooks/useUserNotifications";
 import {
   ActiveFilterChips,
   EmptyState,
@@ -41,17 +29,10 @@ import type { ActiveFilter } from "@/components";
 import { getFilterLabel } from "@/components";
 import { NotificationItem } from "./NotificationItem";
 import { NotificationsBulkActions } from "./NotificationsBulkActions";
-import type { NotificationDocument } from "@/db/schema";
 
 const { themed, flex } = THEME_CONSTANTS;
 
 const PAGE_SIZE = 20;
-
-interface NotificationsResponse {
-  notifications: NotificationDocument[];
-  unreadCount: number;
-  meta?: { total: number; totalPages: number; page: number };
-}
 
 const bellIcon = (
   <svg
@@ -124,27 +105,15 @@ export function UserNotificationsView() {
     return p.toString();
   }, [page, searchQ, isReadFilter]);
 
-  const { data, isLoading, refetch } = useApiQuery<NotificationsResponse>({
-    queryKey: ["notifications", "page", queryParams],
-    queryFn: () => notificationService.list(queryParams),
-    enabled: !!user,
-    cacheTTL: 0,
-  });
-
-  const { mutate: markRead } = useApiMutation<unknown, string>({
-    mutationFn: (id: string) => markNotificationReadAction(id),
-  });
-
-  const { mutate: deleteOne } = useApiMutation<unknown, string>({
-    mutationFn: (id: string) => deleteNotificationAction(id),
-  });
-
-  const { mutate: markAllRead, isLoading: isMarkingAll } = useApiMutation<
-    unknown,
-    void
-  >({
-    mutationFn: () => markAllNotificationsReadAction(),
-  });
+  const {
+    data,
+    isLoading,
+    refetch,
+    markRead,
+    deleteOne,
+    markAllRead,
+    isMarkingAll,
+  } = useUserNotifications(queryParams, !!user);
 
   const handleMarkRead = useCallback(
     async (id: string) => {

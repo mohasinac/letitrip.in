@@ -81,6 +81,8 @@ export { SiteBasicInfoForm } from "./SiteBasicInfoForm";
 export { SiteContactForm } from "./SiteContactForm";
 export { SiteSocialLinksForm } from "./SiteSocialLinksForm";
 export { SiteCommissionsForm } from "./SiteCommissionsForm";
+export { SiteCredentialsForm } from "./SiteCredentialsForm";
+export type { CredentialsUpdateValues } from "./SiteCredentialsForm";
 
 // Payouts
 export { getPayoutTableColumns } from "./PayoutTableColumns";

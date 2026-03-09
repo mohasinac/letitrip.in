@@ -145,7 +145,7 @@ export { useSiteSettings } from "./useSiteSettings";
 export { useHomepageSections } from "./useHomepageSections";
 
 // Phase 37: Service layer — product hooks
-export { useProductReviews } from "./useProductReviews";
+export { useProductReviews, useCreateReview } from "./useProductReviews";
 export { useRelatedProducts } from "./useRelatedProducts";
 export { useAddToCart } from "./useAddToCart";
 

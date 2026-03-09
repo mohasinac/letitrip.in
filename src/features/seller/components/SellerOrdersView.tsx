@@ -38,17 +38,13 @@ import {
 } from "@/components";
 import type { ActiveFilter } from "@/components";
 import { getFilterLabel } from "@/components";
-import {
-  useAuth,
-  useUrlTable,
-  useMessage,
-  useApiMutation,
-  usePendingTable,
-} from "@/hooks";
+import { useAuth, useUrlTable, useMessage, usePendingTable } from "@/hooks";
 import {
   useSellerOrders,
   useSellerShipping,
   useSellerPayoutSettings,
+  useShipOrder,
+  useBulkRequestPayout,
 } from "@/features/seller";
 import {
   ROUTES,
@@ -57,7 +53,6 @@ import {
   SUCCESS_MESSAGES,
 } from "@/constants";
 import { formatCurrency, formatDate } from "@/utils";
-import { sellerService } from "@/services";
 import type { OrderDocument } from "@/db/schema";
 
 const { themed, spacing, flex } = THEME_CONSTANTS;
@@ -79,17 +74,15 @@ function ShipOrderModal({ order, onClose, onShipped }: ShipOrderModalProps) {
     trackingUrl: "",
   });
 
-  const { mutate: shipOrder, isLoading } = useApiMutation({
-    mutationFn: (data: typeof form & { method: "custom" }) =>
-      sellerService.shipOrder(order!.id!, data),
-    onSuccess: () => {
+  const { mutate: shipOrder, isLoading } = useShipOrder(
+    order!.id!,
+    () => {
       showSuccess(SUCCESS_MESSAGES.SHIPPING.ORDER_SHIPPED);
       onShipped();
       onClose();
     },
-    onError: (err: { message?: string }) =>
-      showError(err?.message ?? t("shipError")),
-  });
+    (err) => showError(err?.message ?? t("shipError")),
+  );
 
   const handleSubmit = () => {
     if (
@@ -362,10 +355,8 @@ function SellerOrdersContent() {
   );
 
   const { mutate: requestBulkPayout, isLoading: isBulkLoading } =
-    useApiMutation({
-      mutationFn: (orderIds: string[]) =>
-        sellerService.bulkOrderAction({ action: "request_payout", orderIds }),
-      onSuccess: (res) => {
+    useBulkRequestPayout(
+      (res) => {
         const data = res as { requested: string[]; skipped: string[] };
         showSuccess(
           t("payoutRequested", { count: data.requested?.length ?? 0 }),
@@ -373,9 +364,8 @@ function SellerOrdersContent() {
         setSelectedIds([]);
         refetch();
       },
-      onError: (err: { message?: string }) =>
-        showError(err?.message ?? t("payoutRequestError")),
-    });
+      (err) => showError(err?.message ?? t("payoutRequestError")),
+    );
 
   const handleRequestPayout = useCallback(() => {
     const ids = eligibleForPayout.map((o) => o.id!);

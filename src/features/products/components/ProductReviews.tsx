@@ -21,12 +21,11 @@ import {
 } from "@/components";
 import {
   useProductReviews,
+  useCreateReview,
   useAuth,
-  useApiMutation,
   useMessage,
   useUrlTable,
 } from "@/hooks";
-import { reviewService } from "@/services";
 import type { ReviewDocument } from "@/db/schema";
 
 const {
@@ -202,22 +201,13 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
   const [formError, setFormError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
-  const { mutate, isLoading } = useApiMutation<
-    unknown,
-    {
-      productId: string;
-      rating: number;
-      title: string;
-      comment: string;
-    }
-  >({
-    mutationFn: (data) => reviewService.create(data),
-    onSuccess: () => {
+  const { mutate, isLoading } = useCreateReview(
+    () => {
       setSubmitted(true);
       showSuccess(t("reviewFormSuccess"));
       onSuccess();
     },
-    onError: (err) => {
+    (err) => {
       if (err.status === 403) {
         setFormError(t("reviewFormPurchaseRequired"));
       } else if (err.status === 400) {
@@ -226,7 +216,7 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
         showError(err.message ?? tActions("retry"));
       }
     },
-  });
+  );
 
   if (submitted) {
     return (

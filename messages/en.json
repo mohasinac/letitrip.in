@@ -2209,7 +2209,22 @@
     "platformShippingFixedMinHint": "Minimum fee — charged if percentage is lower",
     "shippingFeeRule": "For Shiprocket: platform charges max(order x %, minimum Rs. fixed)",
     "algoliaTitle": "Algolia Search Index",
-    "algoliaSubtitle": "Manually trigger a full re-index for products or navigation pages. The trigger runs automatically on product changes, but use these if records appear out of sync."
+    "algoliaSubtitle": "Manually trigger a full re-index for products or navigation pages. The trigger runs automatically on product changes, but use these if records appear out of sync.",
+    "credentialsTitle": "Provider Credentials",
+    "credentialsSubtitle": "API keys and secrets are encrypted with AES-256-GCM before storage. Leave a field blank to keep the existing value. Keys are never shown in plain text.",
+    "razorpaySection": "Razorpay",
+    "razorpayKeyId": "Razorpay Key ID",
+    "razorpayKeySecret": "Razorpay Key Secret",
+    "razorpayWebhookSecret": "Razorpay Webhook Secret",
+    "resendSection": "Resend (Email)",
+    "resendApiKey": "Resend API Key",
+    "whatsappSection": "WhatsApp Business API",
+    "whatsappApiKey": "WhatsApp API Key",
+    "whatsappNumber": "WhatsApp Contact Number",
+    "credentialPlaceholderSet": "Leave blank to keep saved value",
+    "credentialPlaceholderUnset": "Paste new value",
+    "credentialSet": "Saved \u2714",
+    "credentialNotSet": "Not configured"
   },
   "adminFeatureFlags": {
     "title": "Feature Flags",

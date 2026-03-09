@@ -13,20 +13,20 @@ import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { AdminPageHeader, Button, Card, Text, useToast } from "@/components";
 import BackgroundSettings from "./BackgroundSettings";
-import {
-  useApiQuery,
-  useApiMutation,
-  useAlgoliaSyncProducts,
-  useAlgoliaSyncPages,
-} from "@/hooks";
-import { siteSettingsService } from "@/services";
+import { useAlgoliaSyncProducts, useAlgoliaSyncPages } from "@/hooks";
+import { useAdminSiteSettings } from "../hooks/useAdminSiteSettings";
 import {
   SiteBasicInfoForm,
   SiteContactForm,
   SiteSocialLinksForm,
   SiteCommissionsForm,
+  SiteCredentialsForm,
 } from ".";
-import type { SiteSettingsDocument } from "@/db/schema";
+import type { CredentialsUpdateValues } from ".";
+import type {
+  SiteSettingsDocument,
+  SiteSettingsCredentialsMasked,
+} from "@/db/schema";
 
 export function AdminSiteView() {
   const { showToast } = useToast();
@@ -34,16 +34,8 @@ export function AdminSiteView() {
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
 
-  const { data, isLoading, error, refetch } = useApiQuery<SiteSettingsDocument>(
-    {
-      queryKey: ["site-settings"],
-      queryFn: () => siteSettingsService.get(),
-    },
-  );
-
-  const updateMutation = useApiMutation<any, Partial<SiteSettingsDocument>>({
-    mutationFn: (data) => siteSettingsService.update(data),
-  });
+  const { data, isLoading, error, refetch, updateMutation } =
+    useAdminSiteSettings();
 
   const [settings, setSettings] = useState<Partial<SiteSettingsDocument>>({
     siteName: "LetItRip",
@@ -73,16 +65,47 @@ export function AdminSiteView() {
     },
   });
 
+  // Masked credential values from the API — shown as hints in SiteCredentialsForm
+  const [maskedCredentials, setMaskedCredentials] =
+    useState<SiteSettingsCredentialsMasked>({});
+
+  // New credential values entered by the admin (plaintext — never stored here, sent to API once)
+  const [credentialsUpdates, setCredentialsUpdates] =
+    useState<CredentialsUpdateValues>({});
+
   useEffect(() => {
     if (data) {
-      setSettings(data);
+      // Strip credentialsMasked out of the regular settings state
+      const { credentialsMasked, ...rest } = data as any;
+      setSettings(rest);
+      if (credentialsMasked) setMaskedCredentials(credentialsMasked);
     }
   }, [data]);
 
   const handleSave = async () => {
     try {
-      await updateMutation.mutate(settings);
+      // Build payload: regular settings + any new credential values the admin typed
+      const payload: Partial<SiteSettingsDocument> & {
+        credentials?: CredentialsUpdateValues;
+      } = { ...settings };
+
+      // Include credentials only when at least one field is non-empty
+      const hasNewCredential = Object.values(credentialsUpdates).some((v) => v);
+      if (hasNewCredential) {
+        (payload as any).credentials = credentialsUpdates;
+        // Also sync whatsappNumber into contact if the admin changed it
+        if (credentialsUpdates.whatsappNumber) {
+          payload.contact = {
+            ...payload.contact,
+            whatsappNumber: credentialsUpdates.whatsappNumber,
+          } as any;
+        }
+      }
+
+      await updateMutation.mutate(payload as any);
       await refetch();
+      // Reset credential fields so they don't re-submit on the next save
+      setCredentialsUpdates({});
       showToast(t("settingsSaved"), "success");
     } catch {
       showToast(t("settingsFailed"), "error");
@@ -168,6 +191,12 @@ export function AdminSiteView() {
       <SiteSocialLinksForm settings={settings} onChange={setSettings} />
 
       <SiteCommissionsForm settings={settings} onChange={setSettings} />
+
+      <SiteCredentialsForm
+        maskedCredentials={maskedCredentials}
+        whatsappNumber={settings.contact?.whatsappNumber}
+        onChange={setCredentialsUpdates}
+      />
 
       {/* Algolia Search Tools */}
       <Card>

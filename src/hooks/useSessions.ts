@@ -8,7 +8,7 @@
 
 import { useApiQuery } from "./useApiQuery";
 import { useApiMutation } from "./useApiMutation";
-import { sessionService, adminService } from "@/services";
+import { adminService } from "@/services";
 import { revokeSessionAction, revokeUserSessionsAction } from "@/actions";
 import type { SessionDocument } from "@/db/schema/sessions";
 

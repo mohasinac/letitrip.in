@@ -1,6 +1,7 @@
 "use client";
 
 import { useApiQuery } from "./useApiQuery";
+import { useApiMutation } from "./useApiMutation";
 import { reviewService } from "@/services";
 
 interface ReviewsResponseMeta {
@@ -29,5 +30,23 @@ export function useProductReviews(productId: string, page = 1, pageSize = 10) {
     queryKey: ["reviews", productId, String(page)],
     queryFn: () => reviewService.listByProduct(productId, page, pageSize),
     enabled: Boolean(productId),
+  });
+}
+
+interface CreateReviewInput {
+  productId: string;
+  rating: number;
+  title: string;
+  comment: string;
+}
+
+export function useCreateReview(
+  onSuccess?: () => void,
+  onError?: (err: { status?: number; message?: string }) => void,
+) {
+  return useApiMutation<unknown, CreateReviewInput>({
+    mutationFn: (data) => reviewService.create(data),
+    onSuccess,
+    onError,
   });
 }

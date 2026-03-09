@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage G1 cont.: Rule 20 fixes in AdminSiteView / ProductReviews / SellerOrdersView / UserNotificationsView
+
+### Added
+
+- **`src/features/admin/hooks/useAdminSiteSettings.ts`** — New hook wrapping `siteSettingsService.get()` (query) and `siteSettingsService.update()` (mutation). Exported from admin hooks barrel.
+- **`src/hooks/useProductReviews.ts`** — Added `useCreateReview(onSuccess, onError)`: mutation hook wrapping `reviewService.create()`. Exported from hooks barrel.
+- **`src/features/seller/hooks/useSellerOrders.ts`** — Added `useShipOrder(orderId, onSuccess, onError)` and `useBulkRequestPayout(onSuccess, onError)`: mutation hooks wrapping `sellerService.shipOrder()` and `sellerService.bulkOrderAction()`. Exported from seller hooks barrel.
+- **`src/features/user/hooks/useUserNotifications.ts`** — New hook providing paginated notification query + `markRead`, `deleteOne`, `markAllRead` mutations (all using Server Actions). Exported from user hooks barrel.
+
+### Fixed
+
+- **`src/features/admin/components/AdminSiteView.tsx`** — **Bug (Rule 20):** `siteSettingsService` was imported directly; inline `useApiQuery` + `useApiMutation` in the component. Now uses `useAdminSiteSettings()` hook. Removed `siteSettingsService`, `useApiQuery`, `useApiMutation` imports.
+- **`src/features/products/components/ProductReviews.tsx`** — **Bug (Rule 20):** `reviewService.create()` was wrapped in inline `useApiMutation` in the component. Now uses `useCreateReview()` from `@/hooks`. Removed `reviewService` and `useApiMutation` imports.
+- **`src/features/seller/components/SellerOrdersView.tsx`** — **Bug (Rule 20):** Two inline `useApiMutation` calls — `sellerService.shipOrder()` in `ShipOrderModal` and `sellerService.bulkOrderAction()` in the main view. Replaced with `useShipOrder()` and `useBulkRequestPayout()` hooks. Removed `sellerService` and `useApiMutation` imports.
+- **`src/features/user/components/UserNotificationsView.tsx`** — **Bug (Rule 20):** Three inline `useApiMutation` calls (mark-read, delete, mark-all-read) plus `useApiQuery` with `notificationService.list()`. Replaced with `useUserNotifications()` hook. Removed `useApiQuery`, `useApiMutation`, `notificationService`, and Server Action imports + unused `NotificationsResponse` and `NotificationDocument` types.
+
+---
+
 ## [Unreleased] — Stage G1 cont.: Rule 20 fixes in SellerCreateProductView / SellerEditProductView / EventParticipateView
 
 ### Added
