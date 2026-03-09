@@ -26,6 +26,7 @@ export { useFeedbackSubmit } from "./hooks/useFeedbackSubmit";
 // Components
 export { EventStatusBadge } from "./components/EventStatusBadge";
 export { EventStatsBanner } from "./components/EventStatsBanner";
+export { EventDetailView } from "./components/EventDetailView";
 export { useEventsTableColumns } from "./components/EventsTable";
 export { useEventEntriesTableColumns } from "./components/EventEntriesTable";
 export { EventFormDrawer } from "./components/EventFormDrawer";

@@ -17,6 +17,7 @@ export { SellerAddressesView } from "./SellerAddressesView";
 // P2-5: seller domain components
 export { default as SellerTabs } from "./SellerTabs";
 export { SellerStorefrontView } from "./SellerStorefrontView";
+export { SellerStorefrontPage } from "./SellerStorefrontPage";
 export { SellerAnalyticsStats } from "./SellerAnalyticsStats";
 export { SellerRevenueChart } from "./SellerRevenueChart";
 export { SellerTopProducts } from "./SellerTopProducts";

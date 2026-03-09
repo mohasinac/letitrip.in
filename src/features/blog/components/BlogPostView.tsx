@@ -33,9 +33,10 @@ const CATEGORY_BADGE: Record<BlogPostCategory, string> = {
 
 interface BlogPostViewProps {
   slug: string;
+  initialData?: { post: BlogPostDocument; related: BlogPostDocument[] };
 }
 
-export function BlogPostView({ slug }: BlogPostViewProps) {
+export function BlogPostView({ slug, initialData }: BlogPostViewProps) {
   const t = useTranslations("blog");
   const tActions = useTranslations("actions");
 
@@ -45,6 +46,7 @@ export function BlogPostView({ slug }: BlogPostViewProps) {
   }>({
     queryKey: ["blog", "post", slug],
     queryFn: () => blogService.getBySlug(slug),
+    initialData,
   });
 
   const post = data?.post;

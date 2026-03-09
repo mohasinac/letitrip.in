@@ -23,9 +23,13 @@ const { themed, borderRadius, flex, page, spacing } = THEME_CONSTANTS;
 
 interface ProductDetailViewProps {
   slug: string;
+  initialData?: ProductDocument;
 }
 
-export function ProductDetailView({ slug }: ProductDetailViewProps) {
+export function ProductDetailView({
+  slug,
+  initialData,
+}: ProductDetailViewProps) {
   const t = useTranslations("products");
 
   const {
@@ -36,6 +40,7 @@ export function ProductDetailView({ slug }: ProductDetailViewProps) {
     queryKey: ["product", slug],
     queryFn: () => productService.getById(slug),
     enabled: Boolean(slug),
+    initialData,
   });
 
   // Loading skeleton

@@ -15,8 +15,17 @@ export { SellerReviewsData, ProductsApiResponse };
  *
  * Fetches a seller's public storefront data: profile, products, and reviews.
  * Only activates product/review queries when the profile confirms a seller role.
+ *
+ * @param initialSeller - Optional pre-fetched seller from the server (SSR). When
+ *   provided, the profile query is seeded immediately so no loading flash occurs.
  */
-export function useSellerStorefront(sellerId: string) {
+export function useSellerStorefront(
+  sellerId: string,
+  options?: { initialSeller?: UserDocument },
+) {
+  const initialProfileData: { user: UserDocument } | undefined =
+    options?.initialSeller ? { user: options.initialSeller } : undefined;
+
   const {
     data: sellerData,
     isLoading: loading,
@@ -26,6 +35,7 @@ export function useSellerStorefront(sellerId: string) {
     queryFn: () =>
       profileService.getById(sellerId) as Promise<{ user: UserDocument }>,
     enabled: !!sellerId,
+    initialData: initialProfileData,
   });
 
   const seller = sellerData?.user;

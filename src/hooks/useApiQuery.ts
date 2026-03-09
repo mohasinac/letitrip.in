@@ -51,6 +51,8 @@ interface UseApiQueryOptions<TData> {
   refetchInterval?: number;
   /** Cache time-to-live in milliseconds (mapped to staleTime). Default: 5 minutes */
   cacheTTL?: number;
+  /** Pre-fetched data from the server (SSR). Prevents the initial client-side fetch. */
+  initialData?: TData;
   onSuccess?: (data: TData) => void;
   onError?: (error: ApiClientError) => void;
 }
@@ -72,6 +74,7 @@ export function useApiQuery<TData = any>(
     enabled = true,
     refetchInterval,
     cacheTTL = DEFAULT_CACHE_TTL,
+    initialData,
     onSuccess,
     onError,
   } = options;
@@ -92,6 +95,10 @@ export function useApiQuery<TData = any>(
     enabled,
     refetchInterval,
     staleTime: cacheTTL,
+    // When initialData is provided (from SSR), seed TanStack and treat it as
+    // fresh for the full staleTime to avoid an immediate background refetch.
+    initialData: initialData,
+    initialDataUpdatedAt: initialData !== undefined ? Date.now() : undefined,
   });
 
   // TanStack v5 removed onSuccess/onError from useQuery options — emulate via useEffect.

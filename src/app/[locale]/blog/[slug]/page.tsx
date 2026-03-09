@@ -1,13 +1,31 @@
-﻿"use client";
-
-import { use } from "react";
+﻿import { notFound } from "next/navigation";
+import { blogRepository } from "@/repositories";
 import { BlogPostView } from "@/features/blog";
+import type { Metadata } from "next";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export default function BlogPostPage({ params }: PageProps) {
-  const { slug } = use(params);
-  return <BlogPostView slug={slug} />;
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await blogRepository.findBySlug(slug);
+  if (!post) return {};
+  return {
+    title: post.title,
+    description: post.excerpt,
+    openGraph: { images: post.coverImage ? [post.coverImage] : [] },
+  };
+}
+
+export default async function BlogPostPage({ params }: PageProps) {
+  const { slug } = await params;
+  const post = await blogRepository.findBySlug(slug);
+  if (!post) notFound();
+
+  const related = await blogRepository.findRelated(post.category, post.id, 3);
+
+  return <BlogPostView slug={slug} initialData={{ post, related }} />;
 }
