@@ -45,8 +45,5 @@ export * from "./helpers/ui";
 // ==================== CLASSES ====================
 export * from "./classes";
 
-// ==================== SNIPPETS ====================
-export * from "./snippets";
-
 // ==================== TYPES ====================
 export * from "./types/auth";
