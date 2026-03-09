@@ -62,3 +62,23 @@ export type { VoteFaqInput, VoteFaqResult } from "./faq.actions";
 // Profile update (auth required)
 export { updateProfileAction } from "./profile.actions";
 export type { UpdateProfileInput } from "./profile.actions";
+
+// Address mutations (auth required)
+export {
+  createAddressAction,
+  updateAddressAction,
+  deleteAddressAction,
+  setDefaultAddressAction,
+} from "./address.actions";
+export type { AddressInput } from "./address.actions";
+
+// Bid mutations (auth required)
+export { placeBidAction } from "./bid.actions";
+export type { PlaceBidInput, PlaceBidResult } from "./bid.actions";
+
+// Coupon validation (auth required)
+export { validateCouponAction } from "./coupon.actions";
+export type {
+  ValidateCouponInput,
+  ValidateCouponResult,
+} from "./coupon.actions";

@@ -12,13 +12,8 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { Heart, ShoppingBag, Gavel, Grid3X3, Store } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import {
-  useAuth,
-  useApiQuery,
-  useUrlTable,
-  useMessage,
-  invalidateQueries,
-} from "@/hooks";
+import { useAuth, useApiQuery, useUrlTable, useMessage } from "@/hooks";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   EmptyState,
@@ -35,7 +30,8 @@ import {
 } from "@/components";
 import { WishlistButton } from "./WishlistButton";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
-import { wishlistService, cartService } from "@/services";
+import { removeFromWishlistAction, addToCartAction } from "@/actions";
+import { wishlistService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
 const WISHLIST_SORT_OPTIONS_KEYS = [
@@ -73,6 +69,7 @@ function WishlistContent() {
   const tActions = useTranslations("actions");
   const tLoading = useTranslations("loading");
   const { showSuccess, showError } = useMessage();
+  const queryClient = useQueryClient();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const table = useUrlTable();
   const activeTab = (table.get("tab") || "products") as TabKey;
@@ -151,7 +148,7 @@ function WishlistContent() {
   // ── Bulk action handlers ─────────────────────────────────────────
   const handleBulkRemoveFromWishlist = useCallback(async () => {
     const results = await Promise.allSettled(
-      selectedIds.map((id) => wishlistService.remove(id)),
+      selectedIds.map((id) => removeFromWishlistAction(id)),
     );
     const succeeded = results.filter((r) => r.status === "fulfilled").length;
     if (succeeded === selectedIds.length) {
@@ -171,12 +168,26 @@ function WishlistContent() {
 
   const handleBulkAddToCart = useCallback(async () => {
     const results = await Promise.allSettled(
-      selectedIds.map((id) =>
-        cartService.addItem({ productId: id, quantity: 1 }),
-      ),
+      selectedIds.map((id) => {
+        const item = allItems.find((i) => i.productId === id);
+        if (!item?.product)
+          return Promise.reject(new Error("Product not found"));
+        const p = item.product;
+        return addToCartAction({
+          productId: id,
+          productTitle: p.title,
+          productImage: p.images?.[0] ?? "",
+          price: p.price,
+          currency: p.currency || "INR",
+          quantity: 1,
+          sellerId: p.sellerId,
+          sellerName: p.sellerName,
+          isAuction: p.isAuction,
+        });
+      }),
     );
     const succeeded = results.filter((r) => r.status === "fulfilled").length;
-    if (succeeded > 0) invalidateQueries(["cart"]);
+    if (succeeded > 0) queryClient.invalidateQueries({ queryKey: ["cart"] });
     if (succeeded === selectedIds.length) {
       showSuccess(tActions("bulkSuccess", { count: succeeded }));
     } else if (succeeded > 0) {

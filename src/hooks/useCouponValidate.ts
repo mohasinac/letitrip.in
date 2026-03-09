@@ -1,7 +1,8 @@
 "use client";
 
 import { useApiMutation } from "@/hooks";
-import { couponService } from "@/services";
+import { validateCouponAction } from "@/actions";
+import type { ValidateCouponResult } from "@/actions";
 
 interface ValidateCouponPayload {
   code: string;
@@ -10,10 +11,14 @@ interface ValidateCouponPayload {
 
 /**
  * useCouponValidate
- * Wraps `couponService.validate()` as a `useApiMutation` for PromoCodeInput.
+ * Wraps `validateCouponAction` as a mutation hook for PromoCodeInput.
  */
 export function useCouponValidate() {
-  return useApiMutation<unknown, ValidateCouponPayload>({
-    mutationFn: (payload) => couponService.validate(payload),
+  return useApiMutation<ValidateCouponResult, ValidateCouponPayload>({
+    mutationFn: (payload) =>
+      validateCouponAction({
+        code: payload.code,
+        orderTotal: payload.orderTotal ?? 0,
+      }),
   });
 }

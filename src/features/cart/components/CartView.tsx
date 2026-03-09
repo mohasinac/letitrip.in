@@ -14,8 +14,9 @@ import {
   useMessage,
   useAuth,
   useGuestCart,
-  invalidateQueries,
 } from "@/hooks";
+import { useQueryClient } from "@tanstack/react-query";
+import { updateCartItemAction, removeFromCartAction } from "@/actions";
 import { cartService } from "@/services";
 import { useTranslations } from "next-intl";
 import {
@@ -61,6 +62,7 @@ export function CartView() {
   const router = useRouter();
   const t = useTranslations("cart");
   const { showError, showSuccess } = useMessage();
+  const queryClient = useQueryClient();
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [discount, setDiscount] = useState(0);
@@ -85,10 +87,10 @@ export function CartView() {
     { itemId: string; quantity: number }
   >({
     mutationFn: ({ itemId, quantity }) =>
-      cartService.updateItem(itemId, { quantity }),
+      updateCartItemAction(itemId, { quantity }),
     onSuccess: () => {
       showSuccess(SUCCESS_MESSAGES.CART.ITEM_UPDATED);
-      invalidateQueries(["cart"]);
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
       setUpdatingItemId(null);
     },
     onError: () => {
@@ -98,10 +100,10 @@ export function CartView() {
   });
 
   const { mutate: removeItem } = useApiMutation<unknown, { itemId: string }>({
-    mutationFn: ({ itemId }) => cartService.removeItem(itemId),
+    mutationFn: ({ itemId }) => removeFromCartAction(itemId),
     onSuccess: () => {
       showSuccess(SUCCESS_MESSAGES.CART.ITEM_REMOVED);
-      invalidateQueries(["cart"]);
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
       setUpdatingItemId(null);
     },
     onError: () => {

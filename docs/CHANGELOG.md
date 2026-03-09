@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage G1 cont.: Server Actions — Address, Bid, Coupon + Rule 20 fixes
+
+### Added
+
+- **`src/actions/address.actions.ts`** — Server Actions: `createAddressAction`, `updateAddressAction`, `deleteAddressAction`, `setDefaultAddressAction`. Each is auth-required, rate-limited by uid (API preset), and calls `addressRepository` directly — no HTTP round-trip.
+- **`src/actions/bid.actions.ts`** — Server Action: `placeBidAction`. Full business-logic port from `POST /api/bids`: validates auction state (active, not ended, not own auction), checks RipCoin free balance, creates bid, atomically updates all bids + product `currentBid`/`bidCount`, records engage/release RipCoin transactions, and writes live update to RTDB. Rate-limited STRICT by uid (5 req/60 s).
+- **`src/actions/coupon.actions.ts`** — Server Action: `validateCouponAction`. Auth-required, rate-limited by uid (API preset). Calls `couponsRepository.validateCoupon()` directly. Returns `{ valid, discountAmount, coupon?, error? }`.
+- **`src/actions/index.ts`** — Barrel now re-exports all new actions and their input/result types: `createAddressAction`, `updateAddressAction`, `deleteAddressAction`, `setDefaultAddressAction`, `placeBidAction`, `PlaceBidInput`, `PlaceBidResult`, `validateCouponAction`, `ValidateCouponInput`, `ValidateCouponResult`.
+
+### Changed
+
+- **`src/hooks/useAddresses.ts`** — Mutation hooks (`useCreateAddress`, `useUpdateAddress`, `useDeleteAddress`, `useSetDefaultAddress`) now call Server Actions from `@/actions` instead of `addressService`. All four mutations add `queryClient.invalidateQueries(["addresses"])` + per-id invalidation on success. Fixed `any` callback typings to `Error`. Read hooks (`useAddresses`, `useAddress`) unchanged — still use `addressService` for query functions.
+- **`src/hooks/usePlaceBid.ts`** — `mutationFn` now calls `placeBidAction` from `@/actions` instead of `bidService.create`. Drops `bidService` import.
+- **`src/hooks/useCouponValidate.ts`** — `mutationFn` now calls `validateCouponAction` from `@/actions` instead of `couponService.validate`. Drops `couponService` import; return type updated to `ValidateCouponResult`.
+
+### Fixed
+
+- **`src/features/cart/components/CartView.tsx`** — **Bug (Rule 20):** `updateItem` and `removeItem` mutations were using `cartService.updateItem` / `cartService.removeItem` inline inside the component. Now use `updateCartItemAction` / `removeFromCartAction` from `@/actions`. Replaced `invalidateQueries(["cart"])` (old adapter) with `queryClient.invalidateQueries({ queryKey: ["cart"] })` from `useQueryClient()`. Removed `cartService` import; retained `cartService.get()` for the read query (read operations stay as service calls).
+- **`src/features/wishlist/components/WishlistView.tsx`** — **Bug (Rule 20):** `handleBulkRemoveFromWishlist` called `wishlistService.remove(id)` per item; now calls `removeFromWishlistAction(id)`. `handleBulkAddToCart` called `cartService.addItem({ productId, quantity: 1 })` which was missing required fields (title, image, price, etc.); now calls `addToCartAction(fullProductData)` using the product already present in `allItems`. Replaced `invalidateQueries(["cart"])` with `queryClient.invalidateQueries({ queryKey: ["cart"] })`. Removed `cartService` import; removed `invalidateQueries` hook import.
+- **`src/features/products/components/AuctionsView.tsx`** — **Bug (Rule 20):** `handleBulkAddToWishlist` called `wishlistService.add(id)` per item; now calls `addToWishlistAction(id)`. Removed `wishlistService` import.
+- **`src/features/products/components/PreOrdersView.tsx`** — **Bug (Rule 20):** Same fix as `AuctionsView.tsx` — `wishlistService.add` → `addToWishlistAction`. Removed `wishlistService` import.
+- **`src/features/products/components/ProductsView.tsx`** — **Bug (Rule 20):** Same fix — `wishlistService.add` → `addToWishlistAction`. Removed `wishlistService` import.
+
+---
+
 ## [Unreleased] — Stage G1 cont.: Server Actions — Contact, Newsletter, FAQ, Profile
 
 ### Added

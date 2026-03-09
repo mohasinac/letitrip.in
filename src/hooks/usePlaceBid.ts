@@ -2,7 +2,7 @@
 
 import { useApiMutation } from "./useApiMutation";
 import { useQueryClient } from "@tanstack/react-query";
-import { bidService } from "@/services";
+import { placeBidAction } from "@/actions";
 import type { BidDocument } from "@/db/schema";
 
 interface PlaceBidPayload {
@@ -25,7 +25,10 @@ export function usePlaceBid() {
   const queryClient = useQueryClient();
 
   return useApiMutation<BidDocument, PlaceBidPayload>({
-    mutationFn: (data) => bidService.create(data) as Promise<BidDocument>,
+    mutationFn: async (data) => {
+      const result = await placeBidAction(data);
+      return result.bid;
+    },
     onSuccess: async (_, { productId }) => {
       // Refresh bid list and auction product detail so current bid + bid count update
       await queryClient.invalidateQueries({ queryKey: ["bids", productId] });

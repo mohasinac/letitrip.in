@@ -18,6 +18,13 @@
 
 import { useApiQuery } from "./useApiQuery";
 import { useApiMutation } from "./useApiMutation";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  createAddressAction,
+  updateAddressAction,
+  deleteAddressAction,
+  setDefaultAddressAction,
+} from "@/actions";
 import { addressService } from "@/services";
 
 // ============================================================================
@@ -101,11 +108,19 @@ export function useAddress(
  */
 export function useCreateAddress(options?: {
   onSuccess?: (data: Address) => void;
-  onError?: (error: any) => void;
+  onError?: (error: Error) => void;
 }) {
+  const queryClient = useQueryClient();
   return useApiMutation<Address, AddressFormData>({
-    mutationFn: (data) => addressService.create(data),
-    onSuccess: options?.onSuccess,
+    mutationFn: (data) =>
+      createAddressAction({
+        ...data,
+        isDefault: data.isDefault ?? false,
+      }) as Promise<Address>,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["addresses"] });
+      options?.onSuccess?.(data);
+    },
     onError: options?.onError,
   });
 }
@@ -117,12 +132,17 @@ export function useUpdateAddress(
   id: string,
   options?: {
     onSuccess?: (data: Address) => void;
-    onError?: (error: any) => void;
+    onError?: (error: Error) => void;
   },
 ) {
+  const queryClient = useQueryClient();
   return useApiMutation<Address, AddressFormData>({
-    mutationFn: (data) => addressService.update(id, data),
-    onSuccess: options?.onSuccess,
+    mutationFn: (data) => updateAddressAction(id, data) as Promise<Address>,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["addresses"] });
+      queryClient.invalidateQueries({ queryKey: ["address", id] });
+      options?.onSuccess?.(data);
+    },
     onError: options?.onError,
   });
 }
@@ -131,12 +151,16 @@ export function useUpdateAddress(
  * Hook to delete an address
  */
 export function useDeleteAddress(options?: {
-  onSuccess?: (data: any) => void;
-  onError?: (error: any) => void;
+  onSuccess?: (data: void) => void;
+  onError?: (error: Error) => void;
 }) {
-  return useApiMutation<any, { id: string }>({
-    mutationFn: (data) => addressService.delete(data.id),
-    onSuccess: options?.onSuccess,
+  const queryClient = useQueryClient();
+  return useApiMutation<void, { id: string }>({
+    mutationFn: (data) => deleteAddressAction(data.id),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["addresses"] });
+      options?.onSuccess?.(data);
+    },
     onError: options?.onError,
   });
 }
@@ -145,12 +169,17 @@ export function useDeleteAddress(options?: {
  * Hook to set an address as default
  */
 export function useSetDefaultAddress(options?: {
-  onSuccess?: (data: any) => void;
-  onError?: (error: any) => void;
+  onSuccess?: (data: Address) => void;
+  onError?: (error: Error) => void;
 }) {
-  return useApiMutation<any, SetDefaultAddressData>({
-    mutationFn: (data) => addressService.setDefault(data.addressId),
-    onSuccess: options?.onSuccess,
+  const queryClient = useQueryClient();
+  return useApiMutation<Address, SetDefaultAddressData>({
+    mutationFn: (data) =>
+      setDefaultAddressAction(data.addressId) as Promise<Address>,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["addresses"] });
+      options?.onSuccess?.(data);
+    },
     onError: options?.onError,
   });
 }

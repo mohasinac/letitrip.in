@@ -28,7 +28,7 @@ import {
   useBrands,
 } from "@/hooks";
 import { useProducts } from "../hooks";
-import { wishlistService } from "@/services";
+import { addToWishlistAction } from "@/actions";
 
 import type { ProductsListResult } from "../hooks";
 
@@ -158,7 +158,7 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
   // ── Bulk wishlist handler ─────────────────────────────────────────
   const handleBulkAddToWishlist = useCallback(async () => {
     const results = await Promise.allSettled(
-      selectedIds.map((id) => wishlistService.add(id)),
+      selectedIds.map((id) => addToWishlistAction(id)),
     );
     const succeeded = results.filter((r) => r.status === "fulfilled").length;
     if (succeeded === selectedIds.length) {

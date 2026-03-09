@@ -28,7 +28,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, useAuth, useMessage, useBrands } from "@/hooks";
 import { usePreOrders } from "../hooks";
-import { wishlistService } from "@/services";
+import { addToWishlistAction } from "@/actions";
 
 const PAGE_SIZE = 24;
 
@@ -153,7 +153,7 @@ function PreOrdersContent() {
   // ── Bulk wishlist handler ─────────────────────────────────────────────────
   const handleBulkAddToWishlist = useCallback(async () => {
     const results = await Promise.allSettled(
-      selectedIds.map((id) => wishlistService.add(id)),
+      selectedIds.map((id) => addToWishlistAction(id)),
     );
     const succeeded = results.filter((r) => r.status === "fulfilled").length;
     if (succeeded === selectedIds.length) {
