@@ -1,73 +1,46 @@
 "use client";
 
 /**
- * useApiQuery Hook
- * React hook for fetching data with automatic loading, error states, refetching,
- * and client-side caching with stale-while-revalidate pattern.
+ * useApiQuery Hook — TanStack Query adapter
  *
- * Features:
- * - In-memory client-side cache using CacheManager singleton
- * - Stale-while-revalidate: returns cached data immediately, refetches in background
- * - Request deduplication: concurrent calls with same key share one fetch
- * - Configurable cache TTL per query
+ * Thin wrapper around @tanstack/react-query's `useQuery` that preserves the
+ * existing interface (cacheTTL, onSuccess, onError, refetch as async void)
+ * so that every caller continues to work without changes.
+ *
+ * TanStack Query v5 differences handled here:
+ * - `onSuccess`/`onError` removed from useQuery options → emulated via useEffect
+ * - `cacheTTL` → mapped to `staleTime`
  *
  * Usage:
  * ```tsx
- * // Always call a service function — never apiClient directly (Rule 21)
  * const { data, isLoading, error, refetch } = useApiQuery({
  *   queryKey: ['profile'],
  *   queryFn: () => userService.getProfile(),
- *   enabled: true,
- *   cacheTTL: 60000, // Cache for 60 seconds (default: 5 minutes)
+ *   cacheTTL: 60000,
  * });
- *
- * if (isLoading) return <Spinner />;
- * if (error) return <Alert>{error.message}</Alert>;
- * return <div>{data.name}</div>;
  * ```
  */
 
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 import { ApiClientError } from "@/lib/api-client";
-import { CacheManager } from "@/classes";
+import { getQueryClient } from "@/components/providers/QueryProvider";
 
-// Default cache TTL: 5 minutes
+// Default cache TTL: 5 minutes (matches QueryProvider defaultOptions.staleTime)
 const DEFAULT_CACHE_TTL = 5 * 60 * 1000;
 
-// In-flight request deduplication map
-const inflightRequests = new Map<string, Promise<unknown>>();
-
-// Client-side cache instance (shared across all hook instances)
-const queryCache = CacheManager.getInstance(200);
-
-// ── Query invalidation event bus ─────────────────────────────────────────────
-// Allows mutations to tell active useApiQuery instances to refetch.
-type InvalidationListener = () => void;
-const invalidationListeners = new Map<string, Set<InvalidationListener>>();
-
-function subscribeInvalidation(cacheKey: string, cb: InvalidationListener) {
-  if (!invalidationListeners.has(cacheKey)) {
-    invalidationListeners.set(cacheKey, new Set());
-  }
-  invalidationListeners.get(cacheKey)!.add(cb);
-  return () => {
-    invalidationListeners.get(cacheKey)?.delete(cb);
-  };
-}
-
 /**
- * Invalidate client-side query cache for the given keys and trigger
- * a background refetch in every mounted useApiQuery that matches.
+ * Invalidate one or more query keys and trigger a background refetch in every
+ * mounted useApiQuery that matches.
  *
  * @example
- * invalidateQueries(["cart"]);           // single key
- * invalidateQueries(["cart"], ["user"]); // multiple keys
+ * invalidateQueries(["cart"]);            // single key
+ * invalidateQueries(["cart"], ["user"]);  // multiple keys
  */
 export function invalidateQueries(...queryKeys: string[][]) {
+  const client = getQueryClient();
   for (const key of queryKeys) {
-    const cacheKey = key.join(",");
-    queryCache.delete(cacheKey);
-    invalidationListeners.get(cacheKey)?.forEach((cb) => cb());
+    client.invalidateQueries({ queryKey: key });
   }
 }
 
@@ -76,7 +49,7 @@ interface UseApiQueryOptions<TData> {
   queryFn: () => Promise<TData>;
   enabled?: boolean;
   refetchInterval?: number;
-  /** Cache time-to-live in milliseconds. Set to 0 to disable caching. Default: 5 minutes */
+  /** Cache time-to-live in milliseconds (mapped to staleTime). Default: 5 minutes */
   cacheTTL?: number;
   onSuccess?: (data: TData) => void;
   onError?: (error: ApiClientError) => void;
@@ -103,31 +76,9 @@ export function useApiQuery<TData = any>(
     onError,
   } = options;
 
-  const cacheKey = queryKey.join(",");
-
-  // Initialize state from cache if available (stale-while-revalidate)
-  const cachedData = cacheTTL > 0 ? queryCache.get<TData>(cacheKey) : null;
-  const [data, setData] = useState<TData | undefined>(cachedData ?? undefined);
-  const [isLoading, setIsLoading] = useState(cachedData === null);
-  const [isFetching, setIsFetching] = useState(false);
-  const [error, setError] = useState<ApiClientError | null>(null);
-
-  // Track mounted state to avoid setState on unmounted component
-  const mountedRef = useRef(true);
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
-
-  // Store unstable callback props in refs so fetchData identity stays stable
-  const queryFnRef = useRef(queryFn);
+  // Keep callbacks in refs so the effects below don't re-run on every render
   const onSuccessRef = useRef(onSuccess);
   const onErrorRef = useRef(onError);
-  useEffect(() => {
-    queryFnRef.current = queryFn;
-  }, [queryFn]);
   useEffect(() => {
     onSuccessRef.current = onSuccess;
   }, [onSuccess]);
@@ -135,99 +86,49 @@ export function useApiQuery<TData = any>(
     onErrorRef.current = onError;
   }, [onError]);
 
-  // Track whether we have data via ref (avoids including `data` in deps)
-  const hasDataRef = useRef(!!cachedData);
+  const result = useQuery<TData, Error>({
+    queryKey,
+    queryFn,
+    enabled,
+    refetchInterval,
+    staleTime: cacheTTL,
+  });
 
-  const fetchData = useCallback(async () => {
-    if (!enabled) return;
+  // TanStack v5 removed onSuccess/onError from useQuery options — emulate via useEffect.
+  const prevDataRef = useRef<TData | undefined>(undefined);
+  const prevErrorRef = useRef<Error | null>(null);
 
-    setIsFetching(true);
-    if (!hasDataRef.current) {
-      setIsLoading(true);
+  useEffect(() => {
+    if (result.data !== undefined && result.data !== prevDataRef.current) {
+      prevDataRef.current = result.data;
+      onSuccessRef.current?.(result.data);
     }
+  }, [result.data]);
 
-    try {
-      let result: TData;
-
-      // Request deduplication: reuse in-flight request for same cache key
-      if (inflightRequests.has(cacheKey)) {
-        result = (await inflightRequests.get(cacheKey)) as TData;
-      } else {
-        const promise = queryFnRef.current();
-        inflightRequests.set(cacheKey, promise);
-        try {
-          result = await promise;
-        } finally {
-          inflightRequests.delete(cacheKey);
-        }
-      }
-
-      // Store in cache
-      if (cacheTTL > 0) {
-        queryCache.set(cacheKey, result, { ttl: cacheTTL });
-      }
-
-      if (!mountedRef.current) return;
-
-      hasDataRef.current = true;
-      setData(result);
-      setError(null);
-
-      if (onSuccessRef.current) {
-        onSuccessRef.current(result);
-      }
-    } catch (err) {
-      if (!mountedRef.current) return;
-
+  useEffect(() => {
+    if (result.error && result.error !== prevErrorRef.current) {
+      prevErrorRef.current = result.error;
       const apiError =
-        err instanceof ApiClientError
-          ? err
-          : new ApiClientError(
-              err instanceof Error ? err.message : "An error occurred",
-              500,
-            );
-
-      setError(apiError);
-
-      if (onErrorRef.current) {
-        onErrorRef.current(apiError);
-      }
-    } finally {
-      if (mountedRef.current) {
-        setIsLoading(false);
-        setIsFetching(false);
-      }
+        result.error instanceof ApiClientError
+          ? result.error
+          : new ApiClientError(result.error.message, 500);
+      onErrorRef.current?.(apiError);
     }
-  }, [enabled, cacheKey, cacheTTL]);
+  }, [result.error]);
 
-  // Initial fetch (or background revalidation if we have cached data)
-  useEffect(() => {
-    fetchData();
-  }, [cacheKey, enabled]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Refetch interval — use ref so interval doesn't reset on fetchData identity change
-  const fetchDataRef = useRef(fetchData);
-  useEffect(() => {
-    fetchDataRef.current = fetchData;
-  }, [fetchData]);
-
-  useEffect(() => {
-    if (!refetchInterval || !enabled) return;
-
-    const interval = setInterval(() => fetchDataRef.current(), refetchInterval);
-    return () => clearInterval(interval);
-  }, [refetchInterval, enabled]);
-
-  // Subscribe to invalidation events for this cache key
-  useEffect(() => {
-    return subscribeInvalidation(cacheKey, () => fetchDataRef.current());
-  }, [cacheKey]);
+  const apiError: ApiClientError | null = result.error
+    ? result.error instanceof ApiClientError
+      ? result.error
+      : new ApiClientError(result.error.message, 500)
+    : null;
 
   return {
-    data,
-    isLoading,
-    isFetching,
-    error,
-    refetch: fetchData,
+    data: result.data,
+    isLoading: result.isLoading,
+    isFetching: result.isFetching,
+    error: apiError,
+    refetch: async () => {
+      await result.refetch();
+    },
   };
 }

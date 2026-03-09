@@ -1,6 +1,7 @@
 import {
   LayoutClient,
   MonitoringProvider,
+  QueryProvider,
   SkipToMain,
   ToastProvider,
   ZodSetup,
@@ -47,12 +48,14 @@ export default async function LocaleLayout({
         <ZodSetup />
         <ThemeProvider>
           <SessionProvider>
-            <GuestCartMergerEffect />
-            <MonitoringProvider>
-              <ToastProvider position="top-right">
-                <LayoutClient>{children}</LayoutClient>
-              </ToastProvider>
-            </MonitoringProvider>
+            <QueryProvider>
+              <GuestCartMergerEffect />
+              <MonitoringProvider>
+                <ToastProvider position="top-right">
+                  <LayoutClient>{children}</LayoutClient>
+                </ToastProvider>
+              </MonitoringProvider>
+            </QueryProvider>
           </SessionProvider>
         </ThemeProvider>
       </NextIntlClientProvider>

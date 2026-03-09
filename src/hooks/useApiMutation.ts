@@ -1,30 +1,26 @@
 "use client";
 
 /**
- * useApiMutation Hook
- * React hook for handling API mutations with loading, error states, and optimistic updates
+ * useApiMutation Hook — TanStack Query adapter
+ *
+ * Thin wrapper around @tanstack/react-query's `useMutation` that preserves the
+ * existing interface so that every caller continues to work without changes:
+ * - `mutate(variables)` returns Promise<TData> (uses mutateAsync internally)
+ * - `isLoading` (mapped from TanStack v5's `isPending`)
+ * - `onSuccess` / `onError` / `onSettled` callbacks preserved
  *
  * Usage:
  * ```tsx
- * // Always call a service function — never apiClient directly (Rule 21)
- * const { mutate, isLoading, error, data } = useApiMutation({
+ * const { mutate, isLoading, error } = useApiMutation({
  *   mutationFn: (data) => userService.updateProfile(data),
- *   onSuccess: (data) => {
- *     toast.success('Profile updated!');
- *   },
- *   onError: (error) => {
- *     toast.error(error.message);
- *   }
+ *   onSuccess: () => toast.success('Saved!'),
  * });
- *
- * // Use in component
- * const handleSubmit = async (formData) => {
- *   await mutate(formData);
- * };
+ * await mutate(formData);
  * ```
  */
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 import { ApiClientError } from "@/lib/api-client";
 
 interface UseApiMutationOptions<TData, TVariables> {
@@ -52,69 +48,61 @@ interface UseApiMutationResult<TData, TVariables> {
 export function useApiMutation<TData = any, TVariables = any>(
   options: UseApiMutationOptions<TData, TVariables>,
 ): UseApiMutationResult<TData, TVariables> {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<ApiClientError | null>(null);
-  const [data, setData] = useState<TData | undefined>(undefined);
+  const { mutationFn, onSuccess, onError, onSettled } = options;
 
-  // Store options in a ref so mutate callback stays stable
-  const optionsRef = useRef(options);
+  // Keep callbacks in refs so TanStack's stable handlers always call the latest version
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
+  const onSettledRef = useRef(onSettled);
   useEffect(() => {
-    optionsRef.current = options;
-  }, [options]);
+    onSuccessRef.current = onSuccess;
+  }, [onSuccess]);
+  useEffect(() => {
+    onErrorRef.current = onError;
+  }, [onError]);
+  useEffect(() => {
+    onSettledRef.current = onSettled;
+  }, [onSettled]);
 
-  const reset = useCallback(() => {
-    setIsLoading(false);
-    setError(null);
-    setData(undefined);
-  }, []);
-
-  const mutate = useCallback(async (variables: TVariables): Promise<TData> => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const result = await optionsRef.current.mutationFn(variables);
-      setData(result);
-
-      if (optionsRef.current.onSuccess) {
-        await optionsRef.current.onSuccess(result, variables);
-      }
-
-      if (optionsRef.current.onSettled) {
-        await optionsRef.current.onSettled(result, null, variables);
-      }
-
-      return result;
-    } catch (err) {
+  const mutation = useMutation<TData, Error, TVariables>({
+    mutationFn,
+    onSuccess: async (data, variables) => {
+      await onSuccessRef.current?.(data, variables);
+    },
+    onError: async (error, variables) => {
       const apiError =
-        err instanceof ApiClientError
-          ? err
-          : new ApiClientError(
-              err instanceof Error ? err.message : "An error occurred",
-              500,
-            );
+        error instanceof ApiClientError
+          ? error
+          : new ApiClientError(error.message, 500);
+      await onErrorRef.current?.(apiError, variables);
+    },
+    onSettled: async (data, error, variables) => {
+      const apiError = error
+        ? error instanceof ApiClientError
+          ? error
+          : new ApiClientError(error.message, 500)
+        : null;
+      await onSettledRef.current?.(data, apiError, variables);
+    },
+  });
 
-      setError(apiError);
+  // Expose mutate as Promise-returning for backward compatibility.
+  // TanStack v5's mutate() returns void; mutateAsync() returns Promise.
+  const mutate = async (variables: TVariables): Promise<TData> => {
+    return mutation.mutateAsync(variables);
+  };
 
-      if (optionsRef.current.onError) {
-        await optionsRef.current.onError(apiError, variables);
-      }
-
-      if (optionsRef.current.onSettled) {
-        await optionsRef.current.onSettled(undefined, apiError, variables);
-      }
-
-      throw apiError;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const apiError: ApiClientError | null = mutation.error
+    ? mutation.error instanceof ApiClientError
+      ? mutation.error
+      : new ApiClientError(mutation.error.message, 500)
+    : null;
 
   return {
     mutate,
-    isLoading,
-    error,
-    data,
-    reset,
+    isLoading: mutation.isPending, // TanStack v5: isPending replaces isLoading
+    error: apiError,
+    data: mutation.data,
+    reset: mutation.reset,
   };
 }
