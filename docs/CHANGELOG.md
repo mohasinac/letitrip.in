@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage F1: Styling Cleanup
+
+### Removed
+
+- **`src/app/globals.css`** — Dead CSS custom properties block (`--bg-primary`, `--text-primary`, `--shadow-*`, etc. in both `:root` and `.dark` blocks). No `var(--...)` usage was found anywhere in the codebase — these were legacy stubs never consumed. Removes ~65 lines.
+- **`src/app/globals.css`** — Entire `@layer components` block (`.btn`, `.btn-primary`, `.btn-secondary`, `.btn-outline`, `.input-base`, `.card`, `.card-hover`, `.card-bordered`, `.heading-1`, `.heading-2`, `.heading-3`, `.body-text`, `.container-max`, `.section-spacing`, `.stack-spacing`, `.interactive-hover`, `.interactive-scale`, `.gradient-primary`, `.gradient-secondary`, `.gradient-accent`, `.gradient-text`). Zero `className` references found in any `.tsx` file — all styling uses `THEME_CONSTANTS` class strings. Removes ~90 lines.
+
+---
+
 ## [Unreleased] — Stage E7: SSR Phase 5 — Real-time SSE Islands
 
 ### Added
