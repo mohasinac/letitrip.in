@@ -12,6 +12,7 @@ import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getLocale } from "next-intl/server";
 import type { Metadata } from "next";
+import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
 export const metadata: Metadata = genMetadata({
   title: SEO_CONFIG.defaultTitle,
@@ -41,13 +42,17 @@ export default async function LocaleLayout({
   const locale = await getLocale();
   const messages = await getMessages();
 
+  // Pre-fetch the authenticated user server-side so SessionProvider can start
+  // with user data immediately — eliminates the loading flash on hard reloads.
+  const serverUser = await getServerSessionUser();
+
   return (
     <>
       <NextIntlClientProvider locale={locale} messages={messages}>
         <SkipToMain />
         <ZodSetup />
         <ThemeProvider>
-          <SessionProvider>
+          <SessionProvider initialUser={serverUser}>
             <QueryProvider>
               <GuestCartMergerEffect />
               <MonitoringProvider>

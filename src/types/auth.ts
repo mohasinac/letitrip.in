@@ -65,6 +65,64 @@ export interface UserProfile {
   };
 }
 
+/**
+ * Hydrated session user — combines Firebase Auth fields with Firestore profile.
+ * Lives here (server-importable) so layout.tsx can pass it to SessionProvider.
+ */
+export interface SessionUser {
+  // Firebase Auth fields
+  uid: string;
+  email: string | null;
+  emailVerified: boolean;
+  displayName: string | null;
+  photoURL: string | null;
+  phoneNumber: string | null;
+
+  // Firestore profile fields
+  role: UserRole;
+  disabled?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+
+  // Session tracking
+  sessionId?: string;
+
+  // Profile extras
+  phoneVerified?: boolean;
+  avatarMetadata?: AvatarMetadata | null;
+
+  publicProfile?: {
+    isPublic?: boolean;
+    showEmail?: boolean;
+    showPhone?: boolean;
+    showOrders?: boolean;
+    showWishlist?: boolean;
+    bio?: string;
+    location?: string;
+    website?: string;
+    socialLinks?: {
+      twitter?: string;
+      instagram?: string;
+      facebook?: string;
+      linkedin?: string;
+    };
+  };
+
+  stats?: {
+    totalOrders?: number;
+    auctionsWon?: number;
+    itemsSold?: number;
+    reviewsCount?: number;
+    rating?: number;
+  };
+
+  metadata?: {
+    lastSignInTime?: string;
+    creationTime?: string;
+    loginCount?: number;
+  };
+}
+
 export interface ExtendedSession {
   user: {
     id: string;

@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage E6: SSR Phase 4 — Auth Session Cookie
+
+### Added
+
+- **`src/types/auth.ts`** — Added `SessionUser` interface (moved from `SessionContext.tsx`). Now importable from server-side code without triggering a `"use client"` boundary.
+- **`src/lib/firebase/auth-server.ts`** — Added `getServerSessionUser(): Promise<SessionUser | null>`. Reads and verifies the `__session` cookie, fetches the Firestore user profile via `userRepository`, and returns a fully-hydrated `SessionUser` suitable for passing as `initialUser` to `SessionProvider`.
+- **`src/app/[locale]/layout.tsx`** — Calls `getServerSessionUser()` server-side and passes the result as `initialUser` to `<SessionProvider>`. Authenticated users now see their UI immediately on hard reload with zero loading flash.
+
+### Changed
+
+- **`src/contexts/SessionContext.tsx`** — Removed the local `SessionUser` interface definition; replaced with `import type { SessionUser } from "@/types/auth"` and a re-export for backwards compatibility. `SessionProvider` now accepts `initialUser?: SessionUser | null`; when provided, `loading` starts as `false` and `sessionId` state is seeded from `initialUser.sessionId`.
+
+### Fixed
+
+- **`src/contexts/SessionContext.tsx`** — Bug: initial `sessionId` state was always `null` even when `initialUser.sessionId` was set, causing `isAuthenticated` to be `false` on first render despite the user being present. Fixed by seeding `sessionId` from `initialUser?.sessionId ?? null`.
+
+---
+
 ## [Unreleased] — Stage E5: SEO — `generateMetadata` + JSON-LD structured data
 
 ### Added

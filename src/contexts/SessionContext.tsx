@@ -22,7 +22,7 @@ import React, {
   useRef,
   useMemo,
 } from "react";
-import type { AuthUser } from "@/types/auth";
+import type { AuthUser, SessionUser } from "@/types/auth";
 import {
   onAuthStateChanged,
   getCurrentUser,
@@ -33,71 +33,13 @@ import { getCookie, hasCookie, deleteCookie } from "@/utils";
 import { logger } from "@/classes";
 import { sessionService, authService } from "@/services";
 import { invalidateQueries } from "@/hooks/useApiQuery";
-import type { AvatarMetadata } from "@/db/schema";
-import type { UserRole } from "@/types/auth";
+
+// Re-export for consumers that currently import SessionUser from here.
+export type { SessionUser } from "@/types/auth";
 
 // ============================================================================
 // Types
 // ============================================================================
-
-export interface SessionUser {
-  // Firebase Auth fields
-  uid: string;
-  email: string | null;
-  emailVerified: boolean;
-  displayName: string | null;
-  photoURL: string | null;
-  phoneNumber: string | null;
-
-  // Firestore profile fields
-  role: UserRole;
-  disabled?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-
-  // Session fields
-  sessionId?: string;
-
-  // Additional profile fields
-  phoneVerified?: boolean;
-
-  // Public profile settings
-  publicProfile?: {
-    isPublic?: boolean;
-    showEmail?: boolean;
-    showPhone?: boolean;
-    showOrders?: boolean;
-    showWishlist?: boolean;
-    bio?: string;
-    location?: string;
-    website?: string;
-    socialLinks?: {
-      twitter?: string;
-      instagram?: string;
-      facebook?: string;
-      linkedin?: string;
-    };
-  };
-
-  // User statistics
-  stats?: {
-    totalOrders?: number;
-    auctionsWon?: number;
-    itemsSold?: number;
-    reviewsCount?: number;
-    rating?: number;
-  };
-
-  // Metadata (login tracking)
-  metadata?: {
-    lastSignInTime?: string;
-    creationTime?: string;
-    loginCount?: number;
-  };
-
-  // Avatar metadata (matches ImageCropData type for AvatarDisplay)
-  avatarMetadata?: AvatarMetadata | null;
-}
 
 export interface SessionContextValue {
   user: SessionUser | null;
@@ -126,12 +68,20 @@ const SessionContext = createContext<SessionContextValue | undefined>(
 
 interface SessionProviderProps {
   children: React.ReactNode;
+  /** Server-prefetched user — skips the initial loading flash when provided. */
+  initialUser?: SessionUser | null;
 }
 
-export function SessionProvider({ children }: SessionProviderProps) {
-  const [user, setUser] = useState<SessionUser | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [sessionId, setSessionId] = useState<string | null>(null);
+export function SessionProvider({
+  children,
+  initialUser,
+}: SessionProviderProps) {
+  const [user, setUser] = useState<SessionUser | null>(initialUser ?? null);
+  // If the server already provided the user, we can start without loading.
+  const [loading, setLoading] = useState(initialUser === undefined);
+  const [sessionId, setSessionId] = useState<string | null>(
+    initialUser?.sessionId ?? null,
+  );
   const activityUpdateRef = useRef<NodeJS.Timeout | null>(null);
   const updateSessionActivityRef = useRef<(() => Promise<void>) | undefined>(
     undefined,
