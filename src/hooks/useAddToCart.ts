@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { useApiMutation } from "./useApiMutation";
 import { invalidateQueries } from "./useApiQuery";
 import { useAuth } from "@/contexts";
-import { cartService } from "@/services";
+import { addToCartAction } from "@/actions";
 import { addToGuestCart } from "@/utils";
 import type { ApiClientError } from "@/lib/api-client";
 
@@ -44,7 +44,8 @@ export function useAddToCart(options?: UseAddToCartOptions) {
   }, [options]);
 
   const serverMutation = useApiMutation<unknown, AddToCartPayload>({
-    mutationFn: (data) => cartService.addItem(data),
+    mutationFn: (data) =>
+      addToCartAction(data as Parameters<typeof addToCartAction>[0]),
     onSuccess: () => {
       invalidateQueries(["cart"]);
       optionsRef.current?.onSuccess?.();

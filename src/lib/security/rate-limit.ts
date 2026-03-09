@@ -163,6 +163,25 @@ export async function rateLimit(
 /** Alias */
 export const applyRateLimit = rateLimit;
 
+/**
+ * Rate limit by an explicit identifier string (e.g. user uid or custom key).
+ * Use this in Server Actions where no `Request` object is available.
+ *
+ * @example
+ * const rl = await rateLimitByIdentifier(`cart:${uid}`, RateLimitPresets.API);
+ * if (!rl.success) throw new Error("Too many requests");
+ */
+export async function rateLimitByIdentifier(
+  identifier: string,
+  config: Omit<RateLimitConfig, "identifier"> = { limit: 60, window: 60 },
+): Promise<RateLimitResult> {
+  const limiter = await getUpstashLimiter();
+  if (limiter) {
+    return limiter(identifier, config.limit, config.window);
+  }
+  return inMemoryLimit(identifier, config.limit, config.window);
+}
+
 /** Rate limit presets for common scenarios */
 export const RateLimitPresets = {
   STRICT: { limit: 5, window: 60 },

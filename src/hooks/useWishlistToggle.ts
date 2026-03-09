@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { wishlistService } from "@/services";
+import { addToWishlistAction, removeFromWishlistAction } from "@/actions";
 
 /**
  * useWishlistToggle
  * Manages wishlist add/remove for a single product.
  * Tracks the in-wishlist state locally (optimistic).
+ *
+ * Uses Server Actions — bypasses the HTTP service layer for lower latency.
  *
  * @param productId      - The product to watch
  * @param initial        - Whether the product is already in the wishlist
@@ -24,9 +26,9 @@ export function useWishlistToggle(productId: string, initial = false) {
     setIsLoading(true);
     try {
       if (prev) {
-        await wishlistService.remove(productId);
+        await removeFromWishlistAction(productId);
       } else {
-        await wishlistService.add(productId);
+        await addToWishlistAction(productId);
       }
     } catch (err) {
       // Rollback optimistic state so the UI isn't stuck

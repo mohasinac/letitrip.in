@@ -3,6 +3,10 @@
 import { useApiQuery } from "./useApiQuery";
 import { useApiMutation } from "./useApiMutation";
 import { notificationService } from "@/services";
+import {
+  markNotificationReadAction,
+  markAllNotificationsReadAction,
+} from "@/actions";
 import type { NotificationDocument } from "@/db/schema";
 
 interface NotificationsResponse {
@@ -25,7 +29,7 @@ export function useNotifications(limit = 10) {
   });
 
   const { mutate: markRead } = useApiMutation<unknown, string>({
-    mutationFn: (id: string) => notificationService.markRead(id),
+    mutationFn: (id: string) => markNotificationReadAction(id),
     onSuccess: () => refetch(),
   });
 
@@ -33,7 +37,7 @@ export function useNotifications(limit = 10) {
     unknown,
     void
   >({
-    mutationFn: () => notificationService.markAllRead(),
+    mutationFn: () => markAllNotificationsReadAction().then(() => undefined),
     onSuccess: () => refetch(),
   });
 

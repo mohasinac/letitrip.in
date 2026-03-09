@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage G1: Server Actions & Hook Migrations
+
+### Added
+
+- **`src/actions/cart.actions.ts`** — Server Actions for all cart mutations: `addToCartAction`, `updateCartItemAction`, `removeFromCartAction`, `clearCartAction`, `mergeGuestCartAction`. Each action calls `requireAuth()` → `rateLimitByIdentifier()` → repository method — bypassing the HTTP/service/route layers entirely.
+- **`src/actions/wishlist.actions.ts`** — Server Actions: `addToWishlistAction`, `removeFromWishlistAction`, `getWishlistAction`.
+- **`src/actions/review.actions.ts`** — Server Actions: `createReviewAction`, `updateReviewAction`, `deleteReviewAction`, `voteReviewHelpfulAction`. Ownership check in update/delete; vote mirrors API-route behaviour (only `helpful=true` increments `helpfulCount`).
+- **`src/actions/notification.actions.ts`** — Server Actions: `markNotificationReadAction`, `markAllNotificationsReadAction`.
+- **`src/actions/index.ts`** — Barrel re-exporting all Server Actions.
+- **`src/lib/security/rate-limit.ts`** — `rateLimitByIdentifier(identifier, config?)` exported helper — applies sliding-window rate-limit from a plain string key; used by all Server Actions where no `Request` object is available.
+- **`docs/TECH_DEBT.md`** — Tracks four open technical debts: TD-001 Turbopack chunk-generation bug (workaround in `next.config.js`), TD-002 `useApiQuery`/`useApiMutation` thin-adapter removal (pending full TanStack migration), TD-003 services pure-passthrough cleanup (ongoing G1 work), TD-004 `THEME_CONSTANTS` spacing-alias trim (remaining F1 work).
+
+### Changed
+
+- **`src/hooks/useWishlistToggle.ts`** — Mutation functions now call `addToWishlistAction`/`removeFromWishlistAction` from `@/actions` instead of `wishlistService` from `@/services`. Optimistic-update logic unchanged.
+- **`src/hooks/useAddToCart.ts`** — `mutationFn` now calls `addToCartAction` from `@/actions` instead of `cartService.addItem`.
+- **`src/hooks/useGuestCartMerge.ts`** — Now calls `mergeGuestCartAction` from `@/actions` instead of `cartService.mergeGuestCart`.
+- **`src/hooks/useNotifications.ts`** — `markRead` and `markAllRead` mutations now call Server Actions from `@/actions`; query (list fetch) still uses `notificationService`.
+
+---
+
+## [Unreleased] — Stage H5/H6: Dead Code Removal & Tech-Debt Tracking
+
+### Added
+
+- **`docs/snippets/`** — 6 snippet files relocated here from `src/snippets/` (`api-requests`, `error-logging-init`, `form-validation`, `performance`, `react-hooks`, `index`). Snippets were never runtime code — living in `docs/` makes that explicit.
+
+### Removed
+
+- **`src/snippets/`** — Entire directory deleted (6 files). Barrel re-export from `src/index.ts` removed.
+
+---
+
+## [Unreleased] — Bug Fix: EventBus console.error
+
+### Fixed
+
+- **`src/classes/EventBus.ts`** — Replaced direct `console.error(...)` in the `emit()` error handler with `logger.error(...)` from `@/classes/Logger`. Complies with Rule 23 (no direct console calls in application code; use structured logger).
+
+---
+
 ## [Unreleased] — Stage F1: Complete `gray-*` Color Audit
 
 ### Changed

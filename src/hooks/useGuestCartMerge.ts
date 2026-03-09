@@ -9,7 +9,7 @@ import {
   getGuestReturnTo,
   clearGuestReturnTo,
 } from "@/utils";
-import { cartService } from "@/services";
+import { mergeGuestCartAction } from "@/actions";
 import { logger } from "@/classes";
 
 /**
@@ -50,8 +50,7 @@ export function useGuestCartMerge(): void {
       return;
     }
 
-    cartService
-      .mergeGuestCart(items)
+    mergeGuestCartAction(items)
       .then(() => {
         clearGuestCart();
         logger.debug("Guest cart merged successfully", { count: items.length });
