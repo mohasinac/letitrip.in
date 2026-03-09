@@ -13,9 +13,13 @@ import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { AdminPageHeader, Button, Card, Text, useToast } from "@/components";
 import BackgroundSettings from "./BackgroundSettings";
-import { useApiQuery, useApiMutation } from "@/hooks";
-import { siteSettingsService, adminService } from "@/services";
-import { API_ENDPOINTS } from "@/constants";
+import {
+  useApiQuery,
+  useApiMutation,
+  useAlgoliaSyncProducts,
+  useAlgoliaSyncPages,
+} from "@/hooks";
+import { siteSettingsService } from "@/services";
 import {
   SiteBasicInfoForm,
   SiteContactForm,
@@ -87,22 +91,22 @@ export function AdminSiteView() {
 
   const isSaving = updateMutation.isLoading;
 
-  // ── Algolia sync state ────────────────────────────────────────────────────
-  const [algoliaProductsLoading, setAlgoliaProductsLoading] = useState(false);
-  const [algoliaPagesLoading, setAlgoliaPagesLoading] = useState(false);
+  // ── Algolia sync mutations ────────────────────────────────────────────────
+  const syncProductsMutation = useAlgoliaSyncProducts();
+  const syncPagesMutation = useAlgoliaSyncPages();
 
   const handleAlgoliaSync = async (
-    fn: () => Promise<unknown>,
-    setter: (v: boolean) => void,
+    mutate: () => Promise<{ indexed?: number } | undefined>,
+    label: string,
   ) => {
-    setter(true);
     try {
-      const result = (await fn()) as { indexed?: number } | undefined;
+      const result = await mutate();
       showToast(`✅ Indexed ${result?.indexed ?? 0} records`, "success");
     } catch (err: unknown) {
-      showToast(err instanceof Error ? err.message : "Sync failed", "error");
-    } finally {
-      setter(false);
+      showToast(
+        err instanceof Error ? err.message : `${label} sync failed`,
+        "error",
+      );
     }
   };
 
@@ -179,13 +183,13 @@ export function AdminSiteView() {
               variant="outline"
               onClick={() =>
                 handleAlgoliaSync(
-                  adminService.algoliaSync,
-                  setAlgoliaProductsLoading,
+                  () => syncProductsMutation.mutate(undefined),
+                  "Products",
                 )
               }
-              disabled={algoliaProductsLoading}
+              disabled={syncProductsMutation.isLoading}
             >
-              {algoliaProductsLoading
+              {syncProductsMutation.isLoading
                 ? "⏳ Syncing products…"
                 : "🔄 Sync Products → Algolia"}
             </Button>
@@ -193,13 +197,13 @@ export function AdminSiteView() {
               variant="outline"
               onClick={() =>
                 handleAlgoliaSync(
-                  adminService.algoliaSyncPages,
-                  setAlgoliaPagesLoading,
+                  () => syncPagesMutation.mutate(undefined),
+                  "Pages",
                 )
               }
-              disabled={algoliaPagesLoading}
+              disabled={syncPagesMutation.isLoading}
             >
-              {algoliaPagesLoading
+              {syncPagesMutation.isLoading
                 ? "⏳ Syncing pages…"
                 : "🔄 Sync Pages → Algolia"}
             </Button>

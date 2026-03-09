@@ -29,6 +29,8 @@ export type {
 export { useSellerStorefront } from "./useSellerStorefront";
 export { useForm } from "react-hook-form";
 export { useAdminStats } from "./useAdminStats";
+export { useAlgoliaSyncProducts, useAlgoliaSyncPages } from "./useAlgoliaSync";
+export type { AlgoliaSyncResult } from "./useAlgoliaSync";
 export { useMessage } from "./useMessage";
 export {
   useAdminSessions,
@@ -169,7 +171,7 @@ export type {
   CreateRazorpayOrderResponse,
 } from "./useCheckout";
 export { useCouponValidate } from "./useCouponValidate";
-export { useMediaUpload } from "./useMediaUpload";
+export { useMediaUpload, useMediaCrop, useMediaTrim } from "./useMediaUpload";
 export { useCamera } from "./useCamera";
 export type { UseCameraOptions, UseCameraReturn } from "./useCamera";
 

@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage G1 cont.: Server Actions — Seller/Admin/Category + Rule 20 fixes in AdminMediaView / AdminSiteView
+
+### Added
+
+- **`src/actions/seller.actions.ts`** — Server Action: `becomeSellerAction()`. Auth-required, rate-limited by uid (STRICT preset). Calls `userRepository.update()` directly to set `role="seller"`, `storeStatus="pending"`. Returns `{ storeStatus, alreadySeller? }` — idempotent (returns current status if already a seller/admin).
+- **`src/actions/admin.actions.ts`** — Server Actions: `revokeSessionAction({ sessionId })` and `revokeUserSessionsAction({ userId })`. Both require admin/moderator role, are rate-limited by uid (API preset), validate input with Zod, and call `sessionRepository` methods directly — bypassing the service → apiClient → API route chain. Structured logging included.
+- **`src/actions/category.actions.ts`** — Server Action: `createCategoryAction(input)`. Admin-only, rate-limited by uid (API preset). Validates via `categoryCreateSchema` (from `@/lib/validation/schemas`), builds the full `CategoryCreateInput` struct (with defaults for `isActive`, `isSearchable`, `slug`, etc.), and calls `categoriesRepository.createWithHierarchy()` directly.
+- **`src/actions/index.ts`** — Barrel now re-exports `becomeSellerAction` + `BecomeSellerActionResult`, `createCategoryAction` + `CreateCategoryInput`, `revokeSessionAction`, `revokeUserSessionsAction`.
+- **`src/hooks/useAlgoliaSync.ts`** — New hooks: `useAlgoliaSyncProducts()` and `useAlgoliaSyncPages()`. Both wrap `adminService.algoliaSync` / `adminService.algoliaSyncPages` as `useApiMutation` hooks. Algolia operations call external services and therefore go through API routes (not Server Actions).
+- **`src/hooks/useMediaUpload.ts`** — Added `useMediaCrop<TResult>()` and `useMediaTrim<TResult>()` as exportable hooks wrapping `mediaService.crop` / `mediaService.trim` respectively. Barrel updated.
+- **`src/hooks/index.ts`** — Added exports: `useMediaCrop`, `useMediaTrim`, `useAlgoliaSyncProducts`, `useAlgoliaSyncPages`, `AlgoliaSyncResult`.
+
+### Changed
+
+- **`src/hooks/useBecomeSeller.ts`** — `mutationFn` now calls `becomeSellerAction()` from `@/actions` instead of `sellerService.becomeSeller()`. Drops `sellerService` import.
+- **`src/hooks/useSessions.ts`** — `useRevokeSession` and `useRevokeUserSessions` mutation functions now call `revokeSessionAction` / `revokeUserSessionsAction` from `@/actions`. Return types tightened to `success: true` (literal) from the Server Action. Drops `adminService` import for these mutations (retains `adminService` for the read query in `useAdminSessions`).
+- **`src/hooks/useAddressSelector.ts`** — `createAddress` mutation now calls `createAddressAction` from `@/actions` (was `addressService.create`). Result wrapped into `CreateAddressApiResponse` shape for consumer compatibility.
+- **`src/hooks/useCategorySelector.ts`** — `useCategorySelector`, `useCreateCategory`, and the second `useCreateCategory` in the category selector chain now call `createCategoryAction` from `@/actions` instead of `categoryService.create`. Read queries (`categoryService.list`) unchanged.
+
+### Fixed
+
+- **`src/features/admin/components/AdminMediaView.tsx`** — **Bug (Rule 20):** `cropMutation` and `trimMutation` were inline `useApiMutation` calls with `mediaService.crop` / `mediaService.trim` directly in the component. Now uses `useMediaCrop` / `useMediaTrim` from `@/hooks`. Removed `useApiMutation` and `mediaService` imports.
+- **`src/features/admin/components/AdminSiteView.tsx`** — **Bug (Rule 20):** `adminService.algoliaSync` and `adminService.algoliaSyncPages` were passed as raw function references into a local async wrapper inside JSX `onClick` handlers. Now uses `useAlgoliaSyncProducts` / `useAlgoliaSyncPages` hooks from `@/hooks`. Removed `adminService` and `API_ENDPOINTS` direct imports. Replaced manual `algoliaProductsLoading` / `algoliaPagesLoading` state with `mutation.isLoading` from the hooks.
+
+---
+
 ## [Unreleased] — Stage G1 cont.: deleteNotificationAction + Rule 20 fixes in UserNotificationsView / UserSettingsView
 
 ### Added

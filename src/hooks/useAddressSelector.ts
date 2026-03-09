@@ -3,6 +3,7 @@
 import { useApiQuery } from "./useApiQuery";
 import { useApiMutation } from "./useApiMutation";
 import { addressService } from "@/services";
+import { createAddressAction } from "@/actions";
 import type { AddressFormData } from "./useAddresses";
 
 interface SavedAddress {
@@ -56,7 +57,16 @@ export function useAddressSelector(options?: {
     CreateAddressApiResponse,
     AddressFormData
   >({
-    mutationFn: (data) => addressService.create(data),
+    mutationFn: async (data) => {
+      const result = await createAddressAction({
+        ...data,
+        isDefault: data.isDefault ?? false,
+      });
+      return {
+        success: true,
+        data: { id: result.id },
+      } as CreateAddressApiResponse;
+    },
     onSuccess: (res) => {
       refetch();
       if (res.data?.id) options?.onCreated?.(res.data.id);

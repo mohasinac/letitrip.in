@@ -1,9 +1,8 @@
 ﻿"use client";
 
 import { useState, useCallback } from "react";
-import { useApiMutation } from "@/hooks";
 import { nowMs } from "@/utils";
-import { mediaService } from "@/services";
+import { useMediaCrop, useMediaTrim } from "@/hooks";
 import { useTranslations } from "next-intl";
 import {
   Card,
@@ -27,13 +26,9 @@ export function AdminMediaView() {
   );
   const [isLoading, setIsLoading] = useState(false);
 
-  const cropMutation = useApiMutation({
-    mutationFn: (data) => mediaService.crop(data),
-  });
+  const cropMutation = useMediaCrop<{ data: { url: string } }>();
 
-  const trimMutation = useApiMutation({
-    mutationFn: (data) => mediaService.trim(data),
-  });
+  const trimMutation = useMediaTrim<{ data: { url: string } }>();
 
   const handleCropSubmit = useCallback(
     async (data: any) => {

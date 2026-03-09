@@ -564,6 +564,22 @@ export const UI_LABELS = {
       TWITTER: "Twitter",
       INSTAGRAM: "Instagram",
       LINKEDIN: "LinkedIn",
+      CREDENTIALS_TITLE: "Provider Credentials",
+      CREDENTIALS_SUBTITLE:
+        "API keys and secrets are encrypted with AES-256-GCM before storage. Leave a field blank to keep the existing value. Keys are never shown in plain text.",
+      RAZORPAY_SECTION: "Razorpay",
+      RAZORPAY_KEY_ID: "Razorpay Key ID",
+      RAZORPAY_KEY_SECRET: "Razorpay Key Secret",
+      RAZORPAY_WEBHOOK_SECRET: "Razorpay Webhook Secret",
+      RESEND_SECTION: "Resend (Email)",
+      RESEND_API_KEY: "Resend API Key",
+      WHATSAPP_SECTION: "WhatsApp Business API",
+      WHATSAPP_API_KEY: "WhatsApp API Key",
+      WHATSAPP_NUMBER: "WhatsApp Contact Number",
+      CREDENTIAL_PLACEHOLDER: (masked: string) =>
+        masked ? `Current: ${masked} — leave blank to keep` : "Paste new value",
+      CREDENTIAL_SET: "Saved ✔",
+      CREDENTIAL_NOT_SET: "Not configured",
     },
     CAROUSEL: {
       TITLE: "Carousel Management",

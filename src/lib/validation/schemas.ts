@@ -549,6 +549,20 @@ export const siteSettingsUpdateSchema = z
         platformShippingFixedMin: z.number().min(0),
       })
       .optional(),
+    /**
+     * Provider credentials — plaintext on input, encrypted at rest.
+     * Empty string = keep existing value unchanged.
+     * Max 512 chars covers all real-world API key lengths.
+     */
+    credentials: z
+      .object({
+        razorpayKeyId: z.string().max(512).optional(),
+        razorpayKeySecret: z.string().max(512).optional(),
+        razorpayWebhookSecret: z.string().max(512).optional(),
+        resendApiKey: z.string().max(512).optional(),
+        whatsappApiKey: z.string().max(512).optional(),
+      })
+      .optional(),
   })
   .partial();
 

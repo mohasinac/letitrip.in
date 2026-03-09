@@ -42,29 +42,41 @@ export const GET = createApiHandler({
     // Fetch site settings (singleton pattern)
     const settings = await siteSettingsRepository.getSingleton();
 
+    // Never expose encrypted credential blobs to any client
+    const { credentials: _encrypted, ...settingsWithoutCreds } = settings;
+
     // Check if user is authenticated and is admin
     const user = await getUserFromRequest(request);
     const isAdmin = user?.role === "admin";
 
     // Filter sensitive fields for non-admin users
-    let responseData: any = { ...settings };
+    let responseData: any;
 
-    if (!isAdmin) {
-      // Public fields only - remove sensitive admin-only fields
-      const {
-        emailSettings, // Hide SMTP config (contains fromEmail, replyTo)
-        legalPages, // Hide legal page content (can be large)
-        ...publicFields
-      } = settings;
+    if (isAdmin) {
+      // Admin: include masked credential values so the UI can show "rzp_li…key4"
+      const credentialsMasked =
+        await siteSettingsRepository.getCredentialsMasked();
+      responseData = { ...settingsWithoutCreds, credentialsMasked };
+    } else {
+      // Public: strip admin-only fields, expose the Razorpay key ID for the checkout modal
+      const { emailSettings, legalPages, ...publicFields } =
+        settingsWithoutCreds;
+
+      // Resolve the public Razorpay key ID: DB wins over env var
+      const decrypted = await siteSettingsRepository.getDecryptedCredentials();
+      const razorpayKeyIdPublic =
+        decrypted.razorpayKeyId ||
+        process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
+        "";
 
       responseData = {
         ...publicFields,
-        // Include only necessary contact info
         contact: {
           email: settings.contact.email,
           phone: settings.contact.phone,
-          // Hide full address
+          whatsappNumber: settings.contact.whatsappNumber,
         },
+        razorpayKeyId: razorpayKeyIdPublic,
       };
     }
 

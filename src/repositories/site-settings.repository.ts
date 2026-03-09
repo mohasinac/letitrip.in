@@ -9,10 +9,13 @@ import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import {
   SITE_SETTINGS_COLLECTION,
   SiteSettingsDocument,
+  SiteSettingsCredentials,
+  SiteSettingsCredentialsMasked,
   SiteSettingsUpdateInput,
   DEFAULT_SITE_SETTINGS_DATA,
 } from "@/db/schema/site-settings";
 import { DatabaseError } from "@/lib/errors";
+import { encrypt, decrypt, maskSecret } from "@/lib/encryption";
 
 /**
  * Repository for site settings management
@@ -70,6 +73,9 @@ class SiteSettingsRepository extends BaseRepository<SiteSettingsDocument> {
   /**
    * Update the global site settings
    *
+   * Credentials are encrypted before being written to Firestore.
+   * Pass an empty string for a credential field to leave it unchanged.
+   *
    * @param updates - Partial updates to apply
    * @returns Promise<SiteSettingsDocument>
    */
@@ -77,8 +83,30 @@ class SiteSettingsRepository extends BaseRepository<SiteSettingsDocument> {
     updates: SiteSettingsUpdateInput,
   ): Promise<SiteSettingsDocument> {
     try {
+      let finalUpdates: SiteSettingsUpdateInput = updates;
+
+      if (updates.credentials) {
+        const existing = await this.getSingleton();
+        const existingCreds: SiteSettingsCredentials =
+          existing.credentials ?? {};
+        const encryptedCreds: SiteSettingsCredentials = { ...existingCreds };
+
+        for (const [key, value] of Object.entries(updates.credentials) as [
+          keyof SiteSettingsCredentials,
+          string | undefined,
+        ][]) {
+          if (value && value.trim()) {
+            // Non-empty plaintext → encrypt and store
+            encryptedCreds[key] = encrypt(value.trim());
+          }
+          // Empty / undefined → keep whatever was already stored
+        }
+
+        finalUpdates = { ...updates, credentials: encryptedCreds };
+      }
+
       const updateData = prepareForFirestore({
-        ...updates,
+        ...finalUpdates,
         updatedAt: new Date(),
       });
 
@@ -93,6 +121,42 @@ class SiteSettingsRepository extends BaseRepository<SiteSettingsDocument> {
         `Failed to update site settings: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
+  }
+
+  /**
+   * Decrypt all stored provider credentials.
+   * FOR INTERNAL BACKEND USE ONLY — never return plaintext to the client.
+   *
+   * Falls back gracefully: returns an empty string for any field that
+   * cannot be decrypted (wrong key, missing value, etc.).
+   */
+  async getDecryptedCredentials(): Promise<Record<string, string>> {
+    const settings = await this.getSingleton();
+    const creds = settings.credentials ?? {};
+    const result: Record<string, string> = {};
+    for (const [key, value] of Object.entries(creds)) {
+      if (value) {
+        try {
+          result[key] = decrypt(value);
+        } catch {
+          result[key] = ""; // auth-tag mismatch or malformed blob → treat as missing
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Return masked credential values for the admin UI (e.g. "rzp_li…key4").
+   * Safe to include in API responses for authenticated admins.
+   */
+  async getCredentialsMasked(): Promise<SiteSettingsCredentialsMasked> {
+    const decrypted = await this.getDecryptedCredentials();
+    const masked: SiteSettingsCredentialsMasked = {};
+    for (const [key, value] of Object.entries(decrypted)) {
+      (masked as Record<string, string>)[key] = value ? maskSecret(value) : "";
+    }
+    return masked;
   }
 
   /**

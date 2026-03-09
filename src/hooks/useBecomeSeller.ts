@@ -15,7 +15,7 @@
 
 import { useApiMutation } from "./useApiMutation";
 import { useMessage } from "./useMessage";
-import { sellerService } from "@/services";
+import { becomeSellerAction } from "@/actions";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 
 export interface BecomeSellerResult {
@@ -27,7 +27,7 @@ export function useBecomeSeller() {
   const { showSuccess, showError } = useMessage();
 
   return useApiMutation<BecomeSellerResult, void>({
-    mutationFn: () => sellerService.becomeSeller(),
+    mutationFn: () => becomeSellerAction(),
     onSuccess: (data) => {
       if (!data?.alreadySeller) {
         showSuccess(SUCCESS_MESSAGES.USER.SELLER_APPLICATION_SUBMITTED);

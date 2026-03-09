@@ -3,6 +3,7 @@
 import { useApiQuery } from "./useApiQuery";
 import { useApiMutation } from "./useApiMutation";
 import { categoryService } from "@/services";
+import { createCategoryAction } from "@/actions";
 import type { CategoryDocument } from "@/db/schema";
 
 interface CategoriesResponse {
@@ -39,7 +40,7 @@ export function useCategorySelector(options?: {
     { data?: { id?: string }; id?: string },
     Partial<CategoryDocument>
   >({
-    mutationFn: (data) => categoryService.create(data),
+    mutationFn: (data) => createCategoryAction(data as any) as any,
     onSuccess: (res) => {
       refetch();
       const id = res?.data?.id ?? res?.id ?? "";
@@ -79,7 +80,7 @@ export function useCreateCategory(options?: {
   onError?: (err: Error) => void;
 }) {
   return useApiMutation<{ data?: { id?: string }; id?: string }, unknown>({
-    mutationFn: (data) => categoryService.create(data),
+    mutationFn: (data) => createCategoryAction(data as any) as any,
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });

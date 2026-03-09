@@ -9,6 +9,7 @@
 import { useApiQuery } from "./useApiQuery";
 import { useApiMutation } from "./useApiMutation";
 import { sessionService, adminService } from "@/services";
+import { revokeSessionAction, revokeUserSessionsAction } from "@/actions";
 import type { SessionDocument } from "@/db/schema/sessions";
 
 interface SessionWithUser extends SessionDocument {
@@ -55,10 +56,10 @@ export function useAdminSessions(limit = 100) {
  */
 export function useRevokeSession() {
   return useApiMutation<
-    { success: boolean; message: string },
+    { success: true; message: string },
     { sessionId: string }
   >({
-    mutationFn: async ({ sessionId }) => adminService.revokeSession(sessionId),
+    mutationFn: ({ sessionId }) => revokeSessionAction({ sessionId }),
   });
 }
 
@@ -67,9 +68,9 @@ export function useRevokeSession() {
  */
 export function useRevokeUserSessions() {
   return useApiMutation<
-    { success: boolean; message: string; revokedCount: number },
+    { success: true; message: string; revokedCount: number },
     { userId: string }
   >({
-    mutationFn: async ({ userId }) => adminService.revokeUserSessions(userId),
+    mutationFn: ({ userId }) => revokeUserSessionsAction({ userId }),
   });
 }

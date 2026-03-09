@@ -83,3 +83,14 @@ export type {
   ValidateCouponInput,
   ValidateCouponResult,
 } from "./coupon.actions";
+
+// Seller application (auth required)
+export { becomeSellerAction } from "./seller.actions";
+export type { BecomeSellerActionResult } from "./seller.actions";
+
+// Category mutations (admin only)
+export { createCategoryAction } from "./category.actions";
+export type { CreateCategoryInput } from "./category.actions";
+
+// Admin session management (admin only)
+export { revokeSessionAction, revokeUserSessionsAction } from "./admin.actions";

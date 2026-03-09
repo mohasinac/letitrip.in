@@ -30,3 +30,23 @@ export function useMediaUpload() {
 
   return { ...mutation, upload };
 }
+
+/**
+ * useMediaCrop
+ * Wraps `mediaService.crop()` as a `useApiMutation`.
+ */
+export function useMediaCrop<TResult = { url: string }>() {
+  return useApiMutation<TResult, unknown>({
+    mutationFn: (data) => mediaService.crop(data),
+  });
+}
+
+/**
+ * useMediaTrim
+ * Wraps `mediaService.trim()` as a `useApiMutation`.
+ */
+export function useMediaTrim<TResult = { url: string }>() {
+  return useApiMutation<TResult, unknown>({
+    mutationFn: (data) => mediaService.trim(data),
+  });
+}

@@ -122,8 +122,37 @@ export interface SiteSettingsDocument {
       codDeposit: number; // Percentage (0-1, e.g., 0.1 = 10%)
     };
   };
+  /**
+   * Encrypted provider credentials (AES-256-GCM via src/lib/encryption.ts).
+   * Values are encrypted blobs — never return raw to the client.
+   * Empty / undefined means "fall back to environment variable".
+   */
+  credentials?: SiteSettingsCredentials;
   createdAt: Date;
   updatedAt: Date;
+}
+
+/** Encrypted-at-rest credential blobs stored in Firestore. */
+export interface SiteSettingsCredentials {
+  /** Razorpay Key ID (semi-public — also returned unmasked in public API for the checkout modal) */
+  razorpayKeyId?: string;
+  /** Razorpay Key Secret — encrypted, NEVER sent to client */
+  razorpayKeySecret?: string;
+  /** Razorpay Webhook Secret — encrypted, NEVER sent to client */
+  razorpayWebhookSecret?: string;
+  /** Resend API key — encrypted, NEVER sent to client */
+  resendApiKey?: string;
+  /** WhatsApp Business Cloud API key — encrypted, NEVER sent to client */
+  whatsappApiKey?: string;
+}
+
+/** Masked credential values safe to return to an authenticated admin. */
+export interface SiteSettingsCredentialsMasked {
+  razorpayKeyId?: string;
+  razorpayKeySecret?: string;
+  razorpayWebhookSecret?: string;
+  resendApiKey?: string;
+  whatsappApiKey?: string;
 }
 
 /**
@@ -436,6 +465,7 @@ export const SITE_SETTINGS_UPDATABLE_FIELDS = [
   "shipping",
   "returns",
   "faq",
+  "credentials",
 ] as const;
 
 // ============================================
