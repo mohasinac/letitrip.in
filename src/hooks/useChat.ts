@@ -54,6 +54,10 @@ export function useChat(chatId: string | null): UseChatReturn {
   const [error, setError] = useState<string | null>(null);
   const tokenExpiresAtRef = useRef<number>(0);
   const msgRefRef = useRef<DatabaseReference | null>(null);
+  // Store the specific listener so off() only removes this subscription
+  const listenerRef = useRef<
+    ((snap: import("firebase/database").DataSnapshot) => void) | null
+  >(null);
 
   /**
    * Authenticate the secondary Firebase app instance with a server-issued
@@ -79,38 +83,34 @@ export function useChat(chatId: string | null): UseChatReturn {
       }
 
       // Subscribe to /chat/{chatId}/messages
-      if (msgRefRef.current) {
-        off(msgRefRef.current);
+      if (msgRefRef.current && listenerRef.current) {
+        off(msgRefRef.current, "value", listenerRef.current);
+        listenerRef.current = null;
       }
 
       const messagesRef = ref(chatRealtimeDb, `/chat/${chatId}/messages`);
       msgRefRef.current = messagesRef;
 
-      onValue(
-        messagesRef,
-        (snapshot) => {
-          if (snapshot.exists()) {
-            const raw = snapshot.val() as Record<
-              string,
-              Omit<ChatMessage, "id">
-            >;
-            const parsed: ChatMessage[] = Object.entries(raw)
-              .map(([id, msg]) => ({ id, ...msg }))
-              .sort((a, b) => a.timestamp - b.timestamp);
-            setMessages(parsed);
-          } else {
-            setMessages([]);
-          }
-          setIsConnected(true);
-          setIsLoading(false);
-        },
-        (err) => {
-          logger.error("Chat RTDB subscription error", err);
-          setError("Could not connect to chat. Please try again.");
-          setIsConnected(false);
-          setIsLoading(false);
-        },
-      );
+      listenerRef.current = (snapshot) => {
+        if (snapshot.exists()) {
+          const raw = snapshot.val() as Record<string, Omit<ChatMessage, "id">>;
+          const parsed: ChatMessage[] = Object.entries(raw)
+            .map(([id, msg]) => ({ id, ...msg }))
+            .sort((a, b) => a.timestamp - b.timestamp);
+          setMessages(parsed);
+        } else {
+          setMessages([]);
+        }
+        setIsConnected(true);
+        setIsLoading(false);
+      };
+
+      onValue(messagesRef, listenerRef.current, (err) => {
+        logger.error("Chat RTDB subscription error", err);
+        setError("Could not connect to chat. Please try again.");
+        setIsConnected(false);
+        setIsLoading(false);
+      });
     } catch (err) {
       logger.error("Failed to authenticate for chat RTDB", err);
       setError("Failed to connect to chat.");
@@ -122,8 +122,9 @@ export function useChat(chatId: string | null): UseChatReturn {
     connectAndSubscribe();
 
     return () => {
-      if (msgRefRef.current) {
-        off(msgRefRef.current);
+      if (msgRefRef.current && listenerRef.current) {
+        off(msgRefRef.current, "value", listenerRef.current);
+        listenerRef.current = null;
         msgRefRef.current = null;
       }
     };

@@ -5,6 +5,8 @@
  */
 
 import { NextRequest } from "next/server";
+import { randomBytes } from "crypto";
+import { fileTypeFromBuffer } from "file-type";
 import { requireAuthFromRequest } from "@/lib/security/authorization";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
@@ -46,7 +48,6 @@ export async function POST(request: NextRequest) {
       return errorResponse(ERROR_MESSAGES.MEDIA.NO_FILE, 400);
     }
 
-    // Validate file type and size
     const allowedImageTypes = [
       "image/jpeg",
       "image/jpg",
@@ -57,15 +58,22 @@ export async function POST(request: NextRequest) {
     const allowedVideoTypes = ["video/mp4", "video/webm", "video/quicktime"];
     const allowedTypes = [...allowedImageTypes, ...allowedVideoTypes];
 
-    if (!allowedTypes.includes(file.type)) {
+    // Convert file to buffer early so we can inspect magic bytes
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Server-side magic byte detection — cannot be spoofed by the client
+    const detected = await fileTypeFromBuffer(buffer);
+    if (!detected || !allowedTypes.includes(detected.mime)) {
       return errorResponse(ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
         allowed: "JPEG, PNG, GIF, WebP, MP4, WebM, QuickTime",
-        received: file.type,
+        detected: detected?.mime ?? "unknown",
       });
     }
 
-    // Validate file size (max 10MB for images, 50MB for videos)
-    const isVideo = allowedVideoTypes.includes(file.type);
+    // Use server-detected MIME type for storage, not client-supplied file.type
+    const detectedMime = detected.mime;
+    const isVideo = allowedVideoTypes.includes(detectedMime);
     const maxSize = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024; // 50MB or 10MB
 
     if (file.size > maxSize) {
@@ -75,19 +83,15 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Generate unique filename
+    // Generate cryptographically secure unique filename
     const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 8);
-    const extension = file.name.split(".").pop();
+    const randomString = randomBytes(6).toString("hex"); // 12 hex chars, crypto-safe
+    const extension = detected.ext;
     const filename = `${timestamp}-${randomString}.${extension}`;
 
     // Determine storage path
     const basePath = folder || "uploads";
     const storagePath = `${basePath}/${user.uid}/${filename}`;
-
-    // Convert file to buffer
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
 
     // Upload to Firebase Storage
     const storage = getStorage();
@@ -96,7 +100,7 @@ export async function POST(request: NextRequest) {
 
     await fileRef.save(buffer, {
       metadata: {
-        contentType: file.type,
+        contentType: detectedMime,
         metadata: {
           uploadedBy: user.uid,
           originalName: file.name,

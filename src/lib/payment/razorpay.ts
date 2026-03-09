@@ -14,7 +14,7 @@
  */
 
 import Razorpay from "razorpay";
-import crypto from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 import { AppError } from "@/lib/errors";
 
 // ─── Singleton Razorpay instance ─────────────────────────────────────────────
@@ -97,12 +97,16 @@ export function verifyPaymentSignature(params: RazorpayPaymentResult): boolean {
     );
   }
 
-  const generatedSignature = crypto
-    .createHmac("sha256", key_secret)
+  const generatedSignature = createHmac("sha256", key_secret)
     .update(`${params.razorpay_order_id}|${params.razorpay_payment_id}`)
     .digest("hex");
 
-  return generatedSignature === params.razorpay_signature;
+  // Guard: both strings must be 64 hex chars (32-byte HMAC-SHA256)
+  if (params.razorpay_signature.length !== 64) return false;
+  return timingSafeEqual(
+    Buffer.from(generatedSignature, "hex"),
+    Buffer.from(params.razorpay_signature, "hex"),
+  );
 }
 
 // ─── Webhook Signature Verification ──────────────────────────────────────────
@@ -124,12 +128,15 @@ export function verifyWebhookSignature(
     );
   }
 
-  const generatedSignature = crypto
-    .createHmac("sha256", webhookSecret)
+  const generatedSignature = createHmac("sha256", webhookSecret)
     .update(rawBody)
     .digest("hex");
 
-  return generatedSignature === receivedSignature;
+  if (receivedSignature.length !== 64) return false;
+  return timingSafeEqual(
+    Buffer.from(generatedSignature, "hex"),
+    Buffer.from(receivedSignature, "hex"),
+  );
 }
 
 // ─── Currency Utilities ────────────────────────────────────────────────────────

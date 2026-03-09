@@ -18,7 +18,11 @@ import { useState, useEffect } from "react";
  * ```
  */
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false);
+  const [matches, setMatches] = useState(
+    // Lazy initializer: use real value on first client render, suppressing the flash.
+    // Returns false on server (no window) — consistent with no-match default.
+    () => typeof window !== "undefined" && window.matchMedia(query).matches,
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;

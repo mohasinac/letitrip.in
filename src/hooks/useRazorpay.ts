@@ -75,6 +75,7 @@ function isScriptLoaded(): boolean {
 
 export function useRazorpay() {
   const [isLoading, setIsLoading] = useState(!isScriptLoaded());
+  const [isError, setIsError] = useState(false);
   const scriptRef = useRef<HTMLScriptElement | null>(null);
 
   useEffect(() => {
@@ -96,7 +97,10 @@ export function useRazorpay() {
     script.src = RAZORPAY_SCRIPT_URL;
     script.async = true;
     script.onload = () => setIsLoading(false);
-    script.onerror = () => setIsLoading(false); // Still let UI proceed
+    script.onerror = () => {
+      setIsLoading(false);
+      setIsError(true);
+    };
     document.body.appendChild(script);
     scriptRef.current = script;
 
@@ -132,5 +136,5 @@ export function useRazorpay() {
     });
   };
 
-  return { openRazorpay, isLoading };
+  return { openRazorpay, isLoading, isError };
 }

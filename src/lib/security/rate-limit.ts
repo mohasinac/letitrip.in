@@ -1,17 +1,25 @@
 /**
  * Rate Limiting
  *
- * Simple in-memory rate limiter for API routes.
- * Tracks requests by IP address and enforces limits.
+ * Upstash Redis-backed sliding-window rate limiter for API routes.
+ * Works correctly across serverless instances on Vercel.
+ *
+ * Requires environment variables:
+ *   UPSTASH_REDIS_REST_URL
+ *   UPSTASH_REDIS_REST_TOKEN
+ *
+ * Falls back to in-memory rate limiting when Upstash is not configured
+ * (e.g. local development without Redis). The dev bypass has been removed —
+ * rate limits are enforced in all environments.
  *
  * @example
  * ```ts
- * import { rateLimit } from '@/lib/security';
+ * import { applyRateLimit, RateLimitPresets } from '@/lib/security';
  *
- * export async function POST(request: Request) {
- *   const rateLimitResult = await rateLimit(request);
- *   if (!rateLimitResult.success) {
- *     return NextResponse.json({ error: rateLimitResult.error }, { status: 429 });
+ * export async function POST(request: NextRequest) {
+ *   const result = await applyRateLimit(request, RateLimitPresets.AUTH);
+ *   if (!result.success) {
+ *     return NextResponse.json({ error: result.error }, { status: 429 });
  *   }
  *   // ... handle request
  * }
@@ -20,27 +28,12 @@
 
 import { NextRequest } from "next/server";
 
-interface RateLimitStore {
-  count: number;
-  resetAt: number;
-}
-
-const store = new Map<string, RateLimitStore>();
-
 export interface RateLimitConfig {
-  /**
-   * Maximum requests allowed in the window
-   */
+  /** Maximum requests allowed in the window */
   limit: number;
-
-  /**
-   * Time window in seconds
-   */
+  /** Time window in seconds */
   window: number;
-
-  /**
-   * Custom identifier (default: IP address)
-   */
+  /** Custom identifier (default: IP address) */
   identifier?: string;
 }
 
@@ -52,147 +45,143 @@ export interface RateLimitResult {
   error?: string;
 }
 
-/**
- * Get client IP address from request
- */
+// ─── IP extraction ────────────────────────────────────────────────────────────
+
 function getClientIP(request: NextRequest | Request): string {
-  // Try Next.js request IP first
-  if ("ip" in request && typeof request.ip === "string") {
-    return request.ip;
-  }
-
-  // Try headers
   const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) {
-    return forwarded.split(",")[0].trim();
-  }
-
+  if (forwarded) return forwarded.split(",")[0].trim();
   const realIP = request.headers.get("x-real-ip");
-  if (realIP) {
-    return realIP;
-  }
-
-  // Fallback
+  if (realIP) return realIP;
   return "unknown";
 }
 
-/**
- * Rate limit checker
- *
- * @param request - Request object
- * @param config - Rate limit configuration
- * @returns Rate limit result with success status
- */
-export async function rateLimit(
-  request: NextRequest | Request,
-  config: RateLimitConfig = { limit: 10, window: 60 },
-): Promise<RateLimitResult> {
-  // Skip rate limiting in development
-  if (process.env.NODE_ENV === "development") {
+// ─── Upstash-backed limiter ───────────────────────────────────────────────────
+
+let upstashLimiter:
+  | ((ip: string, limit: number, window: number) => Promise<RateLimitResult>)
+  | null = null;
+
+async function getUpstashLimiter() {
+  if (upstashLimiter) return upstashLimiter;
+
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+
+  const { Redis } = await import("@upstash/redis");
+  const { Ratelimit } = await import("@upstash/ratelimit");
+
+  const redis = new Redis({ url, token });
+  const cache = new Map<string, import("@upstash/ratelimit").Ratelimit>();
+
+  upstashLimiter = async (
+    ip: string,
+    limit: number,
+    window: number,
+  ): Promise<RateLimitResult> => {
+    const key = `${limit}:${window}`;
+    if (!cache.has(key)) {
+      cache.set(
+        key,
+        new Ratelimit({
+          redis,
+          limiter: Ratelimit.slidingWindow(limit, `${window} s`),
+          prefix: "letitrip:rl",
+        }),
+      );
+    }
+    const result = await cache.get(key)!.limit(ip);
+    const reset = Math.ceil(result.reset / 1000);
     return {
-      success: true,
-      limit: config.limit,
-      remaining: config.limit,
-      reset: Math.ceil((Date.now() + config.window * 1000) / 1000),
+      success: result.success,
+      limit: result.limit,
+      remaining: result.remaining,
+      reset,
+      error: result.success
+        ? undefined
+        : `Rate limit exceeded. Try again after ${new Date(result.reset).toISOString()}`,
     };
-  }
+  };
 
-  const identifier = config.identifier || getClientIP(request);
+  return upstashLimiter;
+}
+
+// ─── In-memory fallback (single-instance only) ───────────────────────────────
+
+interface StoreEntry {
+  count: number;
+  resetAt: number;
+}
+
+const memStore = new Map<string, StoreEntry>();
+
+function inMemoryLimit(
+  identifier: string,
+  limit: number,
+  window: number,
+): RateLimitResult {
   const now = Date.now();
-  const windowMs = config.window * 1000;
-
-  // Get or create store entry
-  let entry = store.get(identifier);
-
-  // Reset if window has passed
+  const windowMs = window * 1000;
+  let entry = memStore.get(identifier);
   if (!entry || now > entry.resetAt) {
-    entry = {
-      count: 0,
-      resetAt: now + windowMs,
-    };
-    store.set(identifier, entry);
+    entry = { count: 0, resetAt: now + windowMs };
+    memStore.set(identifier, entry);
   }
-
-  // Increment count
   entry.count++;
-
-  // Check if limit exceeded
-  const remaining = Math.max(0, config.limit - entry.count);
+  const remaining = Math.max(0, limit - entry.count);
   const reset = Math.ceil(entry.resetAt / 1000);
-
-  if (entry.count > config.limit) {
+  if (entry.count > limit) {
     return {
       success: false,
-      limit: config.limit,
+      limit,
       remaining: 0,
       reset,
       error: `Rate limit exceeded. Try again in ${Math.ceil((entry.resetAt - now) / 1000)} seconds`,
     };
   }
-
-  return {
-    success: true,
-    limit: config.limit,
-    remaining,
-    reset,
-  };
+  return { success: true, limit, remaining, reset };
 }
 
+// ─── Public API ───────────────────────────────────────────────────────────────
+
 /**
- * Cleanup old entries (call periodically)
+ * Rate limit checker. Uses Upstash Redis when configured, in-memory fallback otherwise.
+ * Rate limiting is enforced in ALL environments (no dev bypass).
  */
+export async function rateLimit(
+  request: NextRequest | Request,
+  config: RateLimitConfig = { limit: 10, window: 60 },
+): Promise<RateLimitResult> {
+  const identifier = config.identifier || getClientIP(request);
+  const limiter = await getUpstashLimiter();
+  if (limiter) {
+    return limiter(identifier, config.limit, config.window);
+  }
+  return inMemoryLimit(identifier, config.limit, config.window);
+}
+
+/** Alias */
+export const applyRateLimit = rateLimit;
+
+/** Rate limit presets for common scenarios */
+export const RateLimitPresets = {
+  STRICT: { limit: 5, window: 60 },
+  AUTH: { limit: 10, window: 60 },
+  API: { limit: 60, window: 60 },
+  GENEROUS: { limit: 100, window: 60 },
+  PASSWORD_RESET: { limit: 3, window: 3600 },
+  EMAIL_VERIFICATION: { limit: 5, window: 3600 },
+} as const;
+
+/** @deprecated Use rateLimit() instead */
 export function cleanupRateLimitStore(): void {
   const now = Date.now();
-  for (const [key, entry] of store.entries()) {
-    if (now > entry.resetAt) {
-      store.delete(key);
-    }
+  for (const [key, entry] of memStore.entries()) {
+    if (now > entry.resetAt) memStore.delete(key);
   }
 }
 
-/**
- * Clear all rate limit data (for testing)
- */
+/** @deprecated For testing only */
 export function clearRateLimitStore(): void {
-  store.clear();
+  memStore.clear();
 }
-
-/**
- * Apply rate limit to a request (alias for rateLimit)
- */
-export const applyRateLimit = rateLimit;
-
-/**
- * Rate limit presets for common scenarios
- */
-export const RateLimitPresets = {
-  /**
-   * Strict: 5 requests per minute
-   */
-  STRICT: { limit: 5, window: 60 },
-
-  /**
-   * Auth: 10 requests per minute (for login/register)
-   */
-  AUTH: { limit: 10, window: 60 },
-
-  /**
-   * API: 60 requests per minute
-   */
-  API: { limit: 60, window: 60 },
-
-  /**
-   * Generous: 100 requests per minute
-   */
-  GENEROUS: { limit: 100, window: 60 },
-
-  /**
-   * Password reset: 3 requests per hour
-   */
-  PASSWORD_RESET: { limit: 3, window: 3600 },
-
-  /**
-   * Email verification: 5 requests per hour
-   */
-  EMAIL_VERIFICATION: { limit: 5, window: 3600 },
-} as const;

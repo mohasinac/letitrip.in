@@ -32,6 +32,7 @@ import { ERROR_MESSAGES } from "@/constants";
 import { getCookie, hasCookie, deleteCookie } from "@/utils";
 import { logger } from "@/classes";
 import { sessionService, authService } from "@/services";
+import { invalidateQueries } from "@/hooks/useApiQuery";
 import type { AvatarMetadata } from "@/db/schema";
 import type { UserRole } from "@/types/auth";
 
@@ -300,6 +301,19 @@ export function SessionProvider({ children }: SessionProviderProps) {
 
       // Now sign out of Firebase SDK (triggers onAuthStateChanged with null)
       await firebaseSignOut();
+
+      // Clear the client-side query cache to prevent prior user data leaking
+      // to any account that signs in next in the same browser tab.
+      invalidateQueries(
+        ["cart"],
+        ["wishlist"],
+        ["notifications"],
+        ["orders"],
+        ["profile"],
+        ["user"],
+        ["addresses"],
+        ["bids"],
+      );
 
       // Clear state immediately
       setUser(null);

@@ -19,19 +19,28 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeMode>("light");
-
-  useEffect(() => {
-    // Get theme from localStorage or system preference
-    const savedTheme = localStorage.getItem("theme") as ThemeMode | null;
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-      .matches
+  // Read the class that the server-side layout already applied from the cookie.
+  // This avoids the flash of wrong theme: the initial render matches the server HTML.
+  const [theme, setThemeState] = useState<ThemeMode>(() => {
+    if (typeof window === "undefined") return "light";
+    return document.documentElement.classList.contains("dark")
       ? "dark"
       : "light";
-    const initialTheme = savedTheme || systemTheme;
+  });
 
-    setThemeState(initialTheme);
-    applyTheme(initialTheme);
+  useEffect(() => {
+    // Sync with localStorage / system preference on first mount only if
+    // no server-side cookie was set yet (first-time visitors).
+    const savedTheme = localStorage.getItem("theme") as ThemeMode | null;
+    if (!savedTheme) {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+        .matches
+        ? "dark"
+        : "light";
+      setThemeState(systemTheme);
+      applyTheme(systemTheme);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const applyTheme = useCallback((newTheme: ThemeMode) => {
@@ -50,6 +59,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     (newTheme: ThemeMode) => {
       setThemeState(newTheme);
       localStorage.setItem("theme", newTheme);
+      // Write cookie so the server can render the correct class before hydration
+      document.cookie = `theme=${newTheme}; path=/; max-age=31536000; SameSite=Lax`;
       applyTheme(newTheme);
     },
     [applyTheme],
@@ -59,6 +70,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setThemeState((prev) => {
       const newTheme = prev === "light" ? "dark" : "light";
       localStorage.setItem("theme", newTheme);
+      document.cookie = `theme=${newTheme}; path=/; max-age=31536000; SameSite=Lax`;
       applyTheme(newTheme);
       return newTheme;
     });

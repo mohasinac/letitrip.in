@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Docs: Add Known Bugs Section to MASTER_PLAN.md
+
+### Changed
+
+- **`docs/MASTER_PLAN.md`** — Added Section 9 "Known Bugs & Fixes" documenting 11 real bugs found by static code audit. Updated Table of Contents and Executive Summary table with new entries (2 new P0 rows, 3 new P1 rows, 3 new P2 rows, 3 new P3 rows).
+
+  **P0 bugs (production-critical — fix before next release):**
+  - §9.9 — `verifyPaymentSignature` and `verifyWebhookSignature` use string `===` (timing attack on HMAC — fraudulent order fulfilment risk)
+  - §9.10 — Payment verify route uses stale cart snapshot prices instead of live product prices (undercharge vulnerability)
+
+  **P1 bugs (user-facing correctness):**
+  - §9.1 — `useWishlistToggle`: `toggle()` throws on API failure but call sites use `onClick` (unhandled rejection, no user feedback)
+  - §9.2 — `useMediaQuery` / `useBreakpoint`: `useState(false)` causes mobile layout flash on every page load
+  - §9.5 — `useRazorpay`: script load failure silently sets `isLoading=false`, user sees "ready" but payment throws
+  - §9.11 — `useApiQuery` module-level cache not cleared on sign-out (previous user's data briefly shown to next user)
+
+  **P2 bugs (resource leaks / stale UI):**
+  - §9.3 — `useNotifications`: `markRead`/`markAllRead` mutations have no `onSuccess` refetch, badge stays stale
+  - §9.4 — `useChat`: `off(ref)` without a listener arg removes all RTDB subscriptions on that path
+  - §9.6 — `apiClient`: external `AbortSignal` abort listener is never removed (event listener memory leak)
+
+  **P3 bugs (latent / non-user-facing):**
+  - §9.7 — `Queue.process()`: recursive call in `finally` not `await`-ed (unhandled promise rejections)
+  - §9.8 — `StorageManager.getInstance(prefix)`: `prefix` arg silently ignored after first call (namespace collision risk)
+
+---
+
 ## [Unreleased] — Architecture: Migrate Admin-Only Components to Feature Module (Run 3)
 
 ### Moved

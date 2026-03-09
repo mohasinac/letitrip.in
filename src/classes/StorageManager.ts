@@ -16,7 +16,8 @@ export interface StorageOptions {
 }
 
 export class StorageManager {
-  private static instance: StorageManager;
+  // Per-prefix instance map: different prefixes get independent instances
+  private static instances = new Map<string, StorageManager>();
   private prefix: string;
 
   private constructor(prefix: string = "app_") {
@@ -24,13 +25,14 @@ export class StorageManager {
   }
 
   /**
-   * Get singleton instance
+   * Get-or-create a StorageManager for the given prefix.
+   * Each prefix returns a separate instance, preventing namespace collisions.
    */
-  public static getInstance(prefix?: string): StorageManager {
-    if (!StorageManager.instance) {
-      StorageManager.instance = new StorageManager(prefix);
+  public static getInstance(prefix: string = ""): StorageManager {
+    if (!StorageManager.instances.has(prefix)) {
+      StorageManager.instances.set(prefix, new StorageManager(prefix));
     }
-    return StorageManager.instance;
+    return StorageManager.instances.get(prefix)!;
   }
 
   /**

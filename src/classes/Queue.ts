@@ -59,7 +59,10 @@ export class Queue<T = any> {
         this.errors.set(task.id, error as Error);
       } finally {
         this.running--;
-        this.process(); // Continue processing
+        this.process().catch((err) => {
+          // Prevent unhandled promise rejections from the recursive tail call
+          console.error("Queue.process error", err);
+        });
       }
     }
   }

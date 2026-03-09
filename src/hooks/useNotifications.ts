@@ -26,6 +26,7 @@ export function useNotifications(limit = 10) {
 
   const { mutate: markRead } = useApiMutation<unknown, string>({
     mutationFn: (id: string) => notificationService.markRead(id),
+    onSuccess: () => refetch(),
   });
 
   const { mutate: markAllRead, isLoading: isMarkingAll } = useApiMutation<
@@ -33,6 +34,7 @@ export function useNotifications(limit = 10) {
     void
   >({
     mutationFn: () => notificationService.markAllRead(),
+    onSuccess: () => refetch(),
   });
 
   return {

@@ -16,7 +16,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 import { orderRepository } from "@/repositories";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { serverLogger } from "@/lib/server-logger";
@@ -51,11 +51,16 @@ const CANCELLED_STATUSES = new Set([
 function verifyShiprocketSignature(body: string, signature: string): boolean {
   const secret = process.env.SHIPROCKET_WEBHOOK_SECRET;
   if (!secret) {
-    if (process.env.NODE_ENV === "production") return false; // Block if secret missing in production
-    return true; // Allow in dev/test when secret is not configured
+    if (process.env.NODE_ENV === "production") return false;
+    return true;
   }
   const expected = createHmac("sha256", secret).update(body).digest("hex");
-  return expected === signature;
+  // Length guard: hex-encoded SHA-256 is always 64 chars
+  if (signature.length !== 64) return false;
+  return timingSafeEqual(
+    Buffer.from(expected, "hex"),
+    Buffer.from(signature, "hex"),
+  );
 }
 
 // ─── Route ────────────────────────────────────────────────────────────────────

@@ -19,17 +19,18 @@ export function useWishlistToggle(productId: string, initial = false) {
   const [isLoading, setIsLoading] = useState(false);
 
   const toggle = useCallback(async () => {
+    const prev = inWishlist;
+    setInWishlist(!inWishlist);
     setIsLoading(true);
     try {
-      if (inWishlist) {
+      if (prev) {
         await wishlistService.remove(productId);
-        setInWishlist(false);
       } else {
         await wishlistService.add(productId);
-        setInWishlist(true);
       }
     } catch (err) {
-      // Re-throw so the caller can handle and display the error
+      // Rollback optimistic state so the UI isn't stuck
+      setInWishlist(prev);
       throw err;
     } finally {
       setIsLoading(false);

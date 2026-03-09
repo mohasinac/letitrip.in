@@ -1,4 +1,5 @@
 import "./globals.css";
+import { cookies } from "next/headers";
 import { getLocale } from "next-intl/server";
 import type { Metadata, Viewport } from "next";
 import { SEO_CONFIG } from "@/constants";
@@ -92,8 +93,17 @@ export default async function RootLayout({
   // getLocale() reads the locale set by the next-intl middleware from headers
   const locale = await getLocale();
 
+  // Read theme cookie set by ThemeContext on toggle — eliminates dark-mode flash
+  const cookieStore = await cookies();
+  const themeCookie = cookieStore.get("theme")?.value;
+  const themeClass = themeCookie === "dark" ? "dark" : "";
+
   return (
-    <html lang={locale} suppressHydrationWarning className="h-full">
+    <html
+      lang={locale}
+      suppressHydrationWarning
+      className={`h-full${themeClass ? ` ${themeClass}` : ""}`}
+    >
       <head>
         <script
           type="application/ld+json"

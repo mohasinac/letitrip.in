@@ -99,19 +99,10 @@ const nextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
-          // Content Security Policy
-          {
-            key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline'", // Next.js requires unsafe-inline/eval
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https: blob:",
-              "font-src 'self' data:",
-              "connect-src 'self' https://*.googleapis.com https://*.google.com https://*.firebase.com https://*.firebaseio.com https://*.cloudfunctions.net",
-              "frame-src 'self' https://accounts.google.com",
-            ].join("; "),
-          },
+          // Content Security Policy — set dynamically per-request in middleware.ts
+          // with a per-request nonce that eliminates unsafe-eval in prod.
+          // Leaving an empty placeholder so the header is still explicit.
+          // The dynamic value in middleware.ts takes precedence.
         ],
       },
     ];

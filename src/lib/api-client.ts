@@ -78,7 +78,11 @@ class ApiClient {
     endpoint: string,
     params?: Record<string, string | number | boolean>,
   ): string {
-    const url = new URL(endpoint, window.location.origin);
+    const origin =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000");
+    const url = new URL(endpoint, origin);
 
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
@@ -133,13 +137,15 @@ class ApiClient {
     const externalSignal = config?.signal;
     const combinedSignal = controller.signal;
 
+    let onAbort: (() => void) | null = null;
     if (externalSignal) {
       // If external signal is already aborted, abort our controller
       if (externalSignal.aborted) {
         controller.abort();
       } else {
         // Listen to external signal and abort our controller if it fires
-        externalSignal.addEventListener("abort", () => controller.abort());
+        onAbort = () => controller.abort();
+        externalSignal.addEventListener("abort", onAbort);
       }
     }
 
@@ -178,9 +184,11 @@ class ApiClient {
         );
       }
 
+      if (onAbort) externalSignal?.removeEventListener("abort", onAbort);
       return data.data as T;
     } catch (error) {
       clearTimeout(timeoutId);
+      if (onAbort) externalSignal?.removeEventListener("abort", onAbort);
 
       // Handle abort errors (timeout or external cancellation)
       if (error instanceof Error && error.name === "AbortError") {
