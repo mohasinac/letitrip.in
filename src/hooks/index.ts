@@ -27,7 +27,7 @@ export type {
   ProductsApiResponse,
 } from "./usePublicProfile";
 export { useSellerStorefront } from "./useSellerStorefront";
-export { useForm } from "./useForm";
+export { useForm } from "react-hook-form";
 export { useAdminStats } from "./useAdminStats";
 export { useMessage } from "./useMessage";
 export {
