@@ -124,13 +124,6 @@ export interface UseRealtimeEventReturn<TData = undefined> {
 
 const DEFAULT_TIMEOUT_MS = 3 * 60 * 1000;
 
-const DEFAULT_MESSAGES: Required<RealtimeEventMessages> = {
-  tokenFailure: ERROR_MESSAGES.REALTIME.INIT_FAILED,
-  connectionLost: ERROR_MESSAGES.REALTIME.CONNECTION_LOST,
-  timedOut: ERROR_MESSAGES.REALTIME.TIMED_OUT,
-  failure: ERROR_MESSAGES.REALTIME.OPERATION_FAILED,
-};
-
 // ─── Hook ────────────────────────────────────────────────────────────────────
 
 /**
@@ -194,7 +187,10 @@ export function useRealtimeEvent<TData = undefined>(
       } = configRef.current;
 
       const msg: Required<RealtimeEventMessages> = {
-        ...DEFAULT_MESSAGES,
+        tokenFailure: ERROR_MESSAGES.REALTIME.INIT_FAILED,
+        connectionLost: ERROR_MESSAGES.REALTIME.CONNECTION_LOST,
+        timedOut: ERROR_MESSAGES.REALTIME.TIMED_OUT,
+        failure: ERROR_MESSAGES.REALTIME.OPERATION_FAILED,
         ...messages,
       };
 
