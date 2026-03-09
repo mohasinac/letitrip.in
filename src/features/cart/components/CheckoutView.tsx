@@ -115,8 +115,8 @@ export function CheckoutView() {
     addressQuery: { data: addrData, isLoading: addrLoading },
     cartQuery: { data: cartData, isLoading: cartLoading },
     placeCodOrderMutation: { mutate: placeCodOrder },
-    createPaymentOrder,
-    verifyPayment,
+    createPaymentOrderMutation: { mutate: createPaymentOrder },
+    verifyPaymentMutation: { mutate: verifyPayment },
   } = useCheckout({
     onPlaceCodOrderSuccess: (result) => {
       const primaryOrderId = result?.orderIds?.[0] ?? "";

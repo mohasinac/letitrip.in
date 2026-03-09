@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage G1 cont.: Server Actions — Contact, Newsletter, FAQ, Profile
+
+### Added
+
+- **`src/actions/contact.actions.ts`** — Server Action: `sendContactAction`. Validates input with Zod, rate-limits by IP (STRICT: 5 req/60 s), and calls `sendContactEmail` directly — no HTTP round-trip. Does not require authentication.
+- **`src/actions/newsletter.actions.ts`** — Server Action: `subscribeNewsletterAction`. Validates email + source, rate-limits by IP, handles re-subscription and idempotent active-subscriber case via `newsletterRepository`. No auth required.
+- **`src/actions/faq.actions.ts`** — Server Action: `voteFaqAction`. Auth-required vote (helpful / not-helpful) that calls `faqsRepository.update()` directly. Rate-limited by uid (API preset).
+- **`src/actions/profile.actions.ts`** — Server Action: `updateProfileAction`. Auth-required profile PATCH — calls `userRepository.updateProfileWithVerificationReset()` to auto-reset `emailVerified`/`phoneVerified` when those fields change.
+- **`src/actions/index.ts`** — Barrel now re-exports all new actions and their input/result types: `sendContactAction`, `subscribeNewsletterAction`, `voteFaqAction`, `updateProfileAction`.
+
+### Changed
+
+- **`src/hooks/useContactSubmit.ts`** — `mutationFn` now calls `sendContactAction` from `@/actions` instead of `contactService.send`. Drops `contactService` import.
+- **`src/hooks/useNewsletter.ts`** — `mutationFn` now calls `subscribeNewsletterAction` from `@/actions` instead of `newsletterService.subscribe`. Drops `newsletterService` import.
+- **`src/hooks/useFaqVote.ts`** — `mutationFn` now calls `voteFaqAction` from `@/actions` instead of `faqService.vote`. Drops `faqService` import; return type updated to `VoteFaqResult` (was `void`).
+- **`src/hooks/useProfile.ts`** — `useUpdateProfile` now calls `updateProfileAction` from `@/actions` (replaces `profileService.update`). Added `useQueryClient` + `invalidateQueries(["profile"])` on success so profile data re-fetches automatically. Fixed `any` callback typings to `Error` / `UserDocument`.
+
+### Fixed
+
+- **`src/hooks/useCheckout.ts`** — **Bug (Rule 20):** `createPaymentOrder` and `verifyPayment` were returned as raw bound service methods, allowing components to call service layer code directly. Both are now wrapped as proper `useApiMutation` hooks (`createPaymentOrderMutation`, `verifyPaymentMutation`) inside `useCheckout`. **Bug (missing invalidation):** `placeCodOrderMutation` now calls `queryClient.invalidateQueries(["cart"])` and `queryClient.invalidateQueries(["orders"])` on success so the cart badge empties and the orders list refreshes after a successful order. `verifyPaymentMutation` also invalidates those keys on success.
+- **`src/hooks/usePlaceBid.ts`** — **Bug:** Missing cache invalidation after placing a bid caused the auction UI and RipCoin balance to show stale data. Added `onSuccess` that invalidates `["bids", productId]`, `["auction", productId]`, and `["ripcoins"]` queries.
+- **`src/features/cart/components/CheckoutView.tsx`** — Updated destructuring to use new `createPaymentOrderMutation.mutate` and `verifyPaymentMutation.mutate` from `useCheckout` (replacing the now-removed raw service bindings).
+
+---
+
 ## [Unreleased] — Stage G1: Server Actions & Hook Migrations
 
 ### Added

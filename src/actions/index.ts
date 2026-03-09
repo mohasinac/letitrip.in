@@ -46,3 +46,19 @@ export {
   markNotificationReadAction,
   markAllNotificationsReadAction,
 } from "./notification.actions";
+
+// Contact (public — no auth)
+export { sendContactAction } from "./contact.actions";
+export type { SendContactInput } from "./contact.actions";
+
+// Newsletter (public — no auth)
+export { subscribeNewsletterAction } from "./newsletter.actions";
+export type { SubscribeNewsletterInput } from "./newsletter.actions";
+
+// FAQ voting (auth required)
+export { voteFaqAction } from "./faq.actions";
+export type { VoteFaqInput, VoteFaqResult } from "./faq.actions";
+
+// Profile update (auth required)
+export { updateProfileAction } from "./profile.actions";
+export type { UpdateProfileInput } from "./profile.actions";

@@ -1,7 +1,7 @@
 /**
  * User Profile Hooks
  *
- * Custom hooks for user profile operations using the centralized API client.
+ * Custom hooks for user profile operations.
  *
  * @example
  * ```tsx
@@ -14,7 +14,10 @@
 
 import { useApiQuery } from "./useApiQuery";
 import { useApiMutation } from "./useApiMutation";
-import { sessionService, profileService } from "@/services";
+import { useQueryClient } from "@tanstack/react-query";
+import { sessionService } from "@/services";
+import { updateProfileAction, type UpdateProfileInput } from "@/actions";
+import type { UserDocument } from "@/db/schema";
 
 // ============================================================================
 // Types
@@ -32,12 +35,6 @@ export interface UserProfile {
   updatedAt: Date;
 }
 
-interface UpdateProfileData {
-  displayName?: string;
-  phoneNumber?: string;
-  photoURL?: string;
-}
-
 // ============================================================================
 // Profile Hooks
 // ============================================================================
@@ -48,7 +45,7 @@ interface UpdateProfileData {
 export function useProfile(options?: {
   enabled?: boolean;
   onSuccess?: (data: UserProfile) => void;
-  onError?: (error: any) => void;
+  onError?: (error: Error) => void;
 }) {
   return useApiQuery<UserProfile>({
     queryKey: ["profile"],
@@ -63,12 +60,18 @@ export function useProfile(options?: {
  * Hook to update user profile
  */
 export function useUpdateProfile(options?: {
-  onSuccess?: (data: any) => void;
-  onError?: (error: any) => void;
+  onSuccess?: (data: UserDocument) => void;
+  onError?: (error: Error) => void;
 }) {
-  return useApiMutation<any, UpdateProfileData>({
-    mutationFn: (data) => profileService.update(data),
-    onSuccess: options?.onSuccess,
+  const queryClient = useQueryClient();
+
+  return useApiMutation<UserDocument, UpdateProfileInput>({
+    mutationFn: (data) => updateProfileAction(data),
+    onSuccess: async (data) => {
+      // Invalidate profile cache so the updated data is re-fetched
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+      options?.onSuccess?.(data);
+    },
     onError: options?.onError,
   });
 }
