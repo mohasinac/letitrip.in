@@ -1,8 +1,11 @@
 /**
  * useRealtimeBids Hook
  *
- * Subscribes to Firebase Realtime Database for live auction bid updates.
- * Replaces polling-based updates with push-based streaming.
+ * Subscribes to live auction bid updates via Server-Sent Events (SSE).
+ *
+ * Uses GET /api/realtime/bids/[id] — a streaming Next.js route that keeps a
+ * Firebase Admin RTDB listener open server-side and pushes updates to the
+ * browser via text/event-stream.  No Firebase client SDK required.
  *
  * @example
  * ```tsx
@@ -13,8 +16,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ref, onValue, type DatabaseReference } from "firebase/database";
-import { realtimeDb } from "@/lib/firebase/realtime";
+import { API_ENDPOINTS } from "@/constants";
 import { logger } from "@/classes";
 
 export interface RealtimeBidData {
@@ -29,23 +31,22 @@ export interface RealtimeBidData {
 }
 
 export interface UseRealtimeBidsReturn {
-  /** Current highest bid from Realtime DB (most up-to-date) */
+  /** Current highest bid — most recent value pushed from the server */
   currentBid: number | null;
   /** Total active bid count */
   bidCount: number | null;
   /** Info about the most recent bid placed */
   lastBid: RealtimeBidData["lastBid"];
-  /** Whether the RTDB connection is live */
+  /** Whether the SSE connection is live */
   connected: boolean;
   /** Last time the data was updated (epoch ms) */
   updatedAt: number | null;
 }
 
 /**
- * Hook that subscribes to real-time bid updates via Firebase Realtime Database.
+ * Hook that subscribes to real-time bid updates via SSE.
  *
- * Falls back gracefully when RTDB is unavailable or `productId` is null.
- * In development, RTDB may not be configured — hook works silently with null values.
+ * Falls back gracefully when SSE is unavailable or `productId` is null.
  *
  * @param productId - The auction product ID to subscribe to, or null to disable
  */
@@ -56,38 +57,42 @@ export function useRealtimeBids(
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    if (!productId || !realtimeDb) {
+    if (!productId || typeof EventSource === "undefined") {
       setConnected(false);
       return;
     }
 
-    const bidRef: DatabaseReference = ref(
-      realtimeDb,
-      `/auction-bids/${productId}`,
-    );
+    const url = API_ENDPOINTS.REALTIME.BIDS_SSE(productId);
+    const es = new EventSource(url);
 
-    const unsubscribe = onValue(
-      bidRef,
-      (snapshot) => {
-        if (snapshot.exists()) {
-          const val = snapshot.val() as RealtimeBidData;
-          setData(val);
-        } else {
-          setData(null);
+    es.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data) as {
+          type: string;
+          data?: RealtimeBidData | null;
+        };
+        if (msg.type === "connected") {
+          setConnected(true);
+        } else if (msg.type === "update") {
+          setData(msg.data ?? null);
+          setConnected(true);
+        } else if (msg.type === "error") {
+          setConnected(false);
         }
-        setConnected(true);
-      },
-      (error) => {
-        // RTDB error — fall back to polling
-        logger.warn("[useRealtimeBids] RTDB subscription error:", {
-          error: error.message,
-        });
-        setConnected(false);
-      },
-    );
+      } catch {
+        logger.warn("[useRealtimeBids] Failed to parse SSE message");
+      }
+    };
+
+    es.onerror = () => {
+      // EventSource will attempt to reconnect automatically.
+      setConnected(false);
+      logger.warn("[useRealtimeBids] SSE connection error — will retry");
+    };
 
     return () => {
-      unsubscribe();
+      es.close();
+      setConnected(false);
     };
   }, [productId]);
 

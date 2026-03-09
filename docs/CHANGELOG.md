@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage E7: SSR Phase 5 — Real-time SSE Islands
+
+### Added
+
+- **`src/app/api/realtime/bids/[id]/route.ts`** — New SSE route (`GET /api/realtime/bids/[id]`). Uses Firebase Admin RTDB `onValue` listener to push live auction bid updates to the browser as `text/event-stream`. Node.js runtime, `maxDuration = 300`, 25-second heartbeat pings, and clean teardown on request abort. Sends `{ type: "connected" }`, `{ type: "update", data }`, and `{ type: "error" }` events.
+- **`src/constants/api-endpoints.ts`** — Added `REALTIME.BIDS_SSE: (productId: string) => string` endpoint constant.
+
+### Changed
+
+- **`src/hooks/useRealtimeBids.ts`** — Complete rewrite. Removed Firebase client SDK imports (`firebase/database`, `ref`, `onValue`, `realtimeDb`). Now uses browser `EventSource` pointed at `API_ENDPOINTS.REALTIME.BIDS_SSE(productId)`. No Firebase client bundle cost for auction bid subscriptions.
+
+### Fixed
+
+- **`src/hooks/__tests__/useRealtimeBids.test.ts`** — Tests rewritten for the new SSE-based implementation. All 9 tests pass.
+
+---
+
 ## [Unreleased] — Bug Fixes
 
 ### Fixed

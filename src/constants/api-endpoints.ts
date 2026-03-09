@@ -311,6 +311,7 @@ export const API_ENDPOINTS = {
   // Realtime DB custom token
   REALTIME: {
     TOKEN: "/api/realtime/token", // POST - Get Firebase custom token for Realtime DB
+    BIDS_SSE: (productId: string) => `/api/realtime/bids/${productId}`, // GET - SSE stream for auction bid updates
   },
 
   // RipCoins endpoints

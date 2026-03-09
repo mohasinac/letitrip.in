@@ -83,10 +83,10 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 | D | react-hook-form — `useForm` re-exported from `react-hook-form`; custom `useForm.ts` deleted | ✅ Complete |
 | E1 | SSR Phase 1 — blog/products/events/sellers: async RSC + `generateMetadata` | ✅ Complete |
 | E2 | SSR Phase 2 — homepage `initialData` pre-fetch | ✅ Complete |
-| E3 | SSR Phase 3 — listing pages (products, categories, stores, search) | ⏳ Pending |
-| E4 | SSR Phase 6 — static pages ISR | ⏳ Pending |
-| E5 | SSR Phase 7 — SEO: `generateMetadata` all pages, JSON-LD | ⏳ Pending |
-| E6 | SSR Phase 4 — auth session cookie (`__session`) | ⏳ Pending |
+| E3 | SSR Phase 3 — listing pages (products, categories, stores, search) | ✅ Complete |
+| E4 | SSR Phase 6 — static pages ISR | ✅ Complete |
+| E5 | SSR Phase 7 — SEO: `generateMetadata` all pages, JSON-LD | ✅ Complete |
+| E6 | SSR Phase 4 — auth session cookie (`__session`) | ✅ Complete |
 | E7 | SSR Phase 5 — real-time SSE islands | ⏳ Pending |
 | F | Styling cleanup + `@lir/*` library extraction | ⏳ Pending |
 | G | Server Actions + repository fixes | ⏳ Pending |

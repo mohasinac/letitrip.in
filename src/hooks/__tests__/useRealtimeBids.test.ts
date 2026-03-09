@@ -1,48 +1,54 @@
 /**
- * useRealtimeBids Tests — Phase 18.5
+ * useRealtimeBids Tests
  *
- * - Returns null values before snapshot arrives
- * - Updates currentBid/bidCount/lastBid when snapshot arrives
- * - Sets connected=true on successful snapshot, false on error
- * - Calls off() on unmount (unsubscribes)
+ * The hook now uses EventSource (SSE) instead of Firebase RTDB client SDK.
+ * - Opens an EventSource to /api/realtime/bids/{productId}
+ * - Sets connected=true on "connected" and "update" messages
+ * - Updates bid data on "update" messages
+ * - Sets connected=false on "error" messages and onerror
+ * - Closes EventSource on unmount
  * - Does nothing when productId is null
  */
 
 import { renderHook, act } from "@testing-library/react";
 
-// Capture onValue callbacks so we can trigger them in tests
-let capturedSuccessCallback:
-  | ((snapshot: { exists: () => boolean; val: () => unknown }) => void)
-  | null = null;
-let capturedErrorCallback: ((error: Error) => void) | null = null;
-
-const mockOff = jest.fn();
-const mockRef = jest.fn(() => ({ _path: "test-ref" }));
-const mockOnValue = jest.fn(
-  (
-    ref: unknown,
-    successCb: (snap: { exists: () => boolean; val: () => unknown }) => void,
-    errorCb: (error: Error) => void,
-  ) => {
-    capturedSuccessCallback = successCb;
-    capturedErrorCallback = errorCb;
-    return mockOff;
+// ── EventSource mock ────────────────────────────────────────────────────────
+let capturedMessageHandler: ((event: MessageEvent) => void) | null = null;
+let capturedErrorHandler: (() => void) | null = null;
+const mockClose = jest.fn();
+const MockEventSource = jest.fn().mockImplementation(() => ({
+  set onmessage(handler: (event: MessageEvent) => void) {
+    capturedMessageHandler = handler;
   },
-);
+  set onerror(handler: () => void) {
+    capturedErrorHandler = handler;
+  },
+  close: mockClose,
+}));
+
+const emit = (data: unknown) =>
+  act(() => {
+    capturedMessageHandler?.({ data: JSON.stringify(data) } as MessageEvent);
+  });
 
 jest.mock("@/classes", () => ({
   logger: { warn: jest.fn(), error: jest.fn(), info: jest.fn() },
 }));
 
-jest.mock("@/lib/firebase/config", () => ({
-  realtimeDb: { app: {} }, // truthy value
+// Provide a minimal API_ENDPOINTS stub
+jest.mock("@/constants", () => ({
+  API_ENDPOINTS: {
+    REALTIME: {
+      BIDS_SSE: (id: string) => `/api/realtime/bids/${id}`,
+    },
+  },
 }));
 
-jest.mock("firebase/database", () => ({
-  ref: (...args: unknown[]) => (mockRef as any)(...args),
-  onValue: (...args: unknown[]) => (mockOnValue as any)(...args),
-  off: (...args: unknown[]) => (mockOff as any)(...args),
-}));
+// Set EventSource as a global (JSDOM does not include it)
+Object.defineProperty(global, "EventSource", {
+  writable: true,
+  value: MockEventSource,
+});
 
 import { useRealtimeBids } from "../useRealtimeBids";
 
@@ -51,102 +57,86 @@ const mockLogger = jest.requireMock("@/classes").logger;
 describe("useRealtimeBids", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    capturedSuccessCallback = null;
-    capturedErrorCallback = null;
+    capturedMessageHandler = null;
+    capturedErrorHandler = null;
   });
 
-  it("returns null values initially before any snapshot arrives", () => {
+  it("returns null values initially before any message arrives", () => {
     const { result } = renderHook(() => useRealtimeBids("product-123"));
     expect(result.current.currentBid).toBeNull();
     expect(result.current.bidCount).toBeNull();
     expect(result.current.lastBid).toBeNull();
     expect(result.current.updatedAt).toBeNull();
+    expect(result.current.connected).toBe(false);
   });
 
-  it("updates state when snapshot with data arrives", () => {
+  it("opens EventSource with the correct URL", () => {
+    renderHook(() => useRealtimeBids("product-abc"));
+    expect(MockEventSource).toHaveBeenCalledWith(
+      "/api/realtime/bids/product-abc",
+    );
+  });
+
+  it("sets connected=true on 'connected' message", () => {
+    const { result } = renderHook(() => useRealtimeBids("product-123"));
+    emit({ type: "connected", productId: "product-123" });
+    expect(result.current.connected).toBe(true);
+  });
+
+  it("updates state when 'update' message with data arrives", () => {
     const { result } = renderHook(() => useRealtimeBids("product-123"));
 
-    act(() => {
-      capturedSuccessCallback?.({
-        exists: () => true,
-        val: () => ({
-          currentBid: 1500,
-          bidCount: 7,
-          lastBid: { amount: 1500, bidderName: "Alice", timestamp: 1700000000 },
-          updatedAt: 1700000001,
-        }),
-      });
+    emit({
+      type: "update",
+      data: {
+        currentBid: 1500,
+        bidCount: 7,
+        lastBid: { amount: 1500, bidderName: "Alice", timestamp: 1700000000 },
+        updatedAt: 1700000001,
+      },
     });
 
     expect(result.current.currentBid).toBe(1500);
     expect(result.current.bidCount).toBe(7);
     expect(result.current.lastBid?.bidderName).toBe("Alice");
     expect(result.current.updatedAt).toBe(1700000001);
-  });
-
-  it("sets connected=true after successful snapshot", () => {
-    const { result } = renderHook(() => useRealtimeBids("product-123"));
-
-    act(() => {
-      capturedSuccessCallback?.({
-        exists: () => true,
-        val: () => ({
-          currentBid: 100,
-          bidCount: 1,
-          lastBid: null,
-          updatedAt: 1,
-        }),
-      });
-    });
-
     expect(result.current.connected).toBe(true);
   });
 
-  it("handles null snapshot (no bids yet) — keeps data null but connected=true", () => {
+  it("handles 'update' with null data (no bids yet)", () => {
     const { result } = renderHook(() => useRealtimeBids("product-123"));
-
-    act(() => {
-      capturedSuccessCallback?.({
-        exists: () => false,
-        val: () => null,
-      });
-    });
-
+    emit({ type: "update", data: null });
     expect(result.current.currentBid).toBeNull();
     expect(result.current.connected).toBe(true);
   });
 
-  it("sets connected=false on subscription error", () => {
+  it("sets connected=false on 'error' message", () => {
     const { result } = renderHook(() => useRealtimeBids("product-123"));
-
-    act(() => {
-      capturedErrorCallback?.(new Error("RTDB connection failed"));
-    });
-
+    emit({ type: "connected", productId: "product-123" }); // first connected
+    emit({ type: "error", message: "Realtime connection lost" });
     expect(result.current.connected).toBe(false);
   });
 
-  it("calls off() on unmount to unsubscribe", () => {
+  it("sets connected=false on onerror (network drop)", () => {
+    const { result } = renderHook(() => useRealtimeBids("product-123"));
+    emit({ type: "connected", productId: "product-123" });
+    act(() => {
+      capturedErrorHandler?.();
+    });
+    expect(result.current.connected).toBe(false);
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      "[useRealtimeBids] SSE connection error — will retry",
+    );
+  });
+
+  it("calls EventSource.close() on unmount", () => {
     const { unmount } = renderHook(() => useRealtimeBids("product-123"));
     unmount();
-    expect(mockOff).toHaveBeenCalled();
+    expect(mockClose).toHaveBeenCalled();
   });
 
-  it("does not subscribe when productId is null", () => {
+  it("does not open EventSource when productId is null", () => {
     renderHook(() => useRealtimeBids(null));
-    expect(mockOnValue).not.toHaveBeenCalled();
-  });
-
-  it("calls logger.warn on RTDB subscription error", () => {
-    renderHook(() => useRealtimeBids("product-123"));
-
-    act(() => {
-      capturedErrorCallback?.(new Error("RTDB connection failed"));
-    });
-
-    expect(mockLogger.warn).toHaveBeenCalledWith(
-      "[useRealtimeBids] RTDB subscription error:",
-      expect.objectContaining({ error: "RTDB connection failed" }),
-    );
+    expect(MockEventSource).not.toHaveBeenCalled();
   });
 });
