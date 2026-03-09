@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Search, Gavel, PackageCheck } from "lucide-react";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { Button, Heading, Section, Text } from "@/components";
+import { Button, Heading, Section, Span, Text } from "@/components";
 import { useRouter } from "@/i18n/navigation";
 
 // ─── Step configuration ───────────────────────────────────────────────────────
@@ -100,7 +100,7 @@ function StepCard({
           className={`absolute -top-3 -right-3 md:-top-2 md:-right-2 w-7 h-7 rounded-full ${step.badgeBg}
             flex items-center justify-center shadow-md z-20`}
         >
-          <span className="text-white text-xs font-bold">{step.number}</span>
+          <Span className="text-white text-xs font-bold">{step.number}</Span>
         </div>
 
         {/* Icon */}
@@ -165,7 +165,7 @@ export function HowItWorksSection() {
         >
           {/* Pill label */}
           <div className="inline-flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 inline-block" />
+            <Span className="w-1.5 h-1.5 rounded-full bg-indigo-500 inline-block" />
             {t("howItWorksPill")}
           </div>
 
