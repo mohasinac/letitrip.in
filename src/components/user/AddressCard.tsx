@@ -51,7 +51,8 @@ export function AddressCard({
   className = "",
 }: AddressCardProps) {
   const { spacing, themed, flex } = THEME_CONSTANTS;
-  const t = useTranslations("actions");
+  const tActions = useTranslations("actions");
+  const tAddr = useTranslations("addresses");
 
   return (
     <Card
@@ -65,7 +66,7 @@ export function AddressCard({
             <Heading level={3}>{address.label}</Heading>
             {address.isDefault && (
               <Badge variant="info" className="mt-1">
-                Default
+                {tAddr("default")}
               </Badge>
             )}
           </div>
@@ -78,7 +79,7 @@ export function AddressCard({
               onClick={onEdit}
               className="text-sm"
             >
-              {t("edit")}
+              {tActions("edit")}
             </Button>
             <Button
               variant="ghost"
@@ -86,7 +87,7 @@ export function AddressCard({
               onClick={onDelete}
               className="text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
             >
-              {t("delete")}
+              {tActions("delete")}
             </Button>
           </div>
         </div>
@@ -124,7 +125,7 @@ export function AddressCard({
               onClick={onSetDefault}
               className="w-full"
             >
-              Set as Default
+              {tAddr("setDefault")}
             </Button>
           </div>
         )}
