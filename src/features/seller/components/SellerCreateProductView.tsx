@@ -16,8 +16,8 @@ import {
   ProductForm,
   type AdminProduct,
 } from "@/components";
-import { useApiMutation, useMessage } from "@/hooks";
-import { sellerService } from "@/services";
+import { useMessage } from "@/hooks";
+import { useCreateSellerProduct } from "../hooks/useSellerProducts";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 const { spacing, themed, borderRadius } = THEME_CONSTANTS;
@@ -51,21 +51,18 @@ export function SellerCreateProductView() {
   const { showSuccess, showError } = useMessage();
   const [product, setProduct] = useState<Partial<AdminProduct>>(EMPTY_PRODUCT);
 
-  const { mutate: createProduct, isLoading } = useApiMutation({
-    mutationFn: () => sellerService.createProduct(product),
-    onSuccess: () => {
+  const { mutate: createProduct, isLoading } = useCreateSellerProduct(
+    () => {
       showSuccess(t("createSuccess"));
       router.push(ROUTES.SELLER.PRODUCTS);
     },
-    onError: () => {
-      showError(t("saveFailed"));
-    },
-  });
+    () => showError(t("saveFailed")),
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!product.title) return;
-    createProduct(undefined);
+    createProduct(product);
   };
 
   return (

@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useApiQuery, useApiMutation, useUrlTable } from "@/hooks";
-import { productService } from "@/services";
+import { productService, sellerService } from "@/services";
 import type { AdminProduct } from "@/components";
 
 const PAGE_SIZE = 25;
@@ -90,4 +90,24 @@ export function useSellerProducts(
     updateMutation,
     PAGE_SIZE,
   };
+}
+
+// --- Standalone mutations for create/edit pages ---
+
+export function useCreateSellerProduct(
+  onSuccess?: () => void,
+  onError?: () => void,
+) {
+  return useApiMutation<void, Partial<AdminProduct>>({
+    mutationFn: (product) => sellerService.createProduct(product),
+    onSuccess,
+    onError,
+  });
+}
+
+export function useUpdateSellerProduct(id: string, onSuccess?: () => void) {
+  return useApiMutation<void, Partial<AdminProduct>>({
+    mutationFn: (data) => productService.update(id, data),
+    onSuccess,
+  });
 }

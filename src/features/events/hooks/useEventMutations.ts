@@ -71,3 +71,17 @@ export function useReviewEntry(onSuccess?: () => void) {
     onSuccess,
   });
 }
+
+// --- Participate (survey entry) ---
+
+export function useEventEnter(
+  eventId: string,
+  onSuccess?: () => void,
+  onError?: () => void,
+) {
+  return useApiMutation<void, Record<string, unknown>>({
+    mutationFn: (data) => eventService.enter(eventId, data),
+    onSuccess,
+    onError,
+  });
+}

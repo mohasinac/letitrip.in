@@ -7,9 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage G1 cont.: Rule 20 fixes in SellerCreateProductView / SellerEditProductView / EventParticipateView
+
+### Added
+
+- **`src/features/seller/hooks/useSellerProducts.ts`** — Added `useCreateSellerProduct(onSuccess, onError)`: standalone mutation hook wrapping `sellerService.createProduct`. Added `useUpdateSellerProduct(id, onSuccess)`: standalone mutation hook wrapping `productService.update(id, data)`.
+- **`src/features/seller/hooks/index.ts`** — Barrel now exports `useCreateSellerProduct` and `useUpdateSellerProduct`.
+- **`src/features/events/hooks/useEventMutations.ts`** — Added `useEventEnter(eventId, onSuccess, onError)`: mutation hook wrapping `eventService.enter(eventId, data)` for survey/event participation.
+
+### Fixed
+
+- **`src/features/seller/components/SellerCreateProductView.tsx`** — **Bug (Rule 20):** `useApiMutation({ mutationFn: () => sellerService.createProduct(product) })` was inline in the component. Now uses `useCreateSellerProduct()` from `../hooks/useSellerProducts`. Removed direct `sellerService` and `useApiMutation` imports.
+- **`src/features/seller/components/SellerEditProductView.tsx`** — **Bug (Rule 20):** `await productService.update(id, {...})` was called directly inside `handleSubmit` with manual try/catch and `isSubmitting` state. Replaced with `useUpdateSellerProduct(id, onSuccess)` mutation hook. Removed `isSubmitting` state; uses `mutation.isLoading` instead. Removed direct service call.
+- **`src/features/events/components/EventParticipateView.tsx`** — **Bug (Rule 20):** `useApiMutation({ mutationFn: (data) => eventService.enter(id, data) })` was inline in the component. Now uses `useEventEnter(id, onSuccess, onError)` from `../hooks/useEventMutations`. Removed `useApiMutation` hook import.
+
+---
+
 ## [Unreleased] — Stage G1 cont.: Server Actions — Seller/Admin/Category + Rule 20 fixes in AdminMediaView / AdminSiteView
 
 ### Added
+
+- **`src/lib/encryption.ts`** — AES-256-GCM encryption utility for sensitive settings at rest. `encrypt()` / `decrypt()` / `maskSecret()` / `isEncrypted()`. 96-bit random IV per encryption, 128-bit GCM auth tag (authenticated encryption — no separate HMAC needed). Master key read from `SETTINGS_ENCRYPTION_KEY` env var (64-char hex, 32 bytes). Server-only.
+- **`src/features/admin/components/SiteCredentialsForm.tsx`** — Admin form for managing encrypted provider credentials: Razorpay (key ID, key secret, webhook secret), Resend API key, WhatsApp Business API key, WhatsApp contact number. Shows masked current values as placeholders; blank field = keep existing; inputs rendered as `type="password"` to prevent shoulder-surfing.
+
+### Changed
+
+- **`src/db/schema/site-settings.ts`** — Added `credentials?: SiteSettingsCredentials` field to `SiteSettingsDocument`. Added exported types `SiteSettingsCredentials` and `SiteSettingsCredentialsMasked`. Updated `SITE_SETTINGS_UPDATABLE_FIELDS` to include `"credentials"`.
+- **`src/lib/validation/schemas.ts`** — Added `credentials` sub-object to `siteSettingsUpdateSchema`. Each field is `z.string().max(512).optional()`. Empty string = keep existing credential unchanged.
+- **`src/repositories/site-settings.repository.ts`** — `updateSingleton()` now encrypts credential fields (via `encrypt()`) before writing to Firestore; empty/undefined fields are skipped (keep existing). Added `getDecryptedCredentials()` (internal backend use only — never return to client) and `getCredentialsMasked()` (returns masked values for admin API response).
+- **`src/app/api/site-settings/route.ts`** — `GET`: encrypted credential blobs are stripped from all responses; admin response includes `credentialsMasked` (masked display values) and the public Razorpay key ID (decrypted, for checkout modal); public response includes `razorpayKeyId` (DB-first then env). `PATCH`: credentials pass through to repository, which encrypts them.
+- **`src/lib/payment/razorpay.ts`** — `getRazorpay()` is now async. `resolveRazorpayCredentials()` reads from Firestore DB first (decrypted), falls back to env vars. Singleton removed — fresh credentials per request (supports key rotation without server restart). `verifyPaymentSignature()` and `verifyWebhookSignature()` are now async.
+- **`src/lib/email.ts`** — Added `getResend()` (async, DB-first Resend key resolution) and `getEmailConfig()` (DB-first fromName/fromEmail). Added exported `sendEmail()` helper for DB-first email sending. Module-level `resend`, `FROM_EMAIL`, `FROM_NAME` retained as env-var fallbacks for existing email functions (incremental migration path).
+- **`src/features/admin/components/AdminSiteView.tsx`** — Renders `SiteCredentialsForm`; `handleSave()` includes credential updates only when at least one field is non-empty; credential inputs reset after successful save; `credentialsMasked` from API response tracked separately from regular settings state.
+- **`src/features/admin/components/index.ts`** — Added exports for `SiteCredentialsForm` and `CredentialsUpdateValues`.
+- **`src/constants/ui.ts`** — Added credentials section to `ADMIN.SITE` labels (`CREDENTIALS_TITLE`, `RAZORPAY_*`, `RESEND_*`, `WHATSAPP_*`).
+- **`messages/en.json`** — Added `credentialsTitle`, `razorpaySection`, `razorpayKeyId/Secret/WebhookSecret`, `resendSection`, `resendApiKey`, `whatsappSection`, `whatsappApiKey`, `whatsappNumber`, `credentialSet`, `credentialNotSet`, `credentialPlaceholderSet/Unset` to `adminSite`.
+- **`src/app/api/payment/webhook/route.ts`** — `verifyWebhookSignature()` call updated to `await` (now async).
+
+---
 
 - **`src/actions/seller.actions.ts`** — Server Action: `becomeSellerAction()`. Auth-required, rate-limited by uid (STRICT preset). Calls `userRepository.update()` directly to set `role="seller"`, `storeStatus="pending"`. Returns `{ storeStatus, alreadySeller? }` — idempotent (returns current status if already a seller/admin).
 - **`src/actions/admin.actions.ts`** — Server Actions: `revokeSessionAction({ sessionId })` and `revokeUserSessionsAction({ userId })`. Both require admin/moderator role, are rate-limited by uid (API preset), validate input with Zod, and call `sessionRepository` methods directly — bypassing the service → apiClient → API route chain. Structured logging included.

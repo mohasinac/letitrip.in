@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { useApiQuery, useAuth, useApiMutation, useMessage } from "@/hooks";
+import { useApiQuery, useAuth, useMessage } from "@/hooks";
 import { eventService } from "@/services";
+import { useEventEnter } from "../hooks/useEventMutations";
 import {
   ROUTES,
   SUCCESS_MESSAGES,
@@ -49,14 +50,14 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
     enabled: !authLoading,
   });
 
-  const mutation = useApiMutation<void, Record<string, unknown>>({
-    mutationFn: (data) => eventService.enter(id, data),
-    onSuccess: () => {
+  const mutation = useEventEnter(
+    id,
+    () => {
       showSuccess(SUCCESS_MESSAGES.EVENT.ENTRY_SUBMITTED);
       setSubmitted(true);
     },
-    onError: () => showError(ERROR_MESSAGES.EVENT.ALREADY_ENTERED),
-  });
+    () => showError(ERROR_MESSAGES.EVENT.ALREADY_ENTERED),
+  );
 
   // Auth redirect
   if (!authLoading && !user) {

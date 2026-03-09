@@ -27,6 +27,7 @@ import {
 } from "@/constants";
 import { useTranslations } from "next-intl";
 import { productService } from "@/services";
+import { useUpdateSellerProduct } from "../hooks/useSellerProducts";
 
 const { spacing, flex } = THEME_CONSTANTS;
 
@@ -42,7 +43,6 @@ export function SellerEditProductView({ id }: SellerEditProductViewProps) {
   const tActions = useTranslations("actions");
 
   const [formData, setFormData] = useState<Partial<AdminProduct> | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -70,7 +70,13 @@ export function SellerEditProductView({ id }: SellerEditProductViewProps) {
     [productData, user],
   );
 
-  const handleSubmit = async () => {
+  const { mutate: updateProduct, isLoading: isSubmitting } =
+    useUpdateSellerProduct(id, () => {
+      showSuccess(SUCCESS_MESSAGES.PRODUCT.UPDATED);
+      router.push(ROUTES.SELLER.PRODUCTS);
+    });
+
+  const handleSubmit = () => {
     if (!formData) return;
     setError(null);
 
@@ -87,52 +93,41 @@ export function SellerEditProductView({ id }: SellerEditProductViewProps) {
       return;
     }
 
-    try {
-      setIsSubmitting(true);
-      await productService.update(id, {
-        title: formData.title,
-        description: formData.description,
-        category: formData.category,
-        subcategory: formData.subcategory || undefined,
-        brand: formData.brand || undefined,
-        price: formData.price ?? 0,
-        stockQuantity: formData.stockQuantity ?? 0,
-        currency: formData.currency ?? "INR",
-        mainImage: formData.mainImage,
-        images: formData.images ?? [],
-        tags: formData.tags ?? [],
-        shippingInfo: formData.shippingInfo || undefined,
-        returnPolicy: formData.returnPolicy || undefined,
-        condition: formData.condition || "new",
-        insurance: formData.insurance ?? false,
-        insuranceCost: formData.insurance
-          ? (formData.insuranceCost ?? 0)
-          : undefined,
-        shippingPaidBy: formData.shippingPaidBy || "buyer",
-        isAuction: formData.isAuction ?? false,
-        auctionEndDate: formData.auctionEndDate || undefined,
-        startingBid: formData.startingBid || undefined,
-        reservePrice: formData.reservePrice || undefined,
-        buyNowPrice: formData.buyNowPrice || undefined,
-        minBidIncrement: formData.minBidIncrement || undefined,
-        autoExtendable: formData.autoExtendable ?? false,
-        auctionExtensionMinutes: formData.autoExtendable
-          ? (formData.auctionExtensionMinutes ?? 5)
-          : undefined,
-        auctionShippingPaidBy: formData.isAuction
-          ? formData.auctionShippingPaidBy || "winner"
-          : undefined,
-        status: formData.status,
-      });
-      showSuccess(SUCCESS_MESSAGES.PRODUCT.UPDATED);
-      router.push(ROUTES.SELLER.PRODUCTS);
-    } catch (err: any) {
-      const msg = err?.message ?? t("saveFailed");
-      setError(msg);
-      showError(msg);
-    } finally {
-      setIsSubmitting(false);
-    }
+    updateProduct({
+      title: formData.title,
+      description: formData.description,
+      category: formData.category,
+      subcategory: formData.subcategory || undefined,
+      brand: formData.brand || undefined,
+      price: formData.price ?? 0,
+      stockQuantity: formData.stockQuantity ?? 0,
+      currency: formData.currency ?? "INR",
+      mainImage: formData.mainImage,
+      images: formData.images ?? [],
+      tags: formData.tags ?? [],
+      shippingInfo: formData.shippingInfo || undefined,
+      returnPolicy: formData.returnPolicy || undefined,
+      condition: formData.condition || "new",
+      insurance: formData.insurance ?? false,
+      insuranceCost: formData.insurance
+        ? (formData.insuranceCost ?? 0)
+        : undefined,
+      shippingPaidBy: formData.shippingPaidBy || "buyer",
+      isAuction: formData.isAuction ?? false,
+      auctionEndDate: formData.auctionEndDate || undefined,
+      startingBid: formData.startingBid || undefined,
+      reservePrice: formData.reservePrice || undefined,
+      buyNowPrice: formData.buyNowPrice || undefined,
+      minBidIncrement: formData.minBidIncrement || undefined,
+      autoExtendable: formData.autoExtendable ?? false,
+      auctionExtensionMinutes: formData.autoExtendable
+        ? (formData.auctionExtensionMinutes ?? 5)
+        : undefined,
+      auctionShippingPaidBy: formData.isAuction
+        ? formData.auctionShippingPaidBy || "winner"
+        : undefined,
+      status: formData.status,
+    });
   };
 
   if (authLoading || productLoading) {
