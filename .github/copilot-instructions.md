@@ -87,9 +87,11 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 | E4 | SSR Phase 6 — static pages ISR | ✅ Complete |
 | E5 | SSR Phase 7 — SEO: `generateMetadata` all pages, JSON-LD | ✅ Complete |
 | E6 | SSR Phase 4 — auth session cookie (`__session`) | ✅ Complete |
-| E7 | SSR Phase 5 — real-time SSE islands | ⏳ Pending |
-| F | Styling cleanup + `@lir/*` library extraction | ⏳ Pending |
-| G | Server Actions + repository fixes | ⏳ Pending |
+| E7 | SSR Phase 5 — real-time SSE islands | ✅ Complete |
+| F | Styling cleanup + `@lir/*` library extraction | ⏳ Pending (F1 globals.css done) |
+| G3 | Repository fixes — dead category-metrics.ts deleted; metrics wired in products API | ✅ Complete |
+| G4 | Schema adapters — dead schema.adapter.ts deleted | ✅ Complete |
+| G1 | Server Actions + services-to-actions migration | ⏳ Pending |
 
 ---
 

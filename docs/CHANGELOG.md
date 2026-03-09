@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage G3/G4: Repository Fixes & Dead Code Removal
+
+### Fixed
+
+- **`src/app/api/products/route.ts`** — G3: `POST /api/products` now calls `categoriesRepository.updateMetrics()` fire-and-forget after creating a product. `totalProductCount` / `totalAuctionCount` on the category and all ancestors are now incremented on every product creation. Previously these metrics were never updated.
+- **`src/app/api/products/[id]/route.ts`** — G3: `DELETE /api/products/[id]` (soft-delete) now calls `categoriesRepository.updateMetrics()` fire-and-forget after discontinuing a product. Category metrics are decremented on product removal.
+
+### Removed
+
+- **`src/lib/helpers/category-metrics.ts`** — G3: Deleted. All functions (`batchUpdateAncestorMetrics`, `addProductToCategory`, `removeProductFromCategory`, `recalculateCategoryMetrics`, `recalculateTreeMetrics`, `validateFeaturedStatus`, `bulkValidateFeaturedStatus`) were dead code — zero callers outside the file itself. `CategoriesRepository.updateMetrics()` already provided the equivalent logic with proper repository-pattern encapsulation.
+- **`src/lib/helpers/index.ts`** — Removed `export * from "./category-metrics"` re-export.
+- **`src/lib/adapters/schema.adapter.ts`** — G4: Deleted. `adaptUserToUI`, `adaptProductToUI`, `adaptOrderToUI` and their `Adapted*` types had zero callers and zero imports anywhere in the codebase. Dead code per Rule 24.
+
+---
+
 ## [Unreleased] — Stage F1: Styling Cleanup
 
 ### Removed
