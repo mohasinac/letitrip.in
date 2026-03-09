@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage H3: Delete dead pass-through services
+
+### Removed
+
+- **`src/services/contact.service.ts`** — Deleted. Zero non-test imports; fully replaced by `contact.actions.ts` Server Action.
+- **`src/services/newsletter.service.ts`** — Deleted. Zero imports; fully replaced by `newsletter.actions.ts` Server Action.
+- **`src/services/payment-event.service.ts`** — Deleted. Zero imports; dead code (payment event bridge was never wired into the checkout flow).
+- **`src/services/index.ts`** — Removed barrel exports for the three deleted services.
+
+---
+
 ## [Unreleased] — Stage G1 cont.: Rule 20 fix in CartView
 
 ### Added
