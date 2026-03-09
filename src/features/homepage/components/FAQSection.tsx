@@ -104,7 +104,7 @@ export function FAQSection() {
               {/* Question Button */}
               <Button
                 variant="ghost"
-                className={`w-full text-left ${THEME_CONSTANTS.spacing.padding.lg} ${flex.between} gap-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors`}
+                className={`w-full text-left ${THEME_CONSTANTS.spacing.padding.lg} ${flex.between} gap-4 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors`}
                 onClick={() => toggleFaq(faq.id)}
               >
                 <Span

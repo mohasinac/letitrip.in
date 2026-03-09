@@ -176,7 +176,7 @@ export function CategoryProductsView({
       {/* ═══════════════ Category Hero ═══════════════ */}
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
         {/* Category image */}
-        <div className="relative w-full sm:w-48 md:w-56 lg:w-64 aspect-[4/3] overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+        <div className="relative w-full sm:w-48 md:w-56 lg:w-64 aspect-[4/3] overflow-hidden rounded-xl bg-zinc-100 dark:bg-slate-800 flex-shrink-0">
           {category.display?.coverImage ? (
             <MediaImage
               src={category.display.coverImage}
@@ -212,7 +212,7 @@ export function CategoryProductsView({
               className="p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
               aria-label={t("addToWishlist")}
             >
-              <Heart className="w-5 h-5 text-gray-400 hover:text-red-500 transition-colors" />
+              <Heart className="w-5 h-5 text-zinc-400 hover:text-red-500 transition-colors" />
             </Button>
           </div>
 

@@ -129,7 +129,7 @@ export async function AboutView() {
               { year: "2025", text: t("milestoneMobile") },
             ].map(({ year, text }) => (
               <div key={year} className="relative">
-                <div className="absolute -left-10 top-1 w-4 h-4 rounded-full bg-indigo-500 border-2 border-white dark:border-gray-900" />
+                <div className="absolute -left-10 top-1 w-4 h-4 rounded-full bg-indigo-500 border-2 border-white dark:border-slate-900" />
                 <Span
                   size="xs"
                   weight="bold"

@@ -53,7 +53,7 @@ export function RatingDisplay({
       {showValue && (
         <Span
           variant="inherit"
-          className="text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
         >
           {rating.toFixed(1)}
         </Span>

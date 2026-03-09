@@ -79,10 +79,10 @@ export function RelatedProducts({
               key={i}
               className={`animate-pulse ${themed.bgSecondary} rounded-lg overflow-hidden`}
             >
-              <div className="aspect-square bg-gray-200 dark:bg-gray-700" />
+              <div className="aspect-square bg-zinc-200 dark:bg-slate-700" />
               <div className="p-3 space-y-2">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+                <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-3/4" />
+                <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-1/3" />
               </div>
             </div>
           ))}

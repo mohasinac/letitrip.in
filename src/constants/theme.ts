@@ -115,7 +115,7 @@ export const THEME_CONSTANTS = {
     /** Chat message bubble variants */
     chatBubble: {
       mine: "bg-primary-600 text-white dark:bg-secondary-500 dark:text-white rounded-2xl rounded-br-sm",
-      theirs: "bg-gray-100 dark:bg-slate-800 rounded-2xl rounded-bl-sm",
+      theirs: "bg-zinc-100 dark:bg-slate-800 rounded-2xl rounded-bl-sm",
     },
   },
 
@@ -409,7 +409,7 @@ export const THEME_CONSTANTS = {
     active:
       "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-400/20",
     inactive:
-      "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-gray-100 text-gray-600 ring-1 ring-gray-500/10 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-400/20",
+      "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-zinc-100 text-zinc-600 ring-1 ring-zinc-500/10 dark:bg-slate-800 dark:text-zinc-400 dark:ring-zinc-400/20",
     pending:
       "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-400/20",
     approved:
@@ -430,13 +430,13 @@ export const THEME_CONSTANTS = {
       "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-sky-50 text-sky-700 ring-1 ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-300 dark:ring-sky-400/20",
     seller:
       "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-secondary-50 text-secondary-700 ring-1 ring-secondary-600/20 dark:bg-secondary-900/30 dark:text-secondary-300 dark:ring-secondary-400/20",
-    user: "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-gray-100 text-gray-700 ring-1 ring-gray-500/10 dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-400/20",
+    user: "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-zinc-100 text-zinc-700 ring-1 ring-zinc-500/10 dark:bg-slate-800 dark:text-zinc-300 dark:ring-zinc-400/20",
     // Compact role text colors (for TitleBar/BottomNavbar)
     roleText: {
       admin: "text-purple-600 dark:text-purple-400",
       moderator: "text-sky-600 dark:text-sky-400",
       seller: "text-secondary-600 dark:text-secondary-400",
-      user: "text-gray-600 dark:text-gray-400",
+      user: "text-zinc-600 dark:text-zinc-400",
     },
   },
 
@@ -846,7 +846,7 @@ export const THEME_CONSTANTS = {
   states: {
     disabled: "opacity-50 cursor-not-allowed pointer-events-none",
     loading: "opacity-75 cursor-wait",
-    readonly: "bg-gray-100 dark:bg-gray-800 cursor-default",
+    readonly: "bg-zinc-100 dark:bg-slate-800 cursor-default",
     error: "border-red-500 dark:border-red-500",
     success: "border-green-500 dark:border-green-500",
     focus:
@@ -888,7 +888,7 @@ export const THEME_CONSTANTS = {
    */
   rating: {
     filled: "text-yellow-400",
-    empty: "text-gray-300 dark:text-gray-600",
+    empty: "text-zinc-300 dark:text-zinc-600",
   },
 
   /**

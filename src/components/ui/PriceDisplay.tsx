@@ -33,8 +33,8 @@ export function PriceDisplay({
 
   const originalClass =
     variant === "detail"
-      ? "text-sm line-through text-gray-400 dark:text-gray-500"
-      : "text-xs line-through text-gray-400 dark:text-gray-500";
+      ? "text-sm line-through text-zinc-400 dark:text-zinc-500"
+      : "text-xs line-through text-zinc-400 dark:text-zinc-500";
 
   return (
     <div

@@ -76,7 +76,7 @@ export function OrderDetailView() {
         <EmptyState
           icon={
             <svg
-              className="w-24 h-24 mx-auto text-gray-400"
+              className="w-24 h-24 mx-auto text-zinc-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

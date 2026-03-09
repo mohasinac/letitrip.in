@@ -142,11 +142,11 @@ export function PreOrderCard({
 
   return (
     <div
-      className={`${themed.bgPrimary} ${borderRadius.lg} overflow-hidden border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:border-purple-200 dark:hover:border-purple-800 transition-all duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isSoldOut ? "opacity-60" : ""} ${isSelected ? "ring-2 ring-purple-500 dark:ring-purple-400" : ""} ${className}`}
+      className={`${themed.bgPrimary} ${borderRadius.lg} overflow-hidden border border-zinc-100 dark:border-slate-800 hover:shadow-xl hover:border-purple-200 dark:hover:border-purple-800 transition-all duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isSoldOut ? "opacity-60" : ""} ${isSelected ? "ring-2 ring-purple-500 dark:ring-purple-400" : ""} ${className}`}
     >
       {/* ── IMAGE SECTION ── */}
       <div
-        className={`relative overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0 ${variant === "list" ? "w-32 sm:w-44 aspect-square" : "aspect-square w-full"}`}
+        className={`relative overflow-hidden bg-zinc-100 dark:bg-slate-800 flex-shrink-0 ${variant === "list" ? "w-32 sm:w-44 aspect-square" : "aspect-square w-full"}`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -202,7 +202,7 @@ export function PreOrderCard({
             variant="ghost"
             onClick={handleSelect}
             aria-label={isSelected ? t("deselectItem") : t("selectItem")}
-            className={`absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/90 dark:bg-gray-800/90 ${flex.center} shadow border border-gray-200 dark:border-gray-600 hover:border-purple-500 dark:hover:border-purple-400 transition-colors z-10 p-0`}
+            className={`absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/90 dark:bg-slate-800/90 ${flex.center} shadow border border-zinc-200 dark:border-slate-600 hover:border-purple-500 dark:hover:border-purple-400 transition-colors z-10 p-0`}
           >
             {isSelected ? (
               <Span
@@ -227,7 +227,7 @@ export function PreOrderCard({
             ) : (
               <Span
                 variant="inherit"
-                className="w-4 h-4 rounded border-2 border-gray-400 dark:border-gray-500 block"
+                className="w-4 h-4 rounded border-2 border-zinc-400 dark:border-slate-500 block"
               />
             )}
           </Button>
@@ -243,7 +243,7 @@ export function PreOrderCard({
             {t(`status_${productionStatus}`)}
           </Span>
           {isSoldOut && (
-            <Span className="bg-gray-600/90 backdrop-blur-sm text-white text-xs font-bold px-2 py-0.5 rounded-full">
+            <Span className="bg-zinc-600/90 backdrop-blur-sm text-white text-xs font-bold px-2 py-0.5 rounded-full">
               {t("soldOut")}
             </Span>
           )}
@@ -287,7 +287,7 @@ export function PreOrderCard({
             className="flex-shrink-0 -mt-0.5 p-1 rounded-full hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors disabled:opacity-50"
           >
             <Heart
-              className={`w-4 h-4 transition-colors ${inWishlist ? "fill-rose-500 text-rose-500" : "text-gray-400 dark:text-gray-500"}`}
+              className={`w-4 h-4 transition-colors ${inWishlist ? "fill-rose-500 text-rose-500" : "text-zinc-400 dark:text-zinc-500"}`}
               aria-hidden="true"
             />
           </Button>
@@ -327,7 +327,7 @@ export function PreOrderCard({
 
         {/* Spots remaining row */}
         {spotsLeft !== null && !isSoldOut && (
-          <Caption className="text-gray-500 dark:text-gray-400">
+          <Caption className="text-zinc-500 dark:text-zinc-400">
             {t("spotsAvailable", { count: spotsLeft })}
           </Caption>
         )}

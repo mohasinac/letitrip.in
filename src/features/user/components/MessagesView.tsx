@@ -59,7 +59,7 @@ export function MessagesView() {
       ) : (
         /* Desktop: empty state when no chat selected */
         <div
-          className={`hidden md:${flex.center} text-gray-400 dark:text-gray-600 border border-dashed ${themed.border} rounded-xl`}
+          className={`hidden md:${flex.center} text-zinc-400 dark:text-zinc-600 border border-dashed ${themed.border} rounded-xl`}
         >
           {t("selectRoom")}
         </div>

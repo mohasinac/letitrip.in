@@ -179,7 +179,7 @@ describe("PasswordStrengthIndicator Component", () => {
         <PasswordStrengthIndicator password="test" />,
       );
       // Progress bar exists as styled div (no ARIA role needed for visual indicator)
-      const progressBar = container.querySelector(".bg-gray-200");
+      const progressBar = container.querySelector(".bg-zinc-200");
       expect(progressBar).toBeInTheDocument();
     });
 

@@ -183,7 +183,7 @@ export function DataTable<T extends Record<string, any>>({
           <div className="text-center">
             {emptyIcon || (
               <svg
-                className="mx-auto h-12 w-12 text-gray-400"
+                className="mx-auto h-12 w-12 text-zinc-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -229,7 +229,7 @@ export function DataTable<T extends Record<string, any>>({
               className={`hidden sm:${flex.center} p-2 rounded-lg ring-1 transition-colors ${
                 activeViewMode === "table"
                   ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300"
-                  : `${THEME_CONSTANTS.themed.textSecondary} ring-gray-200 dark:ring-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800`
+                  : `${THEME_CONSTANTS.themed.textSecondary} ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800`
               }`}
             >
               {/* Table icon */}
@@ -261,7 +261,7 @@ export function DataTable<T extends Record<string, any>>({
             className={`${flex.center} p-2 rounded-lg ring-1 transition-colors ${
               activeViewMode === "grid"
                 ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300"
-                : `${THEME_CONSTANTS.themed.textSecondary} ring-gray-200 dark:ring-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800`
+                : `${THEME_CONSTANTS.themed.textSecondary} ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800`
             }`}
           >
             {/* Grid icon */}
@@ -292,7 +292,7 @@ export function DataTable<T extends Record<string, any>>({
             className={`${flex.center} p-2 rounded-lg ring-1 transition-colors ${
               activeViewMode === "list"
                 ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300"
-                : `${THEME_CONSTANTS.themed.textSecondary} ring-gray-200 dark:ring-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800`
+                : `${THEME_CONSTANTS.themed.textSecondary} ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800`
             }`}
           >
             {/* List icon */}
@@ -403,7 +403,7 @@ export function DataTable<T extends Record<string, any>>({
                     <th scope="col" className="px-4 py-3 w-8">
                       <input
                         type="checkbox"
-                        className="rounded border-gray-300"
+                        className="rounded border-zinc-300"
                         aria-label="Select all on page"
                         checked={
                           paginatedData.length > 0 &&
@@ -447,7 +447,7 @@ export function DataTable<T extends Record<string, any>>({
                       <div className="flex items-center gap-2">
                         {column.header}
                         {column.sortable && (
-                          <Span className="text-gray-400">
+                          <Span className="text-zinc-400">
                             {sortKey === column.key ? (
                               sortDirection === "asc" ? (
                                 <Span>↑</Span>
@@ -493,7 +493,7 @@ export function DataTable<T extends Record<string, any>>({
                       >
                         <input
                           type="checkbox"
-                          className="rounded border-gray-300"
+                          className="rounded border-zinc-300"
                           aria-label="Select row"
                           checked={selectedIds.includes(keyExtractor(item))}
                           onChange={(e) => {
@@ -592,10 +592,10 @@ function SelectableCard({
             className={[
               "w-4 h-4 rounded border-2 cursor-pointer",
               "transition-all appearance-none",
-              "border-gray-300 dark:border-gray-600",
+              "border-zinc-300 dark:border-slate-600",
               selected
                 ? "border-indigo-500 bg-indigo-500"
-                : "bg-white dark:bg-gray-800 group-hover:border-indigo-400",
+                : "bg-white dark:bg-slate-800 group-hover:border-indigo-400",
             ].join(" ")}
             checked={selected}
             onChange={(e) => onToggle(id, e.target.checked)}

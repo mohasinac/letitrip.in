@@ -64,7 +64,7 @@ export function BlogCard({
         }`}
       >
         {/* ── Image area ── */}
-        <div className="group/img relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+        <div className="group/img relative aspect-[4/3] overflow-hidden bg-zinc-100 dark:bg-slate-800 flex-shrink-0">
           {post.coverImage ? (
             <MediaImage
               src={post.coverImage}
@@ -92,7 +92,7 @@ export function BlogCard({
                   e.stopPropagation();
                   onSelect?.(post.id, e.target.checked);
                 }}
-                className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer bg-white/80"
+                className="w-5 h-5 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer bg-white/80"
               />
             </div>
           )}

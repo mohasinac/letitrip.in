@@ -111,7 +111,7 @@ export function EntryReviewDrawer({
             {Object.entries(formResponses).map(([key, val]) => (
               <div
                 key={key}
-                className="rounded border border-gray-100 dark:border-gray-800 p-3"
+                className="rounded border border-zinc-100 dark:border-slate-800 p-3"
               >
                 <Caption className="mb-1">{key}</Caption>
                 <Text size="sm">

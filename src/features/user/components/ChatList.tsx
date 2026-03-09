@@ -106,7 +106,7 @@ export function ChatList() {
                 className={`w-full text-left rounded-xl border px-4 py-3 pr-10 transition-colors ${
                   isActive
                     ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-700"
-                    : `${themed.bgPrimary} ${themed.border} hover:bg-gray-50 dark:hover:bg-gray-800`
+                    : `${themed.bgPrimary} ${themed.border} hover:bg-zinc-50 dark:hover:bg-slate-800`
                 }`}
               >
                 <div className={`${flex.betweenStart} gap-2`}>
@@ -133,7 +133,7 @@ export function ChatList() {
                   e.stopPropagation();
                   setConfirmDeleteId(room.id);
                 }}
-                className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+                className="absolute top-1/2 right-2 -translate-y-1/2 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-zinc-400 hover:text-red-500 dark:hover:text-red-400"
               >
                 <Trash2 className="h-4 w-4" aria-hidden />
               </Button>

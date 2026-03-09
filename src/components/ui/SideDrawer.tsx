@@ -191,7 +191,7 @@ export default function SideDrawer({
             <Button
               variant="ghost"
               onClick={attemptClose}
-              className={`${flex.noShrink} p-2 ${themed.textSecondary} ${borderRadius.lg} ${themed.hover} transition-colors ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-gray-300 dark:hover:ring-gray-600`}
+              className={`${flex.noShrink} p-2 ${themed.textSecondary} ${borderRadius.lg} ${themed.hover} transition-colors ring-1 ring-zinc-200 dark:ring-slate-700 hover:ring-zinc-300 dark:hover:ring-slate-600`}
               aria-label={tActions("close")}
             >
               <svg

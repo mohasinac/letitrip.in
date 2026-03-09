@@ -81,7 +81,7 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
         <div className="flex items-center gap-2">
           <Heading level={4}>{participantName ?? t("chat")}</Heading>
           <Span
-            className={`w-2 h-2 rounded-full ${isConnected ? "bg-emerald-500" : "bg-gray-400"}`}
+            className={`w-2 h-2 rounded-full ${isConnected ? "bg-emerald-500" : "bg-zinc-400"}`}
             aria-label={isConnected ? t("connected") : t("disconnected")}
           />
         </div>

@@ -21,7 +21,7 @@ export function WhatsAppCommunitySection() {
         className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
       >
         <div className="w-full">
-          <div className="h-80 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse" />
+          <div className="h-80 bg-zinc-200 dark:bg-slate-700 rounded-2xl animate-pulse" />
         </div>
       </Section>
     );
@@ -120,7 +120,7 @@ export function WhatsAppCommunitySection() {
               size="lg"
               aria-label="Join WhatsApp community"
               onClick={() => window.open(config.groupLink, "_blank")}
-              className="bg-white text-green-600 hover:bg-gray-100 shadow-xl hover:shadow-2xl"
+              className="bg-white text-green-600 hover:bg-zinc-100 shadow-xl hover:shadow-2xl"
             >
               <svg
                 className="w-6 h-6 mr-2"

@@ -40,7 +40,7 @@ export function CartItemRow({
         href={`${ROUTES.PUBLIC.PRODUCTS}/${item.productId}`}
         className="shrink-0"
       >
-        <div className="relative w-20 h-20 sm:w-24 sm:h-24 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
+        <div className="relative w-20 h-20 sm:w-24 sm:h-24 overflow-hidden rounded-lg bg-zinc-100 dark:bg-slate-800">
           {item.productImage ? (
             <MediaImage
               src={item.productImage}
@@ -50,7 +50,7 @@ export function CartItemRow({
             />
           ) : (
             <div
-              className={`${position.fill} ${flex.center} text-2xl text-gray-400`}
+              className={`${position.fill} ${flex.center} text-2xl text-zinc-400`}
             >
               📦
             </div>
@@ -78,7 +78,7 @@ export function CartItemRow({
               variant="ghost"
               onClick={() => onUpdateQuantity(item.itemId, item.quantity - 1)}
               disabled={item.quantity <= 1 || isUpdating}
-              className={`w-7 h-7 ${flex.center} rounded-lg border ${themed.border} ${themed.textPrimary} hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition-colors`}
+              className={`w-7 h-7 ${flex.center} rounded-lg border ${themed.border} ${themed.textPrimary} hover:bg-zinc-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition-colors`}
               aria-label={t("decreaseQty")}
             >
               −
@@ -92,7 +92,7 @@ export function CartItemRow({
               variant="ghost"
               onClick={() => onUpdateQuantity(item.itemId, item.quantity + 1)}
               disabled={isUpdating}
-              className={`w-7 h-7 ${flex.center} rounded-lg border ${themed.border} ${themed.textPrimary} hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition-colors`}
+              className={`w-7 h-7 ${flex.center} rounded-lg border ${themed.border} ${themed.textPrimary} hover:bg-zinc-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-bold transition-colors`}
               aria-label={t("increaseQty")}
             >
               +

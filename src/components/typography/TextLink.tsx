@@ -67,7 +67,7 @@ export function TextLink({
   > = {
     default:
       "text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 underline-offset-2 hover:underline transition-colors duration-150",
-    muted: `${themed.textMuted} hover:text-gray-900 dark:hover:text-white underline-offset-2 hover:underline transition-colors duration-150`,
+    muted: `${themed.textMuted} hover:text-zinc-900 dark:hover:text-white underline-offset-2 hover:underline transition-colors duration-150`,
     nav: `${themed.textSecondary} hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-150`,
     danger:
       "text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 underline-offset-2 hover:underline transition-colors duration-150",

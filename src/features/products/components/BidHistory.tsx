@@ -18,11 +18,11 @@ export function BidHistory({ bids, loading = false }: BidHistoryProps) {
       <div
         className={`rounded-xl border ${themed.border} p-4 ${spacing.stack}`}
       >
-        <div className="h-5 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+        <div className="h-5 w-32 bg-zinc-200 dark:bg-slate-700 rounded animate-pulse" />
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="flex justify-between items-center py-2">
-            <div className="h-4 w-1/3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-            <div className="h-4 w-1/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            <div className="h-4 w-1/3 bg-zinc-200 dark:bg-slate-700 rounded animate-pulse" />
+            <div className="h-4 w-1/4 bg-zinc-200 dark:bg-slate-700 rounded animate-pulse" />
           </div>
         ))}
       </div>
@@ -51,7 +51,7 @@ export function BidHistory({ bids, loading = false }: BidHistoryProps) {
           {UI_LABELS.AUCTIONS_PAGE.BID_HISTORY_EMPTY}
         </div>
       ) : (
-        <Ul className="divide-y divide-gray-100 dark:divide-gray-800">
+        <Ul className="divide-y divide-zinc-100 dark:divide-slate-800">
           {bids.map((bid, index) => (
             <Li
               key={bid.id}

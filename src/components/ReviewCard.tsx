@@ -116,7 +116,7 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
             className={`text-xs ${themed.textSecondary} hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors inline-flex items-center gap-1`}
           >
             <Span
-              className={`inline-block px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-[11px] font-medium truncate max-w-[160px] hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors`}
+              className={`inline-block px-2 py-0.5 rounded bg-zinc-100 dark:bg-slate-700 text-[11px] font-medium truncate max-w-[160px] hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors`}
             >
               {review.productTitle || t("viewItem")}
             </Span>
@@ -133,7 +133,7 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
                     setLightboxOpen(true);
                   }}
                   aria-label={t("reviewImageAlt", { index: i + 1 })}
-                  className="relative w-14 h-14 p-0 min-h-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0 cursor-zoom-in border-0 shadow-none"
+                  className="relative w-14 h-14 p-0 min-h-0 rounded-lg overflow-hidden bg-zinc-100 dark:bg-slate-800 flex-shrink-0 cursor-zoom-in border-0 shadow-none"
                 >
                   <MediaImage
                     src={img}
@@ -151,7 +151,7 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
                   aria-label={t("moreImages", {
                     count: review.images.length - 2,
                   })}
-                  className={`${flex.center} w-14 h-14 p-0 min-h-0 rounded-lg bg-gray-100 dark:bg-gray-800 text-xs ${themed.textSecondary} flex-shrink-0 border-0 shadow-none hover:bg-gray-200 dark:hover:bg-gray-700`}
+                  className={`${flex.center} w-14 h-14 p-0 min-h-0 rounded-lg bg-zinc-100 dark:bg-slate-800 text-xs ${themed.textSecondary} flex-shrink-0 border-0 shadow-none hover:bg-zinc-200 dark:hover:bg-slate-700`}
                 >
                   <Caption>
                     {t("moreImages", { count: review.images.length - 2 })}

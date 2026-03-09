@@ -129,7 +129,7 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
                 ? Array.from({ length: pageSize }).map((_, i) => (
                     <div
                       key={i}
-                      className="animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700 aspect-[4/3]"
+                      className="animate-pulse rounded-xl bg-zinc-200 dark:bg-slate-700 aspect-[4/3]"
                     />
                   ))
                 : stores.map((store) => (

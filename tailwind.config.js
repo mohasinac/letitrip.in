@@ -26,15 +26,6 @@ module.exports = {
     "dark:bg-slate-950",
     "dark:border-slate-700",
     "dark:border-slate-800",
-    // Gray fallback (components not yet migrated)
-    "bg-gray-50",
-    "bg-gray-900",
-    "bg-gray-950",
-    "dark:bg-gray-900",
-    "dark:bg-gray-950",
-    "text-gray-900",
-    "text-gray-100",
-    "dark:text-gray-100",
   ],
   theme: {
     extend: {

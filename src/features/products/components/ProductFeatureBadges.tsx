@@ -173,7 +173,7 @@ export function ProductFeatureBadges({
         count: formatNumber(categoryProductCount),
         category: categoryName,
       }),
-      colorClass: "text-gray-700 dark:text-gray-300",
+      colorClass: "text-zinc-700 dark:text-zinc-300",
       bgClass: `${themed.bgSecondary} ${themed.border}`,
     });
   }

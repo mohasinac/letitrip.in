@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage F1: Complete `gray-*` Color Audit
+
+### Changed
+
+- **`src/constants/theme.ts`** — Replaced all remaining `gray-*` Tailwind classes with canonical palette: badges (`theirs`, `user`), readonly field styles, empty state text. Now fully zinc-/slate-based throughout all THEME_CONSTANTS entries.
+- **`tailwind.config.js`** — Removed "Gray fallback" safelist block (`bg-gray-50`, `bg-gray-900`, `bg-gray-950`, `dark:bg-gray-900`, `dark:bg-gray-950`, `text-gray-900`, `text-gray-100`, `dark:text-gray-100`). Migration is complete; the safelist fallback is no longer needed.
+- **90+ source files** — Systematic replacement of all `gray-*` Tailwind utility classes with the canonical dual-mode palette across the entire `src/` tree:
+  - Light mode neutrals: `gray-N` → `zinc-N`
+  - Dark mode backgrounds/borders: `dark:*-gray-N` → `dark:*-slate-N`
+  - Affected areas: all feature components (products, cart, events, seller, stores, user, admin, homepage, categories), all shared UI primitives, layout, typography, and constants.
+
+### Fixed
+
+- **`src/components/__tests__/PasswordStrengthIndicator.test.tsx`** — Updated test assertion from `.bg-gray-200` to `.bg-zinc-200` to match the updated component class.
+- **`src/components/admin/DataTable.tsx`** — Removed stray extra `}` after JSX comment on line 235 (caused TS1381 parse error introduced during gray migration).
+
+---
+
 ## [Unreleased] — Stage G3/G4: Repository Fixes & Dead Code Removal
 
 ### Fixed

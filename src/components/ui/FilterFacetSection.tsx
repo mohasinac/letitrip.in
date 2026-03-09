@@ -232,7 +232,7 @@ export function FilterFacetSection({
                     type="button"
                     variant="ghost"
                     onClick={() => onChange([])}
-                    className="text-xs text-gray-500 dark:text-gray-400 hover:underline p-0 h-auto"
+                    className="text-xs text-zinc-500 dark:text-zinc-400 hover:underline p-0 h-auto"
                   >
                     {t("clearSection")}
                   </Button>
@@ -332,7 +332,7 @@ export function FilterFacetSection({
               type="button"
               variant="ghost"
               onClick={() => setVisibleCount(pageSize)}
-              className="mt-1 text-xs font-medium text-gray-500 dark:text-gray-400 hover:underline"
+              className="mt-1 text-xs font-medium text-zinc-500 dark:text-zinc-400 hover:underline"
             >
               {t("showLess")}
             </Button>

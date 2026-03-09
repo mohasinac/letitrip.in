@@ -118,14 +118,14 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
     return (
       <div className={`min-h-screen ${themed.bgSecondary}`}>
         <div className={`${page.container.xl} py-6 sm:py-8`}>
-          <div className="h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-6 animate-pulse" />
+          <div className="h-4 w-48 bg-zinc-200 dark:bg-slate-700 rounded mb-6 animate-pulse" />
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] gap-6 lg:gap-8">
             <div className="animate-pulse space-y-3">
-              <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-2xl" />
+              <div className="aspect-square bg-zinc-200 dark:bg-slate-700 rounded-2xl" />
             </div>
             <div className={`animate-pulse ${spacing.stack}`}>
-              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+              <div className="h-8 bg-zinc-200 dark:bg-slate-700 rounded w-3/4" />
+              <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-1/3" />
             </div>
           </div>
         </div>
@@ -235,7 +235,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
             {/* Delivery date */}
             {product!.preOrderDeliveryDate && (
               <div className={`${flex.rowCenter} gap-2`}>
-                <Span className="text-sm text-gray-500 dark:text-gray-400">
+                <Span className="text-sm text-zinc-500 dark:text-zinc-400">
                   🚚 {t("estimatedDelivery")}:
                 </Span>
                 <Span className="text-sm font-semibold text-purple-700 dark:text-purple-300">
@@ -305,7 +305,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     {product!.specifications.map((spec, i) => (
                       <div key={i}>
-                        <Span className="text-gray-500 dark:text-gray-400 block">
+                        <Span className="text-zinc-500 dark:text-zinc-400 block">
                           {spec.name}
                         </Span>
                         <Span className="font-medium">
@@ -327,7 +327,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                     {product!.features.map((f, i) => (
                       <Li
                         key={i}
-                        className="text-sm text-gray-600 dark:text-gray-300"
+                        className="text-sm text-zinc-600 dark:text-zinc-300"
                       >
                         • {f}
                       </Li>
@@ -360,7 +360,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
           {/* ── Col 3: Reservation Panel (sticky) ── */}
           <div className="lg:sticky lg:top-24 self-start">
             <div
-              className={`${themed.bgPrimary} ${borderRadius.xl} border border-gray-100 dark:border-gray-800 p-4 flex flex-col gap-4 shadow-lg`}
+              className={`${themed.bgPrimary} ${borderRadius.xl} border border-zinc-100 dark:border-slate-800 p-4 flex flex-col gap-4 shadow-lg`}
             >
               {/* Pre-order label */}
               <div className="flex items-center gap-2">

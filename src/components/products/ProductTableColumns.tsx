@@ -16,7 +16,7 @@ import type { AdminProduct } from "./Product.types";
 const STATUS_STYLES: Record<string, string> = {
   published:
     "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
-  draft: "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300",
+  draft: "bg-zinc-100 text-zinc-700 dark:bg-slate-700 dark:text-zinc-300",
   out_of_stock:
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300",
   discontinued: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
@@ -49,7 +49,7 @@ export function useProductTableColumns(
                 />
               </div>
             ) : (
-              <div className="w-8 h-8 rounded bg-gray-200 dark:bg-gray-700 flex-shrink-0" />
+              <div className="w-8 h-8 rounded bg-zinc-200 dark:bg-slate-700 flex-shrink-0" />
             )}
             <Span className="font-medium truncate max-w-[180px]">
               {product.title}

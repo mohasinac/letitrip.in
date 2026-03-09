@@ -21,7 +21,7 @@ const STATUS_STYLES: Record<string, string> = {
     "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
   draft:
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300",
-  archived: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400",
+  archived: "bg-zinc-100 text-zinc-700 dark:bg-slate-800 dark:text-zinc-400",
 };
 
 const CATEGORY_STYLES: Record<string, string> = {

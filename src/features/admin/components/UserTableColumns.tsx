@@ -46,7 +46,7 @@ export function useUserTableColumns(
               />
             ) : (
               <div
-                className={`w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 ${flex.center} text-sm font-medium`}
+                className={`w-8 h-8 rounded-full bg-zinc-300 dark:bg-zinc-600 ${flex.center} text-sm font-medium`}
               >
                 {(user.displayName || user.email || "U")
                   .charAt(0)

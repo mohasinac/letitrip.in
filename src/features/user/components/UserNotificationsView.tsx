@@ -50,7 +50,7 @@ interface NotificationsResponse {
 
 const bellIcon = (
   <svg
-    className="w-12 h-12 text-gray-400"
+    className="w-12 h-12 text-zinc-400"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -270,7 +270,7 @@ export function UserNotificationsView() {
             ? Array.from({ length: PAGE_SIZE }).map((_, i) => (
                 <div
                   key={i}
-                  className="animate-pulse h-16 bg-gray-100 dark:bg-gray-800"
+                  className="animate-pulse h-16 bg-zinc-100 dark:bg-slate-800"
                 />
               ))
             : notifications.map((n) => (

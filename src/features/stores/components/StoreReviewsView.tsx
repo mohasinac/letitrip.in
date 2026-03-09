@@ -19,7 +19,7 @@ function StarRow({ rating }: { rating: number }) {
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
           key={i}
-          className={`w-4 h-4 ${i < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300 dark:text-gray-600"}`}
+          className={`w-4 h-4 ${i < rating ? "text-yellow-400 fill-yellow-400" : "text-zinc-300 dark:text-zinc-600"}`}
         />
       ))}
     </div>
@@ -81,7 +81,7 @@ export function StoreReviewsView({ storeSlug }: StoreReviewsViewProps) {
                 <Caption className="w-3">{star}</Caption>
                 <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
                 <div
-                  className={`flex-1 h-2 rounded-full bg-gray-200 dark:bg-gray-700 ${overflow.hidden}`}
+                  className={`flex-1 h-2 rounded-full bg-zinc-200 dark:bg-slate-700 ${overflow.hidden}`}
                 >
                   <div
                     className="h-full bg-yellow-400 rounded-full transition-all"

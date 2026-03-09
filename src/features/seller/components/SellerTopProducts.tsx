@@ -26,7 +26,7 @@ export function SellerTopProducts({ products }: SellerTopProductsProps) {
       <div className={spacing.stack}>
         <Heading level={2}>{t("topProductsTitle")}</Heading>
         {products.length > 0 ? (
-          <div className="divide-y divide-gray-100 dark:divide-gray-800">
+          <div className="divide-y divide-zinc-100 dark:divide-slate-800">
             {products.map((p, i) => (
               <div key={p.productId} className="flex items-center gap-4 py-3">
                 <Span

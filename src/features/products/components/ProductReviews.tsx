@@ -88,7 +88,7 @@ function RatingBar({
     <div className="flex items-center gap-2 text-xs">
       <Span className={`w-3 ${themed.textSecondary}`}>{star}</Span>
       <Span className="text-amber-400 text-xs">★</Span>
-      <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+      <div className="flex-1 bg-zinc-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
         <div
           className="bg-amber-400 h-full rounded-full transition-all"
           style={{ width: `${pct}%` }}
@@ -169,7 +169,7 @@ function StarPicker({
             className={
               star <= (hovered || value)
                 ? "text-amber-400"
-                : "text-gray-300 dark:text-gray-600"
+                : "text-zinc-300 dark:text-zinc-600"
             }
           >
             ★
@@ -394,9 +394,9 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
               key={i}
               className={`animate-pulse ${themed.bgSecondary} rounded-xl p-4 space-y-2`}
             >
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4" />
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+              <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-1/4" />
+              <div className="h-3 bg-zinc-200 dark:bg-slate-700 rounded w-3/4" />
+              <div className="h-3 bg-zinc-200 dark:bg-slate-700 rounded w-1/2" />
             </div>
           ))}
         </div>

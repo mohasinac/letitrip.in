@@ -36,7 +36,7 @@ function ErrorFallbackView({
   const { flex } = THEME_CONSTANTS;
   return (
     <div
-      className={`min-h-screen ${flex.center} bg-gray-50 dark:bg-gray-950 px-4`}
+      className={`min-h-screen ${flex.center} bg-zinc-50 dark:bg-slate-950 px-4`}
     >
       <div
         className={`max-w-md w-full ${THEME_CONSTANTS.themed.bgPrimary} rounded-lg shadow-lg p-8 text-center`}
@@ -70,7 +70,7 @@ function ErrorFallbackView({
           </Text>
 
           {process.env.NODE_ENV === "development" && error && (
-            <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg text-left">
+            <div className="mt-4 p-4 bg-zinc-100 dark:bg-slate-800 rounded-lg text-left">
               <Text size="sm" className="font-mono text-red-600 break-all">
                 {error.message}
               </Text>

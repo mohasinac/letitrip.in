@@ -159,7 +159,7 @@ export function ImageCropModal({
 
           <div
             ref={containerRef}
-            className="relative w-full max-w-sm mx-auto aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden cursor-move max-h-[280px] touch-none"
+            className="relative w-full max-w-sm mx-auto aspect-square bg-zinc-100 dark:bg-slate-800 rounded-lg overflow-hidden cursor-move max-h-[280px] touch-none"
             data-disable-swipe="true"
             tabIndex={0}
             role="application"
@@ -195,7 +195,7 @@ export function ImageCropModal({
                 {[...Array(9)].map((_, i) => (
                   <div
                     key={i}
-                    className="border border-white/20 dark:border-gray-600/30"
+                    className="border border-white/20 dark:border-slate-600/30"
                   />
                 ))}
               </div>
@@ -203,8 +203,8 @@ export function ImageCropModal({
 
             {/* Center crosshair */}
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-              <div className="w-8 h-0.5 bg-white/50 dark:bg-gray-400/50" />
-              <div className="w-0.5 h-8 bg-white/50 dark:bg-gray-400/50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+              <div className="w-8 h-0.5 bg-white/50 dark:bg-zinc-400/50" />
+              <div className="w-0.5 h-8 bg-white/50 dark:bg-zinc-400/50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
             </div>
           </div>
         </div>
@@ -223,7 +223,7 @@ export function ImageCropModal({
               type="button"
               variant="ghost"
               onClick={() => setZoom(Math.max(0.1, zoom - 0.1))}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-slate-800"
               aria-label={UI_LABELS.AVATAR.ZOOM_OUT}
             >
               <svg
@@ -254,7 +254,7 @@ export function ImageCropModal({
               type="button"
               variant="ghost"
               onClick={() => setZoom(Math.min(3, zoom + 0.1))}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-slate-800"
               aria-label={UI_LABELS.AVATAR.ZOOM_IN}
             >
               <svg
@@ -279,7 +279,7 @@ export function ImageCropModal({
               type="button"
               variant="ghost"
               onClick={() => setZoom(0.5)}
-              className="px-3 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="px-3 py-1 text-xs rounded-lg bg-zinc-100 dark:bg-slate-800 hover:bg-zinc-200 dark:hover:bg-slate-700"
             >
               50%
             </Button>
@@ -287,7 +287,7 @@ export function ImageCropModal({
               type="button"
               variant="ghost"
               onClick={() => setZoom(1)}
-              className="px-3 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="px-3 py-1 text-xs rounded-lg bg-zinc-100 dark:bg-slate-800 hover:bg-zinc-200 dark:hover:bg-slate-700"
             >
               100%
             </Button>
@@ -295,7 +295,7 @@ export function ImageCropModal({
               type="button"
               variant="ghost"
               onClick={() => setZoom(1.5)}
-              className="px-3 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="px-3 py-1 text-xs rounded-lg bg-zinc-100 dark:bg-slate-800 hover:bg-zinc-200 dark:hover:bg-slate-700"
             >
               150%
             </Button>
@@ -303,7 +303,7 @@ export function ImageCropModal({
               type="button"
               variant="ghost"
               onClick={() => setZoom(2)}
-              className="px-3 py-1 text-xs rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="px-3 py-1 text-xs rounded-lg bg-zinc-100 dark:bg-slate-800 hover:bg-zinc-200 dark:hover:bg-slate-700"
             >
               200%
             </Button>

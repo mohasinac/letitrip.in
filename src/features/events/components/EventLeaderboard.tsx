@@ -25,7 +25,7 @@ export function EventLeaderboard({
 
   const RANK_STYLES = [
     "bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200",
-    `${themed.bgSecondary} border-gray-200`,
+    `${themed.bgSecondary} border-zinc-200`,
     "bg-orange-50 dark:bg-orange-950/30 border-orange-200",
   ];
 
@@ -58,7 +58,7 @@ export function EventLeaderboard({
               isCurrentUser ? "ring-2 ring-indigo-500" : ""
             }`}
           >
-            <Span className="text-sm font-bold w-6 text-center text-gray-500">
+            <Span className="text-sm font-bold w-6 text-center text-zinc-500">
               #{idx + 1}
             </Span>
             <div

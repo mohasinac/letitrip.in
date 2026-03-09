@@ -110,7 +110,7 @@ export function CheckoutOrderReview({
           {items.map((item) => (
             <div key={item.itemId} className="flex items-center gap-3 p-3">
               {item.productImage ? (
-                <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-800">
+                <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-zinc-100 dark:bg-slate-800">
                   <MediaImage
                     src={item.productImage}
                     alt={item.productTitle}

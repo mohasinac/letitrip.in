@@ -145,7 +145,7 @@ export default function Sidebar({
                         (user.role as keyof typeof THEME_CONSTANTS.badge.roleText) ||
                           "user"
                       ]
-                    } bg-white/90 dark:bg-gray-900/90`}
+                    } bg-white/90 dark:bg-slate-900/90`}
                   >
                     {user.role || "user"}
                   </Span>
@@ -883,7 +883,7 @@ export default function Sidebar({
               <div
                 className={`
                   relative w-10 h-5 rounded-full transition-colors duration-200
-                  ${isDark ? "bg-primary-600" : "bg-gray-300 dark:bg-gray-600"}
+                  ${isDark ? "bg-primary-600" : "bg-zinc-300 dark:bg-zinc-600"}
                 `}
               >
                 <div

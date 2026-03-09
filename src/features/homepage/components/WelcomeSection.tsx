@@ -23,11 +23,11 @@ export function WelcomeSection() {
       >
         <div className="w-full text-center">
           <div className="animate-pulse">
-            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 max-w-3xl mx-auto" />
+            <div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-lg mb-4 max-w-3xl mx-auto" />
             <div
-              className={`h-6 bg-gray-200 dark:bg-gray-700 rounded-lg mb-8 ${THEME_CONSTANTS.container["2xl"]} mx-auto`}
+              className={`h-6 bg-zinc-200 dark:bg-slate-700 rounded-lg mb-8 ${THEME_CONSTANTS.container["2xl"]} mx-auto`}
             />
-            <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded-lg max-w-4xl mx-auto" />
+            <div className="h-24 bg-zinc-200 dark:bg-slate-700 rounded-lg max-w-4xl mx-auto" />
           </div>
         </div>
       </Section>

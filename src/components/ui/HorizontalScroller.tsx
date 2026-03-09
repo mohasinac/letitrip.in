@@ -67,10 +67,10 @@ function ArrowButton({
           "rounded-xl",
           "border-2",
           themed.border,
-          "bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm",
+          "bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm",
           disabled
             ? "opacity-30 cursor-not-allowed"
-            : "hover:bg-white dark:hover:bg-gray-800 hover:shadow-md active:scale-95 cursor-pointer",
+            : "hover:bg-white dark:hover:bg-slate-800 hover:shadow-md active:scale-95 cursor-pointer",
           "transition-all duration-200",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
         ].join(" ")}
@@ -110,7 +110,7 @@ function ArrowButton({
         "border rounded-lg",
         themed.border,
         themed.bgPrimary,
-        "hover:bg-gray-100 dark:hover:bg-gray-700",
+        "hover:bg-zinc-100 dark:hover:bg-slate-700",
         "active:scale-95",
         "transition-all duration-150",
         "cursor-pointer",
@@ -628,7 +628,7 @@ export function HorizontalScroller<T = unknown>({
             aria-hidden
             className={[
               "absolute inset-y-0 left-0 w-10 pointer-events-none z-10",
-              "bg-gradient-to-r from-white/75 dark:from-gray-900/75 to-transparent",
+              "bg-gradient-to-r from-white/75 dark:from-slate-900/75 to-transparent",
               "transition-opacity duration-200",
               canScrollLeft ? "opacity-100" : "opacity-0",
             ].join(" ")}
@@ -681,7 +681,7 @@ export function HorizontalScroller<T = unknown>({
             aria-hidden
             className={[
               "absolute inset-y-0 right-0 w-10 pointer-events-none z-10",
-              "bg-gradient-to-l from-white/75 dark:from-gray-900/75 to-transparent",
+              "bg-gradient-to-l from-white/75 dark:from-slate-900/75 to-transparent",
               "transition-opacity duration-200",
               canScrollRight ? "opacity-100" : "opacity-0",
             ].join(" ")}

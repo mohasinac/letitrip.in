@@ -136,7 +136,7 @@ export function BuyRipCoinsModal({ open, onClose, onPurchaseSuccess }: Props) {
           </div>
         </div>
 
-        <Text className="text-xs text-gray-500 dark:text-gray-400">
+        <Text className="text-xs text-zinc-500 dark:text-zinc-400">
           {t("infoNote")}
         </Text>
 

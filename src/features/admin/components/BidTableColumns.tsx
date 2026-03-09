@@ -19,7 +19,7 @@ const BID_STATUS_STYLES: Record<string, string> = {
   outbid:
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300",
   won: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300",
-  lost: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400",
+  lost: "bg-zinc-100 text-zinc-700 dark:bg-slate-800 dark:text-zinc-400",
   cancelled: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
 };
 

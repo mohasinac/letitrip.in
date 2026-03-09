@@ -96,7 +96,7 @@ export function MediaImage({
   if (!src || hasError) {
     return (
       <div
-        className={`absolute inset-0 ${flex.center} bg-gray-100 dark:bg-gray-800 text-gray-400 text-4xl${className ? ` ${className}` : ""}`}
+        className={`absolute inset-0 ${flex.center} bg-zinc-100 dark:bg-slate-800 text-zinc-400 text-4xl${className ? ` ${className}` : ""}`}
         role="img"
         aria-label={alt}
       >

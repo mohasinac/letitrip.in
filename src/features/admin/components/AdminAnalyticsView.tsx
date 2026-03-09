@@ -246,7 +246,7 @@ export function AdminAnalyticsView() {
               className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-6 ${spacing.stack}`}
             >
               <Heading level={2}>{t("topProductsTitle")}</Heading>
-              <div className="divide-y divide-gray-100 dark:divide-gray-800">
+              <div className="divide-y divide-zinc-100 dark:divide-slate-800">
                 {topProducts.map((p, i) => (
                   <div
                     key={p.productId}

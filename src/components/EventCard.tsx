@@ -84,7 +84,7 @@ export function EventCard({
       }`}
     >
       {/* ── Image area ── */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+      <div className="relative aspect-[4/3] overflow-hidden bg-zinc-100 dark:bg-slate-800 flex-shrink-0">
         <TextLink
           href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}
           className={`${position.fill} block z-0`}
@@ -137,7 +137,7 @@ export function EventCard({
               event.status === "active"
                 ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
                 : event.status === "ended"
-                  ? "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                  ? "bg-zinc-100 text-zinc-600 dark:bg-slate-700 dark:text-zinc-300"
                   : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300"
             }`}
           >

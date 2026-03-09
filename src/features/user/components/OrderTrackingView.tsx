@@ -190,9 +190,9 @@ function StepIcon({ state }: { state: TimelineStepState }) {
   }
   return (
     <div
-      className={`w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 border-2 ${themed.border} ${flex.center} flex-shrink-0`}
+      className={`w-10 h-10 rounded-full bg-zinc-100 dark:bg-slate-800 border-2 ${themed.border} ${flex.center} flex-shrink-0`}
     >
-      <div className="w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600" />
+      <div className="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-600" />
     </div>
   );
 }
@@ -204,7 +204,7 @@ function Connector({ state }: { state: TimelineStepState }) {
   return (
     <div
       className={`w-0.5 h-12 ml-5 ${
-        isActive ? "bg-green-400" : "bg-gray-200 dark:bg-gray-700"
+        isActive ? "bg-green-400" : "bg-zinc-200 dark:bg-slate-700"
       }`}
     />
   );

@@ -259,7 +259,7 @@ export function ProductInfo({
         <Accordion type="single" defaultValue="specs">
           <AccordionItem value="specs" title={t("specsTitle")}>
             <dl
-              className={`rounded-xl border ${themed.border} divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden`}
+              className={`rounded-xl border ${themed.border} divide-y divide-zinc-100 dark:divide-slate-800 overflow-hidden`}
             >
               {specifications.map((spec, idx) => (
                 <div

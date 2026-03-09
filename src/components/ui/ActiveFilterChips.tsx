@@ -75,7 +75,7 @@ export function ActiveFilterChips({
             variant="ghost"
             onClick={() => onRemove(filter.key)}
             aria-label={`Remove ${filter.label}: ${filter.value} filter`}
-            className={`ml-1 ${flex.center} w-4 h-4 ${borderRadius.full} hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors`}
+            className={`ml-1 ${flex.center} w-4 h-4 ${borderRadius.full} hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors`}
           >
             <svg
               className="w-2.5 h-2.5"

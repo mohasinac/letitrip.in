@@ -33,7 +33,7 @@ export function SellerStatCard({
         <div className="flex-1">
           <Text
             size="sm"
-            className="text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide mb-1"
+            className="text-zinc-500 dark:text-zinc-400 font-medium uppercase tracking-wide mb-1"
           >
             {label}
           </Text>

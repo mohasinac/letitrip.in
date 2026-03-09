@@ -106,7 +106,7 @@ export function RipCoinsPurchaseView() {
                 )}
               </div>
 
-              <Heading level={4} className="text-gray-800 dark:text-gray-200">
+              <Heading level={4} className="text-zinc-800 dark:text-zinc-200">
                 ₹{pkg.priceRs.toLocaleString()}
               </Heading>
 

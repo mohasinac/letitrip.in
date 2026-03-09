@@ -291,7 +291,7 @@ export function AlgoliaDashboardView() {
               <Li>
                 <Caption>
                   <strong>Products index</strong> — auto-synced via the{" "}
-                  <code className="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">
+                  <code className="text-xs bg-zinc-100 dark:bg-slate-800 px-1 rounded">
                     onProductWrite
                   </code>{" "}
                   Firebase trigger on every Firestore write.
@@ -314,7 +314,7 @@ export function AlgoliaDashboardView() {
               <Li>
                 <Caption>
                   The search overlay uses{" "}
-                  <code className="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">
+                  <code className="text-xs bg-zinc-100 dark:bg-slate-800 px-1 rounded">
                     NEXT_PUBLIC_ALGOLIA_*
                   </code>{" "}
                   keys (read-only). Syncs use the admin write key (server-side

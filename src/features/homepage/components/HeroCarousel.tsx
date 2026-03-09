@@ -162,7 +162,7 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
         {slides.map((slide, slideIndex) => (
           <div
             key={slide.id}
-            className="snap-start flex-none w-full relative self-stretch bg-gray-900"
+            className="snap-start flex-none w-full relative self-stretch bg-zinc-900"
           >
             {/* Background Media */}
             <div className={position.fill}>

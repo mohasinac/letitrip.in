@@ -25,7 +25,7 @@ export function ItemRow({
   return (
     <div className={classNames("flex gap-4 items-start", className)}>
       {/* Thumbnail */}
-      <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
+      <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-slate-800">
         <MediaImage src={image} alt={imageAlt} size="thumbnail" />
       </div>
 
@@ -34,9 +34,7 @@ export function ItemRow({
         <Text size="sm" weight="medium" className="line-clamp-2">
           {title}
         </Text>
-        {subtitle && (
-          <Caption className="mt-0.5">{subtitle}</Caption>
-        )}
+        {subtitle && <Caption className="mt-0.5">{subtitle}</Caption>}
         {actions && <div className="mt-2">{actions}</div>}
       </div>
 

@@ -24,7 +24,7 @@ export function SellerProductCard({
     <div
       className={`rounded-xl overflow-hidden border ${themed.border} ${themed.bgPrimary} h-full`}
     >
-      <div className="relative aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
+      <div className="relative aspect-square bg-zinc-100 dark:bg-slate-800 overflow-hidden">
         <MediaImage
           src={product.video?.thumbnailUrl || product.mainImage || undefined}
           alt={product.title}

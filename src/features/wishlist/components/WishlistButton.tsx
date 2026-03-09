@@ -101,7 +101,7 @@ export function WishlistButton({
         ${
           inWishlist
             ? "bg-rose-50 dark:bg-rose-900/20 text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/40"
-            : "bg-white/80 dark:bg-gray-800/80 text-gray-400 hover:text-rose-400"
+            : "bg-white/80 dark:bg-slate-800/80 text-zinc-400 hover:text-rose-400"
         }
         ${sizeClasses[size]}
         ${loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}

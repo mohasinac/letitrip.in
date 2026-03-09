@@ -336,7 +336,7 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
               className="overflow-hidden cursor-pointer"
               onClick={() => handleEdit(product)}
             >
-              <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+              <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-slate-800">
                 <MediaImage
                   src={product.mainImage}
                   alt={product.title}
@@ -371,7 +371,7 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
         >
           {drawerMode === "delete" ? (
             <div className={spacing.stack}>
-              <Text className="text-gray-700 dark:text-gray-300">
+              <Text className="text-zinc-700 dark:text-zinc-300">
                 {t("confirmDelete")}
               </Text>
               <Text className="font-medium">{editingProduct.title}</Text>

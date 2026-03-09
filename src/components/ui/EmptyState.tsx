@@ -46,7 +46,7 @@ export function EmptyState({
     <Card className={`p-12 text-center ${className}`}>
       <div className="max-w-md mx-auto">
         {icon && (
-          <div className="w-24 h-24 mx-auto mb-6 text-gray-400 dark:text-gray-600">
+          <div className="w-24 h-24 mx-auto mb-6 text-zinc-400 dark:text-zinc-600">
             {icon}
           </div>
         )}

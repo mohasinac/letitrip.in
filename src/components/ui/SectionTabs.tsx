@@ -102,7 +102,7 @@ export function SectionTabs({
                       // Active: filled brand bg + brand underline
                       isActive
                         ? "border-b-indigo-500 text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40"
-                        : `border-b-transparent ${themed.textSecondary} hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800/50`,
+                        : `border-b-transparent ${themed.textSecondary} hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-slate-800/50`,
                     ].join(" ")}
                   >
                     {tab.icon && (

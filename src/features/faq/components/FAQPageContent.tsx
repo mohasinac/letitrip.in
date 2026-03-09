@@ -170,7 +170,7 @@ export function FAQPageContent({
                   className={`text-xs px-1.5 py-0.5 rounded-full ${
                     isActive
                       ? "bg-white/20 text-white"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                      : "bg-zinc-100 dark:bg-slate-700 text-zinc-500 dark:text-zinc-400"
                   }`}
                 >
                   {pill.count}

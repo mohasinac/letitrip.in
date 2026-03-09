@@ -135,7 +135,7 @@ export function SellerDashboardView() {
       {/* Empty State */}
       {!productsLoading && (productsData?.items?.length ?? 0) === 0 && (
         <EmptyState
-          icon={<Store className="w-10 h-10 text-gray-400" />}
+          icon={<Store className="w-10 h-10 text-zinc-400" />}
           title={t("noProducts")}
           description={t("noProductsSubtitle")}
           actionLabel={t("addProduct")}

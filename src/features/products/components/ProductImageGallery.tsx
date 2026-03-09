@@ -96,7 +96,7 @@ export function ProductImageGallery({
     <div className="space-y-3">
       {/* Primary media display */}
       <div
-        className={`relative group overflow-hidden ${borderRadius.xl} bg-gray-100 dark:bg-gray-800`}
+        className={`relative group overflow-hidden ${borderRadius.xl} bg-zinc-100 dark:bg-slate-800`}
       >
         <div className="aspect-square sm:aspect-[4/3] lg:aspect-square">
           {!selected ? (
@@ -147,14 +147,14 @@ export function ProductImageGallery({
             <Button
               onClick={goPrev}
               aria-label={t("gallery.prevImage")}
-              className={`absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 ${flex.center} rounded-full bg-white/80 dark:bg-gray-900/80 shadow-md opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm`}
+              className={`absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 ${flex.center} rounded-full bg-white/80 dark:bg-slate-900/80 shadow-md opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm`}
             >
               <ChevronLeft className="w-5 h-5" />
             </Button>
             <Button
               onClick={goNext}
               aria-label={t("gallery.nextImage")}
-              className={`absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 ${flex.center} rounded-full bg-white/80 dark:bg-gray-900/80 shadow-md opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm`}
+              className={`absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 ${flex.center} rounded-full bg-white/80 dark:bg-slate-900/80 shadow-md opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm`}
             >
               <ChevronRight className="w-5 h-5" />
             </Button>

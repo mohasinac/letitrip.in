@@ -104,7 +104,7 @@ export function PromoCodeInput({
           </div>
           <Button
             onClick={handleRemove}
-            className="text-xs text-gray-500 hover:text-red-500 transition-colors"
+            className="text-xs text-zinc-500 hover:text-red-500 transition-colors"
           >
             {t("promoRemove")}
           </Button>

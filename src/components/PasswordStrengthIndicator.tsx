@@ -67,7 +67,7 @@ export const PasswordStrengthIndicator: React.FC<
     <div className="mt-2" aria-live="polite" aria-atomic="true">
       {/* Strength Bar */}
       <div className="flex items-center gap-2 mb-2">
-        <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div className="flex-1 h-2 bg-zinc-200 dark:bg-slate-700 rounded-full overflow-hidden">
           <div
             className={`h-full transition-all duration-300 ${getStrengthColor()}`}
             style={{ width: `${strength}%` }}

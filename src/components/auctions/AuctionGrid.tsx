@@ -44,34 +44,34 @@ function AuctionCardSkeleton({
 }) {
   if (variant === "list") {
     return (
-      <div className="bg-gray-200 dark:bg-gray-700 rounded-xl overflow-hidden animate-pulse flex flex-row">
-        <div className="w-32 sm:w-44 aspect-square bg-gray-300 dark:bg-gray-600 flex-shrink-0" />
+      <div className="bg-zinc-200 dark:bg-slate-700 rounded-xl overflow-hidden animate-pulse flex flex-row">
+        <div className="w-32 sm:w-44 aspect-square bg-zinc-300 dark:bg-slate-600 flex-shrink-0" />
         <div className="flex-1 p-3 space-y-2">
-          <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3" />
-          <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-full" />
-          <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-3/4" />
-          <div className="h-5 bg-gray-300 dark:bg-gray-600 rounded w-1/2" />
+          <div className="h-4 bg-zinc-300 dark:bg-slate-600 rounded w-2/3" />
+          <div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-full" />
+          <div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-3/4" />
+          <div className="h-5 bg-zinc-300 dark:bg-slate-600 rounded w-1/2" />
           <div className="flex gap-2">
-            <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded flex-1" />
-            <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded flex-1" />
+            <div className="h-8 bg-zinc-300 dark:bg-slate-600 rounded flex-1" />
+            <div className="h-8 bg-zinc-300 dark:bg-slate-600 rounded flex-1" />
           </div>
         </div>
       </div>
     );
   }
   return (
-    <div className="bg-gray-200 dark:bg-gray-700 rounded-xl overflow-hidden animate-pulse">
-      <div className="aspect-square bg-gray-300 dark:bg-gray-600" />
+    <div className="bg-zinc-200 dark:bg-slate-700 rounded-xl overflow-hidden animate-pulse">
+      <div className="aspect-square bg-zinc-300 dark:bg-slate-600" />
       <div className="p-3 space-y-2">
-        <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4" />
-        <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/3" />
-        <div className="h-5 bg-gray-300 dark:bg-gray-600 rounded w-1/2" />
+        <div className="h-4 bg-zinc-300 dark:bg-slate-600 rounded w-3/4" />
+        <div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-1/3" />
+        <div className="h-5 bg-zinc-300 dark:bg-slate-600 rounded w-1/2" />
         <div className="flex justify-between">
-          <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/4" />
-          <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/3" />
+          <div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-1/4" />
+          <div className="h-3 bg-zinc-300 dark:bg-slate-600 rounded w-1/3" />
         </div>
         <div className="flex gap-2">
-          <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded flex-1" />
+          <div className="h-8 bg-zinc-300 dark:bg-slate-600 rounded flex-1" />
         </div>
       </div>
     </div>

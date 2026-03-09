@@ -171,7 +171,7 @@ export default function NotificationBell() {
             ) : notifications.length === 0 ? (
               <div className={`${flex.centerCol} py-10 px-4 text-center`}>
                 <svg
-                  className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-3"
+                  className="w-12 h-12 text-zinc-300 dark:text-zinc-600 mb-3"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -252,7 +252,7 @@ export default function NotificationBell() {
                             <Button
                               variant="ghost"
                               onClick={() => handleMarkRead(n.id)}
-                              className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:underline p-0 h-auto"
+                              className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:underline p-0 h-auto"
                             >
                               {t("markRead")}
                             </Button>

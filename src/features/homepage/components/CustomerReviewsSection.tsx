@@ -98,7 +98,7 @@ export function CustomerReviewsSection({
                 className={`h-2 rounded-full transition-all ${
                   Math.floor(currentIndex / 3) === i
                     ? "bg-blue-600 w-8"
-                    : "bg-gray-300 dark:bg-gray-600 w-2"
+                    : "bg-zinc-300 dark:bg-zinc-600 w-2"
                 }`}
                 onClick={() => setCurrentIndex(i * 3)}
                 aria-label={`Go to review group ${i + 1}`}

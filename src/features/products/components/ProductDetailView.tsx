@@ -49,17 +49,17 @@ export function ProductDetailView({
       <div className={`min-h-screen ${themed.bgSecondary}`}>
         <div className={`${page.container.xl} py-6 sm:py-8`}>
           {/* Breadcrumb skeleton */}
-          <div className="h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-6 animate-pulse" />
+          <div className="h-4 w-48 bg-zinc-200 dark:bg-slate-700 rounded mb-6 animate-pulse" />
 
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] gap-6 lg:gap-8">
             {/* Gallery skeleton */}
             <div className="animate-pulse space-y-3">
-              <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-2xl" />
+              <div className="aspect-square bg-zinc-200 dark:bg-slate-700 rounded-2xl" />
               <div className="flex gap-2">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div
                     key={i}
-                    className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg shrink-0"
+                    className="w-16 h-16 bg-zinc-200 dark:bg-slate-700 rounded-lg shrink-0"
                   />
                 ))}
               </div>
@@ -67,27 +67,27 @@ export function ProductDetailView({
 
             {/* Info skeleton */}
             <div className={`animate-pulse ${spacing.stack}`}>
-              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
-              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl w-1/3" />
+              <div className="h-8 bg-zinc-200 dark:bg-slate-700 rounded w-3/4" />
+              <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-1/3" />
+              <div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-xl w-1/3" />
               <div className="flex gap-2">
                 {Array.from({ length: 3 }).map((_, i) => (
                   <div
                     key={i}
-                    className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded-lg"
+                    className="h-8 w-24 bg-zinc-200 dark:bg-slate-700 rounded-lg"
                   />
                 ))}
               </div>
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full" />
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6" />
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/6" />
+              <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-full" />
+              <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-5/6" />
+              <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-4/6" />
             </div>
 
             {/* Actions skeleton (desktop) */}
             <div className="hidden lg:block animate-pulse space-y-3">
-              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl" />
-              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl" />
-              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+              <div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-xl" />
+              <div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-xl" />
+              <div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-xl" />
             </div>
           </div>
         </div>

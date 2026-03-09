@@ -136,7 +136,7 @@ export function RipCoinsWallet() {
             {t(`txType.${row.type}` as Parameters<typeof t>[0])}
           </Badge>
           {row.type === "purchase" && row.refunded && (
-            <Caption className="text-xs text-gray-400">{t("refunded")}</Caption>
+            <Caption className="text-xs text-zinc-400">{t("refunded")}</Caption>
           )}
         </div>
       ),

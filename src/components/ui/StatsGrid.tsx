@@ -24,11 +24,7 @@ const columnsClass: Record<2 | 3 | 4, string> = {
   4: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4",
 };
 
-export function StatsGrid({
-  stats,
-  columns = 3,
-  className,
-}: StatsGridProps) {
+export function StatsGrid({ stats, columns = 3, className }: StatsGridProps) {
   const { spacing: sp, flex: fl, themed } = THEME_CONSTANTS;
 
   return (
@@ -37,13 +33,22 @@ export function StatsGrid({
         <Card key={`${stat.label}-${i}`} className={sp.cardPadding}>
           <div className={fl.between}>
             <div>
-              <Text className={classNames("text-sm font-medium", themed.textSecondary)}>
+              <Text
+                className={classNames(
+                  "text-sm font-medium",
+                  themed.textSecondary,
+                )}
+              >
                 {stat.label}
               </Text>
               <Text className="text-3xl font-bold mt-1">{stat.value}</Text>
             </div>
             {stat.icon && (
-              <div className={classNames(stat.colorClass ?? "text-gray-400 dark:text-gray-500")}>
+              <div
+                className={classNames(
+                  stat.colorClass ?? "text-zinc-400 dark:text-zinc-500",
+                )}
+              >
                 {stat.icon}
               </div>
             )}

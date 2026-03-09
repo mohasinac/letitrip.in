@@ -27,7 +27,7 @@ export function AdminDashboardSkeleton() {
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className={`rounded-xl border-l-4 border-l-gray-200 dark:border-l-gray-700 ${themed.bgPrimary} ${spacing.padding.md}`}
+            className={`rounded-xl border-l-4 border-l-zinc-200 dark:border-l-slate-700 ${themed.bgPrimary} ${spacing.padding.md}`}
           >
             <div className={flex.betweenStart}>
               <div className="flex-1">
@@ -41,7 +41,7 @@ export function AdminDashboardSkeleton() {
       </div>
 
       {/* Quick actions skeleton */}
-      <div className="rounded-xl border border-gray-200 dark:border-gray-800 p-6">
+      <div className="rounded-xl border border-zinc-200 dark:border-slate-800 p-6">
         <div className={`${skeleton.heading} w-36 mb-4`} />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-3">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -51,7 +51,7 @@ export function AdminDashboardSkeleton() {
       </div>
 
       {/* Recent activity skeleton */}
-      <div className="rounded-xl border border-gray-200 dark:border-gray-800 p-6">
+      <div className="rounded-xl border border-zinc-200 dark:border-slate-800 p-6">
         <div className={`${skeleton.heading} w-44 mb-4`} />
         <div className={spacing.stackSmall}>
           {Array.from({ length: 2 }).map((_, i) => (

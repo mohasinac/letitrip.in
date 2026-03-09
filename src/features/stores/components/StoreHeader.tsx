@@ -67,7 +67,7 @@ export function StoreHeader({ storeSlug }: StoreHeaderProps) {
           <div className="flex items-end gap-4 -mt-8 sm:-mt-10 flex-wrap">
             {/* Avatar */}
             <div
-              className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white dark:border-gray-900 ${overflow.hidden} bg-indigo-50 dark:bg-indigo-900/40 ${flex.noShrink} ${flex.center} shadow-sm`}
+              className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white dark:border-slate-900 ${overflow.hidden} bg-indigo-50 dark:bg-indigo-900/40 ${flex.noShrink} ${flex.center} shadow-sm`}
             >
               {store.storeLogoURL || store.photoURL ? (
                 <AvatarDisplay
@@ -118,7 +118,7 @@ export function StoreHeader({ storeSlug }: StoreHeaderProps) {
                   className="p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
                   aria-label={t("addToWishlist")}
                 >
-                  <Heart className="w-5 h-5 text-gray-400 hover:text-red-500 transition-colors" />
+                  <Heart className="w-5 h-5 text-zinc-400 hover:text-red-500 transition-colors" />
                 </Button>
               </div>
 
@@ -130,7 +130,7 @@ export function StoreHeader({ storeSlug }: StoreHeaderProps) {
                 )}
                 {typeof store.totalProducts === "number" && (
                   <Span className="flex items-center gap-1">
-                    <Package className="w-3.5 h-3.5 text-gray-400" />
+                    <Package className="w-3.5 h-3.5 text-zinc-400" />
                     <Caption>
                       {t("productCount", { count: store.totalProducts })}
                     </Caption>

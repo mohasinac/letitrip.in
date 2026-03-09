@@ -176,7 +176,9 @@ export function ImageUpload({
       {/* Preview Area */}
       <div className="relative">
         {preview ? (
-          <div className={`relative group h-64 overflow-hidden rounded-lg border-2 ${THEME_CONSTANTS.themed.border}`}>
+          <div
+            className={`relative group h-64 overflow-hidden rounded-lg border-2 ${THEME_CONSTANTS.themed.border}`}
+          >
             <Image
               src={preview}
               alt="Preview"
@@ -195,7 +197,7 @@ export function ImageUpload({
                 disabled={uploading}
                 variant="secondary"
                 size="sm"
-                className="px-4 py-2 bg-white text-gray-900 rounded-md hover:bg-gray-100 transition-colors duration-200 font-medium"
+                className="px-4 py-2 bg-white text-zinc-900 rounded-md hover:bg-zinc-100 transition-colors duration-200 font-medium"
               >
                 Change
               </Button>
@@ -213,7 +215,7 @@ export function ImageUpload({
 
             {/* Upload Progress */}
             {uploading && progress > 0 && (
-              <div className="absolute inset-x-0 bottom-0 h-2 bg-gray-200 dark:bg-gray-700 rounded-b-lg overflow-hidden">
+              <div className="absolute inset-x-0 bottom-0 h-2 bg-zinc-200 dark:bg-slate-700 rounded-b-lg overflow-hidden">
                 <div
                   className="h-full bg-blue-600 transition-all duration-300"
                   style={{ width: `${progress}%` }}
@@ -264,7 +266,9 @@ export function ImageUpload({
                 variant="ghost"
                 className={`w-full h-64 border-2 border-dashed ${THEME_CONSTANTS.themed.border} rounded-lg ${THEME_CONSTANTS.themed.hoverBorder} transition-colors duration-200 ${flex.centerCol} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.themed.bgTertiary}`}
               >
-                <Span className="text-sm font-medium">{t("switchToCamera")}</Span>
+                <Span className="text-sm font-medium">
+                  {t("switchToCamera")}
+                </Span>
               </Button>
             )}
 

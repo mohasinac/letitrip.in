@@ -126,7 +126,7 @@ export function ProfileStatsGrid({
               </Text>
               <Text className="text-3xl font-bold mt-1">{stat.value}</Text>
             </div>
-            <div className="text-gray-400 dark:text-gray-500">{stat.icon}</div>
+            <div className="text-zinc-400 dark:text-zinc-500">{stat.icon}</div>
           </div>
         </Card>
       ))}

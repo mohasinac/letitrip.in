@@ -170,7 +170,7 @@ export function FilterDrawer({
         mode="view"
         footer={footer}
       >
-        <div className="divide-y divide-gray-200 dark:divide-gray-700">
+        <div className="divide-y divide-zinc-200 dark:divide-slate-700">
           {children}
         </div>
       </SideDrawer>

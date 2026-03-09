@@ -17,7 +17,7 @@ const NAV_TYPE_ICON: Record<AlgoliaNavRecord["type"], string> = {
 };
 
 const NAV_TYPE_BADGE: Record<AlgoliaNavRecord["type"], string> = {
-  page: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300",
+  page: "bg-zinc-100 text-zinc-600 dark:bg-slate-700 dark:text-zinc-300",
   category: "bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300",
   blog: "bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-300",
   event: "bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-300",
@@ -186,7 +186,7 @@ export default function Search({
         <div className="relative flex-1 flex items-center">
           {/* Leading search icon — decorative in deferred mode, functional in live mode */}
           <svg
-            className="absolute left-3 w-4 h-4 text-gray-400 pointer-events-none"
+            className="absolute left-3 w-4 h-4 text-zinc-400 pointer-events-none"
             aria-hidden="true"
             fill="none"
             stroke="currentColor"
@@ -215,7 +215,7 @@ export default function Search({
               type="button"
               variant="ghost"
               onClick={handleClear}
-              className="absolute right-3 p-0.5 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              className="absolute right-3 p-0.5 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
               aria-label={t("clearAriaLabel")}
             >
               <svg
@@ -242,7 +242,7 @@ export default function Search({
             variant="ghost"
             onClick={handleDeferredSubmit}
             aria-label={t("ariaLabel")}
-            className="flex-shrink-0 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="flex-shrink-0 px-3 py-2 rounded-lg border border-zinc-300 dark:border-slate-600 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-slate-700 transition-colors"
           >
             <svg
               className="w-4 h-4"

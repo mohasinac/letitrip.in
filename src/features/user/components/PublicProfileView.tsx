@@ -81,7 +81,7 @@ function SellerProductsSection({
               href={`/products/${product.id}`}
               className={`block rounded-xl overflow-hidden border ${THEME_CONSTANTS.themed.border} hover:shadow-md transition-shadow`}
             >
-              <div className="relative aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
+              <div className="relative aspect-square bg-zinc-100 dark:bg-slate-800 overflow-hidden">
                 {product.mainImage ? (
                   <MediaImage
                     src={product.mainImage}
@@ -90,7 +90,7 @@ function SellerProductsSection({
                   />
                 ) : (
                   <div
-                    className={`w-full h-full ${flex.center} text-gray-400 text-4xl`}
+                    className={`w-full h-full ${flex.center} text-zinc-400 text-4xl`}
                   >
                     🛍️
                   </div>

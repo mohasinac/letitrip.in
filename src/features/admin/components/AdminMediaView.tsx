@@ -112,7 +112,7 @@ export function AdminMediaView() {
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               operationType === "crop"
                 ? "bg-primary text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
             }`}
           >
             🖼️ {t("cropImage")}
@@ -122,7 +122,7 @@ export function AdminMediaView() {
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               operationType === "trim"
                 ? "bg-primary text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
             }`}
           >
             🎬 {t("trimVideo")}
@@ -162,7 +162,7 @@ export function AdminMediaView() {
       {/* Empty State */}
       {recentOperations.length === 0 && (
         <Card className="p-12 text-center">
-          <Text className="text-gray-500">{t("noOperations")}</Text>
+          <Text className="text-zinc-500">{t("noOperations")}</Text>
         </Card>
       )}
     </div>

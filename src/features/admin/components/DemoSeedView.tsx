@@ -218,7 +218,7 @@ export function DemoSeedView() {
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary} pb-16`}>
       {/* ── Hero Header ── */}
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white px-6 py-10 sm:py-14">
+      <div className="bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white px-6 py-10 sm:py-14">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -231,7 +231,7 @@ export function DemoSeedView() {
                   Seed Data Manager
                 </Heading>
               </div>
-              <Text className="text-gray-400 text-sm sm:text-base max-w-lg">
+              <Text className="text-zinc-400 text-sm sm:text-base max-w-lg">
                 Load or remove deterministic seed documents from Firestore. All
                 operations are ID-scoped — safe alongside real data.
               </Text>
@@ -251,7 +251,7 @@ export function DemoSeedView() {
               return (
                 <div
                   key={g.label}
-                  className="flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full text-xs text-gray-300"
+                  className="flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full text-xs text-zinc-300"
                 >
                   <Span>{g.emoji}</Span>
                   <Span>{g.label}</Span>
@@ -333,13 +333,13 @@ export function DemoSeedView() {
                       <Span className={`font-semibold text-sm ${group.color}`}>
                         {group.label}
                       </Span>
-                      <Span className="text-xs text-gray-500 dark:text-gray-400">
+                      <Span className="text-xs text-zinc-500 dark:text-zinc-400">
                         ({group.collections.length})
                       </Span>
                     </div>
                     <div className="flex items-center gap-2">
                       {someGroupSelected && !allGroupSelected && (
-                        <Span className="text-xs text-gray-500 dark:text-gray-400">
+                        <Span className="text-xs text-zinc-500 dark:text-zinc-400">
                           {
                             group.collections.filter((c) =>
                               selectedCollections.includes(c),
@@ -351,8 +351,8 @@ export function DemoSeedView() {
                       <Span
                         className={`text-xs font-medium px-2 py-0.5 rounded-full ${
                           allGroupSelected
-                            ? "bg-gray-800 dark:bg-white text-white dark:text-gray-900"
-                            : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                            ? "bg-zinc-800 dark:bg-white text-white dark:text-zinc-900"
+                            : "bg-zinc-200 dark:bg-slate-700 text-zinc-600 dark:text-zinc-300"
                         }`}
                       >
                         {allGroupSelected
@@ -393,7 +393,7 @@ export function DemoSeedView() {
                           className={`
                             flex flex-col gap-1 px-3 py-2.5 rounded-lg border-2 cursor-pointer
                             transition-all duration-150 select-none
-                            ${isSelected ? group.chipSelected : group.chipBg + " text-gray-700 dark:text-gray-300"}
+                            ${isSelected ? group.chipSelected : group.chipBg + " text-zinc-700 dark:text-zinc-300"}
                             ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
                           `}
                         >
@@ -410,7 +410,7 @@ export function DemoSeedView() {
                           </div>
                           {/* Count row */}
                           {statusLoading ? (
-                            <Span className="text-[10px] text-gray-400 pl-5">
+                            <Span className="text-[10px] text-zinc-400 pl-5">
                               checking…
                             </Span>
                           ) : seedCount !== null ? (
@@ -419,7 +419,7 @@ export function DemoSeedView() {
                                 allExist
                                   ? "text-emerald-600 dark:text-emerald-400"
                                   : noneExist
-                                    ? "text-gray-400 dark:text-gray-500"
+                                    ? "text-zinc-400 dark:text-zinc-500"
                                     : "text-amber-600 dark:text-amber-400"
                               }`}
                             >
@@ -616,7 +616,7 @@ function LoadDeleteStatus({
 
   if (isLoading) {
     return (
-      <div className="mt-4 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+      <div className="mt-4 flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
         <Spinner size="sm" />
         <Span>{action === "load" ? "Loading" : "Deleting"} seed data…</Span>
       </div>

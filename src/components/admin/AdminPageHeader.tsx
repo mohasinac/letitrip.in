@@ -53,7 +53,7 @@ export function AdminPageHeader({
       {breadcrumb && breadcrumb.length > 0 && (
         <Nav
           aria-label="Breadcrumb"
-          className="mb-3 flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400"
+          className="mb-3 flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400"
         >
           {breadcrumb.map((crumb, index) => (
             <Span key={index} className="flex items-center gap-1">
@@ -61,12 +61,12 @@ export function AdminPageHeader({
               {crumb.href ? (
                 <TextLink
                   href={crumb.href}
-                  className="hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                  className="hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
                 >
                   {crumb.label}
                 </TextLink>
               ) : (
-                <Span className="text-gray-700 dark:text-gray-200 font-medium">
+                <Span className="text-zinc-700 dark:text-zinc-200 font-medium">
                   {crumb.label}
                 </Span>
               )}
@@ -86,7 +86,7 @@ export function AdminPageHeader({
             <Text className={typography.pageSubtitle}>{subtitle}</Text>
           )}
           {description && (
-            <Text className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <Text className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
               {description}
             </Text>
           )}

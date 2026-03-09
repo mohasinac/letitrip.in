@@ -68,7 +68,7 @@ export function StoreCard({
                   e.stopPropagation();
                   onSelect?.(store.ownerId, e.target.checked);
                 }}
-                className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer bg-white/80"
+                className="w-5 h-5 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer bg-white/80"
               />
             </div>
           )}
@@ -76,7 +76,7 @@ export function StoreCard({
           {/* Category badge — top right */}
           {store.storeCategory && (
             <div className="absolute top-2 right-2 z-10">
-              <Span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/90 text-gray-700 dark:bg-black/60 dark:text-gray-200">
+              <Span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/90 text-zinc-700 dark:bg-black/60 dark:text-zinc-200">
                 {store.storeCategory}
               </Span>
             </div>
@@ -84,7 +84,7 @@ export function StoreCard({
 
           {/* Avatar — centred, overlapping banner bottom */}
           <div className="absolute -bottom-7 left-1/2 -translate-x-1/2">
-            <div className="w-14 h-14 rounded-full border-[3px] border-white dark:border-gray-900 overflow-hidden shadow-md">
+            <div className="w-14 h-14 rounded-full border-[3px] border-white dark:border-slate-900 overflow-hidden shadow-md">
               {(store.storeLogoURL ?? store.photoURL) ? (
                 <AvatarDisplay
                   cropData={{

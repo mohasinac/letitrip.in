@@ -122,7 +122,7 @@ export function PollVotingSection({
               className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
                 isChecked
                   ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
-                  : `${themed.border} hover:border-gray-300`
+                  : `${themed.border} hover:border-zinc-300`
               }`}
             >
               <Checkbox

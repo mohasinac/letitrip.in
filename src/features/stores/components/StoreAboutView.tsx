@@ -55,10 +55,10 @@ export function StoreAboutView({ storeSlug }: StoreAboutViewProps) {
         </div>
 
         {/* Details list */}
-        <dl className="divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+        <dl className="divide-y divide-zinc-200 dark:divide-slate-700 text-sm">
           {store.storeCategory && (
             <div className="py-3 flex items-center gap-3">
-              <Store className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <Store className="w-4 h-4 text-zinc-400 flex-shrink-0" />
               <dt className={`${themed.textSecondary} w-28 flex-shrink-0`}>
                 {t("about.category")}
               </dt>
@@ -78,7 +78,7 @@ export function StoreAboutView({ storeSlug }: StoreAboutViewProps) {
 
           {store.location && (
             <div className="py-3 flex items-center gap-3">
-              <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <MapPin className="w-4 h-4 text-zinc-400 flex-shrink-0" />
               <dt className={`${themed.textSecondary} w-28 flex-shrink-0`}>
                 {t("about.location")}
               </dt>
@@ -88,7 +88,7 @@ export function StoreAboutView({ storeSlug }: StoreAboutViewProps) {
 
           {store.website && (
             <div className="py-3 flex items-center gap-3">
-              <Globe className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <Globe className="w-4 h-4 text-zinc-400 flex-shrink-0" />
               <dt className={`${themed.textSecondary} w-28 flex-shrink-0`}>
                 {t("about.website")}
               </dt>
