@@ -14,6 +14,7 @@ import {
   Li,
 } from "@/components";
 import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
+import { apiClient } from "@/lib/api-client";
 
 const { themed } = THEME_CONSTANTS;
 
@@ -101,18 +102,15 @@ export function AlgoliaDashboardView() {
       [target]: { loading: true, result: null, status: "idle" },
     }));
     try {
-      const res = await fetch(API_ENDPOINTS.DEMO.ALGOLIA, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, target }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error ?? `${errorLabel} failed`);
+      const result = await apiClient.post<ActionResult>(
+        API_ENDPOINTS.DEMO.ALGOLIA,
+        { action, target },
+      );
       setStates((prev) => ({
         ...prev,
         [target]: {
           loading: false,
-          result: json.data ?? {},
+          result: result ?? {},
           status: "success",
         },
       }));

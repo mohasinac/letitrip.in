@@ -1,3 +1,4 @@
+export { AddressCard } from "./AddressCard";
 export { AddressForm } from "./AddressForm";
 
 // Elevated from features/user — used in shared Tier-1 layout components

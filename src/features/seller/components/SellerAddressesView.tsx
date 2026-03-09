@@ -26,7 +26,7 @@ import {
   Spinner,
   Text,
 } from "@/components";
-import { AddressCard } from "@/features/user";
+import { AddressCard } from "@/components";
 import { useRouter } from "@/i18n/navigation";
 import {
   ROUTES,
