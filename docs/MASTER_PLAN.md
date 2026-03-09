@@ -1384,6 +1384,8 @@ F4 (imports done)    ──► H7 (publish @lir/*)
 
 ### Stage A — Security & Bug Fixes _(do first, before any architecture work)_
 
+> ✅ **Complete — all 17 steps committed 2026-03-09.**
+
 | Step  | Action                                                                        | §Ref  | Risk   | Effort | Prerequisite |
 | ----- | ----------------------------------------------------------------------------- | ----- | ------ | ------ | ------------ |
 | A1    | Fix `apiClient.buildURL` — add `NEXT_PUBLIC_APP_URL` env var                  | §2.6  | Low    | 30 min | —            |
@@ -1404,7 +1406,7 @@ F4 (imports done)    ──► H7 (publish @lir/*)
 | A16 ‖ | Fix `Queue.process()` — `.catch()` on recursive tail call                     | §9.7  | Low    | 30 min | —            |
 | A17 ‖ | Fix `StorageManager` — per-prefix instance map                                | §9.8  | Low    | 1 hr   | —            |
 
-> **Gate:** A1–A6 must be production-deployed before Stage C or Stage E begins.
+> ~~**Gate:** A1–A6 must be production-deployed before Stage C or Stage E begins.~~ ✅ Gate cleared — A1–A17 deployed 2026-03-09.
 
 ---
 
@@ -1423,6 +1425,8 @@ Copies files and creates new packages without modifying any app source. Safe to 
 
 ### Stage C — Data Fetching Migration _(after A1–A6 deployed)_
 
+> ✅ **Complete — committed 2026-03-09.** Adapter pattern: `useApiQuery` / `useApiMutation` rewritten as thin TanStack Query wrappers; all 150+ callers unchanged. `QueryProvider` singleton + devtools installed in root layout.
+
 | Step | Action                                                                                                       | §Ref     | Risk   | Effort | Prerequisite |
 | ---- | ------------------------------------------------------------------------------------------------------------ | -------- | ------ | ------ | ------------ |
 | C1   | Install TanStack Query; add `QueryProvider` to root layout                                                   | §3.1     | Low    | 30 min | A1           |
@@ -1434,6 +1438,8 @@ Copies files and creates new packages without modifying any app source. Safe to 
 
 ### Stage D — Form Migration _(parallel with Stage C)_
 
+> ✅ **Complete — committed 2026-03-09.** `react-hook-form@7.71.2` + `@hookform/resolvers` installed; `src/hooks/useForm.ts` deleted; `useForm` re-exported from `react-hook-form` in the barrel.
+
 | Step | Action                                                        | §Ref       | Risk   | Effort | Prerequisite |
 | ---- | ------------------------------------------------------------- | ---------- | ------ | ------ | ------------ |
 | D1   | Install `react-hook-form` + `@hookform/resolvers`             | §3.5       | Low    | 30 min | —            |
@@ -1443,6 +1449,10 @@ Copies files and creates new packages without modifying any app source. Safe to 
 ---
 
 ### Stage E — SSR Migration _(A1 must be done; C1 recommended for prefetch pattern)_
+
+> **E1 ✅** committed 2026-03-09 — blog/products/events/sellers async RSC + `generateMetadata`<br>
+> **E2 ✅** committed 2026-03-09 — homepage `initialData` pre-fetch (carousel, categories, reviews)<br>
+> E3–E7 pending.
 
 | Step | Action                                                                                           | §Ref   | Risk   | Effort | Prerequisite |
 | ---- | ------------------------------------------------------------------------------------------------ | ------ | ------ | ------ | ------------ |
@@ -1507,6 +1517,8 @@ This table is the master deletion checklist. See [Phase 8](#phase-8--dead-code-r
 | ~~`docs/SSR_MIGRATION_PLAN.md`~~                              | Superseded by `MASTER_PLAN.md`                                                                                                                                                                                                                                                                               |
 | ~~`src/components/admin/RichTextEditor.tsx`~~                 | Moved to `src/features/admin/components/`                                                                                                                                                                                                                                                                    |
 | ~~14 admin filter components from `src/components/filters/`~~ | Moved to `src/features/admin/components/` — `BidFilters`, `CarouselFilters`, `CategoryFilters`, `CouponFilters`, `EventEntryFilters`, `FaqFilters`, `HomepageSectionFilters`, `NewsletterFilters`, `NotificationFilters`, `PayoutFilters`, `RipCoinFilters`, `SessionFilters`, `StoreFilters`, `UserFilters` |
+| ~~`src/hooks/useForm.ts`~~                                    | Deleted — `useForm` re-exported from `react-hook-form` in `src/hooks/index.ts` (Stage D, 2026-03-09)                                                                                                                                                                                                         |
+| ~~`src/hooks/__tests__/useForm.test.ts`~~                     | Deleted alongside source file (Stage D, 2026-03-09)                                                                                                                                                                                                                                                          |
 
 ### Pending — keyed to §7 step
 
@@ -1516,7 +1528,6 @@ This table is the master deletion checklist. See [Phase 8](#phase-8--dead-code-r
 | `src/hooks/useApiMutation.ts`             | C4           | `useMutation` from `@tanstack/react-query`           |
 | `src/classes/CacheManager.ts`             | C4           | TanStack Query internal cache                        |
 | `src/classes/EventBus.ts`                 | C4           | `queryClient.invalidateQueries`                      |
-| `src/hooks/useForm.ts`                    | D3           | `react-hook-form` with `zodResolver`                 |
 | `src/services/demo.service.ts`            | G1           | Not needed — demo artifact                           |
 | Pure-passthrough files in `src/services/` | H3           | Server Actions in `src/actions/`                     |
 | `src/snippets/` (entire directory)        | H5           | Patterns documented in `MASTER_PLAN.md` / `GUIDE.md` |

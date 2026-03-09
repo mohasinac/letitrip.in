@@ -7,6 +7,96 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage E2: SSR Phase 2 — Homepage Sections
+
+### Changed
+
+- **`src/app/[locale]/page.tsx`** — Converted to `async` RSC. Pre-fetches carousel slides (`carouselRepository.getActiveSlides()`), root categories (`categoriesRepository.getCategoriesByTier(0).slice(0, 12)`), and featured reviews (`reviewRepository.findFeatured(18)`) in parallel via `Promise.all` with per-call `.catch(() => [])` fallbacks. Passes results as `initialData` props to the three client section components.
+- **`src/hooks/useHeroCarousel.ts`** — Added `options?: { initialData?: CarouselSlideDocument[] }` parameter; forwarded to `useApiQuery`.
+- **`src/hooks/useTopCategories.ts`** — Added optional second `options?: { initialData?: CategoryDocument[] }` parameter; forwarded to `useApiQuery`.
+- **`src/hooks/useHomepageReviews.ts`** — Added `options?: { initialData?: ReviewDocument[] }` parameter; forwarded to `useApiQuery`.
+- **`src/features/homepage/components/HeroCarousel.tsx`** — Added `initialSlides?: CarouselSlideDocument[]` prop; passed to `useHeroCarousel({ initialData: initialSlides })`.
+- **`src/features/homepage/components/TopCategoriesSection.tsx`** — Added `initialCategories?: CategoryDocument[]` prop; passed to `useTopCategories(12, { initialData: initialCategories })`.
+- **`src/features/homepage/components/CustomerReviewsSection.tsx`** — Added `initialReviews?: ReviewDocument[]` prop; passed to `useHomepageReviews({ initialData: initialReviews })`.
+
+---
+
+## [Unreleased] — Stage E1: SSR Phase 1 — Blog, Products, Events, Sellers
+
+### Added
+
+- **`src/features/events/components/EventDetailView.tsx`** — New `"use client"` component. Full event detail rendering extracted from the former fat client page. Accepts `{ id: string; initialData?: EventDocument }`.
+- **`src/features/seller/components/SellerStorefrontPage.tsx`** — New client shell. Receives `{ sellerId, initialSeller? }` from the RSC and passes them into `useSellerStorefront`.
+
+### Changed
+
+- **`src/app/[locale]/blog/[slug]/page.tsx`** — Removed `"use client"`; made `async` RSC. Calls `blogRepository.findBySlug()` + `blogRepository.findRelated()` directly. Added `generateMetadata` with Open Graph image support.
+- **`src/app/[locale]/products/[slug]/page.tsx`** — Removed `"use client"`; made `async` RSC. Calls `productRepository.findByIdOrSlug()` directly. Added `generateMetadata` with OG images.
+- **`src/app/[locale]/events/[id]/page.tsx`** — Thinned to bare async RSC shell. Calls `eventRepository.findById()`. Added `generateMetadata`. Render logic extracted to `EventDetailView`.
+- **`src/app/[locale]/sellers/[id]/page.tsx`** — Made `async` RSC. Calls `userRepository.findById()`, validates seller role (`notFound()` otherwise). Added `generateMetadata`. Renders `<SellerStorefrontPage>`.
+- **`src/features/blog/components/BlogPostView.tsx`** — Added `initialData?: { post; related }` prop; passed to `useApiQuery`.
+- **`src/features/products/components/ProductDetailView.tsx`** — Added `initialData?: ProductDocument` prop; passed to `useApiQuery`.
+- **`src/hooks/useApiQuery.ts`** — Added `initialData` option; `initialDataUpdatedAt: Date.now()` marks it fresh for the full `staleTime`, preventing an immediate refetch.
+- **`src/hooks/useSellerStorefront.ts`** — Added `options?: { initialSeller?: UserDocument }` second parameter; profile query receives `initialData`.
+
+---
+
+## [Unreleased] — Stage D: react-hook-form Migration
+
+### Added
+
+- **`react-hook-form@7.71.2`** + **`@hookform/resolvers`** — Installed via `npm install --legacy-peer-deps`.
+
+### Changed
+
+- **`src/hooks/index.ts`** — `useForm` now re-exported from `react-hook-form` instead of the deleted local file.
+
+### Removed
+
+- **`src/hooks/useForm.ts`** — Deleted. `useForm` re-exported from `react-hook-form` via the barrel.
+- **`src/hooks/__tests__/useForm.test.ts`** — Deleted alongside source file.
+
+---
+
+## [Unreleased] — Stage C: TanStack Query Migration
+
+### Added
+
+- **`@tanstack/react-query@5.90.21`** + **`@tanstack/react-query-devtools`** — Installed.
+- **`src/components/providers/QueryProvider.tsx`** — `QueryClientProvider` wrapper. Exports `getQueryClient()` module-level singleton used by `invalidateQueries` outside React components. `ReactQueryDevtools` mounted in development.
+- **`src/app/[locale]/layout.tsx`** — `QueryProvider` added to root client-provider tree.
+
+### Changed
+
+- **`src/hooks/useApiQuery.ts`** — Rewritten as a thin TanStack `useQuery` adapter. Public interface preserved for all 150+ callers. `cacheTTL` maps to `staleTime`; `onSuccess`/`onError` emulated via `useEffect`; `invalidateQueries` delegates to `queryClient.invalidateQueries()`.
+- **`src/hooks/useApiMutation.ts`** — Rewritten as a thin TanStack `useMutation` adapter. `mutate()` returns a `Promise` via `mutateAsync()`; `isLoading` mapped from TanStack v5 `isPending`.
+
+---
+
+## [Unreleased] — Stage A: Security & Bug Fixes (A1–A17)
+
+### Fixed
+
+- **A1 — `src/lib/api-client.ts`** — `buildURL` falls back to `process.env.NEXT_PUBLIC_APP_URL` server-side; eliminates `ReferenceError: window is not defined` in RSC context.
+- **A2 — Payment verify route** — Razorpay HMAC comparison migrated from `===` to `crypto.timingSafeEqual()`.
+- **A3 — `src/app/api/webhooks/shiprocket/route.ts`** — Webhook HMAC comparison migrated to `timingSafeEqual()`.
+- **A4 — Media upload route** — Server-side magic-byte MIME validation added; filenames replaced with `crypto.randomBytes(16)` hex strings to prevent path traversal.
+- **A5 — `src/lib/security/rate-limit.ts`** — Replaced in-memory `Map` with Upstash Redis `slidingWindow` limiter; removed `NODE_ENV === "development"` bypass.
+- **A6 — CSP** — Nonce-based CSP: `generateNonce()` per request; `unsafe-eval` removed from production; nonce forwarded to `<Script>` elements.
+- **A7 — `src/contexts/ThemeContext.tsx`** — Reads DOM `class="dark"` for initial state; writes `theme` cookie on toggle to prevent flash on server render.
+- **A8 — `src/components/utility/ResponsiveView.tsx`** — Both trees rendered on server; CSS (`block md:hidden` / `hidden md:flex`) hides the inactive one; eliminates hydration mismatch.
+- **A9 — `src/hooks/useMediaQuery.ts`** — Lazy initializer reads `window.matchMedia` synchronously on first client render; removes mobile-layout flash.
+- **A10 — `src/hooks/useWishlistToggle.ts`** — Optimistic state rolls back in `catch`; no longer rethrows unhandled rejections to `onClick` handlers.
+- **A11 — Sign-out cache clear** — `queryClient.clear()` called on sign-out so prior user's cached data is not shown to the next user.
+- **A12 — `src/hooks/useRazorpay.ts`** — Added `isError: boolean` state; `onerror` sets it instead of silently swallowing the failure.
+- **A13 — `src/hooks/useNotifications.ts`** — `markRead` / `markAllRead` mutations call `refetch()` in `onSuccess`; unread badge updates immediately.
+- **A14 — `src/hooks/useChat.ts`** — Listener stored in a `ref`; `off()` receives the same function reference to avoid removing other subscribers on the same RTDB path.
+- **A15 — `src/lib/api-client.ts`** — `AbortController` `abort` event listener removed in `finally` block; fixes event-listener memory leak per request.
+- **A16 — `src/classes/Queue.ts`** — Recursive `process()` tail call now `await`-ed with `.catch()`; prevents unhandled promise rejections.
+- **A17 — `src/classes/StorageManager.ts`** — Instance map keyed by `prefix`; each unique prefix gets its own singleton, fixing cross-namespace key collisions.
+
+---
+
 ## [Unreleased] — Docs: Add Known Bugs Section to MASTER_PLAN.md
 
 ### Changed
