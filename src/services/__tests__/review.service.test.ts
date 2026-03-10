@@ -1,5 +1,6 @@
 /**
  * Review Service Unit Tests
+ * NOTE: vote() removed from reviewService in G1 cont. — use voteReviewHelpfulAction from @/actions.
  */
 import { apiClient } from "@/lib/api-client";
 import { reviewService } from "@/services";
@@ -105,21 +106,5 @@ describe("reviewService", () => {
     expect(mockDelete).toHaveBeenCalledWith(
       API_ENDPOINTS.REVIEWS.DELETE("rev_1"),
     );
-  });
-
-  it("vote() calls POST helpful vote", async () => {
-    mockPost.mockResolvedValueOnce({} as never);
-    await reviewService.vote("rev_1", { helpful: true });
-    expect(mockPost).toHaveBeenCalledWith(API_ENDPOINTS.REVIEWS.VOTE("rev_1"), {
-      helpful: true,
-    });
-  });
-
-  it("vote() calls POST not-helpful vote", async () => {
-    mockPost.mockResolvedValueOnce({} as never);
-    await reviewService.vote("rev_1", { helpful: false });
-    expect(mockPost).toHaveBeenCalledWith(API_ENDPOINTS.REVIEWS.VOTE("rev_1"), {
-      helpful: false,
-    });
   });
 });

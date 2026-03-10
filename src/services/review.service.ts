@@ -1,6 +1,8 @@
 /**
  * Review Service
- * Pure async functions for review API calls.
+ * Read and admin-mutation API calls for reviews.
+ * User mutations (create, vote) use Server Actions from `@/actions`.
+ * Admin mutations (update, delete) go through the admin API route.
  * Import via `@/services` barrel — NEVER call apiClient directly in components.
  */
 
@@ -28,22 +30,20 @@ export const reviewService = {
 
   /** Fetch homepage customer reviews (approved, latest) */
   getHomepageReviews: () =>
-    apiClient.get(`${API_ENDPOINTS.REVIEWS.LIST}?latest=true&pageSize=6`),
+    apiClient.get(
+      `${API_ENDPOINTS.REVIEWS.LIST}?filters=status==approved&sorts=-createdAt&pageSize=6`,
+    ),
 
   /** Get a single review by ID */
   getById: (id: string) => apiClient.get(API_ENDPOINTS.REVIEWS.GET_BY_ID(id)),
 
-  /** Create a new review */
+  /** Create a new review (user-facing; used until createReviewAction interface is aligned) */
   create: (data: unknown) => apiClient.post(API_ENDPOINTS.REVIEWS.CREATE, data),
 
-  /** Update a review */
+  /** Update a review (admin only — goes through admin API route with role check) */
   update: (id: string, data: unknown) =>
     apiClient.patch(API_ENDPOINTS.REVIEWS.UPDATE(id), data),
 
-  /** Delete a review */
+  /** Delete a review (admin only — goes through admin API route with role check) */
   delete: (id: string) => apiClient.delete(API_ENDPOINTS.REVIEWS.DELETE(id)),
-
-  /** Vote a review as helpful or not */
-  vote: (id: string, data: { helpful: boolean }) =>
-    apiClient.post(API_ENDPOINTS.REVIEWS.VOTE(id), data),
 };
