@@ -13,22 +13,18 @@ import {
   Ul,
   Li,
 } from "@/components";
-import { THEME_CONSTANTS, API_ENDPOINTS } from "@/constants";
-import { apiClient } from "@/lib/api-client";
+import { THEME_CONSTANTS } from "@/constants";
+import {
+  useAlgoliaSync,
+  type AlgoliaSyncResult,
+  type AlgoliaSyncTarget,
+} from "@/features/admin";
 
 const { themed } = THEME_CONSTANTS;
 
-interface ActionResult {
-  indexed?: number;
-  deleted?: number;
-  total?: number;
-  cleared?: boolean;
-  error?: string;
-}
-
 interface ActionState {
   loading: boolean;
-  result: ActionResult | null;
+  result: AlgoliaSyncResult | null;
   status: "idle" | "success" | "error";
 }
 
@@ -61,16 +57,19 @@ const SYNC_ACTIONS = [
 
 type SyncKey = (typeof SYNC_ACTIONS)[number]["key"];
 
+const idleState: ActionState = { loading: false, result: null, status: "idle" };
+
 export function AlgoliaDashboardView() {
   const [syncStates, setSyncStates] = useState<Record<SyncKey, ActionState>>({
-    products: { loading: false, result: null, status: "idle" },
-    pages: { loading: false, result: null, status: "idle" },
+    products: idleState,
+    pages: idleState,
   });
   const [clearStates, setClearStates] = useState<Record<SyncKey, ActionState>>({
-    products: { loading: false, result: null, status: "idle" },
-    pages: { loading: false, result: null, status: "idle" },
+    products: idleState,
+    pages: idleState,
   });
   const [confirmClear, setConfirmClear] = useState<SyncKey | null>(null);
+  const algoliaSync = useAlgoliaSync();
 
   if (process.env.NODE_ENV !== "development") {
     return (
@@ -89,30 +88,22 @@ export function AlgoliaDashboardView() {
     );
   }
 
-  const callDev = async (
+  const callAction = async (
     action: "sync" | "clear",
-    target: SyncKey,
+    target: AlgoliaSyncTarget,
     setStates: React.Dispatch<
       React.SetStateAction<Record<SyncKey, ActionState>>
     >,
-    errorLabel: string,
   ) => {
     setStates((prev) => ({
       ...prev,
       [target]: { loading: true, result: null, status: "idle" },
     }));
     try {
-      const result = await apiClient.post<ActionResult>(
-        API_ENDPOINTS.DEMO.ALGOLIA,
-        { action, target },
-      );
+      const result = await algoliaSync.mutateAsync({ action, target });
       setStates((prev) => ({
         ...prev,
-        [target]: {
-          loading: false,
-          result: result ?? {},
-          status: "success",
-        },
+        [target]: { loading: false, result: result ?? {}, status: "success" },
       }));
     } catch (err: unknown) {
       setStates((prev) => ({
@@ -120,7 +111,7 @@ export function AlgoliaDashboardView() {
         [target]: {
           loading: false,
           result: {
-            error: err instanceof Error ? err.message : `${errorLabel} failed`,
+            error: err instanceof Error ? err.message : `${action} failed`,
           },
           status: "error",
         },
@@ -128,12 +119,11 @@ export function AlgoliaDashboardView() {
     }
   };
 
-  const handleSync = (key: SyncKey) =>
-    callDev("sync", key, setSyncStates, "Sync");
+  const handleSync = (key: SyncKey) => callAction("sync", key, setSyncStates);
 
   const handleClear = async (key: SyncKey) => {
     setConfirmClear(null);
-    await callDev("clear", key, setClearStates, "Clear");
+    await callAction("clear", key, setClearStates);
   };
 
   const anyLoading =
@@ -332,7 +322,7 @@ function ActionResultDisplay({
   status,
   label,
 }: {
-  result: ActionResult | null;
+  result: AlgoliaSyncResult | null;
   status: "success" | "error";
   label: string;
 }) {

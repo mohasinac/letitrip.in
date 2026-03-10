@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Rule 20 fix: AlgoliaDashboardView — extract apiClient call to useAlgoliaSync hook
+
+### Added
+
+- **`src/features/admin/hooks/useAlgoliaSync.ts`** — New `useAlgoliaSync()` hook wrapping `useMutation` for the Algolia sync/clear API. Exports `AlgoliaSyncResult`, `AlgoliaSyncTarget`, `AlgoliaSyncVars` types. Eliminates the direct `apiClient.post` call from the component.
+- **`src/features/admin/hooks/index.ts`** — `export * from "./useAlgoliaSync"` added.
+
+### Changed
+
+- **`src/features/admin/components/AlgoliaDashboardView.tsx`** — Removed direct `apiClient` import (Rule 20 violation). Now uses `useAlgoliaSync()` via `@/features/admin` barrel. Removed local `ActionResult` type (replaced by `AlgoliaSyncResult` from hook). Removed `API_ENDPOINTS` import. `callDev` renamed `callAction` with simplified signature (no `errorLabel` param).
+
+### Fixed
+
+- Rule 20 violation: `AlgoliaDashboardView` was directly calling `apiClient.post()` inside a component handler. All API calls now go through the `useAlgoliaSync` TanStack mutation.
+
+---
+
 ## [Unreleased] — §3.3 improvement: rate-limit headers + MASTER_PLAN / TECH_DEBT.md status sync
 
 ### Added
