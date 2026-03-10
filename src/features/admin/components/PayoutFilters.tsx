@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { FilterFacetSection, RangeFilter } from "@/components";
-import type { UrlTable } from "@/components";
+import { FilterPanel } from "@/components";
+import type { FilterConfig, UrlTable } from "@/components";
 
 export const PAYOUT_SORT_OPTIONS = [
   { value: "-requestedAt", label: "Most Recent Request" },
@@ -21,61 +21,42 @@ export interface PayoutFiltersProps {
 export function PayoutFilters({ table }: PayoutFiltersProps) {
   const t = useTranslations("filters");
 
-  const statusOptions = [
-    { value: "pending", label: t("payoutStatusPending") },
-    { value: "processing", label: t("payoutStatusProcessing") },
-    { value: "completed", label: t("payoutStatusCompleted") },
-    { value: "failed", label: t("payoutStatusFailed") },
+  const config: FilterConfig[] = [
+    {
+      type: "facet-multi",
+      key: "status",
+      title: t("status"),
+      options: [
+        { value: "pending", label: t("payoutStatusPending") },
+        { value: "processing", label: t("payoutStatusProcessing") },
+        { value: "completed", label: t("payoutStatusCompleted") },
+        { value: "failed", label: t("payoutStatusFailed") },
+      ],
+      defaultCollapsed: false,
+    },
+    {
+      type: "facet-multi",
+      key: "paymentMethod",
+      title: t("payoutPaymentMethod"),
+      options: [
+        { value: "bank_transfer", label: t("payoutMethodBankTransfer") },
+        { value: "upi", label: t("payoutMethodUpi") },
+      ],
+    },
+    {
+      type: "range-number",
+      minKey: "minAmount",
+      maxKey: "maxAmount",
+      title: t("amountRange"),
+      prefix: "₹",
+      showSlider: true,
+      minBound: 0,
+      maxBound: 500000,
+      step: 500,
+      minPlaceholder: t("minAmount"),
+      maxPlaceholder: t("maxAmount"),
+    },
   ];
 
-  const paymentMethodOptions = [
-    { value: "bank_transfer", label: t("payoutMethodBankTransfer") },
-    { value: "upi", label: t("payoutMethodUpi") },
-  ];
-
-  const selectedStatus = table.get("status")
-    ? table.get("status").split("|").filter(Boolean)
-    : [];
-  const selectedPaymentMethod = table.get("paymentMethod")
-    ? table.get("paymentMethod").split("|").filter(Boolean)
-    : [];
-
-  return (
-    <div>
-      <FilterFacetSection
-        title={t("status")}
-        options={statusOptions}
-        selected={selectedStatus}
-        onChange={(vals) => table.set("status", vals.join("|"))}
-        searchable={false}
-        defaultCollapsed={false}
-      />
-
-      <FilterFacetSection
-        title={t("payoutPaymentMethod")}
-        options={paymentMethodOptions}
-        selected={selectedPaymentMethod}
-        onChange={(vals) => table.set("paymentMethod", vals.join("|"))}
-        searchable={false}
-        defaultCollapsed={true}
-      />
-
-      <RangeFilter
-        title={t("amountRange")}
-        type="number"
-        minValue={table.get("minAmount")}
-        maxValue={table.get("maxAmount")}
-        onMinChange={(v) => table.set("minAmount", v)}
-        onMaxChange={(v) => table.set("maxAmount", v)}
-        prefix="₹"
-        showSlider
-        minBound={0}
-        maxBound={500000}
-        step={500}
-        minPlaceholder={t("minAmount")}
-        maxPlaceholder={t("maxAmount")}
-        defaultCollapsed={true}
-      />
-    </div>
-  );
+  return <FilterPanel config={config} table={table} />;
 }

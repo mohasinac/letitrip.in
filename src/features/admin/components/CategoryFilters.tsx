@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { FilterFacetSection } from "@/components";
-import type { UrlTable } from "@/components";
+import { FilterPanel } from "@/components";
+import type { FilterConfig, UrlTable } from "@/components";
 
 export const CATEGORY_SORT_OPTIONS = [
   { value: "name", label: "Name A–Z" },
@@ -21,109 +21,64 @@ export interface CategoryFiltersProps {
 export function CategoryFilters({ table }: CategoryFiltersProps) {
   const t = useTranslations("filters");
 
-  const tierOptions = [
-    { value: "1", label: t("tierTopLevel") },
-    { value: "2", label: t("tierSubCategory") },
-    { value: "3", label: t("tierLeafCategory") },
+  const config: FilterConfig[] = [
+    {
+      type: "facet-single",
+      key: "tier",
+      title: t("tier"),
+      options: [
+        { value: "1", label: t("tierTopLevel") },
+        { value: "2", label: t("tierSubCategory") },
+        { value: "3", label: t("tierLeafCategory") },
+      ],
+      defaultCollapsed: false,
+    },
+    {
+      type: "facet-single",
+      key: "isActive",
+      title: t("isActive"),
+      options: [
+        { value: "true", label: t("booleanActive") },
+        { value: "false", label: t("booleanInactive") },
+      ],
+    },
+    {
+      type: "facet-single",
+      key: "isFeatured",
+      title: t("isFeatured"),
+      options: [
+        { value: "true", label: t("booleanFeatured") },
+        { value: "false", label: t("booleanNotFeatured") },
+      ],
+    },
+    {
+      type: "facet-single",
+      key: "isSearchable",
+      title: t("isSearchable"),
+      options: [
+        { value: "true", label: t("booleanTrue") },
+        { value: "false", label: t("booleanFalse") },
+      ],
+    },
+    {
+      type: "facet-single",
+      key: "isLeaf",
+      title: t("isLeaf"),
+      options: [
+        { value: "true", label: t("booleanTrue") },
+        { value: "false", label: t("booleanFalse") },
+      ],
+    },
+    {
+      type: "facet-single",
+      key: "isBrand",
+      title: t("isBrand"),
+      options: [
+        { value: "true", label: t("booleanFeatured") },
+        { value: "false", label: t("booleanNotFeatured") },
+      ],
+    },
   ];
 
-  const isActiveOptions = [
-    { value: "true", label: t("booleanActive") },
-    { value: "false", label: t("booleanInactive") },
-  ];
-
-  const isFeaturedOptions = [
-    { value: "true", label: t("booleanFeatured") },
-    { value: "false", label: t("booleanNotFeatured") },
-  ];
-
-  const isSearchableOptions = [
-    { value: "true", label: t("booleanTrue") },
-    { value: "false", label: t("booleanFalse") },
-  ];
-
-  const isLeafOptions = [
-    { value: "true", label: t("booleanTrue") },
-    { value: "false", label: t("booleanFalse") },
-  ];
-
-  const isBrandOptions = [
-    { value: "true", label: t("booleanFeatured") },
-    { value: "false", label: t("booleanNotFeatured") },
-  ];
-
-  const selectedTier = table.get("tier") ? [table.get("tier")] : [];
-  const selectedIsActive = table.get("isActive") ? [table.get("isActive")] : [];
-  const selectedIsFeatured = table.get("isFeatured")
-    ? [table.get("isFeatured")]
-    : [];
-  const selectedIsSearchable = table.get("isSearchable")
-    ? [table.get("isSearchable")]
-    : [];
-  const selectedIsLeaf = table.get("isLeaf") ? [table.get("isLeaf")] : [];
-  const selectedIsBrand = table.get("isBrand") ? [table.get("isBrand")] : [];
-
-  return (
-    <div>
-      <FilterFacetSection
-        title={t("tier")}
-        options={tierOptions}
-        selected={selectedTier}
-        onChange={(vals) => table.set("tier", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={false}
-        selectionMode="single"
-      />
-
-      <FilterFacetSection
-        title={t("isActive")}
-        options={isActiveOptions}
-        selected={selectedIsActive}
-        onChange={(vals) => table.set("isActive", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={true}
-        selectionMode="single"
-      />
-
-      <FilterFacetSection
-        title={t("isFeatured")}
-        options={isFeaturedOptions}
-        selected={selectedIsFeatured}
-        onChange={(vals) => table.set("isFeatured", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={true}
-        selectionMode="single"
-      />
-
-      <FilterFacetSection
-        title={t("isSearchable")}
-        options={isSearchableOptions}
-        selected={selectedIsSearchable}
-        onChange={(vals) => table.set("isSearchable", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={true}
-        selectionMode="single"
-      />
-
-      <FilterFacetSection
-        title={t("isLeaf")}
-        options={isLeafOptions}
-        selected={selectedIsLeaf}
-        onChange={(vals) => table.set("isLeaf", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={true}
-        selectionMode="single"
-      />
-
-      <FilterFacetSection
-        title={t("isBrand")}
-        options={isBrandOptions}
-        selected={selectedIsBrand}
-        onChange={(vals) => table.set("isBrand", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={true}
-        selectionMode="single"
-      />
-    </div>
-  );
+  return <FilterPanel config={config} table={table} />;
 }

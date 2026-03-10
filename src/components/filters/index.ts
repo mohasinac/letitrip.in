@@ -1,4 +1,5 @@
 export * from "./filterUtils";
+export * from "./FilterPanel";
 export * from "./ProductFilters";
 export * from "./RangeFilter";
 export * from "./OrderFilters";

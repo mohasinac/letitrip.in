@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { FilterFacetSection, SwitchFilter } from "@/components";
-import type { UrlTable } from "@/components";
+import { FilterPanel } from "@/components";
+import type { FilterConfig, UrlTable } from "@/components";
 
 export const FAQ_SORT_OPTIONS = [
   { value: "question", label: "Question A–Z" },
@@ -21,38 +21,29 @@ export interface FaqFiltersProps {
 export function FaqFilters({ table }: FaqFiltersProps) {
   const t = useTranslations("filters");
 
-  const categoryOptions = [
-    { value: "general", label: t("faqCategoryGeneral") },
-    { value: "products", label: t("faqCategoryProducts") },
-    { value: "shipping", label: t("faqCategoryShipping") },
-    { value: "returns", label: t("faqCategoryReturns") },
-    { value: "payment", label: t("faqCategoryPayment") },
-    { value: "account", label: t("faqCategoryAccount") },
-    { value: "sellers", label: t("faqCategorySellers") },
+  const config: FilterConfig[] = [
+    {
+      type: "facet-multi",
+      key: "category",
+      title: t("category"),
+      options: [
+        { value: "general", label: t("faqCategoryGeneral") },
+        { value: "products", label: t("faqCategoryProducts") },
+        { value: "shipping", label: t("faqCategoryShipping") },
+        { value: "returns", label: t("faqCategoryReturns") },
+        { value: "payment", label: t("faqCategoryPayment") },
+        { value: "account", label: t("faqCategoryAccount") },
+        { value: "sellers", label: t("faqCategorySellers") },
+      ],
+      defaultCollapsed: false,
+    },
+    {
+      type: "switch",
+      key: "isActive",
+      title: t("isActive"),
+      label: t("showActiveOnly"),
+    },
   ];
 
-  const selectedCategory = table.get("category")
-    ? table.get("category").split("|").filter(Boolean)
-    : [];
-
-  return (
-    <div>
-      <FilterFacetSection
-        title={t("category")}
-        options={categoryOptions}
-        selected={selectedCategory}
-        onChange={(vals) => table.set("category", vals.join("|"))}
-        searchable={false}
-        defaultCollapsed={false}
-      />
-
-      <SwitchFilter
-        title={t("isActive")}
-        label={t("showActiveOnly")}
-        checked={table.get("isActive") === "true"}
-        onChange={(v) => table.set("isActive", v ? "true" : "")}
-        defaultCollapsed={true}
-      />
-    </div>
-  );
+  return <FilterPanel config={config} table={table} />;
 }

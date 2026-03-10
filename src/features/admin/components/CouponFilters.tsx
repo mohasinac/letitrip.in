@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { FilterFacetSection, RangeFilter, SwitchFilter } from "@/components";
-import type { UrlTable } from "@/components";
+import { FilterPanel } from "@/components";
+import type { FilterConfig, UrlTable } from "@/components";
 
 export const COUPON_SORT_OPTIONS = [
   { value: "code", label: "Code A–Z" },
@@ -23,47 +23,34 @@ export interface CouponFiltersProps {
 export function CouponFilters({ table }: CouponFiltersProps) {
   const t = useTranslations("filters");
 
-  const typeOptions = [
-    { value: "percentage", label: t("couponTypePercentage") },
-    { value: "fixed", label: t("couponTypeFixed") },
-    { value: "free_shipping", label: t("couponTypeFreeShipping") },
-    { value: "buy_x_get_y", label: t("couponTypeBuyXGetY") },
+  const config: FilterConfig[] = [
+    {
+      type: "facet-multi",
+      key: "type",
+      title: t("type"),
+      options: [
+        { value: "percentage", label: t("couponTypePercentage") },
+        { value: "fixed", label: t("couponTypeFixed") },
+        { value: "free_shipping", label: t("couponTypeFreeShipping") },
+        { value: "buy_x_get_y", label: t("couponTypeBuyXGetY") },
+      ],
+      defaultCollapsed: false,
+    },
+    {
+      type: "switch",
+      key: "validityIsActive",
+      title: t("isActive"),
+      label: t("showActiveOnly"),
+    },
+    {
+      type: "range-date",
+      fromKey: "dateFrom",
+      toKey: "dateTo",
+      title: t("dateRange"),
+      minPlaceholder: t("minDate"),
+      maxPlaceholder: t("maxDate"),
+    },
   ];
 
-  const selectedType = table.get("type")
-    ? table.get("type").split("|").filter(Boolean)
-    : [];
-
-  return (
-    <div>
-      <FilterFacetSection
-        title={t("type")}
-        options={typeOptions}
-        selected={selectedType}
-        onChange={(vals) => table.set("type", vals.join("|"))}
-        searchable={false}
-        defaultCollapsed={false}
-      />
-
-      <SwitchFilter
-        title={t("isActive")}
-        label={t("showActiveOnly")}
-        checked={table.get("validityIsActive") === "true"}
-        onChange={(v) => table.set("validityIsActive", v ? "true" : "")}
-        defaultCollapsed={true}
-      />
-
-      <RangeFilter
-        title={t("dateRange")}
-        type="date"
-        minValue={table.get("dateFrom")}
-        maxValue={table.get("dateTo")}
-        onMinChange={(v) => table.set("dateFrom", v)}
-        onMaxChange={(v) => table.set("dateTo", v)}
-        minPlaceholder={t("minDate")}
-        maxPlaceholder={t("maxDate")}
-        defaultCollapsed={true}
-      />
-    </div>
-  );
+  return <FilterPanel config={config} table={table} />;
 }

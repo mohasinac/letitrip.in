@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { FilterFacetSection } from "@/components";
-import type { UrlTable } from "@/components";
+import { FilterPanel } from "@/components";
+import type { FilterConfig, UrlTable } from "@/components";
 
 export const SESSION_SORT_OPTIONS = [
   { value: "-lastActivity", label: "Most Recent Activity" },
@@ -19,24 +19,18 @@ export interface SessionFiltersProps {
 export function SessionFilters({ table }: SessionFiltersProps) {
   const t = useTranslations("filters");
 
-  const isActiveOptions = [
-    { value: "true", label: t("booleanActive") },
-    { value: "false", label: t("booleanInactive") },
+  const config: FilterConfig[] = [
+    {
+      type: "facet-single",
+      key: "isActive",
+      title: t("isActive"),
+      options: [
+        { value: "true", label: t("booleanActive") },
+        { value: "false", label: t("booleanInactive") },
+      ],
+      defaultCollapsed: false,
+    },
   ];
 
-  const selectedIsActive = table.get("isActive") ? [table.get("isActive")] : [];
-
-  return (
-    <div>
-      <FilterFacetSection
-        title={t("isActive")}
-        options={isActiveOptions}
-        selected={selectedIsActive}
-        onChange={(vals) => table.set("isActive", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={false}
-        selectionMode="single"
-      />
-    </div>
-  );
+  return <FilterPanel config={config} table={table} />;
 }

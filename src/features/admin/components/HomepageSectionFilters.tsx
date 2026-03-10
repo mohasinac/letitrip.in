@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { FilterFacetSection } from "@/components";
-import type { UrlTable } from "@/components";
+import { FilterPanel } from "@/components";
+import type { FilterConfig, UrlTable } from "@/components";
 
 export const HOMEPAGE_SECTION_SORT_OPTIONS = [
   { value: "order", label: "Display Order" },
@@ -19,51 +19,38 @@ export interface HomepageSectionFiltersProps {
 export function HomepageSectionFilters({ table }: HomepageSectionFiltersProps) {
   const t = useTranslations("filters");
 
-  const typeOptions = [
-    { value: "welcome", label: t("sectionTypeWelcome") },
-    { value: "trust_indicators", label: t("sectionTypeTrustIndicators") },
-    { value: "categories", label: t("sectionTypeCategories") },
-    { value: "brands", label: t("sectionTypeBrands") },
-    { value: "products", label: t("sectionTypeProducts") },
-    { value: "auctions", label: t("sectionTypeAuctions") },
-    { value: "banner", label: t("sectionTypeBanner") },
-    { value: "features", label: t("sectionTypeFeatures") },
-    { value: "reviews", label: t("sectionTypeReviews") },
-    { value: "whatsapp", label: t("sectionTypeWhatsapp") },
-    { value: "faq", label: t("sectionTypeFaq") },
-    { value: "blog_articles", label: t("sectionTypeBlogArticles") },
-    { value: "newsletter", label: t("sectionTypeNewsletter") },
+  const config: FilterConfig[] = [
+    {
+      type: "facet-single",
+      key: "type",
+      title: t("type"),
+      options: [
+        { value: "welcome", label: t("sectionTypeWelcome") },
+        { value: "trust_indicators", label: t("sectionTypeTrustIndicators") },
+        { value: "categories", label: t("sectionTypeCategories") },
+        { value: "brands", label: t("sectionTypeBrands") },
+        { value: "products", label: t("sectionTypeProducts") },
+        { value: "auctions", label: t("sectionTypeAuctions") },
+        { value: "banner", label: t("sectionTypeBanner") },
+        { value: "features", label: t("sectionTypeFeatures") },
+        { value: "reviews", label: t("sectionTypeReviews") },
+        { value: "whatsapp", label: t("sectionTypeWhatsapp") },
+        { value: "faq", label: t("sectionTypeFaq") },
+        { value: "blog_articles", label: t("sectionTypeBlogArticles") },
+        { value: "newsletter", label: t("sectionTypeNewsletter") },
+      ],
+      defaultCollapsed: false,
+    },
+    {
+      type: "facet-single",
+      key: "enabled",
+      title: t("enabled"),
+      options: [
+        { value: "true", label: t("booleanEnabled") },
+        { value: "false", label: t("booleanDisabled") },
+      ],
+    },
   ];
 
-  const enabledOptions = [
-    { value: "true", label: t("booleanEnabled") },
-    { value: "false", label: t("booleanDisabled") },
-  ];
-
-  const selectedType = table.get("type") ? [table.get("type")] : [];
-  const selectedEnabled = table.get("enabled") ? [table.get("enabled")] : [];
-
-  return (
-    <div>
-      <FilterFacetSection
-        title={t("type")}
-        options={typeOptions}
-        selected={selectedType}
-        onChange={(vals) => table.set("type", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={false}
-        selectionMode="single"
-      />
-
-      <FilterFacetSection
-        title={t("enabled")}
-        options={enabledOptions}
-        selected={selectedEnabled}
-        onChange={(vals) => table.set("enabled", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={true}
-        selectionMode="single"
-      />
-    </div>
-  );
+  return <FilterPanel config={config} table={table} />;
 }

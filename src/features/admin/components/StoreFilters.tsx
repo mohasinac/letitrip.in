@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { FilterFacetSection } from "@/components";
-import type { UrlTable } from "@/components";
+import { FilterPanel } from "@/components";
+import type { FilterConfig, UrlTable } from "@/components";
 
 export const STORE_SORT_OPTIONS = [
   { value: "-createdAt", label: "Newest First" },
@@ -16,37 +16,22 @@ export interface StoreFiltersProps {
   table: UrlTable;
 }
 
-/**
- * StoreFilters
- *
- * Filter panel for the admin store approval list.
- * Surfaces store status (pending / approved / rejected) as a single-select
- * facet section, matching the visual style of all other *Filters components.
- */
 export function StoreFilters({ table }: StoreFiltersProps) {
   const t = useTranslations("filters");
 
-  const statusOptions = [
-    { value: "pending", label: t("storeStatusPending") },
-    { value: "approved", label: t("storeStatusApproved") },
-    { value: "rejected", label: t("storeStatusRejected") },
+  const config: FilterConfig[] = [
+    {
+      type: "facet-single",
+      key: "storeStatus",
+      title: t("storeStatus"),
+      options: [
+        { value: "pending", label: t("storeStatusPending") },
+        { value: "approved", label: t("storeStatusApproved") },
+        { value: "rejected", label: t("storeStatusRejected") },
+      ],
+      defaultCollapsed: false,
+    },
   ];
 
-  const selectedStatus = table.get("storeStatus")
-    ? [table.get("storeStatus")]
-    : [];
-
-  return (
-    <div>
-      <FilterFacetSection
-        title={t("storeStatus")}
-        options={statusOptions}
-        selected={selectedStatus}
-        onChange={(vals) => table.set("storeStatus", vals[0] ?? "")}
-        searchable={false}
-        defaultCollapsed={false}
-        selectionMode="single"
-      />
-    </div>
-  );
+  return <FilterPanel config={config} table={table} />;
 }

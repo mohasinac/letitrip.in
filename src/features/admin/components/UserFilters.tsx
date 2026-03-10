@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { FilterFacetSection, RangeFilter, SwitchFilter } from "@/components";
-import type { UrlTable } from "@/components";
+import { FilterPanel } from "@/components";
+import type { FilterConfig, UrlTable } from "@/components";
 
 export const USER_SORT_OPTIONS = [
   { value: "-createdAt", label: "Newest First" },
@@ -20,73 +20,50 @@ export interface UserFiltersProps {
 export function UserFilters({ table }: UserFiltersProps) {
   const t = useTranslations("filters");
 
-  const roleOptions = [
-    { value: "user", label: t("roleUser") },
-    { value: "seller", label: t("roleSeller") },
-    { value: "moderator", label: t("roleModerator") },
-    { value: "admin", label: t("roleAdmin") },
+  const config: FilterConfig[] = [
+    {
+      type: "facet-multi",
+      key: "role",
+      title: t("role"),
+      options: [
+        { value: "user", label: t("roleUser") },
+        { value: "seller", label: t("roleSeller") },
+        { value: "moderator", label: t("roleModerator") },
+        { value: "admin", label: t("roleAdmin") },
+      ],
+      defaultCollapsed: false,
+    },
+    {
+      type: "switch",
+      key: "emailVerified",
+      title: t("emailVerified"),
+      label: t("showEmailVerifiedOnly"),
+    },
+    {
+      type: "switch",
+      key: "disabled",
+      title: t("accountStatus"),
+      label: t("showDisabledOnly"),
+    },
+    {
+      type: "facet-multi",
+      key: "storeStatus",
+      title: t("storeStatus"),
+      options: [
+        { value: "pending", label: t("storeStatusPending") },
+        { value: "approved", label: t("storeStatusApproved") },
+        { value: "rejected", label: t("storeStatusRejected") },
+      ],
+    },
+    {
+      type: "range-date",
+      fromKey: "createdFrom",
+      toKey: "createdTo",
+      title: t("dateRange"),
+      minPlaceholder: t("minDate"),
+      maxPlaceholder: t("maxDate"),
+    },
   ];
 
-  const storeStatusOptions = [
-    { value: "pending", label: t("storeStatusPending") },
-    { value: "approved", label: t("storeStatusApproved") },
-    { value: "rejected", label: t("storeStatusRejected") },
-  ];
-
-  const selectedRole = table.get("role")
-    ? table.get("role").split("|").filter(Boolean)
-    : [];
-  const selectedStoreStatus = table.get("storeStatus")
-    ? table.get("storeStatus").split("|").filter(Boolean)
-    : [];
-
-  return (
-    <div>
-      <FilterFacetSection
-        title={t("role")}
-        options={roleOptions}
-        selected={selectedRole}
-        onChange={(vals) => table.set("role", vals.join("|"))}
-        searchable={false}
-        defaultCollapsed={false}
-      />
-
-      <SwitchFilter
-        title={t("emailVerified")}
-        label={t("showEmailVerifiedOnly")}
-        checked={table.get("emailVerified") === "true"}
-        onChange={(v) => table.set("emailVerified", v ? "true" : "")}
-        defaultCollapsed={true}
-      />
-
-      <SwitchFilter
-        title={t("accountStatus")}
-        label={t("showDisabledOnly")}
-        checked={table.get("disabled") === "true"}
-        onChange={(v) => table.set("disabled", v ? "true" : "")}
-        defaultCollapsed={true}
-      />
-
-      <FilterFacetSection
-        title={t("storeStatus")}
-        options={storeStatusOptions}
-        selected={selectedStoreStatus}
-        onChange={(vals) => table.set("storeStatus", vals.join("|"))}
-        searchable={false}
-        defaultCollapsed={true}
-      />
-
-      <RangeFilter
-        title={t("dateRange")}
-        type="date"
-        minValue={table.get("createdFrom")}
-        maxValue={table.get("createdTo")}
-        onMinChange={(v) => table.set("createdFrom", v)}
-        onMaxChange={(v) => table.set("createdTo", v)}
-        minPlaceholder={t("minDate")}
-        maxPlaceholder={t("maxDate")}
-        defaultCollapsed={true}
-      />
-    </div>
-  );
+  return <FilterPanel config={config} table={table} />;
 }

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage G2: FilterPanel config-driven admin filter consolidation
+
+### Added
+
+- **`src/components/filters/FilterPanel.tsx`** — New config-driven filter sidebar component. Accepts a `config: FilterConfig[]` array (discriminated union of 5 types) and a `table: UrlTable` and renders a vertical stack of filter sections without any internal state. Config types: `FacetSingleConfig`, `FacetMultiConfig`, `SwitchConfig`, `RangeNumberConfig`, `RangeDateConfig`.
+- **`FilterConfig`, `FacetSingleConfig`, `FacetMultiConfig`, `SwitchConfig`, `RangeNumberConfig`, `RangeDateConfig`** — Exported from `@/components` barrel.
+
+### Changed
+
+- All 14 admin filter components refactored to the `FilterPanel` config-driven pattern — `BidFilters`, `CarouselFilters`, `CategoryFilters`, `CouponFilters`, `EventEntryFilters`, `FaqFilters`, `HomepageSectionFilters`, `NewsletterFilters`, `NotificationFilters`, `PayoutFilters`, `RipCoinFilters`, `SessionFilters`, `StoreFilters`, `UserFilters`. Each now builds a `FilterConfig[]` array using `useTranslations("filters")` and delegates all rendering to `<FilterPanel />`.
+
+### Removed
+
+- All direct `FilterFacetSection`, `RangeFilter`, and `SwitchFilter` imports from the 14 admin filter components — these are now internally managed by `FilterPanel`.
+
+---
+
 ## [Unreleased] — Stage H4: Remove THEME_CONSTANTS pure Tailwind aliases
 
 ### Removed
