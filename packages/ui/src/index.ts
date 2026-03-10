@@ -26,3 +26,17 @@ export {
 
 // ─── Typography primitives ────────────────────────────────────────────────────
 export { Heading, Text, Label, Caption, Span } from "./components/Typography";
+
+// ─── Loading / Feedback ───────────────────────────────────────────────────────
+export type { SpinnerProps } from "./components/Spinner";
+export { Spinner } from "./components/Spinner";
+
+export type { SkeletonProps } from "./components/Skeleton";
+export { Skeleton } from "./components/Skeleton";
+
+// ─── Interactive ──────────────────────────────────────────────────────────────
+export type { ButtonProps } from "./components/Button";
+export { Button } from "./components/Button";
+
+export type { BadgeProps, BadgeVariant } from "./components/Badge";
+export { Badge } from "./components/Badge";

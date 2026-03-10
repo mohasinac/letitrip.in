@@ -25,6 +25,10 @@
     "react": ">=18",
     "tailwindcss": ">=3"
   },
+  "dependencies": {
+    "lucide-react": "^0.479.0",
+    "tailwind-merge": "^3.3.0"
+  },
   "devDependencies": {
     "tsup": "^8.5.0",
     "typescript": "^5.9.3",
