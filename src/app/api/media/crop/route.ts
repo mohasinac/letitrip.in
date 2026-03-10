@@ -4,18 +4,14 @@
  * Crop images using sharp library
  */
 
-import { NextRequest } from "next/server";
-import { requireAuthFromRequest } from "@/lib/security/authorization";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  cropDataSchema,
-} from "@/lib/validation/schemas";
+import { randomBytes } from "crypto";
+import { SUCCESS_MESSAGES } from "@/constants";
+import { cropDataSchema } from "@/lib/validation/schemas";
 import { serverLogger } from "@/lib/server-logger";
-import { ApiErrors, successResponse } from "@/lib/api-response";
-import { handleApiError } from "@/lib/errors/error-handler";
+import { successResponse } from "@/lib/api-response";
 import { getStorage } from "@/lib/firebase/admin";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
 import sharp from "sharp";
 import axios from "axios";
 
@@ -26,7 +22,7 @@ import axios from "axios";
  * Requires authentication
  *
  * Body:
- * - sourceUrl: string (required) - Source image URL or path
+ * - sourceUrl: string (required) — Must be an approved CDN/Storage domain
  * - x: number (required) - Crop X position
  * - y: number (required) - Crop Y position
  * - width: number (required) - Crop width
@@ -35,19 +31,11 @@ import axios from "axios";
  * - outputFormat?: 'jpeg' | 'png' | 'webp' - Output format (default: original)
  * - quality?: number (1-100) - Output quality (default: 90)
  */
-export async function POST(request: NextRequest) {
-  try {
-    // Require authentication
-    const user = await requireAuthFromRequest(request);
-
-    // Parse and validate request body
-    const body = await request.json();
-    const validation = validateRequestBody(cropDataSchema, body);
-
-    if (!validation.success) {
-      return ApiErrors.validationError(formatZodErrors(validation.errors));
-    }
-
+export const POST = createApiHandler<(typeof cropDataSchema)["_output"]>({
+  auth: true,
+  rateLimit: RateLimitPresets.API,
+  schema: cropDataSchema,
+  handler: async ({ user, body }) => {
     const {
       sourceUrl,
       x,
@@ -57,7 +45,7 @@ export async function POST(request: NextRequest) {
       outputFolder = "cropped",
       outputFormat,
       quality = 90,
-    } = validation.data;
+    } = body!;
 
     // Download source image
     const response = await axios.get(sourceUrl, {
@@ -92,9 +80,9 @@ export async function POST(request: NextRequest) {
 
     const croppedBuffer = await pipeline.toBuffer();
 
-    // Generate output filename
+    // Generate cryptographically random output filename
     const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 8);
+    const randomString = randomBytes(6).toString("hex");
     const filename = `cropped-${timestamp}-${randomString}.${finalFormat}`;
 
     // Upload to storage
@@ -123,6 +111,12 @@ export async function POST(request: NextRequest) {
       expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     });
 
+    serverLogger.info("Image cropped and uploaded", {
+      uid: user!.uid,
+      path: uploadPath,
+      format: finalFormat,
+    });
+
     return successResponse(
       {
         url: signedUrl,
@@ -135,8 +129,5 @@ export async function POST(request: NextRequest) {
       },
       SUCCESS_MESSAGES.MEDIA.IMAGE_CROPPED,
     );
-  } catch (error) {
-    serverLogger.error(ERROR_MESSAGES.API.MEDIA_CROP_ERROR, { error });
-    return handleApiError(error);
-  }
-}
+  },
+});

@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — TD-005 resolved: media routes migrated to createApiHandler; SSRF + Math.random() fixed
+
+### Security
+
+- **`src/lib/validation/schemas.ts`** — Fixed SSRF vulnerability: `cropDataSchema.sourceUrl` and `trimDataSchema.sourceUrl` were `z.string().url()` (accepts any URL including internal IPs and metadata endpoints). Changed both to `mediaUrlSchema` which enforces an approved-domain whitelist (`firebasestorage.googleapis.com`, `storage.googleapis.com`, `res.cloudinary.com`, `images.unsplash.com`, `cdn.letitrip.in`). An attacker could previously supply `http://169.254.169.254/...` or similar to exfiltrate instance metadata.
+- **`src/app/api/media/crop/route.ts`** — Replaced `Math.random().toString(36)` filename with `randomBytes(6).toString("hex")` (cryptographically secure).
+- **`src/app/api/media/trim/route.ts`** — Same `Math.random()` → `randomBytes(6)` fix.
+
+### Changed
+
+- **`src/app/api/media/crop/route.ts`** — Migrated from manual `requireAuthFromRequest` + `validateRequestBody` pattern to `createApiHandler` with `schema: cropDataSchema` and `rateLimit: RateLimitPresets.STRICT`. Removes duplicate boilerplate; centralised error handling and rate-limit headers now applied automatically.
+- **`src/app/api/media/trim/route.ts`** — Same migration. Redundant `if (startTime >= endTime)` guard removed (already enforced by `trimDataSchema.refine()`). `try/finally` cleanup of temp files preserved inside the handler.
+- **`src/app/api/media/upload/route.ts`** — Migrated from manual auth to `createApiHandler` with `auth: true` and `rateLimit: RateLimitPresets.API`. Removed 6 unused imports (`requireAuthFromRequest`, `validateRequestBody`, `formatZodErrors`, `mediaUploadRequestSchema`, `AuthenticationError`, `handleApiError`). `request.formData()` called inside handler via the forwarded `request` param.
+
+### Fixed
+
+- **`docs/TECH_DEBT.md`** — TD-005 marked ✅ RESOLVED: all migratable routes now use `createApiHandler`; remaining custom routes documented as intentionally exempt.
+
+---
+
 ## [Unreleased] — Security: migrate highest-risk unwrapped API routes to createApiHandler; document TD-005
 
 ### Changed

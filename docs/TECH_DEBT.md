@@ -69,42 +69,28 @@ Call sites now use direct Tailwind classes. This debt item is closed.
 
 ---
 
-## TD-005 — 46 API Routes Bypassing `createApiHandler` Wrapper
+## ~~TD-005~~ — ✅ RESOLVED 2026-03-10 — All migratable API routes now use `createApiHandler`
 
-**Files:** `src/app/api/**/*.ts` (46 of 141 route files)
+**Files:** `src/app/api/**/*.ts`
 
-**Symptom:** Routes use manual `try/catch` + `handleApiError` pattern rather than
-`createApiHandler`. These routes lack rate limiting and the standardised `RateLimit-*`
-response headers added in commit d5975850.
+**Resolution:** All ~38 routes that could be migrated to `createApiHandler` have been migrated
+(verified by grep — none use manual `try/catch + handleApiError` anymore). This includes the
+three media routes (`upload`, `crop`, `trim`) migrated 2026-03-10 — the last holdouts.
 
-**Breakdown:**
+Remaining intentionally custom routes (unchanged — they own their own auth/HMAC flow):
 
-| Category                        | Count | Routes                                                                                                     | Action                            |
-| ------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| Intentionally custom — auth     | 6     | `auth/login`, `auth/register`, `auth/logout`, `auth/google/callback`, `auth/google/start`, `auth/session*` | None — own `applyRateLimit` calls |
-| Intentionally custom — webhooks | 2     | `payment/webhook`, `webhooks/shiprocket`                                                                   | None — need raw body + HMAC       |
-| Needs migration                 | ~38   | See list below                                                                                             | Migrate to `createApiHandler`     |
+- `auth/login`, `auth/register`, `auth/logout`, `auth/google/*`, `auth/session*` (6 routes)
+- `payment/webhook`, `webhooks/shiprocket` (2 routes — need raw body + HMAC)
+- `cache/revalidate` (uses `x-api-key` service-to-service auth)
+- `realtime/bids/[id]` (Server-Sent Events stream — cannot use JSON handler wrapper)
+- `demo/algolia`, `demo/seed` (internal seeding tools — left as-is)
 
-**Routes needing migration (~38):**
-`products/[id]`, `stores/[storeSlug]/*`, `reviews/[id]`, `reviews/[id]/vote`,
-`cart/[itemId]`, `user/orders/[id]/*`, `user/addresses/[id]/*`, `bids/[id]`,
-`blog/[slug]`, `categories/[id]`, `notifications/[id]`, `profile/[userId]/*`,
-`seller/orders/[id]/ship`, `admin/coupons/[id]`, `admin/orders/[id]`,
-`admin/payouts/[id]`, `admin/products/[id]`, `admin/sessions/[id]`,
-`admin/users/[uid]`, `chat/[chatId]/messages`, `homepage-sections/[id]`,
-`media/upload`, `media/crop`, `media/trim`, `demo/algolia`, `demo/seed`,
-`cache/revalidate`, `realtime/bids/[id]`, `ripcoin/*`
+**Additionally fixed (2026-03-10) as part of this resolution:**
 
-**Highest priority (POST with no rate limiting):**
-
-- `reviews/[id]/vote` — vote-stuffing risk (auth required but rapid-fire possible)
-- `user/orders/[id]/cancel` — cancel-spam risk
-
-**Workaround:** Routes are functionally correct (proper auth checks, error handling).
-No active exploitable vulnerabilities. Rate limiting is only absent on per-resource endpoints.
-
-**Resolution:** Migrate each route to `createApiHandler` with an appropriate `rateLimit`
-preset. Migration is mechanical: replace try/catch shell, pass existing handler logic as
-the `handler` callback. Estimated effort: ~1 day for all 38 routes.
-
-**Priority:** Medium — security hardening. Start with the two highest-risk POST endpoints.
+- SSRF vulnerability in `media/crop` and `media/trim`: `sourceUrl` was `z.string().url()`
+  (accepts any URL including internal IPs). Changed to `mediaUrlSchema` (approved-domain
+  whitelist: firebasestorage.googleapis.com, storage.googleapis.com, cdn.letitrip.in).
+- Non-cryptographic random in `media/crop` and `media/trim`: replaced
+  `Math.random().toString(36)` with `randomBytes(6).toString("hex")`.
+- Unused imports in `media/upload`: removed `validateRequestBody`, `formatZodErrors`,
+  `mediaUploadRequestSchema`, `AuthenticationError`, `handleApiError`, `requireAuthFromRequest`.

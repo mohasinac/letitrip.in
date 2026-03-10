@@ -908,7 +908,7 @@ export const bidSchema = z
  */
 export const cropDataSchema = z
   .object({
-    sourceUrl: z.string().url(),
+    sourceUrl: mediaUrlSchema,
     x: z.number().nonnegative(),
     y: z.number().nonnegative(),
     width: z.number().positive(),
@@ -947,7 +947,7 @@ export const cropDataSchema = z
  */
 export const trimDataSchema = z
   .object({
-    sourceUrl: z.string().url(),
+    sourceUrl: mediaUrlSchema,
     startTime: z.number().nonnegative(),
     endTime: z.number().positive(),
     outputFolder: z.string().optional(),

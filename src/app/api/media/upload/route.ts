@@ -4,21 +4,14 @@
  * Upload files to Firebase Cloud Storage
  */
 
-import { NextRequest } from "next/server";
 import { randomBytes } from "crypto";
 import { fileTypeFromBuffer } from "file-type";
-import { requireAuthFromRequest } from "@/lib/security/authorization";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  mediaUploadRequestSchema,
-} from "@/lib/validation/schemas";
-import { AuthenticationError } from "@/lib/errors";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { getStorage } from "@/lib/firebase/admin";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
 import { formatFileSize } from "@/utils";
 
 /**
@@ -32,11 +25,11 @@ import { formatFileSize } from "@/utils";
  * - folder: string (optional) - Storage folder path
  * - public: boolean (optional) - Make file publicly accessible
  */
-export async function POST(request: NextRequest) {
-  try {
-    // Require authentication
-    const user = await requireAuthFromRequest(request);
-
+export const POST = createApiHandler({
+  auth: true,
+  rateLimit: RateLimitPresets.API,
+  // No JSON schema — body is multipart/form-data; parsed below via request.formData()
+  handler: async ({ user, request }) => {
     // Parse form data
     const formData = await request.formData();
     const file = formData.get("file") as File;
@@ -91,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     // Determine storage path
     const basePath = folder || "uploads";
-    const storagePath = `${basePath}/${user.uid}/${filename}`;
+    const storagePath = `${basePath}/${user!.uid}/${filename}`;
 
     // Upload to Firebase Storage
     const storage = getStorage();
@@ -102,7 +95,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         contentType: detectedMime,
         metadata: {
-          uploadedBy: user.uid,
+          uploadedBy: user!.uid,
           originalName: file.name,
           uploadedAt: new Date().toISOString(),
         },
@@ -123,21 +116,26 @@ export async function POST(request: NextRequest) {
       downloadURL = signedUrl;
     }
 
+    serverLogger.info("Media uploaded", {
+      uid: user!.uid,
+      path: storagePath,
+      mime: detectedMime,
+      size: file.size,
+    });
+
     return successResponse(
       {
         url: downloadURL,
         path: storagePath,
         filename,
         size: file.size,
-        type: file.type,
+        type: detectedMime,
         isPublic,
-        uploadedBy: user.uid,
+        uploadedBy: user!.uid,
         uploadedAt: new Date().toISOString(),
       },
       SUCCESS_MESSAGES.UPLOAD.FILE_UPLOADED,
       201,
     );
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});
