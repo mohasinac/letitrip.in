@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage F3: @lir/ui package — Semantic HTML + Typography components
+
+### Added
+
+- **`packages/ui/src/components/Semantic.tsx`** — Extracted `Section`, `Article`, `Main`, `Aside`, `Nav`, `BlockHeader`, `BlockFooter`, `Ul`, `Ol`, `Li` from `src/components/semantic/Semantic.tsx`. Pure React, zero app-specific imports. `Nav` enforces required `aria-label` prop.
+- **`packages/ui/src/components/Typography.tsx`** — Extracted `Heading`, `Text`, `Label`, `Caption`, `Span` from `src/components/typography/Typography.tsx`. Replaced `THEME_CONSTANTS` import with inlined `UI_THEME` const (scoped to only the typography/themed/form.required values used). Consumers override via `className`.
+- **`packages/ui/src/index.ts`** — Replaced stub entrypoint with named exports for all 15 components and their prop types.
+
+---
+
+## [Unreleased] — Stage F2: @lir/react package — Generic React hooks extracted
+
+### Added
+
+- **`packages/react/src/hooks/useMediaQuery.ts`** — SSR-safe `useState(() => typeof window !== 'undefined' && ...)` lazy initializer.
+- **`packages/react/src/hooks/useBreakpoint.ts`** — Tailwind breakpoint map using local `useMediaQuery`.
+- **`packages/react/src/hooks/useClickOutside.ts`** — Ref-based outside-click detector.
+- **`packages/react/src/hooks/useKeyPress.ts`** — Keyboard shortcut hook with modifier key support.
+- **`packages/react/src/hooks/useLongPress.ts`** — Timer-based tap vs. long-press detector.
+- **`packages/react/src/hooks/useGesture.ts`** — Touch gesture recogniser (tap / doubletap / pinch / rotate). Replaced `nowMs()` import with `Date.now()`.
+- **`packages/react/src/hooks/useSwipe.ts`** — Directional swipe with velocity threshold. Replaced `nowMs()` import with `Date.now()`.
+- **`packages/react/src/hooks/useCamera.ts`** — `MediaDevices` API wrapper; browser-only, pure Web APIs.
+- **`packages/react/src/hooks/usePullToRefresh.ts`** — Pull-to-refresh with progress (0–1) for mobile lists.
+- **`packages/react/src/hooks/useCountdown.ts`** — Countdown timer supporting ISO strings, Unix ms, and Firestore Timestamp JSON shapes. Replaced `nowMs()` import with `Date.now()`; no Firestore SDK dependency.
+- **`packages/react/src/index.ts`** — Replaced stub; exports all 10 hooks and associated types.
+
+---
+
+## [Unreleased] — Stage B4: @lir/next package — IAuthVerifier + createApiErrorHandler
+
+### Added
+
+- **`packages/next/src/IAuthVerifier.ts`** — `IAuthVerifier` interface for injecting auth verification into `createApiHandler`. Includes `AuthVerifiedUser` type (`uid`, `email?`, `role?`, index signature).
+- **`packages/next/src/api/errorHandler.ts`** — `createApiErrorHandler<TAppError>` factory. All dependencies injected via `ApiErrorHandlerOptions` (`isAppError`, `getStatusCode`, `toJSON`, `logger`). Handles app errors, Zod validation errors, and unexpected 500s. Zero knowledge of Firebase or app domain.
+- **`packages/next/src/index.ts`** — Replaced stub; exports `IAuthVerifier`, `AuthVerifiedUser`, `createApiErrorHandler`, `IApiErrorLogger`, `ApiErrorHandlerOptions`.
+
+---
+
 ## [Unreleased] — Stage H3 (cont.): Dead service mutation methods removed
 
 ### Removed
