@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage H4: Remove THEME_CONSTANTS pure Tailwind aliases
+
+### Removed
+
+- **`THEME_CONSTANTS.borderRadius`** — Deleted entire sub-object (`xl`, `2xl`, `lg`, `md`, `full`). These were pure Tailwind aliases (e.g. `rounded-xl`) with no semantic value. All ~60 usages replaced with direct Tailwind classes across ~30 files.
+- **`THEME_CONSTANTS.spacing.gap`** — Deleted sub-object (`xs`, `sm`, `md`, `lg`, `xl`). Pure aliases for `gap-*` classes. All usages replaced with direct Tailwind classes.
+- **`THEME_CONSTANTS.spacing.padding`** — Deleted sub-object (`xs`, `sm`, `md`, `lg`, `xl`). Pure aliases for `p-*` classes. All usages replaced.
+- **`THEME_CONSTANTS.spacing.margin`** — Deleted sub-object (`top`, `bottom`). Pure aliases for `mt-*`/`mb-*` classes. All usages replaced.
+
+### Changed
+
+- Replaced all `borderRadius.*`, `spacing.gap.*`, `spacing.padding.*`, and `spacing.margin.*` references across ~80 `.tsx` files with inline Tailwind utility classes. Semantic spacing tokens (`spacing.stack`, `spacing.cardPadding`, `spacing.section`, etc.) are unchanged.
+
+---
+
 ## [Unreleased] — Stage H3: Delete dead pass-through services
 
 ### Removed
