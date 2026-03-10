@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Security: migrate highest-risk unwrapped API routes to createApiHandler; document TD-005
+
+### Changed
+
+- **`src/app/api/reviews/[id]/vote/route.ts`** — Migrated from manual `try/catch` to `createApiHandler`. Added `RateLimitPresets.STRICT` (5/min) to prevent vote-stuffing. Uses `reviewVoteSchema` for body validation. Auth enforced via handler `auth: true`.
+- **`src/app/api/user/orders/[id]/cancel/route.ts`** — Migrated from manual `try/catch` to `createApiHandler`. Added `RateLimitPresets.STRICT` (5/min) to prevent cancel-spam. `cancelSchema` validation now handled by the wrapper. Auth enforced via handler `auth: true`.
+
+### Docs
+
+- **`docs/TECH_DEBT.md`** — Added TD-005: 46 API routes bypassing `createApiHandler`; categorised as intentionally custom (8 routes), needs migration (~38 routes); highest-priority routes noted.
+
+---
+
 ## [Unreleased] — Rule 9 fix: extract buildSellerReviews to user feature lib; profile page 174→~105 lines
 
 ### Added

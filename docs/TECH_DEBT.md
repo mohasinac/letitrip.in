@@ -66,3 +66,45 @@ This debt item is closed.
 **Resolution:** Stage F1 + H4 complete (2026-03-10). The `spacing.gap.*`, `spacing.padding.*`,
 `spacing.margin.*`, `borderRadius.*` pure-alias entries were deleted from `THEME_CONSTANTS`.
 Call sites now use direct Tailwind classes. This debt item is closed.
+
+---
+
+## TD-005 — 46 API Routes Bypassing `createApiHandler` Wrapper
+
+**Files:** `src/app/api/**/*.ts` (46 of 141 route files)
+
+**Symptom:** Routes use manual `try/catch` + `handleApiError` pattern rather than
+`createApiHandler`. These routes lack rate limiting and the standardised `RateLimit-*`
+response headers added in commit d5975850.
+
+**Breakdown:**
+
+| Category                        | Count | Routes                                                                                                     | Action                            |
+| ------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| Intentionally custom — auth     | 6     | `auth/login`, `auth/register`, `auth/logout`, `auth/google/callback`, `auth/google/start`, `auth/session*` | None — own `applyRateLimit` calls |
+| Intentionally custom — webhooks | 2     | `payment/webhook`, `webhooks/shiprocket`                                                                   | None — need raw body + HMAC       |
+| Needs migration                 | ~38   | See list below                                                                                             | Migrate to `createApiHandler`     |
+
+**Routes needing migration (~38):**
+`products/[id]`, `stores/[storeSlug]/*`, `reviews/[id]`, `reviews/[id]/vote`,
+`cart/[itemId]`, `user/orders/[id]/*`, `user/addresses/[id]/*`, `bids/[id]`,
+`blog/[slug]`, `categories/[id]`, `notifications/[id]`, `profile/[userId]/*`,
+`seller/orders/[id]/ship`, `admin/coupons/[id]`, `admin/orders/[id]`,
+`admin/payouts/[id]`, `admin/products/[id]`, `admin/sessions/[id]`,
+`admin/users/[uid]`, `chat/[chatId]/messages`, `homepage-sections/[id]`,
+`media/upload`, `media/crop`, `media/trim`, `demo/algolia`, `demo/seed`,
+`cache/revalidate`, `realtime/bids/[id]`, `ripcoin/*`
+
+**Highest priority (POST with no rate limiting):**
+
+- `reviews/[id]/vote` — vote-stuffing risk (auth required but rapid-fire possible)
+- `user/orders/[id]/cancel` — cancel-spam risk
+
+**Workaround:** Routes are functionally correct (proper auth checks, error handling).
+No active exploitable vulnerabilities. Rate limiting is only absent on per-resource endpoints.
+
+**Resolution:** Migrate each route to `createApiHandler` with an appropriate `rateLimit`
+preset. Migration is mechanical: replace try/catch shell, pass existing handler logic as
+the `handler` callback. Estimated effort: ~1 day for all 38 routes.
+
+**Priority:** Medium — security hardening. Start with the two highest-risk POST endpoints.
