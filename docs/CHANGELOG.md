@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage G1 cont.: Service mutation methods removed; vote + cart pruned
+
+### Removed
+
+- **`src/services/cart.service.ts`** — Deleted `addItem()`, `updateItem()`, `removeItem()`, `clear()`, `mergeGuestCart()`. Only `get()` remains. All cart mutations now go through Server Actions (`addToCartAction`, `updateCartItemAction`, `removeFromCartAction`, `clearCartAction`, `mergeGuestCartAction`).
+- **`src/services/review.service.ts`** — Deleted `vote()`. Only read methods and admin mutations remain. Vote is handled by `voteReviewHelpfulAction` Server Action.
+- **`src/services/__tests__/cart.service.test.ts`** — Removed 4 mutation tests for deleted methods.
+- **`src/services/__tests__/review.service.test.ts`** — Removed 2 vote tests for deleted method.
+
+### Fixed
+
+- **`src/services/review.service.ts`** — `getHomepageReviews()` filter was `?latest=true&pageSize=6` (ignored by the API). Changed to `?filters=status==approved&sorts=-createdAt&pageSize=6` to match the API route's expected Sieve syntax.
+
+---
+
 ## [Unreleased] — Stage F3: @lir/ui package — Semantic HTML + Typography components
 
 ### Added
