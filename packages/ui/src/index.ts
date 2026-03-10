@@ -40,3 +40,18 @@ export { Button } from "./components/Button";
 
 export type { BadgeProps, BadgeVariant } from "./components/Badge";
 export { Badge } from "./components/Badge";
+
+// ─── Feedback ─────────────────────────────────────────────────────────────────
+export type { AlertProps } from "./components/Alert";
+export { Alert } from "./components/Alert";
+
+// ─── Layout helpers ───────────────────────────────────────────────────────────
+export type { DividerProps } from "./components/Divider";
+export { Divider } from "./components/Divider";
+
+// ─── Progress ─────────────────────────────────────────────────────────────────
+export type {
+  ProgressProps,
+  IndeterminateProgressProps,
+} from "./components/Progress";
+export { Progress, IndeterminateProgress } from "./components/Progress";
