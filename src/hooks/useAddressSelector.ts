@@ -14,12 +14,6 @@ interface SavedAddress {
   state?: string;
 }
 
-interface AddressesApiResponse {
-  success?: boolean;
-  data?: SavedAddress[];
-  items?: SavedAddress[];
-}
-
 interface CreateAddressApiResponse {
   success: boolean;
   data?: SavedAddress;
@@ -42,16 +36,12 @@ export function useAddressSelector(options?: {
   onCreated?: (id: string) => void;
   onCreateError?: () => void;
 }) {
-  const {
-    data: raw,
-    isLoading,
-    refetch,
-  } = useQuery<AddressesApiResponse>({
+  const { data, isLoading, refetch } = useQuery<SavedAddress[]>({
     queryKey: ["user-addresses"],
     queryFn: () => addressService.list(),
   });
 
-  const addresses: SavedAddress[] = raw?.data ?? raw?.items ?? [];
+  const addresses: SavedAddress[] = data ?? [];
 
   const { mutate: createAddress, isPending: isSaving } = useMutation<
     CreateAddressApiResponse,

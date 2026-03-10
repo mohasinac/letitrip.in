@@ -1412,6 +1412,8 @@ F4 (imports done)    ──► H7 (publish @lir/*)
 
 ### Stage B — Library Bootstrap _(parallel with Stage A, zero risk to app)_
 
+> **B1 ✅** committed 2026-03-10 — monorepo bootstrap scaffold added (`pnpm-workspace.yaml`, `turbo.json`, `packages/*` stubs with per-package `package.json` + `tsconfig.json` + `src/index.ts`).
+
 Copies files and creates new packages without modifying any app source. Safe to run alongside Stage A.
 
 | Step | Action                                                                                          | §Ref  | Risk   | Effort | Prerequisite |
@@ -1471,7 +1473,7 @@ Copies files and creates new packages without modifying any app source. Safe to 
 
 ---
 
-### Stage F — Library: React & UI Extraction _(after C4 and D3)_
+### Stage F — Library: React & UI Extraction _(after C4 and D3)_```````````````````````````````````````````````````````````
 
 > **F1 ✅** committed 2026-03-10 — dead CSS custom properties + `@layer components` block removed from `globals.css`; all `gray-*` Tailwind classes replaced across 90+ files with canonical zinc/slate palette; `gray-*` safelist removed from `tailwind.config.js`.
 > F2–F4 pending.
@@ -1519,8 +1521,8 @@ Extract only the hooks and components that survive the TanStack Query and react-
 
 > **H5 ✅** committed 2026-03-10 — `src/snippets/` deleted (6 files); moved to `docs/snippets/`; barrel re-export removed from `src/index.ts`.<br>
 > **H6 ✅** committed 2026-03-10 — `docs/TECH_DEBT.md` created with TD-001 (Turbopack), TD-002 (useApiQuery adapters), TD-003 (service passthrough), TD-004 (THEME*CONSTANTS spacing aliases).
-> | H7 | Per-package `CHANGELOG.md`; configure `changesets`; publish `@lir/*` packages to npm | §10.4 | Low | 1 day | F4 |
-> | H8 *(opt.)\_ | Move `src/` → `apps/web/`; full monorepo restructure | §10.1 | Low | 1 day | H7 |
+> | H7 | Per-package `CHANGELOG.md`; configure `changesets`; publish `@lir/*`packages to npm | §10.4 | Low | 1 day | F4 |
+| H8 *(opt.)\_ | Move`src/`→`apps/web/`; full monorepo restructure | §10.1 | Low | 1 day | H7 |
 
 ---
 

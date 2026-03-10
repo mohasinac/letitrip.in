@@ -2,7 +2,7 @@
  * useAddressSelector Tests — Phase 62
  *
  * Verifies that useAddressSelector bundles address list query + create mutation,
- * normalises data.data / data.items arrays, and forwards callbacks.
+ * reads unwrapped array data from apiClient, and forwards callbacks.
  */
 
 /**
@@ -12,48 +12,45 @@ import { renderHook } from "@testing-library/react";
 import { useAddressSelector } from "../useAddressSelector";
 
 const mockRefetch = jest.fn();
+const mockMutate = jest.fn();
 
-jest.mock("../useApiQuery", () => ({
-  useApiQuery: jest.fn(() => ({
-    data: null,
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn(() => ({
+    data: undefined,
     isLoading: false,
-    error: null,
     refetch: mockRefetch,
   })),
-}));
-
-jest.mock("../useApiMutation", () => ({
-  useApiMutation: jest.fn((opts: any) => ({
-    mutate: (data: any) => opts.mutationFn(data),
-    isLoading: false,
-    error: null,
-    data: undefined,
-    reset: jest.fn(),
-  })),
+  useMutation: jest.fn((opts: any) => {
+    mockMutate.mockImplementation((vars: any) => opts.mutationFn(vars));
+    return {
+      mutate: mockMutate,
+      isPending: false,
+    };
+  }),
 }));
 
 jest.mock("@/services", () => ({
   addressService: {
-    list: jest.fn().mockResolvedValue({ data: [] }),
-    create: jest
-      .fn()
-      .mockResolvedValue({ success: true, data: { id: "addr-1" } }),
+    list: jest.fn().mockResolvedValue([]),
   },
 }));
 
-const { useApiQuery } = require("../useApiQuery");
-const { useApiMutation } = require("../useApiMutation");
+jest.mock("@/actions", () => ({
+  createAddressAction: jest.fn().mockResolvedValue({ id: "addr-1" }),
+}));
+
+const { useQuery, useMutation } = require("@tanstack/react-query");
 const { addressService } = require("@/services");
+const { createAddressAction } = require("@/actions");
 
 describe("useAddressSelector", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useApiQuery as jest.Mock).mockImplementation((opts: any) => {
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
       opts.queryFn();
       return {
-        data: null,
+        data: undefined,
         isLoading: false,
-        error: null,
         refetch: mockRefetch,
       };
     });
@@ -61,43 +58,30 @@ describe("useAddressSelector", () => {
 
   it("queries addressService.list with queryKey ['user-addresses']", () => {
     renderHook(() => useAddressSelector());
-    expect(useApiQuery).toHaveBeenCalledWith(
+    expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({ queryKey: ["user-addresses"] }),
     );
     expect(addressService.list).toHaveBeenCalled();
   });
 
-  it("returns empty addresses array when data is null", () => {
+  it("returns empty addresses array when data is undefined", () => {
     const { result } = renderHook(() => useAddressSelector());
     expect(result.current.addresses).toEqual([]);
     expect(result.current.isLoading).toBe(false);
   });
 
-  it("normalises data.data array", () => {
+  it("returns address list when query returns an array", () => {
     const addrs = [{ id: "a1", label: "Home", city: "Delhi" }];
-    (useApiQuery as jest.Mock).mockReturnValue({
-      data: { data: addrs },
+    (useQuery as jest.Mock).mockReturnValue({
+      data: addrs,
       isLoading: false,
-      error: null,
       refetch: mockRefetch,
     });
     const { result } = renderHook(() => useAddressSelector());
     expect(result.current.addresses).toEqual(addrs);
   });
 
-  it("normalises data.items array as fallback", () => {
-    const addrs = [{ id: "a2", label: "Office", city: "Mumbai" }];
-    (useApiQuery as jest.Mock).mockReturnValue({
-      data: { items: addrs },
-      isLoading: false,
-      error: null,
-      refetch: mockRefetch,
-    });
-    const { result } = renderHook(() => useAddressSelector());
-    expect(result.current.addresses).toEqual(addrs);
-  });
-
-  it("calls addressService.create when createAddress is invoked", () => {
+  it("calls createAddressAction when createAddress is invoked", async () => {
     const { result } = renderHook(() => useAddressSelector());
     const payload = {
       label: "Home",
@@ -109,8 +93,12 @@ describe("useAddressSelector", () => {
       postalCode: "110001",
       country: "IN",
     };
-    result.current.createAddress(payload);
-    expect(addressService.create).toHaveBeenCalledWith(payload);
+    await result.current.createAddress(payload);
+    expect(useMutation).toHaveBeenCalled();
+    expect(createAddressAction).toHaveBeenCalledWith({
+      ...payload,
+      isDefault: false,
+    });
   });
 
   it("exposes refetch function", () => {
