@@ -6,9 +6,19 @@
  */
 
 import { Suspense } from "react";
+import { getTranslations } from "next-intl/server";
 import { Spinner } from "@/components";
 import { RegisterForm } from "@/features/auth";
-import { THEME_CONSTANTS } from "@/constants";
+import { SITE_CONFIG, THEME_CONSTANTS } from "@/constants";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("auth.register");
+  return {
+    title: `${t("title")} — ${SITE_CONFIG.brand.name}`,
+    robots: { index: false },
+  };
+}
 
 export default function RegisterPage() {
   const { flex } = THEME_CONSTANTS;

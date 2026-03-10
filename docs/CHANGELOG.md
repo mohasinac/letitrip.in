@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — E5 SEO gaps: generateMetadata for store sub-pages, auction/pre-order detail, reviews; noIndex for auth pages
+
+### Added
+
+- **`src/app/[locale]/stores/[storeSlug]/about/page.tsx`** — `generateMetadata` with store name, description, banner OG image.
+- **`src/app/[locale]/stores/[storeSlug]/products/page.tsx`** — `generateMetadata` with store name + "Products" tab label.
+- **`src/app/[locale]/stores/[storeSlug]/auctions/page.tsx`** — `generateMetadata` with store name + "Auctions" tab label.
+- **`src/app/[locale]/stores/[storeSlug]/reviews/page.tsx`** — `generateMetadata` with store name + "Reviews" tab label.
+- **`src/app/[locale]/auctions/[id]/page.tsx`** — `generateMetadata` using `productRepository.findById`; respects `seoTitle`/`seoDescription` overrides; OG image from `mainImage ?? images[0]`; canonical URL.
+- **`src/app/[locale]/pre-orders/[id]/page.tsx`** — Same pattern as auction detail.
+- **`src/app/[locale]/reviews/page.tsx`** — Static `generateMetadata` from `reviews.title`/`reviews.subtitle` translations.
+- **`src/app/[locale]/auth/login/page.tsx`** — `generateMetadata` with `robots: { index: false }`.
+- **`src/app/[locale]/auth/register/page.tsx`** — `generateMetadata` with `robots: { index: false }`.
+- **`src/app/[locale]/auth/forgot-password/page.tsx`** — `generateMetadata` with `robots: { index: false }`.
+- **`src/app/[locale]/auth/reset-password/page.tsx`** — `generateMetadata` with `robots: { index: false }`.
+- **`src/app/[locale]/auth/verify-email/page.tsx`** — `generateMetadata` with `robots: { index: false }`.
+
+### Fixed
+
+- Store sub-pages, auction/pre-order detail pages, and the platform reviews page were missing `generateMetadata` despite being public, indexable routes (E5 completeness gap).
+- Auth pages were crawlable with no title or robots directive — now all carry `robots: { index: false }` to prevent search engine indexing of authentication flows.
+
+---
+
 ## [Unreleased] — Rule 20 fix: AlgoliaDashboardView — extract apiClient call to useAlgoliaSync hook
 
 ### Added
