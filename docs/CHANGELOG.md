@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage E8: SSR — promotions page converted; profile page confirmed SSR
+
+### Added
+
+- **`src/features/promotions/components/PromotionsView.tsx`** — New client view component accepting pre-fetched `promotedProducts`, `featuredProducts`, `activeCoupons` as props; no loading state or data-fetching hooks needed.
+
+### Changed
+
+- **`src/app/[locale]/promotions/page.tsx`** — Converted from `"use client"` + `usePromotions` hook to an async server component. Fetches data via `productRepository.findPromoted()`, `productRepository.findFeatured()`, `couponsRepository.getActiveCoupons()` in parallel. Added `generateMetadata` using `SEO_CONFIG.pages.promotions`.
+- **`src/features/promotions/components/index.ts`** — Added `PromotionsView` export.
+
+### Confirmed
+
+- **`src/app/[locale]/profile/[userId]/page.tsx`** — Already an async server component (SSR-converted in a prior session). Confirmed: uses `userRepository.findById`, `productRepository.findBySeller`, `reviewRepository.findApprovedByProduct`, `generateMetadata`, and `notFound()`. No changes needed.
+- **`src/app/[locale]/admin/events/[id]/entries/page.tsx`** — Correctly `"use client"`: uses `useState` for review drawer, `useUrlTable` for URL-based filter/sort/page, interactive DataTable. Not a violation.
+- **`src/app/[locale]/admin/orders/[[...action]]/page.tsx`** — Thin shell delegating to `AdminOrdersView`; `"use client"` is acceptable here.
+- **`src/app/[locale]/user/addresses/add/page.tsx`** — Auth-gated form page; legitimately `"use client"`.
+- **`src/app/[locale]/auth/close/page.tsx`** — Calls `window.close()` popup; legitimately `"use client"`.
+- **`src/app/[locale]/auth/oauth-loading/page.tsx`** — Popup relay with `window.opener`; legitimately `"use client"`.
+
+---
+
 ## [Unreleased] — Stage G1 complete: Rule 20 — all feature components use hooks
 
 ### Added
