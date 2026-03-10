@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — XSS fix: escapeHtml in proseMirrorToHtml + safe href validation in ProseMirror link marks
+
+### Security
+
+- **`src/utils/formatters/string.formatter.ts`** — Fixed stored XSS: ProseMirror `text` nodes were interpolated raw into the HTML output string. All text content is now passed through the existing `escapeHtml()` function before insertion, preventing `<script>`, attribute injection, and prototype-polluting payloads from being rendered.
+- **`src/utils/formatters/string.formatter.ts`** — Fixed reflected XSS via link marks: `mark.attrs.href` was interpolated directly into `<a href="...">` without validation. Href values are now validated to only permit `https://`, `http://`, `mailto:`, relative paths, and fragments; values that fail the allowlist are replaced with `"#"`. The attribute value is also entity-encoded (`&"<>`) before insertion. Added `rel="noopener noreferrer"` to all generated links.
+- **`src/features/blog/components/BlogPostView.tsx`** — Blog post `content` field was rendered with `dangerouslySetInnerHTML={{ __html: post.content }}` using the raw Firestore string. Now calls `proseMirrorToHtml(post.content)` so all content — whether stored as ProseMirror JSON or legacy HTML — is normalised through the sanitised renderer before display.
+
+---
+
 ## [Unreleased] — TD-005 resolved: media routes migrated to createApiHandler; SSRF + Math.random() fixed
 
 ### Security

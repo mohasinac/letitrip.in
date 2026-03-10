@@ -248,7 +248,7 @@ function renderProseMirrorNode(node: ProseMirrorNode): string {
       return inner ? `<p>${inner}</p>` : "<p></p>";
     }
     case "text": {
-      let text = node.text ?? "";
+      let text = escapeHtml(node.text ?? "");
       if (node.marks) {
         for (const mark of node.marks) {
           if (mark.type === "bold") text = `<strong>${text}</strong>`;
@@ -257,8 +257,18 @@ function renderProseMirrorNode(node: ProseMirrorNode): string {
           else if (mark.type === "strike") text = `<s>${text}</s>`;
           else if (mark.type === "code") text = `<code>${text}</code>`;
           else if (mark.type === "link") {
-            const href = mark.attrs?.href ?? "#";
-            text = `<a href="${href}">${text}</a>`;
+            const rawHref = String(mark.attrs?.href ?? "#").trim();
+            const safe = /^(https?:\/\/|mailto:|\/|#)/i.test(rawHref)
+              ? rawHref
+              : "#";
+            const href = safe.replace(
+              /[&"<>]/g,
+              (c) =>
+                ({ "&": "&amp;", '"': "&quot;", "<": "&lt;", ">": "&gt;" })[
+                  c
+                ] ?? c,
+            );
+            text = `<a href="${href}" rel="noopener noreferrer">${text}</a>`;
           }
         }
       }

@@ -14,7 +14,7 @@ import {
   TextLink,
 } from "@/components";
 import { BlogCard } from "@/components";
-import { formatDate } from "@/utils";
+import { formatDate, proseMirrorToHtml } from "@/utils";
 import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
 
 const { themed, typography, flex, page } = THEME_CONSTANTS;
@@ -164,7 +164,9 @@ export function BlogPostView({ slug, initialData }: BlogPostViewProps) {
         <Card className="p-8 mb-12">
           <div
             className={`prose dark:prose-invert max-w-none ${themed.textPrimary}`}
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{
+              __html: proseMirrorToHtml(post.content),
+            }}
           />
         </Card>
 
