@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { carouselService } from "@/services";
 import type { CarouselSlideDocument } from "@/db/schema";
 
@@ -12,10 +12,10 @@ import type { CarouselSlideDocument } from "@/db/schema";
 export function useHeroCarousel(options?: {
   initialData?: CarouselSlideDocument[];
 }) {
-  return useApiQuery<CarouselSlideDocument[]>({
+  return useQuery<CarouselSlideDocument[]>({
     queryKey: ["carousel", "active"],
     queryFn: () => carouselService.getActive(),
-    cacheTTL: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes
     initialData: options?.initialData,
   });
 }

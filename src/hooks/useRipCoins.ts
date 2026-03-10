@@ -7,14 +7,13 @@
  * purchase verification, refund, and history via the RipCoins API.
  */
 
-import { useApiQuery } from "./useApiQuery";
-import { useApiMutation } from "./useApiMutation";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useMessage } from "./useMessage";
 import { ripcoinService } from "@/services";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 
 export function useRipCoinBalance() {
-  return useApiQuery({
+  return useQuery({
     queryKey: ["ripcoins", "balance"],
     queryFn: () => ripcoinService.getBalance(),
   });
@@ -23,7 +22,7 @@ export function useRipCoinBalance() {
 export function usePurchaseRipCoins() {
   const { showError } = useMessage();
 
-  return useApiMutation({
+  return useMutation({
     mutationFn: (packageId: string) => ripcoinService.purchaseCoins(packageId),
     onError: () => showError(ERROR_MESSAGES.RIPCOIN.PURCHASE_FAILED),
   });
@@ -32,7 +31,7 @@ export function usePurchaseRipCoins() {
 export function useVerifyRipCoinPurchase() {
   const { showSuccess, showError } = useMessage();
 
-  return useApiMutation({
+  return useMutation({
     mutationFn: (data: {
       razorpayOrderId: string;
       razorpayPaymentId: string;
@@ -47,7 +46,7 @@ export function useVerifyRipCoinPurchase() {
 export function useRefundRipCoinPurchase() {
   const { showSuccess, showError } = useMessage();
 
-  return useApiMutation({
+  return useMutation({
     mutationFn: (transactionId: string) =>
       ripcoinService.refundPurchase(transactionId),
     onSuccess: () => showSuccess(SUCCESS_MESSAGES.RIPCOIN.REFUND_COMPLETE),
@@ -56,7 +55,7 @@ export function useRefundRipCoinPurchase() {
 }
 
 export function useRipCoinHistory(params?: string) {
-  return useApiQuery({
+  return useQuery({
     queryKey: ["ripcoins", "history", params ?? ""],
     queryFn: () => ripcoinService.getHistory(params),
   });

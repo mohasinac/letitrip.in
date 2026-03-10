@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiMutation } from "@/hooks";
+import { useMutation } from "@tanstack/react-query";
 import { mediaService } from "@/services";
 
 /**
@@ -11,7 +11,7 @@ import { mediaService } from "@/services";
  * `<MediaUploadField>` — it builds FormData internally and returns the URL.
  */
 export function useMediaUpload() {
-  const mutation = useApiMutation<{ url: string }, FormData>({
+  const mutation = useMutation<{ url: string }, Error, FormData>({
     mutationFn: (formData) => mediaService.upload<{ url: string }>(formData),
   });
 
@@ -24,7 +24,7 @@ export function useMediaUpload() {
     formData.append("file", file);
     formData.append("folder", folder);
     formData.append("public", isPublic.toString());
-    const data = await mutation.mutate(formData);
+    const data = await mutation.mutateAsync(formData);
     return data!.url;
   };
 
@@ -36,7 +36,7 @@ export function useMediaUpload() {
  * Wraps `mediaService.crop()` as a `useApiMutation`.
  */
 export function useMediaCrop<TResult = { url: string }>() {
-  return useApiMutation<TResult, unknown>({
+  return useMutation<TResult, Error, unknown>({
     mutationFn: (data) => mediaService.crop(data),
   });
 }
@@ -46,7 +46,7 @@ export function useMediaCrop<TResult = { url: string }>() {
  * Wraps `mediaService.trim()` as a `useApiMutation`.
  */
 export function useMediaTrim<TResult = { url: string }>() {
-  return useApiMutation<TResult, unknown>({
+  return useMutation<TResult, Error, unknown>({
     mutationFn: (data) => mediaService.trim(data),
   });
 }

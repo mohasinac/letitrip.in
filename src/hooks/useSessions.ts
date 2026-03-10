@@ -6,8 +6,7 @@
  * React hooks for fetching and managing sessions in admin dashboard and user settings.
  */
 
-import { useApiQuery } from "./useApiQuery";
-import { useApiMutation } from "./useApiMutation";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { adminService } from "@/services";
 import { revokeSessionAction, revokeUserSessionsAction } from "@/actions";
 import type { SessionDocument } from "@/db/schema/sessions";
@@ -44,7 +43,7 @@ interface UserSessionsResponse {
  * Fetch all active sessions (admin only)
  */
 export function useAdminSessions(limit = 100) {
-  return useApiQuery<SessionsResponse>({
+  return useQuery<SessionsResponse>({
     queryKey: ["admin-sessions", limit.toString()],
     queryFn: () => adminService.listSessions(`limit=${limit}`),
     refetchInterval: 30000, // Refresh every 30 seconds
@@ -55,8 +54,9 @@ export function useAdminSessions(limit = 100) {
  * Revoke a session (admin)
  */
 export function useRevokeSession() {
-  return useApiMutation<
+  return useMutation<
     { success: true; message: string },
+    Error,
     { sessionId: string }
   >({
     mutationFn: ({ sessionId }) => revokeSessionAction({ sessionId }),
@@ -67,8 +67,9 @@ export function useRevokeSession() {
  * Revoke all sessions for a user (admin)
  */
 export function useRevokeUserSessions() {
-  return useApiMutation<
+  return useMutation<
     { success: true; message: string; revokedCount: number },
+    Error,
     { userId: string }
   >({
     mutationFn: ({ userId }) => revokeUserSessionsAction({ userId }),

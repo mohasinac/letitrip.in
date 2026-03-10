@@ -30,7 +30,7 @@ export function ForgotPasswordView() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { mutate: forgotPassword, isLoading } = useForgotPassword({
+  const { mutate: forgotPassword, isPending: isLoading } = useForgotPassword({
     onSuccess: () => setSuccess(true),
     onError: (err) =>
       setError(err.message || t("forgotPassword.failedSendEmail")),

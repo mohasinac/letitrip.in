@@ -16,8 +16,6 @@ export type { UseSwipeOptions, SwipeDirection } from "./useSwipe";
 export { useGesture } from "./useGesture";
 export type { UseGestureOptions, GestureType } from "./useGesture";
 
-export { useApiQuery, invalidateQueries } from "./useApiQuery";
-export { useApiMutation } from "./useApiMutation";
 export { useProfile } from "./useProfile";
 export { useProfileStats } from "./useProfileStats";
 export { usePublicProfile } from "./usePublicProfile";

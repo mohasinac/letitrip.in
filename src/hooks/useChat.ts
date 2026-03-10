@@ -28,8 +28,7 @@ import { realtimeApp, chatRealtimeDb } from "@/lib/firebase/realtime";
 import { realtimeTokenService, chatService } from "@/services";
 import { logger } from "@/classes";
 import { nowMs } from "@/utils";
-import { useApiQuery } from "./useApiQuery";
-import { useApiMutation } from "./useApiMutation";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 export interface ChatMessage {
   id: string;
@@ -147,21 +146,21 @@ export function useChat(chatId: string | null): UseChatReturn {
  * Fetches the list of chat rooms the authenticated user participates in.
  */
 export function useChatRooms() {
-  return useApiQuery({
+  return useQuery({
     queryKey: ["chat", "rooms"],
     queryFn: () => chatService.getRooms(),
   });
 }
 
 export function useCreateChatRoom() {
-  return useApiMutation({
+  return useMutation({
     mutationFn: (data: { orderId: string; sellerId: string }) =>
       chatService.createOrGetRoom(data),
   });
 }
 
 export function useDeleteChatRoom() {
-  return useApiMutation({
+  return useMutation({
     mutationFn: (chatId: string) => chatService.deleteRoom(chatId),
   });
 }

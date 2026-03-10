@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiMutation } from "@/hooks";
+import { useMutation } from "@tanstack/react-query";
 import { eventService } from "@/services";
 
 /**
@@ -16,7 +16,7 @@ export function useFeedbackSubmit(
     onError?: () => void;
   },
 ) {
-  return useApiMutation<void, Record<string, unknown>>({
+  return useMutation<void, Error, Record<string, unknown>>({
     mutationFn: (data) => eventService.enter(eventId, data),
     onSuccess: options?.onSuccess,
     onError: options?.onError,

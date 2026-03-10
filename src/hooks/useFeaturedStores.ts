@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { storeService } from "@/services";
 import type { StoreListItem } from "@/types/stores";
 
@@ -18,7 +18,7 @@ interface PaginatedResult<T = unknown> {
  * Fetches top approved stores for the homepage featured stores section.
  */
 export function useFeaturedStores() {
-  return useApiQuery<PaginatedResult<StoreListItem>>({
+  return useQuery<PaginatedResult<StoreListItem>>({
     queryKey: ["stores", "featured"],
     queryFn: () =>
       storeService.listStores("pageSize=12&sorts=-createdAt") as Promise<

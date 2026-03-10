@@ -66,7 +66,7 @@ function CreateCategoryContent({
     order: 0,
   });
 
-  const { mutate, isLoading } = useCreateCategory({
+  const { mutate, isPending: isLoading } = useCreateCategory({
     onSuccess: (res) => {
       showSuccess(SUCCESS_MESSAGES.CATEGORY.CREATED);
       onSuccess(res.data?.id ?? "");

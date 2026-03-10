@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
@@ -33,7 +33,7 @@ export interface AuctionsListResult {
  * `params` is a pre-built query string produced by `useUrlTable`.
  */
 export function useAuctions(params?: string) {
-  const { data, isLoading, error, refetch } = useApiQuery<AuctionsListResult>({
+  const { data, isLoading, error, refetch } = useQuery<AuctionsListResult>({
     queryKey: ["auctions", params ?? ""],
     queryFn: () => productService.listAuctions(params),
   });

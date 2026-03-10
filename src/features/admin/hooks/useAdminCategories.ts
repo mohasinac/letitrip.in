@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { categoryService } from "@/services";
 import type { Category } from "../components";
 
@@ -9,22 +9,24 @@ import type { Category } from "../components";
  * Fetches the full category tree and exposes create, update, and delete mutations.
  */
 export function useAdminCategories() {
-  const query = useApiQuery<{ categories: Category[] }>({
+  const query = useQuery<{ categories: Category[] }>({
     queryKey: ["categories", "tree"],
     queryFn: () => categoryService.list("view=tree"),
   });
 
-  const createMutation = useApiMutation<unknown, unknown>({
+  const createMutation = useMutation<unknown, Error, unknown>({
     mutationFn: (data) => categoryService.create(data),
   });
 
-  const updateMutation = useApiMutation<unknown, { id: string; data: unknown }>(
-    {
-      mutationFn: ({ id, data }) => categoryService.update(id, data),
-    },
-  );
+  const updateMutation = useMutation<
+    unknown,
+    Error,
+    { id: string; data: unknown }
+  >({
+    mutationFn: ({ id, data }) => categoryService.update(id, data),
+  });
 
-  const deleteMutation = useApiMutation<unknown, string>({
+  const deleteMutation = useMutation<unknown, Error, string>({
     mutationFn: (id) => categoryService.delete(id),
   });
 

@@ -180,9 +180,9 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
     if (!editingCategory) return;
     try {
       if (drawerMode === "create") {
-        await createMutation.mutate(editingCategory);
+        await createMutation.mutateAsync(editingCategory);
       } else {
-        await updateMutation.mutate({
+        await updateMutation.mutateAsync({
           id: editingCategory.id!,
           data: editingCategory,
         });
@@ -203,7 +203,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
   const handleConfirmDelete = async () => {
     if (!editingCategory?.id) return;
     try {
-      await deleteMutation.mutate(editingCategory.id);
+      await deleteMutation.mutateAsync(editingCategory.id);
       await refetch();
       showToast(SUCCESS_MESSAGES.CATEGORY.DELETED, "success");
       handleCloseDrawer();

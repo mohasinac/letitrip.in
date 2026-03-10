@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { reviewService } from "@/services";
 import type { ReviewDocument } from "@/db/schema";
 
@@ -11,10 +11,10 @@ import type { ReviewDocument } from "@/db/schema";
 export function useHomepageReviews(options?: {
   initialData?: ReviewDocument[];
 }) {
-  return useApiQuery<ReviewDocument[]>({
+  return useQuery<ReviewDocument[]>({
     queryKey: ["reviews", "latest"],
     queryFn: () => reviewService.getHomepageReviews(),
-    cacheTTL: 10 * 60 * 1000, // 10 minutes
+    staleTime: 10 * 60 * 1000, // 10 minutes
     initialData: options?.initialData,
   });
 }

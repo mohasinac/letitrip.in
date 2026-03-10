@@ -1,6 +1,7 @@
 "use client";
 
-import { useApiQuery, useApiMutation, useAuth } from "@/hooks";
+import { useAuth } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { sellerService } from "@/services";
 import type { OrderDocument } from "@/db/schema";
 
@@ -24,7 +25,7 @@ interface SellerOrdersResult {
 export function useSellerOrders(params?: string) {
   const { user, loading } = useAuth();
 
-  const { data, isLoading, error, refetch } = useApiQuery<SellerOrdersResult>({
+  const { data, isLoading, error, refetch } = useQuery<SellerOrdersResult>({
     queryKey: ["seller-orders", params ?? ""],
     queryFn: () => sellerService.listOrders(params),
     enabled: !loading && !!user,
@@ -54,7 +55,7 @@ export function useShipOrder(
   onSuccess?: () => void,
   onError?: (err: { message?: string }) => void,
 ) {
-  return useApiMutation<unknown, ShipOrderInput>({
+  return useMutation<unknown, Error, ShipOrderInput>({
     mutationFn: (data) => sellerService.shipOrder(orderId, data),
     onSuccess,
     onError,
@@ -67,7 +68,7 @@ export function useBulkRequestPayout(
   onSuccess?: (res: unknown) => void,
   onError?: (err: { message?: string }) => void,
 ) {
-  return useApiMutation<unknown, string[]>({
+  return useMutation<unknown, Error, string[]>({
     mutationFn: (orderIds) =>
       sellerService.bulkOrderAction({ action: "request_payout", orderIds }),
     onSuccess,

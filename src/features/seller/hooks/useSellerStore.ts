@@ -1,6 +1,7 @@
 "use client";
 
-import { useApiQuery, useApiMutation, useAuth } from "@/hooks";
+import { useAuth } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { sellerService } from "@/services";
 import type { StoreDocument } from "@/db/schema";
 
@@ -16,7 +17,7 @@ import type { StoreDocument } from "@/db/schema";
 export function useSellerStore() {
   const { user, loading: authLoading } = useAuth();
 
-  const { data, isLoading, error, refetch } = useApiQuery<{
+  const { data, isLoading, error, refetch } = useQuery<{
     store: StoreDocument | null;
   }>({
     queryKey: ["seller-store"],
@@ -24,16 +25,18 @@ export function useSellerStore() {
     enabled: !authLoading && !!user,
   });
 
-  const { mutate: createStore, isLoading: isCreating } = useApiMutation<
+  const { mutate: createStore, isPending: isCreating } = useMutation<
     { store: StoreDocument },
+    Error,
     unknown
   >({
     mutationFn: (payload) => sellerService.createStore(payload),
     onSuccess: () => refetch(),
   });
 
-  const { mutate: updateStore, isLoading: isSaving } = useApiMutation<
+  const { mutate: updateStore, isPending: isSaving } = useMutation<
     { store: StoreDocument },
+    Error,
     unknown
   >({
     mutationFn: (payload) => sellerService.updateStore(payload),

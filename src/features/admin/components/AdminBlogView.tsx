@@ -156,10 +156,13 @@ export function AdminBlogView() {
   const handleSave = useCallback(async () => {
     try {
       if (editingPost) {
-        await updateMutation.mutate({ id: editingPost.id, data: formData });
+        await updateMutation.mutateAsync({
+          id: editingPost.id,
+          data: formData,
+        });
         showSuccess(SUCCESS_MESSAGES.BLOG.UPDATED);
       } else {
-        await createMutation.mutate(formData);
+        await createMutation.mutateAsync(formData);
         showSuccess(SUCCESS_MESSAGES.BLOG.CREATED);
       }
       closeDrawer();
@@ -181,7 +184,7 @@ export function AdminBlogView() {
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
     try {
-      await deleteMutation.mutate(deleteTarget.id);
+      await deleteMutation.mutateAsync(deleteTarget.id);
       showSuccess(SUCCESS_MESSAGES.BLOG.DELETED);
       setDeleteTarget(null);
       refetch();
@@ -190,8 +193,8 @@ export function AdminBlogView() {
     }
   }, [deleteTarget, deleteMutation, refetch, showSuccess, showError]);
 
-  const isSaving = createMutation.isLoading || updateMutation.isLoading;
-  const isDeleting = deleteMutation.isLoading;
+  const isSaving = createMutation.isPending || updateMutation.isPending;
+  const isDeleting = deleteMutation.isPending;
 
   const STATUS_TABS = useMemo(
     () => [

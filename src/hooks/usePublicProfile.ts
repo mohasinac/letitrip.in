@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { profileService } from "@/services";
 import { hasRole } from "@/helpers";
 import type { UserDocument, ProductDocument } from "@/db/schema";
@@ -40,7 +40,7 @@ export function usePublicProfile(userId: string) {
     data: profileData,
     isLoading: loading,
     error: fetchError,
-  } = useApiQuery<{ user: UserDocument }>({
+  } = useQuery<{ user: UserDocument }>({
     queryKey: ["public-profile", userId],
     queryFn: () =>
       profileService.getById(userId) as Promise<{ user: UserDocument }>,
@@ -52,23 +52,23 @@ export function usePublicProfile(userId: string) {
   const isSeller = hasRole(user?.role ?? "user", "seller");
 
   const { data: productsData, isLoading: productsLoading } =
-    useApiQuery<ProductsApiResponse>({
+    useQuery<ProductsApiResponse>({
       queryKey: ["profile-products", userId],
       queryFn: () =>
         profileService.getSellerProducts(
           userId,
         ) as Promise<ProductsApiResponse>,
       enabled: !!userId && isSeller,
-      cacheTTL: 60000,
+      staleTime: 60000,
     });
 
   const { data: reviewsData, isLoading: reviewsLoading } =
-    useApiQuery<SellerReviewsData>({
+    useQuery<SellerReviewsData>({
       queryKey: ["profile-reviews", userId],
       queryFn: () =>
         profileService.getSellerReviews(userId) as Promise<SellerReviewsData>,
       enabled: !!userId && isSeller,
-      cacheTTL: 60000,
+      staleTime: 60000,
     });
 
   return {

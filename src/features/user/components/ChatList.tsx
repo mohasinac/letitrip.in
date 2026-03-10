@@ -38,7 +38,7 @@ export function ChatList() {
   const isAdmin = useIsAdmin();
 
   const { data, isLoading, refetch } = useChatRooms();
-  const { mutate: deleteRoom, isLoading: isDeleting } = useDeleteChatRoom();
+  const { mutate: deleteRoom, isPending: isDeleting } = useDeleteChatRoom();
 
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 

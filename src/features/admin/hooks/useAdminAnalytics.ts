@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { adminService } from "@/services";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -41,9 +41,9 @@ export interface AnalyticsResponse {
  * Wraps `adminService.getAnalytics()` with a 5-min client-side cache.
  */
 export function useAdminAnalytics() {
-  return useApiQuery<AnalyticsResponse>({
+  return useQuery<AnalyticsResponse>({
     queryKey: ["admin-analytics"],
     queryFn: () => adminService.getAnalytics(),
-    cacheTTL: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
   });
 }

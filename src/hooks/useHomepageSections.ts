@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { homepageSectionsService } from "@/services";
 import type { HomepageSectionDocument } from "@/db/schema";
 
@@ -15,9 +15,9 @@ import type { HomepageSectionDocument } from "@/db/schema";
  * const { data } = useHomepageSections("type=welcome&enabled=true");
  */
 export function useHomepageSections(params?: string) {
-  return useApiQuery<HomepageSectionDocument[]>({
+  return useQuery<HomepageSectionDocument[]>({
     queryKey: ["homepage-sections", params ?? ""],
     queryFn: () => homepageSectionsService.list(params),
-    cacheTTL: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }

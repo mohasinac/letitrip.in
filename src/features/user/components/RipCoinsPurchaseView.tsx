@@ -30,8 +30,8 @@ export function RipCoinsPurchaseView() {
   );
   const [buying, setBuying] = useState(false);
 
-  const { mutate: purchaseCoins } = usePurchaseRipCoins();
-  const { mutate: verifyPurchase } = useVerifyRipCoinPurchase();
+  const { mutateAsync: purchaseCoins } = usePurchaseRipCoins();
+  const { mutateAsync: verifyPurchase } = useVerifyRipCoinPurchase();
   const { openRazorpay, isLoading: isRazorpayLoading } = useRazorpay();
 
   const selectedPkg =

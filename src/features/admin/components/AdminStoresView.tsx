@@ -117,7 +117,7 @@ export function AdminStoresView() {
         message: labels[action].message,
         onConfirm: async () => {
           try {
-            await updateStoreMutation.mutate({ uid: store.uid, action });
+            await updateStoreMutation.mutateAsync({ uid: store.uid, action });
             showSuccess(successKeys[action]);
             refetch();
           } catch {

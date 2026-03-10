@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { wishlistService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
@@ -21,7 +21,7 @@ export interface WishlistResponse {
  * Pass `enabled: false` when the user is not authenticated.
  */
 export function useWishlist(enabled = true) {
-  return useApiQuery<WishlistResponse>({
+  return useQuery<WishlistResponse>({
     queryKey: ["user", "wishlist"],
     queryFn: () => wishlistService.list(),
     enabled,

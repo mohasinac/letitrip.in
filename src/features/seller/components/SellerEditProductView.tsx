@@ -65,7 +65,7 @@ export function SellerEditProductView({ id }: SellerEditProductViewProps) {
     [productData, user],
   );
 
-  const { mutate: updateProduct, isLoading: isSubmitting } =
+  const { mutate: updateProduct, isPending: isSubmitting } =
     useUpdateSellerProduct(id, () => {
       showSuccess(SUCCESS_MESSAGES.PRODUCT.UPDATED);
       router.push(ROUTES.SELLER.PRODUCTS);

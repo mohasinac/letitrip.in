@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { useApiQuery, useApiMutation, useUrlTable } from "@/hooks";
+import { useUrlTable } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { productService, sellerService } from "@/services";
 import type { AdminProduct } from "@/components";
 
@@ -53,7 +54,7 @@ export function useSellerProducts(
     maxPriceParam,
   ]);
 
-  const { data, isLoading, refetch } = useApiQuery<{
+  const { data, isLoading, refetch } = useQuery<{
     items: AdminProduct[];
     total: number;
     page: number;
@@ -66,16 +67,17 @@ export function useSellerProducts(
     enabled: !!queryParams,
   });
 
-  const deleteMutation = useApiMutation<void, string>({
+  const deleteMutation = useMutation<void, Error, string>({
     mutationFn: (id) => productService.delete(id),
   });
 
-  const createMutation = useApiMutation<void, Partial<AdminProduct>>({
+  const createMutation = useMutation<void, Error, Partial<AdminProduct>>({
     mutationFn: (product) => productService.create(product),
   });
 
-  const updateMutation = useApiMutation<
+  const updateMutation = useMutation<
     void,
+    Error,
     Partial<AdminProduct> & { id: string }
   >({
     mutationFn: ({ id, ...rest }) => productService.update(id, rest),
@@ -98,7 +100,7 @@ export function useCreateSellerProduct(
   onSuccess?: () => void,
   onError?: () => void,
 ) {
-  return useApiMutation<void, Partial<AdminProduct>>({
+  return useMutation<void, Error, Partial<AdminProduct>>({
     mutationFn: (product) => sellerService.createProduct(product),
     onSuccess,
     onError,
@@ -106,7 +108,7 @@ export function useCreateSellerProduct(
 }
 
 export function useUpdateSellerProduct(id: string, onSuccess?: () => void) {
-  return useApiMutation<void, Partial<AdminProduct>>({
+  return useMutation<void, Error, Partial<AdminProduct>>({
     mutationFn: (data) => productService.update(id, data),
     onSuccess,
   });

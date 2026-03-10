@@ -23,7 +23,7 @@ function VerifyEmailContent() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { mutate: verifyEmail, isLoading } = useVerifyEmail({
+  const { mutate: verifyEmail, isPending: isLoading } = useVerifyEmail({
     onSuccess: () => setIsSuccess(true),
     onError: (err) => setError(err.message || t("verifyEmail.checkFailed")),
   });

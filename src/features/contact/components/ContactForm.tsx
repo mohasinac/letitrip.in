@@ -51,7 +51,7 @@ export function ContactForm() {
 
     setIsSubmitting(true);
     try {
-      await mutation.mutate(form);
+      await mutation.mutateAsync(form);
       setSubmitted(true);
       setForm(INITIAL_FORM);
       showSuccess(SUCCESS_MESSAGES.CONTACT.SENT);

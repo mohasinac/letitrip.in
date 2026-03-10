@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
@@ -22,7 +22,7 @@ const MIN_COUNT = 12;
  * slots with the latest published auctions (deduped).
  */
 export function useFeaturedAuctions() {
-  return useApiQuery<ProductDocument[]>({
+  return useQuery<ProductDocument[]>({
     queryKey: ["auctions", "featured"],
     queryFn: async () => {
       const promotedRes = await productService.list(
@@ -52,6 +52,6 @@ export function useFeaturedAuctions() {
 
       return [...promoted, ...filler];
     },
-    cacheTTL: 2 * 60 * 1000, // 2 minutes — auctions change more frequently
+    staleTime: 2 * 60 * 1000, // 2 minutes — auctions change more frequently
   });
 }

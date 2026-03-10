@@ -144,7 +144,7 @@ export function BecomeSellerView() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
-  const { mutate: applyAsSeller, isLoading: isApplying } = useBecomeSeller();
+  const { mutate: applyAsSeller, isPending: isApplying } = useBecomeSeller();
 
   // Track which guide sections have been read/acknowledged
   const [readSections, setReadSections] = useState<Record<SectionId, boolean>>(

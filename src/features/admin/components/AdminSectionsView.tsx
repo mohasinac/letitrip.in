@@ -162,10 +162,10 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
     if (!editingSection) return;
     try {
       if (drawerMode === "create") {
-        await createMutation.mutate(editingSection);
+        await createMutation.mutateAsync(editingSection);
         showToast(SUCCESS_MESSAGES.SECTION.CREATED, "success");
       } else {
-        await updateMutation.mutate({
+        await updateMutation.mutateAsync({
           id: editingSection.id!,
           data: editingSection,
         });
@@ -181,7 +181,7 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
   const handleConfirmDelete = async () => {
     if (!editingSection?.id) return;
     try {
-      await deleteMutation.mutate(editingSection.id);
+      await deleteMutation.mutateAsync(editingSection.id);
       showToast(SUCCESS_MESSAGES.SECTION.DELETED, "success");
       await refetch();
       handleCloseDrawer();

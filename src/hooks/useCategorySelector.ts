@@ -1,7 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
-import { useApiMutation } from "./useApiMutation";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { categoryService } from "@/services";
 import { createCategoryAction } from "@/actions";
 import type { CategoryDocument } from "@/db/schema";
@@ -29,15 +28,16 @@ export function useCategorySelector(options?: {
     data: raw,
     isLoading,
     refetch,
-  } = useApiQuery<CategoriesResponse>({
+  } = useQuery<CategoriesResponse>({
     queryKey: ["categories"],
     queryFn: () => categoryService.list(),
   });
 
   const categories: CategoryDocument[] = raw?.data ?? raw?.items ?? [];
 
-  const { mutate: createCategory, isLoading: isCreating } = useApiMutation<
+  const { mutate: createCategory, isPending: isCreating } = useMutation<
     { data?: { id?: string }; id?: string },
+    Error,
     Partial<CategoryDocument>
   >({
     mutationFn: (data) => createCategoryAction(data as any) as any,
@@ -62,7 +62,7 @@ export function useCategories() {
     data: raw,
     isLoading,
     refetch,
-  } = useApiQuery<CategoriesResponse>({
+  } = useQuery<CategoriesResponse>({
     queryKey: ["categories"],
     queryFn: () => categoryService.list(),
   });
@@ -79,7 +79,7 @@ export function useCreateCategory(options?: {
   onSuccess?: (res: { data?: { id?: string }; id?: string }) => void;
   onError?: (err: Error) => void;
 }) {
-  return useApiMutation<{ data?: { id?: string }; id?: string }, unknown>({
+  return useMutation<{ data?: { id?: string }; id?: string }, Error, unknown>({
     mutationFn: (data) => createCategoryAction(data as any) as any,
     onSuccess: options?.onSuccess,
     onError: options?.onError,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { siteSettingsService } from "@/services";
 import type { SiteSettingsDocument } from "@/db/schema";
 
@@ -11,13 +11,14 @@ import type { SiteSettingsDocument } from "@/db/schema";
  * with a single update mutation that patches the site-settings singleton.
  */
 export function useAdminFeatureFlags() {
-  const query = useApiQuery<SiteSettingsDocument>({
+  const query = useQuery<SiteSettingsDocument>({
     queryKey: ["site-settings", "feature-flags"],
     queryFn: () => siteSettingsService.get(),
   });
 
-  const updateMutation = useApiMutation<
+  const updateMutation = useMutation<
     SiteSettingsDocument,
+    Error,
     Partial<SiteSettingsDocument>
   >({
     mutationFn: (data) => siteSettingsService.update(data),

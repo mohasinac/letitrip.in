@@ -32,9 +32,9 @@ export function BuyRipCoinsModal({ open, onClose, onPurchaseSuccess }: Props) {
     RIPCOIN_PACKAGES[0].packageId,
   );
 
-  const { mutate: purchaseCoins, isLoading: isCreatingOrder } =
+  const { mutateAsync: purchaseCoins, isPending: isCreatingOrder } =
     usePurchaseRipCoins();
-  const { mutate: verifyPurchase, isLoading: isVerifying } =
+  const { mutateAsync: verifyPurchase, isPending: isVerifying } =
     useVerifyRipCoinPurchase();
   const { openRazorpay, isLoading: isRazorpayLoading } = useRazorpay();
 

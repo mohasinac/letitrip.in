@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { profileService } from "@/services";
 import type { UserDocument, ProductDocument } from "@/db/schema";
 import type {
@@ -30,7 +30,7 @@ export function useSellerStorefront(
     data: sellerData,
     isLoading: loading,
     error: fetchError,
-  } = useApiQuery<{ user: UserDocument }>({
+  } = useQuery<{ user: UserDocument }>({
     queryKey: ["seller-profile", sellerId],
     queryFn: () =>
       profileService.getById(sellerId) as Promise<{ user: UserDocument }>,
@@ -49,23 +49,23 @@ export function useSellerStorefront(
   const isReady = !!seller && !profileError && !!sellerId;
 
   const { data: productsData, isLoading: productsLoading } =
-    useApiQuery<ProductsApiResponse>({
+    useQuery<ProductsApiResponse>({
       queryKey: ["storefront-products", sellerId],
       queryFn: () =>
         profileService.getSellerProducts(
           sellerId,
         ) as Promise<ProductsApiResponse>,
       enabled: isReady,
-      cacheTTL: 60000,
+      staleTime: 60000,
     });
 
   const { data: reviewsData, isLoading: reviewsLoading } =
-    useApiQuery<SellerReviewsData>({
+    useQuery<SellerReviewsData>({
       queryKey: ["storefront-reviews", sellerId],
       queryFn: () =>
         profileService.getSellerReviews(sellerId) as Promise<SellerReviewsData>,
       enabled: isReady,
-      cacheTTL: 60000,
+      staleTime: 60000,
     });
 
   return {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiMutation } from "@/hooks";
+import { useMutation } from "@tanstack/react-query";
 import { eventService } from "@/services";
 import type {
   EventDocument,
@@ -11,7 +11,7 @@ import type {
 
 // --- Create ---
 export function useCreateEvent(onSuccess?: (event: EventDocument) => void) {
-  return useApiMutation<EventDocument, EventCreateInput>({
+  return useMutation<EventDocument, Error, EventCreateInput>({
     mutationFn: (data) => eventService.adminCreate(data),
     onSuccess,
   });
@@ -24,7 +24,7 @@ interface UpdateEventVars {
 }
 
 export function useUpdateEvent(onSuccess?: (event: EventDocument) => void) {
-  return useApiMutation<EventDocument, UpdateEventVars>({
+  return useMutation<EventDocument, Error, UpdateEventVars>({
     mutationFn: ({ id, data }) => eventService.adminUpdate(id, data),
     onSuccess,
   });
@@ -32,7 +32,7 @@ export function useUpdateEvent(onSuccess?: (event: EventDocument) => void) {
 
 // --- Delete ---
 export function useDeleteEvent(onSuccess?: () => void) {
-  return useApiMutation<void, string>({
+  return useMutation<void, Error, string>({
     mutationFn: (id) => eventService.adminDelete(id),
     onSuccess,
   });
@@ -47,7 +47,7 @@ interface ChangeStatusVars {
 export function useChangeEventStatus(
   onSuccess?: (event: EventDocument) => void,
 ) {
-  return useApiMutation<EventDocument, ChangeStatusVars>({
+  return useMutation<EventDocument, Error, ChangeStatusVars>({
     mutationFn: ({ id, status }) => eventService.adminSetStatus(id, status),
     onSuccess,
   });
@@ -62,7 +62,7 @@ interface ReviewEntryVars {
 }
 
 export function useReviewEntry(onSuccess?: () => void) {
-  return useApiMutation<void, ReviewEntryVars>({
+  return useMutation<void, Error, ReviewEntryVars>({
     mutationFn: ({ eventId, entryId, reviewStatus, reviewNote }) =>
       eventService.adminUpdateEntry(eventId, entryId, {
         reviewStatus,
@@ -79,7 +79,7 @@ export function useEventEnter(
   onSuccess?: () => void,
   onError?: () => void,
 ) {
-  return useApiMutation<void, Record<string, unknown>>({
+  return useMutation<void, Error, Record<string, unknown>>({
     mutationFn: (data) => eventService.enter(eventId, data),
     onSuccess,
     onError,

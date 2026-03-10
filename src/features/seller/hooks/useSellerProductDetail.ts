@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services";
 import type { AdminProduct } from "@/components";
 
@@ -10,7 +10,7 @@ import type { AdminProduct } from "@/components";
  * Uses queryKey "seller-product-edit" to avoid collisions with public product cache.
  */
 export function useSellerProductDetail(id: string | undefined) {
-  const { data, isLoading, error } = useApiQuery<AdminProduct>({
+  const { data, isLoading, error } = useQuery<AdminProduct>({
     queryKey: ["seller-product-edit", id ?? ""],
     queryFn: () => productService.getById(id!),
     enabled: !!id,

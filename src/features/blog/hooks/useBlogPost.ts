@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { blogService } from "@/services";
 import type { BlogPostDocument } from "@/db/schema";
 
@@ -19,7 +19,7 @@ interface UseBlogPostOptions {
  * `options.initialData` — server-prefetched post data; prevents initial client fetch.
  */
 export function useBlogPost(slug: string, options?: UseBlogPostOptions) {
-  const { data, isLoading, error } = useApiQuery<BlogPostQueryResult>({
+  const { data, isLoading, error } = useQuery<BlogPostQueryResult>({
     queryKey: ["blog", "post", slug],
     queryFn: () => blogService.getBySlug(slug),
     initialData: options?.initialData,

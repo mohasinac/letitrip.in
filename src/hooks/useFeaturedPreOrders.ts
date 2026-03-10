@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
@@ -22,7 +22,7 @@ const MIN_COUNT = 12;
  * slots with the latest published pre-orders (deduped).
  */
 export function useFeaturedPreOrders() {
-  return useApiQuery<ProductDocument[]>({
+  return useQuery<ProductDocument[]>({
     queryKey: ["pre-orders", "featured"],
     queryFn: async () => {
       const featuredRes = await productService.getFeaturedPreOrders();
@@ -50,6 +50,6 @@ export function useFeaturedPreOrders() {
 
       return [...featured, ...filler];
     },
-    cacheTTL: 3 * 60 * 1000, // 3 minutes
+    staleTime: 3 * 60 * 1000, // 3 minutes
   });
 }

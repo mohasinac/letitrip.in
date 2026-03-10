@@ -1,6 +1,7 @@
 "use client";
 
-import { useApiQuery, useAuth } from "@/hooks";
+import { useAuth } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { orderService } from "@/services";
 import type { OrderDocument } from "@/db/schema";
 
@@ -20,7 +21,7 @@ interface UserOrdersResult {
 export function useUserOrders(params?: string) {
   const { user, loading } = useAuth();
 
-  const { data, isLoading, error, refetch } = useApiQuery<UserOrdersResult>({
+  const { data, isLoading, error, refetch } = useQuery<UserOrdersResult>({
     queryKey: ["user-orders", params ?? ""],
     queryFn: () => orderService.list(params),
     enabled: !loading && !!user,

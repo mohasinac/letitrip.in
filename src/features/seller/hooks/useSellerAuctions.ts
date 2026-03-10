@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { sellerService } from "@/services";
 import type { AdminProduct } from "@/components";
 
@@ -22,7 +22,7 @@ export interface SellerAuctionsResponse {
  * `enabled` should be `!authLoading && !!user`.
  */
 export function useSellerAuctions(params: string, enabled = true) {
-  const { data, isLoading } = useApiQuery<SellerAuctionsResponse>({
+  const { data, isLoading } = useQuery<SellerAuctionsResponse>({
     queryKey: ["seller-auctions", params],
     queryFn: () => sellerService.listMyProducts(params),
     enabled,

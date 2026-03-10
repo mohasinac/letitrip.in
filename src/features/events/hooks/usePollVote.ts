@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiMutation } from "@/hooks";
+import { useMutation } from "@tanstack/react-query";
 import { eventService } from "@/services";
 
 export interface PollVotePayload {
@@ -21,7 +21,7 @@ export function usePollVote(
     onError?: () => void;
   },
 ) {
-  return useApiMutation<void, PollVotePayload>({
+  return useMutation<void, Error, PollVotePayload>({
     mutationFn: (data) => eventService.enter(eventId, data),
     onSuccess: options?.onSuccess,
     onError: options?.onError,

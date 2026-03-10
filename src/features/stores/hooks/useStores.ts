@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { useApiQuery, useUrlTable } from "@/hooks";
+import { useUrlTable } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { storeService } from "@/services";
 import type { StoreListItem } from "../types";
 
@@ -40,7 +41,7 @@ export function useStores(options?: UseStoresOptions) {
     return sp.toString();
   }, [table]);
 
-  const query = useApiQuery<FirebaseSieveResult>({
+  const query = useQuery<FirebaseSieveResult>({
     queryKey: ["stores", "list", params],
     queryFn: () => storeService.listStores(params),
     initialData: options?.initialData,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { notificationService } from "@/services";
 import {
   markNotificationReadAction,
@@ -20,22 +20,22 @@ interface NotificationsPageResponse {
  * Provides paginated notification list + mutation hooks for mark-read, delete, mark-all-read.
  */
 export function useUserNotifications(queryParams: string, enabled: boolean) {
-  const query = useApiQuery<NotificationsPageResponse>({
+  const query = useQuery<NotificationsPageResponse>({
     queryKey: ["notifications", "page", queryParams],
     queryFn: () => notificationService.list(queryParams),
     enabled,
-    cacheTTL: 0,
+    staleTime: 0,
   });
 
-  const markRead = useApiMutation<unknown, string>({
+  const markRead = useMutation<unknown, Error, string>({
     mutationFn: (id: string) => markNotificationReadAction(id),
   });
 
-  const deleteOne = useApiMutation<unknown, string>({
+  const deleteOne = useMutation<unknown, Error, string>({
     mutationFn: (id: string) => deleteNotificationAction(id),
   });
 
-  const markAllRead = useApiMutation<unknown, void>({
+  const markAllRead = useMutation<unknown, Error, void>({
     mutationFn: () => markAllNotificationsReadAction(),
   });
 
@@ -44,6 +44,6 @@ export function useUserNotifications(queryParams: string, enabled: boolean) {
     markRead: markRead.mutate,
     deleteOne: deleteOne.mutate,
     markAllRead: markAllRead.mutate,
-    isMarkingAll: markAllRead.isLoading,
+    isMarkingAll: markAllRead.isPending,
   };
 }

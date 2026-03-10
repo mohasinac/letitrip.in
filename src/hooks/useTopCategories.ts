@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { categoryService } from "@/services";
 import type { CategoryDocument } from "@/db/schema";
 
@@ -14,10 +14,10 @@ export function useTopCategories(
   limit = 12,
   options?: { initialData?: CategoryDocument[] },
 ) {
-  return useApiQuery<CategoryDocument[]>({
+  return useQuery<CategoryDocument[]>({
     queryKey: ["categories", "top", String(limit)],
     queryFn: () => categoryService.listTopLevel(limit),
-    cacheTTL: 15 * 60 * 1000, // 15 minutes — categories change infrequently
+    staleTime: 15 * 60 * 1000, // 15 minutes — categories change infrequently
     initialData: options?.initialData,
   });
 }

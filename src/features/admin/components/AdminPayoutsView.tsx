@@ -113,8 +113,8 @@ export function AdminPayoutsView() {
   const handleSave = useCallback(async () => {
     if (!selectedPayout || !formState) return;
     try {
-      await updateMutation.mutate({
-        id: selectedPayout.id,
+      await updateMutation.mutateAsync({
+        id: selectedPayout!.id,
         data: formState,
       });
       showSuccess(SUCCESS_MESSAGES.PAYOUT.UPDATED);
@@ -259,7 +259,7 @@ export function AdminPayoutsView() {
             <DrawerFormFooter
               onCancel={handleCloseDrawer}
               onSubmit={handleSave}
-              isLoading={updateMutation.isLoading}
+              isLoading={updateMutation.isPending}
               submitLabel={t("updatePayout")}
             />
           </div>

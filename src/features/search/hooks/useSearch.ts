@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { searchService, categoryService } from "@/services";
 import type { CategoryDocument, ProductDocument } from "@/db/schema";
 
@@ -46,13 +46,13 @@ interface UseSearchOptions {
  * `options.initialCategories` — server-prefetched category list for filter facets.
  */
 export function useSearch(searchParams: string, options?: UseSearchOptions) {
-  const { data: catData } = useApiQuery<CategoryDocument[]>({
+  const { data: catData } = useQuery<CategoryDocument[]>({
     queryKey: ["categories", "flat"],
     queryFn: () => categoryService.list("flat=true"),
     initialData: options?.initialCategories,
   });
 
-  const { data: searchData, isLoading } = useApiQuery<SearchResponse>({
+  const { data: searchData, isLoading } = useQuery<SearchResponse>({
     queryKey: ["search", searchParams],
     queryFn: () => searchService.query(searchParams),
   });

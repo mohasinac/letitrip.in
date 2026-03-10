@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiMutation } from "@/hooks";
+import { useMutation } from "@tanstack/react-query";
 import {
   subscribeNewsletterAction,
   type SubscribeNewsletterInput,
@@ -12,7 +12,7 @@ import {
  * newsletter subscription forms (footer, homepage popup, checkout opt-in, etc.).
  */
 export function useNewsletter() {
-  return useApiMutation<{ subscribed: boolean }, SubscribeNewsletterInput>({
+  return useMutation<{ subscribed: boolean }, Error, SubscribeNewsletterInput>({
     mutationFn: (data) => subscribeNewsletterAction(data),
   });
 }

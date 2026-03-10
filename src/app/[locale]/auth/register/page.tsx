@@ -5,8 +5,6 @@
  * Wrapped in Suspense because RegisterForm uses useSearchParams().
  */
 
-"use client";
-
 import { Suspense } from "react";
 import { Spinner } from "@/components";
 import { RegisterForm } from "@/features/auth";

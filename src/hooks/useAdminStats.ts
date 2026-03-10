@@ -5,7 +5,7 @@
  * Fetch and manage admin dashboard statistics
  */
 
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { adminService } from "@/services";
 
 interface AdminStats {
@@ -26,7 +26,7 @@ interface AdminStats {
 }
 
 export function useAdminStats() {
-  const { data, isLoading, error, refetch } = useApiQuery<AdminStats>({
+  const { data, isLoading, error, refetch } = useQuery<AdminStats>({
     queryKey: ["admin-stats"],
     queryFn: () => adminService.getDashboardStats(),
   });
@@ -35,6 +35,8 @@ export function useAdminStats() {
     stats: data || null,
     isLoading,
     error: error?.message || null,
-    refresh: refetch,
+    refresh: () => {
+      void refetch();
+    },
   };
 }

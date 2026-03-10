@@ -38,7 +38,7 @@ export function EntryReviewDrawer({
   const handleReview = async (reviewStatus: "approved" | "flagged") => {
     if (!entry) return;
     try {
-      await mutation.mutate({
+      await mutation.mutateAsync({
         eventId,
         entryId: entry.id,
         reviewStatus,
@@ -73,14 +73,14 @@ export function EntryReviewDrawer({
             variant="outline"
             className="text-red-600 border-red-300 hover:bg-red-50"
             onClick={() => handleReview("flagged")}
-            isLoading={mutation.isLoading}
+            isLoading={mutation.isPending}
           >
             {t("flag")}
           </Button>
           <Button
             variant="primary"
             onClick={() => handleReview("approved")}
-            isLoading={mutation.isLoading}
+            isLoading={mutation.isPending}
           >
             {t("approve")}
           </Button>

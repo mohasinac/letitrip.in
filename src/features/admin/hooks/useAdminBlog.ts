@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { adminService } from "@/services";
 import type { BlogPostDocument } from "@/db/schema";
 
@@ -29,23 +29,24 @@ export function useAdminBlog(sieveParams: string) {
       : `?${sieveParams}`
     : "?pageSize=200";
 
-  const query = useApiQuery<{ posts: BlogPostDocument[]; meta: BlogListMeta }>({
+  const query = useQuery<{ posts: BlogPostDocument[]; meta: BlogListMeta }>({
     queryKey: ["admin", "blog", sieveParams],
     queryFn: () => adminService.listBlog(filtersParam),
   });
 
-  const createMutation = useApiMutation<BlogPostDocument, unknown>({
+  const createMutation = useMutation<BlogPostDocument, Error, unknown>({
     mutationFn: (data) => adminService.createBlogPost(data),
   });
 
-  const updateMutation = useApiMutation<
+  const updateMutation = useMutation<
     BlogPostDocument,
+    Error,
     { id: string; data: unknown }
   >({
     mutationFn: ({ id, data }) => adminService.updateBlogPost(id, data),
   });
 
-  const deleteMutation = useApiMutation<void, string>({
+  const deleteMutation = useMutation<void, Error, string>({
     mutationFn: (id) => adminService.deleteBlogPost(id),
   });
 

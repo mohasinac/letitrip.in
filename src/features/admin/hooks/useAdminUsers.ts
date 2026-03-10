@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { adminService } from "@/services";
 import type { AdminUser } from "../components";
 
@@ -17,19 +17,20 @@ interface UserListMeta {
  * Exposes update-user and delete-user mutations.
  */
 export function useAdminUsers(sieveParams: string) {
-  const query = useApiQuery<{ users: AdminUser[]; meta: UserListMeta }>({
+  const query = useQuery<{ users: AdminUser[]; meta: UserListMeta }>({
     queryKey: ["admin", "users", sieveParams],
     queryFn: () => adminService.listUsers(sieveParams),
   });
 
-  const updateUserMutation = useApiMutation<
+  const updateUserMutation = useMutation<
     unknown,
+    Error,
     { uid: string; data: unknown }
   >({
     mutationFn: ({ uid, data }) => adminService.updateUser(uid, data),
   });
 
-  const deleteUserMutation = useApiMutation<unknown, string>({
+  const deleteUserMutation = useMutation<unknown, Error, string>({
     mutationFn: (uid) => adminService.deleteUser(uid),
   });
 

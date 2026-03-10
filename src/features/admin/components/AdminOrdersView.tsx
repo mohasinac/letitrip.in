@@ -129,7 +129,10 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
     if (!selectedOrder || !formState) return;
 
     try {
-      await updateMutation.mutate({ id: selectedOrder.id, data: formState });
+      await updateMutation.mutateAsync({
+        id: selectedOrder.id,
+        data: formState,
+      });
       showSuccess(SUCCESS_MESSAGES.ORDER.UPDATED);
       setIsDrawerOpen(false);
       setSelectedOrder(null);
@@ -269,7 +272,7 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
             <DrawerFormFooter
               onCancel={handleCloseDrawer}
               onSubmit={handleSave}
-              isLoading={updateMutation.isLoading}
+              isLoading={updateMutation.isPending}
               submitLabel={t("updateOrder")}
             />
           </div>

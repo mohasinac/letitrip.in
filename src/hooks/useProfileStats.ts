@@ -1,4 +1,4 @@
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { orderService, addressService } from "@/services";
 
 export interface ProfileStats {
@@ -12,7 +12,7 @@ export interface ProfileStats {
  * currently authenticated user.
  */
 export function useProfileStats(enabled: boolean): ProfileStats {
-  const { data: ordersData, isLoading: ordersLoading } = useApiQuery<{
+  const { data: ordersData, isLoading: ordersLoading } = useQuery<{
     data: { total: number };
   }>({
     queryKey: ["user-orders-count"],
@@ -20,7 +20,7 @@ export function useProfileStats(enabled: boolean): ProfileStats {
     enabled,
   });
 
-  const { data: addressesData, isLoading: addressesLoading } = useApiQuery<{
+  const { data: addressesData, isLoading: addressesLoading } = useQuery<{
     data: unknown[];
   }>({
     queryKey: ["user-addresses-count"],

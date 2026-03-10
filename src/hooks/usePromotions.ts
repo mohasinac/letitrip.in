@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { promotionsService } from "@/services";
 import type { ProductDocument, CouponDocument } from "@/db/schema";
 
@@ -15,7 +15,7 @@ interface PromotionsData {
  * Wraps `promotionsService.list()` for the promotions page.
  */
 export function usePromotions() {
-  const { data, isLoading, error, refetch } = useApiQuery<PromotionsData>({
+  const { data, isLoading, error, refetch } = useQuery<PromotionsData>({
     queryKey: ["promotions"],
     queryFn: () => promotionsService.list(),
   });

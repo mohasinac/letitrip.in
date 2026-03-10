@@ -150,9 +150,9 @@ export function AdminCarouselView({ action }: Props) {
     if (!editingSlide) return;
     try {
       if (drawerMode === "create") {
-        await createMutation.mutate(editingSlide);
+        await createMutation.mutateAsync(editingSlide);
       } else {
-        await updateMutation.mutate({
+        await updateMutation.mutateAsync({
           id: editingSlide.id,
           data: editingSlide,
         });
@@ -173,7 +173,7 @@ export function AdminCarouselView({ action }: Props) {
   const handleConfirmDelete = async () => {
     if (!editingSlide?.id) return;
     try {
-      await deleteMutation.mutate(editingSlide.id);
+      await deleteMutation.mutateAsync(editingSlide.id);
       await refetch();
       showToast(SUCCESS_MESSAGES.CAROUSEL.DELETED, "success");
       handleCloseDrawer();

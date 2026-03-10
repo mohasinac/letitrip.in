@@ -71,8 +71,8 @@ export function AvatarUpload({
   const { showToast } = useToast();
 
   const {
-    mutate: uploadMedia,
-    isLoading: isUploading,
+    mutateAsync: uploadMedia,
+    isPending: isUploading,
     error: uploadApiError,
     reset: resetUpload,
   } = useMediaUpload();

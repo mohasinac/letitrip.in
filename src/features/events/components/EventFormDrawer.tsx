@@ -188,12 +188,12 @@ export function EventFormDrawer({
 
     try {
       if (isEdit && editTarget) {
-        await updateMutation.mutate({
+        await updateMutation.mutateAsync({
           id: editTarget.id,
           data: payload as never,
         });
       } else {
-        await createMutation.mutate(payload as never);
+        await createMutation.mutateAsync(payload as never);
       }
     } catch {
       setFormError(
@@ -204,7 +204,7 @@ export function EventFormDrawer({
     }
   };
 
-  const isSaving = createMutation.isLoading || updateMutation.isLoading;
+  const isSaving = createMutation.isPending || updateMutation.isPending;
 
   const typeConfigNode = () => {
     switch (form.type) {

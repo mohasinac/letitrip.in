@@ -51,13 +51,14 @@ export function SellerCreateProductView() {
   const { showSuccess, showError } = useMessage();
   const [product, setProduct] = useState<Partial<AdminProduct>>(EMPTY_PRODUCT);
 
-  const { mutate: createProduct, isLoading } = useCreateSellerProduct(
-    () => {
-      showSuccess(t("createSuccess"));
-      router.push(ROUTES.SELLER.PRODUCTS);
-    },
-    () => showError(t("saveFailed")),
-  );
+  const { mutate: createProduct, isPending: isLoading } =
+    useCreateSellerProduct(
+      () => {
+        showSuccess(t("createSuccess"));
+        router.push(ROUTES.SELLER.PRODUCTS);
+      },
+      () => showError(t("saveFailed")),
+    );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

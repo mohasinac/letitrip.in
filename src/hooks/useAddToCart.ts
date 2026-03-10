@@ -1,8 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { useApiMutation } from "./useApiMutation";
-import { invalidateQueries } from "./useApiQuery";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts";
 import { addToCartAction } from "@/actions";
 import { addToGuestCart } from "@/utils";
@@ -36,6 +35,7 @@ interface UseAddToCartOptions {
  */
 export function useAddToCart(options?: UseAddToCartOptions) {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   // Keep options in a ref so the mutate callback stays stable (no re-creation on re-render)
   const optionsRef = useRef(options);
@@ -43,15 +43,17 @@ export function useAddToCart(options?: UseAddToCartOptions) {
     optionsRef.current = options;
   }, [options]);
 
-  const serverMutation = useApiMutation<unknown, AddToCartPayload>({
-    mutationFn: (data) =>
-      addToCartAction(data as Parameters<typeof addToCartAction>[0]),
-    onSuccess: () => {
-      invalidateQueries(["cart"]);
-      optionsRef.current?.onSuccess?.();
+  const serverMutation = useMutation<unknown, ApiClientError, AddToCartPayload>(
+    {
+      mutationFn: (data) =>
+        addToCartAction(data as Parameters<typeof addToCartAction>[0]),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
+        optionsRef.current?.onSuccess?.();
+      },
+      onError: (err: ApiClientError) => optionsRef.current?.onError?.(err),
     },
-    onError: (err: ApiClientError) => optionsRef.current?.onError?.(err),
-  });
+  );
 
   const mutate = useCallback(
     async (data: AddToCartPayload): Promise<unknown> => {
@@ -73,7 +75,7 @@ export function useAddToCart(options?: UseAddToCartOptions) {
 
   return {
     mutate,
-    isLoading: serverMutation.isLoading,
+    isLoading: serverMutation.isPending,
     error: serverMutation.error,
     data: serverMutation.data,
     reset: serverMutation.reset,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { eventService } from "@/services";
 import type { EventDocument } from "@/db/schema";
 
@@ -16,7 +16,7 @@ interface UsePublicEventOptions {
  * `options.initialData` — server-prefetched event; prevents initial client fetch.
  */
 export function usePublicEvent(id: string, options?: UsePublicEventOptions) {
-  const { data, isLoading, error } = useApiQuery<EventDocument>({
+  const { data, isLoading, error } = useQuery<EventDocument>({
     queryKey: ["public-event", id],
     queryFn: () => eventService.getById(id),
     initialData: options?.initialData,

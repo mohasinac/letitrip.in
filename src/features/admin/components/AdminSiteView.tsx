@@ -102,7 +102,7 @@ export function AdminSiteView() {
         }
       }
 
-      await updateMutation.mutate(payload as any);
+      await updateMutation.mutateAsync(payload as any);
       await refetch();
       // Reset credential fields so they don't re-submit on the next save
       setCredentialsUpdates({});
@@ -112,7 +112,7 @@ export function AdminSiteView() {
     }
   };
 
-  const isSaving = updateMutation.isLoading;
+  const isSaving = updateMutation.isPending;
 
   // ── Algolia sync mutations ────────────────────────────────────────────────
   const syncProductsMutation = useAlgoliaSyncProducts();
@@ -212,13 +212,13 @@ export function AdminSiteView() {
               variant="outline"
               onClick={() =>
                 handleAlgoliaSync(
-                  () => syncProductsMutation.mutate(undefined),
+                  () => syncProductsMutation.mutateAsync(undefined),
                   "Products",
                 )
               }
-              disabled={syncProductsMutation.isLoading}
+              disabled={syncProductsMutation.isPending}
             >
-              {syncProductsMutation.isLoading
+              {syncProductsMutation.isPending
                 ? "⏳ Syncing products…"
                 : "🔄 Sync Products → Algolia"}
             </Button>
@@ -226,13 +226,13 @@ export function AdminSiteView() {
               variant="outline"
               onClick={() =>
                 handleAlgoliaSync(
-                  () => syncPagesMutation.mutate(undefined),
+                  () => syncPagesMutation.mutateAsync(undefined),
                   "Pages",
                 )
               }
-              disabled={syncPagesMutation.isLoading}
+              disabled={syncPagesMutation.isPending}
             >
-              {syncPagesMutation.isLoading
+              {syncPagesMutation.isPending
                 ? "⏳ Syncing pages…"
                 : "🔄 Sync Pages → Algolia"}
             </Button>

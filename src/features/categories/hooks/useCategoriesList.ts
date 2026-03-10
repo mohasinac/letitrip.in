@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { categoryService } from "@/services";
 import type { CategoryDocument } from "@/db/schema";
 
@@ -14,7 +14,7 @@ interface UseCategoriesListOptions {
  * `options.initialData` — server-prefetched categories; prevents initial client fetch.
  */
 export function useCategoriesList(options?: UseCategoriesListOptions) {
-  const { data, isLoading, error } = useApiQuery<CategoryDocument[]>({
+  const { data, isLoading, error } = useQuery<CategoryDocument[]>({
     queryKey: ["categories", "flat"],
     queryFn: () => categoryService.list("flat=true"),
     initialData: options?.initialData,

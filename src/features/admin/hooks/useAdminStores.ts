@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { adminService } from "@/services";
 
 export interface AdminStoreItem {
@@ -50,17 +50,15 @@ interface StoreListResponse {
  * Exposes a mutation to approve, reject, or toggle listing rights.
  */
 export function useAdminStores(sieveParams: string) {
-  const query = useApiQuery<StoreListResponse>({
+  const query = useQuery<StoreListResponse>({
     queryKey: ["admin", "stores", sieveParams],
     queryFn: () => adminService.listStores(sieveParams),
   });
 
-  const updateStoreMutation = useApiMutation<
+  const updateStoreMutation = useMutation<
     unknown,
-    {
-      uid: string;
-      action: "approve" | "reject";
-    }
+    Error,
+    { uid: string; action: "approve" | "reject" }
   >({
     mutationFn: ({ uid, action }) =>
       adminService.updateStoreStatus(uid, action),

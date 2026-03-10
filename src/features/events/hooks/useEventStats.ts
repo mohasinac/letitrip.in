@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { eventService } from "@/services";
 import type { EventDocument, EventEntryDocument } from "@/db/schema";
 
@@ -30,7 +30,7 @@ export function useEventStats({
   eventId,
   enabled = true,
 }: UseEventStatsOptions) {
-  const { data, isLoading, error, refetch } = useApiQuery<EventStatsResult>({
+  const { data, isLoading, error, refetch } = useQuery<EventStatsResult>({
     queryKey: ["admin-event-stats", eventId],
     queryFn: () => eventService.adminGetStats(eventId),
     enabled: enabled && !!eventId,

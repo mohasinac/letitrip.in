@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
@@ -17,7 +17,7 @@ export function useProductDetail(
   slug: string,
   options?: UseProductDetailOptions,
 ) {
-  const { data, isLoading, error } = useApiQuery<ProductDocument>({
+  const { data, isLoading, error } = useQuery<ProductDocument>({
     queryKey: ["product", slug],
     queryFn: () => productService.getById(slug),
     enabled: Boolean(slug),

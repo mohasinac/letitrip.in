@@ -68,7 +68,7 @@ export function UserEditAddressView() {
     }
   }, [addressError, router, showToast]);
 
-  const { mutate: updateAddress, isLoading: saving } = useUpdateAddress(
+  const { mutate: updateAddress, isPending: saving } = useUpdateAddress(
     addressId,
     {
       onSuccess: () => {
@@ -84,7 +84,7 @@ export function UserEditAddressView() {
     },
   );
 
-  const { mutate: deleteAddress, isLoading: deleting } = useDeleteAddress({
+  const { mutate: deleteAddress, isPending: deleting } = useDeleteAddress({
     onSuccess: () => {
       showToast(SUCCESS_MESSAGES.ADDRESS.DELETED, "success");
       router.push(ROUTES.USER.ADDRESSES);

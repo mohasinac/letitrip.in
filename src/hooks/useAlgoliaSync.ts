@@ -9,7 +9,7 @@
  * not Server Actions.
  */
 
-import { useApiMutation } from "./useApiMutation";
+import { useMutation } from "@tanstack/react-query";
 import { adminService } from "@/services";
 
 export interface AlgoliaSyncResult {
@@ -20,7 +20,7 @@ export interface AlgoliaSyncResult {
  * Trigger full product index rebuild in Algolia.
  */
 export function useAlgoliaSyncProducts() {
-  return useApiMutation<AlgoliaSyncResult, void>({
+  return useMutation<AlgoliaSyncResult, Error, void>({
     mutationFn: () => adminService.algoliaSync(),
   });
 }
@@ -29,7 +29,7 @@ export function useAlgoliaSyncProducts() {
  * Trigger static pages / categories / blog / events index rebuild in Algolia.
  */
 export function useAlgoliaSyncPages() {
-  return useApiMutation<AlgoliaSyncResult, void>({
+  return useMutation<AlgoliaSyncResult, Error, void>({
     mutationFn: () => adminService.algoliaSyncPages(),
   });
 }

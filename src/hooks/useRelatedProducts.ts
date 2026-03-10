@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
@@ -49,10 +49,10 @@ export function useRelatedProducts(
 ) {
   const params = `pageSize=${limit}&filters=status==published,category==${encodeURIComponent(category)},isAuction==${isAuction}&sorts=-createdAt`;
 
-  return useApiQuery<RelatedProductsResponse>({
+  return useQuery<RelatedProductsResponse>({
     queryKey: ["related-products", category, excludeId, String(isAuction)],
     queryFn: () => productService.list(params),
     enabled: Boolean(category),
-    cacheTTL: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
   });
 }

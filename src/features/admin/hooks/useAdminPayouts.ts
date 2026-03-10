@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { adminService } from "@/services";
 import type { PayoutDocument } from "@/db/schema";
 
@@ -21,17 +21,18 @@ interface PayoutsResponse {
 export function useAdminPayouts(sieveParams: string) {
   const queryFnParam = sieveParams ? `?${sieveParams}` : "";
 
-  const query = useApiQuery<PayoutsResponse>({
+  const query = useQuery<PayoutsResponse>({
     queryKey: ["admin", "payouts", sieveParams],
     queryFn: () => adminService.listPayouts(queryFnParam),
   });
 
-  const updateMutation = useApiMutation<unknown, { id: string; data: unknown }>(
-    {
-      mutationFn: ({ id, data: update }) =>
-        adminService.updatePayout(id, update),
-    },
-  );
+  const updateMutation = useMutation<
+    unknown,
+    Error,
+    { id: string; data: unknown }
+  >({
+    mutationFn: ({ id, data: update }) => adminService.updatePayout(id, update),
+  });
 
   return { ...query, updateMutation };
 }

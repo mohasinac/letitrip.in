@@ -45,7 +45,7 @@ export function PromoCodeInput({
     setLoading(true);
     setErrorMsg(null);
     try {
-      const res = (await mutation.mutate({
+      const res = (await mutation.mutateAsync({
         code: trimmed,
         orderTotal: subtotal,
       })) as CouponValidateResponse;

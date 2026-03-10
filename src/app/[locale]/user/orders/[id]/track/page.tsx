@@ -2,50 +2,34 @@
  * Order Tracking Page
  *
  * Route: /user/orders/[id]/track
- * Thin orchestration: auth + data fetch → <OrderTrackingView>
+ * Thin orchestration: auth-gated by UserLayout — fetch order → <OrderTrackingView>
  */
 
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
-import { useAuth, useApiQuery } from "@/hooks";
-import { Spinner, Button, EmptyState } from "@/components";
-import { OrderTrackingView } from "@/features/user";
+import { Button, EmptyState, Spinner } from "@/components";
+import { OrderTrackingView, useOrderDetail } from "@/features/user";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { orderService } from "@/services";
 import { useTranslations } from "next-intl";
-import type { OrderDocument } from "@/db/schema";
 
 export default function OrderTrackPage() {
-  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const params = useParams();
   const orderId = params?.id as string;
   const tOrders = useTranslations("orders");
 
-  const { data, isLoading, error } = useApiQuery<{ data: OrderDocument }>({
-    queryKey: ["order-track", orderId],
-    queryFn: () => orderService.getById(orderId),
-    enabled: !!user && !authLoading && !!orderId,
-    cacheTTL: 30000,
-  });
-
-  const order = data?.data ?? null;
+  const { order, isLoading, error } = useOrderDetail(orderId);
 
   const { flex } = THEME_CONSTANTS;
 
-  if (authLoading || isLoading) {
+  if (isLoading) {
     return (
       <div className={`${flex.center} min-h-screen`}>
         <Spinner size="lg" />
       </div>
     );
-  }
-
-  if (!user) {
-    router.push(ROUTES.AUTH.LOGIN);
-    return null;
   }
 
   if (error || !order) {

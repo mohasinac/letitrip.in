@@ -51,7 +51,7 @@ export function UserAddressesView() {
     refetch,
   } = useAddresses();
 
-  const { mutate: deleteAddress, isLoading: deleting } = useDeleteAddress({
+  const { mutate: deleteAddress, isPending: deleting } = useDeleteAddress({
     onSuccess: () => {
       showSuccess(SUCCESS_MESSAGES.ADDRESS.DELETED);
       setDeleteId(null);

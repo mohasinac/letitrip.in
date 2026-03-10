@@ -74,7 +74,7 @@ function ShipOrderModal({ order, onClose, onShipped }: ShipOrderModalProps) {
     trackingUrl: "",
   });
 
-  const { mutate: shipOrder, isLoading } = useShipOrder(
+  const { mutate: shipOrder, isPending: isLoading } = useShipOrder(
     order!.id!,
     () => {
       showSuccess(SUCCESS_MESSAGES.SHIPPING.ORDER_SHIPPED);
@@ -354,7 +354,7 @@ function SellerOrdersContent() {
     [orders, selectedIds],
   );
 
-  const { mutate: requestBulkPayout, isLoading: isBulkLoading } =
+  const { mutate: requestBulkPayout, isPending: isBulkLoading } =
     useBulkRequestPayout(
       (res) => {
         const data = res as { requested: string[]; skipped: string[] };

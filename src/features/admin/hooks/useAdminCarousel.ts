@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { carouselService } from "@/services";
 import type { CarouselSlide } from "../components";
 
@@ -9,22 +9,24 @@ import type { CarouselSlide } from "../components";
  * Fetches the carousel slides list and exposes create, update, and delete mutations.
  */
 export function useAdminCarousel() {
-  const query = useApiQuery<{ slides: CarouselSlide[] }>({
+  const query = useQuery<{ slides: CarouselSlide[] }>({
     queryKey: ["carousel", "list"],
     queryFn: () => carouselService.list(),
   });
 
-  const createMutation = useApiMutation<unknown, unknown>({
+  const createMutation = useMutation<unknown, Error, unknown>({
     mutationFn: (data) => carouselService.create(data),
   });
 
-  const updateMutation = useApiMutation<unknown, { id: string; data: unknown }>(
-    {
-      mutationFn: ({ id, data }) => carouselService.update(id, data),
-    },
-  );
+  const updateMutation = useMutation<
+    unknown,
+    Error,
+    { id: string; data: unknown }
+  >({
+    mutationFn: ({ id, data }) => carouselService.update(id, data),
+  });
 
-  const deleteMutation = useApiMutation<unknown, string>({
+  const deleteMutation = useMutation<unknown, Error, string>({
     mutationFn: (id) => carouselService.delete(id),
   });
 

@@ -19,7 +19,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useApiMutation } from "./useApiMutation";
+import { useMutation } from "@tanstack/react-query";
 import { useAuthEvent } from "./useAuthEvent";
 import { authService, authEventService } from "@/services";
 import { ERROR_MESSAGES } from "@/constants";
@@ -84,7 +84,7 @@ export function useLogin(options?: {
   onSuccess?: () => void;
   onError?: (error: any) => void;
 }) {
-  return useApiMutation<any, LoginCredentials>({
+  return useMutation<any, Error, LoginCredentials>({
     mutationFn: async (credentials) => {
       // 1. Server-side login: validates credentials, creates session cookie, tracks metadata
       await authService.login({
@@ -201,7 +201,7 @@ export function useRegister(options?: {
   onSuccess?: (data: any) => void;
   onError?: (error: any) => void;
 }) {
-  return useApiMutation<any, RegisterData>({
+  return useMutation<any, Error, RegisterData>({
     mutationFn: async (data) => {
       // Server-side registration: Admin SDK creates user, stores profile, creates session, sends verification
       const response = await authService.register({
@@ -231,7 +231,7 @@ export function useVerifyEmail(options?: {
   onSuccess?: (data: any) => void;
   onError?: (error: any) => void;
 }) {
-  return useApiMutation<any, VerifyEmailData>({
+  return useMutation<any, Error, VerifyEmailData>({
     mutationFn: async ({ token }) => {
       // Apply the verification action code from the email link
       await applyEmailVerificationCode(token);
@@ -256,7 +256,7 @@ export function useResendVerification(options?: {
   onSuccess?: (data: any) => void;
   onError?: (error: any) => void;
 }) {
-  return useApiMutation<any, ResendVerificationData>({
+  return useMutation<any, Error, ResendVerificationData>({
     mutationFn: (data) => authService.sendVerification(data),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
@@ -272,7 +272,7 @@ export function useForgotPassword(options?: {
   onSuccess?: (data: any) => void;
   onError?: (error: any) => void;
 }) {
-  return useApiMutation<any, ForgotPasswordData>({
+  return useMutation<any, Error, ForgotPasswordData>({
     mutationFn: async (data) => {
       try {
         await firebaseResetPassword(data.email);
@@ -298,7 +298,7 @@ export function useResetPassword(options?: {
   onSuccess?: (data: any) => void;
   onError?: (error: any) => void;
 }) {
-  return useApiMutation<any, ResetPasswordData>({
+  return useMutation<any, Error, ResetPasswordData>({
     mutationFn: async (data) => {
       const { confirmPasswordResetWithToken } =
         await import("@/lib/firebase/auth-helpers");
@@ -318,7 +318,7 @@ export function useChangePassword(options?: {
   onSuccess?: (data: any) => void;
   onError?: (error: any) => void;
 }) {
-  return useApiMutation<any, ChangePasswordData>({
+  return useMutation<any, Error, ChangePasswordData>({
     mutationFn: async (data) => {
       const { reauthenticateWithPassword, getCurrentUser } =
         await import("@/lib/firebase/auth-helpers");

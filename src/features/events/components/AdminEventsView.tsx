@@ -93,7 +93,9 @@ export function AdminEventsView() {
       setIsBulkProcessing(true);
       try {
         await Promise.allSettled(
-          selectedIds.map((id) => changeStatusMutation.mutate({ id, status })),
+          selectedIds.map((id) =>
+            changeStatusMutation.mutateAsync({ id, status }),
+          ),
         );
         showSuccess(
           tActions("bulkSuccess", {
@@ -124,7 +126,7 @@ export function AdminEventsView() {
     setIsBulkProcessing(true);
     try {
       await Promise.allSettled(
-        selectedIds.map((id) => deleteMutation.mutate(id)),
+        selectedIds.map((id) => deleteMutation.mutateAsync(id)),
       );
       showSuccess(
         tActions("bulkSuccess", {
@@ -158,7 +160,7 @@ export function AdminEventsView() {
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
     try {
-      await deleteMutation.mutate(deleteTarget.id);
+      await deleteMutation.mutateAsync(deleteTarget.id);
     } catch {
       showError(t("confirmDelete"));
     }
@@ -307,7 +309,7 @@ export function AdminEventsView() {
           onClose={() => setDeleteTarget(null)}
           onConfirm={handleDelete}
           title={`${tActions("delete")} "${deleteTarget.title}"?`}
-          isDeleting={deleteMutation.isLoading}
+          isDeleting={deleteMutation.isPending}
         />
       )}
     </>

@@ -139,7 +139,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
 
   const handleApprove = async (review: Review) => {
     try {
-      await updateStatusMutation.mutate({
+      await updateStatusMutation.mutateAsync({
         id: review.id,
         data: { status: "approved" },
       });
@@ -159,7 +159,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
     const { review, reason } = rejectModal;
     if (!review) return;
     try {
-      await updateStatusMutation.mutate({
+      await updateStatusMutation.mutateAsync({
         id: review.id,
         data: { status: "rejected", rejectionReason: reason },
       });
@@ -180,7 +180,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
   const confirmDelete = async () => {
     if (!deleteConfirm) return;
     try {
-      await deleteMutation.mutate(deleteConfirm.id);
+      await deleteMutation.mutateAsync(deleteConfirm.id);
       await refetch();
       showToast(SUCCESS_MESSAGES.REVIEW.DELETED, "success");
       handleBackToList();
@@ -206,7 +206,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
     try {
       await Promise.all(
         pendingReviews.map((review) =>
-          updateStatusMutation.mutate({
+          updateStatusMutation.mutateAsync({
             id: review.id,
             data: { status: "approved" },
           }),

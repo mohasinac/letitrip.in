@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { storeService } from "@/services";
 import type {
   StoreDetail,
@@ -13,7 +13,7 @@ import type {
  * Fetches a single store by its storeSlug.
  */
 export function useStoreBySlug(storeSlug: string) {
-  return useApiQuery<StoreDetail>({
+  return useQuery<StoreDetail>({
     queryKey: ["stores", "detail", storeSlug],
     queryFn: () => storeService.getBySlug(storeSlug),
     enabled: !!storeSlug,
@@ -24,7 +24,7 @@ export function useStoreBySlug(storeSlug: string) {
  * Fetches the aggregated reviews for a store.
  */
 export function useStoreReviews(storeSlug: string) {
-  return useApiQuery<StoreReviewsData>({
+  return useQuery<StoreReviewsData>({
     queryKey: ["stores", "reviews", storeSlug],
     queryFn: () => storeService.getReviews(storeSlug),
     enabled: !!storeSlug,
@@ -36,7 +36,7 @@ export function useStoreReviews(storeSlug: string) {
  * @param params URLSearchParams string
  */
 export function useStoreProducts(storeSlug: string, params?: string) {
-  return useApiQuery<StoreProductsResponse>({
+  return useQuery<StoreProductsResponse>({
     queryKey: ["stores", "products", storeSlug, params ?? ""],
     queryFn: () => storeService.getProducts(storeSlug, params ?? ""),
     enabled: !!storeSlug,
@@ -48,7 +48,7 @@ export function useStoreProducts(storeSlug: string, params?: string) {
  * @param params URLSearchParams string
  */
 export function useStoreAuctions(storeSlug: string, params?: string) {
-  return useApiQuery<StoreAuctionsResponse>({
+  return useQuery<StoreAuctionsResponse>({
     queryKey: ["stores", "auctions", storeSlug, params ?? ""],
     queryFn: () => storeService.getAuctions(storeSlug, params ?? ""),
     enabled: !!storeSlug,

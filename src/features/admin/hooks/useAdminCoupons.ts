@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { couponService } from "@/services";
 import type { CouponDocument } from "@/db/schema";
 
@@ -17,7 +17,7 @@ interface CouponListMeta {
  * Exposes create, update, and delete mutations.
  */
 export function useAdminCoupons(sieveParams: string) {
-  const query = useApiQuery<{
+  const query = useQuery<{
     coupons: CouponDocument[];
     meta: CouponListMeta;
   }>({
@@ -25,17 +25,19 @@ export function useAdminCoupons(sieveParams: string) {
     queryFn: () => couponService.list(sieveParams),
   });
 
-  const createMutation = useApiMutation<unknown, unknown>({
+  const createMutation = useMutation<unknown, Error, unknown>({
     mutationFn: (payload) => couponService.create(payload),
   });
 
-  const updateMutation = useApiMutation<unknown, { id: string; data: unknown }>(
-    {
-      mutationFn: ({ id, data: update }) => couponService.update(id, update),
-    },
-  );
+  const updateMutation = useMutation<
+    unknown,
+    Error,
+    { id: string; data: unknown }
+  >({
+    mutationFn: ({ id, data: update }) => couponService.update(id, update),
+  });
 
-  const deleteMutation = useApiMutation<unknown, string>({
+  const deleteMutation = useMutation<unknown, Error, string>({
     mutationFn: (id) => couponService.delete(id),
   });
 

@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/contexts";
 import { useGuestCart } from "./useGuestCart";
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { cartService } from "@/services";
 
 /**
@@ -18,7 +18,7 @@ import { cartService } from "@/services";
 export function useCartCount(): number {
   const { user } = useAuth();
   const { count: guestCount } = useGuestCart();
-  const { data } = useApiQuery<{
+  const { data } = useQuery<{
     itemCount: number;
     cart: unknown;
     subtotal: number;

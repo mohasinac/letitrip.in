@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { adminService } from "@/services";
 import type { OrderDocument } from "@/db/schema";
 
@@ -20,7 +20,7 @@ interface OrderListMeta {
  * @param sieveParams - Full Sieve query string (filters + sorts + page + pageSize)
  */
 export function useAdminOrders(sieveParams: string) {
-  const query = useApiQuery<{
+  const query = useQuery<{
     orders: OrderDocument[];
     meta: OrderListMeta;
   }>({
@@ -28,8 +28,9 @@ export function useAdminOrders(sieveParams: string) {
     queryFn: () => adminService.listOrders(sieveParams),
   });
 
-  const updateMutation = useApiMutation<
+  const updateMutation = useMutation<
     OrderDocument,
+    Error,
     { id: string; data: unknown }
   >({
     mutationFn: ({ id, data }) => adminService.updateOrder(id, data),

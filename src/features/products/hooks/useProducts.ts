@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
@@ -43,7 +43,7 @@ interface UseProductsOptions {
  * `options.initialData` — server-prefetched first page; prevents initial client fetch.
  */
 export function useProducts(params?: string, options?: UseProductsOptions) {
-  const { data, isLoading, error, refetch } = useApiQuery<ProductsListResult>({
+  const { data, isLoading, error, refetch } = useQuery<ProductsListResult>({
     queryKey: ["products", params ?? ""],
     queryFn: () => productService.list(params),
     initialData: options?.initialData,

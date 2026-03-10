@@ -59,7 +59,7 @@ export function FeedbackEventSection({
       showError(`Please fill in: ${missing.join(", ")}`);
       return;
     }
-    await mutation.mutate({ formResponses: responses });
+    await mutation.mutateAsync({ formResponses: responses });
   };
 
   return (
@@ -111,8 +111,8 @@ export function FeedbackEventSection({
       <Button
         variant="primary"
         onClick={handleSubmit}
-        disabled={mutation.isLoading}
-        isLoading={mutation.isLoading}
+        disabled={mutation.isPending}
+        isLoading={mutation.isPending}
         className="w-full"
       >
         {tEvents("submit")}

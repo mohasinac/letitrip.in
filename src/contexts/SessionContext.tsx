@@ -32,7 +32,7 @@ import { ERROR_MESSAGES } from "@/constants";
 import { getCookie, hasCookie, deleteCookie } from "@/utils";
 import { logger } from "@/classes";
 import { sessionService, authService } from "@/services";
-import { invalidateQueries } from "@/hooks/useApiQuery";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Re-export for consumers that currently import SessionUser from here.
 export type { SessionUser } from "@/types/auth";
@@ -82,6 +82,7 @@ export function SessionProvider({
   const [sessionId, setSessionId] = useState<string | null>(
     initialUser?.sessionId ?? null,
   );
+  const queryClient = useQueryClient();
   const activityUpdateRef = useRef<NodeJS.Timeout | null>(null);
   const updateSessionActivityRef = useRef<(() => Promise<void>) | undefined>(
     undefined,
@@ -254,16 +255,14 @@ export function SessionProvider({
 
       // Clear the client-side query cache to prevent prior user data leaking
       // to any account that signs in next in the same browser tab.
-      invalidateQueries(
-        ["cart"],
-        ["wishlist"],
-        ["notifications"],
-        ["orders"],
-        ["profile"],
-        ["user"],
-        ["addresses"],
-        ["bids"],
-      );
+      void queryClient.invalidateQueries({ queryKey: ["cart"] });
+      void queryClient.invalidateQueries({ queryKey: ["wishlist"] });
+      void queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      void queryClient.invalidateQueries({ queryKey: ["orders"] });
+      void queryClient.invalidateQueries({ queryKey: ["profile"] });
+      void queryClient.invalidateQueries({ queryKey: ["user"] });
+      void queryClient.invalidateQueries({ queryKey: ["addresses"] });
+      void queryClient.invalidateQueries({ queryKey: ["bids"] });
 
       // Clear state immediately
       setUser(null);

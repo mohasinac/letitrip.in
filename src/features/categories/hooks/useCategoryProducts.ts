@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { categoryService, productService } from "@/services";
 import type { CategoryDocument, ProductDocument } from "@/db/schema";
 
@@ -59,12 +59,11 @@ export function useCategoryProducts(
     options;
 
   /* ---- Fetch category by slug ---- */
-  const { data: catData, isLoading: catLoading } =
-    useApiQuery<CategoryResponse>({
-      queryKey: ["categories", "slug", slug],
-      queryFn: () => categoryService.getBySlug(slug),
-      enabled: !!slug,
-    });
+  const { data: catData, isLoading: catLoading } = useQuery<CategoryResponse>({
+    queryKey: ["categories", "slug", slug],
+    queryFn: () => categoryService.getBySlug(slug),
+    enabled: !!slug,
+  });
 
   const category = catData?.data ?? null;
 
@@ -83,7 +82,7 @@ export function useCategoryProducts(
     data: prodData,
     isLoading: prodLoading,
     error,
-  } = useApiQuery<ProductsResponse>({
+  } = useQuery<ProductsResponse>({
     queryKey: ["products", "by-category", category?.id ?? "", cacheKey],
     queryFn: () => productService.list(productsParams!),
     enabled: !!productsParams,

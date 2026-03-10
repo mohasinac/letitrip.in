@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { eventService } from "@/services";
 import type { EventDocument } from "@/db/schema";
 
@@ -33,11 +33,11 @@ export function usePublicEvents({
   enabled = true,
   cacheTTL = 5 * 60 * 1000,
 }: UsePublicEventsOptions = {}) {
-  const { data, isLoading, error, refetch } = useApiQuery<EventsListResult>({
+  const { data, isLoading, error, refetch } = useQuery<EventsListResult>({
     queryKey: ["public-events", params],
     queryFn: () => eventService.list(params),
     enabled,
-    cacheTTL,
+    staleTime: cacheTTL,
   });
 
   return {

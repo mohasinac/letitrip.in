@@ -1,12 +1,16 @@
 "use client";
 
-import { useApiQuery, useApiMutation, useAuth, useMessage } from "@/hooks";
+import { useAuth, useMessage } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { sellerService } from "@/services";
 import { useTranslations } from "next-intl";
 import type { SellerPayoutDetails } from "@/db/schema";
 
 export type SafePayoutDetails = Omit<SellerPayoutDetails, "bankAccount"> & {
-  bankAccount?: Omit<NonNullable<SellerPayoutDetails["bankAccount"]>, "accountNumber">;
+  bankAccount?: Omit<
+    NonNullable<SellerPayoutDetails["bankAccount"]>,
+    "accountNumber"
+  >;
 };
 
 export interface SellerPayoutSettingsData {
@@ -36,14 +40,15 @@ export function useSellerPayoutSettings() {
   const t = useTranslations("sellerPayoutSettings");
 
   const { data, isLoading, error, refetch } =
-    useApiQuery<SellerPayoutSettingsData>({
+    useQuery<SellerPayoutSettingsData>({
       queryKey: ["seller-payout-settings"],
       queryFn: () => sellerService.getPayoutSettings(),
       enabled: !authLoading && !!user,
     });
 
-  const { mutate: updatePayoutSettings, isLoading: isSaving } = useApiMutation<
+  const { mutate: updatePayoutSettings, isPending: isSaving } = useMutation<
     SellerPayoutSettingsData,
+    Error,
     UpdatePayoutSettingsPayload
   >({
     mutationFn: (payload) => sellerService.updatePayoutSettings(payload),

@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { sellerService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
@@ -22,12 +22,11 @@ export interface SellerDashboardProductsResponse {
  * Returns all seller products to compute status-based counts.
  */
 export function useSellerDashboard(userId: string | undefined) {
-  const { data, isLoading, error } =
-    useApiQuery<SellerDashboardProductsResponse>({
-      queryKey: ["seller-products", userId ?? ""],
-      queryFn: () => sellerService.listProducts(userId!),
-      enabled: !!userId,
-    });
+  const { data, isLoading, error } = useQuery<SellerDashboardProductsResponse>({
+    queryKey: ["seller-products", userId ?? ""],
+    queryFn: () => sellerService.listProducts(userId!),
+    enabled: !!userId,
+  });
 
   return { productsData: data ?? null, isLoading, error };
 }

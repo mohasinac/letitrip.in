@@ -1,7 +1,7 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
-import { useApiMutation } from "./useApiMutation";
+import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { addressService } from "@/services";
 import { createAddressAction } from "@/actions";
 import type { AddressFormData } from "./useAddresses";
@@ -46,15 +46,16 @@ export function useAddressSelector(options?: {
     data: raw,
     isLoading,
     refetch,
-  } = useApiQuery<AddressesApiResponse>({
+  } = useQuery<AddressesApiResponse>({
     queryKey: ["user-addresses"],
     queryFn: () => addressService.list(),
   });
 
   const addresses: SavedAddress[] = raw?.data ?? raw?.items ?? [];
 
-  const { mutate: createAddress, isLoading: isSaving } = useApiMutation<
+  const { mutate: createAddress, isPending: isSaving } = useMutation<
     CreateAddressApiResponse,
+    Error,
     AddressFormData
   >({
     mutationFn: async (data) => {

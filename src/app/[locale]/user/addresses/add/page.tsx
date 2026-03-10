@@ -27,7 +27,7 @@ export default function AddAddressPage() {
     }
   }, [user, loading, router]);
 
-  const { mutate: createAddress, isLoading: saving } = useCreateAddress({
+  const { mutate: createAddress, isPending: saving } = useCreateAddress({
     onSuccess: () => {
       showToast(SUCCESS_MESSAGES.ADDRESS.CREATED, "success");
       router.push(ROUTES.USER.ADDRESSES);

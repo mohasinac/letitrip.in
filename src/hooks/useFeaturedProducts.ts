@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
@@ -22,7 +22,7 @@ const MIN_COUNT = 12;
  * slots with the latest published products (deduped).
  */
 export function useFeaturedProducts() {
-  return useApiQuery<PaginatedResult>({
+  return useQuery<PaginatedResult>({
     queryKey: ["products", "featured"],
     queryFn: async () => {
       const promotedRes = (await productService.list(
@@ -51,6 +51,6 @@ export function useFeaturedProducts() {
         total: merged.length,
       };
     },
-    cacheTTL: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }

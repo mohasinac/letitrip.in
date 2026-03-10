@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiMutation } from "./useApiMutation";
+import { useMutation } from "@tanstack/react-query";
 import {
   voteFaqAction,
   type VoteFaqInput,
@@ -19,7 +19,7 @@ import {
  * mutation.mutate({ faqId, vote: "helpful" });
  */
 export function useFaqVote() {
-  return useApiMutation<VoteFaqResult, VoteFaqInput>({
+  return useMutation<VoteFaqResult, Error, VoteFaqInput>({
     mutationFn: (data) => voteFaqAction(data),
   });
 }

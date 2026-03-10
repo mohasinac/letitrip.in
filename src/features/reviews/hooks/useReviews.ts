@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { reviewService } from "@/services";
 import type { ReviewDocument } from "@/db/schema";
 
@@ -21,7 +21,7 @@ export interface ReviewsApiResponse {
  * `queryParams` is a pre-built URLSearchParams query string from the component.
  */
 export function useReviews(queryParams: string) {
-  return useApiQuery<ReviewsApiResponse>({
+  return useQuery<ReviewsApiResponse>({
     queryKey: ["reviews", "all", queryParams],
     queryFn: () => reviewService.list(queryParams),
   });

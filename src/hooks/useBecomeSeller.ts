@@ -13,7 +13,7 @@
  * ```
  */
 
-import { useApiMutation } from "./useApiMutation";
+import { useMutation } from "@tanstack/react-query";
 import { useMessage } from "./useMessage";
 import { becomeSellerAction } from "@/actions";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
@@ -26,7 +26,7 @@ export interface BecomeSellerResult {
 export function useBecomeSeller() {
   const { showSuccess, showError } = useMessage();
 
-  return useApiMutation<BecomeSellerResult, void>({
+  return useMutation<BecomeSellerResult, Error, void>({
     mutationFn: () => becomeSellerAction(),
     onSuccess: (data) => {
       if (!data?.alreadySeller) {

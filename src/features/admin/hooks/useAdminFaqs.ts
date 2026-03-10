@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { faqService } from "@/services";
 import type { FAQ } from "../components";
 
@@ -18,22 +18,24 @@ interface FAQsListResponse {
  * Exposes create, update, and delete mutations.
  */
 export function useAdminFaqs(paramsString: string) {
-  const query = useApiQuery<FAQsListResponse | FAQ[]>({
+  const query = useQuery<FAQsListResponse | FAQ[]>({
     queryKey: ["faqs", "list", paramsString],
     queryFn: () => faqService.list(paramsString),
   });
 
-  const createMutation = useApiMutation<unknown, unknown>({
+  const createMutation = useMutation<unknown, Error, unknown>({
     mutationFn: (data) => faqService.create(data),
   });
 
-  const updateMutation = useApiMutation<unknown, { id: string; data: unknown }>(
-    {
-      mutationFn: ({ id, data }) => faqService.update(id, data),
-    },
-  );
+  const updateMutation = useMutation<
+    unknown,
+    Error,
+    { id: string; data: unknown }
+  >({
+    mutationFn: ({ id, data }) => faqService.update(id, data),
+  });
 
-  const deleteMutation = useApiMutation<unknown, string>({
+  const deleteMutation = useMutation<unknown, Error, string>({
     mutationFn: (id) => faqService.delete(id),
   });
 

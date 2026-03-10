@@ -32,10 +32,10 @@ export function FAQHelpfulButtons({
   const { showError } = useMessage();
 
   const handleVote = async (isHelpful: boolean) => {
-    if (mutation.isLoading || userVote) return;
+    if (mutation.isPending || userVote) return;
 
     try {
-      await mutation.mutate({
+      await mutation.mutateAsync({
         faqId,
         vote: isHelpful ? "helpful" : "not-helpful",
       });
@@ -67,7 +67,7 @@ export function FAQHelpfulButtons({
         <Button
           variant="ghost"
           onClick={() => handleVote(true)}
-          disabled={mutation.isLoading || userVote !== null}
+          disabled={mutation.isPending || userVote !== null}
           className={`flex-1 ${flex.center} gap-2 p-4 rounded-lg transition-all ${
             userVote === "helpful"
               ? "bg-green-600 text-white"
@@ -103,7 +103,7 @@ export function FAQHelpfulButtons({
         <Button
           variant="ghost"
           onClick={() => handleVote(false)}
-          disabled={mutation.isLoading || userVote !== null}
+          disabled={mutation.isPending || userVote !== null}
           className={`flex-1 ${flex.center} gap-2 p-4 rounded-lg transition-all ${
             userVote === "not-helpful"
               ? "bg-red-600 text-white"

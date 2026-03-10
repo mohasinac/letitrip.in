@@ -54,7 +54,7 @@ export function PollVotingSection({
 
   const handleSubmit = async () => {
     if (selected.length === 0) return;
-    await mutation.mutate({
+    await mutation.mutateAsync({
       pollVotes: selected,
       pollComment: pollConfig.allowComment && comment ? comment : undefined,
     });
@@ -147,10 +147,10 @@ export function PollVotingSection({
       <Button
         variant="primary"
         onClick={handleSubmit}
-        disabled={selected.length === 0 || mutation.isLoading}
+        disabled={selected.length === 0 || mutation.isPending}
         className="w-full"
       >
-        {mutation.isLoading ? tLoading("default") : tEvents("vote")}
+        {mutation.isPending ? tLoading("default") : tEvents("vote")}
       </Button>
     </div>
   );

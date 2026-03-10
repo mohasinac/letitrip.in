@@ -157,9 +157,9 @@ function SellerProductsContent() {
     }
     try {
       if (drawerMode === "create") {
-        await createMutation.mutate(formProduct);
+        await createMutation.mutateAsync(formProduct);
       } else {
-        await updateMutation.mutate(
+        await updateMutation.mutateAsync(
           formProduct as Partial<AdminProduct> & { id: string },
         );
       }
@@ -178,7 +178,7 @@ function SellerProductsContent() {
   const handleDeleteConfirm = async () => {
     if (!deleteTarget) return;
     try {
-      await deleteMutation.mutate(deleteTarget.id);
+      await deleteMutation.mutateAsync(deleteTarget.id);
       showSuccess(SUCCESS_MESSAGES.PRODUCT.DELETED);
       setDeleteTarget(null);
       refetch();
@@ -190,7 +190,7 @@ function SellerProductsContent() {
   // ── Bulk action handlers ─────────────────────────────────────────
   const handleBulkDelete = useCallback(async () => {
     const results = await Promise.allSettled(
-      selectedIds.map((id) => deleteMutation.mutate(id)),
+      selectedIds.map((id) => deleteMutation.mutateAsync(id)),
     );
     const succeeded = results.filter((r) => r.status === "fulfilled").length;
     if (succeeded === selectedIds.length) {
@@ -213,7 +213,7 @@ function SellerProductsContent() {
     async (status: string) => {
       const results = await Promise.allSettled(
         selectedIds.map((id) =>
-          updateMutation.mutate({ id, status } as Partial<AdminProduct> & {
+          updateMutation.mutateAsync({ id, status } as Partial<AdminProduct> & {
             id: string;
           }),
         ),
@@ -252,7 +252,7 @@ function SellerProductsContent() {
   const products = data?.items ?? [];
   const totalPages = data?.totalPages ?? 1;
   const totalItems = data?.total ?? 0;
-  const isSaving = createMutation.isLoading || updateMutation.isLoading;
+  const isSaving = createMutation.isPending || updateMutation.isPending;
 
   // ── Active filter chips ──────────────────────────────────────────────
   const activeFiltersSlot = statusParam ? (
@@ -413,7 +413,7 @@ function SellerProductsContent() {
           onConfirm={handleDeleteConfirm}
           title={t("deleteProduct")}
           message={t("deleteListingConfirm")}
-          isDeleting={deleteMutation.isLoading}
+          isDeleting={deleteMutation.isPending}
         />
       )}
     </>

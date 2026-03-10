@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { orderService } from "@/services";
 import type { OrderDocument } from "@/db/schema";
 
@@ -9,7 +9,7 @@ import type { OrderDocument } from "@/db/schema";
  * Wraps `orderService.getById(orderId)` for the checkout success view.
  */
 export function useOrder(orderId: string | null) {
-  const { data, isLoading, error } = useApiQuery<{ data: OrderDocument }>({
+  const { data, isLoading, error } = useQuery<{ data: OrderDocument }>({
     queryKey: ["order", orderId ?? ""],
     queryFn: () => orderService.getById(orderId!),
     enabled: !!orderId,

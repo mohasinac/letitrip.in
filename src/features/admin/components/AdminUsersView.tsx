@@ -149,7 +149,7 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
       message: `${t("confirmRoleChange")} ${newRole}?`,
       onConfirm: async () => {
         try {
-          await updateUserMutation.mutate({
+          await updateUserMutation.mutateAsync({
             uid: user.uid,
             data: { role: newRole },
           });
@@ -174,7 +174,7 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
       message: `${banAction.charAt(0).toUpperCase() + banAction.slice(1)} ${user.displayName || user.email}?`,
       onConfirm: async () => {
         try {
-          await updateUserMutation.mutate({
+          await updateUserMutation.mutateAsync({
             uid: user.uid,
             data: { disabled: !user.disabled },
           });
@@ -205,7 +205,7 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
       requireTypedConfirmation: true,
       onConfirm: async () => {
         try {
-          await deleteUserMutation.mutate(user.uid);
+          await deleteUserMutation.mutateAsync(user.uid);
           await refetch();
           showToast(SUCCESS_MESSAGES.ADMIN.USER_DELETED, "success");
           handleCloseDrawer();

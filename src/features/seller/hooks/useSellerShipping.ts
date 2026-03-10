@@ -1,12 +1,16 @@
 "use client";
 
-import { useApiQuery, useApiMutation, useAuth, useMessage } from "@/hooks";
+import { useAuth, useMessage } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { sellerService } from "@/services";
 import { useTranslations } from "next-intl";
 import type { SellerShippingConfig, SellerPickupAddress } from "@/db/schema";
 
 export interface SellerShippingData {
-  shippingConfig: Omit<SellerShippingConfig, "shiprocketToken" | "shiprocketTokenExpiry"> & {
+  shippingConfig: Omit<
+    SellerShippingConfig,
+    "shiprocketToken" | "shiprocketTokenExpiry"
+  > & {
     isTokenValid?: boolean;
   };
 }
@@ -20,7 +24,10 @@ export type UpdateShippingPayload =
   | {
       method: "shiprocket";
       shiprocketCredentials?: { email: string; password: string };
-      pickupAddress?: Omit<SellerPickupAddress, "isVerified" | "shiprocketAddressId">;
+      pickupAddress?: Omit<
+        SellerPickupAddress,
+        "isVerified" | "shiprocketAddressId"
+      >;
     };
 
 export interface VerifyPickupOtpPayload {
@@ -37,14 +44,15 @@ export function useSellerShipping() {
   const { showSuccess, showError } = useMessage();
   const t = useTranslations("sellerShipping");
 
-  const { data, isLoading, error, refetch } = useApiQuery<SellerShippingData>({
+  const { data, isLoading, error, refetch } = useQuery<SellerShippingData>({
     queryKey: ["seller-shipping"],
     queryFn: () => sellerService.getShipping(),
     enabled: !authLoading && !!user,
   });
 
-  const { mutate: updateShipping, isLoading: isSaving } = useApiMutation<
+  const { mutate: updateShipping, isPending: isSaving } = useMutation<
     SellerShippingData,
+    Error,
     UpdateShippingPayload
   >({
     mutationFn: (payload) => sellerService.updateShipping(payload),
@@ -57,8 +65,9 @@ export function useSellerShipping() {
     },
   });
 
-  const { mutate: verifyOtp, isLoading: isVerifying } = useApiMutation<
+  const { mutate: verifyOtp, isPending: isVerifying } = useMutation<
     { message: string },
+    Error,
     VerifyPickupOtpPayload
   >({
     mutationFn: (payload) => sellerService.verifyPickupOtp(payload),

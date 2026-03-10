@@ -34,7 +34,8 @@ export function PlaceBidForm({
   const tLoading = useTranslations("loading");
   const { showSuccess, showError } = useMessage();
   const [bidAmount, setBidAmount] = useState<string>("");
-  const { mutate: placeBidMutation, isLoading: isSubmitting } = usePlaceBid();
+  const { mutateAsync: placeBidMutation, isPending: isSubmitting } =
+    usePlaceBid();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 

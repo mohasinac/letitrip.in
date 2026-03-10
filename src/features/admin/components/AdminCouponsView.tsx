@@ -149,10 +149,13 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
 
     try {
       if (drawerMode === "create") {
-        await createMutation.mutate(payload);
+        await createMutation.mutateAsync(payload);
         showSuccess(SUCCESS_MESSAGES.COUPON.CREATED);
       } else if (drawerMode === "edit" && selectedCoupon?.id) {
-        await updateMutation.mutate({ id: selectedCoupon.id, data: payload });
+        await updateMutation.mutateAsync({
+          id: selectedCoupon.id,
+          data: payload,
+        });
         showSuccess(SUCCESS_MESSAGES.COUPON.UPDATED);
       }
       handleCloseDrawer();
@@ -179,7 +182,7 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
   const handleDeleteConfirm = useCallback(async () => {
     if (!couponToDelete) return;
     try {
-      await deleteMutation.mutate(couponToDelete.id);
+      await deleteMutation.mutateAsync(couponToDelete.id);
       showSuccess(SUCCESS_MESSAGES.COUPON.DELETED);
       setCouponToDelete(null);
       refetch();
@@ -189,7 +192,7 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
   }, [couponToDelete, deleteMutation, showSuccess, showError, refetch]);
 
   const isSaving = (drawerMode === "create" ? createMutation : updateMutation)
-    .isLoading;
+    .isPending;
 
   const { columns } = getCouponTableColumns(handleEdit, (coupon) =>
     setCouponToDelete(coupon),
@@ -302,7 +305,7 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
         onConfirm={handleDeleteConfirm}
         title={t("delete")}
         message={`Delete coupon "${couponToDelete?.code}"? This cannot be undone.`}
-        isDeleting={deleteMutation.isLoading}
+        isDeleting={deleteMutation.isPending}
       />
     </div>
   );

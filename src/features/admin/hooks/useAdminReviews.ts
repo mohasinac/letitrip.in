@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { reviewService } from "@/services";
 import type { Review } from "../components";
 
@@ -17,18 +17,20 @@ interface ReviewListMeta {
  * Exposes update-status and delete mutations.
  */
 export function useAdminReviews(sieveParams: string) {
-  const query = useApiQuery<{ reviews: Review[]; meta: ReviewListMeta }>({
+  const query = useQuery<{ reviews: Review[]; meta: ReviewListMeta }>({
     queryKey: ["admin", "reviews", sieveParams],
     queryFn: () => reviewService.listAdmin(sieveParams),
   });
 
-  const updateMutation = useApiMutation<unknown, { id: string; data: unknown }>(
-    {
-      mutationFn: ({ id, data }) => reviewService.update(id, data),
-    },
-  );
+  const updateMutation = useMutation<
+    unknown,
+    Error,
+    { id: string; data: unknown }
+  >({
+    mutationFn: ({ id, data }) => reviewService.update(id, data),
+  });
 
-  const deleteMutation = useApiMutation<unknown, string>({
+  const deleteMutation = useMutation<unknown, Error, string>({
     mutationFn: (id) => reviewService.delete(id),
   });
 

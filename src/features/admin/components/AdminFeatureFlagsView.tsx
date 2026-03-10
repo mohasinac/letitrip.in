@@ -124,7 +124,7 @@ export function AdminFeatureFlagsView() {
 
   const handleSave = async () => {
     try {
-      await updateMutation.mutate({ featureFlags, payment });
+      await updateMutation.mutateAsync({ featureFlags, payment });
       await refetch();
       showToast(t("settingsSaved"), "success");
     } catch {
@@ -132,7 +132,7 @@ export function AdminFeatureFlagsView() {
     }
   };
 
-  const isSaving = updateMutation.isLoading;
+  const isSaving = updateMutation.isPending;
 
   if (isLoading) {
     return (

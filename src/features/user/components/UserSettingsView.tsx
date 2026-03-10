@@ -40,7 +40,7 @@ export function UserSettingsView() {
     }
   }, [profile, loading, router, showToast]);
 
-  const { mutate: changePassword, isLoading: isChangingPassword } =
+  const { mutate: changePassword, isPending: isChangingPassword } =
     useChangePassword({
       onSuccess: () => {
         showToast(SUCCESS_MESSAGES.USER.PASSWORD_CHANGED, "success");
@@ -53,7 +53,7 @@ export function UserSettingsView() {
       },
     });
 
-  const { mutate: resendVerification, isLoading: isSendingVerification } =
+  const { mutate: resendVerification, isPending: isSendingVerification } =
     useResendVerification({
       onSuccess: () => {
         showToast(SUCCESS_MESSAGES.EMAIL.VERIFICATION_SENT, "success");

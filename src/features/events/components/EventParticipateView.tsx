@@ -105,7 +105,7 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
       showError(t("fillInRequired", { fields: missing.join(", ") }));
       return;
     }
-    await mutation.mutate({ formResponses: responses });
+    await mutation.mutateAsync({ formResponses: responses });
   };
 
   const renderField = (field: SurveyFormField) => {
@@ -241,11 +241,11 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
 
         <Button
           onClick={handleSubmit}
-          isLoading={mutation.isLoading}
-          disabled={mutation.isLoading}
+          isLoading={mutation.isPending}
+          disabled={mutation.isPending}
           className="w-full"
         >
-          {mutation.isLoading ? tLoading("default") : t("submit")}
+          {mutation.isPending ? tLoading("default") : t("submit")}
         </Button>
       </Card>
     </div>

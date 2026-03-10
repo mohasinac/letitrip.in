@@ -1,7 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateCartItemAction, removeFromCartAction } from "@/actions";
 import { cartService } from "@/services";
 import type { CartDocument } from "@/db/schema";
@@ -13,7 +12,7 @@ interface CartApiResponse {
 }
 
 export function useCart(enabled: boolean) {
-  return useApiQuery<CartApiResponse>({
+  return useQuery<CartApiResponse>({
     queryKey: ["cart"],
     queryFn: () => cartService.get(),
     enabled,
@@ -25,7 +24,7 @@ export function useUpdateCartItem(
   onError?: () => void,
 ) {
   const queryClient = useQueryClient();
-  return useApiMutation<unknown, { itemId: string; quantity: number }>({
+  return useMutation<unknown, Error, { itemId: string; quantity: number }>({
     mutationFn: ({ itemId, quantity }) =>
       updateCartItemAction(itemId, { quantity }),
     onSuccess: () => {
@@ -41,7 +40,7 @@ export function useRemoveCartItem(
   onError?: () => void,
 ) {
   const queryClient = useQueryClient();
-  return useApiMutation<unknown, { itemId: string }>({
+  return useMutation<unknown, Error, { itemId: string }>({
     mutationFn: ({ itemId }) => removeFromCartAction(itemId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });

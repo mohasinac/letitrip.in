@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiMutation } from "@/hooks";
+import { useMutation } from "@tanstack/react-query";
 import { sendContactAction, type SendContactInput } from "@/actions";
 
 /**
@@ -8,7 +8,7 @@ import { sendContactAction, type SendContactInput } from "@/actions";
  * Wraps `sendContactAction` (Server Action) as a `useApiMutation` for the ContactForm.
  */
 export function useContactSubmit() {
-  return useApiMutation<{ sent: boolean }, SendContactInput>({
+  return useMutation<{ sent: boolean }, Error, SendContactInput>({
     mutationFn: (data) => sendContactAction(data),
   });
 }

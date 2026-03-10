@@ -1,7 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
-import { useApiMutation } from "./useApiMutation";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { notificationService } from "@/services";
 import {
   markNotificationReadAction,
@@ -22,19 +21,20 @@ interface NotificationsResponse {
  * @param limit - Number of notifications to fetch (default: 10)
  */
 export function useNotifications(limit = 10) {
-  const { data, isLoading, refetch } = useApiQuery<NotificationsResponse>({
+  const { data, isLoading, refetch } = useQuery<NotificationsResponse>({
     queryKey: ["notifications", "list", String(limit)],
     queryFn: () => notificationService.list(`limit=${limit}`),
-    cacheTTL: 30_000, // 30 seconds
+    staleTime: 30_000, // 30 seconds
   });
 
-  const { mutate: markRead } = useApiMutation<unknown, string>({
+  const { mutate: markRead } = useMutation<unknown, Error, string>({
     mutationFn: (id: string) => markNotificationReadAction(id),
     onSuccess: () => refetch(),
   });
 
-  const { mutate: markAllRead, isLoading: isMarkingAll } = useApiMutation<
+  const { mutate: markAllRead, isPending: isMarkingAll } = useMutation<
     unknown,
+    Error,
     void
   >({
     mutationFn: () => markAllNotificationsReadAction().then(() => undefined),

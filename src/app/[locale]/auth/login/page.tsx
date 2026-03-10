@@ -1,11 +1,9 @@
 /**
  * Login Page
  *
- * Thin page � all form logic lives in LoginForm (src/features/auth).
+ * Thin page — all form logic lives in LoginForm (src/features/auth).
  * Wrapped in Suspense because LoginForm uses useSearchParams().
  */
-
-"use client";
 
 import { Suspense } from "react";
 import { Spinner } from "@/components";

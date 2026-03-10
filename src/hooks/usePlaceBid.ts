@@ -1,7 +1,6 @@
 "use client";
 
-import { useApiMutation } from "./useApiMutation";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { placeBidAction } from "@/actions";
 import type { BidDocument } from "@/db/schema";
 
@@ -24,7 +23,7 @@ interface PlaceBidPayload {
 export function usePlaceBid() {
   const queryClient = useQueryClient();
 
-  return useApiMutation<BidDocument, PlaceBidPayload>({
+  return useMutation<BidDocument, Error, PlaceBidPayload>({
     mutationFn: async (data) => {
       const result = await placeBidAction(data);
       return result.bid;

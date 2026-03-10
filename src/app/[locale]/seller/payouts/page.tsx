@@ -7,62 +7,24 @@
 
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "@/i18n/navigation";
 import { Heading, Text } from "@/components";
 import {
   SellerPayoutStats,
   SellerPayoutRequestForm,
   SellerPayoutHistoryTable,
+  useSellerPayouts,
 } from "@/features/seller";
-import type { PayoutSummary, PayoutRecord } from "@/features/seller";
-import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useAuth, useApiQuery, useApiMutation, useMessage } from "@/hooks";
-import { sellerService } from "@/services";
+import { useMessage } from "@/hooks";
 
-const { themed, spacing, typography, flex } = THEME_CONSTANTS;
-
-interface PayoutsResponse {
-  summary: PayoutSummary;
-  payouts: PayoutRecord[];
-}
+const { themed, spacing, typography } = THEME_CONSTANTS;
 
 export default function SellerPayoutsPage() {
-  const { user, loading: authLoading } = useAuth();
-  const router = useRouter();
   const { showSuccess, showError } = useMessage();
   const t = useTranslations("sellerPayouts");
-  const tLoading = useTranslations("loading");
-
-  useEffect(() => {
-    if (!authLoading && !user) router.replace(ROUTES.AUTH.LOGIN);
-  }, [user, authLoading, router]);
-
-  const { data, isLoading, refetch } = useApiQuery<PayoutsResponse>({
-    queryKey: ["seller-payouts", user?.uid ?? ""],
-    queryFn: () => sellerService.listPayouts(),
-    enabled: !!user,
-    cacheTTL: 0,
-  });
-
-  const { mutate: requestPayout, isLoading: submitting } = useApiMutation<
-    unknown,
-    Record<string, unknown>
-  >({
-    mutationFn: (payload) => sellerService.requestPayout(payload),
-  });
-
-  if (authLoading || !user) {
-    return (
-      <div className={`${themed.bgPrimary} min-h-screen ${flex.center}`}>
-        <Text variant="secondary">{tLoading("default")}</Text>
-      </div>
-    );
-  }
-
-  const summary = data?.summary;
-  const payouts = data?.payouts ?? [];
+  const { summary, payouts, isLoading, refetch, requestPayout, submitting } =
+    useSellerPayouts();
 
   const handleRequestPayout = async (payload: Record<string, unknown>) => {
     try {

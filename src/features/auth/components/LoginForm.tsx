@@ -47,7 +47,7 @@ export function LoginForm() {
   });
   const [error, setError] = useState<string | null>(null);
 
-  const { mutate: login, isLoading: loginLoading } = useLogin({
+  const { mutate: login, isPending: loginLoading } = useLogin({
     onSuccess: () => router.push(callbackUrl),
     onError: (err) => setError(err.message || ERROR_MESSAGES.AUTH.LOGIN_FAILED),
   });

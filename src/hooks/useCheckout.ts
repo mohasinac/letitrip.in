@@ -1,7 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { addressService, cartService, checkoutService } from "@/services";
 import type { AddressDocument, CartDocument } from "@/db/schema";
 
@@ -63,18 +62,19 @@ interface UseCheckoutOptions {
 export function useCheckout(options?: UseCheckoutOptions) {
   const queryClient = useQueryClient();
 
-  const addressQuery = useApiQuery<AddressListResponse>({
+  const addressQuery = useQuery<AddressListResponse>({
     queryKey: ["addresses"],
     queryFn: () => addressService.list(),
   });
 
-  const cartQuery = useApiQuery<CartApiResponse>({
+  const cartQuery = useQuery<CartApiResponse>({
     queryKey: ["cart"],
     queryFn: () => cartService.get(),
   });
 
-  const placeCodOrderMutation = useApiMutation<
+  const placeCodOrderMutation = useMutation<
     PlaceOrderResponse,
+    Error,
     PlaceOrderPayload
   >({
     mutationFn: (data) => checkoutService.placeOrder(data),
@@ -88,15 +88,17 @@ export function useCheckout(options?: UseCheckoutOptions) {
   });
 
   // Razorpay mutations — must stay client-side (browser Razorpay SDK)
-  const createPaymentOrderMutation = useApiMutation<
+  const createPaymentOrderMutation = useMutation<
     CreateRazorpayOrderResponse,
+    Error,
     CreateRazorpayOrderPayload
   >({
     mutationFn: (data) => checkoutService.createPaymentOrder(data),
   });
 
-  const verifyPaymentMutation = useApiMutation<
+  const verifyPaymentMutation = useMutation<
     PlaceOrderResponse,
+    Error,
     VerifyPaymentPayload
   >({
     mutationFn: (data) => checkoutService.verifyPayment(data),

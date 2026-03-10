@@ -12,9 +12,7 @@
  * ```
  */
 
-import { useApiQuery } from "./useApiQuery";
-import { useApiMutation } from "./useApiMutation";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { sessionService } from "@/services";
 import { updateProfileAction, type UpdateProfileInput } from "@/actions";
 import type { UserDocument } from "@/db/schema";
@@ -47,12 +45,10 @@ export function useProfile(options?: {
   onSuccess?: (data: UserProfile) => void;
   onError?: (error: Error) => void;
 }) {
-  return useApiQuery<UserProfile>({
+  return useQuery<UserProfile>({
     queryKey: ["profile"],
     queryFn: () => sessionService.getProfile(),
     enabled: options?.enabled,
-    onSuccess: options?.onSuccess,
-    onError: options?.onError,
   });
 }
 
@@ -65,7 +61,7 @@ export function useUpdateProfile(options?: {
 }) {
   const queryClient = useQueryClient();
 
-  return useApiMutation<UserDocument, UpdateProfileInput>({
+  return useMutation<UserDocument, Error, UpdateProfileInput>({
     mutationFn: (data) => updateProfileAction(data),
     onSuccess: async (data) => {
       // Invalidate profile cache so the updated data is re-fetched

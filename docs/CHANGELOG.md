@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage C4: Native TanStack Query v5 — adapter hooks deleted
+
+### Removed
+
+- **`src/hooks/useApiQuery.ts`** — Thin adapter deleted; all consumers use `useQuery` from `@tanstack/react-query` directly.
+- **`src/hooks/useApiMutation.ts`** — Thin adapter deleted; all consumers use `useMutation` from `@tanstack/react-query` directly.
+- **`src/hooks/index.ts`** — Removed `useApiQuery`, `useApiMutation`, and `invalidateQueries` adapter exports.
+
+### Changed
+
+- **All `src/features/admin/hooks/*.ts`** (17 files) — Migrated from `useApiQuery`/`useApiMutation` to `useQuery`/`useMutation`. Fixed generic order to `useMutation<TData, Error, TVars>`. Replaced `cacheTTL` with `staleTime`.
+- **All `src/features/*/hooks/*.ts`** (36 feature hook files) — Same migration. `onSuccess`/`onError` removed from `useQuery` calls (moved to `onSettled` where needed).
+- **All `src/hooks/*.ts`** (non-adapter hooks) — Same migration: `useAuth`, `useAddresses`, `useRipCoins`, `useAlgoliaSync`, `useCategorySelector`, `useCheckout`, `useAddToCart`, etc.
+- **`src/contexts/SessionContext.tsx`** — Replaced `invalidateQueries` helper with `useQueryClient().invalidateQueries({ queryKey: [...] })` calls.
+- **`src/hooks/useAdminStats.ts`** — `refresh: refetch` wrapped as `refresh: () => { void refetch(); }` to match `MouseEventHandler` signature.
+- **`src/hooks/useAddToCart.ts`** — `TError` generic changed from `Error` to `ApiClientError` to match `onError` callback type.
+- **`src/hooks/useRipCoins.ts`** — Added `razorpayOrderId: string` to `useVerifyRipCoinPurchase` mutation variables type.
+- **All mutation-consuming components** (~40 files) — `isLoading` → `isPending` in destructuring patterns; `mutate` → `mutateAsync` where return values are used (BuyRipCoinsModal, RipCoinsPurchaseView, CheckoutView, PlaceBidForm, AdminSiteView, AvatarUpload).
+- **`src/features/admin/components/AdminPayoutsView.tsx`** — Added `id: selectedPayout!.id` to `updateMutation.mutateAsync` call.
+- **`src/features/admin/components/AdminProductsView.tsx`** — Added `id: editingProduct.id!` to `updateMutation.mutateAsync` call.
+- **`src/features/admin/components/AdminSectionsView.tsx`** — Added `id: editingSection.id!` to `updateMutation.mutateAsync` call.
+
+---
+
 ## [Unreleased] — Stage E8: SSR — promotions page converted; profile page confirmed SSR
 
 ### Added

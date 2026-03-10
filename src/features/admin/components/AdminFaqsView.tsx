@@ -192,10 +192,13 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
     if (!editingFAQ) return;
     try {
       if (drawerMode === "create") {
-        await createMutation.mutate(editingFAQ);
+        await createMutation.mutateAsync(editingFAQ);
         showSuccess(SUCCESS_MESSAGES.FAQ.CREATED);
       } else {
-        await updateMutation.mutate({ id: editingFAQ.id!, data: editingFAQ });
+        await updateMutation.mutateAsync({
+          id: editingFAQ.id!,
+          data: editingFAQ,
+        });
         showSuccess(SUCCESS_MESSAGES.FAQ.UPDATED);
       }
       await refetch();
@@ -208,7 +211,7 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
   const handleConfirmDelete = async () => {
     if (!editingFAQ?.id) return;
     try {
-      await deleteMutation.mutate(editingFAQ.id);
+      await deleteMutation.mutateAsync(editingFAQ.id);
       showSuccess(SUCCESS_MESSAGES.FAQ.DELETED);
       await refetch();
       handleCloseDrawer();

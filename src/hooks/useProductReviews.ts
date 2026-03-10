@@ -1,7 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
-import { useApiMutation } from "./useApiMutation";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { reviewService } from "@/services";
 
 interface ReviewsResponseMeta {
@@ -26,7 +25,7 @@ interface ReviewsResponse {
  * @param pageSize  - Reviews per page (default: 10)
  */
 export function useProductReviews(productId: string, page = 1, pageSize = 10) {
-  return useApiQuery<ReviewsResponse>({
+  return useQuery<ReviewsResponse>({
     queryKey: ["reviews", productId, String(page)],
     queryFn: () => reviewService.listByProduct(productId, page, pageSize),
     enabled: Boolean(productId),
@@ -44,7 +43,7 @@ export function useCreateReview(
   onSuccess?: () => void,
   onError?: (err: { status?: number; message?: string }) => void,
 ) {
-  return useApiMutation<unknown, CreateReviewInput>({
+  return useMutation<unknown, Error, CreateReviewInput>({
     mutationFn: (data) => reviewService.create(data),
     onSuccess,
     onError,

@@ -57,7 +57,7 @@ export function RegisterForm() {
     text: string;
   } | null>(null);
 
-  const { mutate: register, isLoading: registerLoading } = useRegister({
+  const { mutate: register, isPending: registerLoading } = useRegister({
     onSuccess: () => {
       setMessage({
         type: "success",

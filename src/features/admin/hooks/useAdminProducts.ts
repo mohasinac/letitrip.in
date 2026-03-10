@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { adminService } from "@/services";
 import type { AdminProduct } from "../components";
 
@@ -17,7 +17,7 @@ interface ProductListMeta {
  * Exposes create, update, and delete mutations.
  */
 export function useAdminProducts(sieveParams: string) {
-  const query = useApiQuery<{
+  const query = useQuery<{
     products: AdminProduct[];
     meta: ProductListMeta;
   }>({
@@ -25,17 +25,19 @@ export function useAdminProducts(sieveParams: string) {
     queryFn: () => adminService.listAdminProducts(sieveParams),
   });
 
-  const createMutation = useApiMutation<unknown, unknown>({
+  const createMutation = useMutation<unknown, Error, unknown>({
     mutationFn: (data) => adminService.createAdminProduct(data),
   });
 
-  const updateMutation = useApiMutation<unknown, { id: string; data: unknown }>(
-    {
-      mutationFn: ({ id, data }) => adminService.updateAdminProduct(id, data),
-    },
-  );
+  const updateMutation = useMutation<
+    unknown,
+    Error,
+    { id: string; data: unknown }
+  >({
+    mutationFn: ({ id, data }) => adminService.updateAdminProduct(id, data),
+  });
 
-  const deleteMutation = useApiMutation<unknown, string>({
+  const deleteMutation = useMutation<unknown, Error, string>({
     mutationFn: (id) => adminService.deleteAdminProduct(id),
   });
 

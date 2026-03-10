@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { productService, bidService } from "@/services";
 import type { ProductDocument, BidDocument } from "@/db/schema";
 
@@ -24,14 +24,14 @@ interface BidsResponse {
  * const { productQuery, product, bidsQuery, bids } = useAuctionDetail(id);
  */
 export function useAuctionDetail(id: string) {
-  const productQuery = useApiQuery<ProductResponse>({
+  const productQuery = useQuery<ProductResponse>({
     queryKey: ["product", id],
     queryFn: () => productService.getById(id),
   });
 
   const product = productQuery.data?.data ?? null;
 
-  const bidsQuery = useApiQuery<BidsResponse>({
+  const bidsQuery = useQuery<BidsResponse>({
     queryKey: ["bids", id],
     queryFn: () => bidService.listByProduct(id),
     enabled: !!product?.isAuction,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { categoryService } from "@/services";
 import type { CategoryDocument } from "@/db/schema";
 
@@ -34,7 +34,7 @@ export function useCategoryDetail(
     data: catData,
     isLoading: catLoading,
     error: catError,
-  } = useApiQuery<CategoryResponse>({
+  } = useQuery<CategoryResponse>({
     queryKey: ["categories", "slug", slug],
     queryFn: () => categoryService.getBySlug(slug),
     enabled: !!slug,
@@ -47,7 +47,7 @@ export function useCategoryDetail(
 
   /* ---- Fetch direct children of this category ---- */
   const { data: childrenData, isLoading: childrenLoading } =
-    useApiQuery<ChildrenResponse>({
+    useQuery<ChildrenResponse>({
       queryKey: ["categories", "children", category?.id ?? ""],
       queryFn: () => categoryService.getChildren(category!.id),
       enabled: !!category?.id,

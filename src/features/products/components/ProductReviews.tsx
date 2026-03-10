@@ -195,7 +195,7 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
   const [formError, setFormError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
-  const { mutate, isLoading } = useCreateReview(
+  const { mutate, isPending: isLoading } = useCreateReview(
     () => {
       setSubmitted(true);
       showSuccess(t("reviewFormSuccess"));

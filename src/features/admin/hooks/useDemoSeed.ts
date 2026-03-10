@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useApiQuery, useApiMutation } from "@/hooks";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS } from "@/constants";
 
@@ -55,17 +55,18 @@ export function useDemoSeed() {
   );
 
   // GET current counts — re-runs after each successful operation
-  const statusQuery = useApiQuery<{ collections: SeedCollectionStatus[] }>({
+  const statusQuery = useQuery<{ collections: SeedCollectionStatus[] }>({
     queryKey: ["demo", "seed", "status"],
     queryFn: () =>
       apiClient.get<{ collections: SeedCollectionStatus[] }>(
         API_ENDPOINTS.DEMO.SEED_STATUS,
       ),
-    cacheTTL: 0, // always fresh
+    staleTime: 0, // always fresh
   });
 
-  const seedMutation = useApiMutation<
+  const seedMutation = useMutation<
     SeedOperationResult,
+    Error,
     { action: "load" | "delete"; collections?: SeedCollectionName[] }
   >({
     mutationFn: (vars) =>
@@ -88,7 +89,7 @@ export function useDemoSeed() {
   const run = useCallback(
     (action: "load" | "delete", collections?: SeedCollectionName[]) => {
       setActionResult(null);
-      return seedMutation.mutate({ action, collections });
+      return seedMutation.mutateAsync({ action, collections });
     },
     [seedMutation],
   );
@@ -109,7 +110,7 @@ export function useDemoSeed() {
 
     // Mutation
     run,
-    isLoading: seedMutation.isLoading,
+    isLoading: seedMutation.isPending,
     lastAction,
     actionResult,
     clearResult: () => setActionResult(null),

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { categoryService } from "@/services";
 import type { CategoryDocument } from "@/db/schema";
 
@@ -11,10 +11,10 @@ import type { CategoryDocument } from "@/db/schema";
  * Returns mapped { value, label } options ready for FilterFacetSection.
  */
 export function useBrands() {
-  const { data, isLoading } = useApiQuery<CategoryDocument[]>({
+  const { data, isLoading } = useQuery<CategoryDocument[]>({
     queryKey: ["categories", "brands", "all"],
     queryFn: () => categoryService.listBrands(100),
-    cacheTTL: 15 * 60 * 1000, // 15 minutes
+    staleTime: 15 * 60 * 1000, // 15 minutes
   });
 
   const brands = useMemo(() => data ?? [], [data]);

@@ -46,7 +46,7 @@ export function ResetPasswordView() {
 
   const {
     mutate: resetPassword,
-    isLoading,
+    isPending: isLoading,
     error,
   } = useResetPassword({
     onSuccess: () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { blogService } from "@/services";
 import type { BlogPostDocument } from "@/db/schema";
 
@@ -16,7 +16,7 @@ interface BlogPostsResult {
  * change triggers a new fetch.
  */
 export function useBlogPosts(params?: string) {
-  const { data, isLoading, error, refetch } = useApiQuery<BlogPostsResult>({
+  const { data, isLoading, error, refetch } = useQuery<BlogPostsResult>({
     queryKey: ["blog", params ?? ""],
     queryFn: () => blogService.list(params),
   });

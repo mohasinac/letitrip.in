@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
@@ -38,7 +38,7 @@ export interface PreOrdersListResult {
  * `params` is a pre-built query string produced by `useUrlTable`.
  */
 export function usePreOrders(params?: string) {
-  const { data, isLoading, error, refetch } = useApiQuery<PreOrdersListResult>({
+  const { data, isLoading, error, refetch } = useQuery<PreOrdersListResult>({
     queryKey: ["pre-orders", params ?? ""],
     queryFn: () => productService.listPreOrders(params),
   });

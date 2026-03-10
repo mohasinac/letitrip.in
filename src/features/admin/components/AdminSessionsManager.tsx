@@ -70,7 +70,7 @@ export function AdminSessionsManager() {
       message: t("confirmRevokeMessage"),
       onConfirm: async () => {
         try {
-          await revokeSession.mutate({ sessionId });
+          await revokeSession.mutateAsync({ sessionId });
           showToast(SUCCESS_MESSAGES.ADMIN.SESSION_REVOKED, "success");
           refetch();
         } catch (error) {
@@ -91,7 +91,7 @@ export function AdminSessionsManager() {
       message: t("confirmRevokeAllMessage", { userEmail }),
       onConfirm: async () => {
         try {
-          await revokeUserSessions.mutate({ userId });
+          await revokeUserSessions.mutateAsync({ userId });
           showToast(SUCCESS_MESSAGES.ADMIN.SESSIONS_REVOKED, "success");
           refetch();
         } catch (error) {
@@ -183,7 +183,7 @@ export function AdminSessionsManager() {
                   size="sm"
                   variant="ghost"
                   onClick={() => handleRevokeSession(session.id)}
-                  disabled={revokeSession.isLoading}
+                  disabled={revokeSession.isPending}
                 >
                   {t("revoke")}
                 </Button>
@@ -196,7 +196,7 @@ export function AdminSessionsManager() {
                       session.user?.email || "this user",
                     )
                   }
-                  disabled={revokeUserSessions.isLoading}
+                  disabled={revokeUserSessions.isPending}
                 >
                   {t("revokeAll")}
                 </Button>

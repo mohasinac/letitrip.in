@@ -76,7 +76,7 @@ export default function Sidebar({
   const handleSignOut = async () => {
     try {
       // Backend logout - clears session cookie and revokes tokens
-      await logoutMutation.mutate();
+      await logoutMutation.mutateAsync();
 
       // Close sidebar first for better UX
       onClose();

@@ -211,9 +211,9 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
     if (!editingProduct) return;
     try {
       if (drawerMode === "create") {
-        await createMutation.mutate(editingProduct);
+        await createMutation.mutateAsync(editingProduct);
       } else {
-        await updateMutation.mutate({
+        await updateMutation.mutateAsync({
           id: editingProduct.id!,
           data: editingProduct,
         });
@@ -233,7 +233,7 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
   const handleConfirmDelete = async () => {
     if (!editingProduct?.id) return;
     try {
-      await deleteMutation.mutate(editingProduct.id);
+      await deleteMutation.mutateAsync(editingProduct.id);
       await refetch();
       showSuccess(SUCCESS_MESSAGES.PRODUCT.DELETED);
       handleCloseDrawer();

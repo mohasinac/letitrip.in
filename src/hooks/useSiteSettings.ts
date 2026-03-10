@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "./useApiQuery";
+import { useQuery } from "@tanstack/react-query";
 import { siteSettingsService } from "@/services";
 
 /**
@@ -12,9 +12,9 @@ import { siteSettingsService } from "@/services";
  * const { data: settings } = useSiteSettings<{ backgroundConfig: BackgroundConfig }>();
  */
 export function useSiteSettings<T = unknown>() {
-  return useApiQuery<T>({
+  return useQuery<T>({
     queryKey: ["site-settings"],
     queryFn: () => siteSettingsService.get() as Promise<T>,
-    cacheTTL: 10 * 60 * 1000, // 10 minutes
+    staleTime: 10 * 60 * 1000, // 10 minutes
   });
 }

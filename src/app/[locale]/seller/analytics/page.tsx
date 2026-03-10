@@ -7,59 +7,24 @@
 
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "@/i18n/navigation";
 import { Spinner, Heading, Text } from "@/components";
 import {
   SellerAnalyticsStats,
   SellerRevenueChart,
   SellerTopProducts,
+  useSellerAnalytics,
 } from "@/features/seller";
-import type {
-  SellerAnalyticsSummary,
-  MonthEntry,
-  TopProduct,
-} from "@/features/seller";
-import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useAuth, useApiQuery } from "@/hooks";
-import { sellerService } from "@/services";
-import { hasAnyRole } from "@/helpers";
 
 const { themed, spacing, typography, flex } = THEME_CONSTANTS;
 
-interface AnalyticsResponse {
-  summary: SellerAnalyticsSummary;
-  revenueByMonth: MonthEntry[];
-  topProducts: TopProduct[];
-}
-
 export default function SellerAnalyticsPage() {
-  const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
   const t = useTranslations("sellerAnalytics");
+  const { summary, revenueByMonth, topProducts, isLoading } =
+    useSellerAnalytics();
 
-  useEffect(() => {
-    if (
-      !authLoading &&
-      (!user || !hasAnyRole(user.role, ["seller", "admin"]))
-    ) {
-      router.push(ROUTES.SELLER.DASHBOARD);
-    }
-  }, [user, authLoading, router]);
-
-  const { data, isLoading } = useApiQuery<AnalyticsResponse>({
-    queryKey: ["seller-analytics", user?.uid ?? ""],
-    queryFn: () => sellerService.getAnalytics(),
-    enabled: !!user && hasAnyRole(user.role, ["seller", "admin"]),
-    cacheTTL: 5 * 60 * 1000,
-  });
-
-  const summary = data?.summary;
-  const revenueByMonth = data?.revenueByMonth ?? [];
-  const topProducts = data?.topProducts ?? [];
-
-  if (authLoading || (!user && !authLoading)) {
+  if (isLoading) {
     return (
       <div className={`${flex.center} min-h-[50vh]`}>
         <Spinner size="lg" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { blogService } from "@/services";
 import type { BlogPostDocument } from "@/db/schema";
 
@@ -17,7 +17,7 @@ export interface BlogListResult {
  * when there aren't enough featured ones to fill the section.
  */
 export function useBlogArticles() {
-  return useApiQuery<BlogListResult>({
+  return useQuery<BlogListResult>({
     queryKey: ["blog", "featured"],
     queryFn: async () => {
       const featuredRes = (await blogService.getFeatured(
@@ -40,6 +40,6 @@ export function useBlogArticles() {
 
       return { ...featuredRes, posts: [...featured, ...filler] };
     },
-    cacheTTL: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
   });
 }
