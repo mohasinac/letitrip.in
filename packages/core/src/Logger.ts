@@ -22,17 +22,24 @@ export interface LoggerOptions {
   enableConsole?: boolean;
   enableStorage?: boolean;
   /**
-   * URL to POST error log entries. Replaces the previous `@/constants`
-   * dependency. Set to your `/api/logs/write` route.
+   * URL to POST error log entries. Set to your `/api/logs/write` route.
    */
   logFileUrl?: string;
+  /**
+   * @deprecated Prefer `logFileUrl`. When `true` and `logFileUrl` is not set,
+   * defaults to `/api/logs/write` for backward compatibility with the
+   * previous app-coupled Logger implementation.
+   */
+  enableFileLogging?: boolean;
   maxEntries?: number;
 }
 
 export class Logger {
   private static instance: Logger;
   private logs: LogEntry[] = [];
-  private options: Required<Omit<LoggerOptions, "logFileUrl">> & {
+  private options: Required<
+    Omit<LoggerOptions, "logFileUrl" | "enableFileLogging">
+  > & {
     logFileUrl?: string;
   };
   private levelPriority: Record<LogLevel, number> = {
@@ -43,11 +50,15 @@ export class Logger {
   };
 
   private constructor(options?: LoggerOptions) {
+    // `enableFileLogging: true` is a backward-compat alias for logFileUrl.
+    const fileUrl =
+      options?.logFileUrl ??
+      (options?.enableFileLogging ? "/api/logs/write" : undefined);
     this.options = {
       minLevel: options?.minLevel ?? "debug",
       enableConsole: options?.enableConsole ?? true,
       enableStorage: options?.enableStorage ?? false,
-      logFileUrl: options?.logFileUrl,
+      logFileUrl: fileUrl,
       maxEntries: options?.maxEntries ?? 1000,
     };
   }

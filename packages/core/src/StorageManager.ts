@@ -162,3 +162,6 @@ export class StorageManager {
     return result;
   }
 }
+
+/** Default StorageManager instance (empty prefix) */
+export const storageManager = StorageManager.getInstance("");

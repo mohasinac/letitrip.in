@@ -11,11 +11,11 @@ export type { LogLevel, LogEntry, LoggerOptions } from "./Logger";
 export { Queue } from "./Queue";
 export type { QueueOptions, Task } from "./Queue";
 
-export { StorageManager } from "./StorageManager";
+export { StorageManager, storageManager } from "./StorageManager";
 export type { StorageType, StorageOptions } from "./StorageManager";
 
 export { EventBus, eventBus } from "./EventBus";
 export type { EventSubscription } from "./EventBus";
 
-export { CacheManager } from "./CacheManager";
+export { CacheManager, cacheManager } from "./CacheManager";
 export type { CacheOptions, CacheEntry } from "./CacheManager";

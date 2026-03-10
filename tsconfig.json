@@ -19,7 +19,17 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@lir/core": ["./packages/core/src"],
+      "@lir/core/*": ["./packages/core/src/*"],
+      "@lir/react": ["./packages/react/src"],
+      "@lir/react/*": ["./packages/react/src/*"],
+      "@lir/ui": ["./packages/ui/src"],
+      "@lir/ui/*": ["./packages/ui/src/*"],
+      "@lir/http": ["./packages/http/src"],
+      "@lir/http/*": ["./packages/http/src/*"],
+      "@lir/next": ["./packages/next/src"],
+      "@lir/next/*": ["./packages/next/src/*"]
     }
   },
   "include": [
@@ -29,5 +39,14 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "src/sw.ts", "functions", "**/__tests__/**", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
+  "exclude": [
+    "node_modules",
+    "src/sw.ts",
+    "functions",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
 }

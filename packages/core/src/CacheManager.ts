@@ -80,3 +80,6 @@ export class CacheManager {
     return cleaned;
   }
 }
+
+/** Default shared CacheManager singleton */
+export const cacheManager = CacheManager.getInstance();

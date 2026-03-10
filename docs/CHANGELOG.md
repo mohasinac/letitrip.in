@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage F4 complete: @lir/\* workspace packages wired into the app
+
+### Added
+
+- **`tsconfig.json`** — 10 path aliases added (`@lir/core`, `@lir/core/*`, `@lir/react`, `@lir/react/*`, `@lir/ui/*`, `@lir/http/*`, `@lir/next/*`) pointing to `packages/*/src`. Enables TypeScript to resolve `@lir/*` imports to source without building.
+- **`next.config.js`** — `transpilePackages: ["@lir/core", "@lir/react", "@lir/ui", "@lir/http", "@lir/next"]` added so webpack processes the package TypeScript sources.
+- **`packages/core/src/Logger.ts`** — Added `enableFileLogging?: boolean` to `LoggerOptions` as backward-compat alias for `logFileUrl`. When `true` and `logFileUrl` is absent, defaults to `/api/logs/write`.
+- **`packages/core/src/StorageManager.ts`** — Added `export const storageManager = StorageManager.getInstance("")` singleton for backward-compat.
+- **`packages/core/src/CacheManager.ts`** — Added `export const cacheManager = CacheManager.getInstance()` singleton.
+- **`packages/core/src/EventBus.ts`** — Changed `EventCallback` from `unknown[]` to `any[]` params for backward-compat with app-style typed callbacks.
+- **`packages/core/src/index.ts`** — Now exports `storageManager` and `cacheManager` singletons.
+
+### Changed
+
+- **`src/classes/Logger.ts`** — Converted to 2-line re-export from `@lir/core`. Old 204-line implementation removed.
+- **`src/classes/Queue.ts`** — Converted to 2-line re-export from `@lir/core`. Old 132-line implementation removed.
+- **`src/classes/StorageManager.ts`** — Converted to 2-line re-export from `@lir/core`. Full implementation removed.
+- **`src/classes/EventBus.ts`** — Converted to 2-line re-export from `@lir/core`. Full implementation removed.
+- **`src/classes/CacheManager.ts`** — Converted to 2-line re-export from `@lir/core`. Full implementation removed.
+- **`src/classes/index.ts`** — Simplified barrel: now `export * from "@lir/core"`.
+- **`src/hooks/useMediaQuery.ts`** — Converted to 1-line re-export from `@lir/react`.
+- **`src/hooks/useBreakpoint.ts`** — Converted to 1-line re-export from `@lir/react`.
+- **`src/hooks/useClickOutside.ts`** — Converted to 2-line re-export from `@lir/react`.
+- **`src/hooks/useKeyPress.ts`** — Converted to 2-line re-export from `@lir/react`.
+- **`src/hooks/useLongPress.ts`** — Converted to 1-line re-export from `@lir/react`.
+- **`src/hooks/useGesture.ts`** — Converted to 2-line re-export from `@lir/react`. `nowMs()` dependency removed (package uses `Date.now()` directly).
+- **`src/hooks/useSwipe.ts`** — Converted to 2-line re-export from `@lir/react`. `nowMs()` dependency removed.
+- **`src/hooks/useCamera.ts`** — Converted to 2-line re-export from `@lir/react`.
+- **`src/hooks/usePullToRefresh.ts`** — Converted to 2-line re-export from `@lir/react`.
+- **`src/hooks/useCountdown.ts`** — Converted to 2-line re-export from `@lir/react`. `nowMs()` dependency removed.
+
+---
+
 ## [Unreleased] — Stage G1 complete: All pure-passthrough service methods migrated to Server Actions
 
 ### Changed

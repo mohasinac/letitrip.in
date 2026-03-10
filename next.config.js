@@ -62,6 +62,17 @@ const nextConfig = {
     },
   },
 
+  // Allow Next.js webpack to transpile workspace packages (@lir/*).
+  // These packages resolve via tsconfig paths to packages/*/src/ TypeScript
+  // source — not pre-compiled dist — so webpack must transform them.
+  transpilePackages: [
+    "@lir/core",
+    "@lir/react",
+    "@lir/ui",
+    "@lir/http",
+    "@lir/next",
+  ],
+
   // Turbopack is used for `next dev --turbopack` only.
   // Production builds use webpack via `next build --webpack` because Turbopack
   // has a chunk-generation bug in Next.js 16 with large deeply-nested `as const`

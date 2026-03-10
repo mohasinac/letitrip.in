@@ -1,11 +1,6 @@
 /**
- * Classes Barrel Export
+ * Classes Barrel Export — re-exports from @lir/core
  *
- * Centralized export for all class-based modules
+ * All implementations now live in packages/core/src/.
  */
-
-export * from "./CacheManager";
-export * from "./StorageManager";
-export * from "./Logger";
-export * from "./EventBus";
-export * from "./Queue";
+export * from "@lir/core";
