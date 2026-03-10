@@ -7,17 +7,11 @@
  * Fetches the seller's products and then reviews for each product.
  */
 
-import { NextRequest } from "next/server";
 import { productRepository, reviewRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
-import { successResponse, errorResponse } from "@/lib/api-response";
-import { applyRateLimit, RateLimitPresets } from "@/lib/security/rate-limit";
+import { successResponse } from "@/lib/api-response";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
 import { serverLogger } from "@/lib/server-logger";
-import { ERROR_MESSAGES, UI_LABELS } from "@/constants";
-
-interface RouteContext {
-  params: Promise<{ userId: string }>;
-}
+import { createApiHandler } from "@/lib/api/api-handler";
 
 /**
  * GET /api/profile/[userId]/reviews
@@ -25,24 +19,11 @@ interface RouteContext {
  * Returns up to 10 most recent approved reviews across all seller's products.
  * No auth required — public endpoint.
  */
-export async function GET(_request: NextRequest, context: RouteContext) {
-  try {
-    // Rate limiting — public read endpoint
-    const rateLimitResult = await applyRateLimit(
-      _request,
-      RateLimitPresets.API,
-    );
-    if (!rateLimitResult.success) {
-      return errorResponse(UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED, 429);
-    }
+export const GET = createApiHandler<never, { userId: string }>({
+  rateLimit: RateLimitPresets.API,
+  handler: async ({ params }) => {
+    const { userId } = params!;
 
-    const { userId } = await context.params;
-
-    if (!userId) {
-      return errorResponse(ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD, 400);
-    }
-
-    // Fetch seller's products
     const sellerProducts = await productRepository.findBySeller(userId);
     const publishedProducts = sellerProducts.filter(
       (p) => p.status === "published",
@@ -57,22 +38,19 @@ export async function GET(_request: NextRequest, context: RouteContext) {
       });
     }
 
-    // Fetch approved reviews for each product in parallel (limit to 20 products)
     const productSlice = publishedProducts.slice(0, 20);
     const reviewArrays = await Promise.all(
       productSlice.map((p) => reviewRepository.findApprovedByProduct(p.id)),
     );
 
-    // Flatten and sort by createdAt desc
     const allReviews = reviewArrays
       .flat()
       .sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       )
-      .slice(0, 10); // Return 10 most recent
+      .slice(0, 10);
 
-    // Calculate aggregates across ALL reviews (not just the slice)
     const allReviewsForStats = reviewArrays.flat();
     const totalReviews = allReviewsForStats.length;
     const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } as Record<
@@ -90,7 +68,6 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 
     const averageRating = totalReviews > 0 ? ratingSum / totalReviews : 0;
 
-    // Attach product info to each review for display
     const productMap = new Map(publishedProducts.map((p) => [p.id, p]));
     const reviewsWithProduct = allReviews.map((review) => ({
       ...review,
@@ -111,7 +88,5 @@ export async function GET(_request: NextRequest, context: RouteContext) {
       totalReviews,
       ratingDistribution,
     });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

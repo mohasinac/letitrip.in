@@ -1,27 +1,21 @@
-import { NextRequest } from "next/server";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse } from "@/lib/api-response";
-import { ValidationError, NotFoundError } from "@/lib/errors";
+import { NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { storeRepository } from "@/repositories";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
 
 /**
  * GET /api/stores/[storeSlug]
  * Public endpoint — returns a single store's public profile by storeSlug.
  */
-export async function GET(
-  _request: NextRequest,
-  context: { params: Promise<{ storeSlug: string }> },
-) {
-  try {
-    const { storeSlug } = await context.params;
-
-    if (!storeSlug) {
-      throw new ValidationError(ERROR_MESSAGES.VALIDATION.FAILED);
-    }
+export const GET = createApiHandler<never, { storeSlug: string }>({
+  rateLimit: RateLimitPresets.API,
+  handler: async ({ params }) => {
+    const { storeSlug } = params!;
 
     const storeDoc = await storeRepository.findBySlug(storeSlug);
-
     if (!storeDoc || storeDoc.status !== "active" || !storeDoc.isPublic) {
       throw new NotFoundError(ERROR_MESSAGES.USER.NOT_FOUND);
     }
@@ -53,7 +47,5 @@ export async function GET(
     };
 
     return successResponse({ store });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

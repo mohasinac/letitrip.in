@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { adminService } from "@/services";
+import { adminUpdatePayoutAction } from "@/actions";
 import type { PayoutDocument } from "@/db/schema";
 
 interface PayoutsResponse {
@@ -31,7 +32,11 @@ export function useAdminPayouts(sieveParams: string) {
     Error,
     { id: string; data: unknown }
   >({
-    mutationFn: ({ id, data: update }) => adminService.updatePayout(id, update),
+    mutationFn: ({ id, data: update }) =>
+      adminUpdatePayoutAction(
+        id,
+        update as Parameters<typeof adminUpdatePayoutAction>[1],
+      ),
   });
 
   return { ...query, updateMutation };

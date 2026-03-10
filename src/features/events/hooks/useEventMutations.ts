@@ -2,6 +2,13 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { eventService } from "@/services";
+import {
+  createEventAction,
+  updateEventAction,
+  deleteEventAction,
+  changeEventStatusAction,
+  adminUpdateEventEntryAction,
+} from "@/actions";
 import type {
   EventDocument,
   EventCreateInput,
@@ -12,7 +19,10 @@ import type {
 // --- Create ---
 export function useCreateEvent(onSuccess?: (event: EventDocument) => void) {
   return useMutation<EventDocument, Error, EventCreateInput>({
-    mutationFn: (data) => eventService.adminCreate(data),
+    mutationFn: (data) =>
+      createEventAction(
+        data as unknown as Parameters<typeof createEventAction>[0],
+      ) as Promise<EventDocument>,
     onSuccess,
   });
 }
@@ -25,7 +35,11 @@ interface UpdateEventVars {
 
 export function useUpdateEvent(onSuccess?: (event: EventDocument) => void) {
   return useMutation<EventDocument, Error, UpdateEventVars>({
-    mutationFn: ({ id, data }) => eventService.adminUpdate(id, data),
+    mutationFn: ({ id, data }) =>
+      updateEventAction(
+        id,
+        data as Parameters<typeof updateEventAction>[1],
+      ) as Promise<EventDocument>,
     onSuccess,
   });
 }
@@ -33,7 +47,7 @@ export function useUpdateEvent(onSuccess?: (event: EventDocument) => void) {
 // --- Delete ---
 export function useDeleteEvent(onSuccess?: () => void) {
   return useMutation<void, Error, string>({
-    mutationFn: (id) => eventService.adminDelete(id),
+    mutationFn: (id) => deleteEventAction(id),
     onSuccess,
   });
 }
@@ -48,7 +62,8 @@ export function useChangeEventStatus(
   onSuccess?: (event: EventDocument) => void,
 ) {
   return useMutation<EventDocument, Error, ChangeStatusVars>({
-    mutationFn: ({ id, status }) => eventService.adminSetStatus(id, status),
+    mutationFn: ({ id, status }) =>
+      changeEventStatusAction({ id, status }) as Promise<EventDocument>,
     onSuccess,
   });
 }
@@ -64,7 +79,9 @@ interface ReviewEntryVars {
 export function useReviewEntry(onSuccess?: () => void) {
   return useMutation<void, Error, ReviewEntryVars>({
     mutationFn: ({ eventId, entryId, reviewStatus, reviewNote }) =>
-      eventService.adminUpdateEntry(eventId, entryId, {
+      adminUpdateEventEntryAction({
+        eventId,
+        entryId,
         reviewStatus,
         reviewNote,
       }),

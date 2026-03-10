@@ -2,6 +2,11 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { adminService } from "@/services";
+import {
+  createBlogPostAction,
+  updateBlogPostAction,
+  deleteBlogPostAction,
+} from "@/actions";
 import type { BlogPostDocument } from "@/db/schema";
 
 interface BlogListMeta {
@@ -35,7 +40,8 @@ export function useAdminBlog(sieveParams: string) {
   });
 
   const createMutation = useMutation<BlogPostDocument, Error, unknown>({
-    mutationFn: (data) => adminService.createBlogPost(data),
+    mutationFn: (data) =>
+      createBlogPostAction(data as Parameters<typeof createBlogPostAction>[0]),
   });
 
   const updateMutation = useMutation<
@@ -43,11 +49,15 @@ export function useAdminBlog(sieveParams: string) {
     Error,
     { id: string; data: unknown }
   >({
-    mutationFn: ({ id, data }) => adminService.updateBlogPost(id, data),
+    mutationFn: ({ id, data }) =>
+      updateBlogPostAction(
+        id,
+        data as Parameters<typeof updateBlogPostAction>[1],
+      ),
   });
 
   const deleteMutation = useMutation<void, Error, string>({
-    mutationFn: (id) => adminService.deleteBlogPost(id),
+    mutationFn: (id) => deleteBlogPostAction(id),
   });
 
   return { ...query, createMutation, updateMutation, deleteMutation };

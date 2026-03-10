@@ -28,10 +28,6 @@ export const categoryService = {
   getById: (id: string) =>
     apiClient.get(API_ENDPOINTS.CATEGORIES.GET_BY_ID(id)),
 
-  /** Update a category (admin only) */
-  update: (id: string, data: unknown) =>
-    apiClient.patch(API_ENDPOINTS.CATEGORIES.UPDATE(id), data),
-
   /** Get a single category by slug (public) */
   getBySlug: (slug: string) =>
     apiClient.get(
@@ -43,7 +39,4 @@ export const categoryService = {
     apiClient.get(
       `${API_ENDPOINTS.CATEGORIES.LIST}?parentId=${encodeURIComponent(parentId)}`,
     ),
-
-  /** Delete a category (admin only) */
-  delete: (id: string) => apiClient.delete(API_ENDPOINTS.CATEGORIES.DELETE(id)),
 };

@@ -7,20 +7,15 @@
  * - Updates the lastMessage preview in Firestore.
  */
 
-import { NextRequest } from "next/server";
-import { requireAuth } from "@/lib/firebase/auth-server";
+import { z } from "zod";
 import { chatRepository } from "@/repositories";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, FEATURE_FLAGS } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import {
-  ValidationError,
-  NotFoundError,
-  AuthorizationError,
-} from "@/lib/errors";
-import { z } from "zod";
+import { NotFoundError, AuthorizationError } from "@/lib/errors";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
 
 const MESSAGE_MAX_LENGTH = 1000;
 
@@ -28,41 +23,34 @@ const messageSchema = z.object({
   message: z.string().min(1).max(MESSAGE_MAX_LENGTH),
 });
 
-interface RouteParams {
-  params: Promise<{ chatId: string }>;
-}
+type ChatIdParams = { chatId: string };
 
-export async function POST(request: NextRequest, { params }: RouteParams) {
-  try {
+export const POST = createApiHandler<
+  (typeof messageSchema)["_output"],
+  ChatIdParams
+>({
+  auth: true,
+  rateLimit: RateLimitPresets.API,
+  schema: messageSchema,
+  handler: async ({ user, body, params, request }) => {
     if (!FEATURE_FLAGS.CHAT_ENABLED)
       return errorResponse("Chat is temporarily unavailable", 503);
-    const user = await requireAuth();
-    const { chatId } = await params;
 
-    const body = await request.json();
-    const validation = messageSchema.safeParse(body);
-    if (!validation.success) {
-      throw new ValidationError(ERROR_MESSAGES.CHAT.MESSAGE_TOO_LONG);
-    }
-
-    const { message } = validation.data;
+    const { chatId } = params!;
+    const { message } = body!;
 
     // Verify the room exists and the user is a participant
     const room = await chatRepository.findById(chatId);
-    if (!room) {
+    if (!room) throw new NotFoundError(ERROR_MESSAGES.CHAT.FETCH_FAILED);
+
+    if (room.adminDeleted || (room.deletedBy ?? []).includes(user!.uid)) {
       throw new NotFoundError(ERROR_MESSAGES.CHAT.FETCH_FAILED);
     }
 
-    // Reject if the room was admin-deleted or the user has personally deleted it
-    if (room.adminDeleted || (room.deletedBy ?? []).includes(user.uid)) {
-      throw new NotFoundError(ERROR_MESSAGES.CHAT.FETCH_FAILED);
-    }
-
-    // Support both 1-1 (buyerId/sellerId) and group (participantIds) rooms
     const participantIds = room.participantIds?.length
       ? room.participantIds
       : [room.buyerId, room.sellerId];
-    if (!participantIds.includes(user.uid)) {
+    if (!participantIds.includes(user!.uid)) {
       throw new AuthorizationError(ERROR_MESSAGES.CHAT.NOT_AUTHORIZED);
     }
 
@@ -72,11 +60,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const messageId = msgRef.key as string;
 
     await msgRef.set({
-      userId: user.uid,
+      userId: user!.uid,
       userName:
-        user.uid === room.buyerId
+        user!.uid === room.buyerId
           ? (room.buyerName ?? "Buyer")
-          : user.uid === room.sellerId
+          : user!.uid === room.sellerId
             ? (room.sellerName ?? "Seller")
             : (room.buyerName ?? "Member"),
       message,
@@ -91,7 +79,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     serverLogger.info("Chat message sent", {
       chatId,
       messageId,
-      uid: user.uid,
+      uid: user!.uid,
     });
 
     return successResponse(
@@ -99,8 +87,5 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       SUCCESS_MESSAGES.CHAT.MESSAGE_SENT,
       201,
     );
-  } catch (error) {
-    serverLogger.error("POST /api/chat/[chatId]/messages error", { error });
-    return handleApiError(error);
-  }
-}
+  },
+});

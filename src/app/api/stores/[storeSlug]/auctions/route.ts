@@ -1,25 +1,19 @@
-import { NextRequest } from "next/server";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse } from "@/lib/api-response";
-import { ValidationError, NotFoundError } from "@/lib/errors";
+import { NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { storeRepository, productRepository } from "@/repositories";
 import type { SieveModel } from "@/lib/query/firebase-sieve";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
 
 /**
  * GET /api/stores/[storeSlug]/auctions
  * Returns published auction listings for a store, paginated via Sieve.
  */
-export async function GET(
-  request: NextRequest,
-  context: { params: Promise<{ storeSlug: string }> },
-) {
-  try {
-    const { storeSlug } = await context.params;
-
-    if (!storeSlug) {
-      throw new ValidationError(ERROR_MESSAGES.VALIDATION.FAILED);
-    }
+export const GET = createApiHandler<never, { storeSlug: string }>({
+  rateLimit: RateLimitPresets.API,
+  handler: async ({ params, request }) => {
+    const { storeSlug } = params!;
 
     const storeDoc = await storeRepository.findBySlug(storeSlug);
     if (!storeDoc || storeDoc.status !== "active" || !storeDoc.isPublic) {
@@ -34,7 +28,6 @@ export async function GET(
       pageSize: searchParams.get("pageSize") ?? "24",
     };
 
-    // Build filter: published auction products for this store's owner
     const filtersArr = [
       `sellerId==${storeDoc.ownerId}`,
       "status==published",
@@ -50,7 +43,5 @@ export async function GET(
     });
 
     return successResponse(result);
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

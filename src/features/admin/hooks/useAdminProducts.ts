@@ -2,6 +2,11 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { adminService } from "@/services";
+import {
+  adminCreateProductAction,
+  adminUpdateProductAction,
+  adminDeleteProductAction,
+} from "@/actions";
 import type { AdminProduct } from "../components";
 
 interface ProductListMeta {
@@ -26,7 +31,10 @@ export function useAdminProducts(sieveParams: string) {
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({
-    mutationFn: (data) => adminService.createAdminProduct(data),
+    mutationFn: (data) =>
+      adminCreateProductAction(
+        data as Parameters<typeof adminCreateProductAction>[0],
+      ),
   });
 
   const updateMutation = useMutation<
@@ -34,11 +42,15 @@ export function useAdminProducts(sieveParams: string) {
     Error,
     { id: string; data: unknown }
   >({
-    mutationFn: ({ id, data }) => adminService.updateAdminProduct(id, data),
+    mutationFn: ({ id, data }) =>
+      adminUpdateProductAction(
+        id,
+        data as Parameters<typeof adminUpdateProductAction>[1],
+      ),
   });
 
   const deleteMutation = useMutation<unknown, Error, string>({
-    mutationFn: (id) => adminService.deleteAdminProduct(id),
+    mutationFn: (id) => adminDeleteProductAction(id),
   });
 
   return { ...query, createMutation, updateMutation, deleteMutation };

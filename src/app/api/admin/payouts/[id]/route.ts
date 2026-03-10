@@ -4,63 +4,39 @@
  * PATCH /api/admin/payouts/[id] — Update payout status (admin)
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { successResponse, ApiErrors } from "@/lib/api-response";
-import { getAuthenticatedUser } from "@/lib/firebase/auth-server";
-import { handleApiError } from "@/lib/errors/error-handler";
-import { AuthenticationError, NotFoundError } from "@/lib/errors";
-import { requireRole } from "@/lib/security/authorization";
-import { payoutRepository, userRepository } from "@/repositories";
+import { successResponse } from "@/lib/api-response";
+import { NotFoundError } from "@/lib/errors";
+import { payoutRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import type { PayoutStatus } from "@/db/schema";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
 
-interface RouteContext {
-  params: Promise<{ id: string }>;
-}
+type IdParams = { id: string };
 
 const updateSchema = z.object({
   status: z.enum(["pending", "processing", "completed", "failed"]),
   adminNote: z.string().optional(),
 });
 
-async function getAdminUser() {
-  const authUser = await getAuthenticatedUser();
-  if (!authUser)
-    throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-
-  const firestoreUser = await userRepository.findById(authUser.uid);
-  if (!firestoreUser)
-    throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-
-  requireRole({ ...authUser, role: firestoreUser.role || "user" }, [
-    "admin",
-    "moderator",
-  ] as any);
-
-  return authUser;
-}
-
 /**
  * PATCH /api/admin/payouts/[id]
  */
-export async function PATCH(request: NextRequest, context: RouteContext) {
-  try {
-    const adminUser = await getAdminUser();
-    const { id } = await context.params;
-
+export const PATCH = createApiHandler<
+  (typeof updateSchema)["_output"],
+  IdParams
+>({
+  roles: ["admin", "moderator"],
+  rateLimit: RateLimitPresets.API,
+  schema: updateSchema,
+  handler: async ({ user, body, params }) => {
+    const { id } = params!;
     const payout = await payoutRepository.findById(id);
     if (!payout) throw new NotFoundError(ERROR_MESSAGES.PAYOUT.NOT_FOUND);
 
-    const body = await request.json();
-    const validation = updateSchema.safeParse(body);
-    if (!validation.success) {
-      return ApiErrors.validationError(validation.error.issues);
-    }
-
-    const { status, adminNote } = validation.data;
-
+    const { status, adminNote } = body!;
     const updated = await payoutRepository.updateStatus(
       id,
       status as PayoutStatus,
@@ -69,12 +45,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     serverLogger.info("Payout status updated by admin", {
       payoutId: id,
-      adminUid: adminUser.uid,
+      adminUid: user!.uid,
       newStatus: status,
     });
-
     return successResponse(updated, SUCCESS_MESSAGES.PAYOUT.UPDATED);
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

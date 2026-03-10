@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { adminService } from "@/services";
+import { adminUpdateOrderAction } from "@/actions";
 import type { OrderDocument } from "@/db/schema";
 
 interface OrderListMeta {
@@ -33,7 +34,11 @@ export function useAdminOrders(sieveParams: string) {
     Error,
     { id: string; data: unknown }
   >({
-    mutationFn: ({ id, data }) => adminService.updateOrder(id, data),
+    mutationFn: ({ id, data }) =>
+      adminUpdateOrderAction(
+        id,
+        data as Parameters<typeof adminUpdateOrderAction>[1],
+      ),
   });
 
   return { ...query, updateMutation };

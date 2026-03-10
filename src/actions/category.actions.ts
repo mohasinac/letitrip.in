@@ -7,16 +7,27 @@
  * bypassing the service → apiClient → API route chain.
  */
 
+import { z } from "zod";
 import { requireRole } from "@/lib/firebase/auth-server";
 import { categoriesRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
-import { AuthorizationError, ValidationError } from "@/lib/errors";
-import { categoryCreateSchema } from "@/lib/validation/schemas";
+import {
+  AuthorizationError,
+  NotFoundError,
+  ValidationError,
+} from "@/lib/errors";
+import {
+  categoryCreateSchema,
+  categoryUpdateSchema,
+} from "@/lib/validation/schemas";
 import type {
   CategoryDocument,
   CategoryCreateInput,
+  CategoryUpdateInput,
 } from "@/db/schema/categories";
+
+const categoryIdSchema = z.object({ id: z.string().min(1, "id is required") });
 
 export type CreateCategoryInput = {
   name: string;
@@ -95,4 +106,71 @@ export async function createCategoryAction(
   });
 
   return category;
+}
+
+/**
+ * Update a category (admin only).
+ */
+export async function updateCategoryAction(
+  id: string,
+  input: Partial<CategoryUpdateInput>,
+): Promise<CategoryDocument> {
+  const admin = await requireRole(["admin"]);
+
+  const rl = await rateLimitByIdentifier(
+    `category:update:${admin.uid}`,
+    RateLimitPresets.API,
+  );
+  if (!rl.success)
+    throw new AuthorizationError("Too many requests. Please slow down.");
+
+  const idParsed = categoryIdSchema.safeParse({ id });
+  if (!idParsed.success) throw new ValidationError("Invalid id");
+
+  const parsed = categoryUpdateSchema.safeParse(input);
+  if (!parsed.success)
+    throw new ValidationError(
+      parsed.error.issues[0]?.message ?? "Invalid update data",
+    );
+
+  const existing = await categoriesRepository.findById(id);
+  if (!existing) throw new NotFoundError("Category not found");
+
+  const updated = await categoriesRepository.update(
+    id,
+    parsed.data as CategoryUpdateInput,
+  );
+
+  serverLogger.info("updateCategoryAction", {
+    adminId: admin.uid,
+    categoryId: id,
+  });
+  return updated;
+}
+
+/**
+ * Delete a category (admin only).
+ */
+export async function deleteCategoryAction(id: string): Promise<void> {
+  const admin = await requireRole(["admin"]);
+
+  const rl = await rateLimitByIdentifier(
+    `category:delete:${admin.uid}`,
+    RateLimitPresets.API,
+  );
+  if (!rl.success)
+    throw new AuthorizationError("Too many requests. Please slow down.");
+
+  const idParsed = categoryIdSchema.safeParse({ id });
+  if (!idParsed.success) throw new ValidationError("Invalid id");
+
+  const existing = await categoriesRepository.findById(id);
+  if (!existing) throw new NotFoundError("Category not found");
+
+  await categoriesRepository.delete(id);
+
+  serverLogger.info("deleteCategoryAction", {
+    adminId: admin.uid,
+    categoryId: id,
+  });
 }

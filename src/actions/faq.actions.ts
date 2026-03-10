@@ -82,3 +82,119 @@ export async function voteFaqAction(
     notHelpful: updated.stats?.notHelpful ?? 0,
   };
 }
+
+// ─── Admin CRUD ────────────────────────────────────────────────────────────────
+
+import { requireRole } from "@/lib/firebase/auth-server";
+import { serverLogger } from "@/lib/server-logger";
+import { faqCreateSchema, faqUpdateSchema } from "@/lib/validation/schemas";
+import type { FAQDocument } from "@/db/schema";
+
+export type AdminCreateFaqInput = {
+  question: string;
+  answer: string;
+  category?: string;
+  isActive?: boolean;
+  isPinned?: boolean;
+  priority?: number;
+};
+
+export type AdminUpdateFaqInput = Partial<AdminCreateFaqInput>;
+
+/**
+ * Create a FAQ (admin only).
+ */
+export async function adminCreateFaqAction(
+  input: AdminCreateFaqInput,
+): Promise<FAQDocument> {
+  const admin = await requireRole(["admin", "moderator"]);
+
+  const rl = await rateLimitByIdentifier(
+    `faq:create:${admin.uid}`,
+    RateLimitPresets.API,
+  );
+  if (!rl.success)
+    throw new AuthorizationError("Too many requests. Please slow down.");
+
+  const parsed = faqCreateSchema.safeParse(input);
+  if (!parsed.success)
+    throw new ValidationError(
+      parsed.error.issues[0]?.message ?? "Invalid FAQ data",
+    );
+
+  const faq = await faqsRepository.createWithSlug({
+    ...parsed.data,
+    createdBy: admin.uid,
+    showOnHomepage: false,
+    showInFooter: false,
+    isPinned: false,
+    order: 0,
+    useSiteSettings: false,
+    variables: [],
+    isActive: true,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any);
+
+  serverLogger.info("adminCreateFaqAction", {
+    adminId: admin.uid,
+    faqId: faq.id,
+  });
+  return faq;
+}
+
+/**
+ * Update a FAQ (admin only).
+ */
+export async function adminUpdateFaqAction(
+  id: string,
+  input: AdminUpdateFaqInput,
+): Promise<FAQDocument> {
+  const admin = await requireRole(["admin", "moderator"]);
+
+  const rl = await rateLimitByIdentifier(
+    `faq:update:${admin.uid}`,
+    RateLimitPresets.API,
+  );
+  if (!rl.success)
+    throw new AuthorizationError("Too many requests. Please slow down.");
+
+  if (!id?.trim()) throw new ValidationError("id is required");
+
+  const parsed = faqUpdateSchema.safeParse(input);
+  if (!parsed.success)
+    throw new ValidationError(
+      parsed.error.issues[0]?.message ?? "Invalid update data",
+    );
+
+  const existing = await faqsRepository.findById(id);
+  if (!existing) throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const updated = await faqsRepository.update(id, parsed.data as any);
+
+  serverLogger.info("adminUpdateFaqAction", { adminId: admin.uid, faqId: id });
+  return updated;
+}
+
+/**
+ * Delete a FAQ (admin only).
+ */
+export async function adminDeleteFaqAction(id: string): Promise<void> {
+  const admin = await requireRole(["admin", "moderator"]);
+
+  const rl = await rateLimitByIdentifier(
+    `faq:delete:${admin.uid}`,
+    RateLimitPresets.API,
+  );
+  if (!rl.success)
+    throw new AuthorizationError("Too many requests. Please slow down.");
+
+  if (!id?.trim()) throw new ValidationError("id is required");
+
+  const existing = await faqsRepository.findById(id);
+  if (!existing) throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
+
+  await faqsRepository.delete(id);
+
+  serverLogger.info("adminDeleteFaqAction", { adminId: admin.uid, faqId: id });
+}

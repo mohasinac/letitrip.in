@@ -2,7 +2,11 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { categoryService } from "@/services";
-import { createCategoryAction } from "@/actions";
+import {
+  createCategoryAction,
+  updateCategoryAction,
+  deleteCategoryAction,
+} from "@/actions";
 import type { CreateCategoryInput } from "@/actions";
 import type { Category } from "../components";
 
@@ -26,11 +30,15 @@ export function useAdminCategories() {
     Error,
     { id: string; data: unknown }
   >({
-    mutationFn: ({ id, data }) => categoryService.update(id, data),
+    mutationFn: ({ id, data }) =>
+      updateCategoryAction(
+        id,
+        data as Parameters<typeof updateCategoryAction>[1],
+      ),
   });
 
   const deleteMutation = useMutation<unknown, Error, string>({
-    mutationFn: (id) => categoryService.delete(id),
+    mutationFn: (id) => deleteCategoryAction(id),
   });
 
   return { ...query, createMutation, updateMutation, deleteMutation };

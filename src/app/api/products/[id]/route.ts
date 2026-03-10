@@ -2,139 +2,62 @@
  * Product Detail API Routes
  *
  * Handles individual product operations (get, update, delete)
- *
- * TODO (Future) - Phase 2:
- * - Add related products recommendations
- * - Add caching with Redis/CloudFlare
- * - Implement optimistic locking for concurrent updates
- * - Add audit logging for all changes
- * - Implement webhook notifications for status changes
- * Done: view count increment (fire-and-forget) in GET — Phase 7 tech debt
- * Done: soft delete (set status to 'discontinued') in DELETE
  */
 
-import { NextRequest } from "next/server";
 import { productRepository, categoriesRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { PRODUCT_STATUS_TRANSITIONS } from "@/db/schema";
-import {
-  requireRoleFromRequest,
-  getUserFromRequest,
-  requireAuthFromRequest,
-} from "@/lib/security/authorization";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  productUpdateSchema,
-} from "@/lib/validation/schemas";
-import {
-  AuthenticationError,
-  AuthorizationError,
-  NotFoundError,
-} from "@/lib/errors";
-import { handleApiError } from "@/lib/errors/error-handler";
+import { productUpdateSchema } from "@/lib/validation/schemas";
+import { AuthorizationError, NotFoundError } from "@/lib/errors";
 import { successResponse, errorResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
+
+type IdParams = { id: string };
 
 /**
- * GET /api/products/[id]
- *
- * Get single product by ID
- *
- * Features:
- * - Fetch product by ID or slug (supports both ID-based and slug-based lookup)
- * - Increment view count asynchronously (fire-and-forget — ✅ Done)
- * - Return 404 if not found
- * - Public access (no authentication required)
- *
- * TODO (Future) - Phase 3:
- * - Add cache headers (public, max-age=300)
- * - Add related products recommendations
+ * GET /api/products/[id] — Get single product by ID or slug (public)
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    const { id } = await params;
-    // Fetch product by ID or slug (supports both ID-based and slug-based lookup)
+export const GET = createApiHandler<never, IdParams>({
+  rateLimit: RateLimitPresets.API,
+  handler: async ({ params }) => {
+    const { id } = params!;
     const product = await productRepository.findByIdOrSlug(id);
+    if (!product) throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
 
-    // Handle not found
-    if (!product) {
-      throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
-    }
+    // Track view asynchronously — analytics must not block the response
+    productRepository.incrementViewCount(product.id).catch(() => {});
 
-    // Track view asynchronously (fire-and-forget) — analytics must not block the response.
-    // Use product.id (resolved doc ID) in case the lookup was by slug.
-    productRepository.incrementViewCount(product.id).catch(() => {
-      // Intentionally swallowed — analytics failures must not affect availability
-    });
-
-    // Return product data
     return successResponse(product);
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});
 
 /**
- * PATCH /api/products/[id]
- *
- * Update product
- *
- * Body: Partial<ProductDocument>
- *
- * Features:
- * - Require authentication
- * - Ownership check (owner, moderator, or admin can update)
- * - Zod validation for update data
- * - Return updated product
- *
- * TODO (Future) - Phase 3:
- * - Handle status transitions (draft -> published requires admin approval workflow)
- * - Send notifications on status change
- * - Implement optimistic locking for concurrent updates
+ * PATCH /api/products/[id] — Update product (owner, moderator, or admin)
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    const { id } = await params;
-    // Require authentication
-    const user = await requireAuthFromRequest(request);
-
-    // Check product exists
+export const PATCH = createApiHandler<
+  (typeof productUpdateSchema)["_output"],
+  IdParams
+>({
+  auth: true,
+  rateLimit: RateLimitPresets.API,
+  schema: productUpdateSchema,
+  handler: async ({ user, body, params }) => {
+    const { id } = params!;
     const product = await productRepository.findById(id);
-    if (!product) {
-      throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
-    }
+    if (!product) throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
 
-    // Verify ownership (owner, moderator, or admin can update)
-    const isOwner = product.sellerId === user.uid;
-    const isModerator = user.role === "moderator";
-    const isAdmin = user.role === "admin";
+    const isOwner = product.sellerId === user!.uid;
+    const isModerator = user!.role === "moderator";
+    const isAdmin = user!.role === "admin";
 
     if (!isOwner && !isModerator && !isAdmin) {
       throw new AuthorizationError(ERROR_MESSAGES.PRODUCT.UPDATE_NOT_ALLOWED);
     }
 
-    // Parse and validate update data
-    const body = await request.json();
-    const validation = validateRequestBody(productUpdateSchema, body);
-
-    if (!validation.success) {
-      return errorResponse(
-        ERROR_MESSAGES.VALIDATION.FAILED,
-        400,
-        formatZodErrors(validation.errors),
-      );
-    }
-
-    // Status transition validation — enforce valid state machine moves.
-    // Moderators and admins bypass this check (staff override).
-    const newStatus = validation.data.status;
+    // Enforce status machine — staff bypass
+    const newStatus = body!.status;
     if (newStatus && newStatus !== product.status && !isModerator && !isAdmin) {
       const allowedTransitions =
         PRODUCT_STATUS_TRANSITIONS[product.status as string] ?? [];
@@ -146,71 +69,38 @@ export async function PATCH(
       }
     }
 
-    // Update product in repository
-    const updatedProduct = await productRepository.update(
-      id,
-      validation.data as any,
-    );
-
-    if (!updatedProduct) {
+    const updated = await productRepository.update(id, body as any);
+    if (!updated)
       throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND_AFTER_UPDATE);
-    }
-
-    // Return updated product
-    return successResponse(updatedProduct);
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+    return successResponse(updated);
+  },
+});
 
 /**
- * DELETE /api/products/[id]
- *
- * Delete product (soft delete)
- *
- * Features:
- * - Require authentication
- * - Ownership check (owner, moderator, or admin can delete)
- * - Soft delete (set status to 'discontinued')
- * - Return success status
- *
- * TODO (Future) - Phase 3:
- * - Handle cascade deletion (reviews, orders, etc.)
- * - Send notification to seller
- * - Add restore capability
- * - Implement audit logging
+ * DELETE /api/products/[id] — Soft-delete product (owner, moderator, or admin)
  */
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    const { id } = await params;
-    // Require authentication
-    const user = await requireAuthFromRequest(request);
-
-    // Check product exists
+export const DELETE = createApiHandler<never, IdParams>({
+  auth: true,
+  rateLimit: RateLimitPresets.API,
+  handler: async ({ user, params }) => {
+    const { id } = params!;
     const product = await productRepository.findById(id);
-    if (!product) {
-      throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
-    }
+    if (!product) throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
 
-    // Verify ownership (owner, moderator, or admin can delete)
-    const isOwner = product.sellerId === user.uid;
-    const isModerator = user.role === "moderator";
-    const isAdmin = user.role === "admin";
+    const isOwner = product.sellerId === user!.uid;
+    const isModerator = user!.role === "moderator";
+    const isAdmin = user!.role === "admin";
 
     if (!isOwner && !isModerator && !isAdmin) {
       throw new AuthorizationError(ERROR_MESSAGES.PRODUCT.DELETE_NOT_ALLOWED);
     }
 
-    // Soft delete product (set status to 'discontinued')
     await productRepository.update(id, {
       status: "discontinued",
       updatedAt: new Date(),
     });
 
-    // Update category metrics fire-and-forget (must not block the response)
+    // Update category metrics fire-and-forget
     const isAuction = product.isAuction ?? false;
     categoriesRepository
       .updateMetrics(
@@ -226,9 +116,6 @@ export async function DELETE(
         ),
       );
 
-    // Return success
     return successResponse(undefined, SUCCESS_MESSAGES.PRODUCT.DELETED);
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

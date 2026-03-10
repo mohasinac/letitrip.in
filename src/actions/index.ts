@@ -96,3 +96,77 @@ export type { CreateCategoryInput } from "./category.actions";
 
 // Admin session management (admin only)
 export { revokeSessionAction, revokeUserSessionsAction } from "./admin.actions";
+
+// Admin CRUD mutations (admin only)
+export {
+  adminUpdateOrderAction,
+  adminUpdatePayoutAction,
+  adminUpdateUserAction,
+  adminDeleteUserAction,
+  adminUpdateStoreStatusAction,
+  adminUpdateProductAction,
+  adminCreateProductAction,
+  adminDeleteProductAction,
+} from "./admin.actions";
+
+// Blog post mutations (admin only)
+export {
+  createBlogPostAction,
+  updateBlogPostAction,
+  deleteBlogPostAction,
+} from "./blog.actions";
+export type { CreateBlogPostInput, UpdateBlogPostInput } from "./blog.actions";
+
+// Event mutations (admin only + user participation)
+export {
+  createEventAction,
+  updateEventAction,
+  deleteEventAction,
+  changeEventStatusAction,
+  adminUpdateEventEntryAction,
+} from "./event.actions";
+export type { CreateEventInput, UpdateEventInput } from "./event.actions";
+
+// Carousel mutations (admin only)
+export {
+  createCarouselSlideAction,
+  updateCarouselSlideAction,
+  deleteCarouselSlideAction,
+} from "./carousel.actions";
+export type {
+  CreateCarouselSlideInput,
+  UpdateCarouselSlideInput,
+} from "./carousel.actions";
+
+// Homepage section mutations (admin only)
+export {
+  createHomepageSectionAction,
+  updateHomepageSectionAction,
+  deleteHomepageSectionAction,
+} from "./sections.actions";
+export type {
+  CreateHomepageSectionInput,
+  UpdateHomepageSectionInput,
+} from "./sections.actions";
+
+// Coupon admin CRUD (admin only)
+export {
+  adminCreateCouponAction,
+  adminUpdateCouponAction,
+  adminDeleteCouponAction,
+} from "./admin-coupon.actions";
+export type {
+  AdminCreateCouponInput,
+  AdminUpdateCouponInput,
+} from "./admin-coupon.actions";
+
+// FAQ admin CRUD (admin only)
+export {
+  adminCreateFaqAction,
+  adminUpdateFaqAction,
+  adminDeleteFaqAction,
+} from "./faq.actions";
+export type { AdminCreateFaqInput, AdminUpdateFaqInput } from "./faq.actions";
+
+// Category update + delete (admin only)
+export { updateCategoryAction, deleteCategoryAction } from "./category.actions";

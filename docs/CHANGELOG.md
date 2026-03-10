@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — G1 complete: All admin mutations migrated to Server Actions; G2 verified complete
+
+### Changed (Stage G1 — Service-to-Actions Migration)
+
+- **`src/actions/blog.actions.ts`** _(new)_ — `createBlogPostAction`, `updateBlogPostAction`, `deleteBlogPostAction`. Blog CRUD now bypasses service → apiClient → API route chain entirely.
+- **`src/actions/event.actions.ts`** _(new)_ — `createEventAction`, `updateEventAction`, `deleteEventAction`, `changeEventStatusAction`, `adminUpdateEventEntryAction`. All admin event mutations use repositories directly with `requireRole(["admin","moderator"])` + rate-limit guards.
+- **`src/actions/carousel.actions.ts`** _(new)_ — `createCarouselSlideAction`, `updateCarouselSlideAction`, `deleteCarouselSlideAction`. Schema updated to match `CarouselSlideDocument` shape (`active`/`media`).
+- **`src/actions/sections.actions.ts`** _(new)_ — `createHomepageSectionAction`, `updateHomepageSectionAction`, `deleteHomepageSectionAction`. Schema uses `enabled` (not `isEnabled`).
+- **`src/actions/admin-coupon.actions.ts`** _(new)_ — `adminCreateCouponAction`, `adminUpdateCouponAction`, `adminDeleteCouponAction`.
+- **`src/actions/category.actions.ts`** _(extended)_ — Added `updateCategoryAction`, `deleteCategoryAction`.
+- **`src/actions/faq.actions.ts`** _(extended)_ — Added `adminCreateFaqAction`, `adminUpdateFaqAction`, `adminDeleteFaqAction`.
+- **`src/actions/admin.actions.ts`** _(extended)_ — Added `adminUpdateOrderAction`, `adminUpdatePayoutAction`, `adminUpdateUserAction`, `adminDeleteUserAction`, `adminUpdateStoreStatusAction`, `adminCreateProductAction`, `adminUpdateProductAction`, `adminDeleteProductAction`.
+- **`src/actions/index.ts`** — Barrel updated with all new action exports.
+- **`src/features/admin/hooks/useAdminBlog.ts`** — Mutations now call Server Actions (blog).
+- **`src/features/admin/hooks/useAdminCarousel.ts`** — Mutations now call Server Actions (carousel).
+- **`src/features/admin/hooks/useAdminCategories.ts`** — Update/delete mutations now call Server Actions.
+- **`src/features/admin/hooks/useAdminCoupons.ts`** — Mutations now call Server Actions (coupons).
+- **`src/features/admin/hooks/useAdminFaqs.ts`** — Mutations now call Server Actions (FAQs).
+- **`src/features/admin/hooks/useAdminSections.ts`** — Mutations now call Server Actions (sections).
+- **`src/features/admin/hooks/useAdminOrders.ts`** — `updateMutation` now calls `adminUpdateOrderAction`.
+- **`src/features/admin/hooks/useAdminPayouts.ts`** — `updateMutation` now calls `adminUpdatePayoutAction`.
+- **`src/features/admin/hooks/useAdminUsers.ts`** — Update/delete mutations now call Server Actions.
+- **`src/features/admin/hooks/useAdminStores.ts`** — `updateStoreMutation` now calls `adminUpdateStoreStatusAction`.
+- **`src/features/admin/hooks/useAdminProducts.ts`** — All mutations now call Server Actions (products).
+- **`src/features/events/hooks/useEventMutations.ts`** — All admin mutation hooks now call Server Actions.
+- **`src/services/admin.service.ts`** — Removed dead methods: `createBlogPost`, `updateBlogPost`, `deleteBlogPost`, `updateOrder`, `updatePayout`, `updateUser`, `deleteUser`, `updateStoreStatus`, `createAdminProduct`, `updateAdminProduct`, `deleteAdminProduct`.
+- **`src/services/carousel.service.ts`** — Removed dead methods: `create`, `update`, `delete`.
+- **`src/services/category.service.ts`** — Removed dead methods: `update`, `delete`.
+- **`src/services/coupon.service.ts`** — Removed dead methods: `create`, `update`, `delete`.
+- **`src/services/faq.service.ts`** — Removed dead methods: `create`, `update`, `delete`.
+- **`src/services/homepage-sections.service.ts`** — Removed dead methods: `create`, `update`, `delete`.
+- **`src/services/event.service.ts`** — Removed dead methods: `adminCreate`, `adminUpdate`, `adminDelete`, `adminSetStatus`, `adminUpdateEntry`.
+
+### Fixed (Zod v4 compatibility)
+
+- Fixed `z.record(z.unknown())` calls to `z.record(z.string(), z.unknown())` in all new action files — Zod v4 requires explicit key schema as first argument.
+
+### Notes
+
+- Stage **G2** (FilterPanel consolidation) verified complete — all 14+ admin filter UIs already use `FilterPanel`. No changes needed.
+- All `PayoutStatus` references now use correct values: `"pending" | "processing" | "completed" | "failed"` (not `"paid"` or `"cancelled"`).
+
+---
+
 ## [Unreleased] — XSS fix: escapeHtml in proseMirrorToHtml + safe href validation in ProseMirror link marks
 
 ### Security

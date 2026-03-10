@@ -2,6 +2,11 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { homepageSectionsService } from "@/services";
+import {
+  createHomepageSectionAction,
+  updateHomepageSectionAction,
+  deleteHomepageSectionAction,
+} from "@/actions";
 import type { HomepageSection } from "../components";
 
 /**
@@ -15,7 +20,10 @@ export function useAdminSections() {
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({
-    mutationFn: (data) => homepageSectionsService.create(data),
+    mutationFn: (data) =>
+      createHomepageSectionAction(
+        data as Parameters<typeof createHomepageSectionAction>[0],
+      ),
   });
 
   const updateMutation = useMutation<
@@ -23,11 +31,15 @@ export function useAdminSections() {
     Error,
     { id: string; data: unknown }
   >({
-    mutationFn: ({ id, data }) => homepageSectionsService.update(id, data),
+    mutationFn: ({ id, data }) =>
+      updateHomepageSectionAction(
+        id,
+        data as Parameters<typeof updateHomepageSectionAction>[1],
+      ),
   });
 
   const deleteMutation = useMutation<unknown, Error, string>({
-    mutationFn: (id) => homepageSectionsService.delete(id),
+    mutationFn: (id) => deleteHomepageSectionAction(id),
   });
 
   return { ...query, createMutation, updateMutation, deleteMutation };

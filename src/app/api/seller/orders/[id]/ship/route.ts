@@ -5,24 +5,14 @@
  *
  * For CUSTOM shipping method:
  *   Body: { method: "custom", shippingCarrier, trackingNumber, trackingUrl }
- *   - Validates the order belongs to the seller and is in 'confirmed' status
- *   - Updates: status='shipped', shippingMethod='custom', all tracking fields,
- *              shippingDate=now, payoutStatus='eligible'
  *
  * For SHIPROCKET shipping method:
  *   Body: { method: "shiprocket", packageWeight, packageLength, packageBreadth,
  *            packageHeight, courierId? }
- *   - Loads seller's verified shippingConfig
- *   - Creates Shiprocket order → generates AWB → schedules pickup
- *   - Updates order with Shiprocket IDs, AWB, tracking URL,
- *              status='shipped', shippingDate=now, payoutStatus='eligible'
  */
 
-import { NextRequest } from "next/server";
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
 import { userRepository, orderRepository } from "@/repositories";
-import { handleApiError } from "@/lib/errors/error-handler";
 import {
   AuthorizationError,
   NotFoundError,
@@ -38,6 +28,8 @@ import {
   shiprocketGeneratePickup,
   isShiprocketTokenExpired,
 } from "@/lib/shiprocket/client";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
@@ -64,30 +56,30 @@ const shipOrderSchema = z.discriminatedUnion("method", [
   shiprocketShipSchema,
 ]);
 
+type IdParams = { id: string };
+
 // ─── Route ────────────────────────────────────────────────────────────────────
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    const authUser = await requireAuth();
-    const user = await userRepository.findById(authUser.uid);
-
+export const POST = createApiHandler<
+  (typeof shipOrderSchema)["_output"],
+  IdParams
+>({
+  auth: true,
+  rateLimit: RateLimitPresets.STRICT,
+  schema: shipOrderSchema,
+  handler: async ({ user: authUser, body: data, params }) => {
+    const user = await userRepository.findById(authUser!.uid);
     if (!user) throw new AuthorizationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
     if (user.role !== "seller" && user.role !== "admin") {
       throw new AuthorizationError(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED);
     }
 
-    const { id: orderId } = await params;
+    const { id: orderId } = params!;
     const order = await orderRepository.findById(orderId);
-
-    if (!order) {
+    if (!order)
       throw new NotFoundError(ERROR_MESSAGES.SHIPPING.ORDER_NOT_FOUND);
-    }
 
-    // Verify ownership (admin can ship any)
-    if (user.role !== "admin" && order.sellerId !== authUser.uid) {
+    if (user.role !== "admin" && order.sellerId !== authUser!.uid) {
       throw new AuthorizationError(ERROR_MESSAGES.AUTH.ADMIN_ACCESS_REQUIRED);
     }
 
@@ -98,31 +90,24 @@ export async function POST(
       throw new ValidationError(ERROR_MESSAGES.SHIPPING.ORDER_NOT_SHIPPABLE);
     }
 
-    const body = await request.json();
-    const validation = shipOrderSchema.safeParse(body);
-    if (!validation.success) {
-      return ApiErrors.validationError(validation.error.issues);
-    }
-    const data = validation.data;
-
     // ── Custom shipping ──────────────────────────────────────────────────────
-    if (data.method === "custom") {
+    if (data!.method === "custom") {
+      const d = data as (typeof customShipSchema)["_output"];
       await orderRepository.update(orderId, {
         status: "shipped",
         shippingMethod: "custom",
-        shippingCarrier: data.shippingCarrier,
-        trackingNumber: data.trackingNumber,
-        trackingUrl: data.trackingUrl,
+        shippingCarrier: d.shippingCarrier,
+        trackingNumber: d.trackingNumber,
+        trackingUrl: d.trackingUrl,
         shippingDate: new Date(),
         [ORDER_FIELDS.PAYOUT_STATUS]: "eligible",
       });
 
       serverLogger.info("Order shipped (custom)", {
         orderId,
-        uid: authUser.uid,
-        carrier: data.shippingCarrier,
+        uid: authUser!.uid,
+        carrier: d.shippingCarrier,
       });
-
       return successResponse(
         { orderId, method: "custom" },
         SUCCESS_MESSAGES.SHIPPING.ORDER_SHIPPED,
@@ -130,33 +115,41 @@ export async function POST(
     }
 
     // ── Shiprocket shipping ──────────────────────────────────────────────────
+    const d = data as (typeof shiprocketShipSchema)["_output"];
     const shippingConfig = user.shippingConfig;
 
-    if (!shippingConfig?.isConfigured) {
+    if (!shippingConfig?.isConfigured)
       throw new ValidationError(ERROR_MESSAGES.SHIPPING.NOT_CONFIGURED);
-    }
-    if (shippingConfig.method !== "shiprocket") {
+    if (shippingConfig.method !== "shiprocket")
       throw new ValidationError(ERROR_MESSAGES.SHIPPING.INVALID_METHOD);
-    }
-    if (!shippingConfig.pickupAddress?.isVerified) {
-      throw new ValidationError(ERROR_MESSAGES.SHIPPING.PICKUP_ADDRESS_REQUIRED);
+    if (!shippingConfig.pickupAddress?.isVerified)
+      throw new ValidationError(
+        ERROR_MESSAGES.SHIPPING.PICKUP_ADDRESS_REQUIRED,
+      );
+
+    const token = shippingConfig.shiprocketToken;
+    if (
+      !token ||
+      isShiprocketTokenExpired(shippingConfig.shiprocketTokenExpiry)
+    ) {
+      throw new ValidationError(
+        ERROR_MESSAGES.SHIPPING.SHIPROCKET_CREDS_REQUIRED,
+      );
     }
 
-    // Refresh token if expired
-    let token = shippingConfig.shiprocketToken;
-    if (!token || isShiprocketTokenExpired(shippingConfig.shiprocketTokenExpiry)) {
-      throw new ValidationError(ERROR_MESSAGES.SHIPPING.SHIPROCKET_CREDS_REQUIRED);
-    }
-
-    // Build Shiprocket order payload from our order
-    // shippingAddress is stored as a JSON string or plain text
     const rawAddr = order.shippingAddress ?? "";
+    if (!rawAddr)
+      throw new ValidationError(
+        "Order is missing a shipping address. Cannot ship via Shiprocket.",
+      );
+
     let parsedAddr: Record<string, string> = {};
     try {
       parsedAddr = JSON.parse(rawAddr);
     } catch {
       parsedAddr = { address: rawAddr };
     }
+
     const addrName = parsedAddr["name"] ?? order.userName ?? "";
     const addrLine = parsedAddr["address"] ?? parsedAddr["line1"] ?? rawAddr;
     const addrCity = parsedAddr["city"] ?? "";
@@ -165,17 +158,14 @@ export async function POST(
     const addrEmail = parsedAddr["email"] ?? order.userEmail ?? "";
     const addrPhone = parsedAddr["phone"] ?? "";
 
-    if (!rawAddr) {
-      throw new ValidationError(
-        "Order is missing a shipping address. Cannot ship via Shiprocket.",
-      );
-    }
-
     const srOrderPayload = {
       order_id: orderId,
       order_date: (order.createdAt instanceof Date
         ? order.createdAt
-        : new Date((order.createdAt as unknown as { toDate(): Date }).toDate?.() ?? order.createdAt)
+        : new Date(
+            (order.createdAt as unknown as { toDate(): Date }).toDate?.() ??
+              order.createdAt,
+          )
       )
         .toISOString()
         .slice(0, 19),
@@ -199,42 +189,41 @@ export async function POST(
       shipping_state: addrState,
       shipping_email: addrEmail,
       shipping_phone: addrPhone,
-      order_items: [{
-        name: order.productTitle,
-        sku: order.productId,
-        units: order.quantity,
-        selling_price: order.unitPrice,
-      }],
-      payment_method: (order.paymentMethod === "cod" ? "COD" : "Prepaid") as "COD" | "Prepaid",
+      order_items: [
+        {
+          name: order.productTitle,
+          sku: order.productId,
+          units: order.quantity,
+          selling_price: order.unitPrice,
+        },
+      ],
+      payment_method: (order.paymentMethod === "cod" ? "COD" : "Prepaid") as
+        | "COD"
+        | "Prepaid",
       sub_total: order.totalPrice,
-      length: data.packageLength,
-      breadth: data.packageBreadth,
-      height: data.packageHeight,
-      weight: data.packageWeight,
+      length: d.packageLength,
+      breadth: d.packageBreadth,
+      height: d.packageHeight,
+      weight: d.packageWeight,
     };
 
-    // Create Shiprocket order
     const srOrderResponse = await shiprocketCreateOrder(token, srOrderPayload);
     if (!srOrderResponse.order_id || !srOrderResponse.shipment_id) {
       throw new ValidationError(ERROR_MESSAGES.SHIPPING.ORDER_CREATE_FAILED);
     }
 
-    // Generate AWB
     const awbResponse = await shiprocketGenerateAWB(token, {
       shipment_id: srOrderResponse.shipment_id,
-      courier_id: data.courierId,
+      courier_id: d.courierId,
     });
     const awb = awbResponse.awb_code;
-    if (!awb) {
+    if (!awb)
       throw new ValidationError(ERROR_MESSAGES.SHIPPING.AWB_ASSIGN_FAILED);
-    }
 
-    // Schedule pickup
     const pickupResponse = await shiprocketGeneratePickup(token, {
       shipment_id: [srOrderResponse.shipment_id],
     });
     if (!pickupResponse.pickup_scheduled_date) {
-      // Non-fatal — order is still shipped, log the warning
       serverLogger.warn("Pickup scheduling returned no date. Proceeding.", {
         orderId,
         srShipmentId: srOrderResponse.shipment_id,
@@ -258,7 +247,7 @@ export async function POST(
 
     serverLogger.info("Order shipped via Shiprocket", {
       orderId,
-      uid: authUser.uid,
+      uid: authUser!.uid,
       awb,
       srOrderId: srOrderResponse.order_id,
     });
@@ -274,7 +263,5 @@ export async function POST(
       },
       SUCCESS_MESSAGES.SHIPPING.ORDER_SHIPPED,
     );
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

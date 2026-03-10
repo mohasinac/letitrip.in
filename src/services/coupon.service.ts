@@ -11,16 +11,5 @@ export const couponService = {
   /** List coupons with optional Sieve params (admin only) */
   list: (sieveQuery?: string) =>
     apiClient.get(`${API_ENDPOINTS.ADMIN.COUPONS}${sieveQuery ?? ""}`),
-
-  /** Create a coupon (admin only) */
-  create: (data: unknown) => apiClient.post(API_ENDPOINTS.ADMIN.COUPONS, data),
-
-  /** Update a coupon by ID (admin only) */
-  update: (id: string, data: unknown) =>
-    apiClient.patch(API_ENDPOINTS.ADMIN.COUPON_BY_ID(id), data),
-
-  /** Delete a coupon by ID (admin only) */
-  delete: (id: string) =>
-    apiClient.delete(API_ENDPOINTS.ADMIN.COUPON_BY_ID(id)),
 };
-// Mutation (validate coupon) replaced by Server Action in @/actions/coupon.actions.ts
+// Mutations (create/update/delete) replaced by Server Actions in @/actions/admin-coupon.actions.ts

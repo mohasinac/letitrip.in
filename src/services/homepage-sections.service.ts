@@ -22,19 +22,8 @@ export const homepageSectionsService = {
   getById: (id: string) =>
     apiClient.get(API_ENDPOINTS.HOMEPAGE_SECTIONS.GET_BY_ID(id)),
 
-  /** Create a new homepage section (admin only) */
-  create: (data: unknown) =>
-    apiClient.post(API_ENDPOINTS.HOMEPAGE_SECTIONS.CREATE, data),
-
-  /** Update a homepage section (admin only) */
-  update: (id: string, data: unknown) =>
-    apiClient.patch(API_ENDPOINTS.HOMEPAGE_SECTIONS.UPDATE(id), data),
-
-  /** Delete a homepage section (admin only) */
-  delete: (id: string) =>
-    apiClient.delete(API_ENDPOINTS.HOMEPAGE_SECTIONS.DELETE(id)),
-
   /** Reorder homepage sections (admin only) */
   reorder: (data: { orderedIds: string[] }) =>
     apiClient.post(API_ENDPOINTS.HOMEPAGE_SECTIONS.REORDER, data),
 };
+// Mutations (create/update/delete) replaced by Server Actions in @/actions/sections.actions.ts

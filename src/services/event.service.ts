@@ -40,22 +40,6 @@ export const eventService = {
   adminGetById: (id: string) =>
     apiClient.get(API_ENDPOINTS.ADMIN.EVENTS.DETAIL(id)),
 
-  /** Admin: create a new event */
-  adminCreate: (data: unknown) =>
-    apiClient.post(API_ENDPOINTS.ADMIN.EVENTS.LIST, data),
-
-  /** Admin: update an event */
-  adminUpdate: (id: string, data: unknown) =>
-    apiClient.put(API_ENDPOINTS.ADMIN.EVENTS.DETAIL(id), data),
-
-  /** Admin: delete an event */
-  adminDelete: (id: string) =>
-    apiClient.delete(API_ENDPOINTS.ADMIN.EVENTS.DETAIL(id)),
-
-  /** Admin: update event status (draft/published/ended) */
-  adminSetStatus: (id: string, status: string) =>
-    apiClient.patch(API_ENDPOINTS.ADMIN.EVENTS.STATUS(id), { status }),
-
   /** Admin: get event entries */
   adminGetEntries: (id: string, params?: string) =>
     apiClient.get(
@@ -66,11 +50,9 @@ export const eventService = {
   adminGetStats: (id: string) =>
     apiClient.get(API_ENDPOINTS.ADMIN.EVENTS.STATS(id)),
 
-  /** Admin: update a single event entry (approve/flag/reject) */
-  adminUpdateEntry: (eventId: string, entryId: string, data: unknown) =>
-    apiClient.patch(API_ENDPOINTS.ADMIN.EVENTS.ENTRY(eventId, entryId), data),
-
   /** Admin: reorder event rankings */
   adminReorderEntries: (id: string, data: unknown) =>
     apiClient.patch(`${API_ENDPOINTS.ADMIN.EVENTS.ENTRIES(id)}/reorder`, data),
 };
+// Mutations (adminCreate/adminUpdate/adminDelete/adminSetStatus/adminUpdateEntry)
+// replaced by Server Actions in @/actions/event.actions.ts

@@ -2,6 +2,11 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { couponService } from "@/services";
+import {
+  adminCreateCouponAction,
+  adminUpdateCouponAction,
+  adminDeleteCouponAction,
+} from "@/actions";
 import type { CouponDocument } from "@/db/schema";
 
 interface CouponListMeta {
@@ -26,7 +31,10 @@ export function useAdminCoupons(sieveParams: string) {
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({
-    mutationFn: (payload) => couponService.create(payload),
+    mutationFn: (payload) =>
+      adminCreateCouponAction(
+        payload as Parameters<typeof adminCreateCouponAction>[0],
+      ),
   });
 
   const updateMutation = useMutation<
@@ -34,11 +42,15 @@ export function useAdminCoupons(sieveParams: string) {
     Error,
     { id: string; data: unknown }
   >({
-    mutationFn: ({ id, data: update }) => couponService.update(id, update),
+    mutationFn: ({ id, data: update }) =>
+      adminUpdateCouponAction(
+        id,
+        update as Parameters<typeof adminUpdateCouponAction>[1],
+      ),
   });
 
   const deleteMutation = useMutation<unknown, Error, string>({
-    mutationFn: (id) => couponService.delete(id),
+    mutationFn: (id) => adminDeleteCouponAction(id),
   });
 
   return { ...query, createMutation, updateMutation, deleteMutation };

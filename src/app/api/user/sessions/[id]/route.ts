@@ -5,44 +5,30 @@
  * Allows users to revoke their own sessions (e.g., logout from other devices).
  */
 
-import { NextRequest } from "next/server";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { AuthorizationError, NotFoundError } from "@/lib/errors";
-import { requireAuth } from "@/lib/firebase/auth-server";
 import { sessionRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
-import { successResponse, errorResponse } from "@/lib/api-response";
+import { successResponse } from "@/lib/api-response";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    // Require authentication (returns DecodedIdToken with uid)
-    const user = await requireAuth();
+export const DELETE = createApiHandler<never, { id: string }>({
+  auth: true,
+  rateLimit: RateLimitPresets.STRICT,
+  handler: async ({ user, params }) => {
+    const { id: sessionId } = params!;
 
-    const { id: sessionId } = await params;
-
-    // Get session to verify ownership
     const session = await sessionRepository.findById(sessionId);
+    if (!session) throw new NotFoundError(ERROR_MESSAGES.SESSION.NOT_FOUND);
 
-    if (!session) {
-      throw new NotFoundError(ERROR_MESSAGES.SESSION.NOT_FOUND);
-    }
-
-    // Verify user owns this session
-    if (session.userId !== user.uid) {
+    if (session.userId !== user!.uid) {
       throw new AuthorizationError(ERROR_MESSAGES.SESSION.CANNOT_REVOKE_OTHERS);
     }
 
-    // Revoke the session
-    await sessionRepository.revokeSession(sessionId, user.uid);
-
+    await sessionRepository.revokeSession(sessionId, user!.uid);
     return successResponse(
       { sessionId },
       SUCCESS_MESSAGES.ADMIN.SESSION_REVOKED,
     );
-  } catch (error: unknown) {
-    return handleApiError(error);
-  }
-}
+  },
+});

@@ -20,15 +20,5 @@ export const faqService = {
 
   /** Get a single FAQ by ID */
   getById: (id: string) => apiClient.get(API_ENDPOINTS.FAQS.GET_BY_ID(id)),
-
-  /** Create a new FAQ (admin only) */
-  create: (data: unknown) => apiClient.post(API_ENDPOINTS.FAQS.CREATE, data),
-
-  /** Update an FAQ (admin only) */
-  update: (id: string, data: unknown) =>
-    apiClient.patch(API_ENDPOINTS.FAQS.UPDATE(id), data),
-
-  /** Delete an FAQ (admin only) */
-  delete: (id: string) => apiClient.delete(API_ENDPOINTS.FAQS.DELETE(id)),
 };
-// Mutation (vote) replaced by Server Action in @/actions/faq.actions.ts
+// Mutations (create/update/delete/vote) replaced by Server Actions in @/actions/faq.actions.ts

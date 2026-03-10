@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { adminService } from "@/services";
+import { adminUpdateStoreStatusAction } from "@/actions";
 
 export interface AdminStoreItem {
   uid: string;
@@ -61,7 +62,7 @@ export function useAdminStores(sieveParams: string) {
     { uid: string; action: "approve" | "reject" }
   >({
     mutationFn: ({ uid, action }) =>
-      adminService.updateStoreStatus(uid, action),
+      adminUpdateStoreStatusAction({ uid, action }),
   });
 
   return { ...query, updateStoreMutation };

@@ -2,6 +2,11 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { carouselService } from "@/services";
+import {
+  createCarouselSlideAction,
+  updateCarouselSlideAction,
+  deleteCarouselSlideAction,
+} from "@/actions";
 import type { CarouselSlide } from "../components";
 
 /**
@@ -15,7 +20,10 @@ export function useAdminCarousel() {
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({
-    mutationFn: (data) => carouselService.create(data),
+    mutationFn: (data) =>
+      createCarouselSlideAction(
+        data as Parameters<typeof createCarouselSlideAction>[0],
+      ),
   });
 
   const updateMutation = useMutation<
@@ -23,11 +31,15 @@ export function useAdminCarousel() {
     Error,
     { id: string; data: unknown }
   >({
-    mutationFn: ({ id, data }) => carouselService.update(id, data),
+    mutationFn: ({ id, data }) =>
+      updateCarouselSlideAction(
+        id,
+        data as Parameters<typeof updateCarouselSlideAction>[1],
+      ),
   });
 
   const deleteMutation = useMutation<unknown, Error, string>({
-    mutationFn: (id) => carouselService.delete(id),
+    mutationFn: (id) => deleteCarouselSlideAction(id),
   });
 
   return { ...query, createMutation, updateMutation, deleteMutation };

@@ -4,24 +4,17 @@
  * PATCH  /api/admin/orders/[id] — Update order status/tracking (admin)
  */
 
-import { NextRequest } from "next/server";
+import { z } from "zod";
 import { successResponse } from "@/lib/api-response";
-import { getAuthenticatedUser } from "@/lib/firebase/auth-server";
-import { handleApiError } from "@/lib/errors/error-handler";
-import {
-  AuthenticationError,
-  NotFoundError,
-  ValidationError,
-} from "@/lib/errors";
-import { requireRole } from "@/lib/security/authorization";
-import { orderRepository, userRepository } from "@/repositories";
+import { NotFoundError, ValidationError } from "@/lib/errors";
+import { orderRepository } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import type { OrderStatus, PaymentStatus } from "@/db/schema";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
 
-interface RouteContext {
-  params: Promise<{ id: string }>;
-}
+type IdParams = { id: string };
 
 const ORDER_STATUSES: OrderStatus[] = [
   "pending",
@@ -31,7 +24,6 @@ const ORDER_STATUSES: OrderStatus[] = [
   "cancelled",
   "returned",
 ];
-
 const PAYMENT_STATUSES: PaymentStatus[] = [
   "pending",
   "paid",
@@ -39,81 +31,72 @@ const PAYMENT_STATUSES: PaymentStatus[] = [
   "refunded",
 ];
 
-async function getAdminUser() {
-  const authUser = await getAuthenticatedUser();
-  if (!authUser)
-    throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
+const ADMIN_ORDER_ALLOWED_FIELDS = [
+  "status",
+  "paymentStatus",
+  "trackingNumber",
+  "notes",
+  "cancellationReason",
+  "shippingDate",
+  "deliveryDate",
+] as const;
 
-  const firestoreUser = await userRepository.findById(authUser.uid);
-  if (!firestoreUser)
-    throw new AuthenticationError(ERROR_MESSAGES.AUTH.UNAUTHORIZED);
-
-  requireRole({ ...authUser, role: firestoreUser.role || "user" }, [
-    "admin",
-    "moderator",
-  ] as any);
-  return authUser;
-}
+const adminOrderUpdateSchema = z.object({
+  status: z
+    .enum([
+      "pending",
+      "confirmed",
+      "shipped",
+      "delivered",
+      "cancelled",
+      "returned",
+    ])
+    .optional(),
+  paymentStatus: z.enum(["pending", "paid", "failed", "refunded"]).optional(),
+  trackingNumber: z.string().optional(),
+  notes: z.string().optional(),
+  cancellationReason: z.string().optional(),
+  shippingDate: z.coerce.date().optional(),
+  deliveryDate: z.coerce.date().optional(),
+});
 
 /**
  * GET /api/admin/orders/[id]
  */
-export async function GET(_request: NextRequest, context: RouteContext) {
-  try {
-    await getAdminUser();
-    const { id } = await context.params;
-
+export const GET = createApiHandler<never, IdParams>({
+  roles: ["admin", "moderator"],
+  rateLimit: RateLimitPresets.API,
+  handler: async ({ params }) => {
+    const { id } = params!;
     const order = await orderRepository.findById(id);
     if (!order) throw new NotFoundError(ERROR_MESSAGES.ORDER.NOT_FOUND);
-
     return successResponse(order);
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});
 
 /**
- * PATCH /api/admin/orders/[id]
- *
- * Allowed fields: status, paymentStatus, trackingNumber, notes, cancellationReason
+ * PATCH /api/admin/orders/[id] — Update order status/tracking
  */
-export async function PATCH(request: NextRequest, context: RouteContext) {
-  try {
-    const adminUser = await getAdminUser();
-    const { id } = await context.params;
-
+export const PATCH = createApiHandler<
+  (typeof adminOrderUpdateSchema)["_output"],
+  IdParams
+>({
+  roles: ["admin", "moderator"],
+  rateLimit: RateLimitPresets.API,
+  schema: adminOrderUpdateSchema,
+  handler: async ({ user, body, params }) => {
+    const { id } = params!;
     const order = await orderRepository.findById(id);
     if (!order) throw new NotFoundError(ERROR_MESSAGES.ORDER.NOT_FOUND);
 
-    const body = await request.json();
-
-    // Validate status if provided
-    if (body.status && !ORDER_STATUSES.includes(body.status)) {
-      throw new ValidationError(ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD);
-    }
-
-    // Validate paymentStatus if provided
-    if (body.paymentStatus && !PAYMENT_STATUSES.includes(body.paymentStatus)) {
-      throw new ValidationError(ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD);
-    }
-
-    // Only allow safe fields for admin update
     const allowedUpdate: Record<string, unknown> = {};
-    const ALLOWED_FIELDS = [
-      "status",
-      "paymentStatus",
-      "trackingNumber",
-      "notes",
-      "cancellationReason",
-      "shippingDate",
-      "deliveryDate",
-    ];
-    for (const field of ALLOWED_FIELDS) {
-      if (field in body) allowedUpdate[field] = body[field];
+    for (const field of ADMIN_ORDER_ALLOWED_FIELDS) {
+      if (body && field in body)
+        allowedUpdate[field] = body[field as keyof typeof body];
     }
 
     // Auto-set cancellationDate when cancelling
-    if (body.status === "cancelled" && order.status !== "cancelled") {
+    if (body?.status === "cancelled" && order.status !== "cancelled") {
       allowedUpdate.cancellationDate = new Date();
     }
 
@@ -121,15 +104,11 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       ...allowedUpdate,
       updatedAt: new Date(),
     });
-
     serverLogger.info("Order updated by admin", {
       orderId: id,
-      adminUid: adminUser.uid,
+      adminUid: user!.uid,
       changes: allowedUpdate,
     });
-
     return successResponse(updated, SUCCESS_MESSAGES.ORDER.UPDATED);
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

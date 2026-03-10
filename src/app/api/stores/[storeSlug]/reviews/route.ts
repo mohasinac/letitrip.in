@@ -1,7 +1,5 @@
-import { NextRequest } from "next/server";
-import { handleApiError } from "@/lib/errors/error-handler";
 import { successResponse } from "@/lib/api-response";
-import { ValidationError, NotFoundError } from "@/lib/errors";
+import { NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import {
   storeRepository,
@@ -9,21 +7,17 @@ import {
   reviewRepository,
 } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
+import { createApiHandler } from "@/lib/api/api-handler";
+import { RateLimitPresets } from "@/lib/security/rate-limit";
 
 /**
  * GET /api/stores/[storeSlug]/reviews
  * Returns aggregated approved reviews for all published products in a store.
  */
-export async function GET(
-  request: NextRequest,
-  context: { params: Promise<{ storeSlug: string }> },
-) {
-  try {
-    const { storeSlug } = await context.params;
-
-    if (!storeSlug) {
-      throw new ValidationError(ERROR_MESSAGES.VALIDATION.FAILED);
-    }
+export const GET = createApiHandler<never, { storeSlug: string }>({
+  rateLimit: RateLimitPresets.API,
+  handler: async ({ params }) => {
+    const { storeSlug } = params!;
 
     const storeDoc = await storeRepository.findBySlug(storeSlug);
     if (!storeDoc || storeDoc.status !== "active" || !storeDoc.isPublic) {
@@ -74,7 +68,6 @@ export async function GET(
 
     const averageRating = totalReviews > 0 ? ratingSum / totalReviews : 0;
 
-    // Attach product info to each review for display
     const productMap = new Map(publishedProducts.map((p) => [p.id, p]));
     const reviewsWithProduct = allReviews.map((review) => ({
       ...review,
@@ -95,7 +88,5 @@ export async function GET(
       totalReviews,
       ratingDistribution,
     });
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
+  },
+});

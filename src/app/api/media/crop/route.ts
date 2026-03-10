@@ -88,14 +88,14 @@ export const POST = createApiHandler<(typeof cropDataSchema)["_output"]>({
     // Upload to storage
     const storage = getStorage();
     const bucket = storage.bucket();
-    const uploadPath = `${outputFolder}/${user.uid}/${filename}`;
+    const uploadPath = `${outputFolder}/${user!.uid}/${filename}`;
     const file = bucket.file(uploadPath);
 
     await file.save(croppedBuffer, {
       metadata: {
         contentType: `image/${finalFormat}`,
         customMetadata: {
-          uploadedBy: user.uid,
+          uploadedBy: user!.uid,
           croppedFrom: sourceUrl,
           cropData: JSON.stringify({ x, y, width, height }),
           originalFormat: originalFormat,

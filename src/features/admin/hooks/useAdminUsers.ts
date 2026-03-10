@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { adminService } from "@/services";
+import { adminUpdateUserAction, adminDeleteUserAction } from "@/actions";
 import type { AdminUser } from "../components";
 
 interface UserListMeta {
@@ -27,11 +28,15 @@ export function useAdminUsers(sieveParams: string) {
     Error,
     { uid: string; data: unknown }
   >({
-    mutationFn: ({ uid, data }) => adminService.updateUser(uid, data),
+    mutationFn: ({ uid, data }) =>
+      adminUpdateUserAction(
+        uid,
+        data as Parameters<typeof adminUpdateUserAction>[1],
+      ),
   });
 
   const deleteUserMutation = useMutation<unknown, Error, string>({
-    mutationFn: (uid) => adminService.deleteUser(uid),
+    mutationFn: (uid) => adminDeleteUserAction(uid),
   });
 
   return { ...query, updateUserMutation, deleteUserMutation };
