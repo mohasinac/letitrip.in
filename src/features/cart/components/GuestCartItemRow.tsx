@@ -6,7 +6,7 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { GuestCartItem } from "@/utils";
 
-const { themed, borderRadius, flex, position } = THEME_CONSTANTS;
+const { themed, flex, position } = THEME_CONSTANTS;
 
 interface GuestCartItemRowProps {
   item: GuestCartItem;
@@ -25,7 +25,7 @@ export function GuestCartItemRow({
 
   return (
     <div
-      className={`flex gap-4 p-4 ${themed.bgPrimary} ${borderRadius.xl} border ${themed.border}`}
+      className={`flex gap-4 p-4 ${themed.bgPrimary} rounded-xl border ${themed.border}`}
     >
       {/* Product image */}
       <TextLink href={productHref} className="shrink-0">

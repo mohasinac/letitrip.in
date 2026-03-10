@@ -4,13 +4,13 @@ import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { Heading, Text } from "@/components";
 
-const { themed, spacing, typography, borderRadius, flex } = THEME_CONSTANTS;
+const { themed, spacing, typography, flex } = THEME_CONSTANTS;
 
 export function OrderSuccessHero() {
   const t = useTranslations("orderSuccess");
   return (
     <div
-      className={`${themed.bgSecondary} ${borderRadius.xl} p-8 text-center ${spacing.stack} mb-6`}
+      className={`${themed.bgSecondary} rounded-xl p-8 text-center ${spacing.stack} mb-6`}
     >
       <div
         className={`w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full ${flex.center} mx-auto`}

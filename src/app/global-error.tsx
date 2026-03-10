@@ -31,12 +31,10 @@ function GlobalErrorContent({
 }) {
   const t = useTranslations("errorPages.criticalError");
   const tActions = useTranslations("actions");
-  const { themed, spacing, borderRadius, flex } = THEME_CONSTANTS;
+  const { themed, spacing, flex } = THEME_CONSTANTS;
 
   return (
-    <div
-      className={`min-h-screen ${flex.center} ${themed.bgPrimary} ${spacing.padding.xl}`}
-    >
+    <div className={`min-h-screen ${flex.center} ${themed.bgPrimary} p-8`}>
       <div
         className={`${THEME_CONSTANTS.container["2xl"]} w-full text-center ${spacing.stack}`}
       >
@@ -74,7 +72,7 @@ function GlobalErrorContent({
         {/* Error Details (Development Only) */}
         {process.env.NODE_ENV === "development" && error.message && (
           <div
-            className={`bg-red-50 dark:bg-red-900/20 ${themed.border} ${borderRadius.lg} ${spacing.padding.md} mb-8 text-left`}
+            className={`bg-red-50 dark:bg-red-900/20 ${themed.border} rounded-lg p-4 mb-8 text-left`}
           >
             <Text size="sm" variant="error" className="font-mono break-all">
               <strong>Error:</strong> {error.message}
@@ -98,7 +96,7 @@ function GlobalErrorContent({
           </Button>
           <TextLink
             href={ROUTES.HOME}
-            className={`px-6 py-3 ${borderRadius.lg} border-2 border-blue-500 text-blue-500 text-lg font-medium min-w-[200px] inline-block text-center`}
+            className={`px-6 py-3 rounded-lg border-2 border-blue-500 text-blue-500 text-lg font-medium min-w-[200px] inline-block text-center`}
           >
             {t("backToHome")}
           </TextLink>

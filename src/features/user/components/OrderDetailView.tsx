@@ -111,7 +111,7 @@ export function OrderDetailView() {
       {/* Order Header */}
       <Card className={THEME_CONSTANTS.spacing.cardPadding}>
         <div
-          className={`flex flex-col md:flex-row md:items-center md:justify-between ${THEME_CONSTANTS.spacing.gap.md}`}
+          className={`flex flex-col md:flex-row md:items-center md:justify-between gap-4`}
         >
           <div>
             <Heading level={4}>
@@ -162,7 +162,7 @@ export function OrderDetailView() {
         <Heading level={5} className="mb-4">
           {tOrders("orderItems")}
         </Heading>
-        <div className={`flex ${THEME_CONSTANTS.spacing.gap.md} pb-4`}>
+        <div className={`flex gap-4 pb-4`}>
           <div className="flex-1">
             <Heading level={6}>{order.productTitle}</Heading>
             <Text className={THEME_CONSTANTS.typography.caption}>
@@ -196,7 +196,7 @@ export function OrderDetailView() {
       </Card>
 
       <div
-        className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 ${THEME_CONSTANTS.spacing.gap.lg}`}
+        className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 gap-6`}
       >
         {/* Shipping Address */}
         <Card className={THEME_CONSTANTS.spacing.cardPadding}>

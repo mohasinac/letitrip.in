@@ -35,9 +35,7 @@ export function CustomerReviewsSection({
 
   if (isLoading) {
     return (
-      <Section
-        className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
-      >
+      <Section className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}>
         <div className="w-full">
           <div
             className={`h-8 ${THEME_CONSTANTS.skeleton.base} mb-8 max-w-xs mx-auto`}
@@ -64,7 +62,7 @@ export function CustomerReviewsSection({
   return (
     <Section
       ref={sectionRef}
-      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
+      className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}
     >
       <div className="w-full">
         {/* Section Header */}

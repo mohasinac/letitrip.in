@@ -5,7 +5,7 @@ import { Section } from "@/components";
 
 /** Full-page skeleton shown while homepage data is loading. */
 export function HomepageSkeleton() {
-  const { skeleton, spacing, borderRadius, flex } = THEME_CONSTANTS;
+  const { skeleton, flex } = THEME_CONSTANTS;
 
   return (
     <div className="w-full overflow-hidden">
@@ -13,9 +13,7 @@ export function HomepageSkeleton() {
       <div className={`${skeleton.card} w-full h-[28rem]`} aria-hidden="true" />
 
       {/* Trust Features skeleton — 4 cards */}
-      <Section
-        className={`${spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
-      >
+      <Section className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}>
         <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div
@@ -27,9 +25,7 @@ export function HomepageSkeleton() {
       </Section>
 
       {/* Top Categories skeleton — 6 cards */}
-      <Section
-        className={`${spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
-      >
+      <Section className={`p-8 ${THEME_CONSTANTS.themed.bgSecondary}`}>
         <div className={`${skeleton.heading} w-48 mx-auto mb-6`} />
         <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-5 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -39,9 +35,7 @@ export function HomepageSkeleton() {
       </Section>
 
       {/* Featured Products skeleton — 5 cards */}
-      <Section
-        className={`${spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
-      >
+      <Section className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}>
         <div className={`${flex.between} mb-6`}>
           <div className={`${skeleton.heading} w-52`} />
           <div className={`${skeleton.text} w-24`} />
@@ -58,9 +52,7 @@ export function HomepageSkeleton() {
       </Section>
 
       {/* Featured Auctions skeleton — 5 cards */}
-      <Section
-        className={`${spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
-      >
+      <Section className={`p-8 ${THEME_CONSTANTS.themed.bgSecondary}`}>
         <div className={`${flex.between} mb-6`}>
           <div className={`${skeleton.heading} w-56`} />
           <div className={`${skeleton.text} w-24`} />
@@ -77,11 +69,9 @@ export function HomepageSkeleton() {
       </Section>
 
       {/* Newsletter skeleton */}
-      <Section
-        className={`${spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
-      >
+      <Section className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}>
         <div
-          className={`${skeleton.card} ${borderRadius["2xl"]} max-w-2xl mx-auto h-[16rem]`}
+          className={`${skeleton.card} rounded-2xl max-w-2xl mx-auto h-[16rem]`}
         />
       </Section>
     </div>

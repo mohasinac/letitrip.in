@@ -157,7 +157,7 @@ export function FilterFacetSection({
     <div
       role="group"
       aria-labelledby={`facet-${groupId}`}
-      className={`${spacing.padding.md} border-b ${themed.border} last:border-b-0 ${className}`}
+      className={`p-4 border-b ${themed.border} last:border-b-0 ${className}`}
     >
       {/* Section header */}
       <Button

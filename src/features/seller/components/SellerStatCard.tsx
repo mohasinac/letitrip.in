@@ -26,9 +26,7 @@ export function SellerStatCard({
   loading,
 }: SellerStatCardProps) {
   return (
-    <div
-      className={`${cardClass} hover:shadow-md transition-shadow ${spacing.padding.md}`}
-    >
+    <div className={`${cardClass} hover:shadow-md transition-shadow p-4`}>
       <div className={flex.betweenStart}>
         <div className="flex-1">
           <Text

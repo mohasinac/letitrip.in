@@ -61,7 +61,7 @@ function GuideSection({ sectionIndex, id, read, onToggle }: GuideSectionProps) {
 
   return (
     <Card
-      className={`${spacing.padding.md} transition-colors ${
+      className={`p-4 transition-colors ${
         read
           ? "border border-emerald-300 dark:border-emerald-700"
           : "border border-transparent"
@@ -119,7 +119,7 @@ function SuccessState() {
   const t = useTranslations("becomeSeller.states.success");
 
   return (
-    <Card className={`${spacing.padding.lg} text-center max-w-xl mx-auto`}>
+    <Card className={`p-6 text-center max-w-xl mx-auto`}>
       <div className={`${flex.colCenter} gap-4`}>
         <div
           className={`w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 ${flex.center} text-3xl`}
@@ -233,7 +233,7 @@ export function BecomeSellerView() {
 
       {/* Apply call-to-action */}
       <div
-        className={`${themed.bgSecondary} rounded-2xl ${spacing.padding.lg} flex flex-col sm:flex-row items-center justify-between gap-4`}
+        className={`${themed.bgSecondary} rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4`}
       >
         <div>
           <Heading level={3}>{t("applyTitle")}</Heading>

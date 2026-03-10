@@ -12,7 +12,7 @@ import { useAddToCart, useAuth, useMessage, useWishlistToggle } from "@/hooks";
 import { Button, Span, Text } from "@/components";
 import { Heart, ShoppingCart, Zap } from "lucide-react";
 
-const { themed, borderRadius, flex } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
 
 interface ProductActionsProps {
   productId: string;

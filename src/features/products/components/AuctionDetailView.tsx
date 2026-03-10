@@ -38,7 +38,7 @@ import {
 } from "@/hooks";
 import { formatCurrency, formatDate, resolveDate } from "@/utils";
 
-const { themed, borderRadius, flex, page, spacing } = THEME_CONSTANTS;
+const { themed, flex, page, spacing } = THEME_CONSTANTS;
 
 interface AuctionDetailViewProps {
   id: string;
@@ -291,7 +291,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
 
             {/* ——— Bid Info ——— */}
             <div
-              className={`${themed.bgPrimary} rounded-xl ${spacing.padding.md} ${spacing.stack}`}
+              className={`${themed.bgPrimary} rounded-xl p-4 ${spacing.stack}`}
             >
               <div className={flex.between}>
                 <div>
@@ -483,7 +483,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
             <div className={`sticky top-24 ${spacing.stack}`}>
               {/* Bid panel card */}
               <div
-                className={`${themed.bgPrimary} ${borderRadius.xl} p-5 ${spacing.stack} shadow-sm border ${themed.border}`}
+                className={`${themed.bgPrimary} rounded-xl p-5 ${spacing.stack} shadow-sm border ${themed.border}`}
               >
                 <PlaceBidForm
                   productId={product.id}
@@ -527,7 +527,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
 
               {/* Seller card */}
               <div
-                className={`${themed.bgPrimary} ${borderRadius.xl} p-4 border ${themed.border}`}
+                className={`${themed.bgPrimary} rounded-xl p-4 border ${themed.border}`}
               >
                 <Text
                   size="xs"
@@ -550,7 +550,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
 
         {/* ——— Bid History Section ——— */}
         <div
-          className={`${themed.bgPrimary} ${borderRadius.xl} p-4 sm:p-6 lg:p-8 mt-8 lg:mt-12`}
+          className={`${themed.bgPrimary} rounded-xl p-4 sm:p-6 lg:p-8 mt-8 lg:mt-12`}
         >
           <BidHistory bids={bids} loading={bidsQuery.isLoading} />
         </div>

@@ -19,9 +19,7 @@ export function AdvertisementBanner() {
 
   if (isLoading) {
     return (
-      <Section
-        className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.sectionBg.warm}`}
-      >
+      <Section className={`p-8 ${THEME_CONSTANTS.sectionBg.warm}`}>
         <div className="w-full">
           <div
             className={`h-72 ${THEME_CONSTANTS.themed.bgTertiary} rounded-2xl animate-pulse`}
@@ -50,12 +48,10 @@ export function AdvertisementBanner() {
   // ─── Split editorial layout (when CMS provides an image) ────────────────────
   if (hasImage) {
     return (
-      <Section
-        className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.sectionBg.warm}`}
-      >
+      <Section className={`p-8 ${THEME_CONSTANTS.sectionBg.warm}`}>
         <div className="w-full">
           <div
-            className={`relative overflow-hidden ${THEME_CONSTANTS.borderRadius["2xl"]} bg-zinc-900 shadow-xl`}
+            className={`relative overflow-hidden rounded-2xl bg-zinc-900 shadow-xl`}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 min-h-[300px] md:min-h-[360px]">
               {/* Left: editorial image */}
@@ -115,12 +111,10 @@ export function AdvertisementBanner() {
 
   // ─── Full-width gradient layout (fallback / no image) ────────────────────────
   return (
-    <Section
-      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.sectionBg.warm}`}
-    >
+    <Section className={`p-8 ${THEME_CONSTANTS.sectionBg.warm}`}>
       <div className="w-full">
         <div
-          className={`relative overflow-hidden ${THEME_CONSTANTS.borderRadius["2xl"]} min-h-[240px] md:min-h-[300px] flex items-center`}
+          className={`relative overflow-hidden rounded-2xl min-h-[240px] md:min-h-[300px] flex items-center`}
           style={
             hasCmsData && banner?.backgroundColor
               ? { backgroundColor: banner.backgroundColor }

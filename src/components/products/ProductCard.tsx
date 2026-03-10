@@ -15,7 +15,7 @@ import { formatCurrency } from "@/utils";
 import { useAddToCart, useWishlistToggle, useMessage } from "@/hooks";
 import type { ProductDocument } from "@/db/schema";
 
-const { themed, borderRadius, flex, position } = THEME_CONSTANTS;
+const { themed, flex, position } = THEME_CONSTANTS;
 
 export interface ProductCardProps {
   product: Pick<
@@ -144,7 +144,7 @@ export function ProductCard({
 
   return (
     <div
-      className={`${themed.bgPrimary} ${borderRadius.lg} overflow-hidden border transition-shadow transition-colors duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isOutOfStock ? "opacity-75" : ""} ${isSelected ? "ring-2 ring-indigo-500 dark:ring-indigo-400" : ""} ${hovered ? "shadow-xl border-indigo-200 dark:border-indigo-800" : "shadow-sm border-zinc-100 dark:border-slate-800"} ${className}`}
+      className={`${themed.bgPrimary} rounded-lg overflow-hidden border transition-shadow transition-colors duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isOutOfStock ? "opacity-75" : ""} ${isSelected ? "ring-2 ring-indigo-500 dark:ring-indigo-400" : ""} ${hovered ? "shadow-xl border-indigo-200 dark:border-indigo-800" : "shadow-sm border-zinc-100 dark:border-slate-800"} ${className}`}
     >
       {/* ── IMAGE SECTION ── */}
       <div

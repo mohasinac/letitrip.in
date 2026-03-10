@@ -185,7 +185,7 @@ export function ProductForm({
       </div>
 
       {/* Condition & Shipping */}
-      <Heading level={4} className={spacing.margin.top.md}>
+      <Heading level={4} className="mt-4">
         {t("sectionConditionShipping")}
       </Heading>
 
@@ -258,7 +258,7 @@ export function ProductForm({
       )}
 
       {/* Auction fields */}
-      <Heading level={4} className={spacing.margin.top.md}>
+      <Heading level={4} className="mt-4">
         {t("sectionAuctionSettings")}
       </Heading>
 
@@ -356,11 +356,7 @@ export function ProductForm({
           />
 
           {/* Advanced Auction Options */}
-          <Text
-            variant="secondary"
-            weight="semibold"
-            className={spacing.margin.top.sm}
-          >
+          <Text variant="secondary" weight="semibold" className="mt-2">
             {t("sectionAuctionAdvanced")}
           </Text>
 
@@ -393,7 +389,7 @@ export function ProductForm({
       )}
 
       {/* Pre-order Settings */}
-      <Heading level={4} className={spacing.margin.top.md}>
+      <Heading level={4} className="mt-4">
         {t("sectionPreOrderSettings")}
       </Heading>
 

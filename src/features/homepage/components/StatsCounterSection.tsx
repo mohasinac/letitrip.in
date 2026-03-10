@@ -146,7 +146,7 @@ export function StatsCounterSection() {
   return (
     <Section
       ref={sectionRef}
-      className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.sectionBg.cool}`}
+      className={`p-6 ${THEME_CONSTANTS.sectionBg.cool}`}
     >
       <div className={`${THEME_CONSTANTS.container["2xl"]} mx-auto`}>
         {/* Stats grid */}

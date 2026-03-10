@@ -7,9 +7,7 @@ import { Card, Heading, Section, Text } from "@/components";
 export function SiteFeaturesSection() {
   const t = useTranslations("homepage");
   return (
-    <Section
-      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
-    >
+    <Section className={`p-8 ${THEME_CONSTANTS.themed.bgSecondary}`}>
       <div className="w-full">
         {/* Section Header */}
         <div className="text-center mb-12">
@@ -32,7 +30,7 @@ export function SiteFeaturesSection() {
             <Card
               key={feature.id}
               variant="primary"
-              className={`${THEME_CONSTANTS.spacing.padding.lg} text-center hover:shadow-lg transition-all group`}
+              className={`p-6 text-center hover:shadow-lg transition-all group`}
             >
               {/* Icon */}
               <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">

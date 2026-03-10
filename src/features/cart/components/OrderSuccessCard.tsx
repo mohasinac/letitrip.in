@@ -7,7 +7,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { OrderDocument } from "@/db/schema";
 
-const { themed, spacing, borderRadius, flex } = THEME_CONSTANTS;
+const { themed, spacing, flex } = THEME_CONSTANTS;
 
 function orderStatusVariant(
   s: OrderDocument["status"],
@@ -43,7 +43,7 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
   const t = useTranslations("orderSuccess");
   return (
     <div
-      className={`${themed.bgSecondary} ${borderRadius.xl} p-6 ${spacing.stack} mb-6`}
+      className={`${themed.bgSecondary} rounded-xl p-6 ${spacing.stack} mb-6`}
     >
       <Heading level={2} className="mb-0">
         {t("orderDetails")}
@@ -68,7 +68,7 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
 
       {/* Product */}
       <div
-        className={`flex gap-4 p-4 ${themed.bgPrimary} ${borderRadius.xl} border ${themed.border}`}
+        className={`flex gap-4 p-4 ${themed.bgPrimary} rounded-xl border ${themed.border}`}
       >
         <div className="flex-1 min-w-0">
           <Text weight="semibold" className="truncate">
@@ -87,7 +87,7 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
       {/* Payment & shipping info */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div
-          className={`p-4 ${themed.bgPrimary} ${borderRadius.xl} border ${themed.border} ${spacing.stack}`}
+          className={`p-4 ${themed.bgPrimary} rounded-xl border ${themed.border} ${spacing.stack}`}
         >
           <Caption className="font-medium uppercase tracking-wide">
             {t("paymentMethod")}
@@ -103,7 +103,7 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
           </Badge>
         </div>
         <div
-          className={`p-4 ${themed.bgPrimary} ${borderRadius.xl} border ${themed.border} ${spacing.stack}`}
+          className={`p-4 ${themed.bgPrimary} rounded-xl border ${themed.border} ${spacing.stack}`}
         >
           <Caption className="font-medium uppercase tracking-wide">
             {t("shippingTo")}

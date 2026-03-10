@@ -125,7 +125,7 @@ export function RipCoinsPurchaseView() {
       </div>
 
       {/* ── Order summary ──────────────────────────────────────────── */}
-      <Card className={spacing.padding.md}>
+      <Card className="p-4">
         <Heading level={4} className="mb-3">
           {t("summary")}
         </Heading>

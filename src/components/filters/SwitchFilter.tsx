@@ -43,7 +43,7 @@ export function SwitchFilter({
 
   return (
     <div
-      className={`${spacing.padding.md} border-b ${themed.border} last:border-b-0 ${className}`}
+      className={`p-4 border-b ${themed.border} last:border-b-0 ${className}`}
     >
       {/* Section header — matches FilterFacetSection */}
       <Button

@@ -19,7 +19,7 @@ import { ProductFeatureBadges } from "./ProductFeatureBadges";
 import type { ProductDocument } from "@/db/schema";
 import { Store, Tag, Eye, Clock, Truck, RotateCcw } from "lucide-react";
 
-const { themed, spacing, flex, borderRadius } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
 
 interface ProductInfoProps {
   title: string;
@@ -144,7 +144,7 @@ export function ProductInfo({
       </div>
 
       {/* ——— Price section ——— */}
-      <div className={`p-4 ${borderRadius.xl} ${themed.bgSecondary}`}>
+      <div className={`p-4 rounded-xl ${themed.bgSecondary}`}>
         {isAuction ? (
           <div className="space-y-1">
             <Text size="sm" variant="secondary">

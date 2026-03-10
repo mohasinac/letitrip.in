@@ -33,7 +33,7 @@ function TrustFeatureCard({
   return (
     <Card
       variant="primary"
-      className={`${THEME_CONSTANTS.spacing.padding.md} text-center hover:shadow-md
+      className={`p-4 text-center hover:shadow-md
         ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
       style={{
         transition: `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms, box-shadow 0.2s`,
@@ -89,7 +89,7 @@ export function TrustFeaturesSection() {
   return (
     <Section
       ref={sectionRef}
-      className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgSecondary}`}
+      className={`p-6 ${THEME_CONSTANTS.themed.bgSecondary}`}
     >
       <div className="w-full">
         <div className="text-center mb-6">

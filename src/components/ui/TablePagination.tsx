@@ -62,7 +62,7 @@ export function TablePagination({
     <div
       role="navigation"
       aria-label={t("paginationLabel")}
-      className={`flex flex-col sm:flex-row items-center justify-between gap-4 ${spacing.padding.md} border-t ${themed.border} ${className}`}
+      className={`flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t ${themed.border} ${className}`}
     >
       {/* Result count */}
       <Text className={`text-sm ${themed.textSecondary} tabular-nums`}>

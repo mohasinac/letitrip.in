@@ -51,7 +51,7 @@ export function FAQAccordion({
   if (faqs.length === 0) {
     return (
       <div
-        className={`${THEME_CONSTANTS.spacing.padding.xl} p-8 text-center ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl}`}
+        className={`p-8 text-center ${THEME_CONSTANTS.themed.bgSecondary} rounded-xl`}
       >
         <Text
           className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary}`}
@@ -72,13 +72,13 @@ export function FAQAccordion({
           <div
             key={faq.id}
             id={faq.id}
-            className={`${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} ${THEME_CONSTANTS.themed.border} border overflow-hidden transition-all`}
+            className={`${THEME_CONSTANTS.themed.bgSecondary} rounded-xl ${THEME_CONSTANTS.themed.border} border overflow-hidden transition-all`}
           >
             {/* Question Header */}
             <Button
               variant="ghost"
               onClick={() => toggleFAQ(faq.id)}
-              className={`w-full text-left ${THEME_CONSTANTS.spacing.padding.lg} ${flex.betweenStart} gap-4 ${THEME_CONSTANTS.themed.hover} transition-colors`}
+              className={`w-full text-left p-6 ${flex.betweenStart} gap-4 ${THEME_CONSTANTS.themed.hover} transition-colors`}
             >
               <div className="flex-1">
                 <Heading
@@ -92,7 +92,7 @@ export function FAQAccordion({
                     {faq.tags.map((tag) => (
                       <Span
                         key={tag}
-                        className={`${THEME_CONSTANTS.typography.xs} ${THEME_CONSTANTS.spacing.padding.sm} ${THEME_CONSTANTS.borderRadius.md} ${THEME_CONSTANTS.themed.bgTertiary} ${THEME_CONSTANTS.themed.textSecondary}`}
+                        className={`${THEME_CONSTANTS.typography.xs} p-3 rounded-md ${THEME_CONSTANTS.themed.bgTertiary} ${THEME_CONSTANTS.themed.textSecondary}`}
                       >
                         {tag}
                       </Span>
@@ -121,9 +121,7 @@ export function FAQAccordion({
 
             {/* Answer Content */}
             {isExpanded && (
-              <div
-                className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.border} border-t`}
-              >
+              <div className={`p-6 ${THEME_CONSTANTS.themed.border} border-t`}>
                 {/* Answer Text */}
                 <div
                   className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} mb-6 prose dark:prose-invert max-w-none`}

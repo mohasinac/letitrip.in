@@ -18,9 +18,7 @@ export function WelcomeSection() {
 
   if (isLoading) {
     return (
-      <Section
-        className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
-      >
+      <Section className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}>
         <div className="w-full text-center">
           <div className="animate-pulse">
             <div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-lg mb-4 max-w-3xl mx-auto" />
@@ -36,9 +34,7 @@ export function WelcomeSection() {
 
   if (!data?.[0]) {
     return (
-      <Section
-        className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
-      >
+      <Section className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}>
         <div className="w-full text-center">
           <Heading
             level={1}
@@ -60,9 +56,7 @@ export function WelcomeSection() {
   const config = section.config as WelcomeSectionConfig;
 
   return (
-    <Section
-      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
-    >
+    <Section className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}>
       <div className="w-full text-center">
         {/* H1 Heading */}
         <Heading

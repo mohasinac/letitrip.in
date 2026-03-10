@@ -135,7 +135,7 @@ export function SectionCarousel<T = unknown>({
       className={[
         "relative overflow-hidden w-full",
         hasBg ? "" : themed.bgSecondary,
-        spacing.padding.xl,
+        "p-8",
         className,
       ]
         .filter(Boolean)

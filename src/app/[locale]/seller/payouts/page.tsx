@@ -76,7 +76,7 @@ export default function SellerPayoutsPage() {
 
   return (
     <div className={`${themed.bgPrimary} min-h-screen`}>
-      <div className={`max-w-4xl mx-auto ${spacing.padding.lg}`}>
+      <div className={`max-w-4xl mx-auto p-6`}>
         <div className={`${spacing.stack} mb-8`}>
           <Heading level={1} className={typography.h2}>
             {t("pageTitle")}

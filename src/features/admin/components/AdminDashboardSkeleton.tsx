@@ -27,7 +27,7 @@ export function AdminDashboardSkeleton() {
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className={`rounded-xl border-l-4 border-l-zinc-200 dark:border-l-slate-700 ${themed.bgPrimary} ${spacing.padding.md}`}
+            className={`rounded-xl border-l-4 border-l-zinc-200 dark:border-l-slate-700 ${themed.bgPrimary} p-4`}
           >
             <div className={flex.betweenStart}>
               <div className="flex-1">

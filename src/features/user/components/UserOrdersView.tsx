@@ -246,7 +246,7 @@ function UserOrdersContent() {
         mobileCardRender={(order) => (
           <Card className={THEME_CONSTANTS.spacing.cardPadding}>
             <div
-              className={`flex flex-col md:flex-row md:items-center md:justify-between ${THEME_CONSTANTS.spacing.gap.md}`}
+              className={`flex flex-col md:flex-row md:items-center md:justify-between gap-4`}
             >
               <div className={THEME_CONSTANTS.spacing.stackSmall}>
                 <Heading level={6}>{order.productTitle}</Heading>
@@ -258,9 +258,7 @@ function UserOrdersContent() {
                   {tOrders("placedOn")} {formatDate(order.orderDate)}
                 </Text>
               </div>
-              <div
-                className={`flex items-center flex-wrap ${THEME_CONSTANTS.spacing.gap.md}`}
-              >
+              <div className={`flex items-center flex-wrap gap-4`}>
                 <Text className="font-semibold">
                   {formatCurrency(order.totalPrice, order.currency)}
                 </Text>

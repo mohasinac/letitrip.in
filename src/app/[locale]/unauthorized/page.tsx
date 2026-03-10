@@ -39,17 +39,15 @@ export default function UnauthorizedPage() {
 
   return (
     <div
-      className={`${THEME_CONSTANTS.layout.fullScreen} ${THEME_CONSTANTS.layout.flexCenter} ${themed.bgPrimary} ${spacing.padding.xl}`}
+      className={`${THEME_CONSTANTS.layout.fullScreen} ${THEME_CONSTANTS.layout.flexCenter} ${themed.bgPrimary} p-8`}
     >
       <div
         className={`${THEME_CONSTANTS.container.xl} ${THEME_CONSTANTS.layout.centerText} ${spacing.stack}`}
       >
         {/* Unauthorized Icon */}
-        <div
-          className={`${THEME_CONSTANTS.layout.flexCenter} ${spacing.margin.bottom.xl}`}
-        >
+        <div className={`${THEME_CONSTANTS.layout.flexCenter} mb-8`}>
           <div
-            className={`${themed.bgSecondary} ${themed.border} ${THEME_CONSTANTS.borderRadius.full} ${spacing.padding.xl} inline-block`}
+            className={`${themed.bgSecondary} ${themed.border} rounded-full p-8 inline-block`}
           >
             <svg
               className={THEME_CONSTANTS.iconSize.xl}
@@ -68,7 +66,7 @@ export default function UnauthorizedPage() {
         </div>
 
         {/* Large 401 Text */}
-        <div className={`${themed.textPrimary} ${spacing.margin.bottom.md}`}>
+        <div className={`${themed.textPrimary} mb-4`}>
           <Span
             className={`${typography.display} ${THEME_CONSTANTS.opacity.low}`}
           >
@@ -79,19 +77,19 @@ export default function UnauthorizedPage() {
         {/* Error Title */}
         <Heading
           level={1}
-          className={`${typography.h1} ${themed.textPrimary} ${spacing.margin.bottom.md}`}
+          className={`${typography.h1} ${themed.textPrimary} mb-4`}
         >
           {tError("unauthorized.title")}
         </Heading>
 
         {/* Error Description */}
-        <Text variant="secondary" className={spacing.margin.bottom.xl}>
+        <Text variant="secondary" className="mb-8">
           {tError("unauthorized.description")}
         </Text>
 
         {/* Countdown Message */}
         <div
-          className={`${themed.bgSecondary} ${themed.border} ${THEME_CONSTANTS.borderRadius.lg} ${spacing.padding.md} ${spacing.margin.bottom.xl}`}
+          className={`${themed.bgSecondary} ${themed.border} rounded-lg p-4 mb-8`}
         >
           <Text variant="secondary">
             {tAuth("redirectingIn")}{" "}
@@ -102,7 +100,7 @@ export default function UnauthorizedPage() {
 
         {/* Action Buttons */}
         <div
-          className={`${THEME_CONSTANTS.layout.flexCenter} ${spacing.gap.md} flex-col sm:flex-row`}
+          className={`${THEME_CONSTANTS.layout.flexCenter} gap-4 flex-col sm:flex-row`}
         >
           <Button
             variant="primary"

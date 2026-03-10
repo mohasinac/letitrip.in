@@ -118,7 +118,7 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
         )}
       </div>
 
-      <div className={`${grid.cols2} ${spacing.gap.md}`}>
+      <div className={`${grid.cols2} gap-4`}>
         <FormField
           name="category"
           label={t("category")}
@@ -164,7 +164,7 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
         placeholder={t("tagsPlaceholder")}
       />
 
-      <div className={`${grid.cols2} ${spacing.gap.md}`}>
+      <div className={`${grid.cols2} gap-4`}>
         <div>
           <FormField
             name="order"

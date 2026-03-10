@@ -51,7 +51,7 @@ export function ActiveFilterChips({
 }: ActiveFilterChipsProps) {
   if (filters.length === 0) return null;
 
-  const { themed, borderRadius, spacing, flex } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
   const tActions = useTranslations("actions");
 
   return (
@@ -64,7 +64,7 @@ export function ActiveFilterChips({
         <Span
           key={filter.key}
           role="listitem"
-          className={`inline-flex items-center gap-1 text-xs font-medium ${borderRadius.lg} border ${themed.border} ${themed.bgSecondary} ${themed.textPrimary} py-1 pl-2 pr-1`}
+          className={`inline-flex items-center gap-1 text-xs font-medium rounded-lg border ${themed.border} ${themed.bgSecondary} ${themed.textPrimary} py-1 pl-2 pr-1`}
         >
           <Span className={`${themed.textSecondary} mr-0.5`}>
             {filter.label}:
@@ -75,7 +75,7 @@ export function ActiveFilterChips({
             variant="ghost"
             onClick={() => onRemove(filter.key)}
             aria-label={`Remove ${filter.label}: ${filter.value} filter`}
-            className={`ml-1 ${flex.center} w-4 h-4 ${borderRadius.full} hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors`}
+            className={`ml-1 ${flex.center} w-4 h-4 rounded-full hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors`}
           >
             <svg
               className="w-2.5 h-2.5"
@@ -100,7 +100,7 @@ export function ActiveFilterChips({
         type="button"
         variant="ghost"
         onClick={onClearAll}
-        className={`text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline ${spacing.padding.xs}`}
+        className={`text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline p-2`}
       >
         {tActions("clearAll")}
       </Button>

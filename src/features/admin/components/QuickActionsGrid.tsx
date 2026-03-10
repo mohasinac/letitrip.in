@@ -86,7 +86,7 @@ export function QuickActionsGrid() {
         <Heading level={3} variant="primary" className="mb-4">
           {t("quickActions")}
         </Heading>
-        <div className={`grid grid-cols-1 md:grid-cols-3 ${spacing.gap.md}`}>
+        <div className={`grid grid-cols-1 md:grid-cols-3 gap-4`}>
           {QUICK_ACTIONS.map((action) => (
             <TextLink key={action.href} href={action.href} className="block">
               <Button variant="secondary" className="w-full justify-start">

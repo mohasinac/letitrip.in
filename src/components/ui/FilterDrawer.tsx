@@ -84,7 +84,7 @@ export function FilterDrawer({
   const t = useTranslations("filters");
   const tActions = useTranslations("actions");
 
-  const { themed, borderRadius, spacing, flex } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
 
   // Controlled vs uncontrolled open state
   const isControlled = controlledOpen !== undefined;
@@ -132,7 +132,7 @@ export function FilterDrawer({
           variant="ghost"
           onClick={() => setInternalOpen(true)}
           aria-label={triggerLabel ?? t("title")}
-          className={`inline-flex items-center gap-2 text-sm font-medium ${themed.textPrimary} ${borderRadius.lg} border ${themed.border} ${spacing.padding.xs} px-3 hover:${themed.bgSecondary} transition-colors ${triggerClassName}`}
+          className={`inline-flex items-center gap-2 text-sm font-medium ${themed.textPrimary} rounded-lg border ${themed.border} p-2 px-3 hover:${themed.bgSecondary} transition-colors ${triggerClassName}`}
         >
           {/* Filter icon */}
           <svg

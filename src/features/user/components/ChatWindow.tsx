@@ -74,7 +74,7 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
 
   return (
     <Card
-      className={`flex flex-col h-full min-h-[360px] sm:min-h-[420px] xl:min-h-[540px] max-h-[600px] xl:max-h-[760px] 2xl:max-h-[840px] ${spacing.padding.md}`}
+      className={`flex flex-col h-full min-h-[360px] sm:min-h-[420px] xl:min-h-[540px] max-h-[600px] xl:max-h-[760px] 2xl:max-h-[840px] p-4`}
     >
       {/* Header */}
       <div className={`${flex.between} pb-3 border-b ${themed.border} mb-3`}>
@@ -97,7 +97,7 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
 
       {/* Messages */}
       <div
-        className={`${flex.growMinH} ${overflow.yAuto} flex flex-col ${spacing.gap.sm} pr-1`}
+        className={`${flex.growMinH} ${overflow.yAuto} flex flex-col gap-3 pr-1`}
       >
         {messages.length === 0 && !isLoading && (
           <div className={`${flex.center} h-full`}>
@@ -139,7 +139,7 @@ export function ChatWindow({ chatId, currentUserId, participantName }: Props) {
 
       {/* Input */}
       <div
-        className={`mt-3 pt-3 border-t ${themed.border} flex ${spacing.gap.xs} items-end`}
+        className={`mt-3 pt-3 border-t ${themed.border} flex gap-2 items-end`}
       >
         <div className="flex-1">
           <Textarea

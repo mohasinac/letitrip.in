@@ -21,13 +21,13 @@ export default function FAQPage() {
         <div className="py-12">
           <div className={`animate-pulse ${THEME_CONSTANTS.spacing.stack}`}>
             <div
-              className={`h-32 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl}`}
+              className={`h-32 ${THEME_CONSTANTS.themed.bgSecondary} rounded-xl`}
             />
             <div
-              className={`h-16 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl}`}
+              className={`h-16 ${THEME_CONSTANTS.themed.bgSecondary} rounded-xl`}
             />
             <div
-              className={`h-96 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl}`}
+              className={`h-96 ${THEME_CONSTANTS.themed.bgSecondary} rounded-xl`}
             />
           </div>
         </div>

@@ -9,13 +9,11 @@ export function ContactCTA() {
 
   return (
     <div
-      className={`${THEME_CONSTANTS.spacing.padding.xl} p-8 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} text-center`}
+      className={`p-8 ${THEME_CONSTANTS.themed.bgSecondary} rounded-xl text-center`}
     >
       {/* Icon */}
       <div className="flex justify-center mb-6">
-        <div
-          className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.borderRadius.full} bg-blue-100 dark:bg-blue-900/20`}
-        >
+        <div className={`p-8 rounded-full bg-blue-100 dark:bg-blue-900/20`}>
           <svg
             className="w-12 h-12 text-blue-600 dark:text-blue-400"
             fill="none"
@@ -53,7 +51,7 @@ export function ContactCTA() {
         <TextLink
           href={`mailto:${SITE_CONFIG.contact.email}`}
           variant="bare"
-          className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgTertiary} ${THEME_CONSTANTS.borderRadius.xl} hover:${THEME_CONSTANTS.themed.bgPrimary} transition-colors group`}
+          className={`p-6 ${THEME_CONSTANTS.themed.bgTertiary} rounded-xl hover:${THEME_CONSTANTS.themed.bgPrimary} transition-colors group`}
         >
           <svg
             className={`w-8 h-8 ${THEME_CONSTANTS.themed.textSecondary} group-hover:text-blue-600 dark:group-hover:text-blue-400 mx-auto mb-3 transition-colors`}
@@ -84,7 +82,7 @@ export function ContactCTA() {
         <TextLink
           href={`tel:${SITE_CONFIG.contact.phone}`}
           variant="bare"
-          className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgTertiary} ${THEME_CONSTANTS.borderRadius.xl} hover:${THEME_CONSTANTS.themed.bgPrimary} transition-colors group`}
+          className={`p-6 ${THEME_CONSTANTS.themed.bgTertiary} rounded-xl hover:${THEME_CONSTANTS.themed.bgPrimary} transition-colors group`}
         >
           <svg
             className={`w-8 h-8 ${THEME_CONSTANTS.themed.textSecondary} group-hover:text-blue-600 dark:group-hover:text-blue-400 mx-auto mb-3 transition-colors`}
@@ -114,7 +112,7 @@ export function ContactCTA() {
         {/* Contact Form */}
         <TextLink
           href={ROUTES.PUBLIC.CONTACT}
-          className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgTertiary} ${THEME_CONSTANTS.borderRadius.xl} hover:${THEME_CONSTANTS.themed.bgPrimary} transition-colors group`}
+          className={`p-6 ${THEME_CONSTANTS.themed.bgTertiary} rounded-xl hover:${THEME_CONSTANTS.themed.bgPrimary} transition-colors group`}
         >
           <svg
             className={`w-8 h-8 ${THEME_CONSTANTS.themed.textSecondary} group-hover:text-blue-600 dark:group-hover:text-blue-400 mx-auto mb-3 transition-colors`}
@@ -145,7 +143,7 @@ export function ContactCTA() {
       {/* Primary CTA Button */}
       <TextLink
         href={ROUTES.PUBLIC.CONTACT}
-        className={`inline-flex items-center gap-2 ${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.borderRadius.xl} bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors`}
+        className={`inline-flex items-center gap-2 p-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors`}
       >
         <Span>{t("contactTeam")}</Span>
         <svg

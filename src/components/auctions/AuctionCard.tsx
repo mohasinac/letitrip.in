@@ -18,7 +18,7 @@ import type { CountdownRemaining } from "@/hooks";
 import { formatCurrency } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
 
-const { themed, borderRadius, flex, position } = THEME_CONSTANTS;
+const { themed, flex, position } = THEME_CONSTANTS;
 
 export interface AuctionCardProps {
   product: Pick<
@@ -157,7 +157,7 @@ export function AuctionCard({
 
   return (
     <div
-      className={`${themed.bgPrimary} ${borderRadius.lg} overflow-hidden border border-zinc-100 dark:border-slate-800 hover:shadow-xl hover:border-indigo-200 dark:hover:border-indigo-800 transition-all duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isEnded ? "opacity-60" : ""} ${isSelected ? "ring-2 ring-indigo-500 dark:ring-indigo-400" : ""} ${className}`}
+      className={`${themed.bgPrimary} rounded-lg overflow-hidden border border-zinc-100 dark:border-slate-800 hover:shadow-xl hover:border-indigo-200 dark:hover:border-indigo-800 transition-all duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isEnded ? "opacity-60" : ""} ${isSelected ? "ring-2 ring-indigo-500 dark:ring-indigo-400" : ""} ${className}`}
     >
       {/* ── IMAGE SECTION ── */}
       <div

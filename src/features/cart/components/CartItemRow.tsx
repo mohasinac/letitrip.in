@@ -13,7 +13,7 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { CartItemDocument } from "@/db/schema";
 
-const { themed, borderRadius, flex, position } = THEME_CONSTANTS;
+const { themed, flex, position } = THEME_CONSTANTS;
 
 interface CartItemRowProps {
   item: CartItemDocument;
@@ -33,7 +33,7 @@ export function CartItemRow({
 
   return (
     <div
-      className={`flex gap-4 p-4 ${themed.bgPrimary} ${borderRadius.xl} border ${themed.border} ${isUpdating ? "opacity-60 pointer-events-none" : ""}`}
+      className={`flex gap-4 p-4 ${themed.bgPrimary} rounded-xl border ${themed.border} ${isUpdating ? "opacity-60 pointer-events-none" : ""}`}
     >
       {/* Product image */}
       <TextLink

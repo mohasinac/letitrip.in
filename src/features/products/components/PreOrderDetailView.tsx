@@ -39,7 +39,7 @@ import { productService } from "@/services";
 import { formatCurrency, formatDate } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
 
-const { themed, borderRadius, flex, page, spacing } = THEME_CONSTANTS;
+const { themed, flex, page, spacing } = THEME_CONSTANTS;
 
 interface ProductResponse {
   data: ProductDocument;
@@ -360,7 +360,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
           {/* ── Col 3: Reservation Panel (sticky) ── */}
           <div className="lg:sticky lg:top-24 self-start">
             <div
-              className={`${themed.bgPrimary} ${borderRadius.xl} border border-zinc-100 dark:border-slate-800 p-4 flex flex-col gap-4 shadow-lg`}
+              className={`${themed.bgPrimary} rounded-xl border border-zinc-100 dark:border-slate-800 p-4 flex flex-col gap-4 shadow-lg`}
             >
               {/* Pre-order label */}
               <div className="flex items-center gap-2">

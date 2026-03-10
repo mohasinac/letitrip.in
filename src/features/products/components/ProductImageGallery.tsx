@@ -13,7 +13,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, Expand } from "lucide-react";
 
-const { themed, borderRadius, flex } = THEME_CONSTANTS;
+const { themed, flex } = THEME_CONSTANTS;
 
 interface VideoData {
   url: string;
@@ -96,7 +96,7 @@ export function ProductImageGallery({
     <div className="space-y-3">
       {/* Primary media display */}
       <div
-        className={`relative group overflow-hidden ${borderRadius.xl} bg-zinc-100 dark:bg-slate-800`}
+        className={`relative group overflow-hidden rounded-xl bg-zinc-100 dark:bg-slate-800`}
       >
         <div className="aspect-square sm:aspect-[4/3] lg:aspect-square">
           {!selected ? (
@@ -181,7 +181,7 @@ export function ProductImageGallery({
                   ? t("gallery.videoThumbnail")
                   : t("gallery.imageThumbnail", { n: idx + 1 })
               }`}
-              className={`relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 overflow-hidden ${borderRadius.md} border-2 transition-all ${
+              className={`relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 overflow-hidden rounded-md border-2 transition-all ${
                 idx === selectedIndex
                   ? "border-indigo-500 ring-2 ring-indigo-500/30"
                   : `border-transparent ${themed.border} opacity-60 hover:opacity-100`

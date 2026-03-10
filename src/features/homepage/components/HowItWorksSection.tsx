@@ -155,7 +155,7 @@ export function HowItWorksSection() {
   return (
     <Section
       ref={sectionRef}
-      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgPrimary}`}
+      className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}
     >
       <div className={`${THEME_CONSTANTS.container["2xl"]} mx-auto`}>
         {/* Header */}

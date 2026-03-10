@@ -150,7 +150,7 @@ export default function SideDrawer({
 
   if (!isOpen) return null;
 
-  const { themed, spacing, borderRadius, flex } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
 
   const positionClass =
     side === "left"
@@ -184,14 +184,12 @@ export default function SideDrawer({
         aria-labelledby="drawer-title"
       >
         {/* Header */}
-        <div
-          className={`${flex.between} ${spacing.padding.lg} ${modeHeaderClass} border-b`}
-        >
+        <div className={`${flex.between} p-6 ${modeHeaderClass} border-b`}>
           <div className={`${flex.rowCenter} gap-3 min-w-0`}>
             <Button
               variant="ghost"
               onClick={attemptClose}
-              className={`${flex.noShrink} p-2 ${themed.textSecondary} ${borderRadius.lg} ${themed.hover} transition-colors ring-1 ring-zinc-200 dark:ring-slate-700 hover:ring-zinc-300 dark:hover:ring-slate-600`}
+              className={`${flex.noShrink} p-2 ${themed.textSecondary} rounded-lg ${themed.hover} transition-colors ring-1 ring-zinc-200 dark:ring-slate-700 hover:ring-zinc-300 dark:hover:ring-slate-600`}
               aria-label={tActions("close")}
             >
               <svg
@@ -220,14 +218,12 @@ export default function SideDrawer({
         </div>
 
         {/* Content */}
-        <div className={`flex-1 overflow-y-auto ${spacing.padding.lg}`}>
-          {children}
-        </div>
+        <div className={`flex-1 overflow-y-auto p-6`}>{children}</div>
 
         {/* Footer */}
         {footer && (
           <div
-            className={`${spacing.padding.lg} ${themed.border} border-t ${themed.bgSecondary}`}
+            className={`p-6 ${themed.border} border-t ${themed.bgSecondary}`}
           >
             {footer}
           </div>
@@ -242,7 +238,7 @@ export default function SideDrawer({
             onClick={cancelClose}
           />
           <div
-            className={`fixed z-[60] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md ${themed.bgPrimary} ${borderRadius.xl} shadow-2xl p-6`}
+            className={`fixed z-[60] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md ${themed.bgPrimary} rounded-xl shadow-2xl p-6`}
           >
             <div className={`${flex.rowStart} gap-3 mb-4`}>
               <div

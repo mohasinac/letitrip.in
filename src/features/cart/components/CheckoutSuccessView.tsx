@@ -13,7 +13,7 @@ import { useTranslations } from "next-intl";
 import { orderService } from "@/services";
 import type { OrderDocument } from "@/db/schema";
 
-const { themed, spacing, borderRadius, flex } = THEME_CONSTANTS;
+const { themed, spacing, flex } = THEME_CONSTANTS;
 
 export function CheckoutSuccessView() {
   const router = useRouter();
@@ -49,11 +49,9 @@ export function CheckoutSuccessView() {
 
   if (error || !order) {
     return (
-      <div
-        className={`min-h-screen ${flex.centerCol} ${themed.bgPrimary} ${spacing.padding.lg}`}
-      >
+      <div className={`min-h-screen ${flex.centerCol} ${themed.bgPrimary} p-6`}>
         <div
-          className={`${themed.bgSecondary} ${borderRadius.xl} ${spacing.padding.lg} max-w-md w-full text-center ${spacing.stack}`}
+          className={`${themed.bgSecondary} rounded-xl p-6 max-w-md w-full text-center ${spacing.stack}`}
         >
           <div className="text-5xl mb-2">✅</div>
           <Heading level={1} className="text-2xl font-bold">

@@ -14,9 +14,7 @@ export function RelatedFAQs({ relatedFAQs }: RelatedFAQsProps) {
   }
 
   return (
-    <div
-      className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgTertiary} ${THEME_CONSTANTS.borderRadius.xl}`}
-    >
+    <div className={`p-6 ${THEME_CONSTANTS.themed.bgTertiary} rounded-xl`}>
       <Heading
         level={3}
         className={`${THEME_CONSTANTS.typography.h4} ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
@@ -29,7 +27,7 @@ export function RelatedFAQs({ relatedFAQs }: RelatedFAQsProps) {
           <TextLink
             key={faq.id}
             href={`/faqs#${faq.id}`}
-            className={`block ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} ${THEME_CONSTANTS.themed.bgPrimary} hover:${THEME_CONSTANTS.themed.bgSecondary} transition-colors group`}
+            className={`block p-4 rounded-lg ${THEME_CONSTANTS.themed.bgPrimary} hover:${THEME_CONSTANTS.themed.bgSecondary} transition-colors group`}
           >
             <div className="flex items-start gap-3">
               {/* Question Icon */}

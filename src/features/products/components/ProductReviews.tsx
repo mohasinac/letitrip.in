@@ -28,13 +28,7 @@ import {
 } from "@/hooks";
 import type { ReviewDocument } from "@/db/schema";
 
-const {
-  themed,
-  borderRadius,
-  rating: ratingTokens,
-  flex,
-  spacing,
-} = THEME_CONSTANTS;
+const { themed, rating: ratingTokens, flex, spacing } = THEME_CONSTANTS;
 
 interface ReviewsResponse {
   data: ReviewDocument[];
@@ -229,7 +223,7 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
   if (!user) {
     return (
       <div
-        className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 ${themed.bgSecondary} ${borderRadius.xl} mb-6`}
+        className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 ${themed.bgSecondary} rounded-xl mb-6`}
       >
         <Text size="sm" variant="secondary">
           {t("reviewFormLoginRequired")}
@@ -258,7 +252,7 @@ function WriteReviewForm({ productId, onSuccess }: WriteReviewFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className={`p-4 sm:p-6 ${themed.bgSecondary} ${borderRadius.xl} mb-6 ${spacing.stack}`}
+      className={`p-4 sm:p-6 ${themed.bgSecondary} rounded-xl mb-6 ${spacing.stack}`}
     >
       <Heading level={4}>{t("reviewFormTitle")}</Heading>
 
@@ -349,7 +343,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
       {/* Rating summary */}
       {totalReviews > 0 && (
         <div
-          className={`flex flex-col sm:flex-row gap-6 p-5 ${themed.bgSecondary} ${borderRadius.xl} mb-6`}
+          className={`flex flex-col sm:flex-row gap-6 p-5 ${themed.bgSecondary} rounded-xl mb-6`}
         >
           {/* Average */}
           <div className="flex flex-col items-center justify-center sm:w-32 shrink-0">
@@ -408,7 +402,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
           {reviews.map((review) => (
             <div
               key={review.id}
-              className={`p-4 ${themed.bgSecondary} ${borderRadius.xl} space-y-2`}
+              className={`p-4 ${themed.bgSecondary} rounded-xl space-y-2`}
             >
               {/* Header */}
               <div className={`${flex.betweenStart} gap-3`}>

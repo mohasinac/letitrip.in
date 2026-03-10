@@ -17,9 +17,7 @@ export function WhatsAppCommunitySection() {
 
   if (isLoading) {
     return (
-      <Section
-        className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
-      >
+      <Section className={`p-8 ${THEME_CONSTANTS.themed.bgSecondary}`}>
         <div className="w-full">
           <div className="h-80 bg-zinc-200 dark:bg-slate-700 rounded-2xl animate-pulse" />
         </div>
@@ -37,12 +35,10 @@ export function WhatsAppCommunitySection() {
   const benefits = config.benefits ?? [];
 
   return (
-    <Section
-      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
-    >
+    <Section className={`p-8 ${THEME_CONSTANTS.themed.bgSecondary}`}>
       <div className="w-full">
         <div
-          className={`bg-gradient-to-br from-green-500 to-green-600 ${THEME_CONSTANTS.borderRadius["2xl"]} ${THEME_CONSTANTS.spacing.padding.xl} text-white overflow-hidden relative`}
+          className={`bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-8 text-white overflow-hidden relative`}
         >
           {/* Decorative Pattern */}
           <div className="absolute inset-0 opacity-10">

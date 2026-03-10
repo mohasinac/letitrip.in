@@ -47,9 +47,7 @@ export function FAQSection() {
   };
 
   return (
-    <Section
-      className={`${THEME_CONSTANTS.spacing.padding.xl} ${THEME_CONSTANTS.themed.bgSecondary}`}
-    >
+    <Section className={`p-8 ${THEME_CONSTANTS.themed.bgSecondary}`}>
       <div className="w-full">
         {/* Section Header */}
         <div className="text-center mb-8">
@@ -99,12 +97,12 @@ export function FAQSection() {
           {faqs.map((faq) => (
             <div
               key={faq.id}
-              className={`${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.borderRadius["2xl"]} overflow-hidden transition-all`}
+              className={`${THEME_CONSTANTS.themed.bgPrimary} rounded-2xl overflow-hidden transition-all`}
             >
               {/* Question Button */}
               <Button
                 variant="ghost"
-                className={`w-full text-left ${THEME_CONSTANTS.spacing.padding.lg} ${flex.between} gap-4 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors`}
+                className={`w-full text-left p-6 ${flex.between} gap-4 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors`}
                 onClick={() => toggleFaq(faq.id)}
               >
                 <Span
@@ -131,9 +129,9 @@ export function FAQSection() {
 
               {/* Answer (Collapsible) */}
               {openFaqId === faq.id && (
-                <div className={`${THEME_CONSTANTS.spacing.padding.lg} pt-0`}>
+                <div className={`p-6 pt-0`}>
                   <div
-                    className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} ${THEME_CONSTANTS.borderRadius.md} ${THEME_CONSTANTS.themed.bgTertiary} p-4`}
+                    className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} rounded-md ${THEME_CONSTANTS.themed.bgTertiary} p-4`}
                     dangerouslySetInnerHTML={{ __html: faq.answer }}
                   />
                 </div>

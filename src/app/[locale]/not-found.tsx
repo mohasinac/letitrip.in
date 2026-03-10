@@ -21,9 +21,7 @@ export default function NotFound() {
   const router = useRouter();
 
   return (
-    <div
-      className={`min-h-screen ${flex.center} ${themed.bgPrimary} ${spacing.padding.xl}`}
-    >
+    <div className={`min-h-screen ${flex.center} ${themed.bgPrimary} p-8`}>
       <div
         className={`${THEME_CONSTANTS.container["2xl"]} w-full text-center ${spacing.stack}`}
       >

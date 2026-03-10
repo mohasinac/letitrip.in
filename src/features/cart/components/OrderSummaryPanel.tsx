@@ -5,7 +5,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { Heading, Span } from "@/components";
 
-const { themed, borderRadius } = THEME_CONSTANTS;
+const { themed } = THEME_CONSTANTS;
 
 interface OrderSummaryPanelProps {
   itemCount: number;

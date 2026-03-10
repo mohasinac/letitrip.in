@@ -59,7 +59,7 @@ export function UserDetailDrawer({
     >
       <div className={spacing.stack}>
         {/* User Avatar + Info */}
-        <div className={`flex items-start ${spacing.gap.md}`}>
+        <div className={`flex items-start gap-4`}>
           <AvatarDisplay
             cropData={
               user.photoURL

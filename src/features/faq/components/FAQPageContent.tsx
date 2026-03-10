@@ -188,7 +188,7 @@ export function FAQPageContent({
 
       {/* Main Content Grid */}
       <div
-        className={`grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-12 2xl:grid-cols-12 ${THEME_CONSTANTS.spacing.gap.xl}`}
+        className={`grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-12 2xl:grid-cols-12 gap-8`}
       >
         {/* Sidebar (desktop only — 30% width) */}
         <div className="hidden lg:block lg:col-span-4 xl:col-span-3">

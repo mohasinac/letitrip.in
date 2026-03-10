@@ -65,7 +65,7 @@ export default function UnsavedChangesModal() {
     >
       <div onClick={(e: React.MouseEvent) => e.stopPropagation()}>
         <Card
-          className={`w-full max-w-md ${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.spacing.padding.lg}`}
+          className={`w-full max-w-md ${THEME_CONSTANTS.themed.bgPrimary} p-6`}
         >
           <Heading
             level={2}

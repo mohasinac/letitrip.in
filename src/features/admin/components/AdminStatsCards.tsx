@@ -85,7 +85,7 @@ export function AdminStatsCards({ stats }: StatsCardsProps) {
       {cards.map((card) => (
         <div
           key={card.label}
-          className={`${card.cardClass} hover:shadow-md transition-shadow ${spacing.padding.md}`}
+          className={`${card.cardClass} hover:shadow-md transition-shadow p-4`}
         >
           <div className={flex.betweenStart}>
             <div className="flex-1">

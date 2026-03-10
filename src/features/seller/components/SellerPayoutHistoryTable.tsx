@@ -97,7 +97,7 @@ export function SellerPayoutHistoryTable({
       {isLoading ? (
         <Text variant="secondary">{t("loading")}</Text>
       ) : payouts.length === 0 ? (
-        <Card className={`${spacing.padding.lg} text-center`}>
+        <Card className={`p-6 text-center`}>
           <Text variant="secondary" weight="medium">
             {t("noPayouts")}
           </Text>

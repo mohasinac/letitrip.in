@@ -163,14 +163,11 @@ export function ProtectedRoute({
         <div className={THEME_CONSTANTS.layout.centerText}>
           <Heading
             level={1}
-            className={`${THEME_CONSTANTS.typography.h3} ${THEME_CONSTANTS.spacing.margin.bottom.md}`}
+            className={`${THEME_CONSTANTS.typography.h3} mb-4`}
           >
             {UI_LABELS.AUTH.ACCESS_DENIED}
           </Heading>
-          <Text
-            variant="secondary"
-            className={THEME_CONSTANTS.spacing.margin.bottom.xl}
-          >
+          <Text variant="secondary" className="mb-8">
             {UI_LABELS.ERROR_PAGES.UNAUTHORIZED.DESCRIPTION}
           </Text>
           <Button onClick={() => router.push(ROUTES.HOME)} variant="primary">

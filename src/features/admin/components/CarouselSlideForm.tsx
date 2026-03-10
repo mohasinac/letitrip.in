@@ -26,7 +26,7 @@ import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { CarouselSlide, GridCard } from "./Carousel.types";
 
-const { spacing, themed, borderRadius, flex } = THEME_CONSTANTS;
+const { spacing, themed, flex } = THEME_CONSTANTS;
 
 type CellKey = `${number},${number}`;
 
@@ -347,7 +347,7 @@ export function CarouselSlideForm({
                   return (
                     <div
                       key={col}
-                      className={`border ${themed.border} ${borderRadius.xl} overflow-hidden`}
+                      className={`border ${themed.border} rounded-xl overflow-hidden`}
                     >
                       {/* Cell header */}
                       <div

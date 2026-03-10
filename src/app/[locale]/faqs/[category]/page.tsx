@@ -40,17 +40,17 @@ export default async function FAQCategoryPage({ params }: Props) {
     <Suspense
       fallback={
         <div
-          className={`${THEME_CONSTANTS.container["2xl"]} mx-auto ${THEME_CONSTANTS.spacing.padding.xl} py-12`}
+          className={`${THEME_CONSTANTS.container["2xl"]} mx-auto p-8 py-12`}
         >
           <div className={`animate-pulse ${THEME_CONSTANTS.spacing.stack}`}>
             <div
-              className={`h-32 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl}`}
+              className={`h-32 ${THEME_CONSTANTS.themed.bgSecondary} rounded-xl`}
             />
             <div
-              className={`h-16 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl}`}
+              className={`h-16 ${THEME_CONSTANTS.themed.bgSecondary} rounded-xl`}
             />
             <div
-              className={`h-96 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl}`}
+              className={`h-96 ${THEME_CONSTANTS.themed.bgSecondary} rounded-xl`}
             />
           </div>
         </div>

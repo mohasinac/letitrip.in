@@ -96,7 +96,7 @@ function SellerProductsSection({
                   </div>
                 )}
               </div>
-              <div className={THEME_CONSTANTS.spacing.padding.xs}>
+              <div className="p-2">
                 <Text className="text-sm font-medium line-clamp-2 mb-1">
                   {product.title}
                 </Text>

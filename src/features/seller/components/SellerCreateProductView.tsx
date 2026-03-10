@@ -20,7 +20,7 @@ import { useMessage } from "@/hooks";
 import { useCreateSellerProduct } from "../hooks/useSellerProducts";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
-const { spacing, themed, borderRadius } = THEME_CONSTANTS;
+const { spacing, themed } = THEME_CONSTANTS;
 
 const EMPTY_PRODUCT: Partial<AdminProduct> = {
   title: "",
@@ -76,7 +76,7 @@ export function SellerCreateProductView() {
       <div className={`max-w-3xl mx-auto px-4 pb-12 ${spacing.stack}`}>
         <form
           onSubmit={handleSubmit}
-          className={`${themed.bgSecondary} ${borderRadius.xl} ${spacing.padding.lg} ${spacing.stack}`}
+          className={`${themed.bgSecondary} rounded-xl p-6 ${spacing.stack}`}
         >
           <ProductForm product={product} onChange={setProduct} />
 

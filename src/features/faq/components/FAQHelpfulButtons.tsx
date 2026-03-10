@@ -55,9 +55,7 @@ export function FAQHelpfulButtons({
   };
 
   return (
-    <div
-      className={`${THEME_CONSTANTS.spacing.padding.lg} ${THEME_CONSTANTS.themed.bgTertiary} ${THEME_CONSTANTS.borderRadius.lg}`}
-    >
+    <div className={`p-6 ${THEME_CONSTANTS.themed.bgTertiary} rounded-lg`}>
       <Text
         className={`${THEME_CONSTANTS.typography.body} text-sm ${THEME_CONSTANTS.themed.textSecondary} mb-3`}
       >
@@ -70,7 +68,7 @@ export function FAQHelpfulButtons({
           variant="ghost"
           onClick={() => handleVote(true)}
           disabled={mutation.isLoading || userVote !== null}
-          className={`flex-1 ${flex.center} gap-2 ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} transition-all ${
+          className={`flex-1 ${flex.center} gap-2 p-4 rounded-lg transition-all ${
             userVote === "helpful"
               ? "bg-green-600 text-white"
               : userVote
@@ -106,7 +104,7 @@ export function FAQHelpfulButtons({
           variant="ghost"
           onClick={() => handleVote(false)}
           disabled={mutation.isLoading || userVote !== null}
-          className={`flex-1 ${flex.center} gap-2 ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} transition-all ${
+          className={`flex-1 ${flex.center} gap-2 p-4 rounded-lg transition-all ${
             userVote === "not-helpful"
               ? "bg-red-600 text-white"
               : userVote

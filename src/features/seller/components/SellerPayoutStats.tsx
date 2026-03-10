@@ -38,7 +38,7 @@ export function SellerPayoutStats({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-8">
-      <Card className={spacing.padding.md}>
+      <Card className="p-4">
         <Text size="sm" variant="secondary">
           {t("availableEarnings")}
         </Text>
@@ -46,7 +46,7 @@ export function SellerPayoutStats({
           {formatCurrency(summary?.availableEarnings ?? 0)}
         </Text>
       </Card>
-      <Card className={spacing.padding.md}>
+      <Card className="p-4">
         <Text size="sm" variant="secondary">
           {t("totalPaid")}
         </Text>
@@ -54,7 +54,7 @@ export function SellerPayoutStats({
           {formatCurrency(summary?.totalPaidOut ?? 0)}
         </Text>
       </Card>
-      <Card className={spacing.padding.md}>
+      <Card className="p-4">
         <Text size="sm" variant="secondary">
           {t("pendingPayout")}
         </Text>

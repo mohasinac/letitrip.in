@@ -109,7 +109,7 @@ export function ProfileStatsGrid({
 
   return (
     <div
-      className={`grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 ${spacing.gap.md} ${className}`}
+      className={`grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-4 ${className}`}
     >
       {statItems.map((stat) => (
         <Card

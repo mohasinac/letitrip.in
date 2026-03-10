@@ -38,7 +38,7 @@ export function CategoryGrid({
 
   return (
     <div
-      className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 ${spacing.gap.md} ${className}`}
+      className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-4 ${className}`}
     >
       {categories.map((category) => (
         <CategoryCard key={category.id} category={category} />

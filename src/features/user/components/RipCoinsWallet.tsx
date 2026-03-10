@@ -234,7 +234,7 @@ export function RipCoinsWallet() {
     <div className={spacing.stack}>
       {/* ── Balance stat cards ─────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className={`${spacing.padding.md} flex flex-col gap-2`}>
+        <Card className={`p-4 flex flex-col gap-2`}>
           <Caption>{t("available")}</Caption>
           {balanceLoading ? (
             <Skeleton className="h-8 w-24" />
@@ -248,7 +248,7 @@ export function RipCoinsWallet() {
           </Caption>
         </Card>
 
-        <Card className={`${spacing.padding.md} flex flex-col gap-2`}>
+        <Card className={`p-4 flex flex-col gap-2`}>
           <Caption>{t("engaged")}</Caption>
           {balanceLoading ? (
             <Skeleton className="h-8 w-24" />
@@ -260,7 +260,7 @@ export function RipCoinsWallet() {
           <Caption className="text-xs">{t("engagedNote")}</Caption>
         </Card>
 
-        <Card className={`${spacing.padding.md} flex flex-col gap-2`}>
+        <Card className={`p-4 flex flex-col gap-2`}>
           <Caption>{t("total")}</Caption>
           {balanceLoading ? (
             <Skeleton className="h-8 w-24" />
@@ -277,7 +277,7 @@ export function RipCoinsWallet() {
       </div>
 
       {/* ── Buy CTA ─────────────────────────────────────────────────── */}
-      <Card className={`${spacing.padding.md} ${flex.between} flex-wrap gap-3`}>
+      <Card className={`p-4 ${flex.between} flex-wrap gap-3`}>
         <div>
           <Text weight="semibold">{t("buyTitle")}</Text>
           <Text size="sm" variant="secondary" className="mt-0.5">
@@ -294,7 +294,7 @@ export function RipCoinsWallet() {
       </Card>
 
       {/* ── Transaction history ──────────────────────────────────────── */}
-      <Card className={spacing.padding.md}>
+      <Card className="p-4">
         <div className={`${flex.between} flex-wrap gap-2 mb-4`}>
           <Heading level={3}>{t("history.title")}</Heading>
           <Tabs

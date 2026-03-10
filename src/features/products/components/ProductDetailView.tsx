@@ -19,7 +19,7 @@ import { useApiQuery } from "@/hooks";
 import { productService } from "@/services";
 import type { ProductDocument } from "@/db/schema";
 
-const { themed, borderRadius, flex, page, spacing } = THEME_CONSTANTS;
+const { themed, flex, page, spacing } = THEME_CONSTANTS;
 
 interface ProductDetailViewProps {
   slug: string;
@@ -203,7 +203,7 @@ export function ProductDetailView({
 
         {/* ——— Reviews Section ——— */}
         <div
-          className={`${themed.bgPrimary} ${borderRadius.xl} p-4 sm:p-6 lg:p-8 mt-8 lg:mt-12`}
+          className={`${themed.bgPrimary} rounded-xl p-4 sm:p-6 lg:p-8 mt-8 lg:mt-12`}
         >
           <ProductReviews productId={product.id} />
         </div>

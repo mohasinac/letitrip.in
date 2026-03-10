@@ -66,11 +66,9 @@ export function AdminFilterBar({
 
   const innerContent = (
     <>
-      <div className={`grid ${gridCols[columns]} ${spacing.gap.md}`}>
-        {children}
-      </div>
+      <div className={`grid ${gridCols[columns]} gap-4`}>{children}</div>
       {deferred && (
-        <div className={`${flex.end} ${spacing.gap.xs} mt-3`}>
+        <div className={`${flex.end} gap-2 mt-3`}>
           {pendingCount > 0 && (
             <Button variant="ghost" size="sm" onClick={onReset}>
               {t("reset")}

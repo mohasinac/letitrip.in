@@ -16,7 +16,7 @@ import {
   Award,
 } from "lucide-react";
 
-const { flex, themed, borderRadius, spacing } = THEME_CONSTANTS;
+const { flex, themed } = THEME_CONSTANTS;
 
 interface ProductFeatureBadgesProps {
   /** Is this product featured / promoted? */
@@ -185,7 +185,7 @@ export function ProductFeatureBadges({
       {badges.map((badge) => (
         <Span
           key={badge.key}
-          className={`${flex.rowCenter} gap-1.5 px-3 py-1.5 ${borderRadius.lg} border text-xs font-medium ${badge.bgClass} ${badge.colorClass}`}
+          className={`${flex.rowCenter} gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium ${badge.bgClass} ${badge.colorClass}`}
         >
           <Span aria-hidden="true">{badge.icon}</Span>
           {badge.label}

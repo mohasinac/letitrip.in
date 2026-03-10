@@ -54,7 +54,7 @@ export function SellerPayoutRequestForm({
 
   if (summary.hasPendingPayout) {
     return (
-      <Card className={`${spacing.padding.lg} mb-8`}>
+      <Card className={`p-6 mb-8`}>
         <Alert variant="info">{t("alreadyPending")}</Alert>
       </Card>
     );
@@ -62,14 +62,14 @@ export function SellerPayoutRequestForm({
 
   if (summary.availableEarnings <= 0) {
     return (
-      <Card className={`${spacing.padding.lg} mb-8`}>
+      <Card className={`p-6 mb-8`}>
         <Alert variant="info">{t("noEarnings")}</Alert>
       </Card>
     );
   }
 
   return (
-    <Card className={`${spacing.padding.lg} mb-8`}>
+    <Card className={`p-6 mb-8`}>
       <div className={`${flex.between} mb-4`}>
         <div>
           <Heading level={2}>{t("requestPayout")}</Heading>

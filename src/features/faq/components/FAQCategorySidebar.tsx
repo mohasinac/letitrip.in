@@ -26,7 +26,7 @@ export function FAQCategorySidebar({
 
   return (
     <div
-      className={`${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.borderRadius.xl} ${THEME_CONSTANTS.spacing.padding.lg} sticky top-4 h-fit`}
+      className={`${THEME_CONSTANTS.themed.bgSecondary} rounded-xl p-6 sticky top-4 h-fit`}
     >
       {/* Title */}
       <Heading
@@ -40,7 +40,7 @@ export function FAQCategorySidebar({
       <TextLink
         href={ROUTES.PUBLIC.FAQS}
         onClick={() => onCategorySelect?.("all")}
-        className={`block w-full text-left ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} mb-3 transition-colors ${
+        className={`block w-full text-left p-4 rounded-lg mb-3 transition-colors ${
           selectedCategory === "all"
             ? `${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.themed.textPrimary} font-medium`
             : `${THEME_CONSTANTS.themed.textSecondary} hover:${THEME_CONSTANTS.themed.bgTertiary}`
@@ -72,7 +72,7 @@ export function FAQCategorySidebar({
               key={key}
               href={ROUTES.PUBLIC.FAQ_CATEGORY(key)}
               onClick={() => onCategorySelect?.(key as FAQCategoryKey)}
-              className={`block w-full text-left ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} mb-3 transition-colors ${
+              className={`block w-full text-left p-4 rounded-lg mb-3 transition-colors ${
                 isSelected
                   ? `${THEME_CONSTANTS.themed.bgPrimary} ${THEME_CONSTANTS.themed.textPrimary} font-medium`
                   : `${THEME_CONSTANTS.themed.textSecondary} hover:${THEME_CONSTANTS.themed.bgTertiary}`
@@ -112,7 +112,7 @@ export function FAQCategorySidebar({
         </Text>
         <TextLink
           href={ROUTES.PUBLIC.CONTACT}
-          className={`block text-center ${THEME_CONSTANTS.spacing.padding.md} ${THEME_CONSTANTS.borderRadius.lg} bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors`}
+          className={`block text-center p-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors`}
         >
           {t("contactSupport")}
         </TextLink>

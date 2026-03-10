@@ -25,12 +25,12 @@ const columnsClass: Record<2 | 3 | 4, string> = {
 };
 
 export function StatsGrid({ stats, columns = 3, className }: StatsGridProps) {
-  const { spacing: sp, flex: fl, themed } = THEME_CONSTANTS;
+  const { spacing, flex: fl, themed } = THEME_CONSTANTS;
 
   return (
-    <div className={classNames(columnsClass[columns], sp.gap.md, className)}>
+    <div className={classNames(columnsClass[columns], "gap-4", className)}>
       {stats.map((stat, i) => (
-        <Card key={`${stat.label}-${i}`} className={sp.cardPadding}>
+        <Card key={`${stat.label}-${i}`} className={spacing.cardPadding}>
           <div className={fl.between}>
             <div>
               <Text

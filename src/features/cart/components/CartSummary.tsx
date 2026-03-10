@@ -5,7 +5,7 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { Button, Heading, Span, TextLink } from "@/components";
 
-const { themed, borderRadius, flex, spacing } = THEME_CONSTANTS;
+const { themed, flex, spacing } = THEME_CONSTANTS;
 
 interface CartSummaryProps {
   subtotal: number;
@@ -30,7 +30,7 @@ export function CartSummary({
 
   return (
     <div
-      className={`${themed.bgPrimary} ${borderRadius.xl} border ${themed.border} p-5 ${spacing.stack} sticky top-20`}
+      className={`${themed.bgPrimary} rounded-xl border ${themed.border} p-5 ${spacing.stack} sticky top-20`}
     >
       <Heading level={2} className="text-base font-bold">
         {t("orderSummary")}

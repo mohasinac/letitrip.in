@@ -37,12 +37,10 @@ export default function Error({ error, reset }: ErrorProps) {
   const tError = useTranslations("errorPages");
   const tActions = useTranslations("actions");
   const router = useRouter();
-  const { themed, spacing, typography, borderRadius, flex } = THEME_CONSTANTS;
+  const { themed, spacing, typography, flex } = THEME_CONSTANTS;
 
   return (
-    <div
-      className={`min-h-screen ${flex.center} ${themed.bgPrimary} ${spacing.padding.xl}`}
-    >
+    <div className={`min-h-screen ${flex.center} ${themed.bgPrimary} p-8`}>
       <div
         className={`${THEME_CONSTANTS.container["2xl"]} w-full text-center ${spacing.stack}`}
       >
@@ -80,7 +78,7 @@ export default function Error({ error, reset }: ErrorProps) {
         {/* Error Details (Development Only) */}
         {process.env.NODE_ENV === "development" && error.message && (
           <div
-            className={`bg-red-50 dark:bg-red-900/20 ${themed.border} ${borderRadius.lg} ${spacing.padding.md} mb-6 text-left`}
+            className={`bg-red-50 dark:bg-red-900/20 ${themed.border} rounded-lg p-4 mb-6 text-left`}
           >
             <Text size="sm" variant="error" className="font-mono break-all">
               <strong>Error:</strong> {error.message}
