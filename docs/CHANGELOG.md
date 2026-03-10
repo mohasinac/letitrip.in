@@ -7,6 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage G1 complete: Rule 20 — all feature components use hooks
+
+### Added
+
+- **`src/features/wishlist/hooks/useWishlist.ts`** — Wraps `wishlistService.list()` with `enabled` guard. Exports `WishlistItem`, `WishlistResponse` types.
+- **`src/features/wishlist/hooks/index.ts`** — Barrel for wishlist hooks.
+- **`src/features/reviews/hooks/useReviews.ts`** — Wraps `reviewService.list(queryParams)`. Exports `ReviewsApiResponse` type.
+- **`src/features/reviews/hooks/index.ts`** — Barrel for reviews hooks.
+- **`src/features/blog/hooks/useBlogPost.ts`** — Wraps `blogService.getBySlug(slug)` with `initialData` support. Exports `BlogPostQueryResult` type.
+- **`src/features/blog/hooks/index.ts`** — Barrel for blog hooks.
+- **`src/features/homepage/hooks/useBlogArticles.ts`** — Wraps featured/latest blog article logic for the homepage section.
+- **`src/features/homepage/hooks/index.ts`** — Barrel for homepage hooks.
+- **`src/features/products/hooks/useProductDetail.ts`** — Wraps `productService.getById(slug)` with `initialData` support.
+- **`src/features/seller/hooks/useSellerProductDetail.ts`** — Wraps `productService.getById(id)` for the seller edit product form (separate queryKey from public product cache).
+- **`src/features/seller/hooks/useSellerDashboard.ts`** — Wraps `sellerService.listProducts(userId)` for the seller dashboard stats. Exports `SellerDashboardProductsResponse` type.
+- **`src/features/seller/hooks/useSellerAuctions.ts`** — Wraps `sellerService.listMyProducts(params)` for the seller auction list. Exports `SellerAuctionsResponse` type.
+- **`src/features/events/hooks/usePublicEvent.ts`** — Wraps `eventService.getById(id)` with `initialData` and `enabled` support (distinct queryKey from admin `useEvent`).
+- **`src/features/categories/hooks/useCategoriesList.ts`** — Wraps `categoryService.list("flat=true")` with `initialData` support.
+- **`src/features/cart/hooks/useOrder.ts`** — Wraps `orderService.getById(orderId)` with null guard.
+
+### Fixed
+
+- **`src/features/wishlist/components/WishlistView.tsx`** — **Bug (Rule 20):** Direct `wishlistService` import + inline `useApiQuery` in component. Replaced with `useWishlist(!!user)`. Removed local `WishlistItem`/`WishlistResponse` interfaces (moved to hook).
+- **`src/features/reviews/components/ReviewsListView.tsx`** — **Bug (Rule 20):** Direct `reviewService` import + inline `useApiQuery` in component. Replaced with `useReviews(queryParams)`. Removed local `ReviewsApiResponse` interface (moved to hook).
+- **`src/features/products/components/ProductDetailView.tsx`** — **Bug (Rule 20):** Direct `productService` import + inline `useApiQuery`. Replaced with `useProductDetail(slug, { initialData })`.
+- **`src/features/products/components/PreOrderDetailView.tsx`** — **Bug (Rule 20 + type bug):** Direct `productService` import + inline `useApiQuery<ProductResponse>` with incorrect double-unwrap (`data?.data`). apiClient already extracts `data` from `{success,data}` envelope, so `data.data` was always `undefined`. Fixed by using `useProductDetail(id)` which returns `product` correctly typed as `ProductDocument`.
+- **`src/features/seller/components/SellerEditProductView.tsx`** — **Bug (Rule 20):** Direct `productService` import + inline `useApiQuery`. Replaced with `useSellerProductDetail(id)`.
+- **`src/features/seller/components/SellerDashboardView.tsx`** — **Bug (Rule 20):** Direct `sellerService` import + inline `useApiQuery`. Replaced with `useSellerDashboard(user?.uid)`. Removed local `ProductsResponse` interface (moved to hook).
+- **`src/features/seller/components/SellerAuctionsView.tsx`** — **Bug (Rule 20):** Direct `sellerService` import + inline `useApiQuery`. Replaced with `useSellerAuctions(params, !authLoading && !!user)`. Removed local `AuctionsResponse` interface (moved to hook).
+- **`src/features/events/components/EventDetailView.tsx`** — **Bug (Rule 20):** Direct `eventService` import + inline `useApiQuery`. Replaced with `usePublicEvent(id, { initialData })`.
+- **`src/features/events/components/EventParticipateView.tsx`** — **Bug (Rule 20):** Direct `eventService` import + inline `useApiQuery`. Replaced with `usePublicEvent(id, { enabled: !authLoading })`.
+- **`src/features/homepage/components/BlogArticlesSection.tsx`** — **Bug (Rule 20):** Direct `blogService` import + complex inline `useApiQuery` with waterfall logic. Replaced with `useBlogArticles()`.
+- **`src/features/blog/components/BlogPostView.tsx`** — **Bug (Rule 20):** Direct `blogService` import + inline `useApiQuery`. Replaced with `useBlogPost(slug, { initialData })`.
+- **`src/features/categories/components/CategoriesListView.tsx`** — **Bug (Rule 20):** Direct `categoryService` import + inline `useApiQuery`. Replaced with `useCategoriesList({ initialData })`.
+- **`src/features/cart/components/CheckoutSuccessView.tsx`** — **Bug (Rule 20):** Direct `orderService` import + inline `useApiQuery`. Replaced with `useOrder(orderId)`.
+
+### Changed
+
+- Feature index files for `wishlist`, `reviews`, `blog`, `homepage` updated to re-export hooks via `export * from "./hooks"`.
+- `src/features/products/hooks/index.ts` — Added `useProductDetail` export.
+- `src/features/seller/hooks/index.ts` — Added `useSellerProductDetail`, `useSellerDashboard`, `useSellerAuctions` exports.
+- `src/features/events/index.ts` — Added `usePublicEvent` export.
+- `src/features/categories/hooks/index.ts` — Added `useCategoriesList` export.
+- `src/features/cart/hooks/index.ts` — Added `useOrder` export.
+
+---
+
 ## [Unreleased] — Stage G2: FilterPanel config-driven admin filter consolidation
 
 ### Added

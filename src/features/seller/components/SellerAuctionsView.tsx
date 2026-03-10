@@ -23,25 +23,14 @@ import {
 } from "@/components";
 import type { ActiveFilter } from "@/components";
 import { Gavel } from "lucide-react";
-import { useAuth, useApiQuery, useUrlTable, useMessage } from "@/hooks";
-import { sellerService } from "@/services";
+import { useAuth, useUrlTable, useMessage } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
+import { useSellerAuctions } from "../hooks/useSellerAuctions";
 import { SellerProductCard } from "./SellerProductCard";
 import type { AdminProduct } from "@/components";
 
 const { spacing, flex } = THEME_CONSTANTS;
-
-interface AuctionsResponse {
-  products: AdminProduct[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasMore: boolean;
-  };
-}
 
 function SellerAuctionsContent() {
   const router = useRouter();
@@ -107,14 +96,10 @@ function SellerAuctionsContent() {
     pageSize: String(pageSize),
   }).toString();
 
-  const { data, isLoading } = useApiQuery<AuctionsResponse>({
-    queryKey: ["seller-auctions", params],
-    queryFn: () => sellerService.listMyProducts(params),
-    enabled: !authLoading && !!user,
-  });
-
-  const items = data?.products ?? [];
-  const total = data?.meta?.total ?? 0;
+  const { items, total, isLoading } = useSellerAuctions(
+    params,
+    !authLoading && !!user,
+  );
 
   const columns = [
     { key: "title" as const, header: t("colTitle"), sortable: true },

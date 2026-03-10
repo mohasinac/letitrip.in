@@ -18,7 +18,7 @@ import {
   ProductForm,
 } from "@/components";
 import type { AdminProduct } from "@/components";
-import { useAuth, useApiQuery, useMessage } from "@/hooks";
+import { useAuth, useMessage } from "@/hooks";
 import {
   ROUTES,
   THEME_CONSTANTS,
@@ -26,8 +26,8 @@ import {
   ERROR_MESSAGES,
 } from "@/constants";
 import { useTranslations } from "next-intl";
-import { productService } from "@/services";
 import { useUpdateSellerProduct } from "../hooks/useSellerProducts";
+import { useSellerProductDetail } from "../hooks/useSellerProductDetail";
 
 const { spacing, flex } = THEME_CONSTANTS;
 
@@ -52,12 +52,7 @@ export function SellerEditProductView({ id }: SellerEditProductViewProps) {
     }
   }, [user, authLoading, router, showError]);
 
-  const { data: productData, isLoading: productLoading } =
-    useApiQuery<AdminProduct>({
-      queryKey: ["seller-product-edit", id],
-      queryFn: () => productService.getById(id),
-      enabled: !!id,
-    });
+  const { productData, isLoading: productLoading } = useSellerProductDetail(id);
 
   useEffect(() => {
     if (productData) {

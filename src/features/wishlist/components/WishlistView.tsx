@@ -12,7 +12,7 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { Heart, ShoppingBag, Gavel, Grid3X3, Store } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useAuth, useApiQuery, useUrlTable, useMessage } from "@/hooks";
+import { useAuth, useUrlTable, useMessage } from "@/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Button,
@@ -31,7 +31,8 @@ import {
 import { WishlistButton } from "./WishlistButton";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { removeFromWishlistAction, addToCartAction } from "@/actions";
-import { wishlistService } from "@/services";
+import { useWishlist } from "../hooks/useWishlist";
+import type { WishlistItem } from "../hooks/useWishlist";
 import type { ProductDocument } from "@/db/schema";
 
 const WISHLIST_SORT_OPTIONS_KEYS = [
@@ -40,17 +41,6 @@ const WISHLIST_SORT_OPTIONS_KEYS = [
   { value: "-price", key: "sortPriceHigh" },
   { value: "price", key: "sortPriceLow" },
 ] as const;
-
-interface WishlistItem {
-  productId: string;
-  addedAt: string;
-  product: ProductDocument | null;
-}
-
-interface WishlistResponse {
-  items: WishlistItem[];
-  meta: { total: number };
-}
 
 const TAB_KEYS = ["products", "auctions", "categories", "stores"] as const;
 type TabKey = (typeof TAB_KEYS)[number];
@@ -83,11 +73,7 @@ function WishlistContent() {
     }
   }, [user, authLoading, router, showError]);
 
-  const { data, isLoading } = useApiQuery<WishlistResponse>({
-    queryKey: ["user", "wishlist"],
-    queryFn: () => wishlistService.list(),
-    enabled: !!user,
-  });
+  const { data, isLoading } = useWishlist(!!user);
 
   const allItems = useMemo(() => data?.items ?? [], [data]);
   const total = allItems.length;

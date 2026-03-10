@@ -4,3 +4,4 @@ export {
   useRemoveCartItem,
 } from "./useCartMutations";
 export { usePaymentOtp } from "./usePaymentOtp";
+export { useOrder } from "./useOrder";

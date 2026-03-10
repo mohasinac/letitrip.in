@@ -15,8 +15,7 @@ import { ProductReviews } from "./ProductReviews";
 import { RelatedProducts } from "./RelatedProducts";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { useApiQuery } from "@/hooks";
-import { productService } from "@/services";
+import { useProductDetail } from "../hooks/useProductDetail";
 import type { ProductDocument } from "@/db/schema";
 
 const { themed, flex, page, spacing } = THEME_CONSTANTS;
@@ -32,16 +31,7 @@ export function ProductDetailView({
 }: ProductDetailViewProps) {
   const t = useTranslations("products");
 
-  const {
-    data: product,
-    isLoading,
-    error,
-  } = useApiQuery<ProductDocument>({
-    queryKey: ["product", slug],
-    queryFn: () => productService.getById(slug),
-    enabled: Boolean(slug),
-    initialData,
-  });
+  const { product, isLoading, error } = useProductDetail(slug, { initialData });
 
   // Loading skeleton
   if (isLoading) {

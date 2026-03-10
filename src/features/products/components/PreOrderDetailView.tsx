@@ -34,16 +34,11 @@ import {
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth, useWishlistToggle, useMessage } from "@/hooks";
-import { useApiQuery } from "@/hooks";
-import { productService } from "@/services";
+import { useProductDetail } from "../hooks/useProductDetail";
 import { formatCurrency, formatDate } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
 
 const { themed, flex, page, spacing } = THEME_CONSTANTS;
-
-interface ProductResponse {
-  data: ProductDocument;
-}
 
 const STATUS_LABELS: Record<string, string> = {
   upcoming: "Upcoming",
@@ -70,12 +65,9 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
   const t = useTranslations("preOrderDetail");
   const { showSuccess, showError } = useMessage();
 
-  const productQuery = useApiQuery<ProductResponse>({
-    queryKey: ["product", id],
-    queryFn: () => productService.getById(id),
-  });
+  const productQuery = useProductDetail(id);
 
-  const product = productQuery.data?.data ?? null;
+  const product = productQuery.product;
 
   const {
     inWishlist,

@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { useApiQuery, useAuth, useMessage } from "@/hooks";
-import { eventService } from "@/services";
+import { useAuth, useMessage } from "@/hooks";
 import { useEventEnter } from "../hooks/useEventMutations";
+import { usePublicEvent } from "../hooks/usePublicEvent";
 import {
   ROUTES,
   SUCCESS_MESSAGES,
@@ -44,9 +44,7 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 
-  const { data: event, isLoading: eventLoading } = useApiQuery<EventDocument>({
-    queryKey: ["public-event-participate", id],
-    queryFn: () => eventService.getById(id),
+  const { event, isLoading: eventLoading } = usePublicEvent(id, {
     enabled: !authLoading,
   });
 

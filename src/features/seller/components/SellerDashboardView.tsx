@@ -13,26 +13,13 @@ import { useRouter } from "@/i18n/navigation";
 import { Package, Store, Gavel, FileText } from "lucide-react";
 import { Spinner, EmptyState } from "@/components";
 import { Heading, Text } from "@/components";
-import { useAuth, useApiQuery, useMessage } from "@/hooks";
-import { sellerService } from "@/services";
+import { useAuth, useMessage } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
-import type { ProductDocument } from "@/db/schema";
+import { useSellerDashboard } from "../hooks/useSellerDashboard";
 import { SellerStatCard } from "./SellerStatCard";
 import { SellerQuickActions } from "./SellerQuickActions";
 import { SellerRecentListings } from "./SellerRecentListings";
-
-interface ProductsResponse {
-  items: Pick<
-    ProductDocument,
-    "id" | "title" | "status" | "isAuction" | "price" | "mainImage"
-  >[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-}
 
 const { themed, spacing, enhancedCard, flex } = THEME_CONSTANTS;
 
@@ -49,12 +36,9 @@ export function SellerDashboardView() {
     }
   }, [user, authLoading, router, showError]);
 
-  const { data: productsData, isLoading: productsLoading } =
-    useApiQuery<ProductsResponse>({
-      queryKey: ["seller-products", user?.uid ?? ""],
-      queryFn: () => sellerService.listProducts(user!.uid),
-      enabled: !!user?.uid,
-    });
+  const { productsData, isLoading: productsLoading } = useSellerDashboard(
+    user?.uid,
+  );
 
   const stats = useMemo(() => {
     const products = productsData?.items ?? [];

@@ -26,23 +26,12 @@ import {
 } from "@/components";
 import type { ActiveFilter } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { useApiQuery, usePendingTable, useUrlTable, useBrands } from "@/hooks";
-import { reviewService } from "@/services";
+import { usePendingTable, useUrlTable, useBrands } from "@/hooks";
 import { ReviewCard } from "@/components";
 import type { ReviewDocument } from "@/db/schema";
+import { useReviews } from "../hooks/useReviews";
 
 const PAGE_SIZE = 12;
-
-interface ReviewsApiResponse {
-  data: ReviewDocument[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasMore: boolean;
-  };
-}
 
 function ReviewsListContent() {
   const t = useTranslations("reviews");
@@ -63,10 +52,7 @@ function ReviewsListContent() {
     return p.toString();
   }, [ratingFilter, sortParam]);
 
-  const { data, isLoading, error } = useApiQuery<ReviewsApiResponse>({
-    queryKey: ["reviews", "all", queryParams],
-    queryFn: () => reviewService.list(queryParams),
-  });
+  const { data, isLoading, error } = useReviews(queryParams);
 
   const allReviews = useMemo(() => data?.data ?? [], [data]);
 

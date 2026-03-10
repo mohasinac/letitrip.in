@@ -22,6 +22,7 @@ export {
 } from "./hooks/useEventMutations";
 export { usePollVote } from "./hooks/usePollVote";
 export { useFeedbackSubmit } from "./hooks/useFeedbackSubmit";
+export { usePublicEvent } from "./hooks/usePublicEvent";
 
 // Components
 export { EventStatusBadge } from "./components/EventStatusBadge";

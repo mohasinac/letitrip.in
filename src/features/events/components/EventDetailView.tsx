@@ -1,6 +1,5 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { Card, Spinner, EmptyState, Heading, Text } from "@/components";
 import { EventStatusBadge } from "./EventStatusBadge";
@@ -8,9 +7,9 @@ import { PollVotingSection } from "./PollVotingSection";
 import { SurveyEventSection } from "./SurveyEventSection";
 import { FeedbackEventSection } from "./FeedbackEventSection";
 import { EventLeaderboard } from "./EventLeaderboard";
-import { eventService } from "@/services";
 import { formatDate } from "@/utils";
 import type { EventDocument } from "@/db/schema";
+import { usePublicEvent } from "../hooks/usePublicEvent";
 
 const { spacing, typography } = THEME_CONSTANTS;
 
@@ -20,11 +19,7 @@ interface EventDetailViewProps {
 }
 
 export function EventDetailView({ id, initialData }: EventDetailViewProps) {
-  const { data: event, isLoading } = useApiQuery<EventDocument>({
-    queryKey: ["public-event", id],
-    queryFn: () => eventService.getById(id),
-    initialData,
-  });
+  const { event, isLoading } = usePublicEvent(id, { initialData });
 
   if (isLoading) {
     return (

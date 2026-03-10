@@ -1,9 +1,8 @@
 "use client";
 
-import { useApiQuery } from "@/hooks";
-import { blogService } from "@/services";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
+import { useBlogPost } from "../hooks/useBlogPost";
 import {
   Card,
   Button,
@@ -33,24 +32,16 @@ const CATEGORY_BADGE: Record<BlogPostCategory, string> = {
 
 interface BlogPostViewProps {
   slug: string;
-  initialData?: { post: BlogPostDocument; related: BlogPostDocument[] };
+  initialData?: import("../hooks/useBlogPost").BlogPostQueryResult;
 }
 
 export function BlogPostView({ slug, initialData }: BlogPostViewProps) {
   const t = useTranslations("blog");
   const tActions = useTranslations("actions");
 
-  const { data, isLoading, error } = useApiQuery<{
-    post: BlogPostDocument;
-    related: BlogPostDocument[];
-  }>({
-    queryKey: ["blog", "post", slug],
-    queryFn: () => blogService.getBySlug(slug),
+  const { post, related, isLoading, error } = useBlogPost(slug, {
     initialData,
   });
-
-  const post = data?.post;
-  const related = data?.related || [];
 
   if (isLoading) {
     return (

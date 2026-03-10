@@ -13,10 +13,10 @@ import { Grid3X3 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { EmptyState, Heading, ListingLayout, Search, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { useApiQuery, useUrlTable } from "@/hooks";
-import { categoryService } from "@/services";
+import { useUrlTable } from "@/hooks";
 import type { CategoryDocument } from "@/db/schema";
 import { CategoryGrid } from "./CategoryGrid";
+import { useCategoriesList } from "../hooks/useCategoriesList";
 
 interface CategoriesListContentProps {
   initialData?: CategoryDocument[];
@@ -28,11 +28,7 @@ function CategoriesListContent({ initialData }: CategoriesListContentProps) {
   const table = useUrlTable();
   const search = table.get("q");
 
-  const { data, isLoading } = useApiQuery<CategoryDocument[]>({
-    queryKey: ["categories", "flat"],
-    queryFn: () => categoryService.list("flat=true"),
-    initialData,
-  });
+  const { categories: data, isLoading } = useCategoriesList({ initialData });
 
   const allCategories = useMemo(
     () => (data ?? []).filter((c) => !c.isBrand),

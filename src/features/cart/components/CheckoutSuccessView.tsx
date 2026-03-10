@@ -7,11 +7,9 @@ import { Spinner, Heading, Text, Span, Button } from "@/components";
 import { OrderSuccessHero } from "./OrderSuccessHero";
 import { OrderSuccessCard } from "./OrderSuccessCard";
 import { OrderSuccessActions } from "./OrderSuccessActions";
-import { useApiQuery } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { orderService } from "@/services";
-import type { OrderDocument } from "@/db/schema";
+import { useOrder } from "../hooks/useOrder";
 
 const { themed, spacing, flex } = THEME_CONSTANTS;
 
@@ -21,17 +19,7 @@ export function CheckoutSuccessView() {
   const orderId = searchParams.get("orderId");
   const t = useTranslations("orderSuccess");
 
-  const {
-    data: orderData,
-    isLoading,
-    error,
-  } = useApiQuery<{ data: OrderDocument }>({
-    queryKey: ["order", orderId ?? ""],
-    queryFn: () => orderService.getById(orderId!),
-    enabled: !!orderId,
-  });
-
-  const order = orderData?.data;
+  const { order, isLoading, error } = useOrder(orderId);
 
   useEffect(() => {
     if (!orderId) router.replace(ROUTES.PUBLIC.PRODUCTS);
