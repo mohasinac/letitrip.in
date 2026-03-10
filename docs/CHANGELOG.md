@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Rule 9 fix: extract buildSellerReviews to user feature lib; profile page 174→~105 lines
+
+### Added
+
+- **`src/features/user/lib/buildSellerReviews.ts`** — Server-side SSR helper extracted from profile page. Assembles `SellerReviewsData` from `productRepository` + `reviewRepository` for seller profiles.
+- **`src/features/user/index.ts`** — Added `export * from "./lib/buildSellerReviews"`.
+
+### Changed
+
+- **`src/app/[locale]/profile/[userId]/page.tsx`** — Removed 67-line `buildSellerReviews` private function; now imports it from `@/features/user`. Page reduced from 174 → ~105 lines (Rule 9 compliant). Removed now-unused `reviewRepository` import.
+
+### Fixed
+
+- Rule 9 violation: `profile/[userId]/page.tsx` was 174 lines (24 over the 150-line limit).
+
+---
+
 ## [Unreleased] — E5 SEO gaps: generateMetadata for store sub-pages, auction/pre-order detail, reviews; noIndex for auth pages
 
 ### Added
