@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage F4 cont.: @lir/ui — Alert, Divider, Progress, IndeterminateProgress extracted
+
+### Added
+
+- **`packages/ui/src/components/Alert.tsx`** — `Alert` component with `info|success|warning|error` variants, optional dismiss button, optional title (Heading). `ALERT_STYLES` inlined from app's `THEME_CONSTANTS.colors.alert`. Uses local `Button` and `Heading` imports from within the package.
+- **`packages/ui/src/components/Divider.tsx`** — `Divider` with `horizontal|vertical` orientation and optional `label` (Span). Border/text classes inlined.
+- **`packages/ui/src/components/Progress.tsx`** — `Progress` (determinate with label + value display) and `IndeterminateProgress` (animated wave bar) both exported. `styled-jsx` replaced with `dangerouslySetInnerHTML` inline `<style>` using a CSS class `lir-progress-indeterminate`. Theme values inlined.
+- **`packages/ui/src/index.ts`** — Updated to export `Alert`, `AlertProps`, `Divider`, `DividerProps`, `Progress`, `ProgressProps`, `IndeterminateProgress`, `IndeterminateProgressProps`.
+
+---
+
+## [Unreleased] — Stage F4: @lir/ui — Spinner, Skeleton, Button, Badge extracted
+
+### Added
+
+- **`packages/ui/src/components/Spinner.tsx`** — `Spinner` with `sm|md|lg|xl` sizes and `primary|white|current` variants. Removed unused `THEME_CONSTANTS` import from original; pure Tailwind.
+- **`packages/ui/src/components/Skeleton.tsx`** — `Skeleton` with `pulse|wave|none` animations. `styled-jsx` replaced with `dangerouslySetInnerHTML` inline `<style>`. `bgTertiary` inlined as `bg-zinc-100 dark:bg-slate-800`. `"use client"` directive added.
+- **`packages/ui/src/components/Button.tsx`** — `Button` with `primary|secondary|outline|ghost|danger|warning` variants, `sm|md|lg` sizes, `isLoading` state, `leftIcon`/`rightIcon` slots. `UI_BUTTON` const inlines all theme values. Uses `tailwind-merge` and `lucide-react`.
+- **`packages/ui/src/components/Badge.tsx`** — `Badge` with 17 status/role variants. `BADGE_CLASSES` inlined. Imports `Span` from local `./Typography`.
+- **`packages/ui/package.json`** — Added `lucide-react` and `tailwind-merge` as `dependencies`.
+
+---
+
 ## [Unreleased] — Stage G1 cont.: Service mutation methods removed; vote + cart pruned
 
 ### Removed
