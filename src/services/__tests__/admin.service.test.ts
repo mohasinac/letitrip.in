@@ -36,23 +36,6 @@ describe("adminService", () => {
     );
   });
 
-  it("revokeSession() calls DELETE with session URL", async () => {
-    mockDelete.mockResolvedValueOnce({} as never);
-    await adminService.revokeSession("sess_1");
-    expect(mockDelete).toHaveBeenCalledWith(
-      API_ENDPOINTS.ADMIN.REVOKE_SESSION("sess_1"),
-    );
-  });
-
-  it("revokeUserSessions() calls POST with userId", async () => {
-    mockPost.mockResolvedValueOnce({} as never);
-    await adminService.revokeUserSessions("user_1");
-    expect(mockPost).toHaveBeenCalledWith(
-      API_ENDPOINTS.ADMIN.REVOKE_USER_SESSIONS,
-      { userId: "user_1" },
-    );
-  });
-
   it("listOrders() calls GET admin orders without params", async () => {
     mockGet.mockResolvedValueOnce([] as never);
     await adminService.listOrders();

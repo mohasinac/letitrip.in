@@ -180,7 +180,9 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
     if (!editingCategory) return;
     try {
       if (drawerMode === "create") {
-        await createMutation.mutateAsync(editingCategory);
+        await createMutation.mutateAsync(
+          editingCategory as import("@/actions").CreateCategoryInput,
+        );
       } else {
         await updateMutation.mutateAsync({
           id: editingCategory.id!,

@@ -8,31 +8,33 @@
  */
 
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
-import { reviewRepository } from "@/repositories";
+import { requireAuth, requireRole } from "@/lib/firebase/auth-server";
+import {
+  reviewRepository,
+  productRepository,
+  userRepository,
+} from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
-import { AuthorizationError, ValidationError } from "@/lib/errors";
+import {
+  AuthorizationError,
+  NotFoundError,
+  ValidationError,
+} from "@/lib/errors";
 import type { ReviewDocument } from "@/db/schema";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 
+/**
+ * Minimal form input — server action resolves productTitle, sellerId, and
+ * user identity internally via repository lookups.
+ */
 const createReviewSchema = z.object({
   productId: z.string().min(1),
-  productTitle: z.string().min(1),
-  sellerId: z.string().min(1),
-  userId: z.string().min(1),
-  userName: z.string().min(1),
-  userAvatar: z.string().optional().default(""),
   rating: z.number().int().min(1).max(5),
   title: z.string().min(1).max(200),
   comment: z.string().min(10).max(2000),
   images: z.array(z.string()).optional().default([]),
-  verified: z.boolean().optional().default(false),
-  status: z
-    .enum(["pending", "approved", "rejected"])
-    .optional()
-    .default("pending"),
 });
 
 const updateReviewSchema = z.object({
@@ -46,6 +48,10 @@ const updateReviewSchema = z.object({
 
 /**
  * Submit a new review for a product.
+ *
+ * Accepts only the form fields (productId, rating, title, comment, images).
+ * Product title/sellerId are resolved from the product repository; user
+ * identity comes from the authenticated session.
  */
 export async function createReviewAction(
   input: z.infer<typeof createReviewSchema>,
@@ -59,11 +65,6 @@ export async function createReviewAction(
   if (!rl.success)
     throw new AuthorizationError("Too many requests. Please slow down.");
 
-  // Enforce the caller's uid matches the review userId
-  if (input.userId !== user.uid) {
-    throw new AuthorizationError("Cannot submit review as another user");
-  }
-
   const parsed = createReviewSchema.safeParse(input);
   if (!parsed.success) {
     throw new ValidationError(
@@ -71,11 +72,29 @@ export async function createReviewAction(
     );
   }
 
+  const product = await productRepository.findById(parsed.data.productId);
+  if (!product) throw new NotFoundError("Product not found");
+
+  const profile = await userRepository.findById(user.uid);
+
   serverLogger.debug("createReviewAction", {
     uid: user.uid,
     productId: parsed.data.productId,
   });
-  return reviewRepository.create(parsed.data);
+
+  return reviewRepository.create({
+    productId: parsed.data.productId,
+    productTitle: product.title,
+    userId: user.uid,
+    userName: profile?.displayName ?? "Anonymous",
+    userAvatar: profile?.photoURL ?? "",
+    rating: parsed.data.rating,
+    title: parsed.data.title,
+    comment: parsed.data.comment,
+    images: parsed.data.images,
+    verified: false,
+    status: "pending",
+  });
 }
 
 /**
@@ -131,6 +150,73 @@ export async function deleteReviewAction(reviewId: string): Promise<void> {
     throw new AuthorizationError("Not authorized to delete this review");
   }
 
+  await reviewRepository.delete(reviewId);
+}
+
+// ─── Admin Actions ─────────────────────────────────────────────────────────
+
+const adminUpdateReviewSchema = z.object({
+  rating: z.number().int().min(1).max(5).optional(),
+  title: z.string().min(1).max(200).optional(),
+  comment: z.string().min(10).max(2000).optional(),
+  status: z.enum(["pending", "approved", "rejected"]).optional(),
+  images: z.array(z.string()).optional(),
+});
+
+/**
+ * Update any review (admin/moderator only). No ownership check.
+ */
+export async function adminUpdateReviewAction(
+  reviewId: string,
+  input: z.infer<typeof adminUpdateReviewSchema>,
+): Promise<ReviewDocument | null> {
+  const admin = await requireRole(["admin", "moderator"]);
+
+  const rl = await rateLimitByIdentifier(
+    `admin:reviews:update:${admin.uid}`,
+    RateLimitPresets.API,
+  );
+  if (!rl.success)
+    throw new AuthorizationError("Too many requests. Please slow down.");
+
+  if (!reviewId || typeof reviewId !== "string") {
+    throw new ValidationError("reviewId is required");
+  }
+
+  const parsed = adminUpdateReviewSchema.safeParse(input);
+  if (!parsed.success) {
+    throw new ValidationError(
+      parsed.error.issues[0]?.message ?? "Invalid input",
+    );
+  }
+
+  const existing = await reviewRepository.findById(reviewId);
+  if (!existing) throw new NotFoundError("Review not found");
+
+  serverLogger.info("adminUpdateReviewAction", {
+    adminId: admin.uid,
+    reviewId,
+  });
+  return reviewRepository.update(reviewId, parsed.data);
+}
+
+/**
+ * Delete any review (admin/moderator only). No ownership check.
+ */
+export async function adminDeleteReviewAction(reviewId: string): Promise<void> {
+  const admin = await requireRole(["admin", "moderator"]);
+
+  if (!reviewId || typeof reviewId !== "string") {
+    throw new ValidationError("reviewId is required");
+  }
+
+  const existing = await reviewRepository.findById(reviewId);
+  if (!existing) return; // Idempotent
+
+  serverLogger.info("adminDeleteReviewAction", {
+    adminId: admin.uid,
+    reviewId,
+  });
   await reviewRepository.delete(reviewId);
 }
 

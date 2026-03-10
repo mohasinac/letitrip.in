@@ -1,6 +1,7 @@
 /**
  * Review Service Unit Tests
- * NOTE: vote() removed from reviewService in G1 cont. — use voteReviewHelpfulAction from @/actions.
+ * NOTE: create/update/delete removed from reviewService — use Server Actions from @/actions.
+ * NOTE: vote() removed in G1 cont. — use voteReviewHelpfulAction from @/actions.
  */
 import { apiClient } from "@/lib/api-client";
 import { reviewService } from "@/services";
@@ -9,9 +10,6 @@ import { API_ENDPOINTS } from "@/constants";
 jest.mock("@/lib/api-client");
 
 const mockGet = jest.mocked(apiClient.get);
-const mockPost = jest.mocked(apiClient.post);
-const mockPatch = jest.mocked(apiClient.patch);
-const mockDelete = jest.mocked(apiClient.delete);
 
 describe("reviewService", () => {
   beforeEach(() => jest.clearAllMocks());
@@ -81,30 +79,6 @@ describe("reviewService", () => {
     await reviewService.getById("rev_1");
     expect(mockGet).toHaveBeenCalledWith(
       API_ENDPOINTS.REVIEWS.GET_BY_ID("rev_1"),
-    );
-  });
-
-  it("create() calls POST with review data", async () => {
-    mockPost.mockResolvedValueOnce({} as never);
-    const data = { productId: "prod_1", rating: 5, comment: "Great!" };
-    await reviewService.create(data);
-    expect(mockPost).toHaveBeenCalledWith(API_ENDPOINTS.REVIEWS.CREATE, data);
-  });
-
-  it("update() calls PATCH with review ID and data", async () => {
-    mockPatch.mockResolvedValueOnce({} as never);
-    await reviewService.update("rev_1", { rating: 4 });
-    expect(mockPatch).toHaveBeenCalledWith(
-      API_ENDPOINTS.REVIEWS.UPDATE("rev_1"),
-      { rating: 4 },
-    );
-  });
-
-  it("delete() calls DELETE with review ID", async () => {
-    mockDelete.mockResolvedValueOnce({} as never);
-    await reviewService.delete("rev_1");
-    expect(mockDelete).toHaveBeenCalledWith(
-      API_ENDPOINTS.REVIEWS.DELETE("rev_1"),
     );
   });
 });

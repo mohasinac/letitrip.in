@@ -1,8 +1,7 @@
 /**
  * Review Service
- * Read and admin-mutation API calls for reviews.
- * User mutations (create, vote) use Server Actions from `@/actions`.
- * Admin mutations (update, delete) go through the admin API route.
+ * Read-only API calls for reviews.
+ * All mutations (create, update, delete, vote) use Server Actions from `@/actions`.
  * Import via `@/services` barrel — NEVER call apiClient directly in components.
  */
 
@@ -36,14 +35,4 @@ export const reviewService = {
 
   /** Get a single review by ID */
   getById: (id: string) => apiClient.get(API_ENDPOINTS.REVIEWS.GET_BY_ID(id)),
-
-  /** Create a new review (user-facing; used until createReviewAction interface is aligned) */
-  create: (data: unknown) => apiClient.post(API_ENDPOINTS.REVIEWS.CREATE, data),
-
-  /** Update a review (admin only — goes through admin API route with role check) */
-  update: (id: string, data: unknown) =>
-    apiClient.patch(API_ENDPOINTS.REVIEWS.UPDATE(id), data),
-
-  /** Delete a review (admin only — goes through admin API route with role check) */
-  delete: (id: string) => apiClient.delete(API_ENDPOINTS.REVIEWS.DELETE(id)),
 };

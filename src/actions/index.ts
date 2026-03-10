@@ -39,6 +39,8 @@ export {
   updateReviewAction,
   deleteReviewAction,
   voteReviewHelpfulAction,
+  adminUpdateReviewAction,
+  adminDeleteReviewAction,
 } from "./review.actions";
 
 // Notification mutations

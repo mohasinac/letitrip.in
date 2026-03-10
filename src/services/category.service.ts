@@ -28,10 +28,6 @@ export const categoryService = {
   getById: (id: string) =>
     apiClient.get(API_ENDPOINTS.CATEGORIES.GET_BY_ID(id)),
 
-  /** Create a new category (admin only) */
-  create: (data: unknown) =>
-    apiClient.post(API_ENDPOINTS.CATEGORIES.CREATE, data),
-
   /** Update a category (admin only) */
   update: (id: string, data: unknown) =>
     apiClient.patch(API_ENDPOINTS.CATEGORIES.UPDATE(id), data),

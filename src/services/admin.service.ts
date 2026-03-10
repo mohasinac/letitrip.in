@@ -17,14 +17,6 @@ export const adminService = {
       `${API_ENDPOINTS.ADMIN.SESSIONS}${params ? `?${params}` : ""}`,
     ),
 
-  /** DELETE — revoke (terminate) a session by ID (admin) */
-  revokeSession: (id: string) =>
-    apiClient.delete(API_ENDPOINTS.ADMIN.REVOKE_SESSION(id)),
-
-  /** POST — revoke all sessions for a specific user (admin) */
-  revokeUserSessions: (userId: string) =>
-    apiClient.post(API_ENDPOINTS.ADMIN.REVOKE_USER_SESSIONS, { userId }),
-
   /** GET — list all orders with optional Sieve query string (admin) */
   listOrders: (sieveQuery?: string) =>
     apiClient.get(`${API_ENDPOINTS.ADMIN.ORDERS}${sieveQuery ?? ""}`),

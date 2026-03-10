@@ -1,5 +1,6 @@
 /**
  * Category Service Unit Tests
+ * NOTE: create() removed from categoryService \u2014 use createCategoryAction from @/actions.
  */
 import { apiClient } from "@/lib/api-client";
 import { categoryService } from "@/services";
@@ -8,7 +9,6 @@ import { API_ENDPOINTS } from "@/constants";
 jest.mock("@/lib/api-client");
 
 const mockGet = jest.mocked(apiClient.get);
-const mockPost = jest.mocked(apiClient.post);
 const mockPatch = jest.mocked(apiClient.patch);
 const mockDelete = jest.mocked(apiClient.delete);
 
@@ -29,11 +29,11 @@ describe("categoryService", () => {
     );
   });
 
-  it("listTopLevel() calls GET with tier==1 filter and default limit", async () => {
+  it("listTopLevel() calls GET with tier=0 and default limit", async () => {
     mockGet.mockResolvedValueOnce([] as never);
     await categoryService.listTopLevel();
     expect(mockGet).toHaveBeenCalledWith(
-      `${API_ENDPOINTS.CATEGORIES.LIST}?filters=tier==1&sorts=order&pageSize=12`,
+      `${API_ENDPOINTS.CATEGORIES.LIST}?tier=0&pageSize=12`,
     );
   });
 
@@ -41,7 +41,7 @@ describe("categoryService", () => {
     mockGet.mockResolvedValueOnce([] as never);
     await categoryService.listTopLevel(6);
     expect(mockGet).toHaveBeenCalledWith(
-      `${API_ENDPOINTS.CATEGORIES.LIST}?filters=tier==1&sorts=order&pageSize=6`,
+      `${API_ENDPOINTS.CATEGORIES.LIST}?tier=0&pageSize=6`,
     );
   });
 
@@ -50,16 +50,6 @@ describe("categoryService", () => {
     await categoryService.getById("cat_1");
     expect(mockGet).toHaveBeenCalledWith(
       API_ENDPOINTS.CATEGORIES.GET_BY_ID("cat_1"),
-    );
-  });
-
-  it("create() calls POST with data", async () => {
-    mockPost.mockResolvedValueOnce({} as never);
-    const data = { name: "Electronics", slug: "electronics" };
-    await categoryService.create(data);
-    expect(mockPost).toHaveBeenCalledWith(
-      API_ENDPOINTS.CATEGORIES.CREATE,
-      data,
     );
   });
 

@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { reviewService } from "@/services";
+import { createReviewAction } from "@/actions";
 
 interface ReviewsResponseMeta {
   total: number;
@@ -37,6 +38,7 @@ interface CreateReviewInput {
   rating: number;
   title: string;
   comment: string;
+  images?: string[];
 }
 
 export function useCreateReview(
@@ -44,7 +46,8 @@ export function useCreateReview(
   onError?: (err: { status?: number; message?: string }) => void,
 ) {
   return useMutation<unknown, Error, CreateReviewInput>({
-    mutationFn: (data) => reviewService.create(data),
+    mutationFn: (data) =>
+      createReviewAction({ ...data, images: data.images ?? [] }),
     onSuccess,
     onError,
   });

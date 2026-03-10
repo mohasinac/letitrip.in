@@ -2,11 +2,14 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { categoryService } from "@/services";
+import { createCategoryAction } from "@/actions";
+import type { CreateCategoryInput } from "@/actions";
 import type { Category } from "../components";
 
 /**
  * useAdminCategories
  * Fetches the full category tree and exposes create, update, and delete mutations.
+ * Create uses a Server Action; update/delete still use the API route (no actions yet).
  */
 export function useAdminCategories() {
   const query = useQuery<{ categories: Category[] }>({
@@ -14,8 +17,8 @@ export function useAdminCategories() {
     queryFn: () => categoryService.list("view=tree"),
   });
 
-  const createMutation = useMutation<unknown, Error, unknown>({
-    mutationFn: (data) => categoryService.create(data),
+  const createMutation = useMutation<unknown, Error, CreateCategoryInput>({
+    mutationFn: (data) => createCategoryAction(data),
   });
 
   const updateMutation = useMutation<
