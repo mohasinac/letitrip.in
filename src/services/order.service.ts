@@ -17,7 +17,5 @@ export const orderService = {
 
   /** Get live tracking info for an order */
   track: (id: string) => apiClient.get(API_ENDPOINTS.ORDERS.TRACK(id)),
-
-  /** Cancel an order */
-  cancel: (id: string) => apiClient.post(API_ENDPOINTS.ORDERS.CANCEL(id), {}),
 };
+// Mutation (cancel) — create a Server Action if needed

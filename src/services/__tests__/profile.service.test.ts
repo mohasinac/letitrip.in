@@ -8,7 +8,6 @@ import { API_ENDPOINTS } from "@/constants";
 jest.mock("@/lib/api-client");
 
 const mockGet = jest.mocked(apiClient.get);
-const mockPatch = jest.mocked(apiClient.patch);
 
 describe("profileService", () => {
   beforeEach(() => jest.clearAllMocks());
@@ -35,12 +34,5 @@ describe("profileService", () => {
     expect(mockGet).toHaveBeenCalledWith(
       API_ENDPOINTS.PROFILE.GET_STOREFRONT_PRODUCTS("seller_1"),
     );
-  });
-
-  it("update() calls PATCH user profile endpoint with data", async () => {
-    mockPatch.mockResolvedValueOnce({} as never);
-    const data = { displayName: "Updated Name" };
-    await profileService.update(data);
-    expect(mockPatch).toHaveBeenCalledWith(API_ENDPOINTS.USER.PROFILE, data);
   });
 });

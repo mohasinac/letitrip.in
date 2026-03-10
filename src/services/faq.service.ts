@@ -30,8 +30,5 @@ export const faqService = {
 
   /** Delete an FAQ (admin only) */
   delete: (id: string) => apiClient.delete(API_ENDPOINTS.FAQS.DELETE(id)),
-
-  /** Vote an FAQ as helpful or not */
-  vote: (id: string, data: { vote: "helpful" | "not-helpful" }) =>
-    apiClient.post(API_ENDPOINTS.FAQS.VOTE(id), data),
 };
+// Mutation (vote) replaced by Server Action in @/actions/faq.actions.ts

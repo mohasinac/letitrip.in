@@ -8,7 +8,6 @@ import { API_ENDPOINTS } from "@/constants";
 jest.mock("@/lib/api-client");
 
 const mockGet = jest.mocked(apiClient.get);
-const mockPost = jest.mocked(apiClient.post);
 
 describe("orderService", () => {
   beforeEach(() => jest.clearAllMocks());
@@ -40,13 +39,5 @@ describe("orderService", () => {
     await orderService.track("order_1");
     expect(mockGet).toHaveBeenCalledWith(API_ENDPOINTS.ORDERS.TRACK("order_1"));
   });
-
-  it("cancel() calls POST with order cancel URL", async () => {
-    mockPost.mockResolvedValueOnce({} as never);
-    await orderService.cancel("order_1");
-    expect(mockPost).toHaveBeenCalledWith(
-      API_ENDPOINTS.ORDERS.CANCEL("order_1"),
-      {},
-    );
-  });
+  // cancel() removed — use a Server Action when order cancellation is needed
 });

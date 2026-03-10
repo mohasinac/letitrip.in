@@ -16,8 +16,5 @@ export const bidService = {
 
   /** Get a single bid by ID */
   getById: (id: string) => apiClient.get(API_ENDPOINTS.BIDS.GET_BY_ID(id)),
-
-  /** Place a bid on an auction product */
-  create: (data: { productId: string; bidAmount: number }) =>
-    apiClient.post(API_ENDPOINTS.BIDS.CREATE, data),
 };
+// Mutation (create/place bid) replaced by Server Action in @/actions/bid.actions.ts

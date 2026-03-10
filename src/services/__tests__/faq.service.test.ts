@@ -71,20 +71,4 @@ describe("faqService", () => {
     await faqService.delete("faq_1");
     expect(mockDelete).toHaveBeenCalledWith(API_ENDPOINTS.FAQS.DELETE("faq_1"));
   });
-
-  it("vote() calls POST vote endpoint with helpful vote", async () => {
-    mockPost.mockResolvedValueOnce({} as never);
-    await faqService.vote("faq_1", { vote: "helpful" });
-    expect(mockPost).toHaveBeenCalledWith(API_ENDPOINTS.FAQS.VOTE("faq_1"), {
-      vote: "helpful",
-    });
-  });
-
-  it("vote() calls POST vote endpoint with not-helpful vote", async () => {
-    mockPost.mockResolvedValueOnce({} as never);
-    await faqService.vote("faq_1", { vote: "not-helpful" });
-    expect(mockPost).toHaveBeenCalledWith(API_ENDPOINTS.FAQS.VOTE("faq_1"), {
-      vote: "not-helpful",
-    });
-  });
 });

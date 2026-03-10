@@ -22,8 +22,5 @@ export const couponService = {
   /** Delete a coupon by ID (admin only) */
   delete: (id: string) =>
     apiClient.delete(API_ENDPOINTS.ADMIN.COUPON_BY_ID(id)),
-
-  /** Validate a promo code at checkout */
-  validate: (data: { code: string; orderTotal?: number }) =>
-    apiClient.post(API_ENDPOINTS.COUPONS.VALIDATE, data),
 };
+// Mutation (validate coupon) replaced by Server Action in @/actions/coupon.actions.ts

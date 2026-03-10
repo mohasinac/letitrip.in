@@ -19,7 +19,5 @@ export const profileService = {
   /** Get published products for a seller storefront */
   getSellerProducts: (userId: string) =>
     apiClient.get(API_ENDPOINTS.PROFILE.GET_STOREFRONT_PRODUCTS(userId)),
-
-  /** Update the current user's own profile */
-  update: (data: unknown) => apiClient.patch(API_ENDPOINTS.USER.PROFILE, data),
 };
+// Mutation (update profile) replaced by Server Action in @/actions/profile.actions.ts

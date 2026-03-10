@@ -52,21 +52,4 @@ describe("couponService", () => {
       API_ENDPOINTS.ADMIN.COUPON_BY_ID("coup_1"),
     );
   });
-
-  it("validate() calls POST validate endpoint with code and orderTotal", async () => {
-    mockPost.mockResolvedValueOnce({} as never);
-    await couponService.validate({ code: "SAVE10", orderTotal: 1000 });
-    expect(mockPost).toHaveBeenCalledWith(API_ENDPOINTS.COUPONS.VALIDATE, {
-      code: "SAVE10",
-      orderTotal: 1000,
-    });
-  });
-
-  it("validate() calls POST validate endpoint with code only", async () => {
-    mockPost.mockResolvedValueOnce({} as never);
-    await couponService.validate({ code: "SAVE10" });
-    expect(mockPost).toHaveBeenCalledWith(API_ENDPOINTS.COUPONS.VALIDATE, {
-      code: "SAVE10",
-    });
-  });
 });
