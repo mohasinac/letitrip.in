@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage G1 complete: All pure-passthrough service methods migrated to Server Actions
+
+### Changed
+
+- **`src/actions/review.actions.ts`** — `createReviewAction` refactored to accept minimal form input (`productId`, `rating`, `title`, `comment`, `images?`); resolves `productTitle` from `productRepository.findById()` and user identity from `requireAuth()` + `userRepository.findById()`. Old schema required 10+ fields that are now looked up server-side.
+- **`src/actions/review.actions.ts`** — Added `adminUpdateReviewAction` and `adminDeleteReviewAction`: admin/moderator-only mutations with `requireRole(["admin","moderator"])`; no ownership check; rate-limited.
+- **`src/actions/index.ts`** — Exported `adminUpdateReviewAction`, `adminDeleteReviewAction`.
+- **`src/hooks/useProductReviews.ts`** — `useCreateReview` now calls `createReviewAction` directly (was `reviewService.create`). `CreateReviewInput` updated: added `images?: string[]`.
+- **`src/features/admin/hooks/useAdminReviews.ts`** — `updateMutation` and `deleteMutation` now call `adminUpdateReviewAction` / `adminDeleteReviewAction` (was `reviewService.update/delete`).
+- **`src/features/admin/hooks/useAdminCategories.ts`** — `createMutation` now calls `createCategoryAction` directly (was `categoryService.create`). Typed `CreateCategoryInput` instead of `unknown`.
+
+### Removed
+
+- **`src/services/review.service.ts`** — Deleted `create()`, `update()`, `delete()`. Service is now read-only.
+- **`src/services/category.service.ts`** — Deleted `create()`. All category creates go through `createCategoryAction`.
+- **`src/services/admin.service.ts`** — Deleted `revokeSession()`, `revokeUserSessions()` (both had no callers; `useSessions` already used Server Actions).
+- **`src/services/seller.service.ts`** — Deleted `becomeSeller()` (no callers at all; `useBecomeSeller` already used `becomeSellerAction`).
+
+### Fixed
+
+- **`src/services/__tests__/category.service.test.ts`** — Pre-existing test bug: `listTopLevel()` expected URL `?filters=tier==1&sorts=order&pageSize=12` but service uses `?tier=0&pageSize=12`. Fixed to match actual implementation.
+
+---
+
 ## [Unreleased] — Stage F4 cont.: @lir/ui — Alert, Divider, Progress, IndeterminateProgress extracted
 
 ### Added
