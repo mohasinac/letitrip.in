@@ -7,6 +7,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — Stage H3 (cont.): Dead service mutation methods removed
+
+### Removed
+
+- **`src/services/wishlist.service.ts`** — Deleted `add()`, `remove()`, `check()`. Only `list()` remains (now handled by Server Actions).
+- **`src/services/address.service.ts`** — Deleted `create()`, `update()`, `delete()`, `setDefault()`. Only `list()` and `getById()` remain.
+- **`src/services/bid.service.ts`** — Deleted `create()`. Only `listByProduct()` and `getById()` remain.
+- **`src/services/coupon.service.ts`** — Deleted `validate()`. Admin CRUD methods (`list`, `create`, `update`, `delete`) remain.
+- **`src/services/faq.service.ts`** — Deleted `vote()`. CRUD and `list` methods remain.
+- **`src/services/notification.service.ts`** — Deleted `markRead()`, `markAllRead()`, `delete()`. Only `list()` and `getUnreadCount()` remain.
+- **`src/services/profile.service.ts`** — Deleted `update()`. Read-only methods `getById()`, `getSellerReviews()`, `getSellerProducts()` remain.
+- **`src/services/order.service.ts`** — Deleted `cancel()`. `list()`, `getById()`, `track()` remain.
+- **`src/services/__tests__/*.test.ts`** (8 files) — Removed all test cases and mock references for the above deleted methods.
+
+---
+
+## [Unreleased] — Stage B3: @lir/http package extracted
+
+### Added
+
+- **`packages/http/src/ApiClient.ts`** — Full `ApiClient` class extracted from `src/lib/api-client.ts`. Removed hard-coded `API_ENDPOINTS` re-export; constructor accepts `ApiClientOptions { baseURL?, defaultTimeout? }`. All HTTP methods preserved (`get`, `post`, `put`, `patch`, `delete`, `upload`). Exports `ApiClient`, `ApiClientError`, and `apiClient` singleton.
+- **`packages/http/src/index.ts`** — Replaced stub; exports `ApiClient`, `ApiClientError`, `apiClient`, and types `ApiClientOptions`, `RequestConfig`, `ApiResponse`.
+
+---
+
+## [Unreleased] — Stage B2: @lir/core package extracted
+
+### Added
+
+- **`packages/core/src/Logger.ts`** — Extracted from `src/classes/Logger.ts`. Removed `import("@/constants")` dynamic import; constructor now accepts `logFileUrl?: string` option. Exports `Logger` class and `logger` singleton.
+- **`packages/core/src/Queue.ts`** — Extracted from `src/classes/Queue.ts`. Fixed: replaced async recursive `process()` with `.then().catch().finally()` chain to prevent unhandled promise rejections.
+- **`packages/core/src/StorageManager.ts`** — Pure per-prefix instance map, SSR-safe; no app-specific imports.
+- **`packages/core/src/EventBus.ts`** — Pure typed pub/sub singleton with `EventSubscription` type.
+- **`packages/core/src/CacheManager.ts`** — TTL-based in-memory cache with FIFO eviction.
+- **`packages/core/src/index.ts`** — Replaced stub; named exports for all 5 classes, singletons, and associated types.
+
+---
+
+## [Unreleased] — Stage B1: Monorepo bootstrap scaffold
+
+### Added
+
+- **`pnpm-workspace.yaml`** — Workspace package discovery for `apps/*` and `packages/*`.
+- **`turbo.json`** — Turborepo task graph scaffold for `build`, `test`, and `lint`.
+- **`packages/core/`** — Bootstrapped `@lir/core` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
+- **`packages/react/`** — Bootstrapped `@lir/react` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
+- **`packages/ui/`** — Bootstrapped `@lir/ui` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
+- **`packages/http/`** — Bootstrapped `@lir/http` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
+- **`packages/next/`** — Bootstrapped `@lir/next` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
+
+### Notes
+
+- This phase is scaffold-only: no runtime app behavior changed in `src/`.
+- Package entrypoints intentionally export empty stubs and will be filled in Stage B2-B4/F2-F4.
+
 ## [Unreleased] — Stage C4: Native TanStack Query v5 — adapter hooks deleted
 
 ### Removed
