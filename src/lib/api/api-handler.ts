@@ -37,7 +37,7 @@ import {
   requireRoleFromRequest,
 } from "@/lib/security/authorization";
 import { handleApiError } from "@/lib/errors/error-handler";
-import { errorResponse, ApiErrors } from "@/lib/api-response";
+import { ApiErrors } from "@/lib/api-response";
 import { UI_LABELS } from "@/constants";
 import type { UserRole } from "@/types/auth";
 import type { UserDocument } from "@/db/schema/users";
@@ -81,13 +81,22 @@ export function createApiHandler<
   ): Promise<NextResponse> => {
     try {
       // 1. Rate limiting
+      let rateLimitHeaders: Record<string, string> | undefined;
       if (options.rateLimit) {
         const rateLimitResult = await applyRateLimit(
           request,
           options.rateLimit,
         );
+        rateLimitHeaders = {
+          "RateLimit-Limit": String(rateLimitResult.limit),
+          "RateLimit-Remaining": String(rateLimitResult.remaining),
+          "RateLimit-Reset": String(rateLimitResult.reset),
+        };
         if (!rateLimitResult.success) {
-          return errorResponse(UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED, 429);
+          return NextResponse.json(
+            { success: false, error: UI_LABELS.AUTH.RATE_LIMIT_EXCEEDED },
+            { status: 429, headers: rateLimitHeaders },
+          );
         }
       }
 
@@ -113,12 +122,21 @@ export function createApiHandler<
       // 4. Resolve dynamic route params
       const resolvedParams = await context.params;
 
-      return await options.handler({
+      const response = await options.handler({
         request,
         user,
         body: validatedBody,
         params: resolvedParams,
       });
+
+      // Attach rate-limit headers to the response so clients can track their quota
+      if (rateLimitHeaders) {
+        for (const [key, value] of Object.entries(rateLimitHeaders)) {
+          response.headers.set(key, value);
+        }
+      }
+
+      return response;
     } catch (error) {
       return handleApiError(error);
     }

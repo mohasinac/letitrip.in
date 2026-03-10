@@ -37,49 +37,32 @@ that `next build --turbopack` succeeds.
 
 ---
 
-## TD-002 — `useApiQuery` / `useApiMutation` — thin TanStack adapters pending full migration
+## ~~TD-002~~ — ✅ RESOLVED 2026-03-10 — `useApiQuery` / `useApiMutation` adapter files deleted
 
-**Files:** `src/hooks/useApiQuery.ts`, `src/hooks/useApiMutation.ts`
+**Files:** ~~`src/hooks/useApiQuery.ts`~~, ~~`src/hooks/useApiMutation.ts`~~
 
-**State:** These were rewritten as thin `useQuery`/`useMutation` TanStack wrappers in Stage C
-(2026-03-09). All 150+ callers were intentionally left unchanged to minimise migration scope.
-
-**Debt:** The hooks should eventually be deleted (Stage C sub-wave A) once all callers are
-migrated to call `useQuery`/`useMutation` from `@tanstack/react-query` directly.
-
-**Resolution:** Migrate callers feature-by-feature. Run the verification grep before deleting:
-
-```bash
-grep -rl "useApiQuery\|useApiMutation" src --include="*.ts" --include="*.tsx"
-# Must return empty before deleting the adapter files
-```
+**Resolution:** Both adapter files were deleted in Stage C4 (2026-03-09). All callers were
+migrated to call `useQuery`/`useMutation` directly from `@tanstack/react-query`. Zero
+remaining callers verified by grep. This debt item is closed.
 
 ---
 
-## TD-003 — Services layer: pure-passthrough `apiClient` wrappers
+## ~~TD-003~~ — ✅ RESOLVED 2026-03-10 — Services layer mutations converted to Server Actions
 
-**File:** `src/services/` (35 service files)
+**File:** `src/services/` (mutation methods deleted; read-only services remain as apiClient wrappers)
 
-**State:** All 35 service files are pure `apiClient` wrappers — no transformation, caching,
-or orchestration. The call chain is 7 hops: Component → hook → service → apiClient → HTTP →
-API route → repository → Firestore.
-
-**Plan:** Stage G1 — Convert mutation services to Server Actions in `src/actions/`. Delete
-pure-passthrough read services. This collapses the chain to 2-3 hops for mutations.
-
-**Resolution:** Tracked in `MASTER_PLAN.md` §3.2 and Stage G1.
+**Resolution:** Stage G1 + H3 complete (2026-03-10). All mutation service methods were
+deleted and replaced by Server Actions in `src/actions/`. Pure-passthrough mutation services
+(contact, newsletter, payment-event, demo) were deleted entirely. Read-only services remain
+as thin apiClient wrappers which is acceptable for the current architecture.
+This debt item is closed.
 
 ---
 
-## TD-004 — `THEME_CONSTANTS.spacing.{gap,padding,margin}` pure Tailwind aliases
+## ~~TD-004~~ — ✅ RESOLVED 2026-03-10 — `THEME_CONSTANTS` pure Tailwind aliases deleted
 
-**File:** `src/constants/theme.ts`
+**File:** ~~`src/constants/theme.ts`~~
 
-**State:** The `spacing.gap.*`, `spacing.padding.*`, and `spacing.margin.*` entries are plain
-Tailwind class aliases (e.g. `spacing.gap.md = "gap-4"`). They add one level of indirection
-with zero semantic value.
-
-**Plan:** Stage F1 — Delete these entries and replace call sites with direct Tailwind classes.
-`borderRadius.*` entries may also be candidates for removal if they are pure aliases.
-
-**Resolution:** Tracked in `MASTER_PLAN.md` §4.2 and Stage F1.
+**Resolution:** Stage F1 + H4 complete (2026-03-10). The `spacing.gap.*`, `spacing.padding.*`,
+`spacing.margin.*`, `borderRadius.*` pure-alias entries were deleted from `THEME_CONSTANTS`.
+Call sites now use direct Tailwind classes. This debt item is closed.

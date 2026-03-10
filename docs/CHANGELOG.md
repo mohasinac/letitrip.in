@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — §3.3 improvement: rate-limit headers + MASTER_PLAN / TECH_DEBT.md status sync
+
+### Added
+
+- **`src/lib/api/api-handler.ts`** — `createApiHandler` now emits `RateLimit-Limit`, `RateLimit-Remaining`, and `RateLimit-Reset` response headers on every rate-limited route (both 429 throttled responses and successful responses). Clients can use these headers to track quota consumption and implement proactive back-off.
+
+### Changed
+
+- **`docs/MASTER_PLAN.md`** — Executive Summary table updated: all 28 previously-open items are now marked ✅ complete with commit date and step reference. `§3.3` rate-limit headers note updated to ✅. Stage F, G1, G2 status notes updated to ✅. "Pending" deletion table replaced with "all deleted" note.
+- **`docs/TECH_DEBT.md`** — TD-002 (`useApiQuery`/`useApiMutation` adapters), TD-003 (services passthrough), and TD-004 (`THEME_CONSTANTS` aliases) marked ✅ RESOLVED with dates and resolution notes.
+
+---
+
 ## [Unreleased] — Stage F4 complete: @lir/\* workspace packages wired into the app
 
 ### Added
