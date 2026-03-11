@@ -1,3 +1,3 @@
 export * from "./components";
 export * from "./hooks";
-export * from "./lib/buildSellerReviews";
+// Server-only: import buildSellerReviews from "@/features/user/server"

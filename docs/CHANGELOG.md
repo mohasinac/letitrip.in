@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — feat(ssr): SSR initialData for blog/events/auctions; remove "use client" from pure views; fix useAuctions data shape; fix pre-existing build errors
+
+### Changed (Rules 9, 10 — thin pages; E3 SSR Phase 3)
+
+- **`src/features/promotions/components/PromotionsView.tsx`** — Removed `"use client"`; converted to async server component using `getTranslations` (data fully supplied by page as props).
+- **`src/features/user/components/PublicProfileView.tsx`** — Removed `"use client"`; inner `SellerProductsSection` + `SellerReviewsSection` converted to `async` functions using `getTranslations("profile")`.
+- **`src/features/blog/components/BlogListView.tsx`** — Added `initialData?: BlogPostsResult` prop on outer `BlogListView` and inner `BlogListContent`; passes to `useBlogPosts`.
+- **`src/features/events/components/EventsListView.tsx`** — Added `initialData?: EventsListResult` prop on outer `EventsListView` and inner `EventsListContent`; passes to `usePublicEvents`. Added `EventsListResult` interface.
+- **`src/features/products/components/AuctionsView.tsx`** — Added `initialData?: AuctionsListResult` prop on outer `AuctionsView` and inner `AuctionsContent`; passes to `useAuctions`.
+- **`src/app/[locale]/blog/page.tsx`** — Now `async`; fetches first page via `blogRepository.listPublished()` and passes as `initialData` to `<BlogListView>`. Already had `revalidate = 60`.
+- **`src/app/[locale]/events/page.tsx`** — Now `async`; added `export const revalidate = 60`; fetches first page via `eventRepository.list()` and passes as `initialData` to `<EventsListView>`.
+- **`src/app/[locale]/auctions/page.tsx`** — Now `async`; added `export const revalidate = 60`; fetches first page via `productRepository.list()` with auction filters and passes as `initialData` to `<AuctionsView>`.
+- **`src/features/user/index.ts`** — Removed `buildSellerReviews` from client-safe barrel (it imports server-only repositories).
+- **`src/app/[locale]/profile/[userId]/page.tsx`** — Updated import of `buildSellerReviews` to use new server barrel `@/features/user/server`.
+
+### Fixed (bugs)
+
+- **`src/features/products/hooks/useAuctions.ts`** — **Bug fix**: `AuctionsListResult` type had wrong shape (`{ data, meta }` instead of `{ items, total, page, ... }`). Changed `data?.data` → `data?.items`, `data?.meta?.total` → `data?.total`, `data?.meta?.totalPages` → `data?.totalPages`. This was causing the auctions page to always render empty. Added `options?: { initialData? }` parameter.
+- **`src/hooks/useBlogPosts.ts`** — Added `options?: { initialData? }` parameter passed to `useQuery`.
+- **`src/hooks/usePublicEvents.ts`** — Added `initialData?` to `UsePublicEventsOptions` interface; passed to `useQuery`.
+- **`src/helpers/auth/token.helper.ts`** — **Pre-existing build bug**: `import { randomInt } from "crypto"` (Node.js–only module) was crashing the edge-runtime build of `opengraph-image.tsx`. Replaced with `globalThis.crypto.getRandomValues()` (Web Crypto API — available in all runtimes).
+- **`src/features/user/server.ts`** (new) — Server-only barrel for user feature, exports `buildSellerReviews`. Prevents firebase-admin from leaking into client bundles via the main barrel.
+
+### Tests
+
+- **`src/features/products/hooks/__tests__/useAuctions.test.ts`** — Updated mock shape from `{ data: [], meta: {...} }` to `{ items: [], total, page, ... }` to match the fixed type; updated assertion from `extracts data.data` to `extracts items`.
+
+---
+
 ## [Unreleased] — fix(i18n): translated hardcoded filter/form option labels (Rule 3)
 
 ### Fixed (Rule 3 — zero hardcoded strings in JSX)

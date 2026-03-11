@@ -17,6 +17,7 @@ interface UsePublicEventsOptions {
   params?: string;
   enabled?: boolean;
   cacheTTL?: number;
+  initialData?: EventsListResult;
 }
 
 /**
@@ -32,12 +33,14 @@ export function usePublicEvents({
   params = "",
   enabled = true,
   cacheTTL = 5 * 60 * 1000,
+  initialData,
 }: UsePublicEventsOptions = {}) {
   const { data, isLoading, error, refetch } = useQuery<EventsListResult>({
     queryKey: ["public-events", params],
     queryFn: () => eventService.list(params),
     enabled,
     staleTime: cacheTTL,
+    initialData,
   });
 
   return {

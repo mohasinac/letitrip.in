@@ -26,11 +26,25 @@ import type { ActiveFilter } from "@/components";
 import { EventFilters } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useUrlTable, usePublicEvents, usePendingTable } from "@/hooks";
+import type { EventDocument } from "@/db/schema";
 import { EventCard } from "@/components";
 
 const PAGE_SIZE = 24;
 
-function EventsListContent() {
+interface EventsListResult {
+  items: EventDocument[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
+}
+
+function EventsListContent({
+  initialData,
+}: {
+  initialData?: EventsListResult;
+}) {
   const t = useTranslations("events");
   const tActions = useTranslations("actions");
   const tTypes = useTranslations("eventTypes");
@@ -92,7 +106,10 @@ function EventsListContent() {
     return sp.toString();
   }, [statusFilter, typeFilter, sortParam, page, table]);
 
-  const { events, total, isLoading } = usePublicEvents({ params: apiParams });
+  const { events, total, isLoading } = usePublicEvents({
+    params: apiParams,
+    initialData,
+  });
   const totalPages = Math.ceil(total / PAGE_SIZE) || 1;
 
   // ── Active filter chips ────────────────────────────────────────────────
@@ -202,10 +219,12 @@ function EventsListContent() {
   );
 }
 
-export function EventsListView() {
+export function EventsListView({
+  initialData,
+}: { initialData?: EventsListResult } = {}) {
   return (
     <Suspense>
-      <EventsListContent />
+      <EventsListContent initialData={initialData} />
     </Suspense>
   );
 }

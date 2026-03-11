@@ -29,11 +29,16 @@ import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, useAuth, useMessage, useBrands } from "@/hooks";
 import { useAuctions } from "../hooks";
+import type { AuctionsListResult } from "../hooks";
 import { addToWishlistAction } from "@/actions";
 
 const PAGE_SIZE = 24;
 
-function AuctionsContent() {
+function AuctionsContent({
+  initialData,
+}: {
+  initialData?: AuctionsListResult;
+}) {
   const t = useTranslations("auctions");
   const tActions = useTranslations("actions");
   const { user } = useAuth();
@@ -121,7 +126,10 @@ function AuctionsContent() {
     return sp.toString();
   }, [minBid, maxBid, sort, page, searchQuery, brandParam]);
 
-  const { auctions, total, totalPages, isLoading } = useAuctions(auctionParams);
+  const { auctions, total, totalPages, isLoading } = useAuctions(
+    auctionParams,
+    { initialData },
+  );
   const { brandOptions } = useBrands();
 
   // ── Bulk wishlist handler ─────────────────────────────────────────
@@ -294,10 +302,12 @@ function AuctionsContent() {
   );
 }
 
-export function AuctionsView() {
+export function AuctionsView({
+  initialData,
+}: { initialData?: AuctionsListResult } = {}) {
   return (
     <Suspense>
-      <AuctionsContent />
+      <AuctionsContent initialData={initialData} />
     </Suspense>
   );
 }

@@ -23,8 +23,12 @@ export type AuctionItem = Pick<
 >;
 
 export interface AuctionsListResult {
-  data: AuctionItem[];
-  meta: { page: number; limit: number; total: number; totalPages: number };
+  items: AuctionItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
 }
 
 /**
@@ -32,17 +36,21 @@ export interface AuctionsListResult {
  * Wraps `productService.listAuctions(params)` for the public auctions page.
  * `params` is a pre-built query string produced by `useUrlTable`.
  */
-export function useAuctions(params?: string) {
+export function useAuctions(
+  params?: string,
+  options?: { initialData?: AuctionsListResult },
+) {
   const { data, isLoading, error, refetch } = useQuery<AuctionsListResult>({
     queryKey: ["auctions", params ?? ""],
     queryFn: () => productService.listAuctions(params),
+    initialData: options?.initialData,
   });
 
   return {
     data,
-    auctions: data?.data ?? [],
-    total: data?.meta?.total ?? 0,
-    totalPages: data?.meta?.totalPages ?? 1,
+    auctions: data?.items ?? [],
+    total: data?.total ?? 0,
+    totalPages: data?.totalPages ?? 1,
     isLoading,
     error,
     refetch,

@@ -15,10 +15,14 @@ interface BlogPostsResult {
  * Cache key includes the full params string so any filter/sort/page
  * change triggers a new fetch.
  */
-export function useBlogPosts(params?: string) {
+export function useBlogPosts(
+  params?: string,
+  options?: { initialData?: BlogPostsResult },
+) {
   const { data, isLoading, error, refetch } = useQuery<BlogPostsResult>({
     queryKey: ["blog", params ?? ""],
     queryFn: () => blogService.list(params),
+    initialData: options?.initialData,
   });
 
   return {

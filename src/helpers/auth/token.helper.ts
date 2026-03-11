@@ -5,7 +5,6 @@
  */
 
 import { v4 as uuidv4 } from "uuid";
-import { randomInt } from "crypto";
 
 /**
  * Generates a unique verification token using UUID v4
@@ -34,7 +33,10 @@ export function generateVerificationToken(): string {
  * ```
  */
 export function generateVerificationCode(): string {
-  return randomInt(100000, 1000000).toString();
+  const array = new Uint32Array(1);
+  globalThis.crypto.getRandomValues(array);
+  // [0, 899999] + 100000 → always 6 digits (100000 – 999999)
+  return ((array[0] % 900000) + 100000).toString();
 }
 
 /**

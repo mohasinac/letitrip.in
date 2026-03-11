@@ -29,10 +29,16 @@ import { BlogCard } from "@/components";
 import { BlogFeaturedCard } from "./BlogFeaturedCard";
 import { THEME_CONSTANTS } from "@/constants";
 import { useUrlTable, useBlogPosts, usePendingTable } from "@/hooks";
+import type { BlogPostDocument } from "@/db/schema";
 
 const PAGE_SIZE = 24;
 
-function BlogListContent() {
+interface BlogPostsResult {
+  posts: BlogPostDocument[];
+  meta: { total: number; page: number; pageSize: number; totalPages: number };
+}
+
+function BlogListContent({ initialData }: { initialData?: BlogPostsResult }) {
   const t = useTranslations("blog");
   const tActions = useTranslations("actions");
   const tFilters = useTranslations("filters");
@@ -83,7 +89,7 @@ function BlogListContent() {
     return sp.toString();
   }, [page, categoryFilter, sortParam, table]);
 
-  const { posts, data, isLoading } = useBlogPosts(queryParams);
+  const { posts, data, isLoading } = useBlogPosts(queryParams, { initialData });
   const total = data?.meta?.total ?? 0;
   const totalPages = data?.meta?.totalPages ?? 1;
 
@@ -205,10 +211,12 @@ function BlogListContent() {
   );
 }
 
-export function BlogListView() {
+export function BlogListView({
+  initialData,
+}: { initialData?: BlogPostsResult } = {}) {
   return (
     <Suspense>
-      <BlogListContent />
+      <BlogListContent initialData={initialData} />
     </Suspense>
   );
 }

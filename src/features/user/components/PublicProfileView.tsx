@@ -1,6 +1,4 @@
-﻿"use client";
-
-import {
+﻿import {
   AvatarDisplay,
   Badge,
   Card,
@@ -11,7 +9,7 @@ import {
   Text,
   TextLink,
 } from "@/components";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { formatCurrency, formatNumber } from "@/utils";
 import type { UserDocument, ProductDocument } from "@/db/schema";
@@ -56,14 +54,14 @@ function StarIcons({
   );
 }
 
-function SellerProductsSection({
+async function SellerProductsSection({
   productsData,
   productsLoading,
 }: {
   productsData?: ProductsApiResponse;
   productsLoading: boolean;
 }) {
-  const tProfile = useTranslations("profile");
+  const tProfile = await getTranslations("profile");
   return (
     <Card className="mb-6">
       <Heading level={2} className="mb-4">
@@ -122,14 +120,14 @@ function SellerProductsSection({
   );
 }
 
-function SellerReviewsSection({
+async function SellerReviewsSection({
   reviewsData,
   reviewsLoading,
 }: {
   reviewsData?: SellerReviewsData;
   reviewsLoading: boolean;
 }) {
-  const tProfile = useTranslations("profile");
+  const tProfile = await getTranslations("profile");
   return (
     <Card className="mb-6">
       <div className={`${flex.between} mb-4`}>
@@ -211,7 +209,7 @@ function SellerReviewsSection({
   );
 }
 
-export function PublicProfileView({
+export async function PublicProfileView({
   user,
   isSeller,
   profileName,
@@ -222,8 +220,8 @@ export function PublicProfileView({
   reviewsData,
   reviewsLoading,
 }: PublicProfileViewProps) {
-  const tProfile = useTranslations("profile");
-  const tRoles = useTranslations("roles");
+  const tProfile = await getTranslations("profile");
+  const tRoles = await getTranslations("roles");
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
       {/* Header Banner */}

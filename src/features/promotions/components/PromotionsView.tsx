@@ -1,7 +1,5 @@
-"use client";
-
 import { THEME_CONSTANTS } from "@/constants";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { CouponCard, ProductSection } from "@/features/promotions";
 import { Heading, Text, Section } from "@/components";
 import type { ProductDocument, CouponDocument } from "@/db/schema";
@@ -14,12 +12,12 @@ interface PromotionsViewProps {
   activeCoupons: CouponDocument[];
 }
 
-export function PromotionsView({
+export async function PromotionsView({
   promotedProducts,
   featuredProducts,
   activeCoupons,
 }: PromotionsViewProps) {
-  const t = useTranslations("promotions");
+  const t = await getTranslations("promotions");
 
   const hasContent =
     promotedProducts.length > 0 ||

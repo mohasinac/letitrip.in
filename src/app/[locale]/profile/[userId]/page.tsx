@@ -12,7 +12,8 @@ import { userRepository, productRepository } from "@/repositories";
 import { hasRole } from "@/helpers";
 import { formatMonthYear } from "@/utils";
 import { SITE_CONFIG } from "@/constants";
-import { PublicProfileView, buildSellerReviews } from "@/features/user";
+import { PublicProfileView } from "@/features/user";
+import { buildSellerReviews } from "@/features/user/server";
 import type { UserDocument, ProductDocument } from "@/db/schema";
 import type { ImageCropData } from "@/components";
 import type {

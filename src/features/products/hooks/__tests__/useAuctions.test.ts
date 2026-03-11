@@ -21,8 +21,12 @@ jest.mock("@tanstack/react-query", () => ({
 jest.mock("@/services", () => ({
   productService: {
     listAuctions: jest.fn().mockResolvedValue({
-      data: [],
-      meta: { page: 1, limit: 25, total: 0, totalPages: 0 },
+      items: [],
+      total: 0,
+      page: 1,
+      pageSize: 25,
+      totalPages: 0,
+      hasMore: false,
     }),
   },
 }));
@@ -61,10 +65,14 @@ describe("useAuctions", () => {
     expect(result.current.totalPages).toBe(1);
   });
 
-  it("extracts data.data, meta.total, meta.totalPages when data is available", () => {
+  it("extracts items, total, totalPages when data is available", () => {
     const mockData = {
-      data: [{ id: "a1" }],
-      meta: { page: 1, limit: 25, total: 5, totalPages: 1 },
+      items: [{ id: "a1" }],
+      total: 5,
+      page: 1,
+      pageSize: 25,
+      totalPages: 1,
+      hasMore: false,
     };
     (useQuery as jest.Mock).mockReturnValue({
       data: mockData,
@@ -73,7 +81,7 @@ describe("useAuctions", () => {
       refetch: jest.fn(),
     });
     const { result } = renderHook(() => useAuctions());
-    expect(result.current.auctions).toEqual(mockData.data);
+    expect(result.current.auctions).toEqual(mockData.items);
     expect(result.current.total).toBe(5);
     expect(result.current.totalPages).toBe(1);
   });
