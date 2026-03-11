@@ -88,11 +88,12 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 | E5 | SSR Phase 7 — SEO: `generateMetadata` all pages, JSON-LD | ✅ Complete |
 | E6 | SSR Phase 4 — auth session cookie (`__session`) | ✅ Complete |
 | E7 | SSR Phase 5 — real-time SSE islands | ✅ Complete |
-| F | Styling cleanup + `@lir/*` library extraction | ⏳ In Progress (F1 complete — globals.css + gray-* audit; F2–F4 pending) |
+| F | Styling cleanup + `@lir/*` library extraction — globals.css dead vars removed; gray-* purged; `@lir/core/http/next/react/ui` extracted as workspace packages | ✅ Complete |
+| G1 | Server Actions + services-to-actions migration — all mutations → Server Actions; pure-passthrough services deleted | ✅ Complete |
 | G3 | Repository fixes — dead category-metrics.ts deleted; metrics wired in products API | ✅ Complete |
 | G4 | Schema adapters — dead schema.adapter.ts deleted | ✅ Complete |
 | G5 | AES-256-GCM encrypted provider credentials in `siteSettings`; `SiteCredentialsForm`; DB-first `razorpay.ts`/`email.ts` | ✅ Complete |
-| G1 | Server Actions + services-to-actions migration | ⏳ In Progress (15+ actions done; pure-passthrough deletion pending) |
+| H | Dead barrel exports removed; `animation.*` aliases deleted from THEME_CONSTANTS; changesets publishing infra for `@lir/*` | ✅ Complete (H8 optional — monorepo restructure) |
 
 ---
 

@@ -1515,19 +1515,24 @@ Extract only the hooks and components that survive the TanStack Query and react-
 
 ### Stage H — Dead Code & Publish _(as upstream stages complete)_
 
-| Step   | Action                                                                              | §Ref      | Risk | Effort | Prerequisite |
-| ------ | ----------------------------------------------------------------------------------- | --------- | ---- | ------ | ------------ |
-| H1     | Remove `useApiQuery`, `useApiMutation`, `CacheManager`, `EventBus` barrel exports   | §8 wave-A | Low  | 1 hr   | C4           |
-| H2     | Remove `useForm.ts` barrel export                                                   | §8 wave-B | Low  | 30 min | D3           |
-| H3     | Delete pure pass-through services + `demo.service.ts`                               | §8 wave-C | Low  | 1 day  | G1           |
-| H4     | Delete dead CSS vars, `THEME_CONSTANTS` aliases, remove `gray-*` safelist           | §8 wave-D | Low  | 4 hr   | F1           |
-| ~~H5~~ | ~~Move `src/snippets/` → `docs/snippets/` or delete; confirm zero runtime imports~~ | §8 wave-E | Low  | 30 min | —            |
-| ~~H6~~ | ~~Create `docs/TECH_DEBT.md` (referenced in `next.config.js`)~~                     | §5 Ph7    | Low  | 30 min | —            |
-
+> **H1 ✅** committed 2026-03-11 — `useApiQuery.ts` + `useApiMutation.ts` deleted (C4, 2026-03-09); `CacheManager.ts` + `EventBus.ts` converted to thin `@lir/core` re-exports (F4); all four removed from `src/hooks/index.ts` and `src/classes/index.ts` barrels; zero app callers confirmed.<br>
+> **H2 ✅** committed 2026-03-11 — `export { useForm } from "react-hook-form"` removed from `src/hooks/index.ts`; no app callers found; imports from `react-hook-form` directly per Rule 5.<br>
+> **H4 ✅** committed 2026-03-11 — `animation: { fast, normal, slow }` pure-alias section deleted from `src/constants/theme.ts`; `SidebarLayout.tsx` updated to use `duration-300` inline. All F1 work (dead CSS vars, gray-* safelist, spacing alias deletion) confirmed complete.<br>
 > **H5 ✅** committed 2026-03-10 — `src/snippets/` deleted (6 files); moved to `docs/snippets/`; barrel re-export removed from `src/index.ts`.<br>
-> **H6 ✅** committed 2026-03-10 — `docs/TECH_DEBT.md` created with TD-001 (Turbopack), TD-002 (useApiQuery adapters), TD-003 (service passthrough), TD-004 (THEME*CONSTANTS spacing aliases).
-> | H7 | Per-package `CHANGELOG.md`; configure `changesets`; publish `@lir/*`packages to npm | §10.4 | Low | 1 day | F4 |
-| H8 *(opt.)\_ | Move`src/`→`apps/web/`; full monorepo restructure | §10.1 | Low | 1 day | H7 |
+> **H6 ✅** committed 2026-03-10 — `docs/TECH_DEBT.md` created with TD-001 (Turbopack), TD-002 (useApiQuery adapters), TD-003 (service passthrough), TD-004 (THEME*CONSTANTS spacing aliases).<br>
+> **H7 ✅** committed 2026-03-11 — per-package `CHANGELOG.md` files authored; `.changeset/config.json` initialised (`access: public`, `baseBranch: main`); `"private": true` removed + `"publishConfig": { "access": "public" }` added to all 5 `packages/*/package.json`; `@changesets/cli` added to root devDependencies; `changeset`, `version-packages`, `release` scripts added to root `package.json`.<br>
+> **Stage H complete** (H8 optional — full monorepo restructure, no timeline).
+
+| Step        | Action                                                                                   | §Ref      | Risk | Effort | Prerequisite |
+| ----------- | ---------------------------------------------------------------------------------------- | --------- | ---- | ------ | ------------ |
+| ~~H1~~      | ~~Remove `useApiQuery`, `useApiMutation`, `CacheManager`, `EventBus` barrel exports~~    | §8 wave-A | Low  | 1 hr   | C4           |
+| ~~H2~~      | ~~Remove `useForm.ts` barrel export~~                                                    | §8 wave-B | Low  | 30 min | D3           |
+| ~~H3~~      | ~~Delete pure pass-through services + `demo.service.ts`~~                                | §8 wave-C | Low  | 1 day  | G1           |
+| ~~H4~~      | ~~Delete dead CSS vars, `THEME_CONSTANTS` aliases, remove `gray-*` safelist~~            | §8 wave-D | Low  | 4 hr   | F1           |
+| ~~H5~~      | ~~Move `src/snippets/` → `docs/snippets/` or delete; confirm zero runtime imports~~      | §8 wave-E | Low  | 30 min | —            |
+| ~~H6~~      | ~~Create `docs/TECH_DEBT.md` (referenced in `next.config.js`)~~                          | §5 Ph7    | Low  | 30 min | —            |
+| ~~H7~~      | ~~Per-package `CHANGELOG.md`; configure `changesets`; publish `@lir/*` packages to npm~~ | §10.4     | Low  | 1 day  | F4           |
+| H8 _(opt.)_ | Move `src/` → `apps/web/`; full monorepo restructure                                     | §10.1     | Low  | 1 day  | H7           |
 
 ---
 
@@ -1558,14 +1563,16 @@ All previously pending files have been deleted. See "Already deleted / moved ✅
 
 ### Code to remove (not full-file deletions)
 
-| Location                                              | What to remove                                                  | When    |
-| ----------------------------------------------------- | --------------------------------------------------------------- | ------- |
-| `src/hooks/index.ts`                                  | Barrel re-exports for deleted hooks                             | C4 & D3 |
-| `src/classes/index.ts`                                | Barrel re-exports for deleted classes                           | C4      |
-| `src/app/globals.css`                                 | Dead `--variable` CSS custom properties                         | F1      |
-| `src/constants/theme.constants.ts`                    | Pure Tailwind-alias entries (`gap.*`, `padding.*`, `margin.*`)  | F1      |
-| `tailwind.config.js` safelist                         | `gray-*` entries once all `gray-` classes replaced              | F1      |
-| `src/app/[locale]/layout.tsx` and all 24 client pages | `"use client"` directive (where applicable after SSR migration) | E1–E7   |
+All code-level removals are now complete. ✅
+
+| Location                                                  | What to remove                                                      | When    | Status                                     |
+| --------------------------------------------------------- | ------------------------------------------------------------------- | ------- | ------------------------------------------ |
+| ~~`src/hooks/index.ts`~~                                  | ~~Barrel re-exports for deleted hooks~~                             | C4 & D3 | ✅ H1, H2                                  |
+| ~~`src/classes/index.ts`~~                                | ~~Barrel re-exports for deleted classes~~                           | C4      | ✅ H1 (thin @lir/core re-exports retained) |
+| ~~`src/app/globals.css`~~                                 | ~~Dead `--variable` CSS custom properties~~                         | F1      | ✅ F1                                      |
+| ~~`src/constants/theme.ts`~~                              | ~~Pure Tailwind-alias entries (`gap.*`, `animation.*`)~~            | F1, H4  | ✅ F1 + H4                                 |
+| ~~`tailwind.config.js` safelist~~                         | ~~`gray-*` entries once all `gray-` classes replaced~~              | F1      | ✅ F1                                      |
+| ~~`src/app/[locale]/layout.tsx` and all 24 client pages~~ | ~~`"use client"` directive (where applicable after SSR migration)~~ | E1–E7   | ✅ E1–E7                                   |
 
 ---
 

@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — feat(H2/H4/H7): dead barrel exports removed; THEME_CONSTANTS animation aliases deleted; changesets publishing infrastructure
+
+### Changed
+
+- **`src/hooks/index.ts`** (H2) — Removed `export { useForm } from "react-hook-form"` convenience re-export. Components import directly from `react-hook-form` per Rule 5.
+- **`src/components/layout/SidebarLayout.tsx`** (H4) — Replaced `${THEME_CONSTANTS.animation.normal}` with inline `duration-300`; no indirection needed.
+- **`src/constants/theme.ts`** (H4) — Deleted the `animation: { fast, normal, slow }` section (3 pure Tailwind-class aliases: `"duration-150"`, `"duration-300"`, `"duration-500"`).
+- **`packages/*/package.json`** (H7) — Removed `"private": true`; added `"publishConfig": { "access": "public" }` to all 5 `@lir/*` packages (`core`, `http`, `next`, `react`, `ui`).
+- **`package.json`** (H7) — Added `@changesets/cli ^2.27.12` to devDependencies; added `changeset`, `version-packages`, `release` scripts.
+
+### Added
+
+- **`.changeset/config.json`** (H7) — Changesets configuration: `access: public`, `baseBranch: main`, `updateInternalDependencies: patch`. Enables `npm run changeset` / `npm run release` workflow for `@lir/*` packages.
+
+---
+
 ## [Unreleased] — XSS fix: admin form previews sanitised; Algolia hook deduplicated
 
 ### Security
