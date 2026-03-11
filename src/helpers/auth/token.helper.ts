@@ -5,6 +5,7 @@
  */
 
 import { v4 as uuidv4 } from "uuid";
+import { randomInt } from "crypto";
 
 /**
  * Generates a unique verification token using UUID v4
@@ -33,7 +34,7 @@ export function generateVerificationToken(): string {
  * ```
  */
 export function generateVerificationCode(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return randomInt(100000, 1000000).toString();
 }
 
 /**

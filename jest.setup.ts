@@ -364,6 +364,18 @@ jest.mock("next-intl/server", () => {
   };
 });
 
+// Mock Resend so that new Resend(undefined) does not throw when
+// RESEND_API_KEY is absent in CI / test environments.
+jest.mock("resend", () => ({
+  Resend: jest.fn().mockImplementation(() => ({
+    emails: {
+      send: jest
+        .fn()
+        .mockResolvedValue({ data: { id: "mock-email-id" }, error: null }),
+    },
+  })),
+}));
+
 // Mock locale-aware navigation (mirrors next/navigation shape)
 jest.mock("@/i18n/navigation", () => ({
   useRouter: () => ({

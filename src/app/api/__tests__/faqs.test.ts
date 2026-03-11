@@ -49,7 +49,17 @@ jest.mock("@/lib/validation/schemas", () => ({
     };
   },
   formatZodErrors: (errors: any) => errors?.format?.() || [],
-  faqCreateSchema: {},
+  faqCreateSchema: {
+    safeParse: (data: any) =>
+      data && data.question && data.answer
+        ? { success: true, data }
+        : {
+            success: false,
+            error: {
+              issues: [{ path: ["question"], message: "Question is required" }],
+            },
+          },
+  },
 }));
 
 jest.mock("@/lib/errors", () => ({
@@ -282,6 +292,8 @@ describe("FAQs API - POST /api/faqs", () => {
     jest.clearAllMocks();
     mockRequireRoleFromRequest.mockResolvedValue(mockAdminUser());
     mockFaqsFindAll.mockResolvedValue(mockFAQs);
+    // Return the highest-order FAQ so auto-assign gives maxOrder(3) + 1 = 4
+    mockFaqsList.mockResolvedValue({ items: [mockFAQs[2]], total: 1 });
     mockFaqsCreate.mockResolvedValue({ id: "new-faq", question: "New FAQ" });
   });
 

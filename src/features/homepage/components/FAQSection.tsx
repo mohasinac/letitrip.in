@@ -130,10 +130,11 @@ export function FAQSection() {
               {/* Answer (Collapsible) */}
               {openFaqId === faq.id && (
                 <div className={`p-6 pt-0`}>
-                  <div
+                  <p
                     className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} rounded-md ${THEME_CONSTANTS.themed.bgTertiary} p-4`}
-                    dangerouslySetInnerHTML={{ __html: faq.answer }}
-                  />
+                  >
+                    {faq.answer}
+                  </p>
                 </div>
               )}
             </div>

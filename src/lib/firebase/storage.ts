@@ -301,8 +301,9 @@ export function validateDocument(
  * Generate unique filename
  */
 export function generateUniqueFilename(originalName: string): string {
+  const { randomBytes } = require("crypto") as typeof import("crypto");
   const timestamp = Date.now();
-  const randomString = Math.random().toString(36).substring(2, 15);
+  const randomString = randomBytes(8).toString("hex");
   const extension = originalName.split(".").pop();
   return `${timestamp}_${randomString}.${extension}`;
 }

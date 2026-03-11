@@ -175,10 +175,3 @@ export function parseUserAgent(
 
   return { userAgent, browser, os, device };
 }
-
-/**
- * Helper: Generate unique session ID
- */
-export function generateSessionId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
-}

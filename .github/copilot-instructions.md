@@ -17,7 +17,10 @@
 
 ## Stack
 
-Next.js 16.1.1 (App Router) · TypeScript · Tailwind CSS · Firebase (Auth, Firestore, Storage, Realtime DB) · Resend · TanStack Query v5 · react-hook-form v7 · React Context + hooks
+Next.js 16.1.1 (App Router) · TypeScript · Tailwind CSS · Firebase (Auth, Firestore, Storage, Realtime DB) · Resend · TanStack Query v5 · react-hook-form v7 · Server Actions · React Context + hooks
+
+**Workspace packages** (`packages/`): `@lir/core` (Logger, Queue, StorageManager, EventBus, CacheManager) · `@lir/http` (ApiClient, apiClient singleton) · `@lir/next` (IAuthVerifier, createApiErrorHandler) · `@lir/react` (10 UI hooks) · `@lir/ui` (Semantic + Typography primitives with inlined tokens)  
+Linked via `tsconfig` path aliases + `transpilePackages` — **not** npm install.
 
 ---
 
@@ -60,11 +63,12 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 - **No raw HTML tags** — use `Heading`, `Text`, `Caption`, `Label`, `Span`, `TextLink`, `Button`, `Section`, `Nav`, `Ul`, `Li`… from `@/components`
 - **No hardcoded strings in JSX** — use `useTranslations()` from `next-intl`
 - **No Firebase client SDK** in UI code — Auth/Firestore/Storage are backend-only
-- **No `fetch()` or `apiClient` in components** — use `useQuery`/`useMutation` from `@tanstack/react-query` (preferred) or existing `useApiQuery`/`useApiMutation` wrappers; queryFn must call a service function
+- **No `fetch()` or `apiClient` in components** — reads use `useQuery` from `@tanstack/react-query`; queryFn must call a service function from `@/services`
+- **Mutations use Server Actions** — import from `@/actions`; call via `useMutation` or directly inside event handlers; **never** call a service for a mutation
 - **No direct Firestore queries** in API routes — use repositories from `@/repositories`
 - **No file upload to Storage from browser** — stage locally → submit FormData to backend
 - **Forms use `react-hook-form` + `zodResolver`** — `useForm` from `react-hook-form`, resolver from `@hookform/resolvers/zod`, schema from `@/db/schema/`; no custom form state
-- **Server pages call repositories directly** — async RSC pages import from `@/repositories` and pass `initialData` to client views; no `useApiQuery` in page files
+- **Server pages call repositories directly** — async RSC pages import from `@/repositories` and pass `initialData` to client views; no `useQuery` / service calls in page files
 - **Pages ≤ 150 lines** — extract to `src/features/<name>/components/<Domain>View.tsx`
 - **No `alert()`/`confirm()`** — use `useMessage()` / `ConfirmDeleteModal`
 - **No `console.log()`** — use `logger` (client) / `serverLogger` (API routes)
@@ -74,26 +78,36 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 - **Delete old code when replacing** — no `@deprecated` stubs, no dual implementations
 - **Build must pass**: `npx tsc --noEmit` → `npm run build` before handing back
 
-## Migration State (as of 2026-03-09)
+## Migration State (as of 2026-03-11)
 
 | Stage | Description | Status |
 |-------|-------------|--------|
-| A | Security fixes (rate-limit, HMAC, MIME, CSP, apiClient, hydration) | ✅ Complete |
-| C | TanStack Query — `useApiQuery`/`useApiMutation` are now thin adapters; `QueryProvider` in root layout | ✅ Complete |
-| D | react-hook-form — `useForm` re-exported from `react-hook-form`; custom `useForm.ts` deleted | ✅ Complete |
-| E1 | SSR Phase 1 — blog/products/events/sellers: async RSC + `generateMetadata` | ✅ Complete |
+| A | Security fixes — rate-limit (Upstash Redis), HMAC `timingSafeEqual`, magic-byte MIME, nonce-based CSP, apiClient SSR fix, hydration fixes | ✅ Complete |
+| B1 | Monorepo bootstrap — `pnpm-workspace.yaml`, `turbo.json`, `packages/*` stubs | ✅ Complete |
+| B2 | `@lir/core` extracted — Logger, Queue, StorageManager, EventBus, CacheManager | ✅ Complete |
+| B3 | `@lir/http` extracted — ApiClient, ApiClientError, apiClient singleton | ✅ Complete |
+| B4 | `@lir/next` extracted — IAuthVerifier interface, createApiErrorHandler factory | ✅ Complete |
+| C | TanStack Query v5 — `useApiQuery`/`useApiMutation` adapters **deleted**; all hooks use `useQuery`/`useMutation` from `@tanstack/react-query` directly; `QueryProvider` in root layout | ✅ Complete |
+| D | react-hook-form — `useForm` from `react-hook-form` + `zodResolver`; custom `useForm.ts` deleted | ✅ Complete |
+| E1 | SSR Phase 1 — blog/products/events/sellers/promotions: async RSC + `generateMetadata` | ✅ Complete |
 | E2 | SSR Phase 2 — homepage `initialData` pre-fetch | ✅ Complete |
 | E3 | SSR Phase 3 — listing pages (products, categories, stores, search) | ✅ Complete |
 | E4 | SSR Phase 6 — static pages ISR | ✅ Complete |
 | E5 | SSR Phase 7 — SEO: `generateMetadata` all pages, JSON-LD | ✅ Complete |
 | E6 | SSR Phase 4 — auth session cookie (`__session`) | ✅ Complete |
-| E7 | SSR Phase 5 — real-time SSE islands | ✅ Complete |
-| F | Styling cleanup + `@lir/*` library extraction — globals.css dead vars removed; gray-* purged; `@lir/core/http/next/react/ui` extracted as workspace packages | ✅ Complete |
-| G1 | Server Actions + services-to-actions migration — all mutations → Server Actions; pure-passthrough services deleted | ✅ Complete |
-| G3 | Repository fixes — dead category-metrics.ts deleted; metrics wired in products API | ✅ Complete |
-| G4 | Schema adapters — dead schema.adapter.ts deleted | ✅ Complete |
+| E7 | SSR Phase 5 + E8 — real-time SSE islands; profile SSR | ✅ Complete |
+| F1 | Styling cleanup — `globals.css` dead vars removed; `gray-*` purged; `THEME_CONSTANTS` pure aliases deleted | ✅ Complete |
+| F2 | `@lir/react` extracted — 10 UI hooks (useMediaQuery, useBreakpoint, useClickOutside, useKeyPress, useLongPress, useGesture, useSwipe, useCamera, usePullToRefresh, useCountdown) | ✅ Complete |
+| F3 | `@lir/ui` extracted — Semantic.tsx (10 components) + Typography.tsx (Heading/Text/Label/Caption/Span) with inlined UI_THEME tokens | ✅ Complete |
+| F4 | `@lir/ui` extended + tsconfig wired — Spinner, Skeleton, Button, Badge, Alert, Divider, Progress; `@lir/*` path aliases + `transpilePackages`; `src/classes/*` + `src/hooks/*` re-export packages | ✅ Complete |
+| G1 | Server Actions — 20+ actions in `src/actions/`; all mutations → Server Actions (`useMutation` wraps Server Action); dead pure-passthrough service methods deleted | ✅ Complete |
+| G2 | FilterPanel config-driven — all 14 admin filter components use `FilterPanel` pattern | ✅ Complete |
+| G3 | Repository fixes — dead `category-metrics.ts` deleted; metrics wired in products API | ✅ Complete |
+| G4 | Schema adapters — dead `schema.adapter.ts` deleted | ✅ Complete |
 | G5 | AES-256-GCM encrypted provider credentials in `siteSettings`; `SiteCredentialsForm`; DB-first `razorpay.ts`/`email.ts` | ✅ Complete |
-| H | Dead barrel exports removed; `animation.*` aliases deleted from THEME_CONSTANTS; changesets publishing infra for `@lir/*` | ✅ Complete (H8 optional — monorepo restructure) |
+| H1–H7 | Dead barrel exports removed; `animation.*` aliases deleted; dead services deleted (contact, newsletter, payment-event, demo); snippets moved to `docs/snippets/`; `TECH_DEBT.md` created; per-package `CHANGELOG.md` files added | ✅ Complete |
+| Sec | TD-005: media/crop + media/trim migrated to `createApiHandler`; SSRF fix on `sourceUrl`; Stored XSS fix in `renderProseMirrorNode` (escapeHtml + link allowlist) | ✅ Complete |
+| H8 | Publish `@lir/*` to npm registry (build pipeline, `dist/` output, set `private: false`) | 🔲 Optional |
 
 ---
 

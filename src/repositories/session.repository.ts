@@ -13,9 +13,9 @@ import {
   SessionUpdateInput,
   sessionQueryHelpers,
   SESSION_EXPIRATION_MS,
-  generateSessionId,
   SESSION_FIELDS,
 } from "@/db/schema";
+import { generateSessionId } from "@/helpers/auth";
 import { DatabaseError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 import type {
@@ -35,8 +35,12 @@ export class SessionRepository extends BaseRepository<SessionDocument> {
   static readonly SIEVE_FIELDS: FirebaseSieveFields = {
     userId: { canFilter: true, canSort: false },
     isActive: { canFilter: true, canSort: false },
-    'deviceInfo.browser': { path: 'deviceInfo.browser', canFilter: true, canSort: false },
-    'deviceInfo.os': { path: 'deviceInfo.os', canFilter: true, canSort: false },
+    "deviceInfo.browser": {
+      path: "deviceInfo.browser",
+      canFilter: true,
+      canSort: false,
+    },
+    "deviceInfo.os": { path: "deviceInfo.os", canFilter: true, canSort: false },
     lastActivity: { canFilter: true, canSort: true },
     expiresAt: { canFilter: true, canSort: true },
     createdAt: { canFilter: true, canSort: true },

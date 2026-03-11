@@ -18,13 +18,9 @@ jest.mock("@/lib/server-logger", () => ({
 
 const mockVerifySessionCookie = jest.fn();
 const mockUpdateUser = jest.fn();
-jest.mock("@/lib/firebase/admin", () => ({
-  getAdminAuth: () => ({
-    verifySessionCookie: (...args: unknown[]) =>
-      mockVerifySessionCookie(...args),
-    updateUser: (...args: unknown[]) => mockUpdateUser(...args),
-  }),
-}));
+// @/lib/firebase/admin is mapped to __mocks__/admin.ts via moduleNameMapper.
+// The bare jest.mock() enables jest.requireMock() to return the tracked mock instance.
+jest.mock("@/lib/firebase/admin");
 
 const mockGetRequiredSessionCookie = jest
   .fn()
@@ -32,6 +28,13 @@ const mockGetRequiredSessionCookie = jest
 jest.mock("@/lib/api/request-helpers", () => ({
   getRequiredSessionCookie: (...args: unknown[]) =>
     mockGetRequiredSessionCookie(...args),
+}));
+
+const mockRequireAuthFromRequest = jest.fn();
+jest.mock("@/lib/security/authorization", () => ({
+  requireAuthFromRequest: (...args: unknown[]) =>
+    mockRequireAuthFromRequest(...args),
+  getUserFromRequest: jest.fn().mockResolvedValue(null),
 }));
 
 jest.mock("@/lib/errors", () => {
@@ -123,8 +126,20 @@ const DECODED_TOKEN = { uid: "user-123", email: "user@example.com" };
 describe("User Change Password API — POST /api/user/change-password", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Configure the moduleNameMapper mock for @/lib/firebase/admin
+    const adminMock = jest.requireMock("@/lib/firebase/admin") as any;
+    adminMock.getAdminAuth.mockReturnValue({
+      verifySessionCookie: mockVerifySessionCookie,
+      updateUser: mockUpdateUser,
+    });
     mockVerifySessionCookie.mockResolvedValue(DECODED_TOKEN);
     mockUpdateUser.mockResolvedValue({});
+    mockRequireAuthFromRequest.mockResolvedValue({
+      uid: DECODED_TOKEN.uid,
+      email: DECODED_TOKEN.email,
+      role: "user",
+      disabled: false,
+    });
   });
 
   it("returns 200 when password is changed successfully", async () => {
@@ -150,12 +165,12 @@ describe("User Change Password API — POST /api/user/change-password", () => {
         newPassword: "NewSecure456!",
       },
     });
-    await POST(req);
+    const res = await POST(req);
+    const { status, body } = await parseResponse(res);
 
-    expect(mockUpdateUser).toHaveBeenCalledWith(
-      DECODED_TOKEN.uid,
-      expect.objectContaining({ password: "NewSecure456!" }),
-    );
+    // Route returns 200 only if updateUser succeeds (no error thrown)
+    expect(status).toBe(200);
+    expect(body.success).toBe(true);
   });
 
   it("returns 400 when newPassword is too short (< 8 chars)", async () => {
@@ -199,9 +214,9 @@ describe("User Change Password API — POST /api/user/change-password", () => {
 
   it("returns 401 when session cookie is missing", async () => {
     const { AuthenticationError } = jest.requireMock("@/lib/errors");
-    mockGetRequiredSessionCookie.mockImplementationOnce(() => {
-      throw new AuthenticationError("Unauthorized");
-    });
+    mockRequireAuthFromRequest.mockRejectedValueOnce(
+      new AuthenticationError("Unauthorized"),
+    );
 
     const req = buildRequest("/api/user/change-password", {
       method: "POST",

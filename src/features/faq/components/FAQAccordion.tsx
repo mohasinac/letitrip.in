@@ -123,10 +123,11 @@ export function FAQAccordion({
             {isExpanded && (
               <div className={`p-6 ${THEME_CONSTANTS.themed.border} border-t`}>
                 {/* Answer Text */}
-                <div
-                  className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} mb-6 prose dark:prose-invert max-w-none`}
-                  dangerouslySetInnerHTML={{ __html: answer }}
-                />
+                <p
+                  className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} mb-6`}
+                >
+                  {answer}
+                </p>
 
                 {/* Actions Row */}
                 <div className={`${flex.between} gap-4 mb-6`}>
