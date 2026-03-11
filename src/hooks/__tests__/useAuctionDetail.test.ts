@@ -27,9 +27,10 @@ const mockBidsQuery = {
 
 let queryCallCount = 0;
 
-jest.mock("../useApiQuery", () => ({
-  useApiQuery: jest.fn((opts: any) => {
-    opts.queryFn();
+jest.mock("@tanstack/react-query", () => ({
+  ...jest.requireActual("@tanstack/react-query"),
+  useQuery: jest.fn((opts: any) => {
+    opts.queryFn?.();
     queryCallCount++;
     if (opts.queryKey[0] === "product") return mockProductQuery;
     return mockBidsQuery;
@@ -47,7 +48,7 @@ jest.mock("@/services", () => ({
   },
 }));
 
-const { useApiQuery } = require("../useApiQuery");
+const { useQuery } = require("@tanstack/react-query");
 const { productService, bidService } = require("@/services");
 
 describe("useAuctionDetail", () => {
@@ -70,14 +71,14 @@ describe("useAuctionDetail", () => {
 
   it("uses queryKey ['product', id] for product query", () => {
     renderHook(() => useAuctionDetail("product-123"));
-    expect(useApiQuery).toHaveBeenCalledWith(
+    expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({ queryKey: ["product", "product-123"] }),
     );
   });
 
   it("uses queryKey ['bids', id] for bids query", () => {
     renderHook(() => useAuctionDetail("product-123"));
-    expect(useApiQuery).toHaveBeenCalledWith(
+    expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({ queryKey: ["bids", "product-123"] }),
     );
   });
@@ -91,7 +92,7 @@ describe("useAuctionDetail", () => {
   it("extracts product from productQuery.data.data", () => {
     const mockProduct = { id: "p1", isAuction: true };
     (mockProductQuery as any).data = { data: mockProduct };
-    (useApiQuery as jest.Mock).mockImplementation((opts: any) => {
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
       if (opts.queryKey[0] === "product") return { ...mockProductQuery };
       return { ...mockBidsQuery };
     });
@@ -102,7 +103,7 @@ describe("useAuctionDetail", () => {
   it("extracts bids from bidsQuery.data.data", () => {
     const mockBids = [{ id: "b1", bidAmount: 100 }];
     (mockBidsQuery as any).data = { data: mockBids };
-    (useApiQuery as jest.Mock).mockImplementation((opts: any) => {
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
       if (opts.queryKey[0] === "bids") return { ...mockBidsQuery };
       return { ...mockProductQuery };
     });
@@ -112,7 +113,7 @@ describe("useAuctionDetail", () => {
 
   it("passes enabled=false for bids when product is null", () => {
     renderHook(() => useAuctionDetail("p1"));
-    expect(useApiQuery).toHaveBeenCalledWith(
+    expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({ queryKey: ["bids", "p1"], enabled: false }),
     );
   });

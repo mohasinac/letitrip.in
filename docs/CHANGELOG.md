@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — fix(security): eliminate all Math.random() from production code; replace with crypto.getRandomValues()
+
+### Security
+
+- **`src/utils/id-generators.ts`** — `generateRandomString()` (used for Firestore SEO document IDs) now uses `globalThis.crypto.getRandomValues(new Uint8Array(length))` instead of `Math.random()`.
+- **`src/utils/formatters/string.formatter.ts`** — `randomString()` now uses `globalThis.crypto.getRandomValues()` (browser + Node.js 18+ compatible).
+
+---
+
 ## [Unreleased] — fix(i18n/security): replace hardcoded strings in admin event forms; Math.random() → crypto.randomUUID()
 
 ### Security

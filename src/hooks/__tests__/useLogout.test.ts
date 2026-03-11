@@ -1,5 +1,5 @@
 /**
- * useLogout Tests — Phase 62
+ * useLogout Tests
  *
  * Verifies that useLogout delegates to authService.logout() and
  * forwards optional onSuccess/onError callbacks.
@@ -11,11 +11,12 @@
 import { renderHook } from "@testing-library/react";
 import { useLogout } from "../useLogout";
 
-jest.mock("../useApiMutation", () => ({
-  useApiMutation: jest.fn((opts: any) => ({
+jest.mock("@tanstack/react-query", () => ({
+  ...jest.requireActual("@tanstack/react-query"),
+  useMutation: jest.fn((opts: any) => ({
     mutate: () => opts.mutationFn(),
     mutateAsync: () => opts.mutationFn(),
-    isLoading: false,
+    isPending: false,
     error: null,
     data: undefined,
     reset: jest.fn(),
@@ -28,7 +29,7 @@ jest.mock("@/services", () => ({
   },
 }));
 
-const { useApiMutation } = require("../useApiMutation");
+const { useMutation } = require("@tanstack/react-query");
 const { authService } = require("@/services");
 
 describe("useLogout", () => {
@@ -42,18 +43,18 @@ describe("useLogout", () => {
     expect(authService.logout).toHaveBeenCalled();
   });
 
-  it("forwards onSuccess callback to useApiMutation", () => {
+  it("forwards onSuccess callback to useMutation", () => {
     const onSuccess = jest.fn();
     renderHook(() => useLogout({ onSuccess }));
-    expect(useApiMutation).toHaveBeenCalledWith(
+    expect(useMutation).toHaveBeenCalledWith(
       expect.objectContaining({ onSuccess }),
     );
   });
 
-  it("forwards onError callback to useApiMutation", () => {
+  it("forwards onError callback to useMutation", () => {
     const onError = jest.fn();
     renderHook(() => useLogout({ onError }));
-    expect(useApiMutation).toHaveBeenCalledWith(
+    expect(useMutation).toHaveBeenCalledWith(
       expect.objectContaining({ onError }),
     );
   });
