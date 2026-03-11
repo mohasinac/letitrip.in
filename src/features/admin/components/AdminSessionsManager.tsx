@@ -11,7 +11,7 @@ import {
   useAdminSessions,
   useRevokeSession,
   useRevokeUserSessions,
-} from "@/hooks";
+} from "@/features/admin";
 import {
   Card,
   Button,

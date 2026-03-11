@@ -7,6 +7,10 @@ jest.mock("next-intl", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  useAuth: () => ({ user: null, loading: false }),
+}));
+
+jest.mock("@/features/admin", () => ({
   useAdminSessions: () => ({
     data: {
       stats: {

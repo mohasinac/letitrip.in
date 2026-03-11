@@ -1,8 +1,10 @@
 "use client";
+
 /**
- * useAdminStats Hook
+ * useAdminStats
  *
- * Fetch and manage admin dashboard statistics
+ * Fetch admin dashboard statistics.
+ * Moved from src/hooks/useAdminStats.ts — admin-only, belongs in features/admin.
  */
 
 import { useQuery } from "@tanstack/react-query";
@@ -32,9 +34,9 @@ export function useAdminStats() {
   });
 
   return {
-    stats: data || null,
+    stats: data ?? null,
     isLoading,
-    error: error?.message || null,
+    error: error?.message ?? null,
     refresh: () => {
       void refetch();
     },

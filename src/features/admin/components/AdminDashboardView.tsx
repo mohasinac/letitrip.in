@@ -3,7 +3,8 @@
 import { useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Card, Button, Heading, AdminPageHeader } from "@/components";
-import { useAuth, useAdminStats } from "@/hooks";
+import { useAuth } from "@/hooks";
+import { useAdminStats } from "@/features/admin";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { AdminStatsCards } from "./AdminStatsCards";

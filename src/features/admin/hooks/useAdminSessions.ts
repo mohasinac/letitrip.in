@@ -1,9 +1,10 @@
 "use client";
 
 /**
- * Session Management Hooks
+ * Session Management Hooks (admin-only)
  *
- * React hooks for fetching and managing sessions in admin dashboard and user settings.
+ * Fetch and revoke active sessions in the admin dashboard.
+ * Moved from src/hooks/useSessions.ts — admin-only, belongs in features/admin.
  */
 
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -32,27 +33,16 @@ interface SessionsResponse {
   count: number;
 }
 
-interface UserSessionsResponse {
-  success: boolean;
-  sessions: SessionDocument[];
-  activeCount: number;
-  total: number;
-}
-
-/**
- * Fetch all active sessions (admin only)
- */
+/** Fetch all active sessions (admin only). Refreshes every 30 s. */
 export function useAdminSessions(limit = 100) {
   return useQuery<SessionsResponse>({
     queryKey: ["admin-sessions", limit.toString()],
     queryFn: () => adminService.listSessions(`limit=${limit}`),
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 30000,
   });
 }
 
-/**
- * Revoke a session (admin)
- */
+/** Revoke a single session (admin). */
 export function useRevokeSession() {
   return useMutation<
     { success: true; message: string },
@@ -63,9 +53,7 @@ export function useRevokeSession() {
   });
 }
 
-/**
- * Revoke all sessions for a user (admin)
- */
+/** Revoke all sessions for a given user (admin). */
 export function useRevokeUserSessions() {
   return useMutation<
     { success: true; message: string; revokedCount: number },

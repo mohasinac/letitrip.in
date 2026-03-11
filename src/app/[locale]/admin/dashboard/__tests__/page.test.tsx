@@ -14,12 +14,21 @@ jest.mock("@/hooks", () => ({
     user: { uid: "admin-1", role: "admin" },
     loading: false,
   }),
+}));
+
+jest.mock("@/features/admin", () => ({
   useAdminStats: () => ({
     stats: { users: 0, orders: 0, revenue: 0 },
     isLoading: false,
     error: null,
     refresh: jest.fn(),
   }),
+  AdminDashboardView: () => (
+    <div>
+      <h1>{require("@/constants").UI_LABELS.ADMIN.DASHBOARD.TITLE}</h1>
+      <div data-testid="stats-cards" />
+    </div>
+  ),
 }));
 
 jest.mock("@/components", () => ({
@@ -34,11 +43,6 @@ jest.mock("@/components", () => ({
   QuickActionsGrid: () => <div data-testid="quick-actions" />,
   RecentActivityCard: () => <div data-testid="recent-activity" />,
   AdminDashboardSkeleton: () => <div data-testid="dashboard-skeleton" />,
-}));
-
-jest.mock("@/components/admin/dashboard", () => ({
-  QuickActionsGrid: () => <div data-testid="quick-actions" />,
-  RecentActivityCard: () => <div data-testid="recent-activity" />,
 }));
 
 describe("Admin Dashboard Page", () => {
