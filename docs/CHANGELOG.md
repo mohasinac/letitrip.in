@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — fix(security): CSP nonce applied to inline scripts in root layout
+
+### Fixed
+
+- **`src/app/layout.tsx`** — Read `x-nonce` header (injected by middleware) and pass it as `nonce` prop to all three inline `<script>` tags (organization JSON-LD, search-box JSON-LD, dark-mode detection). Previously the production nonce-based CSP (`script-src 'self' 'nonce-…'`) would silently block these scripts, breaking dark-mode initialisation and structured-data injection. Closes §2.4.
+
+---
+
 ## [Unreleased] — feat(H2/H4/H7): dead barrel exports removed; THEME_CONSTANTS animation aliases deleted; changesets publishing infrastructure
 
 ### Changed

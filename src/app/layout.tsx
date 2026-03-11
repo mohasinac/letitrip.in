@@ -1,5 +1,5 @@
 import "./globals.css";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { getLocale } from "next-intl/server";
 import type { Metadata, Viewport } from "next";
 import { SEO_CONFIG } from "@/constants";
@@ -98,6 +98,10 @@ export default async function RootLayout({
   const themeCookie = cookieStore.get("theme")?.value;
   const themeClass = themeCookie === "dark" ? "dark" : "";
 
+  // Read the CSP nonce injected by middleware so inline scripts are allowed
+  const headerStore = await headers();
+  const nonce = headerStore.get("x-nonce") ?? undefined;
+
   return (
     <html
       lang={locale}
@@ -107,17 +111,20 @@ export default async function RootLayout({
       <head>
         <script
           type="application/ld+json"
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(organizationJsonLd()),
           }}
         />
         <script
           type="application/ld+json"
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(searchBoxJsonLd()),
           }}
         />
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `
               try {

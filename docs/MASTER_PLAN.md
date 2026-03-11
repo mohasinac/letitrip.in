@@ -84,6 +84,7 @@
 | **P0**   | ~~Payment verify~~            | ~~Cart snapshot prices~~                   | ~~Stale price enables undercharge~~         | ✅ Fixed 2026-03-10 — live `product.price` at create-order; §9.10                                                                                 |
 | **P0**   | ~~Media upload~~              | ~~`file.type` check~~                      | ~~Browser-spoofable MIME~~                  | ✅ Fixed 2026-03-09 — magic byte detection via `file-type`; `randomBytes` filename (A4)                                                           |
 | **P0**   | ~~apiClient~~                 | ~~`window.location.origin`~~               | ~~Crashes on server~~                       | ✅ Fixed 2026-03-09 — `NEXT_PUBLIC_APP_URL` env var fallback (A1)                                                                                 |
+| **P0**   | ~~CSP~~                       | ~~`unsafe-eval` / `unsafe-inline`~~        | ~~XSS injection vectors~~                   | ✅ Fixed 2026-03-10 — nonce-based CSP in middleware; inline scripts in `layout.tsx` receive nonce via `x-nonce` header (A6) §2.4                  |
 | **P1**   | ~~ThemeContext~~              | ~~`useState("light")`~~                    | ~~Flash on dark users; no SSR cookie~~      | ✅ Fixed 2026-03-09 — reads DOM class for initial state; writes cookie on toggle (A7) §2.5                                                        |
 | **P1**   | ~~ResponsiveView~~            | ~~Different JSX trees~~                    | ~~Hydration mismatch~~                      | ✅ Fixed 2026-03-09 — both trees rendered server-side; CSS hides inactive (A8) §2.7                                                               |
 | **P1**   | ~~useMediaQuery~~             | ~~`useState(false)`~~                      | ~~Hydration mismatch, mobile flash~~        | ✅ Fixed 2026-03-09 — lazy initializer with SSR guard (A9) §9.2                                                                                   |
@@ -271,7 +272,7 @@ const randomString = randomBytes(6).toString("hex"); // 12 chars, crypto-safe
 
 ---
 
-### 2.4 CSP — `unsafe-eval` / `unsafe-inline`
+### 2.4 CSP — `unsafe-eval` / `unsafe-inline` ✅ Fixed 2026-03-10
 
 **File:** `next.config.js`
 
@@ -1582,7 +1583,7 @@ All bugs are confirmed present in the codebase as of audit date 2026-03-09. Each
 
 ---
 
-### 9.1 — useWishlistToggle — No State Rollback on Error
+### 9.1 — useWishlistToggle — No State Rollback on Error ✅ Fixed 2026-03-09
 
 **File:** `src/hooks/useWishlistToggle.ts`
 
@@ -1614,7 +1615,7 @@ try {
 
 ---
 
-### 9.2 — useMediaQuery — Hydration Mismatch
+### 9.2 — useMediaQuery — Hydration Mismatch ✅ Fixed 2026-03-09
 
 **File:** `src/hooks/useMediaQuery.ts` (used by `useBreakpoint`)
 
@@ -1638,7 +1639,7 @@ This uses the real value on the first client render, suppressing the flash. Does
 
 ---
 
-### 9.3 — useNotifications — Stale Unread Count After Mutations
+### 9.3 — useNotifications — Stale Unread Count After Mutations ✅ Fixed 2026-03-09
 
 **File:** `src/hooks/useNotifications.ts`
 
@@ -1664,7 +1665,7 @@ const { mutate: markRead } = useApiMutation({
 
 ---
 
-### 9.4 — useChat — `off()` Removes All Listeners
+### 9.4 — useChat — `off()` Removes All Listeners ✅ Fixed 2026-03-09
 
 **File:** `src/hooks/useChat.ts`
 
@@ -1703,7 +1704,7 @@ return () => {
 
 ---
 
-### 9.5 — useRazorpay — Silent Script Load Failure
+### 9.5 — useRazorpay — Silent Script Load Failure ✅ Fixed 2026-03-09
 
 **File:** `src/hooks/useRazorpay.ts`
 
@@ -1735,7 +1736,7 @@ Call sites should disable the Pay button and surface an error message when `isEr
 
 ---
 
-### 9.6 — apiClient — AbortController Listener Leak
+### 9.6 — apiClient — AbortController Listener Leak ✅ Fixed 2026-03-09
 
 **File:** `src/lib/api-client.ts`
 
@@ -1762,7 +1763,7 @@ try {
 
 ---
 
-### 9.7 — Queue — Unhandled Async Errors in `process()`
+### 9.7 — Queue — Unhandled Async Errors in `process()` ✅ Fixed 2026-03-09
 
 **File:** `src/classes/Queue.ts`
 
@@ -1790,7 +1791,7 @@ Or restructure `process()` to use an iterative loop rather than recursion.
 
 ---
 
-### 9.8 — StorageManager — Singleton Prefix Silently Ignored
+### 9.8 — StorageManager — Singleton Prefix Silently Ignored ✅ Fixed 2026-03-09
 
 **File:** `src/classes/StorageManager.ts`
 
@@ -1830,7 +1831,7 @@ public static getInstance(prefix = ""): StorageManager {
 
 ---
 
-### 9.9 — verifyPaymentSignature — Timing Attack
+### 9.9 — verifyPaymentSignature — Timing Attack ✅ Fixed 2026-03-09
 
 **File:** `src/lib/payment/razorpay.ts`
 
@@ -1892,7 +1893,7 @@ Once the Razorpay order is created with the live price, the verify route's cross
 
 ---
 
-### 9.11 — useApiQuery — Module-Level Cache Not Cleared on Sign-Out
+### 9.11 — useApiQuery — Module-Level Cache Not Cleared on Sign-Out ✅ Fixed 2026-03-09
 
 **File:** `src/hooks/useApiQuery.ts`
 
