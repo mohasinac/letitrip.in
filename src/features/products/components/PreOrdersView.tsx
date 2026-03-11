@@ -32,25 +32,31 @@ import { addToWishlistAction } from "@/actions";
 
 const PAGE_SIZE = 24;
 
-const PRICE_BUCKETS = [
-  { value: "0-1000", label: "Under ₹1,000" },
-  { value: "1000-5000", label: "₹1,000 – ₹5,000" },
-  { value: "5000-20000", label: "₹5,000 – ₹20,000" },
-  { value: "20000+", label: "Over ₹20,000" },
-];
-
-const STATUS_OPTIONS = [
-  { value: "upcoming", label: "Upcoming" },
-  { value: "in_production", label: "In Production" },
-  { value: "ready_to_ship", label: "Ready to Ship" },
-];
-
 function PreOrdersContent() {
   const t = useTranslations("preOrders");
   const tActions = useTranslations("actions");
   const { user } = useAuth();
   const { showSuccess, showError } = useMessage();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const PRICE_BUCKETS = useMemo(
+    () => [
+      { value: "0-1000", label: t("priceBucketUnder1000") },
+      { value: "1000-5000", label: t("priceBucket1000to5000") },
+      { value: "5000-20000", label: t("priceBucket5000to20000") },
+      { value: "20000+", label: t("priceBucketOver20000") },
+    ],
+    [t],
+  );
+
+  const STATUS_OPTIONS = useMemo(
+    () => [
+      { value: "upcoming", label: t("status_upcoming") },
+      { value: "in_production", label: t("status_in_production") },
+      { value: "ready_to_ship", label: t("status_ready_to_ship") },
+    ],
+    [t],
+  );
 
   const sortOptions = useMemo(
     () => [

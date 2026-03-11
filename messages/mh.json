@@ -633,6 +633,7 @@
     "blogCategoryGuides": "Guides",
     "blogCategoryUpdates": "Updates",
     "blogCategoryCommunity": "Community",
+    "blogCategoryAll": "सर्व",
     "tierTopLevel": "Top Level",
     "tierSubCategory": "Sub-category",
     "tierLeafCategory": "Leaf Category",
@@ -1131,7 +1132,11 @@
     "colCurrentBid": "सध्याची बोली",
     "colEnds": "Ends",
     "colBids": "बोली",
-    "typeBadge": "लिलाव"
+    "typeBadge": "लिलाव",
+    "priceBucketUnder1000": "\u20b91,000 पेक्षा कमी",
+    "priceBucket1000to5000": "\u20b91,000 \u2013 \u20b95,000",
+    "priceBucket5000to20000": "\u20b95,000 \u2013 \u20b920,000",
+    "priceBucketOver20000": "\u20b920,000 पेक्षा जास्त"
   },
   "preOrders": {
     "title": "प्री-ऑर्डर",
@@ -1166,10 +1171,13 @@
     "status_ready_to_ship": "Ready to Ship",
     "cancelableNote": "Free cancellation available",
     "depositNote": "Pay {percent}% deposit today, rest on delivery",
-    "noPreOrders": "No pre-orders available right now"
+    "noPreOrders": "No pre-orders available right now",
+    "priceBucketUnder1000": "\u20b91,000 पेक्षा कमी",
+    "priceBucket1000to5000": "\u20b91,000 \u2013 \u20b95,000",
+    "priceBucket5000to20000": "\u20b95,000 \u2013 \u20b920,000",
+    "priceBucketOver20000": "\u20b920,000 पेक्षा जास्त"
   },
   "preOrderDetail": {
-    "breadcrumbHome": "मुख्यपृष्ठ",
     "breadcrumbPreOrders": "प्री-ऑर्डर",
     "notFound": "Pre-order not found",
     "backToPreOrders": "Back to Pre-Orders",
@@ -1440,7 +1448,9 @@
     "bannerFallbackTitle": "अप्रतिम डील्स शोधा",
     "bannerFallbackSubtitle": "टॉप उत्पादने खरेदी करा, एक्सक्लुझिव्ह लिलावांवर बोली लावा, आणि सर्वोत्तम किंमती मिळवा.",
     "bannerFallbackCta": "आत्ता खरेदी करा",
-    "bannerSecondaryCta": "लिलाव पाहा"
+    "bannerSecondaryCta": "लिलाव पाहा",
+    "whatsAppMembers": "सदस्य",
+    "whatsAppJoinAriaLabel": "WhatsApp समुदायात सामील व्हा"
   },
   "footer": {
     "aboutUs": "आमच्याबद्दल",
@@ -2484,7 +2494,15 @@
     "publishedOn": "प्रकाशित तारीख",
     "searchPlaceholder": "Search blog posts...",
     "sortNewest": "नवीनतम प्रथम",
-    "sortOldest": "जुने प्रथम"
+    "sortOldest": "जुने प्रथम",
+    "category_news": "बातम्या",
+    "category_tips": "टिप्स आणि युक्त्या",
+    "category_guides": "मार्गदर्शक",
+    "category_updates": "अपडेट",
+    "category_community": "समुदाय",
+    "status_draft": "मसुदा",
+    "status_published": "प्रकाशित",
+    "status_archived": "संग्रहित"
   },
   "adminCategories": {
     "title": "श्रेण्या",

@@ -33,19 +33,22 @@ import { addToWishlistAction } from "@/actions";
 
 const PAGE_SIZE = 24;
 
-const PRICE_BUCKETS = [
-  { value: "0-1000", label: "Under ₹1,000" },
-  { value: "1000-5000", label: "₹1,000 – ₹5,000" },
-  { value: "5000-20000", label: "₹5,000 – ₹20,000" },
-  { value: "20000+", label: "Over ₹20,000" },
-];
-
 function AuctionsContent() {
   const t = useTranslations("auctions");
   const tActions = useTranslations("actions");
   const { user } = useAuth();
   const { showSuccess, showError } = useMessage();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const PRICE_BUCKETS = useMemo(
+    () => [
+      { value: "0-1000", label: t("priceBucketUnder1000") },
+      { value: "1000-5000", label: t("priceBucket1000to5000") },
+      { value: "5000-20000", label: t("priceBucket5000to20000") },
+      { value: "20000+", label: t("priceBucketOver20000") },
+    ],
+    [t],
+  );
 
   const sortOptions = useMemo(
     () => [

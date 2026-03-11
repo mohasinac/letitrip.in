@@ -7,6 +7,7 @@
 
 "use client";
 
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import {
   Checkbox,
@@ -38,26 +39,33 @@ interface BlogFormProps {
   isReadonly?: boolean;
 }
 
-const CATEGORY_OPTIONS: { value: BlogPostCategory; label: string }[] = [
-  { value: "news", label: "News" },
-  { value: "tips", label: "Tips & Tricks" },
-  { value: "guides", label: "Guides" },
-  { value: "updates", label: "Updates" },
-  { value: "community", label: "Community" },
-];
-
-const STATUS_OPTIONS: { value: BlogPostStatus; label: string }[] = [
-  { value: "draft", label: "Draft" },
-  { value: "published", label: "Published" },
-  { value: "archived", label: "Archived" },
-];
-
 export function BlogForm({
   post,
   onChange,
   isReadonly = false,
 }: BlogFormProps) {
   const t = useTranslations("adminBlog");
+  const categoryOptions = useMemo(
+    () => [
+      { value: "news" as BlogPostCategory, label: t("category_news") },
+      { value: "tips" as BlogPostCategory, label: t("category_tips") },
+      { value: "guides" as BlogPostCategory, label: t("category_guides") },
+      { value: "updates" as BlogPostCategory, label: t("category_updates") },
+      {
+        value: "community" as BlogPostCategory,
+        label: t("category_community"),
+      },
+    ],
+    [t],
+  );
+  const statusOptions = useMemo(
+    () => [
+      { value: "draft" as BlogPostStatus, label: t("status_draft") },
+      { value: "published" as BlogPostStatus, label: t("status_published") },
+      { value: "archived" as BlogPostStatus, label: t("status_archived") },
+    ],
+    [t],
+  );
   const { upload } = useMediaUpload();
   const update = (partial: BlogFormData) => onChange({ ...post, ...partial });
 
@@ -160,7 +168,7 @@ export function BlogForm({
         value={post.category || "news"}
         onChange={(value) => update({ category: value as BlogPostCategory })}
         disabled={isReadonly}
-        options={CATEGORY_OPTIONS}
+        options={categoryOptions}
         required
       />
 
@@ -171,7 +179,7 @@ export function BlogForm({
         value={post.status || "draft"}
         onChange={(value) => update({ status: value as BlogPostStatus })}
         disabled={isReadonly}
-        options={STATUS_OPTIONS}
+        options={statusOptions}
         required
       />
 

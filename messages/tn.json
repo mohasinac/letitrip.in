@@ -633,6 +633,7 @@
     "blogCategoryGuides": "Guides",
     "blogCategoryUpdates": "Updates",
     "blogCategoryCommunity": "Community",
+    "blogCategoryAll": "அனைத்தும்",
     "tierTopLevel": "Top Level",
     "tierSubCategory": "Sub-category",
     "tierLeafCategory": "Leaf Category",
@@ -1131,7 +1132,11 @@
     "colCurrentBid": "தற்போதைய ஏலம்",
     "colEnds": "Ends",
     "colBids": "Bids",
-    "typeBadge": "ஏலம்"
+    "typeBadge": "ஏலம்",
+    "priceBucketUnder1000": "\u20b91,000-க்கு கீழ்",
+    "priceBucket1000to5000": "\u20b91,000 \u2013 \u20b95,000",
+    "priceBucket5000to20000": "\u20b95,000 \u2013 \u20b920,000",
+    "priceBucketOver20000": "\u20b920,000-க்கு மேல்"
   },
   "preOrders": {
     "title": "முன்-ஆர்டர்கள்",
@@ -1166,10 +1171,13 @@
     "status_ready_to_ship": "Ready to Ship",
     "cancelableNote": "Free cancellation available",
     "depositNote": "Pay {percent}% deposit today, rest on delivery",
-    "noPreOrders": "No pre-orders available right now"
+    "noPreOrders": "No pre-orders available right now",
+    "priceBucketUnder1000": "\u20b91,000-க்கு கீழ்",
+    "priceBucket1000to5000": "\u20b91,000 \u2013 \u20b95,000",
+    "priceBucket5000to20000": "\u20b95,000 \u2013 \u20b920,000",
+    "priceBucketOver20000": "\u20b920,000-க்கு மேல்"
   },
   "preOrderDetail": {
-    "breadcrumbHome": "முகப்பு",
     "breadcrumbPreOrders": "முன்-ஆர்டர்கள்",
     "notFound": "Pre-order not found",
     "backToPreOrders": "Back to Pre-Orders",
@@ -1440,7 +1448,9 @@
     "bannerFallbackTitle": "அற்புதமான சலுகைகளை கண்டுபிடிக்கவும்",
     "bannerFallbackSubtitle": "சிறந்த பொருட்களை வாங்கவும், exclusive ஏலங்களில் ஏலம் போடவும், சிறந்த விலைகளை கண்டுபிடிக்கவும்.",
     "bannerFallbackCta": "இப்போது வாங்கவும்",
-    "bannerSecondaryCta": "ஏலங்களை பார்க்கவும்"
+    "bannerSecondaryCta": "ஏலங்களை பார்க்கவும்",
+    "whatsAppMembers": "உறுப்பினர்கள்",
+    "whatsAppJoinAriaLabel": "WhatsApp சமூகத்தில் சேரவும்"
   },
   "footer": {
     "aboutUs": "எங்களைப் பற்றி",
@@ -2484,7 +2494,15 @@
     "publishedOn": "Published on",
     "searchPlaceholder": "Search blog posts...",
     "sortNewest": "புதியது முதல்",
-    "sortOldest": "பழையது முதல்"
+    "sortOldest": "பழையது முதல்",
+    "category_news": "செய்திகள்",
+    "category_tips": "குறிப்புகள் & தந்திரங்கள்",
+    "category_guides": "வழிகாட்டிகள்",
+    "category_updates": "புதுப்பிப்புகள்",
+    "category_community": "சமூகம்",
+    "status_draft": "வரைவு",
+    "status_published": "வெளியிடப்பட்டது",
+    "status_archived": "காப்பகம்"
   },
   "adminCategories": {
     "title": "வகைகள்",

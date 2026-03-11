@@ -633,6 +633,7 @@
     "blogCategoryGuides": "Guides",
     "blogCategoryUpdates": "Updates",
     "blogCategoryCommunity": "Community",
+    "blogCategoryAll": "అన్నీ",
     "tierTopLevel": "Top Level",
     "tierSubCategory": "Sub-category",
     "tierLeafCategory": "Leaf Category",
@@ -1131,7 +1132,11 @@
     "colCurrentBid": "ప్రస్తుత బిడ్",
     "colEnds": "Ends",
     "colBids": "బిడ్లు",
-    "typeBadge": "వేలం"
+    "typeBadge": "వేలం",
+    "priceBucketUnder1000": "\u20b91,000 కంటే తక్కువ",
+    "priceBucket1000to5000": "\u20b91,000 \u2013 \u20b95,000",
+    "priceBucket5000to20000": "\u20b95,000 \u2013 \u20b920,000",
+    "priceBucketOver20000": "\u20b920,000 కంటే ఎక్కువ"
   },
   "preOrders": {
     "title": "ప్రీ-ఆర్డర్లు",
@@ -1166,10 +1171,13 @@
     "status_ready_to_ship": "Ready to Ship",
     "cancelableNote": "Free cancellation available",
     "depositNote": "Pay {percent}% deposit today, rest on delivery",
-    "noPreOrders": "No pre-orders available right now"
+    "noPreOrders": "No pre-orders available right now",
+    "priceBucketUnder1000": "\u20b91,000 కంటే తక్కువ",
+    "priceBucket1000to5000": "\u20b91,000 \u2013 \u20b95,000",
+    "priceBucket5000to20000": "\u20b95,000 \u2013 \u20b920,000",
+    "priceBucketOver20000": "\u20b920,000 కంటే ఎక్కువ"
   },
   "preOrderDetail": {
-    "breadcrumbHome": "హోమ్",
     "breadcrumbPreOrders": "ప్రీ-ఆర్డర్లు",
     "notFound": "Pre-order not found",
     "backToPreOrders": "Back to Pre-Orders",
@@ -1440,7 +1448,9 @@
     "bannerFallbackTitle": "Amazing Deals కనుగొనండి",
     "bannerFallbackSubtitle": "Top products shop చేయండి, exclusive auctions లో bid చేయండి, మరియు best prices కనుగొనండి.",
     "bannerFallbackCta": "Shop Now",
-    "bannerSecondaryCta": "Auctions Browse చేయండి"
+    "bannerSecondaryCta": "Auctions Browse చేయండి",
+    "whatsAppMembers": "సభ్యులు",
+    "whatsAppJoinAriaLabel": "WhatsApp కమ్యూనిటీలో చేరండి"
   },
   "footer": {
     "aboutUs": "మా గురించి",
@@ -2484,7 +2494,15 @@
     "publishedOn": "ప్రచురించబడిన తేదీ",
     "searchPlaceholder": "Search blog posts...",
     "sortNewest": "కొత్తవి ముందు",
-    "sortOldest": "పాతవి ముందు"
+    "sortOldest": "పాతవి ముందు",
+    "category_news": "వార్తలు",
+    "category_tips": "చిట్కాలు & ట్రిక్స్",
+    "category_guides": "గైడ్లు",
+    "category_updates": "అప్‌డేట్‌లు",
+    "category_community": "కమ్యూనిటీ",
+    "status_draft": "డ్రాఫ్ట్",
+    "status_published": "ప్రచురించబడింది",
+    "status_archived": "ఆర్కైవ్ చేయబడింది"
   },
   "adminCategories": {
     "title": "వర్గాలు",

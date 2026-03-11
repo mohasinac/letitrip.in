@@ -1,19 +1,9 @@
 "use client";
 
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { Button, HorizontalScroller } from "@/components";
 import type { BlogPostCategory } from "@/db/schema";
-
-export const BLOG_CATEGORY_TABS: {
-  key: "" | BlogPostCategory;
-  label: string;
-}[] = [
-  { key: "", label: "All" },
-  { key: "news", label: "News" },
-  { key: "tips", label: "Tips" },
-  { key: "guides", label: "Guides" },
-  { key: "updates", label: "Updates" },
-  { key: "community", label: "Community" },
-];
 
 interface BlogCategoryTabsProps {
   activeCategory: "" | BlogPostCategory;
@@ -24,9 +14,25 @@ export function BlogCategoryTabs({
   activeCategory,
   onChange,
 }: BlogCategoryTabsProps) {
+  const t = useTranslations("filters");
+  const tabs = useMemo(
+    () => [
+      { key: "" as "" | BlogPostCategory, label: t("blogCategoryAll") },
+      { key: "news" as BlogPostCategory, label: t("blogCategoryNews") },
+      { key: "tips" as BlogPostCategory, label: t("blogCategoryTips") },
+      { key: "guides" as BlogPostCategory, label: t("blogCategoryGuides") },
+      { key: "updates" as BlogPostCategory, label: t("blogCategoryUpdates") },
+      {
+        key: "community" as BlogPostCategory,
+        label: t("blogCategoryCommunity"),
+      },
+    ],
+    [t],
+  );
+
   return (
     <HorizontalScroller
-      items={BLOG_CATEGORY_TABS}
+      items={tabs}
       renderItem={(tab) => (
         <Button
           variant={activeCategory === tab.key ? "primary" : "outline"}

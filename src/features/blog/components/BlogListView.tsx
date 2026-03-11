@@ -27,7 +27,6 @@ import type { ActiveFilter } from "@/components";
 import { BlogFilters } from "@/components";
 import { BlogCard } from "@/components";
 import { BlogFeaturedCard } from "./BlogFeaturedCard";
-import { BLOG_CATEGORY_TABS } from "./BlogCategoryTabs";
 import { THEME_CONSTANTS } from "@/constants";
 import { useUrlTable, useBlogPosts, usePendingTable } from "@/hooks";
 
@@ -36,6 +35,7 @@ const PAGE_SIZE = 24;
 function BlogListContent() {
   const t = useTranslations("blog");
   const tActions = useTranslations("actions");
+  const tFilters = useTranslations("filters");
 
   const table = useUrlTable({
     defaults: { pageSize: String(PAGE_SIZE), sort: "-publishedAt" },
@@ -54,14 +54,16 @@ function BlogListContent() {
     [t],
   );
 
-  // Category filter options from BLOG_CATEGORY_TABS (excluding "All")
+  // Category filter options (translated)
   const categoryOptions = useMemo(
-    () =>
-      BLOG_CATEGORY_TABS.filter((tab) => tab.key !== "").map((tab) => ({
-        value: tab.key,
-        label: tab.label,
-      })),
-    [],
+    () => [
+      { value: "news", label: tFilters("blogCategoryNews") },
+      { value: "tips", label: tFilters("blogCategoryTips") },
+      { value: "guides", label: tFilters("blogCategoryGuides") },
+      { value: "updates", label: tFilters("blogCategoryUpdates") },
+      { value: "community", label: tFilters("blogCategoryCommunity") },
+    ],
+    [tFilters],
   );
 
   // ── Staged filter state via usePendingTable ───────────────────────────

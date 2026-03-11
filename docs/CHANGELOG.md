@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — fix(i18n): translated hardcoded filter/form option labels (Rule 3)
+
+### Fixed (Rule 3 — zero hardcoded strings in JSX)
+
+- **`WhatsAppCommunitySection.tsx`** — Added `useTranslations("homepage")` to translate `"members"` text and `aria-label="Join WhatsApp community"`.
+- **`AuctionsView.tsx`** — Moved module-level `PRICE_BUCKETS` into `useMemo` with `t("priceBucket*")` keys from `auctions` namespace.
+- **`PreOrdersView.tsx`** — Moved module-level `PRICE_BUCKETS` and `STATUS_OPTIONS` into `useMemo` with keys from `preOrders` namespace.
+- **`BlogCategoryTabs.tsx`** — Removed exported `BLOG_CATEGORY_TABS` constant; added `useTranslations("filters")` + `useMemo` inside component for translated tabs.
+- **`BlogListView.tsx`** — Removed `BLOG_CATEGORY_TABS` import; uses `useTranslations("filters")` directly for translated `categoryOptions`; empty-deps `useMemo` fixed.
+- **`BlogForm.tsx`** — Moved module-level `CATEGORY_OPTIONS` / `STATUS_OPTIONS` into `useMemo` inside component with `t("category_*")` / `t("status_*")` from `adminBlog` namespace.
+- **`src/features/blog/components/index.ts`** — Removed dead `BLOG_CATEGORY_TABS` barrel export.
+- **All 5 locale files** (`en`, `in`, `mh`, `tn`, `ts`) — Added i18n keys for: `homepage.whatsAppMembers`, `homepage.whatsAppJoinAriaLabel`; `auctions/preOrders.priceBucket*` (4 keys each); `filters.blogCategoryAll`; `adminBlog.category_*` (5 keys) + `adminBlog.status_*` (3 keys).
+
+---
+
 ## [Unreleased] — refactor(pages): convert 10 client pages to RSC; extract 5 feature views
 
 ### Changed (Rules 1, 2 — thin pages, feature modules)

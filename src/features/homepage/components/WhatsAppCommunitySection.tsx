@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { useTranslations } from "next-intl";
 import { MessageCircle } from "lucide-react";
 import { useHomepageSections } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
@@ -11,6 +12,7 @@ import type {
 } from "@/db/schema";
 
 export function WhatsAppCommunitySection() {
+  const t = useTranslations("homepage");
   const { data, isLoading } = useHomepageSections(
     "type=whatsapp-community&enabled=true",
   );
@@ -81,7 +83,7 @@ export function WhatsAppCommunitySection() {
             )}
             {config.memberCount ? (
               <Text className="text-base md:text-lg opacity-80 mb-2">
-                {formatNumber(config.memberCount)} members
+                {formatNumber(config.memberCount)} {t("whatsAppMembers")}
               </Text>
             ) : null}
 
@@ -114,7 +116,7 @@ export function WhatsAppCommunitySection() {
             <Button
               variant="primary"
               size="lg"
-              aria-label="Join WhatsApp community"
+              aria-label={t("whatsAppJoinAriaLabel")}
               onClick={() => window.open(config.groupLink, "_blank")}
               className="bg-white text-green-600 hover:bg-zinc-100 shadow-xl hover:shadow-2xl"
             >

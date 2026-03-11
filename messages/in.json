@@ -633,6 +633,7 @@
     "blogCategoryGuides": "गाइड",
     "blogCategoryUpdates": "अपडेट",
     "blogCategoryCommunity": "समुदाय",
+    "blogCategoryAll": "सभी",
     "tierTopLevel": "शीर्ष स्तर",
     "tierSubCategory": "उप-श्रेणी",
     "tierLeafCategory": "लीफ श्रेणी",
@@ -1131,7 +1132,11 @@
     "colCurrentBid": "वर्तमान बोली",
     "colEnds": "समाप्त",
     "colBids": "बोलियां",
-    "typeBadge": "नीलामी"
+    "typeBadge": "नीलामी",
+    "priceBucketUnder1000": "\u20b91,000 से कम",
+    "priceBucket1000to5000": "\u20b91,000 \u2013 \u20b95,000",
+    "priceBucket5000to20000": "\u20b95,000 \u2013 \u20b920,000",
+    "priceBucketOver20000": "\u20b920,000 से अधिक"
   },
   "preOrders": {
     "title": "????-?????",
@@ -1166,7 +1171,11 @@
     "status_ready_to_ship": "??????? ?? ??? ?????",
     "cancelableNote": "???????? ???????? ??????",
     "depositNote": "?? {percent}% ??? ????, ???? ??????? ??",
-    "noPreOrders": "??? ??? ????-????? ?????? ????"
+    "noPreOrders": "??? ??? ????-????? ?????? ????",
+    "priceBucketUnder1000": "\u20b91,000 से कम",
+    "priceBucket1000to5000": "\u20b91,000 \u2013 \u20b95,000",
+    "priceBucket5000to20000": "\u20b95,000 \u2013 \u20b920,000",
+    "priceBucketOver20000": "\u20b920,000 से अधिक"
   },
   "preOrderDetail": {
     "breadcrumbHome": "???",
@@ -1440,7 +1449,9 @@
     "bannerFallbackTitle": "अद्भुत डील्स खोजें",
     "bannerFallbackSubtitle": "टॉप प्रोडक्ट्स खरीदें, एक्सक्लूसिव नीलामियों पर बोली लगाएं, और बेस्ट प्राइस पाएं।",
     "bannerFallbackCta": "अभी खरीदें",
-    "bannerSecondaryCta": "नीलामियां देखें"
+    "bannerSecondaryCta": "नीलामियां देखें",
+    "whatsAppMembers": "सदस्य",
+    "whatsAppJoinAriaLabel": "WhatsApp समुदाय से जुड़ें"
   },
   "footer": {
     "aboutUs": "हमारे बारे में",
@@ -2484,7 +2495,15 @@
     "publishedOn": "प्रकाशित",
     "searchPlaceholder": "ब्लॉग पोस्ट खोजें...",
     "sortNewest": "नवीनतम पहले",
-    "sortOldest": "पुराने पहले"
+    "sortOldest": "पुराने पहले",
+    "category_news": "समाचार",
+    "category_tips": "टिप्स एवं ट्रिक्स",
+    "category_guides": "गाइड",
+    "category_updates": "अपडेट",
+    "category_community": "समुदाय",
+    "status_draft": "मसौदा",
+    "status_published": "प्रकाशित",
+    "status_archived": "संग्रहीत"
   },
   "adminCategories": {
     "title": "श्रेणियां",

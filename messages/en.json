@@ -633,6 +633,7 @@
     "blogCategoryGuides": "Guides",
     "blogCategoryUpdates": "Updates",
     "blogCategoryCommunity": "Community",
+    "blogCategoryAll": "All",
     "tierTopLevel": "Top Level",
     "tierSubCategory": "Sub-category",
     "tierLeafCategory": "Leaf Category",
@@ -1131,7 +1132,11 @@
     "colCurrentBid": "Current Bid",
     "colEnds": "Ends",
     "colBids": "Bids",
-    "typeBadge": "Auction"
+    "typeBadge": "Auction",
+    "priceBucketUnder1000": "Under \u20b91,000",
+    "priceBucket1000to5000": "\u20b91,000 \u2013 \u20b95,000",
+    "priceBucket5000to20000": "\u20b95,000 \u2013 \u20b920,000",
+    "priceBucketOver20000": "Over \u20b920,000"
   },
   "preOrders": {
     "title": "Pre-Orders",
@@ -1166,7 +1171,11 @@
     "status_ready_to_ship": "Ready to Ship",
     "cancelableNote": "Free cancellation available",
     "depositNote": "Pay {percent}% deposit today, rest on delivery",
-    "noPreOrders": "No pre-orders available right now"
+    "noPreOrders": "No pre-orders available right now",
+    "priceBucketUnder1000": "Under \u20b91,000",
+    "priceBucket1000to5000": "\u20b91,000 \u2013 \u20b95,000",
+    "priceBucket5000to20000": "\u20b95,000 \u2013 \u20b920,000",
+    "priceBucketOver20000": "Over \u20b920,000"
   },
   "preOrderDetail": {
     "breadcrumbHome": "Home",
@@ -1440,7 +1449,9 @@
     "bannerFallbackTitle": "Discover Amazing Deals",
     "bannerFallbackSubtitle": "Shop top products, bid on exclusive auctions, and find the best prices — all in one place.",
     "bannerFallbackCta": "Shop Now",
-    "bannerSecondaryCta": "Browse Auctions"
+    "bannerSecondaryCta": "Browse Auctions",
+    "whatsAppMembers": "members",
+    "whatsAppJoinAriaLabel": "Join WhatsApp community"
   },
   "footer": {
     "aboutUs": "About Us",
@@ -2499,7 +2510,15 @@
     "publishedOn": "Published on",
     "searchPlaceholder": "Search blog posts...",
     "sortNewest": "Newest first",
-    "sortOldest": "Oldest first"
+    "sortOldest": "Oldest first",
+    "category_news": "News",
+    "category_tips": "Tips & Tricks",
+    "category_guides": "Guides",
+    "category_updates": "Updates",
+    "category_community": "Community",
+    "status_draft": "Draft",
+    "status_published": "Published",
+    "status_archived": "Archived"
   },
   "adminCategories": {
     "title": "Categories",
