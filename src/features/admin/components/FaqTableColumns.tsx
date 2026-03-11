@@ -38,13 +38,13 @@ export function getFaqTableColumns(
       },
       {
         key: "viewCount",
-        header: "Views",
+        header: LABELS.COL_VIEWS,
         sortable: true,
         width: "10%",
       },
       {
         key: "helpful",
-        header: "Helpful",
+        header: LABELS.COL_HELPFUL,
         render: (faq: FAQ) => {
           const total = faq.helpfulCount + faq.notHelpfulCount;
           const ratio =

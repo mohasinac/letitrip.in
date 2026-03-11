@@ -15,6 +15,8 @@ jest.mock("../../constants/EVENT_TYPE_OPTIONS", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useMessage: () => ({ showError: jest.fn(), showSuccess: jest.fn() }),
 }));
 

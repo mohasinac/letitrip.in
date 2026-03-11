@@ -22,8 +22,14 @@ jest.mock("@/i18n/navigation", () => ({
   redirect: jest.fn(),
 }));
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAddToCart: () => ({ mutate: jest.fn(), isLoading: false }),
-  useWishlistToggle: () => ({ inWishlist: false, isLoading: false, toggle: jest.fn() }),
+  useWishlistToggle: () => ({
+    inWishlist: false,
+    isLoading: false,
+    toggle: jest.fn(),
+  }),
 }));
 
 const baseProduct = {
@@ -104,7 +110,9 @@ describe("ProductCard", () => {
 
   it("shows disabled Out of Stock button when product is out of stock", () => {
     render(
-      <ProductCard product={{ ...baseProduct, status: "out_of_stock" as any }} />,
+      <ProductCard
+        product={{ ...baseProduct, status: "out_of_stock" as any }}
+      />,
     );
     expect(screen.queryByText("addToCart")).not.toBeInTheDocument();
     expect(screen.queryByText("buyNow")).not.toBeInTheDocument();

@@ -22,6 +22,7 @@ jest.mock("next/link", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
   useResetPassword: () => ({
     mutate: jest.fn(),
     isLoading: false,

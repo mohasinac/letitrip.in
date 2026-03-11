@@ -17,6 +17,7 @@ const mockUseApiQuery: jest.Mock = jest.fn(() => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
   useApiQuery: (...args: any[]) => (mockUseApiQuery as any)(...args),
 }));
 

@@ -23,6 +23,8 @@ jest.mock("next-intl", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAuth: () => mockUseAuth(),
   useApiQuery: (...args: any[]) => mockUseApiQuery(...args),
 }));

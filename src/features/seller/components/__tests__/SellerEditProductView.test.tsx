@@ -3,6 +3,8 @@ import { render, screen } from "@testing-library/react";
 import { SellerEditProductView } from "../SellerEditProductView";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAuth: () => ({ user: null, loading: true }),
   useApiQuery: () => ({ data: null, isLoading: true, error: null }),
   useMessage: () => ({ showSuccess: jest.fn(), showError: jest.fn() }),

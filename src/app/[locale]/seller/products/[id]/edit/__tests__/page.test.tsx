@@ -22,6 +22,7 @@ jest.mock("next/navigation", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
   useAuth: jest.fn(() => ({ user: { uid: "seller-1" }, loading: false })),
   useApiQuery: jest.fn(() => ({ data: null, isLoading: false })),
   useMessage: () => ({ showSuccess: jest.fn(), showError: jest.fn() }),

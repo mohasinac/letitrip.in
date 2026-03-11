@@ -614,6 +614,8 @@ export const UI_LABELS = {
       IS_BRAND: "Brand Category",
       TREE_VIEW: "Tree",
       TABLE_VIEW: "Table",
+      COL_SLUG: "Slug",
+      COL_PRODUCTS: "Products",
     },
     FAQS: {
       TITLE: "FAQs",
@@ -639,6 +641,8 @@ export const UI_LABELS = {
       HIDE_VARIABLES: "Hide Variables",
       INSERT_VARIABLE_HELP: "Click to insert variable into answer:",
       SEARCH_PLACEHOLDER: "Search FAQs...",
+      COL_VIEWS: "Views",
+      COL_HELPFUL: "Helpful",
     },
     SECTIONS: {
       TITLE: "Homepage Sections",
@@ -684,6 +688,7 @@ export const UI_LABELS = {
       CREATED: "Created",
       ALL_RATINGS: "All Ratings",
       SEARCH_PLACEHOLDER: "Search products, users...",
+      COL_HELPFUL: "Helpful",
     },
     PRODUCTS: {
       TITLE: "Products",
@@ -875,6 +880,10 @@ export const UI_LABELS = {
       CONFIRM_REVOKE_ALL: "Revoke All Sessions",
       CONFIRM_REVOKE_ALL_MESSAGE:
         "Are you sure you want to revoke all sessions? All users will be logged out.",
+      COL_USER: "User",
+      COL_DEVICE: "Device",
+      COL_LOCATION: "Location",
+      COL_LAST_ACTIVE: "Last Active",
     },
     NEWSLETTER: {
       TITLE: "Newsletter Subscribers",
@@ -1000,6 +1009,8 @@ export const UI_LABELS = {
       DOWNLOAD_RESULT: "Download Result",
       COPY_URL: "Copy URL",
       URL_COPIED: "URL copied to clipboard",
+      COL_FORMAT: "Format",
+      COL_CREATED: "Created",
     },
   },
 

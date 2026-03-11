@@ -12,6 +12,8 @@ jest.mock("next/link", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAuth: jest.fn(() => ({ user: { uid: "u1" } })),
 }));
 

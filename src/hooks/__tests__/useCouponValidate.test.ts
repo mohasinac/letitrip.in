@@ -12,6 +12,8 @@ import { renderHook } from "@testing-library/react";
 import { useCouponValidate } from "../useCouponValidate";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiMutation: jest.fn((opts: any) => ({
     mutate: (payload: unknown) => opts.mutationFn(payload),
     isLoading: false,

@@ -22,6 +22,8 @@ jest.mock("next/navigation", () => ({
   useRouter: () => ({ push: jest.fn() }),
 }));
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useProductReviews: jest.fn(),
   useAuth: jest.fn(),
   useApiMutation: jest.fn(),

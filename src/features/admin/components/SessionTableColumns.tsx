@@ -10,7 +10,10 @@
 
 import { Text, Caption, Badge } from "@/components";
 import { formatRelativeTime, formatDate, isFuture } from "@/utils";
+import { UI_LABELS } from "@/constants";
 import type { SessionDocument } from "@/db/schema/sessions";
+
+const S = UI_LABELS.ADMIN.SESSIONS;
 
 interface SessionWithUser extends SessionDocument {
   user: {
@@ -33,7 +36,7 @@ import React from "react";
 export const SESSION_TABLE_COLUMNS: Column[] = [
   {
     key: "user",
-    header: "User",
+    header: S.COL_USER,
     width: "20%",
     render: (s) => (
       <div className="flex flex-col gap-0.5">
@@ -61,7 +64,7 @@ export const SESSION_TABLE_COLUMNS: Column[] = [
   },
   {
     key: "device",
-    header: "Device",
+    header: S.COL_DEVICE,
     width: "20%",
     render: (s) => (
       <div className="flex flex-col gap-0.5">
@@ -76,7 +79,7 @@ export const SESSION_TABLE_COLUMNS: Column[] = [
   },
   {
     key: "location",
-    header: "Location",
+    header: S.COL_LOCATION,
     width: "15%",
     render: (s) =>
       s.location?.city ? (
@@ -89,7 +92,7 @@ export const SESSION_TABLE_COLUMNS: Column[] = [
   },
   {
     key: "lastActivity",
-    header: "Last Active",
+    header: S.COL_LAST_ACTIVE,
     width: "15%",
     render: (s) => (
       <Caption>
@@ -101,7 +104,7 @@ export const SESSION_TABLE_COLUMNS: Column[] = [
   },
   {
     key: "status",
-    header: "Status",
+    header: UI_LABELS.TABLE.STATUS,
     width: "15%",
     render: (s) =>
       s.isActive && isFuture(s.expiresAt) ? (

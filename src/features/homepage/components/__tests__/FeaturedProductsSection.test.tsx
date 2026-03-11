@@ -19,6 +19,8 @@ jest.mock("@/i18n/navigation", () => ({
 // ── Data hook ─────────────────────────────────────────────────────────────
 const mockUseFeaturedProducts = jest.fn();
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useFeaturedProducts: (...args: unknown[]) => mockUseFeaturedProducts(...args),
 }));
 

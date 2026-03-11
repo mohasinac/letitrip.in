@@ -9,6 +9,7 @@ jest.mock("next/navigation", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
   useAuth: () => ({
     user: {
       email: "user@example.com",

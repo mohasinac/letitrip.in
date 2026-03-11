@@ -6,6 +6,8 @@ import { HeroCarousel } from "../HeroCarousel";
 const mockUseApiQuery = jest.fn();
 const mockUseMediaQuery = jest.fn().mockReturnValue(false); // default: desktop, no reduced-motion
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
   useHeroCarousel: (...args: unknown[]) => mockUseApiQuery(...args),
   useSwipe: jest.fn(), // no-op — swipe is tested via keyboard equivalents

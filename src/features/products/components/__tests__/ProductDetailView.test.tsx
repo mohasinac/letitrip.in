@@ -3,6 +3,8 @@ import { render, screen } from "@testing-library/react";
 import { ProductDetailView } from "../ProductDetailView";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: () => ({ data: undefined, isLoading: true, error: null }),
 }));
 

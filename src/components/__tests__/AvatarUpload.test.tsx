@@ -20,6 +20,8 @@ jest.mock("next-intl", () => ({
 
 // Mock hooks — useMediaUpload (replaces old useStorageUpload)
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useMediaUpload: jest.fn(),
 }));
 

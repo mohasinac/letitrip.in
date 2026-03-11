@@ -57,12 +57,12 @@ export function getCategoryTableColumns(
       },
       {
         key: "slug",
-        header: "Slug",
+        header: UI_LABELS.ADMIN.CATEGORIES.COL_SLUG,
         sortable: true,
       },
       {
         key: "metrics",
-        header: "Products",
+        header: UI_LABELS.ADMIN.CATEGORIES.COL_PRODUCTS,
         render: (cat: Category) => (
           <Span className="text-sm">
             {cat.metrics.productCount} ({cat.metrics.totalProductCount})

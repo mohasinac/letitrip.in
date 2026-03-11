@@ -17,6 +17,7 @@ jest.mock("next/navigation", () => ({
 const mockUseApiQuery = jest.fn();
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
   useApiQuery: (...args: any[]) => mockUseApiQuery(...args),
   useUrlTable: () => ({
     get: mockGet,

@@ -11,6 +11,8 @@ jest.mock("@/services", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAuth: jest.fn(() => ({ user: { uid: "u1" } })),
   useMessage: () => ({ showSuccess: jest.fn(), showError: jest.fn() }),
   useApiMutation: jest.fn((opts: any) => ({

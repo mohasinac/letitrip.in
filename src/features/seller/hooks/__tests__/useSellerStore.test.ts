@@ -14,6 +14,8 @@ import { useSellerStore } from "../useSellerStore";
 const mockRefetch = jest.fn();
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAuth: jest.fn(() => ({
     user: { uid: "seller-1", email: "s@e.com" },
     loading: false,

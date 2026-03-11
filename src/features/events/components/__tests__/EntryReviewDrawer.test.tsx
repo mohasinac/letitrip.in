@@ -16,6 +16,8 @@ jest.mock("../../hooks/useEventMutations", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useMessage: () => ({ showSuccess: jest.fn(), showError: jest.fn() }),
 }));
 

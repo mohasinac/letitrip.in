@@ -66,6 +66,7 @@ jest.mock("@/features/faq/components/ContactCTA", () => ({
 // Mock useAllFaqs hook
 const mockUseApiQuery = jest.fn();
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
   useAllFaqs: () => mockUseApiQuery(),
   useFaqVote: () => ({ mutate: jest.fn(), isLoading: false }),
 }));

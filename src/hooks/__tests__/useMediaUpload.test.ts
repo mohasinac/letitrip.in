@@ -12,6 +12,8 @@ import { renderHook, act } from "@testing-library/react";
 import { useMediaUpload } from "../useMediaUpload";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiMutation: jest.fn((opts: any) => ({
     mutate: (formData: unknown) => opts.mutationFn(formData),
     isLoading: false,

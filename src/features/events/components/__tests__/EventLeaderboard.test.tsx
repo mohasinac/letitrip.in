@@ -16,6 +16,8 @@ jest.mock("../../hooks/useEventLeaderboard", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAuth: jest.fn(() => ({ user: null })),
 }));
 

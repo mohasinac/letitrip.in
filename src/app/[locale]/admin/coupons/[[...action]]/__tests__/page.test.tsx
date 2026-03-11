@@ -13,6 +13,7 @@ jest.mock("next/navigation", () => ({
 const mockBuildSieveParams = jest.fn().mockReturnValue("?page=1&pageSize=25");
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
   useApiQuery: jest.fn(() => ({
     data: {
       coupons: [],

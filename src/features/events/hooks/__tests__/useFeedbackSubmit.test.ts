@@ -12,6 +12,8 @@ import { renderHook } from "@testing-library/react";
 import { useFeedbackSubmit } from "../useFeedbackSubmit";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiMutation: jest.fn((opts: any) => ({
     mutate: (data: unknown) => opts.mutationFn(data),
     isPending: false,

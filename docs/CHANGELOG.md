@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — fix(i18n): replace all remaining hardcoded column headers with UI_LABELS constants
+
+### Fixed (Rule 3 — no hardcoded strings in column definitions)
+
+- **`src/components/categories/CategoryTableColumns.tsx`** — `"Slug"`, `"Products"` → `UI_LABELS.ADMIN.CATEGORIES.COL_SLUG/COL_PRODUCTS`.
+- **`src/features/admin/components/FaqTableColumns.tsx`** — `"Views"`, `"Helpful"` → `LABELS.COL_VIEWS/COL_HELPFUL`.
+- **`src/features/admin/components/ReviewTableColumns.tsx`** — `"Helpful"` → `REVIEWS.COL_HELPFUL`.
+- **`src/features/admin/components/MediaTableColumns.tsx`** — `"Format"`, `"Created"`, `"Actions"` → `LABELS.COL_FORMAT/COL_CREATED`, `UI_LABELS.TABLE.ACTIONS`.
+- **`src/features/admin/components/SessionTableColumns.tsx`** — Added `UI_LABELS` import; `"User"`, `"Device"`, `"Location"`, `"Last Active"`, `"Status"` replaced with `S.COL_*` / `UI_LABELS.TABLE.STATUS`.
+
+### Added (constants)
+
+- **`src/constants/ui.ts` → `ADMIN.CATEGORIES`** — `COL_SLUG`, `COL_PRODUCTS`.
+- **`src/constants/ui.ts` → `ADMIN.FAQS`** — `COL_VIEWS`, `COL_HELPFUL`.
+- **`src/constants/ui.ts` → `ADMIN.REVIEWS`** — `COL_HELPFUL`.
+- **`src/constants/ui.ts` → `ADMIN.MEDIA`** — `COL_FORMAT`, `COL_CREATED`.
+- **`src/constants/ui.ts` → `ADMIN.SESSIONS`** — `COL_USER`, `COL_DEVICE`, `COL_LOCATION`, `COL_LAST_ACTIVE`.
+
+---
+
 ## [Unreleased] — fix(i18n): remove hardcoded column headers in event, seller-payout, and coupon tables
 
 ### Fixed (Rule 3 — no hardcoded strings in JSX/column definitions)

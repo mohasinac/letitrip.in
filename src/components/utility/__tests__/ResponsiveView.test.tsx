@@ -16,6 +16,8 @@ import { ResponsiveView } from "../ResponsiveView";
 const mockUseBreakpoint = jest.fn();
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useBreakpoint: () => mockUseBreakpoint(),
 }));
 

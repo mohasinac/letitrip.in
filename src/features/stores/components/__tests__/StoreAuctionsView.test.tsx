@@ -32,7 +32,11 @@ jest.mock("@/components", () => ({
     total: number;
     currentPage: number;
   }) => (
-    <div data-testid="table-pagination" data-total={total} data-page={currentPage} />
+    <div
+      data-testid="table-pagination"
+      data-total={total}
+      data-page={currentPage}
+    />
   ),
 }));
 
@@ -45,7 +49,9 @@ jest.mock("@/constants", () => ({
 }));
 
 const mockTable = {
-  get: jest.fn((key: string) => (key === "page" ? "1" : key === "pageSize" ? "24" : "")),
+  get: jest.fn((key: string) =>
+    key === "page" ? "1" : key === "pageSize" ? "24" : "",
+  ),
   getNumber: jest.fn((key: string, def: number) => def),
   set: jest.fn(),
   setPage: jest.fn(),
@@ -53,6 +59,8 @@ const mockTable = {
 };
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useUrlTable: () => mockTable,
 }));
 
@@ -83,7 +91,11 @@ describe("StoreAuctionsView", () => {
   });
 
   it("shows spinner while loading", () => {
-    mockUseStoreAuctions.mockReturnValue({ data: undefined, isLoading: true, error: null });
+    mockUseStoreAuctions.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: null,
+    });
     render(<StoreAuctionsView storeSlug="test-store" />);
     expect(screen.getByTestId("spinner")).toBeInTheDocument();
   });
@@ -100,7 +112,14 @@ describe("StoreAuctionsView", () => {
 
   it("shows empty state when no auctions", () => {
     mockUseStoreAuctions.mockReturnValue({
-      data: { items: [], total: 0, page: 1, pageSize: 24, totalPages: 0, hasMore: false },
+      data: {
+        items: [],
+        total: 0,
+        page: 1,
+        pageSize: 24,
+        totalPages: 0,
+        hasMore: false,
+      },
       isLoading: false,
       error: null,
     });
@@ -129,7 +148,14 @@ describe("StoreAuctionsView", () => {
 
   it("renders TablePagination when auctions are present", () => {
     mockUseStoreAuctions.mockReturnValue({
-      data: { items: [baseAuction], total: 1, page: 1, pageSize: 24, totalPages: 1, hasMore: false },
+      data: {
+        items: [baseAuction],
+        total: 1,
+        page: 1,
+        pageSize: 24,
+        totalPages: 1,
+        hasMore: false,
+      },
       isLoading: false,
       error: null,
     });

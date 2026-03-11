@@ -2,6 +2,8 @@ import { renderHook } from "@testing-library/react";
 import { useProfileStats } from "../useProfileStats";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: jest.fn(),
 }));
 

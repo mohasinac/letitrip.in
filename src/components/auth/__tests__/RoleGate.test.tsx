@@ -17,6 +17,8 @@ import * as hooks from "@/hooks";
 
 // Mock useAuth hook
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAuth: jest.fn(),
 }));
 

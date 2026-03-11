@@ -25,6 +25,8 @@ jest.mock("next-intl", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiMutation: ({ onSuccess, onError }: any) => ({
     mutate: (...args: any[]) => mockMutate(onSuccess, onError, ...args),
     isLoading: mockIsLoading,

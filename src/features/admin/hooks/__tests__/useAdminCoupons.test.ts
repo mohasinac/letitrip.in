@@ -9,6 +9,8 @@ import { renderHook } from "@testing-library/react";
 import { useAdminCoupons } from "../useAdminCoupons";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: jest.fn((opts: any) => {
     opts.queryFn();
     return { data: null, isLoading: false, error: null, refetch: jest.fn() };

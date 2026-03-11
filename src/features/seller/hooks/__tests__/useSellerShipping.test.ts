@@ -2,8 +2,15 @@ import { renderHook, act } from "@testing-library/react";
 import { useSellerShipping } from "../useSellerShipping";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: jest.fn(({ queryFn, onError }) => {
-    return { data: undefined, isLoading: false, error: null, refetch: jest.fn() };
+    return {
+      data: undefined,
+      isLoading: false,
+      error: null,
+      refetch: jest.fn(),
+    };
   }),
   useApiMutation: jest.fn(({ onSuccess, onError } = {}) => ({
     mutate: jest.fn(),

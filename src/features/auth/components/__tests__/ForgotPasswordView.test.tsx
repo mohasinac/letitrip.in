@@ -30,6 +30,8 @@ jest.mock("next/link", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useForgotPassword: jest.fn(),
 }));
 

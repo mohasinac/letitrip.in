@@ -30,6 +30,7 @@ jest.mock("next-intl", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
   useAuth: () => ({ user: { uid: "user-1" }, loading: false }),
   useAddress: () => ({
     data: mockAddress,

@@ -10,6 +10,8 @@ import {
 } from "../useEventMutations";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiMutation: jest.fn((opts: any) => ({
     mutate: jest.fn(opts?.mutationFn ?? jest.fn()),
     mutateAsync: jest.fn(),

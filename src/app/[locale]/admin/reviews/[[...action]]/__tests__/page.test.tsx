@@ -17,6 +17,7 @@ jest.mock("next/navigation", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
   useApiQuery: () => ({
     data: { reviews: [], total: 0 },
     isLoading: false,

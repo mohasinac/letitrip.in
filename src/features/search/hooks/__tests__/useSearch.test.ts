@@ -12,6 +12,8 @@ import { renderHook } from "@testing-library/react";
 import { useSearch } from "../useSearch";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: jest.fn((opts: any) => {
     opts.queryFn();
     return { data: null, isLoading: false, error: null };

@@ -103,6 +103,8 @@ describe("ProtectedRoute", () => {
   describe("Accessibility", () => {
     it("provides accessible error messages", () => {
       jest.mock("@/hooks", () => ({
+        ...jest.requireActual("@/hooks"),
+        ...jest.requireActual("@/hooks"),
         useAuth: () => ({
           user: null,
           loading: false,

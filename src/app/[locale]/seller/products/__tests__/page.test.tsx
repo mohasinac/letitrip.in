@@ -50,6 +50,7 @@ const mockUrlTable = {
 };
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
   useAuth: jest.fn(() => ({
     user: {
       uid: "seller-uid",

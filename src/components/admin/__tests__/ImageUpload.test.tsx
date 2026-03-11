@@ -38,6 +38,8 @@ const mockUseCamera = {
 };
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useCamera: jest.fn(() => mockUseCamera),
 }));
 
@@ -75,11 +77,7 @@ jest.mock("@/components", () => ({
     children: React.ReactNode;
     className?: string;
   }) => <span className={className}>{children}</span>,
-  Text: ({
-    children,
-  }: {
-    children: React.ReactNode;
-  }) => <p>{children}</p>,
+  Text: ({ children }: { children: React.ReactNode }) => <p>{children}</p>,
   CameraCapture: ({
     onCapture,
   }: {
@@ -99,7 +97,9 @@ jest.mock("@/components", () => ({
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-const mockOnUpload = jest.fn().mockResolvedValue("https://cdn.example.com/img.webp");
+const mockOnUpload = jest
+  .fn()
+  .mockResolvedValue("https://cdn.example.com/img.webp");
 const mockOnChange = jest.fn();
 
 function makeFile(name = "photo.jpg", type = "image/jpeg"): File {
@@ -118,9 +118,7 @@ describe("ImageUpload", () => {
 
   describe("default captureSource (file-only)", () => {
     it("renders file picker upload button", () => {
-      render(
-        <ImageUpload onUpload={mockOnUpload} label="Product Image" />,
-      );
+      render(<ImageUpload onUpload={mockOnUpload} label="Product Image" />);
       expect(screen.getByText("Click to upload")).toBeInTheDocument();
     });
 
@@ -175,7 +173,9 @@ describe("ImageUpload", () => {
       );
       fireEvent.click(screen.getByText("capture"));
       await waitFor(() => {
-        expect(mockOnChange).toHaveBeenCalledWith("https://cdn.example.com/img.webp");
+        expect(mockOnChange).toHaveBeenCalledWith(
+          "https://cdn.example.com/img.webp",
+        );
       });
     });
   });
@@ -247,9 +247,7 @@ describe("ImageUpload", () => {
   });
 
   it("renders helperText", () => {
-    render(
-      <ImageUpload onUpload={mockOnUpload} helperText="Max 5 MB" />,
-    );
+    render(<ImageUpload onUpload={mockOnUpload} helperText="Max 5 MB" />);
     expect(screen.getByText("Max 5 MB")).toBeInTheDocument();
   });
 
@@ -257,12 +255,7 @@ describe("ImageUpload", () => {
 
   it("shows error when camera capture upload fails", async () => {
     const failUpload = jest.fn().mockRejectedValue(new Error("Network error"));
-    render(
-      <ImageUpload
-        onUpload={failUpload}
-        captureSource="camera-only"
-      />,
-    );
+    render(<ImageUpload onUpload={failUpload} captureSource="camera-only" />);
     fireEvent.click(screen.getByText("capture"));
     await waitFor(() => {
       expect(screen.getByText("Network error")).toBeInTheDocument();

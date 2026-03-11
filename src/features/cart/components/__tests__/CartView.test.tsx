@@ -3,6 +3,8 @@ import { render, screen } from "@testing-library/react";
 import { CartView } from "../CartView";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: () => ({ data: undefined, isLoading: true, refetch: jest.fn() }),
   useApiMutation: () => ({ mutate: jest.fn() }),
   useMessage: () => ({ showError: jest.fn(), showSuccess: jest.fn() }),

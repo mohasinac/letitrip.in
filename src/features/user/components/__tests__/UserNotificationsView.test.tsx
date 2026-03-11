@@ -14,6 +14,8 @@ jest.mock("next-intl", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAuth: jest.fn(() => ({ user: { uid: "user_1" }, loading: false })),
   useApiQuery: jest.fn(() => ({
     data: null,

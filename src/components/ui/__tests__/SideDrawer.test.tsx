@@ -14,6 +14,8 @@ let capturedSwipeOptions: Record<string, (() => void) | undefined> = {};
 
 // Mock hooks used by SideDrawer
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useSwipe: jest.fn((_ref, opts) => {
     capturedSwipeOptions = opts ?? {};
   }),

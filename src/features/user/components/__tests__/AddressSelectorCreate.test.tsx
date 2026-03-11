@@ -13,6 +13,8 @@ const mockRefetch = jest.fn();
 const mockMutate = jest.fn();
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAddressSelector: jest.fn(() => ({
     addresses: mockAddresses,
     isLoading: false,

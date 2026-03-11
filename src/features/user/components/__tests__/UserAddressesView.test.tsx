@@ -3,6 +3,8 @@ import { render, screen } from "@testing-library/react";
 import { UserAddressesView } from "../UserAddressesView";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAuth: () => ({ user: null, loading: true }),
   useAddresses: () => ({
     data: null,

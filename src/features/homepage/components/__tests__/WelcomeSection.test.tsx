@@ -4,6 +4,8 @@ import { WelcomeSection } from "../WelcomeSection";
 // Mock useApiQuery
 const mockUseApiQuery = jest.fn();
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
   useHomepageSections: (...args: unknown[]) => mockUseApiQuery(...args),
   useRouter: () => ({ push: jest.fn(), replace: jest.fn() }),

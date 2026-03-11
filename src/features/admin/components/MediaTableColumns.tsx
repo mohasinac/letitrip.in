@@ -61,21 +61,21 @@ export function getMediaTableColumns(
     },
     {
       key: "format",
-      header: "Format",
+      header: LABELS.COL_FORMAT,
       render: (op) => (
         <Text className="text-sm">{op.format.toUpperCase()}</Text>
       ),
     },
     {
       key: "createdAt",
-      header: "Created",
+      header: LABELS.COL_CREATED,
       render: (op) => (
         <Text className="text-sm">{formatDate(new Date(op.createdAt))}</Text>
       ),
     },
     {
       key: "actions",
-      header: "Actions",
+      header: UI_LABELS.TABLE.ACTIONS,
       render: (op) => (
         <div className="flex gap-2">
           {op.status === "completed" && op.outputUrl && (

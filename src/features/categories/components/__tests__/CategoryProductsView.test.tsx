@@ -15,6 +15,8 @@ jest.mock("next-intl", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: jest.fn().mockImplementation((opts: any) => {
     const key0 = Array.isArray(opts?.queryKey) ? opts.queryKey[0] : "";
     const key1 = Array.isArray(opts?.queryKey) ? opts.queryKey[1] : "";

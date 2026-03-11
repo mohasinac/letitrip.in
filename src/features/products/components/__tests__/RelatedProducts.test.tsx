@@ -14,6 +14,8 @@ jest.mock("next/image", () => ({
   default: ({ alt, src }: any) => <img alt={alt} src={src} />,
 }));
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useRelatedProducts: jest.fn(),
 }));
 

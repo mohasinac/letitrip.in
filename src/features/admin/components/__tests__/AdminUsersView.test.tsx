@@ -14,6 +14,8 @@ jest.mock("next-intl", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: jest.fn(() => ({ data: null, isLoading: false, error: null })),
   useApiMutation: jest.fn(() => ({ mutate: jest.fn(), isLoading: false })),
   useUrlTable: jest.fn(() => ({

@@ -14,6 +14,7 @@ jest.mock("next-intl", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
   useAuth: () => ({ user: { uid: "user-1" }, loading: false }),
   useCreateAddress: () => ({
     mutate: mockCreateAddress,
@@ -50,6 +51,7 @@ describe("Add Address Page", () => {
   it("redirects to login when not authenticated", () => {
     jest.resetModules();
     jest.mock("@/hooks", () => ({
+      ...jest.requireActual("@/hooks"),
       useAuth: () => ({ user: null, loading: false }),
       useCreateAddress: () => ({ mutate: jest.fn(), isLoading: false }),
     }));

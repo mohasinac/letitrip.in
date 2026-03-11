@@ -20,6 +20,8 @@ jest.mock("@/services", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAuth: jest.fn(() => ({ user: { uid: "u1" }, loading: false })),
   useMessage: () => ({ showSuccess: jest.fn(), showError: jest.fn() }),
   useApiQuery: jest.fn(),

@@ -24,6 +24,7 @@ jest.mock("next/navigation", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
   useApiQuery: (...args: any[]) => mockApiQuery(...args),
   useAuth: () => mockUseAuth(),
   useRealtimeBids: () => mockUseRealtimeBids(),

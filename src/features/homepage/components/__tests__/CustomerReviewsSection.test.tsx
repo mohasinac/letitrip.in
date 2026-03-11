@@ -4,6 +4,8 @@ import { CustomerReviewsSection } from "../CustomerReviewsSection";
 // Mock useApiQuery and useSwipe
 const mockUseApiQuery = jest.fn();
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
   useHomepageReviews: (...args: unknown[]) => mockUseApiQuery(...args),
   useSwipe: () => ({ onTouchStart: jest.fn(), onTouchEnd: jest.fn() }),

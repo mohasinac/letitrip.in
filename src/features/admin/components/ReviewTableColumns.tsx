@@ -60,7 +60,7 @@ export function getReviewTableColumns() {
     },
     {
       key: "helpful",
-      header: "Helpful",
+      header: REVIEWS.COL_HELPFUL,
       width: "10%",
       render: (review: Review) => {
         const total = review.helpfulCount + review.notHelpfulCount;

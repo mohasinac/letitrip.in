@@ -2,11 +2,17 @@ import { renderHook } from "@testing-library/react";
 import { useSellerPayoutSettings } from "../useSellerPayoutSettings";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: jest.fn(() => ({
-    data: undefined, isLoading: false, error: null, refetch: jest.fn(),
+    data: undefined,
+    isLoading: false,
+    error: null,
+    refetch: jest.fn(),
   })),
   useApiMutation: jest.fn(() => ({
-    mutate: jest.fn(), isLoading: false,
+    mutate: jest.fn(),
+    isLoading: false,
   })),
   useMessage: jest.fn(() => ({ showSuccess: jest.fn(), showError: jest.fn() })),
 }));

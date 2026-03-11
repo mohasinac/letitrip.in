@@ -12,6 +12,8 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useSwipe: jest.fn(),
   useGesture: jest.fn(() => ({})),
 }));

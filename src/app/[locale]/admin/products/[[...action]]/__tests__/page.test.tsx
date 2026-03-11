@@ -20,6 +20,7 @@ const mockBuildSieveParams = jest.fn().mockReturnValue("?page=1&pageSize=25");
 const mockGet = jest.fn().mockReturnValue("");
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
   useApiQuery: jest.fn(() => ({
     data: {
       products: [],

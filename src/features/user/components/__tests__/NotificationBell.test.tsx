@@ -21,6 +21,8 @@ const mockRefetch = jest.fn();
 const mockUseClickOutside = jest.fn();
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useNotifications: jest.fn(),
   useMessage: jest.fn(() => ({
     showSuccess: jest.fn(),

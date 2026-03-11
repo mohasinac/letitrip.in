@@ -15,6 +15,8 @@ jest.mock("next-intl", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useUrlTable: jest.fn(() => ({
     get: jest.fn().mockReturnValue(""),
     getNumber: jest.fn().mockReturnValue(25),

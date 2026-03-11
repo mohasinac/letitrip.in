@@ -20,6 +20,8 @@ jest.mock("next/link", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAuth: () => ({ user: null, loading: false }),
   useRegister: () => ({ mutate: jest.fn(), isLoading: false }),
   useGoogleLogin: () => ({ mutate: jest.fn(), isLoading: false }),

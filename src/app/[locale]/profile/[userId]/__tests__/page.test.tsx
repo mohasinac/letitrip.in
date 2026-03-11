@@ -27,6 +27,7 @@ jest.mock("@/classes", () => ({
 }));
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
   useApiQuery: () => ({
     data: null,
     isLoading: false,

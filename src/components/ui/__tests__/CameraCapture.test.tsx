@@ -3,7 +3,13 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 // ---------------------------------------------------------------------------
@@ -27,11 +33,15 @@ const mockCamera = {
   stopCamera: jest.fn(),
   takePhoto: jest.fn(),
   startRecording: jest.fn(),
-  stopRecording: jest.fn().mockResolvedValue(new Blob(["v"], { type: "video/webm" })),
+  stopRecording: jest
+    .fn()
+    .mockResolvedValue(new Blob(["v"], { type: "video/webm" })),
   switchCamera: jest.fn().mockResolvedValue(undefined),
 };
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useCamera: jest.fn(() => mockCamera),
 }));
 
@@ -39,8 +49,16 @@ jest.mock("@/hooks", () => ({
 // @/components — partial mock (Alert, Button, Span, Spinner)
 // ---------------------------------------------------------------------------
 jest.mock("@/components", () => ({
-  Alert: ({ children, variant }: { children: React.ReactNode; variant?: string }) => (
-    <div data-testid="alert" data-variant={variant}>{children}</div>
+  Alert: ({
+    children,
+    variant,
+  }: {
+    children: React.ReactNode;
+    variant?: string;
+  }) => (
+    <div data-testid="alert" data-variant={variant}>
+      {children}
+    </div>
   ),
   Button: ({
     children,
@@ -57,9 +75,13 @@ jest.mock("@/components", () => ({
       {children}
     </button>
   ),
-  Span: ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <span className={className}>{children}</span>
-  ),
+  Span: ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) => <span className={className}>{children}</span>,
   Spinner: () => <div data-testid="spinner" />,
 }));
 
@@ -68,7 +90,11 @@ jest.mock("@/components", () => ({
 // ---------------------------------------------------------------------------
 jest.mock("@/constants", () => ({
   THEME_CONSTANTS: {
-    flex: { center: "flex items-center justify-center", colCenter: "flex flex-col items-center", center: "flex items-center justify-center" },
+    flex: {
+      center: "flex items-center justify-center",
+      colCenter: "flex flex-col items-center",
+      center: "flex items-center justify-center",
+    },
     position: { fill: "absolute inset-0" },
   },
 }));
@@ -93,12 +119,18 @@ describe("CameraCapture", () => {
     mockCamera.isCapturing = false;
     mockCamera.error = null;
     mockCamera.startCamera.mockResolvedValue(undefined);
-    mockCamera.stopRecording.mockResolvedValue(new Blob(["v"], { type: "video/webm" }));
-    (navigator.mediaDevices.enumerateDevices as jest.Mock).mockResolvedValue([]);
+    mockCamera.stopRecording.mockResolvedValue(
+      new Blob(["v"], { type: "video/webm" }),
+    );
+    (navigator.mediaDevices.enumerateDevices as jest.Mock).mockResolvedValue(
+      [],
+    );
   });
 
   it("renders a video element for the viewfinder", async () => {
-    const { container } = render(<CameraCapture mode="photo" onCapture={jest.fn()} />);
+    const { container } = render(
+      <CameraCapture mode="photo" onCapture={jest.fn()} />,
+    );
     await waitFor(() =>
       expect(mockCamera.startCamera).toHaveBeenCalledWith({
         facingMode: "environment",
@@ -127,30 +159,44 @@ describe("CameraCapture", () => {
   it("calls onError prop when camera.error changes", async () => {
     const onError = jest.fn();
     mockCamera.error = "Camera unavailable";
-    render(<CameraCapture mode="photo" onCapture={jest.fn()} onError={onError} />);
-    await waitFor(() => expect(onError).toHaveBeenCalledWith("Camera unavailable"));
+    render(
+      <CameraCapture mode="photo" onCapture={jest.fn()} onError={onError} />,
+    );
+    await waitFor(() =>
+      expect(onError).toHaveBeenCalledWith("Camera unavailable"),
+    );
   });
 
   it("photo mode: shows takePhoto button", async () => {
     render(<CameraCapture mode="photo" onCapture={jest.fn()} />);
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "takePhoto" })).toBeInTheDocument(),
+      expect(
+        screen.getByRole("button", { name: "takePhoto" }),
+      ).toBeInTheDocument(),
     );
   });
 
   it("video mode: shows startRecording button", async () => {
     render(<CameraCapture mode="video" onCapture={jest.fn()} />);
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "startRecording" })).toBeInTheDocument(),
+      expect(
+        screen.getByRole("button", { name: "startRecording" }),
+      ).toBeInTheDocument(),
     );
-    expect(screen.queryByRole("button", { name: "takePhoto" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "takePhoto" }),
+    ).not.toBeInTheDocument();
   });
 
   it("both mode: shows both shutter and record buttons", async () => {
     render(<CameraCapture mode="both" onCapture={jest.fn()} />);
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "takePhoto" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "startRecording" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "takePhoto" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "startRecording" }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -160,7 +206,9 @@ describe("CameraCapture", () => {
     const onCapture = jest.fn();
     render(<CameraCapture mode="photo" onCapture={onCapture} />);
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "takePhoto" })).toBeInTheDocument(),
+      expect(
+        screen.getByRole("button", { name: "takePhoto" }),
+      ).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByRole("button", { name: "takePhoto" }));
     expect(onCapture).toHaveBeenCalledWith(photoBlob, "photo");
@@ -169,7 +217,9 @@ describe("CameraCapture", () => {
   it("clicking record button calls startRecording and toggles to stopRecording", async () => {
     render(<CameraCapture mode="video" onCapture={jest.fn()} />);
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "startRecording" })).toBeInTheDocument(),
+      expect(
+        screen.getByRole("button", { name: "startRecording" }),
+      ).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByRole("button", { name: "startRecording" }));
     expect(mockCamera.startRecording).toHaveBeenCalled();
@@ -183,14 +233,18 @@ describe("CameraCapture", () => {
 
     render(<CameraCapture mode="video" onCapture={onCapture} />);
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "stopRecording" })).toBeInTheDocument(),
+      expect(
+        screen.getByRole("button", { name: "stopRecording" }),
+      ).toBeInTheDocument(),
     );
 
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: "stopRecording" }));
     });
 
-    await waitFor(() => expect(onCapture).toHaveBeenCalledWith(videoBlob, "video"));
+    await waitFor(() =>
+      expect(onCapture).toHaveBeenCalledWith(videoBlob, "video"),
+    );
   });
 
   it("shows flip camera button when multiple cameras are detected", async () => {
@@ -200,7 +254,9 @@ describe("CameraCapture", () => {
     ]);
     render(<CameraCapture mode="photo" onCapture={jest.fn()} />);
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "flipCamera" })).toBeInTheDocument(),
+      expect(
+        screen.getByRole("button", { name: "flipCamera" }),
+      ).toBeInTheDocument(),
     );
   });
 
@@ -210,8 +266,12 @@ describe("CameraCapture", () => {
     ]);
     render(<CameraCapture mode="photo" onCapture={jest.fn()} />);
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "takePhoto" })).toBeInTheDocument(),
+      expect(
+        screen.getByRole("button", { name: "takePhoto" }),
+      ).toBeInTheDocument(),
     );
-    expect(screen.queryByRole("button", { name: "flipCamera" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "flipCamera" }),
+    ).not.toBeInTheDocument();
   });
 });

@@ -3,6 +3,8 @@ import { render, screen } from "@testing-library/react";
 
 // Mock heavy dependencies
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAuth: () => ({
     user: null,
     loading: true,

@@ -5,6 +5,8 @@ import { TitleBar } from "@/components";
 import { SITE_CONFIG } from "@/constants";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAuth: () => ({ user: null, loading: false }),
 }));
 

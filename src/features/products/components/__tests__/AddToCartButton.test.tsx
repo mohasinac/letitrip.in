@@ -12,6 +12,8 @@ import { render, screen } from "@testing-library/react";
 import { AddToCartButton } from "../AddToCartButton";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useAddToCart: ({ onSuccess, onError }: any) => ({
     mutate: jest.fn(),
     isLoading: false,

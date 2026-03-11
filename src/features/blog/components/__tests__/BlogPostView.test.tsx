@@ -3,6 +3,8 @@ import { render, screen } from "@testing-library/react";
 import { BlogPostView } from "../BlogPostView";
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: () => ({ data: null, isLoading: true, error: null }),
 }));
 jest.mock("next-intl", () => ({ useTranslations: () => (key: string) => key }));

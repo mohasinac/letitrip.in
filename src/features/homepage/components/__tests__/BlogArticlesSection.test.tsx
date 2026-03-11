@@ -5,6 +5,8 @@ import type { BlogPostDocument } from "@/db/schema";
 // Mock hooks and services
 const mockUseApiQuery = jest.fn();
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
 }));
 jest.mock("@/services", () => ({

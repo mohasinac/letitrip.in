@@ -14,6 +14,8 @@ import { useSellerOrders } from "../useSellerOrders";
 const mockUser = { uid: "seller-1", email: "seller@example.com" };
 
 jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  ...jest.requireActual("@/hooks"),
   useApiQuery: jest.fn((opts: any) => {
     if (opts.enabled !== false) opts.queryFn();
     return { data: null, isLoading: false, error: null, refetch: jest.fn() };
