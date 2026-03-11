@@ -6,6 +6,8 @@ import { ShoppingBag, Truck, MapPin, CheckCircle2 } from "lucide-react";
 
 const { themed, flex, page } = THEME_CONSTANTS;
 
+export const revalidate = 3600;
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("trackOrder");
   return {

@@ -29,11 +29,19 @@ import { THEME_CONSTANTS } from "@/constants";
 import { usePendingTable, useUrlTable, useBrands } from "@/hooks";
 import { ReviewCard } from "@/components";
 import type { ReviewDocument } from "@/db/schema";
-import { useReviews } from "../hooks/useReviews";
+import { useReviews, type ReviewsApiResult } from "../hooks/useReviews";
+
+export interface ReviewsListResult {
+  items: ReviewDocument[];
+}
 
 const PAGE_SIZE = 12;
 
-function ReviewsListContent() {
+function ReviewsListContent({
+  initialData,
+}: {
+  initialData?: ReviewsApiResult;
+}) {
   const t = useTranslations("reviews");
   const tActions = useTranslations("actions");
   const table = useUrlTable({ defaults: { pageSize: String(PAGE_SIZE) } });
@@ -52,9 +60,9 @@ function ReviewsListContent() {
     return p.toString();
   }, [ratingFilter, sortParam]);
 
-  const { data, isLoading, error } = useReviews(queryParams);
+  const { data, isLoading, error } = useReviews(queryParams, { initialData });
 
-  const allReviews = useMemo(() => data?.data ?? [], [data]);
+  const allReviews = useMemo(() => data ?? [], [data]);
 
   // Client-side search only (rating + sort are server-side)
   const displayed = useMemo(() => {
@@ -77,7 +85,7 @@ function ReviewsListContent() {
     });
   }, [allReviews, search, brandFilter]);
 
-  const total = data?.meta?.total ?? allReviews.length;
+  const total = allReviews.length;
   const page = table.getNumber("page", 1);
   const pageSize = table.getNumber("pageSize", PAGE_SIZE);
   const paged = displayed.slice((page - 1) * pageSize, page * pageSize);
@@ -232,10 +240,12 @@ function ReviewsListContent() {
   );
 }
 
-export function ReviewsListView() {
+export function ReviewsListView({
+  initialData,
+}: { initialData?: ReviewsApiResult } = {}) {
   return (
     <Suspense>
-      <ReviewsListContent />
+      <ReviewsListContent initialData={initialData} />
     </Suspense>
   );
 }

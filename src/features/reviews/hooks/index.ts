@@ -1,2 +1,2 @@
 export { useReviews } from "./useReviews";
-export type { ReviewsApiResponse } from "./useReviews";
+export type { ReviewsApiResult } from "./useReviews";

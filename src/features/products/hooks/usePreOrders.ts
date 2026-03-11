@@ -27,27 +27,41 @@ export type PreOrderItem = Pick<
   | "availableQuantity"
 >;
 
+/**
+ * The /api/products endpoint returns successResponse({ items, total, page, pageSize, totalPages, hasMore }).
+ * apiClient unwraps the `data` field, so the resolved value is this shape directly.
+ */
 export interface PreOrdersListResult {
-  data: PreOrderItem[];
-  meta: { page: number; limit: number; total: number; totalPages: number };
+  items: PreOrderItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
 }
 
 /**
  * usePreOrders
  * Wraps `productService.listPreOrders(params)` for the public pre-orders page.
  * `params` is a pre-built query string produced by `useUrlTable`.
+ *
+ * Accepts optional `initialData` for SSR hydration.
  */
-export function usePreOrders(params?: string) {
+export function usePreOrders(
+  params?: string,
+  options?: { initialData?: PreOrdersListResult },
+) {
   const { data, isLoading, error, refetch } = useQuery<PreOrdersListResult>({
     queryKey: ["pre-orders", params ?? ""],
     queryFn: () => productService.listPreOrders(params),
+    initialData: options?.initialData,
   });
 
   return {
     data,
-    preOrders: data?.data ?? [],
-    total: data?.meta?.total ?? 0,
-    totalPages: data?.meta?.totalPages ?? 1,
+    preOrders: data?.items ?? [],
+    total: data?.total ?? 0,
+    totalPages: data?.totalPages ?? 1,
     isLoading,
     error,
     refetch,

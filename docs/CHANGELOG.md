@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — fix(ssr): fix useReviews+usePreOrders data shape bugs; add SSR initialData for reviews/pre-orders; ISR for sellers/track
+
+### Bug Fixes
+
+- **`src/features/reviews/hooks/useReviews.ts`** — **Critical bug fixed**: `ReviewsApiResponse` was typed as `{ data: ReviewDocument[], meta: {...} }` but the `/api/reviews?latest=true` endpoint uses `successResponse(sieveResult.items, ...)` — after `apiClient` unwraps the response, the value is `ReviewDocument[]` (just the array). The component accessed `data?.data ?? []` which was always `undefined`. Fixed by changing the type to `ReviewsApiResult = ReviewDocument[]` and updating component usage.
+- **`src/features/products/hooks/usePreOrders.ts`** — **Critical bug fixed**: Same pattern as `useAuctions`. `PreOrdersListResult` was typed as `{ data: PreOrderItem[], meta: {...} }` but `/api/products` returns `successResponse({ items, total, page, pageSize, totalPages, hasMore })`. After apiClient, the resolved value is `{ items, total, ... }` — component was accessing `data?.data ?? []` (always `undefined`). Fixed type to match actual API shape and updated field accesses to `items`, `total`, `totalPages`.
+
+### Changed (SSR initialData, ISR revalidate)
+
+- **`src/features/reviews/hooks/useReviews.ts`** — Added `options?: { initialData?: ReviewsApiResult }` parameter; passes to `useQuery`.
+- **`src/features/reviews/hooks/index.ts`** — Updated barrel: `ReviewsApiResponse` → `ReviewsApiResult`.
+- **`src/features/reviews/components/ReviewsListView.tsx`** — Added `ReviewsListResult` interface; `ReviewsListContent` and `ReviewsListView` now accept `initialData?: ReviewsApiResult` prop.
+- **`src/app/[locale]/reviews/page.tsx`** — Made `async`; added `export const revalidate = 60`; fetches `reviewRepository.listAll({ filters: "status==approved", sorts: "-rating", page: 1, pageSize: 200 })`; passes as `initialData` to `ReviewsListView`.
+- **`src/features/products/hooks/usePreOrders.ts`** — Added `options?: { initialData?: PreOrdersListResult }` parameter; passes to `useQuery`.
+- **`src/features/products/components/PreOrdersView.tsx`** — `PreOrdersContent` and `PreOrdersView` now accept `initialData?: PreOrdersListResult` prop.
+- **`src/app/[locale]/pre-orders/page.tsx`** — Made `async`; added `export const revalidate = 60`; fetches `productRepository.list({ filters: "isPreOrder==true,status==published", sorts: "preOrderDeliveryDate", page: 1, pageSize: 24 })`; passes as `initialData` to `PreOrdersView`.
+- **`src/app/[locale]/sellers/page.tsx`** — Added `export const revalidate = 3600` (ISR; page renders static marketing content).
+- **`src/app/[locale]/track/page.tsx`** — Added `export const revalidate = 3600` (ISR; page renders static order-tracking instructions).
+
+---
+
 ## [Unreleased] — feat(ssr): SSR initialData for blog/events/auctions; remove "use client" from pure views; fix useAuctions data shape; fix pre-existing build errors
 
 ### Changed (Rules 9, 10 — thin pages; E3 SSR Phase 3)

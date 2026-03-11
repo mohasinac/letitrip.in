@@ -27,12 +27,16 @@ import type { ActiveFilter } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, useAuth, useMessage, useBrands } from "@/hooks";
-import { usePreOrders } from "../hooks";
+import { usePreOrders, type PreOrdersListResult } from "../hooks";
 import { addToWishlistAction } from "@/actions";
 
 const PAGE_SIZE = 24;
 
-function PreOrdersContent() {
+function PreOrdersContent({
+  initialData,
+}: {
+  initialData?: PreOrdersListResult;
+}) {
   const t = useTranslations("preOrders");
   const tActions = useTranslations("actions");
   const { user } = useAuth();
@@ -152,8 +156,10 @@ function PreOrdersContent() {
     brandParam,
   ]);
 
-  const { preOrders, total, totalPages, isLoading } =
-    usePreOrders(preOrderParams);
+  const { preOrders, total, totalPages, isLoading } = usePreOrders(
+    preOrderParams,
+    { initialData },
+  );
   const { brandOptions } = useBrands();
 
   // ── Bulk wishlist handler ─────────────────────────────────────────────────
@@ -347,10 +353,12 @@ function PreOrdersContent() {
   );
 }
 
-export function PreOrdersView() {
+export function PreOrdersView({
+  initialData,
+}: { initialData?: PreOrdersListResult } = {}) {
   return (
     <Suspense>
-      <PreOrdersContent />
+      <PreOrdersContent initialData={initialData} />
     </Suspense>
   );
 }
