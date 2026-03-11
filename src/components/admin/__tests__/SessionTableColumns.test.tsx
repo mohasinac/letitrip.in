@@ -3,7 +3,7 @@
  */
 import React from "react";
 import { render } from "@testing-library/react";
-import { SESSION_TABLE_COLUMNS } from "../SessionTableColumns";
+import { SESSION_TABLE_COLUMNS } from "@/features/admin/components/SessionTableColumns";
 import type { SessionDocument } from "@/db/schema/sessions";
 
 interface SessionWithUser extends SessionDocument {

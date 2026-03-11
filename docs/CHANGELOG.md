@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — fix(i18n): remove hardcoded column headers in event, seller-payout, and coupon tables
+
+### Fixed (Rule 3 — no hardcoded strings in JSX/column definitions)
+
+- **`src/features/events/components/EventEntriesTable.tsx`** — `"User"`, `"Status"`, `"Submitted"`, `"Points"` column headers replaced with `t("colUser")`, `tTable("status")`, `t("colSubmitted")`, `t("colPoints")`.
+- **`src/features/events/components/EventsTable.tsx`** — `"Title"`, `"Type"`, `"Status"`, `"Starts"`, `"Ends"`, `"Entries"` replaced with `t()` / `tTable()` keys.
+- **`src/features/seller/components/PayoutTableColumns.tsx`** — All 7 column headers + `STATUS_LABEL` record + `PAYMENT_METHOD_LABEL` record replaced with `UI_LABELS.ADMIN.PAYOUTS` constants.
+- **`src/features/admin/components/CouponTableColumns.tsx`** — Remaining `"Discount"` column header replaced with `UI_LABELS.ADMIN.COUPONS.DISCOUNT_HEADER`.
+
+### Added (i18n keys — all 5 locales)
+
+- **`messages/*.json` → `adminEvents`** — Added: `colUser`, `colSubmitted`, `colPoints`, `colType`, `colStarts`, `colEnds`.
+- **`src/constants/ui.ts` → `UI_LABELS.ADMIN.COUPONS`** — Added: `DISCOUNT_HEADER`.
+
+---
+
 ## [Unreleased] — fix(security): eliminate all Math.random() from production code; replace with crypto.getRandomValues()
 
 ### Security

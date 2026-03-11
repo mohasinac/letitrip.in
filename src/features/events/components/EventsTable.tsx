@@ -19,7 +19,7 @@ export function useEventsTableColumns(
     columns: [
       {
         key: "title",
-        header: "Title",
+        header: t("form.titleLabel"),
         sortable: true,
         width: "30%",
         render: (e: EventDocument) => (
@@ -37,7 +37,7 @@ export function useEventsTableColumns(
       },
       {
         key: "type",
-        header: "Type",
+        header: t("colType"),
         sortable: true,
         width: "10%",
         render: (e: EventDocument) => (
@@ -48,14 +48,14 @@ export function useEventsTableColumns(
       },
       {
         key: "status",
-        header: "Status",
+        header: tTable("status"),
         sortable: true,
         width: "10%",
         render: (e: EventDocument) => <EventStatusBadge status={e.status} />,
       },
       {
         key: "startsAt",
-        header: "Starts",
+        header: t("colStarts"),
         sortable: true,
         width: "14%",
         render: (e: EventDocument) => (
@@ -66,7 +66,7 @@ export function useEventsTableColumns(
       },
       {
         key: "endsAt",
-        header: "Ends",
+        header: t("colEnds"),
         sortable: true,
         width: "14%",
         render: (e: EventDocument) => (
@@ -77,7 +77,7 @@ export function useEventsTableColumns(
       },
       {
         key: "totalEntries",
-        header: "Entries",
+        header: t("entries"),
         sortable: false,
         width: "8%",
         render: (e: EventDocument) => (

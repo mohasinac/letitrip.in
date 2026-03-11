@@ -11,6 +11,7 @@
 import React from "react";
 import { Text, Caption, Badge } from "@/components";
 import { formatCurrency, formatDate, formatDateTime } from "@/utils";
+import { UI_LABELS } from "@/constants";
 
 export type PayoutStatus = "pending" | "processing" | "completed" | "failed";
 export type PayoutMethod = "bank_transfer" | "upi";
@@ -28,6 +29,8 @@ export interface PayoutRecord {
   orderIds: string[];
 }
 
+const LABELS = UI_LABELS.ADMIN.PAYOUTS;
+
 const STATUS_VARIANT: Record<
   PayoutStatus,
   "pending" | "info" | "success" | "danger"
@@ -39,15 +42,15 @@ const STATUS_VARIANT: Record<
 };
 
 const STATUS_LABEL: Record<PayoutStatus, string> = {
-  pending: "Pending",
-  processing: "Processing",
-  completed: "Completed",
-  failed: "Failed",
+  pending: LABELS.STATUS_PENDING,
+  processing: LABELS.STATUS_PROCESSING,
+  completed: LABELS.STATUS_COMPLETED,
+  failed: LABELS.STATUS_FAILED,
 };
 
 const PAYMENT_METHOD_LABEL: Record<PayoutMethod, string> = {
-  bank_transfer: "Bank Transfer",
-  upi: "UPI",
+  bank_transfer: LABELS.PAYMENT_METHOD_BANK,
+  upi: LABELS.PAYMENT_METHOD_UPI,
 };
 
 type Column = {
@@ -60,19 +63,19 @@ type Column = {
 export const PAYOUT_TABLE_COLUMNS: Column[] = [
   {
     key: "grossAmount",
-    header: "Gross Amount",
+    header: LABELS.GROSS_AMOUNT,
     width: "14%",
     render: (p) => <Text size="sm">{formatCurrency(p.grossAmount)}</Text>,
   },
   {
     key: "platformFee",
-    header: "Platform Fee",
+    header: LABELS.PLATFORM_FEE,
     width: "14%",
     render: (p) => <Caption>{formatCurrency(p.platformFee)}</Caption>,
   },
   {
     key: "amount",
-    header: "Net Amount",
+    header: LABELS.AMOUNT,
     width: "14%",
     render: (p) => (
       <Text weight="semibold">{formatCurrency(p.amount, "INR", "en-IN")}</Text>
@@ -80,13 +83,13 @@ export const PAYOUT_TABLE_COLUMNS: Column[] = [
   },
   {
     key: "paymentMethod",
-    header: "Method",
+    header: LABELS.METHOD,
     width: "14%",
     render: (p) => <Caption>{PAYMENT_METHOD_LABEL[p.paymentMethod]}</Caption>,
   },
   {
     key: "status",
-    header: "Status",
+    header: LABELS.STATUS,
     width: "14%",
     render: (p) => (
       <Badge variant={STATUS_VARIANT[p.status]}>{STATUS_LABEL[p.status]}</Badge>
@@ -94,13 +97,13 @@ export const PAYOUT_TABLE_COLUMNS: Column[] = [
   },
   {
     key: "requestedAt",
-    header: "Requested",
+    header: LABELS.REQUESTED,
     width: "15%",
     render: (p) => <Caption>{formatDate(new Date(p.requestedAt))}</Caption>,
   },
   {
     key: "processedAt",
-    header: "Processed",
+    header: LABELS.PROCESSED,
     width: "15%",
     render: (p) => (
       <Caption>

@@ -812,6 +812,7 @@ export const UI_LABELS = {
       STATUS_EXPIRED: "Expired",
       STATUS_ACTIVE: "Active",
       STATUS_INACTIVE: "Inactive",
+      DISCOUNT_HEADER: "Discount",
       CODE_LABEL: "Coupon Code",
       NAME_LABEL: "Name",
       DESCRIPTION_LABEL: "Description",

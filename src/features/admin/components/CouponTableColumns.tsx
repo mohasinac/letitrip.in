@@ -80,7 +80,7 @@ export function getCouponTableColumns(
       },
       {
         key: "discount",
-        header: "Discount",
+        header: LABELS.DISCOUNT_HEADER,
         width: "12%",
         render: (coupon: CouponDocument) => {
           const { type, discount } = coupon;

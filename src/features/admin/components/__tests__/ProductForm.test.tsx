@@ -157,7 +157,7 @@ jest.mock("@/constants", () => ({
   },
 }));
 
-import { ProductForm } from "../ProductForm";
+import { ProductForm } from "@/components/products/ProductForm";
 
 describe("ProductForm", () => {
   const baseProduct = {

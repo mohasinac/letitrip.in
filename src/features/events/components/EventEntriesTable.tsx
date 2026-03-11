@@ -27,7 +27,7 @@ export function useEventEntriesTableColumns(
     columns: [
       {
         key: "userId",
-        header: "User",
+        header: t("colUser"),
         sortable: false,
         width: "25%",
         render: (e: EventEntryDocument) => (
@@ -45,7 +45,7 @@ export function useEventEntriesTableColumns(
       },
       {
         key: "reviewStatus",
-        header: "Status",
+        header: tTable("status"),
         sortable: false,
         width: "12%",
         render: (e: EventEntryDocument) => (
@@ -56,7 +56,7 @@ export function useEventEntriesTableColumns(
       },
       {
         key: "submittedAt",
-        header: "Submitted",
+        header: t("colSubmitted"),
         sortable: true,
         width: "16%",
         render: (e: EventEntryDocument) => (
@@ -67,7 +67,7 @@ export function useEventEntriesTableColumns(
       },
       {
         key: "points",
-        header: "Points",
+        header: t("colPoints"),
         sortable: false,
         width: "8%",
         render: (e: EventEntryDocument) => (

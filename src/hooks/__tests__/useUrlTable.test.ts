@@ -11,13 +11,18 @@
 
 import { renderHook, act } from "@testing-library/react";
 
-// --- Mock next/navigation ---
+// --- Mock @/i18n/navigation (useUrlTable imports router from here) ---
 const mockReplace = jest.fn();
+
+jest.mock("@/i18n/navigation", () => ({
+  useRouter: () => ({ replace: mockReplace }),
+  usePathname: () => "/admin/products",
+}));
+
+// --- Mock next/navigation (useSearchParams only) ---
 let mockSearchParamsMap: Map<string, string> = new Map();
 
 jest.mock("next/navigation", () => ({
-  useRouter: () => ({ replace: mockReplace }),
-  usePathname: () => "/admin/products",
   useSearchParams: () => ({
     get: (key: string) => mockSearchParamsMap.get(key) ?? null,
     toString: () => {

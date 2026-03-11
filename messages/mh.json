@@ -2727,7 +2727,13 @@
     "pollAddOption": "+ Add Option",
     "pollAllowMultiSelect": "Allow multiple selections",
     "pollAllowComments": "Allow comments",
-    "pollResultsVisibility": "Results Visibility"
+    "pollResultsVisibility": "Results Visibility",
+    "colUser": "User",
+    "colSubmitted": "Submitted",
+    "colPoints": "Points",
+    "colType": "Type",
+    "colStarts": "Starts",
+    "colEnds": "Ends"
   },
   "eventStatus": {
     "draft": "मसुदा",

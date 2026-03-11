@@ -103,16 +103,6 @@ jest.mock("../FAQCategorySidebar", () => ({
   ),
 }));
 
-jest.mock("../FAQSearchBar", () => ({
-  FAQSearchBar: ({ onSearch }: any) => (
-    <input
-      data-testid="faq-search-bar"
-      onChange={(e) => onSearch(e.target.value)}
-      placeholder="Search FAQs..."
-    />
-  ),
-}));
-
 jest.mock("../FAQSortDropdown", () => ({
   FAQSortDropdown: ({ selectedSort, onSortChange }: any) => (
     <select

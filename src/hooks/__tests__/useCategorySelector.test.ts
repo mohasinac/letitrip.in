@@ -1,5 +1,5 @@
 /**
- * useCategorySelector Tests — Phase 62
+ * useCategorySelector Tests
  *
  * Covers three exports from useCategorySelector.ts:
  * - useCategorySelector (composite: list query + create mutation)
@@ -19,19 +19,21 @@ import {
 
 const mockRefetch = jest.fn();
 
-jest.mock("../useApiQuery", () => ({
-  useApiQuery: jest.fn(() => ({
-    data: null,
-    isLoading: false,
-    error: null,
-    refetch: mockRefetch,
-  })),
-}));
-
-jest.mock("../useApiMutation", () => ({
-  useApiMutation: jest.fn((opts: any) => ({
+jest.mock("@tanstack/react-query", () => ({
+  ...jest.requireActual("@tanstack/react-query"),
+  useQuery: jest.fn((opts: any) => {
+    opts.queryFn?.();
+    return {
+      data: null,
+      isLoading: false,
+      error: null,
+      refetch: mockRefetch,
+    };
+  }),
+  useMutation: jest.fn((opts: any) => ({
     mutate: (data: any) => opts.mutationFn(data),
-    isLoading: false,
+    mutateAsync: (data: any) => opts.mutationFn(data),
+    isPending: false,
     error: null,
     data: undefined,
     reset: jest.fn(),
@@ -41,19 +43,22 @@ jest.mock("../useApiMutation", () => ({
 jest.mock("@/services", () => ({
   categoryService: {
     list: jest.fn().mockResolvedValue({ data: [] }),
-    create: jest.fn().mockResolvedValue({ id: "cat-1" }),
   },
 }));
 
-const { useApiQuery } = require("../useApiQuery");
-const { useApiMutation } = require("../useApiMutation");
+jest.mock("@/actions", () => ({
+  createCategoryAction: jest.fn().mockResolvedValue({ id: "cat-1" }),
+}));
+
+const { useQuery, useMutation } = require("@tanstack/react-query");
 const { categoryService } = require("@/services");
+const { createCategoryAction } = require("@/actions");
 
 describe("useCategories", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useApiQuery as jest.Mock).mockImplementation((opts: any) => {
-      opts.queryFn();
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
+      opts.queryFn?.();
       return {
         data: null,
         isLoading: false,
@@ -65,7 +70,7 @@ describe("useCategories", () => {
 
   it("queries categoryService.list with queryKey ['categories']", () => {
     renderHook(() => useCategories());
-    expect(useApiQuery).toHaveBeenCalledWith(
+    expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({ queryKey: ["categories"] }),
     );
     expect(categoryService.list).toHaveBeenCalled();
@@ -78,7 +83,7 @@ describe("useCategories", () => {
 
   it("normalises data.data array", () => {
     const cats = [{ id: "c1", name: "Electronics", slug: "electronics" }];
-    (useApiQuery as jest.Mock).mockReturnValue({
+    (useQuery as jest.Mock).mockReturnValue({
       data: { data: cats },
       isLoading: false,
       error: null,
@@ -90,7 +95,7 @@ describe("useCategories", () => {
 
   it("normalises data.items as fallback", () => {
     const cats = [{ id: "c2", name: "Fashion", slug: "fashion" }];
-    (useApiQuery as jest.Mock).mockReturnValue({
+    (useQuery as jest.Mock).mockReturnValue({
       data: { items: cats },
       isLoading: false,
       error: null,
@@ -106,27 +111,27 @@ describe("useCreateCategory", () => {
     jest.clearAllMocks();
   });
 
-  it("calls categoryService.create when mutation is invoked", () => {
+  it("calls createCategoryAction when mutation is invoked", () => {
     const { result } = renderHook(() => useCreateCategory());
     result.current.mutate({ name: "New Category", slug: "new-category" });
-    expect(categoryService.create).toHaveBeenCalledWith({
+    expect(createCategoryAction).toHaveBeenCalledWith({
       name: "New Category",
       slug: "new-category",
     });
   });
 
-  it("wires onSuccess callback through useApiMutation", () => {
+  it("wires onSuccess callback through useMutation", () => {
     const onSuccess = jest.fn();
     renderHook(() => useCreateCategory({ onSuccess }));
-    expect(useApiMutation).toHaveBeenCalledWith(
+    expect(useMutation).toHaveBeenCalledWith(
       expect.objectContaining({ onSuccess }),
     );
   });
 
-  it("wires onError callback through useApiMutation", () => {
+  it("wires onError callback through useMutation", () => {
     const onError = jest.fn();
     renderHook(() => useCreateCategory({ onError }));
-    expect(useApiMutation).toHaveBeenCalledWith(
+    expect(useMutation).toHaveBeenCalledWith(
       expect.objectContaining({ onError }),
     );
   });
@@ -135,8 +140,8 @@ describe("useCreateCategory", () => {
 describe("useCategorySelector", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useApiQuery as jest.Mock).mockImplementation((opts: any) => {
-      opts.queryFn();
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
+      opts.queryFn?.();
       return {
         data: null,
         isLoading: false,
@@ -152,9 +157,9 @@ describe("useCategorySelector", () => {
     expect(typeof result.current.createCategory).toBe("function");
   });
 
-  it("calls categoryService.create when createCategory is invoked", () => {
+  it("calls createCategoryAction when createCategory is invoked", () => {
     const { result } = renderHook(() => useCategorySelector());
     result.current.createCategory({ name: "Cat A" });
-    expect(categoryService.create).toHaveBeenCalledWith({ name: "Cat A" });
+    expect(createCategoryAction).toHaveBeenCalledWith({ name: "Cat A" });
   });
 });
