@@ -30,3 +30,5 @@ export { PhoneVerificationCard } from "./PhoneVerificationCard";
 export { ProfileInfoForm } from "./ProfileInfoForm";
 export type { ProfileInfoData } from "./ProfileInfoForm";
 export { PasswordChangeForm } from "./PasswordChangeForm";
+export { UserOrderTrackView } from "./UserOrderTrackView";
+export { AddAddressView } from "./AddAddressView";

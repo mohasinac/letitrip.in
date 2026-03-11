@@ -45,7 +45,7 @@ describe("LocaleSwitcher", () => {
 
   it("trigger has aria-expanded=false initially", () => {
     render(<LocaleSwitcher />);
-    expect(screen.getByRole("button")).toHaveAttribute(
+    expect(screen.getByRole("combobox")).toHaveAttribute(
       "aria-expanded",
       "false",
     );
@@ -53,59 +53,60 @@ describe("LocaleSwitcher", () => {
 
   it("trigger has a non-empty aria-label", () => {
     render(<LocaleSwitcher />);
-    const trigger = screen.getByRole("button");
+    const trigger = screen.getByRole("combobox");
     expect(trigger).toHaveAttribute("aria-label");
     expect(trigger.getAttribute("aria-label")).toBeTruthy();
   });
 
   it("opens the dropdown on trigger click", () => {
     render(<LocaleSwitcher />);
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getByRole("combobox"));
     expect(screen.getByRole("listbox")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /switch language/i }),
-    ).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
   });
 
   it("shows all locales in the dropdown when search is empty", () => {
     render(<LocaleSwitcher />);
-    fireEvent.click(screen.getByRole("button"));
-    // routing.locales = ['en', 'hi'] → 2 options + 1 trigger = 3 buttons
-    const buttons = screen.getAllByRole("button");
-    expect(buttons.length).toBeGreaterThanOrEqual(3);
+    fireEvent.click(screen.getByRole("combobox"));
+    // routing.locales → n options all present as option roles
+    const options = screen.getAllByRole("option");
+    expect(options.length).toBeGreaterThanOrEqual(2);
   });
 
-  it("marks the active locale option as pressed", () => {
+  it("marks the active locale option as selected", () => {
     render(<LocaleSwitcher />);
-    fireEvent.click(screen.getByRole("button"));
-    const pressed = screen.getAllByRole("button", { pressed: true });
-    expect(pressed.length).toBe(1);
+    fireEvent.click(screen.getByRole("combobox"));
+    const selected = screen.getAllByRole("option", { selected: true });
+    expect(selected.length).toBe(1);
   });
 
   it("calls router.replace when an inactive locale is clicked", () => {
     render(<LocaleSwitcher />);
-    fireEvent.click(screen.getByRole("button")); // open
-    const inactive = screen.getAllByRole("button", { pressed: false });
-    // Pick the first unpressed option (skip the trigger which has no aria-pressed)
-    const inactiveOption = inactive.find(
-      (btn) => btn.getAttribute("aria-pressed") === "false",
-    );
-    expect(inactiveOption).toBeTruthy();
-    fireEvent.click(inactiveOption!);
+    fireEvent.click(screen.getByRole("combobox")); // open
+    const inactiveOptions = screen.getAllByRole("option", { selected: false });
+    expect(inactiveOptions.length).toBeGreaterThan(0);
+    const btn = inactiveOptions[0].querySelector("button");
+    expect(btn).toBeTruthy();
+    fireEvent.click(btn!);
     expect(mockReplace).toHaveBeenCalledTimes(1);
   });
 
   it("does NOT call router.replace when the active locale is clicked", () => {
     render(<LocaleSwitcher />);
-    fireEvent.click(screen.getByRole("button")); // open
-    const activeOption = screen.getByRole("button", { pressed: true });
-    fireEvent.click(activeOption);
+    fireEvent.click(screen.getByRole("combobox")); // open
+    const activeOption = screen.getByRole("option", { selected: true });
+    const btn = activeOption.querySelector("button");
+    expect(btn).toBeTruthy();
+    fireEvent.click(btn!);
     expect(mockReplace).not.toHaveBeenCalled();
   });
 
   it("closes the dropdown when Escape is pressed", () => {
     render(<LocaleSwitcher />);
-    fireEvent.click(screen.getByRole("button")); // open
+    fireEvent.click(screen.getByRole("combobox")); // open
     expect(screen.getByRole("listbox")).toBeInTheDocument();
     fireEvent.keyDown(document, { key: "Escape" });
     expect(screen.queryByRole("listbox")).toBeNull();
@@ -113,23 +114,22 @@ describe("LocaleSwitcher", () => {
 
   it("filters locale options based on search input", () => {
     render(<LocaleSwitcher />);
-    fireEvent.click(screen.getByRole("button")); // open
+    fireEvent.click(screen.getByRole("combobox")); // open
     const searchInput = screen.getByRole("searchbox");
-    // 'english' matches 'English' but not 'हिन्दी'
+    // 'english' matches 'English' but not other locales
     fireEvent.change(searchInput, { target: { value: "english" } });
-    // Only the English option + trigger should remain
-    const buttons = screen.getAllByRole("button");
-    // trigger + 1 matching option = 2
-    expect(buttons.length).toBe(2);
+    // Only English option visible
+    const options = screen.getAllByRole("option");
+    expect(options.length).toBe(1);
   });
 
   it("shows noResults message when search matches nothing", () => {
     render(<LocaleSwitcher />);
-    fireEvent.click(screen.getByRole("button")); // open
+    fireEvent.click(screen.getByRole("combobox")); // open
     const searchInput = screen.getByRole("searchbox");
     fireEvent.change(searchInput, { target: { value: "zzz" } });
     expect(screen.getByRole("listbox")).toBeInTheDocument();
-    // No option buttons, only the trigger
-    expect(screen.getAllByRole("button").length).toBe(1);
+    // No option elements when no results
+    expect(screen.queryAllByRole("option").length).toBe(0);
   });
 });

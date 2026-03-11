@@ -14,7 +14,7 @@ import { ROUTES, UI_LABELS } from "@/constants";
 const mockPush = jest.fn();
 const mockUseSession = jest.fn();
 
-jest.mock("next/navigation", () => ({
+jest.mock("@/i18n/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
   usePathname: () => "/protected",
 }));

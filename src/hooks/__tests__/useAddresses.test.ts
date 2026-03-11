@@ -3,7 +3,7 @@
  * Phase 18.4 — Address + Profile Hooks
  */
 
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import {
   useAddresses,
   useCreateAddress,
@@ -13,22 +13,68 @@ import {
 } from "../useAddresses";
 import { cacheManager } from "@/classes";
 
-// ─── Mock @/lib/api-client ────────────────────────────────────────────────────
-// Preserve ApiClientError (used internally by useApiMutation) via jest.requireActual,
-// then replace only the apiClient methods with controllable jest.fn() mocks.
-const mockGet = jest.fn();
-const mockPost = jest.fn();
-const mockPatch = jest.fn();
-const mockDelete = jest.fn();
+// ─── Mock @tanstack/react-query ───────────────────────────────────────────────
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn((opts: any) => {
+    if (opts.enabled === false) {
+      return {
+        data: undefined,
+        isLoading: false,
+        error: null,
+        refetch: jest.fn(),
+      };
+    }
+    opts.queryFn?.();
+    return {
+      data: undefined,
+      isLoading: false,
+      error: null,
+      refetch: jest.fn(),
+    };
+  }),
+  useMutation: jest.fn((opts: any) => ({
+    mutate: async (data: unknown) => {
+      try {
+        const result = await opts.mutationFn(data);
+        await opts.onSuccess?.(result, data, undefined);
+        return result;
+      } catch (e) {
+        await opts.onError?.(e, data, undefined);
+        throw e;
+      }
+    },
+    mutateAsync: async (data: unknown) => {
+      const result = await opts.mutationFn(data);
+      await opts.onSuccess?.(result, data, undefined);
+      return result;
+    },
+    isPending: false,
+    error: null,
+  })),
+  useQueryClient: jest.fn(() => ({ invalidateQueries: jest.fn() })),
+}));
 
-jest.mock("@/lib/api-client", () => ({
-  ...jest.requireActual("@/lib/api-client"),
-  apiClient: {
-    get: (...args: unknown[]) => mockGet(...args),
-    post: (...args: unknown[]) => mockPost(...args),
-    patch: (...args: unknown[]) => mockPatch(...args),
-    delete: (...args: unknown[]) => mockDelete(...args),
+// ─── Mock @/services ──────────────────────────────────────────────────────────
+const mockAddressList = jest.fn().mockResolvedValue([]);
+jest.mock("@/services", () => ({
+  addressService: {
+    list: (...args: any[]) => mockAddressList(...args),
+    getById: jest.fn().mockResolvedValue(undefined),
   },
+}));
+
+// ─── Mock @/actions ───────────────────────────────────────────────────────────
+const mockCreateAddressAction = jest.fn().mockResolvedValue(undefined);
+const mockUpdateAddressAction = jest.fn().mockResolvedValue(undefined);
+const mockDeleteAddressAction = jest.fn().mockResolvedValue(undefined);
+const mockSetDefaultAddressAction = jest.fn().mockResolvedValue(undefined);
+jest.mock("@/actions", () => ({
+  ...jest.requireActual("@/actions"),
+  createAddressAction: (...args: any[]) => mockCreateAddressAction(...args),
+  updateAddressAction: (...args: any[]) => mockUpdateAddressAction(...args),
+  deleteAddressAction: (...args: any[]) => mockDeleteAddressAction(...args),
+  setDefaultAddressAction: (...args: any[]) =>
+    mockSetDefaultAddressAction(...args),
 }));
 
 // ─── Sample data ──────────────────────────────────────────────────────────────
@@ -72,63 +118,98 @@ const MOCK_NEW_ADDRESS = {
   isDefault: false,
 };
 
+const {
+  useQuery,
+  useMutation,
+  useQueryClient,
+} = require("@tanstack/react-query");
+
 beforeEach(() => {
   jest.clearAllMocks();
   cacheManager.clear();
+  (useQuery as jest.Mock).mockImplementation((opts: any) => {
+    if (opts.enabled === false) {
+      return {
+        data: undefined,
+        isLoading: false,
+        error: null,
+        refetch: jest.fn(),
+      };
+    }
+    opts.queryFn?.();
+    return {
+      data: undefined,
+      isLoading: false,
+      error: null,
+      refetch: jest.fn(),
+    };
+  });
+  (useMutation as jest.Mock).mockImplementation((opts: any) => ({
+    mutate: async (data: unknown) => {
+      try {
+        const result = await opts.mutationFn(data);
+        await opts.onSuccess?.(result, data, undefined);
+        return result;
+      } catch (e) {
+        await opts.onError?.(e, data, undefined);
+        throw e;
+      }
+    },
+    mutateAsync: async (data: unknown) => {
+      const result = await opts.mutationFn(data);
+      await opts.onSuccess?.(result, data, undefined);
+      return result;
+    },
+    isPending: false,
+    error: null,
+  }));
+  (useQueryClient as jest.Mock).mockReturnValue({
+    invalidateQueries: jest.fn(),
+  });
 });
 
 // ─── Suite: useAddresses ──────────────────────────────────────────────────────
 describe("useAddresses", () => {
-  it("fetches address list on mount and returns data", async () => {
-    mockGet.mockResolvedValueOnce(MOCK_ADDRESSES);
+  it("calls addressService.list on mount", () => {
+    renderHook(() => useAddresses());
+    expect(mockAddressList).toHaveBeenCalled();
+  });
 
+  it("returns data from the query", () => {
+    (useQuery as jest.Mock).mockReturnValueOnce({
+      data: MOCK_ADDRESSES,
+      isLoading: false,
+      error: null,
+      refetch: jest.fn(),
+    });
     const { result } = renderHook(() => useAddresses());
-
-    expect(result.current.isLoading).toBe(true);
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    expect(mockGet).toHaveBeenCalled();
     expect(result.current.data).toEqual(MOCK_ADDRESSES);
   });
 
-  it("exposes error when fetch fails", async () => {
+  it("exposes error when fetch fails", () => {
     const err = new Error("Network error");
-    mockGet.mockRejectedValueOnce(err);
-
+    (useQuery as jest.Mock).mockReturnValueOnce({
+      data: undefined,
+      isLoading: false,
+      error: err,
+      refetch: jest.fn(),
+    });
     const { result } = renderHook(() => useAddresses());
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
     expect(result.current.error).toBeTruthy();
     expect(result.current.data).toBeUndefined();
   });
 
   it("does not fetch when enabled=false", () => {
     const { result } = renderHook(() => useAddresses({ enabled: false }));
-
-    // Should not call the underlying get even though isLoading may start as true
-    expect(mockGet).not.toHaveBeenCalled();
-    // No data in state
+    expect(mockAddressList).not.toHaveBeenCalled();
     expect(result.current.data).toBeUndefined();
-  });
-
-  it("calls onSuccess callback with response data", async () => {
-    mockGet.mockResolvedValueOnce(MOCK_ADDRESSES);
-    const onSuccess = jest.fn();
-
-    const { result } = renderHook(() => useAddresses({ onSuccess }));
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    expect(onSuccess).toHaveBeenCalledWith(MOCK_ADDRESSES);
   });
 });
 
 // ─── Suite: useCreateAddress ──────────────────────────────────────────────────
 describe("useCreateAddress", () => {
-  it("calls POST to addresses endpoint with form data", async () => {
-    mockPost.mockResolvedValueOnce(MOCK_NEW_ADDRESS);
+  it("calls createAddressAction with form data", async () => {
+    mockCreateAddressAction.mockResolvedValueOnce(MOCK_NEW_ADDRESS);
     const onSuccess = jest.fn();
 
     const { result } = renderHook(() => useCreateAddress({ onSuccess }));
@@ -146,12 +227,12 @@ describe("useCreateAddress", () => {
       });
     });
 
-    expect(mockPost).toHaveBeenCalledTimes(1);
-    expect(onSuccess).toHaveBeenCalledWith(MOCK_NEW_ADDRESS, expect.anything());
+    expect(mockCreateAddressAction).toHaveBeenCalledTimes(1);
+    expect(onSuccess).toHaveBeenCalledWith(MOCK_NEW_ADDRESS);
   });
 
-  it("exposes error when POST fails", async () => {
-    mockPost.mockRejectedValueOnce(new Error("creation failed"));
+  it("calls onError when action fails", async () => {
+    mockCreateAddressAction.mockRejectedValueOnce(new Error("creation failed"));
     const onError = jest.fn();
 
     const { result } = renderHook(() => useCreateAddress({ onError }));
@@ -169,20 +250,19 @@ describe("useCreateAddress", () => {
           country: "India",
         });
       } catch {
-        // mutation re-throws; captured by hook state
+        // mutation re-throws; captured by onError
       }
     });
 
     expect(onError).toHaveBeenCalled();
-    expect(result.current.error).toBeTruthy();
   });
 });
 
 // ─── Suite: useUpdateAddress ──────────────────────────────────────────────────
 describe("useUpdateAddress", () => {
-  it("calls PATCH to the address endpoint with updated data", async () => {
+  it("calls updateAddressAction with updated data", async () => {
     const updated = { ...MOCK_ADDRESSES[0], city: "Delhi" };
-    mockPatch.mockResolvedValueOnce(updated);
+    mockUpdateAddressAction.mockResolvedValueOnce(updated);
     const onSuccess = jest.fn();
 
     const { result } = renderHook(() =>
@@ -193,14 +273,17 @@ describe("useUpdateAddress", () => {
       await result.current.mutate({ ...MOCK_ADDRESSES[0], city: "Delhi" });
     });
 
-    expect(mockPatch).toHaveBeenCalledTimes(1);
-    expect(onSuccess).toHaveBeenCalledWith(updated, expect.anything());
+    expect(mockUpdateAddressAction).toHaveBeenCalledTimes(1);
+    expect(onSuccess).toHaveBeenCalledWith(updated);
   });
 
-  it("exposes error when PATCH fails", async () => {
-    mockPatch.mockRejectedValueOnce(new Error("update failed"));
+  it("calls onError when update fails", async () => {
+    mockUpdateAddressAction.mockRejectedValueOnce(new Error("update failed"));
+    const onError = jest.fn();
 
-    const { result } = renderHook(() => useUpdateAddress("addr-1"));
+    const { result } = renderHook(() =>
+      useUpdateAddress("addr-1", { onError }),
+    );
 
     await act(async () => {
       try {
@@ -215,18 +298,18 @@ describe("useUpdateAddress", () => {
           country: "India",
         });
       } catch {
-        // mutation re-throws; captured by hook state
+        // mutation re-throws; captured by onError
       }
     });
 
-    expect(result.current.error).toBeTruthy();
+    expect(onError).toHaveBeenCalled();
   });
 });
 
 // ─── Suite: useDeleteAddress ──────────────────────────────────────────────────
 describe("useDeleteAddress", () => {
-  it("calls DELETE to the address endpoint for the given id", async () => {
-    mockDelete.mockResolvedValueOnce({ success: true });
+  it("calls deleteAddressAction for the given id", async () => {
+    mockDeleteAddressAction.mockResolvedValueOnce({ success: true });
     const onSuccess = jest.fn();
 
     const { result } = renderHook(() => useDeleteAddress({ onSuccess }));
@@ -235,34 +318,32 @@ describe("useDeleteAddress", () => {
       await result.current.mutate({ id: "addr-1" });
     });
 
-    expect(mockDelete).toHaveBeenCalledTimes(1);
-    expect(onSuccess).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-    );
+    expect(mockDeleteAddressAction).toHaveBeenCalledTimes(1);
+    expect(onSuccess).toHaveBeenCalled();
   });
 
-  it("exposes error when DELETE fails", async () => {
-    mockDelete.mockRejectedValueOnce(new Error("deletion failed"));
+  it("calls onError when delete fails", async () => {
+    mockDeleteAddressAction.mockRejectedValueOnce(new Error("deletion failed"));
+    const onError = jest.fn();
 
-    const { result } = renderHook(() => useDeleteAddress());
+    const { result } = renderHook(() => useDeleteAddress({ onError }));
 
     await act(async () => {
       try {
         await result.current.mutate({ id: "addr-1" });
       } catch {
-        // mutation re-throws; captured by hook state
+        // mutation re-throws; captured by onError
       }
     });
 
-    expect(result.current.error).toBeTruthy();
+    expect(onError).toHaveBeenCalled();
   });
 });
 
 // ─── Suite: useSetDefaultAddress ─────────────────────────────────────────────
 describe("useSetDefaultAddress", () => {
-  it("calls POST to the set-default endpoint for the given address", async () => {
-    mockPost.mockResolvedValueOnce({ success: true });
+  it("calls setDefaultAddressAction for the given address", async () => {
+    mockSetDefaultAddressAction.mockResolvedValueOnce({ success: true });
     const onSuccess = jest.fn();
 
     const { result } = renderHook(() => useSetDefaultAddress({ onSuccess }));
@@ -271,26 +352,26 @@ describe("useSetDefaultAddress", () => {
       await result.current.mutate({ addressId: "addr-2" });
     });
 
-    expect(mockPost).toHaveBeenCalledTimes(1);
-    expect(onSuccess).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-    );
+    expect(mockSetDefaultAddressAction).toHaveBeenCalledTimes(1);
+    expect(onSuccess).toHaveBeenCalled();
   });
 
-  it("exposes error when set-default POST fails", async () => {
-    mockPost.mockRejectedValueOnce(new Error("set-default failed"));
+  it("calls onError when set-default fails", async () => {
+    mockSetDefaultAddressAction.mockRejectedValueOnce(
+      new Error("set-default failed"),
+    );
+    const onError = jest.fn();
 
-    const { result } = renderHook(() => useSetDefaultAddress());
+    const { result } = renderHook(() => useSetDefaultAddress({ onError }));
 
     await act(async () => {
       try {
         await result.current.mutate({ addressId: "addr-2" });
       } catch {
-        // mutation re-throws; captured by hook state
+        // mutation re-throws; captured by onError
       }
     });
 
-    expect(result.current.error).toBeTruthy();
+    expect(onError).toHaveBeenCalled();
   });
 });

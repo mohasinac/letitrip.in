@@ -7,23 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased] — fix(i18n): replace all remaining hardcoded column headers with UI_LABELS constants
+## [Unreleased] — refactor(pages): convert 10 client pages to RSC; extract 5 feature views
 
-### Fixed (Rule 3 — no hardcoded strings in column definitions)
+### Changed (Rules 1, 2 — thin pages, feature modules)
 
-- **`src/components/categories/CategoryTableColumns.tsx`** — `"Slug"`, `"Products"` → `UI_LABELS.ADMIN.CATEGORIES.COL_SLUG/COL_PRODUCTS`.
-- **`src/features/admin/components/FaqTableColumns.tsx`** — `"Views"`, `"Helpful"` → `LABELS.COL_VIEWS/COL_HELPFUL`.
-- **`src/features/admin/components/ReviewTableColumns.tsx`** — `"Helpful"` → `REVIEWS.COL_HELPFUL`.
-- **`src/features/admin/components/MediaTableColumns.tsx`** — `"Format"`, `"Created"`, `"Actions"` → `LABELS.COL_FORMAT/COL_CREATED`, `UI_LABELS.TABLE.ACTIONS`.
-- **`src/features/admin/components/SessionTableColumns.tsx`** — Added `UI_LABELS` import; `"User"`, `"Device"`, `"Location"`, `"Last Active"`, `"Status"` replaced with `S.COL_*` / `UI_LABELS.TABLE.STATUS`.
+- **`src/app/[locale]/seller/analytics/page.tsx`** — Removed `"use client"`; delegated entirely to new `SellerAnalyticsView`.
+- **`src/app/[locale]/seller/payouts/page.tsx`** — Removed `"use client"`; delegated entirely to new `SellerPayoutsView`.
+- **`src/app/[locale]/admin/events/[id]/entries/page.tsx`** — Removed `"use client"` + `useParams`; now async RSC → `<AdminEventEntriesView eventId={id} />`.
+- **`src/app/[locale]/user/orders/[id]/track/page.tsx`** — Removed `"use client"` + `useParams` + data hooks; now async RSC → `<UserOrderTrackView orderId={id} />`.
+- **`src/app/[locale]/user/addresses/add/page.tsx`** — Removed `"use client"` + redundant auth guard (layout handles it); now thin RSC → `<AddAddressView />`.
+- **`src/app/[locale]/user/ripcoins/page.tsx`** — Removed `"use client"` + redundant auth guard; now `return <RipCoinsWallet />;`.
+- **`src/app/[locale]/user/ripcoins/purchase/page.tsx`** — Removed `"use client"` + redundant auth guard; now `return <RipCoinsPurchaseView />;`.
+- **`src/app/[locale]/user/messages/page.tsx`** — Removed `"use client"` + auth guard; now async RSC using `getTranslations`; FEATURE_FLAGS check remains server-side.
+- **`src/app/[locale]/seller/products/[id]/edit/page.tsx`** — Removed `"use client"` + `use(params)`; converted to async RSC with `await params`.
+- **`src/app/[locale]/admin/orders/[[...action]]/page.tsx`** — Removed `"use client"` + `use(params)`; converted to async RSC with `await params`.
 
-### Added (constants)
+### Added
 
-- **`src/constants/ui.ts` → `ADMIN.CATEGORIES`** — `COL_SLUG`, `COL_PRODUCTS`.
-- **`src/constants/ui.ts` → `ADMIN.FAQS`** — `COL_VIEWS`, `COL_HELPFUL`.
-- **`src/constants/ui.ts` → `ADMIN.REVIEWS`** — `COL_HELPFUL`.
-- **`src/constants/ui.ts` → `ADMIN.MEDIA`** — `COL_FORMAT`, `COL_CREATED`.
-- **`src/constants/ui.ts` → `ADMIN.SESSIONS`** — `COL_USER`, `COL_DEVICE`, `COL_LOCATION`, `COL_LAST_ACTIVE`.
+- **`src/features/seller/components/SellerAnalyticsView.tsx`** — New client component; owns `useSellerAnalytics` hook, stats/chart/products layout.
+- **`src/features/seller/components/SellerPayoutsView.tsx`** — New client component; owns `useSellerPayouts`, payout request handler, and history table.
+- **`src/features/events/components/AdminEventEntriesView.tsx`** — New client component; accepts `eventId: string`; full entries management UI with i18n filter options.
+- **`src/features/user/components/UserOrderTrackView.tsx`** — New client component; accepts `orderId: string`; loading/error states + `OrderTrackingView`.
+- **`src/features/user/components/AddAddressView.tsx`** — New client component; address creation form without redundant auth guard.
+- **`src/features/seller/components/index.ts`** — Exports `SellerAnalyticsView`, `SellerPayoutsView`.
+- **`src/features/events/index.ts`** — Exports `AdminEventEntriesView`.
+- **`src/features/user/components/index.ts`** — Exports `UserOrderTrackView`, `AddAddressView`.
+- **`messages/*.json` → `adminEvents`** — Added: `statusPending`, `statusApproved`, `statusFlagged`, `sortMostPoints` (all 5 locales).
+- **`messages/*.json` → `nav`** — Added: `chatComingSoon`, `chatComingSoonDesc` (all 5 locales); used by messages page FEATURE_FLAGS empty state.
 
 ---
 

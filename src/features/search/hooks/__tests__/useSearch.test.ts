@@ -11,10 +11,8 @@
 import { renderHook } from "@testing-library/react";
 import { useSearch } from "../useSearch";
 
-jest.mock("@/hooks", () => ({
-  ...jest.requireActual("@/hooks"),
-  ...jest.requireActual("@/hooks"),
-  useApiQuery: jest.fn((opts: any) => {
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn((opts: any) => {
     opts.queryFn();
     return { data: null, isLoading: false, error: null };
   }),
@@ -31,13 +29,13 @@ jest.mock("@/services", () => ({
   },
 }));
 
-const { useApiQuery } = require("@/hooks");
+const { useQuery } = require("@tanstack/react-query");
 const { searchService, categoryService } = require("@/services");
 
 describe("useSearch", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useApiQuery as jest.Mock).mockImplementation((opts: any) => {
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
       opts.queryFn();
       return { data: null, isLoading: false, error: null };
     });
@@ -57,7 +55,7 @@ describe("useSearch", () => {
 
   it("uses queryKey ['categories', 'flat'] for categories query", () => {
     renderHook(() => useSearch("q=test"));
-    const calls = (useApiQuery as jest.Mock).mock.calls;
+    const calls = (useQuery as jest.Mock).mock.calls;
     const catCall = calls.find(
       (c: any[]) =>
         JSON.stringify(c[0].queryKey) ===
@@ -69,7 +67,7 @@ describe("useSearch", () => {
   it("uses queryKey ['search', searchParams] for search query", () => {
     const params = "q=bags";
     renderHook(() => useSearch(params));
-    const calls = (useApiQuery as jest.Mock).mock.calls;
+    const calls = (useQuery as jest.Mock).mock.calls;
     const searchCall = calls.find(
       (c: any[]) =>
         JSON.stringify(c[0].queryKey) === JSON.stringify(["search", params]),
@@ -84,7 +82,7 @@ describe("useSearch", () => {
 
   it("returns products from search data", () => {
     const mockProducts = [{ id: "p-1", title: "Bag" }];
-    (useApiQuery as jest.Mock).mockImplementation((opts: any) => {
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
       const key = JSON.stringify(opts.queryKey);
       opts.queryFn();
       if (key.includes("search")) {

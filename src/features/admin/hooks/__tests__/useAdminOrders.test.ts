@@ -8,10 +8,8 @@
 import { renderHook } from "@testing-library/react";
 import { useAdminOrders } from "../useAdminOrders";
 
-jest.mock("@/hooks", () => ({
-  ...jest.requireActual("@/hooks"),
-  ...jest.requireActual("@/hooks"),
-  useApiQuery: jest.fn((opts: any) => {
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn((opts: any) => {
     opts.queryFn();
     return {
       data: {
@@ -23,27 +21,32 @@ jest.mock("@/hooks", () => ({
       refetch: jest.fn(),
     };
   }),
-  useApiMutation: jest.fn((opts: any) => ({
+  useMutation: jest.fn((opts: any) => ({
     mutate: (data: unknown) => opts.mutationFn(data),
     isLoading: false,
     error: null,
   })),
+  useQueryClient: jest.fn(() => ({ invalidateQueries: jest.fn() })),
 }));
 
 jest.mock("@/services", () => ({
   adminService: {
     listOrders: jest.fn().mockResolvedValue({ orders: [], meta: {} }),
-    updateOrder: jest.fn().mockResolvedValue({}),
   },
 }));
 
-const { useApiQuery, useApiMutation } = require("@/hooks");
+jest.mock("@/actions", () => ({
+  adminUpdateOrderAction: jest.fn().mockResolvedValue({}),
+}));
+
+const { useQuery } = require("@tanstack/react-query");
 const { adminService } = require("@/services");
+const { adminUpdateOrderAction } = require("@/actions");
 
 describe("useAdminOrders", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useApiQuery as jest.Mock).mockImplementation((opts: any) => {
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
       opts.queryFn();
       return {
         data: {
@@ -54,10 +57,6 @@ describe("useAdminOrders", () => {
         refetch: jest.fn(),
       };
     });
-    (useApiMutation as jest.Mock).mockImplementation((opts: any) => ({
-      mutate: (data: unknown) => opts.mutationFn(data),
-      isLoading: false,
-    }));
   });
 
   it("calls adminService.listOrders with the sieve params", () => {
@@ -70,25 +69,25 @@ describe("useAdminOrders", () => {
   it("uses queryKey ['admin', 'orders', sieveParams]", () => {
     const params = "?sorts=-createdAt";
     renderHook(() => useAdminOrders(params));
-    expect(useApiQuery).toHaveBeenCalledWith(
+    expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({ queryKey: ["admin", "orders", params] }),
     );
   });
 
-  it("returns updateMutation that calls adminService.updateOrder", () => {
+  it("returns updateMutation that calls adminUpdateOrderAction", () => {
     const { result } = renderHook(() => useAdminOrders(""));
     result.current.updateMutation.mutate({
       id: "order-123",
       data: { status: "shipped" },
     });
-    expect(adminService.updateOrder).toHaveBeenCalledWith("order-123", {
+    expect(adminUpdateOrderAction).toHaveBeenCalledWith("order-123", {
       status: "shipped",
     });
   });
 
   it("returns orders from data", () => {
     const mockOrders = [{ id: "order-1", status: "pending" }];
-    (useApiQuery as jest.Mock).mockReturnValueOnce({
+    (useQuery as jest.Mock).mockReturnValueOnce({
       data: { orders: mockOrders, meta: {} },
       isLoading: false,
     });
@@ -97,7 +96,7 @@ describe("useAdminOrders", () => {
   });
 
   it("returns isLoading state", () => {
-    (useApiQuery as jest.Mock).mockReturnValueOnce({
+    (useQuery as jest.Mock).mockReturnValueOnce({
       data: null,
       isLoading: true,
     });

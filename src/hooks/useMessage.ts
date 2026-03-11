@@ -11,7 +11,7 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { useToast } from "@/components";
+import { useToast } from "@/components/feedback/Toast";
 
 type MessageType = "success" | "error";
 

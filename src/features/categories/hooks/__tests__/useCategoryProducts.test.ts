@@ -12,17 +12,16 @@
 import { renderHook } from "@testing-library/react";
 import { useCategoryProducts } from "../useCategoryProducts";
 
-jest.mock("@/hooks", () => ({
-  ...jest.requireActual("@/hooks"),
-  ...jest.requireActual("@/hooks"),
-  useApiQuery: jest.fn((opts: any) => {
-    opts.queryFn();
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn((opts: any) => {
+    if (opts.enabled !== false) opts.queryFn?.();
     return { data: null, isLoading: false, error: null, refetch: jest.fn() };
   }),
 }));
 
 jest.mock("@/services", () => ({
   categoryService: {
+    getBySlug: jest.fn().mockResolvedValue({ data: null }),
     list: jest.fn().mockResolvedValue({ data: [] }),
   },
   productService: {
@@ -33,7 +32,7 @@ jest.mock("@/services", () => ({
   },
 }));
 
-const { useApiQuery } = require("@/hooks");
+const { useQuery } = require("@tanstack/react-query");
 const { categoryService, productService } = require("@/services");
 
 const defaultOptions = {
@@ -46,17 +45,32 @@ const defaultOptions = {
 describe("useCategoryProducts", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
+      if (opts.enabled !== false) opts.queryFn?.();
+      return { data: null, isLoading: false, error: null, refetch: jest.fn() };
+    });
   });
 
-  it("queries categoryService.list with flat=true", () => {
+  it("queries categoryService.getBySlug with the slug", () => {
     renderHook(() => useCategoryProducts("electronics", defaultOptions));
-    expect(categoryService.list).toHaveBeenCalledWith("flat=true");
-    expect(useApiQuery).toHaveBeenCalledWith(
-      expect.objectContaining({ queryKey: ["categories", "flat"] }),
+    expect(categoryService.getBySlug).toHaveBeenCalledWith("electronics");
+    expect(useQuery).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryKey: ["categories", "slug", "electronics"],
+      }),
     );
   });
 
-  it("queries productService.list for products", () => {
+  it("queries productService.list when category is available", () => {
+    const mockCat = { id: "cat-1", name: "Electronics", slug: "electronics" };
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
+      if (opts.queryKey[1] === "slug") {
+        opts.queryFn?.();
+        return { data: { data: mockCat }, isLoading: false, error: null };
+      }
+      opts.queryFn?.();
+      return { data: null, isLoading: false, error: null };
+    });
     renderHook(() => useCategoryProducts("electronics", defaultOptions));
     expect(productService.list).toHaveBeenCalled();
   });
@@ -70,18 +84,17 @@ describe("useCategoryProducts", () => {
     expect(result.current.totalProducts).toBe(0);
   });
 
-  it("resolves category from flat category list by slug", () => {
+  it("resolves category from getBySlug response", () => {
     const mockCat = { id: "cat-1", name: "Electronics", slug: "electronics" };
-    (useApiQuery as jest.Mock).mockImplementation((opts: any) => {
-      if (opts.queryKey[0] === "categories") {
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
+      if (opts.queryKey[1] === "slug") {
         return {
-          data: { data: [mockCat] },
+          data: { data: mockCat },
           isLoading: false,
           error: null,
-          refetch: jest.fn(),
         };
       }
-      return { data: null, isLoading: false, error: null, refetch: jest.fn() };
+      return { data: null, isLoading: false, error: null };
     });
     const { result } = renderHook(() =>
       useCategoryProducts("electronics", defaultOptions),

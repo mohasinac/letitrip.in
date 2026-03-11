@@ -31,3 +31,5 @@ export type { PayoutSummary } from "./SellerPayoutStats";
 export type { PayoutRecord } from "./SellerPayoutHistoryTable";
 export { PAYOUT_TABLE_COLUMNS } from "./PayoutTableColumns";
 export type { PayoutStatus, PayoutMethod } from "./PayoutTableColumns";
+export { SellerAnalyticsView } from "./SellerAnalyticsView";
+export { SellerPayoutsView } from "./SellerPayoutsView";

@@ -13,13 +13,14 @@ import { useUserOrders } from "../useUserOrders";
 
 const mockUser = { uid: "user-1", email: "user@example.com" };
 
-jest.mock("@/hooks", () => ({
-  ...jest.requireActual("@/hooks"),
-  ...jest.requireActual("@/hooks"),
-  useApiQuery: jest.fn((opts: any) => {
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn((opts: any) => {
     if (opts.enabled !== false) opts.queryFn();
     return { data: null, isLoading: false, error: null, refetch: jest.fn() };
   }),
+}));
+
+jest.mock("@/hooks", () => ({
   useAuth: jest.fn(() => ({ user: mockUser, loading: false })),
 }));
 
@@ -31,14 +32,15 @@ jest.mock("@/services", () => ({
   },
 }));
 
-const { useApiQuery, useAuth } = require("@/hooks");
+const { useQuery } = require("@tanstack/react-query");
+const { useAuth } = require("@/hooks");
 const { orderService } = require("@/services");
 
 describe("useUserOrders", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useAuth as jest.Mock).mockReturnValue({ user: mockUser, loading: false });
-    (useApiQuery as jest.Mock).mockImplementation((opts: any) => {
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
       if (opts.enabled !== false) opts.queryFn();
       return { data: null, isLoading: false, error: null, refetch: jest.fn() };
     });
@@ -56,7 +58,7 @@ describe("useUserOrders", () => {
 
   it("uses queryKey ['user-orders', ''] when no params", () => {
     renderHook(() => useUserOrders());
-    expect(useApiQuery).toHaveBeenCalledWith(
+    expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({ queryKey: ["user-orders", ""] }),
     );
   });

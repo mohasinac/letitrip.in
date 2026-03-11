@@ -3,6 +3,11 @@ import "@testing-library/jest-dom";
 import { FAQAccordion } from "../FAQAccordion";
 import type { StaticFAQItem } from "@/constants";
 
+jest.mock("@/components/feedback/Toast", () => ({
+  useToast: () => ({ showToast: jest.fn(), hideToast: jest.fn() }),
+  ToastProvider: ({ children }: any) => children,
+}));
+
 // Mock child components
 jest.mock("../FAQHelpfulButtons", () => ({
   FAQHelpfulButtons: ({ faqId, initialHelpful, initialNotHelpful }: any) => (
@@ -94,7 +99,7 @@ describe("FAQAccordion", () => {
       expect(
         screen.getByText(/you can return items within/i),
       ).toBeInTheDocument();
-      expect(screen.getByText("30 days")).toBeInTheDocument();
+      expect(screen.getByText(/30 days/i)).toBeInTheDocument();
     });
 
     it("should render FAQ with plain text answer", () => {

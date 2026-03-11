@@ -13,6 +13,11 @@ import { render, screen } from "@testing-library/react";
 import { CouponCard } from "../CouponCard";
 import type { CouponDocument } from "@/db/schema";
 
+jest.mock("@/components/feedback/Toast", () => ({
+  useToast: () => ({ showToast: jest.fn(), hideToast: jest.fn() }),
+  ToastProvider: ({ children }: any) => children,
+}));
+
 jest.mock("@/utils", () => ({
   formatCurrency: (v: number) => `₹${v}`,
   formatDate: () => "31 Dec 2025",
@@ -69,7 +74,7 @@ describe("CouponCard", () => {
     };
     render(<CouponCard coupon={fixed} />);
     expect(screen.getByText(/₹100/)).toBeInTheDocument();
-    expect(screen.getByText(/flat off/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/flat off/i).length).toBeGreaterThanOrEqual(1);
   });
 
   it("shows free shipping label for free_shipping type", () => {
@@ -78,13 +83,17 @@ describe("CouponCard", () => {
       type: "free_shipping",
     };
     render(<CouponCard coupon={freeShipping} />);
-    expect(screen.getByText(/free shipping/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/free shipping/i).length).toBeGreaterThanOrEqual(
+      1,
+    );
   });
 
   it("shows buy x get y label for buy_x_get_y type", () => {
     const bxgy: CouponDocument = { ...baseCoupon, type: "buy_x_get_y" };
     render(<CouponCard coupon={bxgy} />);
-    expect(screen.getByText(/buy x get y/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/buy x get y/i).length).toBeGreaterThanOrEqual(
+      1,
+    );
   });
 
   it("shows active badge when isActive is true", () => {

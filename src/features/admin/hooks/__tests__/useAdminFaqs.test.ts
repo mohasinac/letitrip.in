@@ -8,43 +8,42 @@
 import { renderHook } from "@testing-library/react";
 import { useAdminFaqs } from "../useAdminFaqs";
 
-jest.mock("@/hooks", () => ({
-  ...jest.requireActual("@/hooks"),
-  ...jest.requireActual("@/hooks"),
-  useApiQuery: jest.fn((opts: any) => {
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn((opts: any) => {
     opts.queryFn();
     return { data: null, isLoading: false, error: null, refetch: jest.fn() };
   }),
-  useApiMutation: jest.fn((opts: any) => ({
+  useMutation: jest.fn((opts: any) => ({
     mutate: (data: unknown) => opts.mutationFn(data),
     isPending: false,
     error: null,
   })),
+  useQueryClient: jest.fn(() => ({ invalidateQueries: jest.fn() })),
 }));
 
 jest.mock("@/services", () => ({
   faqService: {
     list: jest.fn().mockResolvedValue({ items: [], total: 0 }),
-    create: jest.fn().mockResolvedValue({}),
-    update: jest.fn().mockResolvedValue({}),
-    delete: jest.fn().mockResolvedValue({}),
   },
 }));
 
-const { useApiQuery, useApiMutation } = require("@/hooks");
+jest.mock("@/actions", () => ({
+  adminCreateFaqAction: jest.fn().mockResolvedValue({}),
+  adminUpdateFaqAction: jest.fn().mockResolvedValue({}),
+  adminDeleteFaqAction: jest.fn().mockResolvedValue({}),
+}));
+
+const { useQuery } = require("@tanstack/react-query");
 const { faqService } = require("@/services");
+const { adminCreateFaqAction, adminDeleteFaqAction } = require("@/actions");
 
 describe("useAdminFaqs", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useApiQuery as jest.Mock).mockImplementation((opts: any) => {
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
       opts.queryFn();
       return { data: null, isLoading: false };
     });
-    (useApiMutation as jest.Mock).mockImplementation((opts: any) => ({
-      mutate: (data: unknown) => opts.mutationFn(data),
-      isPending: false,
-    }));
   });
 
   it("calls faqService.list with paramsString", () => {
@@ -54,20 +53,20 @@ describe("useAdminFaqs", () => {
 
   it("uses queryKey ['faqs', 'list', paramsString]", () => {
     renderHook(() => useAdminFaqs("page=1"));
-    expect(useApiQuery).toHaveBeenCalledWith(
+    expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({ queryKey: ["faqs", "list", "page=1"] }),
     );
   });
 
-  it("createMutation calls faqService.create", () => {
+  it("createMutation calls adminCreateFaqAction", () => {
     const { result } = renderHook(() => useAdminFaqs(""));
     result.current.createMutation.mutate({ question: "Q?" });
-    expect(faqService.create).toHaveBeenCalledWith({ question: "Q?" });
+    expect(adminCreateFaqAction).toHaveBeenCalledWith({ question: "Q?" });
   });
 
-  it("deleteMutation calls faqService.delete with id", () => {
+  it("deleteMutation calls adminDeleteFaqAction with id", () => {
     const { result } = renderHook(() => useAdminFaqs(""));
     result.current.deleteMutation.mutate("faq-1");
-    expect(faqService.delete).toHaveBeenCalledWith("faq-1");
+    expect(adminDeleteFaqAction).toHaveBeenCalledWith("faq-1");
   });
 });

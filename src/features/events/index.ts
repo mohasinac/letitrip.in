@@ -38,6 +38,7 @@ export { OfferConfigForm } from "./components/EventTypeConfig/OfferConfigForm";
 export { PollConfigForm } from "./components/EventTypeConfig/PollConfigForm";
 export { SurveyConfigForm } from "./components/EventTypeConfig/SurveyConfigForm";
 export { FeedbackConfigForm } from "./components/EventTypeConfig/FeedbackConfigForm";
+export { AdminEventEntriesView } from "./components/AdminEventEntriesView";
 
 // Public-facing components
 export { EventCard } from "@/components";

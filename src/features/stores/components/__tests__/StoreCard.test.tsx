@@ -11,8 +11,8 @@ import type { StoreListItem } from "@/types/stores";
 jest.mock("next-intl", () => ({
   useTranslations: () => (key: string, params?: Record<string, unknown>) => {
     const map: Record<string, string> = {
-      availableProducts: "Available Products",
-      itemsSold: `${params?.count ?? 0} sold`,
+      productsCount: `${params?.count ?? 0} products`,
+      sellerBadge: "Verified Seller",
     };
     return map[key] ?? key;
   },
@@ -47,6 +47,7 @@ jest.mock("@/i18n/navigation", () => ({
 
 const baseStore: StoreListItem = {
   uid: "seller-1",
+  ownerId: "seller-1",
   storeSlug: "himalaya-treks",
   displayName: "Anand Kumar",
   storeName: "Himalaya Treks",
@@ -79,12 +80,12 @@ describe("StoreCard", () => {
 
   it("renders product count", () => {
     render(<StoreCard store={baseStore} />);
-    expect(screen.getByText(/Available Products/i)).toBeInTheDocument();
+    expect(screen.getByText(/42 products/i)).toBeInTheDocument();
   });
 
-  it("renders reviews sold count", () => {
+  it("renders seller badge", () => {
     render(<StoreCard store={baseStore} />);
-    expect(screen.getByText("18 sold")).toBeInTheDocument();
+    expect(screen.getByText(/Verified Seller/i)).toBeInTheDocument();
   });
 
   it("renders a link to the store page", () => {

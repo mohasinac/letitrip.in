@@ -1,11 +1,8 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import {
-  FAQCategorySidebar,
-  FAQ_CATEGORIES,
-  FAQCategoryKey,
-} from "../FAQCategorySidebar";
+import { FAQCategorySidebar } from "../FAQCategorySidebar";
+import { FAQ_CATEGORIES, type FAQCategoryKey } from "@/constants";
 
 // Mock Next.js Link
 jest.mock("next/link", () => {
@@ -81,8 +78,18 @@ describe("FAQCategorySidebar", () => {
         />,
       );
 
-      Object.entries(FAQ_CATEGORIES).forEach(([, category]) => {
-        expect(screen.getByText(category.label)).toBeInTheDocument();
+      // Check i18n translated labels (from en.json faq.category.*)
+      const translatedLabels: Record<string, string> = {
+        general: "General",
+        products: "Products",
+        shipping: "Shipping & Delivery",
+        returns: "Returns & Refunds",
+        payment: "Payment",
+        account: "Account & Security",
+        sellers: "Sellers",
+      };
+      Object.keys(FAQ_CATEGORIES).forEach((key) => {
+        expect(screen.getByText(translatedLabels[key])).toBeInTheDocument();
       });
     });
 
@@ -175,9 +182,7 @@ describe("FAQCategorySidebar", () => {
       );
 
       // Test products category
-      const productsButton = screen
-        .getByText("Products & Auctions")
-        .closest("a");
+      const productsButton = screen.getByText("Products").closest("a");
       fireEvent.click(productsButton!);
       expect(mockOnCategorySelect).toHaveBeenCalledWith("products");
 
@@ -189,7 +194,7 @@ describe("FAQCategorySidebar", () => {
       expect(mockOnCategorySelect).toHaveBeenCalledWith("shipping");
 
       // Test sellers category
-      const sellersButton = screen.getByText("For Sellers").closest("a");
+      const sellersButton = screen.getByText("Sellers").closest("a");
       fireEvent.click(sellersButton!);
       expect(mockOnCategorySelect).toHaveBeenCalledWith("sellers");
     });
@@ -231,9 +236,7 @@ describe("FAQCategorySidebar", () => {
         />,
       );
 
-      const productsButton = screen
-        .getByText("Products & Auctions")
-        .closest("a");
+      const productsButton = screen.getByText("Products").closest("a");
       expect(productsButton).not.toHaveClass("font-medium");
     });
 
@@ -367,9 +370,7 @@ describe("FAQCategorySidebar", () => {
       const shippingButton = screen
         .getByText("Shipping & Delivery")
         .closest("a");
-      const productsButton = screen
-        .getByText("Products & Auctions")
-        .closest("a");
+      const productsButton = screen.getByText("Products").closest("a");
 
       fireEvent.click(generalButton!);
       fireEvent.click(shippingButton!);

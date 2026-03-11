@@ -29,8 +29,12 @@ jest.mock("next/navigation", () => ({
   }),
 }));
 
+jest.mock("@/components/feedback/Toast", () => ({
+  useToast: () => ({ showToast: jest.fn(), hideToast: jest.fn() }),
+  ToastProvider: ({ children }: any) => children,
+}));
+
 jest.mock("@/hooks", () => ({
-  ...jest.requireActual("@/hooks"),
   ...jest.requireActual("@/hooks"),
   useBreakpoint: () => ({
     isMobile: false,

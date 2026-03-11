@@ -1,19 +1,24 @@
 import { renderHook } from "@testing-library/react";
 import { useSellerPayoutSettings } from "../useSellerPayoutSettings";
 
-jest.mock("@/hooks", () => ({
-  ...jest.requireActual("@/hooks"),
-  ...jest.requireActual("@/hooks"),
-  useApiQuery: jest.fn(() => ({
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn(() => ({
     data: undefined,
     isLoading: false,
     error: null,
     refetch: jest.fn(),
   })),
-  useApiMutation: jest.fn(() => ({
+  useMutation: jest.fn(() => ({
     mutate: jest.fn(),
-    isLoading: false,
+    mutateAsync: jest.fn(),
+    isPending: false,
+    error: null,
   })),
+  useQueryClient: jest.fn(() => ({ invalidateQueries: jest.fn() })),
+}));
+
+jest.mock("@/hooks", () => ({
+  useAuth: jest.fn(() => ({ user: { uid: "user-1" }, loading: false })),
   useMessage: jest.fn(() => ({ showSuccess: jest.fn(), showError: jest.fn() })),
 }));
 
@@ -31,7 +36,7 @@ jest.mock("@/services", () => ({
 describe("useSellerPayoutSettings", () => {
   it("returns default state when no data", () => {
     const { result } = renderHook(() => useSellerPayoutSettings());
-    expect(result.current.payoutDetails).toBeUndefined();
+    expect(result.current.payoutDetails).toBeNull();
     expect(result.current.isConfigured).toBe(false);
     expect(result.current.isLoading).toBe(false);
   });

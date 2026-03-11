@@ -8,43 +8,45 @@
 import { renderHook } from "@testing-library/react";
 import { useAdminSections } from "../useAdminSections";
 
-jest.mock("@/hooks", () => ({
-  ...jest.requireActual("@/hooks"),
-  ...jest.requireActual("@/hooks"),
-  useApiQuery: jest.fn((opts: any) => {
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn((opts: any) => {
     opts.queryFn();
     return { data: null, isLoading: false, error: null, refetch: jest.fn() };
   }),
-  useApiMutation: jest.fn((opts: any) => ({
+  useMutation: jest.fn((opts: any) => ({
     mutate: (data: unknown) => opts.mutationFn(data),
     isPending: false,
     error: null,
   })),
+  useQueryClient: jest.fn(() => ({ invalidateQueries: jest.fn() })),
 }));
 
 jest.mock("@/services", () => ({
   homepageSectionsService: {
     list: jest.fn().mockResolvedValue({ sections: [] }),
-    create: jest.fn().mockResolvedValue({}),
-    update: jest.fn().mockResolvedValue({}),
-    delete: jest.fn().mockResolvedValue({}),
   },
 }));
 
-const { useApiQuery, useApiMutation } = require("@/hooks");
+jest.mock("@/actions", () => ({
+  createHomepageSectionAction: jest.fn().mockResolvedValue({}),
+  updateHomepageSectionAction: jest.fn().mockResolvedValue({}),
+  deleteHomepageSectionAction: jest.fn().mockResolvedValue({}),
+}));
+
+const { useQuery } = require("@tanstack/react-query");
 const { homepageSectionsService } = require("@/services");
+const {
+  createHomepageSectionAction,
+  deleteHomepageSectionAction,
+} = require("@/actions");
 
 describe("useAdminSections", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useApiQuery as jest.Mock).mockImplementation((opts: any) => {
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
       opts.queryFn();
       return { data: null, isLoading: false };
     });
-    (useApiMutation as jest.Mock).mockImplementation((opts: any) => ({
-      mutate: (data: unknown) => opts.mutationFn(data),
-      isPending: false,
-    }));
   });
 
   it("calls homepageSectionsService.list via queryFn", () => {
@@ -54,22 +56,22 @@ describe("useAdminSections", () => {
 
   it("uses queryKey ['homepage-sections', 'list']", () => {
     renderHook(() => useAdminSections());
-    expect(useApiQuery).toHaveBeenCalledWith(
+    expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({ queryKey: ["homepage-sections", "list"] }),
     );
   });
 
-  it("createMutation calls homepageSectionsService.create", () => {
+  it("createMutation calls createHomepageSectionAction", () => {
     const { result } = renderHook(() => useAdminSections());
     result.current.createMutation.mutate({ type: "welcome" });
-    expect(homepageSectionsService.create).toHaveBeenCalledWith({
+    expect(createHomepageSectionAction).toHaveBeenCalledWith({
       type: "welcome",
     });
   });
 
-  it("deleteMutation calls homepageSectionsService.delete with id", () => {
+  it("deleteMutation calls deleteHomepageSectionAction with id", () => {
     const { result } = renderHook(() => useAdminSections());
     result.current.deleteMutation.mutate("sec-1");
-    expect(homepageSectionsService.delete).toHaveBeenCalledWith("sec-1");
+    expect(deleteHomepageSectionAction).toHaveBeenCalledWith("sec-1");
   });
 });

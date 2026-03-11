@@ -8,6 +8,11 @@
 import { renderHook, act } from "@testing-library/react";
 import { useMessage } from "../useMessage";
 
+jest.mock("@/components/feedback/Toast", () => ({
+  useToast: () => ({ showToast: jest.fn(), hideToast: jest.fn() }),
+  ToastProvider: ({ children }: any) => children,
+}));
+
 describe("useMessage", () => {
   beforeEach(() => {
     jest.useFakeTimers();

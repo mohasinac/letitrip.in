@@ -2,6 +2,28 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { ProductGrid } from "../ProductGrid";
 
+jest.mock("@/components/feedback/Toast", () => ({
+  useToast: () => ({ showToast: jest.fn(), hideToast: jest.fn() }),
+  ToastProvider: ({ children }: any) => children,
+}));
+
+jest.mock("@/hooks", () => ({
+  ...jest.requireActual("@/hooks"),
+  useAuth: () => ({ user: null, loading: false }),
+  useMessage: () => ({
+    message: null,
+    showSuccess: jest.fn(),
+    showError: jest.fn(),
+    clearMessage: jest.fn(),
+  }),
+  useAddToCart: () => ({ mutate: jest.fn(), isPending: false }),
+}));
+
+jest.mock("@/contexts", () => ({
+  ...jest.requireActual("@/contexts"),
+  useAuth: () => ({ user: null, loading: false }),
+}));
+
 jest.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
 }));
@@ -22,7 +44,9 @@ const mockProduct = {
   currency: "INR",
   mainImage: "/img.jpg",
   images: [] as string[],
-  video: undefined as { url: string; thumbnailUrl: string; duration: number } | undefined,
+  video: undefined as
+    | { url: string; thumbnailUrl: string; duration: number }
+    | undefined,
   status: "published" as const,
   featured: false,
   isAuction: false,

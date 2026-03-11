@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import type React from "react";
-import { AdminTabs } from "@/components";
+import AdminTabs from "../../../features/admin/components/AdminTabs";
 
 // Mock Next.js navigation
 jest.mock("next/navigation", () => ({

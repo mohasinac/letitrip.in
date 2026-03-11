@@ -8,13 +8,12 @@
 import { renderHook } from "@testing-library/react";
 import { useAdminAnalytics } from "../useAdminAnalytics";
 
-jest.mock("@/hooks", () => ({
-  ...jest.requireActual("@/hooks"),
-  ...jest.requireActual("@/hooks"),
-  useApiQuery: jest.fn((opts: any) => {
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn((opts: any) => {
     opts.queryFn();
     return { data: null, isLoading: false, error: null, refetch: jest.fn() };
   }),
+  useQueryClient: jest.fn(() => ({ invalidateQueries: jest.fn() })),
 }));
 
 jest.mock("@/services", () => ({
@@ -23,13 +22,13 @@ jest.mock("@/services", () => ({
   },
 }));
 
-const { useApiQuery } = require("@/hooks");
+const { useQuery } = require("@tanstack/react-query");
 const { adminService } = require("@/services");
 
 describe("useAdminAnalytics", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useApiQuery as jest.Mock).mockImplementation((opts: any) => {
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
       opts.queryFn();
       return { data: null, isLoading: false };
     });
@@ -42,7 +41,7 @@ describe("useAdminAnalytics", () => {
 
   it("uses queryKey ['admin-analytics']", () => {
     renderHook(() => useAdminAnalytics());
-    expect(useApiQuery).toHaveBeenCalledWith(
+    expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({ queryKey: ["admin-analytics"] }),
     );
   });

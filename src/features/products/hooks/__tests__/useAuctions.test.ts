@@ -11,10 +11,8 @@
 import { renderHook } from "@testing-library/react";
 import { useAuctions } from "../useAuctions";
 
-jest.mock("@/hooks", () => ({
-  ...jest.requireActual("@/hooks"),
-  ...jest.requireActual("@/hooks"),
-  useApiQuery: jest.fn((opts: any) => {
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn((opts: any) => {
     opts.queryFn();
     return { data: null, isLoading: false, error: null, refetch: jest.fn() };
   }),
@@ -29,7 +27,7 @@ jest.mock("@/services", () => ({
   },
 }));
 
-const { useApiQuery } = require("@/hooks");
+const { useQuery } = require("@tanstack/react-query");
 const { productService } = require("@/services");
 
 describe("useAuctions", () => {
@@ -51,7 +49,7 @@ describe("useAuctions", () => {
 
   it("uses queryKey ['auctions', ''] when no params", () => {
     renderHook(() => useAuctions());
-    expect(useApiQuery).toHaveBeenCalledWith(
+    expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({ queryKey: ["auctions", ""] }),
     );
   });
@@ -68,7 +66,7 @@ describe("useAuctions", () => {
       data: [{ id: "a1" }],
       meta: { page: 1, limit: 25, total: 5, totalPages: 1 },
     };
-    (useApiQuery as jest.Mock).mockReturnValue({
+    (useQuery as jest.Mock).mockReturnValue({
       data: mockData,
       isLoading: false,
       error: null,

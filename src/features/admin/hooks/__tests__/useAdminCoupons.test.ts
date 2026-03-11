@@ -8,43 +8,45 @@
 import { renderHook } from "@testing-library/react";
 import { useAdminCoupons } from "../useAdminCoupons";
 
-jest.mock("@/hooks", () => ({
-  ...jest.requireActual("@/hooks"),
-  ...jest.requireActual("@/hooks"),
-  useApiQuery: jest.fn((opts: any) => {
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn((opts: any) => {
     opts.queryFn();
     return { data: null, isLoading: false, error: null, refetch: jest.fn() };
   }),
-  useApiMutation: jest.fn((opts: any) => ({
+  useMutation: jest.fn((opts: any) => ({
     mutate: (data: unknown) => opts.mutationFn(data),
     isPending: false,
     error: null,
   })),
+  useQueryClient: jest.fn(() => ({ invalidateQueries: jest.fn() })),
 }));
 
 jest.mock("@/services", () => ({
   couponService: {
     list: jest.fn().mockResolvedValue({ coupons: [], meta: {} }),
-    create: jest.fn().mockResolvedValue({}),
-    update: jest.fn().mockResolvedValue({}),
-    delete: jest.fn().mockResolvedValue({}),
   },
 }));
 
-const { useApiQuery, useApiMutation } = require("@/hooks");
+jest.mock("@/actions", () => ({
+  adminCreateCouponAction: jest.fn().mockResolvedValue({}),
+  adminUpdateCouponAction: jest.fn().mockResolvedValue({}),
+  adminDeleteCouponAction: jest.fn().mockResolvedValue({}),
+}));
+
+const { useQuery } = require("@tanstack/react-query");
 const { couponService } = require("@/services");
+const {
+  adminCreateCouponAction,
+  adminDeleteCouponAction,
+} = require("@/actions");
 
 describe("useAdminCoupons", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useApiQuery as jest.Mock).mockImplementation((opts: any) => {
+    (useQuery as jest.Mock).mockImplementation((opts: any) => {
       opts.queryFn();
       return { data: null, isLoading: false };
     });
-    (useApiMutation as jest.Mock).mockImplementation((opts: any) => ({
-      mutate: (data: unknown) => opts.mutationFn(data),
-      isPending: false,
-    }));
   });
 
   it("calls couponService.list with sieveParams", () => {
@@ -54,20 +56,20 @@ describe("useAdminCoupons", () => {
 
   it("uses queryKey ['admin', 'coupons', sieveParams]", () => {
     renderHook(() => useAdminCoupons("page=1"));
-    expect(useApiQuery).toHaveBeenCalledWith(
+    expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({ queryKey: ["admin", "coupons", "page=1"] }),
     );
   });
 
-  it("createMutation calls couponService.create", () => {
+  it("createMutation calls adminCreateCouponAction", () => {
     const { result } = renderHook(() => useAdminCoupons(""));
     result.current.createMutation.mutate({ code: "SAVE10" });
-    expect(couponService.create).toHaveBeenCalledWith({ code: "SAVE10" });
+    expect(adminCreateCouponAction).toHaveBeenCalledWith({ code: "SAVE10" });
   });
 
-  it("deleteMutation calls couponService.delete with id", () => {
+  it("deleteMutation calls adminDeleteCouponAction with id", () => {
     const { result } = renderHook(() => useAdminCoupons(""));
     result.current.deleteMutation.mutate("coup-1");
-    expect(couponService.delete).toHaveBeenCalledWith("coup-1");
+    expect(adminDeleteCouponAction).toHaveBeenCalledWith("coup-1");
   });
 });
