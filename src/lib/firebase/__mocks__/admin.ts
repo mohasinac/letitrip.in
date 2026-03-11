@@ -32,6 +32,7 @@ export const getAdminDb = jest.fn(() => ({
   doc: jest.fn(),
   runTransaction: jest.fn(),
   batch: jest.fn(),
+  settings: jest.fn(),
 }));
 export const getStorage = jest.fn(() => ({
   bucket: jest.fn(() => ({

@@ -26,6 +26,7 @@ const mockIncrementViews = jest.fn();
 
 jest.mock("@/repositories", () => ({
   carouselRepository: {
+    list: (...args: unknown[]) => mockFindAll(...args),
     findAll: (...args: unknown[]) => mockFindAll(...args),
     getActiveSlides: (...args: unknown[]) => mockGetActiveSlides(...args),
     create: (...args: unknown[]) => mockCreate(...args),
@@ -43,19 +44,15 @@ jest.mock("@/lib/security/authorization", () => ({
 }));
 
 jest.mock("@/lib/validation/schemas", () => ({
-  validateRequestBody: (_schema: unknown, body: any) => {
-    if (body && body.title && body.media) {
-      return { success: true, data: body };
-    }
-    return {
-      success: false,
-      errors: {
-        format: () => [{ path: ["title"], message: "Title is required" }],
-      },
-    };
+  carouselCreateSchema: {
+    safeParse: (data: any) =>
+      data && data.title && data.media
+        ? { success: true, data }
+        : {
+            success: false,
+            error: { issues: [{ path: ["title"], message: "Required" }] },
+          },
   },
-  formatZodErrors: (errors: any) => errors?.format?.() || [],
-  carouselCreateSchema: {},
 }));
 
 jest.mock("@/lib/errors", () => {
@@ -149,7 +146,10 @@ describe("Carousel API - GET /api/carousel", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGetActiveSlides.mockResolvedValue(mockSlides.filter((s) => s.active));
-    mockFindAll.mockResolvedValue([...mockSlides]);
+    mockFindAll.mockResolvedValue({
+      items: [...mockSlides],
+      total: mockSlides.length,
+    });
     mockGetUserFromRequest.mockResolvedValue(null);
   });
 

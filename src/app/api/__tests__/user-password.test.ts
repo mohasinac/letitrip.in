@@ -132,7 +132,7 @@ describe("User Change Password API — POST /api/user/change-password", () => {
       method: "POST",
       body: {
         currentPassword: "OldPassword123",
-        newPassword: "NewSecure456",
+        newPassword: "NewSecure456!",
       },
     });
     const res = await POST(req);
@@ -147,14 +147,14 @@ describe("User Change Password API — POST /api/user/change-password", () => {
       method: "POST",
       body: {
         currentPassword: "OldPassword123",
-        newPassword: "NewSecure456",
+        newPassword: "NewSecure456!",
       },
     });
     await POST(req);
 
     expect(mockUpdateUser).toHaveBeenCalledWith(
       DECODED_TOKEN.uid,
-      expect.objectContaining({ password: "NewSecure456" }),
+      expect.objectContaining({ password: "NewSecure456!" }),
     );
   });
 
@@ -207,7 +207,7 @@ describe("User Change Password API — POST /api/user/change-password", () => {
       method: "POST",
       body: {
         currentPassword: "OldPassword123",
-        newPassword: "NewSecure456",
+        newPassword: "NewSecure456!",
       },
     });
     const res = await POST(req);

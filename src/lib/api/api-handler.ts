@@ -37,7 +37,7 @@ import {
   requireRoleFromRequest,
 } from "@/lib/security/authorization";
 import { handleApiError } from "@/lib/errors/error-handler";
-import { ApiErrors } from "@/lib/api-response";
+import { errorResponse } from "@/lib/api-response";
 import { serverLogger } from "@/lib/server-logger";
 import { UI_LABELS } from "@/constants";
 import type { UserRole } from "@/types/auth";
@@ -112,17 +112,22 @@ export function createApiHandler<
 
       // 3. Body validation
       let validatedBody: TInput | undefined;
-      if (options.schema) {
+      if (
+        options.schema &&
+        typeof (options.schema as any).safeParse === "function"
+      ) {
         const body = await request.json();
         const result = options.schema.safeParse(body);
         if (!result.success) {
-          return ApiErrors.validationError(result.error.issues);
+          return errorResponse("Validation failed", 400, result.error.issues);
         }
         validatedBody = result.data;
       }
 
       // 4. Resolve dynamic route params
-      const resolvedParams = await context.params;
+      const resolvedParams = (context as any)?.params
+        ? await context.params
+        : undefined;
 
       const response = await options.handler({
         request,

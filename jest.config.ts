@@ -12,13 +12,24 @@ const config: Config = {
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   moduleNameMapper: {
-    // Global stubs for the Firebase Admin chain — prevents 'SyntaxError: Unexpected token export'
-    // in tests that do not explicitly mock these modules. Tests that call jest.mock() with a
-    // factory function will override these stubs and take precedence.
-    // NOTE: These must come BEFORE the generic @/ alias so they are not resolved to the real files.
+    // ─── Firebase Admin SDK — intercept at the npm package level ────────────────
+    // Prevents "SyntaxError: Unexpected token 'export'" from jwks-rsa / firebase-admin
+    // ESM files. Tests that call jest.mock("firebase-admin/...", ...) with a factory
+    // will override these stubs and take precedence.
+    // NOTE: These must come BEFORE the generic @/ alias so the more-specific patterns fire first.
+    "^firebase-admin/app$": "<rootDir>/src/__mocks__/firebase-admin-app.ts",
+    "^firebase-admin/auth$": "<rootDir>/src/__mocks__/firebase-admin-auth.ts",
+    "^firebase-admin/firestore$":
+      "<rootDir>/src/__mocks__/firebase-admin-firestore.ts",
+    "^firebase-admin/storage$":
+      "<rootDir>/src/__mocks__/firebase-admin-storage.ts",
+    "^firebase-admin/database$":
+      "<rootDir>/src/__mocks__/firebase-admin-database.ts",
+    // High-level @/ stubs — intercept when used via @/ alias (comes before generic @/)
     "^@/lib/firebase/admin$": "<rootDir>/src/lib/firebase/__mocks__/admin.ts",
     "^@/lib/firebase/auth-server$":
       "<rootDir>/src/lib/firebase/__mocks__/auth-server.ts",
+    // Generic @/ alias — must be last so the specific patterns above win
     "^@/(.*)$": "<rootDir>/src/$1",
   },
   testMatch: [

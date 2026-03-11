@@ -101,7 +101,7 @@ describe("Auth API — PUT /api/auth/reset-password", () => {
   it("returns 200 for a valid token and new password", async () => {
     const req = buildRequest("/api/auth/reset-password", {
       method: "PUT",
-      body: { token: "valid-oob-token", newPassword: "newSecure123" },
+      body: { token: "valid-oob-token", newPassword: "n3wSecure@123" },
     });
     const res = await PUT(req);
     const { status, body } = await parseResponse(res);
