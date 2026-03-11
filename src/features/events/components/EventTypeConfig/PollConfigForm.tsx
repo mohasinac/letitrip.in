@@ -14,12 +14,13 @@ interface PollConfigFormProps {
 }
 
 function generateId() {
-  return Math.random().toString(36).slice(2, 10);
+  return crypto.randomUUID();
 }
 
 type PollOption = { id: string; label: string };
 
 export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
+  const t = useTranslations("adminEvents");
   const tActions = useTranslations("actions");
   const options: PollOption[] = value.options ?? [];
 
@@ -47,7 +48,7 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
   return (
     <div className={spacing.stack}>
       <div className="space-y-2">
-        <Label>Poll Options</Label>
+        <Label>{t("pollOptionsLabel")}</Label>
         {options.map((opt, idx) => (
           <div key={opt.id} className="flex items-center gap-2">
             <div className="flex-1">
@@ -56,7 +57,7 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
                 type="text"
                 value={opt.label}
                 onChange={(e) => updateOption(opt.id, e.target.value)}
-                placeholder={`Option ${idx + 1}`}
+                placeholder={`${t("pollOptionPlaceholder")} ${idx + 1}`}
               />
             </div>
             <Button
@@ -71,24 +72,24 @@ export function PollConfigForm({ value, onChange }: PollConfigFormProps) {
           </div>
         ))}
         <Button variant="outline" size="sm" onClick={addOption} type="button">
-          + Add Option
+          {t("pollAddOption")}
         </Button>
       </div>
       <Checkbox
         id="allowMultiSelect"
         checked={value.allowMultiSelect ?? false}
         onChange={(e) => setField("allowMultiSelect", e.target.checked)}
-        label="Allow multiple selections"
+        label={t("pollAllowMultiSelect")}
       />
       <Checkbox
         id="allowComment"
         checked={value.allowComment ?? false}
         onChange={(e) => setField("allowComment", e.target.checked)}
-        label="Allow comments"
+        label={t("pollAllowComments")}
       />
       <div>
         <Label htmlFor="poll-results-visibility" className="mb-1">
-          Results Visibility
+          {t("pollResultsVisibility")}
         </Label>
         <Select
           id="poll-results-visibility"

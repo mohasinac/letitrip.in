@@ -36,7 +36,7 @@ export function AdminMediaView() {
       try {
         const result = await cropMutation.mutateAsync(data);
         const newOp: MediaOperation = {
-          id: Math.random().toString(36).substr(2, 9),
+          id: crypto.randomUUID(),
           type: "crop",
           sourceUrl: data.sourceUrl,
           status: "completed",
@@ -62,7 +62,7 @@ export function AdminMediaView() {
       try {
         const result = await trimMutation.mutateAsync(data);
         const newOp: MediaOperation = {
-          id: Math.random().toString(36).substr(2, 9),
+          id: crypto.randomUUID(),
           type: "trim",
           sourceUrl: data.sourceUrl,
           status: "completed",

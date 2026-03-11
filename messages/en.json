@@ -2730,7 +2730,19 @@
       "bannerLabel": "Banner Image URL",
       "bannerPlaceholder": "https://...",
       "titleRequired": "Title is required."
-    }
+    },
+    "formFieldsLabel": "Form Fields",
+    "fieldLabel": "Label",
+    "noFieldsYet": "No fields yet. Add one above.",
+    "fieldLabelPlaceholder": "Field label",
+    "optionsLabel": "Options (comma-separated)",
+    "optionsPlaceholder": "Option 1, Option 2, Option 3",
+    "pollOptionsLabel": "Poll Options",
+    "pollOptionPlaceholder": "Option",
+    "pollAddOption": "+ Add Option",
+    "pollAllowMultiSelect": "Allow multiple selections",
+    "pollAllowComments": "Allow comments",
+    "pollResultsVisibility": "Results Visibility"
   },
   "eventStatus": {
     "draft": "Draft",

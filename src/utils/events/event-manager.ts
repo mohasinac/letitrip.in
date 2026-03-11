@@ -36,7 +36,7 @@ class GlobalEventManager {
     if (target === window) return "window";
     if (target === document) return "document";
     if (target instanceof HTMLElement && target.id) return target.id;
-    return `element-${Math.random().toString(36).substr(2, 9)}`;
+    return `element-${crypto.randomUUID()}`;
   }
 
   /**

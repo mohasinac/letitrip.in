@@ -12,7 +12,7 @@ interface SurveyFieldBuilderProps {
 }
 
 function generateId() {
-  return Math.random().toString(36).slice(2, 10);
+  return crypto.randomUUID();
 }
 
 function emptyField(order: number): SurveyFormField {
@@ -52,7 +52,7 @@ export function SurveyFieldBuilder({
   return (
     <div className="space-y-3">
       <div className={flex.between}>
-        <Label>Form Fields</Label>
+        <Label>{t("formFieldsLabel")}</Label>
         <Button variant="outline" size="sm" onClick={addField} type="button">
           {t("addField")}
         </Button>
@@ -60,7 +60,7 @@ export function SurveyFieldBuilder({
 
       {fields.length === 0 && (
         <Text size="sm" variant="muted" className="italic">
-          No fields yet. Add one above.
+          {t("noFieldsYet")}
         </Text>
       )}
 
@@ -71,14 +71,14 @@ export function SurveyFieldBuilder({
         >
           <div className="flex items-center gap-2">
             <div className="flex-1">
-              <Label className="mb-0.5">Label</Label>
+              <Label className="mb-0.5">{t("fieldLabel")}</Label>
               <Input
                 type="text"
                 value={field.label}
                 onChange={(e) =>
                   updateField(field.id, { label: e.target.value })
                 }
-                placeholder="Field label"
+                placeholder={t("fieldLabelPlaceholder")}
               />
             </div>
             <div className="shrink-0 mt-4">
@@ -101,7 +101,7 @@ export function SurveyFieldBuilder({
             field.type === "multiselect" ||
             field.type === "radio") && (
             <div>
-              <Label className="mb-0.5">Options (comma-separated)</Label>
+              <Label className="mb-0.5">{t("optionsLabel")}</Label>
               <Input
                 type="text"
                 value={(field.options ?? []).join(", ")}
@@ -113,7 +113,7 @@ export function SurveyFieldBuilder({
                       .filter(Boolean),
                   })
                 }
-                placeholder="Option 1, Option 2, Option 3"
+                placeholder={t("optionsPlaceholder")}
               />
             </div>
           )}

@@ -93,26 +93,30 @@ export function getCouponTableColumns(
               </Span>
             );
           if (type === "free_shipping")
-            return <Span className="font-semibold">Free shipping</Span>;
-          return <Span className="font-semibold">BXGY</Span>;
+            return (
+              <Span className="font-semibold">
+                {LABELS.DISCOUNT_FREE_SHIPPING}
+              </Span>
+            );
+          return <Span className="font-semibold">{LABELS.DISCOUNT_BXGY}</Span>;
         },
       },
       {
         key: "usage",
-        header: "Usage",
+        header: LABELS.USAGE_HEADER,
         width: "12%",
         render: (coupon: CouponDocument) => (
           <Span className={`text-sm ${themed.textSecondary}`}>
             {coupon.usage.currentUsage}
             {coupon.usage.totalLimit
               ? ` / ${coupon.usage.totalLimit}`
-              : " uses"}
+              : LABELS.USAGE_SUFFIX}
           </Span>
         ),
       },
       {
         key: "validity",
-        header: "Status",
+        header: LABELS.STATUS_HEADER,
         width: "9%",
         render: (coupon: CouponDocument) => {
           const isActive = coupon.validity.isActive;
@@ -128,7 +132,11 @@ export function getCouponTableColumns(
                     : `${themed.bgSecondary} ${themed.textSecondary}`
               }`}
             >
-              {isExpired ? "Expired" : isActive ? "Active" : "Inactive"}
+              {isExpired
+                ? LABELS.STATUS_EXPIRED
+                : isActive
+                  ? LABELS.STATUS_ACTIVE
+                  : LABELS.STATUS_INACTIVE}
             </Span>
           );
         },

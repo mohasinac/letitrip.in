@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — fix(i18n/security): replace hardcoded strings in admin event forms; Math.random() → crypto.randomUUID()
+
+### Security
+
+- **`src/features/events/components/EventTypeConfig/PollConfigForm.tsx`** — Replaced `Math.random().toString(36)` with `crypto.randomUUID()` for poll option IDs.
+- **`src/features/events/components/SurveyFieldBuilder.tsx`** — Same; survey field IDs now use `crypto.randomUUID()`.
+- **`src/features/admin/components/AdminMediaView.tsx`** — `MediaOperation.id` now uses `crypto.randomUUID()` instead of `Math.random()`.
+- **`src/utils/events/event-manager.ts`** — Element tracking IDs use `crypto.randomUUID()`.
+
+### Fixed (Rule 3 — no hardcoded strings in JSX)
+
+- **`src/features/events/components/EventTypeConfig/PollConfigForm.tsx`** — `"Poll Options"`, `"Option {n}"`, `"+ Add Option"`, `"Allow multiple selections"`, `"Allow comments"`, `"Results Visibility"` replaced with `useTranslations("adminEvents")` calls.
+- **`src/features/events/components/SurveyFieldBuilder.tsx`** — `"Form Fields"`, `"Label"`, `"No fields yet. Add one above."`, `"Field label"`, `"Options (comma-separated)"`, `"Option 1, Option 2, Option 3"` replaced with `t()` calls.
+- **`src/features/admin/components/CouponTableColumns.tsx`** — `"Free shipping"`, `"BXGY"`, `"Usage"`, `" uses"`, `"Status"`, `"Expired"`, `"Active"`, `"Inactive"` replaced with `UI_LABELS.ADMIN.COUPONS.*` constants.
+
+### Added (i18n keys — all 5 locales: en, in, mh, tn, ts)
+
+- **`messages/*.json` → `adminEvents`** — Added: `formFieldsLabel`, `fieldLabel`, `noFieldsYet`, `fieldLabelPlaceholder`, `optionsLabel`, `optionsPlaceholder`, `pollOptionsLabel`, `pollOptionPlaceholder`, `pollAddOption`, `pollAllowMultiSelect`, `pollAllowComments`, `pollResultsVisibility`.
+- **`src/constants/ui.ts` → `UI_LABELS.ADMIN.COUPONS`** — Added: `DISCOUNT_FREE_SHIPPING`, `DISCOUNT_BXGY`, `USAGE_HEADER`, `USAGE_SUFFIX`, `STATUS_HEADER`, `STATUS_EXPIRED`, `STATUS_ACTIVE`, `STATUS_INACTIVE`.
+
+---
+
 ## [Unreleased] — fix(security): crypto.randomInt for OTP; remove dangerouslySetInnerHTML from static FAQ; dead session-ID duplicate removed
 
 ### Security
