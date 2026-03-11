@@ -12,6 +12,13 @@ const config: Config = {
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   moduleNameMapper: {
+    // Global stubs for the Firebase Admin chain — prevents 'SyntaxError: Unexpected token export'
+    // in tests that do not explicitly mock these modules. Tests that call jest.mock() with a
+    // factory function will override these stubs and take precedence.
+    // NOTE: These must come BEFORE the generic @/ alias so they are not resolved to the real files.
+    "^@/lib/firebase/admin$": "<rootDir>/src/lib/firebase/__mocks__/admin.ts",
+    "^@/lib/firebase/auth-server$":
+      "<rootDir>/src/lib/firebase/__mocks__/auth-server.ts",
     "^@/(.*)$": "<rootDir>/src/$1",
   },
   testMatch: [

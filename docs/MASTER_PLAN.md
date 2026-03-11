@@ -859,7 +859,7 @@ Entries to **keep** (genuine semantic tokens):
 
 ---
 
-### 4.3 Gray SafeList — Incomplete Migration
+### 4.3 Gray SafeList — Incomplete Migration ✅ Fixed 2026-03-10
 
 `tailwind.config.js` safeLists `gray-*` variants. This signals an incomplete migration from Tailwind's `gray-*` classes to the project's `neutral-*` or `slate-*` design tokens.
 

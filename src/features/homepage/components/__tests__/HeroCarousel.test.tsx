@@ -4,11 +4,12 @@ import { HeroCarousel } from "../HeroCarousel";
 
 // Mock useApiQuery and Phase 10 hooks
 const mockUseApiQuery = jest.fn();
+const mockUseMediaQuery = jest.fn().mockReturnValue(false); // default: desktop, no reduced-motion
 jest.mock("@/hooks", () => ({
   useApiQuery: (...args: unknown[]) => mockUseApiQuery(...args),
   useHeroCarousel: (...args: unknown[]) => mockUseApiQuery(...args),
   useSwipe: jest.fn(), // no-op — swipe is tested via keyboard equivalents
-  useMediaQuery: jest.fn().mockReturnValue(false), // default: no reduced-motion preference
+  useMediaQuery: (...args: unknown[]) => mockUseMediaQuery(...args),
 }));
 
 // Mock Button component
@@ -84,6 +85,26 @@ jest.mock("@/components", () => {
       },
     ),
     HorizontalScroller: Passthrough,
+    MediaImage: ({
+      src,
+      alt,
+      ...props
+    }: {
+      src?: string;
+      alt?: string;
+      [k: string]: unknown;
+    }) => <img src={src} alt={alt || ""} />,
+    MediaVideo: ({
+      src,
+      thumbnailUrl,
+      poster,
+      ...props
+    }: {
+      src?: string;
+      thumbnailUrl?: string;
+      poster?: string;
+      [k: string]: unknown;
+    }) => <video src={src} poster={thumbnailUrl ?? poster} />,
   };
 });
 
@@ -448,21 +469,18 @@ describe("HeroCarousel", () => {
   // ====================================
   describe("Mobile Behavior", () => {
     it("hides arrows on mobile", () => {
-      Object.defineProperty(window, "innerWidth", {
-        writable: true,
-        configurable: true,
-        value: 500,
-      });
+      // Simulate mobile: useMediaQuery("(max-width: 767px)") returns true
+      mockUseMediaQuery.mockImplementation(
+        (query: string) => query === "(max-width: 767px)",
+      );
       mockUseApiQuery.mockReturnValue({ data: mockSlides, isLoading: false });
       render(<HeroCarousel />);
 
-      // Trigger the resize check
-      act(() => {
-        window.dispatchEvent(new Event("resize"));
-      });
-
       expect(screen.queryByLabelText("Previous slide")).not.toBeInTheDocument();
       expect(screen.queryByLabelText("Next slide")).not.toBeInTheDocument();
+
+      // Restore default mock
+      mockUseMediaQuery.mockReturnValue(false);
     });
   });
 
