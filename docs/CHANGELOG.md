@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — XSS fix: admin form previews sanitised; Algolia hook deduplicated
+
+### Security
+
+- **`src/features/admin/components/BlogForm.tsx`** — Fixed stored XSS in readonly preview: `post.content` was passed directly to `dangerouslySetInnerHTML`. Now routed through `proseMirrorToHtml()`, which escapes text nodes and validates link `href` values before inserting into HTML.
+- **`src/features/admin/components/FaqForm.tsx`** — Same fix: `faq.answer` readonly preview now uses `proseMirrorToHtml()`.
+- **`src/features/admin/components/SectionForm.tsx`** — Same fix: `section.description` readonly preview now uses `proseMirrorToHtml()`.
+
+### Changed
+
+- **`src/features/admin/hooks/useAlgoliaSync.ts`** — Merged in `useAlgoliaSyncProducts` and `useAlgoliaSyncPages` from the dead `src/hooks/useAlgoliaSync.ts`. All Algolia hooks now live in the admin feature module.
+- **`src/features/admin/components/AdminSiteView.tsx`** — Updated import of `useAlgoliaSyncProducts`/`useAlgoliaSyncPages` from `@/hooks` → `@/features/admin` (architecture Rule 2 compliance).
+
+### Removed
+
+- **`src/hooks/useAlgoliaSync.ts`** — Deleted; was a duplicate of the admin feature hook. Callers updated to `@/features/admin`.
+- **`src/hooks/index.ts`** — Removed re-exports for the deleted `useAlgoliaSync.ts`.
+
+---
+
 ## [Unreleased] — G1 complete: All admin mutations migrated to Server Actions; G2 verified complete
 
 ### Changed (Stage G1 — Service-to-Actions Migration)

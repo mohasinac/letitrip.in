@@ -13,7 +13,7 @@ import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { AdminPageHeader, Button, Card, Text, useToast } from "@/components";
 import BackgroundSettings from "./BackgroundSettings";
-import { useAlgoliaSyncProducts, useAlgoliaSyncPages } from "@/hooks";
+import { useAlgoliaSyncProducts, useAlgoliaSyncPages } from "@/features/admin";
 import { useAdminSiteSettings } from "../hooks/useAdminSiteSettings";
 import {
   SiteBasicInfoForm,

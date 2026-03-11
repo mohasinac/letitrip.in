@@ -22,6 +22,7 @@ import {
 } from "@/components";
 import { RichTextEditor } from "./RichTextEditor";
 import { THEME_CONSTANTS } from "@/constants";
+import { proseMirrorToHtml } from "@/utils";
 import type { FAQ } from "./Faq.types";
 import { FAQ_CATEGORIES, VARIABLE_PLACEHOLDERS } from "./Faq.types";
 
@@ -106,7 +107,9 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
         {isReadonly ? (
           <Article
             className={`${THEME_CONSTANTS.patterns.adminInput} opacity-60 min-h-[150px]`}
-            dangerouslySetInnerHTML={{ __html: faq.answer || "" }}
+            dangerouslySetInnerHTML={{
+              __html: proseMirrorToHtml(faq.answer || ""),
+            }}
           />
         ) : (
           <RichTextEditor

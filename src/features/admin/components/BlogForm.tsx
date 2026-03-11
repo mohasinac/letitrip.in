@@ -19,6 +19,7 @@ import {
 import { RichTextEditor } from "./RichTextEditor";
 import { useMediaUpload } from "@/hooks";
 import { THEME_CONSTANTS } from "@/constants";
+import { proseMirrorToHtml } from "@/utils";
 import type {
   BlogPostDocument,
   BlogPostCategory,
@@ -115,7 +116,9 @@ export function BlogForm({
         {isReadonly ? (
           <div
             className="min-h-[200px] border rounded-md p-3 opacity-60 prose dark:prose-invert max-w-none"
-            dangerouslySetInnerHTML={{ __html: post.content || "" }}
+            dangerouslySetInnerHTML={{
+              __html: proseMirrorToHtml(post.content || ""),
+            }}
           />
         ) : (
           <RichTextEditor

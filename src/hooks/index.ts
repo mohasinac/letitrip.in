@@ -27,8 +27,6 @@ export type {
 export { useSellerStorefront } from "./useSellerStorefront";
 export { useForm } from "react-hook-form";
 export { useAdminStats } from "./useAdminStats";
-export { useAlgoliaSyncProducts, useAlgoliaSyncPages } from "./useAlgoliaSync";
-export type { AlgoliaSyncResult } from "./useAlgoliaSync";
 export { useMessage } from "./useMessage";
 export {
   useAdminSessions,

@@ -12,6 +12,7 @@
 import { Checkbox, FormField, Label, Textarea } from "@/components";
 import { RichTextEditor } from "./RichTextEditor";
 import { THEME_CONSTANTS } from "@/constants";
+import { proseMirrorToHtml } from "@/utils";
 import { useTranslations } from "next-intl";
 import type { HomepageSection } from "./Section.types";
 import { SECTION_TYPES } from "./Section.types";
@@ -197,7 +198,9 @@ export function SectionForm({
         {isReadonly ? (
           <div
             className={`${THEME_CONSTANTS.patterns.adminInput} opacity-60 min-h-[100px]`}
-            dangerouslySetInnerHTML={{ __html: section.description || "" }}
+            dangerouslySetInnerHTML={{
+              __html: proseMirrorToHtml(section.description || ""),
+            }}
           />
         ) : (
           <RichTextEditor
