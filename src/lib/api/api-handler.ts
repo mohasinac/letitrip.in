@@ -38,6 +38,7 @@ import {
 } from "@/lib/security/authorization";
 import { handleApiError } from "@/lib/errors/error-handler";
 import { ApiErrors } from "@/lib/api-response";
+import { serverLogger } from "@/lib/server-logger";
 import { UI_LABELS } from "@/constants";
 import type { UserRole } from "@/types/auth";
 import type { UserDocument } from "@/db/schema/users";
@@ -79,6 +80,7 @@ export function createApiHandler<
     request: NextRequest,
     context: { params: Promise<TParams> },
   ): Promise<NextResponse> => {
+    const startMs = performance.now();
     try {
       // 1. Rate limiting
       let rateLimitHeaders: Record<string, string> | undefined;
@@ -136,8 +138,21 @@ export function createApiHandler<
         }
       }
 
+      serverLogger.info("api.timing", {
+        method: request.method,
+        path: request.nextUrl.pathname,
+        status: response.status,
+        durationMs: Math.round(performance.now() - startMs),
+      });
+
       return response;
     } catch (error) {
+      serverLogger.error("api.timing", {
+        method: request.method,
+        path: request.nextUrl.pathname,
+        durationMs: Math.round(performance.now() - startMs),
+        error: error instanceof Error ? error.message : String(error),
+      });
       return handleApiError(error);
     }
   };

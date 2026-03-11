@@ -27,6 +27,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — feat: API timing instrumentation in createApiHandler
+
+### Added
+
+- **`src/lib/api/api-handler.ts`** — Added `performance.now()` timing around every API handler. On success logs `api.timing` with `method`, `path`, `status`, and `durationMs` via `serverLogger.info`; on unhandled error also logs `api.timing` at `serverLogger.error` level with the error message. Zero overhead for handlers that don't throw.
+
+---
+
+## [Unreleased] — refactor: Consolidate admin-only hooks into features/admin
+
+### Changed
+
+- **`src/features/admin/hooks/useAdminStats.ts`** _(new)_ — Migrated from `src/hooks/useAdminStats.ts`; admin dashboard statistics hook now lives inside the admin feature module.
+- **`src/features/admin/hooks/useAdminSessions.ts`** _(new)_ — Migrated from `src/hooks/useSessions.ts`; exports `useAdminSessions`, `useRevokeSession`, `useRevokeUserSessions`.
+- **`src/features/admin/hooks/index.ts`** — Added barrel exports for the two new hooks.
+- **`src/features/admin/components/AdminDashboardView.tsx`** — `useAdminStats` import updated to `@/features/admin`.
+- **`src/features/admin/components/AdminSessionsManager.tsx`** — Session hook imports updated to `@/features/admin`.
+- **`src/hooks/index.ts`** — Removed re-exports for the now-deleted hooks.
+
+### Removed
+
+- **`src/hooks/useAdminStats.ts`** — Deleted; moved to `features/admin/hooks/`.
+- **`src/hooks/useSessions.ts`** — Deleted; moved to `features/admin/hooks/useAdminSessions.ts`.
+
+### Fixed
+
+- **`src/features/admin/components/__tests__/AdminSessionsManager.test.tsx`** — Updated mock paths after hook migration.
+- **`src/app/[locale]/admin/dashboard/__tests__/page.test.tsx`** — Removed invalid `@/components/admin/dashboard` mock; added `AdminDashboardView` to `@/features/admin` mock.
+
+---
+
 ## [Unreleased] — G1 complete: All admin mutations migrated to Server Actions; G2 verified complete
 
 ### Changed (Stage G1 — Service-to-Actions Migration)

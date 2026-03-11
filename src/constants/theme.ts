@@ -167,17 +167,6 @@ export const THEME_CONSTANTS = {
   },
 
   /**
-   * Animation durations
-   * Standard timing for transitions and animations
-   */
-  // Animation durations
-  animation: {
-    fast: "duration-150",
-    normal: "duration-300",
-    slow: "duration-500",
-  },
-
-  /**
    * Spacing
    * Standard spacing patterns for groups and sections
    */

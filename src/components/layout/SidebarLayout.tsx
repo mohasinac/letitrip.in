@@ -70,7 +70,7 @@ export const SidebarLayout = forwardRef<HTMLElement, SidebarLayoutProps>(
             ${THEME_CONSTANTS.layout.sidebarWidth}
             ${THEME_CONSTANTS.layout.sidebarBg}
             shadow-2xl
-            transform ${THEME_CONSTANTS.animation.normal} ease-in-out
+            transform duration-300 ease-in-out
             ${THEME_CONSTANTS.zIndex.sidebar}
             ${isOpen ? "translate-x-0" : "translate-x-full"}
             flex flex-col

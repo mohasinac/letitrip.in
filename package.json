@@ -19,7 +19,10 @@
     "seed:faqs": "tsx scripts/seed-faqs.ts",
     "check:violations": "node scripts/check-violations.js",
     "fix:violations": "node scripts/fix-violations.js",
-    "fix:violations:apply": "node scripts/fix-violations.js --apply"
+    "fix:violations:apply": "node scripts/fix-violations.js --apply",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish"
   },
   "dependencies": {
     "@auth/firebase-adapter": "^2.11.1",
@@ -87,7 +90,8 @@
     "stream-browserify": "^3.0.0",
     "tailwindcss": "^3.4.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@changesets/cli": "^2.27.12"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,md}": [

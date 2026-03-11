@@ -93,22 +93,17 @@ function ProfilePage() {
 
 ### 🔒 Session Management Hooks
 
-| Hook                      | Purpose                                | Parameters       | Returns                         |
-| ------------------------- | -------------------------------------- | ---------------- | ------------------------------- |
-| `useAdminSessions()`      | Admin view of all active sessions      | -                | `{ sessions, loading, error }`  |
-| `useUserSessions(userId)` | View sessions for specific user        | `userId: string` | `{ sessions, loading, error }`  |
-| `useMySessions()`         | View current user's sessions           | -                | `{ sessions, loading, error }`  |
-| `useRevokeSession()`      | Revoke a session (admin)               | -                | `{ revoke, loading, error }`    |
-| `useRevokeMySession()`    | Revoke own session                     | -                | `{ revoke, loading, error }`    |
-| `useRevokeUserSessions()` | Revoke all sessions for a user (admin) | -                | `{ revokeAll, loading, error }` |
+| Hook                      | Purpose                         | Parameters       | Returns                        |
+| ------------------------- | ------------------------------- | ---------------- | ------------------------------ |
+| `useUserSessions(userId)` | View sessions for specific user | `userId: string` | `{ sessions, loading, error }` |
+| `useMySessions()`         | View current user's sessions    | -                | `{ sessions, loading, error }` |
+| `useRevokeMySession()`    | Revoke own session              | -                | `{ revoke, loading, error }`   |
+
+> **Admin session hooks** (`useAdminSessions`, `useRevokeSession`, `useRevokeUserSessions`) moved to `src/features/admin/hooks/useAdminSessions.ts`.
 
 ---
 
-### 📊 Admin Hooks
-
-| Hook              | Purpose                          | Returns                              |
-| ----------------- | -------------------------------- | ------------------------------------ |
-| `useAdminStats()` | Fetch admin dashboard statistics | `{ stats, loading, error, refresh }` |
+> **Admin statistics hooks** (`useAdminStats`) moved to `src/features/admin/hooks/useAdminStats.ts`.
 
 ---
 

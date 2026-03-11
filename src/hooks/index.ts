@@ -25,7 +25,6 @@ export type {
   ProductsApiResponse,
 } from "./usePublicProfile";
 export { useSellerStorefront } from "./useSellerStorefront";
-export { useForm } from "react-hook-form";
 export { useMessage } from "./useMessage";
 
 export { useClickOutside } from "./useClickOutside";
