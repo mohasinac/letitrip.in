@@ -78,6 +78,11 @@ export const sellerService = {
 
   // ── Order actions ────────────────────────────────────────────────────────
 
+  // ── Coupons ──────────────────────────────────────────────────────────────
+
+  /** List the authenticated seller's own coupons */
+  listCoupons: () => apiClient.get(API_ENDPOINTS.SELLER.COUPONS),
+
   /** Ship an order (custom or Shiprocket) */
   shipOrder: (id: string, data: unknown) =>
     apiClient.post(API_ENDPOINTS.SELLER.ORDER_SHIP(id), data),

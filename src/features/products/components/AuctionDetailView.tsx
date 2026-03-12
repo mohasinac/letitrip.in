@@ -22,6 +22,7 @@ import {
   AccordionItem,
   Ul,
   Li,
+  RipCoinsBalanceChip,
 } from "@/components";
 import { ProductImageGallery } from "./ProductImageGallery";
 import { BidHistory } from "./BidHistory";
@@ -481,6 +482,14 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
           {/* Column 3 — Bid Panel (desktop sticky sidebar) */}
           <div className="hidden lg:block">
             <div className={`sticky top-24 ${spacing.stack}`}>
+              {/* RipCoins balance panel — shown to authenticated users */}
+              {!!user && !isEnded && (
+                <RipCoinsBalanceChip
+                  minimumRequired={displayBid + 1}
+                  variant="panel"
+                />
+              )}
+
               {/* Bid panel card */}
               <div
                 className={`${themed.bgPrimary} rounded-xl p-5 ${spacing.stack} shadow-sm border ${themed.border}`}
@@ -544,6 +553,14 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                   {t("viewStore")} →
                 </TextLink>
               </div>
+
+              {/* How Auctions Work link */}
+              <TextLink
+                href={ROUTES.PUBLIC.HOW_AUCTIONS_WORK}
+                className="block text-center text-xs text-indigo-500 dark:text-indigo-400 hover:underline"
+              >
+                {t("ripcoinsInfoLink")} →
+              </TextLink>
             </div>
           </div>
         </div>
@@ -561,6 +578,16 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
         <div
           className={`${themed.bgPrimary} border-t ${themed.border} px-4 py-3`}
         >
+          {/* RipCoins balance row — mobile */}
+          {!!user && !isEnded && (
+            <div className="mb-2">
+              <RipCoinsBalanceChip
+                minimumRequired={displayBid + 1}
+                variant="chip"
+                className="text-xs"
+              />
+            </div>
+          )}
           <div className={flex.between}>
             <div>
               <Text size="xs" variant="secondary">

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
-import { Heading, Text, Section, TextLink } from "@/components";
+import { Heading, Text, Section, TextLink, Span } from "@/components";
 import { getTranslations } from "next-intl/server";
 import {
   Store,
@@ -93,8 +93,149 @@ export default async function SellerGuidePage() {
           ))}
         </div>
 
+        {/* ── Become a Seller Onboarding Diagram ── */}
         <div
-          className={`mt-12 pt-8 border-t ${themed.border} flex flex-wrap gap-6 text-sm`}
+          className={`mt-12 mb-6 rounded-2xl border ${themed.border} overflow-hidden`}
+        >
+          <div
+            className={`${themed.bgSecondary} px-5 py-3 border-b ${themed.border}`}
+          >
+            <Text
+              weight="semibold"
+              size="sm"
+              className="text-indigo-700 dark:text-indigo-300"
+            >
+              🚀 {t("onboardDiagramTitle")}
+            </Text>
+          </div>
+          <div className={`${themed.bgPrimary} p-5`}>
+            <div className="flex justify-center items-start gap-3 overflow-x-auto pb-2">
+              <div className="shrink-0 flex flex-col items-center text-center gap-1 w-[100px]">
+                <div className="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-400 dark:border-indigo-600 flex items-center justify-center text-xl">
+                  👤
+                </div>
+                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
+                  {t("onboardS1")}
+                </Span>
+                <Text size="xs" variant="secondary" className="leading-tight">
+                  {t("onboardS1Desc")}
+                </Text>
+              </div>
+              <div className="shrink-0 self-start h-0.5 w-8 bg-indigo-200 dark:bg-indigo-800 mt-6" />
+              <div className="shrink-0 flex flex-col items-center text-center gap-1 w-[100px]">
+                <div className="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/40 border-2 border-amber-400 dark:border-amber-600 flex items-center justify-center text-xl">
+                  ✅
+                </div>
+                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+                  {t("onboardS2")}
+                </Span>
+                <Text size="xs" variant="secondary" className="leading-tight">
+                  {t("onboardS2Desc")}
+                </Text>
+              </div>
+              <div className="shrink-0 self-start h-0.5 w-8 bg-indigo-200 dark:bg-indigo-800 mt-6" />
+              <div className="shrink-0 flex flex-col items-center text-center gap-1 w-[100px]">
+                <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 border-2 border-emerald-400 dark:border-emerald-600 flex items-center justify-center text-xl">
+                  🚀
+                </div>
+                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
+                  {t("onboardS3")}
+                </Span>
+                <Text size="xs" variant="secondary" className="leading-tight">
+                  {t("onboardS3Desc")}
+                </Text>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Payout Journey Diagram ── */}
+        <div
+          className={`mb-10 rounded-2xl border ${themed.border} overflow-hidden`}
+        >
+          <div
+            className={`${themed.bgSecondary} px-5 py-3 border-b ${themed.border}`}
+          >
+            <Text
+              weight="semibold"
+              size="sm"
+              className="text-indigo-700 dark:text-indigo-300"
+            >
+              💰 {t("payoutDiagramTitle")}
+            </Text>
+          </div>
+          <div className={`${themed.bgPrimary} p-5`}>
+            <div className="flex items-start overflow-x-auto pb-3 gap-1.5 scroll-smooth">
+              <div className="shrink-0 flex flex-col items-center text-center gap-1 w-[86px]">
+                <div className="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-400 dark:border-indigo-600 flex items-center justify-center text-xl">
+                  💰
+                </div>
+                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
+                  {t("payoutS1")}
+                </Span>
+                <Text size="xs" variant="secondary" className="leading-tight">
+                  {t("payoutS1Desc")}
+                </Text>
+              </div>
+              <div className="shrink-0 self-start h-0.5 w-5 bg-indigo-200 dark:bg-indigo-800 mt-6" />
+              <div className="shrink-0 flex flex-col items-center text-center gap-1 w-[86px]">
+                <div className="w-12 h-12 rounded-full bg-sky-100 dark:bg-sky-900/40 border-2 border-sky-400 dark:border-sky-600 flex items-center justify-center text-xl">
+                  📦
+                </div>
+                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300">
+                  {t("payoutS2")}
+                </Span>
+                <Text size="xs" variant="secondary" className="leading-tight">
+                  {t("payoutS2Desc")}
+                </Text>
+              </div>
+              <div className="shrink-0 self-start h-0.5 w-5 bg-indigo-200 dark:bg-indigo-800 mt-6" />
+              <div className="shrink-0 flex flex-col items-center text-center gap-1 w-[86px]">
+                <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 border-2 border-emerald-400 dark:border-emerald-600 flex items-center justify-center text-xl">
+                  💵
+                </div>
+                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
+                  {t("payoutS3")}
+                </Span>
+                <Text size="xs" variant="secondary" className="leading-tight">
+                  {t("payoutS3Desc")}
+                </Text>
+              </div>
+              <div className="shrink-0 self-start h-0.5 w-5 bg-indigo-200 dark:bg-indigo-800 mt-6" />
+              <div className="shrink-0 flex flex-col items-center text-center gap-1 w-[86px]">
+                <div className="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/40 border-2 border-amber-400 dark:border-amber-600 flex items-center justify-center text-xl">
+                  🏦
+                </div>
+                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+                  {t("payoutS4")}
+                </Span>
+                <Text size="xs" variant="secondary" className="leading-tight">
+                  {t("payoutS4Desc")}
+                </Text>
+              </div>
+              <div className="shrink-0 self-start h-0.5 w-5 bg-indigo-200 dark:bg-indigo-800 mt-6" />
+              <div className="shrink-0 flex flex-col items-center text-center gap-1 w-[86px]">
+                <div className="w-12 h-12 rounded-full bg-violet-100 dark:bg-violet-900/40 border-2 border-violet-400 dark:border-violet-600 flex items-center justify-center text-xl">
+                  🎉
+                </div>
+                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300">
+                  {t("payoutS5")}
+                </Span>
+                <Text size="xs" variant="secondary" className="leading-tight">
+                  {t("payoutS5Desc")}
+                </Text>
+              </div>
+            </div>
+            <div className="mt-3 pt-3 border-t border-dashed border-slate-200 dark:border-slate-700">
+              <Text size="xs" variant="secondary">
+                ⌛ {t("payoutNote")}
+              </Text>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className={`mt-4 pt-8 border-t ${themed.border} flex flex-wrap gap-6 text-sm`}
         >
           <TextLink
             href={ROUTES.PUBLIC.HELP}
@@ -107,6 +248,18 @@ export default async function SellerGuidePage() {
             className="text-indigo-600 dark:text-indigo-400 hover:underline"
           >
             {t("contactUs")}
+          </TextLink>
+          <TextLink
+            href={ROUTES.PUBLIC.HOW_AUCTIONS_WORK}
+            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+          >
+            How Auctions Work
+          </TextLink>
+          <TextLink
+            href={ROUTES.PUBLIC.SHIPPING_POLICY}
+            className="text-indigo-600 dark:text-indigo-400 hover:underline"
+          >
+            Shipping Policy
           </TextLink>
         </div>
       </div>

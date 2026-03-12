@@ -1,5 +1,5 @@
 /**
- * Queue Class — @lir/core
+ * Queue Class — @mohasinac/core
  *
  * Generic priority queue for task management.
  * Pure utility — no framework or app-specific imports.

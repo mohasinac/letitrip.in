@@ -2,6 +2,8 @@
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import nextPlugin from "@next/eslint-plugin-next";
+import lirPlugin from "./packages/eslint-plugin-letitrip/index.js";
+import reactPlugin from "eslint-plugin-react";
 
 /**
  * ESLint flat config for LetItRip (Phase 18.19 baseline).
@@ -27,12 +29,166 @@ export default tseslint.config(
   {
     plugins: { "@next/next": nextPlugin },
     rules: {
+      // warn — MEDIA-001 is also caught by lir/no-raw-media-elements
       "@next/next/no-img-element": "warn",
       "@next/next/no-html-link-for-pages": "off",
     },
   },
+  // ── LetItRip architectural rules (lir/) ─────────────────────────────────
+  // Maps to all violation codes in scripts/check-violations.js.
+  // Auto-fixable rules: lir/no-deep-barrel-import, lir/use-i18n-navigation
+  //   → run: npm run lint:fix
+  ...lirPlugin.configs.recommended,
+  // ── packages/** — extend lint coverage to workspace packages ────────────
+  // Barrel / feature / Firebase rules don't apply (packages are standalone
+  // libraries that have no @/ aliases or feature-tier structure).
+  // Base TypeScript quality overrides applied to all packages (mirror src/).
   {
+    files: ["packages/*/src/**/*.{ts,tsx}"],
     rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          varsIgnorePattern: "^_",
+          argsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-empty-object-type": "off",
+      "@typescript-eslint/no-unused-expressions": "warn",
+      "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
+      "@typescript-eslint/no-unsafe-function-type": "off",
+      "prefer-const": "off",
+    },
+  },
+  // Each package file set only disables rules that its code legitimately needs
+  // to bypass by design.
+  {
+    // @mohasinac/core — Logger is the console transport; StorageManager calls fetch()
+    files: ["packages/core/src/**/*.{ts,tsx}"],
+    plugins: { lir: lirPlugin },
+    rules: {
+      "lir/no-deep-barrel-import": "off",
+      "lir/no-cross-feature-import": "off",
+      "lir/no-tier1-feature-import": "off",
+      "lir/use-i18n-navigation": "off",
+      "lir/no-firebase-client-in-ui": "off",
+      "lir/no-firebase-admin-outside-backend": "off",
+      "lir/no-direct-firestore-query": "off",
+      "lir/no-fetch-in-ui": "off",       // StorageManager uses fetch() legitimately
+      "lir/no-apiclient-outside-services": "off",
+      "lir/no-hardcoded-api-path": "off",
+      "lir/no-hardcoded-route": "off",
+      "lir/no-hardcoded-collection": "off",
+      "lir/no-firebase-trigger-in-api": "off",
+      "no-console": "off",               // Logger IS the console transport
+    },
+  },
+  {
+    // @mohasinac/http — ApiClient owns the fetch() call; this IS the HTTP wrapper
+    files: ["packages/http/src/**/*.{ts,tsx}"],
+    plugins: { lir: lirPlugin },
+    rules: {
+      "lir/no-deep-barrel-import": "off",
+      "lir/no-cross-feature-import": "off",
+      "lir/no-tier1-feature-import": "off",
+      "lir/use-i18n-navigation": "off",
+      "lir/no-firebase-client-in-ui": "off",
+      "lir/no-firebase-admin-outside-backend": "off",
+      "lir/no-direct-firestore-query": "off",
+      "lir/no-fetch-in-ui": "off",       // ApiClient IS the fetch wrapper
+      "lir/no-apiclient-outside-services": "off",
+      "lir/no-hardcoded-api-path": "off",
+      "lir/no-hardcoded-route": "off",
+      "lir/no-hardcoded-collection": "off",
+      "lir/no-firebase-trigger-in-api": "off",
+    },
+  },
+  {
+    // @mohasinac/next — thin Next.js utilities; no app-layer structure
+    files: ["packages/next/src/**/*.{ts,tsx}"],
+    plugins: { lir: lirPlugin },
+    rules: {
+      "lir/no-deep-barrel-import": "off",
+      "lir/no-cross-feature-import": "off",
+      "lir/no-tier1-feature-import": "off",
+      "lir/use-i18n-navigation": "off",
+      "lir/no-firebase-client-in-ui": "off",
+      "lir/no-firebase-admin-outside-backend": "off",
+      "lir/no-direct-firestore-query": "off",
+      "lir/no-fetch-in-ui": "off",
+      "lir/no-apiclient-outside-services": "off",
+      "lir/no-hardcoded-api-path": "off",
+      "lir/no-hardcoded-route": "off",
+      "lir/no-hardcoded-collection": "off",
+      "lir/no-firebase-trigger-in-api": "off",
+    },
+  },
+  {
+    // @mohasinac/react — UI hooks; no routing, no Firebase, no fetch
+    files: ["packages/react/src/**/*.{ts,tsx}"],
+    plugins: { lir: lirPlugin },
+    rules: {
+      "lir/no-deep-barrel-import": "off",
+      "lir/no-cross-feature-import": "off",
+      "lir/no-tier1-feature-import": "off",
+      "lir/use-i18n-navigation": "off",
+      "lir/no-firebase-client-in-ui": "off",
+      "lir/no-firebase-admin-outside-backend": "off",
+      "lir/no-direct-firestore-query": "off",
+      "lir/no-fetch-in-ui": "off",
+      "lir/no-apiclient-outside-services": "off",
+      "lir/no-hardcoded-api-path": "off",
+      "lir/no-hardcoded-route": "off",
+      "lir/no-hardcoded-collection": "off",
+      "lir/no-firebase-trigger-in-api": "off",
+    },
+  },
+  {
+    // @mohasinac/ui — primitive component implementations.
+    // These files ARE the raw-element wrappers — flagging raw HTML inside them
+    // would be a false positive. All other lir/ rules (service layer, Firebase,
+    // i18n navigation) are irrelevant and turned off for this standalone package.
+    files: ["packages/ui/src/**/*.{ts,tsx}"],
+    plugins: { lir: lirPlugin, react: reactPlugin },
+    rules: {
+      "lir/no-deep-barrel-import": "off",
+      "lir/no-cross-feature-import": "off",
+      "lir/no-tier1-feature-import": "off",
+      "lir/use-i18n-navigation": "off",
+      "lir/no-firebase-client-in-ui": "off",
+      "lir/no-firebase-admin-outside-backend": "off",
+      "lir/no-direct-firestore-query": "off",
+      "lir/no-fetch-in-ui": "off",
+      "lir/no-apiclient-outside-services": "off",
+      "lir/no-hardcoded-api-path": "off",
+      "lir/no-hardcoded-route": "off",
+      "lir/no-hardcoded-collection": "off",
+      "lir/no-firebase-trigger-in-api": "off",
+      // Semantic.tsx, Typography.tsx, Button.tsx, Select.tsx, DataTable.tsx etc.
+      // are the primitive implementations — they must use raw HTML elements.
+      "lir/no-raw-html-elements": "off",
+      // ImageLightbox.tsx uses <img> directly — the eslint-disable comment
+      // in that file suppresses @next/next/no-img-element on that line.
+      "lir/no-raw-media-elements": "off",
+      // Inline styles in primitives are intentional token-level one-offs.
+      "lir/no-inline-static-style": "off",
+      // Progress.tsx and Skeleton.tsx use dangerouslySetInnerHTML for CSS injection.
+      // Register the plugin so eslint-disable-next-line react/no-danger is valid.
+      "react/no-danger": "warn",
+    },
+  },
+  {
+    // Scope general quality rules to src/ only so they don't override package
+    // exceptions declared above (e.g. no-console off in @mohasinac/core Logger).
+    files: ["src/**"],
+    rules: {
+      // QUAL-001: No console.* in production code — use logger / serverLogger
+      "no-console": "warn",
+      // QUAL-002: No native dialog functions — use useMessage() / ConfirmDeleteModal
+      "no-alert": "warn",
       // Off — allow `any` in a large Next.js codebase (enables gradual typing)
       "@typescript-eslint/no-explicit-any": "off",
       // Warn on unused vars with _ prefix exception
@@ -65,6 +221,8 @@ export default tseslint.config(
       "node_modules/**",
       "coverage/**",
       "dist/**",
+      "packages/*/dist/**",
+      "packages/eslint-plugin-letitrip/**", // plain JS plugin — not TypeScript
       "*.config.js",
       "postcss.config.js",
       "tailwind.config.js",

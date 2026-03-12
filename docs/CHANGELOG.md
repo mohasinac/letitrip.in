@@ -7,7 +7,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased] — feat(s1): @lir/ui package library — 8 new primitives + DataTable promotion
+## [Unreleased] — feat: seller coupons, RipCoins system, new info pages, package rename @lir→@mohasinac, eslint plugin
+
+### Added
+
+**Seller Coupon Management**
+
+- `src/actions/seller-coupon.actions.ts` — new Server Actions: `createSellerCouponAction`, `toggleSellerCouponAction`, `deleteSellerCouponAction`
+- `src/app/[locale]/seller/coupons/` — seller-facing coupon list + create pages
+- `src/app/api/seller/coupons/` — REST endpoints for seller coupon list and detail
+- `src/features/seller/components/SellerCouponForm.tsx` — form for creating seller coupons with store-prefix validation
+- `src/features/seller/components/SellerCouponsView.tsx` — paginated coupon list with activate/deactivate/delete actions
+- `src/features/seller/hooks/useSellerCoupons.ts` — `useSellerCoupons` TanStack Query hook
+- `src/db/schema/coupons.ts` — added `scope: "admin" | "seller"`, `sellerId?`, `storeSlug?`, `applicableToAuctions?` to `CouponDocument`; updated `isValidCouponCode()` to accept `STOREPREFIX-CODE` format
+- `src/repositories/coupons.repository.ts` — added `getSellerCoupons(sellerId)` and `validateCouponForCart(code, userId, cartItems)` with full business-rule enforcement (pre-order exclusion, auction scope, seller-only items)
+- `src/constants/routes.ts` — `SELLER.COUPONS`, `SELLER.COUPONS_NEW`
+- `src/constants/api-endpoints.ts` — `SELLER.COUPONS`, `SELLER.COUPON_BY_ID`
+- `src/actions/coupon.actions.ts` — `validateCouponForCartAction` + `ValidateCouponForCartInput` / `ValidateCouponForCartResult` types; cart-item Zod schema
+- `messages/en.json` — full `sellerCoupons.*` namespace (40+ strings); cart `promoScopeSellerItems`
+- `src/features/cart/components/PromoCodeInput.tsx` — accepts `cartItems` prop, passes to `validateCouponForCartAction`, shows seller-scope label
+
+**RipCoins System**
+
+- `src/components/user/RipCoinsBalanceChip.tsx` — `RipCoinsBalanceChip` component with `chip` / `panel` variants; shows balance and "insufficient coins" warning
+- `src/features/admin/components/RipCoinAdjustModal.tsx` — admin modal to manually grant/deduct RipCoins for any user with notes field
+- `src/actions/admin.actions.ts` — `adminAdjustRipCoinsAction` — rate-limited, validates deduction ceiling, writes immutable `ripcoinRepository` ledger entry + atomically updates user balance
+- `src/features/admin/components/AdminUsersView.tsx` — "Adjust RipCoins" action wired into user table; `RipCoinAdjustModal` mounted; balance reflected in user drawer after change
+- `src/app/api/admin/users/route.ts` — `ripcoinBalance` included in user list response
+- `src/features/products/components/AuctionDetailView.tsx` — `RipCoinsBalanceChip` (variant `panel`) shown in sticky sidebar for authenticated non-ended auctions
+- `src/app/[locale]/ripcoins/` — public RipCoins info page
+- `messages/en.json` — auction namespace: `ripcoinsBalanceLabel`, `ripcoinsUnit`, `topUpRipcoins`, `insufficientCoins`, `ripcoinsNeeded`, `ripcoinsInfoLink`; `auctionDetail` namespace: `ripcoinsBalance`, `buyRipcoins`, `ripcoinsInfoLink`
+
+**New Public Info Pages**
+
+- `src/app/[locale]/how-auctions-work/` — static page explaining auction flow
+- `src/app/[locale]/how-pre-orders-work/` — static page explaining pre-order flow
+- `src/app/[locale]/shipping-policy/` — shipping policy page
+- `src/constants/routes.ts` — `PUBLIC.SHIPPING_POLICY`, `PUBLIC.HOW_AUCTIONS_WORK`, `PUBLIC.HOW_PRE_ORDERS_WORK`, `PUBLIC.RIPCOINS_INFO`
+- `src/components/layout/Footer.tsx` — added "Learn" section with links to all four new pages
+- `messages/en.json` — footer namespace: `learnSection`, `howAuctionsWork`, `howPreOrdersWork`, `shippingPolicy`, `ripcoins`; auctions subtitleWithCount
+
+**Package: `@mohasinac/eslint-plugin` v0.1.0**
+
+- `packages/eslint-plugin-letitrip/` — new workspace package `@mohasinac/eslint-plugin` with custom ESLint rules for this monorepo; exports as ESLint flat-config plugin
+
+### Changed
+
+**Package namespace rename: `@lir/*` → `@mohasinac/*`**
+
+- `tsconfig.json` — all path aliases updated (`@lir/core` → `@mohasinac/core`, etc.)
+- `next.config.js` — `transpilePackages` array updated
+- `packages/*/package.json` — `name` fields updated in `core`, `http`, `next`, `react`, `ui`
+- `src/classes/index.ts` + individual class files — re-export sources updated to `@mohasinac/*`
+- `src/hooks/` (all 10 hooks) — re-export sources updated to `@mohasinac/react`
+- `src/components/semantic/Semantic.tsx`, `src/components/typography/Typography.tsx` — imports updated to `@mohasinac/ui`
+- All `packages/*/CHANGELOG.md` files updated to reflect rename
+- `eslint.config.mjs` — updated for new package names
+
+**Build gate:** `npx tsc --noEmit` ✅
+
+---
+
+## [Unreleased] — feat(s1): @mohasinac/ui package library — 8 new primitives + DataTable promotion
 
 ### Added — Sprint 1 (Package Library)
 
@@ -26,16 +87,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 All 8 components: `"use client"`, inline Tailwind (no app-specific deps), exported from `packages/ui/src/index.ts`.
 
-**S1-2 — `DataTable` promoted to `@lir/ui`**
+**S1-2 — `DataTable` promoted to `@mohasinac/ui`**
 
 - New file: `packages/ui/src/DataTable.tsx` — full rewrite with all `THEME_CONSTANTS` inlined, `UI_LABELS` replaced by a `labels` prop with English defaults, `pageSize?: number` prop (default 20), `rounded-2xl` container.
-- `src/components/admin/DataTable.tsx` converted to a shim: `export { DataTable } from "@lir/ui"`.
+- `src/components/admin/DataTable.tsx` converted to a shim: `export { DataTable } from "@mohasinac/ui"`.
 - All existing callers unchanged (import via `@/components` barrel).
 
 ### Fixed — Sprint 1
 
 - **`packages/ui/src/DataTable.tsx`** — Generic constraint corrected from `Record<string, unknown>` to `Record<string, any>`. TypeScript structural typing does not allow plain interfaces to satisfy `Record<string, unknown>` without an explicit index signature; `Record<string, any>` correctly accepts all admin view row types.
-- **`src/components/index.ts`** — Removed `Breadcrumb`/`BreadcrumbItem` re-exports from `@lir/ui` to prevent naming conflict with the existing `BreadcrumbItem` React component in `src/components/layout/Breadcrumbs.tsx`.
+- **`src/components/index.ts`** — Removed `Breadcrumb`/`BreadcrumbItem` re-exports from `@mohasinac/ui` to prevent naming conflict with the existing `BreadcrumbItem` React component in `src/components/layout/Breadcrumbs.tsx`.
 - **`src/components/admin/DataTable.tsx`** — Added `"use client"` directive to the shim file; the retained legacy dead-code block uses React hooks which require a client boundary.
 
 **Build gate — Sprint 1:** `npx tsc --noEmit` ✅ · `npm run build` ✅ (29.6 s)
@@ -317,12 +378,12 @@ All 8 components: `"use client"`, inline Tailwind (no app-specific deps), export
 - **`src/hooks/index.ts`** (H2) — Removed `export { useForm } from "react-hook-form"` convenience re-export. Components import directly from `react-hook-form` per Rule 5.
 - **`src/components/layout/SidebarLayout.tsx`** (H4) — Replaced `${THEME_CONSTANTS.animation.normal}` with inline `duration-300`; no indirection needed.
 - **`src/constants/theme.ts`** (H4) — Deleted the `animation: { fast, normal, slow }` section (3 pure Tailwind-class aliases: `"duration-150"`, `"duration-300"`, `"duration-500"`).
-- **`packages/*/package.json`** (H7) — Removed `"private": true`; added `"publishConfig": { "access": "public" }` to all 5 `@lir/*` packages (`core`, `http`, `next`, `react`, `ui`).
+- **`packages/*/package.json`** (H7) — Removed `"private": true`; added `"publishConfig": { "access": "public" }` to all 5 `@mohasinac/*` packages (`core`, `http`, `next`, `react`, `ui`).
 - **`package.json`** (H7) — Added `@changesets/cli ^2.27.12` to devDependencies; added `changeset`, `version-packages`, `release` scripts.
 
 ### Added
 
-- **`.changeset/config.json`** (H7) — Changesets configuration: `access: public`, `baseBranch: main`, `updateInternalDependencies: patch`. Enables `npm run changeset` / `npm run release` workflow for `@lir/*` packages.
+- **`.changeset/config.json`** (H7) — Changesets configuration: `access: public`, `baseBranch: main`, `updateInternalDependencies: patch`. Enables `npm run changeset` / `npm run release` workflow for `@mohasinac/*` packages.
 
 ---
 
@@ -535,12 +596,12 @@ All 8 components: `"use client"`, inline Tailwind (no app-specific deps), export
 
 ---
 
-## [Unreleased] — Stage F4 complete: @lir/\* workspace packages wired into the app
+## [Unreleased] — Stage F4 complete: @mohasinac/\* workspace packages wired into the app
 
 ### Added
 
-- **`tsconfig.json`** — 10 path aliases added (`@lir/core`, `@lir/core/*`, `@lir/react`, `@lir/react/*`, `@lir/ui/*`, `@lir/http/*`, `@lir/next/*`) pointing to `packages/*/src`. Enables TypeScript to resolve `@lir/*` imports to source without building.
-- **`next.config.js`** — `transpilePackages: ["@lir/core", "@lir/react", "@lir/ui", "@lir/http", "@lir/next"]` added so webpack processes the package TypeScript sources.
+- **`tsconfig.json`** — 10 path aliases added (`@mohasinac/core`, `@mohasinac/core/*`, `@mohasinac/react`, `@mohasinac/react/*`, `@mohasinac/ui/*`, `@mohasinac/http/*`, `@mohasinac/next/*`) pointing to `packages/*/src`. Enables TypeScript to resolve `@mohasinac/*` imports to source without building.
+- **`next.config.js`** — `transpilePackages: ["@mohasinac/core", "@mohasinac/react", "@mohasinac/ui", "@mohasinac/http", "@mohasinac/next"]` added so webpack processes the package TypeScript sources.
 - **`packages/core/src/Logger.ts`** — Added `enableFileLogging?: boolean` to `LoggerOptions` as backward-compat alias for `logFileUrl`. When `true` and `logFileUrl` is absent, defaults to `/api/logs/write`.
 - **`packages/core/src/StorageManager.ts`** — Added `export const storageManager = StorageManager.getInstance("")` singleton for backward-compat.
 - **`packages/core/src/CacheManager.ts`** — Added `export const cacheManager = CacheManager.getInstance()` singleton.
@@ -549,22 +610,22 @@ All 8 components: `"use client"`, inline Tailwind (no app-specific deps), export
 
 ### Changed
 
-- **`src/classes/Logger.ts`** — Converted to 2-line re-export from `@lir/core`. Old 204-line implementation removed.
-- **`src/classes/Queue.ts`** — Converted to 2-line re-export from `@lir/core`. Old 132-line implementation removed.
-- **`src/classes/StorageManager.ts`** — Converted to 2-line re-export from `@lir/core`. Full implementation removed.
-- **`src/classes/EventBus.ts`** — Converted to 2-line re-export from `@lir/core`. Full implementation removed.
-- **`src/classes/CacheManager.ts`** — Converted to 2-line re-export from `@lir/core`. Full implementation removed.
-- **`src/classes/index.ts`** — Simplified barrel: now `export * from "@lir/core"`.
-- **`src/hooks/useMediaQuery.ts`** — Converted to 1-line re-export from `@lir/react`.
-- **`src/hooks/useBreakpoint.ts`** — Converted to 1-line re-export from `@lir/react`.
-- **`src/hooks/useClickOutside.ts`** — Converted to 2-line re-export from `@lir/react`.
-- **`src/hooks/useKeyPress.ts`** — Converted to 2-line re-export from `@lir/react`.
-- **`src/hooks/useLongPress.ts`** — Converted to 1-line re-export from `@lir/react`.
-- **`src/hooks/useGesture.ts`** — Converted to 2-line re-export from `@lir/react`. `nowMs()` dependency removed (package uses `Date.now()` directly).
-- **`src/hooks/useSwipe.ts`** — Converted to 2-line re-export from `@lir/react`. `nowMs()` dependency removed.
-- **`src/hooks/useCamera.ts`** — Converted to 2-line re-export from `@lir/react`.
-- **`src/hooks/usePullToRefresh.ts`** — Converted to 2-line re-export from `@lir/react`.
-- **`src/hooks/useCountdown.ts`** — Converted to 2-line re-export from `@lir/react`. `nowMs()` dependency removed.
+- **`src/classes/Logger.ts`** — Converted to 2-line re-export from `@mohasinac/core`. Old 204-line implementation removed.
+- **`src/classes/Queue.ts`** — Converted to 2-line re-export from `@mohasinac/core`. Old 132-line implementation removed.
+- **`src/classes/StorageManager.ts`** — Converted to 2-line re-export from `@mohasinac/core`. Full implementation removed.
+- **`src/classes/EventBus.ts`** — Converted to 2-line re-export from `@mohasinac/core`. Full implementation removed.
+- **`src/classes/CacheManager.ts`** — Converted to 2-line re-export from `@mohasinac/core`. Full implementation removed.
+- **`src/classes/index.ts`** — Simplified barrel: now `export * from "@mohasinac/core"`.
+- **`src/hooks/useMediaQuery.ts`** — Converted to 1-line re-export from `@mohasinac/react`.
+- **`src/hooks/useBreakpoint.ts`** — Converted to 1-line re-export from `@mohasinac/react`.
+- **`src/hooks/useClickOutside.ts`** — Converted to 2-line re-export from `@mohasinac/react`.
+- **`src/hooks/useKeyPress.ts`** — Converted to 2-line re-export from `@mohasinac/react`.
+- **`src/hooks/useLongPress.ts`** — Converted to 1-line re-export from `@mohasinac/react`.
+- **`src/hooks/useGesture.ts`** — Converted to 2-line re-export from `@mohasinac/react`. `nowMs()` dependency removed (package uses `Date.now()` directly).
+- **`src/hooks/useSwipe.ts`** — Converted to 2-line re-export from `@mohasinac/react`. `nowMs()` dependency removed.
+- **`src/hooks/useCamera.ts`** — Converted to 2-line re-export from `@mohasinac/react`.
+- **`src/hooks/usePullToRefresh.ts`** — Converted to 2-line re-export from `@mohasinac/react`.
+- **`src/hooks/useCountdown.ts`** — Converted to 2-line re-export from `@mohasinac/react`. `nowMs()` dependency removed.
 
 ---
 
@@ -592,7 +653,7 @@ All 8 components: `"use client"`, inline Tailwind (no app-specific deps), export
 
 ---
 
-## [Unreleased] — Stage F4 cont.: @lir/ui — Alert, Divider, Progress, IndeterminateProgress extracted
+## [Unreleased] — Stage F4 cont.: @mohasinac/ui — Alert, Divider, Progress, IndeterminateProgress extracted
 
 ### Added
 
@@ -603,7 +664,7 @@ All 8 components: `"use client"`, inline Tailwind (no app-specific deps), export
 
 ---
 
-## [Unreleased] — Stage F4: @lir/ui — Spinner, Skeleton, Button, Badge extracted
+## [Unreleased] — Stage F4: @mohasinac/ui — Spinner, Skeleton, Button, Badge extracted
 
 ### Added
 
@@ -630,7 +691,7 @@ All 8 components: `"use client"`, inline Tailwind (no app-specific deps), export
 
 ---
 
-## [Unreleased] — Stage F3: @lir/ui package — Semantic HTML + Typography components
+## [Unreleased] — Stage F3: @mohasinac/ui package — Semantic HTML + Typography components
 
 ### Added
 
@@ -640,7 +701,7 @@ All 8 components: `"use client"`, inline Tailwind (no app-specific deps), export
 
 ---
 
-## [Unreleased] — Stage F2: @lir/react package — Generic React hooks extracted
+## [Unreleased] — Stage F2: @mohasinac/react package — Generic React hooks extracted
 
 ### Added
 
@@ -658,7 +719,7 @@ All 8 components: `"use client"`, inline Tailwind (no app-specific deps), export
 
 ---
 
-## [Unreleased] — Stage B4: @lir/next package — IAuthVerifier + createApiErrorHandler
+## [Unreleased] — Stage B4: @mohasinac/next package — IAuthVerifier + createApiErrorHandler
 
 ### Added
 
@@ -684,7 +745,7 @@ All 8 components: `"use client"`, inline Tailwind (no app-specific deps), export
 
 ---
 
-## [Unreleased] — Stage B3: @lir/http package extracted
+## [Unreleased] — Stage B3: @mohasinac/http package extracted
 
 ### Added
 
@@ -693,7 +754,7 @@ All 8 components: `"use client"`, inline Tailwind (no app-specific deps), export
 
 ---
 
-## [Unreleased] — Stage B2: @lir/core package extracted
+## [Unreleased] — Stage B2: @mohasinac/core package extracted
 
 ### Added
 
@@ -712,11 +773,11 @@ All 8 components: `"use client"`, inline Tailwind (no app-specific deps), export
 
 - **`pnpm-workspace.yaml`** — Workspace package discovery for `apps/*` and `packages/*`.
 - **`turbo.json`** — Turborepo task graph scaffold for `build`, `test`, and `lint`.
-- **`packages/core/`** — Bootstrapped `@lir/core` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
-- **`packages/react/`** — Bootstrapped `@lir/react` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
-- **`packages/ui/`** — Bootstrapped `@lir/ui` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
-- **`packages/http/`** — Bootstrapped `@lir/http` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
-- **`packages/next/`** — Bootstrapped `@lir/next` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
+- **`packages/core/`** — Bootstrapped `@mohasinac/core` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
+- **`packages/react/`** — Bootstrapped `@mohasinac/react` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
+- **`packages/ui/`** — Bootstrapped `@mohasinac/ui` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
+- **`packages/http/`** — Bootstrapped `@mohasinac/http` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
+- **`packages/next/`** — Bootstrapped `@mohasinac/next` with `package.json`, `tsconfig.json`, and `src/index.ts` stub.
 
 ### Notes
 

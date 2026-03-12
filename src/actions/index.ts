@@ -80,11 +80,27 @@ export { placeBidAction } from "./bid.actions";
 export type { PlaceBidInput, PlaceBidResult } from "./bid.actions";
 
 // Coupon validation (auth required)
-export { validateCouponAction } from "./coupon.actions";
+export {
+  validateCouponAction,
+  validateCouponForCartAction,
+} from "./coupon.actions";
 export type {
   ValidateCouponInput,
+  ValidateCouponForCartInput,
   ValidateCouponResult,
+  ValidateCouponForCartResult,
 } from "./coupon.actions";
+
+// Seller coupon CRUD (seller role required)
+export {
+  sellerCreateCouponAction,
+  sellerUpdateCouponAction,
+  sellerDeleteCouponAction,
+} from "./seller-coupon.actions";
+export type {
+  SellerCreateCouponInput,
+  SellerUpdateCouponInput,
+} from "./seller-coupon.actions";
 
 // Seller application (auth required)
 export { becomeSellerAction } from "./seller.actions";
@@ -107,7 +123,9 @@ export {
   adminUpdateProductAction,
   adminCreateProductAction,
   adminDeleteProductAction,
+  adminAdjustRipCoinsAction,
 } from "./admin.actions";
+export type { AdminAdjustRipCoinsInput } from "./admin.actions";
 
 // Blog post mutations (admin only)
 export {

@@ -36,6 +36,12 @@ export function SellerQuickActions() {
       icon: "??",
       variant: "outline" as const,
     },
+    {
+      label: t("manageCoupons"),
+      href: ROUTES.SELLER.COUPONS,
+      icon: "??",
+      variant: "outline" as const,
+    },
   ];
 
   return (

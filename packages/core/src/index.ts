@@ -1,5 +1,5 @@
 /**
- * @lir/core — Stage B2
+ * @mohasinac/core — Stage B2
  *
  * Pure utility classes extracted from src/classes/.
  * No framework dependencies, no app-specific imports.

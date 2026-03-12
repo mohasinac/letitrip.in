@@ -26,6 +26,7 @@ export type { OrderStatusFormState } from "./OrderStatusForm";
 // Users
 export { useUserTableColumns } from "./UserTableColumns";
 export { UserDetailDrawer } from "./UserDetailDrawer";
+export { RipCoinAdjustModal } from "./RipCoinAdjustModal";
 export type { AdminUser, UserTab } from "./User.types";
 
 // Carousel

@@ -1,7 +1,7 @@
 /**
- * Semantic HTML wrapper components - re-exported from @lir/ui.
+ * Semantic HTML wrapper components - re-exported from @mohasinac/ui.
  * All implementations live in packages/ui/src/components/Semantic.tsx.
- * @lir/ui is mapped via tsconfig path alias and transpiled by Next.js.
+ * @mohasinac/ui is mapped via tsconfig path alias and transpiled by Next.js.
  */
 export {
   Section,
@@ -14,7 +14,7 @@ export {
   Ul,
   Ol,
   Li,
-} from "@lir/ui";
+} from "@mohasinac/ui";
 export type {
   SectionProps,
   ArticleProps,
@@ -26,4 +26,4 @@ export type {
   UlProps,
   OlProps,
   LiProps,
-} from "@lir/ui";
+} from "@mohasinac/ui";

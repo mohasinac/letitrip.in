@@ -1,5 +1,5 @@
 /**
- * CacheManager Class — @lir/core
+ * CacheManager Class — @mohasinac/core
  *
  * Simple TTL-based in-memory cache with FIFO eviction.
  * Pure utility — no framework or app-specific imports.

@@ -1,6 +1,6 @@
 /**
- * Classes Barrel Export — re-exports from @lir/core
+ * Classes Barrel Export — re-exports from @mohasinac/core
  *
  * All implementations now live in packages/core/src/.
  */
-export * from "@lir/core";
+export * from "@mohasinac/core";

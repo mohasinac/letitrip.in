@@ -1,2 +1,2 @@
-export { useGesture } from "@lir/react";
-export type { GestureType, UseGestureOptions } from "@lir/react";
+export { useGesture } from "@mohasinac/react";
+export type { GestureType, UseGestureOptions } from "@mohasinac/react";

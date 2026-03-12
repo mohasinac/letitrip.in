@@ -1,1 +1,1 @@
-export { useBreakpoint } from "@lir/react";
+export { useBreakpoint } from "@mohasinac/react";

@@ -1,5 +1,5 @@
 /**
- * @lir/react — Generic React hooks
+ * @mohasinac/react — Generic React hooks
  *
  * Stage F2: 10 pure browser/React hooks extracted from the app.
  * Zero domain dependencies — safe for use in any React project.

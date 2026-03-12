@@ -16,6 +16,17 @@ export const FAQ_CATEGORIES = {
     icon: "🛍️",
     description: "Product listings, auctions, bidding, and quality",
   },
+  auctions: {
+    label: "Auctions & Bidding",
+    icon: "🔨",
+    description: "How auctions work, bidding rules, winning, and payment",
+  },
+  preorders: {
+    label: "Pre-Orders",
+    icon: "📦",
+    description:
+      "Pre-order process, deposits, production timelines, and cancellations",
+  },
   shipping: {
     label: "Shipping & Delivery",
     icon: "🚚",

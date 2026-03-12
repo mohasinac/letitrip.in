@@ -1,7 +1,7 @@
 /**
- * CacheManager — re-exported from @lir/core
+ * CacheManager — re-exported from @mohasinac/core
  *
  * Implementation lives in packages/core/src/CacheManager.ts.
  */
-export { CacheManager, cacheManager } from "@lir/core";
-export type { CacheOptions, CacheEntry } from "@lir/core";
+export { CacheManager, cacheManager } from "@mohasinac/core";
+export type { CacheOptions, CacheEntry } from "@mohasinac/core";

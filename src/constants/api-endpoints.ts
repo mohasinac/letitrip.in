@@ -273,6 +273,9 @@ export const API_ENDPOINTS = {
     SHIPPING: "/api/seller/shipping", // GET/PATCH - Get & update shipping config (auth: seller)
     SHIPPING_VERIFY_PICKUP: "/api/seller/shipping/verify-pickup", // POST - OTP verify pickup address
     PAYOUT_SETTINGS: "/api/seller/payout-settings", // GET/PATCH - Get & update payout details (auth: seller)
+    /** ✅ Seller coupons endpoints */
+    COUPONS: "/api/seller/coupons", // GET - List seller's own coupons
+    COUPON_BY_ID: (id: string) => `/api/seller/coupons/${id}`, // GET - Single coupon (seller-owned)
   },
 
   // Blog endpoints — public

@@ -15,6 +15,7 @@ export interface AdminUser {
   disabled: boolean;
   createdAt: string;
   lastLoginAt?: string;
+  ripcoinBalance?: number;
   metadata?: {
     loginCount?: number;
   };

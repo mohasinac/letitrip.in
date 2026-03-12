@@ -1,7 +1,7 @@
 /**
  * IAuthVerifier — Injectable auth interface for createApiHandler.
  *
- * Decouples @lir/next from any specific auth provider (Firebase, Auth.js, etc.).
+ * Decouples @mohasinac/next from any specific auth provider (Firebase, Auth.js, etc.).
  * The consuming app provides a concrete implementation backed by its own
  * auth SDK. The interface is intentionally minimal — only what createApiHandler
  * needs: a uid and an optional role string.
@@ -9,7 +9,7 @@
  * @example
  * ```ts
  * // apps/web/src/lib/firebase/auth-verifier.ts
- * import type { IAuthVerifier, AuthVerifiedUser } from '@lir/next';
+ * import type { IAuthVerifier, AuthVerifiedUser } from '@mohasinac/next';
  * import { getAdminAuth } from '@/lib/firebase/admin';
  *
  * export const firebaseAuthVerifier: IAuthVerifier = {

@@ -2,11 +2,14 @@
 
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
+import { Label, Span, Text } from "./Typography";
+import { Ul, Li } from "./Semantic";
+import { Button } from "./Button";
 
 /**
  * Select — accessible combobox with label, error state, and disabled support.
  *
- * Standalone @lir/ui primitive. No app-specific imports.
+ * Standalone @mohasinac/ui primitive. No app-specific imports.
  */
 
 export interface SelectOption<V = string> {
@@ -120,20 +123,16 @@ export function Select<V extends string = string>({
   return (
     <div ref={ref} className="relative w-full">
       {label && (
-        <label
+        <Label
           htmlFor={id}
-          className="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          className="!text-zinc-700 dark:!text-zinc-300"
+          required={required}
         >
           {label}
-          {required && (
-            <span className="ml-1 text-red-500" aria-hidden="true">
-              *
-            </span>
-          )}
-        </label>
+        </Label>
       )}
 
-      <button
+      <Button
         id={id}
         type="button"
         role="combobox"
@@ -141,11 +140,12 @@ export function Select<V extends string = string>({
         aria-haspopup="listbox"
         aria-disabled={disabled}
         disabled={disabled}
+        variant="ghost"
         className={triggerClass}
         onClick={toggle}
         onKeyDown={handleKeyDown}
       >
-        <span
+        <Span
           className={
             selected
               ? "text-zinc-900 dark:text-zinc-50"
@@ -153,22 +153,22 @@ export function Select<V extends string = string>({
           }
         >
           {selected?.label ?? placeholder}
-        </span>
+        </Span>
         <ChevronDown
           className={`h-4 w-4 flex-shrink-0 text-zinc-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           aria-hidden="true"
         />
-      </button>
+      </Button>
 
       {open && (
-        <ul
+        <Ul
           role="listbox"
           className="absolute z-50 mt-1 w-full overflow-auto rounded-lg border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg max-h-60 py-1"
         >
           {options.map((option) => {
             const isSelected = option.value === value;
             return (
-              <li
+              <Li
                 key={option.value}
                 role="option"
                 aria-selected={isSelected}
@@ -183,26 +183,23 @@ export function Select<V extends string = string>({
                 ].join(" ")}
                 onClick={() => !option.disabled && handleSelect(option.value)}
               >
-                <span className="flex-1">{option.label}</span>
+                <Span className="flex-1">{option.label}</Span>
                 {isSelected && (
                   <Check
                     className="h-4 w-4 ml-2 flex-shrink-0"
                     aria-hidden="true"
                   />
                 )}
-              </li>
+              </Li>
             );
           })}
-        </ul>
+        </Ul>
       )}
 
       {error && (
-        <p
-          className="mt-1.5 text-xs text-red-600 dark:text-red-400"
-          role="alert"
-        >
+        <Text size="xs" variant="error" className="mt-1.5" role="alert">
           {error}
-        </p>
+        </Text>
       )}
     </div>
   );

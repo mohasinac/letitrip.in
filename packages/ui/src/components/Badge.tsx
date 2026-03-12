@@ -4,7 +4,7 @@ import { Span } from "./Typography";
 /**
  * Badge — compact label with ring border variants for status, roles, and categories.
  *
- * Extracted from src/components/ui/Badge.tsx for @lir/ui.
+ * Extracted from src/components/ui/Badge.tsx for @mohasinac/ui.
  * Theme values inlined from THEME_CONSTANTS.badge and THEME_CONSTANTS.colors.badge.
  */
 

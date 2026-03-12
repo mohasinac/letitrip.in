@@ -5,7 +5,7 @@ import { Button } from "./Button";
 /**
  * Alert — flexible alert/notification with variant icons and optional dismiss.
  *
- * Extracted from src/components/feedback/Alert.tsx for @lir/ui.
+ * Extracted from src/components/feedback/Alert.tsx for @mohasinac/ui.
  * Theme values inlined from THEME_CONSTANTS.colors.alert and THEME_CONSTANTS.colors.button.
  */
 

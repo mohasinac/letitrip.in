@@ -125,6 +125,7 @@ export const POST = createApiHandler({
     const input: CouponCreateInput = {
       ...validation.data,
       createdBy: user.uid,
+      scope: "admin",
     };
 
     // Check for duplicate code

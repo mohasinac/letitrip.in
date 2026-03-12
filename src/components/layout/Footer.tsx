@@ -66,6 +66,18 @@ export default function Footer() {
       ],
     },
     {
+      heading: t("learnSection"),
+      links: [
+        { href: ROUTES.PUBLIC.HOW_AUCTIONS_WORK, label: t("howAuctionsWork") },
+        {
+          href: ROUTES.PUBLIC.HOW_PRE_ORDERS_WORK,
+          label: t("howPreOrdersWork"),
+        },
+        { href: ROUTES.PUBLIC.SHIPPING_POLICY, label: t("shippingPolicy") },
+        { href: ROUTES.PUBLIC.RIPCOINS_INFO, label: t("ripcoins") },
+      ],
+    },
+    {
       heading: t("legal"),
       links: [
         { href: ROUTES.PUBLIC.PRIVACY, label: t("privacyPolicy") },

@@ -1,5 +1,5 @@
 /**
- * ApiClient — @lir/http
+ * ApiClient — @mohasinac/http
  *
  * Centralized HTTP client with consistent error handling,
  * timeout management, abort controller, and JSON parsing.
@@ -10,7 +10,7 @@
  *
  * Usage:
  * ```ts
- * import { ApiClient, ApiClientError } from "@lir/http";
+ * import { ApiClient, ApiClientError } from "@mohasinac/http";
  *
  * const client = new ApiClient({ baseURL: process.env.NEXT_PUBLIC_APP_URL });
  * const data = await client.get("/api/products");

@@ -1,5 +1,5 @@
 /**
- * EventBus Class — @lir/core
+ * EventBus Class — @mohasinac/core
  *
  * Singleton pub/sub event bus for decoupled communication.
  * Pure utility — no framework or app-specific imports.

@@ -3,11 +3,13 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import { Heading } from "./Typography";
+import { Button } from "./Button";
 
 /**
  * Drawer — slide-in panel from left, right, or bottom.
  *
- * Standalone @lir/ui primitive. No app-specific imports.
+ * Standalone @mohasinac/ui primitive. No app-specific imports.
  * Bottom variant gets `rounded-t-2xl` and can be swipe-dismissed via drag handle.
  */
 
@@ -138,19 +140,24 @@ export function Drawer({
         {(title || showCloseButton) && (
           <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-slate-800 flex-shrink-0">
             {title && (
-              <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+              <Heading
+                level={2}
+                className="!text-base !font-semibold !font-sans"
+              >
                 {title}
-              </h2>
+              </Heading>
             )}
             {showCloseButton && (
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 type="button"
                 onClick={onClose}
-                className="ml-auto p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-slate-800 transition-colors"
+                className="ml-auto p-1.5 !min-h-0 rounded-lg text-zinc-400 hover:text-zinc-700 dark:text-zinc-500 dark:hover:text-zinc-300"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             )}
           </div>
         )}

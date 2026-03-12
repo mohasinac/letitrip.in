@@ -1,2 +1,2 @@
-export { useCamera } from "@lir/react";
-export type { UseCameraOptions, UseCameraReturn } from "@lir/react";
+export { useCamera } from "@mohasinac/react";
+export type { UseCameraOptions, UseCameraReturn } from "@mohasinac/react";

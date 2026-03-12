@@ -1,2 +1,2 @@
-export { useKeyPress } from "@lir/react";
-export type { KeyModifiers, UseKeyPressOptions } from "@lir/react";
+export { useKeyPress } from "@mohasinac/react";
+export type { KeyModifiers, UseKeyPressOptions } from "@mohasinac/react";

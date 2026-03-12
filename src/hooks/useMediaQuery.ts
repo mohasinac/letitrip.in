@@ -1,1 +1,1 @@
-export { useMediaQuery } from "@lir/react";
+export { useMediaQuery } from "@mohasinac/react";

@@ -14,6 +14,8 @@ export { SellerAuctionsView } from "./SellerAuctionsView";
 export { SellerShippingView } from "./SellerShippingView";
 export { SellerPayoutSettingsView } from "./SellerPayoutSettingsView";
 export { SellerAddressesView } from "./SellerAddressesView";
+export { SellerCouponsView } from "./SellerCouponsView";
+export { SellerCouponForm } from "./SellerCouponForm";
 // P2-5: seller domain components
 export { default as SellerTabs } from "./SellerTabs";
 export { SellerStorefrontView } from "./SellerStorefrontView";

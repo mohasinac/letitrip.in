@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 /**
  * Button — versatile button with multiple variants, sizes, and loading state.
  *
- * Extracted from src/components/ui/Button.tsx for @lir/ui.
+ * Extracted from src/components/ui/Button.tsx for @mohasinac/ui.
  * Theme values inlined from THEME_CONSTANTS.button and THEME_CONSTANTS.colors.button.
  */
 

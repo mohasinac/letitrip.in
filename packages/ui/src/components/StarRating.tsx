@@ -2,11 +2,12 @@
 
 import React, { useState } from "react";
 import { Star } from "lucide-react";
+import { Span } from "./Typography";
 
 /**
  * StarRating — 0–5 star display/interactive rating.
  *
- * Standalone @lir/ui primitive. No app-specific imports.
+ * Standalone @mohasinac/ui primitive. No app-specific imports.
  * Use `readOnly` for display, omit it for interactive mode with hover preview.
  */
 
@@ -37,7 +38,7 @@ export function StarRating({
   const displayed = hovered ?? value;
 
   return (
-    <div
+    <Span
       className={`inline-flex items-center gap-0.5 ${className}`}
       role={readOnly ? "img" : "group"}
       aria-label={label ?? `${value} out of ${max} stars`}
@@ -48,7 +49,7 @@ export function StarRating({
         const half = !filled && starValue - 0.5 <= displayed;
 
         return (
-          <span
+          <Span
             key={starValue}
             className={readOnly ? undefined : "cursor-pointer"}
             onClick={() => !readOnly && onChange?.(starValue)}
@@ -69,16 +70,16 @@ export function StarRating({
               ].join(" ")}
               aria-hidden="true"
             />
-          </span>
+          </Span>
         );
       })}
 
       {/* Screen-reader-only value for interactive mode */}
       {!readOnly && (
-        <span className="sr-only">
+        <Span className="sr-only">
           {value} out of {max}
-        </span>
+        </Span>
       )}
-    </div>
+    </Span>
   );
 }

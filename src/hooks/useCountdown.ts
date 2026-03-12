@@ -1,2 +1,2 @@
-export { useCountdown } from "@lir/react";
-export type { CountdownRemaining } from "@lir/react";
+export { useCountdown } from "@mohasinac/react";
+export type { CountdownRemaining } from "@mohasinac/react";

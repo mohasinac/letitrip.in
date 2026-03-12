@@ -1,5 +1,5 @@
 /**
- * Logger Class — @lir/core
+ * Logger Class — @mohasinac/core
  *
  * Singleton class for application logging.
  * Pure utility — no framework or app-specific imports.

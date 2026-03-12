@@ -5,7 +5,7 @@ import React from "react";
 /**
  * Pagination — smart ellipsis pagination with prev/next chevrons.
  *
- * Extracted to @lir/ui as a standalone, framework-agnostic component.
+ * Extracted to @mohasinac/ui as a standalone, framework-agnostic component.
  * No app-specific dependencies (no THEME_CONSTANTS, UI_LABELS, or app imports).
  */
 

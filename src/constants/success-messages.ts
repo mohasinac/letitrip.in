@@ -81,6 +81,8 @@ export const SUCCESS_MESSAGES = {
     ALGOLIA_PAGES_CLEARED: "Navigation pages index cleared successfully",
     STORE_APPROVED: "Store approved successfully",
     STORE_REJECTED: "Store application rejected",
+    RIPCOIN_CREDITED: "RipCoins credited successfully",
+    RIPCOIN_DEBITED: "RipCoins debited successfully",
   },
 
   // Review Success

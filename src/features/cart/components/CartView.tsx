@@ -239,6 +239,7 @@ export function CartView() {
             >
               <PromoCodeInput
                 subtotal={subtotal}
+                cartItems={items}
                 onApply={(amount, code) => {
                   setDiscount(amount);
                   setCouponCode(code);

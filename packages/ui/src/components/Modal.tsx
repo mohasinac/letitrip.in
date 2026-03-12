@@ -3,11 +3,13 @@
 import React, { useCallback, useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import { Heading } from "./Typography";
+import { Button } from "./Button";
 
 /**
  * Modal — centered dialog with backdrop, multiple sizes, ESC-to-close, and scroll lock.
  *
- * Standalone @lir/ui primitive. No app-specific imports.
+ * Standalone @mohasinac/ui primitive. No app-specific imports.
  * Renders via React Portal for correct z-index layering.
  */
 
@@ -128,22 +130,25 @@ export function Modal({
         {(title || showCloseButton) && (
           <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 dark:border-slate-800 flex-shrink-0">
             {title && (
-              <h2
+              <Heading
+                level={2}
                 id={titleId}
-                className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 tracking-tight"
+                className="!text-lg !font-semibold !font-sans tracking-tight"
               >
                 {title}
-              </h2>
+              </Heading>
             )}
             {showCloseButton && (
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 type="button"
                 onClick={onClose}
-                className="ml-auto p-1.5 rounded-lg text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-slate-800 transition-colors"
+                className="ml-auto p-1.5 !min-h-0 rounded-lg text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             )}
           </div>
         )}

@@ -18,6 +18,7 @@ import {
   userRepository,
   storeRepository,
   productRepository,
+  ripcoinRepository,
 } from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
@@ -420,4 +421,77 @@ export async function adminDeleteProductAction(id: string): Promise<void> {
     adminId: admin.uid,
     productId: id,
   });
+}
+
+// ─── RipCoin adjustments (admin only) ────────────────────────────────────
+
+const adminAdjustRipCoinsSchema = z.object({
+  targetUid: z.string().min(1, "targetUid is required"),
+  coins: z.number().int().positive("Must be a positive integer"),
+  type: z.enum(["admin_grant", "admin_deduct"]),
+  notes: z.string().max(500).optional(),
+});
+
+export type AdminAdjustRipCoinsInput = z.infer<
+  typeof adminAdjustRipCoinsSchema
+>;
+
+/**
+ * Manually credit or debit RipCoins for any user (admin only).
+ * Writes an immutable ledger entry and atomically updates the user balance.
+ */
+export async function adminAdjustRipCoinsAction(
+  input: AdminAdjustRipCoinsInput,
+): Promise<{ success: true; newBalance: number }> {
+  const admin = await requireRole(["admin"]);
+
+  const rl = await rateLimitByIdentifier(
+    `ripcoins:adjust:${admin.uid}`,
+    RateLimitPresets.API,
+  );
+  if (!rl.success)
+    throw new AuthorizationError("Too many requests. Please slow down.");
+
+  const parsed = adminAdjustRipCoinsSchema.safeParse(input);
+  if (!parsed.success)
+    throw new ValidationError(
+      parsed.error.issues[0]?.message ?? "Invalid input",
+    );
+
+  const { targetUid, coins, type, notes } = parsed.data;
+
+  const user = await userRepository.findById(targetUid);
+  if (!user) throw new NotFoundError("User not found");
+
+  const currentBalance = user.ripcoinBalance ?? 0;
+
+  if (type === "admin_deduct" && coins > currentBalance)
+    throw new ValidationError(
+      `Cannot deduct ${coins} coins — user only has ${currentBalance}`,
+    );
+
+  const balanceDelta = type === "admin_grant" ? coins : -coins;
+  const newBalance = currentBalance + balanceDelta;
+
+  await userRepository.incrementRipCoinBalance(targetUid, balanceDelta);
+
+  await ripcoinRepository.create({
+    userId: targetUid,
+    type,
+    coins,
+    balanceBefore: currentBalance,
+    balanceAfter: newBalance,
+    notes,
+  });
+
+  serverLogger.info("adminAdjustRipCoinsAction", {
+    adminId: admin.uid,
+    targetUid,
+    type,
+    coins,
+    balanceBefore: currentBalance,
+    balanceAfter: newBalance,
+  });
+
+  return { success: true, newBalance };
 }

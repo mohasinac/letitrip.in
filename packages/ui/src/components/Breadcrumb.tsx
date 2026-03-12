@@ -1,10 +1,12 @@
 import React from "react";
 import { ChevronRight } from "lucide-react";
+import { Nav, Ol, Li } from "./Semantic";
+import { Span } from "./Typography";
 
 /**
  * Breadcrumb — accessible navigation trail with ChevronRight separators.
  *
- * Standalone @lir/ui primitive. No app-specific imports.
+ * Standalone @mohasinac/ui primitive. No app-specific imports.
  * Last item is displayed with `font-medium` (non-link, current page).
  */
 
@@ -20,12 +22,12 @@ export interface BreadcrumbProps {
 
 export function Breadcrumb({ items, className = "" }: BreadcrumbProps) {
   return (
-    <nav aria-label="Breadcrumb" className={className}>
-      <ol className="flex items-center gap-1 flex-wrap text-sm text-zinc-500 dark:text-zinc-400">
+    <Nav aria-label="Breadcrumb" className={className}>
+      <Ol className="flex items-center gap-1 flex-wrap text-sm text-zinc-500 dark:text-zinc-400">
         {items.map((item, i) => {
           const isLast = i === items.length - 1;
           return (
-            <li key={i} className="flex items-center gap-1">
+            <Li key={i} className="flex items-center gap-1">
               {i > 0 && (
                 <ChevronRight
                   className="w-3.5 h-3.5 flex-shrink-0 text-zinc-400 dark:text-zinc-600"
@@ -33,7 +35,7 @@ export function Breadcrumb({ items, className = "" }: BreadcrumbProps) {
                 />
               )}
               {isLast || !item.href ? (
-                <span
+                <Span
                   className={
                     isLast
                       ? "font-medium text-zinc-900 dark:text-zinc-50"
@@ -42,7 +44,7 @@ export function Breadcrumb({ items, className = "" }: BreadcrumbProps) {
                   aria-current={isLast ? "page" : undefined}
                 >
                   {item.label}
-                </span>
+                </Span>
               ) : (
                 <a
                   href={item.href}
@@ -51,10 +53,10 @@ export function Breadcrumb({ items, className = "" }: BreadcrumbProps) {
                   {item.label}
                 </a>
               )}
-            </li>
+            </Li>
           );
         })}
-      </ol>
-    </nav>
+      </Ol>
+    </Nav>
   );
 }

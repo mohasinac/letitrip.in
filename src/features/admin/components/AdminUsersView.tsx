@@ -33,7 +33,7 @@ import {
   useToast,
 } from "@/components";
 import { UserFilters } from "./UserFilters";
-import { UserDetailDrawer, useUserTableColumns } from ".";
+import { UserDetailDrawer, useUserTableColumns, RipCoinAdjustModal } from ".";
 import type { AdminUser, UserTab } from ".";
 
 interface AdminUsersViewProps {
@@ -71,6 +71,10 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
 
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [ripCoinModal, setRipCoinModal] = useState<{
+    open: boolean;
+    user: AdminUser | null;
+  }>({ open: false, user: null });
 
   const [confirmModal, setConfirmModal] = useState<{
     open: boolean;
@@ -217,6 +221,22 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
     });
   };
 
+  const handleAdjustRipCoins = (user: AdminUser) => {
+    setRipCoinModal({ open: true, user });
+  };
+
+  const handleRipCoinSuccess = async (newBalance: number) => {
+    await refetch();
+    const msg =
+      ripCoinModal.user && (ripCoinModal.user.ripcoinBalance ?? 0) < newBalance
+        ? SUCCESS_MESSAGES.ADMIN.RIPCOIN_CREDITED
+        : SUCCESS_MESSAGES.ADMIN.RIPCOIN_DEBITED;
+    showToast(msg, "success");
+    if (selectedUser && ripCoinModal.user?.uid === selectedUser.uid) {
+      setSelectedUser({ ...selectedUser, ripcoinBalance: newBalance });
+    }
+  };
+
   const { columns, actions } = useUserTableColumns(
     handleViewUser,
     handleToggleBan,
@@ -339,6 +359,14 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
         onRoleChange={handleRoleChange}
         onToggleBan={handleToggleBan}
         onDelete={handleDeleteUser}
+        onAdjustRipCoins={handleAdjustRipCoins}
+      />
+
+      <RipCoinAdjustModal
+        user={ripCoinModal.user}
+        isOpen={ripCoinModal.open}
+        onClose={() => setRipCoinModal({ open: false, user: null })}
+        onSuccess={handleRipCoinSuccess}
       />
 
       <ConfirmDeleteModal

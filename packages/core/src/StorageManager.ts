@@ -1,5 +1,5 @@
 /**
- * StorageManager Class — @lir/core
+ * StorageManager Class — @mohasinac/core
  *
  * Singleton class for managing localStorage and sessionStorage with
  * namespace prefixing and SSR-safe fallbacks.

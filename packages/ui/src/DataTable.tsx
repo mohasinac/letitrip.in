@@ -4,9 +4,11 @@ import { ReactNode, useState, useMemo } from "react";
 import { Button } from "./components/Button";
 import { Spinner } from "./components/Spinner";
 import { Pagination } from "./components/Pagination";
+import { Text } from "./components/Typography";
+import { Label } from "./components/Typography";
 
 /**
- * DataTable — generic sortable + paginated table promoted to @lir/ui.
+ * DataTable — generic sortable + paginated table promoted to @mohasinac/ui.
  *
  * No app-specific imports (no THEME_CONSTANTS, UI_LABELS, @/components, @/constants).
  * All theme values inlined. Labels available as props with sensible defaults.
@@ -194,12 +196,12 @@ export function DataTable<T extends Record<string, any>>({
                 />
               </svg>
             )}
-            <p className="mt-4 text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+            <Text size="sm" weight="semibold" className="mt-4">
               {emptyTitle ?? noDataTitle}
-            </p>
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            </Text>
+            <Text size="sm" variant="secondary" className="mt-1">
               {emptyMessage ?? noDataDescription}
-            </p>
+            </Text>
           </div>
         </div>
       </div>
@@ -544,7 +546,7 @@ function SelectableCard({
         ].join(" ")}
         onClick={(e) => e.stopPropagation()}
       >
-        <label className="flex items-center justify-center cursor-pointer mb-0">
+        <Label className="flex items-center justify-center cursor-pointer !mb-0 !text-inherit !text-base !font-normal">
           <input
             type="checkbox"
             className={[
@@ -573,7 +575,7 @@ function SelectableCard({
               />
             </svg>
           )}
-        </label>
+        </Label>
       </div>
       {selected && (
         <div

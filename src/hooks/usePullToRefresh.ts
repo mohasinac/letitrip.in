@@ -1,5 +1,5 @@
-export { usePullToRefresh } from "@lir/react";
+export { usePullToRefresh } from "@mohasinac/react";
 export type {
   UsePullToRefreshOptions,
   UsePullToRefreshReturn,
-} from "@lir/react";
+} from "@mohasinac/react";

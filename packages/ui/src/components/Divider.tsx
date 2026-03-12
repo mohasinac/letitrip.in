@@ -4,7 +4,7 @@ import { Span } from "./Typography";
 /**
  * Divider — horizontal or vertical visual separator with optional label.
  *
- * Extracted from src/components/ui/Divider.tsx for @lir/ui.
+ * Extracted from src/components/ui/Divider.tsx for @mohasinac/ui.
  * Theme values inlined from THEME_CONSTANTS.themed.
  */
 

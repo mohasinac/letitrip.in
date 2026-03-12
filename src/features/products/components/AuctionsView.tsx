@@ -23,9 +23,11 @@ import {
   SortDropdown,
   TablePagination,
   Text,
+  RipCoinsBalanceChip,
+  TextLink,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
-import { THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, useAuth, useMessage, useBrands } from "@/hooks";
 import { useAuctions } from "../hooks";
@@ -187,6 +189,16 @@ function AuctionsContent({
                   ? t("subtitleWithCount", { count: total })
                   : t("subtitle")}
               </Text>
+              {/* RipCoins balance chip — auction-specific, authenticated users only */}
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                <RipCoinsBalanceChip variant="chip" />
+                <TextLink
+                  href={ROUTES.PUBLIC.HOW_AUCTIONS_WORK}
+                  className="text-xs text-indigo-500 dark:text-indigo-400 hover:underline"
+                >
+                  🪙 {t("ripcoinsInfoLink")}
+                </TextLink>
+              </div>
             </div>
           }
           searchSlot={

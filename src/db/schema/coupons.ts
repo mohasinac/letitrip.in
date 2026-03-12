@@ -71,6 +71,29 @@ export interface CouponDocument {
   description: string;
   type: CouponType;
 
+  /**
+   * "admin" = platform-wide coupon created by an admin.
+   * "seller" = store-scoped coupon created by a verified seller.
+   * Defaults to "admin" for backward compatibility.
+   */
+  scope: "admin" | "seller";
+
+  /** Sellers only — the owner's user UID */
+  sellerId?: string;
+
+  /**
+   * Sellers only — the store's URL slug.
+   * Prepended to the coupon code so codes are store-unique:
+   * e.g. "KEKESTUDIO-SALE10"
+   */
+  storeSlug?: string;
+
+  /**
+   * Sellers only — when true the coupon is valid exclusively for
+   * auction items in this seller's store.
+   */
+  applicableToAuctions?: boolean;
+
   // Discount configuration
   discount: DiscountConfig;
 
@@ -90,7 +113,7 @@ export interface CouponDocument {
   restrictions: RestrictionsConfig;
 
   // Metadata
-  createdBy: string; // Admin user ID
+  createdBy: string; // Admin or seller user ID
   createdAt: Date;
   updatedAt: Date;
   stats: CouponStats;
@@ -254,6 +277,7 @@ export type CouponUpdateInput = Partial<
     | "usage"
     | "validity"
     | "restrictions"
+    | "applicableToAuctions"
   >
 >;
 
@@ -304,11 +328,38 @@ export function createCouponId(code: string): string {
 }
 
 /**
- * Validate coupon code format (uppercase alphanumeric, 4-20 chars)
+ * Validate coupon code format.
+ * Admin codes:  4-20 uppercase alphanumeric chars (e.g. SAVE20).
+ * Seller codes: STOREPREFIX-CODE format  (e.g. KEKESTUDIO-SAVE10).
+ * Both forms are acceptable — any uppercase alphanumeric string with
+ * at most one internal hyphen, 4-30 chars total.
  */
 export function isValidCouponCode(code: string): boolean {
-  const regex = /^[A-Z0-9]{4,20}$/;
-  return regex.test(code);
+  // Allow one optional hyphen in the middle (seller prefix separator)
+  const regex = /^[A-Z0-9][A-Z0-9-]{2,28}[A-Z0-9]$|^[A-Z0-9]{4,20}$/;
+  return regex.test(code) && !code.startsWith("-") && !code.endsWith("-");
+}
+
+/**
+ * Derive the store prefix used in seller coupon codes.
+ * Strips hyphens from the store slug, uppercases, truncates to 10 chars.
+ *
+ * @example sellerCouponCodePrefix("keke-studio") === "KEKESTUDIO"
+ * @example sellerCouponCodePrefix("ravi-elec-store") === "RAVIELECST"
+ */
+export function sellerCouponCodePrefix(storeSlug: string): string {
+  return storeSlug.replace(/-/g, "").toUpperCase().slice(0, 10);
+}
+
+/**
+ * Build the full coupon code a user types at checkout for a seller coupon.
+ * Format: {STOREPREFIX}-{SELLER_CODE}
+ */
+export function buildSellerCouponCode(
+  storeSlug: string,
+  sellerCode: string,
+): string {
+  return `${sellerCouponCodePrefix(storeSlug)}-${sellerCode.toUpperCase()}`;
 }
 
 /**

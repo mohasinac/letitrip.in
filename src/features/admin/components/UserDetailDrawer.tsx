@@ -33,6 +33,7 @@ interface UserDetailDrawerProps {
   onRoleChange: (user: AdminUser, newRole: string) => void;
   onToggleBan: (user: AdminUser) => void;
   onDelete: (user: AdminUser) => void;
+  onAdjustRipCoins: (user: AdminUser) => void;
 }
 
 const ROLES = ["user", "seller", "moderator", "admin"] as const;
@@ -44,8 +45,10 @@ export function UserDetailDrawer({
   onRoleChange,
   onToggleBan,
   onDelete,
+  onAdjustRipCoins,
 }: UserDetailDrawerProps) {
   const t = useTranslations("adminUsers");
+  const tRipCoins = useTranslations("adminRipCoins");
   const tRoles = useTranslations("roles");
   if (!user) return null;
 
@@ -115,6 +118,24 @@ export function UserDetailDrawer({
               {user.lastLoginAt ? formatDateTime(user.lastLoginAt) : t("never")}
             </Text>
           </div>
+        </div>
+
+        {/* RipCoins */}
+        <div className={`pt-4 border-t ${themed.border}`}>
+          <div className="flex items-center justify-between mb-2">
+            <Label>{tRipCoins("balance")}</Label>
+            <Text weight="semibold">
+              {(user.ripcoinBalance ?? 0).toLocaleString()} {tRipCoins("coins")}
+            </Text>
+          </div>
+          <Button
+            onClick={() => onAdjustRipCoins(user)}
+            variant="outline"
+            size="sm"
+            className="w-full"
+          >
+            {tRipCoins("adjustButton")}
+          </Button>
         </div>
 
         {/* Role Change */}

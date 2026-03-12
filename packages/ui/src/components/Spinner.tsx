@@ -3,7 +3,7 @@ import React from "react";
 /**
  * Spinner — generic loading indicator.
  *
- * Extracted from src/components/ui/Spinner.tsx for @lir/ui.
+ * Extracted from src/components/ui/Spinner.tsx for @mohasinac/ui.
  * No app-specific imports; pure Tailwind CSS.
  */
 

@@ -3,11 +3,13 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react";
+import { Button } from "./Button";
+import { Text, Span } from "./Typography";
 
 /**
  * ImageLightbox — full-screen image overlay with keyboard navigation.
  *
- * Standalone @lir/ui primitive. No app-specific imports.
+ * Standalone @mohasinac/ui primitive. No app-specific imports.
  * Navigation: ← / → arrow keys, Esc to close. Displays item counter.
  *
  * Uses a standard <img> tag for framework portability.
@@ -108,14 +110,16 @@ export function ImageLightbox({
       onKeyDown={handleKeyDown}
     >
       {/* Close button */}
-      <button
+      <Button
+        variant="ghost"
+        size="sm"
         type="button"
         onClick={onClose}
-        className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+        className="absolute top-4 right-4 z-10 p-2 !min-h-0 rounded-full bg-white/10 hover:bg-white/20 text-white"
         aria-label="Close lightbox"
       >
         <X className="w-6 h-6" />
-      </button>
+      </Button>
 
       {/* Counter */}
       {hasMultiple && (
@@ -126,14 +130,16 @@ export function ImageLightbox({
 
       {/* Prev button */}
       {hasMultiple && (
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           type="button"
           onClick={() => navigate(-1)}
-          className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
+          className="absolute left-4 top-1/2 -translate-y-1/2 p-2 !min-h-0 rounded-full bg-white/10 hover:bg-white/20 text-white z-10"
           aria-label="Previous image"
         >
           <ChevronLeft className="w-6 h-6" />
-        </button>
+        </Button>
       )}
 
       {/* Image */}
@@ -148,27 +154,33 @@ export function ImageLightbox({
         {/* Zoom icon hint */}
         <div className="absolute bottom-4 right-4 text-white/40 flex items-center gap-1 text-xs">
           <ZoomIn className="w-4 h-4" />
-          <span>Scroll to zoom</span>
+          <Span className="text-xs">Scroll to zoom</Span>
         </div>
       </div>
 
       {/* Caption */}
       {image.caption && (
-        <p className="flex-shrink-0 text-white/70 text-sm text-center px-8 pb-4">
+        <Text
+          size="sm"
+          variant="secondary"
+          className="flex-shrink-0 !text-white/70 text-center px-8 pb-4"
+        >
           {image.caption}
-        </p>
+        </Text>
       )}
 
       {/* Next button */}
       {hasMultiple && (
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           type="button"
           onClick={() => navigate(1)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
+          className="absolute right-4 top-1/2 -translate-y-1/2 p-2 !min-h-0 rounded-full bg-white/10 hover:bg-white/20 text-white z-10"
           aria-label="Next image"
         >
           <ChevronRight className="w-6 h-6" />
-        </button>
+        </Button>
       )}
     </div>,
     document.body,

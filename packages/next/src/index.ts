@@ -1,5 +1,5 @@
 /**
- * @lir/next — Next.js adapters and utilities
+ * @mohasinac/next — Next.js adapters and utilities
  *
  * Stage B4: IAuthVerifier interface + createApiErrorHandler factory.
  */

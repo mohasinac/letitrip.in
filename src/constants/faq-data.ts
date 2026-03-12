@@ -1275,6 +1275,254 @@ export const STATIC_FAQS: StaticFAQItem[] = [
     tags: ["international", "selling", "export"],
     stats: { views: 0, helpful: 0, notHelpful: 0 },
   },
+
+  // ============================================
+  // AUCTIONS (10 FAQs)
+  // ============================================
+  {
+    id: "how-auctions-work",
+    question: "How do auctions work on LetItRip?",
+    answer:
+      "Sellers list products as auctions with a starting bid. You place a bid that must be higher than the current highest bid. When the auction ends, the highest bidder wins and is required to complete the purchase.",
+    category: "auctions",
+    isPinned: true,
+    order: 1,
+    priority: 10,
+    tags: ["auctions", "bidding", "how-to"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "auction-do-i-have-to-pay",
+    question: "Do I have to pay if I win an auction?",
+    answer:
+      "Yes. Winning an auction is a binding commitment to purchase. If you win, you will be required to complete payment within 24 hours. Failure to pay may result in account suspension.",
+    category: "auctions",
+    isPinned: true,
+    order: 2,
+    priority: 10,
+    tags: ["auctions", "payment", "winner"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "auction-can-i-cancel",
+    question: "Can I cancel a bid I placed?",
+    answer:
+      "Bids are generally non-cancellable once placed. In rare exceptional circumstances (e.g. a seller changes the product description significantly), contact our support team before the auction ends.",
+    category: "auctions",
+    isPinned: false,
+    order: 3,
+    priority: 9,
+    tags: ["auctions", "cancel", "bid"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "auction-outbid",
+    question: "What happens when I get outbid?",
+    answer:
+      "You will receive a notification when someone places a higher bid. You can return and place a new bid if you wish to continue competing.",
+    category: "auctions",
+    isPinned: false,
+    order: 4,
+    priority: 8,
+    tags: ["auctions", "outbid", "notification"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "auction-reserve-price",
+    question: "What is a reserve price?",
+    answer:
+      "Some auctions have a hidden reserve price — the minimum the seller is willing to accept. If no bid meets the reserve price, the seller is not obligated to sell. The product page will indicate if a reserve applies.",
+    category: "auctions",
+    isPinned: false,
+    order: 5,
+    priority: 7,
+    tags: ["auctions", "reserve", "price"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "auction-coupons",
+    question: "Can I use a coupon on an auction purchase?",
+    answer:
+      "Only coupons specifically created for auctions (marked 'Auction Only') can be applied to auction items. Standard store coupons and platform-wide coupons do not apply to auction purchases. Pre-order items are never eligible for coupons.",
+    category: "auctions",
+    isPinned: false,
+    order: 6,
+    priority: 8,
+    tags: ["auctions", "coupons", "discount"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "auction-shipping",
+    question: "Who handles shipping for auction items?",
+    answer:
+      "The seller who listed the auction item is responsible for shipping once payment is confirmed. Shipping fees and timelines are specified on the auction product page.",
+    category: "auctions",
+    isPinned: false,
+    order: 7,
+    priority: 7,
+    tags: ["auctions", "shipping", "delivery"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "auction-snipe-protection",
+    question: "Is there protection against last-second sniping?",
+    answer:
+      "Yes. If a bid is placed in the final 2 minutes of an auction, the auction end time is automatically extended by 2 minutes to give all bidders a fair chance to respond.",
+    category: "auctions",
+    isPinned: false,
+    order: 8,
+    priority: 6,
+    tags: ["auctions", "snipe", "anti-sniping"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "auction-return-policy",
+    question: "Can I return an item I won at auction?",
+    answer:
+      "Returns for auction items follow the seller's stated return policy. Please check the auction listing before bidding. If the item arrives significantly not as described, contact support immediately.",
+    category: "auctions",
+    isPinned: false,
+    order: 9,
+    priority: 6,
+    tags: ["auctions", "returns", "refund"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "auction-seller-coupons",
+    question: "As a seller, can I offer coupons on my auction listings?",
+    answer:
+      "Yes. In your Seller Dashboard under Coupons, create a coupon and enable the 'Auction Items Only' option. This coupon will only apply to your auction listings — not your regular fixed-price products. Buyers can enter this coupon code at checkout after winning an auction.",
+    category: "auctions",
+    isPinned: false,
+    order: 10,
+    priority: 7,
+    tags: ["auctions", "seller", "coupons", "discount"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+
+  // ============================================
+  // PRE-ORDERS (10 FAQs)
+  // ============================================
+  {
+    id: "what-is-preorder",
+    question: "What is a pre-order?",
+    answer:
+      "A pre-order lets you reserve a product before it is produced or available in stock. You pay a deposit upfront (or the full amount, depending on the seller) and receive the product once production is complete.",
+    category: "preorders",
+    isPinned: true,
+    order: 1,
+    priority: 10,
+    tags: ["pre-order", "deposit", "reserve"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "preorder-deposit",
+    question: "How much deposit do I pay for a pre-order?",
+    answer:
+      "The deposit amount is set by the seller and shown on the product page. It is typically between 10% and 50% of the total price. The balance is collected when the product is ready to ship.",
+    category: "preorders",
+    isPinned: false,
+    order: 2,
+    priority: 9,
+    tags: ["pre-order", "deposit", "payment"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "preorder-delivery-date",
+    question: "When will I receive my pre-order?",
+    answer:
+      "The estimated delivery date is shown on the product page. Production timelines can change due to manufacturing delays; the seller will notify you of any updates. You can also check your order status in My Orders.",
+    category: "preorders",
+    isPinned: false,
+    order: 3,
+    priority: 9,
+    tags: ["pre-order", "delivery", "timeline"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "preorder-cancel",
+    question: "Can I cancel a pre-order?",
+    answer:
+      "Cancellation rights depend on the seller's policy, shown on the product page. If the seller allows cancellations, your deposit will be refunded within 5–7 business days. Once production has started, cancellations may not be possible.",
+    category: "preorders",
+    isPinned: false,
+    order: 4,
+    priority: 9,
+    tags: ["pre-order", "cancel", "refund"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "preorder-no-coupons",
+    question: "Can I use a coupon on a pre-order?",
+    answer:
+      "No. Coupons — including seller coupons and platform-wide discount codes — cannot be applied to pre-order items. Pre-orders have fixed pricing agreed at the time of reservation.",
+    category: "preorders",
+    isPinned: true,
+    order: 5,
+    priority: 9,
+    tags: ["pre-order", "coupons", "discount"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "preorder-quantity-limit",
+    question: "Is there a limit on how many pre-orders I can place?",
+    answer:
+      "Each pre-order listing may have a maximum quantity per buyer, shown on the product page. This ensures fair access during limited production runs.",
+    category: "preorders",
+    isPinned: false,
+    order: 6,
+    priority: 7,
+    tags: ["pre-order", "quantity", "limit"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "preorder-production-status",
+    question: "How do I track production status?",
+    answer:
+      "Sellers update the production status in their dashboard (e.g. 'In Production', 'Quality Check', 'Ready to Ship'). You can view the current status on your order detail page under My Orders.",
+    category: "preorders",
+    isPinned: false,
+    order: 7,
+    priority: 7,
+    tags: ["pre-order", "production", "status"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "preorder-item-delayed",
+    question: "What if my pre-order is significantly delayed?",
+    answer:
+      "If a pre-order is delayed beyond the original estimated date, you will be notified. If the delay exceeds 90 days from the original date, you are entitled to a full refund of any deposit paid.",
+    category: "preorders",
+    isPinned: false,
+    order: 8,
+    priority: 8,
+    tags: ["pre-order", "delay", "refund"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "preorder-payment-balance",
+    question: "When is the remaining balance charged?",
+    answer:
+      "The balance (total price minus deposit) is charged automatically once the seller marks the order as 'Ready to Ship'. You will receive an email and a notification before the charge is processed.",
+    category: "preorders",
+    isPinned: false,
+    order: 9,
+    priority: 7,
+    tags: ["pre-order", "balance", "payment"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
+  {
+    id: "preorder-returns",
+    question: "Can I return a pre-order item after delivery?",
+    answer:
+      "Returns are subject to the seller's return policy. Many pre-order items are custom or made-to-order and may not be eligible for return. Check the product page carefully before ordering.",
+    category: "preorders",
+    isPinned: false,
+    order: 10,
+    priority: 6,
+    tags: ["pre-order", "returns", "refund"],
+    stats: { views: 0, helpful: 0, notHelpful: 0 },
+  },
 ];
 
 /** Returns FAQs for a specific category, sorted by order. */
@@ -1306,6 +1554,8 @@ export function getStaticFaqCategoryCounts(): Record<FAQCategoryKey, number> {
     payment: 0,
     account: 0,
     sellers: 0,
+    auctions: 0,
+    preorders: 0,
   };
   STATIC_FAQS.forEach((f) => {
     if (f.category in counts) counts[f.category]++;

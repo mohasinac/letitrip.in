@@ -4,7 +4,7 @@ import { Badge } from "./Badge";
 /**
  * StatusBadge — semantic color map for order/payment/review/ticket status strings.
  *
- * Wraps @lir/ui Badge with a pre-defined status → variant mapping.
+ * Wraps @mohasinac/ui Badge with a pre-defined status → variant mapping.
  * No app-specific imports.
  */
 

@@ -1,5 +1,5 @@
 /**
- * @lir/http — Stage B3
+ * @mohasinac/http — Stage B3
  *
  * Framework-agnostic HTTP client extracted from src/lib/api-client.ts.
  * No app-specific imports (API_ENDPOINTS stripped).

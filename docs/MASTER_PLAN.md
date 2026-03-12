@@ -1,4 +1,4 @@
-# LetItRip — Master Architecture, Security & Migration Plan
+﻿# LetItRip — Master Architecture, Security & Migration Plan
 
 > **Single source of truth.** This document supersedes and replaces `DESIGN_PATTERNS.md`, `SSR_MIGRATION_PLAN.md`, and `LIBRARY_PLAN.md`.  
 > **Intent:** Concrete, actionable guidance for every open architectural concern — security fixes first, then pattern upgrades, SSR migration, and library extraction.  
@@ -62,7 +62,7 @@
    - 9.9 [verifyPaymentSignature — Timing Attack](#99--verifypaymentsignature--timing-attack)
    - 9.10 [Payment Verify Route — Stale Cart Prices](#910--payment-verify-route--stale-cart-prices)
    - 9.11 [useApiQuery — Module-Level Cache Not Cleared on Sign-Out](#911--useapiquery--module-level-cache-not-cleared-on-sign-out)
-10. [Library Extraction — `@lir/*` Packages](#10-library-extraction--lir-packages)
+10. [Library Extraction — `@mohasinac/*` Packages](#10-library-extraction--lir-packages)
 
 - 10.1 [Monorepo Structure](#101-monorepo-structure)
 - 10.2 [Package Inventory](#102-package-inventory)
@@ -76,38 +76,38 @@
 
 ## 1. Executive Summary
 
-| Priority | Area                          | Current State                              | Problem                                     | Action                                                                                                                                            |
-| -------- | ----------------------------- | ------------------------------------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **P0**   | ~~Rate limiter~~              | ~~In-memory `Map`~~                        | ~~Serverless: per-instance, dev bypass~~    | ✅ Fixed 2026-03-09 — Upstash Redis sliding-window with in-memory fallback; dev bypass removed (A5)                                               |
-| **P0**   | ~~Webhook HMAC~~              | ~~String `===` compare~~                   | ~~Timing attack~~                           | ✅ Fixed 2026-03-09 — `timingSafeEqual` (A3)                                                                                                      |
-| **P0**   | ~~Razorpay HMAC~~             | ~~String `===` compare~~                   | ~~Timing attack on payment verify~~         | ✅ Fixed 2026-03-09 — `timingSafeEqual` (A2) §9.9                                                                                                 |
-| **P0**   | ~~Payment verify~~            | ~~Cart snapshot prices~~                   | ~~Stale price enables undercharge~~         | ✅ Fixed 2026-03-10 — live `product.price` at create-order; §9.10                                                                                 |
-| **P0**   | ~~Media upload~~              | ~~`file.type` check~~                      | ~~Browser-spoofable MIME~~                  | ✅ Fixed 2026-03-09 — magic byte detection via `file-type`; `randomBytes` filename (A4)                                                           |
-| **P0**   | ~~apiClient~~                 | ~~`window.location.origin`~~               | ~~Crashes on server~~                       | ✅ Fixed 2026-03-09 — `NEXT_PUBLIC_APP_URL` env var fallback (A1)                                                                                 |
-| **P0**   | ~~CSP~~                       | ~~`unsafe-eval` / `unsafe-inline`~~        | ~~XSS injection vectors~~                   | ✅ Fixed 2026-03-10 — nonce-based CSP in middleware; inline scripts in `layout.tsx` receive nonce via `x-nonce` header (A6) §2.4                  |
-| **P1**   | ~~ThemeContext~~              | ~~`useState("light")`~~                    | ~~Flash on dark users; no SSR cookie~~      | ✅ Fixed 2026-03-09 — reads DOM class for initial state; writes cookie on toggle (A7) §2.5                                                        |
-| **P1**   | ~~ResponsiveView~~            | ~~Different JSX trees~~                    | ~~Hydration mismatch~~                      | ✅ Fixed 2026-03-09 — both trees rendered server-side; CSS hides inactive (A8) §2.7                                                               |
-| **P1**   | ~~useMediaQuery~~             | ~~`useState(false)`~~                      | ~~Hydration mismatch, mobile flash~~        | ✅ Fixed 2026-03-09 — lazy initializer with SSR guard (A9) §9.2                                                                                   |
-| **P1**   | ~~useWishlistToggle~~         | ~~Optimistic, no rollback~~                | ~~UI stuck on wrong state after error~~     | ✅ Fixed 2026-03-09 — rollback in catch (A10) §9.1                                                                                                |
-| **P1**   | ~~useApiQuery cache~~         | ~~Module-level singleton~~                 | ~~Prior user's data shown after sign-out~~  | ✅ Fixed 2026-03-09 — replaced with TanStack Query; `queryClient.clear()` on sign-out (A11 + C4) §9.11                                            |
-| **P1**   | ~~useRazorpay~~               | ~~`onerror` drops error~~                  | ~~Silent failure, UX shows "ready"~~        | ✅ Fixed 2026-03-09 — `isError` state exposed in return (A12) §9.5                                                                                |
-| **P2**   | ~~useNotifications~~          | ~~No `onSuccess` refetch~~                 | ~~Stale unread badge after read~~           | ✅ Fixed 2026-03-09 — `onSuccess: () => refetch()` (A13) §9.3                                                                                     |
-| **P2**   | ~~useChat~~                   | ~~`off()` without listener~~               | ~~Removes all RTDB subscribers~~            | ✅ Fixed 2026-03-09 — `listenerRef` stored; passed to `off()` (A14) §9.4                                                                          |
-| **P2**   | ~~apiClient AbortController~~ | ~~Listener never removed~~                 | ~~Event listener memory leak~~              | ✅ Fixed 2026-03-09 — `removeEventListener` in `finally` (A15) §9.6                                                                               |
-| **P2**   | ~~Data fetching~~             | ~~Hand-rolled SWR~~                        | ~~~350 LOC, no devtools~~                   | ✅ Fixed 2026-03-09 — TanStack Query v5; adapters deleted (C4)                                                                                    |
-| **P2**   | ~~Forms~~                     | ~~Custom `useForm`~~                       | ~~No touched state, no Zod~~                | ✅ Fixed 2026-03-09 — `react-hook-form` + `zodResolver`; `useForm.ts` deleted (D)                                                                 |
-| **P3**   | ~~Queue.process()~~           | ~~Not `await`-ed recursion~~               | ~~Unhandled promise rejections~~            | ✅ Fixed 2026-03-09 — `.catch()` on recursive call; extracted to `@lir/core` (A16, B2)                                                            |
-| **P3**   | ~~StorageManager~~            | ~~Prefix ignored on 2nd+ call~~            | ~~Key namespace collisions~~                | ✅ Fixed 2026-03-09 — per-prefix instance map; extracted to `@lir/core` (A17, B2)                                                                 |
-| **P3**   | ~~Services layer~~            | ~~35 apiClient wrappers~~                  | ~~Zero logic, 7-hop chain~~                 | ✅ G1+H3 complete 2026-03-10 — all mutations → Server Actions; pure-passthrough methods deleted                                                   |
-| **P3**   | ~~Token systems~~             | ~~CSS vars + THEME_CONSTANTS + Tailwind~~  | ~~Three sources of truth~~                  | ✅ F1–F4 complete 2026-03-10 — globals.css dead vars removed; gray-\* safelist removed; THEME_CONSTANTS aliases deleted; `@lir/ui` inlines tokens |
-| **P3**   | ~~SSR~~                       | ~~24 pages are `"use client"`~~            | ~~No SEO HTML, blank div~~                  | ✅ E1–E7 complete 2026-03-09 — all public pages are async RSC; `generateMetadata`; JSON-LD; SSE islands                                           |
-| **P3**   | ~~Library extraction~~        | ~~Everything in `src/`~~                   | ~~Business and infra code tightly coupled~~ | ✅ B1–B4 + F2–F4 complete 2026-03-10 — `@lir/core`, `@lir/react`, `@lir/ui`, `@lir/http`, `@lir/next` live                                        |
-| **P4**   | ~~CacheManager~~              | ~~`maxSize` ignored~~                      | ~~Misconfiguration footgun~~                | ✅ Extracted to `@lir/core` with fixed singleton API (C4, B2)                                                                                     |
-| **P4**   | ~~Schema adapters~~           | ~~3 partial adapters~~                     | ~~Incomplete, `\|` defaults~~               | ✅ Dead adapters deleted (G4)                                                                                                                     |
-| **P4**   | ~~EventBus~~                  | ~~Parallel to TanStack invalidation~~      | ~~Two invalidation mechanisms~~             | ✅ Extracted to `@lir/core`; app uses `queryClient.invalidateQueries` (C4, B2)                                                                    |
-| **P4**   | ~~TECH_DEBT.md~~              | ~~Referenced in `next.config.js` comment~~ | ~~File does not exist~~                     | ✅ Created 2026-03-10 — `docs/TECH_DEBT.md` (H6)                                                                                                  |
-| **—**    | ~~G2 FilterPanel~~            | ~~14 separate admin filter components~~    | ~~Duplicated rendering logic~~              | ✅ Complete 2026-03-10 — all 14 admin filters use `FilterPanel` config-driven pattern                                                             |
-| **—**    | ~~Rate-limit headers~~        | ~~429 returned no headers~~                | ~~Clients can't track quota~~               | ✅ Fixed 2026-03-10 — `RateLimit-Limit/Remaining/Reset` headers on 429 and all rate-limited routes (§3.3)                                         |
+| Priority | Area                          | Current State                              | Problem                                     | Action                                                                                                                                                  |
+| -------- | ----------------------------- | ------------------------------------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **P0**   | ~~Rate limiter~~              | ~~In-memory `Map`~~                        | ~~Serverless: per-instance, dev bypass~~    | ✅ Fixed 2026-03-09 — Upstash Redis sliding-window with in-memory fallback; dev bypass removed (A5)                                                     |
+| **P0**   | ~~Webhook HMAC~~              | ~~String `===` compare~~                   | ~~Timing attack~~                           | ✅ Fixed 2026-03-09 — `timingSafeEqual` (A3)                                                                                                            |
+| **P0**   | ~~Razorpay HMAC~~             | ~~String `===` compare~~                   | ~~Timing attack on payment verify~~         | ✅ Fixed 2026-03-09 — `timingSafeEqual` (A2) §9.9                                                                                                       |
+| **P0**   | ~~Payment verify~~            | ~~Cart snapshot prices~~                   | ~~Stale price enables undercharge~~         | ✅ Fixed 2026-03-10 — live `product.price` at create-order; §9.10                                                                                       |
+| **P0**   | ~~Media upload~~              | ~~`file.type` check~~                      | ~~Browser-spoofable MIME~~                  | ✅ Fixed 2026-03-09 — magic byte detection via `file-type`; `randomBytes` filename (A4)                                                                 |
+| **P0**   | ~~apiClient~~                 | ~~`window.location.origin`~~               | ~~Crashes on server~~                       | ✅ Fixed 2026-03-09 — `NEXT_PUBLIC_APP_URL` env var fallback (A1)                                                                                       |
+| **P0**   | ~~CSP~~                       | ~~`unsafe-eval` / `unsafe-inline`~~        | ~~XSS injection vectors~~                   | ✅ Fixed 2026-03-10 — nonce-based CSP in middleware; inline scripts in `layout.tsx` receive nonce via `x-nonce` header (A6) §2.4                        |
+| **P1**   | ~~ThemeContext~~              | ~~`useState("light")`~~                    | ~~Flash on dark users; no SSR cookie~~      | ✅ Fixed 2026-03-09 — reads DOM class for initial state; writes cookie on toggle (A7) §2.5                                                              |
+| **P1**   | ~~ResponsiveView~~            | ~~Different JSX trees~~                    | ~~Hydration mismatch~~                      | ✅ Fixed 2026-03-09 — both trees rendered server-side; CSS hides inactive (A8) §2.7                                                                     |
+| **P1**   | ~~useMediaQuery~~             | ~~`useState(false)`~~                      | ~~Hydration mismatch, mobile flash~~        | ✅ Fixed 2026-03-09 — lazy initializer with SSR guard (A9) §9.2                                                                                         |
+| **P1**   | ~~useWishlistToggle~~         | ~~Optimistic, no rollback~~                | ~~UI stuck on wrong state after error~~     | ✅ Fixed 2026-03-09 — rollback in catch (A10) §9.1                                                                                                      |
+| **P1**   | ~~useApiQuery cache~~         | ~~Module-level singleton~~                 | ~~Prior user's data shown after sign-out~~  | ✅ Fixed 2026-03-09 — replaced with TanStack Query; `queryClient.clear()` on sign-out (A11 + C4) §9.11                                                  |
+| **P1**   | ~~useRazorpay~~               | ~~`onerror` drops error~~                  | ~~Silent failure, UX shows "ready"~~        | ✅ Fixed 2026-03-09 — `isError` state exposed in return (A12) §9.5                                                                                      |
+| **P2**   | ~~useNotifications~~          | ~~No `onSuccess` refetch~~                 | ~~Stale unread badge after read~~           | ✅ Fixed 2026-03-09 — `onSuccess: () => refetch()` (A13) §9.3                                                                                           |
+| **P2**   | ~~useChat~~                   | ~~`off()` without listener~~               | ~~Removes all RTDB subscribers~~            | ✅ Fixed 2026-03-09 — `listenerRef` stored; passed to `off()` (A14) §9.4                                                                                |
+| **P2**   | ~~apiClient AbortController~~ | ~~Listener never removed~~                 | ~~Event listener memory leak~~              | ✅ Fixed 2026-03-09 — `removeEventListener` in `finally` (A15) §9.6                                                                                     |
+| **P2**   | ~~Data fetching~~             | ~~Hand-rolled SWR~~                        | ~~~350 LOC, no devtools~~                   | ✅ Fixed 2026-03-09 — TanStack Query v5; adapters deleted (C4)                                                                                          |
+| **P2**   | ~~Forms~~                     | ~~Custom `useForm`~~                       | ~~No touched state, no Zod~~                | ✅ Fixed 2026-03-09 — `react-hook-form` + `zodResolver`; `useForm.ts` deleted (D)                                                                       |
+| **P3**   | ~~Queue.process()~~           | ~~Not `await`-ed recursion~~               | ~~Unhandled promise rejections~~            | ✅ Fixed 2026-03-09 — `.catch()` on recursive call; extracted to `@mohasinac/core` (A16, B2)                                                            |
+| **P3**   | ~~StorageManager~~            | ~~Prefix ignored on 2nd+ call~~            | ~~Key namespace collisions~~                | ✅ Fixed 2026-03-09 — per-prefix instance map; extracted to `@mohasinac/core` (A17, B2)                                                                 |
+| **P3**   | ~~Services layer~~            | ~~35 apiClient wrappers~~                  | ~~Zero logic, 7-hop chain~~                 | ✅ G1+H3 complete 2026-03-10 — all mutations → Server Actions; pure-passthrough methods deleted                                                         |
+| **P3**   | ~~Token systems~~             | ~~CSS vars + THEME_CONSTANTS + Tailwind~~  | ~~Three sources of truth~~                  | ✅ F1–F4 complete 2026-03-10 — globals.css dead vars removed; gray-\* safelist removed; THEME_CONSTANTS aliases deleted; `@mohasinac/ui` inlines tokens |
+| **P3**   | ~~SSR~~                       | ~~24 pages are `"use client"`~~            | ~~No SEO HTML, blank div~~                  | ✅ E1–E7 complete 2026-03-09 — all public pages are async RSC; `generateMetadata`; JSON-LD; SSE islands                                                 |
+| **P3**   | ~~Library extraction~~        | ~~Everything in `src/`~~                   | ~~Business and infra code tightly coupled~~ | ✅ B1–B4 + F2–F4 complete 2026-03-10 — `@mohasinac/core`, `@mohasinac/react`, `@mohasinac/ui`, `@mohasinac/http`, `@mohasinac/next` live                |
+| **P4**   | ~~CacheManager~~              | ~~`maxSize` ignored~~                      | ~~Misconfiguration footgun~~                | ✅ Extracted to `@mohasinac/core` with fixed singleton API (C4, B2)                                                                                     |
+| **P4**   | ~~Schema adapters~~           | ~~3 partial adapters~~                     | ~~Incomplete, `\|` defaults~~               | ✅ Dead adapters deleted (G4)                                                                                                                           |
+| **P4**   | ~~EventBus~~                  | ~~Parallel to TanStack invalidation~~      | ~~Two invalidation mechanisms~~             | ✅ Extracted to `@mohasinac/core`; app uses `queryClient.invalidateQueries` (C4, B2)                                                                    |
+| **P4**   | ~~TECH_DEBT.md~~              | ~~Referenced in `next.config.js` comment~~ | ~~File does not exist~~                     | ✅ Created 2026-03-10 — `docs/TECH_DEBT.md` (H6)                                                                                                        |
+| **—**    | ~~G2 FilterPanel~~            | ~~14 separate admin filter components~~    | ~~Duplicated rendering logic~~              | ✅ Complete 2026-03-10 — all 14 admin filters use `FilterPanel` config-driven pattern                                                                   |
+| **—**    | ~~Rate-limit headers~~        | ~~429 returned no headers~~                | ~~Clients can't track quota~~               | ✅ Fixed 2026-03-10 — `RateLimit-Limit/Remaining/Reset` headers on 429 and all rate-limited routes (§3.3)                                               |
 
 ---
 
@@ -1376,11 +1376,11 @@ All work is divided into eight stages. **Stages A and B run in parallel.** Withi
 ```
 A1 (apiClient fix)   ──► E1 (SSR Phase 1)
 A1–A6 deployed       ──► C1 (TanStack Query) and E1 (SSR)  ← gates
-C4 (TanStack done)   ──► F2 (@lir/react)  — don't extract hooks about to be deleted
+C4 (TanStack done)   ──► F2 (@mohasinac/react)  — don't extract hooks about to be deleted
 D3 (forms done)      ──► F2
-F1 (styling trim)    ──► F3 (@lir/ui)     — trim THEME_CONSTANTS before packaging
+F1 (styling trim)    ──► F3 (@mohasinac/ui)     — trim THEME_CONSTANTS before packaging
 E6 (auth session)    ──► G1 (Server Actions need getSession())
-F4 (imports done)    ──► H7 (publish @lir/*)
+F4 (imports done)    ──► H7 (publish @mohasinac/*)
 ```
 
 ---
@@ -1419,12 +1419,12 @@ F4 (imports done)    ──► H7 (publish @lir/*)
 
 Copies files and creates new packages without modifying any app source. Safe to run alongside Stage A.
 
-| Step | Action                                                                                          | §Ref  | Risk   | Effort | Prerequisite |
-| ---- | ----------------------------------------------------------------------------------------------- | ----- | ------ | ------ | ------------ |
-| B1   | Bootstrap monorepo — `pnpm-workspace.yaml`, `turbo.json`, per-package `tsup` + `tsconfig` stubs | §10.1 | Low    | 1 hr   | —            |
-| B2   | Extract `@lir/core` — copy pure files, strip app imports, write Vitest tests                    | §10.2 | Low    | 2 days | B1           |
-| B3   | Extract `@lir/http` — strip `API_ENDPOINTS` ref; add `baseUrl` constructor                      | §10.2 | Low    | 4 hr   | B2           |
-| B4   | Extract `@lir/next` — `IAuthVerifier` interface; move `error-handler` out of `@lir/core`        | §10.2 | Medium | 1 day  | B2, B3       |
+| Step | Action                                                                                               | §Ref  | Risk   | Effort | Prerequisite |
+| ---- | ---------------------------------------------------------------------------------------------------- | ----- | ------ | ------ | ------------ |
+| B1   | Bootstrap monorepo — `pnpm-workspace.yaml`, `turbo.json`, per-package `tsup` + `tsconfig` stubs      | §10.1 | Low    | 1 hr   | —            |
+| B2   | Extract `@mohasinac/core` — copy pure files, strip app imports, write Vitest tests                   | §10.2 | Low    | 2 days | B1           |
+| B3   | Extract `@mohasinac/http` — strip `API_ENDPOINTS` ref; add `baseUrl` constructor                     | §10.2 | Low    | 4 hr   | B2           |
+| B4   | Extract `@mohasinac/next` — `IAuthVerifier` interface; move `error-handler` out of `@mohasinac/core` | §10.2 | Medium | 1 day  | B2, B3       |
 
 ---
 
@@ -1479,19 +1479,19 @@ Copies files and creates new packages without modifying any app source. Safe to 
 ### Stage F — Library: React & UI Extraction _(after C4 and D3)_```````````````````````````````````````````````````````````
 
 > **F1 ✅** committed 2026-03-10 — dead CSS custom properties + `@layer components` block removed from `globals.css`; all `gray-*` Tailwind classes replaced across 90+ files with canonical zinc/slate palette; `gray-*` safelist removed from `tailwind.config.js`.<br>
-> **F2 ✅** committed 2026-03-10 — `@lir/react` package: 10 generic hooks extracted (`useMediaQuery`, `useBreakpoint`, `useClickOutside`, `useKeyPress`, `useLongPress`, `useGesture`, `useSwipe`, `useCamera`, `usePullToRefresh`, `useCountdown`).<br>
-> **F3 ✅** committed 2026-03-10 — `@lir/ui` package: `Semantic.tsx` (10 layout/nav components) + `Typography.tsx` (Heading/Text/Label/Caption/Span) + `Spinner`, `Skeleton`, `Button`, `Badge`, `Alert`, `Divider`, `Progress`, `IndeterminateProgress` — all using inlined `UI_THEME`.<br>
-> **F4 ✅** committed 2026-03-10 — `tsconfig.json` path aliases + `transpilePackages` for all `@lir/*`; `src/classes/*` and `src/hooks/*` converted to 2-line re-exports from `@lir/*`.
+> **F2 ✅** committed 2026-03-10 — `@mohasinac/react` package: 10 generic hooks extracted (`useMediaQuery`, `useBreakpoint`, `useClickOutside`, `useKeyPress`, `useLongPress`, `useGesture`, `useSwipe`, `useCamera`, `usePullToRefresh`, `useCountdown`).<br>
+> **F3 ✅** committed 2026-03-10 — `@mohasinac/ui` package: `Semantic.tsx` (10 layout/nav components) + `Typography.tsx` (Heading/Text/Label/Caption/Span) + `Spinner`, `Skeleton`, `Button`, `Badge`, `Alert`, `Divider`, `Progress`, `IndeterminateProgress` — all using inlined `UI_THEME`.<br>
+> **F4 ✅** committed 2026-03-10 — `tsconfig.json` path aliases + `transpilePackages` for all `@mohasinac/*`; `src/classes/*` and `src/hooks/*` converted to 2-line re-exports from `@mohasinac/*`.
 > **Stage F complete.**
 
 Extract only the hooks and components that survive the TanStack Query and react-hook-form migrations.
 
-| Step | Action                                                                                         | §Ref  | Risk   | Effort | Prerequisite |
-| ---- | ---------------------------------------------------------------------------------------------- | ----- | ------ | ------ | ------------ |
-| F1   | Styling cleanup — dead CSS vars, `gray-*` audit, `THEME_CONSTANTS` pure-alias trim             | §4    | Low    | 1 day  | D3           |
-| F2   | Extract `@lir/react` — remaining generic hooks, `StorageManager`, `EventManager`, `classNames` | §10.2 | Medium | 1 day  | C4, D3, B2   |
-| F3   | Extract `@lir/ui` — all generic components; rename `THEME_CONSTANTS` → `UI_THEME`              | §10.2 | Medium | 2 days | F1, F2       |
-| F4   | Update all `apps/web` imports to `@lir/*`; run `npx tsc --noEmit` + `npm run build`            | §10.5 | Medium | 2 days | B4, F3       |
+| Step | Action                                                                                               | §Ref  | Risk   | Effort | Prerequisite |
+| ---- | ---------------------------------------------------------------------------------------------------- | ----- | ------ | ------ | ------------ |
+| F1   | Styling cleanup — dead CSS vars, `gray-*` audit, `THEME_CONSTANTS` pure-alias trim                   | §4    | Low    | 1 day  | D3           |
+| F2   | Extract `@mohasinac/react` — remaining generic hooks, `StorageManager`, `EventManager`, `classNames` | §10.2 | Medium | 1 day  | C4, D3, B2   |
+| F3   | Extract `@mohasinac/ui` — all generic components; rename `THEME_CONSTANTS` → `UI_THEME`              | §10.2 | Medium | 2 days | F1, F2       |
+| F4   | Update all `apps/web` imports to `@mohasinac/*`; run `npx tsc --noEmit` + `npm run build`            | §10.5 | Medium | 2 days | B4, F3       |
 
 ---
 
@@ -1516,7 +1516,7 @@ Extract only the hooks and components that survive the TanStack Query and react-
 
 ### Stage H — Dead Code & Publish _(as upstream stages complete)_
 
-> **H1 ✅** committed 2026-03-11 — `useApiQuery.ts` + `useApiMutation.ts` deleted (C4, 2026-03-09); `CacheManager.ts` + `EventBus.ts` converted to thin `@lir/core` re-exports (F4); all four removed from `src/hooks/index.ts` and `src/classes/index.ts` barrels; zero app callers confirmed.<br>
+> **H1 ✅** committed 2026-03-11 — `useApiQuery.ts` + `useApiMutation.ts` deleted (C4, 2026-03-09); `CacheManager.ts` + `EventBus.ts` converted to thin `@mohasinac/core` re-exports (F4); all four removed from `src/hooks/index.ts` and `src/classes/index.ts` barrels; zero app callers confirmed.<br>
 > **H2 ✅** committed 2026-03-11 — `export { useForm } from "react-hook-form"` removed from `src/hooks/index.ts`; no app callers found; imports from `react-hook-form` directly per Rule 5.<br>
 > **H4 ✅** committed 2026-03-11 — `animation: { fast, normal, slow }` pure-alias section deleted from `src/constants/theme.ts`; `SidebarLayout.tsx` updated to use `duration-300` inline. All F1 work (dead CSS vars, gray-* safelist, spacing alias deletion) confirmed complete.<br>
 > **H5 ✅** committed 2026-03-10 — `src/snippets/` deleted (6 files); moved to `docs/snippets/`; barrel re-export removed from `src/index.ts`.<br>
@@ -1524,16 +1524,16 @@ Extract only the hooks and components that survive the TanStack Query and react-
 > **H7 ✅** committed 2026-03-11 — per-package `CHANGELOG.md` files authored; `.changeset/config.json` initialised (`access: public`, `baseBranch: main`); `"private": true` removed + `"publishConfig": { "access": "public" }` added to all 5 `packages/*/package.json`; `@changesets/cli` added to root devDependencies; `changeset`, `version-packages`, `release` scripts added to root `package.json`.<br>
 > **Stage H complete** (H8 optional — full monorepo restructure, no timeline).
 
-| Step        | Action                                                                                   | §Ref      | Risk | Effort | Prerequisite |
-| ----------- | ---------------------------------------------------------------------------------------- | --------- | ---- | ------ | ------------ |
-| ~~H1~~      | ~~Remove `useApiQuery`, `useApiMutation`, `CacheManager`, `EventBus` barrel exports~~    | §8 wave-A | Low  | 1 hr   | C4           |
-| ~~H2~~      | ~~Remove `useForm.ts` barrel export~~                                                    | §8 wave-B | Low  | 30 min | D3           |
-| ~~H3~~      | ~~Delete pure pass-through services + `demo.service.ts`~~                                | §8 wave-C | Low  | 1 day  | G1           |
-| ~~H4~~      | ~~Delete dead CSS vars, `THEME_CONSTANTS` aliases, remove `gray-*` safelist~~            | §8 wave-D | Low  | 4 hr   | F1           |
-| ~~H5~~      | ~~Move `src/snippets/` → `docs/snippets/` or delete; confirm zero runtime imports~~      | §8 wave-E | Low  | 30 min | —            |
-| ~~H6~~      | ~~Create `docs/TECH_DEBT.md` (referenced in `next.config.js`)~~                          | §5 Ph7    | Low  | 30 min | —            |
-| ~~H7~~      | ~~Per-package `CHANGELOG.md`; configure `changesets`; publish `@lir/*` packages to npm~~ | §10.4     | Low  | 1 day  | F4           |
-| H8 _(opt.)_ | Move `src/` → `apps/web/`; full monorepo restructure                                     | §10.1     | Low  | 1 day  | H7           |
+| Step        | Action                                                                                         | §Ref      | Risk | Effort | Prerequisite |
+| ----------- | ---------------------------------------------------------------------------------------------- | --------- | ---- | ------ | ------------ |
+| ~~H1~~      | ~~Remove `useApiQuery`, `useApiMutation`, `CacheManager`, `EventBus` barrel exports~~          | §8 wave-A | Low  | 1 hr   | C4           |
+| ~~H2~~      | ~~Remove `useForm.ts` barrel export~~                                                          | §8 wave-B | Low  | 30 min | D3           |
+| ~~H3~~      | ~~Delete pure pass-through services + `demo.service.ts`~~                                      | §8 wave-C | Low  | 1 day  | G1           |
+| ~~H4~~      | ~~Delete dead CSS vars, `THEME_CONSTANTS` aliases, remove `gray-*` safelist~~                  | §8 wave-D | Low  | 4 hr   | F1           |
+| ~~H5~~      | ~~Move `src/snippets/` → `docs/snippets/` or delete; confirm zero runtime imports~~            | §8 wave-E | Low  | 30 min | —            |
+| ~~H6~~      | ~~Create `docs/TECH_DEBT.md` (referenced in `next.config.js`)~~                                | §5 Ph7    | Low  | 30 min | —            |
+| ~~H7~~      | ~~Per-package `CHANGELOG.md`; configure `changesets`; publish `@mohasinac/*` packages to npm~~ | §10.4     | Low  | 1 day  | F4           |
+| H8 _(opt.)_ | Move `src/` → `apps/web/`; full monorepo restructure                                           | §10.1     | Low  | 1 day  | H7           |
 
 ---
 
@@ -1553,8 +1553,8 @@ This table is the master deletion checklist. See [Phase 8](#phase-8--dead-code-r
 | ~~`src/hooks/__tests__/useForm.test.ts`~~                     | Deleted alongside source file (Stage D, 2026-03-09)                                                                                                                                                                                                                                                          |
 | ~~`src/hooks/useApiQuery.ts`~~                                | Deleted — replaced by native `useQuery` from TanStack Query (C4, 2026-03-09)                                                                                                                                                                                                                                 |
 | ~~`src/hooks/useApiMutation.ts`~~                             | Deleted — replaced by native `useMutation` from TanStack Query (C4, 2026-03-09)                                                                                                                                                                                                                              |
-| ~~`src/classes/CacheManager.ts`~~                             | Re-exported from `@lir/core` — `maxSize` singleton bug fixed (B2, F4, 2026-03-10)                                                                                                                                                                                                                            |
-| ~~`src/classes/EventBus.ts`~~                                 | Re-exported from `@lir/core` (B2, F4, 2026-03-10)                                                                                                                                                                                                                                                            |
+| ~~`src/classes/CacheManager.ts`~~                             | Re-exported from `@mohasinac/core` — `maxSize` singleton bug fixed (B2, F4, 2026-03-10)                                                                                                                                                                                                                      |
+| ~~`src/classes/EventBus.ts`~~                                 | Re-exported from `@mohasinac/core` (B2, F4, 2026-03-10)                                                                                                                                                                                                                                                      |
 | ~~`src/services/demo.service.ts`~~                            | Deleted — demo artifact, no callers (H3, 2026-03-10)                                                                                                                                                                                                                                                         |
 | ~~`src/snippets/` (entire directory)~~                        | Moved to `docs/snippets/` (H5, 2026-03-10)                                                                                                                                                                                                                                                                   |
 
@@ -1566,14 +1566,14 @@ All previously pending files have been deleted. See "Already deleted / moved ✅
 
 All code-level removals are now complete. ✅
 
-| Location                                                  | What to remove                                                      | When    | Status                                     |
-| --------------------------------------------------------- | ------------------------------------------------------------------- | ------- | ------------------------------------------ |
-| ~~`src/hooks/index.ts`~~                                  | ~~Barrel re-exports for deleted hooks~~                             | C4 & D3 | ✅ H1, H2                                  |
-| ~~`src/classes/index.ts`~~                                | ~~Barrel re-exports for deleted classes~~                           | C4      | ✅ H1 (thin @lir/core re-exports retained) |
-| ~~`src/app/globals.css`~~                                 | ~~Dead `--variable` CSS custom properties~~                         | F1      | ✅ F1                                      |
-| ~~`src/constants/theme.ts`~~                              | ~~Pure Tailwind-alias entries (`gap.*`, `animation.*`)~~            | F1, H4  | ✅ F1 + H4                                 |
-| ~~`tailwind.config.js` safelist~~                         | ~~`gray-*` entries once all `gray-` classes replaced~~              | F1      | ✅ F1                                      |
-| ~~`src/app/[locale]/layout.tsx` and all 24 client pages~~ | ~~`"use client"` directive (where applicable after SSR migration)~~ | E1–E7   | ✅ E1–E7                                   |
+| Location                                                  | What to remove                                                      | When    | Status                                           |
+| --------------------------------------------------------- | ------------------------------------------------------------------- | ------- | ------------------------------------------------ |
+| ~~`src/hooks/index.ts`~~                                  | ~~Barrel re-exports for deleted hooks~~                             | C4 & D3 | ✅ H1, H2                                        |
+| ~~`src/classes/index.ts`~~                                | ~~Barrel re-exports for deleted classes~~                           | C4      | ✅ H1 (thin @mohasinac/core re-exports retained) |
+| ~~`src/app/globals.css`~~                                 | ~~Dead `--variable` CSS custom properties~~                         | F1      | ✅ F1                                            |
+| ~~`src/constants/theme.ts`~~                              | ~~Pure Tailwind-alias entries (`gap.*`, `animation.*`)~~            | F1, H4  | ✅ F1 + H4                                       |
+| ~~`tailwind.config.js` safelist~~                         | ~~`gray-*` entries once all `gray-` classes replaced~~              | F1      | ✅ F1                                            |
+| ~~`src/app/[locale]/layout.tsx` and all 24 client pages~~ | ~~`"use client"` directive (where applicable after SSR migration)~~ | E1–E7   | ✅ E1–E7                                         |
 
 ---
 
@@ -1917,11 +1917,11 @@ When TanStack Query replaces `useApiQuery`, use `queryClient.clear()` instead.
 
 ---
 
-## 10. Library Extraction — `@lir/*` Packages
+## 10. Library Extraction — `@mohasinac/*` Packages
 
 > **Goal:** Extract all non-business, framework/DB/store-agnostic code into standalone, publishable npm packages that any project can consume regardless of stack.  
 > **Strategy:** Pnpm workspace monorepo with a `packages/` root. `letitrip.in` becomes one app; library packages are siblings. They can later move to a dedicated repo and be published to npm or a private registry.  
-> **Non-breaking Phase 0:** Do NOT move app files until packages are stable. Extract packages in-place, update the app to import from `@lir/*`, then restructure the monorepo.
+> **Non-breaking Phase 0:** Do NOT move app files until packages are stable. Extract packages in-place, update the app to import from `@mohasinac/*`, then restructure the monorepo.
 
 ---
 
@@ -1933,11 +1933,11 @@ letitrip.in/                     ← repo root (becomes monorepo)
 │   └── web/                     ← current src/, public/, next.config.js … (moved later)
 │       └── functions/           ← Firebase Functions
 ├── packages/
-│   ├── core/                    ← @lir/core   — zero deps
-│   ├── react/                   ← @lir/react  — peer: react
-│   ├── ui/                      ← @lir/ui     — peer: react, tailwindcss
-│   ├── http/                    ← @lir/http   — zero runtime deps
-│   └── next/                    ← @lir/next   — peer: next, react
+│   ├── core/                    ← @mohasinac/core   — zero deps
+│   ├── react/                   ← @mohasinac/react  — peer: react
+│   ├── ui/                      ← @mohasinac/ui     — peer: react, tailwindcss
+│   ├── http/                    ← @mohasinac/http   — zero runtime deps
+│   └── next/                    ← @mohasinac/next   — peer: next, react
 ├── pnpm-workspace.yaml
 ├── turbo.json                   ← Turborepo build orchestration
 └── package.json                 ← root workspace scripts
@@ -1947,13 +1947,13 @@ letitrip.in/                     ← repo root (becomes monorepo)
 
 ### 10.2 Package Inventory
 
-#### `@lir/core` — Pure TypeScript utilities
+#### `@mohasinac/core` — Pure TypeScript utilities
 
 **No runtime dependencies. Works in any JS environment (browser, Node, Deno, edge).**
 
 | Module                     | Source file                                  | Notes                                                                         |
 | -------------------------- | -------------------------------------------- | ----------------------------------------------------------------------------- |
-| `formatters/date`          | `src/utils/formatters/date.formatter.ts`     | Remove Firestore Timestamp overload (move to `@lir/next`)                     |
+| `formatters/date`          | `src/utils/formatters/date.formatter.ts`     | Remove Firestore Timestamp overload (move to `@mohasinac/next`)               |
 | `formatters/number`        | `src/utils/formatters/number.formatter.ts`   | Unchanged                                                                     |
 | `formatters/string`        | `src/utils/formatters/string.formatter.ts`   | Unchanged                                                                     |
 | `validators/email`         | `src/utils/validators/email.validator.ts`    | Unchanged                                                                     |
@@ -1974,22 +1974,22 @@ letitrip.in/                     ← repo root (becomes monorepo)
 | `classes/EventBus`         | `src/classes/EventBus.ts`                    | Unchanged                                                                     |
 | `classes/Logger`           | `src/classes/Logger.ts`                      | Extract file-write path behind optional `ILogWriter` interface                |
 | `classes/Queue`            | `src/classes/Queue.ts`                       | Unchanged                                                                     |
-| `errors/`                  | `src/lib/errors/*.ts` (all 8 files)          | Remove `nextResponse` dep — move `error-handler` to `@lir/next`               |
+| `errors/`                  | `src/lib/errors/*.ts` (all 8 files)          | Remove `nextResponse` dep — move `error-handler` to `@mohasinac/next`         |
 | `constants/config`         | `src/constants/config.ts`                    | Generic keys only (TOKEN, PASSWORD, VALIDATION, API, PAGINATION, FILE_UPLOAD) |
 | `constants/error-messages` | Subset of `src/constants/error-messages.ts`  | AUTH + VALIDATION + DB sections only                                          |
 
-> **Interaction with §3.1 and §3.6:** Once TanStack Query is adopted, `CacheManager` and `EventBus` are deleted from the app (§8 sub-wave A). They still belong in `@lir/core` as general utilities — the app just stops consuming them.
+> **Interaction with §3.1 and §3.6:** Once TanStack Query is adopted, `CacheManager` and `EventBus` are deleted from the app (§8 sub-wave A). They still belong in `@mohasinac/core` as general utilities — the app just stops consuming them.
 
 ---
 
-#### `@lir/react` — React hooks & browser utilities
+#### `@mohasinac/react` — React hooks & browser utilities
 
-**Peer deps: `react >=18`, `react-dom >=18`.** No Next.js deps. Depends on `@lir/core`.
+**Peer deps: `react >=18`, `react-dom >=18`.** No Next.js deps. Depends on `@mohasinac/core`.
 
 | Module                    | Source file                                   | Notes                                                                    |
 | ------------------------- | --------------------------------------------- | ------------------------------------------------------------------------ |
 | `hooks/useApiMutation`    | `src/hooks/useApiMutation.ts`                 | Unchanged — pure React state machine                                     |
-| `hooks/useApiQuery`       | `src/hooks/useApiQuery.ts`                    | Replace `CacheManager` import with `@lir/core`                           |
+| `hooks/useApiQuery`       | `src/hooks/useApiQuery.ts`                    | Replace `CacheManager` import with `@mohasinac/core`                     |
 | `hooks/useBreakpoint`     | `src/hooks/useBreakpoint.ts`                  | Make breakpoints configurable via `createBreakpointHook(config)` factory |
 | `hooks/useBulkSelection`  | `src/hooks/useBulkSelection.ts`               | Unchanged                                                                |
 | `hooks/useClickOutside`   | `src/hooks/useClickOutside.ts`                | Unchanged                                                                |
@@ -2001,23 +2001,23 @@ letitrip.in/                     ← repo root (becomes monorepo)
 | `hooks/useMediaQuery`     | `src/hooks/useMediaQuery.ts`                  | Unchanged                                                                |
 | `hooks/usePullToRefresh`  | `src/hooks/usePullToRefresh.ts`               | Unchanged                                                                |
 | `hooks/useSwipe`          | `src/hooks/useSwipe.ts`                       | Unchanged                                                                |
-| `hooks/useUnsavedChanges` | `src/hooks/useUnsavedChanges.ts`              | Replace `eventBus` import with `@lir/core` EventBus                      |
+| `hooks/useUnsavedChanges` | `src/hooks/useUnsavedChanges.ts`              | Replace `eventBus` import with `@mohasinac/core` EventBus                |
 | `hooks/useCamera`         | `src/hooks/useCamera.ts`                      | Unchanged                                                                |
 | `hooks/useMessage`        | `src/hooks/useMessage.ts`                     | Replace `useToast` dep with EventBus-based dispatch                      |
 | `utils/EventManager`      | `src/utils/events/event-manager.ts`           | Unchanged                                                                |
 | `utils/StorageManager`    | `src/classes/StorageManager.ts`               | Unchanged                                                                |
-| `helpers/classNames`      | Extract from `src/helpers/ui/style.helper.ts` | Drop `mergeTailwindClasses` — stays in `@lir/ui`                         |
+| `helpers/classNames`      | Extract from `src/helpers/ui/style.helper.ts` | Drop `mergeTailwindClasses` — stays in `@mohasinac/ui`                   |
 
 ---
 
-#### `@lir/ui` — React + Tailwind component library
+#### `@mohasinac/ui` — React + Tailwind component library
 
-**Peer deps: `react >=18`, `tailwindcss >=3`.** Depends on `@lir/core`, `@lir/react`.
+**Peer deps: `react >=18`, `tailwindcss >=3`.** Depends on `@mohasinac/core`, `@mohasinac/react`.
 
 Consumers add the package path to their Tailwind `content` array:
 
 ```js
-content: ["./node_modules/@lir/ui/src/**/*.{tsx,ts}"];
+content: ["./node_modules/@mohasinac/ui/src/**/*.{tsx,ts}"];
 ```
 
 | Category          | Components                                                                                                                                                                                                                                                                                                                                                                           |
@@ -2036,25 +2036,25 @@ content: ["./node_modules/@lir/ui/src/**/*.{tsx,ts}"];
 > \*`MediaImage` wraps `next/image`. Accept an `ImageComponent` prop so non-Next.js consumers can swap in a plain `<img>`.  
 > `TextLink` wraps Next.js `<Link>` — accept a `LinkComponent` prop for the same reason.
 
-**App-side breaking changes:** `THEME_CONSTANTS` import path changes to `@lir/ui`. All other import paths change per the map in §10.5.
+**App-side breaking changes:** `THEME_CONSTANTS` import path changes to `@mohasinac/ui`. All other import paths change per the map in §10.5.
 
 ---
 
-#### `@lir/http` — Framework-agnostic HTTP client
+#### `@mohasinac/http` — Framework-agnostic HTTP client
 
-**No runtime deps. Works in browser, Node, edge runtimes.** Re-exports error types from `@lir/core`.
+**No runtime deps. Works in browser, Node, edge runtimes.** Re-exports error types from `@mohasinac/core`.
 
 | Module           | Source                    | Notes                                                                       |
 | ---------------- | ------------------------- | --------------------------------------------------------------------------- |
 | `ApiClient`      | `src/lib/api-client.ts`   | Remove `API_ENDPOINTS` reference; consumer passes `baseUrl` via constructor |
-| `ApiClientError` | Inline in `api-client.ts` | Extend `AppError` from `@lir/core`                                          |
+| `ApiClientError` | Inline in `api-client.ts` | Extend `AppError` from `@mohasinac/core`                                    |
 
 ```ts
 // Before (app-coupled singleton)
 import { apiClient } from "@/lib/api-client";
 
 // After (generic — instantiated once in apps/web/src/lib/http.ts)
-import { ApiClient } from "@lir/http";
+import { ApiClient } from "@mohasinac/http";
 export const apiClient = new ApiClient({
   baseUrl: process.env.NEXT_PUBLIC_APP_URL!,
 });
@@ -2064,9 +2064,9 @@ This also fixes §2.6 (the `window.location.origin` crash) — the app-side adap
 
 ---
 
-#### `@lir/next` — Next.js adapters
+#### `@mohasinac/next` — Next.js adapters
 
-**Peer deps: `next >=14`, `react >=18`, `zod >=3`.** Depends on `@lir/core`, `@lir/http`.
+**Peer deps: `next >=14`, `react >=18`, `zod >=3`.** Depends on `@mohasinac/core`, `@mohasinac/http`.
 
 | Module                         | Source                                            | Notes                                                                           |
 | ------------------------------ | ------------------------------------------------- | ------------------------------------------------------------------------------- |
@@ -2074,9 +2074,9 @@ This also fixes §2.6 (the `window.location.origin` crash) — the app-side adap
 | `api/apiResponse`              | `src/lib/api-response.ts`                         | Unchanged                                                                       |
 | `api/errorHandler`             | `src/lib/errors/error-handler.ts`                 | Unchanged                                                                       |
 | `api/requestHelpers`           | `src/lib/api/request-helpers.ts`                  | Unchanged                                                                       |
-| `api/cacheMiddleware`          | `src/lib/api/cache-middleware.ts`                 | Replace `CacheManager` import with `@lir/core`                                  |
-| `security/rateLimit`           | `src/lib/security/rate-limit.ts`                  | Keep `NextRequest` dep; extract sliding-window algorithm to `@lir/core`         |
-| `zod/zodErrorMap`              | `src/lib/zod-error-map.ts`                        | Replace app `ERROR_MESSAGES` with `@lir/core` generic subset                    |
+| `api/cacheMiddleware`          | `src/lib/api/cache-middleware.ts`                 | Replace `CacheManager` import with `@mohasinac/core`                            |
+| `security/rateLimit`           | `src/lib/security/rate-limit.ts`                  | Keep `NextRequest` dep; extract sliding-window algorithm to `@mohasinac/core`   |
+| `zod/zodErrorMap`              | `src/lib/zod-error-map.ts`                        | Replace app `ERROR_MESSAGES` with `@mohasinac/core` generic subset              |
 | `validation/schemas`           | Generic subset of `src/lib/validation/schemas.ts` | `paginationQuerySchema`, `objectIdSchema`, `urlSchema`, `dateStringSchema` only |
 | `formatting/dateWithTimestamp` | New file                                          | `resolveDate()` overload for Firestore Timestamp shape                          |
 | `monitoring/errorTracking`     | `src/lib/monitoring/error-tracking.ts`            | Replace Firebase Analytics dep with `IEventTracker` interface; default no-op    |
@@ -2099,7 +2099,7 @@ export interface IAuthVerifier {
 export function createApiHandler(authVerifier: IAuthVerifier, options: ApiHandlerOptions) { ... }
 
 // apps/web/src/lib/api/api-handler.ts  (app-side adapter)
-import { createApiHandler } from '@lir/next';
+import { createApiHandler } from '@mohasinac/next';
 import { firebaseAuthVerifier } from '@/lib/firebase/auth-server';
 export const apiHandler = createApiHandler(firebaseAuthVerifier, { ... });
 ```
@@ -2130,17 +2130,17 @@ interface MediaImageProps {
 
 ### 10.4 Extraction Phases
 
-| Phase             | Action                                                                              | Output                         | Prerequisite |
-| ----------------- | ----------------------------------------------------------------------------------- | ------------------------------ | ------------ |
-| **L1**            | Bootstrap monorepo: `pnpm-workspace.yaml`, `turbo.json`, per-package `tsup` configs | Workspace skeleton             | —            |
-| **L2**            | Extract `@lir/core` — copy sources, strip app imports, write Vitest tests           | `@lir/core` v0.1.0             | L1           |
-| **L3**            | Extract `@lir/http` — strip `API_ENDPOINTS`, add `baseUrl` constructor              | `@lir/http` v0.1.0; fixes §2.6 | L2           |
-| **L4**            | Extract `@lir/next` — apply `IAuthVerifier` injection                               | `@lir/next` v0.1.0             | L2, L3       |
-| **L5**            | Extract `@lir/react` — replace inter-hook imports, decouple `useMessage`            | `@lir/react` v0.1.0            | L2           |
-| **L6**            | Extract `@lir/ui` — move `THEME_CONSTANTS` → `UI_THEME`, add `ImageComponent` prop  | `@lir/ui` v0.1.0               | L2, L5       |
-| **L7**            | Update all `apps/web` imports to `@lir/*`; run `npx tsc --noEmit` + `npm run build` | Zero regressions               | L2–L6        |
-| **L8**            | Configure `changesets`, write per-package `CHANGELOG.md`, publish                   | npm packages                   | L7           |
-| **L9** (optional) | Move app to `apps/web/`, move `functions/` inside it                                | Full monorepo layout           | L8           |
+| Phase             | Action                                                                                    | Output                               | Prerequisite |
+| ----------------- | ----------------------------------------------------------------------------------------- | ------------------------------------ | ------------ |
+| **L1**            | Bootstrap monorepo: `pnpm-workspace.yaml`, `turbo.json`, per-package `tsup` configs       | Workspace skeleton                   | —            |
+| **L2**            | Extract `@mohasinac/core` — copy sources, strip app imports, write Vitest tests           | `@mohasinac/core` v0.1.0             | L1           |
+| **L3**            | Extract `@mohasinac/http` — strip `API_ENDPOINTS`, add `baseUrl` constructor              | `@mohasinac/http` v0.1.0; fixes §2.6 | L2           |
+| **L4**            | Extract `@mohasinac/next` — apply `IAuthVerifier` injection                               | `@mohasinac/next` v0.1.0             | L2, L3       |
+| **L5**            | Extract `@mohasinac/react` — replace inter-hook imports, decouple `useMessage`            | `@mohasinac/react` v0.1.0            | L2           |
+| **L6**            | Extract `@mohasinac/ui` — move `THEME_CONSTANTS` → `UI_THEME`, add `ImageComponent` prop  | `@mohasinac/ui` v0.1.0               | L2, L5       |
+| **L7**            | Update all `apps/web` imports to `@mohasinac/*`; run `npx tsc --noEmit` + `npm run build` | Zero regressions                     | L2–L6        |
+| **L8**            | Configure `changesets`, write per-package `CHANGELOG.md`, publish                         | npm packages                         | L7           |
+| **L9** (optional) | Move app to `apps/web/`, move `functions/` inside it                                      | Full monorepo layout                 | L8           |
 
 > **Integration with §7:** L1 = B1, L2 = B2, L3 = B3, L4 = B4 (run parallel with Stage A). L5 = F2, L6 = F3, L7 = F4 — these must come **after C4** (TanStack Query complete), because extracting hooks before deleting them from the app would package dead code. L8 = H7, L9 = H8 (optional).
 
@@ -2150,54 +2150,54 @@ interface MediaImageProps {
 
 After full extraction, `apps/web` imports change as follows:
 
-| Old `@/` import                                               | New `@lir/*` import                               |
-| ------------------------------------------------------------- | ------------------------------------------------- |
-| `@/utils/formatters/*`                                        | `@lir/core`                                       |
-| `@/utils/validators/*`                                        | `@lir/core`                                       |
-| `@/utils/converters/type.converter`                           | `@lir/core`                                       |
-| `@/helpers/data/array.helper`                                 | `@lir/core`                                       |
-| `@/helpers/data/object.helper`                                | `@lir/core`                                       |
-| `@/helpers/data/pagination.helper`                            | `@lir/core`                                       |
-| `@/helpers/data/sorting.helper`                               | `@lir/core`                                       |
-| `@/helpers/ui/color.helper`                                   | `@lir/core`                                       |
-| `@/helpers/ui/animation.helper`                               | `@lir/core`                                       |
-| `@/helpers/auth/token.helper`                                 | `@lir/core`                                       |
-| `@/classes/CacheManager`                                      | `@lir/core`                                       |
-| `@/classes/EventBus`                                          | `@lir/core`                                       |
-| `@/classes/Logger`                                            | `@lir/core`                                       |
-| `@/classes/Queue`                                             | `@lir/core`                                       |
-| `@/lib/errors/*`                                              | `@lir/core`                                       |
-| `@/lib/api-client`                                            | `@lir/http` (via local `src/lib/http.ts` adapter) |
-| `@/lib/api-response`                                          | `@lir/next`                                       |
-| `@/lib/api/api-handler`                                       | `@lir/next` (via local assembled adapter)         |
-| `@/lib/api/request-helpers`                                   | `@lir/next`                                       |
-| `@/lib/api/cache-middleware`                                  | `@lir/next`                                       |
-| `@/lib/security/rate-limit`                                   | `@lir/next`                                       |
-| `@/lib/server-logger`                                         | `@lir/next`                                       |
-| `@/hooks/useApiMutation`                                      | `@lir/react`                                      |
-| `@/hooks/useApiQuery`                                         | `@lir/react`                                      |
-| `@/hooks/useBreakpoint`                                       | `@lir/react`                                      |
-| `@/hooks/useBulkSelection`                                    | `@lir/react`                                      |
-| `@/hooks/useClickOutside`                                     | `@lir/react`                                      |
-| `@/hooks/useCountdown`                                        | `@lir/react`                                      |
-| `@/hooks/useGesture`                                          | `@lir/react`                                      |
-| `@/hooks/useKeyPress`                                         | `@lir/react`                                      |
-| `@/hooks/useLongPress`                                        | `@lir/react`                                      |
-| `@/hooks/useMediaQuery`                                       | `@lir/react`                                      |
-| `@/hooks/usePullToRefresh`                                    | `@lir/react`                                      |
-| `@/hooks/useSwipe`                                            | `@lir/react`                                      |
-| `@/hooks/useUnsavedChanges`                                   | `@lir/react`                                      |
-| `@/hooks/useCamera`                                           | `@lir/react`                                      |
-| `@/hooks/useMessage`                                          | `@lir/react`                                      |
-| `@/components/ui/*`                                           | `@lir/ui`                                         |
-| `@/components/typography/*`                                   | `@lir/ui`                                         |
-| `@/components/forms/*`                                        | `@lir/ui`                                         |
-| `@/components/feedback/*`                                     | `@lir/ui`                                         |
-| `@/components/semantic/*`                                     | `@lir/ui`                                         |
-| `@/components/media/*`                                        | `@lir/ui`                                         |
-| `@/components/modals/*`                                       | `@lir/ui`                                         |
-| `@/components/layout/TitleBar*`, `Breadcrumbs`, layout shells | `@lir/ui`                                         |
-| `@/constants/theme` (`THEME_CONSTANTS`)                       | `@lir/ui`                                         |
+| Old `@/` import                                               | New `@mohasinac/*` import                               |
+| ------------------------------------------------------------- | ------------------------------------------------------- |
+| `@/utils/formatters/*`                                        | `@mohasinac/core`                                       |
+| `@/utils/validators/*`                                        | `@mohasinac/core`                                       |
+| `@/utils/converters/type.converter`                           | `@mohasinac/core`                                       |
+| `@/helpers/data/array.helper`                                 | `@mohasinac/core`                                       |
+| `@/helpers/data/object.helper`                                | `@mohasinac/core`                                       |
+| `@/helpers/data/pagination.helper`                            | `@mohasinac/core`                                       |
+| `@/helpers/data/sorting.helper`                               | `@mohasinac/core`                                       |
+| `@/helpers/ui/color.helper`                                   | `@mohasinac/core`                                       |
+| `@/helpers/ui/animation.helper`                               | `@mohasinac/core`                                       |
+| `@/helpers/auth/token.helper`                                 | `@mohasinac/core`                                       |
+| `@/classes/CacheManager`                                      | `@mohasinac/core`                                       |
+| `@/classes/EventBus`                                          | `@mohasinac/core`                                       |
+| `@/classes/Logger`                                            | `@mohasinac/core`                                       |
+| `@/classes/Queue`                                             | `@mohasinac/core`                                       |
+| `@/lib/errors/*`                                              | `@mohasinac/core`                                       |
+| `@/lib/api-client`                                            | `@mohasinac/http` (via local `src/lib/http.ts` adapter) |
+| `@/lib/api-response`                                          | `@mohasinac/next`                                       |
+| `@/lib/api/api-handler`                                       | `@mohasinac/next` (via local assembled adapter)         |
+| `@/lib/api/request-helpers`                                   | `@mohasinac/next`                                       |
+| `@/lib/api/cache-middleware`                                  | `@mohasinac/next`                                       |
+| `@/lib/security/rate-limit`                                   | `@mohasinac/next`                                       |
+| `@/lib/server-logger`                                         | `@mohasinac/next`                                       |
+| `@/hooks/useApiMutation`                                      | `@mohasinac/react`                                      |
+| `@/hooks/useApiQuery`                                         | `@mohasinac/react`                                      |
+| `@/hooks/useBreakpoint`                                       | `@mohasinac/react`                                      |
+| `@/hooks/useBulkSelection`                                    | `@mohasinac/react`                                      |
+| `@/hooks/useClickOutside`                                     | `@mohasinac/react`                                      |
+| `@/hooks/useCountdown`                                        | `@mohasinac/react`                                      |
+| `@/hooks/useGesture`                                          | `@mohasinac/react`                                      |
+| `@/hooks/useKeyPress`                                         | `@mohasinac/react`                                      |
+| `@/hooks/useLongPress`                                        | `@mohasinac/react`                                      |
+| `@/hooks/useMediaQuery`                                       | `@mohasinac/react`                                      |
+| `@/hooks/usePullToRefresh`                                    | `@mohasinac/react`                                      |
+| `@/hooks/useSwipe`                                            | `@mohasinac/react`                                      |
+| `@/hooks/useUnsavedChanges`                                   | `@mohasinac/react`                                      |
+| `@/hooks/useCamera`                                           | `@mohasinac/react`                                      |
+| `@/hooks/useMessage`                                          | `@mohasinac/react`                                      |
+| `@/components/ui/*`                                           | `@mohasinac/ui`                                         |
+| `@/components/typography/*`                                   | `@mohasinac/ui`                                         |
+| `@/components/forms/*`                                        | `@mohasinac/ui`                                         |
+| `@/components/feedback/*`                                     | `@mohasinac/ui`                                         |
+| `@/components/semantic/*`                                     | `@mohasinac/ui`                                         |
+| `@/components/media/*`                                        | `@mohasinac/ui`                                         |
+| `@/components/modals/*`                                       | `@mohasinac/ui`                                         |
+| `@/components/layout/TitleBar*`, `Breadcrumbs`, layout shells | `@mohasinac/ui`                                         |
+| `@/constants/theme` (`THEME_CONSTANTS`)                       | `@mohasinac/ui`                                         |
 
 ---
 
@@ -2207,7 +2207,7 @@ After full extraction, `apps/web` imports change as follows:
 
 ```json
 {
-  "name": "@lir/core",
+  "name": "@mohasinac/core",
   "version": "0.1.0",
   "description": "Framework-agnostic TypeScript utilities — formatters, validators, helpers, error classes",
   "type": "module",

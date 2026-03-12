@@ -1,4 +1,4 @@
-# LetItRip.in — Implementation Plan
+﻿# LetItRip.in — Implementation Plan
 
 > **Source document:** `docs/MAKEOVER.md` — read that first for full specs on each item.  
 > **This file:** The ordered, sprint-driven execution roadmap. Pick up each sprint, implement every task, run the build gate, then proceed.
@@ -12,7 +12,7 @@
 3. **Props over hardcoding.** Every new behavior is prop-controlled with sensible defaults.
 4. **No new hardcoded strings.** All user-visible text via `useTranslations()` or typed props.
 5. **Mobile-first.** All sizing/spacing starts at `base`, expands at `md`/`lg`.
-6. **Barrel imports only.** Import from `@/components`, `@/features/<name>`, `@lir/*` — never deep paths.
+6. **Barrel imports only.** Import from `@/components`, `@/features/<name>`, `@mohasinac/*` — never deep paths.
 7. **Delete dead code.** When replacing `AdminTabs`, `SellerTabs`, `UserTabs` — delete the old file.
 
 ---
@@ -37,7 +37,7 @@
 
 ## Sprint 0 — Foundations & P0 Bugs
 
-**Goal:** Fix brand-breaking bugs, migrate font loading, lay the CSS/token foundation that all later phases build on, and extract `@lir/utils`.
+**Goal:** Fix brand-breaking bugs, migrate font loading, lay the CSS/token foundation that all later phases build on, and extract `@mohasinac/utils`.
 
 ---
 
@@ -245,7 +245,7 @@ trustStrip: {
 
 ---
 
-### Task S0-4 — Create `@lir/utils` Package `(PL-0)`
+### Task S0-4 — Create `@mohasinac/utils` Package `(PL-0)`
 
 **New directory:** `packages/utils/`
 
@@ -253,7 +253,7 @@ trustStrip: {
 
    ```json
    {
-     "name": "@lir/utils",
+     "name": "@mohasinac/utils",
      "version": "0.1.0",
      "private": true,
      "main": "src/index.ts",
@@ -278,17 +278,17 @@ trustStrip: {
 5. Replace each original `src/utils/` and `src/helpers/` file with a 1-line shim:
 
    ```ts
-   export * from "@lir/utils/formatters"; // (or whichever sub-path)
+   export * from "@mohasinac/utils/formatters"; // (or whichever sub-path)
    ```
 
 6. Add to root `tsconfig.json` `paths`:
 
    ```json
-   "@lir/utils": ["packages/utils/src/index.ts"],
-   "@lir/utils/*": ["packages/utils/src/*"]
+   "@mohasinac/utils": ["packages/utils/src/index.ts"],
+   "@mohasinac/utils/*": ["packages/utils/src/*"]
    ```
 
-7. Add `"@lir/utils"` to `transpilePackages` in `next.config.js`.
+7. Add `"@mohasinac/utils"` to `transpilePackages` in `next.config.js`.
 
 **Build gate — Sprint 0:**
 
@@ -301,13 +301,13 @@ npm run build
 
 ## Sprint 1 — Package Library ✅ COMPLETE
 
-**Goal:** Elevate `@lir/ui` with 8 interactive primitives from Licorice and promote `DataTable`.
+**Goal:** Elevate `@mohasinac/ui` with 8 interactive primitives from Licorice and promote `DataTable`.
 
 > **Status:** Complete. Build gate passed: `npx tsc --noEmit` ✅ · `npm run build` ✅ (29.6 s)
 
 ---
 
-### Task S1-1 — Add 8 Primitives to `@lir/ui` `(PL-1)`
+### Task S1-1 — Add 8 Primitives to `@mohasinac/ui` `(PL-1)`
 
 **Directory:** `packages/ui/src/`
 
@@ -337,14 +337,14 @@ Add the following components (see MAKEOVER.md PL-1 for full specs):
 
 ---
 
-### Task S1-2 — Promote `DataTable` to `@lir/ui` `(PL-2)`
+### Task S1-2 — Promote `DataTable` to `@mohasinac/ui` `(PL-2)`
 
 1. Copy `src/components/DataTable.tsx` → `packages/ui/src/DataTable.tsx`.
 2. Verify no app-specific imports remain in the file (only `react`, lucide-react, and generic types).
 3. Add `rounded-2xl border border-zinc-200 dark:border-slate-700` container wrapper.
 4. Add `pageSize?: number` prop (default 20) if not already configurable.
 5. Export from `packages/ui/src/index.ts`.
-6. Replace `src/components/DataTable.tsx` with a shim: `export { DataTable } from "@lir/ui"`.
+6. Replace `src/components/DataTable.tsx` with a shim: `export { DataTable } from "@mohasinac/ui"`.
 7. Verify all existing callers still resolve (they import from `@/components` barrel — unchanged).
 
 **Build gate — Sprint 1:**
@@ -883,7 +883,7 @@ npm run build
 
 ### Task S6-1 — Extract `DashboardStatsCard` `(AU-9)`
 
-**New file:** `src/components/DashboardStatsCard.tsx` (or `@lir/ui` if ready)
+**New file:** `src/components/DashboardStatsCard.tsx` (or `@mohasinac/ui` if ready)
 
 ```tsx
 interface DashboardStatsCardProps {
@@ -940,7 +940,7 @@ Admin layout shell:
 - Group label: `text-zinc-500 text-xs tracking-widest px-3 mb-1 mt-4 uppercase`
 - Nav item: `flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-zinc-400 hover:bg-white/5 hover:text-white transition-colors`
 - Active item: `bg-primary/15 text-primary`
-- Mobile: drawer using `@lir/ui Drawer` (left side)
+- Mobile: drawer using `@mohasinac/ui Drawer` (left side)
 
 `AdminTopBar` spec:
 
@@ -1012,7 +1012,7 @@ npm run build
 
 ### Task S7-1 — Admin Data Tables standardization `(AU-3)`
 
-Migrate these admin views to `DataTable` (from `@lir/ui`), replacing raw `<table>` elements:
+Migrate these admin views to `DataTable` (from `@mohasinac/ui`), replacing raw `<table>` elements:
 
 - `AdminBlogView` → `DataTable<BlogDocument>`
 - `AdminCouponsView` → `DataTable<CouponDocument>`
@@ -1047,7 +1047,7 @@ Desktop:
 
 Mobile:
 
-- Bottom-sheet `Drawer` (from `@lir/ui`) triggered from profile icon in sticky mobile header
+- Bottom-sheet `Drawer` (from `@mohasinac/ui`) triggered from profile icon in sticky mobile header
 
 **Delete:** `src/features/user/components/UserTabs.tsx` after migration.
 

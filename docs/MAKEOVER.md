@@ -1,4 +1,4 @@
-# LetItRip.in — Visual Makeover Plan
+﻿# LetItRip.in — Visual Makeover Plan
 
 > **Goal**: Transform the platform from a functional-but-sterile layout into a vibrant, premium marketplace. Keep all existing color tokens (`primary` lime-green, `secondary` hot-pink, `cobalt` blue, Bangers display font). Lift the craft everywhere: spacing, motion, typographic hierarchy, cards, sections, and interactive states.
 >
@@ -89,7 +89,7 @@ Changes:
 - Right panel: `relative overflow-hidden rounded-3xl` — renders `<MediaImage>` from `@/components` if `ctaImage` CMS field set; else neutral gradient placeholder with floating product tile art
 - Section padding: `py-16 md:py-24`
 
-> **Existing infrastructure:** `Heading`, `Text`, `Label` from `@/components` (re-exported from `@lir/ui`). `Button` from `@/components`. `MediaImage` from `@/components`. `.text-gradient-brand` utility already in `globals.css`.
+> **Existing infrastructure:** `Heading`, `Text`, `Label` from `@/components` (re-exported from `@mohasinac/ui`). `Button` from `@/components`. `MediaImage` from `@/components`. `.text-gradient-brand` utility already in `globals.css`.
 
 ### C2 — `HeroCarousel`
 
@@ -106,7 +106,7 @@ Structural changes:
 - Render slide images with `<MediaImage>` from `@/components`
 - Fade gradient at bottom to bleed into next section: `absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-slate-950 to-transparent`
 
-> **Existing infrastructure:** `MediaImage`, `MediaVideo` from `@/components`. `Badge` from `@/components`. `THEME_CONSTANTS.carousel.*` already has `arrow`, `dotActive`, `dotInactive` tokens. `animate-progress-fill`, `animate-slide-in-left` already in `tailwind.config.js`. `.text-shadow-lg` already in `globals.css`. Use `useSwipe` from `@lir/react` for touch swipe gesture support.
+> **Existing infrastructure:** `MediaImage`, `MediaVideo` from `@/components`. `Badge` from `@/components`. `THEME_CONSTANTS.carousel.*` already has `arrow`, `dotActive`, `dotInactive` tokens. `animate-progress-fill`, `animate-slide-in-left` already in `tailwind.config.js`. `.text-shadow-lg` already in `globals.css`. Use `useSwipe` from `@mohasinac/react` for touch swipe gesture support.
 
 ### C3 — `SectionCarousel`
 
@@ -121,7 +121,7 @@ Changes:
 - Arrow buttons: apply `THEME_CONSTANTS.carousel.arrow` token (already defined). Replaces plain icon circles with `w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-md border border-zinc-200 dark:border-slate-700 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 transition-all duration-200`
 - Underlying scroller: `HorizontalScroller` lives at `src/components/ui/HorizontalScroller.tsx` — use it via `@/components`. It already supports `perView`, `gap`, and drag scroll via `useHorizontalScrollDrag`.
 - Peek next card: Use `HorizontalScroller`'s existing props for overflow behavior; expose last card by `-mr-6 md:-mr-8` on scroller wrapper (configurable `showPeek` prop)
-- Loading skeleton: Use `<Skeleton>` from `@/components` (re-exported from `@lir/ui`). Cards get `rounded-2xl` (was `rounded-xl`)
+- Loading skeleton: Use `<Skeleton>` from `@/components` (re-exported from `@mohasinac/ui`). Cards get `rounded-2xl` (was `rounded-xl`)
 
 > **Existing infrastructure:** `HorizontalScroller` at `src/components/ui/HorizontalScroller.tsx` (exported from `@/components`). `useHorizontalAutoScroll` and `useHorizontalScrollDrag` hooks co-located at `src/components/ui/`. `THEME_CONSTANTS.sectionHeader.*` and `THEME_CONSTANTS.carousel.*` already defined. `Heading`, `Text`, `Skeleton` from `@/components`.
 
@@ -243,9 +243,9 @@ Changes:
 - Cards: `rounded-3xl p-8 bg-white dark:bg-slate-900 shadow-soft group hover:-translate-y-2 hover:shadow-xl transition-all duration-300` — compose with `<Article>` from `@/components` for semantic wrapping
 - On scroll: staggered entrance via `IntersectionObserver` + `animate-slide-in-left` / `animate-slide-in-right` (already in `tailwind.config.js`). Use `.stagger-1`, `.stagger-2`, `.stagger-3` utility classes (already in `globals.css`) for `animation-delay`
 - Connector: animated dashed line using SVG with `stroke-dasharray` + `stroke-dashoffset` that shrinks on scroll enter
-- Use `useBreakpoint` from `@lir/react` (via `@/hooks`) to conditionally render connector between steps on desktop only
+- Use `useBreakpoint` from `@mohasinac/react` (via `@/hooks`) to conditionally render connector between steps on desktop only
 
-> **Existing infrastructure:** `animate-slide-in-left`, `animate-slide-in-right` ✅ in `tailwind.config.js`. `.stagger-1`–`.stagger-5` ✅ in `globals.css`. `.text-gradient-primary` ✅ in `globals.css`. `Heading`, `Article`, `Badge`, `Text` from `@/components`. `useBreakpoint` from `@lir/react` (re-exported via `@/hooks`).
+> **Existing infrastructure:** `animate-slide-in-left`, `animate-slide-in-right` ✅ in `tailwind.config.js`. `.stagger-1`–`.stagger-5` ✅ in `globals.css`. `.text-gradient-primary` ✅ in `globals.css`. `Heading`, `Article`, `Badge`, `Text` from `@/components`. `useBreakpoint` from `@mohasinac/react` (re-exported via `@/hooks`).
 
 ### C12 — `AdvertisementBanner`
 
@@ -297,9 +297,9 @@ Changes:
 
 - Add promo micro-strip above the bar on mobile: `bg-gradient-to-r from-primary-500 to-cobalt-600 text-white text-xs text-center py-1 px-4` — dismissible `×` button uses `<Button>` from `@/components`. Strip is `<Section>` from `@/components`. Controlled by `showPromoStrip` siteSettings field
 - Logo wordmark: `<Heading>` from `@/components` with `font-display text-xl tracking-tight text-cobalt-700 dark:text-cobalt-300` — "LetItRip" — next to cobalt-gradient square
-- Search overlay: on click, expand to full `absolute top-12 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg p-4 shadow-xl` overlay. Reuse `<Search>` component from `src/components/utility/Search.tsx` (already exported from `@/components`). Use `useClickOutside` from `@lir/react` (via `@/hooks`) to dismiss overlay on outside click
+- Search overlay: on click, expand to full `absolute top-12 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg p-4 shadow-xl` overlay. Reuse `<Search>` component from `src/components/utility/Search.tsx` (already exported from `@/components`). Use `useClickOutside` from `@mohasinac/react` (via `@/hooks`) to dismiss overlay on outside click
 
-> **Existing infrastructure:** `Search` at `src/components/utility/Search.tsx` (exported from `@/components`). `Section`, `Heading`, `Button` from `@/components`. `useClickOutside` from `@lir/react` (re-exported via `@/hooks`). `THEME_CONSTANTS.layout.titleBarHeight` and `zIndex.titleBar` already defined in `theme.ts`.
+> **Existing infrastructure:** `Search` at `src/components/utility/Search.tsx` (exported from `@/components`). `Section`, `Heading`, `Button` from `@/components`. `useClickOutside` from `@mohasinac/react` (re-exported via `@/hooks`). `THEME_CONSTANTS.layout.titleBarHeight` and `zIndex.titleBar` already defined in `theme.ts`.
 
 ---
 
@@ -468,11 +468,11 @@ Changes:
 
 - Standardize all card `transition` + `hover:-translate-y` across all cards (audit all `src/components/` + `src/features/`) — replace ad-hoc `transition-all duration-200` with `.card-lift` where applicable
 - Breadcrumb: `<Breadcrumbs>` / `<AutoBreadcrumbs>` already exist at `src/components/layout/Breadcrumbs.tsx` — update to `<TextLink>` from `@/components` for items and `ChevronRight` separators
-- Skeleton loaders: `<Skeleton>` from `@/components` (re-exported from `@lir/ui`) — update `className` to `rounded-2xl` everywhere to match new card radius
+- Skeleton loaders: `<Skeleton>` from `@/components` (re-exported from `@mohasinac/ui`) — update `className` to `rounded-2xl` everywhere to match new card radius
 - ProductCard: quick-view `<Modal>` from `@/components/feedback/Modal.tsx` hook-up (feature-flagged)
 - Image loading states: all images already go through `<MediaImage>` from `@/components` — `placeholder="blur"` can be passed via `blurDataURL` prop
 - Dark mode: spot-check all new gradient/glass elements — use `.glass` and `.glass-strong` utilities from `globals.css`
-- Use `useMediaQuery` / `useBreakpoint` from `@lir/react` (via `@/hooks`) for any JS-driven responsive logic
+- Use `useMediaQuery` / `useBreakpoint` from `@mohasinac/react` (via `@/hooks`) for any JS-driven responsive logic
 - Run `npx tsc --noEmit` → `npm run build` — fix any type errors introduced
 
 **Effort:** ~3 hours | **Risk:** High per-file but low per-change
@@ -494,19 +494,19 @@ Changes:
 
 **Remaining: ~29 hours across Phases 1–7**
 
-> **Available infrastructure (no re-implementation needed):** All typography + semantic primitives via `@lir/ui` (`Heading`, `Text`, `Label`, `Caption`, `Span`, `Section`, `Nav`, `Ul`, `Li`, etc.). All interactive primitives from `@/components`: `Button`, `Badge`, `Alert`, `Divider`, `Spinner`, `Skeleton`, `Progress`, `Accordion`, `AccordionItem`, `Tabs`, `Modal`, `Card`. All media rendering via `MediaImage`, `MediaVideo`, `MediaAvatar` from `@/components`. Specialized display components: `PriceDisplay`, `RatingDisplay`, `CountdownDisplay`, `StatsGrid`, `HorizontalScroller`. UI hooks: `useSwipe`, `useClickOutside`, `useBreakpoint`, `useMediaQuery`, `useCountdown` from `@lir/react` (via `@/hooks`). All CSS tokens: `.text-gradient-primary`, `.text-gradient-brand`, `.card-lift`, `.glass`, `.stagger-*`, `animate-marquee`, `animate-float`, `animate-pulse-slow`, `animate-progress-fill`, `shadow-glow` — all live.
+> **Available infrastructure (no re-implementation needed):** All typography + semantic primitives via `@mohasinac/ui` (`Heading`, `Text`, `Label`, `Caption`, `Span`, `Section`, `Nav`, `Ul`, `Li`, etc.). All interactive primitives from `@/components`: `Button`, `Badge`, `Alert`, `Divider`, `Spinner`, `Skeleton`, `Progress`, `Accordion`, `AccordionItem`, `Tabs`, `Modal`, `Card`. All media rendering via `MediaImage`, `MediaVideo`, `MediaAvatar` from `@/components`. Specialized display components: `PriceDisplay`, `RatingDisplay`, `CountdownDisplay`, `StatsGrid`, `HorizontalScroller`. UI hooks: `useSwipe`, `useClickOutside`, `useBreakpoint`, `useMediaQuery`, `useCountdown` from `@mohasinac/react` (via `@/hooks`). All CSS tokens: `.text-gradient-primary`, `.text-gradient-brand`, `.card-lift`, `.glass`, `.stagger-*`, `animate-marquee`, `animate-float`, `animate-pulse-slow`, `animate-progress-fill`, `shadow-glow` — all live.
 
 ---
 
 ---
 
-## Package Library (`@lir/*`) Extraction Plan
+## Package Library (`@mohasinac/*`) Extraction Plan
 
-> **Goal:** Move all zero-app-dependency logic from `src/utils/` and `src/helpers/` into a new `packages/utils` package (`@lir/utils`), and extend `@lir/ui` with the missing interactive primitives identified by comparing Licorice's `components/ui/`. App code then imports from `@lir/*` barrel, and the shims in `src/utils/` and `src/helpers/` become single-line re-exports — identical to how `src/classes/index.ts` and `src/hooks/index.ts` already work.
+> **Goal:** Move all zero-app-dependency logic from `src/utils/` and `src/helpers/` into a new `packages/utils` package (`@mohasinac/utils`), and extend `@mohasinac/ui` with the missing interactive primitives identified by comparing Licorice's `components/ui/`. App code then imports from `@mohasinac/*` barrel, and the shims in `src/utils/` and `src/helpers/` become single-line re-exports — identical to how `src/classes/index.ts` and `src/hooks/index.ts` already work.
 
 ---
 
-### PL-0 — New Package: `@lir/utils`
+### PL-0 — New Package: `@mohasinac/utils`
 
 **Create:** `packages/utils/` following the same structure as `packages/core`.
 
@@ -541,20 +541,20 @@ Changes:
 - `auth.helper.ts` — imports `ROLE_HIERARCHY` from `@/constants`
 - `address.helper.ts` — imports `@/constants` validation messages
 - `error-logger.ts` / `server-error-logger.ts` — bound to `@/classes` + Next.js
-- `style.helper.ts` — covered by `tailwind-merge` already in `@lir/ui`
+- `style.helper.ts` — covered by `tailwind-merge` already in `@mohasinac/ui`
 
 **After extraction:** Each source file becomes a 1-line re-export shim:
 
 ```ts
 // src/utils/formatters/date.formatter.ts (after)
-export * from "@lir/utils/formatters";
+export * from "@mohasinac/utils/formatters";
 ```
 
 **`packages/utils/package.json`:**
 
 ```json
 {
-  "name": "@lir/utils",
+  "name": "@mohasinac/utils",
   "version": "0.1.0",
   "private": true,
   "main": "src/index.ts",
@@ -568,15 +568,15 @@ export * from "@lir/utils/formatters";
 **`tsconfig.json` path alias** (already have the pattern):
 
 ```json
-"@lir/utils": ["packages/utils/src/index.ts"],
-"@lir/utils/*": ["packages/utils/src/*"]
+"@mohasinac/utils": ["packages/utils/src/index.ts"],
+"@mohasinac/utils/*": ["packages/utils/src/*"]
 ```
 
 **Effort:** ~4h | **Risk:** Low — pure file moves, no logic changes. Existing `@/utils` imports keep working via shim.
 
 ---
 
-### PL-1 — Extend `@lir/ui` with Interactive Primitives
+### PL-1 — Extend `@mohasinac/ui` with Interactive Primitives
 
 Licorice has polished UI primitives in `components/ui/` that LetItRip either builds inline ad-hoc or lacks entirely. Extract or build these into `packages/ui/src/`:
 
@@ -591,7 +591,7 @@ Licorice has polished UI primitives in `components/ui/` that LetItRip either bui
 | `StatusBadge`   | Licorice `StatusBadge.tsx`   | Semantic color mapping for order/payment/review/ticket status strings; wraps `Badge`; covers all LetItRip status domains |
 | `ImageLightbox` | Licorice `ImageLightbox.tsx` | Full-screen image overlay; keyboard nav (←/→/Esc); counter overlay; Next.js `Image`                                      |
 
-**Current workaround in LetItRip:** these are all built inline inside feature components, duplicated, and inconsistent. Moving them to `@lir/ui` means one consistent implementation used by admin, seller, user, and public pages.
+**Current workaround in LetItRip:** these are all built inline inside feature components, duplicated, and inconsistent. Moving them to `@mohasinac/ui` means one consistent implementation used by admin, seller, user, and public pages.
 
 **New peer deps for `packages/ui`:**
 
@@ -604,7 +604,7 @@ Licorice has polished UI primitives in `components/ui/` that LetItRip either bui
 
 ---
 
-### PL-2 — `@lir/ui` DataTable Promotion
+### PL-2 — `@mohasinac/ui` DataTable Promotion
 
 The `DataTable` component currently lives in `src/components/` and is used by ~20 admin/seller views. It has no app-specific imports. Move it to `packages/ui/src/DataTable.tsx` and re-export from `@/components` shim.
 
@@ -631,7 +631,7 @@ The `DataTable` component currently lives in `src/components/` and is used by ~2
 
 ```
 1. Create packages/utils/  (PL-0) → convert src/utils + src/helpers shims
-2. Add @lir/utils alias in tsconfig.json + transpilePackages
+2. Add @mohasinac/utils alias in tsconfig.json + transpilePackages
 3. Extend packages/ui/ with Modal, Drawer, Select, StarRating (PL-1)
 4. Add Pagination, Breadcrumb, StatusBadge, ImageLightbox (PL-1 cont.)
 5. Move DataTable to packages/ui (PL-2)
@@ -735,7 +735,7 @@ A conditional banner section showing up to 3 priority alerts:
 
 ### AU-3 — Admin Data Tables: Consistent Pattern
 
-**Problem:** LetItRip admin uses `DataTable` for products/orders but raw `<table>` for blog, coupons, FAQs, reviews (inconsistent). After PL-2 promotes `DataTable` to `@lir/ui`, standardize all admin list views to use it.
+**Problem:** LetItRip admin uses `DataTable` for products/orders but raw `<table>` for blog, coupons, FAQs, reviews (inconsistent). After PL-2 promotes `DataTable` to `@mohasinac/ui`, standardize all admin list views to use it.
 
 **Views to migrate to `DataTable`:**
 
@@ -883,7 +883,7 @@ Unread/count badges: small `bg-secondary-500 text-white` pills — critical for 
 
 ### AU-9 — Shared DashboardStatsCard Component
 
-All three portals (admin, seller, user) have stat cards with slightly different styling. Extract `DashboardStatsCard` to `src/components/` (or `@lir/ui` if generic enough):
+All three portals (admin, seller, user) have stat cards with slightly different styling. Extract `DashboardStatsCard` to `src/components/` (or `@mohasinac/ui` if generic enough):
 
 ```tsx
 interface DashboardStatsCardProps {
@@ -911,20 +911,20 @@ Replaces:
 
 ### Portal UX Phase Plan
 
-| Phase    | Scope                                                                                            | Effort | Dependency        |
-| -------- | ------------------------------------------------------------------------------------------------ | ------ | ----------------- |
-| **PL-0** | Create `@lir/utils` package + shim src/                                                          | 4h     | None              |
-| **PL-1** | Extend `@lir/ui` with Modal, Drawer, Select, Star, Pagination, Breadcrumb, StatusBadge, Lightbox | 5h     | None              |
-| **PL-2** | Promote `DataTable` to `@lir/ui`                                                                 | 2h     | PL-1              |
-| **AU-9** | Extract `DashboardStatsCard` shared component                                                    | 3h     | None              |
-| **AU-1** | Admin sidebar navigation (replaces `AdminTabs`)                                                  | 5h     | AU-9              |
-| **AU-2** | Admin dashboard: alerts + stats cards redesign                                                   | 3h     | AU-1, AU-9        |
-| **AU-3** | Admin data tables: standardize to `DataTable`                                                    | 4h     | PL-2, AU-1        |
-| **AU-4** | Seller sidebar navigation (replaces `SellerTabs`)                                                | 4h     | AU-9              |
-| **AU-5** | Seller product view toggle (grid/table)                                                          | 2h     | AU-4, PL-2        |
-| **AU-6** | User account hub landing page                                                                    | 3h     | None              |
-| **AU-7** | User portal sidebar (replaces `UserTabs`)                                                        | 4h     | AU-6, PL-1 Drawer |
-| **AU-8** | Order detail: status stepper + timeline                                                          | 3h     | None              |
+| Phase    | Scope                                                                                                  | Effort | Dependency        |
+| -------- | ------------------------------------------------------------------------------------------------------ | ------ | ----------------- |
+| **PL-0** | Create `@mohasinac/utils` package + shim src/                                                          | 4h     | None              |
+| **PL-1** | Extend `@mohasinac/ui` with Modal, Drawer, Select, Star, Pagination, Breadcrumb, StatusBadge, Lightbox | 5h     | None              |
+| **PL-2** | Promote `DataTable` to `@mohasinac/ui`                                                                 | 2h     | PL-1              |
+| **AU-9** | Extract `DashboardStatsCard` shared component                                                          | 3h     | None              |
+| **AU-1** | Admin sidebar navigation (replaces `AdminTabs`)                                                        | 5h     | AU-9              |
+| **AU-2** | Admin dashboard: alerts + stats cards redesign                                                         | 3h     | AU-1, AU-9        |
+| **AU-3** | Admin data tables: standardize to `DataTable`                                                          | 4h     | PL-2, AU-1        |
+| **AU-4** | Seller sidebar navigation (replaces `SellerTabs`)                                                      | 4h     | AU-9              |
+| **AU-5** | Seller product view toggle (grid/table)                                                                | 2h     | AU-4, PL-2        |
+| **AU-6** | User account hub landing page                                                                          | 3h     | None              |
+| **AU-7** | User portal sidebar (replaces `UserTabs`)                                                              | 4h     | AU-6, PL-1 Drawer |
+| **AU-8** | Order detail: status stepper + timeline                                                                | 3h     | None              |
 
 **Total portal UX effort: ~42h across 12 phases**
 
@@ -1791,7 +1791,7 @@ Based on Licorice's `BeforeAfterCard`, add a new **Phase 8** to the LetItRip mak
 2. **Props first** — All new behaviors are controlled by props with sensible defaults. Existing call sites must still work unchanged.
 3. **No breaking changes in barrel exports** — All component exports from `@/components` and feature `index.ts` files must remain valid.
 4. **No hardcoded strings** — Any new user-visible text goes through `useTranslations()` or is supplied via a typed prop.
-5. **No new layout primitives** — Use existing `Section`, `Heading`, `Text`, `Label` from `@/components` (which re-export `@lir/ui`).
+5. **No new layout primitives** — Use existing `Section`, `Heading`, `Text`, `Label` from `@/components` (which re-export `@mohasinac/ui`).
 6. **Mobile-first** — All spacing/typography changes start at `base` breakpoint; expand at `md`/`lg`.
 7. **Accessibility** — All interactive elements keep `aria-label`, `role`, and keyboard focus rings.
 8. **embla-carousel install** — Install `embla-carousel-react embla-carousel-autoplay` before starting Phase 3.

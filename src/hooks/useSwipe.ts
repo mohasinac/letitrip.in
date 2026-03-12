@@ -1,2 +1,2 @@
-export { useSwipe } from "@lir/react";
-export type { SwipeDirection, UseSwipeOptions } from "@lir/react";
+export { useSwipe } from "@mohasinac/react";
+export type { SwipeDirection, UseSwipeOptions } from "@mohasinac/react";

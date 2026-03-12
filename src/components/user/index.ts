@@ -5,3 +5,4 @@ export { AddressForm } from "./AddressForm";
 export { default as NotificationBell } from "./NotificationBell";
 export { AddressSelectorCreate } from "./AddressSelectorCreate";
 export type { AddressSelectorCreateProps } from "./AddressSelectorCreate";
+export { RipCoinsBalanceChip } from "./RipCoinsBalanceChip";

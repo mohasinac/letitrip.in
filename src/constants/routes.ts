@@ -40,6 +40,10 @@ export const ROUTES = {
     SELLER_GUIDE: "/seller-guide",
     COOKIE_POLICY: "/cookies",
     REFUND_POLICY: "/refund-policy",
+    SHIPPING_POLICY: "/shipping-policy",
+    HOW_AUCTIONS_WORK: "/how-auctions-work",
+    HOW_PRE_ORDERS_WORK: "/how-pre-orders-work",
+    RIPCOINS_INFO: "/ripcoins",
     EVENTS: "/events",
     EVENT_DETAIL: (id: string) => `/events/${id}`,
     EVENT_PARTICIPATE: (id: string) => `/events/${id}/participate`,
@@ -99,6 +103,8 @@ export const ROUTES = {
     ADDRESSES: "/seller/addresses",
     ADDRESSES_ADD: "/seller/addresses/add",
     ADDRESSES_EDIT: (id: string) => `/seller/addresses/edit/${id}`,
+    COUPONS: "/seller/coupons",
+    COUPONS_NEW: "/seller/coupons/new",
   },
 
   // Admin Routes

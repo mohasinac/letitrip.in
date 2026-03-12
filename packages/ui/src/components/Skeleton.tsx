@@ -5,7 +5,7 @@ import React from "react";
 /**
  * Skeleton — content placeholder with pulse or wave animation.
  *
- * Extracted from src/components/ui/Skeleton.tsx for @lir/ui.
+ * Extracted from src/components/ui/Skeleton.tsx for @mohasinac/ui.
  * Wave animation uses a plain <style> element (no styled-jsx dependency).
  */
 

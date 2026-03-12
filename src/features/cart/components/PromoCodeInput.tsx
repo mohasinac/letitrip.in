@@ -6,20 +6,32 @@ import { THEME_CONSTANTS } from "@/constants";
 import { Button, Input, Label, Span, Text } from "@/components";
 import { useCouponValidate } from "@/hooks";
 import { formatCurrency } from "@/utils";
+import type { CartItemDocument } from "@/db/schema";
 
 const { themed, input } = THEME_CONSTANTS;
 
 interface CouponValidateResponse {
   valid: boolean;
   discountAmount: number;
+  eligibleProductIds?: string[];
+  scope?: "admin" | "seller";
   error?: string;
 }
 
 interface PromoCodeInputProps {
   /** Order subtotal — sent to the API to calculate discount */
   subtotal?: number;
+  /** Cart items — used for seller/auction coupon scoping */
+  cartItems?: Pick<
+    CartItemDocument,
+    "productId" | "sellerId" | "price" | "quantity" | "isPreOrder" | "isAuction"
+  >[];
   /** Called when a coupon is successfully validated */
-  onApply?: (discountAmount: number, code: string) => void;
+  onApply?: (
+    discountAmount: number,
+    code: string,
+    eligibleProductIds?: string[],
+  ) => void;
   /** Called when the applied coupon is removed */
   onRemove?: () => void;
   disabled?: boolean;
@@ -27,6 +39,7 @@ interface PromoCodeInputProps {
 
 export function PromoCodeInput({
   subtotal = 0,
+  cartItems,
   onApply,
   onRemove,
   disabled = false,
@@ -38,6 +51,7 @@ export function PromoCodeInput({
   const [appliedCode, setAppliedCode] = useState<string | null>(null);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [scopeLabel, setScopeLabel] = useState<string | null>(null);
 
   const handleApply = async () => {
     const trimmed = code.trim().toUpperCase();
@@ -48,12 +62,16 @@ export function PromoCodeInput({
       const res = (await mutation.mutateAsync({
         code: trimmed,
         orderTotal: subtotal,
+        cartItems,
       })) as CouponValidateResponse;
       if (res.valid) {
         setAppliedCode(trimmed);
         setDiscountAmount(res.discountAmount);
+        setScopeLabel(
+          res.scope === "seller" ? t("promoScopeSellerItems") : null,
+        );
         setCode("");
-        onApply?.(res.discountAmount, trimmed);
+        onApply?.(res.discountAmount, trimmed, res.eligibleProductIds);
       } else {
         setErrorMsg(res.error ?? t("promoInvalid"));
       }
@@ -67,6 +85,7 @@ export function PromoCodeInput({
   const handleRemove = () => {
     setAppliedCode(null);
     setDiscountAmount(0);
+    setScopeLabel(null);
     setErrorMsg(null);
     setCode("");
     onRemove?.();
@@ -95,9 +114,16 @@ export function PromoCodeInput({
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            <Span className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-              {appliedCode}
-            </Span>
+            <div className="flex-1 min-w-0">
+              <Span className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                {appliedCode}
+              </Span>
+              {scopeLabel && (
+                <Span className="block text-xs text-emerald-600 dark:text-emerald-500">
+                  {scopeLabel}
+                </Span>
+              )}
+            </div>
             <Span className="text-xs text-emerald-600 dark:text-emerald-500 ml-auto">
               -{formatCurrency(discountAmount)}
             </Span>

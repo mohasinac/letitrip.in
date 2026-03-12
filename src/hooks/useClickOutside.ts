@@ -1,2 +1,2 @@
-export { useClickOutside } from "@lir/react";
-export type { UseClickOutsideOptions } from "@lir/react";
+export { useClickOutside } from "@mohasinac/react";
+export type { UseClickOutsideOptions } from "@mohasinac/react";

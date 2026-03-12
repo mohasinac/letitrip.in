@@ -2,12 +2,12 @@
 "use client";
 
 /**
- * DataTable — promoted to @lir/ui (S1-2).
+ * DataTable — promoted to @mohasinac/ui (S1-2).
  * This shim re-exports from the package so all existing callers
  * (via `@/components` barrel) continue to work unchanged.
  */
-export { DataTable } from "@lir/ui";
-export type { DataTableProps, DataTableColumn } from "@lir/ui";
+export { DataTable } from "@mohasinac/ui";
+export type { DataTableProps, DataTableColumn } from "@mohasinac/ui";
 
 // Legacy: the rest of this file is replaced by the shim above.
 // If you need the old implementation, see git history.

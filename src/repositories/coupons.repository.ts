@@ -418,6 +418,175 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
   }
 
   // ---------------------------------------------------------------------------
+  // Seller-scoped helpers
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Get all coupons created by a specific seller.
+   *
+   * @param sellerId - The seller's user UID
+   */
+  async getSellerCoupons(sellerId: string): Promise<CouponDocument[]> {
+    try {
+      const snapshot = await this.db
+        .collection(this.collection)
+        .where(COUPON_FIELDS.SELLER_ID, "==", sellerId)
+        .orderBy(COUPON_FIELDS.CREATED_AT, "desc")
+        .get();
+
+      return snapshot.docs.map(
+        (doc) => ({ id: doc.id, ...doc.data() }) as CouponDocument,
+      );
+    } catch (error) {
+      throw new DatabaseError(
+        `Failed to retrieve seller coupons: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+    }
+  }
+
+  /**
+   * Validate a coupon against the cart items and return a per-item breakdown.
+   *
+   * Business rules enforced here:
+   * - Pre-order items are NEVER eligible for any coupon.
+   * - Admin coupons apply to all non-pre-order items that satisfy product/
+   *   category restrictions.
+   * - Seller coupons apply only to non-pre-order items from that seller.
+   * - If `applicableToAuctions` is true, only auction items from that seller
+   *   are eligible; regular (fixed-price) items from the same store are
+   *   excluded.
+   * - If `applicableToAuctions` is false/undefined, only non-auction items
+   *   from that seller are eligible.
+   *
+   * @returns An object that mirrors `validateCoupon` but also includes
+   *          `eligibleSubtotal` (the order slice the discount is based on)
+   *          and `eligibleProductIds` (the `productId` values that qualify).
+   */
+  async validateCouponForCart(
+    code: string,
+    userId: string,
+    cartItems: Array<{
+      productId: string;
+      sellerId: string;
+      price: number;
+      quantity: number;
+      isPreOrder: boolean;
+      isAuction: boolean;
+    }>,
+  ): Promise<{
+    valid: boolean;
+    coupon?: CouponDocument;
+    discountAmount?: number;
+    eligibleSubtotal?: number;
+    eligibleProductIds?: string[];
+    scope?: "admin" | "seller";
+    sellerId?: string;
+    message?: string;
+  }> {
+    // Format check
+    if (!isValidCouponCode(code)) {
+      return { valid: false, message: "Invalid coupon code format" };
+    }
+
+    const coupon = await this.getCouponByCode(code);
+    if (!coupon) {
+      return { valid: false, message: "Coupon not found" };
+    }
+
+    if (!isCouponValid(coupon)) {
+      return { valid: false, coupon, message: "Coupon is not currently valid" };
+    }
+
+    const userUsageCount = await this.getUserCouponUsageCount(
+      userId,
+      coupon.id,
+    );
+    if (!canUserUseCoupon(coupon, userUsageCount)) {
+      return {
+        valid: false,
+        coupon,
+        message: "You have reached the usage limit for this coupon",
+      };
+    }
+
+    // Determine eligible items
+    // Pre-order items are always excluded
+    let eligible = cartItems.filter((item) => !item.isPreOrder);
+
+    const scope = coupon.scope ?? "admin";
+
+    if (scope === "seller") {
+      // Restrict to this seller's items
+      eligible = eligible.filter((item) => item.sellerId === coupon.sellerId);
+
+      if (coupon.applicableToAuctions === true) {
+        // Auction-only coupon
+        eligible = eligible.filter((item) => item.isAuction);
+      } else {
+        // Regular (fixed-price) items only — exclude auctions
+        eligible = eligible.filter((item) => !item.isAuction);
+      }
+    }
+
+    // Apply product/category restrictions from the coupon itself
+    const { applicableProducts, applicableCategories, excludeProducts } =
+      coupon.restrictions;
+    if (applicableProducts && applicableProducts.length > 0) {
+      eligible = eligible.filter((item) =>
+        applicableProducts.includes(item.productId),
+      );
+    }
+    if (excludeProducts && excludeProducts.length > 0) {
+      eligible = eligible.filter(
+        (item) => !excludeProducts.includes(item.productId),
+      );
+    }
+    // Note: category filtering requires product metadata — skipped here but
+    // the restriction is stored and can be enforced by the order service.
+    void applicableCategories;
+
+    if (eligible.length === 0) {
+      return {
+        valid: false,
+        coupon,
+        message:
+          scope === "seller"
+            ? "This coupon is not valid for the items in your cart from this store"
+            : "No eligible items found for this coupon",
+      };
+    }
+
+    const eligibleSubtotal = eligible.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0,
+    );
+
+    if (
+      coupon.discount.minPurchase &&
+      eligibleSubtotal < coupon.discount.minPurchase
+    ) {
+      return {
+        valid: false,
+        coupon,
+        message: `Minimum purchase of ₹${coupon.discount.minPurchase} required`,
+      };
+    }
+
+    const discountAmount = calculateDiscount(coupon, eligibleSubtotal);
+
+    return {
+      valid: true,
+      coupon,
+      discountAmount,
+      eligibleSubtotal,
+      eligibleProductIds: eligible.map((item) => item.productId),
+      scope,
+      sellerId: coupon.sellerId,
+      message: "Coupon is valid",
+    };
+  }
+
+  // ---------------------------------------------------------------------------
   // Sieve-powered list query
   // ---------------------------------------------------------------------------
 

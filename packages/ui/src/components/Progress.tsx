@@ -6,7 +6,7 @@ import { Span } from "./Typography";
 /**
  * Progress / IndeterminateProgress — deterministic and animated loading bars.
  *
- * Extracted from src/components/ui/Progress.tsx for @lir/ui.
+ * Extracted from src/components/ui/Progress.tsx for @mohasinac/ui.
  * Theme values inlined; styled-jsx replaced with plain <style> element.
  */
 

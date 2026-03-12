@@ -1,1 +1,1 @@
-export { useLongPress } from "@lir/react";
+export { useLongPress } from "@mohasinac/react";

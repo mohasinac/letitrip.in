@@ -30,3 +30,5 @@ export { useSellerAnalytics } from "./useSellerAnalytics";
 export type { SellerAnalyticsResponse } from "./useSellerAnalytics";
 export { useSellerPayouts } from "./useSellerPayouts";
 export type { SellerPayoutsResponse } from "./useSellerPayouts";
+export { useSellerCoupons } from "./useSellerCoupons";
+export type { SellerCouponsResponse } from "./useSellerCoupons";
