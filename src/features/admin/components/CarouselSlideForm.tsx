@@ -104,20 +104,13 @@ export function CarouselSlideForm({
         onChange={(value) => update({ title: value })}
         disabled={isReadonly}
       />
-      <FormField
-        name="description"
-        label="Description"
-        type="textarea"
-        rows={2}
-        value={slide.description ?? ""}
-        onChange={(value) => update({ description: value })}
-        disabled={isReadonly}
-      />
       {!isReadonly && (
         <ImageUpload
-          currentImage={slide.imageUrl}
+          currentImage={slide.media?.url ?? ""}
           onUpload={(file) => upload(file, "carousel")}
-          onChange={(url) => update({ imageUrl: url })}
+          onChange={(url) =>
+            update({ media: { type: "image", url, alt: slide.title || "" } })
+          }
           label="Slide Image"
           helperText="Recommended: 1920×600 px"
         />
@@ -126,8 +119,14 @@ export function CarouselSlideForm({
         name="linkUrl"
         label="Link URL (optional)"
         type="text"
-        value={slide.linkUrl ?? ""}
-        onChange={(value) => update({ linkUrl: value })}
+        value={slide.link?.url ?? ""}
+        onChange={(value) =>
+          update({
+            link: value
+              ? { url: value, openInNewTab: slide.link?.openInNewTab ?? false }
+              : undefined,
+          })
+        }
         disabled={isReadonly}
       />
       <div className="grid grid-cols-2 gap-4">
@@ -141,8 +140,8 @@ export function CarouselSlideForm({
         />
         <div className="flex items-end pb-1">
           <Checkbox
-            checked={slide.isActive}
-            onChange={(e) => update({ isActive: e.target.checked })}
+            checked={slide.active}
+            onChange={(e) => update({ active: e.target.checked })}
             disabled={isReadonly}
             label={UI_LABELS.STATUS.ACTIVE}
           />

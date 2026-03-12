@@ -125,8 +125,8 @@ export function CategoryForm({
 
       <div className="grid grid-cols-2 gap-4">
         <Checkbox
-          checked={category.enabled || false}
-          onChange={(e) => update({ enabled: e.target.checked })}
+          checked={category.isActive || false}
+          onChange={(e) => update({ isActive: e.target.checked })}
           disabled={isReadonly}
           label={LABELS.ENABLED}
         />

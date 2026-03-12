@@ -7,9 +7,9 @@ export interface Review {
   rating: number;
   comment: string;
   status: "pending" | "approved" | "rejected";
-  verifiedPurchase: boolean;
+  verified: boolean;
   helpfulCount: number;
-  notHelpfulCount: number;
+  reportCount: number;
   createdAt: string;
   updatedAt: string;
 }

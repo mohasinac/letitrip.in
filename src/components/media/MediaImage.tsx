@@ -90,6 +90,7 @@ export function MediaImage({
   className,
 }: MediaImageProps) {
   const [hasError, setHasError] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const icon = fallback ?? FALLBACK_ICONS[size];
   const fitClass = objectFit === "contain" ? "object-contain" : "object-cover";
 
@@ -108,12 +109,18 @@ export function MediaImage({
   const isSvg =
     src.toLowerCase().endsWith(".svg") ||
     src.includes("image/svg") ||
-    /\.svg(\?|$)/.test(src);
+    /[./]svg(\?|$)/i.test(src);
 
   return (
     <div
       className={`absolute inset-0 overflow-hidden${className ? ` ${className}` : ""}`}
     >
+      {!isLoaded && (
+        <div
+          className="absolute inset-0 bg-zinc-200 dark:bg-slate-700 animate-pulse"
+          aria-hidden="true"
+        />
+      )}
       <Image
         src={src}
         alt={alt}
@@ -121,6 +128,7 @@ export function MediaImage({
         priority={priority}
         className={fitClass}
         sizes={SIZE_HINTS[size]}
+        onLoad={() => setIsLoaded(true)}
         onError={() => setHasError(true)}
         unoptimized={isSvg}
       />

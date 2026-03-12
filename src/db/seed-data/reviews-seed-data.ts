@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Reviews Seed Data
  * Sample product reviews with various ratings and statuses
  */
@@ -346,7 +346,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     approvedAt: new Date("2026-02-08T21:00:00Z"),
   },
 
-  // ─── Reviews for new products ──────────────────────────────────────────────
+  // â”€â”€â”€ Reviews for new products â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: "review-oxford-shirt-priya-20260205",
     productId: "product-mens-oxford-shirt-fashion-new-fashionboutique-1",
@@ -556,7 +556,7 @@ export const reviewsSeedData: Partial<ReviewDocument>[] = [
     approvedAt: new Date("2026-02-05T17:00:00Z"),
   },
 
-  // ── New buyer reviews (Ananya, Pooja, Ravi, Sneha) ────────────────────────
+  // â”€â”€ New buyer reviews (Ananya, Pooja, Ravi, Sneha) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   {
     id: "review-iphone15-ananya-20260228",
     productId:

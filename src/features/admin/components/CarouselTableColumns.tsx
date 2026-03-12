@@ -37,12 +37,12 @@ export function useCarouselTableColumns(
         sortable: true,
       },
       {
-        key: "imageUrl",
+        key: "media",
         header: t("colImage"),
         render: (slide: CarouselSlide) => (
           <div className="relative h-12 w-20 overflow-hidden rounded flex-shrink-0">
             <MediaImage
-              src={slide.imageUrl}
+              src={slide.media?.url ?? ""}
               alt={slide.title}
               size="thumbnail"
             />
@@ -50,13 +50,13 @@ export function useCarouselTableColumns(
         ),
       },
       {
-        key: "isActive",
+        key: "active",
         header: t("colStatus"),
         sortable: true,
         render: (slide: CarouselSlide) => (
           <StatusBadge
-            status={slide.isActive ? "active" : "inactive"}
-            label={slide.isActive ? t("statusActive") : t("statusInactive")}
+            status={slide.active ? "active" : "inactive"}
+            label={slide.active ? t("statusActive") : t("statusInactive")}
           />
         ),
       },

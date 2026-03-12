@@ -752,6 +752,8 @@
     "paginationLabel": "Pagination"
   },
   "products": {
+    "metaTitle": "Products — Anime Figures, Collectibles & More",
+    "metaDescription": "Shop thousands of anime figures, Nendoroids, Gunpla, Pokémon TCG, cosplay and more from verified sellers across India.",
     "title": "Products",
     "addToCart": "Add to Cart",
     "addToWishlist": "Add to Wishlist",
@@ -1287,6 +1289,8 @@
     "browseProducts": "Search \u201c{q}\u201d in products \u2192"
   },
   "categories": {
+    "metaTitle": "Categories — Shop Anime Figures by Collection",
+    "metaDescription": "Browse all product categories on LetItRip — anime figures, Gunpla, Nendoroids, Pokémon TCG, cosplay and more.",
     "title": "Categories",
     "subtitle": "Browse all product categories",
     "subtitleWithCount": "{count, plural, one {# category} other {# categories}} to explore",

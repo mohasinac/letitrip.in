@@ -17,6 +17,7 @@ import {
 import { DatabaseError } from "@/lib/errors";
 import { FieldValue } from "firebase-admin/firestore";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { generateBlogPostId } from "@/utils";
 import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 
 class BlogRepository extends BaseRepository<BlogPostDocument> {
@@ -52,6 +53,11 @@ class BlogRepository extends BaseRepository<BlogPostDocument> {
   async create(input: BlogPostCreateInput): Promise<BlogPostDocument> {
     try {
       const now = new Date();
+      const id = generateBlogPostId({
+        title: input.title,
+        category: input.category,
+        status: input.status,
+      });
       const data = prepareForFirestore({
         ...input,
         views: input.views ?? 0,
@@ -59,10 +65,9 @@ class BlogRepository extends BaseRepository<BlogPostDocument> {
         updatedAt: now,
       });
 
-      const ref = await this.db.collection(this.collection).add(data);
-      const doc = await ref.get();
+      await this.db.collection(this.collection).doc(id).set(data);
 
-      return { id: doc.id, ...doc.data() } as BlogPostDocument;
+      return { id, ...data } as BlogPostDocument;
     } catch (error) {
       throw new DatabaseError(
         `Failed to create blog post: ${error instanceof Error ? error.message : "Unknown error"}`,

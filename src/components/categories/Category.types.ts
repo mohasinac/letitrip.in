@@ -17,7 +17,7 @@ export interface Category {
   parentId: string | null;
   tier: number;
   order: number;
-  enabled: boolean;
+  isActive: boolean;
   showOnHomepage: boolean;
   isBrand?: boolean;
   metrics: {

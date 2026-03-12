@@ -50,7 +50,7 @@ export function AdminCarouselView({ action }: Props) {
   const [viewMode, setViewMode] = useState<"table" | "grid" | "list">("table");
   const initialFormRef = useRef<string>("");
 
-  const slides = data?.slides || [];
+  const slides = data || [];
 
   const isDirty = useMemo(() => {
     if (!editingSlide || drawerMode === "delete") return false;
@@ -83,8 +83,8 @@ export function AdminCarouselView({ action }: Props) {
     const newSlide: CarouselSlide = {
       id: "",
       title: "",
-      imageUrl: "",
-      isActive: true,
+      media: { type: "image", url: "", alt: "" },
+      active: true,
       order: slides.length + 1,
       cards: [],
     };
@@ -215,7 +215,7 @@ export function AdminCarouselView({ action }: Props) {
           subtitle={t("subtitle")}
           actionLabel={`+ ${tActions("create")}`}
           onAction={handleCreate}
-          actionDisabled={slides.filter((s) => s.isActive).length >= 5}
+          actionDisabled={slides.filter((s) => s.active).length >= 5}
         />
 
         {isLoading ? (
@@ -248,7 +248,7 @@ export function AdminCarouselView({ action }: Props) {
               >
                 <div className="relative aspect-video overflow-hidden">
                   <MediaImage
-                    src={slide.imageUrl}
+                    src={slide.media?.url ?? ""}
                     alt={slide.title}
                     size="card"
                   />
@@ -260,7 +260,7 @@ export function AdminCarouselView({ action }: Props) {
                   <div className={`${flex.between}`}>
                     <Caption>#{slide.order}</Caption>
                     <StatusBadge
-                      status={slide.isActive ? "active" : "inactive"}
+                      status={slide.active ? "active" : "inactive"}
                     />
                   </div>
                 </div>

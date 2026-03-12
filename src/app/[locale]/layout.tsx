@@ -52,16 +52,16 @@ export default async function LocaleLayout({
         <SkipToMain />
         <ZodSetup />
         <ThemeProvider>
-          <SessionProvider initialUser={serverUser}>
-            <QueryProvider>
+          <QueryProvider>
+            <SessionProvider initialUser={serverUser}>
               <GuestCartMergerEffect />
               <MonitoringProvider>
                 <ToastProvider position="top-right">
                   <LayoutClient>{children}</LayoutClient>
                 </ToastProvider>
               </MonitoringProvider>
-            </QueryProvider>
-          </SessionProvider>
+            </SessionProvider>
+          </QueryProvider>
         </ThemeProvider>
       </NextIntlClientProvider>
     </>

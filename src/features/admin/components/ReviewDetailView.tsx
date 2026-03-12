@@ -46,7 +46,7 @@ export function ReviewDetailView({
               <Label className="text-sm font-medium">{REVIEWS.USER}</Label>
               <Text className="mt-0.5">
                 {review.userName}
-                {review.verifiedPurchase && (
+                {review.verified && (
                   <Span variant="success" className="ml-2 text-xs">
                     ✓ {REVIEWS.VERIFIED_PURCHASE}
                   </Span>
@@ -94,8 +94,7 @@ export function ReviewDetailView({
                 {REVIEWS.HELPFUL_VOTES}
               </Label>
               <Text className="mt-0.5">
-                {review.helpfulCount} helpful, {review.notHelpfulCount} not
-                helpful
+                {review.helpfulCount} helpful, {review.reportCount} reported
               </Text>
             </div>
             <div>

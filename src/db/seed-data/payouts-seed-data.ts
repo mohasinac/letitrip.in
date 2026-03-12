@@ -9,26 +9,27 @@ import { PAYOUT_FIELDS, DEFAULT_PLATFORM_FEE_RATE } from "@/db/schema";
 export const payoutsSeedData: Partial<PayoutDocument>[] = [
   // ── TechHub Electronics ───────────────────────────────────────────────
 
-  // Completed payout — January batch (delivered iphone + samsung orders)
+  // Completed payout — January batch (delivered Goku + Vegeta + Zoro + Bleach figures)
   {
-    id: "payout-techhub-jan-2026-completed",
+    id: "payout-figurevault-jan-2026-completed",
     sellerId: "user-techhub-electronics-electron",
-    sellerName: "TechHub Electronics",
+    sellerName: "FigureVault JP",
     sellerEmail: "techhub@letitrip.in",
-    amount: 247521.05,
-    grossAmount: 259929.0, // 134900 + 124999 + other orders
-    platformFee: 12407.95,
+    amount: 47879.55,
+    grossAmount: 50399.0, // 12490 + 9990 + 18990 + 8990 Jan figure orders
+    platformFee: 2519.45,
     platformFeeRate: DEFAULT_PLATFORM_FEE_RATE,
     currency: "INR",
     status: PAYOUT_FIELDS.STATUS_VALUES.COMPLETED,
     paymentMethod: "bank_transfer",
     bankAccount: {
-      accountHolderName: "TechHub Electronics Pvt Ltd",
+      accountHolderName: "FigureVault JP Pvt Ltd",
       accountNumberMasked: "****4892",
       ifscCode: "HDFC0001234",
       bankName: "HDFC Bank",
     },
-    notes: "January 2026 payout — iphone + samsung + pixel orders",
+    notes:
+      "January 2026 payout — Goku, Vegeta, Zoro, Bleach Ichigo figure orders",
     adminNote: "Verified and transferred. Ref: TXN-2026-01-3847",
     orderIds: [
       "order-1-20260115-xk7m9p",
@@ -44,24 +45,25 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
 
   // Processing payout — February batch
   {
-    id: "payout-techhub-feb-2026-processing",
+    id: "payout-figurevault-feb-2026-processing",
     sellerId: "user-techhub-electronics-electron",
-    sellerName: "TechHub Electronics",
+    sellerName: "FigureVault JP",
     sellerEmail: "techhub@letitrip.in",
-    amount: 75619.0,
-    grossAmount: 79599.0,
-    platformFee: 3980.0,
+    amount: 33718.55,
+    grossAmount: 35493.0, // 24990 + 3499 + 6990 = 35,479
+    platformFee: 1774.45,
     platformFeeRate: DEFAULT_PLATFORM_FEE_RATE,
     currency: "INR",
     status: PAYOUT_FIELDS.STATUS_VALUES.PROCESSING,
     paymentMethod: "bank_transfer",
     bankAccount: {
-      accountHolderName: "TechHub Electronics Pvt Ltd",
+      accountHolderName: "FigureVault JP Pvt Ltd",
       accountNumberMasked: "****4892",
       ifscCode: "HDFC0001234",
       bankName: "HDFC Bank",
     },
-    notes: "February 2026 payout — pixel + additional orders",
+    notes:
+      "February 2026 payout — Luffy Gear 5, Totoro Nendoroid, Ultra Instinct Goku orders",
     adminNote: "Bank transfer initiated. ETA 2 business days.",
     orderIds: [
       "order-1-20260205-h2k6m4",
@@ -77,9 +79,9 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
 
   // Completed payout — UPI
   {
-    id: "payout-fashionboutique-jan-2026-completed",
+    id: "payout-animecraft-jan-2026-completed",
     sellerId: "user-fashion-boutique-fashionb",
-    sellerName: "Fashion Boutique",
+    sellerName: "AnimeCraft Apparel",
     sellerEmail: "fashion@letitrip.in",
     amount: 13491.0,
     grossAmount: 14201.0,
@@ -89,7 +91,8 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
     status: PAYOUT_FIELDS.STATUS_VALUES.COMPLETED,
     paymentMethod: "upi",
     upiId: "fashionboutique@okaxis",
-    notes: "January payout — shirts + kurta orders",
+    notes:
+      "January payout — Tanjiro T-shirt, Nezuko Hoodie, Cosplay Jacket orders",
     adminNote: "UPI transfer successful. Ref: UPI-2026-02-7721",
     orderIds: [
       "order-2-20260125-r5t9w1",
@@ -104,19 +107,20 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
 
   // Pending payout
   {
-    id: "payout-fashionboutique-feb-2026-pending",
+    id: "payout-animecraft-feb-2026-pending",
     sellerId: "user-fashion-boutique-fashionb",
-    sellerName: "Fashion Boutique",
+    sellerName: "AnimeCraft Apparel",
     sellerEmail: "fashion@letitrip.in",
-    amount: 85465.5,
-    grossAmount: 89963.68,
-    platformFee: 4498.18,
+    amount: 18043.5,
+    grossAmount: 18993.68,
+    platformFee: 950.18,
     platformFeeRate: DEFAULT_PLATFORM_FEE_RATE,
     currency: "INR",
     status: PAYOUT_FIELDS.STATUS_VALUES.PENDING,
     paymentMethod: "upi",
     upiId: "fashionboutique@okaxis",
-    notes: "February 2026 payout batch",
+    notes:
+      "February 2026 payout batch — cosplay, apparel, cosplay jacket orders",
     orderIds: [
       "order-confirmed-2-20260216-fp7r1v",
       "order-confirmed-3-20260215-gx2s5u",
@@ -132,24 +136,25 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
 
   // Failed payout (bank rejected)
   {
-    id: "payout-homeessentials-jan-2026-failed",
+    id: "payout-otakushelf-jan-2026-failed",
     sellerId: "user-home-essentials-homeesse",
-    sellerName: "Home Essentials",
+    sellerName: "OtakuShelf Co",
     sellerEmail: "home@letitrip.in",
-    amount: 47975.0,
-    grossAmount: 50500.0,
-    platformFee: 2525.0,
+    amount: 22800.0,
+    grossAmount: 24000.0,
+    platformFee: 1200.0,
     platformFeeRate: DEFAULT_PLATFORM_FEE_RATE,
     currency: "INR",
     status: PAYOUT_FIELDS.STATUS_VALUES.FAILED,
     paymentMethod: "bank_transfer",
     bankAccount: {
-      accountHolderName: "Home Essentials Store",
+      accountHolderName: "OtakuShelf Co",
       accountNumberMasked: "****7203",
       ifscCode: "SBIN0003456",
       bankName: "State Bank of India",
     },
-    notes: "January 2026 payout",
+    notes:
+      "January 2026 payout — Nendoroid, 3D Maneuver Gear, Ghibli Shelf orders",
     adminNote:
       "Bank transfer rejected — IFSC code mismatch. Seller has been notified to update banking details.",
     orderIds: ["order-5-20260201-w8y2a6", "order-1-20260208-z1x5c9"],
@@ -161,24 +166,24 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
 
   // Pending payout — Home Essentials (re-requested after fixing bank details)
   {
-    id: "payout-homeessentials-feb-2026-pending",
+    id: "payout-otakushelf-feb-2026-pending",
     sellerId: "user-home-essentials-homeesse",
-    sellerName: "Home Essentials",
+    sellerName: "OtakuShelf Co",
     sellerEmail: "home@letitrip.in",
-    amount: 47975.0,
-    grossAmount: 50500.0,
-    platformFee: 2525.0,
+    amount: 22800.0,
+    grossAmount: 24000.0,
+    platformFee: 1200.0,
     platformFeeRate: DEFAULT_PLATFORM_FEE_RATE,
     currency: "INR",
     status: PAYOUT_FIELDS.STATUS_VALUES.PENDING,
     paymentMethod: "bank_transfer",
     bankAccount: {
-      accountHolderName: "Home Essentials Store",
+      accountHolderName: "OtakuShelf Co",
       accountNumberMasked: "****7203",
       ifscCode: "SBIN0004567",
       bankName: "State Bank of India",
     },
-    notes: "Re-submitted with corrected IFSC code",
+    notes: "Re-submitted with corrected IFSC code — Nendoroid + Ghibli orders",
     orderIds: ["order-5-20260201-w8y2a6", "order-1-20260208-z1x5c9"],
     requestedAt: new Date("2026-02-22T14:00:00Z"),
     createdAt: new Date("2026-02-22T14:00:00Z"),
@@ -188,13 +193,13 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
   // ── Home Essentials (was Sports Zone) ───────────────────────────────────
 
   {
-    id: "payout-sportszone-jan-2026-completed",
+    id: "payout-otakushelf-jan2-2026-completed",
     sellerId: "user-home-essentials-homeesse",
-    sellerName: "Home Essentials",
+    sellerName: "OtakuShelf Co",
     sellerEmail: "home@letitrip.in",
-    amount: 22610.5,
-    grossAmount: 23800.53,
-    platformFee: 1190.03,
+    amount: 11495.0,
+    grossAmount: 12100.0,
+    platformFee: 605.0,
     platformFeeRate: DEFAULT_PLATFORM_FEE_RATE,
     currency: "INR",
     status: PAYOUT_FIELDS.STATUS_VALUES.COMPLETED,

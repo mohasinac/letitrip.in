@@ -7,6 +7,93 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — fix(layout/ux/security): provider order, hydration, background config, MediaImage skeleton, edge-runtime CSP, SEO IDs, categories API, seed data
+
+### Bug Fixes
+
+- **`src/app/[locale]/layout.tsx`** — `QueryProvider` and `SessionProvider` wrapper order swapped: `QueryProvider` is now the outer provider and `SessionProvider` the inner one. This fixes React context ordering so TanStack Query is available before auth state resolves.
+- **`src/app/layout.tsx`** — Added `suppressHydrationWarning` to the three `<script>` tags (JSON-LD organization, JSON-LD searchbox, theme-init inline script) to eliminate React hydration mismatches caused by nonce differences between SSR and client.
+- **`src/components/LayoutClient.tsx`** — Background config key mismatch fixed: `siteSettings?.backgroundConfig` (non-existent) replaced with `siteSettings?.background?.light` / `siteSettings?.background?.dark` to match the actual `siteSettings` document shape (`background: { light, dark }`). Fallback objects extracted to `DEFAULT_LIGHT_BG` / `DEFAULT_DARK_BG` constants.
+- **`src/lib/firebase/auth-server.ts`** — `verifyIdToken()` and `verifySessionCookie()` no longer log expected auth errors (expired/revoked tokens, disabled users) as `serverLogger.error`. Added `EXPECTED_AUTH_CODES` set; only unexpected codes hit the logger. Eliminates noise from normal unauthenticated requests.
+- **`src/components/media/MediaImage.tsx`** — SVG detection regex broadened from `/\.svg(\?|$)/` to `/[./]svg(\?|$)/i` to catch data-URI SVGs and mixed-case paths. Added `isLoaded` state — a pulsing skeleton placeholder (`bg-zinc-200 dark:bg-slate-700 animate-pulse`) is rendered until `onLoad` fires, eliminating layout shift for uncached images.
+- **`src/features/homepage/components/HeroCarousel.tsx`** — Carousel card background images are now rendered via `<MediaImage>` (proper Next.js optimisation, LCP-aware) instead of `background-image` inline CSS. `getBackgroundStyle()` returns `{}` for `type === "image"` and `<MediaImage>` is conditionally rendered inside the card.
+
+### Changed
+
+- **`src/lib/security/csp.ts`** — `generateNonce()` migrated from Node.js-only `randomBytes` (breaks edge runtime) to `crypto.getRandomValues(new Uint8Array(16))` + `btoa()` (Web Crypto — works in Node.js, edge, and browser). Import of `randomBytes` removed.
+- **`src/utils/id-generators.ts`** — Added `generateBlogPostId({ title, category, status? })` and `generatePayoutId({ sellerName, date? })`. Both use `slugify()` for URL-safe segments. Blog IDs: `blog-{title-slug}-{category}[-{status}]` (draft/archived suffix; published posts have no suffix). Payout IDs: `payout-{seller-slug}-{YYYYMMDD}-{hex6}`.
+- **`src/repositories/blog.repository.ts`** — `create()` now calls `generateBlogPostId()` for deterministic, SEO-friendly Firestore document IDs instead of relying on Firestore auto-ID + extra `.get()` round-trip. Uses `doc(id).set()` instead of `.add()`.
+- **`src/repositories/payout.repository.ts`** — `create()` replaces bare template literal `` `payout-${sellerId.slice(0,8)}-${Date.now()}` `` with `generatePayoutId({ sellerName, date })` for consistent, readable payout IDs.
+- **`src/app/api/categories/route.ts`** — Added `showOnHomepage` query parameter (boolean). When `showOnHomepage=true`, the handler calls `categoriesRepository.findBy("showOnHomepage", true)` and returns the matching categories. Supports the new homepage category section that uses this field.
+- **`src/features/admin/components/DemoSeedView.tsx`** — Seed item counts updated to match current seed data: `products: 50 → 40`, `faqs: 103 → 102`, `categories: 20 → 23`, `carouselSlides: 23 → 6`, `homepageSections: 17 → 15`.
+- **`src/db/seed-data/`** — Multiple seed files updated/expanded: `products-seed-data.ts` significantly expanded (+619 lines); `categories-seed-data.ts` updated to include `showOnHomepage` field; `carousel-slides` reduced to 6 production-quality slides; `homepage-sections` updated to match 15-section layout; other files reformatted for consistency.
+- **`messages/*.json` (all 5 locales)** — Added `products.metaTitle` and `products.metaDescription`; added `categories.metaTitle` and `categories.metaDescription`. Used for `generateMetadata()` on the products listing and categories listing pages.
+- **`public/favicon.svg`** — Removed (replaced by favicon assets in `/public/icons/` and `<head>` link tags in root layout).
+
+---
+
+## [Unreleased] — fix(carousel): field name mismatches across type, form, view, hook, and schema
+
+### Bug Fixes (Carousel Admin — Complete UI Broken)
+
+- **`src/features/admin/components/Carousel.types.ts`** — `CarouselSlide` interface was out of sync with `CarouselSlideDocument`. Fixed:
+  - `imageUrl: string` → `media: { type, url, alt, thumbnail? }` (nested object matching DB)
+  - `isActive: boolean` → `active: boolean`
+  - `linkUrl?: string` → `link?: { url, openInNewTab }` (nested object matching DB)
+  - Removed orphaned `description?: string` (no top-level description in `CarouselSlideDocument`)
+  - Added `mobileMedia?` field to match Document
+- **`src/features/admin/hooks/useAdminCarousel.ts`** — `useQuery<{ slides: CarouselSlide[] }>` typed incorrectly; `apiClient.get()` unwraps the wrapper and returns the array directly, so `data?.slides` was always `undefined` (carousel list always showed empty). Fixed to `useQuery<CarouselSlide[]>`.
+- **`src/features/admin/components/AdminCarouselView.tsx`** — `data?.slides || []` → `data || []`; new-slide initialiser `imageUrl`/`isActive` → `media`/`active`; `s.isActive` → `s.active` in `actionDisabled`; `slide.imageUrl` → `slide.media?.url ?? ""` in mobile card; `slide.isActive` → `slide.active` in `StatusBadge`.
+- **`src/features/admin/components/CarouselTableColumns.tsx`** — column key `"imageUrl"` → `"media"`; `slide.imageUrl` → `slide.media?.url ?? ""`; key `"isActive"` → `"active"`; both `slide.isActive` → `slide.active` in render.
+- **`src/features/admin/components/CarouselSlideForm.tsx`** — removed orphaned top-level `description` `FormField`; `ImageUpload` bound to `slide.media?.url` and `update({ media: { type, url, alt } })`; `linkUrl` `FormField` bound to `slide.link?.url` / `update({ link: { ... } })`; `isActive` `Checkbox` → `active`.
+- **`src/features/admin/components/__tests__/CarouselTableColumns.test.tsx`** — fixture updated: `imageUrl`/`isActive` → `media`/`active`.
+- **`src/lib/validation/schemas.ts`** — `carouselBaseSchema` field `gridCards` renamed to `cards` (matches `CarouselSlideDocument.cards`); max updated from 2 to 6 (schema was 2 but slide supports up to 6 cards in 2×3 grid); both refinements updated from `data.gridCards` → `data.cards`.
+- **`src/app/api/carousel/route.ts`** — POST handler: `body!.gridCards.map(...)` → `body!.cards.map(...)`; PATCH route now also receives `cards` directly (no more `gridCards` stored to DB).
+
+---
+
+## [Unreleased] — fix(schema): product validation schema missing pre-order, auction, and condition fields
+
+### Bug Fixes (Product Schema — Silent Field Stripping)
+
+- **`src/lib/validation/schemas.ts`** — `productBaseSchema` was missing 22 fields that exist in `ProductDocument`. Because `createApiHandler` calls Zod `.parse()` (stripping unknown keys), all PATCH requests to `/api/products/[id]` silently dropped any pre-order, extended-auction, condition, SEO, and shipping fields before they could reach the repository.
+
+  **Added to `productBaseSchema`** (valid at both create and update):
+  - `condition?: "new" | "used" | "refurbished" | "broken"`
+  - `insurance?: boolean`, `insuranceCost?: number`
+  - `shippingPaidBy?: "seller" | "buyer"`, `pickupAddressId?`
+  - `seoTitle?: string` (max 60), `seoDescription?: string` (max 160), `seoKeywords?: string[]` (max 10)
+  - Auction extras: `reservePrice`, `buyNowPrice`, `minBidIncrement`, `autoExtendable`, `auctionExtensionMinutes`, `auctionShippingPaidBy`
+  - Pre-order: `isPreOrder`, `preOrderDeliveryDate`, `preOrderDepositPercent`, `preOrderDepositAmount`, `preOrderMaxQuantity`, `preOrderProductionStatus`, `preOrderCancellable`
+
+  **Added to `productUpdateSchema.extend()`** (admin-only, not settable by sellers at creation):
+  - `featured?: boolean`, `isPromoted?: boolean`, `promotionEndDate?`
+
+---
+
+## [Unreleased] — fix(schema): field name mismatch audit — categories, FAQs, reviews
+
+### Bug Fixes (Schema/Field Mismatch Audit)
+
+- **`src/components/categories/Category.types.ts`** — `enabled: boolean` renamed to `isActive: boolean` (matches `CategoryDocument.isActive`); added `showOnHomepage?: boolean` to local type.
+- **`src/components/categories/CategoryTableColumns.tsx`** — column key `"enabled"` → `"isActive"`; `cat.enabled` → `cat.isActive`.
+- **`src/components/categories/CategoryForm.tsx`** — checkbox `category.enabled` → `category.isActive`; update payload `{ enabled }` → `{ isActive }`.
+- **`src/components/categories/CategorySelectorCreate.tsx`** — draft initialiser `enabled: true` → `isActive: true`.
+- **`src/features/admin/components/AdminCategoriesView.tsx`** — new-category draft `enabled: true` → `isActive: true`.
+- **`src/db/schema/categories.ts`** — Added `showOnHomepage?: boolean` field and `"showOnHomepage"` to `CATEGORIES_INDEXED_FIELDS`.
+- **`src/lib/validation/schemas.ts`** — `categoryUpdateSchema` extended with `isActive`, `showOnHomepage`, `isSearchable`; `faqBaseSchema` field `featured` renamed to `isPinned` (matches `FAQDocument.isPinned`).
+- **`src/features/admin/components/Faq.types.ts`** — `featured: boolean` → `isPinned: boolean`; flat `viewCount`/`helpfulCount`/`notHelpfulCount` replaced with nested `stats: FAQStats { views, helpful, notHelpful }` (matches `FAQDocument.stats`); added exported `FAQStats` interface.
+- **`src/features/admin/components/FaqTableColumns.tsx`** — column key `"featured"` → `"isPinned"`; `faq.featured` → `faq.isPinned`; `faq.helpfulCount`/`faq.notHelpfulCount` → `faq.stats.helpful`/`faq.stats.notHelpful`; `"viewCount"` column now reads `faq.stats.views`.
+- **`src/features/admin/components/FaqForm.tsx`** — checkbox `faq.featured` → `faq.isPinned`; update payload `{ featured }` → `{ isPinned }`.
+- **`src/features/admin/components/AdminFaqsView.tsx`** — `faq.featured` → `faq.isPinned`; mobile card caption `faq.helpfulCount`/`faq.viewCount` → `faq.stats.helpful`/`faq.stats.views`.
+- **`src/app/api/faqs/route.ts`** — Sieve field `isFeatured` → `isPinned`; POST comment `featured: boolean` → `isPinned: boolean`.
+- **`src/features/admin/components/Review.types.ts`** — `verifiedPurchase: boolean` → `verified: boolean` (matches `ReviewDocument.verified`); `notHelpfulCount: number` → `reportCount: number` (matches `ReviewDocument.reportCount`).
+- **`src/features/admin/components/ReviewTableColumns.tsx`** — `review.verifiedPurchase` → `review.verified`; helpful column simplified to show `review.helpfulCount` only (vote API only tracks helpful votes).
+- **`src/features/admin/components/ReviewDetailView.tsx`** — `review.verifiedPurchase` → `review.verified`; `review.notHelpfulCount` → `review.reportCount`.
+- **`src/features/admin/components/__tests__/FaqTableColumns.test.tsx`** — test fixture updated: `viewCount`/`helpfulCount`/`notHelpfulCount` → `stats: { views, helpful, notHelpful }`; column key assertion `"featured"` → `"isPinned"`.
+
+---
+
 ## [Unreleased] — fix(ssr): fix useReviews+usePreOrders data shape bugs; add SSR initialData for reviews/pre-orders; ISR for sellers/track
 
 ### Bug Fixes

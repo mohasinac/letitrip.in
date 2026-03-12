@@ -38,7 +38,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 1,
     seo: {
-      title: "Scale Figures — Anime Collectibles | LetItRip",
+      title: "Scale Figures â€” Anime Collectibles | LetItRip",
       description:
         "Shop premium anime scale figures including Dragon Ball Z, One Piece, Demon Slayer, and more",
       keywords: [
@@ -52,7 +52,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
         "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&h=630&fit=crop",
     },
     display: {
-      icon: "🎌",
+      icon: "ðŸŽŒ",
       coverImage:
         "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&h=800&fit=crop",
       color: "#3b82f6",
@@ -61,6 +61,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -107,7 +108,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       ],
     },
     display: {
-      icon: "🫧",
+      icon: "ðŸ«§",
       coverImage:
         "https://images.unsplash.com/photo-1614108831137-558fffac9ead?w=800&h=800&fit=crop",
       showInMenu: true,
@@ -115,6 +116,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -154,13 +156,13 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 2,
     seo: {
-      title: "Dragon Ball Figures — Goku, Vegeta & More | LetItRip",
+      title: "Dragon Ball Figures â€” Goku, Vegeta & More | LetItRip",
       description:
         "Shop Dragon Ball Z and Super scale figures by Bandai Spirits, MegaHouse, and Banpresto",
       keywords: ["dragon ball", "goku", "vegeta", "bandai", "scale figure"],
     },
     display: {
-      icon: "🔥",
+      icon: "ðŸ”¥",
       coverImage:
         "https://images.unsplash.com/photo-1608889825271-9696283b84bd?w=800&h=800&fit=crop",
       showInMenu: true,
@@ -168,6 +170,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -221,7 +224,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       ],
     },
     display: {
-      icon: "😊",
+      icon: "ðŸ˜Š",
       coverImage:
         "https://images.unsplash.com/photo-1560762484-813fc97650a0?w=800&h=800&fit=crop",
       showInMenu: true,
@@ -229,6 +232,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -271,7 +275,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     isBrand: false,
     featuredPriority: 3,
     seo: {
-      title: "Premium Anime Statues — One Piece, Bleach | LetItRip",
+      title: "Premium Anime Statues â€” One Piece, Bleach | LetItRip",
       description:
         "Browse large-scale One Piece, Bleach, and premium anime statues by Bandai Spirits and MegaHouse",
       keywords: [
@@ -283,7 +287,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       ],
     },
     display: {
-      icon: "🏆",
+      icon: "ðŸ†",
       coverImage:
         "https://images.unsplash.com/photo-1599409636295-e3cf3538f212?w=800&h=800&fit=crop",
       showInMenu: true,
@@ -291,6 +295,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -330,7 +335,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     seo: {
       title: "Limited Edition Anime Figures | LetItRip",
       description:
-        "Shop exclusive, limited-run anime figures — Alter Co., Union Creative, limited releases",
+        "Shop exclusive, limited-run anime figures â€” Alter Co., Union Creative, limited releases",
       keywords: [
         "limited edition",
         "exclusive figure",
@@ -340,7 +345,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       ],
     },
     display: {
-      icon: "⭐",
+      icon: "â­",
       coverImage:
         "https://images.unsplash.com/photo-1614108831137-558fffac9ead?w=800&h=800&fit=crop",
       showInMenu: true,
@@ -348,6 +353,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -397,7 +403,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       ],
     },
     display: {
-      icon: "🖼️",
+      icon: "ðŸ–¼ï¸",
       coverImage:
         "https://images.unsplash.com/photo-1578301978162-7aae4d755744?w=800&h=800&fit=crop",
       showInMenu: true,
@@ -405,6 +411,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -453,7 +460,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       ],
     },
     display: {
-      icon: "🎭",
+      icon: "ðŸŽ­",
       coverImage:
         "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=800&h=800&fit=crop",
       color: "#ec4899",
@@ -462,6 +469,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -513,7 +521,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       ],
     },
     display: {
-      icon: "👘",
+      icon: "ðŸ‘˜",
       coverImage:
         "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=800&h=800&fit=crop",
       showInMenu: true,
@@ -521,6 +529,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -570,7 +579,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       ],
     },
     display: {
-      icon: "👗",
+      icon: "ðŸ‘—",
       coverImage:
         "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=800&h=800&fit=crop",
       showInMenu: true,
@@ -578,6 +587,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -629,7 +639,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       ],
     },
     display: {
-      icon: "🎎",
+      icon: "ðŸŽŽ",
       coverImage:
         "https://images.unsplash.com/photo-1614108831137-558fffac9ead?w=800&h=800&fit=crop",
       color: "#10b981",
@@ -638,6 +648,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -688,7 +699,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       ],
     },
     display: {
-      icon: "🤖",
+      icon: "ðŸ¤–",
       coverImage:
         "https://images.unsplash.com/photo-1657664072470-99b02c2143f2?w=800&h=800&fit=crop",
       color: "#f97316",
@@ -697,6 +708,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -735,7 +747,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       keywords: ["beauty", "skincare", "cosmetics", "health", "wellness"],
     },
     display: {
-      icon: "💄",
+      icon: "ðŸ’„",
       coverImage:
         "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&h=800&fit=crop",
       color: "#ec4899",
@@ -744,6 +756,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -782,7 +795,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       keywords: ["books", "stationery", "notebooks", "office supplies"],
     },
     display: {
-      icon: "📚",
+      icon: "ðŸ“š",
       coverImage:
         "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=800&fit=crop",
       color: "#f59e0b",
@@ -791,6 +804,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -829,7 +843,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       keywords: ["automotive", "car accessories", "vehicle parts", "tools"],
     },
     display: {
-      icon: "🚗",
+      icon: "ðŸš—",
       coverImage:
         "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&h=800&fit=crop",
       color: "#6b7280",
@@ -838,6 +852,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -876,7 +891,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       keywords: ["jewelry", "watches", "accessories", "rings", "necklaces"],
     },
     display: {
-      icon: "💍",
+      icon: "ðŸ’",
       coverImage:
         "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&h=800&fit=crop",
       color: "#d97706",
@@ -885,6 +900,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -923,7 +939,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       keywords: ["toys", "baby", "kids", "games", "educational toys"],
     },
     display: {
-      icon: "🧸",
+      icon: "ðŸ§¸",
       coverImage:
         "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=800&h=800&fit=crop",
       color: "#8b5cf6",
@@ -932,6 +948,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -970,7 +987,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
       keywords: ["food", "groceries", "beverages", "fresh produce", "snacks"],
     },
     display: {
-      icon: "🛒",
+      icon: "ðŸ›’",
       coverImage:
         "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800&h=800&fit=crop",
       color: "#059669",
@@ -979,6 +996,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-02-09T00:00:00Z"),
@@ -1021,13 +1039,13 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     seo: {
       title: "Apple Products | LetItRip",
       description:
-        "Shop genuine Apple products — iPhone, MacBook, iPad, and accessories",
+        "Shop genuine Apple products â€” iPhone, MacBook, iPad, and accessories",
       keywords: ["apple", "iphone", "macbook", "ipad", "airpods"],
       ogImage:
         "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=1200&h=630&fit=crop",
     },
     display: {
-      icon: "🍎",
+      icon: "ðŸŽ",
       coverImage:
         "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop",
       color: "#555555",
@@ -1036,6 +1054,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-03-07T00:00:00Z"),
@@ -1078,7 +1097,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
         "https://images.unsplash.com/photo-1610945264803-c22b62831028?w=1200&h=630&fit=crop",
     },
     display: {
-      icon: "📺",
+      icon: "ðŸ“º",
       coverImage:
         "https://images.unsplash.com/photo-1610945264803-c22b62831028?w=800&h=800&fit=crop",
       color: "#1428a0",
@@ -1087,6 +1106,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-03-07T00:00:00Z"),
@@ -1132,7 +1152,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
         "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=1200&h=630&fit=crop",
     },
     display: {
-      icon: "🎮",
+      icon: "ðŸŽ®",
       coverImage:
         "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop",
       color: "#000000",
@@ -1141,6 +1161,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-03-07T00:00:00Z"),
@@ -1181,7 +1202,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
         "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&h=630&fit=crop",
     },
     display: {
-      icon: "👟",
+      icon: "ðŸ‘Ÿ",
       coverImage:
         "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=800&fit=crop",
       color: "#111111",
@@ -1190,6 +1211,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-03-07T00:00:00Z"),
@@ -1230,7 +1252,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
         "https://images.unsplash.com/photo-1605348532760-6753d2c43329?w=1200&h=630&fit=crop",
     },
     display: {
-      icon: "👕",
+      icon: "ðŸ‘•",
       coverImage:
         "https://images.unsplash.com/photo-1605348532760-6753d2c43329?w=800&h=800&fit=crop",
       color: "#000000",
@@ -1239,6 +1261,7 @@ export const categoriesSeedData: Partial<CategoryDocument>[] = [
     },
     isActive: true,
     isSearchable: true,
+    showOnHomepage: false,
     createdBy: "user-admin-user-admin",
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2026-03-07T00:00:00Z"),

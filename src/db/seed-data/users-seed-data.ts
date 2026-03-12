@@ -1,5 +1,5 @@
 /**
- * Users Seed Data
+ * Users Seed Data — Anime/Otaku Marketplace Theme
  * Sample user data for development and testing
  */
 

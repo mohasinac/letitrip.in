@@ -16,6 +16,17 @@ import type { SessionUser } from "@/types/auth";
 /**
  * Verify Firebase ID token from request
  */
+/** Firebase error codes that represent a normal "not authenticated" state. */
+const EXPECTED_AUTH_CODES = new Set([
+  "auth/argument-error",
+  "auth/id-token-expired",
+  "auth/id-token-revoked",
+  "auth/session-cookie-expired",
+  "auth/session-cookie-revoked",
+  "auth/user-disabled",
+  "auth/user-not-found",
+]);
+
 export async function verifyIdToken(
   token: string,
 ): Promise<DecodedIdToken | null> {
@@ -23,7 +34,10 @@ export async function verifyIdToken(
     const decodedToken = await getAdminAuth().verifyIdToken(token);
     return decodedToken;
   } catch (error) {
-    serverLogger.error("Token verification failed:", error);
+    const code = (error as { code?: string }).code ?? "";
+    if (!EXPECTED_AUTH_CODES.has(code)) {
+      serverLogger.error("Token verification failed:", error);
+    }
     return null;
   }
 }
@@ -41,7 +55,10 @@ export async function verifySessionCookie(
     );
     return decodedClaims;
   } catch (error) {
-    serverLogger.error("Session cookie verification failed:", error);
+    const code = (error as { code?: string }).code ?? "";
+    if (!EXPECTED_AUTH_CODES.has(code)) {
+      serverLogger.error("Session cookie verification failed:", error);
+    }
     return null;
   }
 }

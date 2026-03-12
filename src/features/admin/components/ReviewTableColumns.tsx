@@ -23,9 +23,9 @@ export function getReviewTableColumns() {
       render: (review: Review) => (
         <div>
           <div>{review.userName}</div>
-          {review.verifiedPurchase && (
+          {review.verified && (
             <Span className="text-xs text-green-600 dark:text-green-400">
-              ? {REVIEWS.VERIFIED}
+              ✓ {REVIEWS.VERIFIED}
             </Span>
           )}
         </div>
@@ -63,14 +63,7 @@ export function getReviewTableColumns() {
       header: REVIEWS.COL_HELPFUL,
       width: "10%",
       render: (review: Review) => {
-        const total = review.helpfulCount + review.notHelpfulCount;
-        const ratio =
-          total > 0 ? Math.round((review.helpfulCount / total) * 100) : 0;
-        return (
-          <Span className="text-sm">
-            {review.helpfulCount}/{total} ({ratio}%)
-          </Span>
-        );
+        return <Span className="text-sm">{review.helpfulCount ?? 0}</Span>;
       },
     },
     {

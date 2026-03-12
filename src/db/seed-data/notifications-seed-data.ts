@@ -17,7 +17,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
     title: "Welcome to LetItRip, John! 🎉",
     message:
-      "Thanks for joining. Browse thousands of outdoor gear listings, place bids on unique items, and earn trust points by leaving helpful reviews.",
+      "Thanks for joining. Browse thousands of anime collectibles, rare figures, and auction listings. Place bids, earn trust points by leaving helpful reviews.",
     actionUrl: "/products",
     actionLabel: "Start Exploring",
     isRead: true,
@@ -34,7 +34,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.HIGH,
     title: "Order Placed Successfully",
     message:
-      "Your order for Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure (₹1,34,900) has been placed. Estimated delivery: 18 Jan 2026.",
+      "Your order for Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure (₹12,490) has been placed. Estimated delivery: 18 Jan 2026.",
     actionUrl: "/user/orders/order-1-20260115-xk7m9p",
     actionLabel: "View Order",
     isRead: true,
@@ -86,7 +86,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
 
   // Review approved
   {
-    id: "notif-review-approved-john-iphone",
+    id: "notif-review-approved-john-goku-figure",
     userId: "user-john-doe-johndoe",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.REVIEW_APPROVED,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.LOW,
@@ -106,7 +106,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
 
   // Bid outbid
   {
-    id: "notif-bid-outbid-john-vintage-camera",
+    id: "notif-bid-outbid-john-evangelion-art",
     userId: "user-john-doe-johndoe",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.BID_OUTBID,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.HIGH,
@@ -127,23 +127,19 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
 
   // Promotion — unread
   {
-    id: "notif-promotion-john-holi-2026",
+    id: "notif-promotion-john-animecon-2026",
     userId: "user-john-doe-johndoe",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.PROMOTION,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.LOW,
-    title: "Holi Special — Extra 15% Off 🎨",
+    title: "AniCon 2026 Drop — Extra 15% Off 🎌",
     message:
-      "Use code HOLI15 on any order over ₹999 until 15 March 2026. Don't miss out!",
-    actionUrl: "/products",
+      "Use code ANIMECON15 on any order over ₹999 until 15 March 2026. Don't miss out!",
+    actionUrl: "/deals",
     actionLabel: "Shop Now",
     isRead: false,
-    relatedId: "event-holi-offer-2026-offer",
-    relatedType: "product",
-    createdAt: new Date("2026-03-01T08:00:00Z"),
-    updatedAt: new Date("2026-03-01T08:00:00Z"),
+    createdAt: new Date("2026-02-22T09:00:00Z"),
+    updatedAt: new Date("2026-02-22T09:00:00Z"),
   },
-
-  // ── Jane Smith ────────────────────────────────────────────────────────
 
   {
     id: "notif-welcome-jane-20240310",
@@ -152,7 +148,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
     title: "Welcome to LetItRip, Jane! 🎉",
     message:
-      "Your account is all set. Start discovering great deals on outdoor gear, fashion, and more.",
+      "Your account is all set. Start discovering great deals on anime figures, rare Nendoroids, and more.",
     actionUrl: "/products",
     actionLabel: "Start Shopping",
     isRead: true,
@@ -182,7 +178,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
 
   // Bid won
   {
-    id: "notif-bid-won-jane-vintage-camera",
+    id: "notif-bid-won-jane-evangelion-art",
     userId: "user-jane-smith-janes",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.BID_WON,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.HIGH,
@@ -208,7 +204,8 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     type: NOTIFICATION_FIELDS.TYPE_VALUES.WELCOME,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
     title: "Welcome to LetItRip, Mike! 🎉",
-    message: "You're all set! Explore our outdoor gear, electronics, and more.",
+    message:
+      "You're all set! Explore our anime collectibles, scale figures, and live auctions for rare finds.",
     actionUrl: "/products",
     actionLabel: "Start Exploring",
     isRead: true,
@@ -218,7 +215,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
   },
 
   {
-    id: "notif-bid-lost-mike-vintage-camera",
+    id: "notif-bid-lost-mike-evangelion-art",
     userId: "user-mike-johnson-mikejohn",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.BID_LOST,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
@@ -252,13 +249,13 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
   // ── TechHub Electronics (Seller) ──────────────────────────────────────
 
   {
-    id: "notif-order-confirmed-techhub-order1",
+    id: "notif-order-confirmed-figurevault-order1",
     userId: "user-techhub-electronics-electron",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.ORDER_CONFIRMED,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.HIGH,
     title: "New Order Received",
     message:
-      "You have a new order for Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure (Qty: 1, ₹1,34,900). Ship within 24 hours to maintain your seller rating.",
+      "You have a new order for Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure (Qty: 1, ₹12,490). Ship within 24 hours to maintain your seller rating.",
     actionUrl: "/seller/orders/order-1-20260115-xk7m9p",
     actionLabel: "View Order",
     isRead: true,
@@ -297,7 +294,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.HIGH,
     title: "Order Cancelled",
     message:
-      'Your order for Apple iPad Pro 11" M2 (₹89,900) has been cancelled as requested. Refund will be credited to your original payment method within 5–7 working days.',
+      "Your order for Bleach Ichigo Bankai Tensa Zangetsu 1/6 Scale Figure (₹8,990) has been cancelled as requested. Refund will be credited to your original payment method within 5–7 working days.",
     actionUrl: "/user/orders/order-cancelled-1-20260210-lv4x7c",
     actionLabel: "View Cancelled Order",
     isRead: true,
@@ -311,7 +308,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
   // ── bid_placed — Meera placed a bid on the Leica ─────────────────────────
   // Tests: bid placement confirmation notification, bid summary data in payload
   {
-    id: "notif-bid-placed-meera-leica-20260219",
+    id: "notif-bid-placed-vikram-evangelion-poster-20260219",
     userId: "user-vikram-nair-vikram",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.BID_PLACED,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
@@ -331,13 +328,13 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
   // ── review_replied — seller replied to John's review ────────────────────
   // Tests: review-reply notification, deep link to the review thread
   {
-    id: "notif-review-replied-john-iphone-20260202",
+    id: "notif-review-replied-john-goku-figure-20260202",
     userId: "user-john-doe-johndoe",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.REVIEW_REPLIED,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.LOW,
     title: "FigureVault JP Replied to Your Review",
     message:
-      'FigureVault JP replied to your review of Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure: "Thank you for your wonderful feedback, John! We\'re glad the camera is exceeding expectations."',
+      'FigureVault JP replied to your review of Dragon Ball Super Saiyan Blue Goku 1/4 Scale Figure: "Thank you for your wonderful feedback, John! We\'re thrilled the figure has exceeded your expectations."',
     actionUrl:
       "/products/product-iphone-15-pro-max-smartphones-new-techhub-electronics-1#reviews",
     actionLabel: "View Reply",
@@ -382,17 +379,17 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     updatedAt: new Date("2026-03-06T07:00:00Z"),
   },
   {
-    id: "notif-promotion-ananya-holi-2026",
+    id: "notif-promotion-ananya-animecon-2026",
     userId: "user-ananya-bose-ananya",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.PROMOTION,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.LOW,
-    title: "Holi Special — Extra 15% Off 🎨",
+    title: "AniCon 2026 Drop — Extra 15% Off 🎌",
     message:
-      "Use code HOLI15 on any order over ₹999 until 15 March 2026. Don't miss out!",
+      "Use code ANIMECON15 on any order over ₹999 until 15 March 2026. Don't miss out!",
     actionUrl: "/products",
     actionLabel: "Shop Now",
     isRead: false,
-    relatedId: "event-holi-offer-2026-offer",
+    relatedId: "event-anicon-2026-coupon-drop-offer",
     relatedType: "product",
     createdAt: new Date("2026-03-01T08:00:00Z"),
     updatedAt: new Date("2026-03-01T08:00:00Z"),
@@ -416,33 +413,33 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     updatedAt: new Date("2025-11-10T11:00:00Z"),
   },
   {
-    id: "notif-bid-placed-pooja-hermes-20260303",
+    id: "notif-bid-placed-pooja-saber-alter-20260303",
     userId: "user-pooja-mehta-pooja",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.BID_PLACED,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
     title: "Bid Placed Successfully",
     message:
-      "Your bid of ₹54,000 on Hermès Silk Twilly Scarf has been placed. You are currently the highest bidder. Auction ends 13 Mar 2026.",
-    actionUrl: "/products/auction-hermes-silk-scarf-fashion-1",
+      "Your bid of ₹28,000 on Fate/Stay Night Saber Alter Wedding Dress 1/7 Scale has been placed. You are currently the highest bidder. Auction ends 13 Mar 2026.",
+    actionUrl: "/products/auction-fate-saber-alter-figure-techhub-1",
     actionLabel: "View Auction",
     isRead: true,
     readAt: new Date("2026-03-03T15:00:00Z"),
-    relatedId: "auction-hermes-silk-scarf-fashion-1",
+    relatedId: "auction-fate-saber-alter-figure-techhub-1",
     relatedType: "product",
     createdAt: new Date("2026-03-03T14:30:00Z"),
     updatedAt: new Date("2026-03-03T15:00:00Z"),
   },
   {
-    id: "notif-promotion-pooja-holi-2026",
+    id: "notif-promotion-pooja-animecon-2026",
     userId: "user-pooja-mehta-pooja",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.PROMOTION,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.LOW,
-    title: "Holi Special — Extra 15% Off 🎨",
-    message: "Use code HOLI15 on any order over ₹999 until 15 March 2026.",
+    title: "AniCon 2026 Drop — Extra 15% Off 🎌",
+    message: "Use code ANIMECON15 on any order over ₹999 until 15 March 2026.",
     actionUrl: "/products",
     actionLabel: "Shop Now",
     isRead: false,
-    relatedId: "event-holi-offer-2026-offer",
+    relatedId: "event-anicon-2026-coupon-drop-offer",
     relatedType: "product",
     createdAt: new Date("2026-03-01T08:00:00Z"),
     updatedAt: new Date("2026-03-01T08:00:00Z"),
@@ -457,7 +454,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
     title: "Welcome to LetItRip, Ravi! 🎉",
     message:
-      "Glad you're here! Find the latest tech, fashion, and unique auction items all in one marketplace.",
+      "Glad you're here! Browse rare anime figures, collectibles, and live auction listings in one marketplace.",
     actionUrl: "/products",
     actionLabel: "Explore Now",
     isRead: true,
@@ -466,7 +463,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     updatedAt: new Date("2025-12-01T11:00:00Z"),
   },
   {
-    id: "notif-bid-placed-ravi-macbook-m3-20260228",
+    id: "notif-bid-placed-ravi-dbz-set-20260228",
     userId: "user-ravi-kumar-ravi",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.BID_PLACED,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
@@ -483,17 +480,17 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     updatedAt: new Date("2026-02-28T17:00:00Z"),
   },
   {
-    id: "notif-product-available-ravi-sony-a7iv",
+    id: "notif-product-available-ravi-charizard-psa9",
     userId: "user-ravi-kumar-ravi",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.PRODUCT_AVAILABLE,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
-    title: "New Auction Live: Sony Alpha 7 IV 📸",
+    title: "New Auction Live: Pokémon Charizard PSA-9 🎦",
     message:
-      "A Sony Alpha 7 IV camera is now up for auction. Bidding starts at ₹1,50,000. Auction ends 14 Mar 2026!",
-    actionUrl: "/products/auction-sony-alpha-7iv-camera-techhub-1",
+      "New Live Auction: Pokémon 1st Edition Base Set Charizard Holo — PSA Graded 9. Bidding starts at ₹25,000. Auction ends 14 Mar 2026!",
+    actionUrl: "/products/auction-pokemon-charizard-1st-ed-fashion-1",
     actionLabel: "View Auction",
     isRead: false,
-    relatedId: "auction-sony-alpha-7iv-camera-techhub-1",
+    relatedId: "auction-pokemon-charizard-1st-ed-fashion-1",
     relatedType: "product",
     createdAt: new Date("2026-03-05T09:00:00Z"),
     updatedAt: new Date("2026-03-05T09:00:00Z"),
@@ -508,7 +505,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
     title: "Welcome to LetItRip, Sneha! 🎉",
     message:
-      "You're in! Browse products, join live auctions, and get great deals from verified sellers.",
+      "You're in! Browse anime figures, Gunpla model kits, Nendoroids, and live auctions from verified collectible sellers.",
     actionUrl: "/products",
     actionLabel: "Start Shopping",
     isRead: true,
@@ -517,33 +514,33 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     updatedAt: new Date("2026-01-05T11:00:00Z"),
   },
   {
-    id: "notif-bid-placed-sneha-dyson-20260304",
+    id: "notif-bid-placed-sneha-wing-zero-20260304",
     userId: "user-sneha-gupta-sneha",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.BID_PLACED,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.NORMAL,
     title: "Bid Placed Successfully",
     message:
-      "Your bid of ₹42,000 on Dyson V15 Detect Cordless Vacuum has been placed. You are currently the highest bidder. Auction ends 15 Mar 2026.",
-    actionUrl: "/products/auction-dyson-v15-vacuum-homeessentials-1",
+      "Your bid of ₹14,500 on Gundam Wing Perfect Grade Wing Zero Custom — Full Build has been placed. You are currently the highest bidder. Auction ends 15 Mar 2026.",
+    actionUrl: "/products/auction-gunpla-pg-wing-zero-techhub-1",
     actionLabel: "View Auction",
     isRead: true,
     readAt: new Date("2026-03-04T13:00:00Z"),
-    relatedId: "auction-dyson-v15-vacuum-homeessentials-1",
+    relatedId: "auction-gunpla-pg-wing-zero-techhub-1",
     relatedType: "product",
     createdAt: new Date("2026-03-04T12:30:00Z"),
     updatedAt: new Date("2026-03-04T13:00:00Z"),
   },
   {
-    id: "notif-promotion-sneha-holi-2026",
+    id: "notif-promotion-sneha-animecon-2026",
     userId: "user-sneha-gupta-sneha",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.PROMOTION,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.LOW,
-    title: "Holi Special — Extra 15% Off 🎨",
-    message: "Use code HOLI15 on any order over ₹999 until 15 March 2026.",
+    title: "AniCon 2026 Drop — Extra 15% Off 🎌",
+    message: "Use code ANIMECON15 on any order over ₹999 until 15 March 2026.",
     actionUrl: "/products",
     actionLabel: "Shop Now",
     isRead: false,
-    relatedId: "event-holi-offer-2026-offer",
+    relatedId: "event-anicon-2026-coupon-drop-offer",
     relatedType: "product",
     createdAt: new Date("2026-03-01T08:00:00Z"),
     updatedAt: new Date("2026-03-01T08:00:00Z"),
@@ -552,7 +549,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
   // ── TechHub Seller — new auction sale order notifications ─────────────
 
   {
-    id: "notif-auction-live-techhub-ps5-20260301",
+    id: "notif-auction-ending-figurevault-ps5-20260301",
     userId: "user-techhub-electronics-electron",
     type: NOTIFICATION_FIELDS.TYPE_VALUES.ORDER_CONFIRMED,
     priority: NOTIFICATION_FIELDS.PRIORITY_VALUES.HIGH,

@@ -14,7 +14,7 @@ import type { CarouselSlide } from "../components";
  * Fetches the carousel slides list and exposes create, update, and delete mutations.
  */
 export function useAdminCarousel() {
-  const query = useQuery<{ slides: CarouselSlide[] }>({
+  const query = useQuery<CarouselSlide[]>({
     queryKey: ["carousel", "list"],
     queryFn: () => carouselService.list(),
   });

@@ -2,6 +2,13 @@
  * Shared FAQ types for admin FAQ management.
  */
 
+export interface FAQStats {
+  views: number;
+  helpful: number;
+  notHelpful: number;
+  lastViewed?: string;
+}
+
 export interface FAQ {
   id: string;
   question: string;
@@ -9,10 +16,8 @@ export interface FAQ {
   category: string;
   priority: number;
   tags: string[];
-  featured: boolean;
-  viewCount: number;
-  helpfulCount: number;
-  notHelpfulCount: number;
+  isPinned: boolean;
+  stats: FAQStats;
   order: number;
   createdAt: string;
   updatedAt: string;

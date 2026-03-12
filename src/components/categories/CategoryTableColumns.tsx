@@ -70,14 +70,14 @@ export function getCategoryTableColumns(
         ),
       },
       {
-        key: "enabled",
+        key: "isActive",
         header: UI_LABELS.TABLE.STATUS,
         sortable: true,
         render: (cat: Category) => (
           <StatusBadge
-            status={cat.enabled ? "active" : "inactive"}
+            status={cat.isActive ? "active" : "inactive"}
             label={
-              cat.enabled ? UI_LABELS.STATUS.ACTIVE : UI_LABELS.STATUS.INACTIVE
+              cat.isActive ? UI_LABELS.STATUS.ACTIVE : UI_LABELS.STATUS.INACTIVE
             }
           />
         ),

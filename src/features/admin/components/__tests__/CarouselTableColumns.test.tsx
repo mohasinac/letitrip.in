@@ -21,8 +21,8 @@ describe("CarouselTableColumns", () => {
   const slide: CarouselSlide = {
     id: "slide-1",
     title: "Test Slide",
-    imageUrl: "image-url",
-    isActive: true,
+    media: { type: "image", url: "image-url", alt: "Test Slide" },
+    active: true,
     order: 1,
     cards: [],
   };

@@ -14,11 +14,11 @@
  * ```
  */
 
-import { randomBytes } from "crypto";
-
 /** Generate a 16-byte base64 nonce for a single request. */
 export function generateNonce(): string {
-  return randomBytes(16).toString("base64");
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return btoa(String.fromCharCode(...bytes));
 }
 
 /** Build the full CSP header value for the given nonce. */

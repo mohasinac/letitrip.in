@@ -48,11 +48,23 @@ export interface CarouselSlideOverlay {
 export interface CarouselSlide {
   id: string;
   title: string;
-  description?: string;
-  imageUrl: string;
-  linkUrl?: string;
-  isActive: boolean;
   order: number;
+  active: boolean;
+  media: {
+    type: "image" | "video";
+    url: string;
+    alt: string;
+    thumbnail?: string;
+  };
+  link?: {
+    url: string;
+    openInNewTab: boolean;
+  };
+  mobileMedia?: {
+    type: "image" | "video";
+    url: string;
+    alt: string;
+  };
   cards: GridCard[];
   /**
    * When set, cards are ignored and text + button are rendered centred over the slide.

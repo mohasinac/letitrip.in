@@ -129,7 +129,7 @@ export const POST = createApiHandler<(typeof carouselCreateSchema)["_output"]>({
     }
     const slide = await carouselRepository.create({
       ...body!,
-      cards: body!.gridCards.map((card, index) => ({
+      cards: body!.cards.map((card, index) => ({
         ...card,
         gridRow: card.gridRow as 1 | 2,
         gridCol: card.gridCol as 1 | 2 | 3,

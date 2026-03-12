@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @jest-environment node
  */
 
@@ -117,7 +117,7 @@ const mockSlides = [
     title: "Summer Sale",
     active: true,
     order: 1,
-    gridCards: [],
+    cards: [],
     buttons: [],
   },
   {
@@ -125,7 +125,7 @@ const mockSlides = [
     title: "New Arrivals",
     active: true,
     order: 2,
-    gridCards: [],
+    cards: [],
     buttons: [],
   },
   {
@@ -133,7 +133,7 @@ const mockSlides = [
     title: "Flash Deal",
     active: false,
     order: 3,
-    gridCards: [],
+    cards: [],
     buttons: [],
   },
 ];
@@ -251,7 +251,7 @@ describe("Carousel API - POST /api/carousel", () => {
         title: "Summer Sale",
         media: { type: "image", url: "/img.jpg" },
         active: true,
-        gridCards: [],
+        cards: [],
       },
     });
     const res = await POST(req);
@@ -267,7 +267,7 @@ describe("Carousel API - POST /api/carousel", () => {
       body: {
         title: "Test",
         media: { type: "image", url: "/img.jpg" },
-        gridCards: [],
+        cards: [],
       },
     });
     await POST(req);
@@ -287,7 +287,7 @@ describe("Carousel API - POST /api/carousel", () => {
         title: "Extra",
         media: { type: "image", url: "/img.jpg" },
         active: true,
-        gridCards: [],
+        cards: [],
       },
     });
     const res = await POST(req);
@@ -308,7 +308,7 @@ describe("Carousel API - POST /api/carousel", () => {
         title: "Draft",
         media: { type: "image", url: "/img.jpg" },
         active: false,
-        gridCards: [],
+        cards: [],
       },
     });
     const res = await POST(req);
@@ -341,7 +341,7 @@ describe("Carousel API - POST /api/carousel", () => {
       body: {
         title: "Test",
         media: { type: "image", url: "/i.jpg" },
-        gridCards: [],
+        cards: [],
       },
     });
     const res = await POST(req);
@@ -361,7 +361,7 @@ describe("Carousel API - POST /api/carousel", () => {
       body: {
         title: "Test",
         media: { type: "image", url: "/i.jpg" },
-        gridCards: [],
+        cards: [],
       },
     });
     const res = await POST(req);
@@ -380,7 +380,7 @@ describe("Carousel API - POST /api/carousel", () => {
         title: "Test",
         media: { type: "image", url: "/i.jpg" },
         active: false,
-        gridCards: [],
+        cards: [],
       },
     });
     await POST(req);
@@ -397,7 +397,7 @@ describe("Carousel API - POST /api/carousel", () => {
       body: {
         title: "Test",
         media: { type: "image", url: "/i.jpg" },
-        gridCards: [],
+        cards: [],
       },
     });
     const res = await POST(req);

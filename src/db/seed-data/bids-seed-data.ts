@@ -868,14 +868,16 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     createdAt: new Date("2026-02-28T11:00:00Z"),
     updatedAt: new Date("2026-03-02T13:00:00Z"),
   },
+  // ── Makima 1/7 Kotobukiya (AnimeCraft Apparel) — 3 bids ──────────────────
   {
     id: "bid-supreme-tee-john-1-20260302",
-    productId: "auction-supreme-box-logo-tee-fashion-1",
-    productTitle: "Supreme Box Logo Tee FW23 — AUCTION",
+    productId: "auction-chainsaw-man-makima-figure-fashion-1",
+    productTitle:
+      "Chainsaw Man Makima 1/7 Scale Figure — Kotobukiya ARTFX J — AUCTION",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
-    bidAmount: 25000,
+    bidAmount: 13000,
     currency: "INR",
     status: "outbid",
     isWinning: false,
@@ -885,29 +887,47 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   },
   {
     id: "bid-supreme-tee-ananya-1-20260304",
-    productId: "auction-supreme-box-logo-tee-fashion-1",
-    productTitle: "Supreme Box Logo Tee FW23 — AUCTION",
+    productId: "auction-chainsaw-man-makima-figure-fashion-1",
+    productTitle:
+      "Chainsaw Man Makima 1/7 Scale Figure — Kotobukiya ARTFX J — AUCTION",
     userId: "user-ananya-bose-ananya",
     userName: "Ananya Bose",
     userEmail: "ananya@letitrip.in",
-    bidAmount: 27000,
+    bidAmount: 15500,
     currency: "INR",
-    status: "active",
-    isWinning: true,
+    status: "outbid",
+    isWinning: false,
     bidDate: new Date("2026-03-04T10:00:00Z"),
     createdAt: new Date("2026-03-04T10:00:00Z"),
-    updatedAt: new Date("2026-03-04T10:00:00Z"),
+    updatedAt: new Date("2026-03-05T09:00:00Z"),
   },
-
-  // ── Trek Domane Bike (March 12) — 4 bids ─────────────────────────────────
   {
-    id: "bid-trek-bike-ravi-1-20260221",
-    productId: "auction-trek-domane-road-bike-homeessentials-1",
-    productTitle: "Trek Domane AL 5 Road Bike (56cm, 2023) — AUCTION",
+    id: "bid-makima-figure-ravi-1-20260305",
+    productId: "auction-chainsaw-man-makima-figure-fashion-1",
+    productTitle:
+      "Chainsaw Man Makima 1/7 Scale Figure — Kotobukiya ARTFX J — AUCTION",
     userId: "user-ravi-kumar-ravi",
     userName: "Ravi Kumar",
     userEmail: "ravi@letitrip.in",
-    bidAmount: 60000,
+    bidAmount: 18500,
+    currency: "INR",
+    status: "active",
+    isWinning: true,
+    bidDate: new Date("2026-03-05T09:00:00Z"),
+    createdAt: new Date("2026-03-05T09:00:00Z"),
+    updatedAt: new Date("2026-03-05T09:00:00Z"),
+  },
+
+  // ── Sukuna 1/6 MegaHouse (OtakuShelf) — 3 bids ──────────────────────────
+  {
+    id: "bid-trek-bike-ravi-1-20260221",
+    productId: "auction-jjk-sukuna-figure-homeessentials-1",
+    productTitle:
+      "Jujutsu Kaisen Ryomen Sukuna King of Curses 1/6 Scale — AUCTION",
+    userId: "user-ravi-kumar-ravi",
+    userName: "Ravi Kumar",
+    userEmail: "ravi@letitrip.in",
+    bidAmount: 16000,
     currency: "INR",
     status: "outbid",
     isWinning: false,
@@ -917,12 +937,13 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   },
   {
     id: "bid-trek-bike-mike-1-20260225",
-    productId: "auction-trek-domane-road-bike-homeessentials-1",
-    productTitle: "Trek Domane AL 5 Road Bike (56cm, 2023) — AUCTION",
+    productId: "auction-jjk-sukuna-figure-homeessentials-1",
+    productTitle:
+      "Jujutsu Kaisen Ryomen Sukuna King of Curses 1/6 Scale — AUCTION",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
-    bidAmount: 64000,
+    bidAmount: 19000,
     currency: "INR",
     status: "outbid",
     isWinning: false,
@@ -932,30 +953,32 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   },
   {
     id: "bid-trek-bike-raj-1-20260302",
-    productId: "auction-trek-domane-road-bike-homeessentials-1",
-    productTitle: "Trek Domane AL 5 Road Bike (56cm, 2023) — AUCTION",
+    productId: "auction-jjk-sukuna-figure-homeessentials-1",
+    productTitle:
+      "Jujutsu Kaisen Ryomen Sukuna King of Curses 1/6 Scale — AUCTION",
     userId: "user-raj-patel-rajpatel",
     userName: "Raj Patel",
     userEmail: "raj@letitrip.in",
-    bidAmount: 68000,
+    bidAmount: 22000,
     currency: "INR",
     status: "active",
     isWinning: true,
-    autoMaxBid: 80000,
+    autoMaxBid: 28000,
     bidDate: new Date("2026-03-02T08:00:00Z"),
     createdAt: new Date("2026-03-02T08:00:00Z"),
     updatedAt: new Date("2026-03-02T08:00:00Z"),
   },
 
-  // ── Hermès Scarf (March 13) — 3 bids ─────────────────────────────────────
+  // ── Saber Alter Wedding 1/7 (FigureVault JP) — 2 bids ───────────────────
   {
     id: "bid-hermes-scarf-jane-1-20260302",
-    productId: "auction-hermes-silk-scarf-fashion-1",
-    productTitle: "Hermès Silk Twill Scarf 'Jungle Love' (90cm) — AUCTION",
+    productId: "auction-fate-saber-alter-figure-techhub-1",
+    productTitle:
+      "Fate/Stay Night Saber Alter Wedding Dress 1/7 Scale — AUCTION",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userEmail: "jane@letitrip.in",
-    bidAmount: 45000,
+    bidAmount: 20000,
     currency: "INR",
     status: "outbid",
     isWinning: false,
@@ -965,12 +988,13 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   },
   {
     id: "bid-hermes-scarf-pooja-1-20260304",
-    productId: "auction-hermes-silk-scarf-fashion-1",
-    productTitle: "Hermès Silk Twill Scarf 'Jungle Love' (90cm) — AUCTION",
+    productId: "auction-fate-saber-alter-figure-techhub-1",
+    productTitle:
+      "Fate/Stay Night Saber Alter Wedding Dress 1/7 Scale — AUCTION",
     userId: "user-pooja-mehta-pooja",
     userName: "Pooja Mehta",
     userEmail: "pooja@letitrip.in",
-    bidAmount: 48000,
+    bidAmount: 28000,
     currency: "INR",
     status: "active",
     isWinning: true,
@@ -979,15 +1003,16 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     updatedAt: new Date("2026-03-04T15:00:00Z"),
   },
 
-  // ── Babolat Tennis Racket (March 14) — 4 bids ────────────────────────────
+  // ── Spirited Away Production Cel (OtakuShelf) — 3 bids ──────────────────
   {
     id: "bid-babolat-ravi-1-20260301",
-    productId: "auction-babolat-tennis-racket-signed-homeessentials-1",
-    productTitle: "Babolat Pure Aero Tennis Racket — Signed — AUCTION",
+    productId: "auction-spirited-away-cel-homeessentials-1",
+    productTitle:
+      "Spirited Away 2001 Original Production Cel — Studio Ghibli — AUCTION",
     userId: "user-ravi-kumar-ravi",
     userName: "Ravi Kumar",
     userEmail: "ravi@letitrip.in",
-    bidAmount: 55000,
+    bidAmount: 32000,
     currency: "INR",
     status: "outbid",
     isWinning: false,
@@ -997,12 +1022,13 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   },
   {
     id: "bid-babolat-mike-1-20260303",
-    productId: "auction-babolat-tennis-racket-signed-homeessentials-1",
-    productTitle: "Babolat Pure Aero Tennis Racket — Signed — AUCTION",
+    productId: "auction-spirited-away-cel-homeessentials-1",
+    productTitle:
+      "Spirited Away 2001 Original Production Cel — Studio Ghibli — AUCTION",
     userId: "user-mike-johnson-mikejohn",
     userName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
-    bidAmount: 58000,
+    bidAmount: 39000,
     currency: "INR",
     status: "outbid",
     isWinning: false,
@@ -1012,12 +1038,13 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   },
   {
     id: "bid-babolat-raj-1-20260304",
-    productId: "auction-babolat-tennis-racket-signed-homeessentials-1",
-    productTitle: "Babolat Pure Aero Tennis Racket — Signed — AUCTION",
+    productId: "auction-spirited-away-cel-homeessentials-1",
+    productTitle:
+      "Spirited Away 2001 Original Production Cel — Studio Ghibli — AUCTION",
     userId: "user-raj-patel-rajpatel",
     userName: "Raj Patel",
     userEmail: "raj@letitrip.in",
-    bidAmount: 60000,
+    bidAmount: 45000,
     currency: "INR",
     status: "active",
     isWinning: true,
@@ -1026,15 +1053,16 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     updatedAt: new Date("2026-03-04T16:00:00Z"),
   },
 
-  // ── Sony Alpha 7 IV (March 14) — 3 bids ──────────────────────────────────
+  // ── Charizard 1st Edition PSA 9 (AnimeCraft) — 2 bids ───────────────────
   {
     id: "bid-sony-a7iv-john-1-20260226",
-    productId: "auction-sony-alpha-7iv-camera-techhub-1",
-    productTitle: "Sony Alpha 7 IV Full-Frame Mirrorless Camera — AUCTION",
+    productId: "auction-pokemon-charizard-1st-ed-fashion-1",
+    productTitle:
+      "Pokémon 1st Edition Base Set Charizard Holo — PSA Graded 9 — AUCTION",
     userId: "user-john-doe-johndoe",
     userName: "John Doe",
     userEmail: "john@letitrip.in",
-    bidAmount: 200000,
+    bidAmount: 30000,
     currency: "INR",
     status: "outbid",
     isWinning: false,
@@ -1044,12 +1072,13 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   },
   {
     id: "bid-sony-a7iv-vikram-1-20260301",
-    productId: "auction-sony-alpha-7iv-camera-techhub-1",
-    productTitle: "Sony Alpha 7 IV Full-Frame Mirrorless Camera — AUCTION",
+    productId: "auction-pokemon-charizard-1st-ed-fashion-1",
+    productTitle:
+      "Pokémon 1st Edition Base Set Charizard Holo — PSA Graded 9 — AUCTION",
     userId: "user-vikram-nair-vikram",
     userName: "Vikram Nair",
     userEmail: "vikram@letitrip.in",
-    bidAmount: 215000,
+    bidAmount: 52000,
     currency: "INR",
     status: "active",
     isWinning: true,
@@ -1058,15 +1087,16 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     updatedAt: new Date("2026-03-01T13:00:00Z"),
   },
 
-  // ── Dyson V15 Vacuum (March 15) — 3 bids ─────────────────────────────────
+  // ── PG Wing Zero Built (FigureVault JP) — 2 bids ────────────────────────
   {
     id: "bid-dyson-v15-pooja-1-20260302",
-    productId: "auction-dyson-v15-vacuum-homeessentials-1",
-    productTitle: "Dyson V15 Detect Absolute Cordless Vacuum — AUCTION",
+    productId: "auction-gunpla-pg-wing-zero-techhub-1",
+    productTitle:
+      "Gundam Wing Perfect Grade Wing Zero Custom — Full Build & Paint — AUCTION",
     userId: "user-pooja-mehta-pooja",
     userName: "Pooja Mehta",
     userEmail: "pooja@letitrip.in",
-    bidAmount: 35000,
+    bidAmount: 9000,
     currency: "INR",
     status: "outbid",
     isWinning: false,
@@ -1076,12 +1106,13 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   },
   {
     id: "bid-dyson-v15-jane-1-20260304",
-    productId: "auction-dyson-v15-vacuum-homeessentials-1",
-    productTitle: "Dyson V15 Detect Absolute Cordless Vacuum — AUCTION",
+    productId: "auction-gunpla-pg-wing-zero-techhub-1",
+    productTitle:
+      "Gundam Wing Perfect Grade Wing Zero Custom — Full Build & Paint — AUCTION",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userEmail: "jane@letitrip.in",
-    bidAmount: 38000,
+    bidAmount: 14500,
     currency: "INR",
     status: "active",
     isWinning: true,
@@ -1090,15 +1121,16 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     updatedAt: new Date("2026-03-04T12:00:00Z"),
   },
 
-  // ── Nikon Z30 (March 15) — 2 bids ────────────────────────────────────────
+  // ── Rem Wedding 1/7 GSC (FigureVault JP) — 2 bids ───────────────────────
   {
     id: "bid-nikon-z30-sneha-1-20260303",
-    productId: "auction-nikon-z30-mirrorless-techhub-1",
-    productTitle: "Nikon Z30 APS-C Mirrorless Camera Body — AUCTION",
+    productId: "auction-rezero-rem-wedding-figure-techhub-1",
+    productTitle:
+      "Re:Zero Rem Wedding Dress 1/7 Scale — Good Smile Company — AUCTION",
     userId: "user-sneha-gupta-sneha",
     userName: "Sneha Gupta",
     userEmail: "sneha@letitrip.in",
-    bidAmount: 55000,
+    bidAmount: 22000,
     currency: "INR",
     status: "outbid",
     isWinning: false,
@@ -1108,12 +1140,13 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   },
   {
     id: "bid-nikon-z30-vikram-1-20260305",
-    productId: "auction-nikon-z30-mirrorless-techhub-1",
-    productTitle: "Nikon Z30 APS-C Mirrorless Camera Body — AUCTION",
+    productId: "auction-rezero-rem-wedding-figure-techhub-1",
+    productTitle:
+      "Re:Zero Rem Wedding Dress 1/7 Scale — Good Smile Company — AUCTION",
     userId: "user-vikram-nair-vikram",
     userName: "Vikram Nair",
     userEmail: "vikram@letitrip.in",
-    bidAmount: 57000,
+    bidAmount: 32000,
     currency: "INR",
     status: "active",
     isWinning: true,
@@ -1122,15 +1155,16 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     updatedAt: new Date("2026-03-05T08:00:00Z"),
   },
 
-  // ── iPhone 15 Bundle (March 16) — 2 bids ─────────────────────────────────
+  // ── Oda Signed Artbook (FigureVault JP) — 2 bids ────────────────────────
   {
     id: "bid-iphone15-bundle-ravi-1-20260304",
-    productId: "auction-iphone15-sealed-bundle-techhub-1",
-    productTitle: "iPhone 15 256GB + MagSafe Charger Bundle — AUCTION",
+    productId: "auction-one-piece-signed-artbook-techhub-1",
+    productTitle:
+      "One Piece 25th Anniversary Artbook Signed by Eiichiro Oda — AUCTION",
     userId: "user-ravi-kumar-ravi",
     userName: "Ravi Kumar",
     userEmail: "ravi@letitrip.in",
-    bidAmount: 90000,
+    bidAmount: 11000,
     currency: "INR",
     status: "outbid",
     isWinning: false,
@@ -1140,12 +1174,13 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   },
   {
     id: "bid-iphone15-bundle-sneha-1-20260305",
-    productId: "auction-iphone15-sealed-bundle-techhub-1",
-    productTitle: "iPhone 15 256GB + MagSafe Charger Bundle — AUCTION",
+    productId: "auction-one-piece-signed-artbook-techhub-1",
+    productTitle:
+      "One Piece 25th Anniversary Artbook Signed by Eiichiro Oda — AUCTION",
     userId: "user-sneha-gupta-sneha",
     userName: "Sneha Gupta",
     userEmail: "sneha@letitrip.in",
-    bidAmount: 93000,
+    bidAmount: 16000,
     currency: "INR",
     status: "active",
     isWinning: true,
@@ -1154,16 +1189,16 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     updatedAt: new Date("2026-03-05T09:00:00Z"),
   },
 
-  // ── Kanjeevaram Silk Saree (March 16) — 2 bids ───────────────────────────
+  // ── Makima figure 2nd wave (AnimeCraft) — 2 more bids ────────────────────
   {
     id: "bid-kanjeevaram-ananya-1-20260304",
-    productId: "auction-designer-kanjeevaram-silk-fashion-1",
+    productId: "auction-chainsaw-man-makima-figure-fashion-1",
     productTitle:
-      "Sabyasachi Kanjeevaram Silk Saree — Bridal Edition — AUCTION",
+      "Chainsaw Man Makima 1/7 Scale Figure — Kotobukiya ARTFX J — AUCTION",
     userId: "user-ananya-bose-ananya",
     userName: "Ananya Bose",
     userEmail: "ananya@letitrip.in",
-    bidAmount: 25000,
+    bidAmount: 19000,
     currency: "INR",
     status: "outbid",
     isWinning: false,
@@ -1173,21 +1208,20 @@ export const bidsSeedData: Partial<BidDocument>[] = [
   },
   {
     id: "bid-kanjeevaram-jane-1-20260305",
-    productId: "auction-designer-kanjeevaram-silk-fashion-1",
+    productId: "auction-chainsaw-man-makima-figure-fashion-1",
     productTitle:
-      "Sabyasachi Kanjeevaram Silk Saree — Bridal Edition — AUCTION",
+      "Chainsaw Man Makima 1/7 Scale Figure — Kotobukiya ARTFX J — AUCTION",
     userId: "user-jane-smith-janes",
     userName: "Jane Smith",
     userEmail: "jane@letitrip.in",
-    bidAmount: 27000,
+    bidAmount: 20500,
     currency: "INR",
-    status: "active",
-    isWinning: true,
+    status: "outbid",
+    isWinning: false,
     bidDate: new Date("2026-03-05T10:00:00Z"),
     createdAt: new Date("2026-03-05T10:00:00Z"),
     updatedAt: new Date("2026-03-05T10:00:00Z"),
   },
 
-  // ── Weber Grill (March 16) — 0 bids (just listed) ────────────────────────
-  // No bids yet — tests the "no bids yet" state in the auction detail page
+  // No bids on pre-orders — tests "no bids yet" state in auction detail page
 ];

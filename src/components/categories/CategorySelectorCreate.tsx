@@ -60,7 +60,7 @@ function CreateCategoryContent({
 }) {
   const { showSuccess, showError } = useMessage();
   const [draft, setDraft] = useState<Partial<Category>>({
-    enabled: true,
+    isActive: true,
     showOnHomepage: false,
     parentId: null,
     order: 0,

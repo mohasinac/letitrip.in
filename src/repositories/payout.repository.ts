@@ -7,6 +7,7 @@
 
 import { BaseRepository } from "./base.repository";
 import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import { generatePayoutId } from "@/utils";
 import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
 import type {
   PayoutDocument,
@@ -26,7 +27,7 @@ class PayoutRepository extends BaseRepository<PayoutDocument> {
    */
   async create(input: PayoutCreateInput): Promise<PayoutDocument> {
     const now = new Date();
-    const id = `payout-${input.sellerId.slice(0, 8)}-${Date.now()}`;
+    const id = generatePayoutId({ sellerName: input.sellerName, date: now });
 
     const data: Omit<PayoutDocument, "id"> = {
       ...input,

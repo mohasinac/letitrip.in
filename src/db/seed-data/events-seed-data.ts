@@ -24,21 +24,20 @@ type EventEntrySeed = Omit<EventEntryDocument, "submittedAt" | "reviewedAt"> & {
 // ── Events ────────────────────────────────────────────────────────────────────
 
 export const eventsSeedData: EventSeed[] = [
-  // 1. Active Sale Event — site-wide 20% off
+  // 1. Ended Sale Event — Anime Winter Season Sale
   {
-    id: "event-republic-day-sale-2026-sale",
+    id: "event-anime-winter-season-sale-2026-sale",
     type: EVENT_FIELDS.TYPE_VALUES.SALE,
-    title: "Republic Day Sale 2026 — 20% Off Everything",
+    title: "Anime Winter Season Sale 2026 — 20% Off Everything",
     description:
-      "<p>Celebrate Republic Day with a <strong>flat 20% discount</strong> across all categories. Limited-time offer — sale ends 26 Jan at midnight.</p>",
+      "<p>Celebrate the end of the Winter anime season with a <strong>flat 20% discount</strong> across all collectibles, figures, and cosplay. Limited-time offer — sale ends 26 Jan at midnight.</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ENDED,
     startsAt: new Date("2026-01-24T00:00:00Z"),
     endsAt: new Date("2026-01-26T23:59:59Z"),
-    coverImageUrl:
-      "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1200&h=400&fit=crop",
+    coverImageUrl: "https://picsum.photos/seed/anime-winter-sale/1200/400",
     saleConfig: {
       discountPercent: 20,
-      bannerText: "Republic Day Sale — 20% Off Sitewide 🇮🇳",
+      bannerText: "❄️ Anime Winter Season Sale — 20% Off Sitewide!",
       affectedCategories: [],
     },
     stats: {
@@ -51,21 +50,21 @@ export const eventsSeedData: EventSeed[] = [
     updatedAt: new Date("2026-01-27T00:05:00Z"),
   },
 
-  // 2. Active Offer Event — coupon giveaway
+  // 2. Active Offer Event — AniCon 2026 Coupon Drop
   {
-    id: "event-holi-offer-2026-offer",
+    id: "event-anicon-2026-coupon-drop-offer",
     type: EVENT_FIELDS.TYPE_VALUES.OFFER,
-    title: "Holi Special Offer — Extra 15% Off with HOLI15",
+    title: "AniCon 2026 Coupon Drop — Extra 15% Off with ANIMECON15",
     description:
-      "<p>Celebrate Holi with colours <em>and</em> savings! Use code <strong>HOLI15</strong> to get an extra 15% off your cart. Valid on all orders over ₹999.</p>",
+      "<p>Celebrating AniCon 2026! Use code <strong>ANIMECON15</strong> to get an extra 15% off any order. Valid on all orders over ₹999 — stack it on top of sale prices!</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
     startsAt: new Date("2026-03-01T00:00:00Z"),
     endsAt: new Date("2026-03-15T23:59:59Z"),
-    coverImageUrl: "https://picsum.photos/seed/holi-festival/1200/400",
+    coverImageUrl: "https://picsum.photos/seed/animecon-2026-offer/1200/400",
     offerConfig: {
-      couponId: "coupon-HOLI15",
-      displayCode: "HOLI15",
-      bannerText: "🎨 Holi Offer — Use HOLI15 for 15% extra off",
+      couponId: "coupon-ANIMECON15",
+      displayCode: "ANIMECON15",
+      bannerText: "🎌 AniCon 2026 — Use ANIMECON15 for 15% extra off!",
     },
     stats: {
       totalEntries: 0,
@@ -77,13 +76,13 @@ export const eventsSeedData: EventSeed[] = [
     updatedAt: new Date("2026-02-22T10:00:00Z"),
   },
 
-  // 3. Active Poll — Community Preference
+  // 3. Ended Poll — Anime Franchise Features
   {
-    id: "event-community-poll-gear-2026-poll",
+    id: "event-anime-franchise-poll-2026-poll",
     type: EVENT_FIELDS.TYPE_VALUES.POLL,
-    title: "What Outdoor Gear Should We Feature Next Month?",
+    title: "Which Anime Franchise Should We Feature Next Month?",
     description:
-      "<p>We want to feature the category YOU care about most in March. Cast your vote and shape what appears on the LetItRip homepage next month!</p>",
+      "<p>We want to feature the franchise YOU love most in March. Cast your vote and shape what drops on the LetItRip homepage next month — new figures, exclusive cosplay, and special auction lots!</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ENDED,
     startsAt: new Date("2026-02-15T00:00:00Z"),
     endsAt: new Date("2026-02-28T23:59:59Z"),
@@ -91,16 +90,15 @@ export const eventsSeedData: EventSeed[] = [
       allowMultiSelect: false,
       allowComment: true,
       options: [
-        { id: "opt-camping", label: "Camping & Tents" },
-        { id: "opt-climbing", label: "Rock Climbing Gear" },
-        { id: "opt-cycling", label: "Cycling & MTB" },
-        { id: "opt-water", label: "Water Sports" },
-        { id: "opt-winter", label: "Winter Sports & Snow Gear" },
+        { id: "opt-dragon-ball", label: "Dragon Ball (Z / Super)" },
+        { id: "opt-one-piece", label: "One Piece" },
+        { id: "opt-jjk", label: "Jujutsu Kaisen" },
+        { id: "opt-demon-slayer", label: "Demon Slayer" },
+        { id: "opt-bleach", label: "Bleach: Thousand-Year Blood War" },
       ],
       resultsVisibility: "after_vote",
     },
-    coverImageUrl:
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=400&fit=crop",
+    coverImageUrl: "https://picsum.photos/seed/anime-franchise-poll/1200/400",
     stats: {
       totalEntries: 312,
       approvedEntries: 312,
@@ -223,22 +221,21 @@ export const eventsSeedData: EventSeed[] = [
     updatedAt: new Date("2026-02-27T16:00:00Z"),
   },
 
-  // 6. Active Sale — Women's Day 15% off Fashion + Beauty
+  // 6. Active Sale — Spring Otaku Sale 15% off all collectibles
   {
-    id: "event-womens-day-sale-2026-sale",
+    id: "event-spring-otaku-sale-2026-sale",
     type: EVENT_FIELDS.TYPE_VALUES.SALE,
-    title: "Women's Day Sale — 15% Off Fashion & Beauty",
+    title: "Spring Otaku Sale 2026 — 15% Off All Collectibles & Cosplay",
     description:
-      "<p>Celebrate International Women's Day with <strong>15% off</strong> everything in Fashion and Beauty & Health. Valid 8–10 March 2026.</p>",
+      "<p>Spring season is here and so are new anime releases! Grab <strong>15% off</strong> all figures, cosplay, Nendoroids, and Gunpla kits. Valid 8–10 March 2026 only.</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
     startsAt: new Date("2026-03-08T00:00:00Z"),
     endsAt: new Date("2026-03-10T23:59:59Z"),
-    coverImageUrl:
-      "https://images.unsplash.com/photo-1607748862156-7c548e7e98f4?w=1200&h=400&fit=crop",
+    coverImageUrl: "https://picsum.photos/seed/spring-otaku-sale/1200/400",
     saleConfig: {
       discountPercent: 15,
-      bannerText: "💜 Women's Day — 15% off Fashion & Beauty this weekend",
-      affectedCategories: ["category-fashion", "category-beauty-health"],
+      bannerText: "🌸 Spring Otaku Sale — 15% off all Figures & Cosplay!",
+      affectedCategories: ["category-electronics", "category-fashion"],
     },
     stats: {
       totalEntries: 0,
@@ -250,21 +247,21 @@ export const eventsSeedData: EventSeed[] = [
     updatedAt: new Date("2026-03-01T10:00:00Z"),
   },
 
-  // 7. Draft Sale — Diwali 40% off sitewide (future)
+  // 7. Draft Sale — Summer Anime Season Sale (future)
   {
-    id: "event-diwali-sale-2026-sale",
+    id: "event-summer-anime-season-sale-2026-sale",
     type: EVENT_FIELDS.TYPE_VALUES.SALE,
-    title: "Diwali Grand Sale 2026 — Up to 40% Off",
+    title: "Summer Anime Season Sale 2026 — Up to 40% Off",
     description:
-      "<p>Our biggest sale of the year is coming! Enjoy <strong>up to 40% off</strong> across every category on LetItRip. Mark your calendars — 20–28 Oct 2026.</p>",
+      "<p>Get ready for our biggest otaku sale of the year! Enjoy <strong>up to 40% off</strong> exclusive figures, pre-orders, Gunpla, and cosplay across LetItRip. Mark your calendars — 1–10 July 2026.</p>",
     status: EVENT_FIELDS.STATUS_VALUES.DRAFT,
-    startsAt: new Date("2026-10-20T00:00:00Z"),
-    endsAt: new Date("2026-10-28T23:59:59Z"),
+    startsAt: new Date("2026-07-01T00:00:00Z"),
+    endsAt: new Date("2026-07-10T23:59:59Z"),
     coverImageUrl:
-      "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=1200&h=400&fit=crop",
+      "https://picsum.photos/seed/summer-anime-season-sale/1200/400",
     saleConfig: {
       discountPercent: 40,
-      bannerText: "🪔 Diwali Sale is coming — Up to 40% off sitewide!",
+      bannerText: "☀️ Summer Anime Season Sale — Up to 40% off sitewide!",
       affectedCategories: [],
     },
     stats: {
@@ -277,23 +274,22 @@ export const eventsSeedData: EventSeed[] = [
     updatedAt: new Date("2026-03-15T09:00:00Z"),
   },
 
-  // 8. Active Offer — Sports Season coupon giveaway
+  // 8. Active Offer — Golden Week Anime Special
   {
-    id: "event-sports-season-offer-2026-offer",
+    id: "event-golden-week-anime-special-2026-offer",
     type: EVENT_FIELDS.TYPE_VALUES.OFFER,
-    title: "Sports Season Deal — 10% Off with SPORT10",
+    title: "Golden Week Anime Special — 10% Off with GOLDENWEEK10",
     description:
-      "<p>Gear up for the sporting season! Use code <strong>SPORT10</strong> at checkout to get 10% off all Sports & Outdoors products. Valid on orders over ₹500.</p>",
+      "<p>Celebrate Golden Week with otaku deals! Use code <strong>GOLDENWEEK10</strong> at checkout to get 10% off all pre-orders, scale figures, and Gunpla kits. Valid on orders over ₹500.</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
-    startsAt: new Date("2026-04-01T00:00:00Z"),
-    endsAt: new Date("2026-05-31T23:59:59Z"),
-    coverImageUrl:
-      "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1200&h=400&fit=crop",
+    startsAt: new Date("2026-04-29T00:00:00Z"),
+    endsAt: new Date("2026-05-05T23:59:59Z"),
+    coverImageUrl: "https://picsum.photos/seed/golden-week-anime/1200/400",
     offerConfig: {
-      couponId: "coupon-SPORT10",
-      displayCode: "SPORT10",
+      couponId: "coupon-GOLDENWEEK10",
+      displayCode: "GOLDENWEEK10",
       bannerText:
-        "🏅 Sports Season — Use SPORT10 for 10% off Sports & Outdoors",
+        "⛩️ Golden Week Special — Use GOLDENWEEK10 for 10% off figures & pre-orders!",
     },
     stats: {
       totalEntries: 0,
@@ -305,27 +301,27 @@ export const eventsSeedData: EventSeed[] = [
     updatedAt: new Date("2026-03-20T10:00:00Z"),
   },
 
-  // 9. Active Poll — Favourite Electronics Brand
+  // 9. Active Poll — Favourite Anime Figure Manufacturer
   {
-    id: "event-favourite-brand-poll-2026-poll",
+    id: "event-best-anime-figures-brand-poll-2026-poll",
     type: EVENT_FIELDS.TYPE_VALUES.POLL,
-    title: "Your Favourite Electronics Brand on LetItRip",
+    title: "Who Makes the Best Anime Figures? Cast Your Vote!",
     description:
-      "<p>Which electronics brand do you trust most? Cast your vote and see live results — everyone can see the tally as it updates!</p>",
+      "<p>Which figure manufacturer do you trust most? Cast your vote and see live results — everyone can see the tally as it updates in real time!</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
     startsAt: new Date("2026-03-01T00:00:00Z"),
     endsAt: new Date("2026-04-30T23:59:59Z"),
     coverImageUrl:
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&h=400&fit=crop",
+      "https://picsum.photos/seed/figure-manufacturer-poll/1200/400",
     pollConfig: {
       allowMultiSelect: false,
       allowComment: false,
       options: [
-        { id: "opt-samsung", label: "Samsung" },
-        { id: "opt-apple", label: "Apple" },
-        { id: "opt-sony", label: "Sony" },
-        { id: "opt-oneplus", label: "OnePlus" },
-        { id: "opt-lg", label: "LG" },
+        { id: "opt-gsc", label: "Good Smile Company" },
+        { id: "opt-alter", label: "Alter" },
+        { id: "opt-kotobukiya", label: "Kotobukiya" },
+        { id: "opt-megahouse", label: "MegaHouse" },
+        { id: "opt-bandai", label: "Bandai / S.H.Figuarts" },
         { id: "opt-other", label: "Other" },
       ],
       resultsVisibility: "always",
@@ -381,11 +377,11 @@ export const eventsSeedData: EventSeed[] = [
           label: "Which category do you shop in most?",
           required: true,
           options: [
-            "Electronics",
-            "Fashion",
-            "Home & Kitchen",
-            "Sports",
-            "Other",
+            "Scale Figures",
+            "Nendoroids & Chibis",
+            "Gunpla & Model Kits",
+            "Cosplay & Apparel",
+            "TCG & Trading Cards",
           ],
           order: 3,
         } as SurveyFormField,
@@ -487,36 +483,38 @@ export const eventsSeedData: EventSeed[] = [
 // ── Event Entries ─────────────────────────────────────────────────────────────
 
 export const eventEntriesSeedData: EventEntrySeed[] = [
-  // Poll votes
+  // Poll votes — anime franchise poll
   {
-    id: "entry-poll-gear-john-camping",
-    eventId: "event-community-poll-gear-2026-poll",
+    id: "entry-poll-franchise-john-one-piece",
+    eventId: "event-anime-franchise-poll-2026-poll",
     userId: "user-john-doe-johndoe",
     userDisplayName: "John Doe",
     userEmail: "john@letitrip.in",
-    pollVotes: ["opt-camping"],
-    pollComment: "Really keen to see more camping gear featured!",
+    pollVotes: ["opt-one-piece"],
+    pollComment:
+      "One Piece has so many incredible figures and the Going Merry model is stunning!",
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
     submittedAt: new Date("2026-02-16T10:12:00Z"),
   },
   {
-    id: "entry-poll-gear-jane-climbing",
-    eventId: "event-community-poll-gear-2026-poll",
+    id: "entry-poll-franchise-jane-demon-slayer",
+    eventId: "event-anime-franchise-poll-2026-poll",
     userId: "user-jane-smith-janes",
     userDisplayName: "Jane Smith",
     userEmail: "jane@letitrip.in",
-    pollVotes: ["opt-climbing"],
+    pollVotes: ["opt-demon-slayer"],
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
     submittedAt: new Date("2026-02-17T14:30:00Z"),
   },
   {
-    id: "entry-poll-gear-mike-cycling",
-    eventId: "event-community-poll-gear-2026-poll",
+    id: "entry-poll-franchise-mike-jjk",
+    eventId: "event-anime-franchise-poll-2026-poll",
     userId: "user-mike-johnson-mikejohn",
     userDisplayName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
-    pollVotes: ["opt-cycling"],
-    pollComment: "MTB accessories are underrepresented on the platform.",
+    pollVotes: ["opt-jjk"],
+    pollComment:
+      "JJK figures have the best sculpts right now — Sukuna and Gojo both look incredible.",
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
     submittedAt: new Date("2026-02-18T09:05:00Z"),
   },
@@ -590,44 +588,44 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     submittedAt: new Date("2026-02-15T09:55:00Z"),
   },
 
-  // Brand Poll votes — event-favourite-brand-poll-2026-poll (#9)
+  // Figure Manufacturer Poll votes — event-best-anime-figures-brand-poll-2026-poll (#9)
   {
-    id: "entry-poll-brand-john-samsung",
-    eventId: "event-favourite-brand-poll-2026-poll",
+    id: "entry-poll-brand-john-gsc",
+    eventId: "event-best-anime-figures-brand-poll-2026-poll",
     userId: "user-john-doe-johndoe",
     userDisplayName: "John Doe",
     userEmail: "john@letitrip.in",
-    pollVotes: ["opt-samsung"],
+    pollVotes: ["opt-gsc"],
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
     submittedAt: new Date("2026-03-02T10:00:00Z"),
   },
   {
-    id: "entry-poll-brand-jane-apple",
-    eventId: "event-favourite-brand-poll-2026-poll",
+    id: "entry-poll-brand-jane-alter",
+    eventId: "event-best-anime-figures-brand-poll-2026-poll",
     userId: "user-jane-smith-janes",
     userDisplayName: "Jane Smith",
     userEmail: "jane@letitrip.in",
-    pollVotes: ["opt-apple"],
+    pollVotes: ["opt-alter"],
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
     submittedAt: new Date("2026-03-03T14:22:00Z"),
   },
   {
-    id: "entry-poll-brand-mike-sony",
-    eventId: "event-favourite-brand-poll-2026-poll",
+    id: "entry-poll-brand-mike-kotobukiya",
+    eventId: "event-best-anime-figures-brand-poll-2026-poll",
     userId: "user-mike-johnson-mikejohn",
     userDisplayName: "Mike Johnson",
     userEmail: "mike@letitrip.in",
-    pollVotes: ["opt-sony"],
+    pollVotes: ["opt-kotobukiya"],
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
     submittedAt: new Date("2026-03-04T09:10:00Z"),
   },
   {
-    id: "entry-poll-brand-fashionb-oneplus",
-    eventId: "event-favourite-brand-poll-2026-poll",
+    id: "entry-poll-brand-animecraft-bandai",
+    eventId: "event-best-anime-figures-brand-poll-2026-poll",
     userId: "user-fashion-boutique-fashionb",
-    userDisplayName: "Fashion Boutique",
+    userDisplayName: "AnimeCraft Apparel",
     userEmail: "fashionb@letitrip.in",
-    pollVotes: ["opt-oneplus"],
+    pollVotes: ["opt-bandai"],
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
     submittedAt: new Date("2026-03-05T16:45:00Z"),
   },
@@ -642,10 +640,10 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     formResponses: {
       "sq-name": "John",
       "sq-rating": 5,
-      "sq-category": "Electronics",
+      "sq-category": "Scale Figures",
       "sq-features": ["Wishlist", "Product Reviews", "Deals & Events"],
       "sq-suggestion":
-        "A price-drop alert direct to WhatsApp would be fantastic.",
+        "A 'coming soon' pre-order tracker with email alerts for new Alter and GSC announcements would be amazing.",
     },
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
     reviewedBy: "user-admin-user-admin",
@@ -663,10 +661,10 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     formResponses: {
       "sq-name": "Jane",
       "sq-rating": 4,
-      "sq-category": "Fashion",
+      "sq-category": "Cosplay & Apparel",
       "sq-features": ["Wishlist", "Price Alerts"],
       "sq-suggestion":
-        "Outfit-builder feature combining multiple products would be amazing.",
+        "A size guide comparison tool for cosplay items across different sellers would be incredibly helpful.",
     },
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.PENDING,
     submittedAt: new Date("2026-04-08T15:00:00Z"),

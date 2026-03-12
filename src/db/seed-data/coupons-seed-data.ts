@@ -10,8 +10,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
   {
     id: "coupon-WELCOME10",
     code: "WELCOME10",
-    name: "Welcome Discount",
-    description: "10% off first order",
+    name: "Otaku Welcome Discount",
+    description: "10% off your first anime figure or collectible order",
     type: "percentage",
     discount: {
       value: 10,
@@ -44,8 +44,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
   {
     id: "coupon-SAVE20",
     code: "SAVE20",
-    name: "20% Off Sitewide",
-    description: "20% off all products",
+    name: "Winter Anime Sale",
+    description: "20% off all anime collectibles sitewide — winter season deal",
     type: "percentage",
     discount: {
       value: 20,
@@ -76,15 +76,15 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
     },
   },
   {
-    id: "coupon-FREESHIP",
-    code: "ELECTRONICS15",
-    name: "Electronics Sale",
-    description: "15% off electronics",
+    id: "coupon-FIGURES15",
+    code: "FIGURES15",
+    name: "Scale Figures Sale",
+    description: "15% off scale figures & PVC statues — limited window",
     type: "percentage",
     discount: {
       value: 15,
       maxDiscount: 3000,
-      minPurchase: 5000,
+      minPurchase: 3000,
     },
     usage: {
       totalLimit: 300,
@@ -97,7 +97,7 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       isActive: false,
     },
     restrictions: {
-      applicableCategories: ["category-electronics"],
+      applicableCategories: ["category-scale-figures-collectibles"],
       firstTimeUserOnly: false,
       combineWithSellerCoupons: true,
     },
@@ -113,10 +113,10 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
 
   // Fixed amount discount coupons
   {
-    id: "coupon-FIRSTBUY",
+    id: "coupon-FLAT500",
     code: "FLAT500",
-    name: "Flat ₹500 Off",
-    description: "Flat ₹500 off above ₹3000",
+    name: "Flat ₹500 Off Collectibles",
+    description: "Flat ₹500 off anime figure & collectible orders above ₹3000",
     type: "fixed",
     discount: {
       value: 500,
@@ -146,10 +146,10 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
     },
   },
   {
-    id: "coupon-FLASH50",
+    id: "coupon-MEGA1000",
     code: "MEGA1000",
-    name: "Mega Discount",
-    description: "₹1000 off above ₹10000",
+    name: "Mega Otaku Discount",
+    description: "₹1000 off anime collectible orders above ₹10,000",
     type: "fixed",
     discount: {
       value: 1000,
@@ -181,10 +181,10 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
 
   // Free shipping coupon
   {
-    id: "coupon-TECHSALE100",
+    id: "coupon-FREESHIP",
     code: "FREESHIP",
-    name: "Free Shipping",
-    description: "Free shipping all orders",
+    name: "Free Shipping — Otaku Orders",
+    description: "Free shipping on all anime & collectible orders — no minimum",
     type: "free_shipping",
     discount: {
       value: 0,
@@ -216,10 +216,10 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
 
   // Buy X Get Y coupon
   {
-    id: "coupon-FASHION15",
+    id: "coupon-BUY2GET1",
     code: "BUY2GET1",
-    name: "Buy 2 Get 1 Free",
-    description: "Buy 2 get 1 free on fashion",
+    name: "Buy 2 Get 1 Free — Cosplay",
+    description: "Buy 2 cosplay items get 1 free — limited stock event",
     type: "buy_x_get_y",
     discount: {
       value: 0,
@@ -229,9 +229,9 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       buyQuantity: 2,
       getQuantity: 1,
       applicableCategories: [
-        "category-fashion",
-        "category-mens-fashion-fashion",
-        "category-womens-fashion-fashion",
+        "category-cosplay-cosplay",
+        "category-apparel-cosplay",
+        "category-accessories-cosplay",
       ],
     },
     usage: {
@@ -246,9 +246,9 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
     },
     restrictions: {
       applicableCategories: [
-        "category-fashion",
-        "category-mens-fashion-fashion",
-        "category-womens-fashion-fashion",
+        "category-cosplay-cosplay",
+        "category-apparel-cosplay",
+        "category-accessories-cosplay",
       ],
       firstTimeUserOnly: false,
       combineWithSellerCoupons: false,
@@ -265,14 +265,14 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
 
   // Product-specific coupon
   {
-    id: "coupon-HOME200",
-    code: "IPHONE100",
-    name: "iPhone Discount",
-    description: "₹10000 off iPhone 15 Pro Max",
+    id: "coupon-MAKIMA500",
+    code: "MAKIMA500",
+    name: "Makima Figure Launch Deal",
+    description: "₹500 off the Makima 1/7 Kotobukiya figure — launch week only",
     type: "fixed",
     discount: {
-      value: 10000,
-      minPurchase: 130000,
+      value: 500,
+      minPurchase: 12000,
     },
     usage: {
       totalLimit: 50,
@@ -285,9 +285,7 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       isActive: false,
     },
     restrictions: {
-      applicableProducts: [
-        "product-iphone-15-pro-max-smartphones-new-techhub-electronics-1",
-      ],
+      applicableProducts: ["auction-chainsaw-man-makima-figure-fashion-1"],
       firstTimeUserOnly: false,
       combineWithSellerCoupons: false,
     },
@@ -296,17 +294,17 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
     updatedAt: new Date("2026-02-09T00:00:00Z"),
     stats: {
       totalUses: 12,
-      totalRevenue: 1618800,
-      totalDiscount: 120000,
+      totalRevenue: 144000,
+      totalDiscount: 6000,
     },
   },
 
   // Inactive/Expired coupon
   {
-    id: "coupon-SPORTS10",
+    id: "coupon-NEWYEAR25",
     code: "NEWYEAR25",
-    name: "New Year Sale",
-    description: "25% off all - New Year",
+    name: "New Year Otaku Sale",
+    description: "25% off all anime collectibles — New Year 2026 flash deal",
     type: "percentage",
     discount: {
       value: 25,
@@ -339,10 +337,10 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
 
   // Seller-specific coupon
   {
-    id: "coupon-WINTERSALE",
-    code: "TECHHUB15",
-    name: "TechHub Special",
-    description: "15% off TechHub products",
+    id: "coupon-FJPVAULT15",
+    code: "FJPVAULT15",
+    name: "FigureVault JP Special",
+    description: "15% off FigureVault JP figures and imports",
     type: "percentage",
     discount: {
       value: 15,
@@ -376,10 +374,11 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
 
   // Holi Special coupon — linked to the Holi Offer event
   {
-    id: "coupon-HOLI15",
-    code: "HOLI15",
-    name: "Holi Special Discount",
-    description: "Extra 15% off for Holi — valid on orders over ₹999",
+    id: "coupon-ANIMECON15",
+    code: "ANIMECON15",
+    name: "AniCon 2026 Coupon Drop",
+    description:
+      "Extra 15% off for AniCon 2026 — valid on all anime orders over ₹999",
     type: "percentage",
     discount: {
       value: 15,
@@ -412,10 +411,11 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
 
   // Fashion Boutique — seller-specific March sale coupon
   {
-    id: "coupon-FASHION-MAR10",
-    code: "FASHION10",
-    name: "Fashion Boutique March Offer",
-    description: "10% off all Fashion Boutique products in March",
+    id: "coupon-ANIMECRAFT10",
+    code: "ANIMECRAFT10",
+    name: "AnimeCraft Apparel March Offer",
+    description:
+      "10% off all AnimeCraft Apparel cosplay & accessories in March",
     type: "percentage",
     discount: {
       value: 10,
@@ -447,12 +447,13 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
     },
   },
 
-  // Sports Season — 10% off Sports & Outdoors, used by event-sports-season-offer-2026-offer
+  // Golden Week Anime Special — 10% off all collectibles, used by event-golden-week-anime-special-2026-offer
   {
-    id: "coupon-SPORT10",
-    code: "SPORT10",
-    name: "Sports Season Deal",
-    description: "10% off all Sports & Outdoors products",
+    id: "coupon-GOLDENWEEK10",
+    code: "GOLDENWEEK10",
+    name: "Golden Week Anime Special",
+    description:
+      "10% off all anime collectibles during Golden Week (Apr 29 – May 5)",
     type: "percentage",
     discount: {
       value: 10,
@@ -465,8 +466,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 0,
     },
     validity: {
-      startDate: new Date("2026-04-01T00:00:00Z"),
-      endDate: new Date("2026-05-31T23:59:59Z"),
+      startDate: new Date("2026-04-29T00:00:00Z"),
+      endDate: new Date("2026-05-05T23:59:59Z"),
       isActive: true,
     },
     restrictions: {
@@ -485,10 +486,10 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
 
   // Home Essentials — seller-specific coupon for home & sports categories
   {
-    id: "coupon-HOME-ESSENTIALS-MAR",
-    code: "HOME15",
-    name: "Home Essentials March Deal",
-    description: "15% off Home Essentials products above ₹2000",
+    id: "coupon-OTAKUSHELF15",
+    code: "OTAKUSHELF15",
+    name: "OtakuShelf Co March Deal",
+    description: "15% off OtakuShelf Co Nendoroids & Gunpla above ₹2000",
     type: "percentage",
     discount: {
       value: 15,

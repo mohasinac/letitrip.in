@@ -42,27 +42,30 @@ export default function LayoutClient({
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
 
-  const defaultBackgroundConfig = {
-    lightMode: {
-      type: "color" as const,
-      value: "#f9fafb",
-      overlay: { enabled: false, color: "#000000", opacity: 0 },
-    },
-    darkMode: {
-      type: "color" as const,
-      value: "#030712",
-      overlay: { enabled: false, color: "#000000", opacity: 0 },
-    },
+  const DEFAULT_LIGHT_BG = {
+    type: "color" as const,
+    value: "#f9fafb",
+    overlay: { enabled: false, color: "#000000", opacity: 0 },
+  };
+  const DEFAULT_DARK_BG = {
+    type: "color" as const,
+    value: "#030712",
+    overlay: { enabled: false, color: "#000000", opacity: 0 },
   };
 
   // Fetch background settings from site settings API.
-  // Falls back to site defaults when data is not yet loaded or on error.
+  // The API returns background.light / background.dark.
   const { data: siteSettings } = useSiteSettings<{
-    backgroundConfig?: typeof defaultBackgroundConfig;
+    background?: {
+      light?: typeof DEFAULT_LIGHT_BG;
+      dark?: typeof DEFAULT_DARK_BG;
+    };
   }>();
 
-  const backgroundConfig =
-    siteSettings?.backgroundConfig ?? defaultBackgroundConfig;
+  const backgroundConfig = {
+    lightMode: siteSettings?.background?.light ?? DEFAULT_LIGHT_BG,
+    darkMode: siteSettings?.background?.dark ?? DEFAULT_DARK_BG,
+  };
 
   // Set sidebar default state based on screen size and user preference
   // Desktop (>= 768px): visible by default (unless user closed it)

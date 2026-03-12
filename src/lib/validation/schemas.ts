@@ -299,10 +299,44 @@ const productBaseSchema = z.object({
   shippingInfo: z.string().max(1000).optional(),
   returnPolicy: z.string().max(1000).optional(),
   isDraft: z.boolean().default(false), // Draft auto-save support
+
+  // Product condition
+  condition: z.enum(["new", "used", "refurbished", "broken"]).optional(),
+
+  // Insurance
+  insurance: z.boolean().optional(),
+  insuranceCost: z.number().nonnegative().optional(),
+
+  // Shipping
+  shippingPaidBy: z.enum(["seller", "buyer"]).optional(),
+  pickupAddressId: objectIdSchema.optional(),
+
+  // SEO overrides
+  seoTitle: z.string().max(60).optional(),
+  seoDescription: z.string().max(160).optional(),
+  seoKeywords: z.array(z.string().min(1).max(50)).max(10).optional(),
+
   // Auction fields
   isAuction: z.boolean().optional(),
   auctionEndDate: dateStringSchema.optional(),
   startingBid: z.number().positive().optional(),
+  reservePrice: z.number().positive().optional(),
+  buyNowPrice: z.number().positive().optional(),
+  minBidIncrement: z.number().positive().optional(),
+  autoExtendable: z.boolean().optional(),
+  auctionExtensionMinutes: z.number().int().positive().optional(),
+  auctionShippingPaidBy: z.enum(["seller", "winner"]).optional(),
+
+  // Pre-order fields
+  isPreOrder: z.boolean().optional(),
+  preOrderDeliveryDate: dateStringSchema.optional(),
+  preOrderDepositPercent: z.number().min(0).max(100).optional(),
+  preOrderDepositAmount: z.number().nonnegative().optional(),
+  preOrderMaxQuantity: z.number().int().nonnegative().optional(),
+  preOrderProductionStatus: z
+    .enum(["upcoming", "in_production", "ready_to_ship"])
+    .optional(),
+  preOrderCancellable: z.boolean().optional(),
 });
 
 /**
@@ -330,6 +364,10 @@ export const productUpdateSchema = productBaseSchema.partial().extend({
     .enum(["draft", "published", "out_of_stock", "discontinued", "sold"])
     .optional(),
   version: z.number().optional(), // For optimistic locking
+  // Admin-managed fields (not settable at creation by sellers)
+  featured: z.boolean().optional(),
+  isPromoted: z.boolean().optional(),
+  promotionEndDate: dateStringSchema.optional(),
 });
 
 /**
@@ -399,8 +437,11 @@ export const categoryCreateSchema = categoryBaseSchema;
  */
 export const categoryUpdateSchema = categoryBaseSchema.partial().extend({
   order: z.number().int().nonnegative().optional(),
+  isActive: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
   isBrand: z.boolean().optional(),
+  showOnHomepage: z.boolean().optional(),
+  isSearchable: z.boolean().optional(),
 });
 
 /**
@@ -641,7 +682,7 @@ const carouselBaseSchema = z.object({
       openInNewTab: z.boolean().default(false),
     })
     .optional(),
-  gridCards: z.array(gridCardSchema).min(1).max(2),
+  cards: z.array(gridCardSchema).min(0).max(6),
   startDate: dateStringSchema.optional(),
   endDate: dateStringSchema.optional(),
   template: z.string().max(100).optional(),
@@ -664,7 +705,7 @@ export const carouselCreateSchema = carouselBaseSchema
   )
   .refine(
     (data) => {
-      const positions = data.gridCards.map((c) => `${c.gridRow},${c.gridCol}`);
+      const positions = data.cards.map((c) => `${c.gridRow},${c.gridCol}`);
       return new Set(positions).size === positions.length;
     },
     {
@@ -674,7 +715,7 @@ export const carouselCreateSchema = carouselBaseSchema
   )
   .refine(
     (data) => {
-      const rows = data.gridCards.map((c) => c.gridRow);
+      const rows = data.cards.map((c) => c.gridRow);
       return new Set(rows).size === rows.length;
     },
     {
@@ -805,7 +846,7 @@ const faqBaseSchema = z.object({
   }),
   category: z.string().min(1).max(100),
   priority: z.number().int().min(1).max(10).default(5),
-  featured: z.boolean().default(false),
+  isPinned: z.boolean().default(false),
   tags: z.array(z.string().min(1).max(50)).max(10).optional(),
   relatedFAQs: z.array(objectIdSchema).max(5).optional(),
   template: z.string().max(100).optional(),

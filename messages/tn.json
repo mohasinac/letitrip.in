@@ -752,6 +752,8 @@
     "paginationLabel": "Pagination"
   },
   "products": {
+    "metaTitle": "தயாரிப்புகள் — அனிமே பொம்மைகள், செக்கல் பொருட்கள் மற்றும்",
+    "metaDescription": "இந்தியாவில் உறுதிப்படுத்தப்பட்ட விற்பனையாளர்களிடமிருந்து ஆயிரக்கணக்கான அனிமே பொம்மைகள், காஸ்ப்ளே மற்றும் பலவற்றை வாங்கலாம்.",
     "title": "தயாரிப்புகள்",
     "addToCart": "கார்டில் சேர்",
     "addToWishlist": "விருப்பப்பட்டியலில் சேர்",
@@ -1286,8 +1288,9 @@
     "browseProducts": "Search \"{q}\" in products →"
   },
   "categories": {
+    "metaTitle": "வகைகள் — தொகுப்பு வாரியாக வாங்குங்கள்",
+    "metaDescription": "LetItRip இல் அனைத்து தயாரிப்பு வகைகளையும் உலாவுங்கள் — அனிமே பொம்மைகள், கஸ்ப்ளே மற்றும் பலவற்றை.",
     "title": "வகைகள்",
-    "subtitle": "Browse all product categories",
     "subtitleWithCount": "{count, plural, one {# category} other {# categories}} to explore",
     "allCategories": "அனைத்து வகைகள்",
     "allCategoriesCount": "{count} categories",

@@ -37,6 +37,7 @@ import { createApiHandler } from "@/lib/api/api-handler";
  * - rootId: string (optional, get specific tree)
  * - parentId: string (optional, get children of parent)
  * - featured: boolean (optional, get only featured)
+ * - showOnHomepage: boolean (optional, get homepage categories)
  * - isBrand: boolean (optional, get only brand categories)
  * - includeMetrics: boolean (optional, include product counts)
  * - flat: boolean (optional, return flat list instead of tree)
@@ -58,6 +59,8 @@ export const GET = createApiHandler({
     const parentId = getStringParam(searchParams, "parentId");
     const slug = getStringParam(searchParams, "slug");
     const featured = getBooleanParam(searchParams, "featured") === true;
+    const showOnHomepage =
+      getBooleanParam(searchParams, "showOnHomepage") === true;
     const brandsOnly = getBooleanParam(searchParams, "isBrand") === true;
     const flat = getBooleanParam(searchParams, "flat") === true;
     const tierParam = searchParams.get("tier");
@@ -112,6 +115,9 @@ export const GET = createApiHandler({
     if (parentId) {
       // Get direct children of specific parent — Firestore-native
       categories = await categoriesRepository.getChildren(parentId);
+    } else if (showOnHomepage) {
+      // Get categories for homepage section
+      categories = await categoriesRepository.findBy("showOnHomepage", true);
     } else if (featured) {
       // Get featured categories (brands excluded at repository level)
       categories = await categoriesRepository.findBy("isFeatured", true);

@@ -12,10 +12,8 @@ describe("FaqTableColumns", () => {
     category: UI_LABELS.ACTIONS.SAVE,
     priority: 1,
     tags: [],
-    featured: true,
-    viewCount: 0,
-    helpfulCount: 1,
-    notHelpfulCount: 0,
+    isPinned: true,
+    stats: { views: 0, helpful: 1, notHelpful: 0 },
     order: 1,
     createdAt: "",
     updatedAt: "",
@@ -23,11 +21,10 @@ describe("FaqTableColumns", () => {
 
   it("renders featured label", () => {
     const { columns } = getFaqTableColumns(jest.fn(), jest.fn());
-    const featuredColumn = columns.find((column) => column.key === "featured");
+    const featuredColumn = columns.find((column) => column.key === "isPinned");
 
     render(featuredColumn?.render?.(faq) as React.ReactElement);
 
     expect(screen.getByText(UI_LABELS.ACTIONS.YES)).toBeInTheDocument();
   });
 });
-

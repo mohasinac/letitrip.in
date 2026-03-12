@@ -151,7 +151,7 @@ export const GET = createApiHandler({
             canSort: false,
             parseValue: (v: string) => v === "true",
           },
-          isFeatured: {
+          isPinned: {
             canFilter: true,
             canSort: false,
             parseValue: (v: string) => v === "true",
@@ -246,7 +246,7 @@ export const GET = createApiHandler({
  * - answer: object (text, format)
  * - category: FAQCategory (required)
  * - priority: number (1-10)
- * - featured: boolean
+ * - isPinned: boolean
  * - tags: string[]
  * - relatedFAQs: string[]
  *

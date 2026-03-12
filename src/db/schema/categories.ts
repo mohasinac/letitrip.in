@@ -85,6 +85,7 @@ export interface CategoryDocument {
   // Status
   isActive: boolean;
   isSearchable: boolean; // Include in search results
+  showOnHomepage?: boolean; // Show in homepage category section
 
   // Metadata
   createdBy: string; // Admin user ID
@@ -122,6 +123,7 @@ export const CATEGORIES_INDEXED_FIELDS = [
   "isBrand", // For brand category filtering
   "isActive", // For active categories
   "isSearchable", // For search filtering
+  "showOnHomepage", // For homepage section filtering
   "createdBy", // For admin filtering
   "createdAt", // For date sorting
 ] as const;

@@ -15,6 +15,8 @@
  * - Coupon: coupon-{code} (user-provided code)
  * - Carousel: carousel-{title-slug}-{timestamp}
  * - Homepage Section: section-{type}-{timestamp}
+ * - Blog Post: blog-{title-slug}-{category}[-{status}]
+ * - Payout: payout-{seller-slug}-{YYYYMMDD}-{random}
  */
 
 import { slugify } from "./formatters/string.formatter";
@@ -374,6 +376,64 @@ export function generateBidId(input: GenerateBidIdInput): string {
   const random = input.random || generateRandomString(6);
 
   return `bid-${productSlug}-${userSlug}-${dateStr}-${random}`;
+}
+
+// ============================================
+// BLOG POST ID GENERATION
+// ============================================
+
+export interface GenerateBlogPostIdInput {
+  title: string;
+  category: string;
+  status?: "draft" | "published" | "archived";
+}
+
+/**
+ * Generate blog post ID: blog-{title-slug}-{category}[-{status}]
+ * Status suffix only added for non-published posts.
+ *
+ * Examples:
+ * - blog-top-10-rarest-anime-figures-2026-guides
+ * - blog-gunpla-journey-beginners-tips
+ * - blog-guide-authenticating-anime-merchandise-draft
+ */
+export function generateBlogPostId(input: GenerateBlogPostIdInput): string {
+  const titleSlug = slugify(input.title).substring(0, 40).replace(/-+$/, "");
+  const categorySlug = slugify(input.category);
+  const base = `blog-${titleSlug}-${categorySlug}`;
+  if (input.status && input.status !== "published") {
+    return `${base}-${input.status}`;
+  }
+  return base;
+}
+
+// ============================================
+// PAYOUT ID GENERATION
+// ============================================
+
+export interface GeneratePayoutIdInput {
+  sellerName: string;
+  date?: Date;
+}
+
+/**
+ * Generate payout ID: payout-{seller-slug}-{YYYYMMDD}-{random}
+ *
+ * Examples:
+ * - payout-figurevault-jp-20260301-a7b2c9
+ * - payout-animecraft-apparel-20260228-x4y9z1
+ */
+export function generatePayoutId(input: GeneratePayoutIdInput): string {
+  const sellerSlug = slugify(input.sellerName)
+    .substring(0, 25)
+    .replace(/-+$/, "");
+  const date = input.date || new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const dateStr = `${year}${month}${day}`;
+  const random = generateRandomString(6);
+  return `payout-${sellerSlug}-${dateStr}-${random}`;
 }
 
 // ============================================

@@ -752,6 +752,8 @@
     "paginationLabel": "పేజినేషన్"
   },
   "products": {
+    "metaTitle": "ఉత్పత్తులు — అనిమే ఫిగర్స్, కలెక్టిబుల్స్ మరిన్ని",
+    "metaDescription": "భారతదేశంలో ధృవీకరించబడ్డ విక్రేతలద్వారా వేలు అనిమే ఫిగర్స్, గంప్లా, కాస్ప్లే మరిన్ని అదె థాకుకోండి.",
     "title": "ఉత్పత్తులు",
     "addToCart": "కార్ట్‌కు జోడించండి",
     "addToWishlist": "విష్‌లిస్ట్‌కు జోడించండి",
@@ -1286,8 +1288,9 @@
     "browseProducts": "Search \"{q}\" in products →"
   },
   "categories": {
+    "metaTitle": "వర్గాలు — సంగ్రహం వారీగా షాపింగ్ చేయండి",
+    "metaDescription": "LetItRip లో అన్ని ఉత్పత్తి వర్గాలను బ్రౌజ్ చేయండి — అనిమే ఫిగర్స్, గంప్లా, కాస్ప్లే మరియు మరిన్ని.",
     "title": "వర్గాలు",
-    "subtitle": "Browse all product categories",
     "subtitleWithCount": "{count, plural, one {# category} other {# categories}} to explore",
     "allCategories": "అన్ని వర్గాలు",
     "allCategoriesCount": "{count} categories",

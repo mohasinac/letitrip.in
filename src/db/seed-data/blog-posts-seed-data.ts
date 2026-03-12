@@ -1,5 +1,5 @@
 /**
- * Blog Posts Seed Data
+ * Blog Posts Seed Data — Anime / Otaku Marketplace
  * Sample blog posts across all categories for development and testing
  */
 
@@ -9,22 +9,21 @@ import { BLOG_POST_FIELDS } from "@/db/schema";
 export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
   // ── Featured / Published ──────────────────────────────────────────────
   {
-    id: "blog-top-trekking-destinations-india-2026-guides",
-    title: "Top 10 Trekking Destinations in India for 2026",
-    slug: "top-10-trekking-destinations-india-2026",
+    id: "blog-top-10-rarest-anime-figures-2026-guides",
+    title: "Top 10 Rarest Anime Figures You Can Actually Buy in 2026",
+    slug: "top-10-rarest-anime-figures-2026",
     excerpt:
-      "From the snow-capped trails of Himachal to the lush ghats of Kerala — discover the finest trekking routes India has to offer this year.",
-    content: `<h2>1. Roopkund Trek, Uttarakhand</h2><p>Known as the 'Mystery Lake Trail', Roopkund sits at 5,029 m and rewards trekkers with panoramic Himalayan views and an eerie glacial lake containing ancient skeletal remains. Best season: May–June and September–October.</p><h2>2. Hampta Pass, Himachal Pradesh</h2><p>A dramatic crossover between the lush Kullu Valley and the stark Spiti landscape, Hampta Pass (4,270 m) is perfect for first-time high-altitude trekkers.</p><h2>3. Bali Pass, Uttarakhand</h2><p>One of the more demanding trails, Bali Pass connects the Yamunotri region to Har Ki Dun and offers unmatched views of the Swargarohini massif.</p><p>… and seven more incredible trails await inside.</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&h=630&fit=crop",
+      "From limited-run Kotobukiya ARTFX statues to out-of-print Good Smile Company Nendoroids — we rank the 10 most coveted figures that still occasionally surface on the secondary market.",
+    content: `<h2>1. Evangelion Unit-01 Ver. Ka — MegaHouse Master Grade</h2><p>Originally released in 2012 as a convention exclusive, this 1/60-scale articulated statue regularly commands ₹50,000+ at auction. Its translucent AT-Field base and hand-painted panel lines make it the crown jewel of any Eva collection.</p><h2>2. Good Smile Company — Rem Wedding Dress 1/7 Scale</h2><p>First sold exclusively at Wonder Festival 2019, Rem's wedding version shipped only to Japan-based buyers and sold out in minutes. Secondary market prices hover around ₹25,000–35,000 worldwide.</p><h2>3. Kotobukiya ARTFX J — Makima 1/7 (Chainsaw Man)</h2><p>Released in early 2025, this figure sold out globally in 48 hours. Sculpted by Takashi Tanaka, its flowing coat and hypnotic eye detail set a new bar for Chainsaw Man merchandise.</p><h2>4. Alter — Frieren 1/7 Scale (Beyond Journey's End)</h2><p>Alter's 2025 announcement caused the internet to collectively lose its mind. Pre-orders sold out in under two hours, and secondary listings are already appearing at 2× retail.</p><h2>5. Max Factory — Saber Alter Wedding Dress (Fate/Stay Night)</h2><p>A Wonder Festival exclusive from 2017, this 1/7-scale figure features hand-applied gold leaf details on the gown trim and is considered one of the finest Fate figures ever produced.</p><h2>6–10: The Rest of Our List</h2><p>Spots 6 through 10 include the Neon Genesis Evangelion Production Models by Gainax (hand-autographed by Anno), a sealed 1st-edition Pokémon Charizard PSA-10, the Spirited Away No-Face resin limited run, and more. <a href="/products">Browse our current listings</a> — some of these have just appeared on LetItRip.</p>`,
+    coverImage: "https://picsum.photos/seed/anime-figures-top10/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.GUIDES,
     tags: [
-      "trekking",
-      "india",
-      "hiking",
-      "adventure",
-      "uttarakhand",
-      "himachal",
+      "figures",
+      "rare",
+      "collectibles",
+      "gunpla",
+      "nendoroid",
+      "scale-figures",
     ],
     isFeatured: true,
     status: BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
@@ -33,31 +32,23 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     authorName: "Admin User",
     readTimeMinutes: 8,
     views: 4723,
-    metaTitle: "10 Best Trekking Destinations in India 2026 | LetItRip",
+    metaTitle: "Top 10 Rarest Anime Figures to Buy in 2026 | LetItRip",
     metaDescription:
-      "Explore the top trekking trails across India in 2026 — from Roopkund to Bali Pass. Curated routes for every skill level.",
+      "Discover the 10 rarest anime figures still available on the secondary market in 2026 — with prices, rarity scores, and buying tips.",
     createdAt: new Date("2026-01-08T10:00:00Z"),
     updatedAt: new Date("2026-01-10T08:00:00Z"),
   },
 
   {
-    id: "blog-how-to-choose-trekking-gear-beginners-tips",
-    title: "How to Choose Trekking Gear: A Beginner's Complete Guide",
-    slug: "how-to-choose-trekking-gear-beginners-guide",
+    id: "blog-how-to-start-your-gunpla-journey-tips",
+    title: "How to Start Your Gunpla Journey: A Complete Beginner's Guide",
+    slug: "how-to-start-gunpla-journey-beginners-guide",
     excerpt:
-      "Overwhelmed by the sheer volume of gear options? This comprehensive checklist helps beginners pick the right boots, backpacks, and layers without breaking the bank.",
-    content: `<h2>Why Gear Matters</h2><p>Poor gear choices are the number-one reason beginners abandon a trek mid-way. The right equipment keeps you safe, comfortable, and prepared for sudden weather changes.</p><h2>The Essential Checklist</h2><ul><li><strong>Boots:</strong> Waterproof ankle-support boots are non-negotiable for anything above 2,000 m.</li><li><strong>Backpack:</strong> A 40–50 L pack with a hip-belt distributes weight across your hips, not your shoulders.</li><li><strong>Base Layers:</strong> Merino wool or synthetic moisture-wicking fabrics — never cotton.</li><li><strong>Shell Jacket:</strong> A windproof, waterproof shell that packs down small.</li></ul><h2>Budget vs. Premium</h2><p>You don't need to blow ₹50,000 on your first kit. We break down which items are worth splurging on and where you can safely save.</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1551632811-561732d1e306?w=1200&h=630&fit=crop",
+      "Overwhelmed by High Grade, Master Grade, and Perfect Grade? This guide walks you through every Gunpla grade, the tools you need, and how to pick your first kit without regret.",
+    content: `<h2>What Is Gunpla?</h2><p>Gunpla (Gundam Plastic Models) are injection-moulded model kits produced by Bandai since 1980. They require no glue, snap together perfectly, and come in grades ranging from beginner-friendly to achingly complex.</p><h2>Understanding the Grades</h2><ul><li><strong>SD (Super Deformed)</strong> — Chibi-proportioned, ~50 pieces, great for kids and first-timers.</li><li><strong>HG (High Grade, 1/144)</strong> — The sweet spot for beginners. Affordable (₹800–₹2,500), articulated, and plentiful.</li><li><strong>RG (Real Grade, 1/144)</strong> — Advanced inner-frame detail in a small footprint. Not for absolute beginners.</li><li><strong>MG (Master Grade, 1/100)</strong> — Rich inner skeleton, panel lines, and accessories. 3–6 hours build time.</li><li><strong>PG (Perfect Grade, 1/60)</strong> — The mountain to climb. LED-lit options, 400+ pieces, 15–30 hours. Our Gundam Wing Zero Custom is an example.</li></ul><h2>Essential First-Time Tools</h2><p>You only need three things to start: a pair of Tamiya side-cutters (₹600), a hobby knife (₹300), and a grey panel-lining pen (₹350). Everything else is optional.</p><h2>Your First Kit Recommendation</h2><p>Start with an HG RX-78-2 or an HG Zaku II — both are ~₹900, have clean designs, and teach you the fundamentals without frustration.</p><h2>Where to Buy</h2><p>LetItRip lists both new and second-hand Gunpla, including rare PG builds like our <a href="/products">Wing Zero Custom</a>. Pre-orders are available for upcoming Bandai releases.</p>`,
+    coverImage: "https://picsum.photos/seed/gunpla-beginner-guide/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.TIPS,
-    tags: [
-      "gear",
-      "beginners",
-      "trekking",
-      "backpack",
-      "boots",
-      "buying-guide",
-    ],
+    tags: ["gunpla", "beginners", "model-kits", "bandai", "how-to", "guide"],
     isFeatured: true,
     status: BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
     publishedAt: new Date("2026-01-18T09:00:00Z"),
@@ -65,24 +56,23 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     authorName: "Admin User",
     readTimeMinutes: 10,
     views: 6891,
-    metaTitle: "Trekking Gear Guide for Beginners 2026 | LetItRip",
+    metaTitle: "Complete Beginner's Guide to Gunpla 2026 | LetItRip",
     metaDescription:
-      "Complete beginner's guide to choosing trekking gear: boots, backpacks, layers, and more. Budget-smart recommendations included.",
+      "New to Gunpla? Learn every grade from SD to Perfect Grade, the tools you need, and which kit to buy first.",
     createdAt: new Date("2026-01-16T11:00:00Z"),
     updatedAt: new Date("2026-01-18T09:00:00Z"),
   },
 
   {
     id: "blog-letitrip-launches-auction-feature-news",
-    title: "LetItRip Launches Live Auction Feature for Outdoor Gear",
-    slug: "letitrip-launches-live-auction-feature-outdoor-gear",
+    title: "LetItRip Launches Live Auction Feature for Rare Anime Collectibles",
+    slug: "letitrip-launches-live-auction-feature-anime-collectibles",
     excerpt:
-      "Today we're thrilled to announce our new live auction platform — the best way to score premium outdoor gear at prices set by the community.",
-    content: `<h2>Introducing Live Auctions</h2><p>LetItRip's auction feature lets verified sellers list quality outdoor equipment — from vintage cameras to premium tents — and buyers bid in real time. Every listing is verified by our team before it goes live.</p><h2>How It Works</h2><ol><li>Browse open auctions on the <a href="/auctions">Auctions page</a>.</li><li>Place a bid — you'll be instantly notified if outbid.</li><li>Win the auction and check out securely within 24 hours.</li></ol><h2>Seller Benefits</h2><p>Sellers get competitive, market-driven prices without the race to the bottom. Payouts are processed within 3–5 business days after buyer confirmation.</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200&h=630&fit=crop",
+      "Today we're thrilled to announce our live auction platform — the best way to score rare figures, TCG cards, and production art at prices set by the community.",
+    content: `<h2>Introducing Live Auctions</h2><p>LetItRip's auction feature lets verified sellers list rare anime collectibles — from out-of-print Nendoroids to original Studio Ghibli production cels — and buyers bid in real time. Every listing is authenticated by our team before going live.</p><h2>How It Works</h2><ol><li>Browse open auctions on the <a href="/auctions">Auctions page</a>.</li><li>Place a bid — you'll be instantly notified by push notification if outbid.</li><li>Win the auction and check out securely within 24 hours.</li><li>Receive a Certificate of Authenticity with every winning lot.</li></ol><h2>What Can Be Auctioned?</h2><p>Scale figures, Nendoroids, Funko Pop vaulted editions, Pokemon TCG graded cards, original anime production art, autographed merchandise, limited-run apparel, and complete manga sets.</p><h2>Seller Benefits</h2><p>Sellers get competitive, market-driven prices without constantly dropping their asking price. Payouts are processed within 3–5 business days after buyer confirmation. Our Auction Escrow service protects both parties throughout.</p>`,
+    coverImage: "https://picsum.photos/seed/auction-launch-anime/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.NEWS,
-    tags: ["auctions", "platform", "feature", "launch", "news"],
+    tags: ["auctions", "platform", "feature", "launch", "news", "collectibles"],
     isFeatured: false,
     status: BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
     publishedAt: new Date("2026-01-25T10:00:00Z"),
@@ -90,24 +80,23 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     authorName: "Admin User",
     readTimeMinutes: 4,
     views: 3210,
-    metaTitle: "LetItRip Launches Live Auction Platform | Platform News",
+    metaTitle: "LetItRip Launches Anime Collectible Auction Platform | News",
     metaDescription:
-      "LetItRip announces its new live auction feature for outdoor gear. Bid, win and explore premium equipment at fair market prices.",
+      "LetItRip announces its live auction feature for rare anime figures, TCG cards, and production art. Bid, win, and collect.",
     createdAt: new Date("2026-01-24T14:00:00Z"),
     updatedAt: new Date("2026-01-25T10:00:00Z"),
   },
 
   {
     id: "blog-buyer-seller-protection-policy-updates-updates",
-    title: "Updated Buyer & Seller Protection Policies — What's New",
-    slug: "updated-buyer-seller-protection-policies-2026",
+    title: "Updated Buyer & Seller Protection Policies for Anime Merchandise",
+    slug: "updated-buyer-seller-protection-policies-anime-2026",
     excerpt:
-      "We've strengthened our protection policies to give every transaction on LetItRip more confidence — here's a clear breakdown of what changed.",
-    content: `<h2>Key Changes Effective 1 February 2026</h2><p><strong>Buyers:</strong> The return window for physical goods is extended from 7 to 14 days for all categories except digital items. Refunds are now processed within 5 business days — down from 10.</p><p><strong>Sellers:</strong> We've introduced a dispute resolution SLA; all buyer claims will be reviewed within 48 hours. Sellers with a dispute rate below 0.5% get a 'Trusted Seller' badge automatically.</p><h2>Why We Made These Changes</h2><p>Feedback from our community surveys — over 2,400 responses — made it clear that faster refunds and clearer dispute timelines were the top priorities. We listened.</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&h=630&fit=crop",
+      "We've strengthened our protection policies for collectible merchandise — here's a clear breakdown of what changed for figures, TCG cards, artbooks, and cosplay.",
+    content: `<h2>Key Changes Effective 1 February 2026</h2><p><strong>Buyers:</strong> The return window for sealed collectibles is extended from 7 to 14 days. For opened figures, the window remains 7 days — but now includes a condition-based partial refund option if items arrive damaged.</p><p><strong>Authentication Guarantee:</strong> All auction lots now ship with a QR-coded Certificate of Authenticity, verified against our seller registry. If an item is found to be inauthentic, you receive a full refund plus ₹500 store credit.</p><p><strong>Sellers:</strong> We've introduced a dispute resolution SLA; all buyer claims are reviewed within 48 hours. Sellers maintaining a dispute rate below 0.5% automatically earn a 'Verified Otaku Seller' badge.</p><h2>Graded Card Policy</h2><p>PSA/BGS-graded cards must ship in rigid mailers inside bubble wrap. Any damage in transit is covered by our ₹5,000 Shipping Protection policy at no extra cost.</p><h2>Why We Made These Changes</h2><p>Over 2,400 survey responses from our anime collector community guided these updates. Faster refunds and clearer authentication processes topped the wishlist — and we delivered.</p>`,
+    coverImage: "https://picsum.photos/seed/policy-update-anime/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.UPDATES,
-    tags: ["policy", "protection", "returns", "refunds", "updates"],
+    tags: ["policy", "protection", "returns", "authentication", "collectibles"],
     isFeatured: false,
     status: BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
     publishedAt: new Date("2026-02-01T08:00:00Z"),
@@ -115,24 +104,23 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     authorName: "Admin User",
     readTimeMinutes: 5,
     views: 1845,
-    metaTitle: "Updated Protection Policies Feb 2026 | LetItRip",
+    metaTitle: "Updated Collectibles Protection Policies Feb 2026 | LetItRip",
     metaDescription:
-      "LetItRip updates buyer and seller protection policies — extended return windows, faster refunds, and a new Trusted Seller programme.",
+      "LetItRip updates buyer and seller protection policies for anime merchandise — authentication guarantees, extended returns, and a Verified Otaku Seller programme.",
     createdAt: new Date("2026-01-30T12:00:00Z"),
     updatedAt: new Date("2026-02-01T08:00:00Z"),
   },
 
   {
-    id: "blog-seller-tips-better-product-photos-tips",
-    title: "5 Pro Tips for Taking Better Product Photos on a Budget",
-    slug: "5-pro-tips-better-product-photos-budget",
+    id: "blog-figure-photography-tips-collection-tips",
+    title: "Photography Tips for Showcasing Your Figure Collection Online",
+    slug: "photography-tips-anime-figure-collection",
     excerpt:
-      "You don't need a DSLR to take great listing photos. Learn how to use natural light, simple backgrounds, and your phone camera to make your products irresistible.",
-    content: `<h2>Tip 1 — Chase Natural Light</h2><p>Place your product near a north-facing window for soft, diffused light with no harsh shadows. Golden hour (7–9 AM or 4–6 PM) gives warm tones that work beautifully for outdoor gear.</p><h2>Tip 2 — Keep Backgrounds Simple</h2><p>A plain white foam board costs ₹50 at any stationery shop. It removes distractions and makes your product the sole focus.</p><h2>Tip 3 — Shoot Multiple Angles</h2><p>Buyers want to see front, back, sides, close-ups of details, and any wear or damage. Aim for 6–8 photos per listing.</p><h2>Tip 4 — Use Portrait Mode Sparingly</h2><p>Portrait mode blurs backgrounds, but over-blurring hides useful context. Use it for hero shots only, not detail shots where sharpness is key.</p><h2>Tip 5 — Edit Minimally</h2><p>Adjust brightness and contrast only — never change colours. Buyers should receive exactly what they see in the photo.</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1200&h=630&fit=crop",
+      "Great photos move listings faster and command higher bids. Learn how to use natural light, dioramas, and your phone camera to make your figures look gallery-worthy.",
+    content: `<h2>Tip 1 — Use a Lightbox or North-Facing Window</h2><p>Hard shadows kill figure photos. A ₹500 collapsible lightbox from Amazon, or a north-facing window at midday, gives you the soft, even light that makes paint apps and sculpt details pop without blown-out highlights.</p><h2>Tip 2 — Match the Base to the Series</h2><p>Place a Dragon Ball figure on a rocky terrain texture sheet, or put a Ghibli figure on green moss. Context shots like these dramatically increase click-through rates on listings.</p><h2>Tip 3 — Shoot at Eye Level or Below</h2><p>Shooting at the figure's eye level (or up at it slightly) creates a heroic, dimensional look. Shooting down makes figures look like cheap toys — avoid it.</p><h2>Tip 4 — Document Every Flaw Clearly</h2><p>Pre-owned collectibles must have honest photos of every scuff, paint chip, and joint wear. Buyers who receive items matching the photos leave 5-star reviews. Surprises create disputes.</p><h2>Tip 5 — Include Scale Reference</h2><p>Place a coin, a ruler, or a known-size item beside the figure. Buyers need to understand size relative to their display shelf before committing to a ₹15,000 bid.</p><h2>Tip 6 — Edit Minimally</h2><p>Adjust brightness and contrast only — never change colours. The buyer should receive exactly what they see in your listing photos.</p>`,
+    coverImage: "https://picsum.photos/seed/figure-photography-tips/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.TIPS,
-    tags: ["seller", "photography", "listing", "tips", "product-photos"],
+    tags: ["seller", "photography", "figures", "listing", "tips", "display"],
     isFeatured: false,
     status: BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
     publishedAt: new Date("2026-02-05T09:30:00Z"),
@@ -140,24 +128,24 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     authorName: "Admin User",
     readTimeMinutes: 6,
     views: 2234,
-    metaTitle: "Better Product Photos on a Budget — Seller Tips | LetItRip",
+    metaTitle: "Figure Photography Tips for Anime Sellers | LetItRip",
     metaDescription:
-      "5 actionable tips to improve your product listing photos using just your smartphone. No expensive camera required.",
+      "6 actionable tips for photographing anime figures and collectibles to create listings that sell faster and attract higher bids.",
     createdAt: new Date("2026-02-03T11:00:00Z"),
     updatedAt: new Date("2026-02-05T09:30:00Z"),
   },
 
   {
     id: "blog-community-spotlight-jan-2026-community",
-    title: "Community Spotlight: January 2026 Top Sellers & Reviewers",
-    slug: "community-spotlight-january-2026",
+    title: "Community Spotlight: January 2026 Top Collectors & Bidders",
+    slug: "community-spotlight-january-2026-collectors",
     excerpt:
-      "Meet the outstanding community members who made January 2026 a record month — from our top-rated sellers to the most helpful reviewers.",
-    content: `<h2>Top Sellers of January</h2><p><strong>TechHub Electronics</strong> — 47 orders fulfilled at a 4.9-star average. Their iPhone and Samsung listings consistently hit the featured section thanks to detailed descriptions and fast shipping.</p><p><strong>Fashion Boutique</strong> — specialising in sustainable clothing, they earned the 'Trusted Seller' badge in January with a zero-dispute month.</p><h2>Top Reviewers</h2><p><strong>John Doe</strong> — 4 in-depth reviews in January, each with detailed pros/cons and real-world usage context. John's review of the iPhone 15 Pro Max has been marked helpful by 24 community members.</p><h2>New Members</h2><p>330 new buyers and 18 new sellers joined LetItRip in January — a 34% month-on-month increase. Welcome to the community!</p>`,
+      "Meet the outstanding community members who made January 2026 a record month — from our top-rated sellers to the most passionate collectors and highest bidders.",
+    content: `<h2>Top Sellers of January</h2><p><strong>FigureVault JP</strong> — 47 orders fulfilled at a 4.9-star average. Their Dragon Ball and Evangelion auction listings consistently sell above estimate, thanks to meticulous authentication and same-day shipping.</p><p><strong>AnimeCraft Apparel</strong> — Specialising in licensed cosplay, they earned the 'Verified Otaku Seller' badge in January with a zero-dispute month. Their Charizard PSA-9 lot received 28 bids before close.</p><p><strong>OtakuShelf Co</strong> — January's hidden gem. Their Spirited Away production cel auction attracted 19 unique bidders and set a new platform record for production art.</p><h2>Top Bidders</h2><p><strong>Raj Patel</strong> — 6 winning bids in January alone. Raj is building an extraordinary Gundam collection and his attention to build quality details in bid notes helps sellers trust him.</p><p><strong>Vikram Nair</strong> — Won the Charizard 1st-Edition PSA-9 lot in our inaugural TCG auction. His detailed review of the item helped 31 community members understand graded card authentication.</p><h2>Growing Community</h2><p>412 new collectors joined LetItRip in January — a 34% month-on-month increase. The anime collectibles niche is the fastest-growing category on the platform. Welcome to every new member!</p>`,
     coverImage:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=630&fit=crop",
+      "https://picsum.photos/seed/community-spotlight-jan2026/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.COMMUNITY,
-    tags: ["community", "spotlight", "sellers", "reviewers", "january-2026"],
+    tags: ["community", "spotlight", "collectors", "bidders", "january-2026"],
     isFeatured: false,
     status: BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
     publishedAt: new Date("2026-02-10T10:00:00Z"),
@@ -165,30 +153,29 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     authorName: "Admin User",
     readTimeMinutes: 5,
     views: 987,
-    metaTitle: "Community Spotlight January 2026 | LetItRip",
+    metaTitle: "Community Spotlight January 2026 — Top Collectors | LetItRip",
     metaDescription:
-      "Celebrating our top sellers and reviewers from January 2026 and welcoming the hundreds of new members who joined the LetItRip community.",
+      "Celebrating LetItRip's top sellers, bidders, and collectors from January 2026 and welcoming hundreds of new anime enthusiasts to the platform.",
     createdAt: new Date("2026-02-08T13:00:00Z"),
     updatedAt: new Date("2026-02-10T10:00:00Z"),
   },
 
-  // ── Draft ─────────────────────────────────────────────────────────────
+  // ── Published — March Auction Spotlight ──────────────────────────────
   {
     id: "blog-march-2026-auction-spotlight-news",
-    title: "March Auction Spotlight: 20 Exceptional Items Up for Bid",
-    slug: "march-2026-auction-spotlight",
+    title: "March Auction Spotlight: Rare Figures, TCG Cards & Production Art",
+    slug: "march-2026-auction-spotlight-anime-collectibles",
     excerpt:
-      "From a signed Babolat tennis racket to a sealed iPhone 15 Pro Max bundle — March 2026 brings our biggest and most diverse auction lineup yet. Here's everything live right now.",
-    content: `<h2>Why This Month's Auctions Are Special</h2><p>March 2026 marks the most diverse auction month in LetItRip's history. We have 20 active auctions spanning electronics, fashion, home, and sports — with competitive opening bids and items that simply can't be found at retail.</p><h2>Electronics — Bid for the Best Tech</h2><p><strong>PS5 Slim Gaming Console</strong> — Barely used, all accessories included. Closing 7 March. <strong>AirPods Pro 2</strong> and <strong>Bose 700 Headphones</strong> both closing 8 March — perfect if you're in the market for premium audio. <strong>MacBook Pro M3 14"</strong> — factory-sealed, closing 16 March with multiple active bidders.</p><h2>Fashion — Rare & Collectible</h2><p>Fashion Boutique has listed a signed pair of <strong>Air Jordan 1 Retro High OG</strong> sneakers, a collector-grade <strong>Hermès Silk Twilly Scarf</strong>, and a handwoven <strong>Designer Kanjeevaram Silk Saree</strong> — all authenticated and closing mid-March.</p><h2>Sports & Home — Premium & Practical</h2><p>Home Essentials brings a <strong>Trek Domane SL 5 Road Bike</strong>, a <strong>Babolat Pure Aero Tennis Racket (signed)</strong>, and a <strong>Dyson V15 Detect Vacuum</strong> — all at starting bids well below retail.</p><h2>How to Bid</h2><p>Visit the <a href="/auctions">Auctions page</a>, sign in, and place your bid. You'll be notified instantly if outbid so you never miss a chance to win.</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1505253468034-514d2507d914?w=1200&h=630&fit=crop",
+      "From a PSA-9 Charizard to a Good Smile Company Rem Wedding figure — March 2026 brings our biggest and most diverse anime auction lineup yet. Everything live right now.",
+    content: `<h2>Why March 2026 Is Special</h2><p>March marks the most diverse auction month in LetItRip's history. We have 10 active auctions spanning scale figures, Gunpla, TCG, and original production art — with competitive opening bids and items that simply can't be found at retail.</p><h2>Scale Figures — One for Every Fan</h2><p><strong>Chainsaw Man Makima 1/7 — Kotobukiya ARTFX J</strong> — 3 active bids, closing March 10. This soldout figure retails for ₹18,000 online when you can find one.</p><p><strong>Jujutsu Kaisen Sukuna 1/6 — MegaHouse</strong> — closing March 12 with competitive bidding from Gunpla collectors eyeing their shelf space wisely.</p><p><strong>Fate/Stay Night Saber Alter Wedding 1/7</strong> — closing March 13. A Wonder Festival exclusive rarely seen outside Japan dealers.</p><p><strong>Re:Zero Rem Wedding 1/7 — Good Smile Company</strong> — closing March 15. GSC's best Rem figure, bar none.</p><h2>TCG & Trading Cards</h2><p><strong>Pokémon 1st Edition Base Set Charizard Holo — PSA 9</strong> — closing March 14. Already 2 active bids above ₹30,000. This is the holy grail of Pokémon TCG.</p><h2>Production Art & Artbooks</h2><p><strong>Spirited Away 2001 Original Production Cel</strong> — a Studio Ghibli hand-inked cel from the film's production, with gallery COA. Closing March 14.</p><p><strong>One Piece 25th Anniversary Artbook — Signed by Eiichiro Oda</strong> — 2 bids already, closing March 16. Authenticated by publisher Shueisha.</p><h2>Gunpla Corner</h2><p><strong>PG Wing Zero Custom — Full Build & Paint</strong> — FigureVault JP's custom-built Perfect Grade kit, closing March 15. A gallery-quality display piece.</p><h2>How to Bid</h2><p>Visit the <a href="/auctions">Auctions page</a>, sign in, and place your bid. You'll be notified instantly by app push notification if you're outbid.</p>`,
+    coverImage: "https://picsum.photos/seed/march2026-auction-anime/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.NEWS,
     tags: [
       "auctions",
       "march-2026",
-      "electronics",
-      "fashion",
-      "sports",
+      "figures",
+      "tcg",
+      "production-art",
       "spotlight",
     ],
     isFeatured: true,
@@ -198,22 +185,31 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     authorName: "Riya Sharma",
     readTimeMinutes: 5,
     views: 2104,
-    metaTitle: "March 2026 Auction Spotlight — 20 Items Live Now | LetItRip",
+    metaTitle:
+      "March 2026 Auction Spotlight — Anime Figures & TCG Live Now | LetItRip",
     metaDescription:
-      "Explore LetItRip's biggest auction month: 20 live auctions across electronics, fashion, sports, and home. Bid now before they close.",
+      "Explore LetItRip's biggest anime auction month: rare figures, PSA-graded Pokémon cards, Ghibli production art, and more. Bid now.",
     createdAt: new Date("2026-02-28T14:00:00Z"),
     updatedAt: new Date("2026-03-01T09:00:00Z"),
   },
 
+  // ── Draft ─────────────────────────────────────────────────────────────
   {
-    id: "blog-camping-checklist-essentials-2026-guides-draft",
-    title: "The Ultimate Camping Checklist for 2026",
-    slug: "ultimate-camping-checklist-2026",
+    id: "blog-guide-authenticating-anime-merchandise-draft",
+    title: "The Complete Guide to Authenticating Anime Merchandise",
+    slug: "complete-guide-authenticating-anime-merchandise-2026",
     excerpt:
-      "Whether it's a weekend car camp or a 7-day backcountry expedition, this checklist covers everything you need to pack — and nothing you don't.",
-    content: `<h2>Shelter & Sleep</h2><p>- Tent rated for your expected conditions (3-season vs 4-season)</p><p>- Ground sheet / footprint</p><p>- Sleeping bag (temperature rating matters)</p><p>- Sleeping pad (R-value ≥ 3 for cold ground)</p><h2>Cooking & Water</h2><p>- Compact stove + fuel canister</p><p>- Pot / pan set</p><p>- Water filter or purification tablets</p><p>[Draft — more sections coming]</p>`,
+      "With bootleg figures and fake TCG cards flooding the secondary market, authentication is a must-have skill for any serious collector. This guide covers how to spot fakes for figures, Nendoroids, Gunpla, and graded cards.",
+    content: `<h2>Why Authentication Matters</h2><p>The anime collectibles market loses an estimated ₹20 crore annually to counterfeit goods. Bootleg figures look convincing at thumbnail resolution — this guide gives you the tools to tell the difference before bidding.</p><h2>Scale Figures: What to Check</h2><ul><li><strong>Box Print Quality:</strong> Official releases have crisp, high-contrast printing. Bootlegs show banding, colour shift, and blurred kanji.</li><li><strong>Seam Lines:</strong> Authentic figures have nearly invisible seam lines. Bootlegs show gaps and misalignment of 1–3 mm.</li><li><strong>Paint Applications:</strong> Check the eyes under a macro lens — official eye decals are perfectly centered; bootlegs are usually off by 0.5–1 mm on at least one axis.</li><li><strong>Weight:</strong> Authentic figures use denser PVC. Bootlegs are noticeably lighter and feel hollow.</li></ul><h2>Nendoroid Specifics</h2><p>[Draft — Nendoroid section in progress]</p><h2>Graded TCG Cards</h2><p>PSA and BGS holders can be verified at psacard.com using the certification number on the label. Any holder not verifiable online is counterfeit.</p><h2>Gunpla: Official vs. Knockoff</h2><p>[Draft — Gunpla section in progress]</p>`,
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.GUIDES,
-    tags: ["camping", "checklist", "gear", "outdoor", "beginners"],
+    tags: [
+      "authentication",
+      "figures",
+      "tcg",
+      "gunpla",
+      "guide",
+      "anti-counterfeit",
+    ],
     isFeatured: false,
     status: BLOG_POST_FIELDS.STATUS_VALUES.DRAFT,
     authorId: "user-admin-user-admin",
@@ -226,16 +222,15 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
 
   // ── Archived ─────────────────────────────────────────────────────────
   {
-    id: "blog-festive-sale-dec-2025-recap-community-archived",
-    title: "Festive Sale December 2025 — A Recap",
-    slug: "festive-sale-december-2025-recap",
+    id: "blog-anicon-2025-haul-recap-community-archived",
+    title: "AniCon 2025 Haul Recap — Community Picks of the Year",
+    slug: "anicon-2025-haul-recap-community",
     excerpt:
-      "December's mega sale was our biggest ever — here's a look at the numbers, the bestsellers, and what the community loved most.",
+      "December's AniCon online event was our biggest ever — here's a look at the top picks, best-value lots, and the items the community loved most.",
     content: `<p>This post has been archived. For current deals and updates, visit our <a href="/blog">blog</a>.</p>`,
-    coverImage:
-      "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=1200&h=630&fit=crop",
+    coverImage: "https://picsum.photos/seed/anicon2025-recap/1200/630",
     category: BLOG_POST_FIELDS.CATEGORY_VALUES.COMMUNITY,
-    tags: ["sale", "december", "2025", "recap"],
+    tags: ["anicon", "december", "2025", "recap", "haul"],
     isFeatured: false,
     status: BLOG_POST_FIELDS.STATUS_VALUES.ARCHIVED,
     publishedAt: new Date("2025-12-28T10:00:00Z"),

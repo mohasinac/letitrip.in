@@ -752,6 +752,8 @@
     "paginationLabel": "पृष्ठांक"
   },
   "products": {
+    "metaTitle": "उत्पादने — अनिमे फिगर, संग्रहणीय वस्तू आणि बरेच काही",
+    "metaDescription": "भारतभरातील पडताळलेल्या विक्रेत्यांकडून हजारो अनिमे फिगर, नेंडोरॉइड, गंप्ला, कॉस्प्ले आणि आणखी खरेदी करा.",
     "title": "उत्पादने",
     "addToCart": "कार्टमध्ये जोडा",
     "addToWishlist": "इच्छासूचीत जोडा",
@@ -1286,8 +1288,9 @@
     "browseProducts": "Search \"{q}\" in products →"
   },
   "categories": {
+    "metaTitle": "श्रेण्या — संग्रहानुसार खरेदी करा",
+    "metaDescription": "LetItRip वर सर्व उत्पाद श्रेण्या पहा — अनिमे फिगर, गंप्ला, नेंडोरॉइड, कॉस्प्ले आणि बरेच काही.",
     "title": "श्रेण्या",
-    "subtitle": "Browse all product categories",
     "subtitleWithCount": "{count, plural, one {# category} other {# categories}} to explore",
     "allCategories": "सर्व श्रेण्या",
     "allCategoriesCount": "{count} categories",

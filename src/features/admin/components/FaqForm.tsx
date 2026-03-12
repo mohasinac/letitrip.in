@@ -185,8 +185,8 @@ export function FaqForm({ faq, onChange, isReadonly = false }: FaqFormProps) {
         <div className={`${flex.rowCenter} mt-6`}>
           <Checkbox
             label={t("featuredLabel")}
-            checked={faq.featured || false}
-            onChange={(e) => update({ featured: e.target.checked })}
+            checked={faq.isPinned || false}
+            onChange={(e) => update({ isPinned: e.target.checked })}
             disabled={isReadonly}
           />
         </div>

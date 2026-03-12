@@ -108,11 +108,8 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
     } else if (type === "gradient") {
       return { background: value };
     } else if (type === "image") {
-      return {
-        backgroundImage: `url(${value})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      };
+      // Background image is rendered via <MediaImage> inside the card — no inline CSS needed.
+      return {};
     }
     return {};
   };
@@ -252,7 +249,7 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
                       className="relative rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105"
                       style={{
                         ...getGridPosition(card),
-                        ...getBackgroundStyle(card),
+                        ...getBackgroundStyle(card), // color / gradient / transparent only
                         width: card.sizing?.widthPct
                           ? `${isMobile ? Math.min(card.sizing.widthPct, 65) : card.sizing.widthPct}%`
                           : isMobile
@@ -267,6 +264,14 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
                         alignSelf: "center",
                       }}
                     >
+                      {card.background.type === "image" &&
+                        card.background.value && (
+                          <MediaImage
+                            src={card.background.value}
+                            alt=""
+                            size="card"
+                          />
+                        )}
                       {!card.isButtonOnly && (
                         <div
                           className={`${position.fill} flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/30 to-transparent ${

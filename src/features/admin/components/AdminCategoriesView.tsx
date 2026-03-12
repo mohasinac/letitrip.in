@@ -83,7 +83,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
       name: "",
       slug: "",
       parentId: null,
-      enabled: true,
+      isActive: true,
       showOnHomepage: false,
       isBrand: false,
       order: 0,

@@ -26,8 +26,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     order: 1,
     enabled: true,
     config: {
-      h1: "Welcome to LetItRip",
-      subtitle: "Your Marketplace, Your Rules",
+      h1: "Welcome to LetItRip — Your Otaku Marketplace",
+      subtitle: "India’s Premier Anime Collectibles & Rare Figures Destination",
       description: JSON.stringify({
         type: "doc",
         content: [
@@ -36,14 +36,14 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
             content: [
               {
                 type: "text",
-                text: "Discover amazing products from trusted sellers across India.",
+                text: "Discover rare anime figures, exclusive live auctions, and pre-orders from verified collectors across India. Scale figures, Nendoroids, Gunpla, Pok\u00e9mon TCG, cosplay, and more.",
               },
             ],
           },
         ],
       }),
       showCTA: true,
-      ctaText: "Start Shopping",
+      ctaText: "Explore Collectibles",
       ctaLink: "/products",
     },
     createdAt: new Date("2024-01-01T00:00:00Z"),
@@ -59,31 +59,31 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     order: 2,
     enabled: true,
     config: {
-      title: "Why Shop With Us",
+      title: "Why Collectors Trust LetItRip",
       indicators: [
         {
           id: "trust_001",
           icon: "🚚",
           title: "Free Shipping",
-          description: "On orders above ₹999",
+          description: "On all orders above ₹999",
         },
         {
           id: "trust_002",
           icon: "🔒",
           title: "Secure Payments",
-          description: "100% secure transactions",
+          description: "100% safe & encrypted",
         },
         {
           id: "trust_003",
-          icon: "↩️",
-          title: "Easy Returns",
-          description: "7-day return policy",
+          icon: "✅",
+          title: "Verified Sellers",
+          description: "Only authenticated collectibles",
         },
         {
           id: "trust_004",
-          icon: "🎁",
-          title: "Best Deals",
-          description: "Unbeatable prices guaranteed",
+          icon: "🏆",
+          title: "Live Auctions",
+          description: "Bid on rare & exclusive figures",
         },
       ],
     },
@@ -118,8 +118,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     order: 4,
     enabled: true,
     config: {
-      title: "Featured Products",
-      subtitle: "Handpicked for you",
+      title: "Featured Collectibles",
+      subtitle: "Handpicked rare figures & anime merch",
       maxProducts: 18,
       rows: 2,
       itemsPerRow: 3,
@@ -141,7 +141,7 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     enabled: true,
     config: {
       title: "New Arrivals",
-      subtitle: "Just in for you",
+      subtitle: "Fresh drops — figures, Nendoroids & pre-orders just listed",
       maxProducts: 18,
       rows: 2,
       itemsPerRow: 3,
@@ -163,7 +163,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     enabled: true,
     config: {
       title: "Live Auctions",
-      subtitle: "Bid and win amazing products",
+      subtitle:
+        "Bid on rare 1/7 scale figures, signed art, PSA graded cards & more",
       maxAuctions: 18,
       rows: 2,
       itemsPerRow: 3,
@@ -187,9 +188,9 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       height: "md",
       gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       content: {
-        title: "Limited Time Offer",
-        subtitle: "Get 20% Off Sitewide",
-        description: "Use code SAVE20 at checkout",
+        title: "AniCon 2026 Coupon Drop 🎉",
+        subtitle: "Extra 15% Off All Anime Orders",
+        description: "Use code ANIMECON15 at checkout — valid Mar 1–15",
       },
       buttons: [
         {
@@ -251,7 +252,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     enabled: true,
     config: {
       title: "Join Our Community",
-      description: "Get exclusive deals and connect with shoppers",
+      description:
+        "Get early auction alerts, exclusive otaku deals, and connect with collectors across India",
       groupLink: "https://chat.whatsapp.com/example",
       memberCount: 5000,
       benefits: [
@@ -297,7 +299,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     enabled: true,
     config: {
       title: "From Our Blog",
-      subtitle: "Tips, guides, and stories from our community",
+      subtitle:
+        "Figure reviews, auction guides, and collector community stories",
       maxArticles: 4,
       showReadTime: true,
       showAuthor: true,
@@ -317,7 +320,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     enabled: true,
     config: {
       title: "Stay Updated",
-      description: "Subscribe for exclusive deals and updates",
+      description:
+        "Subscribe for pre-order alerts, auction announcements, and otaku discounts",
       placeholder: "Enter your email",
       buttonText: "Subscribe",
       privacyText: "We respect your privacy",
@@ -337,7 +341,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     enabled: true,
     config: {
       title: "Featured Stores",
-      subtitle: "Shop from our top sellers",
+      subtitle:
+        "Shop from verified anime figure importers and collectible stores",
       maxStores: 12,
       autoScroll: true,
       scrollInterval: 4500,
@@ -356,7 +361,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
     enabled: true,
     config: {
       title: "Upcoming Events",
-      subtitle: "Don't miss out",
+      subtitle:
+        "Anime sales, AniCon drops, and collector auctions — coming up soon",
       maxEvents: 12,
       autoScroll: true,
       scrollInterval: 5000,

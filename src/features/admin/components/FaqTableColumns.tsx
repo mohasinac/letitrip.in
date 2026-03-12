@@ -46,30 +46,33 @@ export function getFaqTableColumns(
         key: "helpful",
         header: LABELS.COL_HELPFUL,
         render: (faq: FAQ) => {
-          const total = faq.helpfulCount + faq.notHelpfulCount;
+          const total =
+            (faq.stats?.helpful ?? 0) + (faq.stats?.notHelpful ?? 0);
           const ratio =
-            total > 0 ? Math.round((faq.helpfulCount / total) * 100) : 0;
+            total > 0
+              ? Math.round(((faq.stats?.helpful ?? 0) / total) * 100)
+              : 0;
           return (
             <Span className="text-sm">
-              {faq.helpfulCount} / {total} ({ratio}%)
+              {faq.stats?.helpful ?? 0} / {total} ({ratio}%)
             </Span>
           );
         },
         width: "15%",
       },
       {
-        key: "featured",
+        key: "isPinned",
         header: LABELS.FEATURED,
         sortable: true,
         render: (faq: FAQ) => (
           <Span
             className={`px-2 py-1 text-xs font-medium rounded ${
-              faq.featured
+              faq.isPinned
                 ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                 : `${themed.bgTertiary} ${themed.textSecondary}`
             }`}
           >
-            {faq.featured ? UI_LABELS.ACTIONS.YES : UI_LABELS.ACTIONS.NO}
+            {faq.isPinned ? UI_LABELS.ACTIONS.YES : UI_LABELS.ACTIONS.NO}
           </Span>
         ),
         width: "15%",

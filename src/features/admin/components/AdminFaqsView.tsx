@@ -109,7 +109,7 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
       category: "General",
       priority: 5,
       tags: [],
-      featured: false,
+      isPinned: false,
       order: faqs.length + 1,
     };
     setEditingFAQ(newFAQ);
@@ -317,10 +317,10 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
                   </Text>
                   <div className={`${flex.between}`}>
                     <Badge>{faq.category}</Badge>
-                    {faq.featured && <StatusBadge status="active" />}
+                    {faq.isPinned && <StatusBadge status="active" />}
                   </div>
                   <Caption>
-                    ❤ {faq.helpfulCount ?? 0} · 👁 {faq.viewCount ?? 0}
+                    ❤ {faq.stats?.helpful ?? 0} · 👁 {faq.stats?.views ?? 0}
                   </Caption>
                 </Card>
               )}
