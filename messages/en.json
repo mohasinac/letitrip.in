@@ -1467,7 +1467,13 @@
     "bannerFallbackCta": "Shop Now",
     "bannerSecondaryCta": "Browse Auctions",
     "whatsAppMembers": "members",
-    "whatsAppJoinAriaLabel": "Join WhatsApp community"
+    "whatsAppJoinAriaLabel": "Join WhatsApp community",
+    "welcomePill": "India's #1 Marketplace",
+    "welcomeSecondaryCta": "Browse All",
+    "welcomeTrustDelivery": "Fast Delivery",
+    "welcomeTrustPayment": "Secure Payments",
+    "welcomeTrustRating": "4.8★ Rated",
+    "welcomeTrustReturns": "Easy Returns"
   },
   "footer": {
     "aboutUs": "About Us",

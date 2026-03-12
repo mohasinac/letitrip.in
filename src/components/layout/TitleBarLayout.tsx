@@ -174,6 +174,9 @@ export function TitleBarLayout({
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
+            <kbd className="hidden xl:inline-flex border border-zinc-300/50 text-zinc-400 rounded px-1.5 py-0.5 text-[10px]">
+              ⌘K
+            </kbd>
           </Button>
 
           {/* Notification slot — rendered for authenticated users only */}

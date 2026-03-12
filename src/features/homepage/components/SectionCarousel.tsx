@@ -23,6 +23,20 @@ export interface SectionCarouselProps<T = unknown> {
   description?: string;
 
   /**
+   * Heading visual variant.
+   * - `"default"` — standard themed text
+   * - `"gradient"` — primary→cobalt gradient clip text
+   * - `"editorial"` — pill + font-display H2 + ── ✦ ── ornament
+   */
+  headingVariant?: "default" | "gradient" | "editorial";
+
+  /**
+   * Pill label shown above the heading when `headingVariant="editorial"`.
+   * Required for editorial variant; ignored otherwise.
+   */
+  pillLabel?: string;
+
+  /**
    * URL of an image to use as the section background.
    * A dark semi-transparent overlay is applied so the text remains readable.
    */
@@ -80,6 +94,13 @@ export interface SectionCarouselProps<T = unknown> {
    * Defaults to `true` when `backgroundImage` is provided, `false` otherwise.
    */
   lightText?: boolean;
+
+  /**
+   * When `true`, adds a negative right margin to the scroller wrapper so the
+   * last visible item peeks at the edge, hinting there's more content.
+   * Default: false
+   */
+  showPeek?: boolean;
 }
 
 // ─── Skeleton ───────────────────────────────────────────────────────────────
@@ -105,6 +126,8 @@ function CarouselSkeleton({ count }: { count: number }) {
 export function SectionCarousel<T = unknown>({
   title,
   description,
+  headingVariant = "default",
+  pillLabel,
   backgroundImage,
   viewMoreHref,
   viewMoreLabel,
@@ -120,14 +143,20 @@ export function SectionCarousel<T = unknown>({
   isLoading = false,
   skeletonCount = 4,
   lightText,
+  showPeek = false,
 }: SectionCarouselProps<T>) {
   const tActions = useTranslations("actions");
   const hasBg = Boolean(backgroundImage);
   const useLightText = lightText ?? hasBg;
 
-  const { themed, spacing, flex } = THEME_CONSTANTS;
+  const { themed, flex } = THEME_CONSTANTS;
 
-  const headingVariant = useLightText ? "text-white" : themed.textPrimary;
+  const headingClass = useLightText
+    ? "text-white"
+    : headingVariant === "gradient"
+      ? "bg-gradient-to-r from-primary to-cobalt bg-clip-text text-transparent"
+      : themed.textPrimary;
+
   const descVariant = useLightText ? "text-white/80" : themed.textSecondary;
 
   return (
@@ -154,16 +183,51 @@ export function SectionCarousel<T = unknown>({
       {/* Content — sits above the background */}
       <div className="relative z-10 w-full max-w-7xl mx-auto">
         {/* Header */}
-        <div className={`text-center mb-6 ${spacing.stack}`}>
+        <div className={`text-center mb-6`}>
+          {/* Editorial pill */}
+          {headingVariant === "editorial" && pillLabel && (
+            <div className="mb-3">
+              <span className={THEME_CONSTANTS.sectionHeader.pill}>
+                {pillLabel}
+              </span>
+            </div>
+          )}
+
           <Heading
             level={2}
-            className={`${THEME_CONSTANTS.typography.h2} ${headingVariant}`}
+            className={[
+              THEME_CONSTANTS.typography.h2,
+              headingClass,
+              headingVariant === "editorial" ? "font-display text-4xl" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
           >
             {title}
           </Heading>
+
+          {/* Editorial ornament */}
+          {headingVariant === "editorial" && (
+            <div
+              className={`${THEME_CONSTANTS.sectionHeader.ornament} justify-center mt-2`}
+            >
+              <span
+                className="h-px w-8 bg-zinc-300 dark:bg-slate-600"
+                aria-hidden="true"
+              />
+              <span className="text-primary text-sm" aria-hidden="true">
+                ✦
+              </span>
+              <span
+                className="h-px w-8 bg-zinc-300 dark:bg-slate-600"
+                aria-hidden="true"
+              />
+            </div>
+          )}
+
           {description && (
             <Text
-              className={`${THEME_CONSTANTS.typography.body} ${descVariant}`}
+              className={`mt-2 ${THEME_CONSTANTS.typography.body} ${descVariant}`}
             >
               {description}
             </Text>
@@ -177,6 +241,7 @@ export function SectionCarousel<T = unknown>({
             hasBg ? "border-white/20" : themed.border,
             "p-4",
             hasBg ? "bg-white/10 backdrop-blur-sm" : themed.bgPrimary,
+            showPeek ? "-mr-6 md:-mr-8 overflow-hidden" : "",
           ]
             .filter(Boolean)
             .join(" ")}

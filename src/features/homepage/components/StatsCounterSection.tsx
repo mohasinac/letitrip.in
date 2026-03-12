@@ -3,18 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Package, Users, ShoppingBag, Star } from "lucide-react";
-import { THEME_CONSTANTS } from "@/constants";
 import { Section, Heading, Text } from "@/components";
 
 // ─── Icon map ────────────────────────────────────────────────────────────────
 
-const ICON_MAP = {
-  Package,
-  Users,
-  ShoppingBag,
-  Star,
-} as const;
-
+const ICON_MAP = { Package, Users, ShoppingBag, Star } as const;
 type IconName = keyof typeof ICON_MAP;
 
 // ─── Stat config ─────────────────────────────────────────────────────────────
@@ -23,8 +16,6 @@ interface StatConfig {
   iconName: IconName;
   valueKey: string;
   labelKey: string;
-  iconColor: string;
-  iconBg: string;
 }
 
 const STATS: StatConfig[] = [
@@ -32,30 +23,18 @@ const STATS: StatConfig[] = [
     iconName: "Package",
     valueKey: "statsProducts",
     labelKey: "statsProductsLabel",
-    iconColor: "text-indigo-600 dark:text-indigo-400",
-    iconBg: "bg-indigo-50 dark:bg-indigo-950/40",
   },
   {
     iconName: "Users",
     valueKey: "statsSellers",
     labelKey: "statsSellersLabel",
-    iconColor: "text-emerald-600 dark:text-emerald-400",
-    iconBg: "bg-emerald-50 dark:bg-emerald-950/40",
   },
   {
     iconName: "ShoppingBag",
     valueKey: "statsBuyers",
     labelKey: "statsBuyersLabel",
-    iconColor: "text-amber-600 dark:text-amber-400",
-    iconBg: "bg-amber-50 dark:bg-amber-950/40",
   },
-  {
-    iconName: "Star",
-    valueKey: "statsRating",
-    labelKey: "statsRatingLabel",
-    iconColor: "text-orange-600 dark:text-orange-400",
-    iconBg: "bg-orange-50 dark:bg-orange-950/40",
-  },
+  { iconName: "Star", valueKey: "statsRating", labelKey: "statsRatingLabel" },
 ];
 
 // ─── Single stat item ─────────────────────────────────────────────────────────
@@ -66,57 +45,45 @@ function StatItem({
   label,
   visible,
   delay,
+  isLast,
 }: {
   config: StatConfig;
   value: string;
   label: string;
   visible: boolean;
   delay: number;
+  isLast: boolean;
 }) {
   const Icon = ICON_MAP[config.iconName];
 
   return (
     <div
-      className={`flex flex-col items-center text-center px-4 py-6 transition-all duration-700
-        ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+      className={[
+        "relative flex flex-col items-center text-center px-6 py-8",
+        "transition-all duration-700",
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
+        !isLast ? "md:border-r md:border-white/10" : "",
+      ].join(" ")}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      {/* Icon circle */}
-      <div
-        className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${config.iconBg} mb-4 shadow-sm`}
-      >
-        <Icon className={`w-8 h-8 ${config.iconColor}`} />
+      {/* Icon wrapper */}
+      <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center mb-4">
+        <Icon className="w-7 h-7 text-white/80" />
       </div>
 
       {/* Stat value */}
       <Heading
         level={2}
-        className={`text-3xl md:text-4xl font-extrabold tracking-tight ${THEME_CONSTANTS.themed.textPrimary} mb-1`}
+        className="font-display text-4xl md:text-5xl bg-gradient-to-b from-primary to-cobalt/80 bg-clip-text text-transparent mb-1"
       >
         {value}
       </Heading>
 
       {/* Label */}
-      <Text
-        className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} font-medium uppercase tracking-wider`}
-      >
+      <Text className="text-zinc-400 text-sm uppercase tracking-widest">
         {label}
       </Text>
     </div>
-  );
-}
-
-// ─── Divider line (shows between stats on desktop) ────────────────────────────
-
-function Divider({ visible, delay }: { visible: boolean; delay: number }) {
-  return (
-    <div
-      className={`hidden md:block w-px self-stretch my-6 transition-all duration-700
-        ${visible ? "opacity-100" : "opacity-0"}
-        bg-zinc-200 dark:bg-slate-700`}
-      style={{ transitionDelay: `${delay}ms` }}
-      aria-hidden
-    />
   );
 }
 
@@ -146,31 +113,20 @@ export function StatsCounterSection() {
   return (
     <Section
       ref={sectionRef}
-      className={`p-6 ${THEME_CONSTANTS.sectionBg.cool}`}
+      className="bg-gradient-to-br from-cobalt-900 via-slate-900 to-cobalt-950 py-12 px-4"
     >
-      <div className={`${THEME_CONSTANTS.container["2xl"]} mx-auto`}>
-        {/* Stats grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 divide-y-2 md:divide-y-0 divide-x-0 md:divide-x-0 gap-0 relative">
-          {/* Background decorative band */}
-          <div
-            className="absolute inset-0 rounded-2xl bg-white/60 dark:bg-slate-800/40 shadow-sm border border-zinc-100 dark:border-slate-700/50"
-            aria-hidden
-          />
-
+      <div className="max-w-5xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4">
           {STATS.map((stat, i) => (
-            <div key={stat.valueKey} className="relative flex items-center">
-              <StatItem
-                config={stat}
-                value={t(stat.valueKey as never)}
-                label={t(stat.labelKey as never)}
-                visible={visible}
-                delay={i * 120}
-              />
-              {/* Vertical dividers between items on md+ */}
-              {i < STATS.length - 1 && (
-                <Divider visible={visible} delay={i * 120 + 60} />
-              )}
-            </div>
+            <StatItem
+              key={stat.valueKey}
+              config={stat}
+              value={t(stat.valueKey as never)}
+              label={t(stat.labelKey as never)}
+              visible={visible}
+              delay={i * 120}
+              isLast={i === STATS.length - 1}
+            />
           ))}
         </div>
       </div>

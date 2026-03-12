@@ -125,6 +125,7 @@ export default function LayoutClient({
 
       <Search
         isOpen={searchOpen}
+        onOpen={() => setSearchOpen(true)}
         onClose={() => setSearchOpen(false)}
         onSearch={(query) => {
           setSearchOpen(false);

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Search, Gavel, PackageCheck } from "lucide-react";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { Button, Heading, Section, Span, Text } from "@/components";
+import { Button, Heading, Section, Text } from "@/components";
 import { useRouter } from "@/i18n/navigation";
 
 // ─── Step configuration ───────────────────────────────────────────────────────
@@ -52,78 +52,60 @@ function StepCard({
   desc,
   visible,
   delay,
-  isLast,
 }: {
   step: (typeof STEPS)[number];
   title: string;
   desc: string;
   visible: boolean;
   delay: number;
-  isLast: boolean;
 }) {
   const Icon = ICON_MAP[step.iconName];
 
   return (
-    <div className="relative flex flex-col items-center text-center">
-      {/* Connector arrow between steps (hidden on last) */}
-      {!isLast && (
-        <div
-          className="hidden md:block absolute top-10 left-[calc(50%+3.5rem)] right-0 h-0.5 z-0"
-          aria-hidden
-        >
-          <div
-            className={`h-full bg-gradient-to-r from-zinc-300 to-zinc-200 dark:from-slate-600 dark:to-slate-700
-              transition-all duration-700 origin-left
-              ${visible ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"}`}
-            style={{ transitionDelay: `${delay + 200}ms` }}
-          />
-          {/* Arrow head */}
-          <div
-            className={`absolute right-0 top-1/2 -translate-y-1/2 w-0 h-0
-              border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent
-              border-l-[7px] border-l-zinc-300 dark:border-l-slate-600
-              transition-all duration-300
-              ${visible ? "opacity-100" : "opacity-0"}`}
-            style={{ transitionDelay: `${delay + 350}ms` }}
-          />
-        </div>
-      )}
-
-      {/* Card */}
+    <div
+      className={[
+        "relative rounded-3xl p-8",
+        "bg-white dark:bg-slate-900",
+        "shadow-md group hover:-translate-y-2 hover:shadow-xl",
+        "transition-all duration-300",
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+      ].join(" ")}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {/* Step number watermark (absolute behind content) */}
       <div
-        className={`relative z-10 flex flex-col items-center transition-all duration-700
-          ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-        style={{ transitionDelay: `${delay}ms` }}
+        className="absolute top-4 right-5 font-display text-7xl bg-gradient-to-br from-primary to-cobalt opacity-10 bg-clip-text text-transparent select-none pointer-events-none leading-none"
+        aria-hidden="true"
       >
-        {/* Step number badge */}
-        <div
-          className={`absolute -top-3 -right-3 md:-top-2 md:-right-2 w-7 h-7 rounded-full ${step.badgeBg}
-            flex items-center justify-center shadow-md z-20`}
-        >
-          <Span className="text-white text-xs font-bold">{step.number}</Span>
-        </div>
-
-        {/* Icon */}
-        <div
-          className={`relative w-20 h-20 rounded-2xl ${step.iconBg} flex items-center justify-center
-            shadow-md mb-5 border border-white/80 dark:border-slate-700/50`}
-        >
-          <Icon className={`w-9 h-9 ${step.iconColor}`} strokeWidth={1.75} />
-        </div>
-
-        {/* Text */}
-        <Heading
-          level={3}
-          className={`${THEME_CONSTANTS.typography.h5} ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
-        >
-          {title}
-        </Heading>
-        <Text
-          className={`${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} max-w-[200px] leading-relaxed`}
-        >
-          {desc}
-        </Text>
+        {step.number}
       </div>
+
+      {/* Visible index badge */}
+      <div
+        className={`relative z-10 w-10 h-10 rounded-full ${step.badgeBg} text-white font-bold text-sm flex items-center justify-center mb-5 shadow-md`}
+      >
+        {step.number}
+      </div>
+
+      {/* Icon */}
+      <div
+        className={`relative z-10 w-14 h-14 rounded-2xl ${step.iconBg} flex items-center justify-center mb-4 border border-white/80 dark:border-slate-700/50`}
+      >
+        <Icon className={`w-7 h-7 ${step.iconColor}`} strokeWidth={1.75} />
+      </div>
+
+      {/* Text */}
+      <Heading
+        level={3}
+        className={`relative z-10 ${THEME_CONSTANTS.typography.h5} ${THEME_CONSTANTS.themed.textPrimary} mb-2`}
+      >
+        {title}
+      </Heading>
+      <Text
+        className={`relative z-10 ${THEME_CONSTANTS.typography.small} ${THEME_CONSTANTS.themed.textSecondary} leading-relaxed`}
+      >
+        {desc}
+      </Text>
     </div>
   );
 }
@@ -164,8 +146,9 @@ export function HowItWorksSection() {
             ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
         >
           {/* Pill label */}
-          <div className="inline-flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 shadow-sm">
-            <Span className="w-1.5 h-1.5 rounded-full bg-indigo-500 inline-block" />
+          <div
+            className={`inline-block mb-4 ${THEME_CONSTANTS.sectionHeader.pill}`}
+          >
             {t("howItWorksPill")}
           </div>
 
@@ -183,7 +166,7 @@ export function HowItWorksSection() {
         </div>
 
         {/* Steps */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {STEPS.map((step, i) => (
             <StepCard
               key={step.number}
@@ -192,7 +175,6 @@ export function HowItWorksSection() {
               desc={t(step.descKey as never)}
               visible={visible}
               delay={i * 150}
-              isLast={i === STEPS.length - 1}
             />
           ))}
         </div>

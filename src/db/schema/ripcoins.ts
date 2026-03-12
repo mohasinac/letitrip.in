@@ -42,6 +42,9 @@ export interface RipCoinTransactionDocument {
   productId?: string;
   productTitle?: string;
   bidAmount?: number; // Rupee value of the bid that was placed
+  // Event earn reference (for earn_event transactions)
+  eventId?: string;
+  eventTitle?: string;
   // Admin notes
   notes?: string;
   createdAt: Date;
@@ -58,6 +61,8 @@ export interface RipCoinTransactionDocument {
  * refund      — purchase refunded; coins debited back
  * admin_grant — admin manually credits coins (bonuses, support)
  * admin_deduct — admin manually removes coins
+ * earn_purchase — free coins earned from a store purchase
+ * earn_event   — free coins earned for participating in / winning an event
  */
 export type RipCoinTransactionType =
   | "purchase"
@@ -68,7 +73,8 @@ export type RipCoinTransactionType =
   | "refund"
   | "admin_grant"
   | "admin_deduct"
-  | "earn_purchase";
+  | "earn_purchase"
+  | "earn_event";
 
 export const RIPCOIN_COLLECTION = "ripcoins" as const;
 
@@ -118,7 +124,27 @@ export const RIPCOIN_MAX_PACKS = 1000;
 /** 1 RipCoin = ₹1 of bid value */
 export const RIPCOIN_BID_VALUE_RS = 1;
 
-/** Earn rate: ₹10 spent on a purchase = 1 RipCoin credited */
+/**
+ * Loyalty configuration — controls how RipCoins are earned as rewards.
+ * Stored as siteSettings.loyalty in Firestore (admin-configurable).
+ * Use DEFAULT_LOYALTY_CONFIG when no DB value is present.
+ */
+export interface LoyaltyConfig {
+  /** Master switch — when false no coins are awarded for any earn event */
+  active: boolean;
+  /** ₹ spent per 1 earn coin credited on store purchases (default 10) */
+  rupeePerCoin: number;
+  /** Flat coins awarded when a user submits an eligible event entry (default 5) */
+  eventEntryCoins: number;
+}
+
+export const DEFAULT_LOYALTY_CONFIG: LoyaltyConfig = {
+  active: true,
+  rupeePerCoin: 10,
+  eventEntryCoins: 5,
+};
+
+/** @deprecated Use siteSettingsRepository.getLoyaltyConfig() — kept for legacy imports only */
 export const RIPCOIN_EARN_RATE = 10;
 
 /** Grace period (ms) after auction win before coins are forfeited */
@@ -148,6 +174,7 @@ export const RIPCOIN_SIEVE_FIELDS: FirebaseSieveFields = {
   type: { canFilter: true, canSort: false },
   bidId: { canFilter: true, canSort: false },
   productId: { canFilter: true, canSort: false },
+  eventId: { canFilter: true, canSort: false },
   createdAt: { canFilter: true, canSort: true },
 };
 

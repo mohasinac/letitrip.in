@@ -29,7 +29,7 @@ import {
   userRepository,
   ripcoinRepository,
 } from "@/repositories";
-import { RIPCOIN_EARN_RATE } from "@/db/schema";
+import { calculatePurchaseCoins } from "@/lib/loyalty";
 import { successResponse } from "@/lib/api-response";
 import { ValidationError, NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -270,9 +270,10 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
       unitOfWork.carts.updateInBatch(batch, user!.uid, { items: [] } as any);
     });
 
-    // 10. Credit RipCoins earned from this purchase (1 coin per ₹10 spent)
+    // 10. Credit RipCoins earned from this purchase (loyalty earn rate from DB)
     {
-      const earnedCoins = Math.floor(total / RIPCOIN_EARN_RATE);
+      const loyaltyConfig = await siteSettingsRepository.getLoyaltyConfig();
+      const earnedCoins = calculatePurchaseCoins(total, loyaltyConfig);
       if (earnedCoins > 0) {
         try {
           const userDoc = await userRepository.findById(user!.uid);

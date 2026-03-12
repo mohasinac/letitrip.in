@@ -7,10 +7,17 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { createApiHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
-import { eventRepository, eventEntryRepository } from "@/repositories";
+import {
+  eventRepository,
+  eventEntryRepository,
+  userRepository,
+  ripcoinRepository,
+} from "@/repositories";
+import { siteSettingsRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { NotFoundError, ValidationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
+import { calculateEventCoins } from "@/lib/loyalty";
 
 const enterEventSchema = z.object({
   pollVotes: z.array(z.string()).optional(),
@@ -133,6 +140,38 @@ export const POST = createApiHandler({
       type: event.type,
       userId: user?.uid,
     });
+
+    // Credit earn_event RipCoins for eligible authenticated entries (non-critical)
+    if (user && autoApprove) {
+      try {
+        const loyaltyConfig = await siteSettingsRepository.getLoyaltyConfig();
+        const coinsToCredit = calculateEventCoins(
+          event.coinReward,
+          loyaltyConfig,
+        );
+        if (coinsToCredit > 0) {
+          const userDoc = await userRepository.findById(user.uid);
+          const balanceBefore = userDoc?.ripcoinBalance ?? 0;
+          await userRepository.incrementRipCoinBalance(user.uid, coinsToCredit);
+          await ripcoinRepository.create({
+            userId: user.uid,
+            type: "earn_event",
+            coins: coinsToCredit,
+            balanceBefore,
+            balanceAfter: balanceBefore + coinsToCredit,
+            eventId: id,
+            eventTitle: event.title,
+            notes: `Earned for entering event: ${event.title}`,
+          });
+        }
+      } catch (err) {
+        serverLogger.warn("earn_event coin credit failed (non-critical)", {
+          eventId: id,
+          userId: user.uid,
+          err,
+        });
+      }
+    }
 
     const message =
       event.type === "poll"

@@ -78,14 +78,14 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
   useEffect(() => {
     if (slides.length <= 1 || isPaused || prefersReducedMotion) return;
 
-    const interval = setInterval(goNext, 5000);
+    const interval = setInterval(goNext, 4000);
     return () => clearInterval(interval);
   }, [slides.length, isPaused, prefersReducedMotion, goNext]);
 
   if (isLoading) {
     return (
       <div
-        className={`relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] ${THEME_CONSTANTS.themed.bgTertiary} animate-pulse`}
+        className={`relative w-full min-h-[420px] md:min-h-[560px] lg:min-h-[680px] ${THEME_CONSTANTS.themed.bgTertiary} animate-pulse`}
       >
         <div className={`${position.fill} ${flex.center}`}>
           <Text variant="secondary">{tLoading("default")}</Text>
@@ -133,7 +133,7 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
   return (
     <Section
       ref={sectionRef}
-      className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] overflow-hidden"
+      className="relative w-full min-h-[420px] md:min-h-[560px] lg:min-h-[680px] overflow-hidden"
       aria-roledescription="carousel"
       aria-label={tA11y("heroCarouselAriaLabel")}
       onKeyDown={handleKeyDown}
@@ -196,38 +196,44 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
                 className={`${position.fill} ${flex.center} flex-col text-center px-6 md:px-16 lg:px-32`}
               >
                 {slide.overlay.subtitle && (
-                  <Text className="text-xs md:text-sm !text-white/80 mb-1 md:mb-2 drop-shadow-sm uppercase tracking-widest">
+                  <Text className="stagger-1 text-xs md:text-sm !text-white/80 mb-1 md:mb-2 drop-shadow-sm uppercase tracking-widest">
                     {slide.overlay.subtitle}
                   </Text>
                 )}
                 {slide.overlay.title && (
                   <Heading
                     level={1}
-                    className="text-2xl md:text-5xl lg:text-6xl font-bold !text-white mb-2 md:mb-4 drop-shadow-lg"
+                    className="stagger-2 font-display text-4xl md:text-6xl lg:text-8xl !text-white drop-shadow-2xl mb-2 md:mb-4"
                   >
                     {slide.overlay.title}
                   </Heading>
                 )}
                 {slide.overlay.description && (
-                  <Text className="text-sm md:text-lg lg:text-xl !text-white/90 mb-4 md:mb-8 drop-shadow-sm max-w-2xl mx-auto">
+                  <Text className="stagger-3 text-sm md:text-lg lg:text-xl !text-white/90 mb-4 md:mb-8 drop-shadow-sm max-w-2xl mx-auto">
                     {slide.overlay.description}
                   </Text>
                 )}
                 {slide.overlay.button && (
-                  <Button
-                    variant={slide.overlay.button.variant}
-                    size="sm"
-                    onClick={() => {
-                      const btn = slide.overlay!.button!;
-                      if (btn.openInNewTab) {
-                        window.open(btn.link, "_blank", "noopener,noreferrer");
-                      } else {
-                        router.push(btn.link);
-                      }
-                    }}
-                  >
-                    {slide.overlay.button.text}
-                  </Button>
+                  <div className="stagger-4">
+                    <Button
+                      variant={slide.overlay.button.variant}
+                      size="sm"
+                      onClick={() => {
+                        const btn = slide.overlay!.button!;
+                        if (btn.openInNewTab) {
+                          window.open(
+                            btn.link,
+                            "_blank",
+                            "noopener,noreferrer",
+                          );
+                        } else {
+                          router.push(btn.link);
+                        }
+                      }}
+                    >
+                      {slide.overlay.button.text}
+                    </Button>
+                  </div>
                 )}
               </div>
             ) : (
@@ -367,29 +373,44 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
             <Button
               key={index}
               variant="ghost"
-              className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all p-0 ${
+              className={`relative overflow-hidden rounded-full transition-all duration-500 p-0 ${
                 index === currentSlide
-                  ? "bg-white w-6 md:w-8"
-                  : "bg-white/50 hover:bg-white/75"
+                  ? "w-8 h-2 bg-white"
+                  : "w-2 h-2 bg-white/40 hover:bg-white/75"
               }`}
               onClick={() => goToSlide(index)}
               aria-label={tA11y("heroCarouselGoToSlide", { number: index + 1 })}
-            />
+            >
+              {/* Progress fill on active dot */}
+              {index === currentSlide && (
+                <span
+                  className="absolute inset-y-0 left-0 bg-white/60 rounded-full"
+                  style={{ animation: "progress-fill 4s linear forwards" }}
+                  aria-hidden="true"
+                />
+              )}
+            </Button>
           ))}
         </div>
       )}
+
+      {/* Bottom gradient bleed */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-slate-950 to-transparent pointer-events-none z-[5]"
+        aria-hidden="true"
+      />
 
       {/* Navigation Arrows (desktop only) */}
       {slides.length > 1 && !isMobile && (
         <>
           <Button
             variant="ghost"
-            className={`absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 hover:bg-black/60 dark:hover:bg-black/60 text-white dark:text-white ${flex.center} shadow-lg transition-all z-10 p-0`}
+            className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 p-0 ${THEME_CONSTANTS.carousel.arrow}`}
             onClick={goPrev}
             aria-label={tA11y("heroCarouselPrevSlide")}
           >
             <svg
-              className="w-6 h-6"
+              className="w-5 h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -397,19 +418,19 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
+                strokeWidth={2.5}
                 d="M15 19l-7-7 7-7"
               />
             </svg>
           </Button>
           <Button
             variant="ghost"
-            className={`absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 hover:bg-black/60 dark:hover:bg-black/60 text-white dark:text-white ${flex.center} shadow-lg transition-all z-10 p-0`}
+            className={`absolute right-4 top-1/2 -translate-y-1/2 z-10 p-0 ${THEME_CONSTANTS.carousel.arrow}`}
             onClick={goNext}
             aria-label={tA11y("heroCarouselNextSlide")}
           >
             <svg
-              className="w-6 h-6"
+              className="w-5 h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -417,7 +438,7 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
+                strokeWidth={2.5}
                 d="M9 5l7 7-7 7"
               />
             </svg>

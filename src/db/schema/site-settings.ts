@@ -127,7 +127,12 @@ export interface SiteSettingsDocument {
    * Values are encrypted blobs — never return raw to the client.
    * Empty / undefined means "fall back to environment variable".
    */
-  credentials?: SiteSettingsCredentials;
+  credentials?: SiteSettingsCredentials; /**
+   * Loyalty / RipCoin earn configuration.
+   * Controls earn rates for purchases and events.
+   * Falls back to DEFAULT_LOYALTY_CONFIG when not set.
+   */
+  loyalty?: import("./ripcoins").LoyaltyConfig;
   createdAt: Date;
   updatedAt: Date;
 }

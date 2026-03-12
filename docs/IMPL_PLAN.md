@@ -514,7 +514,7 @@ npm run build
 
 ---
 
-## Sprint 3 — Hero Sequences + Carousels
+## Sprint 3 — Hero Sequences + Carousels ✅ COMPLETE
 
 ---
 
@@ -618,7 +618,7 @@ Add `variant` prop (`"strip" | "cards"`, default `"cards"`):
 
 Below the header strip, add an inline `<Search>` component in inline mode (`deferred=false`). On submit, navigate to `/search?q=...` and call `onClose()`.
 
-**Build gate — Sprint 3:**
+**Build gate — Sprint 3:** ✅ `npx tsc --noEmit` → 0 errors · `npm run build` → 0 errors
 
 ```powershell
 npx tsc --noEmit

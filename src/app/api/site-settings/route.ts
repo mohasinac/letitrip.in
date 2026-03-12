@@ -25,6 +25,7 @@ import { serverLogger } from "@/lib/server-logger";
 import { sendSiteSettingsChangedEmail } from "@/lib/email";
 import { SCHEMA_DEFAULTS } from "@/db/schema";
 import { createApiHandler } from "@/lib/api/api-handler";
+import { invalidateIntegrationKeysCache } from "@/lib/integration-keys";
 
 /**
  * GET /api/site-settings
@@ -125,6 +126,10 @@ export const PATCH = createApiHandler<
   handler: async ({ user, body }) => {
     // Update settings in repository (singleton pattern)
     const updatedSettings = await siteSettingsRepository.updateSingleton(body!);
+
+    // Invalidate the integration-keys in-process cache so Razorpay/Resend/etc.
+    // pick up rotated credentials on the very next request.
+    invalidateIntegrationKeysCache();
 
     // Audit log — record which admin changed what fields
     serverLogger.info(ERROR_MESSAGES.API.SITE_SETTINGS_AUDIT_LOG, {

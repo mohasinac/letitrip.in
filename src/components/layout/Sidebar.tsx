@@ -19,6 +19,7 @@ import {
   Li,
   LocaleSwitcher,
   Nav,
+  Search,
   Span,
   Text,
   TextLink,
@@ -68,6 +69,7 @@ export default function Sidebar({
   const sidebarRef = useRef<HTMLElement>(null);
   const tNav = useTranslations("nav");
   const tA = useTranslations("accessibility");
+  const [sidebarQuery, setSidebarQuery] = useState("");
   const [supportOpen, setSupportOpen] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(true);
   const logoutMutation = useLogout();
@@ -250,6 +252,21 @@ export default function Sidebar({
         )
       }
     >
+      {/* Inline search */}
+      <div className="px-1 pb-4">
+        <Search
+          value={sidebarQuery}
+          onChange={setSidebarQuery}
+          deferred={false}
+          onSearch={(q) => {
+            const trimmed = q.trim();
+            if (trimmed)
+              router.push(`/search?q=${encodeURIComponent(trimmed)}`);
+            onClose();
+          }}
+        />
+      </div>
+
       <Nav aria-label={tA("sidebarLinks")} className="space-y-6">
         {/* User Profile Actions - Only shown when logged in */}
         {isAuthenticated && (

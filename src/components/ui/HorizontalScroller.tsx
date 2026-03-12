@@ -62,22 +62,14 @@ function ArrowButton({
         aria-label={direction === "left" ? "Scroll left" : "Scroll right"}
         className={[
           `${flex.noShrink} self-stretch`,
-          `${flex.center}`,
-          "w-12 min-h-[3rem]",
-          "rounded-xl",
-          "border-2",
-          themed.border,
-          "bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm",
-          disabled
-            ? "opacity-30 cursor-not-allowed"
-            : "hover:bg-white dark:hover:bg-slate-800 hover:shadow-md active:scale-95 cursor-pointer",
-          "transition-all duration-200",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
+          THEME_CONSTANTS.carousel.arrow,
+          disabled ? "opacity-30 cursor-not-allowed" : "cursor-pointer",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
         ].join(" ")}
       >
         <svg
-          width="22"
-          height="22"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"

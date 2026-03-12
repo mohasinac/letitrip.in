@@ -3,13 +3,26 @@
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useHomepageSections } from "@/hooks";
-import { THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { Button, Heading, Section, Text } from "@/components";
-import { proseMirrorToHtml } from "@/utils";
-import type {
-  HomepageSectionDocument,
-  WelcomeSectionConfig,
-} from "@/db/schema";
+import type { WelcomeSectionConfig } from "@/db/schema";
+
+// ─── Trust chip keys (order matters for display) ────────────────────────────
+const TRUST_CHIP_KEYS = [
+  "welcomeTrustDelivery",
+  "welcomeTrustPayment",
+  "welcomeTrustRating",
+  "welcomeTrustReturns",
+] as const;
+
+const TRUST_CHIP_EMOJIS: Record<(typeof TRUST_CHIP_KEYS)[number], string> = {
+  welcomeTrustDelivery: "🚀",
+  welcomeTrustPayment: "🔒",
+  welcomeTrustRating: "⭐",
+  welcomeTrustReturns: "↩️",
+};
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 export function WelcomeSection() {
   const t = useTranslations("homepage");
@@ -18,85 +31,118 @@ export function WelcomeSection() {
 
   if (isLoading) {
     return (
-      <Section className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}>
-        <div className="w-full text-center">
-          <div className="animate-pulse">
-            <div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-lg mb-4 max-w-3xl mx-auto" />
-            <div
-              className={`h-6 bg-zinc-200 dark:bg-slate-700 rounded-lg mb-8 ${THEME_CONSTANTS.container["2xl"]} mx-auto`}
-            />
-            <div className="h-24 bg-zinc-200 dark:bg-slate-700 rounded-lg max-w-4xl mx-auto" />
+      <Section className="relative overflow-hidden py-16 md:py-24 px-4">
+        <div className="animate-pulse max-w-4xl mx-auto text-center">
+          <div className="h-6 bg-zinc-200 dark:bg-slate-700 rounded-full w-52 mx-auto mb-6" />
+          <div className="h-20 bg-zinc-200 dark:bg-slate-700 rounded-lg mb-4 max-w-2xl mx-auto" />
+          <div className="h-6 bg-zinc-200 dark:bg-slate-700 rounded-lg mb-8 max-w-lg mx-auto" />
+          <div className="flex justify-center gap-4">
+            <div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-xl w-36" />
+            <div className="h-12 bg-zinc-200 dark:bg-slate-700 rounded-xl w-36" />
           </div>
         </div>
       </Section>
     );
   }
 
-  if (!data?.[0]) {
-    return (
-      <Section className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}>
-        <div className="w-full text-center">
-          <Heading
-            level={1}
-            className={`${THEME_CONSTANTS.typography.h1} ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
-          >
-            {t("heroTitle")}
-          </Heading>
-          <Text
-            className={`${THEME_CONSTANTS.typography.body} text-lg ${THEME_CONSTANTS.themed.textSecondary}`}
-          >
-            {t("heroSubtitle")}
-          </Text>
-        </div>
-      </Section>
-    );
-  }
-
-  const section = data[0];
-  const config = section.config as WelcomeSectionConfig;
+  const config = data?.[0]?.config as WelcomeSectionConfig | undefined;
+  const h1 = config?.h1 ?? t("heroTitle");
+  const subtitle = config?.subtitle ?? t("heroSubtitle");
+  const showCTA = config?.showCTA ?? true;
+  const ctaText = config?.ctaText ?? t("shopNow");
+  const ctaLink = config?.ctaLink ?? ROUTES.PUBLIC.PRODUCTS;
 
   return (
-    <Section className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}>
-      <div className="w-full text-center">
-        {/* H1 Heading */}
-        <Heading
-          level={1}
-          className={`${THEME_CONSTANTS.typography.h1} ${THEME_CONSTANTS.themed.textPrimary} mb-4`}
-        >
-          {config.h1}
-        </Heading>
+    <Section className="relative overflow-hidden py-16 md:py-24 px-4">
+      {/* Decorative rings (LX-2 — Beyblade flavour) */}
+      <div
+        className="pointer-events-none absolute -top-24 -left-24 w-96 h-96 rounded-full border border-dashed border-primary/10 animate-spin"
+        style={{ animationDuration: "60s" }}
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute -bottom-32 -right-32 w-[32rem] h-[32rem] rounded-full border border-dashed border-cobalt/10 animate-spin"
+        style={{ animationDuration: "80s", animationDirection: "reverse" }}
+        aria-hidden="true"
+      />
 
-        {/* Subtitle */}
-        {config.subtitle && (
-          <Text
-            className={`${THEME_CONSTANTS.typography.body} text-lg ${THEME_CONSTANTS.themed.textSecondary} mb-8`}
-          >
-            {config.subtitle}
-          </Text>
-        )}
+      <div className="relative z-10 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left: text content */}
+          <div className="text-center lg:text-left">
+            {/* Pill badge */}
+            <div className="stagger-1">
+              <span className={THEME_CONSTANTS.sectionHeader.pill}>
+                <span
+                  className="w-1.5 h-1.5 rounded-full bg-primary-500 inline-block"
+                  aria-hidden="true"
+                />
+                {t("welcomePill")}
+                <span
+                  className="w-1.5 h-1.5 rounded-full bg-primary-500 inline-block"
+                  aria-hidden="true"
+                />
+              </span>
+            </div>
 
-        {/* Rich Text Description */}
-        {config.description && (
-          <div
-            className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} max-w-4xl mx-auto mb-8 prose prose-lg dark:prose-invert`}
-            dangerouslySetInnerHTML={{
-              __html: proseMirrorToHtml(config.description),
-            }}
-          />
-        )}
-
-        {/* CTA Button */}
-        {config.showCTA && config.ctaText && config.ctaLink && (
-          <div className="flex justify-center">
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => router.push(config.ctaLink!)}
+            {/* H1 */}
+            <Heading
+              level={1}
+              className="stagger-2 mt-4 font-display text-5xl md:text-7xl lg:text-8xl bg-gradient-to-r from-primary via-cobalt to-secondary bg-clip-text text-transparent leading-tight"
             >
-              {config.ctaText}
-            </Button>
+              {h1}
+            </Heading>
+
+            {/* Subtitle */}
+            <Text className="stagger-3 mt-4 text-xl text-zinc-500 dark:text-zinc-400 max-w-xl leading-relaxed mx-auto lg:mx-0">
+              {subtitle}
+            </Text>
+
+            {/* Dual CTA */}
+            {showCTA && (
+              <div className="stagger-4 mt-8 flex flex-wrap gap-4 justify-center lg:justify-start">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={() => router.push(ctaLink)}
+                >
+                  {ctaText}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => router.push(ROUTES.PUBLIC.PRODUCTS)}
+                >
+                  {t("welcomeSecondaryCta")}
+                </Button>
+              </div>
+            )}
+
+            {/* Trust chips */}
+            <div className="stagger-5 mt-6 flex flex-wrap gap-2 justify-center lg:justify-start">
+              {TRUST_CHIP_KEYS.map((key) => (
+                <span
+                  key={key}
+                  className="bg-zinc-100 dark:bg-slate-800 rounded-full px-3 py-1 text-xs text-zinc-600 dark:text-zinc-400"
+                >
+                  {TRUST_CHIP_EMOJIS[key]} {t(key)}
+                </span>
+              ))}
+            </div>
           </div>
-        )}
+
+          {/* Right: gradient placeholder (desktop only) */}
+          <div className="hidden lg:block">
+            <div className="relative rounded-3xl overflow-hidden aspect-[4/3] bg-gradient-to-br from-primary/10 via-cobalt/10 to-secondary/10 border border-zinc-200 dark:border-slate-700">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-cobalt/5" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="font-display text-8xl text-primary/20 select-none">
+                  LIR
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </Section>
   );

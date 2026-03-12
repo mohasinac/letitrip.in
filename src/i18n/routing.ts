@@ -14,17 +14,9 @@
 import { defineRouting } from "next-intl/routing";
 
 export const routing = defineRouting({
-  /** Supported locales — en (English), in (Hindi), mh (Marathi), ts (Telugu), tn (Tamil) */
-  locales: ["en", "in", "mh", "ts", "tn"] as const,
-
-  /** Default locale — English pages have no URL prefix */
+  locales: ["en"] as const,
   defaultLocale: "en",
-
-  /**
-   * 'as-needed': default locale (/en) has no prefix, others (/hi) have prefix.
-   * Change to 'always' to force all locales to show a prefix (e.g. /en/products).
-   */
-  localePrefix: "as-needed",
+  localePrefix: "never",
 });
 
 export type Locale = (typeof routing.locales)[number];

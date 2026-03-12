@@ -72,6 +72,8 @@ interface SearchProps {
   isOpen?: boolean;
   onClose?: () => void;
   onSearch?: (query: string) => void;
+  /** Called when the search overlay should open (used for Cmd+K shortcut). */
+  onOpen?: () => void;
   // ── Inline mode (activated when `value` is provided) ────────────────────────
   /** Controlled value from `useUrlTable`. Providing this enables inline mode. */
   value?: string;
@@ -94,6 +96,7 @@ export default function Search({
   isOpen,
   onClose,
   onSearch,
+  onOpen,
   value,
   onChange,
   placeholder,
@@ -109,6 +112,19 @@ export default function Search({
   const [query, setQuery] = useState(isInlineMode ? value : "");
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ── Global Cmd+K / Ctrl+K to open overlay ────────────────────────────────
+  useEffect(() => {
+    if (isInlineMode || !onOpen) return;
+    const handleCmdK = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        onOpen();
+      }
+    };
+    document.addEventListener("keydown", handleCmdK);
+    return () => document.removeEventListener("keydown", handleCmdK);
+  }, [isInlineMode, onOpen]);
 
   // ── Overlay: auto-focus ──────────────────────────────────────────────────────
   useEffect(() => {
