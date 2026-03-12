@@ -356,7 +356,9 @@ npm run build
 
 ---
 
-## Sprint 2 — Cards + Product Page Micro-UX
+## Sprint 2 — Cards + Product Page Micro-UX ✅ COMPLETE
+
+> **Status:** Complete. Build gate passed: `npx tsc --noEmit` ✅ · `npm run build` ✅ (99/99 pages)
 
 **Goal:** The highest-ROI visual changes: every card becomes premium; key product page quick-wins land.
 

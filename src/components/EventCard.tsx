@@ -18,6 +18,7 @@ import {
   TextLink,
 } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
+import { formatDate } from "@/utils";
 import type { EventType, EventDocument } from "@/db/schema";
 
 const { themed, flex, position } = THEME_CONSTANTS;
@@ -56,6 +57,8 @@ interface EventCardProps {
   selected?: boolean;
   /** Callback when checkbox is toggled */
   onSelect?: (id: string, checked: boolean) => void;
+  /** "standard" = regular card layout. "overlay" = magazine with text over image. */
+  variant?: "standard" | "overlay";
 }
 
 export function EventCard({
@@ -63,6 +66,7 @@ export function EventCard({
   selectable,
   selected,
   onSelect,
+  variant = "standard",
 }: EventCardProps) {
   const t = useTranslations("events");
   const tTypes = useTranslations("eventTypes");
@@ -121,60 +125,95 @@ export function EventCard({
           </div>
         )}
 
-        {/* Type badge — top right */}
-        <div className="absolute top-2 right-2 z-10">
+        {/* Type / category badge */}
+        <div
+          className={`absolute z-10 ${variant === "overlay" ? "top-3 left-3" : "top-2 right-2"}`}
+        >
           <Span
-            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${typeConfig.className}`}
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
+              variant === "overlay"
+                ? "bg-black/40 backdrop-blur-sm text-white"
+                : typeConfig.className
+            }`}
           >
             <TypeIcon className="w-3 h-3 flex-shrink-0" />
             {tTypes(event.type)}
           </Span>
         </div>
 
-        {/* Status badge — bottom left */}
-        <div className="absolute bottom-2 left-2 z-10">
-          <Span
-            className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium capitalize ${
-              event.status === "active"
-                ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
-                : event.status === "ended"
-                  ? "bg-zinc-100 text-zinc-600 dark:bg-slate-700 dark:text-zinc-300"
-                  : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300"
-            }`}
-          >
-            {event.status}
-          </Span>
-        </div>
-      </div>
-
-      {/* ── Content ── */}
-      <div className="flex flex-col flex-1 p-4 gap-2">
-        {/* Event title */}
-        <TextLink href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}>
-          <Heading
-            level={3}
-            className={`text-base sm:text-[17px] font-semibold leading-snug ${themed.textPrimary} line-clamp-2 hover:text-primary-600 dark:hover:text-primary-400 transition-colors`}
-          >
-            {event.title}
-          </Heading>
-        </TextLink>
-
-        {plainDescription && (
-          <Text size="sm" variant="secondary" className="line-clamp-3 flex-1">
-            {plainDescription}
-          </Text>
+        {/* Date badge (overlay variant only) */}
+        {variant === "overlay" && (
+          <div className="absolute top-3 right-3 z-10">
+            <Span className="bg-white dark:bg-slate-900 text-zinc-700 dark:text-zinc-300 text-xs rounded-lg px-2 py-1 shadow-sm">
+              {formatDate(event.startsAt, "short")}
+            </Span>
+          </div>
         )}
 
-        {/* Visit button */}
-        <div className="mt-auto pt-2">
+        {/* Title overlay (overlay variant only) */}
+        {variant === "overlay" && (
           <TextLink
             href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}
-            className="inline-flex w-full items-center justify-center px-4 py-2 rounded-xl bg-primary-500 hover:bg-primary-600 active:scale-95 text-white text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            variant="bare"
+            className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-4 pt-16 z-10"
           >
-            {t("visitEvent")}
+            <Heading
+              level={3}
+              className="font-display text-base sm:text-lg text-white leading-snug line-clamp-2"
+            >
+              {event.title}
+            </Heading>
           </TextLink>
-        </div>
+        )}
+
+        {/* Status badge — bottom left (standard variant only) */}
+        {variant === "standard" && (
+          <div className="absolute bottom-2 left-2 z-10">
+            <Span
+              className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium capitalize ${
+                event.status === "active"
+                  ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
+                  : event.status === "ended"
+                    ? "bg-zinc-100 text-zinc-600 dark:bg-slate-700 dark:text-zinc-300"
+                    : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300"
+              }`}
+            >
+              {event.status}
+            </Span>
+          </div>
+        )}
       </div>
+
+      {/* ── Content (standard variant only) ── */}
+      {variant === "standard" && (
+        <div className="flex flex-col flex-1 p-4 gap-2">
+          {/* Event title */}
+          <TextLink href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}>
+            <Heading
+              level={3}
+              className={`text-base sm:text-[17px] font-semibold leading-snug ${themed.textPrimary} line-clamp-2 hover:text-primary-600 dark:hover:text-primary-400 transition-colors`}
+            >
+              {event.title}
+            </Heading>
+          </TextLink>
+
+          {plainDescription && (
+            <Text size="sm" variant="secondary" className="line-clamp-3 flex-1">
+              {plainDescription}
+            </Text>
+          )}
+
+          {/* Visit button */}
+          <div className="mt-auto pt-2">
+            <TextLink
+              href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}
+              className="inline-flex w-full items-center justify-center px-4 py-2 rounded-xl bg-primary-500 hover:bg-primary-600 active:scale-95 text-white text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            >
+              {t("visitEvent")}
+            </TextLink>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }

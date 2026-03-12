@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — feat(s2): cards + product page micro-UX phase 2 enhancements
+
+### Changed — Sprint 2 (Cards + Product Page Micro-UX) — Phase 2 pass
+
+**S2-3 StoreCard full redesign**
+
+- `src/components/StoreCard.tsx` — `group` hover orchestration on root `TextLink`; full-bleed banner using `aspect-[2/1]` with `from-primary-400 via-cobalt-500 to-secondary-400` gradient placeholder; slide-up "Visit Store →" overlay at bottom (`translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/80`); verified badge with `CheckBadgeIcon` (cobalt) on avatar ring corner; product count + star rating stat row via `ShoppingBag` + `Star` icon; selection checkbox preserved in top-left
+
+**S2-4 EventCard + BlogCard overlay variant — enhanced**
+
+- `src/components/EventCard.tsx` — `variant="overlay"` : image scales `group-hover:scale-105 transition-transform duration-500`; event type chip `absolute top-3 left-3 bg-black/40 backdrop-blur`; date badge `absolute top-3 right-3 bg-white dark:bg-slate-900 rounded-lg shadow-sm`; title as `absolute bottom-0 bg-gradient-to-t from-black/80 to-transparent font-display px-4 pb-4 pt-16 text-white`; `"standard"` variant retains previous card layout; `selectable` checkbox always visible in both variants
+- `src/components/BlogCard.tsx` — `variant="overlay"` : `aspect-video` (16:9) thumbnail; overlay gradient title with `font-display text-white`; category chip + date badge at corners; `"standard"` variant uses `group-hover:text-primary` on title heading
+
+**S2-5 ReviewCard redesign — enhanced**
+
+- `src/components/ReviewCard.tsx` — `Quote` icon (`h-8 w-8 text-primary-500/10`) at top of card; star rating row moved above the body text; `<div className="bg-primary/30 my-5 h-px w-full" />` accent divider; reviewer row with initials avatar + name as profile `TextLink` + "Verified" chip (`bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 text-xs rounded-full px-2`); review images lightbox preserved; `hover:shadow-xl hover:-translate-y-1 transition-all duration-300` on Card
+
+**S2-7 ProductImageGallery zoom hint — enhanced**
+
+- `src/features/products/components/ProductImageGallery.tsx` — main image wrapper adds `cursor-zoom-in`; `ZoomIn` icon (`h-6 w-6 text-white`) centered over image as `opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none` overlay; active thumbnail uses `border-2 border-primary rounded-xl` ring
+
+**FlowDiagram export**
+
+- `src/components/ui/index.ts` — exports `FlowDiagram` and `FlowStep` type for use in page files
+- `src/app/[locale]/ripcoins/page.tsx`, `src/app/[locale]/how-auctions-work/page.tsx`, `src/app/[locale]/how-pre-orders-work/page.tsx`, `src/app/[locale]/shipping-policy/page.tsx`, `src/app/[locale]/seller-guide/page.tsx`, `src/app/[locale]/refund-policy/page.tsx` — migrated step/flow sections to use `FlowDiagram` component
+
+**Build gate — Sprint 2 (phase 2):** `npx tsc --noEmit` ✅ · `npm run build` ✅ (99/99 pages)
+
+---
+
 ## [Unreleased] — feat: seller coupons, RipCoins system, new info pages, package rename @lir→@mohasinac, eslint plugin
 
 ### Added

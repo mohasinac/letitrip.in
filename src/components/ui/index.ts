@@ -43,6 +43,8 @@ export {
 export { default as ImageGallery } from "./ImageGallery";
 export type { GalleryImage } from "./ImageGallery";
 export { default as SideDrawer } from "./SideDrawer";
+export { FlowDiagram } from "./FlowDiagram";
+export type { FlowStep, FlowDiagramProps } from "./FlowDiagram";
 
 // Phase 2: Shared UI Primitives
 export { FilterFacetSection } from "./FilterFacetSection";

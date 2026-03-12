@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
-import { Heading, Text, Section, TextLink, Span } from "@/components";
+import { Heading, Text, Section, TextLink, FlowDiagram } from "@/components";
+import type { FlowStep } from "@/components";
 import { getTranslations } from "next-intl/server";
 
 export const revalidate = 3600;
 
-const { themed, flex, page } = THEME_CONSTANTS;
+const { themed, page } = THEME_CONSTANTS;
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("shippingPolicy");
@@ -29,6 +30,54 @@ export default async function ShippingPolicyPage() {
     { title: t("damagedTitle"), text: t("damagedText") },
   ];
 
+  const DIAGRAM_STEPS: FlowStep[] = [
+    {
+      emoji: "✅",
+      circleClass:
+        "bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-300 dark:border-indigo-600",
+      badge: t("diagramStatus1"),
+      badgeClass:
+        "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300",
+      desc: t("diagramStatus1Desc"),
+    },
+    {
+      emoji: "📦",
+      circleClass:
+        "bg-amber-100 dark:bg-amber-900/40 border-2 border-amber-300 dark:border-amber-600",
+      badge: t("diagramStatus2"),
+      badgeClass:
+        "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300",
+      desc: t("diagramStatus2Desc"),
+    },
+    {
+      emoji: "🚀",
+      circleClass:
+        "bg-sky-100 dark:bg-sky-900/40 border-2 border-sky-300 dark:border-sky-600",
+      badge: t("diagramStatus3"),
+      badgeClass:
+        "bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300",
+      desc: t("diagramStatus3Desc"),
+    },
+    {
+      emoji: "🚚",
+      circleClass:
+        "bg-violet-100 dark:bg-violet-900/40 border-2 border-violet-300 dark:border-violet-600",
+      badge: t("diagramStatus4"),
+      badgeClass:
+        "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300",
+      desc: t("diagramStatus4Desc"),
+    },
+    {
+      emoji: "🏠",
+      circleClass:
+        "bg-emerald-100 dark:bg-emerald-900/40 border-2 border-emerald-400 dark:border-emerald-600",
+      badge: t("diagramStatus5"),
+      badgeClass:
+        "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300",
+      desc: t("diagramStatus5Desc"),
+    },
+  ];
+
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}
@@ -47,94 +96,14 @@ export default async function ShippingPolicyPage() {
         </Text>
 
         {/* ── Order Delivery Diagram ── */}
-        <div
-          className={`mb-10 rounded-2xl border ${themed.border} overflow-hidden`}
-        >
-          <div
-            className={`${themed.bgSecondary} px-5 py-3 border-b ${themed.border}`}
-          >
-            <Text
-              weight="semibold"
-              size="sm"
-              className="text-sky-700 dark:text-sky-300"
-            >
-              🚚 {t("diagramTitle")}
-            </Text>
-          </div>
-          <div className={`${themed.bgPrimary} p-5`}>
-            <div className="flex items-start overflow-x-auto pb-3 gap-1.5 scroll-smooth">
-              {/* 1 Order Placed */}
-              <div className="shrink-0 flex flex-col items-center text-center gap-1 w-[86px]">
-                <div className="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-300 dark:border-indigo-600 flex items-center justify-center text-xl">
-                  ✅
-                </div>
-                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
-                  {t("diagramStatus1")}
-                </Span>
-                <Text size="xs" variant="secondary" className="leading-tight">
-                  {t("diagramStatus1Desc")}
-                </Text>
-              </div>
-              <div className="shrink-0 self-start h-0.5 w-5 bg-sky-200 dark:bg-sky-800 mt-6" />
-              {/* 2 Seller Preparing */}
-              <div className="shrink-0 flex flex-col items-center text-center gap-1 w-[86px]">
-                <div className="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/40 border-2 border-amber-300 dark:border-amber-600 flex items-center justify-center text-xl">
-                  📦
-                </div>
-                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
-                  {t("diagramStatus2")}
-                </Span>
-                <Text size="xs" variant="secondary" className="leading-tight">
-                  {t("diagramStatus2Desc")}
-                </Text>
-              </div>
-              <div className="shrink-0 self-start h-0.5 w-5 bg-sky-200 dark:bg-sky-800 mt-6" />
-              {/* 3 Dispatched */}
-              <div className="shrink-0 flex flex-col items-center text-center gap-1 w-[86px]">
-                <div className="w-12 h-12 rounded-full bg-sky-100 dark:bg-sky-900/40 border-2 border-sky-300 dark:border-sky-600 flex items-center justify-center text-xl">
-                  🚀
-                </div>
-                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300">
-                  {t("diagramStatus3")}
-                </Span>
-                <Text size="xs" variant="secondary" className="leading-tight">
-                  {t("diagramStatus3Desc")}
-                </Text>
-              </div>
-              <div className="shrink-0 self-start h-0.5 w-5 bg-sky-200 dark:bg-sky-800 mt-6" />
-              {/* 4 In Transit */}
-              <div className="shrink-0 flex flex-col items-center text-center gap-1 w-[86px]">
-                <div className="w-12 h-12 rounded-full bg-violet-100 dark:bg-violet-900/40 border-2 border-violet-300 dark:border-violet-600 flex items-center justify-center text-xl">
-                  🚚
-                </div>
-                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300">
-                  {t("diagramStatus4")}
-                </Span>
-                <Text size="xs" variant="secondary" className="leading-tight">
-                  {t("diagramStatus4Desc")}
-                </Text>
-              </div>
-              <div className="shrink-0 self-start h-0.5 w-5 bg-sky-200 dark:bg-sky-800 mt-6" />
-              {/* 5 Delivered */}
-              <div className="shrink-0 flex flex-col items-center text-center gap-1 w-[86px]">
-                <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 border-2 border-emerald-400 dark:border-emerald-600 flex items-center justify-center text-xl">
-                  🏠
-                </div>
-                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
-                  {t("diagramStatus5")}
-                </Span>
-                <Text size="xs" variant="secondary" className="leading-tight">
-                  {t("diagramStatus5Desc")}
-                </Text>
-              </div>
-            </div>
-            <div className="mt-3 pt-3 border-t border-dashed border-slate-200 dark:border-slate-700">
-              <Text size="xs" variant="secondary">
-                📌 {t("diagramNote")}
-              </Text>
-            </div>
-          </div>
-        </div>
+        <FlowDiagram
+          title={`🚚 ${t("diagramTitle")}`}
+          titleClass="text-sky-700 dark:text-sky-300"
+          connectorClass="bg-sky-200 dark:bg-sky-800"
+          steps={DIAGRAM_STEPS}
+          className="mb-10"
+          note={`📌 ${t("diagramNote")}`}
+        />
 
         <div className="space-y-8">
           {SECTIONS.map(({ title, text }) => (

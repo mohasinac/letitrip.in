@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
-import { Heading, Text, Section, TextLink, Span } from "@/components";
+import {
+  Heading,
+  Text,
+  Section,
+  TextLink,
+  Span,
+  FlowDiagram,
+} from "@/components";
+import type { FlowStep } from "@/components";
 import { getTranslations } from "next-intl/server";
 import { RIPCOIN_PACKAGES } from "@/db/schema";
 
@@ -55,6 +63,45 @@ export default async function RipCoinsInfoPage() {
     },
   ];
 
+  const FLOW_STEPS: FlowStep[] = [
+    {
+      emoji: "💳",
+      circleClass:
+        "bg-violet-100 dark:bg-violet-900/40 border-2 border-violet-400 dark:border-violet-600",
+      badge: t("diagramBuy"),
+      badgeClass:
+        "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300",
+      desc: t("diagramBuyDesc"),
+    },
+    {
+      emoji: "🪙",
+      circleClass:
+        "bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-400 dark:border-indigo-600",
+      badge: t("diagramAvailable"),
+      badgeClass:
+        "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300",
+      desc: t("diagramAvailableDesc"),
+    },
+    {
+      emoji: "🔨",
+      circleClass:
+        "bg-amber-100 dark:bg-amber-900/40 border-2 border-amber-400 dark:border-amber-600",
+      badge: t("diagramBid"),
+      badgeClass:
+        "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300",
+      desc: t("diagramBidDesc"),
+    },
+    {
+      emoji: "🔒",
+      circleClass:
+        "bg-slate-100 dark:bg-slate-800 border-2 border-slate-400 dark:border-slate-500",
+      badge: t("diagramLocked"),
+      badgeClass:
+        "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300",
+      desc: t("diagramLockedDesc"),
+    },
+  ];
+
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}
@@ -92,12 +139,12 @@ export default async function RipCoinsInfoPage() {
               {t("valueText")}
             </Text>
             <div className="mt-4 flex flex-wrap gap-3 text-sm font-semibold">
-              <span className="px-3 py-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
+              <Span className="px-3 py-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
                 10 RC = ₹1 purchased
-              </span>
-              <span className="px-3 py-1.5 rounded-lg bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300">
+              </Span>
+              <Span className="px-3 py-1.5 rounded-lg bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300">
                 1 RC = ₹1 bid value
-              </span>
+              </Span>
             </div>
           </Section>
         </div>
@@ -120,9 +167,9 @@ export default async function RipCoinsInfoPage() {
                   {pkg.totalCoins.toLocaleString("en-IN")} RC
                 </Heading>
                 {pkg.bonusPct > 0 && (
-                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400">
+                  <Span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400">
                     +{pkg.bonusPct}% {t("bonusLabel")}
-                  </span>
+                  </Span>
                 )}
               </div>
               <Text className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
@@ -146,119 +193,61 @@ export default async function RipCoinsInfoPage() {
         </div>
 
         {/* ── RipCoins Lifecycle Diagram ── */}
-        <div
-          className={`mb-10 rounded-2xl border ${themed.border} overflow-hidden`}
+        <FlowDiagram
+          title={`🪙 ${t("diagramTitle")}`}
+          titleClass="text-violet-700 dark:text-violet-300"
+          connectorClass="bg-violet-200 dark:bg-violet-800"
+          steps={FLOW_STEPS}
+          centered
+          className="mb-10"
         >
-          <div
-            className={`${themed.bgSecondary} px-5 py-3 border-b ${themed.border}`}
-          >
-            <Text
-              weight="semibold"
-              size="sm"
-              className="text-violet-700 dark:text-violet-300"
-            >
-              🪙 {t("diagramTitle")}
-            </Text>
+          {/* Arrow down */}
+          <div className="flex justify-center mb-3">
+            <div className="text-slate-400 text-lg">⬇️</div>
           </div>
-          <div className={`${themed.bgPrimary} p-5`}>
-            {/* Top linear flow */}
-            <div className="flex justify-center items-start gap-1.5 mb-4">
-              <div className="flex flex-col items-center text-center gap-1 w-[86px]">
-                <div className="w-12 h-12 rounded-full bg-violet-100 dark:bg-violet-900/40 border-2 border-violet-400 dark:border-violet-600 flex items-center justify-center text-xl">
-                  💳
-                </div>
-                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300">
-                  {t("diagramBuy")}
-                </Span>
-                <Text size="xs" variant="secondary" className="leading-tight">
-                  {t("diagramBuyDesc")}
-                </Text>
-              </div>
-              <div className="shrink-0 self-start h-0.5 w-5 bg-violet-200 dark:bg-violet-800 mt-6" />
-              <div className="flex flex-col items-center text-center gap-1 w-[86px]">
-                <div className="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-400 dark:border-indigo-600 flex items-center justify-center text-xl">
-                  🪙
-                </div>
-                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
-                  {t("diagramAvailable")}
-                </Span>
-                <Text size="xs" variant="secondary" className="leading-tight">
-                  {t("diagramAvailableDesc")}
-                </Text>
-              </div>
-              <div className="shrink-0 self-start h-0.5 w-5 bg-violet-200 dark:bg-violet-800 mt-6" />
-              <div className="flex flex-col items-center text-center gap-1 w-[86px]">
-                <div className="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/40 border-2 border-amber-400 dark:border-amber-600 flex items-center justify-center text-xl">
-                  🔨
-                </div>
-                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
-                  {t("diagramBid")}
-                </Span>
-                <Text size="xs" variant="secondary" className="leading-tight">
-                  {t("diagramBidDesc")}
-                </Text>
-              </div>
-              <div className="shrink-0 self-start h-0.5 w-5 bg-violet-200 dark:bg-violet-800 mt-6" />
-              <div className="flex flex-col items-center text-center gap-1 w-[86px]">
-                <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-slate-400 dark:border-slate-500 flex items-center justify-center text-xl">
-                  🔒
-                </div>
-                <Span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                  {t("diagramLocked")}
-                </Span>
-                <Text size="xs" variant="secondary" className="leading-tight">
-                  {t("diagramLockedDesc")}
-                </Text>
-              </div>
+          {/* Three outcome branches */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-xl border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-900/20 p-3 text-center space-y-1">
+              <div className="text-2xl">🔓</div>
+              <Text
+                size="xs"
+                weight="semibold"
+                className="text-sky-700 dark:text-sky-300"
+              >
+                {t("diagramPath1")}
+              </Text>
+              <Text size="xs" variant="secondary" className="leading-tight">
+                {t("diagramPath1Desc")}
+              </Text>
             </div>
-            {/* Arrow down */}
-            <div className="flex justify-center mb-3">
-              <div className="text-slate-400 text-lg">⬇️</div>
+            <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 p-3 text-center space-y-1">
+              <div className="text-2xl">✅</div>
+              <Text
+                size="xs"
+                weight="semibold"
+                className="text-emerald-700 dark:text-emerald-300"
+              >
+                {t("diagramPath2")}
+              </Text>
+              <Text size="xs" variant="secondary" className="leading-tight">
+                {t("diagramPath2Desc")}
+              </Text>
             </div>
-            {/* Three outcome branches */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="rounded-xl border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-900/20 p-3 text-center space-y-1">
-                <div className="text-2xl">🔓</div>
-                <Text
-                  size="xs"
-                  weight="semibold"
-                  className="text-sky-700 dark:text-sky-300"
-                >
-                  {t("diagramPath1")}
-                </Text>
-                <Text size="xs" variant="secondary" className="leading-tight">
-                  {t("diagramPath1Desc")}
-                </Text>
-              </div>
-              <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 p-3 text-center space-y-1">
-                <div className="text-2xl">✅</div>
-                <Text
-                  size="xs"
-                  weight="semibold"
-                  className="text-emerald-700 dark:text-emerald-300"
-                >
-                  {t("diagramPath2")}
-                </Text>
-                <Text size="xs" variant="secondary" className="leading-tight">
-                  {t("diagramPath2Desc")}
-                </Text>
-              </div>
-              <div className="rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/20 p-3 text-center space-y-1">
-                <div className="text-2xl">❌</div>
-                <Text
-                  size="xs"
-                  weight="semibold"
-                  className="text-rose-700 dark:text-rose-300"
-                >
-                  {t("diagramPath3")}
-                </Text>
-                <Text size="xs" variant="secondary" className="leading-tight">
-                  {t("diagramPath3Desc")}
-                </Text>
-              </div>
+            <div className="rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/20 p-3 text-center space-y-1">
+              <div className="text-2xl">❌</div>
+              <Text
+                size="xs"
+                weight="semibold"
+                className="text-rose-700 dark:text-rose-300"
+              >
+                {t("diagramPath3")}
+              </Text>
+              <Text size="xs" variant="secondary" className="leading-tight">
+                {t("diagramPath3Desc")}
+              </Text>
             </div>
           </div>
-        </div>
+        </FlowDiagram>
 
         {/* Lifecycle */}
         <Heading level={2} className="mb-6">

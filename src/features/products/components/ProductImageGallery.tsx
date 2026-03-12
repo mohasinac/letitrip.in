@@ -11,7 +11,7 @@ import {
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-import { ChevronLeft, ChevronRight, Expand } from "lucide-react";
+import { ChevronLeft, ChevronRight, Expand, ZoomIn } from "lucide-react";
 
 const { themed, flex } = THEME_CONSTANTS;
 
@@ -126,6 +126,13 @@ export function ProductImageGallery({
                 onClick={() => setLightboxOpen(true)}
                 className="absolute inset-0 cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
               />
+              {/* ZoomIn hint — centered on hover */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                <ZoomIn
+                  className="h-6 w-6 text-white drop-shadow-lg"
+                  aria-hidden="true"
+                />
+              </div>
             </>
           )}
         </div>
@@ -181,7 +188,7 @@ export function ProductImageGallery({
                   ? t("gallery.videoThumbnail")
                   : t("gallery.imageThumbnail", { n: idx + 1 })
               }`}
-              className={`relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 overflow-hidden rounded-md border-2 transition-all ${
+              className={`relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 overflow-hidden rounded-xl border-2 transition-all ${
                 idx === selectedIndex
                   ? "border-primary-500 ring-2 ring-primary-500/30"
                   : `border-transparent ${themed.border} opacity-60 hover:opacity-100`

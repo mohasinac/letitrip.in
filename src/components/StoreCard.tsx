@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, ShoppingBag } from "lucide-react";
+import { Star, ShoppingBag, BadgeCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import {
@@ -79,28 +79,44 @@ export function StoreCard({
             </div>
           )}
 
+          {/* Visit Store → overlay — slides up from banner bottom on group hover */}
+          <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/80 to-transparent flex items-end justify-center pb-10 pt-16 z-10">
+            <Span className="inline-flex items-center gap-1 text-white text-xs font-semibold">
+              {t("visitStore")} &rarr;
+            </Span>
+          </div>
+
           {/* Avatar — centred, overlapping banner bottom */}
-          <div className="absolute -bottom-7 left-1/2 -translate-x-1/2">
-            <div className="w-14 h-14 rounded-full border-[3px] border-white dark:border-slate-900 overflow-hidden shadow-md">
-              {(store.storeLogoURL ?? store.photoURL) ? (
-                <AvatarDisplay
-                  cropData={{
-                    url: (store.storeLogoURL ?? store.photoURL)!,
-                    position: { x: 50, y: 50 },
-                    zoom: 1,
-                  }}
-                  size="lg"
-                  alt={name}
+          <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 z-20">
+            <div className="relative">
+              <div className="w-14 h-14 rounded-full border-[3px] border-white dark:border-slate-900 overflow-hidden shadow-md">
+                {(store.storeLogoURL ?? store.photoURL) ? (
+                  <AvatarDisplay
+                    cropData={{
+                      url: (store.storeLogoURL ?? store.photoURL)!,
+                      position: { x: 50, y: 50 },
+                      zoom: 1,
+                    }}
+                    size="lg"
+                    alt={name}
+                  />
+                ) : (
+                  <div
+                    className={`${flex.center} w-full h-full bg-gradient-to-br from-primary-500 to-cobalt-600`}
+                  >
+                    <Span className="text-xl font-bold text-white">
+                      {name.charAt(0).toUpperCase()}
+                    </Span>
+                  </div>
+                )}
+              </div>
+              {/* Verified badge on avatar corner */}
+              <div className="absolute -bottom-0.5 -right-0.5 z-10 w-5 h-5 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
+                <BadgeCheck
+                  className="w-3.5 h-3.5 text-cobalt-500"
+                  aria-hidden="true"
                 />
-              ) : (
-                <div
-                  className={`${flex.center} w-full h-full bg-gradient-to-br from-primary-500 to-cobalt-600`}
-                >
-                  <Span className="text-xl font-bold text-white">
-                    {name.charAt(0).toUpperCase()}
-                  </Span>
-                </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
@@ -115,27 +131,12 @@ export function StoreCard({
             {name}
           </Heading>
 
-          {/* Verified badge */}
-          <Span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 uppercase tracking-wide">
-            {t("sellerBadge")}
-          </Span>
-
           {/* Short description */}
           {store.storeDescription && (
             <Text variant="secondary" size="sm" className="line-clamp-2 mt-0.5">
               {store.storeDescription}
             </Text>
           )}
-
-          {/* Visit Store CTA — slides up on hover */}
-          <div className="relative overflow-hidden mt-auto">
-            <div
-              className={`${flex.center} gap-1 w-full py-2 text-xs font-semibold text-primary-600 dark:text-primary-400 translate-y-full group-hover:translate-y-0 transition-transform duration-300`}
-            >
-              {t("visitStore")}
-              <Span aria-hidden="true">&rarr;</Span>
-            </div>
-          </div>
 
           {/* Stats row */}
           <div
