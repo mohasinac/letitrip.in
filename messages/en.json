@@ -268,7 +268,9 @@
     "events": "Events",
     "blog": "Blog",
     "cart": "Cart",
-    "featureFlags": "Feature Flags"
+    "featureFlags": "Feature Flags",
+    "todayDeals": "Today's Deals",
+    "sellOnLet": "Sell on LetItRip"
   },
   "auth": {
     "login": {
@@ -1310,7 +1312,8 @@
     "categoryFilter": "Category",
     "allCategories": "All Categories",
     "searching": "Searching...",
-    "browseProducts": "Search \u201c{q}\u201d in products \u2192"
+    "browseProducts": "Search \u201c{q}\u201d in products \u2192",
+    "quickLinks": "Quick Links"
   },
   "categories": {
     "metaTitle": "Categories — Shop Anime Figures by Collection",
@@ -1480,6 +1483,7 @@
     "bannerSecondaryCta": "Browse Auctions",
     "whatsAppMembers": "members",
     "whatsAppJoinAriaLabel": "Join WhatsApp community",
+    "whatsAppTestimonial": "Being part of this group helped me discover exclusive deals before anyone else. Absolutely love it!",
     "welcomePill": "India's #1 Marketplace",
     "welcomeSecondaryCta": "Browse All",
     "welcomeTrustDelivery": "Fast Delivery",
@@ -1514,6 +1518,9 @@
     "refundPolicy": "Refund Policy",
     "madeIn": "Made in India",
     "copyright": "© {year} {brand}. All rights reserved.",
+    "newsletterLabel": "Stay in the loop",
+    "newsletterPlaceholder": "Enter your email",
+    "newsletterCta": "Subscribe",
     "faqs": "FAQs",
     "blog": "Blog",
     "contact": "Contact",

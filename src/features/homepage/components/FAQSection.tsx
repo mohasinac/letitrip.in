@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { ChevronDown } from "lucide-react";
 import {
   THEME_CONSTANTS,
   ROUTES,
@@ -10,17 +11,7 @@ import {
   getStaticFaqCategoryCounts,
 } from "@/constants";
 import type { FAQCategoryKey, StaticFAQItem } from "@/constants";
-import {
-  Button,
-  Heading,
-  Section,
-  Span,
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  Text,
-  TextLink,
-} from "@/components";
+import { Button, Heading, Section, Span, Text, TextLink } from "@/components";
 
 const { flex } = THEME_CONSTANTS;
 
@@ -49,11 +40,11 @@ export function FAQSection() {
   return (
     <Section className={`p-8 ${THEME_CONSTANTS.themed.bgSecondary}`}>
       <div className="w-full">
-        {/* Section Header */}
+        {/* Section Header — gradient heading */}
         <div className="text-center mb-8">
           <Heading
             level={2}
-            className={`${THEME_CONSTANTS.typography.h2} ${THEME_CONSTANTS.themed.textPrimary} mb-3`}
+            className="bg-gradient-to-r from-primary to-cobalt bg-clip-text text-transparent text-3xl md:text-4xl font-bold mb-3"
           >
             {t("title")}
           </Heading>
@@ -64,26 +55,34 @@ export function FAQSection() {
           </Text>
         </div>
 
-        {/* Category Tabs — single horizontal scrollable row, nav-item style */}
-        <Tabs
-          variant="line"
-          value={activeCategory}
-          onChange={(v) => handleCategoryChange(v as FAQCategoryKey)}
+        {/* Category Tabs — pill group */}
+        <div
+          role="tablist"
+          aria-label={t("title")}
+          className="flex flex-wrap gap-1 rounded-full bg-zinc-100 dark:bg-slate-800 p-1 mb-8 max-w-max mx-auto"
         >
-          <TabsList className="pb-1 mb-8">
-            {(
-              Object.entries(FAQ_CATEGORIES) as [
-                FAQCategoryKey,
-                (typeof FAQ_CATEGORIES)[FAQCategoryKey],
-              ][]
-            ).map(([key, category]) => (
-              <TabsTrigger key={key} value={key}>
-                <Span>{category.icon}</Span>
-                {category.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+          {(
+            Object.entries(FAQ_CATEGORIES) as [
+              FAQCategoryKey,
+              (typeof FAQ_CATEGORIES)[FAQCategoryKey],
+            ][]
+          ).map(([key, category]) => (
+            <button
+              key={key}
+              role="tab"
+              aria-selected={activeCategory === key}
+              onClick={() => handleCategoryChange(key)}
+              className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200 ${
+                activeCategory === key
+                  ? "bg-white dark:bg-slate-700 shadow-sm text-zinc-900 dark:text-white"
+                  : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+              }`}
+            >
+              <Span>{category.icon}</Span>
+              {category.label}
+            </button>
+          ))}
+        </div>
 
         {/* FAQ Accordion */}
         <div className={`${THEME_CONSTANTS.spacing.stack} max-w-3xl mx-auto`}>
@@ -94,51 +93,53 @@ export function FAQSection() {
               {tEmpty("noData")}
             </Text>
           )}
-          {faqs.map((faq) => (
-            <div
-              key={faq.id}
-              className={`${THEME_CONSTANTS.themed.bgPrimary} rounded-2xl overflow-hidden transition-all`}
-            >
-              {/* Question Button */}
-              <Button
-                variant="ghost"
-                className={`w-full text-left p-6 ${flex.between} gap-4 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors`}
-                onClick={() => toggleFaq(faq.id)}
+          {faqs.map((faq) => {
+            const isOpen = openFaqId === faq.id;
+            return (
+              <div
+                key={faq.id}
+                className={`${THEME_CONSTANTS.themed.bgPrimary} rounded-2xl overflow-hidden transition-all border-l-4 ${
+                  isOpen
+                    ? "border-primary bg-primary/5 dark:bg-primary/10"
+                    : "border-transparent"
+                }`}
               >
-                <Span
-                  className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-medium flex-1`}
+                {/* Question Button */}
+                <Button
+                  variant="ghost"
+                  className={`w-full text-left p-6 ${flex.between} gap-4 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors`}
+                  onClick={() => toggleFaq(faq.id)}
+                  aria-expanded={isOpen}
                 >
-                  {faq.question}
-                </Span>
-                <svg
-                  className={`w-5 h-5 ${THEME_CONSTANTS.themed.textSecondary} transition-transform ${
-                    openFaqId === faq.id ? "rotate-180" : ""
-                  }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </Button>
-
-              {/* Answer (Collapsible) */}
-              {openFaqId === faq.id && (
-                <div className={`p-6 pt-0`}>
-                  <p
-                    className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} rounded-md ${THEME_CONSTANTS.themed.bgTertiary} p-4`}
+                  <Span
+                    className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textPrimary} font-medium flex-1`}
                   >
-                    {faq.answer}
-                  </p>
+                    {faq.question}
+                  </Span>
+                  <ChevronDown
+                    className={`w-5 h-5 flex-shrink-0 ${THEME_CONSTANTS.themed.textSecondary} transition-transform duration-300 ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </Button>
+
+                {/* Answer — max-h CSS animated expand */}
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-out ${
+                    isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <div className="p-6 pt-0">
+                    <p
+                      className={`${THEME_CONSTANTS.typography.body} ${THEME_CONSTANTS.themed.textSecondary} rounded-md ${THEME_CONSTANTS.themed.bgTertiary} p-4`}
+                    >
+                      {faq.answer}
+                    </p>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
 
         {/* View More / View All Link */}

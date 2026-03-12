@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SITE_CONFIG, ROUTES } from "@/constants";
@@ -10,6 +11,7 @@ import type { FooterSocialLink, FooterLinkGroup } from "./FooterLayout";
 export default function Footer() {
   const t = useTranslations("footer");
   const tNav = useTranslations("nav");
+  const [email, setEmail] = useState("");
 
   const socialLinks: FooterSocialLink[] = [
     {
@@ -99,6 +101,34 @@ export default function Footer() {
         brand: SITE_CONFIG.brand.name,
       })}
       madeInText={t("madeIn")}
+      showTrustBar
+      newsletterSlot={
+        <div className="bg-gradient-to-r from-primary/90 to-cobalt/80 rounded-xl p-4 text-white relative overflow-hidden">
+          <div
+            className="absolute -top-8 -right-8 h-24 w-24 rounded-full border border-white/10 pointer-events-none"
+            aria-hidden
+          />
+          <p className="text-xs font-semibold uppercase tracking-wider mb-2 opacity-90">
+            {t("newsletterLabel")}
+          </p>
+          <div className="flex gap-2">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t("newsletterPlaceholder")}
+              className="flex-1 min-w-0 rounded-lg px-3 py-1.5 text-sm text-zinc-900 bg-white/95 placeholder:text-zinc-400 outline-none focus:ring-2 focus:ring-white/50"
+            />
+            <button
+              type="button"
+              onClick={() => setEmail("")}
+              className="flex-shrink-0 px-3 py-1.5 rounded-lg bg-white text-primary text-sm font-semibold hover:bg-zinc-100 transition-colors"
+            >
+              {t("newsletterCta")}
+            </button>
+          </div>
+        </div>
+      }
     />
   );
 }

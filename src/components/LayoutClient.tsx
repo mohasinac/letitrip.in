@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTheme } from "@/contexts/ThemeContext";
-import { TitleBar, MainNavbar, Sidebar, Footer, BottomNavbar } from "./layout";
+import { TitleBar, Sidebar, Footer, BottomNavbar } from "./layout";
 import Search from "./utility/Search";
 import BackToTop from "./utility/BackToTop";
 import AutoBreadcrumbs from "./layout/AutoBreadcrumbs";
@@ -117,8 +117,6 @@ export default function LayoutClient({
         onSearchToggle={() => setSearchOpen(!searchOpen)}
         searchOpen={searchOpen}
       />
-
-      <MainNavbar />
 
       {/* Dismissible event banner for active sales / offers */}
       <EventBanner />

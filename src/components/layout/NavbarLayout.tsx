@@ -7,6 +7,8 @@ export interface NavbarLayoutItem {
   href: string;
   label: string;
   icon: React.ReactNode;
+  /** When true, renders this nav link as an accented pill (e.g. "Today's Deals"). */
+  highlighted?: boolean;
 }
 
 export interface NavbarLayoutProps {
@@ -14,6 +16,11 @@ export interface NavbarLayoutProps {
   activeHref: string;
   id?: string;
   ariaLabel?: string;
+  /**
+   * When true, renders as an inline flex row (no outer Nav wrapper or sticky bg).
+   * Used when slotted inside TitleBarLayout for the slim double-nav pattern.
+   */
+  inline?: boolean;
 }
 
 /**
@@ -27,8 +34,32 @@ export function NavbarLayout({
   activeHref,
   id = "main-navbar",
   ariaLabel = "Main navigation",
+  inline = false,
 }: NavbarLayoutProps) {
   const { layout, flex } = THEME_CONSTANTS;
+
+  if (inline) {
+    return (
+      <Ul
+        aria-label={ariaLabel}
+        className="hidden md:flex items-center gap-0.5 lg:gap-1"
+      >
+        {items.map((item) => (
+          <Li key={item.href}>
+            <NavItem
+              href={item.href}
+              label={item.label}
+              icon={item.icon}
+              isActive={activeHref === item.href}
+              variant="horizontal"
+              highlighted={item.highlighted}
+            />
+          </Li>
+        ))}
+      </Ul>
+    );
+  }
+
   return (
     <Nav
       id={id}
@@ -47,6 +78,7 @@ export function NavbarLayout({
                 icon={item.icon}
                 isActive={activeHref === item.href}
                 variant="horizontal"
+                highlighted={item.highlighted}
               />
             </Li>
           ))}

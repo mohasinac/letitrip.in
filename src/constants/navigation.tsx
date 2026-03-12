@@ -22,6 +22,8 @@ import {
   CalendarDays,
   BookOpen,
   Star,
+  Tag,
+  Megaphone,
 } from "lucide-react";
 import { SITE_CONFIG } from "./site";
 
@@ -32,6 +34,8 @@ import { SITE_CONFIG } from "./site";
 export interface NavItem {
   href: string;
   icon: ReactNode;
+  /** When true, renders the item as an accented pill in the desktop navbar. */
+  highlighted?: boolean;
 }
 
 /**
@@ -81,5 +85,15 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   {
     href: SITE_CONFIG.nav.reviews,
     icon: <Star className="w-5 h-5 text-yellow-500 dark:text-yellow-400" />,
+  },
+  {
+    href: SITE_CONFIG.nav.promotions,
+    icon: <Tag className="w-5 h-5 text-primary" />,
+    highlighted: true,
+  },
+  {
+    href: SITE_CONFIG.nav.sellers,
+    icon: <Megaphone className="w-5 h-5 text-primary" />,
+    highlighted: true,
   },
 ];

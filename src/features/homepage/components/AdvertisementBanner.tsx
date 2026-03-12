@@ -10,7 +10,14 @@ import type { BannerSectionConfig } from "@/db/schema";
 
 const { position } = THEME_CONSTANTS;
 
-export function AdvertisementBanner() {
+interface AdvertisementBannerProps {
+  /** When true: renders a compact single-row pill strip (h-32) */
+  compact?: boolean;
+}
+
+export function AdvertisementBanner({
+  compact = false,
+}: AdvertisementBannerProps) {
   const t = useTranslations("homepage");
   const router = useRouter();
   const { data, isLoading } = useHomepageSections(
@@ -114,7 +121,7 @@ export function AdvertisementBanner() {
     <Section className={`p-8 ${THEME_CONSTANTS.sectionBg.warm}`}>
       <div className="w-full">
         <div
-          className={`relative overflow-hidden rounded-2xl min-h-[240px] md:min-h-[300px] flex items-center`}
+          className={`relative overflow-hidden rounded-2xl ${compact ? "h-32 flex items-center" : "min-h-[240px] md:min-h-[300px]"} flex items-center`}
           style={
             hasCmsData && banner?.backgroundColor
               ? { backgroundColor: banner.backgroundColor }
@@ -129,51 +136,75 @@ export function AdvertisementBanner() {
             />
           )}
 
-          {/* Decorative circle blobs */}
+          {/* Decorative circle blobs — animated mesh (LX-6) */}
           <div className={`${position.fill} overflow-hidden`} aria-hidden>
-            <div className="absolute -top-16 -left-16 w-64 h-64 rounded-full bg-white/5 blur-2xl" />
-            <div className="absolute -bottom-16 right-0 w-80 h-80 rounded-full bg-fuchsia-400/10 blur-3xl" />
+            <div className="absolute -top-16 -left-16 w-64 h-64 rounded-full bg-primary/20 blur-3xl animate-pulse-slow" />
+            <div className="absolute -bottom-16 right-0 w-80 h-80 rounded-full bg-cobalt/20 blur-3xl animate-pulse-slow" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-fuchsia-400/10 blur-3xl animate-pulse-slow" />
+            {/* Decorative rings (LX-6) */}
+            <div className="absolute -top-32 -left-32 h-64 w-64 rounded-full border border-white/[0.06]" />
+            <div className="absolute -bottom-20 -right-20 h-80 w-80 rounded-full border border-white/[0.04]" />
           </div>
 
           {/* Content */}
-          <div className="relative z-10 w-full max-w-4xl mx-auto px-6 py-12 md:py-16 text-center">
-            {/* Tag pill */}
-            <div className="inline-flex items-center gap-1.5 bg-white/15 text-white/90 text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-5 backdrop-blur-sm shadow-sm">
-              <Sparkles className="w-3.5 h-3.5" />
-              {t("bannerTag")}
-            </div>
-
-            <Heading
-              level={2}
-              className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 drop-shadow-lg leading-tight"
-            >
-              {title}
-            </Heading>
-
-            <Text className="text-white/80 text-base md:text-xl mb-10 max-w-2xl mx-auto">
-              {subtitle}
-            </Text>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          {compact ? (
+            <div className="relative z-10 flex items-center justify-between w-full px-6 py-4 gap-4 flex-wrap">
+              <div className="inline-flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-white/80" />
+                <span className="text-white font-semibold text-sm">
+                  {title}
+                </span>
+              </div>
               <Button
                 variant="secondary"
-                size="lg"
+                size="sm"
                 onClick={() => router.push(ctaHref)}
-                className="bg-white text-indigo-700 hover:bg-zinc-50 font-semibold shadow-2xl gap-2"
+                className="bg-white text-indigo-700 hover:bg-zinc-50 font-semibold hover:shadow-glow gap-1.5 flex-shrink-0"
               >
                 {ctaText}
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => router.push(ROUTES.PUBLIC.AUCTIONS)}
-                className="border-white/40 text-white hover:bg-white/10 font-medium backdrop-blur-sm"
-              >
-                {t("bannerSecondaryCta")}
+                <ArrowRight className="w-3.5 h-3.5" />
               </Button>
             </div>
-          </div>
+          ) : (
+            <div className="relative z-10 w-full max-w-4xl mx-auto px-6 py-12 md:py-16 text-center">
+              {/* Tag pill */}
+              <div className="inline-flex items-center gap-1.5 bg-white/15 text-white/90 text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-5 backdrop-blur-sm shadow-sm">
+                <Sparkles className="w-3.5 h-3.5" />
+                {t("bannerTag")}
+              </div>
+
+              <Heading
+                level={2}
+                className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 drop-shadow-lg leading-tight"
+              >
+                {title}
+              </Heading>
+
+              <Text className="text-white/80 text-base md:text-xl mb-10 max-w-2xl mx-auto">
+                {subtitle}
+              </Text>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  onClick={() => router.push(ctaHref)}
+                  className="bg-white text-indigo-700 hover:bg-zinc-50 font-semibold shadow-2xl hover:shadow-glow gap-2"
+                >
+                  {ctaText}
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => router.push(ROUTES.PUBLIC.AUCTIONS)}
+                  className="border-white/40 text-white hover:bg-white/10 font-medium backdrop-blur-sm"
+                >
+                  {t("bannerSecondaryCta")}
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </Section>

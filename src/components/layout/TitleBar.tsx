@@ -6,6 +6,7 @@ import { NotificationBell } from "@/components";
 import { TitleBarLayout } from "./TitleBarLayout";
 import { TextLink, Span } from "@/components";
 import { Sprout, SearchCode } from "lucide-react";
+import MainNavbar from "./MainNavbar";
 
 /**
  * TitleBar Component
@@ -50,6 +51,7 @@ export default function TitleBar(props: TitleBarProps) {
       user={user}
       cartCount={cartCount}
       notificationSlot={<>{user && <NotificationBell />}</>}
+      navSlot={<MainNavbar inline />}
       devSlot={
         isDev ? (
           <>

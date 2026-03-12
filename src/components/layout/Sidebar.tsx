@@ -618,12 +618,14 @@ export default function Sidebar({
                 "home",
                 "products",
                 "auctions",
+                "preOrders",
                 "categories",
                 "stores",
                 "events",
                 "blog",
-                "promotions",
                 "reviews",
+                "todayDeals",
+                "sellOnLet",
               ] as const;
               const isActive = pathname === item.href;
               return (

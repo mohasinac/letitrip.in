@@ -15,6 +15,8 @@ const NAV_TRANSLATION_KEYS = [
   "events",
   "blog",
   "reviews",
+  "todayDeals",
+  "sellOnLet",
 ] as const;
 
 /**
@@ -24,7 +26,7 @@ const NAV_TRANSLATION_KEYS = [
  * array from MAIN_NAV_ITEMS and passes everything to the generic
  * NavbarLayout shell.
  */
-export default function MainNavbar() {
+export default function MainNavbar({ inline = false }: { inline?: boolean }) {
   const pathname = usePathname();
   const t = useTranslations("nav");
 
@@ -32,7 +34,8 @@ export default function MainNavbar() {
     href: item.href,
     label: t(NAV_TRANSLATION_KEYS[i]),
     icon: item.icon,
+    highlighted: item.highlighted,
   }));
 
-  return <NavbarLayout items={items} activeHref={pathname} />;
+  return <NavbarLayout items={items} activeHref={pathname} inline={inline} />;
 }

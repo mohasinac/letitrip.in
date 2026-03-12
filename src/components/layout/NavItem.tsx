@@ -31,6 +31,8 @@ interface NavItemProps {
   icon: ReactNode;
   isActive?: boolean;
   variant?: "horizontal" | "vertical";
+  /** When true, renders the item with a pill/border accent (e.g. "Today's Deals"). */
+  highlighted?: boolean;
 }
 
 export default function NavItem({
@@ -39,6 +41,7 @@ export default function NavItem({
   icon,
   isActive = false,
   variant = "horizontal",
+  highlighted = false,
 }: NavItemProps) {
   const { colors } = THEME_CONSTANTS;
 
@@ -47,19 +50,38 @@ export default function NavItem({
     return (
       <TextLink
         href={href}
-        className={`flex flex-col items-center gap-1 py-2 transition-colors ${
+        className={`relative flex flex-col items-center gap-1 py-2 transition-colors ${
           isActive ? colors.bottomNav.active : colors.bottomNav.inactive
         }`}
       >
-        <Span className={`${colors.bottomNav.icon} flex items-center`}>
+        {/* Active gradient glow (Phase 6 / C15-adjacent) */}
+        {isActive && (
+          <span
+            className="absolute inset-0 rounded-t-xl bg-gradient-to-b from-primary/10 to-transparent pointer-events-none"
+            aria-hidden
+          />
+        )}
+        <Span className={`${colors.bottomNav.icon} flex items-center relative`}>
           {icon}
         </Span>
-        <Span className={colors.bottomNav.text}>{label}</Span>
+        <Span className={`${colors.bottomNav.text} relative`}>{label}</Span>
       </TextLink>
     );
   }
 
   // Horizontal navbar style (icon and label side by side, more compact and user-friendly)
+  if (highlighted) {
+    return (
+      <TextLink
+        href={href}
+        className="flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/5 text-primary text-sm font-medium transition-all hover:bg-primary/10"
+      >
+        <Span className="flex-shrink-0 flex items-center">{icon}</Span>
+        <Span className="whitespace-nowrap">{label}</Span>
+      </TextLink>
+    );
+  }
+
   return (
     <TextLink
       href={href}

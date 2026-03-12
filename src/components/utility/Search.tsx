@@ -2,12 +2,25 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { THEME_CONSTANTS } from "@/constants";
+import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { Li, Text, Ul } from "@/components";
 import { useTranslations } from "next-intl";
 import Button from "../ui/Button";
 import { useNavSuggestions } from "@/hooks";
 import type { AlgoliaNavRecord } from "@/hooks";
+import {
+  ShoppingBag,
+  Gavel,
+  LayoutGrid,
+  Store,
+  CalendarDays,
+  BookOpen,
+  Tag,
+  TrendingUp,
+  HelpCircle,
+  Package,
+  type LucideIcon,
+} from "lucide-react";
 
 const NAV_TYPE_ICON: Record<AlgoliaNavRecord["type"], string> = {
   page: "📄",
@@ -15,6 +28,76 @@ const NAV_TYPE_ICON: Record<AlgoliaNavRecord["type"], string> = {
   blog: "✍️",
   event: "🎉",
 };
+
+interface SiteLink {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  keywords: string[];
+}
+
+const SITE_LINKS: SiteLink[] = [
+  {
+    href: ROUTES.PUBLIC.PRODUCTS,
+    label: "Products",
+    icon: ShoppingBag,
+    keywords: ["shop", "buy", "items", "figure"],
+  },
+  {
+    href: ROUTES.PUBLIC.AUCTIONS,
+    label: "Auctions",
+    icon: Gavel,
+    keywords: ["bid", "live", "auction", "gavel"],
+  },
+  {
+    href: ROUTES.PUBLIC.CATEGORIES,
+    label: "Categories",
+    icon: LayoutGrid,
+    keywords: ["browse", "category", "genre"],
+  },
+  {
+    href: ROUTES.PUBLIC.STORES,
+    label: "Stores",
+    icon: Store,
+    keywords: ["seller", "brand", "vendor", "shop"],
+  },
+  {
+    href: ROUTES.PUBLIC.EVENTS,
+    label: "Events",
+    icon: CalendarDays,
+    keywords: ["event", "contest", "tournament"],
+  },
+  {
+    href: ROUTES.PUBLIC.BLOG,
+    label: "Blog",
+    icon: BookOpen,
+    keywords: ["article", "news", "guide", "read"],
+  },
+  {
+    href: ROUTES.PUBLIC.PROMOTIONS,
+    label: "Today's Deals",
+    icon: Tag,
+    keywords: ["deals", "discount", "promo", "offer"],
+  },
+  {
+    href: ROUTES.PUBLIC.SELLERS,
+    label: "Sell on LetItRip",
+    icon: TrendingUp,
+    keywords: ["sell", "vendor", "business"],
+  },
+  {
+    href: ROUTES.PUBLIC.HELP,
+    label: "Help Center",
+    icon: HelpCircle,
+    keywords: ["help", "support", "faq", "question"],
+  },
+  {
+    href: ROUTES.PUBLIC.TRACK_ORDER,
+    label: "Track Order",
+    icon: Package,
+    keywords: ["track", "order", "shipping", "delivery"],
+  },
+];
 
 const NAV_TYPE_BADGE: Record<AlgoliaNavRecord["type"], string> = {
   page: "bg-zinc-100 text-zinc-600 dark:bg-slate-700 dark:text-zinc-300",
@@ -280,6 +363,16 @@ export default function Search({
     );
   }
 
+  // ── OVERLAY: filtered quick links ──────────────────────────────────────────
+  const q = query.toLowerCase();
+  const filteredSiteLinks = query
+    ? SITE_LINKS.filter(
+        (link) =>
+          link.label.toLowerCase().includes(q) ||
+          link.keywords.some((k) => k.includes(q)),
+      ).slice(0, 6)
+    : SITE_LINKS.slice(0, 6);
+
   // ── OVERLAY RENDER ───────────────────────────────────────────────────────────
 
   if (!isOpen) return null;
@@ -350,6 +443,49 @@ export default function Search({
               </svg>
             </Button>
           </div>
+
+          {/* Quick Links — shown before typing (top 6) and filtered while typing */}
+          {filteredSiteLinks.length > 0 && !suggestionsLoading && (
+            <div
+              className={`mt-3 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.border} rounded-xl overflow-hidden`}
+            >
+              <div
+                className={`px-4 py-2 border-b ${THEME_CONSTANTS.themed.border}`}
+              >
+                <Text
+                  variant="secondary"
+                  size="xs"
+                  className="uppercase tracking-wider font-semibold"
+                >
+                  {t("quickLinks")}
+                </Text>
+              </div>
+              <Ul>
+                {filteredSiteLinks.map((link) => {
+                  const Icon = link.icon;
+                  return (
+                    <Li key={link.href}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onClose?.();
+                          router.push(link.href);
+                        }}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left ${THEME_CONSTANTS.themed.hover} transition-colors border-b ${THEME_CONSTANTS.themed.border} last:border-b-0`}
+                      >
+                        <Icon
+                          className={`w-4 h-4 flex-shrink-0 ${THEME_CONSTANTS.colors.icon.muted}`}
+                        />
+                        <Text size="sm" className="font-medium">
+                          {link.label}
+                        </Text>
+                      </button>
+                    </Li>
+                  );
+                })}
+              </Ul>
+            </div>
+          )}
 
           {/* Navigation Suggestions Preview */}
           {query && (

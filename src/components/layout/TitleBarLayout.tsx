@@ -27,9 +27,9 @@
  * ```
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Tag } from "lucide-react";
+import { Tag, X } from "lucide-react";
 import { THEME_CONSTANTS } from "@/constants";
 import type { UserRole } from "@/types/auth";
 import type { AvatarMetadata } from "@/db/schema";
@@ -68,6 +68,13 @@ export interface TitleBarLayoutProps {
   notificationSlot?: React.ReactNode;
   /** Dev-only slot rendered just before the hamburger button. */
   devSlot?: React.ReactNode;
+  /** When set, renders a dismissable promo micro-strip above the header. */
+  promoStripText?: string;
+  /**
+   * Optional nav slot rendered between logo and right action icons (desktop only).
+   * Pass `<MainNavbar inline />` for the slim double-nav pattern.
+   */
+  navSlot?: React.ReactNode;
   id?: string;
 }
 
@@ -85,17 +92,36 @@ export function TitleBarLayout({
   cartCount = 0,
   notificationSlot,
   devSlot,
+  promoStripText,
+  navSlot,
   id = "title-bar",
 }: TitleBarLayoutProps) {
   const { colors, layout, zIndex, flex } = THEME_CONSTANTS;
   const tA = useTranslations("accessibility");
   const tNav = useTranslations("nav");
+  const [promoVisible, setPromoVisible] = useState(true);
+
+  const showPromo = !!promoStripText && promoVisible;
 
   return (
     <BlockHeader
       id={id}
       className={`sticky top-0 ${zIndex.titleBar} ${layout.titleBarBg}`}
     >
+      {/* Promo micro-strip (LX-7) — dismissed locally via useState */}
+      {showPromo && (
+        <div className="bg-gradient-to-r from-primary to-cobalt text-white text-xs py-1 text-center relative flex items-center justify-center px-8">
+          <span>{promoStripText}</span>
+          <button
+            type="button"
+            onClick={() => setPromoVisible(false)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white transition-colors"
+            aria-label="Dismiss promo"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
       <div
         className={`container mx-auto ${layout.navPadding} ${layout.containerWidth} py-2 md:py-2.5 ${flex.between}`}
       >
@@ -107,11 +133,18 @@ export function TitleBarLayout({
             {brandShortName}
           </div>
           <Span
-            className={`text-lg md:text-xl font-bold hidden sm:block ${colors.onPrimary.brandHover} transition-colors duration-300`}
+            className={`font-display text-xl tracking-tight text-cobalt-700 dark:text-cobalt-300 hidden sm:block`}
           >
             {brandName}
           </Span>
         </TextLink>
+
+        {/* Inline nav slot — desktop only, between logo and right icons (S5-8) */}
+        {navSlot && (
+          <div className="hidden md:flex flex-1 items-center justify-start mx-4 lg:mx-8 overflow-x-auto">
+            {navSlot}
+          </div>
+        )}
 
         {/* Right Side Icons */}
         <div className={`${flex.rowCenter} gap-2 ml-auto`}>
