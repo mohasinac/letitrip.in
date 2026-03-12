@@ -21,6 +21,8 @@ export function FeaturedPreOrdersSection() {
     <SectionCarousel
       title={t("featuredPreOrders")}
       description={t("preOrdersSubtitle")}
+      headingVariant="editorial"
+      pillLabel={t("preOrdersPill")}
       viewMoreHref={ROUTES.PUBLIC.PRE_ORDERS}
       viewMoreLabel={tActions("viewAllArrow")}
       items={preOrders}
@@ -32,7 +34,7 @@ export function FeaturedPreOrdersSection() {
       keyExtractor={(p) => p.id}
       isLoading={isLoading}
       skeletonCount={5}
-      className={THEME_CONSTANTS.themed.bgPrimary}
+      className="bg-gradient-to-b from-cobalt/5 dark:from-cobalt/10"
     />
   );
 }

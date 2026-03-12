@@ -21,6 +21,8 @@ export function FeaturedAuctionsSection() {
     <SectionCarousel
       title={t("liveAuctions")}
       description={t("auctionsSubtitle")}
+      headingVariant="editorial"
+      pillLabel={t("auctionsPill")}
       viewMoreHref={ROUTES.PUBLIC.AUCTIONS}
       viewMoreLabel={tActions("viewAllArrow")}
       items={auctions}
@@ -32,7 +34,7 @@ export function FeaturedAuctionsSection() {
       keyExtractor={(a) => a.id}
       isLoading={isLoading}
       skeletonCount={5}
-      className={THEME_CONSTANTS.themed.bgPrimary}
+      className="bg-gradient-to-b from-amber-500/5 dark:from-amber-900/10"
     />
   );
 }

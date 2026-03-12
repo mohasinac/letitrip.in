@@ -19,6 +19,9 @@ export function FeaturedStoresSection() {
     <SectionCarousel
       title={t("featuredStores")}
       description={t("featuredStoresSubtitle")}
+      headingVariant="editorial"
+      pillLabel={t("storesPill")}
+      lightText
       viewMoreHref={ROUTES.PUBLIC.STORES}
       viewMoreLabel={tActions("viewAllArrow")}
       items={stores}
@@ -30,7 +33,7 @@ export function FeaturedStoresSection() {
       keyExtractor={(s) => s.id}
       isLoading={isLoading}
       skeletonCount={5}
-      className={THEME_CONSTANTS.themed.bgPrimary}
+      className="bg-slate-950"
     />
   );
 }

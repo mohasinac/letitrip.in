@@ -17,6 +17,8 @@ export function TopBrandsSection() {
   return (
     <SectionCarousel
       title={t("brandsTitle")}
+      headingVariant="editorial"
+      pillLabel={t("brandsPill")}
       items={brands.slice(0, 12)}
       renderItem={(brand) => <CategoryCard category={brand} />}
       perView={{ base: 2, sm: 3, md: 4, xl: 5 }}
@@ -25,7 +27,7 @@ export function TopBrandsSection() {
       keyExtractor={(c) => c.id ?? c.slug}
       isLoading={isLoading}
       skeletonCount={8}
-      className={THEME_CONSTANTS.sectionBg.warm}
+      className="bg-gradient-to-br from-amber-50 dark:from-amber-950/20 dark:to-slate-900"
     />
   );
 }

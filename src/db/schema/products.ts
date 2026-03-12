@@ -104,6 +104,13 @@ export interface ProductDocument {
   // Analytics — system-managed
   viewCount?: number; // Total unique product detail page views
 
+  // Bulk discount tiers (buy more, save more)
+  bulkDiscounts?: { quantity: number; discountPercent: number }[];
+
+  // Detailed product content (used by ProductTabs)
+  ingredients?: string[];
+  howToUse?: string[];
+
   createdAt: Date;
   updatedAt: Date;
 }

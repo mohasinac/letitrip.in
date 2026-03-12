@@ -28,6 +28,12 @@ interface FilterFacetSectionProps {
   /** Whether the section starts collapsed. Defaults to false. */
   defaultCollapsed?: boolean;
   /**
+   * Whether the section starts open. Convenience inverse of `defaultCollapsed`.
+   * When both are provided, `defaultCollapsed` takes precedence.
+   * Defaults to true.
+   */
+  defaultOpen?: boolean;
+  /**
    * Cap how many values can be selected at once.
    * Unselected options become disabled when the limit is reached.
    * Ignored when selectionMode is 'single'. Default: unlimited.
@@ -73,7 +79,8 @@ export function FilterFacetSection({
   onChange,
   searchable = true,
   pageSize = 10,
-  defaultCollapsed = false,
+  defaultCollapsed,
+  defaultOpen = true,
   maxSelections,
   showSelectAll = false,
   selectionMode = "multi",
@@ -81,7 +88,9 @@ export function FilterFacetSection({
 }: FilterFacetSectionProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(pageSize);
-  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
+  const [isCollapsed, setIsCollapsed] = useState(
+    defaultCollapsed ?? !defaultOpen,
+  );
 
   const groupId = useId();
   const { themed, spacing, flex } = THEME_CONSTANTS;

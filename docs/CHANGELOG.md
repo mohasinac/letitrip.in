@@ -7,7 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased] — feat(s2): cards + product page micro-UX phase 2 enhancements
+## [Unreleased] — feat(s4): content sections + shop UX
+
+### Added — Sprint 4 (Content Sections + Shop UX)
+
+**S4-1 Homepage section carousel headingVariant upgrades**
+
+- All 8 homepage section carousel components updated to pass `headingVariant` and `pillLabel` props to `SectionCarousel` per spec table in IMPL_PLAN.md.
+- `TopCategoriesSection.tsx` — `headingVariant="editorial"` + `pillLabel` "SHOP BY CATEGORY" + `py-20` on section
+- `TopBrandsSection.tsx` — `headingVariant="editorial"` + `pillLabel` "EXPLORE BRANDS" + warm amber gradient bg
+- `FeaturedProductsSection.tsx` — `headingVariant="gradient"`
+- `FeaturedAuctionsSection.tsx` — `headingVariant="editorial"` + `pillLabel` "⚡ LIVE AUCTIONS" + amber strip bg
+- `FeaturedPreOrdersSection.tsx` — `headingVariant="editorial"` + `pillLabel` "COMING SOON" + cobalt bg strip
+- `FeaturedStoresSection.tsx` — `headingVariant="editorial"` + `pillLabel` "TOP STORES" + `lightText` + dark `bg-slate-950`
+- `FeaturedEventsSection.tsx` — `headingVariant="editorial"` + `pillLabel` "EVENTS & OFFERS"
+- `BlogArticlesSection.tsx` — `headingVariant="editorial"` + `pillLabel` "FROM THE BLOG"
+- `messages/en.json` — added `categoriesPill`, `brandsPill`, `auctionsPill`, `preOrdersPill`, `storesPill`, `eventsPill`, `blogPill` keys to `homepage` namespace
+
+**S4-2 BuyMoreSaveMore component**
+
+- **New:** `src/features/products/components/BuyMoreSaveMore.tsx` — horizontal bulk-discount tier row; active tier highlighted with `border-primary bg-primary/5`; renders nothing when `product.bulkDiscounts` absent
+- `src/db/schema/products.ts` — added optional `bulkDiscounts?: { quantity: number; discountPercent: number }[]` field
+- `messages/en.json` — added `bulkDiscountTitle`, `bulkDiscountBuy`, `bulkDiscountSave` keys to `products` namespace
+
+**S4-3 PromoBannerStrip component**
+
+- **New:** `src/features/products/components/PromoBannerStrip.tsx` — 3 icon chips (Truck, RefreshCw, ShieldCheck) with configurable `shippingThreshold` prop (default 499); uses Lucide icons at `strokeWidth={1.5}` in `text-primary`
+- `messages/en.json` — added `promoFreeShipping`, `promoEasyReturns`, `promoAuthentic` keys
+
+**S4-4 ProductTabs component**
+
+- **New:** `src/features/products/components/ProductTabs.tsx` — pill-group tab nav for Description/Ingredients/How to Use/Reviews; "Reviews" tab anchor-scrolls to `#reviews` instead of rendering a panel; plain-text description rendering (no XSS risk); uses `Ul`/`Li` primitives for ingredient/how-to-use lists
+- `src/db/schema/products.ts` — added optional `ingredients?: string[]` and `howToUse?: string[]` fields
+- `messages/en.json` — added `tabDescription`, `tabIngredients`, `tabHowToUse`, `tabReviews`, `noIngredients`, `noHowToUse` keys
+
+**S4-5 ProductGrid skeleton improvement**
+
+- `src/components/products/ProductGrid.tsx` — grid skeleton updated to `rounded-2xl`, `aspect-[4/5]`, `border-border border` container; removed the old button row from skeleton; uses `THEME_CONSTANTS.skeleton.*` classes
+
+**S4-6 FilterFacetSection `defaultOpen` convenience prop**
+
+- `src/components/ui/FilterFacetSection.tsx` — added `defaultOpen?: boolean` prop (default `true`) as inverse alias for `defaultCollapsed`; existing collapse logic unchanged
+
+**S4-7 Cormorant Garamond editorial font**
+
+- `src/app/layout.tsx` — added `Cormorant_Garamond` from `next/font/google` with weights 300–700, normal+italic styles, `--font-editorial` CSS variable; applied to `<html>` className
+- `tailwind.config.js` — `editorial` font family was already present from prior sprint; confirmed wired
+
+**ProductDetailView wiring**
+
+- `src/features/products/components/ProductDetailView.tsx` — added `id="reviews"` on reviews section for ProductTabs anchor scroll; wired `<PromoBannerStrip />`, `<ProductTabs product={product} />`, `<BuyMoreSaveMore product={product} />` above the reviews section
 
 ### Changed — Sprint 2 (Cards + Product Page Micro-UX) — Phase 2 pass
 

@@ -26,6 +26,8 @@ export function TopCategoriesSection({
   return (
     <SectionCarousel
       title={t("categoriesTitle")}
+      headingVariant="editorial"
+      pillLabel={t("categoriesPill")}
       viewMoreHref={ROUTES.PUBLIC.CATEGORIES}
       viewMoreLabel={tActions("viewAllArrow")}
       items={categories.slice(0, 12)}
@@ -36,7 +38,7 @@ export function TopCategoriesSection({
       keyExtractor={(c) => c.id ?? c.slug}
       isLoading={isLoading}
       skeletonCount={8}
-      className={THEME_CONSTANTS.sectionBg.cool}
+      className={`${THEME_CONSTANTS.sectionBg.cool} py-20`}
     />
   );
 }

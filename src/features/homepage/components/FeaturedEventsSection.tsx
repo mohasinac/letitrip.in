@@ -19,6 +19,8 @@ export function FeaturedEventsSection() {
     <SectionCarousel
       title={t("featuredEvents")}
       description={t("featuredEventsSubtitle")}
+      headingVariant="editorial"
+      pillLabel={t("eventsPill")}
       viewMoreHref={ROUTES.PUBLIC.EVENTS}
       viewMoreLabel={tActions("viewAllArrow")}
       items={events}

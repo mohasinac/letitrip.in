@@ -887,7 +887,19 @@
       "enterFullscreen": "Enter fullscreen",
       "exitFullscreen": "Exit fullscreen",
       "close": "Close"
-    }
+    },
+    "bulkDiscountTitle": "Buy More, Save More",
+    "bulkDiscountBuy": "Buy {qty}",
+    "bulkDiscountSave": "save {pct}%",
+    "promoFreeShipping": "Free Shipping above \u20b9{threshold}",
+    "promoEasyReturns": "Easy Returns",
+    "promoAuthentic": "100% Authentic",
+    "tabDescription": "Description",
+    "tabIngredients": "Ingredients",
+    "tabHowToUse": "How to Use",
+    "tabReviews": "Reviews",
+    "noIngredients": "No ingredient information available.",
+    "noHowToUse": "No usage instructions available."
   },
   "cart": {
     "title": "Shopping Cart",
@@ -1472,8 +1484,15 @@
     "welcomeSecondaryCta": "Browse All",
     "welcomeTrustDelivery": "Fast Delivery",
     "welcomeTrustPayment": "Secure Payments",
-    "welcomeTrustRating": "4.8★ Rated",
-    "welcomeTrustReturns": "Easy Returns"
+    "welcomeTrustRating": "4.8\u2605 Rated",
+    "welcomeTrustReturns": "Easy Returns",
+    "categoriesPill": "SHOP BY CATEGORY",
+    "brandsPill": "EXPLORE BRANDS",
+    "auctionsPill": "\u26a1 LIVE AUCTIONS",
+    "preOrdersPill": "COMING SOON",
+    "storesPill": "TOP STORES",
+    "eventsPill": "EVENTS & OFFERS",
+    "blogPill": "FROM THE BLOG"
   },
   "footer": {
     "aboutUs": "About Us",

@@ -20,6 +20,8 @@ export function BlogArticlesSection() {
     <SectionCarousel
       title={t("blogTitle")}
       description={t("blogSubtitle")}
+      headingVariant="editorial"
+      pillLabel={t("blogPill")}
       viewMoreHref={ROUTES.PUBLIC.BLOG}
       viewMoreLabel={tActions("viewAllArrow")}
       items={articles}

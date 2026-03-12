@@ -13,6 +13,9 @@ import { ProductActions } from "./ProductActions";
 import { ProductInfo } from "./ProductInfo";
 import { ProductReviews } from "./ProductReviews";
 import { RelatedProducts } from "./RelatedProducts";
+import { PromoBannerStrip } from "./PromoBannerStrip";
+import { BuyMoreSaveMore } from "./BuyMoreSaveMore";
+import { ProductTabs } from "./ProductTabs";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useProductDetail } from "../hooks/useProductDetail";
@@ -191,8 +194,16 @@ export function ProductDetailView({
           />
         </div>
 
+        {/* ——— Promo Banner + Tabs + Bulk Discounts ——— */}
+        <div className="mt-8 lg:mt-10 space-y-6">
+          <PromoBannerStrip />
+          <ProductTabs product={product} />
+          <BuyMoreSaveMore product={product} />
+        </div>
+
         {/* ——— Reviews Section ——— */}
         <div
+          id="reviews"
           className={`${themed.bgPrimary} rounded-xl p-4 sm:p-6 lg:p-8 mt-8 lg:mt-12`}
         >
           <ProductReviews productId={product.id} />

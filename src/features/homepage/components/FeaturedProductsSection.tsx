@@ -20,6 +20,7 @@ export function FeaturedProductsSection() {
     <SectionCarousel
       title={t("featuredProducts")}
       description={t("featuredProductsSubtitle")}
+      headingVariant="gradient"
       viewMoreHref={ROUTES.PUBLIC.PRODUCTS}
       viewMoreLabel={tActions("viewAllArrow")}
       items={products}

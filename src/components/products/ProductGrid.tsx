@@ -60,17 +60,15 @@ function ProductSkeleton({ variant = "grid" }: { variant?: "grid" | "list" }) {
   }
   return (
     <div
-      className={`${themed.bgPrimary} rounded-lg overflow-hidden animate-pulse`}
+      className={`${themed.bgPrimary} border-border overflow-hidden rounded-2xl border animate-pulse`}
     >
-      <div className="aspect-square bg-zinc-200 dark:bg-slate-700" />
-      <div className="p-3 space-y-2">
-        <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-3/4" />
-        <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-1/4" />
-        <div className="h-5 bg-zinc-200 dark:bg-slate-700 rounded w-1/3" />
-        <div className="flex gap-2">
-          <div className="h-8 bg-zinc-200 dark:bg-slate-700 rounded flex-1" />
-          <div className="h-8 bg-zinc-200 dark:bg-slate-700 rounded flex-1" />
-        </div>
+      <div
+        className={`aspect-[4/5] w-full ${THEME_CONSTANTS.skeleton.image}`}
+      />
+      <div className="space-y-2 p-4">
+        <div className={`h-4 w-3/4 ${THEME_CONSTANTS.skeleton.text}`} />
+        <div className={`h-3 w-1/2 ${THEME_CONSTANTS.skeleton.text}`} />
+        <div className={`h-5 w-1/3 ${THEME_CONSTANTS.skeleton.text}`} />
       </div>
     </div>
   );

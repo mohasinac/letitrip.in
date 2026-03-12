@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Bangers, Inter } from "next/font/google";
+import { Bangers, Inter, Cormorant_Garamond } from "next/font/google";
 import { cookies, headers } from "next/headers";
 import { getLocale } from "next-intl/server";
 import type { Metadata, Viewport } from "next";
@@ -15,6 +15,13 @@ const bangers = Bangers({
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-body",
+  display: "swap",
+});
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-editorial",
   display: "swap",
 });
 
@@ -119,7 +126,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`h-full ${bangers.variable} ${inter.variable}${themeClass ? ` ${themeClass}` : ""}`}
+      className={`h-full ${bangers.variable} ${inter.variable} ${cormorant.variable}${themeClass ? ` ${themeClass}` : ""}`}
     >
       <head>
         <script
