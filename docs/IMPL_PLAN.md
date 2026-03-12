@@ -27,8 +27,8 @@
 | **S3**    | Hero sequences + carousel         | 9h         | Phase 2, Phase 3, SR-1, NV-3       |
 | **S4** ✅ | Content sections + shop UX        | 9h         | Phase 4, PP-3–5, SH-1, SH-3, FN-2  |
 | **S5** ✅ | Layout shell + nav + search       | 9h         | Phase 5, Phase 6, NV-1, NV-2, SR-2 |
-| **S6**    | Portal UX — admin + seller + user | 11h        | AU-9, AU-1, AU-2, AU-4, AU-6       |
-| **S7**    | Portal completion + global polish | 10h        | AU-3, AU-5, AU-7, AU-8, Phase 7    |
+| **S6** ✅ | Portal UX — admin + seller + user | 11h        | AU-9, AU-1, AU-2, AU-4, AU-6       |
+| **S7** ✅ | Portal completion + global polish | 10h        | AU-3, AU-5, AU-7, AU-8, Phase 7    |
 | **S8**    | Before/After section _(optional)_ | 3h         | Phase 8, LX-1                      |
 
 **Total: ~72h** (visual makeover ~34h · package library ~11h · portal UX ~27h)
@@ -883,7 +883,7 @@ npm run build
 
 ---
 
-## Sprint 6 — Portal UX: Admin + Seller + User
+## Sprint 6 — Portal UX: Admin + Seller + User ✅ COMPLETE
 
 ---
 
@@ -1012,7 +1012,7 @@ npm run build
 
 ---
 
-## Sprint 7 — Portal Completion + Global Polish
+## Sprint 7 — Portal Completion + Global Polish ✅ COMPLETE
 
 ---
 
