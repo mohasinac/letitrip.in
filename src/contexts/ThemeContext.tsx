@@ -18,11 +18,17 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Read the class that the server-side layout already applied from the cookie.
-  // This avoids the flash of wrong theme: the initial render matches the server HTML.
+export function ThemeProvider({
+  children,
+  initialTheme = "light",
+}: {
+  children: React.ReactNode;
+  initialTheme?: ThemeMode;
+}) {
+  // `initialTheme` is passed by the server layout (read from the theme cookie)
+  // so SSR and client hydration agree on the initial theme — no mismatch.
   const [theme, setThemeState] = useState<ThemeMode>(() => {
-    if (typeof window === "undefined") return "light";
+    if (typeof window === "undefined") return initialTheme;
     return document.documentElement.classList.contains("dark")
       ? "dark"
       : "light";

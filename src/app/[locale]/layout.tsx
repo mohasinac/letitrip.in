@@ -13,6 +13,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
+import { cookies } from "next/headers";
+import type { ThemeMode } from "@/constants";
 
 export const metadata: Metadata = genMetadata({
   title: SEO_CONFIG.defaultTitle,
@@ -46,12 +48,18 @@ export default async function LocaleLayout({
   // with user data immediately — eliminates the loading flash on hard reloads.
   const serverUser = await getServerSessionUser();
 
+  // Read the theme cookie so ThemeProvider starts with the correct theme on
+  // SSR — prevents a hydration mismatch in theme-dependent inline styles.
+  const cookieStore = await cookies();
+  const initialTheme: ThemeMode =
+    cookieStore.get("theme")?.value === "dark" ? "dark" : "light";
+
   return (
     <>
       <NextIntlClientProvider locale={locale} messages={messages}>
         <SkipToMain />
         <ZodSetup />
-        <ThemeProvider>
+        <ThemeProvider initialTheme={initialTheme}>
           <QueryProvider>
             <SessionProvider initialUser={serverUser}>
               <GuestCartMergerEffect />

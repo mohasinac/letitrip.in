@@ -105,10 +105,18 @@ module.exports = {
       },
       fontFamily: {
         display: [
+          "var(--font-display)",
           "Bangers",
           "Impact",
           "ui-sans-serif",
           "system-ui",
+          "sans-serif",
+        ],
+        sans: [
+          "var(--font-body)",
+          "ui-sans-serif",
+          "system-ui",
+          "-apple-system",
           "sans-serif",
         ],
       },
@@ -135,6 +143,10 @@ module.exports = {
         pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         bounce: "bounce 1s infinite",
         shimmer: "shimmer 2s infinite linear",
+        marquee: "marquee 30s linear infinite",
+        "pulse-slow": "pulse-slow 4s ease-in-out infinite",
+        "progress-fill": "progress-fill linear forwards",
+        float: "float 6s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
@@ -190,6 +202,26 @@ module.exports = {
         shimmer: {
           "0%": { backgroundPosition: "-1000px 0" },
           "100%": { backgroundPosition: "1000px 0" },
+        },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
+        "pulse-slow": {
+          "0%, 100%": { opacity: "0.3" },
+          "50%": { opacity: "0.7" },
+        },
+        "progress-fill": {
+          from: { width: "0%" },
+          to: { width: "100%" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)", opacity: "0.3" },
+          "50%": { transform: "translateY(-20px)", opacity: "0.7" },
+        },
+        fadeInUp: {
+          from: { opacity: "0", transform: "translateY(20px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
         },
       },
     },

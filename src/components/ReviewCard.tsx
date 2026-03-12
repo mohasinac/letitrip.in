@@ -53,7 +53,7 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
           <div className={`${flex.between} gap-2`}>
             <div className={`${flex.rowCenter} gap-3 min-w-0`}>
               {/* Avatar */}
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-indigo-100 dark:bg-indigo-900/30 flex-shrink-0">
+              <div className="relative w-10 h-10 rounded-full overflow-hidden bg-indigo-100 dark:bg-indigo-900/30 flex-shrink-0">
                 {review.userAvatar ? (
                   <MediaImage
                     src={review.userAvatar}

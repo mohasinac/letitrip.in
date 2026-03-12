@@ -110,7 +110,7 @@ export function ProductActions({
             onClick={handleAddToCart}
             disabled={isOutOfStock || cartLoading}
             isLoading={cartLoading}
-            className="w-full py-3.5 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold transition-colors rounded-xl text-base"
+            className="w-full py-3.5 bg-primary-500 hover:bg-primary-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold transition-all duration-200 rounded-xl text-base active:scale-95"
             aria-label={cartLabel}
           >
             <Span className={`${flex.center} gap-2`} aria-hidden="true">
@@ -196,7 +196,7 @@ export function ProductActions({
               onClick={handleAddToCart}
               disabled={isOutOfStock || cartLoading}
               isLoading={cartLoading}
-              className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-semibold transition-colors rounded-xl text-sm"
+              className="flex-1 py-2.5 bg-primary-500 hover:bg-primary-600 disabled:opacity-60 text-white font-semibold transition-all duration-200 rounded-xl text-sm active:scale-95"
             >
               <Span className={`${flex.center} gap-1.5`}>
                 <ShoppingCart className="w-4 h-4" aria-hidden="true" />

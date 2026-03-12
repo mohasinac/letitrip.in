@@ -1031,6 +1031,36 @@ export const THEME_CONSTANTS = {
     /** `py-8 sm:py-12` — vertical padding for auth form wrappers */
     authPad: "py-8 sm:py-12",
   },
+
+  /**
+   * Section header tokens (Sprint 0 / Phase 0)
+   * Pill badge above H2, ornament row below.
+   */
+  sectionHeader: {
+    pill: "inline-flex items-center gap-2 rounded-full border border-primary-500/30 bg-primary-500/10 px-5 py-1.5 text-xs font-medium tracking-[0.2em] uppercase text-primary-600 dark:text-primary-400 backdrop-blur-sm",
+    ornament:
+      "flex items-center gap-2 mt-1 text-zinc-400 dark:text-zinc-500 text-xs select-none",
+  },
+
+  /**
+   * Carousel tokens (Sprint 0 / Phase 0)
+   * Shared arrow and dot styles for SectionCarousel and HeroCarousel.
+   */
+  carousel: {
+    arrow:
+      "w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-md border border-zinc-200 dark:border-slate-700 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 transition-all duration-200 flex items-center justify-center",
+    dotActive: "w-8 h-2 rounded-full bg-white transition-all duration-500",
+    dotInactive: "w-2 h-2 rounded-full bg-white/40 transition-all duration-500",
+  },
+
+  /**
+   * Trust strip tokens (Sprint 0 / Phase 0)
+   * Icon box style for trust feature cards.
+   */
+  trustStrip: {
+    iconBox:
+      "from-primary-500/10 to-cobalt-500/10 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br flex-shrink-0",
+  },
 } as const;
 
 export type ThemeMode = "light" | "dark";

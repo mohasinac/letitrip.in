@@ -1,9 +1,22 @@
 import "./globals.css";
+import { Bangers, Inter } from "next/font/google";
 import { cookies, headers } from "next/headers";
 import { getLocale } from "next-intl/server";
 import type { Metadata, Viewport } from "next";
 import { SEO_CONFIG } from "@/constants";
 import { organizationJsonLd, searchBoxJsonLd } from "@/lib/seo";
+
+const bangers = Bangers({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
 
 export const viewport: Viewport = {
   themeColor: [
@@ -106,7 +119,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`h-full${themeClass ? ` ${themeClass}` : ""}`}
+      className={`h-full ${bangers.variable} ${inter.variable}${themeClass ? ` ${themeClass}` : ""}`}
     >
       <head>
         <script
