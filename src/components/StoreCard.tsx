@@ -5,7 +5,9 @@ import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import {
   Card,
+  Checkbox,
   Heading,
+  MediaImage,
   Text,
   Caption,
   AvatarDisplay,
@@ -44,11 +46,7 @@ export function StoreCard({
         {/* ── Banner ── */}
         <div className="relative aspect-[2/1] overflow-hidden bg-gradient-to-br from-primary-400 via-cobalt-500 to-secondary-400 flex-shrink-0">
           {store.storeBannerURL && (
-            <img
-              src={store.storeBannerURL}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover"
-            />
+            <MediaImage src={store.storeBannerURL} alt="" size="card" />
           )}
 
           {/* bottom gradient for readability */}
@@ -60,15 +58,14 @@ export function StoreCard({
               className="absolute top-2 left-2 z-10"
               onClick={(e) => e.stopPropagation()}
             >
-              <input
-                type="checkbox"
+              <Checkbox
                 aria-label={`Select ${name}`}
                 checked={selected}
                 onChange={(e) => {
                   e.stopPropagation();
                   onSelect?.(store.ownerId, e.target.checked);
                 }}
-                className="w-5 h-5 rounded border-zinc-300 text-primary-600 focus:ring-primary-500 cursor-pointer bg-white/80"
+                className="bg-white/80"
               />
             </div>
           )}

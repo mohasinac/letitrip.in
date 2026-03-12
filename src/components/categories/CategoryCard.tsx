@@ -12,7 +12,15 @@ import { Star, Tag, Bookmark } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { CategoryDocument } from "@/db/schema";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
+import {
+  Card,
+  Checkbox,
+  Heading,
+  MediaImage,
+  Span,
+  Text,
+  TextLink,
+} from "@/components";
 
 const { themed, flex } = THEME_CONSTANTS;
 
@@ -143,15 +151,14 @@ export function CategoryCard({
               className="absolute top-2 left-2 z-10"
               onClick={(e) => e.stopPropagation()}
             >
-              <input
-                type="checkbox"
+              <Checkbox
                 aria-label={`Select ${name}`}
                 checked={selected}
                 onChange={(e) => {
                   e.stopPropagation();
                   onSelect?.(category.id, e.target.checked);
                 }}
-                className="w-5 h-5 rounded border-zinc-300 text-primary-600 focus:ring-primary-500 cursor-pointer bg-white/80"
+                className="bg-white/80"
               />
             </div>
           )}
@@ -206,15 +213,14 @@ export function CategoryCard({
               className="absolute top-2 left-2 z-10"
               onClick={(e) => e.stopPropagation()}
             >
-              <input
-                type="checkbox"
+              <Checkbox
                 aria-label={`Select ${name}`}
                 checked={selected}
                 onChange={(e) => {
                   e.stopPropagation();
                   onSelect?.(category.id, e.target.checked);
                 }}
-                className="w-5 h-5 rounded border-zinc-300 text-primary-600 focus:ring-primary-500 cursor-pointer bg-white/80"
+                className="bg-white/80"
               />
             </div>
           )}

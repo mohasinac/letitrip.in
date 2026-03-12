@@ -9,7 +9,15 @@ import {
   Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Card, Heading, MediaImage, Span, Text, TextLink } from "@/components";
+import {
+  Card,
+  Checkbox,
+  Heading,
+  MediaImage,
+  Span,
+  Text,
+  TextLink,
+} from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import type { BlogPostDocument, BlogPostCategory } from "@/db/schema";
@@ -84,15 +92,14 @@ export function BlogCard({
               className="absolute top-2 left-2 z-10"
               onClick={(e) => e.stopPropagation()}
             >
-              <input
-                type="checkbox"
+              <Checkbox
                 aria-label={`Select ${post.title}`}
                 checked={selected}
                 onChange={(e) => {
                   e.stopPropagation();
                   onSelect?.(post.id, e.target.checked);
                 }}
-                className="w-5 h-5 rounded border-zinc-300 text-primary-600 focus:ring-primary-500 cursor-pointer bg-white/80"
+                className="bg-white/80"
               />
             </div>
           )}
