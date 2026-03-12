@@ -104,7 +104,7 @@ export function AdminStatsCards({ stats }: StatsCardsProps) {
             <div
               className={`p-2 rounded-lg ${themed.bgSecondary} ${card.iconClass}`}
             >
-              <card.Icon className="w-6 h-6" />
+              <card.Icon className="w-6 h-6" strokeWidth={1.5} />
             </div>
           </div>
         </div>

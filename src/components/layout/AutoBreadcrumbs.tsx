@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { ChevronRight } from "lucide-react";
 import { usePathname } from "@/i18n/navigation";
 import { THEME_CONSTANTS } from "@/constants";
 import { Nav, Ol, Li } from "../semantic/Semantic";
@@ -140,19 +141,10 @@ export default function AutoBreadcrumbs() {
             return (
               <Li key={crumb.href} className="flex items-center gap-2">
                 {index > 0 && (
-                  <svg
-                    className={`w-4 h-4 ${THEME_CONSTANTS.themed.textSecondary}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
+                  <ChevronRight
+                    className="h-3 w-3 text-zinc-400"
+                    strokeWidth={1.5}
+                  />
                 )}
 
                 {isLast ? (

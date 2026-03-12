@@ -1,47 +1,29 @@
 "use client";
 
-import { ReactNode } from "react";
-import { Main, Heading, Text, BlockHeader } from "@/components";
-import { AdminTabs } from "@/features/admin";
-import { THEME_CONSTANTS } from "@/constants";
+import { ReactNode, useState } from "react";
 import { ProtectedRoute } from "@/components";
+import { AdminSidebar, AdminTopBar } from "@/features/admin";
 
 interface AdminLayoutProps {
   children: ReactNode;
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <ProtectedRoute requireAuth requireRole="admin">
-      <div className="w-full space-y-0">
-        {/* Header */}
-        <BlockHeader
-          className={`${THEME_CONSTANTS.themed.bgSecondary} border-b ${THEME_CONSTANTS.themed.borderColor}`}
-        >
-          <div className="py-3 sm:py-4">
-            <Heading
-              level={1}
-              className={`text-xl sm:text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
-            >
-              Admin Dashboard
-            </Heading>
-            <Text size="xs" variant="secondary" className="sm:text-sm mt-1">
-              Manage your platform content and settings
-            </Text>
-          </div>
-        </BlockHeader>
-
-        {/* Tab Navigation */}
-        <div
-          className={`${THEME_CONSTANTS.themed.bgSecondary} border-b ${THEME_CONSTANTS.themed.borderColor} -mx-4 sm:-mx-6 lg:-mx-8`}
-        >
-          <div className="px-4 sm:px-6 lg:px-8">
-            <AdminTabs />
-          </div>
+      <div className="flex h-screen overflow-hidden bg-slate-950">
+        <AdminSidebar
+          mobileOpen={mobileOpen}
+          onMobileClose={() => setMobileOpen(false)}
+        />
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <AdminTopBar onMenuOpen={() => setMobileOpen(true)} />
+          <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-950/30">
+            {children}
+          </main>
         </div>
-
-        {/* Main Content */}
-        <Main className="py-4 sm:py-6">{children}</Main>
       </div>
     </ProtectedRoute>
   );

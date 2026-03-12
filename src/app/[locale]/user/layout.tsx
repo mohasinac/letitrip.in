@@ -1,32 +1,43 @@
 "use client";
 
+import { useState } from "react";
 import { ReactNode } from "react";
-import { UserTabs } from "@/features/user";
+import { Menu } from "lucide-react";
+import { UserSidebar } from "@/features/user";
 import { ProtectedRoute } from "@/components";
 
 interface UserLayoutProps {
   children: ReactNode;
 }
 
-/**
- * User Layout
- *
- * Shared layout for all user section pages (Profile, Orders, Wishlist, Addresses, Settings).
- * Includes UserTabs navigation component for consistent section navigation.
- * Wrapped in ProtectedRoute so a loading spinner is shown while auth resolves
- * instead of flashing protected content to unauthenticated users.
- */
 export default function UserLayout({ children }: UserLayoutProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <ProtectedRoute requireAuth>
-      <div className="w-full">
-        {/* Tab Navigation - negative margins to break out of container padding */}
-        <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10 mb-6">
-          <UserTabs />
-        </div>
+      <div className="flex min-h-screen bg-zinc-50 dark:bg-slate-900">
+        <UserSidebar
+          mobileOpen={mobileOpen}
+          onMobileClose={() => setMobileOpen(false)}
+        />
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Mobile sticky header */}
+          <header className="sticky top-0 z-30 md:hidden flex items-center gap-3 h-14 px-4 bg-white dark:bg-slate-950 border-b border-zinc-200 dark:border-slate-800">
+            <button
+              type="button"
+              aria-label="Open navigation"
+              onClick={() => setMobileOpen(true)}
+              className="p-2 rounded-lg text-zinc-500 hover:bg-zinc-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <Menu className="w-5 h-5" strokeWidth={1.5} />
+            </button>
+            <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              My Account
+            </span>
+          </header>
 
-        {/* Main Content */}
-        <div>{children}</div>
+          <main className="flex-1 p-4 md:p-6">{children}</main>
+        </div>
       </div>
     </ProtectedRoute>
   );

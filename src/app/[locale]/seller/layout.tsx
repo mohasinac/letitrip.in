@@ -1,9 +1,11 @@
 "use client";
 
-import { ReactNode } from "react";
-import { Main, Heading, Text, BlockHeader, ProtectedRoute } from "@/components";
-import { SellerTabs } from "@/features/seller";
-import { THEME_CONSTANTS } from "@/constants";
+import { ReactNode, useState } from "react";
+import { ProtectedRoute, Button } from "@/components";
+import { SellerSidebar } from "@/features/seller";
+import { Menu } from "lucide-react";
+import { useTranslations } from "next-intl";
+import AutoBreadcrumbs from "@/components/layout/AutoBreadcrumbs";
 
 interface SellerLayoutProps {
   children: ReactNode;
@@ -12,42 +14,38 @@ interface SellerLayoutProps {
 /**
  * Seller Layout
  *
- * Shared layout for all seller section pages (Dashboard, Products, Auctions, Sales).
- * Includes SellerTabs navigation component for consistent section navigation.
- * Pattern mirrors AdminLayout for consistency.
+ * Sidebar-based layout for all seller section pages.
+ * Desktop: fixed w-56 sidebar.
+ * Mobile: Drawer triggered by hamburger in the top bar.
  */
 export default function SellerLayout({ children }: SellerLayoutProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const t = useTranslations("nav");
+
   return (
     <ProtectedRoute requireAuth requireRole="seller">
-      <div className="w-full space-y-0">
-        {/* Header */}
-        <BlockHeader
-          className={`${THEME_CONSTANTS.themed.bgSecondary} border-b ${THEME_CONSTANTS.themed.borderColor}`}
-        >
-          <div className="py-3 sm:py-4">
-            <Heading
-              level={1}
-              className={`text-xl sm:text-2xl font-bold ${THEME_CONSTANTS.themed.textPrimary}`}
-            >
-              Seller Dashboard
-            </Heading>
-            <Text size="xs" variant="secondary" className="sm:text-sm mt-1">
-              Manage your listings, auctions, and earnings
-            </Text>
-          </div>
-        </BlockHeader>
-
-        {/* Tab Navigation */}
-        <div
-          className={`${THEME_CONSTANTS.themed.bgSecondary} border-b ${THEME_CONSTANTS.themed.borderColor} -mx-4 sm:-mx-6 lg:-mx-8`}
-        >
-          <div className="px-4 sm:px-6 lg:px-8">
-            <SellerTabs />
-          </div>
+      <div className="flex h-screen overflow-hidden bg-white dark:bg-slate-950">
+        <SellerSidebar
+          mobileOpen={mobileOpen}
+          onMobileClose={() => setMobileOpen(false)}
+        />
+        <div className="flex flex-1 flex-col overflow-hidden">
+          {/* Top bar */}
+          <header className="h-14 flex-shrink-0 flex items-center px-4 md:px-6 justify-between border-b border-zinc-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <button
+                type="button"
+                onClick={() => setMobileOpen(true)}
+                className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors"
+                aria-label={t("mobileNav")}
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+              <AutoBreadcrumbs />
+            </div>
+          </header>
+          <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
         </div>
-
-        {/* Main Content */}
-        <Main className="py-4 sm:py-6">{children}</Main>
       </div>
     </ProtectedRoute>
   );

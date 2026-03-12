@@ -11,6 +11,7 @@ import { AdminStatsCards } from "./AdminStatsCards";
 import { AdminDashboardSkeleton } from "./AdminDashboardSkeleton";
 import { RecentActivityCard } from "./RecentActivityCard";
 import { QuickActionsGrid } from "./QuickActionsGrid";
+import { AdminPriorityAlerts } from "./AdminPriorityAlerts";
 
 export function AdminDashboardView() {
   const router = useRouter();
@@ -75,6 +76,8 @@ export function AdminDashboardView() {
       />
 
       {stats && <AdminStatsCards stats={stats} />}
+
+      <AdminPriorityAlerts />
 
       <QuickActionsGrid />
 

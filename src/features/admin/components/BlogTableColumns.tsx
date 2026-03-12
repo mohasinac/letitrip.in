@@ -10,7 +10,7 @@
 
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
-import { Button, Caption, Span, Text } from "@/components";
+import { Caption, RowActionMenu, Span, Text } from "@/components";
 import { useTranslations } from "next-intl";
 import type { BlogPostDocument } from "@/db/schema";
 
@@ -134,24 +134,20 @@ export function useBlogTableColumns(
       {
         key: "actions",
         header: "",
-        width: "10%",
+        width: "8%",
         render: (post: BlogPostDocument) => (
-          <div className="flex gap-1 justify-end">
-            <Button
-              variant="ghost"
-              onClick={() => onEdit(post)}
-              className="text-xs px-2 py-1 h-auto"
-            >
-              {tActions("edit")}
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => onDelete(post)}
-              className="text-xs px-2 py-1 h-auto text-red-600 hover:text-red-700 dark:text-red-400"
-            >
-              {tActions("delete")}
-            </Button>
-          </div>
+          <RowActionMenu
+            align="right"
+            actions={[
+              { label: tActions("edit"), onClick: () => onEdit(post) },
+              {
+                label: tActions("delete"),
+                onClick: () => onDelete(post),
+                destructive: true,
+                separator: true,
+              },
+            ]}
+          />
         ),
       },
     ],

@@ -1009,6 +1009,9 @@
     "sortOldest": "Oldest First",
     "sortHighest": "Highest Amount",
     "sortLowest": "Lowest Amount",
+    "orderCancelled": "Order cancelled successfully",
+    "cancelFailed": "Failed to cancel order. Please try again.",
+    "statusLabel": "Status:",
     "colProduct": "Product"
   },
   "checkout": {
@@ -3585,5 +3588,47 @@
     "ctaTitle": "Ready to start bidding?",
     "ctaText": "Top up your RipCoins wallet and join live auctions now.",
     "signInToBuy": "Sign in to buy RipCoins"
+  },
+  "adminNav": {
+    "adminNav": "Admin Navigation",
+    "groupOverview": "Overview",
+    "groupMarketplace": "Marketplace",
+    "groupContent": "Content",
+    "groupCommunity": "Community",
+    "groupPlatform": "Platform",
+    "analytics": "Analytics",
+    "orders": "Orders",
+    "coupons": "Coupons",
+    "stores": "Stores"
+  },
+  "adminAlerts": {
+    "pendingPayouts": "{count} seller payout requests awaiting approval",
+    "pendingPayoutsAction": "Review",
+    "disputedOrders": "{count} orders need attention",
+    "disputedOrdersAction": "View",
+    "unverifiedSellers": "{count} new seller applications pending",
+    "unverifiedSellersAction": "Review"
+  },
+  "sellerNav": {
+    "sellerNav": "Seller Navigation",
+    "groupOverview": "Overview",
+    "groupProducts": "Products",
+    "groupSales": "Sales",
+    "groupStore": "Store",
+    "analytics": "Analytics",
+    "createProduct": "Create Product",
+    "payoutSettings": "Payout Settings",
+    "shippingSettings": "Shipping",
+    "coupons": "Coupons"
+  },
+  "userHub": {
+    "title": "My Account",
+    "quickNav": "Quick Access",
+    "recentOrders": "Recent Orders",
+    "viewAllOrders": "View all orders",
+    "noOrders": "No orders yet",
+    "notifications": "Notifications",
+    "memberSince": "Member since {date}",
+    "becomeSellerCta": "Start Selling"
   }
 }

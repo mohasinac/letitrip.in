@@ -7,7 +7,7 @@
 
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { FAQ } from "./Faq.types";
-import { Button, Span } from "@/components";
+import { RowActionMenu, Span } from "@/components";
 
 const LABELS = UI_LABELS.ADMIN.FAQS;
 const { themed } = THEME_CONSTANTS;
@@ -79,26 +79,18 @@ export function getFaqTableColumns(
       },
     ],
     actions: (faq: FAQ) => (
-      <div className="flex gap-2">
-        <Button
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit(faq);
-          }}
-          className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
-        >
-          {UI_LABELS.ACTIONS.EDIT}
-        </Button>
-        <Button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(faq);
-          }}
-          className="text-red-600 hover:text-red-800 dark:text-red-400"
-        >
-          {UI_LABELS.ACTIONS.DELETE}
-        </Button>
-      </div>
+      <RowActionMenu
+        align="right"
+        actions={[
+          { label: UI_LABELS.ACTIONS.EDIT, onClick: () => onEdit(faq) },
+          {
+            label: UI_LABELS.ACTIONS.DELETE,
+            onClick: () => onDelete(faq),
+            destructive: true,
+            separator: true,
+          },
+        ]}
+      />
     ),
   };
 }

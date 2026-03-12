@@ -109,8 +109,10 @@ export { MediaOperationForm } from "./MediaOperationForm";
 export { getMediaTableColumns } from "./MediaTableColumns";
 export type { MediaOperation } from "./MediaTableColumns";
 
-// Admin UI (shared tab navigation + session management)
-export { default as AdminTabs } from "./AdminTabs";
+// Admin UI (sidebar navigation + session management)
+export { AdminSidebar } from "./AdminSidebar";
+export { AdminTopBar } from "./AdminTopBar";
+export { AdminPriorityAlerts } from "./AdminPriorityAlerts";
 export { AdminSessionsManager } from "./AdminSessionsManager";
 export { SESSION_TABLE_COLUMNS } from "./SessionTableColumns";
 

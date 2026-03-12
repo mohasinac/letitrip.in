@@ -81,6 +81,12 @@ export * from "./layout";
 // Re-export from admin subdirectory
 export * from "./admin";
 
+// ==================== DASHBOARD STATS CARD ====================
+export { DashboardStatsCard } from "./DashboardStatsCard";
+export type { DashboardStatsCardProps } from "./DashboardStatsCard";
+export { RowActionMenu } from "./RowActionMenu";
+export type { RowAction } from "./RowActionMenu";
+
 // ==================== USER COMPONENTS ====================
 export * from "./user";
 

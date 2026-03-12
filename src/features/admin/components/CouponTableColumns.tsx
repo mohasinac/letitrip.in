@@ -8,7 +8,7 @@
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import type { CouponDocument } from "@/db/schema";
 import { formatCurrency, isPast } from "@/utils";
-import { Button, Span, Text } from "@/components";
+import { RowActionMenu, Span, Text } from "@/components";
 
 const LABELS = UI_LABELS.ADMIN.COUPONS;
 const { themed } = THEME_CONSTANTS;
@@ -144,22 +144,20 @@ export function getCouponTableColumns(
       {
         key: "actions",
         header: UI_LABELS.TABLE.ACTIONS,
-        width: "18%",
+        width: "8%",
         render: (coupon: CouponDocument) => (
-          <div className="flex gap-2">
-            <Button
-              onClick={() => onEdit(coupon)}
-              className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm font-medium"
-            >
-              {UI_LABELS.ACTIONS.EDIT}
-            </Button>
-            <Button
-              onClick={() => onDelete(coupon)}
-              className="text-red-600 dark:text-red-400 hover:underline text-sm font-medium"
-            >
-              {UI_LABELS.ACTIONS.DELETE}
-            </Button>
-          </div>
+          <RowActionMenu
+            align="right"
+            actions={[
+              { label: UI_LABELS.ACTIONS.EDIT, onClick: () => onEdit(coupon) },
+              {
+                label: UI_LABELS.ACTIONS.DELETE,
+                onClick: () => onDelete(coupon),
+                destructive: true,
+                separator: true,
+              },
+            ]}
+          />
         ),
       },
     ],

@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useTranslations } from "next-intl";
-import { Badge, Button, MediaImage, Span, Text } from "@/components";
+import { Button, MediaImage, Span, Text } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
 import type { AdminProduct } from "@/components";
@@ -12,6 +12,36 @@ interface SellerProductCardProps {
   onDelete: (product: AdminProduct) => void;
 }
 
+const STATUS_STYLES: Record<string, string> = {
+  published:
+    "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300",
+  draft: "bg-zinc-100 text-zinc-600 dark:bg-slate-700 dark:text-zinc-400",
+  out_of_stock:
+    "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
+  discontinued: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400",
+  sold: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+};
+
+function StockBar({ available, total }: { available: number; total: number }) {
+  if (total <= 0) return null;
+  const pct = Math.min(100, Math.round((available / total) * 100));
+  const color =
+    pct > 50 ? "bg-emerald-500" : pct > 10 ? "bg-amber-500" : "bg-red-500";
+  return (
+    <div className="space-y-0.5">
+      <div className="w-full h-1.5 rounded-full bg-zinc-200 dark:bg-slate-700 overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all ${color}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <Text size="xs" variant="secondary">
+        {available} / {total} in stock
+      </Text>
+    </div>
+  );
+}
+
 export function SellerProductCard({
   product,
   onEdit,
@@ -20,9 +50,12 @@ export function SellerProductCard({
   const tActions = useTranslations("actions");
   const { themed, flex } = THEME_CONSTANTS;
 
+  const sold = Math.max(0, product.stockQuantity - product.availableQuantity);
+  const revenue = sold * product.price;
+
   return (
     <div
-      className={`rounded-xl overflow-hidden border ${themed.border} ${themed.bgPrimary} h-full`}
+      className={`rounded-xl overflow-hidden border ${themed.border} ${themed.bgPrimary} h-full flex flex-col transition-all duration-300 hover:shadow-md`}
     >
       <div className="relative aspect-square bg-zinc-100 dark:bg-slate-800 overflow-hidden">
         <MediaImage
@@ -42,8 +75,13 @@ export function SellerProductCard({
             </Span>
           </div>
         )}
+        <Span
+          className={`absolute top-2 right-2 px-2 py-0.5 text-xs font-medium rounded-full capitalize ${STATUS_STYLES[product.status] ?? STATUS_STYLES.draft}`}
+        >
+          {product.status.replace(/_/g, " ")}
+        </Span>
       </div>
-      <div className="p-3 space-y-2">
+      <div className="p-3 space-y-2 flex-1 flex flex-col">
         <Text size="sm" weight="semibold" className="truncate">
           {product.title}
         </Text>
@@ -51,20 +89,17 @@ export function SellerProductCard({
           <Text size="sm" weight="bold">
             {formatCurrency(product.price)}
           </Text>
-          <Badge
-            variant={
-              product.status === "published"
-                ? "success"
-                : product.status === "out_of_stock"
-                  ? "warning"
-                  : "default"
-            }
-            className="text-xs capitalize"
-          >
-            {product.status.replace(/_/g, " ")}
-          </Badge>
+          {revenue > 0 && (
+            <Text size="xs" variant="secondary" className="text-right">
+              {formatCurrency(revenue)} sold
+            </Text>
+          )}
         </div>
-        <div className="flex gap-2 pt-1">
+        <StockBar
+          available={product.availableQuantity}
+          total={product.stockQuantity}
+        />
+        <div className="flex gap-2 pt-1 mt-auto">
           <Button
             variant="outline"
             size="sm"
