@@ -4,7 +4,7 @@
  * POST /api/payment/verify
  *
  * 1. Verifies Razorpay payment signature
- * 2. Groups cart items by sellerId → creates one application order per store
+ * 2. Splits cart by type+seller → auction=1/item, preorder=1/seller, standard=1/seller
  * 3. Deducts product stock
  * 4. Clears the cart
  * 5. Returns { orderIds, total }
@@ -38,6 +38,7 @@ import { sendOrderConfirmationEmail } from "@/lib/email";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
 import { createApiHandler } from "@/lib/api/api-handler";
+import { splitCartIntoOrderGroups } from "@/utils";
 import type { AddressDocument } from "@/db/schema";
 
 const verifySchema = z.object({
@@ -153,22 +154,20 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
       }
     }
 
-    // 7. Group items by sellerId → one order per store (payment verified — status = "paid")
+    // 7. Split cart into typed order groups (payment verified — status = "confirmed"/"paid")
+    //    • auction items   → 1 order per item
+    //    • pre-order items → 1 order per seller
+    //    • standard items  → 1 order per seller
     const userName = user!.displayName ?? user!.email ?? "Unknown User";
     const userEmail = user!.email ?? "";
 
-    const byStore = new Map<string, typeof productChecks>();
-    for (const check of productChecks) {
-      const key = check.item.sellerId || "unknown";
-      if (!byStore.has(key)) byStore.set(key, []);
-      byStore.get(key)!.push(check);
-    }
+    const orderGroups = splitCartIntoOrderGroups(productChecks);
 
     const orderIds: string[] = [];
     let total = 0;
     const emailsToSend: Parameters<typeof sendOrderConfirmationEmail>[0][] = [];
 
-    for (const group of byStore.values()) {
+    for (const { items: group, orderType } of orderGroups) {
       const firstItem = group[0].item;
       const groupTotal = group.reduce(
         (sum, { item, product }) => sum + product!.price * item.quantity,
@@ -227,6 +226,7 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
         sellerId: firstItem.sellerId || undefined,
         sellerName: firstItem.sellerName || undefined,
         items: orderItems,
+        orderType,
         status: "confirmed",
         paymentStatus: "paid",
         paymentMethod: "online",

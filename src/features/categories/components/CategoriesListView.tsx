@@ -8,12 +8,20 @@
  * All state is URL-driven via useUrlTable.
  */
 
-import { Suspense, useMemo } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import { Grid3X3 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { EmptyState, Heading, ListingLayout, Search, Text } from "@/components";
+import {
+  Button,
+  EmptyState,
+  Heading,
+  ListingLayout,
+  Search,
+  Text,
+} from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { useUrlTable } from "@/hooks";
+import { useUrlTable, useAuth, useMessage } from "@/hooks";
+import { addToWishlistAction } from "@/actions";
 import type { CategoryDocument } from "@/db/schema";
 import { CategoryGrid } from "./CategoryGrid";
 import { useCategoriesList } from "../hooks/useCategoriesList";
@@ -25,6 +33,9 @@ interface CategoriesListContentProps {
 function CategoriesListContent({ initialData }: CategoriesListContentProps) {
   const t = useTranslations("categories");
   const tActions = useTranslations("actions");
+  const { user } = useAuth();
+  const { showSuccess, showError } = useMessage();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const table = useUrlTable();
   const search = table.get("q");
 
@@ -48,6 +59,26 @@ function CategoriesListContent({ initialData }: CategoriesListContentProps) {
 
   const hasSearch = Boolean(search);
 
+  const handleBulkAddToWishlist = useCallback(async () => {
+    const results = await Promise.allSettled(
+      selectedIds.map((id) => addToWishlistAction(id)),
+    );
+    const succeeded = results.filter((r) => r.status === "fulfilled").length;
+    if (succeeded === selectedIds.length) {
+      showSuccess(tActions("bulkSuccess", { count: succeeded }));
+    } else if (succeeded > 0) {
+      showError(
+        tActions("bulkPartialSuccess", {
+          success: succeeded,
+          total: selectedIds.length,
+        }),
+      );
+    } else {
+      showError(tActions("bulkFailed"));
+    }
+    setSelectedIds([]);
+  }, [selectedIds, showSuccess, showError, tActions]);
+
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
       <div className={`${THEME_CONSTANTS.page.container.full} py-8`}>
@@ -69,6 +100,19 @@ function CategoriesListContent({ initialData }: CategoriesListContentProps) {
               placeholder={t("searchPlaceholder")}
               onClear={() => table.set("q", "")}
             />
+          }
+          selectedCount={selectedIds.length}
+          onClearSelection={() => setSelectedIds([])}
+          bulkActions={
+            user ? (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleBulkAddToWishlist}
+              >
+                {tActions("bulkAddToWishlist", { count: selectedIds.length })}
+              </Button>
+            ) : undefined
           }
         >
           {isLoading ? (
@@ -98,7 +142,12 @@ function CategoriesListContent({ initialData }: CategoriesListContentProps) {
                   })}
                 </Text>
               )}
-              <CategoryGrid categories={displayed} />
+              <CategoryGrid
+                categories={displayed}
+                selectable={!!user}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
+              />
             </>
           )}
         </ListingLayout>

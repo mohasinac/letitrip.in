@@ -170,3 +170,6 @@ export type { AdminCreateFaqInput, AdminUpdateFaqInput } from "./faq.actions";
 
 // Category update + delete (admin only)
 export { updateCategoryAction, deleteCategoryAction } from "./category.actions";
+
+// Order mutations (auth required)
+export { cancelOrderAction } from "./order.actions";

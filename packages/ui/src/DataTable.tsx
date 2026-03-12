@@ -1,0 +1,587 @@
+"use client";
+
+import { ReactNode, useState, useMemo } from "react";
+import { Button } from "./components/Button";
+import { Spinner } from "./components/Spinner";
+import { Pagination } from "./components/Pagination";
+
+/**
+ * DataTable — generic sortable + paginated table promoted to @lir/ui.
+ *
+ * No app-specific imports (no THEME_CONSTANTS, UI_LABELS, @/components, @/constants).
+ * All theme values inlined. Labels available as props with sensible defaults.
+ * S1-2: rounded-2xl container, pageSize prop (default 20).
+ */
+
+type ViewMode = "table" | "grid" | "list";
+type SortDirection = "asc" | "desc" | null;
+
+export interface DataTableColumn<T> {
+  key: string;
+  header: string;
+  render?: (item: T) => ReactNode;
+  sortable?: boolean;
+  width?: string;
+}
+
+export interface DataTableProps<T> {
+  data: T[];
+  columns: DataTableColumn<T>[];
+  keyExtractor: (item: T) => string;
+  onRowClick?: (item: T) => void;
+  loading?: boolean;
+  emptyMessage?: string;
+  actions?: (item: T) => ReactNode;
+  /** When true, disables internal pagination — render your own externally. Default: false */
+  externalPagination?: boolean;
+  /** Items per page. Default: 20 */
+  pageSize?: number;
+  // Mobile view
+  mobileCardRender?: (item: T) => ReactNode;
+  // Custom empty state
+  emptyState?: ReactNode;
+  emptyIcon?: ReactNode;
+  emptyTitle?: string;
+  // Table enhancements
+  stickyHeader?: boolean;
+  striped?: boolean;
+  // View toggle
+  showViewToggle?: boolean;
+  showTableView?: boolean;
+  viewMode?: ViewMode;
+  defaultViewMode?: ViewMode;
+  onViewModeChange?: (mode: ViewMode) => void;
+  // Row selection
+  selectable?: boolean;
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
+  // Labels (override defaults for i18n)
+  labels?: {
+    loading?: string;
+    noDataTitle?: string;
+    noDataDescription?: string;
+    actions?: string;
+    tableView?: string;
+    gridView?: string;
+    listView?: string;
+  };
+}
+
+export function DataTable<T extends Record<string, any>>({
+  data,
+  columns,
+  keyExtractor,
+  onRowClick,
+  loading = false,
+  emptyMessage,
+  actions,
+  mobileCardRender,
+  emptyState,
+  emptyIcon,
+  emptyTitle,
+  stickyHeader = false,
+  striped = false,
+  externalPagination = false,
+  pageSize = 20,
+  showViewToggle = false,
+  showTableView = true,
+  viewMode: controlledViewMode,
+  defaultViewMode = "table",
+  onViewModeChange,
+  selectable = false,
+  selectedIds = [],
+  onSelectionChange,
+  labels = {},
+}: DataTableProps<T>) {
+  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [internalViewMode, setInternalViewMode] =
+    useState<ViewMode>(defaultViewMode);
+
+  const activeViewMode: ViewMode = controlledViewMode ?? internalViewMode;
+
+  const {
+    loading: labelLoading = "Loading…",
+    noDataTitle = "No data found",
+    noDataDescription = "There are no items to display.",
+    actions: labelActions = "Actions",
+    tableView = "Table view",
+    gridView = "Grid view",
+    listView = "List view",
+  } = labels;
+
+  const handleViewModeChange = (mode: ViewMode) => {
+    if (controlledViewMode === undefined) setInternalViewMode(mode);
+    onViewModeChange?.(mode);
+  };
+
+  const handleSort = (key: string) => {
+    const col = columns.find((c) => c.key === key);
+    if (!col?.sortable) return;
+    if (sortKey === key) {
+      if (sortDirection === "asc") setSortDirection("desc");
+      else {
+        setSortKey(null);
+        setSortDirection(null);
+      }
+    } else {
+      setSortKey(key);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedData = useMemo(() => {
+    const sorted = [...data];
+    if (sortKey && sortDirection) {
+      sorted.sort((a, b) => {
+        const aVal = a[sortKey];
+        const bVal = b[sortKey];
+        if (aVal == null) return 1;
+        if (bVal == null) return -1;
+        if (typeof aVal === "string" && typeof bVal === "string") {
+          return sortDirection === "asc"
+            ? aVal.localeCompare(bVal)
+            : bVal.localeCompare(aVal);
+        }
+        if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+        if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+    return sorted;
+  }, [data, sortKey, sortDirection]);
+
+  const paginatedData = useMemo(() => {
+    if (externalPagination) return sortedData;
+    const start = (currentPage - 1) * pageSize;
+    return sortedData.slice(start, start + pageSize);
+  }, [sortedData, currentPage, externalPagination, pageSize]);
+
+  const totalPages = Math.ceil(sortedData.length / pageSize);
+
+  // ─── Loading state ──────────────────────────────────────────────────────────
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-zinc-200 dark:border-slate-700 overflow-hidden">
+        <div className="flex items-center justify-center h-64">
+          <Spinner size="lg" label={labelLoading} />
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Empty state ────────────────────────────────────────────────────────────
+  if (data.length === 0) {
+    if (emptyState) return <>{emptyState}</>;
+    return (
+      <div className="rounded-2xl border border-zinc-200 dark:border-slate-700 overflow-hidden">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center px-4">
+            {emptyIcon ?? (
+              <svg
+                className="mx-auto h-12 w-12 text-zinc-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                />
+              </svg>
+            )}
+            <p className="mt-4 text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+              {emptyTitle ?? noDataTitle}
+            </p>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+              {emptyMessage ?? noDataDescription}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const renderViewToggle = () => {
+    if (!showViewToggle) return null;
+    return (
+      <div
+        className="flex justify-end gap-1"
+        role="toolbar"
+        aria-label="View mode"
+      >
+        {showTableView && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => handleViewModeChange("table")}
+            aria-label={tableView}
+            aria-pressed={activeViewMode === "table"}
+            className={`hidden sm:flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${activeViewMode === "table" ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300" : "text-zinc-500 dark:text-zinc-400 ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800"}`}
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 10h18M3 6h18M3 14h18M3 18h18"
+              />
+            </svg>
+          </Button>
+        )}
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => handleViewModeChange("grid")}
+          aria-label={gridView}
+          aria-pressed={activeViewMode === "grid"}
+          className={`flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${activeViewMode === "grid" ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300" : "text-zinc-500 dark:text-zinc-400 ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800"}`}
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"
+            />
+          </svg>
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => handleViewModeChange("list")}
+          aria-label={listView}
+          aria-pressed={activeViewMode === "list"}
+          className={`flex items-center justify-center p-2 rounded-lg ring-1 transition-colors ${activeViewMode === "list" ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 ring-indigo-300" : "text-zinc-500 dark:text-zinc-400 ring-zinc-200 dark:ring-slate-700 hover:bg-zinc-100 dark:hover:bg-slate-800"}`}
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
+            />
+          </svg>
+        </Button>
+      </div>
+    );
+  };
+
+  // ─── Card views (grid / list) ────────────────────────────────────────────────
+  const renderCardGrid = (mode: "grid" | "list") => {
+    if (!mobileCardRender) return null;
+    return (
+      <div
+        className={
+          mode === "grid"
+            ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+            : "flex flex-col gap-2"
+        }
+      >
+        {paginatedData.map((item) => (
+          <SelectableCard
+            key={keyExtractor(item)}
+            id={keyExtractor(item)}
+            selectable={selectable}
+            selected={selectedIds.includes(keyExtractor(item))}
+            listMode={mode === "list"}
+            onToggle={(id, checked) =>
+              onSelectionChange?.(
+                checked
+                  ? [...selectedIds, id]
+                  : selectedIds.filter((s) => s !== id),
+              )
+            }
+          >
+            {mobileCardRender(item)}
+          </SelectableCard>
+        ))}
+      </div>
+    );
+  };
+
+  // ─── Main render ─────────────────────────────────────────────────────────────
+  return (
+    <div className="space-y-4">
+      {renderViewToggle()}
+
+      {/* Non-table views */}
+      {activeViewMode !== "table" &&
+        mobileCardRender &&
+        renderCardGrid(activeViewMode as "grid" | "list")}
+
+      {/* Mobile cards in table mode */}
+      {activeViewMode === "table" && mobileCardRender && (
+        <div className="md:hidden space-y-4">
+          {paginatedData.map((item) => (
+            <SelectableCard
+              key={keyExtractor(item)}
+              id={keyExtractor(item)}
+              selectable={selectable}
+              selected={selectedIds.includes(keyExtractor(item))}
+              onToggle={(id, checked) =>
+                onSelectionChange?.(
+                  checked
+                    ? [...selectedIds, id]
+                    : selectedIds.filter((s) => s !== id),
+                )
+              }
+            >
+              {mobileCardRender(item)}
+            </SelectableCard>
+          ))}
+        </div>
+      )}
+
+      {/* Desktop table */}
+      {activeViewMode === "table" && (
+        <div className="rounded-2xl border border-zinc-200 dark:border-slate-700 overflow-hidden">
+          <div
+            className={`overflow-x-auto ${stickyHeader ? "max-h-[600px] overflow-y-auto" : ""}`}
+          >
+            <table className="min-w-full divide-y divide-zinc-200 dark:divide-slate-700">
+              <thead
+                className={`bg-zinc-50 dark:bg-slate-800 ${stickyHeader ? "sticky top-0 z-10" : ""}`}
+              >
+                <tr>
+                  {selectable && (
+                    <th scope="col" className="px-4 py-3 w-8">
+                      <input
+                        type="checkbox"
+                        className="rounded border-zinc-300"
+                        aria-label="Select all on page"
+                        checked={
+                          paginatedData.length > 0 &&
+                          paginatedData.every((item) =>
+                            selectedIds.includes(keyExtractor(item)),
+                          )
+                        }
+                        onChange={(e) => {
+                          const pageIds = paginatedData.map(keyExtractor);
+                          onSelectionChange?.(
+                            e.target.checked
+                              ? [...new Set([...selectedIds, ...pageIds])]
+                              : selectedIds.filter(
+                                  (id) => !pageIds.includes(id),
+                                ),
+                          );
+                        }}
+                      />
+                    </th>
+                  )}
+                  {columns.map((col) => (
+                    <th
+                      key={col.key}
+                      scope="col"
+                      aria-sort={
+                        col.sortable
+                          ? sortKey === col.key
+                            ? sortDirection === "asc"
+                              ? "ascending"
+                              : "descending"
+                            : "none"
+                          : undefined
+                      }
+                      className={`px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ${col.sortable ? "cursor-pointer select-none hover:bg-zinc-100 dark:hover:bg-slate-700" : ""}`}
+                      style={{ width: col.width }}
+                      onClick={() => col.sortable && handleSort(col.key)}
+                    >
+                      <div className="flex items-center gap-2">
+                        {col.header}
+                        {col.sortable && (
+                          <span className="text-zinc-400" aria-hidden="true">
+                            {sortKey === col.key ? (
+                              sortDirection === "asc" ? (
+                                "↑"
+                              ) : (
+                                "↓"
+                              )
+                            ) : (
+                              <span className="opacity-30">↕</span>
+                            )}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                  ))}
+                  {actions && (
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider"
+                    >
+                      {labelActions}
+                    </th>
+                  )}
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-slate-900 divide-y divide-zinc-200 dark:divide-slate-700">
+                {paginatedData.map((item, index) => (
+                  <tr
+                    key={keyExtractor(item)}
+                    className={[
+                      striped && index % 2 === 1
+                        ? "bg-zinc-50 dark:bg-slate-800"
+                        : "",
+                      onRowClick
+                        ? "cursor-pointer hover:bg-zinc-50 dark:hover:bg-slate-800/60"
+                        : "",
+                      "transition-colors duration-150",
+                    ].join(" ")}
+                    onClick={() => onRowClick?.(item)}
+                  >
+                    {selectable && (
+                      <td
+                        className="px-4 py-4 w-8"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <input
+                          type="checkbox"
+                          className="rounded border-zinc-300"
+                          aria-label="Select row"
+                          checked={selectedIds.includes(keyExtractor(item))}
+                          onChange={(e) => {
+                            const id = keyExtractor(item);
+                            onSelectionChange?.(
+                              e.target.checked
+                                ? [...selectedIds, id]
+                                : selectedIds.filter((s) => s !== id),
+                            );
+                          }}
+                        />
+                      </td>
+                    )}
+                    {columns.map((col) => (
+                      <td
+                        key={col.key}
+                        className="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100"
+                      >
+                        {col.render
+                          ? col.render(item)
+                          : ((item[col.key] as string) ?? "-")}
+                      </td>
+                    ))}
+                    {actions && (
+                      <td
+                        className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {actions(item)}
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {!externalPagination && totalPages > 1 && (
+        <div className="flex justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── SelectableCard (internal) ───────────────────────────────────────────────
+
+interface SelectableCardProps {
+  id: string;
+  selectable: boolean;
+  selected: boolean;
+  onToggle: (id: string, checked: boolean) => void;
+  children: ReactNode;
+  listMode?: boolean;
+}
+
+function SelectableCard({
+  id,
+  selectable,
+  selected,
+  onToggle,
+  children,
+  listMode = false,
+}: SelectableCardProps) {
+  if (!selectable) return <div>{children}</div>;
+  return (
+    <div className="relative group">
+      <div
+        className={[
+          "absolute z-10",
+          listMode ? "left-2 top-1/2 -translate-y-1/2" : "top-2 left-2",
+        ].join(" ")}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <label className="flex items-center justify-center cursor-pointer mb-0">
+          <input
+            type="checkbox"
+            className={[
+              "w-4 h-4 rounded border-2 cursor-pointer transition-all appearance-none border-zinc-300 dark:border-slate-600",
+              selected
+                ? "border-indigo-500 bg-indigo-500"
+                : "bg-white dark:bg-slate-800 group-hover:border-indigo-400",
+            ].join(" ")}
+            checked={selected}
+            onChange={(e) => onToggle(id, e.target.checked)}
+            aria-label="Select item"
+          />
+          {selected && (
+            <svg
+              className="absolute w-3 h-3 text-white pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={3}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          )}
+        </label>
+      </div>
+      {selected && (
+        <div
+          className="absolute inset-0 z-[5] rounded-xl ring-2 ring-indigo-500 ring-offset-0 pointer-events-none"
+          aria-hidden="true"
+        />
+      )}
+      {children}
+    </div>
+  );
+}

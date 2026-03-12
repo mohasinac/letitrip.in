@@ -26,7 +26,7 @@ export const ORDER_SELLER_SORT_OPTIONS = [
 ] as const;
 
 /** Controls which Sieve field set to expose in the filter UI */
-export type OrderFilterVariant = "admin" | "seller";
+export type OrderFilterVariant = "admin" | "seller" | "user";
 
 export interface OrderFiltersProps {
   table: UrlTable;

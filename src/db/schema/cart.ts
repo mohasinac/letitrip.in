@@ -25,6 +25,8 @@ export interface CartItemDocument {
   sellerId: string;
   sellerName: string;
   isAuction: boolean;
+  /** True for pre-order products — drives separate order grouping at checkout */
+  isPreOrder: boolean;
   addedAt: Date;
   updatedAt: Date;
 }
@@ -85,6 +87,7 @@ export const CART_FIELDS = {
     SELLER_ID: "sellerId",
     SELLER_NAME: "sellerName",
     IS_AUCTION: "isAuction",
+    IS_PRE_ORDER: "isPreOrder",
     ADDED_AT: "addedAt",
     UPDATED_AT: "updatedAt",
   },
@@ -113,6 +116,7 @@ export type AddToCartInput = {
   sellerId: string;
   sellerName: string;
   isAuction?: boolean;
+  isPreOrder?: boolean;
 };
 
 export type UpdateCartItemInput = {

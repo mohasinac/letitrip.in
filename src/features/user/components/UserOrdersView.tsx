@@ -3,26 +3,27 @@
  *
  * Extracted from src/app/[locale]/user/orders/page.tsx
  * Lists the current user's orders with status filter tabs, search, sort,
- * and pagination — all URL-driven via useUrlTable.
+ * filter drawer, URL-driven selection, and bulk cancel.
  * Uses the unified ListingLayout shell.
  */
 
 "use client";
 
-import { Suspense, useMemo } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import { ShoppingBag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useAuth, useUrlTable } from "@/hooks";
+import { useAuth, useMessage, usePendingTable, useUrlTable } from "@/hooks";
 import { useUserOrders } from "../hooks";
 import {
   ActiveFilterChips,
   Button,
-  Card,
   DataTable,
   EmptyState,
   Heading,
   ListingLayout,
+  OrderCard,
+  OrderFilters,
   Search,
   SortDropdown,
   Spinner,
@@ -35,7 +36,9 @@ import {
 } from "@/components";
 import type { ActiveFilter } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { formatCurrency, formatDate } from "@/utils";
+import { formatCurrency } from "@/utils";
+import { cancelOrderAction } from "@/actions";
+import type { OrderDocument } from "@/db/schema";
 
 const STATUS_MAP: Record<
   string,
@@ -56,6 +59,15 @@ const ORDER_SORT_OPTIONS_KEYS = [
   { value: "totalPrice", key: "sortLowest" },
 ] as const;
 
+const FILTER_KEYS: string[] = [
+  "status",
+  "paymentStatus",
+  "minAmount",
+  "maxAmount",
+  "dateFrom",
+  "dateTo",
+];
+
 function UserOrdersContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -63,11 +75,24 @@ function UserOrdersContent() {
   const tOrders = useTranslations("orders");
   const tLoading = useTranslations("loading");
   const tActions = useTranslations("actions");
+  const { showSuccess, showError } = useMessage();
+
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
   const statusFilter = table.get("status");
+  const paymentStatusFilter = table.get("paymentStatus");
+  const minAmount = table.get("minAmount");
+  const maxAmount = table.get("maxAmount");
+  const dateFrom = table.get("dateFrom");
+  const dateTo = table.get("dateTo");
   const page = table.getNumber("page", 1);
   const pageSize = table.getNumber("pageSize", 10);
   const search = table.get("q");
   const sortParam = table.get("sorts") || "-orderDate";
+
+  // ── Staged filter state via usePendingTable ──────────────────────────
+  const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
+    usePendingTable(table, FILTER_KEYS);
 
   const STATUS_TABS = [
     { key: "", label: tOrders("tabAll") },
@@ -81,12 +106,28 @@ function UserOrdersContent() {
   const ordersParams = useMemo(() => {
     const p = new URLSearchParams();
     if (statusFilter) p.set("status", statusFilter);
+    if (paymentStatusFilter) p.set("paymentStatus", paymentStatusFilter);
+    if (minAmount) p.set("minAmount", minAmount);
+    if (maxAmount) p.set("maxAmount", maxAmount);
+    if (dateFrom) p.set("dateFrom", dateFrom);
+    if (dateTo) p.set("dateTo", dateTo);
     if (search) p.set("q", search);
     if (sortParam) p.set("sorts", sortParam);
     p.set("page", String(page));
     p.set("pageSize", String(pageSize));
     return p.toString();
-  }, [statusFilter, search, sortParam, page, pageSize]);
+  }, [
+    statusFilter,
+    paymentStatusFilter,
+    minAmount,
+    maxAmount,
+    dateFrom,
+    dateTo,
+    search,
+    sortParam,
+    page,
+    pageSize,
+  ]);
 
   const {
     orders,
@@ -104,20 +145,81 @@ function UserOrdersContent() {
     [tOrders],
   );
 
-  const activeFilters = useMemo<ActiveFilter[]>(
+  const activeFilters = useMemo<ActiveFilter[]>(() => {
+    const chips: ActiveFilter[] = [];
+    if (statusFilter) {
+      chips.push({
+        key: "status",
+        label: tOrders("tabAll"),
+        value:
+          STATUS_TABS.find((t) => t.key === statusFilter)?.label ??
+          statusFilter,
+      });
+    }
+    if (paymentStatusFilter) {
+      chips.push({
+        key: "paymentStatus",
+        label: tOrders("paymentStatus"),
+        value: paymentStatusFilter,
+      });
+    }
+    if (minAmount || maxAmount) {
+      chips.push({
+        key: "amount",
+        label: tOrders("total"),
+        value: [minAmount && `₹${minAmount}`, maxAmount && `₹${maxAmount}`]
+          .filter(Boolean)
+          .join(" – "),
+      });
+    }
+    if (dateFrom || dateTo) {
+      chips.push({
+        key: "date",
+        label: tOrders("orderDate"),
+        value: [dateFrom, dateTo].filter(Boolean).join(" – "),
+      });
+    }
+    return chips;
+  }, [
+    statusFilter,
+    paymentStatusFilter,
+    minAmount,
+    maxAmount,
+    dateFrom,
+    dateTo,
+    tOrders,
+  ]);
+
+  // ── Bulk cancel handler ──────────────────────────────────────────────
+  const handleBulkCancel = useCallback(async () => {
+    const results = await Promise.allSettled(
+      selectedIds.map((id) => cancelOrderAction(id, "Cancelled by user")),
+    );
+    const succeeded = results.filter((r) => r.status === "fulfilled").length;
+    if (succeeded === selectedIds.length) {
+      showSuccess(tActions("bulkSuccess", { count: succeeded }));
+    } else if (succeeded > 0) {
+      showError(
+        tActions("bulkPartialSuccess", {
+          success: succeeded,
+          total: selectedIds.length,
+        }),
+      );
+    } else {
+      showError(tActions("bulkFailed"));
+    }
+    setSelectedIds([]);
+  }, [selectedIds, showSuccess, showError, tActions]);
+
+  // Only show bulk cancel when at least one selected order is cancellable
+  const cancellableSelected = useMemo(
     () =>
-      statusFilter
-        ? [
-            {
-              key: "status",
-              label: tOrders("tabAll"),
-              value:
-                STATUS_TABS.find((t) => t.key === statusFilter)?.label ??
-                statusFilter,
-            },
-          ]
-        : [],
-    [statusFilter, tOrders],
+      orders.filter(
+        (o) =>
+          selectedIds.includes(o.id ?? "") &&
+          (o.status === "pending" || o.status === "confirmed"),
+      ),
+    [orders, selectedIds],
   );
 
   if (loading) {
@@ -141,7 +243,7 @@ function UserOrdersContent() {
           <Text variant="secondary" className="mt-1">
             {totalOrders > 0
               ? tOrders("subtitleWithCount", { count: totalOrders })
-              : tOrders("subtitle")}
+              : tOrders("empty")}
           </Text>
         </div>
       }
@@ -168,6 +270,10 @@ function UserOrdersContent() {
           onClear={() => table.set("q", "")}
         />
       }
+      filterContent={<OrderFilters table={pendingTable} variant="user" />}
+      filterActiveCount={filterActiveCount}
+      onFilterApply={onFilterApply}
+      onFilterClear={onFilterClear}
       sortSlot={
         <SortDropdown
           value={sortParam}
@@ -191,16 +297,33 @@ function UserOrdersContent() {
         activeFilters.length > 0 ? (
           <ActiveFilterChips
             filters={activeFilters}
-            onRemove={(key) => table.set(key, "")}
-            onClearAll={() => table.set("status", "")}
+            onRemove={(key) => {
+              if (key === "amount") {
+                table.setMany({ minAmount: "", maxAmount: "" });
+              } else if (key === "date") {
+                table.setMany({ dateFrom: "", dateTo: "" });
+              } else {
+                table.set(key, "");
+              }
+            }}
+            onClearAll={onFilterClear}
           />
+        ) : undefined
+      }
+      selectedCount={selectedIds.length}
+      onClearSelection={() => setSelectedIds([])}
+      bulkActions={
+        cancellableSelected.length > 0 ? (
+          <Button variant="danger" size="sm" onClick={handleBulkCancel}>
+            {tActions("bulkCancel", { count: cancellableSelected.length })}
+          </Button>
         ) : undefined
       }
       loading={isLoading}
     >
       <DataTable
         data={orders}
-        keyExtractor={(o) => o.id ?? ""}
+        keyExtractor={(o: OrderDocument) => o.id ?? ""}
         loading={isLoading}
         columns={[
           { key: "productTitle", header: tOrders("colProduct") },
@@ -234,6 +357,9 @@ function UserOrdersContent() {
           },
         ]}
         defaultViewMode="list"
+        selectable
+        selectedIds={selectedIds}
+        onSelectionChange={setSelectedIds}
         emptyState={
           <EmptyState
             icon={<ShoppingBag className="w-16 h-16" />}
@@ -244,55 +370,16 @@ function UserOrdersContent() {
           />
         }
         mobileCardRender={(order) => (
-          <Card className={THEME_CONSTANTS.spacing.cardPadding}>
-            <div
-              className={`flex flex-col md:flex-row md:items-center md:justify-between gap-4`}
-            >
-              <div className={THEME_CONSTANTS.spacing.stackSmall}>
-                <Heading level={6}>{order.productTitle}</Heading>
-                <Text className={THEME_CONSTANTS.typography.caption}>
-                  {tOrders("orderNumber")} #
-                  {(order.id ?? "").slice(0, 8).toUpperCase()}
-                </Text>
-                <Text className={THEME_CONSTANTS.typography.caption}>
-                  {tOrders("placedOn")} {formatDate(order.orderDate)}
-                </Text>
-              </div>
-              <div className={`flex items-center flex-wrap gap-4`}>
-                <Text className="font-semibold">
-                  {formatCurrency(order.totalPrice, order.currency)}
-                </Text>
-                <StatusBadge
-                  status={STATUS_MAP[order.status] ?? "pending"}
-                  label={
-                    order.status.charAt(0).toUpperCase() + order.status.slice(1)
-                  }
-                />
-                {order.status === "delivered" && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      router.push(
-                        `${ROUTES.PUBLIC.PRODUCT_DETAIL(order.productId)}#write-review`,
-                      )
-                    }
-                  >
-                    {tOrders("writeReview")}
-                  </Button>
-                )}
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() =>
-                    router.push(ROUTES.USER.ORDER_DETAIL(order.id ?? ""))
-                  }
-                >
-                  {tOrders("viewOrder")}
-                </Button>
-              </div>
-            </div>
-          </Card>
+          <OrderCard
+            order={order}
+            selectable
+            isSelected={selectedIds.includes(order.id ?? "")}
+            onSelect={(id, checked) =>
+              setSelectedIds((prev) =>
+                checked ? [...prev, id] : prev.filter((x) => x !== id),
+              )
+            }
+          />
         )}
       />
     </ListingLayout>

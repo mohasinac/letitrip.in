@@ -97,6 +97,7 @@ class CartRepository extends BaseRepository<CartDocument> {
           sellerId: input.sellerId,
           sellerName: input.sellerName,
           isAuction: input.isAuction ?? false,
+          isPreOrder: input.isPreOrder ?? false,
           addedAt: new Date(),
           updatedAt: new Date(),
         };

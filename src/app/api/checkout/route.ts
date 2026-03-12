@@ -9,7 +9,7 @@
  *  3. Load cart & verify it has items
  *  4. Resolve & validate shipping address
  *  5. For each cart item: fetch product, check stock
- *  6. Group cart items by sellerId → create ONE OrderDocument per store
+ *  6. Split cart by type+seller → auction=1/item, preorder=1/seller, standard=1/seller
  *  7. Deduct availableQuantity from each product
  *  8. Clear the cart
  *  9. Return { orderIds, total, itemCount }
@@ -27,6 +27,7 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { sendOrderConfirmationEmail } from "@/lib/email";
 import { createApiHandler } from "@/lib/api/api-handler";
+import { splitCartIntoOrderGroups } from "@/utils";
 import type { AddressDocument } from "@/db/schema";
 
 // ─── Validation Schema ────────────────────────────────────────────────────────
@@ -103,23 +104,20 @@ export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
       }
     }
 
-    // 6. Group items by sellerId → one order per store
+    // 6. Split cart into typed order groups:
+    //    • auction items   → 1 order per item (independent lot)
+    //    • pre-order items → 1 order per seller (consolidated deposit)
+    //    • standard items  → 1 order per seller (same-store shipment)
     const userName = user!.displayName ?? user!.email ?? "Unknown User";
     const userEmail = user!.email ?? "";
 
-    // Build seller → items map
-    const byStore = new Map<string, typeof productChecks>();
-    for (const check of productChecks) {
-      const key = check.item.sellerId || "unknown";
-      if (!byStore.has(key)) byStore.set(key, []);
-      byStore.get(key)!.push(check);
-    }
+    const orderGroups = splitCartIntoOrderGroups(productChecks);
 
     const orderIds: string[] = [];
     let total = 0;
     const emailsToSend: Parameters<typeof sendOrderConfirmationEmail>[0][] = [];
 
-    for (const group of byStore.values()) {
+    for (const { items: group, orderType } of orderGroups) {
       const firstItem = group[0].item;
       const groupTotal = group.reduce(
         (sum, { item }) => sum + item.price * item.quantity,
@@ -188,6 +186,7 @@ export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
         sellerId: firstItem.sellerId || undefined,
         sellerName: firstItem.sellerName || undefined,
         items: orderItems,
+        orderType,
         status: "pending",
         paymentStatus: "pending",
         paymentMethod,

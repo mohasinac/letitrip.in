@@ -8,11 +8,12 @@
  * All state is URL-driven via useUrlTable.
  */
 
-import { Suspense, useMemo } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import { BookOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   ActiveFilterChips,
+  Button,
   DataTable,
   EmptyState,
   Heading,
@@ -28,7 +29,14 @@ import { BlogFilters } from "@/components";
 import { BlogCard } from "@/components";
 import { BlogFeaturedCard } from "./BlogFeaturedCard";
 import { THEME_CONSTANTS } from "@/constants";
-import { useUrlTable, useBlogPosts, usePendingTable } from "@/hooks";
+import {
+  useUrlTable,
+  useBlogPosts,
+  usePendingTable,
+  useAuth,
+  useMessage,
+} from "@/hooks";
+import { addToWishlistAction } from "@/actions";
 import type { BlogPostDocument } from "@/db/schema";
 
 const PAGE_SIZE = 24;
@@ -42,6 +50,9 @@ function BlogListContent({ initialData }: { initialData?: BlogPostsResult }) {
   const t = useTranslations("blog");
   const tActions = useTranslations("actions");
   const tFilters = useTranslations("filters");
+  const { user } = useAuth();
+  const { showSuccess, showError } = useMessage();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const table = useUrlTable({
     defaults: { pageSize: String(PAGE_SIZE), sort: "-publishedAt" },
@@ -108,6 +119,26 @@ function BlogListContent({ initialData }: { initialData?: BlogPostsResult }) {
 
   const hasActiveFilters = filterActiveCount > 0 || Boolean(table.get("q"));
 
+  const handleBulkAddToWishlist = useCallback(async () => {
+    const results = await Promise.allSettled(
+      selectedIds.map((id) => addToWishlistAction(id)),
+    );
+    const succeeded = results.filter((r) => r.status === "fulfilled").length;
+    if (succeeded === selectedIds.length) {
+      showSuccess(tActions("bulkSuccess", { count: succeeded }));
+    } else if (succeeded > 0) {
+      showError(
+        tActions("bulkPartialSuccess", {
+          success: succeeded,
+          total: selectedIds.length,
+        }),
+      );
+    } else {
+      showError(tActions("bulkFailed"));
+    }
+    setSelectedIds([]);
+  }, [selectedIds, showSuccess, showError, tActions]);
+
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
       <div className={`${THEME_CONSTANTS.page.container.full} py-8`}>
@@ -148,6 +179,19 @@ function BlogListContent({ initialData }: { initialData?: BlogPostsResult }) {
                 onRemove={() => table.set("category", "")}
                 onClearAll={() => table.set("category", "")}
               />
+            ) : undefined
+          }
+          selectedCount={selectedIds.length}
+          onClearSelection={() => setSelectedIds([])}
+          bulkActions={
+            user ? (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleBulkAddToWishlist}
+              >
+                {tActions("bulkAddToWishlist", { count: selectedIds.length })}
+              </Button>
             ) : undefined
           }
           paginationSlot={
@@ -194,6 +238,9 @@ function BlogListContent({ initialData }: { initialData?: BlogPostsResult }) {
                   { key: "publishedAt", header: t("colPublishedAt") },
                 ]}
                 defaultViewMode="grid"
+                selectable={!!user}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
                 emptyState={
                   <EmptyState
                     icon={<BookOpen className="w-16 h-16" />}
@@ -201,7 +248,18 @@ function BlogListContent({ initialData }: { initialData?: BlogPostsResult }) {
                     description={t("noArticlesSubtitle")}
                   />
                 }
-                mobileCardRender={(post) => <BlogCard post={post as any} />}
+                mobileCardRender={(post) => (
+                  <BlogCard
+                    post={post as any}
+                    selectable={!!user}
+                    selected={selectedIds.includes(post.id)}
+                    onSelect={(id, sel) =>
+                      setSelectedIds((prev) =>
+                        sel ? [...prev, id] : prev.filter((x) => x !== id),
+                      )
+                    }
+                  />
+                )}
               />
             </div>
           )}

@@ -1,4 +1,17 @@
+// Note: "use client" retained because the dead-code legacy section uses React hooks.
 "use client";
+
+/**
+ * DataTable — promoted to @lir/ui (S1-2).
+ * This shim re-exports from the package so all existing callers
+ * (via `@/components` barrel) continue to work unchanged.
+ */
+export { DataTable } from "@lir/ui";
+export type { DataTableProps, DataTableColumn } from "@lir/ui";
+
+// Legacy: the rest of this file is replaced by the shim above.
+// If you need the old implementation, see git history.
+/* eslint-disable */
 
 import { ReactNode, useState, useMemo } from "react";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
@@ -65,7 +78,7 @@ interface DataTableProps<T> {
 
 type SortDirection = "asc" | "desc" | null;
 
-export function DataTable<T extends Record<string, any>>({
+export function DataTable_LegacyDeleted<T extends Record<string, any>>({
   data,
   columns,
   keyExtractor,

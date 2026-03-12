@@ -21,3 +21,6 @@ export * from "./id-generators";
 
 // Guest Cart (localStorage storage for unauthenticated users)
 export * from "./guest-cart";
+
+// Order Splitter (cart → order group segmentation)
+export * from "./order-splitter";

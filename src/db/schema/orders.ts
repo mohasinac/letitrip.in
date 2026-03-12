@@ -13,6 +13,14 @@ export type ShippingMethod = "custom" | "shiprocket";
 export type OrderPayoutStatus = "eligible" | "requested" | "paid";
 
 /**
+ * Discriminates how an order was created and what fulfilment rules apply:
+ * - "standard"  — regular in-stock product, ships upon payment
+ * - "preorder"  — item not yet available; deposit may be collected upfront
+ * - "auction"   — won via bidding; one order per auction item
+ */
+export type OrderType = "standard" | "preorder" | "auction";
+
+/**
  * A single line-item within a per-store order.
  * Used when multiple cart items from the same seller are grouped into one order.
  */
@@ -37,6 +45,11 @@ export interface OrderDocument {
   sellerName?: string;
   /** All line items in this order (populated for multi-item per-store orders) */
   items?: OrderItem[];
+  /**
+   * Discriminates order type for downstream processing (refunds, shipping, payouts).
+   * Defaults to "standard" when not set (legacy orders).
+   */
+  orderType?: OrderType;
   quantity: number;
   unitPrice: number;
   totalPrice: number;

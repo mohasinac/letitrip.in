@@ -17,11 +17,17 @@ const { spacing } = THEME_CONSTANTS;
 interface CategoryGridProps {
   categories: CategoryDocument[];
   className?: string;
+  selectable?: boolean;
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
 }
 
 export function CategoryGrid({
   categories,
   className = "",
+  selectable = false,
+  selectedIds = [],
+  onSelectionChange,
 }: CategoryGridProps) {
   const t = useTranslations("categories");
   if (categories.length === 0) {
@@ -41,7 +47,17 @@ export function CategoryGrid({
       className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-4 ${className}`}
     >
       {categories.map((category) => (
-        <CategoryCard key={category.id} category={category} />
+        <CategoryCard
+          key={category.id}
+          category={category}
+          selectable={selectable}
+          selected={selectedIds.includes(category.id)}
+          onSelect={(id, sel) =>
+            onSelectionChange?.(
+              sel ? [...selectedIds, id] : selectedIds.filter((x) => x !== id),
+            )
+          }
+        />
       ))}
     </div>
   );

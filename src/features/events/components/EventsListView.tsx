@@ -8,11 +8,12 @@
  * All state is URL-driven via useUrlTable.
  */
 
-import { Suspense, useMemo } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import { CalendarDays } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   ActiveFilterChips,
+  Button,
   EmptyState,
   Heading,
   ListingLayout,
@@ -25,7 +26,14 @@ import {
 import type { ActiveFilter } from "@/components";
 import { EventFilters } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
-import { useUrlTable, usePublicEvents, usePendingTable } from "@/hooks";
+import {
+  useUrlTable,
+  usePublicEvents,
+  usePendingTable,
+  useAuth,
+  useMessage,
+} from "@/hooks";
+import { addToWishlistAction } from "@/actions";
 import type { EventDocument } from "@/db/schema";
 import { EventCard } from "@/components";
 
@@ -48,6 +56,9 @@ function EventsListContent({
   const t = useTranslations("events");
   const tActions = useTranslations("actions");
   const tTypes = useTranslations("eventTypes");
+  const { user } = useAuth();
+  const { showSuccess, showError } = useMessage();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const table = useUrlTable({
     defaults: { pageSize: String(PAGE_SIZE), sort: "-startsAt" },
@@ -105,6 +116,26 @@ function EventsListContent({
     if (q) sp.set("q", q);
     return sp.toString();
   }, [statusFilter, typeFilter, sortParam, page, table]);
+
+  const handleBulkAddToWishlist = useCallback(async () => {
+    const results = await Promise.allSettled(
+      selectedIds.map((id) => addToWishlistAction(id)),
+    );
+    const succeeded = results.filter((r) => r.status === "fulfilled").length;
+    if (succeeded === selectedIds.length) {
+      showSuccess(tActions("bulkSuccess", { count: succeeded }));
+    } else if (succeeded > 0) {
+      showError(
+        tActions("bulkPartialSuccess", {
+          success: succeeded,
+          total: selectedIds.length,
+        }),
+      );
+    } else {
+      showError(tActions("bulkFailed"));
+    }
+    setSelectedIds([]);
+  }, [selectedIds, showSuccess, showError, tActions]);
 
   const { events, total, isLoading } = usePublicEvents({
     params: apiParams,
@@ -170,6 +201,19 @@ function EventsListContent({
               />
             ) : undefined
           }
+          selectedCount={selectedIds.length}
+          onClearSelection={() => setSelectedIds([])}
+          bulkActions={
+            user ? (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleBulkAddToWishlist}
+              >
+                {tActions("bulkAddToWishlist", { count: selectedIds.length })}
+              </Button>
+            ) : undefined
+          }
           paginationSlot={
             totalPages > 1 ? (
               <TablePagination
@@ -209,7 +253,17 @@ function EventsListContent({
                     />
                   ))
                 : events.map((event) => (
-                    <EventCard key={event.id} event={event} />
+                    <EventCard
+                      key={event.id}
+                      event={event}
+                      selectable={!!user}
+                      selected={selectedIds.includes(event.id)}
+                      onSelect={(id, sel) =>
+                        setSelectedIds((prev) =>
+                          sel ? [...prev, id] : prev.filter((x) => x !== id),
+                        )
+                      }
+                    />
                   ))}
             </div>
           )}

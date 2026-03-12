@@ -88,6 +88,15 @@ export * from "./user";
 // Re-export from auth subdirectory
 export * from "./auth";
 
+// ==================== @LIR/UI NEW PRIMITIVES (S1-1) ====================
+// Components that don't have existing app-specific equivalents
+// Modal, Drawer, Pagination, StatusBadge, Breadcrumbs are app-specific (see feedback/, ui/, layout/)
+// BreadcrumbItem is already exported from layout/ as a React component — don't re-export as type
+export { StarRating } from "@lir/ui";
+export type { StarRatingProps } from "@lir/ui";
+export { ImageLightbox } from "@lir/ui";
+export type { ImageLightboxProps, LightboxImage } from "@lir/ui";
+
 // ==================== PROVIDERS ====================
 // Re-export from providers subdirectory
 export * from "./providers";
@@ -101,6 +110,9 @@ export * from "./auctions";
 
 // ==================== PRE-ORDERS ====================
 export * from "./pre-orders";
+
+// ==================== ORDERS ====================
+export * from "./orders";
 
 // ==================== CATEGORIES ====================
 export * from "./categories";

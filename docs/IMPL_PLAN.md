@@ -19,17 +19,17 @@
 
 ## Sprint Map (Overview)
 
-| Sprint | Theme                             | Est. Hours | Items                              |
-| ------ | --------------------------------- | ---------- | ---------------------------------- |
-| **S0** | Foundations & P0 bugs             | 5h         | PP-1, FN-1, Phase 0 + LX-15, PL-0  |
-| **S1** | Package library                   | 7h         | PL-1, PL-2                         |
-| **S2** | Cards + product page micro-UX     | 9h         | Phase 1, PP-2, PP-6, PP-7, NV-4    |
-| **S3** | Hero sequences + carousel         | 9h         | Phase 2, Phase 3, SR-1, NV-3       |
-| **S4** | Content sections + shop UX        | 9h         | Phase 4, PP-3–5, SH-1, SH-3, FN-2  |
-| **S5** | Layout shell + nav + search       | 9h         | Phase 5, Phase 6, NV-1, NV-2, SR-2 |
-| **S6** | Portal UX — admin + seller + user | 11h        | AU-9, AU-1, AU-2, AU-4, AU-6       |
-| **S7** | Portal completion + global polish | 10h        | AU-3, AU-5, AU-7, AU-8, Phase 7    |
-| **S8** | Before/After section _(optional)_ | 3h         | Phase 8, LX-1                      |
+| Sprint    | Theme                             | Est. Hours | Items                              |
+| --------- | --------------------------------- | ---------- | ---------------------------------- |
+| **S0** ✅ | Foundations & P0 bugs             | 5h         | PP-1, FN-1, Phase 0 + LX-15, PL-0  |
+| **S1** ✅ | Package library                   | 7h         | PL-1, PL-2                         |
+| **S2** ✅ | Cards + product page micro-UX     | 9h         | Phase 1, PP-2, PP-6, PP-7, NV-4    |
+| **S3**    | Hero sequences + carousel         | 9h         | Phase 2, Phase 3, SR-1, NV-3       |
+| **S4**    | Content sections + shop UX        | 9h         | Phase 4, PP-3–5, SH-1, SH-3, FN-2  |
+| **S5**    | Layout shell + nav + search       | 9h         | Phase 5, Phase 6, NV-1, NV-2, SR-2 |
+| **S6**    | Portal UX — admin + seller + user | 11h        | AU-9, AU-1, AU-2, AU-4, AU-6       |
+| **S7**    | Portal completion + global polish | 10h        | AU-3, AU-5, AU-7, AU-8, Phase 7    |
+| **S8**    | Before/After section _(optional)_ | 3h         | Phase 8, LX-1                      |
 
 **Total: ~72h** (visual makeover ~34h · package library ~11h · portal UX ~27h)
 
@@ -299,9 +299,11 @@ npm run build
 
 ---
 
-## Sprint 1 — Package Library
+## Sprint 1 — Package Library ✅ COMPLETE
 
 **Goal:** Elevate `@lir/ui` with 8 interactive primitives from Licorice and promote `DataTable`.
+
+> **Status:** Complete. Build gate passed: `npx tsc --noEmit` ✅ · `npm run build` ✅ (29.6 s)
 
 ---
 

@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased] — feat(s1): @lir/ui package library — 8 new primitives + DataTable promotion
+
+### Added — Sprint 1 (Package Library)
+
+**S1-1 — 8 new interactive primitives in `packages/ui/src/components/`**
+
+| File                | Component                                                                                                |
+| ------------------- | -------------------------------------------------------------------------------------------------------- |
+| `Modal.tsx`         | Centered modal — React Portal, focus trap, ESC close, scroll lock, 5 sizes (`sm`/`md`/`lg`/`xl`/`full`)  |
+| `Drawer.tsx`        | Slide-in panel — left/right/bottom sides, CSS `transition-transform`, `rounded-t-2xl` bottom variant     |
+| `Select.tsx`        | Accessible custom combobox — `SelectOption<V>` generic, label/error/disabled, keyboard nav (↑↓Enter Esc) |
+| `StarRating.tsx`    | 0–5 star rating — interactive mode with hover preview, `readOnly` display mode, 3 sizes                  |
+| `Pagination.tsx`    | Smart-ellipsis pagination — prev/next chevrons, first/last buttons, 3 sizes                              |
+| `Breadcrumb.tsx`    | Accessible nav trail — `BreadcrumbItem[]`, ChevronRight separators, last item = `font-medium`            |
+| `StatusBadge.tsx`   | Semantic status badge — broad union covers order/payment/review/ticket/generic statuses, wraps `Badge`   |
+| `ImageLightbox.tsx` | Full-screen image overlay — keyboard ←/→/Esc, counter, React Portal                                      |
+
+All 8 components: `"use client"`, inline Tailwind (no app-specific deps), exported from `packages/ui/src/index.ts`.
+
+**S1-2 — `DataTable` promoted to `@lir/ui`**
+
+- New file: `packages/ui/src/DataTable.tsx` — full rewrite with all `THEME_CONSTANTS` inlined, `UI_LABELS` replaced by a `labels` prop with English defaults, `pageSize?: number` prop (default 20), `rounded-2xl` container.
+- `src/components/admin/DataTable.tsx` converted to a shim: `export { DataTable } from "@lir/ui"`.
+- All existing callers unchanged (import via `@/components` barrel).
+
+### Fixed — Sprint 1
+
+- **`packages/ui/src/DataTable.tsx`** — Generic constraint corrected from `Record<string, unknown>` to `Record<string, any>`. TypeScript structural typing does not allow plain interfaces to satisfy `Record<string, unknown>` without an explicit index signature; `Record<string, any>` correctly accepts all admin view row types.
+- **`src/components/index.ts`** — Removed `Breadcrumb`/`BreadcrumbItem` re-exports from `@lir/ui` to prevent naming conflict with the existing `BreadcrumbItem` React component in `src/components/layout/Breadcrumbs.tsx`.
+- **`src/components/admin/DataTable.tsx`** — Added `"use client"` directive to the shim file; the retained legacy dead-code block uses React hooks which require a client boundary.
+
+**Build gate — Sprint 1:** `npx tsc --noEmit` ✅ · `npm run build` ✅ (29.6 s)
+
+---
+
 ## [Unreleased] — fix(layout/ux/security): provider order, hydration, background config, MediaImage skeleton, edge-runtime CSP, SEO IDs, categories API, seed data
 
 ### Bug Fixes

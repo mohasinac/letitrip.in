@@ -30,6 +30,7 @@ const addToCartSchema = z.object({
   sellerId: z.string().min(1),
   sellerName: z.string().min(1),
   isAuction: z.boolean().optional(),
+  isPreOrder: z.boolean().optional(),
 });
 
 const updateCartItemSchema = z.object({

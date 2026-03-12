@@ -55,3 +55,44 @@ export type {
   IndeterminateProgressProps,
 } from "./components/Progress";
 export { Progress, IndeterminateProgress } from "./components/Progress";
+
+// ─── S1-1: New Primitives ─────────────────────────────────────────────────────
+
+export type { PaginationProps } from "./components/Pagination";
+export { Pagination } from "./components/Pagination";
+
+export type {
+  StatusBadgeProps,
+  StatusBadgeStatus,
+  OrderStatus,
+  PaymentStatus,
+  ReviewStatus,
+  TicketStatus,
+  GenericStatus,
+} from "./components/StatusBadge";
+export { StatusBadge } from "./components/StatusBadge";
+
+export type { ModalProps } from "./components/Modal";
+export { Modal } from "./components/Modal";
+
+export type { DrawerProps } from "./components/Drawer";
+export { Drawer } from "./components/Drawer";
+
+export type { SelectProps, SelectOption } from "./components/Select";
+export { Select } from "./components/Select";
+
+export type { StarRatingProps } from "./components/StarRating";
+export { StarRating } from "./components/StarRating";
+
+export type { BreadcrumbProps, BreadcrumbItem } from "./components/Breadcrumb";
+export { Breadcrumb } from "./components/Breadcrumb";
+
+export type {
+  ImageLightboxProps,
+  LightboxImage,
+} from "./components/ImageLightbox";
+export { ImageLightbox } from "./components/ImageLightbox";
+
+// ─── S1-2: DataTable ──────────────────────────────────────────────────────────
+export type { DataTableProps, DataTableColumn } from "./DataTable";
+export { DataTable } from "./DataTable";

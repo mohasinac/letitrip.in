@@ -55,14 +55,14 @@ interface EventCardProps {
   /** Whether this card is selected */
   selected?: boolean;
   /** Callback when checkbox is toggled */
-  onSelectionChange?: (id: string, checked: boolean) => void;
+  onSelect?: (id: string, checked: boolean) => void;
 }
 
 export function EventCard({
   event,
   selectable,
   selected,
-  onSelectionChange,
+  onSelect,
 }: EventCardProps) {
   const t = useTranslations("events");
   const tTypes = useTranslations("eventTypes");
@@ -115,7 +115,7 @@ export function EventCard({
               id={`select-event-${event.id}`}
               aria-label={`Select ${event.title}`}
               checked={!!selected}
-              onChange={(e) => onSelectionChange?.(event.id, e.target.checked)}
+              onChange={(e) => onSelect?.(event.id, e.target.checked)}
               className="bg-white/80"
             />
           </div>

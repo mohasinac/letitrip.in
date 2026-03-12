@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Store } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
+  Button,
   EmptyState,
   Heading,
   ListingLayout,
@@ -15,6 +16,8 @@ import {
 import { THEME_CONSTANTS } from "@/constants";
 import { StoreCard } from "@/components";
 import { useStores } from "../hooks";
+import { useAuth, useMessage } from "@/hooks";
+import { addToWishlistAction } from "@/actions";
 import type { StoreListItem } from "../types";
 
 const PAGE_SIZE = 24;
@@ -43,6 +46,9 @@ const STORE_SORT_OPTIONS_KEYS = [
 export function StoresListView({ initialData }: StoresListViewProps = {}) {
   const t = useTranslations("storesPage");
   const tActions = useTranslations("actions");
+  const { user } = useAuth();
+  const { showSuccess, showError } = useMessage();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const { query, table } = useStores({ initialData });
 
   const { data, isLoading, error } = query;
@@ -62,6 +68,26 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
   const handleClearFilters = useCallback(() => {
     table.clear(["q"]);
   }, [table]);
+
+  const handleBulkAddToWishlist = useCallback(async () => {
+    const results = await Promise.allSettled(
+      selectedIds.map((id) => addToWishlistAction(id)),
+    );
+    const succeeded = results.filter((r) => r.status === "fulfilled").length;
+    if (succeeded === selectedIds.length) {
+      showSuccess(tActions("bulkSuccess", { count: succeeded }));
+    } else if (succeeded > 0) {
+      showError(
+        tActions("bulkPartialSuccess", {
+          success: succeeded,
+          total: selectedIds.length,
+        }),
+      );
+    } else {
+      showError(tActions("bulkFailed"));
+    }
+    setSelectedIds([]);
+  }, [selectedIds, showSuccess, showError, tActions]);
 
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
@@ -105,6 +131,19 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
               />
             ) : undefined
           }
+          selectedCount={selectedIds.length}
+          onClearSelection={() => setSelectedIds([])}
+          bulkActions={
+            user ? (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleBulkAddToWishlist}
+              >
+                {tActions("bulkAddToWishlist", { count: selectedIds.length })}
+              </Button>
+            ) : undefined
+          }
         >
           {!isLoading && error ? (
             <EmptyState
@@ -133,7 +172,17 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
                     />
                   ))
                 : stores.map((store) => (
-                    <StoreCard key={store.uid} store={store} />
+                    <StoreCard
+                      key={store.uid}
+                      store={store}
+                      selectable={!!user}
+                      selected={selectedIds.includes(store.ownerId)}
+                      onSelect={(id, sel) =>
+                        setSelectedIds((prev) =>
+                          sel ? [...prev, id] : prev.filter((x) => x !== id),
+                        )
+                      }
+                    />
                   ))}
             </div>
           )}
