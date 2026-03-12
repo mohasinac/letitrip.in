@@ -1,8 +1,9 @@
 /**
  * CategoryCard
  *
- * Displays a single category with optional image, checkbox,
- * featured star, name, product count, and an amber "View" label.
+ * tile variant (default): portrait card with gradient background, icon, bottom name overlay.
+ * pill variant: compact rounded-full button for filter rows.
+ * card variant: legacy full card with image, used for admin/selectable contexts.
  */
 
 "use client";
@@ -21,6 +22,8 @@ interface CategoryCardProps {
   selected?: boolean;
   onSelect?: (id: string, selected: boolean) => void;
   className?: string;
+  /** tile: portrait card (default). pill: compact rounded-full. card: legacy landscape. */
+  variant?: "tile" | "pill" | "card";
 }
 
 export function CategoryCard({
@@ -29,13 +32,135 @@ export function CategoryCard({
   selected = false,
   onSelect,
   className = "",
+  variant = "tile",
 }: CategoryCardProps) {
   const t = useTranslations("categories");
   const { name, slug, display, metrics, isFeatured, isBrand } = category;
   const productCount = metrics?.totalProductCount ?? metrics?.productCount ?? 0;
-
   const href = `${ROUTES.PUBLIC.CATEGORIES}/${slug}`;
 
+  /* ── Pill variant ─────────────────────────────────────── */
+  if (variant === "pill") {
+    return (
+      <TextLink
+        href={href}
+        className={`inline-flex items-center gap-2 rounded-full bg-zinc-100 dark:bg-slate-800 px-4 py-2 text-sm font-medium hover:bg-primary-500/10 hover:text-primary-700 dark:hover:text-primary-400 transition-all duration-200 ${className}`}
+      >
+        {display?.icon && (
+          <Span className="text-base leading-none">{display.icon}</Span>
+        )}
+        {name}
+      </TextLink>
+    );
+  }
+
+  /* ── Tile variant (default) ───────────────────────────── */
+  if (variant === "tile") {
+    const bgGradient = display?.color
+      ? `background: ${display.color}`
+      : undefined;
+
+    return (
+      <TextLink
+        href={href}
+        className={`block group focus:outline-none ${className}`}
+        onClick={
+          selectable
+            ? (e) => {
+                e.preventDefault();
+                onSelect?.(category.id, !selected);
+              }
+            : undefined
+        }
+      >
+        <div
+          className={`relative overflow-hidden rounded-2xl aspect-[3/4] cursor-pointer ${
+            selected ? "ring-2 ring-primary-500" : ""
+          }`}
+          style={{
+            background:
+              display?.color ??
+              "linear-gradient(135deg,#65c408 0%,#3570fc 100%)",
+          }}
+        >
+          {/* Cover image */}
+          {display?.coverImage && (
+            <div className="absolute inset-0">
+              <MediaImage
+                src={display.coverImage}
+                alt={name}
+                size="card"
+                className="group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+          )}
+
+          {/* Large icon */}
+          {!display?.coverImage && display?.icon && (
+            <div className={`${flex.center} w-full h-full pt-8`}>
+              <Span className="text-7xl leading-none group-hover:scale-110 transition-transform duration-300">
+                {display.icon}
+              </Span>
+            </div>
+          )}
+
+          {/* Gradient hover fill overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-cobalt-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+          {/* Bottom overlay */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent px-3 pb-3 pt-10">
+            <Heading
+              level={3}
+              className="font-display text-lg text-white leading-snug line-clamp-1"
+            >
+              {name}
+            </Heading>
+            <div className="flex items-center justify-between mt-1">
+              {/* Animated underline */}
+              <div className="bg-primary-400 h-0.5 w-0 rounded-full transition-all duration-300 group-hover:w-8" />
+              {/* Product count chip */}
+              <Span className="bg-white/20 backdrop-blur text-white text-[10px] font-medium rounded-full px-2 py-0.5">
+                {productCount}
+              </Span>
+            </div>
+          </div>
+
+          {/* Featured star */}
+          {isFeatured && (
+            <div
+              className={`absolute top-2 right-2 z-10 w-7 h-7 rounded-full bg-yellow-400 ${flex.center} shadow`}
+            >
+              <Star
+                className="w-4 h-4 text-yellow-900 fill-yellow-900"
+                aria-hidden="true"
+              />
+            </div>
+          )}
+
+          {/* Checkbox */}
+          {selectable && (
+            <div
+              className="absolute top-2 left-2 z-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <input
+                type="checkbox"
+                aria-label={`Select ${name}`}
+                checked={selected}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  onSelect?.(category.id, e.target.checked);
+                }}
+                className="w-5 h-5 rounded border-zinc-300 text-primary-600 focus:ring-primary-500 cursor-pointer bg-white/80"
+              />
+            </div>
+          )}
+        </div>
+      </TextLink>
+    );
+  }
+
+  /* ── Card variant (legacy / admin) ───────────────────── */
   return (
     <TextLink
       href={href}
@@ -43,7 +168,7 @@ export function CategoryCard({
     >
       <Card
         className={`h-full overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200${
-          selected ? " ring-2 ring-indigo-500" : ""
+          selected ? " ring-2 ring-primary-500" : ""
         }`}
       >
         {/* ── Image area ── */}
@@ -67,7 +192,7 @@ export function CategoryCard({
             </div>
           ) : (
             <div
-              className={`${flex.center} w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600`}
+              className={`${flex.center} w-full h-full bg-gradient-to-br from-primary-500 to-cobalt-600`}
             >
               <Span className="text-4xl font-bold text-white/90 select-none">
                 {name.charAt(0).toUpperCase()}
@@ -89,7 +214,7 @@ export function CategoryCard({
                   e.stopPropagation();
                   onSelect?.(category.id, e.target.checked);
                 }}
-                className="w-5 h-5 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer bg-white/80"
+                className="w-5 h-5 rounded border-zinc-300 text-primary-600 focus:ring-primary-500 cursor-pointer bg-white/80"
               />
             </div>
           )}
@@ -112,7 +237,7 @@ export function CategoryCard({
               className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
                 isBrand
                   ? "bg-amber-600/90 text-white"
-                  : "bg-indigo-600/90 text-white"
+                  : "bg-gradient-to-br from-primary-500 to-primary-600 text-white"
               }`}
             >
               {isBrand ? (
@@ -129,7 +254,7 @@ export function CategoryCard({
         <div className="flex flex-col flex-1 p-4 gap-1">
           <Heading
             level={3}
-            className={`text-base font-semibold ${themed.textPrimary} line-clamp-1 group-hover/img:text-indigo-600 dark:group-hover/img:text-indigo-400 transition-colors`}
+            className={`text-base font-semibold ${themed.textPrimary} line-clamp-1 group-hover/img:text-primary-600 dark:group-hover/img:text-primary-400 transition-colors`}
           >
             {name}
           </Heading>

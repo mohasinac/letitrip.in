@@ -435,7 +435,7 @@ export const THEME_CONSTANTS = {
     },
     // Bottom navbar colors
     bottomNav: {
-      active: "text-zinc-900 dark:text-zinc-50 font-semibold",
+      active: "text-primary-500 dark:text-primary-400 font-semibold",
       inactive:
         "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors",
       text: "text-xs",

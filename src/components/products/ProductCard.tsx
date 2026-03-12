@@ -144,11 +144,11 @@ export function ProductCard({
 
   return (
     <div
-      className={`${themed.bgPrimary} rounded-lg overflow-hidden border transition-shadow transition-colors duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isOutOfStock ? "opacity-75" : ""} ${isSelected ? "ring-2 ring-indigo-500 dark:ring-indigo-400" : ""} ${hovered ? "shadow-xl border-indigo-200 dark:border-indigo-800" : "shadow-sm border-zinc-100 dark:border-slate-800"} ${className}`}
+      className={`${themed.bgPrimary} rounded-2xl overflow-hidden border transition-all duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isOutOfStock ? "opacity-75" : ""} ${isSelected ? "ring-2 ring-primary-500 dark:ring-primary-400 border-primary-300 dark:border-primary-700" : `border-zinc-100 dark:border-slate-800 hover:border-primary-300 dark:hover:border-primary-700`} shadow-sm hover:shadow-2xl hover:-translate-y-1.5 group ${className}`}
     >
       {/* ── IMAGE SECTION ── */}
       <div
-        className={`relative overflow-hidden bg-zinc-100 dark:bg-slate-800 flex-shrink-0 ${variant === "list" ? "w-32 sm:w-44 aspect-square" : "aspect-square w-full"}`}
+        className={`relative overflow-hidden bg-zinc-100 dark:bg-slate-800 flex-shrink-0 ${variant === "list" ? "w-32 sm:w-44 aspect-square" : "aspect-[4/5] w-full"}`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -203,12 +203,12 @@ export function ProductCard({
             variant="ghost"
             onClick={handleSelect}
             aria-label={isSelected ? t("deselectItem") : t("selectItem")}
-            className={`absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/90 dark:bg-slate-800/90 ${flex.center} shadow border border-zinc-200 dark:border-slate-600 hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors z-10 p-0`}
+            className={`absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/90 dark:bg-slate-800/90 ${flex.center} shadow border border-zinc-200 dark:border-slate-600 hover:border-primary-500 dark:hover:border-primary-400 transition-colors z-10 p-0`}
           >
             {isSelected ? (
               <Span
                 variant="inherit"
-                className={`w-4 h-4 rounded bg-indigo-600 ${flex.center}`}
+                className={`w-4 h-4 rounded bg-primary-600 ${flex.center}`}
               >
                 <svg
                   viewBox="0 0 10 8"
@@ -239,7 +239,7 @@ export function ProductCard({
           className={`absolute left-2 flex flex-col gap-1 z-10 ${product.featured ? "top-8" : "top-2"}`}
         >
           {product.isAuction && (
-            <Span className="bg-indigo-600/90 backdrop-blur-sm text-white text-xs font-bold px-2 py-0.5 rounded-full">
+            <Span className="bg-gradient-to-br from-primary-500 to-primary-600 backdrop-blur-sm text-white text-xs font-bold px-2 py-0.5 rounded-full shadow">
               {t("auction")}
             </Span>
           )}
@@ -264,7 +264,7 @@ export function ProductCard({
         {/* Type badge — bottom right */}
         <div className="absolute bottom-2 right-2 z-10 pointer-events-none">
           <Span
-            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${product.isAuction ? "bg-amber-600/90 text-white" : "bg-indigo-600/90 text-white"}`}
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${product.isAuction ? "bg-amber-600/90 text-white" : "bg-gradient-to-br from-primary-500 to-primary-600 text-white"}`}
           >
             {product.isAuction ? (
               <Gavel className="w-3 h-3 flex-shrink-0" />
@@ -284,7 +284,7 @@ export function ProductCard({
         <div className={`${flex.rowCenter} gap-2 items-start`}>
           <TextLink
             href={productHref}
-            className={`flex-1 min-w-0 text-sm font-medium ${themed.textPrimary} line-clamp-2 leading-snug hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors`}
+            className={`flex-1 min-w-0 text-sm font-medium ${themed.textPrimary} line-clamp-2 leading-snug hover:text-primary-600 dark:hover:text-primary-400 transition-colors`}
           >
             {product.title}
           </TextLink>
@@ -297,7 +297,7 @@ export function ProductCard({
                 ? tWishlist("removeFromWishlist")
                 : tWishlist("addToWishlist")
             }
-            className="flex-shrink-0 -mt-0.5 p-1 rounded-full hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors disabled:opacity-50"
+            className={`flex-shrink-0 -mt-0.5 p-1 rounded-full hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all duration-200 disabled:opacity-50 ${inWishlist ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
           >
             <Heart
               className={`w-4 h-4 transition-colors ${inWishlist ? "fill-rose-500 text-rose-500" : "text-zinc-400 dark:text-zinc-500"}`}
@@ -320,7 +320,7 @@ export function ProductCard({
               {t("currentBid")}:
             </Span>
           )}
-          <Text className="text-base font-bold text-indigo-600 dark:text-indigo-400 leading-none">
+          <Text className="text-base font-bold text-primary-600 dark:text-primary-400 leading-none">
             {formatCurrency(displayPrice)}
           </Text>
         </div>
@@ -343,7 +343,7 @@ export function ProductCard({
               <Button
                 variant="primary"
                 size="sm"
-                className="flex-1 text-xs px-2 gap-1"
+                className="flex-1 text-xs px-2 gap-1 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-all hover:shadow-glow active:scale-95"
                 isLoading={cartLoading}
                 onClick={handleAddToCart}
               >
@@ -358,7 +358,7 @@ export function ProductCard({
               <Button
                 variant="secondary"
                 size="sm"
-                className="flex-1 text-xs px-2 gap-1"
+                className="flex-1 text-xs px-2 gap-1 rounded-xl active:scale-95"
                 onClick={handleBuyNow}
               >
                 <Zap

@@ -79,8 +79,8 @@ export function EventCard({
 
   return (
     <Card
-      className={`h-full overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200${
-        selected ? " ring-2 ring-indigo-500" : ""
+      className={`group h-full overflow-hidden flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300${
+        selected ? " ring-2 ring-primary-500" : ""
       }`}
     >
       {/* ── Image area ── */}
@@ -95,10 +95,11 @@ export function EventCard({
               src={event.coverImageUrl}
               alt={event.title}
               size="card"
+              className="group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
             <div
-              className={`${flex.center} w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600`}
+              className={`${flex.center} w-full h-full bg-gradient-to-br from-primary-500 to-cobalt-600`}
             >
               <Span className="text-white text-5xl font-bold opacity-30">
                 {event.title.charAt(0).toUpperCase()}
@@ -152,7 +153,7 @@ export function EventCard({
         <TextLink href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}>
           <Heading
             level={3}
-            className={`text-base sm:text-[17px] font-semibold leading-snug ${themed.textPrimary} line-clamp-2 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors`}
+            className={`text-base sm:text-[17px] font-semibold leading-snug ${themed.textPrimary} line-clamp-2 hover:text-primary-600 dark:hover:text-primary-400 transition-colors`}
           >
             {event.title}
           </Heading>
@@ -168,7 +169,7 @@ export function EventCard({
         <div className="mt-auto pt-2">
           <TextLink
             href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}
-            className="inline-flex w-full items-center justify-center px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            className="inline-flex w-full items-center justify-center px-4 py-2 rounded-xl bg-primary-500 hover:bg-primary-600 active:scale-95 text-white text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
           >
             {t("visitEvent")}
           </TextLink>

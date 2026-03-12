@@ -37,12 +37,12 @@ export function StoreCard({
   return (
     <TextLink href={href} className="group block focus:outline-none">
       <Card
-        className={`overflow-hidden h-full flex flex-col hover:shadow-lg transition-all duration-200 group-focus-visible:ring-2 group-focus-visible:ring-indigo-500${
-          selected ? " ring-2 ring-indigo-500" : ""
+        className={`overflow-hidden h-full flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group-focus-visible:ring-2 group-focus-visible:ring-primary-500${
+          selected ? " ring-2 ring-primary-500" : ""
         }`}
       >
         {/* ── Banner ── */}
-        <div className="relative aspect-[2/1] overflow-hidden bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-400 flex-shrink-0">
+        <div className="relative aspect-[2/1] overflow-hidden bg-gradient-to-br from-primary-400 via-cobalt-500 to-secondary-400 flex-shrink-0">
           {store.storeBannerURL && (
             <img
               src={store.storeBannerURL}
@@ -68,7 +68,7 @@ export function StoreCard({
                   e.stopPropagation();
                   onSelect?.(store.ownerId, e.target.checked);
                 }}
-                className="w-5 h-5 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer bg-white/80"
+                className="w-5 h-5 rounded border-zinc-300 text-primary-600 focus:ring-primary-500 cursor-pointer bg-white/80"
               />
             </div>
           )}
@@ -97,7 +97,7 @@ export function StoreCard({
                 />
               ) : (
                 <div
-                  className={`${flex.center} w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600`}
+                  className={`${flex.center} w-full h-full bg-gradient-to-br from-primary-500 to-cobalt-600`}
                 >
                   <Span className="text-xl font-bold text-white">
                     {name.charAt(0).toUpperCase()}
@@ -130,13 +130,23 @@ export function StoreCard({
             </Text>
           )}
 
+          {/* Visit Store CTA — slides up on hover */}
+          <div className="relative overflow-hidden mt-auto">
+            <div
+              className={`${flex.center} gap-1 w-full py-2 text-xs font-semibold text-primary-600 dark:text-primary-400 translate-y-full group-hover:translate-y-0 transition-transform duration-300`}
+            >
+              {t("visitStore")}
+              <Span aria-hidden="true">&rarr;</Span>
+            </div>
+          </div>
+
           {/* Stats row */}
           <div
-            className={`${flex.rowCenter} gap-3 mt-auto pt-2 text-xs ${themed.textSecondary}`}
+            className={`${flex.rowCenter} gap-3 pt-2 text-xs ${themed.textSecondary}`}
           >
             <div className={`${flex.rowCenter} gap-1`}>
               <ShoppingBag
-                className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0"
+                className="w-3.5 h-3.5 text-primary-500 flex-shrink-0"
                 aria-hidden="true"
               />
               <Span>

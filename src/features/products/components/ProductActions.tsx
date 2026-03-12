@@ -21,6 +21,8 @@ interface ProductActionsProps {
   isAuction?: boolean;
   isOutOfStock?: boolean;
   statusLabel?: string;
+  /** When provided and <= 5, shows a low-stock urgency label */
+  stockCount?: number;
 }
 
 export function ProductActions({
@@ -30,6 +32,7 @@ export function ProductActions({
   isAuction = false,
   isOutOfStock = false,
   statusLabel,
+  stockCount,
 }: ProductActionsProps) {
   const t = useTranslations("products");
   const tLoading = useTranslations("loading");
@@ -105,6 +108,18 @@ export function ProductActions({
       {/* Desktop actions — visible on lg+ */}
       <div className="hidden lg:block">
         <div className="sticky top-24 space-y-3">
+          {/* Low-stock urgency */}
+          {!isOutOfStock &&
+            typeof stockCount === "number" &&
+            stockCount > 0 &&
+            stockCount <= 5 && (
+              <Text
+                size="sm"
+                className="font-medium text-amber-600 dark:text-amber-400"
+              >
+                {t("onlyLeft", { count: stockCount })}
+              </Text>
+            )}
           {/* Add to Cart */}
           <Button
             onClick={handleAddToCart}

@@ -124,7 +124,7 @@ export function ProductImageGallery({
                 type="button"
                 aria-label={t("gallery.openLightbox")}
                 onClick={() => setLightboxOpen(true)}
-                className="absolute inset-0 cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-inset"
+                className="absolute inset-0 cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
               />
             </>
           )}
@@ -183,7 +183,7 @@ export function ProductImageGallery({
               }`}
               className={`relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 overflow-hidden rounded-md border-2 transition-all ${
                 idx === selectedIndex
-                  ? "border-indigo-500 ring-2 ring-indigo-500/30"
+                  ? "border-primary-500 ring-2 ring-primary-500/30"
                   : `border-transparent ${themed.border} opacity-60 hover:opacity-100`
               }`}
             >
@@ -198,7 +198,7 @@ export function ProductImageGallery({
                   aria-hidden="true"
                 >
                   <Span
-                    className={`w-7 h-7 rounded-full bg-white/90 text-indigo-600 ${flex.center} text-sm font-bold`}
+                    className={`w-7 h-7 rounded-full bg-white/90 text-primary-600 ${flex.center} text-sm font-bold`}
                   >
                     ▶
                   </Span>

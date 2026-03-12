@@ -59,8 +59,8 @@ export function BlogCard({
       className="block group/card focus:outline-none"
     >
       <Card
-        className={`h-full overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200${
-          selected ? " ring-2 ring-indigo-500" : ""
+        className={`h-full overflow-hidden flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300${
+          selected ? " ring-2 ring-primary-500" : ""
         }`}
       >
         {/* ── Image area ── */}
@@ -92,7 +92,7 @@ export function BlogCard({
                   e.stopPropagation();
                   onSelect?.(post.id, e.target.checked);
                 }}
-                className="w-5 h-5 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer bg-white/80"
+                className="w-5 h-5 rounded border-zinc-300 text-primary-600 focus:ring-primary-500 cursor-pointer bg-white/80"
               />
             </div>
           )}
@@ -129,7 +129,7 @@ export function BlogCard({
         <div className="flex flex-col flex-1 p-4 gap-2">
           <Heading
             level={3}
-            className={`text-base sm:text-[17px] font-semibold leading-snug ${themed.textPrimary} line-clamp-2 group-hover/img:text-indigo-600 dark:group-hover/img:text-indigo-400 transition-colors`}
+            className={`text-base sm:text-[17px] font-semibold leading-snug ${themed.textPrimary} line-clamp-2 group-hover/img:text-primary-600 dark:group-hover/img:text-primary-400 transition-colors`}
           >
             {post.title}
           </Heading>
@@ -158,7 +158,7 @@ export function BlogCard({
           {/* Continue Reading — visual-only; the outer <a> provides navigation */}
           <div
             aria-hidden="true"
-            className="mt-1 w-full text-center text-xs font-semibold text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-700 rounded-lg py-2 group-hover/img:bg-indigo-50 dark:group-hover/img:bg-indigo-900/20 transition-colors"
+            className="mt-1 w-full text-center text-xs font-semibold text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-700 rounded-xl py-2 group-hover/img:bg-primary-50 dark:group-hover/img:bg-primary-900/20 transition-colors"
           >
             {t("continueReading")}
           </div>

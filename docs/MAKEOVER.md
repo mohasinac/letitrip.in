@@ -4,7 +4,15 @@
 >
 > **Reference inspiration**: licoricehealth.store — clean editorial hero, polished trust strips, rich product cards with micro-interactions, editorial section headers with tag pills, gradient-text headings, staggered grid animations, momentum scroll carousels.
 >
-> **Rule**: Every component stays configurable. No hardcoded pixels. Use THEME_CONSTANTS, Tailwind tokens, and props to drive all variation.
+> **Rules**:
+>
+> - Every component stays configurable. No hardcoded pixels. Use `THEME_CONSTANTS`, Tailwind tokens, and props to drive all variation.
+> - **No raw HTML tags in JSX.** Use the primitives from `@/components` instead:
+>   - Structure: `Section`, `Article`, `Main`, `Nav`, `Aside`, `Ul`, `Ol`, `Li`, `BlockHeader`, `BlockFooter`
+>   - Typography: `Heading`, `Text`, `Label`, `Caption`, `Span`, `TextLink`
+>   - Interactive: `Button`, `Badge`, `Alert`, `Divider`
+>   - Media: `MediaImage`, `MediaVideo`, `MediaAvatar`
+>   - Raw `<div>` and `<span>` are only acceptable as layout/animation wrapper shells with no semantic meaning and no text content.
 
 ---
 
@@ -73,13 +81,15 @@ Desktop: 2-col (left: text stack | right: decorative element — optional bg ima
 
 Changes:
 
-- H1: `font-display text-5xl md:text-7xl lg:text-8xl` — gradient text using `bg-gradient-to-r from-primary-400 via-cobalt-500 to-secondary-500 bg-clip-text text-transparent`
-- Pill badge above H1: `bg-primary-500/15 text-primary-600 border border-primary-500/30 rounded-full px-4 py-1 text-xs tracking-widest uppercase` — configurable via prop
+- H1: `font-display text-5xl md:text-7xl lg:text-8xl` — use `.text-gradient-brand` utility (already in `globals.css`) or inline `bg-gradient-to-r from-primary-400 via-cobalt-500 to-secondary-500 bg-clip-text text-transparent`
+- Pill badge above H1: `bg-primary-500/15 text-primary-600 border border-primary-500/30 rounded-full px-4 py-1 text-xs tracking-widest uppercase` — use `THEME_CONSTANTS.sectionHeader.pill` base as reference — configurable via prop
 - Subtitle: `text-xl text-zinc-500 dark:text-zinc-400 max-w-xl leading-relaxed`
-- Dual CTA: Primary button (lime filled) + Ghost outline button side-by-side
+- Dual CTA: Use `<Button>` from `@/components` — `variant="primary"` (lime filled) + `variant="outline"` — side-by-side
 - Trust badges inline below CTA: 3–4 mini chips (`bg-zinc-100 dark:bg-slate-800`) with emoji + text — configurable array prop
-- Right panel: `relative overflow-hidden rounded-3xl` — renders `<MediaImage>` if `ctaImage` CMS field set; else neutral gradient placeholder with floating product tile art
+- Right panel: `relative overflow-hidden rounded-3xl` — renders `<MediaImage>` from `@/components` if `ctaImage` CMS field set; else neutral gradient placeholder with floating product tile art
 - Section padding: `py-16 md:py-24`
+
+> **Existing infrastructure:** `Heading`, `Text`, `Label` from `@/components` (re-exported from `@lir/ui`). `Button` from `@/components`. `MediaImage` from `@/components`. `.text-gradient-brand` utility already in `globals.css`.
 
 ### C2 — `HeroCarousel`
 
@@ -88,12 +98,15 @@ Changes:
 Structural changes:
 
 - Change aspect from `aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9]` to `min-h-[420px] md:min-h-[560px] lg:min-h-[680px] w-full` — allows text to breathe without cropping
-- Auto-advance: reduce to `4000ms`, add progress bar that fills inside each dot indicator (CSS `animation: fill 4s linear`)
-- Arrows: change from small circle to `w-12 h-12 rounded-2xl bg-white/20 dark:bg-slate-900/20 backdrop-blur-md border border-white/30 hover:bg-white/40 shadow-lg` — with directional arrow SVG
-- Dot indicators: replace with pill-shaped track. Active dot morphs to `w-8` pill via `transition-all duration-500`; each `bg-white/40` → active `bg-white`
-- Overlay slide text: H1 gets `font-display text-6xl lg:text-8xl text-white text-shadow-lg`, add animated entrance on slide change (`animate-slideInLeft` → reset on previous slides)
-- Video badge: small `LIVE` badge on video slides top-right
+- Auto-advance: reduce to `4000ms`, add progress bar that fills inside each dot indicator — use `animate-progress-fill` (already in `tailwind.config.js`) with CSS `animation-duration` set per-slide
+- Arrows: change from small circle to `w-12 h-12 rounded-2xl bg-white/20 dark:bg-slate-900/20 backdrop-blur-md border border-white/30 hover:bg-white/40 shadow-lg` — use `THEME_CONSTANTS.carousel.arrow` tokens; directional arrow SVG
+- Dot indicators: replace with pill-shaped track. Active dot morphs to `w-8` pill via `transition-all duration-500`; `THEME_CONSTANTS.carousel.dotInactive` → `THEME_CONSTANTS.carousel.dotActive`
+- Overlay slide text: H1 gets `font-display text-6xl lg:text-8xl text-white text-shadow-lg` (`.text-shadow-lg` already in `globals.css`), add `animate-slide-in-left` on slide change (reset via `key` prop)
+- Video badge: small `LIVE` badge (`<Badge>` from `@/components`) on video slides top-right — use `<MediaVideo>` from `@/components` for video slides
+- Render slide images with `<MediaImage>` from `@/components`
 - Fade gradient at bottom to bleed into next section: `absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-slate-950 to-transparent`
+
+> **Existing infrastructure:** `MediaImage`, `MediaVideo` from `@/components`. `Badge` from `@/components`. `THEME_CONSTANTS.carousel.*` already has `arrow`, `dotActive`, `dotInactive` tokens. `animate-progress-fill`, `animate-slide-in-left` already in `tailwind.config.js`. `.text-shadow-lg` already in `globals.css`. Use `useSwipe` from `@lir/react` for touch swipe gesture support.
 
 ### C3 — `SectionCarousel`
 
@@ -102,12 +115,15 @@ Structural changes:
 Changes:
 
 - Section header redesign: Add `headingVariant` prop (`default | gradient | editorial`)
-  - `editorial`: Pill badge (optional `label` prop) above H2, H2 styled `font-display text-4xl`, description below
-  - `gradient`: H2 with gradient text (`from-primary-500 to-cobalt-500`)
+  - `editorial`: Use `THEME_CONSTANTS.sectionHeader.pill` for pill badge (already defined). `Heading` from `@/components` for H2 styled `font-display text-4xl`, `Text` for description below
+  - `gradient`: `Heading` with `.text-gradient-primary` utility (already in `globals.css`) applied via `className`
   - `default`: current behavior
-- Arrow buttons: Replace plain icon circles with `w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-md border border-zinc-200 dark:border-slate-700 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 transition-all duration-200`
-- Peek next card: Default `overflow hidden` → expose last card by `-mr-6 md:-mr-8` on scroller wrapper (configurable `showPeek` prop)
-- Loading skeleton: cards get `rounded-2xl` (was `rounded-xl`)
+- Arrow buttons: apply `THEME_CONSTANTS.carousel.arrow` token (already defined). Replaces plain icon circles with `w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-md border border-zinc-200 dark:border-slate-700 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 transition-all duration-200`
+- Underlying scroller: `HorizontalScroller` lives at `src/components/ui/HorizontalScroller.tsx` — use it via `@/components`. It already supports `perView`, `gap`, and drag scroll via `useHorizontalScrollDrag`.
+- Peek next card: Use `HorizontalScroller`'s existing props for overflow behavior; expose last card by `-mr-6 md:-mr-8` on scroller wrapper (configurable `showPeek` prop)
+- Loading skeleton: Use `<Skeleton>` from `@/components` (re-exported from `@lir/ui`). Cards get `rounded-2xl` (was `rounded-xl`)
+
+> **Existing infrastructure:** `HorizontalScroller` at `src/components/ui/HorizontalScroller.tsx` (exported from `@/components`). `useHorizontalAutoScroll` and `useHorizontalScrollDrag` hooks co-located at `src/components/ui/`. `THEME_CONSTANTS.sectionHeader.*` and `THEME_CONSTANTS.carousel.*` already defined. `Heading`, `Text`, `Skeleton` from `@/components`.
 
 ### C4 — `ProductCard`
 
@@ -115,27 +131,32 @@ Changes:
 
 Changes:
 
-- Outer: `rounded-2xl` (was `rounded-lg`), shadow `shadow-sm hover:shadow-2xl`, `hover:-translate-y-1.5` transition, `hover:border-primary-300 dark:hover:border-primary-700`
-- Image area: `aspect-[4/5]` (was `aspect-square`) — taller is more premium; image crossfades (CSS `opacity` transition, already using slideshow, change to crossfade)
+- Outer: `rounded-2xl` (was `rounded-lg`), shadow `shadow-sm hover:shadow-2xl`, `hover:-translate-y-1.5` transition — or use `.card-lift` utility from `globals.css`. Add `hover:border-primary-300 dark:hover:border-primary-700`
+- Image area: `aspect-[4/5]` (was `aspect-square`) — taller is more premium; use `<MediaImage>` from `@/components` for image rendering. Change slideshow to crossfade via CSS `opacity` transition
 - Wishlist heart: `opacity-0 group-hover:opacity-100 transition-opacity duration-200` (always hidden, reveal on card hover) — currently always visible
-- Discount badge: `bg-gradient-to-br from-primary-500 to-primary-600 text-white font-bold text-xs rounded-full px-2 py-0.5 shadow-glow` — replaces flat bg
-- Seller name: add small text below product title in `text-zinc-400 text-xs`
-- Price row: MRP strikethrough stays; add `text-primary-600 dark:text-primary-400 font-bold` for current price
-- CTA row: Add-to-cart button gets `bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl px-3 py-1.5 transition-all duration-200 hover:shadow-glow active:scale-95` — full-width on mobile
+- Discount badge: `bg-gradient-to-br from-primary-500 to-primary-600 text-white font-bold text-xs rounded-full px-2 py-0.5 shadow-glow` — use `<Badge>` from `@/components` as base; replaces flat bg
+- Seller name: add `<Caption>` from `@/components` below product title in `text-zinc-400`
+- Price row: Use `<PriceDisplay>` from `@/components/ui/PriceDisplay` — already handles MRP strikethrough + current price formatting. Extend `className` prop for `text-primary-600 dark:text-primary-400 font-bold` override
+- Rating row: Use `<RatingDisplay>` from `@/components/ui/RatingDisplay` instead of inline star rendering
+- CTA row: Use `<Button>` from `@/components` — `variant="primary"` with `hover:shadow-glow active:scale-95` — full-width on mobile
 - Quick-view trigger: small `👁` icon button top-right on hover (opens modal — phase 2 implementation)
+
+> **Existing infrastructure:** `MediaImage` from `@/components`. `Badge`, `Button`, `Caption` from `@/components`. `PriceDisplay` at `src/components/ui/PriceDisplay.tsx`. `RatingDisplay` at `src/components/ui/RatingDisplay.tsx`. `.card-lift` utility in `globals.css`. `shadow-glow` in `tailwind.config.js`.
 
 ### C5 — `CategoryCard`
 
-**File:** Likely `src/components/CategoryCard.tsx` or inside features
+**File:** `src/components/categories/CategoryCard.tsx`
 
 Changes (two variants, prop `variant="tile" | "pill"`):
 
 - **tile** (default for section carousel): `rounded-2xl overflow-hidden aspect-[3/4] relative group cursor-pointer`
   - Background: gradient from category `color` prop (defaults to indigo/violet if not set)
   - Large emoji or icon: `text-6xl absolute top-4 left-4 transition-transform duration-300 group-hover:scale-110`
-  - Category name: absolute bottom overlay with `bg-gradient-to-t from-black/70 to-transparent`, white `font-display text-xl`
-  - Product count chip: `bg-white/20 backdrop-blur text-white text-xs rounded-full px-2` bottom-right
+  - Category name: absolute bottom overlay with `bg-gradient-to-t from-black/70 to-transparent`, white `font-display text-xl` — render with `<Heading>` from `@/components`
+  - Product count chip: use `<Badge>` from `@/components` — `bg-white/20 backdrop-blur text-white text-xs rounded-full`
 - **pill** (for filter rows): `rounded-full bg-zinc-100 dark:bg-slate-800 px-4 py-2 text-sm font-medium hover:bg-primary-100 dark:hover:bg-primary-900 hover:text-primary-700 transition-all`
+
+> **Existing infrastructure:** `Heading`, `Text`, `Badge` from `@/components`. `MediaImage` from `@/components` for category cover images.
 
 ### C6 — `StoreCard`
 
@@ -143,33 +164,45 @@ Changes (two variants, prop `variant="tile" | "pill"`):
 
 Changes:
 
-- Banner: use actual seller banner image with `<MediaImage>` if available; fallback to gradient stays but gets more variation
+- Banner: use `<MediaImage>` from `@/components` if seller `bannerUrl` set; fallback to gradient stays but gets more variation
+- Store avatar: use `<MediaAvatar>` from `@/components` for the avatar with ring styling
 - Card gets `group` class for hover orchestration
-- On hover: a semi-transparent "Visit Store →" overlay CTA slides up from bottom (`translate-y-full → translate-y-0` on group-hover) over the banner area
-- Stats row more refined: product count + rating in `text-sm text-zinc-500` alongside store name, not below it
-- Verified badge: moved to overlay — shown as `CheckBadgeIcon` on avatar corner (cobalt, white background)
+- On hover: a semi-transparent "Visit Store →" overlay CTA slides up from bottom (`translate-y-full → translate-y-0` on group-hover) over the banner area — CTA uses `<Button>` from `@/components`
+- Stats row: use `<RatingDisplay>` from `@/components/ui/RatingDisplay` for star rating. Product count in `<Caption>` from `@/components`
+- Verified badge: moved to overlay — shown as `CheckBadgeIcon` on avatar corner (cobalt, white background) — or use `<Badge variant="info">` from `@/components`
+
+> **Existing infrastructure:** `MediaImage`, `MediaAvatar` from `@/components`. `RatingDisplay` at `src/components/ui/RatingDisplay.tsx`. `Button`, `Badge`, `Caption` from `@/components`.
 
 ### C7 — `EventCard` & `BlogCard`
 
+**Files:** `src/components/EventCard.tsx` · `src/components/BlogCard.tsx`
+
 Changes:
 
-- Both get magazine-style treatment: image with `group-hover:scale-105 transition-transform duration-500`
-- Category tag: `absolute top-3 left-3` pill `bg-black/40 backdrop-blur text-white text-xs`
-- Date badge: `absolute top-3 right-3` small calendar chip `bg-white dark:bg-slate-900 text-zinc-700 dark:text-zinc-300 text-xs rounded-lg px-2 py-1 shadow-sm`
-- Title: migrates from below image to `absolute bottom-0 left-0 right-0` with `bg-gradient-to-t from-black/80 to-transparent px-4 pb-4 pt-16 text-white font-display` (overlay mode) — controlled by `variant="overlay" | "standard"` prop (default `standard` for backward compat)
+- Both get magazine-style treatment: `<MediaImage>` from `@/components` with `group-hover:scale-105 transition-transform duration-500` inside `overflow-hidden` wrapper
+- Category tag: `absolute top-3 left-3` — use `<Badge>` from `@/components` with `bg-black/40 backdrop-blur text-white text-xs`
+- Date badge: `absolute top-3 right-3` — small calendar chip `bg-white dark:bg-slate-900 text-zinc-700 dark:text-zinc-300 text-xs rounded-lg px-2 py-1 shadow-sm`
+- Title: migrates from below image to `absolute bottom-0 left-0 right-0` with `bg-gradient-to-t from-black/80 to-transparent px-4 pb-4 pt-16` in overlay mode. Use `<Heading>` from `@/components` with `text-white font-display` — controlled by `variant="overlay" | "standard"` prop (default `standard` for backward compat)
+- `CountdownDisplay` from `@/components/ui/CountdownDisplay` for event countdown badges
+
+> **Existing infrastructure:** `MediaImage` from `@/components`. `Badge`, `Heading`, `Text`, `Caption` from `@/components`. `CountdownDisplay` at `src/components/ui/CountdownDisplay.tsx`.
 
 ### C8 — `ReviewCard`
 
-**File:** `src/features/homepage/components/CustomerReviewsSection.tsx` (inline)
+**File:** `src/components/ReviewCard.tsx` _(already extracted — update in place)_
 
 Changes:
 
-- Card: `rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-md relative overflow-hidden`
+- Card: `rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-md relative overflow-hidden` — or compose with `<Card>` from `@/components/ui/Card`
 - Oversized quote mark watermark: `absolute -top-2 -left-2 text-9xl font-display text-primary-500/10 leading-none select-none pointer-events-none`
-- Star rating: `text-amber-400 flex gap-0.5 text-sm mb-3` — moved to top of card (before body)
-- Body: `text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed line-clamp-4`
-- Reviewer row: avatar circle (initials) + name `font-semibold text-sm` + "Verified" chip `text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 text-xs rounded-full px-2` — bottom
-- Card hover: `hover:shadow-xl hover:-translate-y-1 transition-all duration-300`
+- Star rating: use `<RatingDisplay>` from `@/components/ui/RatingDisplay` — moved to top of card (before body)
+- Body: `<Text>` from `@/components` with `.truncate-4` utility (already in `globals.css`) — `text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed`
+- Reviewer avatar: use `<MediaAvatar>` from `@/components` with fallback initials
+- Reviewer name: `<Label>` from `@/components` with `font-semibold text-sm`
+- "Verified" chip: `<Badge>` from `@/components` with `text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 text-xs rounded-full`
+- Card hover: `hover:shadow-xl hover:-translate-y-1 transition-all duration-300` — or use `.card-lift` from `globals.css`
+
+> **Existing infrastructure:** `ReviewCard` already exists at `src/components/ReviewCard.tsx` — update it in place; no extraction needed. `RatingDisplay`, `Card` from `@/components`. `MediaAvatar` from `@/components`. `Badge`, `Text`, `Label`, `Caption` from `@/components`. `.truncate-4`, `.card-lift` utilities in `globals.css`.
 
 ### C9 — `StatsCounterSection`
 
@@ -178,10 +211,14 @@ Changes:
 Changes:
 
 - Background: switch from flat `bgSecondary` to `bg-gradient-to-br from-cobalt-900 via-slate-900 to-cobalt-950` (dark editorial strip)
-- Each stat: large `font-display` number in gradient text (`from-primary-400 to-cobalt-400`), label below in `text-zinc-400 text-sm uppercase tracking-widest`
-- Icon: Replace plain circle with `w-14 h-14 rounded-2xl bg-white/10 backdrop-blur flex-center` — icon `text-2xl text-white`
-- Layout: on desktop, a vertical hairline divider (`border-r border-white/10`) between stats instead of cards
+- Layout: Consider using `<StatsGrid>` from `@/components/ui/StatsGrid` as the grid structure — it already handles responsive `StatItem` rows. Extend the `StatItem` type with an `icon` field instead of building from scratch.
+- Each stat number: `<Heading>` from `@/components` with `.text-gradient-primary` utility (`globals.css`) — large `font-display` in gradient text
+- Each stat label: `<Caption>` from `@/components` — `text-zinc-400 text-sm uppercase tracking-widest`
+- Icon: Replace plain circle with `w-14 h-14 rounded-2xl bg-white/10 backdrop-blur flex-center` using `THEME_CONSTANTS.trustStrip.iconBox` as reference — icon `text-2xl text-white`
+- Layout: on desktop, a vertical `<Divider>` from `@/components` with `orientation="vertical"` and `border-white/10` between stats
 - Section padding: `py-12 md:py-16`
+
+> **Existing infrastructure:** `StatsGrid` + `StatItem` type at `src/components/ui/StatsGrid.tsx`. `Heading`, `Caption`, `Divider` from `@/components`. `.text-gradient-primary` in `globals.css`. `THEME_CONSTANTS.trustStrip.iconBox` already defined.
 
 ### C10 — `TrustFeaturesSection`
 
@@ -189,10 +226,12 @@ Changes:
 
 Two sub-variants:
 
-1. **Strip** (existing): horizontally scrolling icon+text ticker — for very tight spaces (e.g., between hero and welcome). Add `animate-marquee` CSS keyframe for auto-scroll (respects `prefers-reduced-motion`).
-2. **Cards** (hero use): 4-up grid of glass cards — stays, but each icon gets `w-12 h-12 rounded-2xl bg-gradient-to-br` colored icon circle (configurable per-trust-item); card lifts on hover.
+1. **Strip** (existing): horizontally scrolling icon+text ticker — use `animate-marquee` (`tailwind.config.js` ✅ already added). Wrap strip items in a `<Section>` from `@/components`. Respects `prefers-reduced-motion` via CSS.
+2. **Cards** (hero use): 4-up grid of glass cards — each icon gets `THEME_CONSTANTS.trustStrip.iconBox` gradient background (✅ already defined). Card hover uses `.card-lift` from `globals.css`. Use `<Text>` and `<Label>` from `@/components` for title + description.
 
 Switch via `variant="strip" | "cards"` prop. Homepage uses `"strip"` just below hero, `"cards"` before footer.
+
+> **Existing infrastructure:** `animate-marquee` ✅ in `tailwind.config.js`. `THEME_CONSTANTS.trustStrip.iconBox` ✅ in `theme.ts`. `.card-lift` ✅ in `globals.css`. `Section`, `Text`, `Label` from `@/components`.
 
 ### C11 — `HowItWorksSection`
 
@@ -200,10 +239,13 @@ Switch via `variant="strip" | "cards"` prop. Homepage uses `"strip"` just below 
 
 Changes:
 
-- Step index: large `font-display text-7xl` number in `bg-clip-text text-transparent bg-gradient-to-br from-primary-400 to-cobalt-500 opacity-20` watermark behind each card — plus a `w-10 h-10 rounded-full bg-primary-500 text-white font-bold text-sm flex-center` front number badge
-- Cards: `rounded-3xl p-8 bg-white dark:bg-slate-900 shadow-soft group hover:-translate-y-2 hover:shadow-xl transition-all duration-300`
-- On scroll: staggered entrance via `IntersectionObserver` + CSS `@keyframes slideInLeft/Right` with `animation-delay: 0ms / 150ms / 300ms`
+- Step index: `<Heading>` from `@/components` with `font-display text-7xl` + `.text-gradient-primary` as watermark behind card. Front badge uses `<Badge>` from `@/components` — `w-10 h-10 rounded-full bg-primary-500 text-white font-bold text-sm`
+- Cards: `rounded-3xl p-8 bg-white dark:bg-slate-900 shadow-soft group hover:-translate-y-2 hover:shadow-xl transition-all duration-300` — compose with `<Article>` from `@/components` for semantic wrapping
+- On scroll: staggered entrance via `IntersectionObserver` + `animate-slide-in-left` / `animate-slide-in-right` (already in `tailwind.config.js`). Use `.stagger-1`, `.stagger-2`, `.stagger-3` utility classes (already in `globals.css`) for `animation-delay`
 - Connector: animated dashed line using SVG with `stroke-dasharray` + `stroke-dashoffset` that shrinks on scroll enter
+- Use `useBreakpoint` from `@lir/react` (via `@/hooks`) to conditionally render connector between steps on desktop only
+
+> **Existing infrastructure:** `animate-slide-in-left`, `animate-slide-in-right` ✅ in `tailwind.config.js`. `.stagger-1`–`.stagger-5` ✅ in `globals.css`. `.text-gradient-primary` ✅ in `globals.css`. `Heading`, `Article`, `Badge`, `Text` from `@/components`. `useBreakpoint` from `@lir/react` (re-exported via `@/hooks`).
 
 ### C12 — `AdvertisementBanner`
 
@@ -211,11 +253,14 @@ Changes:
 
 Gradient fallback redesign:
 
-- Add animated floating mesh blobs (`absolute rounded-full blur-3xl animate-pulse-slow`) in brand gradient behind content
-- CTA button: gets `shadow-glow` (lime glow) on hover
-- Tag pill: use `secondary` pink on gradient backgrounds for contrast
+- Add animated floating mesh blobs: `absolute rounded-full blur-3xl animate-float` (✅ `float` keyframe + `animate-float` already in `tailwind.config.js`) plus `animate-pulse-slow` (✅ already added) in brand gradient behind content
+- CTA button: use `<Button>` from `@/components` with `className="shadow-glow hover:shadow-glow"` — `shadow-glow` ✅ in `tailwind.config.js`
+- Tag pill: use `<Badge>` from `@/components` with `secondary` pink variant on gradient backgrounds for contrast
+- Banner image/media: use `<MediaImage>` from `@/components` for product mockup image
 - Split layout: dark panel gets a decorative grid pattern SVG overlay instead of CSS dots (sharper, scales better)
-- New `compact` variant (`h-32`) for between-section promotions (horizontal pill-style — logo + text + CTA on one line)
+- New `compact` variant (`h-32`) for between-section promotions — use `<Section>` from `@/components` for semantic wrapper
+
+> **Existing infrastructure:** `animate-float` ✅ in `tailwind.config.js`. `animate-pulse-slow` ✅ in `tailwind.config.js`. `shadow-glow` ✅ in `tailwind.config.js`. `Button`, `Badge`, `Section` from `@/components`. `MediaImage` from `@/components`.
 
 ### C13 — `FAQSection`
 
@@ -223,9 +268,11 @@ Gradient fallback redesign:
 
 Changes:
 
-- Tab nav: replace default `Tabs` line-variant with `pill-group` — `rounded-full bg-zinc-100 dark:bg-slate-800 p-1 flex gap-1`. Active tab: `bg-white dark:bg-slate-700 shadow-sm rounded-full px-4 py-1.5 text-sm font-medium`
-- Accordion: animated `max-h` expansion with `transition-all duration-300 ease-out`; active chevron rotates 180° (`-rotate-180 transition-transform duration-300`); active row has `bg-primary-50 dark:bg-primary-900/20 border-primary-500` left-border `border-l-4`
-- Section header: uses `gradient` variant (see C3)
+- Tab nav: use existing `<Tabs>`, `<TabsList>`, `<TabsTrigger>`, `<TabsContent>` from `@/components/ui/Tabs.tsx`. Apply `pill-group` styling to `<TabsList>` via `className` — `rounded-full bg-zinc-100 dark:bg-slate-800 p-1 flex gap-1`. Active `<TabsTrigger>`: `bg-white dark:bg-slate-700 shadow-sm rounded-full px-4 py-1.5 text-sm font-medium` — no new component needed
+- Accordion: use existing `<Accordion>`, `<AccordionItem>` from `@/components/ui/Accordion.tsx`. Extend with animated `max-h` expansion and active left-border `border-l-4 border-primary-500`. Chevron rotation on open state — add `data-[state=open]:-rotate-180 transition-transform duration-300` to chevron icon
+- Section header: uses `gradient` headingVariant (see C3) — `<Heading>` from `@/components` with `.text-gradient-primary`
+
+> **Existing infrastructure:** `Accordion`, `AccordionItem` at `src/components/ui/Accordion.tsx` (exported from `@/components`). `Tabs`, `TabsList`, `TabsTrigger`, `TabsContent` at `src/components/ui/Tabs.tsx` (exported from `@/components`). No new accordion/tabs primitives needed.
 
 ### C14 — `FooterLayout`
 
@@ -233,10 +280,14 @@ Changes:
 
 Changes:
 
-- Add trust bar above main footer content: horizontal row of 5 badges — free shipping, easy returns, secure payment, 24/7 support, authentic sellers. Each `flex-col items-center gap-1 text-xs text-zinc-500`. Divider above this.
-- Newsletter strip: inline `email input + Subscribe button` in brand colors, above link columns or in brand column sidebar (configurable `showNewsletter` prop)
-- Brand column: logo + tagline + social icons in a row with `hover:text-primary-500` transitions
-- Copyright line: improve with `Built with ❤️ in India` styling in `text-zinc-400 text-xs`
+- Add trust bar above main footer content: horizontal row of 5 badges using `<Badge>` with `<Label>` from `@/components`. Use `<Divider>` from `@/components` to separate from main footer.
+- Newsletter strip: `<Input>` from `@/components/forms` + `<Button>` from `@/components` inline. Controlled by `showNewsletter` prop. Use `<form>` via `<Form>` from `@/components/forms`
+- Social icon links: `<TextLink>` from `@/components` with `hover:text-primary-500` transitions
+- Brand tagline: `<Text>` from `@/components` with appropriate muted style
+- Footer nav links: `<TextLink>` from `@/components` — already handles internal/external links
+- Copyright line: `<Caption>` from `@/components` — `Built with ❤️ in India` in `text-zinc-400`
+
+> **Existing infrastructure:** `Divider`, `Badge`, `Button`, `Label`, `Text`, `Caption`, `TextLink` from `@/components`. `Input`, `Form` from `@/components/forms`. All layout wrappers: `Section`, `BlockFooter`, `Nav` from `@/components`.
 
 ### C15 — `TitleBarLayout`
 
@@ -244,25 +295,31 @@ Changes:
 
 Changes:
 
-- Add promo micro-strip above the bar on mobile: `bg-gradient-to-r from-primary-500 to-cobalt-600 text-white text-xs text-center py-1 px-4` — dismissible with `×` button — controlled by `showPromoStrip` siteSettings field
-- Logo: add wordmark next to the cobalt-gradient square — `font-display text-xl tracking-tight text-cobalt-700 dark:text-cobalt-300` — "LetItRip"
-- Search: on click, expand to full `absolute top-12 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg p-4 shadow-xl` overlay instead of inline expand
+- Add promo micro-strip above the bar on mobile: `bg-gradient-to-r from-primary-500 to-cobalt-600 text-white text-xs text-center py-1 px-4` — dismissible `×` button uses `<Button>` from `@/components`. Strip is `<Section>` from `@/components`. Controlled by `showPromoStrip` siteSettings field
+- Logo wordmark: `<Heading>` from `@/components` with `font-display text-xl tracking-tight text-cobalt-700 dark:text-cobalt-300` — "LetItRip" — next to cobalt-gradient square
+- Search overlay: on click, expand to full `absolute top-12 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg p-4 shadow-xl` overlay. Reuse `<Search>` component from `src/components/utility/Search.tsx` (already exported from `@/components`). Use `useClickOutside` from `@lir/react` (via `@/hooks`) to dismiss overlay on outside click
+
+> **Existing infrastructure:** `Search` at `src/components/utility/Search.tsx` (exported from `@/components`). `Section`, `Heading`, `Button` from `@/components`. `useClickOutside` from `@lir/react` (re-exported via `@/hooks`). `THEME_CONSTANTS.layout.titleBarHeight` and `zIndex.titleBar` already defined in `theme.ts`.
 
 ---
 
 ## Phase Plan
 
-### Phase 0 — Design Token Refresh (No visible component changes)
+### Phase 0 — Design Token Refresh ✅ COMPLETE (S0-3)
 
-**Goal**: Introduce new shared token values, animation CSS, and shared utility classes to power all later phases. Nothing visible changes yet.
+**Goal**: Introduce new shared token values, animation CSS, and shared utility classes to power all later phases.
 
-**Files changed:**
+**Completed in commit S0-3:**
 
-- `src/app/globals.css` — add CSS keyframes: `marquee`, `fadeInUp`, `pulse-slow`, `progress-fill`; add utilities: `.animate-marquee`, `.text-gradient-primary`, `.text-gradient-brand`, `.card-hover`
-- `src/constants/theme.ts` — add new token groups: `sectionHeader.*`, `carousel.*`, `trustStrip.*`
-- `tailwind.config.js` — add `keyframes.marquee`, `animation.marquee`, `animation.pulse-slow`, `animation.progress-fill`
+- `src/app/globals.css` — ✅ keyframes: `marquee`, `fadeInUp`, `pulse-slow`, `progress-fill`, `float`; utilities: `.animate-marquee`, `.text-gradient-primary`, `.text-gradient-brand`, `.card-lift`, `.glass`, `.stagger-1`–`.stagger-5`, `.truncate-2`–`.truncate-4`
+- `src/constants/theme.ts` — ✅ token groups: `sectionHeader.*` (pill, ornament), `carousel.*` (arrow, dotActive, dotInactive), `trustStrip.*` (iconBox)
+- `tailwind.config.js` — ✅ `animate-marquee`, `animate-pulse-slow`, `animate-progress-fill`, `animate-float`, `shadow-glow`, `shadow-glow-pink`
+- `next.config.js` + fonts — ✅ Bangers + Inter migrated to `next/font/google`
+- `src/components/products/ProductCard.tsx` — ✅ S0-1: add-to-cart CTA color fixed to `primary`
 
-**Effort:** ~2 hours | **Risk:** None (additive only)
+**Nothing to do in Phase 0** — all tokens and utilities are live. Reference them directly in Phases 1–7.
+
+**Effort:** ✅ Done | **Risk:** None
 
 ---
 
@@ -272,23 +329,23 @@ Changes:
 
 **Components:**
 
-1. `ProductCard` → C4 changes
-2. `CategoryCard` → C5 tile + pill variants
-3. `StoreCard` → C6 changes
-4. `EventCard` → C7 overlay variant added
-5. `BlogCard` → C7 overlay + compact variants added
-6. `ReviewCard` → C8 changes (inline in section, extract to own file)
+1. `ProductCard` → C4 changes — uses `MediaImage`, `Badge`, `Button`, `PriceDisplay`, `RatingDisplay`, `Caption` from `@/components`
+2. `CategoryCard` → C5 tile + pill variants — uses `Heading`, `Badge`, `MediaImage` from `@/components`
+3. `StoreCard` → C6 changes — uses `MediaImage`, `MediaAvatar`, `RatingDisplay`, `Button`, `Badge` from `@/components`
+4. `EventCard` → C7 overlay variant — uses `MediaImage`, `Badge`, `Heading`, `CountdownDisplay` from `@/components`
+5. `BlogCard` → C7 overlay + compact variants — uses `MediaImage`, `Badge`, `Heading`, `Text` from `@/components`
+6. `ReviewCard` → C8 changes — update existing `src/components/ReviewCard.tsx` in-place (already extracted)
 
 **Files changed:**
 
 - `src/components/products/ProductCard.tsx`
 - `src/components/StoreCard.tsx`
 - `src/components/EventCard.tsx`
-- `src/components/CategoryCard.tsx` (may need to be created or found)
-- `src/components/BlogCard.tsx` (may need to be found)
-- Extract `ReviewCard.tsx` to `src/features/homepage/components/ReviewCard.tsx`
+- `src/components/categories/CategoryCard.tsx` _(correct path — already exists)_
+- `src/components/BlogCard.tsx` _(already exists)_
+- `src/components/ReviewCard.tsx` _(already exists — update in-place; no extraction needed)_
 
-**Effort:** ~6 hours | **Risk:** Medium (cards are used site-wide; run full type-check after)
+**Effort:** ~6 hours | **Risk:** Medium (cards are used site-wide; run `npx tsc --noEmit` after each card)
 
 ---
 
@@ -327,7 +384,7 @@ Changes:
 
 - `src/features/homepage/components/SectionCarousel.tsx`
 - `src/features/homepage/components/HeroCarousel.tsx`
-- `src/components/HorizontalScroller.tsx` (if peek/overflow needs change there)
+- `src/components/ui/HorizontalScroller.tsx` _(correct path — update peek/overflow props here if needed)_
 
 **Effort:** ~4 hours | **Risk:** Medium (carousel used in all section carousels — test every section)
 
@@ -409,12 +466,13 @@ Changes:
 
 **Tasks:**
 
-- Standardize all card `transition` + `hover:-translate-y` across all cards (audit all `src/components/` + `src/features/`)
-- Breadcrumb: replace text separators with chevron icons; apply `text-zinc-400` muted links
-- Skeleton loaders: update all to `rounded-2xl` (match new card radius)
-- ProductCard: quick-view modal hook-up (feature-flagged)
-- Image loading states: `blur-up` technique using Next.js `placeholder="blur"` where `blurDataURL` is available
-- Dark mode: spot-check all new gradient/glass elements
+- Standardize all card `transition` + `hover:-translate-y` across all cards (audit all `src/components/` + `src/features/`) — replace ad-hoc `transition-all duration-200` with `.card-lift` where applicable
+- Breadcrumb: `<Breadcrumbs>` / `<AutoBreadcrumbs>` already exist at `src/components/layout/Breadcrumbs.tsx` — update to `<TextLink>` from `@/components` for items and `ChevronRight` separators
+- Skeleton loaders: `<Skeleton>` from `@/components` (re-exported from `@lir/ui`) — update `className` to `rounded-2xl` everywhere to match new card radius
+- ProductCard: quick-view `<Modal>` from `@/components/feedback/Modal.tsx` hook-up (feature-flagged)
+- Image loading states: all images already go through `<MediaImage>` from `@/components` — `placeholder="blur"` can be passed via `blurDataURL` prop
+- Dark mode: spot-check all new gradient/glass elements — use `.glass` and `.glass-strong` utilities from `globals.css`
+- Use `useMediaQuery` / `useBreakpoint` from `@lir/react` (via `@/hooks`) for any JS-driven responsive logic
 - Run `npx tsc --noEmit` → `npm run build` — fix any type errors introduced
 
 **Effort:** ~3 hours | **Risk:** High per-file but low per-change
@@ -423,18 +481,20 @@ Changes:
 
 ## Summary Table
 
-| Phase                | Component Count      | Estimated Effort | Visual Impact      |
-| -------------------- | -------------------- | ---------------- | ------------------ |
-| 0 — Tokens           | 3 files              | 2h               | None (foundation)  |
-| 1 — Cards            | 6 components         | 6h               | ★★★★★ Highest      |
-| 2 — Hero Sections    | 4 components         | 5h               | ★★★★☆ Very high    |
-| 3 — Carousels        | 2–3 components       | 4h               | ★★★★☆ Very high    |
-| 4 — Content Sections | 8 sections           | 4h               | ★★★☆☆ Medium-high  |
-| 5 — Banner/FAQ/WA    | 3 components         | 3h               | ★★★☆☆ Medium       |
-| 6 — Layout Shell     | 3 components         | 4h               | ★★★★☆ High (frame) |
-| 7 — Polish & Motion  | Audit whole codebase | 3h               | ★★★☆☆ Progressive  |
+| Phase                | Component Count      | Status      | Estimated Effort | Visual Impact      |
+| -------------------- | -------------------- | ----------- | ---------------- | ------------------ |
+| 0 — Tokens           | 3 files              | ✅ Complete | Done             | None (foundation)  |
+| 1 — Cards            | 6 components         | 🔲 Next     | ~6h              | ★★★★★ Highest      |
+| 2 — Hero Sections    | 4 components         | 🔲 Planned  | ~5h              | ★★★★☆ Very high    |
+| 3 — Carousels        | 2–3 components       | 🔲 Planned  | ~4h              | ★★★★☆ Very high    |
+| 4 — Content Sections | 8 sections           | 🔲 Planned  | ~4h              | ★★★☆☆ Medium-high  |
+| 5 — Banner/FAQ/WA    | 3 components         | 🔲 Planned  | ~3h              | ★★★☆☆ Medium       |
+| 6 — Layout Shell     | 3 components         | 🔲 Planned  | ~4h              | ★★★★☆ High (frame) |
+| 7 — Polish & Motion  | Audit whole codebase | 🔲 Planned  | ~3h              | ★★★☆☆ Progressive  |
 
-**Total estimated: ~31 hours across 7 phases**
+**Remaining: ~29 hours across Phases 1–7**
+
+> **Available infrastructure (no re-implementation needed):** All typography + semantic primitives via `@lir/ui` (`Heading`, `Text`, `Label`, `Caption`, `Span`, `Section`, `Nav`, `Ul`, `Li`, etc.). All interactive primitives from `@/components`: `Button`, `Badge`, `Alert`, `Divider`, `Spinner`, `Skeleton`, `Progress`, `Accordion`, `AccordionItem`, `Tabs`, `Modal`, `Card`. All media rendering via `MediaImage`, `MediaVideo`, `MediaAvatar` from `@/components`. Specialized display components: `PriceDisplay`, `RatingDisplay`, `CountdownDisplay`, `StatsGrid`, `HorizontalScroller`. UI hooks: `useSwipe`, `useClickOutside`, `useBreakpoint`, `useMediaQuery`, `useCountdown` from `@lir/react` (via `@/hooks`). All CSS tokens: `.text-gradient-primary`, `.text-gradient-brand`, `.card-lift`, `.glass`, `.stagger-*`, `animate-marquee`, `animate-float`, `animate-pulse-slow`, `animate-progress-fill`, `shadow-glow` — all live.
 
 ---
 

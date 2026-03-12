@@ -46,14 +46,14 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
   return (
     <>
       <Card
-        className={`h-full overflow-hidden flex flex-col hover:shadow-md transition-shadow duration-200 ${className}`}
+        className={`h-full overflow-hidden flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${className}`}
       >
         <div className="flex flex-col flex-1 p-4 gap-3">
           {/* ── Top row: avatar + info + rating star ── */}
           <div className={`${flex.between} gap-2`}>
             <div className={`${flex.rowCenter} gap-3 min-w-0`}>
               {/* Avatar */}
-              <div className="relative w-10 h-10 rounded-full overflow-hidden bg-indigo-100 dark:bg-indigo-900/30 flex-shrink-0">
+              <div className="relative w-10 h-10 rounded-full overflow-hidden bg-primary-100 dark:bg-primary-900/30 flex-shrink-0">
                 {review.userAvatar ? (
                   <MediaImage
                     src={review.userAvatar}
@@ -62,7 +62,7 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
                   />
                 ) : (
                   <div className={`${flex.center} w-full h-full`}>
-                    <Span className="text-sm font-bold text-indigo-500">
+                    <Span className="text-sm font-bold text-primary-500">
                       {generateInitials(review.userName || "A")}
                     </Span>
                   </div>
@@ -73,7 +73,7 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
               <div className="flex flex-col min-w-0">
                 <TextLink
                   href={userHref}
-                  className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 truncate transition-colors leading-snug"
+                  className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 truncate transition-colors leading-snug"
                 >
                   {review.userName || t("anonymous")}
                 </TextLink>
@@ -113,10 +113,10 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
           {/* ── Item link ── */}
           <TextLink
             href={productHref}
-            className={`text-xs ${themed.textSecondary} hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors inline-flex items-center gap-1`}
+            className={`text-xs ${themed.textSecondary} hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1`}
           >
             <Span
-              className={`inline-block px-2 py-0.5 rounded bg-zinc-100 dark:bg-slate-700 text-[11px] font-medium truncate max-w-[160px] hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors`}
+              className={`inline-block px-2 py-0.5 rounded bg-zinc-100 dark:bg-slate-700 text-[11px] font-medium truncate max-w-[160px] hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors`}
             >
               {review.productTitle || t("viewItem")}
             </Span>

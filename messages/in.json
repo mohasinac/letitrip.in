@@ -759,6 +759,7 @@
     "addToWishlist": "विशलिस्ट में जोड़ें",
     "buyNow": "अभी खरीदें",
     "outOfStock": "स्टॉक में नहीं",
+    "onlyLeft": "केवल {count} स्टॉक में बचे!",
     "inStock": "स्टॉक में है",
     "freeShipping": "मुफ्त शिपिंग",
     "reviews": "समीक्षाएं",

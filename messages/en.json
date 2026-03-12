@@ -759,6 +759,7 @@
     "addToWishlist": "Add to Wishlist",
     "buyNow": "Buy Now",
     "outOfStock": "Out of Stock",
+    "onlyLeft": "Only {count} left in stock!",
     "inStock": "In Stock",
     "freeShipping": "Free Shipping",
     "reviews": "Reviews",
