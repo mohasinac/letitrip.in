@@ -102,6 +102,13 @@ const BlogArticlesSection = dynamic(
     })),
   { ssr: true },
 );
+const FeaturedResultsSection = dynamic(
+  () =>
+    import("@/features/homepage").then((m) => ({
+      default: m.FeaturedResultsSection,
+    })),
+  { ssr: true },
+);
 const HowItWorksSection = dynamic(
   () =>
     import("@/features/homepage").then((m) => ({
@@ -139,6 +146,7 @@ export default async function Page() {
       <WhatsAppCommunitySection />
       <FAQSection />
       <BlogArticlesSection />
+      <FeaturedResultsSection />
     </div>
   );
 }

@@ -133,8 +133,23 @@ export interface SiteSettingsDocument {
    * Falls back to DEFAULT_LOYALTY_CONFIG when not set.
    */
   loyalty?: import("./ripcoins").LoyaltyConfig;
+  /**
+   * Admin-curated before/after result cards shown in `FeaturedResultsSection`.
+   * Each entry pairs two image URLs with an optional caption.
+   */
+  featuredResults?: FeaturedResult[];
   createdAt: Date;
   updatedAt: Date;
+}
+
+/** A single before/after comparison card entry for the homepage results section. */
+export interface FeaturedResult {
+  /** URL of the "before" image */
+  beforeImage: string;
+  /** URL of the "after" image */
+  afterImage: string;
+  /** Short caption displayed below the drag card */
+  caption: string;
 }
 
 /** Encrypted-at-rest credential blobs stored in Firestore. */

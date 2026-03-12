@@ -21,4 +21,7 @@ export { CustomerReviewsSection } from "./CustomerReviewsSection";
 export { WhatsAppCommunitySection } from "./WhatsAppCommunitySection";
 export { FAQSection } from "./FAQSection";
 export { BlogArticlesSection } from "./BlogArticlesSection";
+export { BeforeAfterCard } from "./BeforeAfterCard";
+export type { BeforeAfterCardProps } from "./BeforeAfterCard";
+export { FeaturedResultsSection } from "./FeaturedResultsSection";
 export { HomepageSkeleton } from "./HomepageSkeleton";

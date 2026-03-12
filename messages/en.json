@@ -1499,7 +1499,13 @@
     "preOrdersPill": "COMING SOON",
     "storesPill": "TOP STORES",
     "eventsPill": "EVENTS & OFFERS",
-    "blogPill": "FROM THE BLOG"
+    "blogPill": "FROM THE BLOG",
+    "realResultsPill": "REAL RESULTS",
+    "realResultsTitle": "Proven by real people",
+    "realResultsSubtitle": "See how real customers transformed their experience with LetItRip",
+    "beforeLabel": "BEFORE",
+    "afterLabel": "AFTER",
+    "beforeAfterSlider": "Before/After comparison slider"
   },
   "footer": {
     "aboutUs": "About Us",

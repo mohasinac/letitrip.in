@@ -33,6 +33,7 @@ module.exports = {
         // Theme Colors — dual-mode palette inspired by Beyblade artwork
         primary: {
           // Lime Green — light mode energy accent (Beyblade green blades)
+          DEFAULT: "#84e122",
           50: "#f3ffe3",
           100: "#e4ffc5",
           200: "#c8ff90",
@@ -47,6 +48,7 @@ module.exports = {
         },
         secondary: {
           // Hot Pink / Magenta — dark mode accent (pink Beyblade blades)
+          DEFAULT: "#e91e8c",
           50: "#fdf0f8",
           100: "#fce2f2",
           200: "#fac6e6",
@@ -61,6 +63,7 @@ module.exports = {
         },
         cobalt: {
           // Cobalt Blue — former primary, used for links & nav accents
+          DEFAULT: "#3570fc",
           50: "#eef5ff",
           100: "#d9e8ff",
           200: "#bcd4ff",
@@ -75,6 +78,7 @@ module.exports = {
         },
         accent: {
           // Metallic Steel — silver edges (Beyblade frame)
+          DEFAULT: "#8393b2",
           50: "#f5f7fa",
           100: "#eaeef4",
           200: "#d1dae6",

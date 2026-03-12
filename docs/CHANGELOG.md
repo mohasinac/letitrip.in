@@ -7,7 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased] — feat(s4): content sections + shop UX
+## [Unreleased] — feat(s8): before/after section
+
+### Added — Sprint 8 (Before/After Section)
+
+**S8-1 BeforeAfterCard + FeaturedResultsSection (Phase 8 / LX-1)**
+
+- **New:** `src/features/homepage/components/BeforeAfterCard.tsx` — interactive drag-to-reveal before/after comparison card; pointer capture keeps drag active outside bounds; keyboard ← / → nudge ±5%; `role="slider"` + `aria-valuenow` for full accessibility; clip-path approach ensures both images fill the same space with zero layout shift; mobile-safe with `touch-none` + `pointercapture`
+- **New:** `src/features/homepage/components/FeaturedResultsSection.tsx` — async RSC; fetches `siteSettings.featuredResults` directly from `siteSettingsRepository`; renders nothing when the array is absent; editorial section header (pill + `font-display` H2 + `── ✦ ──` ornament); responsive `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3` grid
+- `src/db/schema/site-settings.ts` — added `FeaturedResult` interface and optional `featuredResults?: FeaturedResult[]` field on `SiteSettingsDocument`
+- `src/features/homepage/components/index.ts` — exported `BeforeAfterCard`, `BeforeAfterCardProps`, `FeaturedResultsSection`
+- `src/app/[locale]/page.tsx` — `FeaturedResultsSection` dynamically imported (`ssr: true`) and rendered after `BlogArticlesSection`
+- `messages/en.json` — added `realResultsPill`, `realResultsTitle`, `realResultsSubtitle`, `beforeLabel`, `afterLabel`, `beforeAfterSlider` to `homepage` namespace
+
+**Build gate — Sprint 8:** `npx tsc --noEmit` ✅ 0 errors · `npm run build` ✅ 0 errors/warnings
+
+---
 
 ### Added — Sprint 4 (Content Sections + Shop UX)
 
