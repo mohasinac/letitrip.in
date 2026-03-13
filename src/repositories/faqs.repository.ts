@@ -70,7 +70,7 @@ class FAQsRepository extends BaseRepository<FAQDocument> {
       if (snapshot.empty) return null;
 
       const doc = snapshot.docs[0];
-      return { id: doc.id, ...doc.data() } as FAQDocument;
+      return this.mapDoc<FAQDocument>(doc);
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve FAQ by slug: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -93,9 +93,7 @@ class FAQsRepository extends BaseRepository<FAQDocument> {
         .orderBy("order", "asc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as FAQDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<FAQDocument>(doc));
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve FAQs by category: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -117,9 +115,7 @@ class FAQsRepository extends BaseRepository<FAQDocument> {
         .orderBy("priority", "desc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as FAQDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<FAQDocument>(doc));
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve homepage FAQs: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -141,9 +137,7 @@ class FAQsRepository extends BaseRepository<FAQDocument> {
         .orderBy("order", "asc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as FAQDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<FAQDocument>(doc));
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve footer FAQs: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -170,9 +164,7 @@ class FAQsRepository extends BaseRepository<FAQDocument> {
 
       const snapshot = await query.orderBy("order", "asc").get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as FAQDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<FAQDocument>(doc));
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve pinned FAQs: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -194,9 +186,7 @@ class FAQsRepository extends BaseRepository<FAQDocument> {
         .where("isActive", "==", true)
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as FAQDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<FAQDocument>(doc));
     } catch (error) {
       throw new DatabaseError(
         `Failed to search FAQs by tag: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -219,9 +209,7 @@ class FAQsRepository extends BaseRepository<FAQDocument> {
         .limit(limit)
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as FAQDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<FAQDocument>(doc));
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve most helpful FAQs: ${error instanceof Error ? error.message : "Unknown error"}`,

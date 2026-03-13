@@ -33,7 +33,10 @@ export function StepperNav({ steps, currentStep, className }: StepperNavProps) {
                       ? "bg-indigo-600 border-indigo-600 text-white"
                       : isActive
                         ? "border-indigo-600 text-indigo-600 bg-transparent"
-                        : classNames(themed.border, "text-zinc-400"),
+                        : classNames(
+                            themed.border,
+                            "text-zinc-500 dark:text-zinc-400",
+                          ),
                   )}
                 >
                   {isComplete ? (
@@ -62,7 +65,7 @@ export function StepperNav({ steps, currentStep, className }: StepperNavProps) {
                       ? "text-indigo-600"
                       : isComplete
                         ? themed.textPrimary
-                        : "text-zinc-400",
+                        : "text-zinc-500 dark:text-zinc-400",
                   )}
                 >
                   {step.label}

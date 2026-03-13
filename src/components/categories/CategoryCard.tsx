@@ -127,7 +127,7 @@ export function CategoryCard({
               {/* Animated underline */}
               <div className="bg-primary-400 h-0.5 w-0 rounded-full transition-all duration-300 group-hover:w-8" />
               {/* Product count chip */}
-              <Span className="bg-white/20 backdrop-blur text-white text-[10px] font-medium rounded-full px-2 py-0.5">
+              <Span className="bg-black/50 backdrop-blur text-white text-[10px] font-medium rounded-full px-2 py-0.5">
                 {productCount}
               </Span>
             </div>
@@ -158,7 +158,7 @@ export function CategoryCard({
                   e.stopPropagation();
                   onSelect?.(category.id, e.target.checked);
                 }}
-                className="bg-white/80"
+                className={THEME_CONSTANTS.accentBanner.imageCheckbox}
               />
             </div>
           )}
@@ -220,7 +220,7 @@ export function CategoryCard({
                   e.stopPropagation();
                   onSelect?.(category.id, e.target.checked);
                 }}
-                className="bg-white/80"
+                className={THEME_CONSTANTS.accentBanner.imageCheckbox}
               />
             </div>
           )}

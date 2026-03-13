@@ -90,8 +90,8 @@ class HomepageSectionsRepository extends BaseRepository<HomepageSectionDocument>
         .orderBy("order", "asc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as HomepageSectionDocument,
+      return snapshot.docs.map((doc) =>
+        this.mapDoc<HomepageSectionDocument>(doc),
       );
     } catch (error) {
       throw new DatabaseError(
@@ -113,8 +113,8 @@ class HomepageSectionsRepository extends BaseRepository<HomepageSectionDocument>
         .orderBy("order", "asc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as HomepageSectionDocument,
+      return snapshot.docs.map((doc) =>
+        this.mapDoc<HomepageSectionDocument>(doc),
       );
     } catch (error) {
       throw new DatabaseError(
@@ -142,7 +142,7 @@ class HomepageSectionsRepository extends BaseRepository<HomepageSectionDocument>
       if (snapshot.empty) return null;
 
       const doc = snapshot.docs[0];
-      return { id: doc.id, ...doc.data() } as HomepageSectionDocument;
+      return this.mapDoc<HomepageSectionDocument>(doc);
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve section by type: ${error instanceof Error ? error.message : "Unknown error"}`,

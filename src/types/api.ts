@@ -444,7 +444,7 @@ export interface ReviewVoteRequest {
 /**
  * Site settings update request (admin only)
  * Validated by siteSettingsUpdateSchema (Zod) in the API route
- * TODO (Future): Add settings diff tracking Ã¢â‚¬â€ compare old vs new to generate change log entries
+ * TODO (Future): Add settings diff tracking — compare old vs new to generate change log entries
  */
 export type SiteSettingsUpdateRequest = Partial<
   Omit<SiteSettingsDocument, "id" | "createdAt" | "updatedAt">

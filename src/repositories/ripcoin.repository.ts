@@ -135,7 +135,7 @@ class RipCoinRepository extends BaseRepository<RipCoinTransactionDocument> {
     try {
       const snap = await this.getCollection().doc(id).get();
       if (!snap.exists) return null;
-      return { id: snap.id, ...snap.data() } as RipCoinTransactionDocument;
+      return this.mapDoc<RipCoinTransactionDocument>(snap);
     } catch (error) {
       throw new DatabaseError(
         `Failed to find ripcoin transaction: ${id}`,

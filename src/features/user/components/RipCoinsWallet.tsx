@@ -233,7 +233,7 @@ export function RipCoinsWallet() {
   return (
     <div className={spacing.stack}>
       {/* ── Balance stat cards ─────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-4">
         <Card className={`p-4 flex flex-col gap-2`}>
           <Caption>{t("available")}</Caption>
           {balanceLoading ? (

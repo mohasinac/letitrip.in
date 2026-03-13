@@ -33,7 +33,7 @@ export function FeaturedStoresSection() {
       keyExtractor={(s) => s.id}
       isLoading={isLoading}
       skeletonCount={5}
-      className="bg-slate-950"
+      className="bg-zinc-800 dark:bg-slate-950"
     />
   );
 }

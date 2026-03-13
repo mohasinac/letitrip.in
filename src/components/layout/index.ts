@@ -63,5 +63,8 @@ export { default as Footer } from "./Footer";
 // Breadcrumb Navigation
 export { default as Breadcrumbs, BreadcrumbItem } from "./Breadcrumbs";
 
+// Auto-generated breadcrumb trail (reads from Next.js pathname)
+export { default as AutoBreadcrumbs } from "./AutoBreadcrumbs";
+
 // Locale Switcher
 export { default as LocaleSwitcher } from "./LocaleSwitcher";

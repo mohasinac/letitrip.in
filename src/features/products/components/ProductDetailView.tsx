@@ -17,9 +17,17 @@ import { PromoBannerStrip } from "./PromoBannerStrip";
 import { BuyMoreSaveMore } from "./BuyMoreSaveMore";
 import { ProductTabs } from "./ProductTabs";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { capitalizeWords } from "@/utils";
 import { useTranslations } from "next-intl";
 import { useProductDetail } from "../hooks/useProductDetail";
 import type { ProductDocument } from "@/db/schema";
+
+function formatCategoryLabel(label: string): string {
+  if (label.startsWith("category-")) {
+    return capitalizeWords(label.slice("category-".length).replace(/-/g, " "));
+  }
+  return label;
+}
 
 const { themed, flex, page, spacing } = THEME_CONSTANTS;
 
@@ -44,8 +52,7 @@ export function ProductDetailView({
           {/* Breadcrumb skeleton */}
           <div className="h-4 w-48 bg-zinc-200 dark:bg-slate-700 rounded mb-6 animate-pulse" />
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] gap-6 lg:gap-8">
-            {/* Gallery skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] 2xl:grid-cols-[1fr_1fr_320px] gap-6 lg:gap-8">
             <div className="animate-pulse space-y-3">
               <div className="aspect-square bg-zinc-200 dark:bg-slate-700 rounded-2xl" />
               <div className="flex gap-2">
@@ -131,7 +138,7 @@ export function ProductDetailView({
             <BreadcrumbItem
               href={`${ROUTES.PUBLIC.PRODUCTS}?filters=category==${encodeURIComponent(product.category)}`}
             >
-              {product.category}
+              {formatCategoryLabel(product.category)}
             </BreadcrumbItem>
           )}
           <BreadcrumbItem current>{product.title}</BreadcrumbItem>
@@ -139,7 +146,7 @@ export function ProductDetailView({
 
         {/* ——— 3-Column Product Layout ——— */}
         {/* Mobile: stacked. Tablet: 2-col. Desktop: 3-col with sticky actions sidebar. */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] 2xl:grid-cols-[1fr_1fr_320px] gap-6 lg:gap-8">
           {/* Column 1 — Gallery */}
           <div>
             <ProductImageGallery

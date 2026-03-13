@@ -239,7 +239,8 @@ const RULES = [
         let m;
         while ((m = deepImport.exec(line)) !== null) {
           if (ALLOWED_DEEP_IMPORTS.includes(m[1])) {
-            deepImport.lastIndex = 0;
+            // Do NOT reset lastIndex here — exec() already advanced past this
+            // match. Resetting would cause an infinite loop on the same match.
             continue;
           }
           violations.push({
@@ -520,13 +521,15 @@ const RULES = [
       "getAdminDb, getAdminAuth, getAdminStorage must only be imported in src/app/api/** and src/lib/**.",
     ruleRef: "rules-firebase.instructions.md — RULE 11",
     // Repositories and Next.js server-side app files legitimately use the Admin SDK.
+    // Server Actions (src/actions/) are also server-side and may use the Admin SDK.
     fileFilter: (p) =>
       (p.endsWith(".ts") || p.endsWith(".tsx")) &&
       !isTestFile(p) &&
       !isApiRoute(p) &&
       !isLibDir(p) &&
       !isRepositoryFile(p) &&
-      !isAppServerFile(p),
+      !isAppServerFile(p) &&
+      !norm(p).includes("/src/actions/"),
     check(filePath, lines, rawLines) {
       const violations = [];
       const pat = /from\s+['"][^'"]*lib\/firebase\/admin['"]/g;
@@ -1310,6 +1313,7 @@ const RULES = [
         !n.includes("/src/repositories/") &&
         !n.includes("/src/db/") &&
         !n.includes("/src/classes/") &&
+        !n.includes("/src/actions/") &&
         !n.endsWith("/src/proxy.ts")
       );
     },
@@ -1343,32 +1347,41 @@ const RULES = [
     check(filePath, lines, rawLines) {
       const violations = [];
       // collection('users'), collection('products'), etc.
+      // Actual Firestore collection string values (from src/db/schema/*COLLECTION constants)
       const KNOWN_COLLECTIONS = [
+        // Core user/product/order
         "users",
         "products",
         "orders",
         "reviews",
         "bids",
         "sessions",
-        "carousel_slides",
-        "homepage_sections",
+        "carts",
+        "stores",
+        // Platform config
+        "carouselSlides",
+        "homepageSections",
         "categories",
         "coupons",
+        "couponUsage",
         "faqs",
-        "site_settings",
-        "email_verifications",
-        "password_resets",
+        "siteSettings",
+        // Auth tokens
+        "emailVerificationTokens",
+        "passwordResetTokens",
+        // User subcollections (string literal still needs a constant)
         "addresses",
-        "blogs",
-        "carts",
-        "wishlists",
-        "chats",
+        "wishlist",
+        // Content & comms
+        "blogPosts",
+        "chatRooms",
         "events",
-        "event_entries",
-        "newsletters",
+        "eventEntries",
+        "newsletterSubscribers",
         "notifications",
         "payouts",
-        "rip_coins",
+        "ripcoins",
+        "sms_counters",
       ];
       const quoted = KNOWN_COLLECTIONS.map((c) => `'${c}'|"${c}"`).join("|");
       const pat = new RegExp(`\\.collection\\s*\\(\\s*(${quoted})\\s*\\)`, "g");

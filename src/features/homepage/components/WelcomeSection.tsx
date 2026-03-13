@@ -56,18 +56,16 @@ export function WelcomeSection() {
     <Section className="relative overflow-hidden py-16 md:py-24 px-4">
       {/* Decorative rings (LX-2 — Beyblade flavour) */}
       <div
-        className="pointer-events-none absolute -top-24 -left-24 w-96 h-96 rounded-full border border-dashed border-primary/10 animate-spin"
-        style={{ animationDuration: "60s" }}
+        className="pointer-events-none absolute -top-24 -left-24 w-96 h-96 rounded-full border border-dashed border-primary/10 animate-spin [animation-duration:60s]"
         aria-hidden="true"
       />
       <div
-        className="pointer-events-none absolute -bottom-32 -right-32 w-[32rem] h-[32rem] rounded-full border border-dashed border-cobalt/10 animate-spin"
-        style={{ animationDuration: "80s", animationDirection: "reverse" }}
+        className="pointer-events-none absolute -bottom-32 -right-32 w-[32rem] h-[32rem] rounded-full border border-dashed border-cobalt/10 animate-spin [animation-duration:80s] [animation-direction:reverse]"
         aria-hidden="true"
       />
 
       <div className="relative z-10 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 gap-12 items-center">
           {/* Left: text content */}
           <div className="text-center lg:text-left">
             {/* Pill badge */}
@@ -89,7 +87,7 @@ export function WelcomeSection() {
             <Heading
               level={1}
               variant="none"
-              className="stagger-2 mt-4 font-display text-5xl md:text-7xl lg:text-8xl bg-gradient-to-r from-primary via-cobalt to-secondary bg-clip-text text-transparent leading-tight"
+              className="stagger-2 mt-4 font-display text-5xl md:text-7xl lg:text-8xl bg-gradient-to-r from-primary via-cobalt to-secondary dark:from-secondary dark:via-cobalt dark:to-primary bg-clip-text text-transparent leading-tight"
             >
               {h1}
             </Heading>

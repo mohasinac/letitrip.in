@@ -20,6 +20,7 @@ import {
   Heading,
   ListingLayout,
   ProductGrid,
+  Row,
   Search,
   SortDropdown,
   Spinner,
@@ -29,7 +30,7 @@ import {
   Text,
 } from "@/components";
 import { WishlistButton } from "./WishlistButton";
-import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
+import { ROUTES, ERROR_MESSAGES } from "@/constants";
 import { removeFromWishlistAction, addToCartAction } from "@/actions";
 import { useWishlist } from "../hooks/useWishlist";
 import type { WishlistItem } from "../hooks/useWishlist";
@@ -191,9 +192,9 @@ function WishlistContent() {
 
   if (authLoading || !user) {
     return (
-      <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
+      <Row justify="center" gap="none" className="min-h-screen">
         <Spinner size="lg" label={tLoading("default")} />
-      </div>
+      </Row>
     );
   }
 
@@ -294,7 +295,7 @@ function WishlistContent() {
             />
             {/* Wishlist remove button overlay */}
             {!isLoading && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 absolute inset-0 pointer-events-none">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4 absolute inset-0 pointer-events-none">
                 {displayedProducts.map((item) =>
                   item.product ? (
                     <div key={item.productId} className="relative">

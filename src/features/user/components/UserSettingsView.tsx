@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth, useChangePassword, useResendVerification } from "@/hooks";
 import { updateProfileAction } from "@/actions";
 import { nowMs } from "@/utils";
-import { Heading, Alert, Spinner, useToast } from "@/components";
+import { Heading, Alert, Row, Spinner, useToast } from "@/components";
 import { EmailVerificationCard } from "./EmailVerificationCard";
 import { PhoneVerificationCard } from "./PhoneVerificationCard";
 import { ProfileInfoForm } from "./ProfileInfoForm";
@@ -125,9 +125,9 @@ export function UserSettingsView() {
 
   if (loading) {
     return (
-      <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
+      <Row justify="center" gap="none" className="min-h-screen">
         <Spinner size="xl" variant="primary" />
-      </div>
+      </Row>
     );
   }
 

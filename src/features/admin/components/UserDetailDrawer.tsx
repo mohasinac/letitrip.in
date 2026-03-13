@@ -18,6 +18,7 @@ import {
   Caption,
   Label,
   AvatarDisplay,
+  Grid,
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDateTime } from "@/utils";
@@ -93,9 +94,7 @@ export function UserDetailDrawer({
         </div>
 
         {/* Metadata Grid */}
-        <div
-          className={`grid grid-cols-2 gap-4 pt-4 border-t ${themed.border}`}
-        >
+        <Grid className={`grid-cols-2 pt-4 border-t ${themed.border}`} gap="md">
           <div>
             <Caption>{t("fields.userId")}</Caption>
             <Text className="font-mono break-all" size="sm">
@@ -118,7 +117,7 @@ export function UserDetailDrawer({
               {user.lastLoginAt ? formatDateTime(user.lastLoginAt) : t("never")}
             </Text>
           </div>
-        </div>
+        </Grid>
 
         {/* RipCoins */}
         <div className={`pt-4 border-t ${themed.border}`}>

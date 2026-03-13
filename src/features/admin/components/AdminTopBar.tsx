@@ -2,8 +2,12 @@
 
 import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { AvatarDisplay, Button, NotificationBell } from "@/components";
-import AutoBreadcrumbs from "@/components/layout/AutoBreadcrumbs";
+import {
+  AvatarDisplay,
+  Button,
+  NotificationBell,
+  AutoBreadcrumbs,
+} from "@/components";
 import { useAuth } from "@/hooks";
 import { RoleBadge } from "@/components";
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
-import { Heading, Text, Caption, Section, TextLink } from "@/components";
+import { Heading, Text, Caption, Grid, Section, TextLink } from "@/components";
 import { getTranslations } from "next-intl/server";
 import { ShoppingBag, Truck, MapPin, CheckCircle2 } from "lucide-react";
 
@@ -53,12 +53,16 @@ export default async function TrackOrderPage() {
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}
-      <Section className="bg-gradient-to-br from-indigo-600 to-violet-700 text-white py-14 md:py-16 lg:py-20">
+      <Section
+        className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
+      >
         <div className={`${page.container.sm} text-center`}>
           <Heading level={1} variant="none" className="mb-4 text-white">
             {t("title")}
           </Heading>
-          <Text className="text-indigo-200">{t("subtitle")}</Text>
+          <Text variant="none" className="text-white/80">
+            {t("subtitle")}
+          </Text>
         </div>
       </Section>
 
@@ -98,7 +102,7 @@ export default async function TrackOrderPage() {
           <Heading level={2} className="text-center mb-10">
             {t("howItWorksTitle")}
           </Heading>
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+          <Grid className="grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" gap="lg">
             {STEPS.map(({ icon: Icon, title, text, color, bg }, index) => (
               <div
                 key={title}
@@ -120,7 +124,7 @@ export default async function TrackOrderPage() {
                 </Text>
               </div>
             ))}
-          </div>
+          </Grid>
         </Section>
 
         {/* Need help */}

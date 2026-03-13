@@ -106,6 +106,16 @@ export default function AutoBreadcrumbs() {
     return null;
   }
 
+  // Don't render on pages that provide their own contextual breadcrumbs
+  const topSegments = pathWithoutLocale.split("/").filter(Boolean);
+  if (
+    (topSegments[0] === "products" && topSegments.length >= 2) ||
+    (topSegments[0] === "blog" && topSegments.length >= 2) ||
+    (topSegments[0] === "categories" && topSegments.length >= 2)
+  ) {
+    return null;
+  }
+
   // Split pathname into segments and filter out empty strings and locale codes
   const segments = pathname.split("/").filter((s) => s && !isLocale(s));
 

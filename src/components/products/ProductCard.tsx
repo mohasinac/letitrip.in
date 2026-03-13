@@ -343,7 +343,7 @@ export function ProductCard({
               <Button
                 variant="primary"
                 size="sm"
-                className="flex-1 text-xs px-2 gap-1 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-all hover:shadow-glow active:scale-95"
+                className="flex-1 text-xs px-2 gap-1 bg-primary-700 hover:bg-primary-800 text-white rounded-xl transition-all hover:shadow-glow active:scale-95"
                 isLoading={cartLoading}
                 onClick={handleAddToCart}
               >

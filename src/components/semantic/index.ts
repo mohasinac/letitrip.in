@@ -47,3 +47,34 @@ export type {
   OlProps,
   LiProps,
 } from "./Semantic";
+
+/**
+ * Layout primitives — Container, Stack, Row, Grid.
+ * Use instead of raw `<div className="flex|grid|max-w-7xl ...">` markup.
+ * Implementations live in packages/ui/src/components/Layout.tsx.
+ *
+ * @example
+ * ```tsx
+ * // Page wrapper
+ * <Container size="2xl">...</Container>
+ *
+ * // Responsive grid
+ * <Grid cols={3} gap="md">...</Grid>
+ *
+ * // Horizontal flex row
+ * <Row justify="between" gap="sm">...</Row>
+ *
+ * // Vertical flex column
+ * <Stack gap="md">...</Stack>
+ * ```
+ */
+export { Container, Stack, Row, Grid } from "@mohasinac/ui";
+export type {
+  GapKey,
+  ContainerSize,
+  GridCols,
+  ContainerProps,
+  StackProps,
+  RowProps,
+  GridProps,
+} from "@mohasinac/ui";

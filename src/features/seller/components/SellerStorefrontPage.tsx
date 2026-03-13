@@ -62,13 +62,13 @@ export function SellerStorefrontPage({
           <div className="mt-4 flex gap-4">
             <TextLink
               href={ROUTES.PUBLIC.SELLERS}
-              className="text-primary-600 hover:underline text-sm"
+              className="text-primary-700 dark:text-primary-400 hover:underline text-sm"
             >
               {tSf("back")}
             </TextLink>
             <TextLink
               href={ROUTES.HOME}
-              className="text-primary-600 hover:underline text-sm"
+              className="text-primary-700 dark:text-primary-400 hover:underline text-sm"
             >
               {tActions("goHome")}
             </TextLink>

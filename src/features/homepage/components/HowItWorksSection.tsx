@@ -139,7 +139,7 @@ export function HowItWorksSection() {
       ref={sectionRef}
       className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}
     >
-      <div className={`${THEME_CONSTANTS.container["2xl"]} mx-auto`}>
+      <div className={`${THEME_CONSTANTS.container["6xl"]} mx-auto`}>
         {/* Header */}
         <div
           className={`text-center mb-12 transition-all duration-700
@@ -166,7 +166,7 @@ export function HowItWorksSection() {
         </div>
 
         {/* Steps */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-6 mb-10">
           {STEPS.map((step, i) => (
             <StepCard
               key={step.number}
@@ -181,9 +181,8 @@ export function HowItWorksSection() {
 
         {/* CTA */}
         <div
-          className={`text-center transition-all duration-700
+          className={`text-center transition-all duration-700 delay-500
             ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          style={{ transitionDelay: "500ms" }}
         >
           <Button
             variant="primary"

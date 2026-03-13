@@ -4,14 +4,13 @@ import { serverLogger } from "@/lib/server-logger";
 import {
   isAlgoliaConfigured,
   clearAlgoliaIndex,
-  ALGOLIA_INDEX_NAME,
   ALGOLIA_PAGES_INDEX_NAME,
 } from "@/lib/search/algolia";
 import {
   usersSeedData,
   addressesSeedData,
   categoriesSeedData,
-  productsSeedData,
+  storesSeedData,
   ordersSeedData,
   reviewsSeedData,
   bidsSeedData,
@@ -27,10 +26,10 @@ import {
   eventEntriesSeedData,
   sessionsSeedData,
   cartsSeedData,
+  productsSeedData,
 } from "@/db/seed-data";
 import {
   USER_COLLECTION,
-  PRODUCT_COLLECTION,
   ORDER_COLLECTION,
   REVIEW_COLLECTION,
   BID_COLLECTION,
@@ -47,6 +46,8 @@ import {
   EVENT_ENTRIES_COLLECTION,
   SESSION_COLLECTION,
   CART_COLLECTION,
+  STORE_COLLECTION,
+  PRODUCT_COLLECTION,
   ADDRESS_SUBCOLLECTION,
 } from "@/db/schema";
 
@@ -54,6 +55,7 @@ type CollectionName =
   | "users"
   | "addresses"
   | "categories"
+  | "stores"
   | "products"
   | "orders"
   | "reviews"
@@ -80,6 +82,7 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   users: USER_COLLECTION,
   addresses: "addresses", // Subcollection
   categories: CATEGORIES_COLLECTION,
+  stores: STORE_COLLECTION,
   products: PRODUCT_COLLECTION,
   orders: ORDER_COLLECTION,
   reviews: REVIEW_COLLECTION,
@@ -102,6 +105,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   users: usersSeedData,
   addresses: addressesSeedData,
   categories: categoriesSeedData,
+  stores: storesSeedData,
   products: productsSeedData,
   orders: ordersSeedData,
   reviews: reviewsSeedData,
@@ -123,6 +127,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
 /** Recursively remove keys whose value is `undefined` so Firestore doesn't reject them. */
 function stripUndefined(obj: any): any {
   if (Array.isArray(obj)) return obj.map(stripUndefined);
+  if (obj instanceof Date) return obj;
   if (obj !== null && typeof obj === "object") {
     return Object.fromEntries(
       Object.entries(obj)
@@ -624,22 +629,11 @@ export async function POST(request: NextRequest) {
 
       // Clear Algolia indexes for affected collections
       if (isAlgoliaConfigured()) {
-        const shouldClearProducts = collectionsToProcess.includes("products");
         const shouldClearPages =
           collectionsToProcess.includes("categories") ||
           collectionsToProcess.includes("blogPosts") ||
           collectionsToProcess.includes("events");
 
-        if (shouldClearProducts) {
-          try {
-            await clearAlgoliaIndex(ALGOLIA_INDEX_NAME);
-            serverLogger.info(
-              "Algolia products index cleared after seed delete",
-            );
-          } catch (err) {
-            serverLogger.error("Failed to clear Algolia products index:", err);
-          }
-        }
         if (shouldClearPages) {
           try {
             await clearAlgoliaIndex(ALGOLIA_PAGES_INDEX_NAME);

@@ -16,7 +16,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks";
-import { Heading, Button } from "@/components";
+import { Heading, Button, Stack } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { ChatList } from "./ChatList";
 import { ChatWindow } from "./ChatWindow";
@@ -31,7 +31,7 @@ export function MessagesView() {
   const { user } = useAuth();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr] gap-4 h-full min-h-[600px]">
+    <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] xl:grid-cols-[320px_1fr] 2xl:grid-cols-[360px_1fr] gap-4 h-full min-h-[600px]">
       {/* Room list — hidden on mobile when a chat is open */}
       <div
         className={`${chatId ? "hidden md:block" : "block"} ${spacing.stack}`}
@@ -44,7 +44,7 @@ export function MessagesView() {
 
       {/* Chat window — shown when chatId is in URL */}
       {chatId ? (
-        <div className="flex flex-col gap-3">
+        <Stack gap="3">
           {/* Mobile back button */}
           <Button
             variant="ghost"
@@ -55,7 +55,7 @@ export function MessagesView() {
             ← {t("backToList")}
           </Button>
           <ChatWindow chatId={chatId} currentUserId={user?.uid ?? ""} />
-        </div>
+        </Stack>
       ) : (
         /* Desktop: empty state when no chat selected */
         <div

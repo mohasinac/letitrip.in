@@ -379,12 +379,11 @@ export default function Search({
 
   return (
     <>
-      {/* Search Bar - sticky positioning after TitleBar */}
-      {/* Appears after TitleBar on both mobile and desktop (navbar hides on scroll) */}
+      {/* Search bar row — part of the unified sticky header */}
       <div
-        className={`sticky top-20 ${THEME_CONSTANTS.zIndex.search} ${THEME_CONSTANTS.layout.titleBarBg} border-b ${THEME_CONSTANTS.themed.border} shadow-md animate-slide-down`}
+        className={`${THEME_CONSTANTS.layout.titleBarBg} border-b ${THEME_CONSTANTS.themed.border} shadow-md animate-slide-down`}
       >
-        <div className="container mx-auto px-4 py-3 md:py-4">
+        <div className="container mx-auto px-4 py-3 md:py-4 relative">
           <div className="flex items-center gap-2 md:gap-3">
             <div className="flex-1 relative">
               <input
@@ -444,117 +443,131 @@ export default function Search({
             </Button>
           </div>
 
-          {/* Quick Links — shown before typing (top 6) and filtered while typing */}
-          {filteredSiteLinks.length > 0 && !suggestionsLoading && (
+          {/* Results dropdown — absolute so it overlays page content below the header */}
+          {(filteredSiteLinks.length > 0 || query) && (
             <div
-              className={`mt-3 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.border} rounded-xl overflow-hidden`}
+              className={`absolute top-full left-0 right-0 ${THEME_CONSTANTS.zIndex.search} px-4 pt-2 pb-4 space-y-2`}
             >
-              <div
-                className={`px-4 py-2 border-b ${THEME_CONSTANTS.themed.border}`}
-              >
-                <Text
-                  variant="secondary"
-                  size="xs"
-                  className="uppercase tracking-wider font-semibold"
+              {/* Quick Links — shown before typing (top 6) and filtered while typing */}
+              {filteredSiteLinks.length > 0 && !suggestionsLoading && (
+                <div
+                  className={`${THEME_CONSTANTS.themed.bgSecondary} border ${THEME_CONSTANTS.themed.border} rounded-xl overflow-hidden shadow-lg`}
                 >
-                  {t("quickLinks")}
-                </Text>
-              </div>
-              <Ul>
-                {filteredSiteLinks.map((link) => {
-                  const Icon = link.icon;
-                  return (
-                    <Li key={link.href}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          onClose?.();
-                          router.push(link.href);
-                        }}
-                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left ${THEME_CONSTANTS.themed.hover} transition-colors border-b ${THEME_CONSTANTS.themed.border} last:border-b-0`}
-                      >
-                        <Icon
-                          className={`w-4 h-4 flex-shrink-0 ${THEME_CONSTANTS.colors.icon.muted}`}
-                        />
-                        <Text size="sm" className="font-medium">
-                          {link.label}
-                        </Text>
-                      </button>
-                    </Li>
-                  );
-                })}
-              </Ul>
-            </div>
-          )}
-
-          {/* Navigation Suggestions Preview */}
-          {query && (
-            <div
-              className={`mt-3 ${THEME_CONSTANTS.themed.bgSecondary} ${THEME_CONSTANTS.themed.border} rounded-xl overflow-hidden`}
-            >
-              {suggestionsLoading ? (
-                <div className="px-4 py-3">
-                  <Text variant="secondary" size="sm">
-                    {t("searching")}
-                  </Text>
-                </div>
-              ) : suggestions.length > 0 ? (
-                <Ul>
-                  {suggestions.map((s) => (
-                    <Li key={s.objectID}>
-                      <button
-                        type="button"
-                        onClick={() => handleSuggestionClick(s)}
-                        className={`w-full flex items-center gap-3 px-4 py-3 text-left ${THEME_CONSTANTS.themed.hover} transition-colors border-b ${THEME_CONSTANTS.themed.border} last:border-b-0`}
-                      >
-                        <span className="text-sm">{NAV_TYPE_ICON[s.type]}</span>
-                        <div className="flex-1 min-w-0">
-                          <Text size="sm" className="font-medium truncate">
-                            {s.title}
-                          </Text>
-                          {s.subtitle && (
-                            <Text
-                              variant="secondary"
-                              size="xs"
-                              className="truncate"
-                            >
-                              {s.subtitle}
+                  <div
+                    className={`px-4 py-2 border-b ${THEME_CONSTANTS.themed.border}`}
+                  >
+                    <Text
+                      variant="secondary"
+                      size="xs"
+                      className="uppercase tracking-wider font-semibold"
+                    >
+                      {t("quickLinks")}
+                    </Text>
+                  </div>
+                  <Ul>
+                    {filteredSiteLinks.map((link) => {
+                      const Icon = link.icon;
+                      return (
+                        <Li key={link.href}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onClose?.();
+                              router.push(link.href);
+                            }}
+                            className={`w-full flex items-center gap-3 px-4 py-2.5 text-left ${THEME_CONSTANTS.themed.hover} transition-colors border-b ${THEME_CONSTANTS.themed.border} last:border-b-0`}
+                          >
+                            <Icon
+                              className={`w-4 h-4 flex-shrink-0 ${THEME_CONSTANTS.colors.icon.muted}`}
+                            />
+                            <Text size="sm" className="font-medium">
+                              {link.label}
                             </Text>
-                          )}
-                        </div>
-                        <span
-                          className={`text-xs px-2 py-0.5 rounded-full ${NAV_TYPE_BADGE[s.type]}`}
-                        >
-                          {s.type}
-                        </span>
-                      </button>
-                    </Li>
-                  ))}
-                </Ul>
-              ) : null}
-              {/* Always show "search products" footer */}
-              <button
-                type="button"
-                onClick={handleOverlaySearch}
-                className={`w-full flex items-center gap-2 px-4 py-3 text-left ${THEME_CONSTANTS.themed.hover} transition-colors ${suggestions.length > 0 ? `border-t ${THEME_CONSTANTS.themed.border}` : ""}`}
-              >
-                <svg
-                  className={`w-4 h-4 flex-shrink-0 ${THEME_CONSTANTS.colors.icon.muted}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                          </button>
+                        </Li>
+                      );
+                    })}
+                  </Ul>
+                </div>
+              )}
+
+              {/* Navigation Suggestions Preview */}
+              {query && (
+                <div
+                  className={`${THEME_CONSTANTS.themed.bgSecondary} border ${THEME_CONSTANTS.themed.border} rounded-xl overflow-hidden shadow-lg`}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-                <Text size="sm" className="font-medium">
-                  {t("browseProducts", { q: query })}
-                </Text>
-              </button>
+                  {suggestionsLoading ? (
+                    <div className="px-4 py-3">
+                      <Text variant="secondary" size="sm">
+                        {t("searching")}
+                      </Text>
+                    </div>
+                  ) : suggestions.length > 0 ? (
+                    <Ul>
+                      {suggestions.map((s) => (
+                        <Li key={s.objectID}>
+                          <button
+                            type="button"
+                            onClick={() => handleSuggestionClick(s)}
+                            className={`w-full flex items-center gap-3 px-4 py-3 text-left ${THEME_CONSTANTS.themed.hover} transition-colors border-b ${THEME_CONSTANTS.themed.border} last:border-b-0`}
+                          >
+                            <span className="text-sm">
+                              {NAV_TYPE_ICON[s.type]}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <Text size="sm" className="font-medium truncate">
+                                {s.title}
+                              </Text>
+                              {s.subtitle && (
+                                <Text
+                                  variant="secondary"
+                                  size="xs"
+                                  className="truncate"
+                                >
+                                  {s.subtitle}
+                                </Text>
+                              )}
+                            </div>
+                            <span
+                              className={`text-xs px-2 py-0.5 rounded-full ${NAV_TYPE_BADGE[s.type]}`}
+                            >
+                              {s.type}
+                            </span>
+                          </button>
+                        </Li>
+                      ))}
+                    </Ul>
+                  ) : null}
+                  {/* Always show "search products" footer */}
+                  <button
+                    type="button"
+                    onClick={handleOverlaySearch}
+                    className={
+                      `w-full flex items-center gap-2 px-4 py-3 text-left ${THEME_CONSTANTS.themed.hover} transition-colors` +
+                      (suggestions.length > 0
+                        ? ` border-t ${THEME_CONSTANTS.themed.border}`
+                        : "")
+                    }
+                  >
+                    <svg
+                      className={`w-4 h-4 flex-shrink-0 ${THEME_CONSTANTS.colors.icon.muted}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                    <Text size="sm" className="font-medium">
+                      {t("browseProducts", { q: query })}
+                    </Text>
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

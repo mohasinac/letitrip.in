@@ -91,6 +91,21 @@ General admin write mutations covering sessions, orders, payouts, users, stores,
 
 ---
 
+## Checkout Actions — `checkout.actions.ts`
+
+Server-side mutations for the third-party shipping consent OTP flow.
+
+| Export                                    | Returns                   | Description                                                                                                                                 |
+| ----------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sendConsentOtpAction(addressId)`         | `{ maskedEmail: string }` | Generates and emails a 6-digit consent OTP when the delivery address belongs to a different person. Enforces a 15-min cooldown (see below). |
+| `verifyConsentOtpAction(addressId, code)` | `void`                    | Verifies the 6-digit code, marks the OTP document as verified so `POST /api/checkout` can confirm consent was obtained.                     |
+
+**Rate limiting:** `sendConsentOtpAction` enforces a 15-minute per-user cooldown stored in `users/{uid}/consentOtpRateLimit/meta`. The cooldown can be bypassed up to `CONSENT_OTP_MAX_BYPASS_CREDITS` (3) times when a partial order was placed due to unavailable items — the checkout route grants one credit per partial order. `verifyConsentOtpAction` is additionally rate-limited to 10 attempts per 5 minutes via Upstash.
+
+**Shared module:** All constants, Firestore path helpers, and crypto utilities are in `src/lib/consent-otp.ts` — see [Consent OTP Lib](#consent-otp-lib-srclibconsent-otpts) in the cart-checkout feature doc.
+
+---
+
 ## Cart Actions — `cart.actions.ts`
 
 | Export                                                 | Description                                             |

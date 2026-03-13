@@ -22,7 +22,7 @@ import { z } from "zod";
 
 /**
  * Pagination query schema
- * NOTE: Max limit is enforced per field (max 100) Ã¢â‚¬â€ role-based limit reduction is a future enhancement
+ * NOTE: Max limit is enforced per field (max 100) — role-based limit reduction is a future enhancement
  */
 export const paginationQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
@@ -153,7 +153,7 @@ export const addressSchema = z.object({
 // ============================================
 
 /**
- * Base user address schema Ã¢â‚¬â€ covers Indian addresses
+ * Base user address schema — covers Indian addresses
  */
 const userAddressBaseSchema = z.object({
   label: z.string().min(1, "Label is required").max(50, "Label too long"),
@@ -1146,7 +1146,7 @@ export const changePasswordSchema = z
 
 /**
  * Validate request body with Zod schema
- * Returns typed success/failure Ã¢â‚¬â€ error logging is handled at the API route call site via serverLogger
+ * Returns typed success/failure — error logging is handled at the API route call site via serverLogger
  * TODO (Future): Add i18n support for error messages
  */
 export function validateRequestBody<T>(
@@ -1162,7 +1162,7 @@ export function validateRequestBody<T>(
 
 /**
  * Format Zod errors for API response
- * TODO (Future): Add i18n support Ã¢â‚¬â€ map field paths to localised error messages
+ * TODO (Future): Add i18n support — map field paths to localised error messages
  */
 export function formatZodErrors(error: z.ZodError): Record<string, string[]> {
   const formatted: Record<string, string[]> = {};

@@ -6,7 +6,6 @@
 export { usersSeedData } from "./users-seed-data";
 export { addressesSeedData } from "./addresses-seed-data";
 export { categoriesSeedData } from "./categories-seed-data";
-export { productsSeedData } from "./products-seed-data";
 export { ordersSeedData } from "./orders-seed-data";
 export { reviewsSeedData } from "./reviews-seed-data";
 export { bidsSeedData } from "./bids-seed-data";
@@ -21,3 +20,5 @@ export { notificationsSeedData } from "./notifications-seed-data";
 export { payoutsSeedData } from "./payouts-seed-data";
 export { sessionsSeedData } from "./sessions-seed-data";
 export { cartsSeedData } from "./cart-seed-data";
+export { storesSeedData } from "./stores-seed-data";
+export { productsSeedData } from "./products-seed-data";

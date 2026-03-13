@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ReactNode } from "react";
 import { Menu } from "lucide-react";
 import { UserSidebar } from "@/features/user";
-import { ProtectedRoute } from "@/components";
+import { ProtectedRoute, Main } from "@/components";
 
 interface UserLayoutProps {
   children: ReactNode;
@@ -36,7 +36,7 @@ export default function UserLayout({ children }: UserLayoutProps) {
             </span>
           </header>
 
-          <main className="flex-1 p-4 md:p-6">{children}</main>
+          <Main className="flex-1 p-4 md:p-6">{children}</Main>
         </div>
       </div>
     </ProtectedRoute>

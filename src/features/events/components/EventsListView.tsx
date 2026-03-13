@@ -14,7 +14,9 @@ import { useTranslations } from "next-intl";
 import {
   ActiveFilterChips,
   Button,
+  Container,
   EmptyState,
+  Grid,
   Heading,
   ListingLayout,
   Search,
@@ -161,7 +163,7 @@ function EventsListContent({
 
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
-      <div className={`${THEME_CONSTANTS.page.container.full} py-8`}>
+      <Container size="full" className="py-8">
         <ListingLayout
           headerSlot={
             <div>
@@ -244,7 +246,7 @@ function EventsListContent({
               }
             />
           ) : (
-            <div className={THEME_CONSTANTS.grid.cols4}>
+            <Grid cols={4} gap="none">
               {isLoading
                 ? Array.from({ length: PAGE_SIZE }).map((_, i) => (
                     <div
@@ -265,10 +267,10 @@ function EventsListContent({
                       }
                     />
                   ))}
-            </div>
+            </Grid>
           )}
         </ListingLayout>
-      </div>
+      </Container>
     </div>
   );
 }

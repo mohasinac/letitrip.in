@@ -22,6 +22,7 @@ import {
   Spinner,
   AddressForm,
   ConfirmDeleteModal,
+  Row,
   useToast,
 } from "@/components";
 import type { AddressFormData } from "@/hooks";
@@ -112,9 +113,9 @@ export function UserEditAddressView() {
 
   if (loading || loadingAddress) {
     return (
-      <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
+      <Row justify="center" gap="none" className="min-h-screen">
         <Spinner size="lg" label={tLoading("default")} />
-      </div>
+      </Row>
     );
   }
 
@@ -125,7 +126,7 @@ export function UserEditAddressView() {
   return (
     <div className="max-w-3xl">
       <div className={THEME_CONSTANTS.spacing.stack}>
-        <div className={THEME_CONSTANTS.flex.between}>
+        <Row justify="between" gap="none">
           <Heading level={3}>{tAddresses("edit")}</Heading>
           <Button
             variant="danger"
@@ -134,7 +135,7 @@ export function UserEditAddressView() {
           >
             {tActions("delete")}
           </Button>
-        </div>
+        </Row>
 
         <Card className={THEME_CONSTANTS.spacing.cardPadding}>
           <AddressForm

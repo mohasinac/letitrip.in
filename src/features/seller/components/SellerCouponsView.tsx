@@ -24,6 +24,7 @@ import {
 } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { useSellerCoupons } from "../hooks/useSellerCoupons";
+import { resolveDate } from "@/utils";
 import type { CouponDocument } from "@/db/schema";
 
 const { themed, spacing, flex } = THEME_CONSTANTS;
@@ -58,9 +59,8 @@ function CouponCard({
     : t("scopeRegular");
 
   const endDate = coupon.validity.endDate
-    ? new Date(
-        coupon.validity.endDate as unknown as string,
-      ).toLocaleDateString()
+    ? (resolveDate(coupon.validity.endDate)?.toLocaleDateString() ??
+      t("noExpiry"))
     : t("noExpiry");
 
   return (
@@ -244,7 +244,7 @@ export function SellerCouponsView() {
           onAction={() => router.push(ROUTES.SELLER.COUPONS_NEW)}
         />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
           {coupons.map((coupon) => (
             <CouponCard
               key={coupon.id}

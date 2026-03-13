@@ -29,9 +29,21 @@ class EventRepository extends BaseRepository<EventDocument> {
     createdBy: { canFilter: true, canSort: false },
     startsAt: { canFilter: true, canSort: true },
     endsAt: { canFilter: true, canSort: true },
-    'stats.totalEntries': { path: 'stats.totalEntries', canFilter: true, canSort: true },
-    'stats.approvedEntries': { path: 'stats.approvedEntries', canFilter: true, canSort: true },
-    'stats.flaggedEntries': { path: 'stats.flaggedEntries', canFilter: true, canSort: true },
+    "stats.totalEntries": {
+      path: "stats.totalEntries",
+      canFilter: true,
+      canSort: true,
+    },
+    "stats.approvedEntries": {
+      path: "stats.approvedEntries",
+      canFilter: true,
+      canSort: true,
+    },
+    "stats.flaggedEntries": {
+      path: "stats.flaggedEntries",
+      canFilter: true,
+      canSort: true,
+    },
     id: { canFilter: true, canSort: false },
     createdAt: { canFilter: true, canSort: true },
   };
@@ -59,10 +71,7 @@ class EventRepository extends BaseRepository<EventDocument> {
         .orderBy(EVENT_FIELDS.ENDS_AT, "asc")
         .get();
 
-      return snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as EventDocument[];
+      return snapshot.docs.map((doc) => this.mapDoc<EventDocument>(doc));
     } catch (error) {
       throw new DatabaseError("Failed to list active events", error);
     }
@@ -86,7 +95,7 @@ class EventRepository extends BaseRepository<EventDocument> {
 
       serverLogger.info("Event created", { eventId: ref.id, type: input.type });
 
-      return { id: ref.id, ...created.data() } as EventDocument;
+      return this.mapDoc<EventDocument>(created);
     } catch (error) {
       throw new DatabaseError("Failed to create event", error);
     }

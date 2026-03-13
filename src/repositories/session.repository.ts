@@ -15,7 +15,7 @@ import {
   SESSION_EXPIRATION_MS,
   SESSION_FIELDS,
 } from "@/db/schema";
-import { generateSessionId } from "@/helpers/auth";
+import { generateSessionId } from "@/helpers";
 import { DatabaseError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 import type {

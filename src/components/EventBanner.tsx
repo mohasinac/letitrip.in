@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePublicEvents } from "@/hooks";
 import { useTranslations } from "next-intl";
-import { ROUTES } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { Button, TextLink } from "@/components";
 
 /**
@@ -60,9 +60,7 @@ export function EventBanner() {
     ? t("saleBanner", { pct: discountPct })
     : t("offerBanner", { code: offerCode });
 
-  const bgClass = isSale
-    ? "bg-gradient-to-r from-indigo-600 to-purple-600"
-    : "bg-gradient-to-r from-emerald-600 to-teal-600";
+  const bgClass = THEME_CONSTANTS.accentBanner.cta;
 
   const href = isSale
     ? ROUTES.PUBLIC.PRODUCTS

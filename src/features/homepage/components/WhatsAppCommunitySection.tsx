@@ -40,7 +40,7 @@ export function WhatsAppCommunitySection() {
     <Section className={`p-8 ${THEME_CONSTANTS.themed.bgSecondary}`}>
       <div className="w-full">
         <div
-          className={`bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-8 text-white overflow-hidden relative`}
+          className={`${THEME_CONSTANTS.accentBanner.whatsappCard} rounded-2xl p-8 text-white overflow-hidden relative`}
         >
           {/* Decorative Pattern */}
           <div className="absolute inset-0 opacity-10">
@@ -96,10 +96,7 @@ export function WhatsAppCommunitySection() {
                     </div>
                   ))}
                 </div>
-                <Text
-                  variant="none"
-                  className="text-white font-bold text-emerald-100"
-                >
+                <Text variant="none" className="text-white font-bold">
                   <span className="text-xl font-extrabold">
                     {formatNumber(config.memberCount)}
                   </span>{" "}
@@ -109,13 +106,17 @@ export function WhatsAppCommunitySection() {
             ) : null}
 
             {/* Testimonial snippet */}
-            <p className="italic text-white/75 text-sm max-w-sm mx-auto mb-6">
+            <Text
+              size="sm"
+              variant="none"
+              className="italic text-white/90 max-w-sm mx-auto mb-6"
+            >
               &ldquo;{t("whatsAppTestimonial")}&rdquo;
-            </p>
+            </Text>
 
             {/* Benefits */}
             <div
-              className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${THEME_CONSTANTS.container["2xl"]} mx-auto my-8`}
+              className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4 ${THEME_CONSTANTS.container["2xl"]} mx-auto my-8`}
             >
               {benefits.slice(0, 4).map((benefit, index) => (
                 <div

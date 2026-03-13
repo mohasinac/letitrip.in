@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { sellerService } from "@/services";
 import { sellerDeleteCouponAction, sellerUpdateCouponAction } from "@/actions";
+import { nowISO } from "@/utils";
 import type { CouponDocument } from "@/db/schema";
 
 export interface SellerCouponsResponse {
@@ -27,7 +28,7 @@ export function useSellerCoupons(enabled = true) {
   const toggleActive = useMutation({
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
       sellerUpdateCouponAction(id, {
-        validity: { isActive, startDate: new Date().toISOString() },
+        validity: { isActive, startDate: nowISO() },
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["seller-coupons"] });

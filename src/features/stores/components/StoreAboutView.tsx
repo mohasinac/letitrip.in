@@ -42,7 +42,7 @@ export function StoreAboutView({ storeSlug }: StoreAboutViewProps) {
   }
 
   return (
-    <div className={`${spacing.stack} max-w-2xl`}>
+    <div className={`${spacing.stack} max-w-4xl mx-auto`}>
       <Card className={`p-6 ${spacing.stack}`}>
         {/* Store name + description */}
         <div>

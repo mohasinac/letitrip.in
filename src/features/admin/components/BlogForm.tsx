@@ -142,7 +142,13 @@ export function BlogForm({
       {!isReadonly && (
         <ImageUpload
           currentImage={post.coverImage}
-          onUpload={(file) => upload(file, "blog")}
+          onUpload={(file) =>
+            upload(file, "blog", true, {
+              type: "blog-image",
+              title: post.title || "post",
+              category: post.category || "news",
+            })
+          }
           onChange={(url) => update({ coverImage: url })}
           label={t("formCover")}
           helperText="Recommended: 1200x630px (16:9)"

@@ -1,3 +1,0 @@
-﻿
-Scanning 1559 TypeScript files in src/ ...
-

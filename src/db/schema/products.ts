@@ -103,6 +103,8 @@ export interface ProductDocument {
 
   // Analytics — system-managed
   viewCount?: number; // Total unique product detail page views
+  avgRating?: number; // Denormalized average rating from approved reviews
+  reviewCount?: number; // Denormalized count of approved reviews
 
   // Bulk discount tiers (buy more, save more)
   bulkDiscounts?: { quantity: number; discountPercent: number }[];

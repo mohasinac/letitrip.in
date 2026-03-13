@@ -264,7 +264,7 @@ export function OrderTrackingView({ order, orderId }: OrderTrackingViewProps) {
         <Heading level={1}>{tOrders("trackTitle")}</Heading>
         <Text size="sm" variant="secondary" className="mt-1">
           {tOrders("orderNumber")} #{order.id.slice(0, 8).toUpperCase()}
-          {" � "}
+          {" — "}
           {tOrders("placedOn")} {formatDate(order.orderDate)}
         </Text>
       </div>
@@ -315,7 +315,7 @@ export function OrderTrackingView({ order, orderId }: OrderTrackingViewProps) {
                     {step.date && (
                       <Span className={`text-xs ${themed.textSecondary}`}>
                         {formatDate(step.date)}
-                        {" � "}
+                        {" — "}
                         {formatRelativeTime(step.date)}
                       </Span>
                     )}

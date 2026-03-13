@@ -373,10 +373,10 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
             <Button
               key={index}
               variant="ghost"
-              className={`relative overflow-hidden rounded-full transition-all duration-500 p-0 ${
+              className={`relative overflow-hidden rounded-full transition-all duration-500 p-0 !min-h-0 ${
                 index === currentSlide
-                  ? "w-8 h-2 bg-white"
-                  : "w-2 h-2 bg-white/40 hover:bg-white/75"
+                  ? THEME_CONSTANTS.carousel.dotActive
+                  : `${THEME_CONSTANTS.carousel.dotInactive} hover:bg-white/75`
               }`}
               onClick={() => goToSlide(index)}
               aria-label={tA11y("heroCarouselGoToSlide", { number: index + 1 })}
@@ -384,8 +384,7 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
               {/* Progress fill on active dot */}
               {index === currentSlide && (
                 <span
-                  className="absolute inset-y-0 left-0 bg-white/60 rounded-full"
-                  style={{ animation: "progress-fill 4s linear forwards" }}
+                  className="absolute inset-y-0 left-0 bg-black/20 rounded-full animate-[progress-fill_4s_linear_forwards]"
                   aria-hidden="true"
                 />
               )}

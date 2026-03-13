@@ -2,7 +2,14 @@
 
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { EmptyState, Spinner, Heading, Text, Caption } from "@/components";
+import {
+  EmptyState,
+  Spinner,
+  Heading,
+  Stack,
+  Text,
+  Caption,
+} from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatDate } from "@/utils";
 import { useStoreReviews } from "../hooks";
@@ -96,7 +103,7 @@ export function StoreReviewsView({ storeSlug }: StoreReviewsViewProps) {
       </div>
 
       {/* Review list */}
-      <div className="flex flex-col gap-4">
+      <Stack gap="md">
         {reviews.map((review) => (
           <div
             key={review.id}
@@ -125,7 +132,7 @@ export function StoreReviewsView({ storeSlug }: StoreReviewsViewProps) {
             </div>
           </div>
         ))}
-      </div>
+      </Stack>
     </div>
   );
 }

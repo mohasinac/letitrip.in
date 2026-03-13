@@ -83,9 +83,7 @@ class NotificationRepository extends BaseRepository<NotificationDocument> {
         .limit(limit)
         .get();
 
-      return snap.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as NotificationDocument,
-      );
+      return snap.docs.map((doc) => this.mapDoc<NotificationDocument>(doc));
     } catch (error) {
       serverLogger.error("Failed to fetch user notifications", {
         userId,

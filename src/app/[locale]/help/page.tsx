@@ -33,16 +33,20 @@ export default async function HelpPage() {
 
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
-      <Section className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white py-14 md:py-16 lg:py-20">
+      <Section
+        className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
+      >
         <div className={`${page.container.sm} text-center`}>
-          <Heading level={1} className="mb-4">
+          <Heading level={1} variant="none" className="mb-4 text-white">
             {t("title")}
           </Heading>
-          <Text className="text-blue-100 text-lg mb-8">{t("subtitle")}</Text>
+          <Text variant="none" className="text-white/80 text-lg mb-8">
+            {t("subtitle")}
+          </Text>
           <TextLink
             href={ROUTES.PUBLIC.FAQS}
             variant="inherit"
-            className="inline-flex items-center gap-2 bg-white text-indigo-700 font-medium px-6 py-3 rounded-full hover:bg-indigo-50 transition-colors"
+            className="inline-flex items-center gap-2 bg-white text-primary-700 dark:text-secondary-700 font-medium px-6 py-3 rounded-full hover:bg-zinc-50 dark:hover:bg-zinc-100 transition-colors"
           >
             {t("searchPlaceholder")}
           </TextLink>

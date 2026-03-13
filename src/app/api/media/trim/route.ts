@@ -12,6 +12,7 @@ import { successResponse } from "@/lib/api-response";
 import { getStorage } from "@/lib/firebase/admin";
 import { createApiHandler } from "@/lib/api/api-handler";
 import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { generateTrimmedVideoFilename } from "@/utils";
 import ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
 import path from "path";
@@ -126,7 +127,13 @@ export const POST = createApiHandler<(typeof trimDataSchema)["_output"]>({
       // Upload to storage
       const storage = getStorage();
       const bucket = storage.bucket();
-      const filename = `trimmed-${timestamp}-${randomStr}.${outputFormat}`;
+      // Derive SEO-friendly filename from the source URL so the trimmed file
+      // stays clearly related to its origin (e.g. product-...-video-1-trimmed.mp4).
+      const sourcePathSegment =
+        new URL(sourceUrl).pathname.split("/").pop() ?? "";
+      const filename = sourcePathSegment
+        ? generateTrimmedVideoFilename(sourcePathSegment, outputFormat)
+        : `trimmed-${timestamp}-${randomStr}.${outputFormat}`;
       const uploadPath = `${outputFolder}/${user!.uid}/${filename}`;
       const file = bucket.file(uploadPath);
 

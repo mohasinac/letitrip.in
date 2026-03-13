@@ -47,15 +47,19 @@ All API routes live under `src/app/api/`. They follow a consistent pattern: vali
 
 ## Checkout & Payment Routes
 
-| Method | Route                       | Auth | Description                      |
-| ------ | --------------------------- | ---- | -------------------------------- |
-| `GET`  | `/api/checkout`             | User | Checkout data (cart + addresses) |
-| `POST` | `/api/payment/create-order` | User | Create Razorpay order            |
-| `POST` | `/api/payment/verify`       | User | Verify payment + create order    |
-| `POST` | `/api/payment/preorder`     | User | Pre-order deposit payment        |
-| `POST` | `/api/payment/event/init`   | User | Event participation payment      |
-| `POST` | `/api/payment/otp/request`  | User | Request COD OTP                  |
-| `POST` | `/api/payment/webhook`      | None | Razorpay webhook                 |
+| Method | Route                              | Auth | Description                                                                                |
+| ------ | ---------------------------------- | ---- | ------------------------------------------------------------------------------------------ |
+| `GET`  | `/api/checkout`                    | User | Checkout data (cart + addresses)                                                           |
+| `POST` | `/api/checkout`                    | User | Place order(s) from cart; enforces consent OTP for third-party addresses                   |
+| `POST` | `/api/checkout/preflight`          | User | Non-mutating stock check — returns unavailable items without placing an order              |
+| `POST` | `/api/checkout/consent-otp/send`   | User | Send 6-digit consent email OTP; 15-min cooldown, up to 3 bypass credits for partial orders |
+| `POST` | `/api/checkout/consent-otp/verify` | User | Verify consent OTP code; max 5 attempts, marks OTP document as verified                    |
+| `POST` | `/api/payment/create-order`        | User | Create Razorpay order                                                                      |
+| `POST` | `/api/payment/verify`              | User | Verify payment + create order                                                              |
+| `POST` | `/api/payment/preorder`            | User | Pre-order deposit payment                                                                  |
+| `POST` | `/api/payment/event/init`          | User | Event participation payment                                                                |
+| `POST` | `/api/payment/otp/request`         | User | Request COD OTP                                                                            |
+| `POST` | `/api/payment/webhook`             | None | Razorpay webhook                                                                           |
 
 ---
 

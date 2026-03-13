@@ -6,6 +6,12 @@
 import type { BlogPostDocument } from "@/db/schema";
 import { BLOG_POST_FIELDS } from "@/db/schema";
 
+// Dynamic date helpers
+const NOW = new Date();
+const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
+const daysAhead = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
+const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000);
+
 export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
   // ── Featured / Published ──────────────────────────────────────────────
   {
@@ -27,7 +33,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     ],
     isFeatured: true,
     status: BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
-    publishedAt: new Date("2026-01-10T08:00:00Z"),
+    publishedAt: daysAgo(58),
     authorId: "user-admin-user-admin",
     authorName: "Admin User",
     readTimeMinutes: 8,
@@ -35,8 +41,8 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     metaTitle: "Top 10 Rarest Anime Figures to Buy in 2026 | LetItRip",
     metaDescription:
       "Discover the 10 rarest anime figures still available on the secondary market in 2026 — with prices, rarity scores, and buying tips.",
-    createdAt: new Date("2026-01-08T10:00:00Z"),
-    updatedAt: new Date("2026-01-10T08:00:00Z"),
+    createdAt: daysAgo(60),
+    updatedAt: daysAgo(58),
   },
 
   {
@@ -51,7 +57,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     tags: ["gunpla", "beginners", "model-kits", "bandai", "how-to", "guide"],
     isFeatured: true,
     status: BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
-    publishedAt: new Date("2026-01-18T09:00:00Z"),
+    publishedAt: daysAgo(50),
     authorId: "user-admin-user-admin",
     authorName: "Admin User",
     readTimeMinutes: 10,
@@ -59,8 +65,8 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     metaTitle: "Complete Beginner's Guide to Gunpla 2026 | LetItRip",
     metaDescription:
       "New to Gunpla? Learn every grade from SD to Perfect Grade, the tools you need, and which kit to buy first.",
-    createdAt: new Date("2026-01-16T11:00:00Z"),
-    updatedAt: new Date("2026-01-18T09:00:00Z"),
+    createdAt: daysAgo(52),
+    updatedAt: daysAgo(50),
   },
 
   {
@@ -75,7 +81,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     tags: ["auctions", "platform", "feature", "launch", "news", "collectibles"],
     isFeatured: false,
     status: BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
-    publishedAt: new Date("2026-01-25T10:00:00Z"),
+    publishedAt: daysAgo(43),
     authorId: "user-admin-user-admin",
     authorName: "Admin User",
     readTimeMinutes: 4,
@@ -83,8 +89,8 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     metaTitle: "LetItRip Launches Anime Collectible Auction Platform | News",
     metaDescription:
       "LetItRip announces its live auction feature for rare anime figures, TCG cards, and production art. Bid, win, and collect.",
-    createdAt: new Date("2026-01-24T14:00:00Z"),
-    updatedAt: new Date("2026-01-25T10:00:00Z"),
+    createdAt: daysAgo(44),
+    updatedAt: daysAgo(43),
   },
 
   {
@@ -99,7 +105,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     tags: ["policy", "protection", "returns", "authentication", "collectibles"],
     isFeatured: false,
     status: BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
-    publishedAt: new Date("2026-02-01T08:00:00Z"),
+    publishedAt: daysAgo(36),
     authorId: "user-admin-user-admin",
     authorName: "Admin User",
     readTimeMinutes: 5,
@@ -107,8 +113,8 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     metaTitle: "Updated Collectibles Protection Policies Feb 2026 | LetItRip",
     metaDescription:
       "LetItRip updates buyer and seller protection policies for anime merchandise — authentication guarantees, extended returns, and a Verified Otaku Seller programme.",
-    createdAt: new Date("2026-01-30T12:00:00Z"),
-    updatedAt: new Date("2026-02-01T08:00:00Z"),
+    createdAt: daysAgo(38),
+    updatedAt: daysAgo(36),
   },
 
   {
@@ -123,7 +129,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     tags: ["seller", "photography", "figures", "listing", "tips", "display"],
     isFeatured: false,
     status: BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
-    publishedAt: new Date("2026-02-05T09:30:00Z"),
+    publishedAt: daysAgo(32),
     authorId: "user-admin-user-admin",
     authorName: "Admin User",
     readTimeMinutes: 6,
@@ -131,8 +137,8 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     metaTitle: "Figure Photography Tips for Anime Sellers | LetItRip",
     metaDescription:
       "6 actionable tips for photographing anime figures and collectibles to create listings that sell faster and attract higher bids.",
-    createdAt: new Date("2026-02-03T11:00:00Z"),
-    updatedAt: new Date("2026-02-05T09:30:00Z"),
+    createdAt: daysAgo(34),
+    updatedAt: daysAgo(32),
   },
 
   {
@@ -148,7 +154,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     tags: ["community", "spotlight", "collectors", "bidders", "january-2026"],
     isFeatured: false,
     status: BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
-    publishedAt: new Date("2026-02-10T10:00:00Z"),
+    publishedAt: daysAgo(27),
     authorId: "user-admin-user-admin",
     authorName: "Admin User",
     readTimeMinutes: 5,
@@ -156,8 +162,8 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     metaTitle: "Community Spotlight January 2026 — Top Collectors | LetItRip",
     metaDescription:
       "Celebrating LetItRip's top sellers, bidders, and collectors from January 2026 and welcoming hundreds of new anime enthusiasts to the platform.",
-    createdAt: new Date("2026-02-08T13:00:00Z"),
-    updatedAt: new Date("2026-02-10T10:00:00Z"),
+    createdAt: daysAgo(29),
+    updatedAt: daysAgo(27),
   },
 
   // ── Published — March Auction Spotlight ──────────────────────────────
@@ -180,7 +186,7 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     ],
     isFeatured: true,
     status: BLOG_POST_FIELDS.STATUS_VALUES.PUBLISHED,
-    publishedAt: new Date("2026-03-01T09:00:00Z"),
+    publishedAt: daysAgo(8),
     authorId: "user-moderator-mod-user",
     authorName: "Riya Sharma",
     readTimeMinutes: 5,
@@ -189,8 +195,8 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
       "March 2026 Auction Spotlight — Anime Figures & TCG Live Now | LetItRip",
     metaDescription:
       "Explore LetItRip's biggest anime auction month: rare figures, PSA-graded Pokémon cards, Ghibli production art, and more. Bid now.",
-    createdAt: new Date("2026-02-28T14:00:00Z"),
-    updatedAt: new Date("2026-03-01T09:00:00Z"),
+    createdAt: daysAgo(9),
+    updatedAt: daysAgo(8),
   },
 
   // ── Draft ─────────────────────────────────────────────────────────────
@@ -216,8 +222,8 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     authorName: "Admin User",
     readTimeMinutes: 12,
     views: 0,
-    createdAt: new Date("2026-02-20T09:00:00Z"),
-    updatedAt: new Date("2026-02-20T09:00:00Z"),
+    createdAt: daysAgo(17),
+    updatedAt: daysAgo(17),
   },
 
   // ── Archived ─────────────────────────────────────────────────────────
@@ -233,12 +239,12 @@ export const blogPostsSeedData: Partial<BlogPostDocument>[] = [
     tags: ["anicon", "december", "2025", "recap", "haul"],
     isFeatured: false,
     status: BLOG_POST_FIELDS.STATUS_VALUES.ARCHIVED,
-    publishedAt: new Date("2025-12-28T10:00:00Z"),
+    publishedAt: daysAgo(71),
     authorId: "user-admin-user-admin",
     authorName: "Admin User",
     readTimeMinutes: 3,
     views: 5602,
-    createdAt: new Date("2025-12-27T14:00:00Z"),
-    updatedAt: new Date("2026-01-15T08:00:00Z"),
+    createdAt: daysAgo(72),
+    updatedAt: daysAgo(53),
   },
 ];

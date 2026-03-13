@@ -6,7 +6,7 @@
  *
  * Exports:
  * - MAIN_NAV_ITEMS: href + icon data for MainNavbar.
- *   Translation keys (in order): home · products · auctions · pre-orders · categories · sellers · events · blog · reviews
+ *   Translation keys (in order): home · products · auctions · pre-orders · categories · stores · events · blog · reviews
  *
  * @constant
  */
@@ -22,8 +22,6 @@ import {
   CalendarDays,
   BookOpen,
   Star,
-  Tag,
-  Megaphone,
 } from "lucide-react";
 import { SITE_CONFIG } from "./site";
 
@@ -32,6 +30,8 @@ import { SITE_CONFIG } from "./site";
  * href + icon data only; labels are provided by consuming components via useTranslations.
  */
 export interface NavItem {
+  /** Stable identifier matching the nav translation key (e.g. "products", "blog"). */
+  key: string;
   href: string;
   icon: ReactNode;
   /** When true, renders the item as an accented pill in the desktop navbar. */
@@ -45,55 +45,54 @@ export interface NavItem {
  */
 export const MAIN_NAV_ITEMS: NavItem[] = [
   {
+    key: "home",
     href: SITE_CONFIG.nav.home,
     icon: <Home className="w-5 h-5 text-blue-500 dark:text-blue-400" />,
   },
   {
+    key: "products",
     href: SITE_CONFIG.nav.products,
     icon: (
       <ShoppingBag className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
     ),
   },
   {
+    key: "auctions",
     href: SITE_CONFIG.nav.auctions,
     icon: <Gavel className="w-5 h-5 text-amber-500 dark:text-amber-400" />,
   },
   {
+    key: "preOrders",
     href: SITE_CONFIG.nav.preOrders,
     icon: (
       <CalendarCheck className="w-5 h-5 text-purple-500 dark:text-purple-400" />
     ),
   },
   {
+    key: "categories",
     href: SITE_CONFIG.nav.categories,
     icon: (
       <LayoutGrid className="w-5 h-5 text-violet-500 dark:text-violet-400" />
     ),
   },
   {
+    key: "stores",
     href: SITE_CONFIG.nav.stores,
     icon: <Store className="w-5 h-5 text-orange-500 dark:text-orange-400" />,
   },
   {
+    key: "events",
     href: SITE_CONFIG.nav.events,
     icon: <CalendarDays className="w-5 h-5 text-rose-500 dark:text-rose-400" />,
   },
   {
+    key: "blog",
     href: SITE_CONFIG.nav.blog,
     icon: <BookOpen className="w-5 h-5 text-cyan-500 dark:text-cyan-400" />,
   },
   {
+    key: "reviews",
     href: SITE_CONFIG.nav.reviews,
     icon: <Star className="w-5 h-5 text-yellow-500 dark:text-yellow-400" />,
-  },
-  {
-    href: SITE_CONFIG.nav.promotions,
-    icon: <Tag className="w-5 h-5 text-primary" />,
-    highlighted: true,
-  },
-  {
-    href: SITE_CONFIG.nav.sellers,
-    icon: <Megaphone className="w-5 h-5 text-primary" />,
-    highlighted: true,
   },
 ];

@@ -2,13 +2,15 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { mediaService } from "@/services";
+import type { MediaFilenameContext } from "@/utils";
 
 /**
  * useMediaUpload
  * Wraps `mediaService.upload()` as a `useApiMutation`.
  *
- * Use `upload(file, folder?)` as the `onUpload` prop for `<ImageUpload>` and
- * `<MediaUploadField>` — it builds FormData internally and returns the URL.
+ * Use `upload(file, folder?, isPublic?, context?)` as the `onUpload` prop for
+ * `<ImageUpload>` and `<MediaUploadField>`.  Pass a `MediaFilenameContext` to
+ * get an SEO-friendly filename like `product-iphone-15-pro-image-1.webp`.
  */
 export function useMediaUpload() {
   const mutation = useMutation<{ url: string }, Error, FormData>({
@@ -19,11 +21,15 @@ export function useMediaUpload() {
     file: File,
     folder = "uploads",
     isPublic = true,
+    context?: MediaFilenameContext,
   ): Promise<string> => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("folder", folder);
     formData.append("public", isPublic.toString());
+    if (context) {
+      formData.append("context", JSON.stringify(context));
+    }
     const data = await mutation.mutateAsync(formData);
     return data!.url;
   };

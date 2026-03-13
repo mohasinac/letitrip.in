@@ -37,6 +37,7 @@ import type {
   ProductDocument,
   ProductAdminUpdateInput,
 } from "@/db/schema";
+import { adminService } from "@/services";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 
@@ -395,9 +396,7 @@ export async function adminCreateProductAction(
 
   // Delegate to the API route — product creation requires complex validation
   // (slug generation, image processing). This action is a thin auth wrapper.
-  const { apiClient } = await import("@/lib/api-client");
-  const { API_ENDPOINTS } = await import("@/constants");
-  return apiClient.post<ProductDocument>(API_ENDPOINTS.ADMIN.PRODUCTS, input);
+  return adminService.createAdminProduct(input) as Promise<ProductDocument>;
 }
 
 export async function adminDeleteProductAction(id: string): Promise<void> {

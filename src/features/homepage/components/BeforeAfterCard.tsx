@@ -3,7 +3,7 @@
 import { useRef, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowLeftRight } from "lucide-react";
-import { MediaImage } from "@/components";
+import { MediaImage, Text } from "@/components";
 import type { FeaturedResult } from "@/db/schema";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -133,9 +133,14 @@ export function BeforeAfterCard({
 
       {/* ── Caption ── */}
       {caption && (
-        <p className="p-4 text-center text-sm font-medium text-zinc-600 dark:text-zinc-400">
+        <Text
+          size="sm"
+          weight="medium"
+          variant="muted"
+          className="p-4 text-center"
+        >
           {caption}
-        </p>
+        </Text>
       )}
     </div>
   );

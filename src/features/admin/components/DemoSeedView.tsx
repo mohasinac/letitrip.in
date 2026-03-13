@@ -14,6 +14,13 @@ import {
   Checkbox,
   Ul,
   Li,
+  Section,
+  BlockHeader,
+  Progress,
+  IndeterminateProgress,
+  Row,
+  Stack,
+  Grid,
 } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { useDemoSeed } from "@/features/admin/hooks";
@@ -55,6 +62,7 @@ const COLLECTION_GROUPS: CollectionGroup[] = [
     chipSelected:
       "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300",
     collections: [
+      "stores",
       "products",
       "orders",
       "bids",
@@ -107,6 +115,7 @@ const COLLECTION_LABELS: Record<CollectionName, string> = {
   users: "Users",
   addresses: "Addresses",
   sessions: "Sessions",
+  stores: "Stores",
   products: "Products",
   orders: "Orders",
   bids: "Bids",
@@ -128,11 +137,12 @@ const COLLECTION_LABELS: Record<CollectionName, string> = {
 /** Expected item counts from the current seed files — used as pre-load reference. */
 const SEED_ITEM_COUNTS: Record<CollectionName, number> = {
   users: 19,
-  addresses: 23,
+  addresses: 22,
   sessions: 19,
-  products: 40,
+  stores: 3,
+  products: 101,
   orders: 25,
-  bids: 72,
+  bids: 73,
   carts: 5,
   coupons: 14,
   payouts: 7,
@@ -218,7 +228,9 @@ export function DemoSeedView() {
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary} pb-16`}>
       {/* ── Hero Header ── */}
-      <div className="bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white px-6 py-10 sm:py-14">
+      <div
+        className={`${THEME_CONSTANTS.accentBanner.devHero} px-6 py-10 sm:py-14`}
+      >
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -227,14 +239,14 @@ export function DemoSeedView() {
                 <Heading
                   level={1}
                   variant="none"
-                  className="text-3xl sm:text-4xl font-bold tracking-tight text-white"
+                  className={`text-3xl sm:text-4xl font-bold tracking-tight ${THEME_CONSTANTS.accentBanner.devHeroText}`}
                 >
                   Seed Data Manager
                 </Heading>
               </div>
               <Text
                 variant="none"
-                className="text-zinc-300 text-sm sm:text-base max-w-lg"
+                className={`${THEME_CONSTANTS.accentBanner.devHeroTextMuted} text-sm sm:text-base max-w-lg`}
               >
                 Load or remove deterministic seed documents from Firestore. All
                 operations are ID-scoped — safe alongside real data.
@@ -255,15 +267,21 @@ export function DemoSeedView() {
               return (
                 <div
                   key={g.label}
-                  className="flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full text-xs text-zinc-300"
+                  className={`flex items-center gap-1.5 px-3 py-1 ${THEME_CONSTANTS.accentBanner.devHeroChipBg} rounded-full text-xs ${THEME_CONSTANTS.accentBanner.devHeroChipText}`}
                 >
                   <Span>{g.emoji}</Span>
                   <Span>{g.label}</Span>
-                  <Span className="font-bold text-white">{groupItemTotal}</Span>
+                  <Span
+                    className={`font-bold ${THEME_CONSTANTS.accentBanner.devHeroChipBoldText}`}
+                  >
+                    {groupItemTotal}
+                  </Span>
                 </div>
               );
             })}
-            <div className="flex items-center gap-1.5 px-3 py-1 bg-white/20 rounded-full text-xs font-semibold text-white">
+            <div
+              className={`flex items-center gap-1.5 px-3 py-1 ${THEME_CONSTANTS.accentBanner.devHeroChipBoldBg} rounded-full text-xs font-semibold ${THEME_CONSTANTS.accentBanner.devHeroChipBoldText}`}
+            >
               {ALL_COLLECTIONS.reduce(
                 (sum, col) => sum + SEED_ITEM_COUNTS[col],
                 0,
@@ -275,6 +293,13 @@ export function DemoSeedView() {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6 mt-8">
+        {/* ── Seed Status Banner ── */}
+        <SeedStatusBanner
+          statusMap={statusMap}
+          statusLoading={statusLoading}
+          collections={ALL_COLLECTIONS}
+        />
+
         {/* ── Collection Selector ── */}
         <Card className="p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
@@ -441,7 +466,7 @@ export function DemoSeedView() {
         </Card>
 
         {/* ── Actions ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Grid cols={2} gap="md">
           {/* Load card */}
           <Card className="p-5 border-2 border-emerald-200 dark:border-emerald-800">
             <div className="flex items-center gap-2 mb-4">
@@ -525,7 +550,76 @@ export function DemoSeedView() {
               action="delete"
             />
           </Card>
-        </div>
+        </Grid>
+
+        {/* ── Demo Credentials ── */}
+        <Card className="p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Span className="text-xl">🔑</Span>
+            <Heading
+              level={3}
+              className={`font-bold text-base ${THEME_CONSTANTS.themed.textPrimary}`}
+            >
+              Demo Credentials
+            </Heading>
+          </div>
+          <Text size="sm" variant="secondary" className="mb-4">
+            All demo accounts use the password{" "}
+            <Span className="font-mono text-xs font-semibold px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200">
+              TempPass123!
+            </Span>
+          </Text>
+          <Grid cols={3} gap="sm">
+            {[
+              {
+                role: "Admin",
+                email: "admin@letitrip.in",
+                color:
+                  "border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-900/20",
+                badge:
+                  "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300",
+                emoji: "👑",
+              },
+              {
+                role: "Moderator",
+                email: "moderator@letitrip.in",
+                color:
+                  "border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-900/20",
+                badge:
+                  "bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300",
+                emoji: "🛡️",
+              },
+              {
+                role: "Seller",
+                email: "techhub@letitrip.in",
+                color:
+                  "border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20",
+                badge:
+                  "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300",
+                emoji: "🏪",
+              },
+            ].map(({ role, email, color, badge, emoji }) => (
+              <div
+                key={role}
+                className={`rounded-xl border-2 p-4 flex flex-col gap-2 ${color}`}
+              >
+                <div className="flex items-center gap-2">
+                  <Span>{emoji}</Span>
+                  <Span
+                    className={`text-xs font-bold px-2 py-0.5 rounded-full ${badge}`}
+                  >
+                    {role}
+                  </Span>
+                </div>
+                <Span
+                  className={`font-mono text-xs break-all ${THEME_CONSTANTS.themed.textPrimary}`}
+                >
+                  {email}
+                </Span>
+              </div>
+            ))}
+          </Grid>
+        </Card>
 
         {/* ── Info footer ── */}
         <div
@@ -565,8 +659,8 @@ export function DemoSeedView() {
               <Span className="font-mono text-xs">TempPass123!</Span>
             </Li>
             <Li>
-              19 users · 50 products (20 auctions) · 72 bids · 103 FAQs · 20
-              categories · 479 docs total
+              19 users · 101 products (19 auctions) · 73 bids · 102 FAQs · 23
+              categories · 3 stores · 532 docs total
             </Li>
           </Ul>
         </div>
@@ -596,6 +690,241 @@ export function DemoSeedView() {
         confirmText="Delete"
         isDeleting={isLoading}
       />
+    </div>
+  );
+}
+
+// ── Top-level seed status banner ────────────────────────────────────────────
+interface SeedStatusBannerProps {
+  statusMap: Record<string, { seedCount: number; existingCount: number }>;
+  statusLoading: boolean;
+  collections: CollectionName[];
+}
+
+function SeedStatusBanner({
+  statusMap,
+  statusLoading,
+  collections,
+}: SeedStatusBannerProps) {
+  const { themed } = THEME_CONSTANTS;
+
+  const totalExpected = collections.reduce(
+    (sum, col) => sum + (statusMap[col]?.seedCount ?? SEED_ITEM_COUNTS[col]),
+    0,
+  );
+  const totalSeeded = collections.reduce(
+    (sum, col) => sum + (statusMap[col]?.existingCount ?? 0),
+    0,
+  );
+  const totalPending = Math.max(0, totalExpected - totalSeeded);
+  const fullySeeded = collections.filter(
+    (col) =>
+      statusMap[col] &&
+      statusMap[col].existingCount > 0 &&
+      statusMap[col].existingCount >= statusMap[col].seedCount,
+  ).length;
+  const emptyCount = collections.filter(
+    (col) => statusMap[col] && statusMap[col].existingCount === 0,
+  ).length;
+  const partialCount = collections.length - fullySeeded - emptyCount;
+  const pct =
+    totalExpected > 0 ? Math.round((totalSeeded / totalExpected) * 100) : 0;
+
+  const isFullyLoaded =
+    !statusLoading && totalSeeded === totalExpected && totalExpected > 0;
+  const isFullyEmpty = !statusLoading && totalSeeded === 0 && totalExpected > 0;
+
+  const borderCls = isFullyLoaded
+    ? "border-emerald-300 dark:border-emerald-700"
+    : isFullyEmpty
+      ? "border-zinc-300 dark:border-zinc-700"
+      : "border-amber-300 dark:border-amber-700";
+
+  const progressVariant = isFullyLoaded
+    ? "success"
+    : isFullyEmpty
+      ? "primary"
+      : "warning";
+
+  return (
+    <Section
+      aria-label="Seed data status"
+      aria-live="polite"
+      className={`rounded-2xl border-2 overflow-hidden ${themed.bgPrimary} ${borderCls}`}
+    >
+      {/* ── Header ── */}
+      <BlockHeader
+        className={`flex items-center justify-between gap-3 px-5 py-4 border-b ${themed.border} ${themed.bgSecondary}`}
+      >
+        <Row gap="sm" align="center">
+          <Span className="text-xl" aria-hidden="true">
+            {isFullyLoaded ? "✅" : isFullyEmpty ? "📭" : "⏳"}
+          </Span>
+          <Heading
+            level={2}
+            className={`text-base font-semibold ${themed.textPrimary}`}
+          >
+            Seed Data Status
+          </Heading>
+        </Row>
+
+        {statusLoading ? (
+          <Row
+            gap="xs"
+            align="center"
+            className="text-xs text-zinc-500 dark:text-zinc-400"
+          >
+            <Spinner size="sm" />
+            <Span>Checking…</Span>
+          </Row>
+        ) : (
+          <Badge
+            variant={
+              isFullyLoaded ? "success" : isFullyEmpty ? "secondary" : "warning"
+            }
+            className="text-xs font-semibold"
+          >
+            {isFullyLoaded
+              ? "Fully seeded"
+              : isFullyEmpty
+                ? "Not seeded"
+                : `${pct}% seeded`}
+          </Badge>
+        )}
+      </BlockHeader>
+
+      {/* ── Body ── */}
+      <Stack gap="sm" className="p-5">
+        {/* Progress bar */}
+        {statusLoading ? (
+          <IndeterminateProgress size="sm" className="rounded-full" />
+        ) : (
+          <Progress
+            value={pct}
+            variant={progressVariant}
+            size="sm"
+            label={`${totalSeeded.toLocaleString()} / ${totalExpected.toLocaleString()} documents seeded`}
+            showValue
+          />
+        )}
+
+        {/* ── Stat grid ── */}
+        <Grid cols={4} gap="sm">
+          <SeedStatTile
+            label="Seeded"
+            sub="docs in DB"
+            loading={statusLoading}
+            value={totalSeeded}
+            accent={
+              totalSeeded > 0
+                ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300"
+                : undefined
+            }
+          />
+
+          <SeedStatTile
+            label="Pending"
+            sub="not yet loaded"
+            loading={statusLoading}
+            value={totalPending}
+            accent={
+              totalPending > 0
+                ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300"
+                : undefined
+            }
+          />
+
+          <SeedStatTile
+            label="Expected"
+            sub="in seed files"
+            loading={statusLoading}
+            value={totalExpected}
+          />
+
+          {/* Collections breakdown tile */}
+          <div
+            className={`rounded-xl px-4 py-3 border ${themed.bgSecondary} ${themed.border}`}
+          >
+            <Caption className="text-[10px] uppercase tracking-widest font-semibold text-zinc-500 dark:text-zinc-400">
+              Collections
+            </Caption>
+            {statusLoading ? (
+              <div className="h-6 w-20 mt-1 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse" />
+            ) : (
+              <Row
+                gap="xs"
+                wrap
+                align="baseline"
+                className="mt-1 min-h-[1.75rem]"
+              >
+                {fullySeeded > 0 && (
+                  <Span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                    {fullySeeded}
+                    <Span className="text-[10px] font-normal ml-0.5">✓</Span>
+                  </Span>
+                )}
+                {partialCount > 0 && (
+                  <Span className="text-sm font-bold text-amber-600 dark:text-amber-400">
+                    {partialCount}
+                    <Span className="text-[10px] font-normal ml-0.5">~</Span>
+                  </Span>
+                )}
+                {emptyCount > 0 && (
+                  <Span className="text-sm font-bold text-zinc-400 dark:text-zinc-500">
+                    {emptyCount}
+                    <Span className="text-[10px] font-normal ml-0.5">✗</Span>
+                  </Span>
+                )}
+              </Row>
+            )}
+            <Caption className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">
+              full · partial · empty
+            </Caption>
+          </div>
+        </Grid>
+      </Stack>
+    </Section>
+  );
+}
+
+// ── Stat tile used inside the banner grid ─────────────────────────────────────
+interface SeedStatTileProps {
+  label: string;
+  sub: string;
+  value: number;
+  loading: boolean;
+  accent?: string;
+}
+
+function SeedStatTile({
+  label,
+  sub,
+  value,
+  loading,
+  accent,
+}: SeedStatTileProps) {
+  const { themed } = THEME_CONSTANTS;
+  const tileBase = `rounded-xl px-4 py-3 border`;
+  const tileCls = accent
+    ? `${tileBase} ${accent}`
+    : `${tileBase} ${themed.bgSecondary} ${themed.border}`;
+  const valueCls = accent
+    ? `text-2xl font-bold`
+    : `text-2xl font-bold ${themed.textPrimary}`;
+
+  return (
+    <div className={tileCls}>
+      <Caption className="text-[10px] uppercase tracking-widest font-semibold text-zinc-500 dark:text-zinc-400">
+        {label}
+      </Caption>
+      {loading ? (
+        <div className="h-7 w-14 mt-1 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse" />
+      ) : (
+        <Span className={valueCls}>{value.toLocaleString()}</Span>
+      )}
+      <Caption className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">
+        {sub}
+      </Caption>
     </div>
   );
 }

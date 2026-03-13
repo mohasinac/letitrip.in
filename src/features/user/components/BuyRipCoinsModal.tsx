@@ -9,7 +9,15 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Modal, Heading, Text, Caption, Button, Badge } from "@/components";
+import {
+  Modal,
+  Grid,
+  Heading,
+  Text,
+  Caption,
+  Button,
+  Badge,
+} from "@/components";
 import {
   usePurchaseRipCoins,
   useVerifyRipCoinPurchase,
@@ -72,7 +80,7 @@ export function BuyRipCoinsModal({ open, onClose, onPurchaseSuccess }: Props) {
     <Modal isOpen={open} onClose={onClose} title={t("title")}>
       <div className={spacing.stack}>
         {/* Package cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Grid cols={2} gap="3">
           {RIPCOIN_PACKAGES.map((pkg) => {
             const isSelected = pkg.packageId === selectedPackageId;
             return (
@@ -107,7 +115,7 @@ export function BuyRipCoinsModal({ open, onClose, onPurchaseSuccess }: Props) {
               </button>
             );
           })}
-        </div>
+        </Grid>
 
         {/* Selected summary */}
         <div className="rounded-lg bg-indigo-50 dark:bg-indigo-950/30 p-4 flex flex-col gap-1">

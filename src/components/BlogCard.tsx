@@ -104,7 +104,7 @@ export function BlogCard({
                   e.stopPropagation();
                   onSelect?.(post.id, e.target.checked);
                 }}
-                className="bg-white/80"
+                className={THEME_CONSTANTS.accentBanner.imageCheckbox}
               />
             </div>
           )}

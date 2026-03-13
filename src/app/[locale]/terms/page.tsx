@@ -31,12 +31,16 @@ export default async function TermsPage() {
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}
-      <Section className="bg-gradient-to-br from-slate-700 to-slate-900 text-white py-14 md:py-16 lg:py-20">
+      <Section
+        className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
+      >
         <div className={`${page.container.sm}`}>
-          <Heading level={1} className="mb-3">
+          <Heading level={1} variant="none" className="mb-3 text-white">
             {t("title")}
           </Heading>
-          <Text className="text-slate-300">{t("lastUpdated")}</Text>
+          <Text variant="none" className="text-white/80">
+            {t("lastUpdated")}
+          </Text>
         </div>
       </Section>
 

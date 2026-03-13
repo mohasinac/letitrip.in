@@ -18,6 +18,7 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { getSearchParams, getStringParam } from "@/lib/api/request-helpers";
 import { NotFoundError } from "@/lib/errors";
+import { resolveDate } from "@/utils";
 import { z } from "zod";
 import { createApiHandler } from "@/lib/api/api-handler";
 
@@ -73,11 +74,8 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
 
     // Auction must not have ended
     if (product.auctionEndDate) {
-      const endDate =
-        product.auctionEndDate instanceof Date
-          ? product.auctionEndDate
-          : new Date(product.auctionEndDate as unknown as string);
-      if (endDate.getTime() < Date.now()) {
+      const endDate = resolveDate(product.auctionEndDate);
+      if (endDate && endDate.getTime() < Date.now()) {
         return errorResponse(ERROR_MESSAGES.BID.AUCTION_ENDED, 400);
       }
     }

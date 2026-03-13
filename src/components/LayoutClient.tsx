@@ -61,6 +61,14 @@ export default function LayoutClient({
       light?: typeof DEFAULT_LIGHT_BG;
       dark?: typeof DEFAULT_DARK_BG;
     };
+    navbarConfig?: { hiddenNavItems?: string[] };
+    footerConfig?: {
+      trustBar?: {
+        enabled?: boolean;
+        items?: { icon: string; label: string; visible: boolean }[];
+      };
+      newsletterEnabled?: boolean;
+    };
   }>();
 
   const backgroundConfig = {
@@ -68,31 +76,13 @@ export default function LayoutClient({
     darkMode: siteSettings?.background?.dark ?? DEFAULT_DARK_BG,
   };
 
-  // Set sidebar default state based on screen size and user preference
-  // Desktop (>= 768px): visible by default (unless user closed it)
-  // Mobile (< 768px): hidden by default
+  // Sidebar always starts closed — user opens it explicitly.
   useEffect(() => {
-    const handleResize = () => {
-      const isDesktop = window.innerWidth >= 768;
-
-      // Check if user has a saved preference
-      const savedPreference = localStorage.getItem("sidebarOpen");
-
-      if (savedPreference !== null) {
-        // Respect user's preference
-        setSidebarOpen(savedPreference === "true");
-      } else {
-        // Default behavior based on screen size
-        setSidebarOpen(isDesktop);
-      }
-    };
-
-    // Set initial state
-    handleResize();
-
-    // Listen for window resize
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    const savedPreference = localStorage.getItem("sidebarOpen");
+    if (savedPreference !== null) {
+      setSidebarOpen(savedPreference === "true");
+    }
+    // No resize-based auto-open — sidebar is opt-in.
   }, []);
 
   // Handle sidebar toggle and save preference
@@ -106,35 +96,41 @@ export default function LayoutClient({
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full overflow-x-hidden transition-colors duration-300">
+    <div className="flex flex-col min-h-screen w-full overflow-x-clip transition-colors duration-300">
       {/* Dynamic Background */}
       <BackgroundRenderer
         lightMode={backgroundConfig.lightMode}
         darkMode={backgroundConfig.darkMode}
       />
-      <TitleBar
-        onToggleSidebar={handleToggleSidebar}
-        sidebarOpen={sidebarOpen}
-        onSearchToggle={() => setSearchOpen(!searchOpen)}
-        searchOpen={searchOpen}
-      />
-      <MainNavbar />
+      {/* Unified sticky site header: TitleBar + Navbar + Search row */}
+      <div className={`sticky top-0 ${THEME_CONSTANTS.zIndex.titleBar} w-full`}>
+        <TitleBar
+          onToggleSidebar={handleToggleSidebar}
+          sidebarOpen={sidebarOpen}
+          onSearchToggle={() => setSearchOpen(!searchOpen)}
+          searchOpen={searchOpen}
+          isDark={isDark}
+          onToggleTheme={toggleTheme}
+        />
+        <MainNavbar
+          hiddenNavItems={siteSettings?.navbarConfig?.hiddenNavItems}
+        />
+        <Search
+          isOpen={searchOpen}
+          onOpen={() => setSearchOpen(true)}
+          onClose={() => setSearchOpen(false)}
+          onSearch={(query) => {
+            setSearchOpen(false);
+            router.push(
+              `${ROUTES.PUBLIC.PRODUCTS}?search=${encodeURIComponent(query)}`,
+            );
+            logger.debug("Search navigating to products:", query);
+          }}
+        />
+      </div>
 
       {/* Dismissible event banner for active sales / offers */}
       <EventBanner />
-
-      <Search
-        isOpen={searchOpen}
-        onOpen={() => setSearchOpen(true)}
-        onClose={() => setSearchOpen(false)}
-        onSearch={(query) => {
-          setSearchOpen(false);
-          router.push(
-            `${ROUTES.PUBLIC.PRODUCTS}?search=${encodeURIComponent(query)}`,
-          );
-          logger.debug("Search navigating to products:", query);
-        }}
-      />
 
       {/* Breadcrumbs - shown on all pages except home */}
       <AutoBreadcrumbs />
@@ -160,7 +156,7 @@ export default function LayoutClient({
 
       <BackToTop sidebarOpen={sidebarOpen} />
 
-      <Footer />
+      <Footer footerConfig={siteSettings?.footerConfig} />
 
       <BottomNavbar onSearchToggle={() => setSearchOpen(!searchOpen)} />
 

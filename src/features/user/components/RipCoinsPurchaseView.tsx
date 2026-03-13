@@ -10,7 +10,15 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Card, Heading, Text, Caption, Button, Badge } from "@/components";
+import {
+  Card,
+  Grid,
+  Heading,
+  Text,
+  Caption,
+  Button,
+  Badge,
+} from "@/components";
 import {
   usePurchaseRipCoins,
   useVerifyRipCoinPurchase,
@@ -77,7 +85,7 @@ export function RipCoinsPurchaseView() {
       </div>
 
       {/* ── Package cards grid ─────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Grid cols={2} gap="md">
         {RIPCOIN_PACKAGES.map((pkg) => {
           const isSelected = pkg.packageId === selectedPackageId;
           return (
@@ -122,7 +130,7 @@ export function RipCoinsPurchaseView() {
             </button>
           );
         })}
-      </div>
+      </Grid>
 
       {/* ── Order summary ──────────────────────────────────────────── */}
       <Card className="p-4">

@@ -6,6 +6,12 @@
 import type { NotificationDocument } from "@/db/schema";
 import { NOTIFICATION_FIELDS } from "@/db/schema";
 
+// Dynamic date helpers
+const NOW = new Date();
+const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
+const daysAhead = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
+const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000);
+
 export const notificationsSeedData: Partial<NotificationDocument>[] = [
   // ── John Doe — various notification types ─────────────────────────────
 
@@ -21,9 +27,9 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/products",
     actionLabel: "Start Exploring",
     isRead: true,
-    readAt: new Date("2024-02-15T10:00:00Z"),
-    createdAt: new Date("2024-02-15T08:30:00Z"),
-    updatedAt: new Date("2024-02-15T10:00:00Z"),
+    readAt: daysAgo(753),
+    createdAt: daysAgo(753),
+    updatedAt: daysAgo(753),
   },
 
   // Order placed
@@ -38,11 +44,11 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/user/orders/order-1-20260115-xk7m9p",
     actionLabel: "View Order",
     isRead: true,
-    readAt: new Date("2026-01-15T11:00:00Z"),
+    readAt: daysAgo(53),
     relatedId: "order-1-20260115-xk7m9p",
     relatedType: "order",
-    createdAt: new Date("2026-01-15T10:30:00Z"),
-    updatedAt: new Date("2026-01-15T11:00:00Z"),
+    createdAt: daysAgo(53),
+    updatedAt: daysAgo(53),
   },
 
   // Order shipped
@@ -57,11 +63,11 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/user/orders/order-1-20260115-xk7m9p",
     actionLabel: "Track Order",
     isRead: true,
-    readAt: new Date("2026-01-16T09:00:00Z"),
+    readAt: daysAgo(52),
     relatedId: "order-1-20260115-xk7m9p",
     relatedType: "order",
-    createdAt: new Date("2026-01-16T08:00:00Z"),
-    updatedAt: new Date("2026-01-16T09:00:00Z"),
+    createdAt: daysAgo(52),
+    updatedAt: daysAgo(52),
   },
 
   // Order delivered
@@ -77,11 +83,11 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
       "/products/product-iphone-15-pro-max-smartphones-new-techhub-electronics-1",
     actionLabel: "Write a Review",
     isRead: true,
-    readAt: new Date("2026-01-18T16:00:00Z"),
+    readAt: daysAgo(50),
     relatedId: "order-1-20260115-xk7m9p",
     relatedType: "order",
-    createdAt: new Date("2026-01-18T14:30:00Z"),
-    updatedAt: new Date("2026-01-18T16:00:00Z"),
+    createdAt: daysAgo(50),
+    updatedAt: daysAgo(50),
   },
 
   // Review approved
@@ -97,11 +103,11 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
       "/products/product-iphone-15-pro-max-smartphones-new-techhub-electronics-1#reviews",
     actionLabel: "View Review",
     isRead: true,
-    readAt: new Date("2026-01-21T09:30:00Z"),
+    readAt: daysAgo(47),
     relatedId: "review-iphone-15-pro-max-john-20260120",
     relatedType: "review",
-    createdAt: new Date("2026-01-20T12:00:00Z"),
-    updatedAt: new Date("2026-01-21T09:30:00Z"),
+    createdAt: daysAgo(48),
+    updatedAt: daysAgo(47),
   },
 
   // Bid outbid
@@ -117,12 +123,12 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
       "/products/auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
     actionLabel: "Place a New Bid",
     isRead: true,
-    readAt: new Date("2026-01-21T09:20:00Z"),
+    readAt: daysAgo(47),
     relatedId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
     relatedType: "product",
-    createdAt: new Date("2026-01-21T09:15:00Z"),
-    updatedAt: new Date("2026-01-21T09:20:00Z"),
+    createdAt: daysAgo(47),
+    updatedAt: daysAgo(47),
   },
 
   // Promotion — unread
@@ -137,8 +143,8 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/deals",
     actionLabel: "Shop Now",
     isRead: false,
-    createdAt: new Date("2026-02-22T09:00:00Z"),
-    updatedAt: new Date("2026-02-22T09:00:00Z"),
+    createdAt: daysAgo(15),
+    updatedAt: daysAgo(15),
   },
 
   {
@@ -152,9 +158,9 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/products",
     actionLabel: "Start Shopping",
     isRead: true,
-    readAt: new Date("2024-03-10T10:15:00Z"),
-    createdAt: new Date("2024-03-10T10:00:00Z"),
-    updatedAt: new Date("2024-03-10T10:15:00Z"),
+    readAt: daysAgo(729),
+    createdAt: daysAgo(729),
+    updatedAt: daysAgo(729),
   },
 
   {
@@ -169,11 +175,11 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
       "/products/product-samsung-galaxy-s24-ultra-smartphones-new-techhub-electronics-1",
     actionLabel: "Write a Review",
     isRead: true,
-    readAt: new Date("2026-01-24T10:00:00Z"),
+    readAt: daysAgo(44),
     relatedId: "order-1-20260120-b4n8q3",
     relatedType: "order",
-    createdAt: new Date("2026-01-23T16:45:00Z"),
-    updatedAt: new Date("2026-01-24T10:00:00Z"),
+    createdAt: daysAgo(45),
+    updatedAt: daysAgo(44),
   },
 
   // Bid won
@@ -192,8 +198,8 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     relatedId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
     relatedType: "bid",
-    createdAt: new Date("2026-02-05T18:00:00Z"),
-    updatedAt: new Date("2026-02-05T18:00:00Z"),
+    createdAt: daysAgo(32),
+    updatedAt: daysAgo(32),
   },
 
   // ── Mike Johnson ─────────────────────────────────────────────────────
@@ -209,9 +215,9 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/products",
     actionLabel: "Start Exploring",
     isRead: true,
-    readAt: new Date("2024-04-05T10:00:00Z"),
-    createdAt: new Date("2024-04-05T09:15:00Z"),
-    updatedAt: new Date("2024-04-05T10:00:00Z"),
+    readAt: daysAgo(703),
+    createdAt: daysAgo(703),
+    updatedAt: daysAgo(703),
   },
 
   {
@@ -228,8 +234,8 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     relatedId:
       "auction-vintage-canon-ae-1-film-camera-cameras-photography-used-techhub-electronics-1",
     relatedType: "bid",
-    createdAt: new Date("2026-02-05T18:00:00Z"),
-    updatedAt: new Date("2026-02-05T18:00:00Z"),
+    createdAt: daysAgo(32),
+    updatedAt: daysAgo(32),
   },
 
   // System notification (admin-level)
@@ -242,8 +248,8 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     message:
       "LetItRip will be unavailable for scheduled maintenance on 2 March between 2 AM and 4 AM IST. Apologies for any inconvenience.",
     isRead: false,
-    createdAt: new Date("2026-02-27T10:00:00Z"),
-    updatedAt: new Date("2026-02-27T10:00:00Z"),
+    createdAt: daysAgo(10),
+    updatedAt: daysAgo(10),
   },
 
   // ── TechHub Electronics (Seller) ──────────────────────────────────────
@@ -259,11 +265,11 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/seller/orders/order-1-20260115-xk7m9p",
     actionLabel: "View Order",
     isRead: true,
-    readAt: new Date("2026-01-15T11:00:00Z"),
+    readAt: daysAgo(53),
     relatedId: "order-1-20260115-xk7m9p",
     relatedType: "order",
-    createdAt: new Date("2026-01-15T10:35:00Z"),
-    updatedAt: new Date("2026-01-15T11:00:00Z"),
+    createdAt: daysAgo(53),
+    updatedAt: daysAgo(53),
   },
 
   {
@@ -281,8 +287,8 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     relatedId:
       "product-iphone-15-pro-max-smartphones-new-techhub-electronics-1",
     relatedType: "product",
-    createdAt: new Date("2026-02-20T09:00:00Z"),
-    updatedAt: new Date("2026-02-20T09:00:00Z"),
+    createdAt: daysAgo(17),
+    updatedAt: daysAgo(17),
   },
 
   // ── order_cancelled — Jane Smith's order was cancelled ──────────────────
@@ -298,11 +304,11 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/user/orders/order-cancelled-1-20260210-lv4x7c",
     actionLabel: "View Cancelled Order",
     isRead: true,
-    readAt: new Date("2026-02-10T15:00:00Z"),
+    readAt: daysAgo(27),
     relatedId: "order-cancelled-1-20260210-lv4x7c",
     relatedType: "order",
-    createdAt: new Date("2026-02-10T14:30:00Z"),
-    updatedAt: new Date("2026-02-10T15:00:00Z"),
+    createdAt: daysAgo(27),
+    updatedAt: daysAgo(27),
   },
 
   // ── bid_placed — Meera placed a bid on the Leica ─────────────────────────
@@ -318,11 +324,11 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/products/product-vintage-leica-camera-auction-artisan-1",
     actionLabel: "View Auction",
     isRead: true,
-    readAt: new Date("2026-02-19T09:00:00Z"),
+    readAt: daysAgo(18),
     relatedId: "product-vintage-leica-camera-auction-artisan-1",
     relatedType: "product",
-    createdAt: new Date("2026-02-19T08:30:00Z"),
-    updatedAt: new Date("2026-02-19T09:00:00Z"),
+    createdAt: daysAgo(18),
+    updatedAt: daysAgo(18),
   },
 
   // ── review_replied — seller replied to John's review ────────────────────
@@ -341,8 +347,8 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     isRead: false,
     relatedId: "review-john-iphone15-5star-001",
     relatedType: "review",
-    createdAt: new Date("2026-02-02T09:30:00Z"),
-    updatedAt: new Date("2026-02-02T09:30:00Z"),
+    createdAt: daysAgo(35),
+    updatedAt: daysAgo(35),
   },
 
   // ── Ananya Bose ───────────────────────────────────────────────────────
@@ -358,9 +364,9 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/products",
     actionLabel: "Start Shopping",
     isRead: true,
-    readAt: new Date("2025-10-15T11:00:00Z"),
-    createdAt: new Date("2025-10-15T10:00:00Z"),
-    updatedAt: new Date("2025-10-15T11:00:00Z"),
+    readAt: daysAgo(145),
+    createdAt: daysAgo(145),
+    updatedAt: daysAgo(145),
   },
   {
     id: "notif-bid-outbid-ananya-ps5-20260306",
@@ -375,8 +381,8 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     isRead: false,
     relatedId: "auction-ps5-slim-gaming-console-techhub-1",
     relatedType: "product",
-    createdAt: new Date("2026-03-06T07:00:00Z"),
-    updatedAt: new Date("2026-03-06T07:00:00Z"),
+    createdAt: daysAgo(3),
+    updatedAt: daysAgo(3),
   },
   {
     id: "notif-promotion-ananya-animecon-2026",
@@ -391,8 +397,8 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     isRead: false,
     relatedId: "event-anicon-2026-coupon-drop-offer",
     relatedType: "product",
-    createdAt: new Date("2026-03-01T08:00:00Z"),
-    updatedAt: new Date("2026-03-01T08:00:00Z"),
+    createdAt: daysAgo(8),
+    updatedAt: daysAgo(8),
   },
 
   // ── Pooja Mehta ───────────────────────────────────────────────────────
@@ -408,9 +414,9 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/products",
     actionLabel: "Start Exploring",
     isRead: true,
-    readAt: new Date("2025-11-10T11:00:00Z"),
-    createdAt: new Date("2025-11-10T10:00:00Z"),
-    updatedAt: new Date("2025-11-10T11:00:00Z"),
+    readAt: daysAgo(119),
+    createdAt: daysAgo(119),
+    updatedAt: daysAgo(119),
   },
   {
     id: "notif-bid-placed-pooja-saber-alter-20260303",
@@ -423,11 +429,11 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/products/auction-fate-saber-alter-figure-techhub-1",
     actionLabel: "View Auction",
     isRead: true,
-    readAt: new Date("2026-03-03T15:00:00Z"),
+    readAt: daysAgo(6),
     relatedId: "auction-fate-saber-alter-figure-techhub-1",
     relatedType: "product",
-    createdAt: new Date("2026-03-03T14:30:00Z"),
-    updatedAt: new Date("2026-03-03T15:00:00Z"),
+    createdAt: daysAgo(6),
+    updatedAt: daysAgo(6),
   },
   {
     id: "notif-promotion-pooja-animecon-2026",
@@ -441,8 +447,8 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     isRead: false,
     relatedId: "event-anicon-2026-coupon-drop-offer",
     relatedType: "product",
-    createdAt: new Date("2026-03-01T08:00:00Z"),
-    updatedAt: new Date("2026-03-01T08:00:00Z"),
+    createdAt: daysAgo(8),
+    updatedAt: daysAgo(8),
   },
 
   // ── Ravi Kumar ────────────────────────────────────────────────────────
@@ -458,9 +464,9 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/products",
     actionLabel: "Explore Now",
     isRead: true,
-    readAt: new Date("2025-12-01T11:00:00Z"),
-    createdAt: new Date("2025-12-01T10:00:00Z"),
-    updatedAt: new Date("2025-12-01T11:00:00Z"),
+    readAt: daysAgo(98),
+    createdAt: daysAgo(98),
+    updatedAt: daysAgo(98),
   },
   {
     id: "notif-bid-placed-ravi-dbz-set-20260228",
@@ -473,11 +479,11 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/products/product-macbook-pro-m3-auction-electronics-techhub-1",
     actionLabel: "View Auction",
     isRead: true,
-    readAt: new Date("2026-02-28T17:00:00Z"),
+    readAt: daysAgo(9),
     relatedId: "product-macbook-pro-m3-auction-electronics-techhub-1",
     relatedType: "product",
-    createdAt: new Date("2026-02-28T16:30:00Z"),
-    updatedAt: new Date("2026-02-28T17:00:00Z"),
+    createdAt: daysAgo(9),
+    updatedAt: daysAgo(9),
   },
   {
     id: "notif-product-available-ravi-charizard-psa9",
@@ -492,8 +498,8 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     isRead: false,
     relatedId: "auction-pokemon-charizard-1st-ed-fashion-1",
     relatedType: "product",
-    createdAt: new Date("2026-03-05T09:00:00Z"),
-    updatedAt: new Date("2026-03-05T09:00:00Z"),
+    createdAt: daysAgo(4),
+    updatedAt: daysAgo(4),
   },
 
   // ── Sneha Gupta ───────────────────────────────────────────────────────
@@ -509,9 +515,9 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/products",
     actionLabel: "Start Shopping",
     isRead: true,
-    readAt: new Date("2026-01-05T11:00:00Z"),
-    createdAt: new Date("2026-01-05T10:00:00Z"),
-    updatedAt: new Date("2026-01-05T11:00:00Z"),
+    readAt: daysAgo(63),
+    createdAt: daysAgo(63),
+    updatedAt: daysAgo(63),
   },
   {
     id: "notif-bid-placed-sneha-wing-zero-20260304",
@@ -524,11 +530,11 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     actionUrl: "/products/auction-gunpla-pg-wing-zero-techhub-1",
     actionLabel: "View Auction",
     isRead: true,
-    readAt: new Date("2026-03-04T13:00:00Z"),
+    readAt: daysAgo(5),
     relatedId: "auction-gunpla-pg-wing-zero-techhub-1",
     relatedType: "product",
-    createdAt: new Date("2026-03-04T12:30:00Z"),
-    updatedAt: new Date("2026-03-04T13:00:00Z"),
+    createdAt: daysAgo(5),
+    updatedAt: daysAgo(5),
   },
   {
     id: "notif-promotion-sneha-animecon-2026",
@@ -542,8 +548,8 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     isRead: false,
     relatedId: "event-anicon-2026-coupon-drop-offer",
     relatedType: "product",
-    createdAt: new Date("2026-03-01T08:00:00Z"),
-    updatedAt: new Date("2026-03-01T08:00:00Z"),
+    createdAt: daysAgo(8),
+    updatedAt: daysAgo(8),
   },
 
   // ── TechHub Seller — new auction sale order notifications ─────────────
@@ -561,7 +567,7 @@ export const notificationsSeedData: Partial<NotificationDocument>[] = [
     isRead: false,
     relatedId: "auction-ps5-slim-gaming-console-techhub-1",
     relatedType: "product",
-    createdAt: new Date("2026-03-05T10:00:00Z"),
-    updatedAt: new Date("2026-03-05T10:00:00Z"),
+    createdAt: daysAgo(4),
+    updatedAt: daysAgo(4),
   },
 ];

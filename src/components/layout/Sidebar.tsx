@@ -12,6 +12,7 @@ import {
 } from "@/constants";
 import { useSwipe, useAuth, useLogout, useMessage } from "@/hooks";
 import { logger } from "@/classes";
+import { Sprout, SearchCode } from "lucide-react";
 import {
   AvatarDisplay,
   Button,
@@ -68,8 +69,8 @@ export default function Sidebar({
   const sidebarRef = useRef<HTMLElement>(null);
   const tNav = useTranslations("nav");
   const tA = useTranslations("accessibility");
-  const [supportOpen, setSupportOpen] = useState(true);
-  const [settingsOpen, setSettingsOpen] = useState(true);
+  const [supportOpen, setSupportOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const logoutMutation = useLogout();
   const { showSuccess, showError } = useMessage();
 
@@ -797,8 +798,66 @@ export default function Sidebar({
           </div>
         </div>
 
-        {/* Settings Section - Collapsible */}
-        <div className="space-y-2">
+        {/* Dev Tools Section - only in development */}
+        {process.env.NODE_ENV === "development" && (
+          <div className="space-y-2">
+            <div
+              className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}
+            >
+              <div className={colors.onPrimary.divider}></div>
+              <Heading
+                level={3}
+                className={`${THEME_CONSTANTS.typography.xs} font-semibold uppercase tracking-wider`}
+              >
+                Dev Tools
+              </Heading>
+              <div className={colors.onPrimary.divider}></div>
+            </div>
+            <Ul className="space-y-1">
+              <Li>
+                <TextLink
+                  href={ROUTES.DEMO.SEED}
+                  variant="inherit"
+                  className={`${flex.rowCenter} gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group border border-dashed border-yellow-400/40 hover:bg-yellow-400/10 ${colors.onPrimary.navItemInactive}`}
+                  onClick={onClose}
+                >
+                  <div
+                    className={`${flex.noShrink} p-1.5 rounded-md ${colors.onPrimary.iconBgInactive}`}
+                  >
+                    <Sprout className="w-4 h-4 text-yellow-500 dark:text-yellow-400" />
+                  </div>
+                  <Span
+                    className={`${THEME_CONSTANTS.typography.small} font-medium flex-1 text-yellow-700 dark:text-yellow-300`}
+                  >
+                    Seed Data
+                  </Span>
+                </TextLink>
+              </Li>
+              <Li>
+                <TextLink
+                  href={ROUTES.DEMO.ALGOLIA}
+                  variant="inherit"
+                  className={`${flex.rowCenter} gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group border border-dashed border-orange-400/40 hover:bg-orange-400/10 ${colors.onPrimary.navItemInactive}`}
+                  onClick={onClose}
+                >
+                  <div
+                    className={`${flex.noShrink} p-1.5 rounded-md ${colors.onPrimary.iconBgInactive}`}
+                  >
+                    <SearchCode className="w-4 h-4 text-orange-500 dark:text-orange-400" />
+                  </div>
+                  <Span
+                    className={`${THEME_CONSTANTS.typography.small} font-medium flex-1 text-orange-700 dark:text-orange-300`}
+                  >
+                    Algolia
+                  </Span>
+                </TextLink>
+              </Li>
+            </Ul>
+          </div>
+        )}
+
+        {/* Settings Section - Collapsible (mobile only; desktop has titlebar controls) */}
+        <div className="space-y-2 md:hidden">
           <div
             className={`${flex.rowCenter} gap-2 px-2 py-1.5 ${colors.onPrimary.sectionLabel}`}
           >

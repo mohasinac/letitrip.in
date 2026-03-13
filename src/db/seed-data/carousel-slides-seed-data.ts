@@ -5,6 +5,12 @@
 
 import type { CarouselSlideDocument } from "@/db/schema";
 
+// Dynamic date helpers
+const NOW = new Date();
+const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
+const daysAhead = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
+const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000);
+
 export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
   // Slide 1: Welcome/Hero Slide — full-slide central overlay (no cards)
   {
@@ -36,8 +42,8 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
         openInNewTab: false,
       },
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-03-08T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(2),
     createdBy: "user-admin-user-admin",
   },
 
@@ -103,8 +109,8 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
         isButtonOnly: true,
       },
     ],
-    createdAt: new Date("2026-02-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(37),
+    updatedAt: daysAgo(30),
     createdBy: "user-admin-user-admin",
   },
 
@@ -153,8 +159,8 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
         isButtonOnly: false,
       },
     ],
-    createdAt: new Date("2026-02-05T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(33),
+    updatedAt: daysAgo(30),
     createdBy: "user-admin-user-admin",
   },
 
@@ -211,8 +217,8 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
         isButtonOnly: false,
       },
     ],
-    createdAt: new Date("2026-02-07T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(31),
+    updatedAt: daysAgo(30),
     createdBy: "user-admin-user-admin",
   },
 
@@ -273,8 +279,8 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
         isButtonOnly: false,
       },
     ],
-    createdAt: new Date("2026-02-08T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(30),
+    updatedAt: daysAgo(30),
     createdBy: "user-admin-user-admin",
   },
 
@@ -290,8 +296,8 @@ export const carouselSlidesSeedData: Partial<CarouselSlideDocument>[] = [
       alt: "Test Banner",
     },
     cards: [],
-    createdAt: new Date("2026-01-15T00:00:00Z"),
-    updatedAt: new Date("2026-01-20T00:00:00Z"),
+    createdAt: daysAgo(54),
+    updatedAt: daysAgo(49),
     createdBy: "user-admin-user-admin",
   },
 ];

@@ -4,15 +4,13 @@
  * Firestore schema definitions for token collections
  */
 
-import { Timestamp } from "firebase-admin/firestore";
-
 export interface EmailVerificationTokenDocument {
   id?: string; // Document ID (optional, added by Firestore)
   userId: string;
   email: string;
   token: string;
-  expiresAt: Timestamp | Date;
-  createdAt: Timestamp | Date;
+  expiresAt: Date;
+  createdAt: Date;
 }
 
 export interface PasswordResetTokenDocument {
@@ -20,10 +18,10 @@ export interface PasswordResetTokenDocument {
   userId: string;
   email: string;
   token: string;
-  expiresAt: Timestamp | Date;
-  createdAt: Timestamp | Date;
+  expiresAt: Date;
+  createdAt: Date;
   used: boolean;
-  usedAt?: Timestamp | Date;
+  usedAt?: Date;
 }
 
 export const EMAIL_VERIFICATION_COLLECTION = "emailVerificationTokens" as const;

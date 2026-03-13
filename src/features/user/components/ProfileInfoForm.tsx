@@ -91,6 +91,7 @@ export function ProfileInfoForm({
             <AvatarUpload
               currentPhotoURL={formData.photoURL}
               userId={userId}
+              displayName={formData.displayName}
               onUploadSuccess={handleAvatarUploadSuccess}
               onSaveComplete={onRefresh}
             />

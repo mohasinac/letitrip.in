@@ -6,6 +6,10 @@
  * All address documents mapped to users that exist in users-seed-data.ts.
  */
 
+// ─── Dynamic date helpers ───────────────────────────────────────────────────
+const NOW = new Date();
+const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
+
 export interface AddressSeedData {
   id: string;
   label: string;
@@ -41,8 +45,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "400069",
     country: "India",
     isDefault: true,
-    createdAt: new Date("2024-02-15T08:30:00Z"),
-    updatedAt: new Date("2024-02-15T08:30:00Z"),
+    createdAt: daysAgo(753),
+    updatedAt: daysAgo(753),
   },
   {
     id: "addr-john-office-1707400002",
@@ -57,8 +61,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "400076",
     country: "India",
     isDefault: false,
-    createdAt: new Date("2024-03-01T10:00:00Z"),
-    updatedAt: new Date("2024-03-01T10:00:00Z"),
+    createdAt: daysAgo(738),
+    updatedAt: daysAgo(738),
   },
   {
     id: "addr-john-parents-1707400003",
@@ -74,8 +78,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "411038",
     country: "India",
     isDefault: false,
-    createdAt: new Date("2024-04-10T14:00:00Z"),
-    updatedAt: new Date("2024-04-10T14:00:00Z"),
+    createdAt: daysAgo(698),
+    updatedAt: daysAgo(698),
   },
 
   // ============================================
@@ -94,8 +98,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "560037",
     country: "India",
     isDefault: true,
-    createdAt: new Date("2024-03-10T10:00:00Z"),
-    updatedAt: new Date("2024-03-10T10:00:00Z"),
+    createdAt: daysAgo(729),
+    updatedAt: daysAgo(729),
   },
   {
     id: "addr-jane-work-1707400005",
@@ -110,8 +114,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "560103",
     country: "India",
     isDefault: false,
-    createdAt: new Date("2024-04-05T09:00:00Z"),
-    updatedAt: new Date("2024-04-05T09:00:00Z"),
+    createdAt: daysAgo(703),
+    updatedAt: daysAgo(703),
   },
 
   // ============================================
@@ -131,8 +135,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "560001",
     country: "India",
     isDefault: true,
-    createdAt: new Date("2024-04-20T14:15:00Z"),
-    updatedAt: new Date("2024-04-20T14:15:00Z"),
+    createdAt: daysAgo(688),
+    updatedAt: daysAgo(688),
   },
   {
     id: "addr-mike-shipping-1707400007",
@@ -147,8 +151,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "560038",
     country: "India",
     isDefault: false,
-    createdAt: new Date("2025-01-10T11:00:00Z"),
-    updatedAt: new Date("2025-01-10T11:00:00Z"),
+    createdAt: daysAgo(423),
+    updatedAt: daysAgo(423),
   },
 
   // ============================================
@@ -168,8 +172,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "500034",
     country: "India",
     isDefault: true,
-    createdAt: new Date("2025-03-15T00:00:00Z"),
-    updatedAt: new Date("2025-03-15T00:00:00Z"),
+    createdAt: daysAgo(360),
+    updatedAt: daysAgo(360),
   },
   {
     id: "addr-priya-work-1707400009",
@@ -184,8 +188,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "500081",
     country: "India",
     isDefault: false,
-    createdAt: new Date("2025-04-01T09:00:00Z"),
-    updatedAt: new Date("2025-04-01T09:00:00Z"),
+    createdAt: daysAgo(342),
+    updatedAt: daysAgo(342),
   },
 
   // ============================================
@@ -204,8 +208,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "380009",
     country: "India",
     isDefault: true,
-    createdAt: new Date("2025-05-20T00:00:00Z"),
-    updatedAt: new Date("2025-05-20T00:00:00Z"),
+    createdAt: daysAgo(294),
+    updatedAt: daysAgo(294),
   },
   {
     id: "addr-raj-business-1707400011",
@@ -220,8 +224,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "382445",
     country: "India",
     isDefault: false,
-    createdAt: new Date("2025-06-15T10:00:00Z"),
-    updatedAt: new Date("2025-06-15T10:00:00Z"),
+    createdAt: daysAgo(267),
+    updatedAt: daysAgo(267),
   },
 
   // ============================================
@@ -241,8 +245,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "682001",
     country: "India",
     isDefault: true,
-    createdAt: new Date("2025-08-01T00:00:00Z"),
-    updatedAt: new Date("2025-08-01T00:00:00Z"),
+    createdAt: daysAgo(221),
+    updatedAt: daysAgo(221),
   },
   {
     id: "addr-meera-parents-1707400013",
@@ -257,8 +261,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "695001",
     country: "India",
     isDefault: false,
-    createdAt: new Date("2025-09-10T08:00:00Z"),
-    updatedAt: new Date("2025-09-10T08:00:00Z"),
+    createdAt: daysAgo(180),
+    updatedAt: daysAgo(180),
   },
 
   // ============================================
@@ -277,8 +281,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "400051",
     country: "India",
     isDefault: true,
-    createdAt: new Date("2024-03-01T00:00:00Z"),
-    updatedAt: new Date("2024-03-01T00:00:00Z"),
+    createdAt: daysAgo(739),
+    updatedAt: daysAgo(739),
   },
 
   // ============================================
@@ -297,8 +301,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "400051",
     country: "India",
     isDefault: true,
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2024-01-01T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(799),
   },
 
   // ============================================
@@ -317,8 +321,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "110024",
     country: "India",
     isDefault: false,
-    createdAt: new Date("2025-11-01T10:00:00Z"),
-    updatedAt: new Date("2025-11-01T10:00:00Z"),
+    createdAt: daysAgo(128),
+    updatedAt: daysAgo(128),
   },
 
   // ============================================
@@ -337,8 +341,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "400050",
     country: "India",
     isDefault: true,
-    createdAt: new Date("2024-06-01T09:00:00Z"),
-    updatedAt: new Date("2024-06-01T09:00:00Z"),
+    createdAt: daysAgo(646),
+    updatedAt: daysAgo(646),
   },
 
   // ============================================
@@ -357,8 +361,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "302022",
     country: "India",
     isDefault: true,
-    createdAt: new Date("2024-07-01T10:00:00Z"),
-    updatedAt: new Date("2024-07-01T10:00:00Z"),
+    createdAt: daysAgo(616),
+    updatedAt: daysAgo(616),
   },
 
   // ============================================
@@ -377,8 +381,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "700089",
     country: "India",
     isDefault: true,
-    createdAt: new Date("2025-10-15T10:00:00Z"),
-    updatedAt: new Date("2025-10-15T10:00:00Z"),
+    createdAt: daysAgo(145),
+    updatedAt: daysAgo(145),
   },
 
   // ============================================
@@ -397,8 +401,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "400050",
     country: "India",
     isDefault: true,
-    createdAt: new Date("2025-11-10T10:00:00Z"),
-    updatedAt: new Date("2025-11-10T10:00:00Z"),
+    createdAt: daysAgo(119),
+    updatedAt: daysAgo(119),
   },
 
   // ============================================
@@ -418,8 +422,8 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "160020",
     country: "India",
     isDefault: true,
-    createdAt: new Date("2025-12-01T10:00:00Z"),
-    updatedAt: new Date("2025-12-01T10:00:00Z"),
+    createdAt: daysAgo(98),
+    updatedAt: daysAgo(98),
   },
 
   // ============================================
@@ -438,7 +442,7 @@ export const addressesSeedData: AddressSeedData[] = [
     postalCode: "226010",
     country: "India",
     isDefault: true,
-    createdAt: new Date("2026-01-05T10:00:00Z"),
-    updatedAt: new Date("2026-01-05T10:00:00Z"),
+    createdAt: daysAgo(63),
+    updatedAt: daysAgo(63),
   },
 ];

@@ -6,14 +6,14 @@ import { Button } from "@/components";
 import { useHorizontalScrollDrag } from "./useHorizontalScrollDrag";
 import { useHorizontalAutoScroll } from "./useHorizontalAutoScroll";
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 /**
  * Responsive items-per-view map.
  * The component measures the container width each render tick and picks the
  * highest-matching breakpoint value.
  *
- * item width = (availableWidth - (n-1) Ã— gap) / n
+ * item width = (availableWidth - (n-1) × gap) / n
  *
  * @example { base: 1, sm: 2, md: 3, lg: 4, '2xl': 5 }
  */
@@ -36,7 +36,7 @@ function resolvePerView(cfg: PerViewConfig, containerWidth: number): number {
   return Math.max(1, n);
 }
 
-// â”€â”€â”€ Arrow button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Arrow button ─────────────────────────────────────────────────────────────
 
 interface ArrowButtonProps {
   direction: "left" | "right";
@@ -144,7 +144,7 @@ function ArrowButton({
   );
 }
 
-// â”€â”€â”€ Props â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Props ────────────────────────────────────────────────────────────────────
 
 export interface HorizontalScrollerProps<T = unknown> {
   /** Array of items to render — required when `children` is not provided */
@@ -162,7 +162,7 @@ export interface HorizontalScrollerProps<T = unknown> {
 
   /**
    * Responsive items-per-view config.
-   * Item width is computed as `(containerWidth - (n-1) Ã— gap) / n`.
+   * Item width is computed as `(containerWidth - (n-1) × gap) / n`.
 
    *
    * @example { base: 1, sm: 2, md: 3, lg: 4, '2xl': 5 }
@@ -180,7 +180,7 @@ export interface HorizontalScrollerProps<T = unknown> {
 
   /**
    * Enable circular auto-scroll (single-row only).
-   * Items array is tripled internally â€” wrapping is seamless.
+   * Items array is tripled internally — wrapping is seamless.
    * Default: false
    */
   autoScroll?: boolean;
@@ -216,7 +216,7 @@ export interface HorizontalScrollerProps<T = unknown> {
   /** Extra CSS class(es) on the inner scroll container */
   scrollerClassName?: string;
 
-  /** Key extractor â€” falls back to position index when omitted */
+  /** Key extractor — falls back to position index when omitted */
   keyExtractor?: (item: T, index: number) => string;
   /**
    * Enable CSS scroll-snap per child item.
@@ -269,7 +269,7 @@ export interface HorizontalScrollerProps<T = unknown> {
   minItemWidth?: number;
 }
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export function HorizontalScroller<T = unknown>({
   items = [] as T[],
@@ -316,7 +316,7 @@ export function HorizontalScroller<T = unknown>({
   const simpleAutoScroll = autoScroll && isGrid;
   const displayItems = circularScroll ? [...items, ...items, ...items] : items;
 
-  // â”€â”€â”€ Arrow visibility â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Arrow visibility ───────────────────────────────────────────────────
 
   const updateScrollEdges = useCallback(() => {
     const el = scrollRef.current;
@@ -325,7 +325,7 @@ export function HorizontalScroller<T = unknown>({
     setCanScrollRight(el.scrollLeft + el.offsetWidth < el.scrollWidth - 1);
   }, []);
 
-  // â”€â”€â”€ Page step â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Page step ──────────────────────────────────────────────────────────
 
   const getPageStep = useCallback((): number => {
     const iw = resolvedIWRef.current;
@@ -340,7 +340,7 @@ export function HorizontalScroller<T = unknown>({
     return iw ? iw + gap : (containerRef.current?.offsetWidth ?? 200);
   }, [gap]);
 
-  // â”€â”€â”€ Circular scroll helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Circular scroll helpers ─────────────────────────────────────────────
 
   const resettingRef = useRef(false);
   const initializingRef = useRef(false);
@@ -377,7 +377,7 @@ export function HorizontalScroller<T = unknown>({
     [],
   );
 
-  // â”€â”€â”€ Arrow / auto-advance actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Arrow / auto-advance actions ────────────────────────────────────────
 
   const scrollBy = useCallback((px: number) => {
     scrollRef.current?.scrollBy({ left: px, behavior: "smooth" });
@@ -395,7 +395,7 @@ export function HorizontalScroller<T = unknown>({
     [scrollBy, getSingleStep],
   );
 
-  // â”€â”€â”€ Auto-scroll timer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Auto-scroll timer ───────────────────────────────────────────────────
 
   const isHoverPausedRef = useRef(false);
   const isDragPausedRef = useRef(false);
@@ -450,7 +450,7 @@ export function HorizontalScroller<T = unknown>({
     resumeAutoScroll();
   }, [resumeAutoScroll]);
 
-  // â”€â”€â”€ Initial circular position â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Initial circular position ───────────────────────────────────────────
 
   // Double-RAF ensures the second frame fires after React has re-rendered items
   // with their resolved widths (set by the ResizeObserver effect), so scrollWidth
@@ -472,7 +472,7 @@ export function HorizontalScroller<T = unknown>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circularScroll, items.length]);
 
-  // â”€â”€â”€ Auto-detect width from first child (variable-width / pill mode) â”€â”€â”€â”€â”€
+  // ─── Auto-detect width from first child (variable-width / pill mode) ─────
 
   useEffect(() => {
     if (itemWidthProp || perViewProp) return;
@@ -485,7 +485,7 @@ export function HorizontalScroller<T = unknown>({
     }
   });
 
-  // â”€â”€â”€ ResizeObserver â€” recompute item width + arrow state on resize â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── ResizeObserver — recompute item width + arrow state on resize ────────
 
   useEffect(() => {
     const container = containerRef.current;
@@ -520,7 +520,7 @@ export function HorizontalScroller<T = unknown>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateScrollEdges, perViewProp, itemWidthProp, gap]);
 
-  // â”€â”€â”€ Keyboard navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Keyboard navigation ─────────────────────────────────────────────────
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -539,7 +539,7 @@ export function HorizontalScroller<T = unknown>({
 
   // ─── Drag-to-scroll handlers (unified pointer events — mouse + touch) ─────────
 
-  // â”€â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Render ──────────────────────────────────────────────────────────────
 
   const { utilities, overflow, flex } = THEME_CONSTANTS;
 
@@ -547,18 +547,27 @@ export function HorizontalScroller<T = unknown>({
   if (children !== undefined) {
     return (
       <div
-        ref={scrollContainerRef}
+        ref={(el) => {
+          scrollRef.current = el;
+          if (scrollContainerRef) {
+            (
+              scrollContainerRef as React.MutableRefObject<HTMLDivElement | null>
+            ).current = el;
+          }
+        }}
         onScroll={onScroll}
+        {...drag.handlers}
         className={[
           "flex overflow-x-auto touch-pan-x h-full",
           snapToItems ? "snap-x snap-mandatory" : "",
           showScrollbar ? utilities.scrollbarThinX : utilities.scrollbarHide,
           showScrollbar ? "pb-2" : "",
+          drag.cursorClass,
           className,
         ]
           .filter(Boolean)
           .join(" ")}
-        style={{ gap: `${gap}px` }}
+        style={{ ...drag.style, gap: `${gap}px` }}
       >
         {children}
       </div>
@@ -600,7 +609,7 @@ export function HorizontalScroller<T = unknown>({
       role="region"
       aria-label="Scrollable content"
     >
-      {/* â”€â”€ Left arrow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Left arrow ─────────────────────────────────────────────────── */}
       {showArrows && (
         <ArrowButton
           direction="left"
@@ -610,7 +619,7 @@ export function HorizontalScroller<T = unknown>({
         />
       )}
 
-      {/* â”€â”€ Scroll viewport â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Scroll viewport ────────────────────────────────────────────── */}
       <div
         ref={containerRef}
         className={`relative ${flex.growMin} ${overflow.hidden}`}
@@ -681,7 +690,7 @@ export function HorizontalScroller<T = unknown>({
         )}
       </div>
 
-      {/* â”€â”€ Right arrow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Right arrow ────────────────────────────────────────────────── */}
       {showArrows && (
         <ArrowButton
           direction="right"

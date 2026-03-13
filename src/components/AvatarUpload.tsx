@@ -30,6 +30,8 @@ interface AvatarUploadProps {
   currentPhotoURL?: string | null;
   currentCropData?: ImageCropData | null;
   userId: string;
+  /** User's full display name — used to build an SEO-friendly filename (e.g. user-john-doe-avatar.webp) */
+  displayName?: string;
   onUploadSuccess?: (
     photoURL: string,
     cropData: ImageCropData,
@@ -45,6 +47,7 @@ export function AvatarUpload({
   currentPhotoURL,
   currentCropData,
   userId,
+  displayName,
   onUploadSuccess,
   onUploadError,
   onSaveComplete,
@@ -117,6 +120,20 @@ export function AvatarUpload({
 
     const formData = new FormData();
     formData.append("file", pendingUploadFile);
+    // Build SEO filename context from the user's display name when available.
+    const nameParts = (displayName ?? "").trim().split(/\s+/).filter(Boolean);
+    const firstName = nameParts[0] || userId;
+    const lastName = nameParts.slice(1).join("-") || "";
+    formData.append(
+      "context",
+      JSON.stringify({
+        type: "user-avatar",
+        firstName,
+        lastName: lastName || firstName,
+      }),
+    );
+    formData.append("folder", "users");
+    formData.append("public", "true");
     formData.append(
       "metadata",
       JSON.stringify({
@@ -135,12 +152,6 @@ export function AvatarUpload({
         mimeType: pendingUploadFile.type,
         fileSize: pendingUploadFile.size,
         alt: `${userId} profile avatar`,
-        seoContext: {
-          domain: "user",
-          slug: userId,
-          mediaType: "avatar",
-          index: 1,
-        },
       }),
     );
 

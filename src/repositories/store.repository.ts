@@ -25,10 +25,21 @@ export class StoreRepository extends BaseRepository<StoreDocument> {
   /**
    * Create a new store.
    * The document ID is set to storeSlug for easy URL-based lookups.
+   * Uses Firestore's `.create()` semantics to reject duplicate slugs —
+   * this enforces that storeSlug is always a unique identifier and is
+   * structurally distinct from the owner's Firebase UID.
    */
   async create(
     input: Omit<StoreDocument, "id" | "createdAt" | "updatedAt">,
   ): Promise<StoreDocument> {
+    // Defense-in-depth: storeSlug must never equal the owner UID so that
+    // stores and users can always be distinguished by their document IDs.
+    if (input.storeSlug === input.ownerId) {
+      throw new DatabaseError(
+        "Store slug must be different from the owner UID",
+      );
+    }
+
     const storeData: Omit<StoreDocument, "id"> = {
       ...DEFAULT_STORE_DATA,
       ...input,
@@ -36,10 +47,22 @@ export class StoreRepository extends BaseRepository<StoreDocument> {
       updatedAt: new Date(),
     };
 
-    await this.db
-      .collection(this.collection)
-      .doc(input.storeSlug)
-      .set(prepareForFirestore(storeData));
+    // Use .create() instead of .set() so that a duplicate slug from a
+    // different seller fails immediately instead of silently overwriting.
+    try {
+      await this.db
+        .collection(this.collection)
+        .doc(input.storeSlug)
+        .create(prepareForFirestore(storeData));
+    } catch (err: unknown) {
+      // gRPC ALREADY_EXISTS = code 6
+      if ((err as { code?: number }).code === 6) {
+        throw new DatabaseError(
+          `Store slug "${input.storeSlug}" is already taken`,
+        );
+      }
+      throw err;
+    }
 
     return { id: input.storeSlug, ...storeData };
   }

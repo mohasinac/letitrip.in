@@ -1,5 +1,5 @@
 /**
- * RegisterForm � full registration form including email/password/name fields,
+ * RegisterForm — full registration form including email/password/name fields,
  * terms acceptance, social sign-up options, and auth redirect logic.
  */
 
@@ -167,7 +167,7 @@ export function RegisterForm() {
             {t("register.or")}{" "}
             <TextLink
               href={ROUTES.AUTH.LOGIN}
-              className="font-medium text-blue-600 hover:text-blue-500"
+              className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
             >
               {t("register.signInLink")}
             </TextLink>
@@ -267,14 +267,14 @@ export function RegisterForm() {
                 {t("register.acceptTerms")}{" "}
                 <TextLink
                   href={ROUTES.PUBLIC.TERMS}
-                  className="text-blue-600 hover:text-blue-500"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
                 >
                   {t("register.termsOfService")}
                 </TextLink>{" "}
                 {t("register.and")}{" "}
                 <TextLink
                   href={ROUTES.PUBLIC.PRIVACY}
-                  className="text-blue-600 hover:text-blue-500"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
                 >
                   {t("register.privacyPolicy")}
                 </TextLink>

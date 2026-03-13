@@ -14,6 +14,7 @@ import { useTranslations } from "next-intl";
 import {
   ActiveFilterChips,
   Button,
+  Container,
   DataTable,
   EmptyState,
   Heading,
@@ -141,7 +142,7 @@ function BlogListContent({ initialData }: { initialData?: BlogPostsResult }) {
 
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
-      <div className={`${THEME_CONSTANTS.page.container.full} py-8`}>
+      <Container size="full" className="py-8">
         <ListingLayout
           headerSlot={
             <div>
@@ -264,7 +265,7 @@ function BlogListContent({ initialData }: { initialData?: BlogPostsResult }) {
             </div>
           )}
         </ListingLayout>
-      </div>
+      </Container>
     </div>
   );
 }

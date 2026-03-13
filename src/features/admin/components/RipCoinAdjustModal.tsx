@@ -6,7 +6,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { Button, Card, Caption, Heading, Label, Text } from "@/components";
+import {
+  Button,
+  Card,
+  Caption,
+  Grid,
+  Heading,
+  Label,
+  Text,
+} from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { adminAdjustRipCoinsAction } from "@/actions";
 import type { AdminUser } from "./User.types";
@@ -141,9 +149,9 @@ export function RipCoinAdjustModal({
             {/* Credit / Debit toggle */}
             <div>
               <Label className="block mb-2">{t("adjustType")}</Label>
-              <div className="grid grid-cols-2 gap-2">
+              <Grid className="grid-cols-2" gap="sm">
                 {ADJUST_TYPES.map((v) => (
-                  <label key={v} className="cursor-pointer">
+                  <Label key={v} className="cursor-pointer">
                     <input
                       type="radio"
                       value={v}
@@ -159,9 +167,9 @@ export function RipCoinAdjustModal({
                     >
                       {t(ADJUST_TYPE_CONFIG[v].labelKey)}
                     </div>
-                  </label>
+                  </Label>
                 ))}
-              </div>
+              </Grid>
             </div>
 
             {/* Coins amount */}

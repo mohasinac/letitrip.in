@@ -5,7 +5,9 @@ import { Store } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   Button,
+  Container,
   EmptyState,
+  Grid,
   Heading,
   ListingLayout,
   Search,
@@ -91,7 +93,7 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
 
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
-      <div className={`${THEME_CONSTANTS.page.container.full} py-8`}>
+      <Container size="full" className="py-8">
         <ListingLayout
           headerSlot={
             <div>
@@ -163,7 +165,7 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
               onAction={table.get("q") ? handleClearFilters : undefined}
             />
           ) : (
-            <div className={THEME_CONSTANTS.grid.cols4}>
+            <Grid cols={4} gap="none">
               {isLoading
                 ? Array.from({ length: pageSize }).map((_, i) => (
                     <div
@@ -184,10 +186,10 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
                       }
                     />
                   ))}
-            </div>
+            </Grid>
           )}
         </ListingLayout>
-      </div>
+      </Container>
     </div>
   );
 }

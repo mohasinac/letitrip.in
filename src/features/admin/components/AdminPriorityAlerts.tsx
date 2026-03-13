@@ -3,6 +3,7 @@
 import { AlertTriangle, AlertCircle, Clock, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { Stack } from "@/components";
 import { ROUTES } from "@/constants";
 
 interface AdminPriorityAlertsProps {
@@ -75,7 +76,7 @@ export function AdminPriorityAlerts({
   if (!hasAlerts) return null;
 
   return (
-    <div className="flex flex-col gap-3">
+    <Stack gap="3">
       {pendingPayouts > 0 && (
         <AlertCard
           count={pendingPayouts}
@@ -112,6 +113,6 @@ export function AdminPriorityAlerts({
           icon={AlertTriangle}
         />
       )}
-    </div>
+    </Stack>
   );
 }

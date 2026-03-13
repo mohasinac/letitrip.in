@@ -6,12 +6,14 @@ import {
   Button,
   FormField,
   Alert,
+  Grid,
   Input,
   Label,
   Select,
   Text,
 } from "@/components";
 import { SUCCESS_MESSAGES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
+import { resolveDate } from "@/utils";
 
 const { themed } = THEME_CONSTANTS;
 import { useTranslations } from "next-intl";
@@ -90,20 +92,9 @@ function emptyForm(): FormState {
 }
 
 function eventToForm(e: EventDocument): FormState {
-  const toIso = (ts: unknown) => {
-    if (!ts) return "";
-    try {
-      const d =
-        ts instanceof Date
-          ? ts
-          : new Date(
-              (ts as { toDate?: () => Date }).toDate?.() ??
-                (ts as string | number),
-            );
-      return d.toISOString().slice(0, 16);
-    } catch {
-      return "";
-    }
+  const toIso = (ts: unknown): string => {
+    const d = resolveDate(ts);
+    return d ? d.toISOString().slice(0, 16) : "";
   };
   return {
     title: e.title ?? "",
@@ -310,7 +301,7 @@ export function EventFormDrawer({
         </div>
 
         {/* Dates */}
-        <div className="grid grid-cols-2 gap-4">
+        <Grid className="grid-cols-2" gap="md">
           <div>
             <Label htmlFor="event-starts-at" className="mb-1">
               Starts At
@@ -333,7 +324,7 @@ export function EventFormDrawer({
               onChange={(e) => set("endsAt", e.target.value)}
             />
           </div>
-        </div>
+        </Grid>
 
         <FormField
           label="Max Entries Per User"

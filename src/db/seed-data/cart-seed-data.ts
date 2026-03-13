@@ -18,6 +18,12 @@
 
 import type { CartDocument } from "@/db/schema";
 
+// Dynamic date helpers
+const NOW = new Date();
+const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
+const daysAhead = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
+const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000);
+
 export const cartsSeedData: CartDocument[] = [
   // ── John Doe: multi-item, cross-seller cart ───────────────────────────────
   // Tests: list cart items, remove single item, update quantity, checkout
@@ -37,11 +43,11 @@ export const cartsSeedData: CartDocument[] = [
         currency: "INR",
         quantity: 1,
         sellerId: "user-techhub-electronics-electron",
-        sellerName: "TechHub Electronics",
+        sellerName: "FigureVault JP",
         isAuction: false,
         isPreOrder: false,
-        addedAt: new Date("2026-02-28T10:00:00Z"),
-        updatedAt: new Date("2026-02-28T10:00:00Z"),
+        addedAt: daysAgo(9),
+        updatedAt: daysAgo(9),
       },
       {
         itemId: "cartitem-john-yoga-001",
@@ -54,11 +60,11 @@ export const cartsSeedData: CartDocument[] = [
         currency: "INR",
         quantity: 1,
         sellerId: "user-home-essentials-homeesse",
-        sellerName: "Home Essentials",
+        sellerName: "OtakuShelf Co",
         isAuction: false,
         isPreOrder: false,
-        addedAt: new Date("2026-02-28T10:15:00Z"),
-        updatedAt: new Date("2026-02-28T10:15:00Z"),
+        addedAt: daysAgo(9),
+        updatedAt: daysAgo(9),
       },
       {
         itemId: "cartitem-john-charger-001",
@@ -70,15 +76,15 @@ export const cartsSeedData: CartDocument[] = [
         currency: "INR",
         quantity: 2, // quantity > 1 edge case
         sellerId: "user-techhub-electronics-electron",
-        sellerName: "TechHub Electronics",
+        sellerName: "FigureVault JP",
         isAuction: false,
         isPreOrder: false,
-        addedAt: new Date("2026-02-28T10:30:00Z"),
-        updatedAt: new Date("2026-02-28T11:00:00Z"),
+        addedAt: daysAgo(9),
+        updatedAt: daysAgo(9),
       },
     ],
-    createdAt: new Date("2026-02-28T10:00:00Z"),
-    updatedAt: new Date("2026-02-28T11:00:00Z"),
+    createdAt: daysAgo(9),
+    updatedAt: daysAgo(9),
   },
 
   // ── Jane Smith: single-item cart ─────────────────────────────────────────
@@ -99,15 +105,15 @@ export const cartsSeedData: CartDocument[] = [
         currency: "INR",
         quantity: 1,
         sellerId: "user-fashion-boutique-fashionb",
-        sellerName: "Fashion Boutique",
+        sellerName: "AnimeCraft Apparel",
         isAuction: false,
         isPreOrder: false,
-        addedAt: new Date("2026-02-27T14:00:00Z"),
-        updatedAt: new Date("2026-02-27T14:00:00Z"),
+        addedAt: daysAgo(10),
+        updatedAt: daysAgo(10),
       },
     ],
-    createdAt: new Date("2026-02-27T14:00:00Z"),
-    updatedAt: new Date("2026-02-27T14:00:00Z"),
+    createdAt: daysAgo(10),
+    updatedAt: daysAgo(10),
   },
 
   // ── Mike Johnson: cart with auction item ──────────────────────────────────
@@ -128,11 +134,11 @@ export const cartsSeedData: CartDocument[] = [
         currency: "INR",
         quantity: 1,
         sellerId: "user-home-essentials-homeesse",
-        sellerName: "Home Essentials",
+        sellerName: "OtakuShelf Co",
         isAuction: true,
         isPreOrder: false,
-        addedAt: new Date("2026-02-20T08:00:00Z"),
-        updatedAt: new Date("2026-02-20T08:00:00Z"),
+        addedAt: daysAgo(17),
+        updatedAt: daysAgo(17),
       },
       {
         itemId: "cartitem-mike-cookware-001",
@@ -144,15 +150,15 @@ export const cartsSeedData: CartDocument[] = [
         currency: "INR",
         quantity: 1,
         sellerId: "user-home-essentials-homeesse",
-        sellerName: "Home Essentials",
+        sellerName: "OtakuShelf Co",
         isAuction: false,
         isPreOrder: false,
-        addedAt: new Date("2026-02-25T09:30:00Z"),
-        updatedAt: new Date("2026-02-25T09:30:00Z"),
+        addedAt: daysAgo(12),
+        updatedAt: daysAgo(12),
       },
     ],
-    createdAt: new Date("2026-02-20T08:00:00Z"),
-    updatedAt: new Date("2026-02-25T09:30:00Z"),
+    createdAt: daysAgo(17),
+    updatedAt: daysAgo(12),
   },
 
   // ── Priya Sharma: cart with quantity > 1 items ────────────────────────────
@@ -173,11 +179,11 @@ export const cartsSeedData: CartDocument[] = [
         currency: "INR",
         quantity: 3, // buying 3 (as gifts)
         sellerId: "user-fashion-boutique-fashionb",
-        sellerName: "Fashion Boutique",
+        sellerName: "AnimeCraft Apparel",
         isAuction: false,
         isPreOrder: false,
-        addedAt: new Date("2026-02-26T12:00:00Z"),
-        updatedAt: new Date("2026-02-26T12:30:00Z"),
+        addedAt: daysAgo(11),
+        updatedAt: daysAgo(11),
       },
       {
         itemId: "cartitem-priya-charger-001",
@@ -189,15 +195,15 @@ export const cartsSeedData: CartDocument[] = [
         currency: "INR",
         quantity: 1,
         sellerId: "user-techhub-electronics-electron",
-        sellerName: "TechHub Electronics",
+        sellerName: "FigureVault JP",
         isAuction: false,
         isPreOrder: false,
-        addedAt: new Date("2026-02-26T12:10:00Z"),
-        updatedAt: new Date("2026-02-26T12:10:00Z"),
+        addedAt: daysAgo(11),
+        updatedAt: daysAgo(11),
       },
     ],
-    createdAt: new Date("2026-02-26T12:00:00Z"),
-    updatedAt: new Date("2026-02-26T12:30:00Z"),
+    createdAt: daysAgo(11),
+    updatedAt: daysAgo(11),
   },
 
   // ── Raj Patel: empty cart (all items removed) ─────────────────────────────
@@ -207,7 +213,7 @@ export const cartsSeedData: CartDocument[] = [
     id: "user-raj-patel-rajpatel",
     userId: "user-raj-patel-rajpatel",
     items: [],
-    createdAt: new Date("2026-02-10T09:00:00Z"),
-    updatedAt: new Date("2026-02-28T16:00:00Z"),
+    createdAt: daysAgo(27),
+    updatedAt: daysAgo(9),
   },
 ];

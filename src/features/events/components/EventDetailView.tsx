@@ -38,9 +38,6 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
     );
   }
 
-  const startsAt = event.startsAt as unknown as string;
-  const endsAt = event.endsAt as unknown as string;
-
   return (
     <div className={`max-w-3xl mx-auto ${spacing.stack}`}>
       {/* Header */}
@@ -58,11 +55,11 @@ export function EventDetailView({ id, initialData }: EventDetailViewProps) {
         <Heading level={1} className={typography.h2}>
           {event.title}
         </Heading>
-        {(startsAt || endsAt) && (
+        {(event.startsAt || event.endsAt) && (
           <Text size="sm" variant="secondary" className="mt-1">
-            {startsAt && `Starts: ${formatDate(startsAt)}`}
-            {startsAt && endsAt && " · "}
-            {endsAt && `Ends: ${formatDate(endsAt)}`}
+            {event.startsAt && `Starts: ${formatDate(event.startsAt)}`}
+            {event.startsAt && event.endsAt && " · "}
+            {event.endsAt && `Ends: ${formatDate(event.endsAt)}`}
           </Text>
         )}
         <Text variant="secondary" className="mt-3">

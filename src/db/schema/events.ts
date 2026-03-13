@@ -5,8 +5,6 @@
  * Collections: events, eventEntries
  */
 
-import type { Timestamp } from "firebase-admin/firestore";
-
 // ============================================
 // 1. COLLECTION INTERFACES & NAMES
 // ============================================
@@ -91,8 +89,8 @@ export interface EventDocument {
   title: string;
   description: string; // RichText HTML
   status: EventStatus;
-  startsAt: Timestamp;
-  endsAt: Timestamp;
+  startsAt: Date;
+  endsAt: Date;
   coverImageUrl?: string;
 
   // Only one of these is populated per event
@@ -116,8 +114,8 @@ export interface EventDocument {
   };
 
   createdBy: string;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface EventEntryDocument {
@@ -137,14 +135,14 @@ export interface EventEntryDocument {
   // Moderation
   reviewStatus: EntryReviewStatus;
   reviewedBy?: string;
-  reviewedAt?: Timestamp;
+  reviewedAt?: Date;
   reviewNote?: string;
 
   // Point system
   points?: number;
 
   ipAddress?: string; // for dedup / fraud detection
-  submittedAt: Timestamp;
+  submittedAt: Date;
 }
 
 // ============================================

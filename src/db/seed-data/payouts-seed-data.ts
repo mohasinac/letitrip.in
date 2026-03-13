@@ -6,6 +6,12 @@
 import type { PayoutDocument } from "@/db/schema";
 import { PAYOUT_FIELDS, DEFAULT_PLATFORM_FEE_RATE } from "@/db/schema";
 
+// Dynamic date helpers
+const NOW = new Date();
+const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
+const daysAhead = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
+const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000);
+
 export const payoutsSeedData: Partial<PayoutDocument>[] = [
   // ── TechHub Electronics ───────────────────────────────────────────────
 
@@ -37,10 +43,10 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
       "order-1-20260128-t9u3v7",
       "order-1-20260128-s4t7u1",
     ],
-    requestedAt: new Date("2026-02-01T09:00:00Z"),
-    processedAt: new Date("2026-02-05T14:30:00Z"),
-    createdAt: new Date("2026-02-01T09:00:00Z"),
-    updatedAt: new Date("2026-02-05T14:30:00Z"),
+    requestedAt: daysAgo(36),
+    processedAt: daysAgo(32),
+    createdAt: daysAgo(36),
+    updatedAt: daysAgo(32),
   },
 
   // Processing payout — February batch
@@ -70,9 +76,9 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
       "order-1-20260208-k2l4n8",
       "order-1-20260209-d6f2h1",
     ],
-    requestedAt: new Date("2026-02-15T10:00:00Z"),
-    createdAt: new Date("2026-02-15T10:00:00Z"),
-    updatedAt: new Date("2026-02-20T09:00:00Z"),
+    requestedAt: daysAgo(22),
+    createdAt: daysAgo(22),
+    updatedAt: daysAgo(17),
   },
 
   // ── Fashion Boutique ──────────────────────────────────────────────────
@@ -99,10 +105,10 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
       "order-3-20260206-m3n7p5",
       "order-3-20260208-v1w7x2",
     ],
-    requestedAt: new Date("2026-02-02T11:00:00Z"),
-    processedAt: new Date("2026-02-04T16:00:00Z"),
-    createdAt: new Date("2026-02-02T11:00:00Z"),
-    updatedAt: new Date("2026-02-04T16:00:00Z"),
+    requestedAt: daysAgo(35),
+    processedAt: daysAgo(33),
+    createdAt: daysAgo(35),
+    updatedAt: daysAgo(33),
   },
 
   // Pending payout
@@ -127,9 +133,9 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
       "order-shipped-2-20260213-jq8v4a",
       "order-shipped-3-20260212-kt1w6b",
     ],
-    requestedAt: new Date("2026-02-25T09:00:00Z"),
-    createdAt: new Date("2026-02-25T09:00:00Z"),
-    updatedAt: new Date("2026-02-25T09:00:00Z"),
+    requestedAt: daysAgo(12),
+    createdAt: daysAgo(12),
+    updatedAt: daysAgo(12),
   },
 
   // ── Home Essentials ───────────────────────────────────────────────────
@@ -158,10 +164,10 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
     adminNote:
       "Bank transfer rejected — IFSC code mismatch. Seller has been notified to update banking details.",
     orderIds: ["order-5-20260201-w8y2a6", "order-1-20260208-z1x5c9"],
-    requestedAt: new Date("2026-02-03T10:30:00Z"),
-    processedAt: new Date("2026-02-07T11:00:00Z"),
-    createdAt: new Date("2026-02-03T10:30:00Z"),
-    updatedAt: new Date("2026-02-07T11:00:00Z"),
+    requestedAt: daysAgo(34),
+    processedAt: daysAgo(30),
+    createdAt: daysAgo(34),
+    updatedAt: daysAgo(30),
   },
 
   // Pending payout — Home Essentials (re-requested after fixing bank details)
@@ -185,9 +191,9 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
     },
     notes: "Re-submitted with corrected IFSC code — Nendoroid + Ghibli orders",
     orderIds: ["order-5-20260201-w8y2a6", "order-1-20260208-z1x5c9"],
-    requestedAt: new Date("2026-02-22T14:00:00Z"),
-    createdAt: new Date("2026-02-22T14:00:00Z"),
-    updatedAt: new Date("2026-02-22T14:00:00Z"),
+    requestedAt: daysAgo(15),
+    createdAt: daysAgo(15),
+    updatedAt: daysAgo(15),
   },
 
   // ── Home Essentials (was Sports Zone) ───────────────────────────────────
@@ -211,9 +217,9 @@ export const payoutsSeedData: Partial<PayoutDocument>[] = [
       "order-confirmed-1-20260217-ck4t8w",
       "order-shipped-1-20260214-hn5u9z",
     ],
-    requestedAt: new Date("2026-02-05T08:00:00Z"),
-    processedAt: new Date("2026-02-07T10:00:00Z"),
-    createdAt: new Date("2026-02-05T08:00:00Z"),
-    updatedAt: new Date("2026-02-07T10:00:00Z"),
+    requestedAt: daysAgo(32),
+    processedAt: daysAgo(30),
+    createdAt: daysAgo(32),
+    updatedAt: daysAgo(30),
   },
 ];

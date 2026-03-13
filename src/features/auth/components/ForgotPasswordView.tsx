@@ -145,7 +145,7 @@ export function ForgotPasswordView() {
             {t("forgotPassword.rememberPassword")}{" "}
             <TextLink
               href={ROUTES.AUTH.LOGIN}
-              className="text-blue-600 hover:underline"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
             >
               {t("forgotPassword.signInLink")}
             </TextLink>

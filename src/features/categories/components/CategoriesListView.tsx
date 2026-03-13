@@ -13,7 +13,9 @@ import { Grid3X3 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   Button,
+  Container,
   EmptyState,
+  Grid,
   Heading,
   ListingLayout,
   Search,
@@ -81,7 +83,7 @@ function CategoriesListContent({ initialData }: CategoriesListContentProps) {
 
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
-      <div className={`${THEME_CONSTANTS.page.container.full} py-8`}>
+      <Container size="full" className="py-8">
         <ListingLayout
           headerSlot={
             <div>
@@ -116,14 +118,14 @@ function CategoriesListContent({ initialData }: CategoriesListContentProps) {
           }
         >
           {isLoading ? (
-            <div className={THEME_CONSTANTS.grid.cols4}>
+            <Grid cols={4} gap="none">
               {Array.from({ length: 12 }).map((_, i) => (
                 <div
                   key={i}
                   className="animate-pulse rounded-xl bg-zinc-200 dark:bg-slate-700 aspect-[4/3]"
                 />
               ))}
-            </div>
+            </Grid>
           ) : displayed.length === 0 ? (
             <EmptyState
               icon={<Grid3X3 className="w-16 h-16" />}
@@ -151,7 +153,7 @@ function CategoriesListContent({ initialData }: CategoriesListContentProps) {
             </>
           )}
         </ListingLayout>
-      </div>
+      </Container>
     </div>
   );
 }

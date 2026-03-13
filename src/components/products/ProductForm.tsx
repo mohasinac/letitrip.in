@@ -10,8 +10,10 @@
 import {
   FormField,
   Checkbox,
+  Grid,
   ImageUpload,
   Heading,
+  Stack,
   Text,
   Alert,
 } from "@/components";
@@ -19,12 +21,9 @@ import { CategorySelectorCreate } from "@/components";
 import { AddressSelectorCreate } from "@/components";
 import { useMediaUpload } from "@/hooks";
 import { useTranslations } from "next-intl";
-import { THEME_CONSTANTS } from "@/constants";
 import { resolveDate } from "@/utils";
 import type { AdminProduct } from "./Product.types";
 import { PRODUCT_STATUS_OPTIONS } from "./Product.types";
-
-const { spacing } = THEME_CONSTANTS;
 
 interface ProductFormProps {
   product: Partial<AdminProduct>;
@@ -44,7 +43,7 @@ export function ProductForm({
   };
 
   return (
-    <div className={spacing.stack}>
+    <Stack>
       {/* Basic Info */}
       <FormField
         name="title"
@@ -66,7 +65,7 @@ export function ProductForm({
         placeholder="Enter product description"
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Grid cols={2} gap="md">
         <CategorySelectorCreate
           label={t("formCategory")}
           value={product.categoryId || product.category || ""}
@@ -82,9 +81,9 @@ export function ProductForm({
           disabled={isReadonly}
           placeholder="e.g. Smartphones"
         />
-      </div>
+      </Grid>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Grid cols={2} gap="md">
         <FormField
           name="brand"
           label={t("formBrand")}
@@ -105,10 +104,10 @@ export function ProductForm({
           disabled={isReadonly}
           options={PRODUCT_STATUS_OPTIONS}
         />
-      </div>
+      </Grid>
 
       {/* Pricing & Stock */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Grid cols={2} gap="md">
         <FormField
           name="price"
           label={t("formPrice")}
@@ -127,13 +126,21 @@ export function ProductForm({
           disabled={isReadonly}
           placeholder="0"
         />
-      </div>
+      </Grid>
 
       {/* Media */}
       {!isReadonly && (
         <ImageUpload
           currentImage={product.mainImage}
-          onUpload={(file) => upload(file, "products")}
+          onUpload={(file) =>
+            upload(file, "products", true, {
+              type: "product-image",
+              name: product.title || "product",
+              category:
+                product.category || product.categoryId || "uncategorized",
+              store: product.sellerName || "store",
+            })
+          }
           onChange={(url) => update({ mainImage: url })}
           label={t("formMainImage")}
           helperText="Recommended: 800x800px (1:1)"
@@ -169,7 +176,7 @@ export function ProductForm({
       />
 
       {/* Toggles */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Grid cols={2} gap="md">
         <Checkbox
           label={t("formFeatured")}
           checked={!!product.featured}
@@ -182,14 +189,14 @@ export function ProductForm({
           onChange={(e) => update({ isPromoted: e.target.checked })}
           disabled={isReadonly}
         />
-      </div>
+      </Grid>
 
       {/* Condition & Shipping */}
       <Heading level={4} className="mt-4">
         {t("sectionConditionShipping")}
       </Heading>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Grid cols={2} gap="md">
         <FormField
           name="condition"
           label={t("formCondition")}
@@ -224,7 +231,7 @@ export function ProductForm({
             { value: "seller", label: t("formShippingPaidBySeller") },
           ]}
         />
-      </div>
+      </Grid>
 
       {/* Insurance */}
       <Checkbox
@@ -271,7 +278,7 @@ export function ProductForm({
 
       {product.isAuction && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Grid cols={2} gap="md">
             <FormField
               name="startingBid"
               label={t("formStartingBid")}
@@ -294,9 +301,9 @@ export function ProductForm({
               onChange={(value) => update({ auctionEndDate: value })}
               disabled={isReadonly}
             />
-          </div>
+          </Grid>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Grid cols={2} gap="md">
             <FormField
               name="reservePrice"
               label={t("formReservePrice")}
@@ -321,7 +328,7 @@ export function ProductForm({
               placeholder="0"
               helpText={t("formBuyNowPriceHelp")}
             />
-          </div>
+          </Grid>
 
           <FormField
             name="minBidIncrement"
@@ -402,7 +409,7 @@ export function ProductForm({
 
       {product.isPreOrder && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Grid cols={2} gap="md">
             <FormField
               name="preOrderDeliveryDate"
               label={t("formPreOrderDeliveryDate")}
@@ -429,9 +436,9 @@ export function ProductForm({
               placeholder="20"
               helpText={t("formPreOrderDepositPercentHelp")}
             />
-          </div>
+          </Grid>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Grid cols={2} gap="md">
             <FormField
               name="preOrderMaxQuantity"
               label={t("formPreOrderMaxQuantity")}
@@ -468,7 +475,7 @@ export function ProductForm({
                 },
               ]}
             />
-          </div>
+          </Grid>
 
           <Checkbox
             label={t("formPreOrderCancellable")}
@@ -518,6 +525,6 @@ export function ProductForm({
           disabled
         />
       )}
-    </div>
+    </Stack>
   );
 }

@@ -13,7 +13,7 @@ import { successResponse } from "@/lib/api-response";
 import { createApiHandler } from "@/lib/api/api-handler";
 import { SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import { slugify } from "@/utils";
+import { generateStoreSlug } from "@/db/schema";
 import { ApiError, NotFoundError } from "@/lib/errors";
 
 // ─── GET ─────────────────────────────────────────────────────────────────────
@@ -46,8 +46,24 @@ export const POST = createApiHandler<(typeof createStoreSchema)["_output"]>({
     }
 
     const { storeName, storeDescription, storeCategory } = body!;
-    const slugBase = slugify(`${storeName} ${user!.displayName ?? user!.uid}`);
-    const storeSlug = `store-${slugBase}`.slice(0, 80);
+
+    // Build a URL-safe slug that is structurally distinct from any Firebase UID.
+    // Format: "store-<store-name>-by-<seller-first-name>" (max 80 chars).
+    const ownerName = user!.displayName ?? "seller";
+    const baseSlug = `store-${generateStoreSlug(storeName, ownerName)}`.slice(
+      0,
+      80,
+    );
+
+    // Guarantee uniqueness: if the base slug is already taken by another store,
+    // append a numeric suffix until we find a free one.
+    let storeSlug = baseSlug;
+    let attempt = 1;
+    while (await storeRepository.findBySlug(storeSlug)) {
+      attempt++;
+      const suffix = `-${attempt}`;
+      storeSlug = `${baseSlug.slice(0, 80 - suffix.length)}${suffix}`;
+    }
 
     const store = await storeRepository.create({
       storeSlug,

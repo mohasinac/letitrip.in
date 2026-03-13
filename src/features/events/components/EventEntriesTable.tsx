@@ -61,7 +61,7 @@ export function useEventEntriesTableColumns(
         width: "16%",
         render: (e: EventEntryDocument) => (
           <Text className={`text-sm ${themed.textSecondary}`}>
-            {formatDate(e.submittedAt as unknown as string)}
+            {formatDate(e.submittedAt)}
           </Text>
         ),
       },

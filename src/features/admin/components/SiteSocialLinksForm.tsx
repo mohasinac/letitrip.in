@@ -8,7 +8,7 @@
 
 "use client";
 
-import { Card, Heading, FormField } from "@/components";
+import { Card, FormField, Grid, Heading } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import type { SiteSettingsDocument } from "@/db/schema";
 
@@ -38,7 +38,7 @@ export function SiteSocialLinksForm({
         <Heading level={3} className={`${typography.cardTitle} mb-4`}>
           {UI_LABELS.ADMIN.SITE.SOCIAL_LINKS}
         </Heading>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Grid cols={2} gap="md">
           <FormField
             name="facebook"
             label={UI_LABELS.ADMIN.SITE.FACEBOOK}
@@ -71,7 +71,7 @@ export function SiteSocialLinksForm({
             onChange={(value) => updateLink("linkedin", value)}
             placeholder="https://linkedin.com/company/yourcompany"
           />
-        </div>
+        </Grid>
       </div>
     </Card>
   );

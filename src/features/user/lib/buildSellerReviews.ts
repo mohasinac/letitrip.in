@@ -1,9 +1,6 @@
 import { productRepository, reviewRepository } from "@/repositories";
 import type { ProductDocument } from "@/db/schema";
-import type {
-  SellerReviewsData,
-  SellerReviewItem,
-} from "@/hooks/usePublicProfile";
+import type { SellerReviewsData, SellerReviewItem } from "@/hooks";
 
 export async function buildSellerReviews(
   userId: string,

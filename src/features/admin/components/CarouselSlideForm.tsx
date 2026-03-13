@@ -15,6 +15,7 @@ import {
   Button,
   Checkbox,
   FormField,
+  Grid,
   Heading,
   ImageUpload,
   Label,
@@ -107,7 +108,12 @@ export function CarouselSlideForm({
       {!isReadonly && (
         <ImageUpload
           currentImage={slide.media?.url ?? ""}
-          onUpload={(file) => upload(file, "carousel")}
+          onUpload={(file) =>
+            upload(file, "carousel", true, {
+              type: "carousel-image",
+              title: slide.title || "slide",
+            })
+          }
           onChange={(url) =>
             update({ media: { type: "image", url, alt: slide.title || "" } })
           }
@@ -129,7 +135,7 @@ export function CarouselSlideForm({
         }
         disabled={isReadonly}
       />
-      <div className="grid grid-cols-2 gap-4">
+      <Grid className="grid-cols-2" gap="md">
         <FormField
           name="order"
           label="Order"
@@ -146,7 +152,7 @@ export function CarouselSlideForm({
             label={UI_LABELS.STATUS.ACTIVE}
           />
         </div>
-      </div>
+      </Grid>
       {/* -- Central overlay (mutually exclusive with cards) --------- */}
       <div className={`border-t ${themed.border} pt-4`}>
         <div className={`${flex.between} mb-3`}>

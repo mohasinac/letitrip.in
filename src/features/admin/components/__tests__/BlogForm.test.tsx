@@ -3,7 +3,7 @@
  *
  * Verifies form rendering, RichTextEditor for content, ImageUpload for cover,
  * Checkbox for isFeatured, and field change propagation.
- * TASK-23: useTranslations mocked � labels render as translation keys.
+ * TASK-23: useTranslations mocked — labels render as translation keys.
  */
 
 import React from "react";
@@ -198,10 +198,9 @@ describe("BlogForm", () => {
     );
   });
 
-  it("disabled when isReadonly=true � hides editor and disables checkbox", () => {
+  it("disabled when isReadonly=true — hides editor and disables checkbox", () => {
     render(<BlogForm post={basPost} onChange={jest.fn()} isReadonly={true} />);
     expect(screen.queryByTestId("rich-text-editor")).not.toBeInTheDocument();
     expect(screen.getByTestId("checkbox-featured")).toBeDisabled();
   });
 });
-

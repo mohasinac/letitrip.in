@@ -26,6 +26,7 @@ import {
   OrderFilters,
   Search,
   SortDropdown,
+  Row,
   Spinner,
   StatusBadge,
   TablePagination,
@@ -35,7 +36,7 @@ import {
   Text,
 } from "@/components";
 import type { ActiveFilter } from "@/components";
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES } from "@/constants";
 import { formatCurrency } from "@/utils";
 import { cancelOrderAction } from "@/actions";
 import type { OrderDocument } from "@/db/schema";
@@ -224,9 +225,9 @@ function UserOrdersContent() {
 
   if (loading) {
     return (
-      <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
+      <Row justify="center" gap="none" className="min-h-screen">
         <Spinner size="lg" label={tLoading("default")} />
-      </div>
+      </Row>
     );
   }
 

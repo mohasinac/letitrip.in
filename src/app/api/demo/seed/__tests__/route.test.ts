@@ -31,7 +31,7 @@ jest.mock("@/lib/firebase/admin", () => ({
 }));
 
 // Mock seed data
-jest.mock("../../../../../../scripts/seed-data", () => ({
+jest.mock("@/db/seed-data", () => ({
   usersSeedData: [
     {
       uid: "test-user-1",
@@ -61,7 +61,7 @@ jest.mock("../../../../../../scripts/seed-data", () => ({
   categoriesSeedData: [
     { id: "cat-1", name: "Electronics", slug: "electronics" },
   ],
-  productsSeedData: [{ id: "prod-1", title: "Test Product", price: 100 }],
+  storesSeedData: [],
   ordersSeedData: [],
   reviewsSeedData: [],
   bidsSeedData: [],

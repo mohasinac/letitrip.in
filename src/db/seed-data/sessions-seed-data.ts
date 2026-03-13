@@ -15,6 +15,12 @@
 import type { SessionDocument } from "@/db/schema";
 import { SESSION_COLLECTION } from "@/db/schema";
 
+// Dynamic date helpers
+const NOW = new Date();
+const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
+const daysAhead = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
+const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000);
+
 // Re-exported so seed-all-data.ts can reference the collection name directly.
 export { SESSION_COLLECTION };
 
@@ -32,9 +38,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.1",
     },
     location: { country: "India", city: "Mumbai" },
-    createdAt: new Date("2026-02-25T07:00:00Z"),
-    lastActivity: new Date("2026-03-01T08:45:00Z"),
-    expiresAt: new Date("2026-03-26T07:00:00Z"),
+    createdAt: daysAgo(12),
+    lastActivity: daysAgo(8),
+    expiresAt: daysAhead(17),
     isActive: true,
   },
 
@@ -51,9 +57,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.10",
     },
     location: { country: "India", city: "Mumbai" },
-    createdAt: new Date("2026-02-26T09:00:00Z"),
-    lastActivity: new Date("2026-03-01T09:15:00Z"),
-    expiresAt: new Date("2026-03-26T09:00:00Z"),
+    createdAt: daysAgo(11),
+    lastActivity: daysAgo(8),
+    expiresAt: daysAhead(17),
     isActive: true,
   },
 
@@ -70,9 +76,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.11",
     },
     location: { country: "India", city: "Mumbai" },
-    createdAt: new Date("2026-02-27T14:30:00Z"),
-    lastActivity: new Date("2026-03-01T06:00:00Z"),
-    expiresAt: new Date("2026-03-27T14:30:00Z"),
+    createdAt: daysAgo(10),
+    lastActivity: daysAgo(8),
+    expiresAt: daysAhead(18),
     isActive: true,
   },
 
@@ -89,9 +95,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.20",
     },
     location: { country: "India", city: "Delhi" },
-    createdAt: new Date("2026-02-28T10:00:00Z"),
-    lastActivity: new Date("2026-03-01T07:30:00Z"),
-    expiresAt: new Date("2026-03-28T10:00:00Z"),
+    createdAt: daysAgo(9),
+    lastActivity: daysAgo(8),
+    expiresAt: daysAhead(19),
     isActive: true,
   },
 
@@ -108,9 +114,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.30",
     },
     location: { country: "India", city: "Mumbai" },
-    createdAt: new Date("2026-02-24T06:00:00Z"),
-    lastActivity: new Date("2026-03-01T08:00:00Z"),
-    expiresAt: new Date("2026-03-24T06:00:00Z"),
+    createdAt: daysAgo(13),
+    lastActivity: daysAgo(8),
+    expiresAt: daysAhead(15),
     isActive: true,
   },
 
@@ -127,9 +133,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.40",
     },
     location: { country: "India", city: "Mumbai" },
-    createdAt: new Date("2026-02-28T08:00:00Z"),
-    lastActivity: new Date("2026-03-01T08:55:00Z"),
-    expiresAt: new Date("2026-03-28T08:00:00Z"),
+    createdAt: daysAgo(9),
+    lastActivity: daysAgo(8),
+    expiresAt: daysAhead(19),
     isActive: true,
   },
 
@@ -146,9 +152,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.50",
     },
     location: { country: "India", city: "Hyderabad" },
-    createdAt: new Date("2026-02-27T18:00:00Z"),
-    lastActivity: new Date("2026-02-28T20:00:00Z"),
-    expiresAt: new Date("2026-03-27T18:00:00Z"),
+    createdAt: daysAgo(10),
+    lastActivity: daysAgo(9),
+    expiresAt: daysAhead(18),
     isActive: true,
   },
 
@@ -165,9 +171,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.60",
     },
     location: { country: "India", city: "Jaipur" },
-    createdAt: new Date("2026-02-25T10:00:00Z"),
-    lastActivity: new Date("2026-02-28T16:30:00Z"),
-    expiresAt: new Date("2026-03-25T10:00:00Z"),
+    createdAt: daysAgo(12),
+    lastActivity: daysAgo(9),
+    expiresAt: daysAhead(16),
     isActive: true,
   },
 
@@ -185,9 +191,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.70",
     },
     location: { country: "India", city: "Bangalore" },
-    createdAt: new Date("2026-01-25T12:00:00Z"),
-    lastActivity: new Date("2026-01-29T10:00:00Z"),
-    expiresAt: new Date("2026-01-30T12:00:00Z"), // Expired 30 days ago
+    createdAt: daysAgo(43),
+    lastActivity: daysAgo(39),
+    expiresAt: daysAgo(38), // Expired 30 days ago
     isActive: false,
   },
 
@@ -204,9 +210,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.80",
     },
     location: { country: "India", city: "Ahmedabad" },
-    createdAt: new Date("2026-01-10T09:00:00Z"),
-    lastActivity: new Date("2026-01-12T15:00:00Z"),
-    expiresAt: new Date("2026-01-15T09:00:00Z"), // Expired 45 days ago
+    createdAt: daysAgo(58),
+    lastActivity: daysAgo(56),
+    expiresAt: daysAgo(53), // Expired 45 days ago
     isActive: false,
   },
 
@@ -224,11 +230,11 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.81",
     },
     location: { country: "India", city: "Ahmedabad" },
-    createdAt: new Date("2025-12-01T08:00:00Z"),
-    lastActivity: new Date("2026-02-01T09:00:00Z"),
-    expiresAt: new Date("2026-03-01T08:00:00Z"), // Would still be valid
+    createdAt: daysAgo(98),
+    lastActivity: daysAgo(36),
+    expiresAt: daysAgo(8), // Would still be valid
     isActive: false,
-    revokedAt: new Date("2026-02-10T11:00:00Z"),
+    revokedAt: daysAgo(27),
     revokedBy: "user-raj-patel-rajpatel", // User revoked their own session
   },
 
@@ -246,11 +252,11 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "198.51.100.42", // Unknown IP, flagged as suspicious
     },
     location: { country: "Russia", city: "Moscow" }, // Unexpected country
-    createdAt: new Date("2026-02-15T03:22:00Z"),
-    lastActivity: new Date("2026-02-15T03:45:00Z"),
-    expiresAt: new Date("2026-03-15T03:22:00Z"),
+    createdAt: daysAgo(22),
+    lastActivity: daysAgo(22),
+    expiresAt: daysAhead(6),
     isActive: false,
-    revokedAt: new Date("2026-02-15T09:00:00Z"),
+    revokedAt: daysAgo(22),
     revokedBy: "admin", // Admin revoked after security review
   },
 
@@ -267,9 +273,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.90",
     },
     location: { country: "India", city: "Mumbai" },
-    createdAt: new Date("2026-03-01T08:00:00Z"),
-    lastActivity: new Date("2026-03-05T16:00:00Z"),
-    expiresAt: new Date("2026-03-31T08:00:00Z"),
+    createdAt: daysAgo(8),
+    lastActivity: daysAgo(4),
+    expiresAt: daysAhead(22),
     isActive: true,
   },
 
@@ -286,9 +292,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.91",
     },
     location: { country: "India", city: "Kochi" },
-    createdAt: new Date("2026-02-28T12:00:00Z"),
-    lastActivity: new Date("2026-03-05T10:30:00Z"),
-    expiresAt: new Date("2026-03-28T12:00:00Z"),
+    createdAt: daysAgo(9),
+    lastActivity: daysAgo(4),
+    expiresAt: daysAhead(19),
     isActive: true,
   },
 
@@ -305,9 +311,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.92",
     },
     location: { country: "India", city: "Ahmedabad" },
-    createdAt: new Date("2026-03-01T07:00:00Z"),
-    lastActivity: new Date("2026-03-05T19:00:00Z"),
-    expiresAt: new Date("2026-03-31T07:00:00Z"),
+    createdAt: daysAgo(8),
+    lastActivity: daysAgo(4),
+    expiresAt: daysAhead(22),
     isActive: true,
   },
 
@@ -324,9 +330,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.93",
     },
     location: { country: "India", city: "Kolkata" },
-    createdAt: new Date("2026-02-20T11:00:00Z"),
-    lastActivity: new Date("2026-03-05T14:00:00Z"),
-    expiresAt: new Date("2026-03-20T11:00:00Z"),
+    createdAt: daysAgo(17),
+    lastActivity: daysAgo(4),
+    expiresAt: daysAhead(11),
     isActive: true,
   },
 
@@ -343,9 +349,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.94",
     },
     location: { country: "India", city: "Mumbai" },
-    createdAt: new Date("2026-02-22T09:00:00Z"),
-    lastActivity: new Date("2026-03-04T20:00:00Z"),
-    expiresAt: new Date("2026-03-22T09:00:00Z"),
+    createdAt: daysAgo(15),
+    lastActivity: daysAgo(5),
+    expiresAt: daysAhead(13),
     isActive: true,
   },
 
@@ -362,9 +368,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.95",
     },
     location: { country: "India", city: "Chandigarh" },
-    createdAt: new Date("2026-02-25T15:00:00Z"),
-    lastActivity: new Date("2026-03-05T08:00:00Z"),
-    expiresAt: new Date("2026-03-25T15:00:00Z"),
+    createdAt: daysAgo(12),
+    lastActivity: daysAgo(4),
+    expiresAt: daysAhead(16),
     isActive: true,
   },
 
@@ -381,9 +387,9 @@ export const sessionsSeedData: SessionDocument[] = [
       ip: "203.0.113.96",
     },
     location: { country: "India", city: "Lucknow" },
-    createdAt: new Date("2026-02-28T16:00:00Z"),
-    lastActivity: new Date("2026-03-05T11:00:00Z"),
-    expiresAt: new Date("2026-03-28T16:00:00Z"),
+    createdAt: daysAgo(9),
+    lastActivity: daysAgo(4),
+    expiresAt: daysAhead(19),
     isActive: true,
   },
 ];

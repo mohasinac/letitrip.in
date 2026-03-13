@@ -65,7 +65,7 @@ export function StoreCard({
                   e.stopPropagation();
                   onSelect?.(store.ownerId, e.target.checked);
                 }}
-                className="bg-white/80"
+                className={THEME_CONSTANTS.accentBanner.imageCheckbox}
               />
             </div>
           )}

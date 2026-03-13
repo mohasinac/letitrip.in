@@ -5,10 +5,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Button, Card, Heading, Text, Label, Input, Span } from "@/components";
+import {
+  Button,
+  Card,
+  Grid,
+  Heading,
+  Text,
+  Label,
+  Input,
+  Span,
+} from "@/components";
 import { useMessage } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { sellerCreateCouponAction } from "@/actions";
+import { nowISO } from "@/utils";
 
 const { themed, spacing } = THEME_CONSTANTS;
 
@@ -60,7 +70,7 @@ export function SellerCouponForm() {
       applicableToAuctions: false,
       usage: { currentUsage: 0 },
       validity: {
-        startDate: new Date().toISOString().slice(0, 10),
+        startDate: nowISO().slice(0, 10),
         isActive: true,
       },
     },
@@ -94,7 +104,7 @@ export function SellerCouponForm() {
           {t("formSectionBasic")}
         </Heading>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Grid cols={2} gap="md">
           {/* Short code */}
           <div>
             <Label
@@ -155,7 +165,7 @@ export function SellerCouponForm() {
               placeholder={t("fieldDescriptionPlaceholder")}
             />
           </div>
-        </div>
+        </Grid>
       </Card>
 
       {/* Discount type & target */}
@@ -164,7 +174,7 @@ export function SellerCouponForm() {
           {t("formSectionDiscount")}
         </Heading>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Grid cols={2} gap="md">
           {/* Type */}
           <div>
             <Label htmlFor="type" className="block text-sm font-medium mb-1">
@@ -259,7 +269,7 @@ export function SellerCouponForm() {
               {t("hintPreordersNever")}
             </Text>
           </div>
-        </div>
+        </Grid>
       </Card>
 
       {/* Usage limits */}
@@ -268,7 +278,7 @@ export function SellerCouponForm() {
           {t("formSectionUsage")}
         </Heading>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Grid cols={2} gap="md">
           <div>
             <Label
               htmlFor="usage.totalLimit"
@@ -299,7 +309,7 @@ export function SellerCouponForm() {
               placeholder={t("fieldPerUserLimitPlaceholder")}
             />
           </div>
-        </div>
+        </Grid>
       </Card>
 
       {/* Validity */}
@@ -308,7 +318,7 @@ export function SellerCouponForm() {
           {t("formSectionValidity")}
         </Heading>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Grid cols={2} gap="md">
           <div>
             <Label
               htmlFor="validity.startDate"
@@ -350,7 +360,7 @@ export function SellerCouponForm() {
               <span className="text-sm">{t("fieldIsActive")}</span>
             </Label>
           </div>
-        </div>
+        </Grid>
       </Card>
 
       {/* Submit */}

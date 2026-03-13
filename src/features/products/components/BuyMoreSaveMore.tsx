@@ -41,12 +41,12 @@ export function BuyMoreSaveMore({
               ].join(" ")}
             >
               <Text
-                className={`text-sm font-semibold ${isActive ? "text-primary" : ""}`}
+                className={`text-sm font-semibold ${isActive ? "text-primary-700 dark:text-primary" : ""}`}
               >
                 {t("bulkDiscountBuy", { qty: tier.quantity })}
               </Text>
               <Span
-                className={`text-xs ${isActive ? "text-primary/80" : "text-zinc-500 dark:text-zinc-400"}`}
+                className={`text-xs ${isActive ? "text-primary-700/80 dark:text-primary/80" : "text-zinc-500 dark:text-zinc-400"}`}
               >
                 {t("bulkDiscountSave", { pct: tier.discountPercent })}
               </Span>

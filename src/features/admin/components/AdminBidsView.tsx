@@ -6,10 +6,9 @@ import { useUrlTable, usePendingTable } from "@/hooks";
 import { useAdminBids } from "@/features/admin/hooks";
 import { ROUTES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
-
-const { flex, spacing } = THEME_CONSTANTS;
 import {
   Card,
+  Grid,
   SideDrawer,
   DataTable,
   AdminPageHeader,
@@ -25,6 +24,8 @@ import { BidFilters } from "./BidFilters";
 import { useBidTableColumns } from ".";
 import { formatCurrency, formatDate } from "@/utils";
 import type { BidDocument } from "@/db/schema";
+
+const { flex, spacing } = THEME_CONSTANTS;
 
 interface Props {
   action?: string[];
@@ -105,7 +106,7 @@ export function AdminBidsView({ action }: Props) {
       />
 
       {/* Summary stat cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
+      <Grid className="grid-cols-2 md:grid-cols-4" gap="md">
         {[
           { label: t("totalBids"), value: totalBids },
           { label: t("activeBids"), value: activeBids },
@@ -121,7 +122,7 @@ export function AdminBidsView({ action }: Props) {
             </Text>
           </Card>
         ))}
-      </div>
+      </Grid>
 
       <ListingLayout
         searchSlot={
@@ -209,7 +210,7 @@ export function AdminBidsView({ action }: Props) {
             </div>
 
             {/* Bid details */}
-            <div className="grid grid-cols-2 gap-4">
+            <Grid className="grid-cols-2" gap="md">
               <div>
                 <Caption className="uppercase tracking-wide font-semibold">
                   {t("bidAmount")}
@@ -231,7 +232,7 @@ export function AdminBidsView({ action }: Props) {
                   )}
                 </Text>
               </div>
-            </div>
+            </Grid>
 
             {/* Bid Date */}
             <div>

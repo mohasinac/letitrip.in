@@ -7,6 +7,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { createApiHandler } from "@/lib/api/api-handler";
 import { successResponse } from "@/lib/api-response";
+import { resolveDate } from "@/utils";
 import {
   eventRepository,
   eventEntryRepository,
@@ -45,10 +46,8 @@ export const POST = createApiHandler({
 
     // Check event window
     const now = new Date();
-    const endsAt =
-      (event.endsAt as unknown as { toDate: () => Date }).toDate?.() ??
-      new Date(event.endsAt as unknown as string);
-    if (now > endsAt) {
+    const endsAt = resolveDate(event.endsAt);
+    if (endsAt && now > endsAt) {
       throw new ValidationError(ERROR_MESSAGES.EVENT.ENTRIES_CLOSED);
     }
 

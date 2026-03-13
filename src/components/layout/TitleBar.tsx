@@ -1,11 +1,9 @@
 "use client";
 
-import { SITE_CONFIG, ROUTES, THEME_CONSTANTS } from "@/constants";
+import { SITE_CONFIG, THEME_CONSTANTS } from "@/constants";
 import { useAuth, useCartCount } from "@/hooks";
 import { NotificationBell } from "@/components";
 import { TitleBarLayout } from "./TitleBarLayout";
-import { TextLink, Span } from "@/components";
-import { Sprout, SearchCode } from "lucide-react";
 
 /**
  * TitleBar Component
@@ -30,17 +28,18 @@ interface TitleBarProps {
   sidebarOpen: boolean;
   onSearchToggle: () => void;
   searchOpen: boolean;
+  isDark: boolean;
+  onToggleTheme: () => void;
 }
 
 export default function TitleBar(props: TitleBarProps) {
   const { user } = useAuth();
   const cartCount = useCartCount();
-
-  const isDev = process.env.NODE_ENV === "development";
+  const { isDark, onToggleTheme, ...rest } = props;
 
   return (
     <TitleBarLayout
-      {...props}
+      {...rest}
       brandName={SITE_CONFIG.brand.name}
       brandShortName={SITE_CONFIG.brand.shortName}
       logoHref={SITE_CONFIG.nav.home}
@@ -50,32 +49,8 @@ export default function TitleBar(props: TitleBarProps) {
       user={user}
       cartCount={cartCount}
       notificationSlot={<>{user && <NotificationBell />}</>}
-      devSlot={
-        isDev ? (
-          <>
-            <TextLink
-              href={ROUTES.DEMO.SEED}
-              className={`p-2 rounded-xl transition-colors flex items-center gap-1.5 border border-dashed border-yellow-400/60 hover:bg-yellow-400/10 ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
-              aria-label="Seed data (dev only)"
-            >
-              <Sprout className="w-4 h-4 text-yellow-400" />
-              <Span className="text-xs font-semibold text-yellow-400 hidden lg:inline">
-                Seed
-              </Span>
-            </TextLink>
-            <TextLink
-              href={ROUTES.DEMO.ALGOLIA}
-              className={`p-2 rounded-xl transition-colors flex items-center gap-1.5 border border-dashed border-orange-400/60 hover:bg-orange-400/10 ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
-              aria-label="Algolia dashboard (dev only)"
-            >
-              <SearchCode className="w-4 h-4 text-orange-400" />
-              <Span className="text-xs font-semibold text-orange-400 hidden lg:inline">
-                Algolia
-              </Span>
-            </TextLink>
-          </>
-        ) : undefined
-      }
+      isDark={isDark}
+      onToggleTheme={onToggleTheme}
     />
   );
 }

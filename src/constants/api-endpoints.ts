@@ -233,6 +233,9 @@ export const API_ENDPOINTS = {
   // Checkout endpoints
   CHECKOUT: {
     PLACE_ORDER: "/api/checkout", // POST - Place order from cart (COD)
+    PREFLIGHT: "/api/checkout/preflight", // POST - Non-mutating stock check
+    CONSENT_OTP_SEND: "/api/checkout/consent-otp/send", // POST - Send consent email OTP (third-party shipping)
+    CONSENT_OTP_VERIFY: "/api/checkout/consent-otp/verify", // POST - Verify consent email OTP
   },
 
   // Payment endpoints (Razorpay)

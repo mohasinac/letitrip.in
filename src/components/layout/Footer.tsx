@@ -5,10 +5,18 @@ import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SITE_CONFIG, ROUTES } from "@/constants";
 import { currentYear } from "@/utils";
+import { DEFAULT_TRUST_BAR_ITEMS } from "@/db/schema";
+import type { SiteSettingsDocument } from "@/db/schema";
 import { FooterLayout } from "./FooterLayout";
 import type { FooterSocialLink, FooterLinkGroup } from "./FooterLayout";
+import { THEME_CONSTANTS } from "@/constants";
+import { Text } from "@/components";
 
-export default function Footer() {
+interface FooterProps {
+  footerConfig?: SiteSettingsDocument["footerConfig"];
+}
+
+export default function Footer({ footerConfig }: FooterProps) {
   const t = useTranslations("footer");
   const tNav = useTranslations("nav");
   const [email, setEmail] = useState("");
@@ -90,6 +98,11 @@ export default function Footer() {
     },
   ];
 
+  const trustBarItems =
+    footerConfig?.trustBar?.items ?? DEFAULT_TRUST_BAR_ITEMS;
+  const showTrustBar = footerConfig?.trustBar?.enabled ?? true;
+  const newsletterEnabled = footerConfig?.newsletterEnabled ?? true;
+
   return (
     <FooterLayout
       brandName={SITE_CONFIG.brand.name}
@@ -101,16 +114,25 @@ export default function Footer() {
         brand: SITE_CONFIG.brand.name,
       })}
       madeInText={t("madeIn")}
-      showTrustBar
+      showTrustBar={showTrustBar}
+      trustBarItems={trustBarItems}
+      newsletterEnabled={newsletterEnabled}
       newsletterSlot={
-        <div className="bg-gradient-to-r from-primary/90 to-cobalt/80 rounded-xl p-4 text-white relative overflow-hidden">
+        <div
+          className={`${THEME_CONSTANTS.accentBanner.gradientSubtle} rounded-xl p-4 text-white relative overflow-hidden`}
+        >
           <div
             className="absolute -top-8 -right-8 h-24 w-24 rounded-full border border-white/10 pointer-events-none"
             aria-hidden
           />
-          <p className="text-xs font-semibold uppercase tracking-wider mb-2 opacity-90">
+          <Text
+            size="xs"
+            weight="semibold"
+            variant="none"
+            className="uppercase tracking-wider mb-2 opacity-90"
+          >
             {t("newsletterLabel")}
-          </p>
+          </Text>
           <div className="flex gap-2">
             <input
               type="email"
@@ -122,7 +144,7 @@ export default function Footer() {
             <button
               type="button"
               onClick={() => setEmail("")}
-              className="flex-shrink-0 px-3 py-1.5 rounded-lg bg-white text-primary text-sm font-semibold hover:bg-zinc-100 transition-colors"
+              className="flex-shrink-0 px-3 py-1.5 rounded-lg bg-white text-primary-700 text-sm font-semibold hover:bg-zinc-100 transition-colors"
             >
               {t("newsletterCta")}
             </button>

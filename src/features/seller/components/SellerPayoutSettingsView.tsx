@@ -17,6 +17,7 @@ import {
   Card,
   Button,
   FormField,
+  Grid,
   Alert,
   Text,
   Heading,
@@ -120,7 +121,7 @@ function BankForm({ defaultMasked, isSaving, onSave }: BankFormProps) {
         onChange={(v) => set("accountHolderName", v)}
         placeholder={t("accountHolderPlaceholder")}
       />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Grid cols={2} gap="md">
         <FormField
           type="password"
           name="accountNumber"
@@ -138,8 +139,8 @@ function BankForm({ defaultMasked, isSaving, onSave }: BankFormProps) {
           placeholder="XXXXXXXXXX"
           error={mismatch ? t("accountNumberMismatch") : undefined}
         />
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      </Grid>
+      <Grid cols={2} gap="md">
         <FormField
           type="text"
           name="ifscCode"
@@ -157,7 +158,7 @@ function BankForm({ defaultMasked, isSaving, onSave }: BankFormProps) {
           onChange={(v) => set("bankName", v)}
           placeholder={t("bankNamePlaceholder")}
         />
-      </div>
+      </Grid>
       <FormField
         type="select"
         name="accountType"
@@ -225,7 +226,7 @@ export function SellerPayoutSettingsView() {
         <Heading level={3} className="mb-4">
           {t("methodHeading")}
         </Heading>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Grid cols={2} gap="md">
           {(["upi", "bank_transfer"] as const).map((method) => (
             <Button
               key={method}
@@ -246,7 +247,7 @@ export function SellerPayoutSettingsView() {
               </Text>
             </Button>
           ))}
-        </div>
+        </Grid>
       </Card>
 
       {/* UPI form */}

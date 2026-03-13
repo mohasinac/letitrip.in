@@ -47,6 +47,7 @@ import type {
   DocumentData,
   Query,
 } from "firebase-admin/firestore";
+import { deserializeTimestamps } from "@/lib/firebase/firestore-helpers";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -150,7 +151,8 @@ export async function applySieveToFirestore<T extends DocumentData>(params: {
   const snapshot = await pagedQuery.get();
 
   const items = snapshot.docs.map(
-    (doc) => ({ id: doc.id, ...doc.data() }) as unknown as T,
+    (doc) =>
+      deserializeTimestamps({ id: doc.id, ...doc.data() }) as unknown as T,
   );
 
   // ── Step 3: pagination meta ───────────────────────────────────────────────

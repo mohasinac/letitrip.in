@@ -86,7 +86,7 @@ export function OrderCard({
           onClick={handleSelect}
           className={`absolute top-3 left-3 z-10 w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
             isSelected
-              ? "bg-primary-500 border-primary-500"
+              ? "bg-primary-700 border-primary-700"
               : "bg-white/90 border-zinc-300 dark:bg-slate-800/90 dark:border-slate-600 hover:border-primary-400"
           }`}
         >

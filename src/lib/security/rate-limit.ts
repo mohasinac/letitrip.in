@@ -192,15 +192,7 @@ export const RateLimitPresets = {
   EMAIL_VERIFICATION: { limit: 5, window: 3600 },
 } as const;
 
-/** @deprecated Use rateLimit() instead */
-export function cleanupRateLimitStore(): void {
-  const now = Date.now();
-  for (const [key, entry] of memStore.entries()) {
-    if (now > entry.resetAt) memStore.delete(key);
-  }
-}
-
-/** @deprecated For testing only */
+/** For testing only: clear the in-memory rate limit store. */
 export function clearRateLimitStore(): void {
   memStore.clear();
 }

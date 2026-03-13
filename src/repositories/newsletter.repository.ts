@@ -66,7 +66,7 @@ class NewsletterRepository extends BaseRepository<NewsletterSubscriberDocument> 
 
     if (snapshot.empty) return null;
     const doc = snapshot.docs[0];
-    return { id: doc.id, ...doc.data() } as NewsletterSubscriberDocument;
+    return this.mapDoc<NewsletterSubscriberDocument>(doc);
   }
 
   // ---------------------------------------------------------------------------
@@ -131,7 +131,7 @@ class NewsletterRepository extends BaseRepository<NewsletterSubscriberDocument> 
         }),
       );
     const doc = await this.db.collection(this.collection).doc(id).get();
-    return { id: doc.id, ...doc.data() } as NewsletterSubscriberDocument;
+    return this.mapDoc<NewsletterSubscriberDocument>(doc);
   }
 
   /**

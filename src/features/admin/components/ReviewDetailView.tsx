@@ -1,13 +1,22 @@
 "use client";
 
-import { Card, Button, Heading, Text, Label, Span } from "@/components";
+import {
+  Card,
+  Button,
+  Grid,
+  Heading,
+  Row,
+  Stack,
+  Text,
+  Label,
+  Span,
+} from "@/components";
 import { THEME_CONSTANTS, UI_LABELS } from "@/constants";
 import { formatDate } from "@/utils";
 import { ReviewStars } from "./ReviewStars";
 import type { Review } from "./Review.types";
 
 const REVIEWS = UI_LABELS.ADMIN.REVIEWS;
-const { flex } = THEME_CONSTANTS;
 
 interface ReviewDetailViewProps {
   review: Review;
@@ -25,19 +34,19 @@ export function ReviewDetailView({
   onDelete,
 }: ReviewDetailViewProps) {
   return (
-    <div className={THEME_CONSTANTS.spacing.stack}>
-      <div className={flex.between}>
+    <Stack>
+      <Row justify="between" gap="none">
         <Heading level={1} className="text-2xl font-bold">
           {REVIEWS.REVIEW_DETAILS}
         </Heading>
         <Button onClick={onBack} variant="secondary">
           {REVIEWS.BACK_TO_LIST}
         </Button>
-      </div>
+      </Row>
 
       <Card>
-        <div className={THEME_CONSTANTS.spacing.stack}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Stack>
+          <Grid cols={2} gap="md">
             <div>
               <Label className="text-sm font-medium">{REVIEWS.PRODUCT}</Label>
               <Text className="mt-0.5">{review.productName}</Text>
@@ -53,10 +62,9 @@ export function ReviewDetailView({
                 )}
               </Text>
             </div>
-          </div>
+          </Grid>
 
           <div>
-            <Label className="text-sm font-medium">{REVIEWS.RATING}</Label>
             <div className="flex items-center gap-2 mt-1">
               <ReviewStars rating={review.rating} size="md" />
               <Span variant="secondary">({review.rating}/5)</Span>
@@ -68,7 +76,7 @@ export function ReviewDetailView({
             <Text className="mt-1 whitespace-pre-wrap">{review.comment}</Text>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-4">
+          <Grid className="grid-cols-1 sm:grid-cols-2 md:grid-cols-3" gap="md">
             <div>
               <Label className="text-sm font-medium">
                 {UI_LABELS.TABLE.STATUS}
@@ -101,7 +109,7 @@ export function ReviewDetailView({
               <Label className="text-sm font-medium">{REVIEWS.CREATED}</Label>
               <Text className="mt-0.5">{formatDate(review.createdAt)}</Text>
             </div>
-          </div>
+          </Grid>
 
           <div
             className={`flex gap-2 pt-4 border-t ${THEME_CONSTANTS.themed.borderColor}`}
@@ -124,8 +132,8 @@ export function ReviewDetailView({
               {REVIEWS.DELETE}
             </Button>
           </div>
-        </div>
+        </Stack>
       </Card>
-    </div>
+    </Stack>
   );
 }

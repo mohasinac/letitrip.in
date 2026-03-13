@@ -131,7 +131,7 @@ export function TrustFeaturesSection({
             {t("whyChooseUs")}
           </Heading>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
           {TRUST_FEATURES.map((item, index) => (
             <TrustFeatureCard
               key={item.iconName}

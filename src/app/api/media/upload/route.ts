@@ -12,7 +12,11 @@ import { serverLogger } from "@/lib/server-logger";
 import { getStorage } from "@/lib/firebase/admin";
 import { createApiHandler } from "@/lib/api/api-handler";
 import { RateLimitPresets } from "@/lib/security/rate-limit";
-import { formatFileSize } from "@/utils";
+import {
+  formatFileSize,
+  generateMediaFilename,
+  type MediaFilenameContext,
+} from "@/utils";
 
 /**
  * POST /api/media/upload
@@ -24,6 +28,8 @@ import { formatFileSize } from "@/utils";
  * - file: File (required)
  * - folder: string (optional) - Storage folder path
  * - public: boolean (optional) - Make file publicly accessible
+ * - context: string (optional) - JSON-encoded MediaFilenameContext for SEO filename
+ *   e.g. {"type":"product-image","name":"iPhone 15 Pro","category":"Smartphones","store":"TechStore","index":1}
  */
 export const POST = createApiHandler({
   auth: true,
@@ -35,6 +41,7 @@ export const POST = createApiHandler({
     const file = formData.get("file") as File;
     const folder = formData.get("folder") as string | null;
     const isPublic = formData.get("public") === "true";
+    const contextRaw = formData.get("context") as string | null;
 
     // Validate file exists
     if (!file) {
@@ -76,11 +83,39 @@ export const POST = createApiHandler({
       });
     }
 
-    // Generate cryptographically secure unique filename
-    const timestamp = Date.now();
-    const randomString = randomBytes(6).toString("hex"); // 12 hex chars, crypto-safe
-    const extension = detected.ext;
-    const filename = `${timestamp}-${randomString}.${extension}`;
+    // Generate SEO-friendly filename when context is supplied, otherwise
+    // fall back to a cryptographically random name (safe for anonymous uploads).
+    let filename: string;
+    if (contextRaw) {
+      let ctx: MediaFilenameContext | null = null;
+      try {
+        ctx = JSON.parse(contextRaw) as MediaFilenameContext;
+      } catch {
+        // Malformed context — fall back silently; no sensitive info leaked
+      }
+      if (ctx && typeof ctx === "object" && "type" in ctx) {
+        // Force the correct extension from the server-detected MIME type
+        const mimeToExt: Record<string, string> = {
+          "image/jpeg": "jpg",
+          "image/jpg": "jpg",
+          "image/png": "png",
+          "image/gif": "gif",
+          "image/webp": "webp",
+          "video/mp4": "mp4",
+          "video/webm": "webm",
+          "video/quicktime": "mov",
+        };
+        const detectedExt = mimeToExt[detectedMime] ?? detected.ext;
+        // Inject the server-verified extension into the context
+        filename = generateMediaFilename({ ...ctx, ext: detectedExt });
+      } else {
+        const randomString = randomBytes(6).toString("hex");
+        filename = `${Date.now()}-${randomString}.${detected.ext}`;
+      }
+    } else {
+      const randomString = randomBytes(6).toString("hex");
+      filename = `${Date.now()}-${randomString}.${detected.ext}`;
+    }
 
     // Determine storage path
     const basePath = folder || "uploads";

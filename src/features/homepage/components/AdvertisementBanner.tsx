@@ -60,7 +60,7 @@ export function AdvertisementBanner({
           <div
             className={`relative overflow-hidden rounded-2xl bg-zinc-900 shadow-xl`}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 min-h-[300px] md:min-h-[360px]">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 min-h-[300px] md:min-h-[360px]">
               {/* Left: editorial image */}
               <div className="relative aspect-[4/3] md:aspect-auto order-last md:order-first min-h-0 md:min-h-[360px]">
                 <MediaImage
@@ -187,7 +187,7 @@ export function AdvertisementBanner({
 
               <Text
                 variant="none"
-                className="text-white/80 text-base md:text-xl mb-10 max-w-2xl mx-auto"
+                className="text-white text-base md:text-xl mb-10 max-w-2xl mx-auto"
               >
                 {subtitle}
               </Text>
@@ -206,7 +206,7 @@ export function AdvertisementBanner({
                   variant="outline"
                   size="lg"
                   onClick={() => router.push(ROUTES.PUBLIC.AUCTIONS)}
-                  className="border-white/40 text-white hover:bg-white/10 font-medium backdrop-blur-sm"
+                  className="bg-transparent border-white/40 text-white hover:bg-white/10 font-medium backdrop-blur-sm"
                 >
                   {t("bannerSecondaryCta")}
                 </Button>

@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl";
 import {
   Checkbox,
   FormField,
+  Grid,
   ImageUpload,
   Label,
   MediaImage,
@@ -82,7 +83,12 @@ export function CategoryForm({
       {!isReadonly && (
         <ImageUpload
           currentImage={category.display?.coverImage}
-          onUpload={(file) => upload(file, "categories")}
+          onUpload={(file) =>
+            upload(file, "categories", true, {
+              type: "category-image",
+              name: category.name || "category",
+            })
+          }
           onChange={(url) =>
             update({ display: { ...category.display, coverImage: url } })
           }
@@ -123,7 +129,7 @@ export function CategoryForm({
         ]}
       />
 
-      <div className="grid grid-cols-2 gap-4">
+      <Grid className="grid-cols-2" gap="md">
         <Checkbox
           checked={category.isActive || false}
           onChange={(e) => update({ isActive: e.target.checked })}
@@ -144,7 +150,7 @@ export function CategoryForm({
           disabled={isReadonly}
           label={LABELS.IS_BRAND}
         />
-      </div>
+      </Grid>
 
       <FormField
         name="order"

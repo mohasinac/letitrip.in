@@ -75,6 +75,8 @@ Progress shown via `StepperNav`.
 
 - Renders `AddressSelectorCreate` — select saved address or add new inline
 - Validates a delivery address is selected before proceeding
+- Detects third-party addresses (recipient name differs from the account holder) and triggers the consent OTP flow before allowing the step to advance
+- Shows `ConsentOtpModal` when consent is required; shows `PartialOrderDialog` when a prior partial order occurred
 
 ### `CheckoutOrderReview`
 
@@ -96,6 +98,27 @@ On "Place Order":
 1. `POST /api/payment/create-order` — creates Razorpay order ID
 2. Razorpay checkout opens
 3. On payment success: `POST /api/payment/verify` — verifies signature, creates order in Firestore, clears cart
+
+### `ConsentOtpModal`
+
+Email OTP verification required when shipping to a third-party address:
+
+1. Calls `sendConsentOtpAction(addressId)` to email a 6-digit code to the account's email
+2. User enters the code; calls `verifyConsentOtpAction(addressId, code)`
+3. On success the checkout step proceeds; on failure shows attempt count / error
+4. Respects the 15-min cooldown — shows a countdown timer when resend is blocked
+5. Can be re-triggered up to 3 times via bypass credits after a partial order
+
+**Types:** `ConsentOtpModalProps`
+
+### `PartialOrderDialog`
+
+Shown after `POST /api/checkout` returns `unavailableItems` (some products were out of stock mid-transaction). Lets the buyer decide to:
+
+- **Proceed** — place the order with only the available items (granting one bypass credit)
+- **Cancel** — return to cart to adjust quantities
+
+**Types:** `PartialOrderDialogProps`, `UnavailableItem`
 
 ### `CheckoutOtpModal`
 
@@ -182,6 +205,41 @@ When a cart contains items from multiple sellers, the cart is split into separat
 | `POST /api/payment/webhook`      | Razorpay webhook (payment.captured, payment.failed) |
 
 Hook: `useRazorpay` loads the Razorpay script and opens the checkout widget.
+
+---
+
+## Consent OTP Lib — `src/lib/consent-otp.ts`
+
+Shared module used by the send route, verify route, checkout route, and checkout actions. Single source of truth — never duplicate these in consumer files.
+
+### Constants
+
+| Export                           | Value      | Description                                 |
+| -------------------------------- | ---------- | ------------------------------------------- |
+| `CONSENT_OTP_EXPIRY_MS`          | 10 min     | OTP validity window (milliseconds)          |
+| `CONSENT_OTP_EXPIRY_MINUTES`     | 10         | Expiry in minutes (used in email body text) |
+| `CONSENT_OTP_COOLDOWN_MS`        | 15 min     | Per-user send cooldown (milliseconds)       |
+| `CONSENT_OTP_MAX_BYPASS_CREDITS` | 3          | Max partial-order cooldown bypasses         |
+| `CONSENT_OTP_MAX_ATTEMPTS`       | 5          | Max failed verification attempts per OTP    |
+| `CONSENT_OTP_VERIFY_RATE_LIMIT`  | 10 / 5 min | Upstash rate limit for verify endpoint      |
+
+### Path Helpers
+
+| Export                              | Returns             | Description                            |
+| ----------------------------------- | ------------------- | -------------------------------------- |
+| `consentOtpRef(db, uid, addressId)` | `DocumentReference` | `users/{uid}/consentOtps/{addressId}`  |
+| `consentOtpRateLimitRef(db, uid)`   | `DocumentReference` | `users/{uid}/consentOtpRateLimit/meta` |
+
+### Utilities
+
+| Export                                                | Description                                                  |
+| ----------------------------------------------------- | ------------------------------------------------------------ |
+| `hashOtp(code)`                                       | HMAC-SHA256 hash of a code (key from `CONSENT_OTP_HMAC_KEY`) |
+| `generateOtpCode()`                                   | Random 6-digit string                                        |
+| `maskEmail(email)`                                    | Obfuscates email for display (`j***e@example.com`)           |
+| `buildConsentOtpEmail(recipientName, code, siteName)` | Returns `{ subject, html }` for the consent email            |
+
+---
 
 ### Pre-Order Deposit
 

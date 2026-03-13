@@ -10,7 +10,7 @@
  * - Response-level metrics tracking (response time, error rate)
  */
 
-import { productRepository, categoriesRepository } from "@/repositories";
+import { productRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { slugify } from "@/utils";
 import { errorResponse, successResponse } from "@/lib/api-response";
@@ -130,9 +130,9 @@ export const GET = createApiHandler({
  * - video: object (optional)
  * - ... (see ProductDocument interface)
  *
- * Ã¢Å“â€¦ Requires seller/moderator/admin authentication via requireRoleFromRequest * Ã¢Å„â¦ Requires verified email for sellers (403 EMAIL_NOT_VERIFIED if unverified) * Ã¢Å“â€¦ Validates body with productCreateSchema (Zod)
- * Ã¢Å“â€¦ Creates product via productRepository.create() with status='draft'
- * Ã¢Å“â€¦ Returns created product with 201 status
+ * ✅ Requires seller/moderator/admin authentication via requireRoleFromRequest * ✅ Requires verified email for sellers (403 EMAIL_NOT_VERIFIED if unverified) * ✅ Validates body with productCreateSchema (Zod)
+ * ✅ Creates product via productRepository.create() with status='draft'
+ * ✅ Returns created product with 201 status
  * NOTE: Images are pre-uploaded via /api/media/upload before product creation
  * ✅ Generates SEO-friendly slug from title (e.g. "vintage-camera-1700000000000")
  * ✅ Sends fire-and-forget admin notification email on successful submission
@@ -165,21 +165,9 @@ export const POST = createApiHandler<(typeof productCreateSchema)["_output"]>({
     }).catch((err) =>
       serverLogger.error(ERROR_MESSAGES.API.PRODUCTS_POST_ERROR, { err }),
     );
-    // Update category metrics fire-and-forget (must not block the response)
-    const isAuction = body!.isAuction ?? false;
-    categoriesRepository
-      .updateMetrics(
-        body!.category,
-        isAuction ? 0 : 1,
-        isAuction ? 1 : 0,
-        product.id,
-      )
-      .catch((err) =>
-        serverLogger.error(
-          "Failed to update category metrics on product create",
-          { err },
-        ),
-      );
+    // NOTE: Category metrics and store stats are maintained by the
+    // onProductWrite Cloud Function trigger, which fires when the product
+    // status transitions to "published". Draft products are not counted.
     return successResponse(product, SUCCESS_MESSAGES.PRODUCT.CREATED, 201);
   },
 });

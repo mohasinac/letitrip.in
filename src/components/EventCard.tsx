@@ -120,7 +120,7 @@ export function EventCard({
               aria-label={`Select ${event.title}`}
               checked={!!selected}
               onChange={(e) => onSelect?.(event.id, e.target.checked)}
-              className="bg-white/80"
+              className={THEME_CONSTANTS.accentBanner.imageCheckbox}
             />
           </div>
         )}
@@ -207,7 +207,7 @@ export function EventCard({
           <div className="mt-auto pt-2">
             <TextLink
               href={ROUTES.PUBLIC.EVENT_DETAIL(event.id)}
-              className="inline-flex w-full items-center justify-center px-4 py-2 rounded-xl bg-primary-500 hover:bg-primary-600 active:scale-95 text-white text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+              className="inline-flex w-full items-center justify-center px-4 py-2 rounded-xl bg-primary-700 hover:bg-primary-800 active:scale-95 text-white text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-700"
             >
               {t("visitEvent")}
             </TextLink>

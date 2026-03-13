@@ -9,7 +9,7 @@
 
 "use client";
 
-import { Checkbox, FormField, Label, Textarea } from "@/components";
+import { Checkbox, FormField, Grid, Label, Textarea } from "@/components";
 import { RichTextEditor } from "./RichTextEditor";
 import { THEME_CONSTANTS } from "@/constants";
 import { proseMirrorToHtml } from "@/utils";
@@ -101,7 +101,7 @@ function CarouselConfigFields({
 
       {/* Items per view — reviews only */}
       {hasItemsPerView && (
-        <div className="grid grid-cols-2 gap-4">
+        <Grid className="grid-cols-2" gap="md">
           <FormField
             name="itemsPerView"
             label={t("formItemsPerView")}
@@ -120,11 +120,11 @@ function CarouselConfigFields({
             }
             disabled={isReadonly}
           />
-        </div>
+        </Grid>
       )}
 
       {/* Auto scroll + interval */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Grid cols={2} gap="md">
         <div className="flex items-end pb-1">
           <Checkbox
             label={t("formAutoScroll")}
@@ -143,7 +143,7 @@ function CarouselConfigFields({
             disabled={isReadonly}
           />
         )}
-      </div>
+      </Grid>
     </div>
   );
 }
@@ -212,7 +212,7 @@ export function SectionForm({
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Grid cols={2} gap="md">
         <FormField
           name="order"
           label={t("formOrder")}
@@ -230,7 +230,7 @@ export function SectionForm({
             disabled={isReadonly}
           />
         </div>
-      </div>
+      </Grid>
 
       <div>
         <Label className={`block ${typography.label} mb-2`}>

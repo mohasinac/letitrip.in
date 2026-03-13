@@ -15,6 +15,7 @@ import {
   Card,
   Button,
   FormField,
+  Grid,
   Alert,
   Text,
   Heading,
@@ -200,7 +201,7 @@ function PickupAddressForm({
         value={form.name}
         onChange={(v) => set("name", v)}
       />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Grid cols={2} gap="md">
         <FormField
           type="email"
           name="pickupEmail"
@@ -215,7 +216,7 @@ function PickupAddressForm({
           value={form.phone}
           onChange={(v) => set("phone", v)}
         />
-      </div>
+      </Grid>
       <FormField
         type="text"
         name="address"
@@ -230,7 +231,7 @@ function PickupAddressForm({
         value={form.address2}
         onChange={(v) => set("address2", v)}
       />
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <Grid cols={3} gap="md">
         <FormField
           type="text"
           name="city"
@@ -252,7 +253,7 @@ function PickupAddressForm({
           value={form.pincode}
           onChange={(v) => set("pincode", v)}
         />
-      </div>
+      </Grid>
       <Button
         variant="primary"
         isLoading={isSaving}
@@ -370,7 +371,7 @@ export function SellerShippingView() {
         <Heading level={3} className="mb-4">
           {t("methodHeading")}
         </Heading>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Grid cols={2} gap="md">
           {(["custom", "shiprocket"] as const).map((method) => (
             <Button
               key={method}
@@ -395,7 +396,7 @@ export function SellerShippingView() {
               </Text>
             </Button>
           ))}
-        </div>
+        </Grid>
       </Card>
 
       {/* Custom shipping config */}

@@ -44,6 +44,45 @@ Before writing ANY markup, check `@/components` first. NEVER write raw `<h1>`–
 | `BlockFooter`          | `<footer>` inside components | NOT the app footer    |
 | `Ul` / `Ol` / `Li`     | `<ul>` / `<ol>` / `<li>`     |                       |
 
+### Layout Primitives (mandatory for all flex / grid / container divs)
+
+NEVER write raw `<div className="flex ...">`, `<div className="grid ...">`, or `<div className="max-w-7xl mx-auto ...">` inline. Use these instead:
+
+| Component   | Replaces                                     | Key props                                                    |
+| ----------- | -------------------------------------------- | ------------------------------------------------------------ |
+| `Container` | `<div className="max-w-7xl mx-auto px-4 …">` | `size` (`sm`\|`md`\|`lg`\|`xl`\|`2xl`\|`full`\|`wide`), `as` |
+| `Stack`     | `<div className="flex flex-col gap-4">`      | `gap`, `align`, `as`                                         |
+| `Row`       | `<div className="flex items-center gap-3">`  | `gap`, `align`, `justify`, `wrap`, `as`                      |
+| `Grid`      | `<div className="grid grid-cols-… gap-4">`   | `cols` (1–6 or named preset), `gap`, `as`                    |
+
+```tsx
+import { Container, Stack, Row, Grid } from '@/components';
+
+// Page wrapper
+<Container size="2xl">…</Container>
+
+// Responsive product grid
+<Grid cols={4} gap="md">…</Grid>
+
+// Header row with title + action button
+<Row justify="between" gap="sm">
+  <Heading level={2}>Title</Heading>
+  <Button>Add new</Button>
+</Row>
+
+// Vertical form fields
+<Stack gap="sm">
+  <FormField …>
+  <FormField …>
+</Stack>
+```
+
+**`gap` token values:** `none` · `px` · `xs` (`gap-1`) · `sm` (`gap-2`) · `md` (`gap-4`) · `lg` (`gap-6`) · `xl` (`gap-8`) · `2xl` (`gap-12`)
+**`Container size` values:** `sm` (max-w-3xl) · `md` (max-w-4xl) · `lg` (max-w-5xl) · `xl` (max-w-6xl) · `2xl` (max-w-7xl, default) · `full` / `wide` (max-w-screen-2xl)
+**`Grid cols` named presets:** `halves` · `sidebar` · `sidebarRight` · `sidebarWide` · `twoThird` · `oneThird` · `autoSm` · `autoMd` · `autoLg`
+
+Raw gap tokens are also available as `THEME_CONSTANTS.spacing.gap.md` etc.
+
 ### Other Key Components
 
 `Card`, `Badge`, `StatusBadge`, `RoleBadge`, `Alert`, `Modal`, `ConfirmDeleteModal` (prop `variant?: "danger"|"warning"|"primary"`), `ImageCropModal`, `Tooltip`, `Divider`, `LoadingSpinner`, `Skeleton`, `EmptyState`, `SideDrawer`, `BackToTop`, `LocaleSwitcher`, `AvatarDisplay`, `AvatarUpload`, `ImageUpload`, `MediaUploadField`, `PasswordStrengthIndicator`, `ErrorBoundary`, `ResponsiveView`, `HorizontalScroller` (carousel/tab strips), `SectionCarousel` (section with heading + HorizontalScroller), `RichTextEditor`, `Progress`, `Tabs`, `SectionTabs`, `Accordion`, `RatingDisplay`, `AdminPageHeader`, `AdminFilterBar`, `DrawerFormFooter`, `AddressForm`, `SkipToMain`, `ReviewCard`, `ProductActions`, `ProductFeatureBadges`

@@ -10,20 +10,16 @@ import type {
 } from "@/db/schema";
 import { EVENT_FIELDS, EVENT_ENTRY_FIELDS } from "@/db/schema";
 
-// Helper type that accepts Date for Timestamp fields (converted at seed time)
-type EventSeed = Omit<
-  EventDocument,
-  "startsAt" | "endsAt" | "createdAt" | "updatedAt"
-> & { startsAt: Date; endsAt: Date; createdAt: Date; updatedAt: Date };
-
-type EventEntrySeed = Omit<EventEntryDocument, "submittedAt" | "reviewedAt"> & {
-  submittedAt: Date;
-  reviewedAt?: Date;
-};
+// ─── Dynamic date helpers ───────────────────────────────────────────────────
+const NOW = new Date();
+const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
+const daysAhead = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
+const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000);
+const hoursAhead = (h: number) => new Date(NOW.getTime() + h * 3_600_000);
 
 // ── Events ────────────────────────────────────────────────────────────────────
 
-export const eventsSeedData: EventSeed[] = [
+export const eventsSeedData: EventDocument[] = [
   // 1. Ended Sale Event — Anime Winter Season Sale
   {
     id: "event-anime-winter-season-sale-2026-sale",
@@ -32,8 +28,8 @@ export const eventsSeedData: EventSeed[] = [
     description:
       "<p>Celebrate the end of the Winter anime season with a <strong>flat 20% discount</strong> across all collectibles, figures, and cosplay. Limited-time offer — sale ends 26 Jan at midnight.</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ENDED,
-    startsAt: new Date("2026-01-24T00:00:00Z"),
-    endsAt: new Date("2026-01-26T23:59:59Z"),
+    startsAt: daysAgo(45),
+    endsAt: daysAgo(43),
     coverImageUrl: "https://picsum.photos/seed/anime-winter-sale/1200/400",
     saleConfig: {
       discountPercent: 20,
@@ -46,8 +42,8 @@ export const eventsSeedData: EventSeed[] = [
       flaggedEntries: 0,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-01-20T10:00:00Z"),
-    updatedAt: new Date("2026-01-27T00:05:00Z"),
+    createdAt: daysAgo(49),
+    updatedAt: daysAgo(42),
   },
 
   // 2. Active Offer Event — AniCon 2026 Coupon Drop
@@ -58,8 +54,8 @@ export const eventsSeedData: EventSeed[] = [
     description:
       "<p>Celebrating AniCon 2026! Use code <strong>ANIMECON15</strong> to get an extra 15% off any order. Valid on all orders over ₹999 — stack it on top of sale prices!</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
-    startsAt: new Date("2026-03-01T00:00:00Z"),
-    endsAt: new Date("2026-03-15T23:59:59Z"),
+    startsAt: daysAgo(5),
+    endsAt: daysAhead(9),
     coverImageUrl: "https://picsum.photos/seed/animecon-2026-offer/1200/400",
     offerConfig: {
       couponId: "coupon-ANIMECON15",
@@ -72,8 +68,8 @@ export const eventsSeedData: EventSeed[] = [
       flaggedEntries: 0,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-02-22T10:00:00Z"),
-    updatedAt: new Date("2026-02-22T10:00:00Z"),
+    createdAt: daysAgo(12),
+    updatedAt: daysAgo(12),
   },
 
   // 3. Ended Poll — Anime Franchise Features
@@ -84,8 +80,8 @@ export const eventsSeedData: EventSeed[] = [
     description:
       "<p>We want to feature the franchise YOU love most in March. Cast your vote and shape what drops on the LetItRip homepage next month — new figures, exclusive cosplay, and special auction lots!</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ENDED,
-    startsAt: new Date("2026-02-15T00:00:00Z"),
-    endsAt: new Date("2026-02-28T23:59:59Z"),
+    startsAt: daysAgo(22),
+    endsAt: daysAgo(9),
     pollConfig: {
       allowMultiSelect: false,
       allowComment: true,
@@ -105,8 +101,8 @@ export const eventsSeedData: EventSeed[] = [
       flaggedEntries: 0,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-02-10T14:00:00Z"),
-    updatedAt: new Date("2026-02-27T20:00:00Z"),
+    createdAt: daysAgo(27),
+    updatedAt: daysAgo(10),
   },
 
   // 4. Ended Survey — Product Feedback Survey
@@ -117,8 +113,8 @@ export const eventsSeedData: EventSeed[] = [
     description:
       "<p>Share your honest feedback about LetItRip and be entered into a draw to <strong>win a ₹500 shopping voucher</strong>. Takes 3 minutes — we promise.</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ENDED,
-    startsAt: new Date("2026-01-01T00:00:00Z"),
-    endsAt: new Date("2026-01-31T23:59:59Z"),
+    startsAt: daysAgo(68),
+    endsAt: daysAgo(37),
     surveyConfig: {
       requireLogin: true,
       maxEntriesPerUser: 1,
@@ -166,8 +162,8 @@ export const eventsSeedData: EventSeed[] = [
       flaggedEntries: 12,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2025-12-28T10:00:00Z"),
-    updatedAt: new Date("2026-02-01T09:00:00Z"),
+    createdAt: daysAgo(72),
+    updatedAt: daysAgo(36),
   },
 
   // 5. Active Feedback Event — anonymous contact form
@@ -178,8 +174,8 @@ export const eventsSeedData: EventSeed[] = [
     description:
       "<p>Selling on LetItRip? We'd love your feedback. This anonymous form takes 2 minutes and every response is reviewed by our product team.</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
-    startsAt: new Date("2026-02-01T00:00:00Z"),
-    endsAt: new Date("2026-04-30T23:59:59Z"),
+    startsAt: daysAgo(36),
+    endsAt: daysAhead(52),
     feedbackConfig: {
       anonymous: true,
       formFields: [
@@ -217,8 +213,8 @@ export const eventsSeedData: EventSeed[] = [
       flaggedEntries: 0,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-01-28T11:00:00Z"),
-    updatedAt: new Date("2026-02-27T16:00:00Z"),
+    createdAt: daysAgo(40),
+    updatedAt: daysAgo(10),
   },
 
   // 6. Active Sale — Spring Otaku Sale 15% off all collectibles
@@ -229,8 +225,8 @@ export const eventsSeedData: EventSeed[] = [
     description:
       "<p>Spring season is here and so are new anime releases! Grab <strong>15% off</strong> all figures, cosplay, Nendoroids, and Gunpla kits. Valid 8–10 March 2026 only.</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
-    startsAt: new Date("2026-03-08T00:00:00Z"),
-    endsAt: new Date("2026-03-10T23:59:59Z"),
+    startsAt: daysAgo(1),
+    endsAt: daysAhead(1),
     coverImageUrl: "https://picsum.photos/seed/spring-otaku-sale/1200/400",
     saleConfig: {
       discountPercent: 15,
@@ -243,8 +239,8 @@ export const eventsSeedData: EventSeed[] = [
       flaggedEntries: 0,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-03-01T10:00:00Z"),
-    updatedAt: new Date("2026-03-01T10:00:00Z"),
+    createdAt: daysAgo(8),
+    updatedAt: daysAgo(8),
   },
 
   // 7. Draft Sale — Summer Anime Season Sale (future)
@@ -255,8 +251,8 @@ export const eventsSeedData: EventSeed[] = [
     description:
       "<p>Get ready for our biggest otaku sale of the year! Enjoy <strong>up to 40% off</strong> exclusive figures, pre-orders, Gunpla, and cosplay across LetItRip. Mark your calendars — 1–10 July 2026.</p>",
     status: EVENT_FIELDS.STATUS_VALUES.DRAFT,
-    startsAt: new Date("2026-07-01T00:00:00Z"),
-    endsAt: new Date("2026-07-10T23:59:59Z"),
+    startsAt: daysAhead(115),
+    endsAt: daysAhead(124),
     coverImageUrl:
       "https://picsum.photos/seed/summer-anime-season-sale/1200/400",
     saleConfig: {
@@ -270,8 +266,8 @@ export const eventsSeedData: EventSeed[] = [
       flaggedEntries: 0,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-03-15T09:00:00Z"),
-    updatedAt: new Date("2026-03-15T09:00:00Z"),
+    createdAt: daysAgo(1),
+    updatedAt: daysAgo(1),
   },
 
   // 8. Active Offer — Golden Week Anime Special
@@ -282,8 +278,8 @@ export const eventsSeedData: EventSeed[] = [
     description:
       "<p>Celebrate Golden Week with otaku deals! Use code <strong>GOLDENWEEK10</strong> at checkout to get 10% off all pre-orders, scale figures, and Gunpla kits. Valid on orders over ₹500.</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
-    startsAt: new Date("2026-04-29T00:00:00Z"),
-    endsAt: new Date("2026-05-05T23:59:59Z"),
+    startsAt: daysAgo(2),
+    endsAt: daysAhead(5),
     coverImageUrl: "https://picsum.photos/seed/golden-week-anime/1200/400",
     offerConfig: {
       couponId: "coupon-GOLDENWEEK10",
@@ -297,8 +293,8 @@ export const eventsSeedData: EventSeed[] = [
       flaggedEntries: 0,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-03-20T10:00:00Z"),
-    updatedAt: new Date("2026-03-20T10:00:00Z"),
+    createdAt: daysAgo(10),
+    updatedAt: daysAgo(10),
   },
 
   // 9. Active Poll — Favourite Anime Figure Manufacturer
@@ -309,8 +305,8 @@ export const eventsSeedData: EventSeed[] = [
     description:
       "<p>Which figure manufacturer do you trust most? Cast your vote and see live results — everyone can see the tally as it updates in real time!</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
-    startsAt: new Date("2026-03-01T00:00:00Z"),
-    endsAt: new Date("2026-04-30T23:59:59Z"),
+    startsAt: daysAgo(8),
+    endsAt: daysAhead(52),
     coverImageUrl:
       "https://picsum.photos/seed/figure-manufacturer-poll/1200/400",
     pollConfig: {
@@ -332,8 +328,8 @@ export const eventsSeedData: EventSeed[] = [
       flaggedEntries: 0,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-02-25T14:00:00Z"),
-    updatedAt: new Date("2026-03-10T11:00:00Z"),
+    createdAt: daysAgo(12),
+    updatedAt: daysAgo(1),
   },
 
   // 10. Active Survey — Shopping Experience with leaderboard + points
@@ -344,8 +340,8 @@ export const eventsSeedData: EventSeed[] = [
     description:
       "<p>Complete this short survey and earn <strong>Stars</strong> on our leaderboard. Top contributors each month win exclusive LetItRip rewards!</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
-    startsAt: new Date("2026-04-01T00:00:00Z"),
-    endsAt: new Date("2026-06-30T23:59:59Z"),
+    startsAt: daysAgo(5),
+    endsAt: daysAhead(83),
     coverImageUrl:
       "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&h=400&fit=crop",
     surveyConfig: {
@@ -416,8 +412,8 @@ export const eventsSeedData: EventSeed[] = [
       flaggedEntries: 0,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-03-25T09:00:00Z"),
-    updatedAt: new Date("2026-04-12T16:00:00Z"),
+    createdAt: daysAgo(14),
+    updatedAt: hoursAgo(12),
   },
 
   // 11. Active Feedback — App Experience (non-anonymous)
@@ -428,8 +424,8 @@ export const eventsSeedData: EventSeed[] = [
     description:
       "<p>Tell us what you think about the LetItRip app. Your named feedback helps our team prioritise improvements — thank you for taking a moment!</p>",
     status: EVENT_FIELDS.STATUS_VALUES.ACTIVE,
-    startsAt: new Date("2026-04-01T00:00:00Z"),
-    endsAt: new Date("2026-06-30T23:59:59Z"),
+    startsAt: daysAgo(5),
+    endsAt: daysAhead(83),
     coverImageUrl:
       "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&h=400&fit=crop",
     feedbackConfig: {
@@ -475,14 +471,14 @@ export const eventsSeedData: EventSeed[] = [
       flaggedEntries: 0,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-03-25T09:00:00Z"),
-    updatedAt: new Date("2026-04-15T12:00:00Z"),
+    createdAt: daysAgo(14),
+    updatedAt: hoursAgo(8),
   },
 ];
 
 // ── Event Entries ─────────────────────────────────────────────────────────────
 
-export const eventEntriesSeedData: EventEntrySeed[] = [
+export const eventEntriesSeedData: EventEntryDocument[] = [
   // Poll votes — anime franchise poll
   {
     id: "entry-poll-franchise-john-one-piece",
@@ -494,7 +490,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     pollComment:
       "One Piece has so many incredible figures and the Going Merry model is stunning!",
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
-    submittedAt: new Date("2026-02-16T10:12:00Z"),
+    submittedAt: daysAgo(20),
   },
   {
     id: "entry-poll-franchise-jane-demon-slayer",
@@ -504,7 +500,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     userEmail: "jane@letitrip.in",
     pollVotes: ["opt-demon-slayer"],
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
-    submittedAt: new Date("2026-02-17T14:30:00Z"),
+    submittedAt: daysAgo(19),
   },
   {
     id: "entry-poll-franchise-mike-jjk",
@@ -516,7 +512,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     pollComment:
       "JJK figures have the best sculpts right now — Sukuna and Gojo both look incredible.",
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
-    submittedAt: new Date("2026-02-18T09:05:00Z"),
+    submittedAt: daysAgo(18),
   },
 
   // Survey responses
@@ -532,7 +528,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
       "sf-improve": "Faster search filters would be great.",
     },
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
-    submittedAt: new Date("2026-01-10T11:00:00Z"),
+    submittedAt: daysAgo(60),
   },
   {
     id: "entry-survey-platform-jane",
@@ -546,7 +542,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
       "sf-improve": "Would love a wishlist sharing feature.",
     },
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
-    submittedAt: new Date("2026-01-15T15:30:00Z"),
+    submittedAt: daysAgo(55),
   },
 
   // Feedback (anonymous)
@@ -560,7 +556,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
         "The dashboard is quite good. Would love bulk image upload.",
     },
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
-    submittedAt: new Date("2026-02-10T08:45:00Z"),
+    submittedAt: daysAgo(30),
   },
   {
     id: "entry-feedback-seller-anon-2",
@@ -571,7 +567,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
       "fb-comment": "Payout is a bit slow. 5 days feels long for small orders.",
     },
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
-    submittedAt: new Date("2026-02-14T12:20:00Z"),
+    submittedAt: daysAgo(26),
   },
   {
     id: "entry-feedback-seller-anon-flagged",
@@ -583,9 +579,9 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     },
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.FLAGGED,
     reviewedBy: "user-admin-user-admin",
-    reviewedAt: new Date("2026-02-15T10:00:00Z"),
+    reviewedAt: daysAgo(25),
     reviewNote: "Spam submission — flagged",
-    submittedAt: new Date("2026-02-15T09:55:00Z"),
+    submittedAt: daysAgo(25),
   },
 
   // Figure Manufacturer Poll votes — event-best-anime-figures-brand-poll-2026-poll (#9)
@@ -597,7 +593,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     userEmail: "john@letitrip.in",
     pollVotes: ["opt-gsc"],
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
-    submittedAt: new Date("2026-03-02T10:00:00Z"),
+    submittedAt: daysAgo(7),
   },
   {
     id: "entry-poll-brand-jane-alter",
@@ -607,7 +603,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     userEmail: "jane@letitrip.in",
     pollVotes: ["opt-alter"],
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
-    submittedAt: new Date("2026-03-03T14:22:00Z"),
+    submittedAt: daysAgo(6),
   },
   {
     id: "entry-poll-brand-mike-kotobukiya",
@@ -617,7 +613,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     userEmail: "mike@letitrip.in",
     pollVotes: ["opt-kotobukiya"],
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
-    submittedAt: new Date("2026-03-04T09:10:00Z"),
+    submittedAt: daysAgo(5),
   },
   {
     id: "entry-poll-brand-animecraft-bandai",
@@ -627,7 +623,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     userEmail: "fashionb@letitrip.in",
     pollVotes: ["opt-bandai"],
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
-    submittedAt: new Date("2026-03-05T16:45:00Z"),
+    submittedAt: daysAgo(4),
   },
 
   // Survey responses — event-shopping-experience-survey-2026-survey (#10)
@@ -647,10 +643,10 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
     },
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
     reviewedBy: "user-admin-user-admin",
-    reviewedAt: new Date("2026-04-10T10:00:00Z"),
+    reviewedAt: daysAgo(2),
     reviewNote: "Well-written response — awarded full Stars",
     points: 95,
-    submittedAt: new Date("2026-04-05T11:30:00Z"),
+    submittedAt: daysAgo(3),
   },
   {
     id: "entry-survey-shopping-jane",
@@ -667,7 +663,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
         "A size guide comparison tool for cosplay items across different sellers would be incredibly helpful.",
     },
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.PENDING,
-    submittedAt: new Date("2026-04-08T15:00:00Z"),
+    submittedAt: daysAgo(2),
   },
 
   // App feedback — event-app-experience-feedback-2026-feedback (#11)
@@ -685,7 +681,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
         "Love how fast searches load. The filter panel is intuitive.",
     },
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
-    submittedAt: new Date("2026-04-03T09:15:00Z"),
+    submittedAt: daysAgo(4),
   },
   {
     id: "entry-feedback-app-mike",
@@ -701,7 +697,7 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
         "Occasionally slow on category pages with lots of products.",
     },
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
-    submittedAt: new Date("2026-04-06T13:40:00Z"),
+    submittedAt: daysAgo(3),
   },
   {
     id: "entry-feedback-app-priya",
@@ -717,6 +713,6 @@ export const eventEntriesSeedData: EventEntrySeed[] = [
         "Love the auction feature! Wish there were more live auctions.",
     },
     reviewStatus: EVENT_ENTRY_FIELDS.REVIEW_STATUS_VALUES.APPROVED,
-    submittedAt: new Date("2026-04-09T17:05:00Z"),
+    submittedAt: daysAgo(1),
   },
 ];

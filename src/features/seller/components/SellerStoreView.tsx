@@ -18,6 +18,7 @@ import {
   Alert,
   Button,
   FormField,
+  Grid,
   Toggle,
   Heading,
   Text,
@@ -37,7 +38,7 @@ import type { StoreDocument } from "@/db/schema";
 
 const { themed, spacing, flex } = THEME_CONSTANTS;
 
-// â”€â”€â”€ Form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Form state ───────────────────────────────────────────────────────────────
 
 interface StoreFormState {
   storeName: string;
@@ -101,7 +102,7 @@ function storeToForm(store: StoreDocument): StoreFormState {
   };
 }
 
-// â”€â”€â”€ Status badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Status badge ─────────────────────────────────────────────────────────────
 
 const STATUS_COLORS: Record<StoreDocument["status"], string> = {
   pending:
@@ -128,7 +129,7 @@ function StatusBadge({
   );
 }
 
-// â”€â”€â”€ Main view â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main view ────────────────────────────────────────────────────────────────
 
 export function SellerStoreView() {
   const router = useRouter();
@@ -201,12 +202,12 @@ export function SellerStoreView() {
     );
   }
 
-  // â”€â”€ No store yet â†’ show setup flow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── No store yet â†’ show setup flow ────────────────────────────────────────
   if (!store) {
     return <SellerStoreSetupView />;
   }
 
-  // â”€â”€ Store exists â†’ full edit form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Store exists â†’ full edit form ─────────────────────────────────────────
 
   const statusLabel = {
     pending: t("statusPending"),
@@ -239,7 +240,7 @@ export function SellerStoreView() {
 
       {saveError && <Alert variant="error">{saveError}</Alert>}
 
-      {/* â”€â”€ Store Details â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Store Details ─────────────────────────────────────── */}
       <Card>
         <div className={spacing.stack}>
           <div className={`${flex.between} gap-4`}>
@@ -303,7 +304,7 @@ export function SellerStoreView() {
             helpText={t("bioHelp")}
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Grid cols={2} gap="md">
             <FormField
               name="storeLogoURL"
               label={t("storeLogoURL")}
@@ -318,7 +319,7 @@ export function SellerStoreView() {
               onChange={set("storeBannerURL")}
               placeholder="https://..."
             />
-          </div>
+          </Grid>
 
           <div className={flex.between}>
             <div>
@@ -333,7 +334,7 @@ export function SellerStoreView() {
         </div>
       </Card>
 
-      {/* â”€â”€ Contact & Social â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Contact & Social ──────────────────────────────────── */}
       <Card>
         <div className={spacing.stack}>
           <div>
@@ -360,7 +361,7 @@ export function SellerStoreView() {
 
           <Divider />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Grid cols={2} gap="md">
             <FormField
               name="instagram"
               label="Instagram"
@@ -389,11 +390,11 @@ export function SellerStoreView() {
               onChange={set("linkedin")}
               placeholder="https://linkedin.com/in/..."
             />
-          </div>
+          </Grid>
         </div>
       </Card>
 
-      {/* â”€â”€ Store Policies â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Store Policies ────────────────────────────────────── */}
       <Card>
         <div className={spacing.stack}>
           <div>
@@ -425,7 +426,7 @@ export function SellerStoreView() {
         </div>
       </Card>
 
-      {/* â”€â”€ Vacation Mode â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Vacation Mode ─────────────────────────────────────── */}
       <Card>
         <div className={spacing.stack}>
           <div className={flex.between}>
@@ -456,7 +457,7 @@ export function SellerStoreView() {
         </div>
       </Card>
 
-      {/* â”€â”€ Save â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Save ──────────────────────────────────────────────── */}
       <div className="flex justify-end">
         <Button
           type="submit"

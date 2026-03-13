@@ -116,6 +116,13 @@ const HowItWorksSection = dynamic(
     })),
   { ssr: true },
 );
+const NewsletterSection = dynamic(
+  () =>
+    import("@/features/homepage").then((m) => ({
+      default: m.NewsletterSection,
+    })),
+  { ssr: true },
+);
 export default async function Page() {
   const [slides, categories, reviews] = await Promise.all([
     carouselRepository.getActiveSlides().catch(() => []),
@@ -145,6 +152,7 @@ export default async function Page() {
       <CustomerReviewsSection initialReviews={reviews} />
       <WhatsAppCommunitySection />
       <FAQSection />
+      <NewsletterSection />
       <BlogArticlesSection />
       <FeaturedResultsSection />
     </div>

@@ -34,7 +34,7 @@ Main catalogue page view. Renders a filter sidebar + product grid.
 
 ### `ProductGrid`
 
-Responsive grid (`2-col mobile → 4-col desktop`) of `ProductCard` components.
+Responsive grid of `ProductCard` components. Columns: 2 (base) → 3 (sm) → 4 (md/lg) → 5 (xl) → 6 (2xl).
 
 ### `ProductCard`
 

@@ -25,6 +25,10 @@ import type {
   EventUpdateInput,
   EventStatus,
 } from "@/db/schema";
+import {
+  EVENTS_COLLECTION as EVT_COL,
+  EVENT_ENTRIES_COLLECTION as EVT_ENTRIES_COL,
+} from "@/db/schema";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 
@@ -203,9 +207,9 @@ export async function adminUpdateEventEntryAction(
   const { getFirestore } = await import("firebase-admin/firestore");
   const db = getFirestore();
   await db
-    .collection("events")
+    .collection(EVT_COL)
     .doc(eventId)
-    .collection("eventEntries")
+    .collection(EVT_ENTRIES_COL)
     .doc(entryId)
     .update({
       reviewStatus,

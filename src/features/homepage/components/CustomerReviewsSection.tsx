@@ -81,7 +81,10 @@ export function CustomerReviewsSection({
         </div>
 
         {/* Reviews Grid — 3-col on desktop */}
-        <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-6 mb-8">
+        <div
+          key={currentIndex}
+          className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-6 mb-8 animate-in fade-in slide-in-from-bottom-2 duration-300"
+        >
           {visibleReviews.map((review) => (
             <ReviewCard key={review.id} review={review} />
           ))}
@@ -93,10 +96,11 @@ export function CustomerReviewsSection({
             {[...Array(totalGroups)].map((_, i) => (
               <Button
                 key={i}
-                className={`h-2 rounded-full transition-all ${
+                variant="ghost"
+                className={`p-0 !min-h-0 rounded-full transition-all duration-500 ${
                   Math.floor(currentIndex / 3) === i
-                    ? "bg-blue-600 w-8"
-                    : "bg-zinc-300 dark:bg-zinc-600 w-2"
+                    ? "w-8 h-2 bg-primary-600 dark:bg-secondary-500"
+                    : "w-2 h-2 bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400 dark:hover:bg-zinc-500"
                 }`}
                 onClick={() => setCurrentIndex(i * 3)}
                 aria-label={`Go to review group ${i + 1}`}

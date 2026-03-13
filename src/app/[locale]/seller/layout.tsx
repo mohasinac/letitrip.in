@@ -1,11 +1,7 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import { ProtectedRoute, Button } from "@/components";
-import { SellerSidebar } from "@/features/seller";
-import { Menu } from "lucide-react";
-import { useTranslations } from "next-intl";
-import AutoBreadcrumbs from "@/components/layout/AutoBreadcrumbs";
+import { ProtectedRoute, Button, AutoBreadcrumbs, Main } from "@/components";
 
 interface SellerLayoutProps {
   children: ReactNode;
@@ -44,7 +40,7 @@ export default function SellerLayout({ children }: SellerLayoutProps) {
               <AutoBreadcrumbs />
             </div>
           </header>
-          <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
+          <Main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</Main>
         </div>
       </div>
     </ProtectedRoute>

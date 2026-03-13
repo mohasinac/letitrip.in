@@ -1,14 +1,14 @@
 ﻿/**
  * FAQSection Tests
  *
- * FAQSection is now fully static â€” it reads from STATIC_FAQS constants
+ * FAQSection is now fully static — it reads from STATIC_FAQS constants
  * directly (no API/hook calls). Tests verify rendering and accordion behaviour
  * using the real static data.
  */
 import { render, screen, fireEvent } from "@testing-library/react";
 import { FAQSection } from "../FAQSection";
 
-// No API hook mocks needed â€” FAQSection uses static constants only
+// No API hook mocks needed — FAQSection uses static constants only
 
 describe("FAQSection", () => {
   // ====================================

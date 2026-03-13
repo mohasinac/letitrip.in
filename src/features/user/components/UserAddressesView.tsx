@@ -23,17 +23,13 @@ import {
   EmptyState,
   Heading,
   ListingLayout,
+  Row,
   Spinner,
   Text,
 } from "@/components";
 import { AddressCard } from "@/components";
 import { useRouter } from "@/i18n/navigation";
-import {
-  ROUTES,
-  THEME_CONSTANTS,
-  SUCCESS_MESSAGES,
-  ERROR_MESSAGES,
-} from "@/constants";
+import { ROUTES, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import type { Address } from "@/hooks";
 
 export function UserAddressesView() {
@@ -89,9 +85,9 @@ export function UserAddressesView() {
 
   if (authLoading || fetchLoading) {
     return (
-      <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
+      <Row justify="center" gap="none" className="min-h-screen">
         <Spinner size="lg" label={tLoading("default")} />
-      </div>
+      </Row>
     );
   }
 

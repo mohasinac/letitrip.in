@@ -15,7 +15,7 @@ import {
 import { useTranslations } from "next-intl";
 import { usePathname, Link } from "@/i18n/navigation";
 import { Drawer } from "@mohasinac/ui";
-import { MediaAvatar, Span, Text } from "@/components";
+import { MediaAvatar, Span, Text, Nav, Aside } from "@/components";
 import { ROUTES } from "@/constants";
 import { useAuth, useNotifications, useRipCoinBalance } from "@/hooks";
 
@@ -109,7 +109,10 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       )}
 
       {/* Main nav */}
-      <nav className="flex-1 overflow-y-auto py-3 space-y-0.5 px-2">
+      <Nav
+        aria-label="User account navigation"
+        className="flex-1 overflow-y-auto py-3 space-y-0.5 px-2"
+      >
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href);
@@ -136,7 +139,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
             </Link>
           );
         })}
-      </nav>
+      </Nav>
 
       {/* Divider */}
       <div className="h-px mx-4 bg-zinc-200 dark:bg-slate-700" />
@@ -186,9 +189,9 @@ export function UserSidebar({ mobileOpen, onMobileClose }: UserSidebarProps) {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-56 shrink-0 min-h-screen border-r border-zinc-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+      <Aside className="hidden md:flex flex-col w-56 shrink-0 min-h-screen border-r border-zinc-200 dark:border-slate-800 bg-white dark:bg-slate-950">
         <SidebarContent />
-      </aside>
+      </Aside>
 
       {/* Mobile bottom-sheet Drawer */}
       <Drawer

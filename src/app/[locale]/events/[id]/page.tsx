@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { eventRepository } from "@/repositories";
 import { EventDetailView } from "@/features/events";
 import { SITE_CONFIG } from "@/constants";
+import { resolveDate } from "@/utils";
 import type { Metadata } from "next";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://letitrip.in";
@@ -34,18 +35,8 @@ export default async function EventDetailPage({ params }: Props) {
   const event = await eventRepository.findById(id);
   if (!event) notFound();
 
-  const startDate = event.startsAt
-    ? new Date(
-        (event.startsAt as unknown as { toDate?: () => Date }).toDate?.() ??
-          (event.startsAt as unknown as string),
-      ).toISOString()
-    : undefined;
-  const endDate = event.endsAt
-    ? new Date(
-        (event.endsAt as unknown as { toDate?: () => Date }).toDate?.() ??
-          (event.endsAt as unknown as string),
-      ).toISOString()
-    : undefined;
+  const startDate = resolveDate(event.startsAt)?.toISOString();
+  const endDate = resolveDate(event.endsAt)?.toISOString();
 
   const jsonLd = {
     "@context": "https://schema.org",

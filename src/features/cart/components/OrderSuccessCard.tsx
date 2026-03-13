@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Badge, Heading, Text, Caption } from "@/components";
+import { Badge, Grid, Heading, Text, Caption } from "@/components";
 import { useTranslations } from "next-intl";
 import { THEME_CONSTANTS } from "@/constants";
 import { formatCurrency } from "@/utils";
@@ -85,7 +85,7 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
       </div>
 
       {/* Payment & shipping info */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Grid cols={2} gap="md">
         <div
           className={`p-4 ${themed.bgPrimary} rounded-xl border ${themed.border} ${spacing.stack}`}
         >
@@ -110,7 +110,7 @@ export function OrderSuccessCard({ order }: OrderSuccessCardProps) {
           </Caption>
           <Text size="sm">{order.shippingAddress}</Text>
         </div>
-      </div>
+      </Grid>
     </div>
   );
 }

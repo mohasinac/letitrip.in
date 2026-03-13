@@ -62,4 +62,21 @@ export const adminService = {
   /** POST — clear all records from the Algolia pages_nav index */
   algoliaClearPages: () =>
     apiClient.post(API_ENDPOINTS.ADMIN.ALGOLIA_CLEAR_PAGES),
+
+  /** GET — current demo seed collection counts */
+  demoSeedStatus: () => apiClient.get(API_ENDPOINTS.DEMO.SEED_STATUS),
+
+  /** POST — seed or delete demo data */
+  demoSeed: (vars: { action: "load" | "delete"; collections?: string[] }) =>
+    apiClient.post(API_ENDPOINTS.DEMO.SEED, vars),
+
+  /** POST — dev-only: sync or clear Algolia via demo endpoint */
+  algoliaDevSync: (vars: {
+    action: "sync" | "clear";
+    target: "products" | "pages";
+  }) => apiClient.post(API_ENDPOINTS.DEMO.ALGOLIA, vars),
+
+  /** POST — create a product (admin; delegates to the products API route) */
+  createAdminProduct: (input: unknown) =>
+    apiClient.post(API_ENDPOINTS.ADMIN.PRODUCTS, input),
 };

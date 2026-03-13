@@ -186,7 +186,7 @@ Shows:
 ### `SellersListView`
 
 **Route:** `/sellers`  
-Directory of all approved sellers. Cards show store logo, name, rating, and top product count.
+"Become a Seller" marketing landing page. Sections: hero banner with register CTA, platform stats, benefits grid (4 cards), how-it-works steps (3 cards), FAQs accordion, and final CTA.
 
 ---
 

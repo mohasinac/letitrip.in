@@ -1702,6 +1702,28 @@ export const UI_LABELS = {
     VERIFIED_PURCHASE: "Verified",
   },
 
+  // ── Admin Navigation Settings ──────────────────────────────────────────────
+  ADMIN_NAVIGATION: {
+    TITLE: "Navigation Settings",
+    SUBTITLE:
+      "Configure which items appear in the navbar and how the footer looks",
+    NAVBAR_TAB: "Navbar",
+    FOOTER_TAB: "Footer",
+    NAVBAR_SECTION: "Navbar Items",
+    NAVBAR_SECTION_SUBTITLE:
+      "Toggle which pages appear in the main navigation bar",
+    TRUST_BAR_SECTION: "Trust Bar",
+    TRUST_BAR_ENABLED: "Show trust bar",
+    TRUST_BAR_ITEMS: "Trust bar chips",
+    ITEM_ICON: "Icon",
+    ITEM_LABEL: "Label",
+    ITEM_VISIBLE: "Visible",
+    NEWSLETTER_SECTION: "Newsletter",
+    NEWSLETTER_ENABLED: "Show newsletter subscription form",
+    SAVE_SUCCESS: "Navigation settings saved",
+    SAVE_FAILED: "Failed to save navigation settings",
+  },
+
   // ── Admin Analytics ────────────────────────────────────────────────────────
   ADMIN_ANALYTICS: {
     PAGE_TITLE: "Sales Analytics",

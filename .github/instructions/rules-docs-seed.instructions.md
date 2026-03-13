@@ -11,9 +11,9 @@ Whenever you change a schema file, Firestore/Storage/DB rules, or `firestore.ind
 
 ### Trigger Table
 
-| Changed                                        | Update in `scripts/`                          |
+| Changed                                        | Update in `src/db/seed-data/`                 |
 | ---------------------------------------------- | --------------------------------------------- |
-| `src/db/schema/<domain>.ts` — interface/fields | `scripts/seed-data/<domain>-seed-data.ts`     |
+| `src/db/schema/<domain>.ts` — interface/fields | `src/db/seed-data/<domain>-seed-data.ts`      |
 | Collection name constant                       | All seed files referencing it                 |
 | `STATUS_VALUES`/`TYPE_VALUES` enum constants   | All seed objects using those values           |
 | `firestore.rules`                              | Seed data for affected collection             |
@@ -32,13 +32,13 @@ Whenever you change a schema file, Firestore/Storage/DB rules, or `firestore.ind
 
 ### Checklist
 
-- [ ] Updated `scripts/seed-data/<domain>-seed-data.ts`
-- [ ] Updated `scripts/seed-data/RELATIONSHIPS.md` if FK references changed
-- [ ] Updated `scripts/seed-data/index.ts` if new seed file added
-- [ ] Updated `scripts/seed-all-data.ts` if new collection seeded
-- [ ] `npx tsc --noEmit scripts/seed-data/<domain>-seed-data.ts` passes
+- [ ] Updated `src/db/seed-data/<domain>-seed-data.ts`
+- [ ] Updated `src/db/seed-data/RELATIONSHIPS.md` if FK references changed
+- [ ] Updated `src/db/seed-data/index.ts` if new seed file added
+- [ ] Added seeding step in `/api/demo/seed/route.ts` if new collection seeded
+- [ ] `npx tsc --noEmit src/db/seed-data/<domain>-seed-data.ts` passes
 
-When adding a new collection: create `scripts/seed-data/<domain>-seed-data.ts`, export from `scripts/seed-data/index.ts`, add seeding step in `scripts/seed-all-data.ts`.
+When adding a new collection: create `src/db/seed-data/<domain>-seed-data.ts`, export from `src/db/seed-data/index.ts`, add to `CollectionName` type and seed maps in `src/app/api/demo/seed/route.ts`.
 
 ## RULE 30: Docs + CHANGELOG Must Stay in Sync
 

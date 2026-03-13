@@ -7,7 +7,15 @@
 
 "use client";
 
-import { Card, Heading, FormField, Text, Caption, Label } from "@/components";
+import {
+  Card,
+  Heading,
+  FormField,
+  Grid,
+  Text,
+  Caption,
+  Label,
+} from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import type { SiteSettingsDocument } from "@/db/schema";
@@ -115,7 +123,7 @@ export function SiteCommissionsForm({
             <Caption className="font-semibold mb-3 uppercase tracking-wide">
               {t("paymentFeesLabel")}
             </Caption>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Grid cols={2} gap="md">
               <FormField
                 name="razorpayFeePercent"
                 label={t("razorpayFeePercent")}
@@ -132,7 +140,7 @@ export function SiteCommissionsForm({
                 onChange={(v) => updateCommission("codDepositPercent", v)}
                 helpText={t("codDepositHint")}
               />
-            </div>
+            </Grid>
           </div>
 
           {/* Shipping fees */}

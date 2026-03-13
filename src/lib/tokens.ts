@@ -6,8 +6,8 @@
 
 import crypto from "crypto";
 import { getAdminDb } from "@/lib/firebase/admin";
-import { Timestamp } from "firebase-admin/firestore";
 import { TOKEN_CONFIG, ERROR_MESSAGES } from "@/constants";
+import { resolveDate } from "@/utils";
 import {
   EMAIL_VERIFICATION_COLLECTION,
   PASSWORD_RESET_COLLECTION,
@@ -18,13 +18,13 @@ export interface TokenData {
   userId: string;
   email: string;
   token: string;
-  expiresAt: Timestamp | Date;
-  createdAt: Timestamp | Date;
+  expiresAt: Date;
+  createdAt: Date;
 }
 
 export interface PasswordResetTokenData extends TokenData {
   used: boolean;
-  usedAt?: Timestamp | Date;
+  usedAt?: Date;
 }
 
 /**
@@ -115,12 +115,9 @@ export async function verifyEmailToken(token: string): Promise<{
   }
 
   // Check expiration
-  const expiresAt =
-    tokenData.expiresAt instanceof Date
-      ? tokenData.expiresAt
-      : tokenData.expiresAt.toDate();
+  const expiresAt = resolveDate(tokenData.expiresAt);
 
-  if (expiresAt < new Date()) {
+  if (!expiresAt || expiresAt < new Date()) {
     await getAdminDb()
       .collection(EMAIL_VERIFICATION_COLLECTION)
       .doc(token)
@@ -161,12 +158,9 @@ export async function verifyPasswordResetToken(token: string): Promise<{
   }
 
   // Check expiration
-  const expiresAt =
-    tokenData.expiresAt instanceof Date
-      ? tokenData.expiresAt
-      : tokenData.expiresAt.toDate();
+  const expiresAt = resolveDate(tokenData.expiresAt);
 
-  if (expiresAt < new Date()) {
+  if (!expiresAt || expiresAt < new Date()) {
     await getAdminDb()
       .collection(PASSWORD_RESET_COLLECTION)
       .doc(token)

@@ -13,6 +13,7 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActiveFilterChips,
   Button,
+  Container,
   DataTable,
   FilterFacetSection,
   Heading,
@@ -216,7 +217,7 @@ function PreOrdersContent({
 
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
-      <div className={`${THEME_CONSTANTS.page.container["2xl"]} py-8`}>
+      <Container className="py-8">
         <ListingLayout
           headerSlot={
             <div>
@@ -348,7 +349,7 @@ function PreOrdersContent({
             )}
           />
         </ListingLayout>
-      </div>
+      </Container>
     </div>
   );
 }

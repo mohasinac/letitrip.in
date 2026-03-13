@@ -19,6 +19,7 @@ import {
   Badge,
   ConfirmDeleteModal,
   DataTable,
+  Grid,
   Heading,
   Text,
 } from "@/components";
@@ -127,7 +128,10 @@ export function AdminSessionsManager() {
   return (
     <div className="space-y-6">
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
+      <Grid
+        className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4"
+        gap="md"
+      >
         <Card className="p-4">
           <Text variant="secondary" size="sm">
             {t("stats.active")}
@@ -160,7 +164,7 @@ export function AdminSessionsManager() {
             {stats?.totalExpired || 0}
           </Text>
         </Card>
-      </div>
+      </Grid>
 
       {/* Sessions Table */}
       <Card>

@@ -32,9 +32,9 @@ import { invalidateIntegrationKeysCache } from "@/lib/integration-keys";
  *
  * Get global site settings
  *
- * Ã¢Å“â€¦ Fetches settings via siteSettingsRepository.getSingleton()
- * Ã¢Å“â€¦ Returns public fields only for non-admin users (strips emailSettings, legalPages)
- * Ã¢Å“â€¦ Cache-Control headers set (5 min public / no-cache admin)
+ * ✅ Fetches settings via siteSettingsRepository.getSingleton()
+ * ✅ Returns public fields only for non-admin users (strips emailSettings, legalPages)
+ * ✅ Cache-Control headers set (5 min public / no-cache admin)
  * TODO (Future): Support ETag for conditional requests — ✅ Done
  * TODO (Future): Integrate Redis for distributed caching
  */
@@ -109,11 +109,11 @@ export const GET = createApiHandler({
  *
  * Body: Partial<SiteSettingsDocument>
  *
- * Ã¢Å“â€¦ Requires admin authentication via requireRoleFromRequest
- * Ã¢Å“â€¦ Validates body with siteSettingsUpdateSchema (Zod)
- * Ã¢Å“â€¦ Updates via siteSettingsRepository.updateSingleton()
- * Ã¢Å„â¦ Writes audit log entry via serverLogger with changed fields and admin identity
- * Ã¢Å„â¦ Returns updated settings
+ * ✅ Requires admin authentication via requireRoleFromRequest
+ * ✅ Validates body with siteSettingsUpdateSchema (Zod)
+ * ✅ Updates via siteSettingsRepository.updateSingleton()
+ * ✅ Writes audit log entry via serverLogger with changed fields and admin identity
+ * ✅ Returns updated settings
  * TODO (Future): Invalidate distributed caches (Redis)
  * TODO (Future): Send notification to all admins on settings change — ✅ Done
  */

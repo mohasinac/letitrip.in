@@ -27,7 +27,7 @@ export function SurveyEventSection({
         <Alert variant="info">{tEvents("loginToParticipate")}</Alert>
         <TextLink
           href={ROUTES.AUTH.LOGIN}
-          className="inline-block px-6 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors"
+          className="inline-block px-6 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 dark:bg-secondary-600 dark:hover:bg-secondary-700 text-white text-sm font-medium transition-colors"
         >
           {tActions("login")}
         </TextLink>
@@ -55,7 +55,7 @@ export function SurveyEventSection({
         href={ROUTES.PUBLIC.EVENT_PARTICIPATE(event.id)}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-block px-6 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors"
+        className="inline-block px-6 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 dark:bg-secondary-600 dark:hover:bg-secondary-700 text-white text-sm font-medium transition-colors"
       >
         {tEvents("participate")}
       </TextLink>

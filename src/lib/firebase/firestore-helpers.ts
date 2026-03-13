@@ -57,3 +57,40 @@ export function prepareForFirestore<T extends Record<string, any>>(
 ): Partial<T> {
   return removeUndefined(data);
 }
+
+/**
+ * Recursively convert Firestore Timestamp instances to plain JS Date objects.
+ * Firestore Admin SDK returns Timestamp class instances for date fields.
+ * React RSC cannot serialize class instances to Client Components — JS Date
+ * objects are supported and serialized as ISO strings.
+ *
+ * @param obj - Raw Firestore document data
+ * @returns Data with all Timestamps replaced by Date objects
+ */
+export function deserializeTimestamps<T>(obj: T): T {
+  if (obj === null || obj === undefined) return obj;
+  // Firestore Timestamp — has toDate() but is not a plain Date
+  if (
+    typeof obj === "object" &&
+    !(obj instanceof Date) &&
+    typeof (obj as any).toDate === "function"
+  ) {
+    return (obj as any).toDate() as unknown as T;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(deserializeTimestamps) as unknown as T;
+  }
+  if (
+    typeof obj === "object" &&
+    !Array.isArray(obj) &&
+    !(obj instanceof Date)
+  ) {
+    return Object.fromEntries(
+      Object.entries(obj as object).map(([k, v]) => [
+        k,
+        deserializeTimestamps(v),
+      ]),
+    ) as unknown as T;
+  }
+  return obj;
+}

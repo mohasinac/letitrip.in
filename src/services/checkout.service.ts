@@ -12,6 +12,30 @@ export const checkoutService = {
   placeOrder: (data: unknown) =>
     apiClient.post(API_ENDPOINTS.CHECKOUT.PLACE_ORDER, data),
 
+  /**
+   * Non-mutating stock preflight check.
+   * Returns { available, unavailable } before the buyer confirms placement.
+   */
+  checkPreflight: (addressId: string) =>
+    apiClient.post(API_ENDPOINTS.CHECKOUT.PREFLIGHT, { addressId }),
+
+  /**
+   * Send a consent email OTP for third-party shipping verification.
+   * Returns { maskedEmail }.
+   */
+  sendConsentOtp: (addressId: string) =>
+    apiClient.post(API_ENDPOINTS.CHECKOUT.CONSENT_OTP_SEND, { addressId }),
+
+  /**
+   * Verify the 6-digit consent OTP entered by the buyer.
+   * Returns { verified: true } on success.
+   */
+  verifyConsentOtp: (addressId: string, code: string) =>
+    apiClient.post(API_ENDPOINTS.CHECKOUT.CONSENT_OTP_VERIFY, {
+      addressId,
+      code,
+    }),
+
   /** Create a Razorpay payment order */
   createPaymentOrder: (data: unknown) =>
     apiClient.post(API_ENDPOINTS.PAYMENT.CREATE_ORDER, data),

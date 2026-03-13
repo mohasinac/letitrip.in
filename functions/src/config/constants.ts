@@ -56,6 +56,9 @@ export const SCHEDULES = {
    * "pending" payout records are picked up in the same morning window.
    */
   WEEKLY_SAT_0500: "0 5 * * 6",
+
+  /** Category metrics + store stats reconciliation — 03:00 UTC */
+  DAILY_0300: "0 3 * * *",
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -100,4 +103,6 @@ export const COLLECTIONS = {
   CARTS: "carts",
   PAYOUTS: "payouts",
   NOTIFICATIONS: "notifications",
+  CATEGORIES: "categories",
+  STORES: "stores",
 } as const;

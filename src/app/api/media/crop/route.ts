@@ -12,6 +12,7 @@ import { successResponse } from "@/lib/api-response";
 import { getStorage } from "@/lib/firebase/admin";
 import { createApiHandler } from "@/lib/api/api-handler";
 import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { generateCroppedImageFilename } from "@/utils";
 import sharp from "sharp";
 import axios from "axios";
 
@@ -80,10 +81,14 @@ export const POST = createApiHandler<(typeof cropDataSchema)["_output"]>({
 
     const croppedBuffer = await pipeline.toBuffer();
 
-    // Generate cryptographically random output filename
-    const timestamp = Date.now();
-    const randomString = randomBytes(6).toString("hex");
-    const filename = `cropped-${timestamp}-${randomString}.${finalFormat}`;
+    // Derive an SEO-friendly filename from the source URL so the cropped file
+    // is clearly related to its origin (e.g. product-iphone-15-pro-...-cropped.webp).
+    // Fall back to a random name if the source URL path is opaque.
+    const sourcePathSegment =
+      new URL(sourceUrl).pathname.split("/").pop() ?? "";
+    const filename = sourcePathSegment
+      ? generateCroppedImageFilename(sourcePathSegment, finalFormat)
+      : `cropped-${Date.now()}-${randomBytes(6).toString("hex")}.${finalFormat}`;
 
     // Upload to storage
     const storage = getStorage();

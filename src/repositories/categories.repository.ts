@@ -184,7 +184,7 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
       if (snapshot.empty) return null;
 
       const doc = snapshot.docs[0];
-      return { id: doc.id, ...doc.data() } as CategoryDocument;
+      return this.mapDoc<CategoryDocument>(doc);
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve category by slug: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -207,7 +207,7 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
         .get();
 
       return snapshot.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument)
+        .map((doc) => this.mapDoc<CategoryDocument>(doc))
         .filter((c) => !c.isBrand);
     } catch (error) {
       throw new DatabaseError(
@@ -229,9 +229,7 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
         .where("isActive", "==", true)
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<CategoryDocument>(doc));
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve leaf categories: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -255,7 +253,7 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
         .get();
 
       return snapshot.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument)
+        .map((doc) => this.mapDoc<CategoryDocument>(doc))
         .filter((c) => !c.isBrand);
     } catch (error) {
       throw new DatabaseError(
@@ -279,9 +277,7 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
         .orderBy("order", "asc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<CategoryDocument>(doc));
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve categories by rootId: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -308,7 +304,7 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
 
       // Filter to get only direct children (parentIds ends with parentId)
       const children = snapshot.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument)
+        .map((doc) => this.mapDoc<CategoryDocument>(doc))
         .filter((cat) => cat.parentIds[cat.parentIds.length - 1] === parentId);
 
       return children;
@@ -334,7 +330,7 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
         .get();
 
       return snapshot.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument)
+        .map((doc) => this.mapDoc<CategoryDocument>(doc))
         .filter((c) => !c.isBrand);
     } catch (error) {
       throw new DatabaseError(
@@ -358,8 +354,8 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
         .orderBy("order", "asc")
         .get();
 
-      const brands = snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument,
+      const brands = snapshot.docs.map((doc) =>
+        this.mapDoc<CategoryDocument>(doc),
       );
       return limit > 0 ? brands.slice(0, limit) : brands;
     } catch (error) {
@@ -544,7 +540,7 @@ class CategoriesRepository extends BaseRepository<CategoryDocument> {
           .orderBy(CATEGORY_FIELDS.ORDER, "asc")
           .get();
         categories = snapshot.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() }) as CategoryDocument)
+          .map((doc) => this.mapDoc<CategoryDocument>(doc))
           .filter((c) => !c.isBrand);
       }
 

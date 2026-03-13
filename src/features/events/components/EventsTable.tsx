@@ -60,7 +60,7 @@ export function useEventsTableColumns(
         width: "14%",
         render: (e: EventDocument) => (
           <Text size="sm" variant="secondary">
-            {e.startsAt ? formatDate(e.startsAt as unknown as string) : "—"}
+            {e.startsAt ? formatDate(e.startsAt) : "—"}
           </Text>
         ),
       },
@@ -71,7 +71,7 @@ export function useEventsTableColumns(
         width: "14%",
         render: (e: EventDocument) => (
           <Text size="sm" variant="secondary">
-            {e.endsAt ? formatDate(e.endsAt as unknown as string) : "—"}
+            {e.endsAt ? formatDate(e.endsAt) : "—"}
           </Text>
         ),
       },

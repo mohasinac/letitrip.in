@@ -12,6 +12,7 @@ import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   ActiveFilterChips,
+  Container,
   DataTable,
   EmptyState,
   Heading,
@@ -141,7 +142,7 @@ function ReviewsListContent({
 
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
-      <div className={`${THEME_CONSTANTS.page.container.full} py-8`}>
+      <Container size="full" className="py-8">
         <ListingLayout
           headerSlot={
             <div>
@@ -235,7 +236,7 @@ function ReviewsListContent({
             />
           )}
         </ListingLayout>
-      </div>
+      </Container>
     </div>
   );
 }

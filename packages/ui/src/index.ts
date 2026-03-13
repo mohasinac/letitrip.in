@@ -96,3 +96,15 @@ export { ImageLightbox } from "./components/ImageLightbox";
 // ─── S1-2: DataTable ──────────────────────────────────────────────────────────
 export type { DataTableProps, DataTableColumn } from "./DataTable";
 export { DataTable } from "./DataTable";
+
+// ─── Layout Primitives ────────────────────────────────────────────────────────
+export type {
+  GapKey,
+  ContainerSize,
+  GridCols,
+  ContainerProps,
+  StackProps,
+  RowProps,
+  GridProps,
+} from "./components/Layout";
+export { Container, Stack, Row, Grid } from "./components/Layout";

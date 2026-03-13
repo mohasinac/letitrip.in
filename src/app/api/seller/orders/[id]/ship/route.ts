@@ -30,6 +30,7 @@ import {
 } from "@/lib/shiprocket/client";
 import { createApiHandler } from "@/lib/api/api-handler";
 import { RateLimitPresets } from "@/lib/security/rate-limit";
+import { resolveDate } from "@/utils";
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
@@ -160,13 +161,7 @@ export const POST = createApiHandler<
 
     const srOrderPayload = {
       order_id: orderId,
-      order_date: (order.createdAt instanceof Date
-        ? order.createdAt
-        : new Date(
-            (order.createdAt as unknown as { toDate(): Date }).toDate?.() ??
-              order.createdAt,
-          )
-      )
+      order_date: (resolveDate(order.createdAt) ?? new Date())
         .toISOString()
         .slice(0, 19),
       pickup_location: shippingConfig.pickupAddress.locationName,

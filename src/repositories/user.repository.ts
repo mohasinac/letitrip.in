@@ -100,9 +100,7 @@ export class UserRepository extends BaseRepository<UserDocument> {
       }
 
       const snapshot = await query.get();
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as UserDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<UserDocument>(doc));
     } catch (error) {
       throw new DatabaseError("Failed to fetch verified users", error);
     }
@@ -120,9 +118,7 @@ export class UserRepository extends BaseRepository<UserDocument> {
       }
 
       const snapshot = await query.get();
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as UserDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<UserDocument>(doc));
     } catch (error) {
       throw new DatabaseError("Failed to fetch active users", error);
     }
@@ -340,7 +336,9 @@ export class UserRepository extends BaseRepository<UserDocument> {
     emailVerified: { canFilter: true, canSort: false },
     disabled: { canFilter: true, canSort: true },
     storeStatus: { canFilter: true, canSort: false },
-    createdAt: { canFilter: true, canSort: true },    updatedAt:     { canFilter: true, canSort: true  },  };
+    createdAt: { canFilter: true, canSort: true },
+    updatedAt: { canFilter: true, canSort: true },
+  };
 
   /**
    * Paginated, Firestore-native user list (admin use).

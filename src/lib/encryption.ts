@@ -5,7 +5,7 @@
  * before storing them in Firestore. All operations are server-side only.
  *
  * Setup: add SETTINGS_ENCRYPTION_KEY to your .env.local
- *   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+ *   node -e "require('crypto').randomBytes(32).toString('hex')"
  *
  * Encrypted format (opaque, stored as a single string in Firestore):
  *   "enc:v1:<base64(iv)>.<base64(authTag)>.<base64(ciphertext)>"
@@ -28,7 +28,7 @@ function getMasterKey(): Buffer {
   if (!hex || hex.length !== 64) {
     throw new Error(
       "SETTINGS_ENCRYPTION_KEY must be a 64-character hex string (32 bytes). " +
-        "Generate one with: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"",
+        "Generate with: node -e \"require('crypto').randomBytes(32).toString('hex')\"",
     );
   }
   return Buffer.from(hex, "hex");

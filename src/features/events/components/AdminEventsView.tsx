@@ -286,7 +286,7 @@ export function AdminEventsView() {
                   <Badge>{event.type}</Badge>
                   <StatusBadge status={event.status as any} />
                 </div>
-                <Caption>{formatDate(event.startsAt.toDate())}</Caption>
+                <Caption>{formatDate(event.startsAt)}</Caption>
               </div>
             </Card>
           )}

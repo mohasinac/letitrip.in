@@ -20,6 +20,7 @@ export { AdvertisementBanner } from "./AdvertisementBanner";
 export { CustomerReviewsSection } from "./CustomerReviewsSection";
 export { WhatsAppCommunitySection } from "./WhatsAppCommunitySection";
 export { FAQSection } from "./FAQSection";
+export { NewsletterSection } from "./NewsletterSection";
 export { BlogArticlesSection } from "./BlogArticlesSection";
 export { BeforeAfterCard } from "./BeforeAfterCard";
 export type { BeforeAfterCardProps } from "./BeforeAfterCard";

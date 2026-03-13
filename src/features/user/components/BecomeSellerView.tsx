@@ -6,9 +6,9 @@
  * Multi-state view for the /user/become-seller page.
  *
  * States:
- *  1. Guide � user with role="user" reads 5 sections, then applies
- *  2. Success � just applied this session (pending admin review)
- *  3. Already a seller / admin / moderator � redirect to seller dashboard
+ *  1. Guide — user with role="user" reads 5 sections, then applies
+ *  2. Success — just applied this session (pending admin review)
+ *  3. Already a seller / admin / moderator — redirect to seller dashboard
  */
 
 import { useEffect, useState } from "react";
@@ -155,7 +155,7 @@ export function BecomeSellerView() {
       ),
   );
 
-  // Local post-apply state � session isn't refreshed until re-login
+  // Local post-apply state — session isn't refreshed until re-login
   const [justApplied, setJustApplied] = useState(false);
 
   const allSectionsRead = SECTION_IDS.every((id) => readSections[id]);

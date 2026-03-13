@@ -194,7 +194,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
       <div className={`min-h-screen ${themed.bgSecondary}`}>
         <div className={`${page.container.xl} py-6 sm:py-8`}>
           <div className="h-4 w-48 bg-zinc-200 dark:bg-slate-700 rounded mb-6 animate-pulse" />
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] 2xl:grid-cols-[1fr_1fr_320px] gap-6 lg:gap-8">
             <div className="animate-pulse space-y-3">
               <div className="aspect-square bg-zinc-200 dark:bg-slate-700 rounded-2xl" />
             </div>
@@ -241,8 +241,7 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
         </Breadcrumbs>
 
         {/* 3-column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] gap-6 lg:gap-8">
-          {/* ── Col 1: Gallery ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_280px] xl:grid-cols-[1fr_1fr_300px] 2xl:grid-cols-[1fr_1fr_320px] gap-6 lg:gap-8">
           <div>
             <ProductImageGallery
               mainImage={product!.mainImage}

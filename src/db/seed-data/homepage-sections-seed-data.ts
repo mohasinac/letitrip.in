@@ -16,6 +16,12 @@
 
 import type { HomepageSectionDocument } from "@/db/schema";
 
+// Dynamic date helpers
+const NOW = new Date();
+const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
+const daysAhead = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
+const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000);
+
 export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
   // ============================================
   // 1. WELCOME SECTION
@@ -46,8 +52,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       ctaText: "Explore Collectibles",
       ctaLink: "/products",
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(30),
   },
 
   // ============================================
@@ -87,8 +93,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
         },
       ],
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(30),
   },
 
   // ============================================
@@ -105,8 +111,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       autoScroll: false,
       scrollInterval: 3000,
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(30),
   },
 
   // ============================================
@@ -127,8 +133,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       autoScroll: false,
       scrollInterval: 5000,
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(30),
   },
 
   // ============================================
@@ -149,8 +155,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       autoScroll: true,
       scrollInterval: 4000,
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(30),
   },
 
   // ============================================
@@ -172,8 +178,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       autoScroll: false,
       scrollInterval: 5000,
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(30),
   },
 
   // ============================================
@@ -202,8 +208,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       clickable: true,
       clickLink: "/deals",
     },
-    createdAt: new Date("2026-02-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(37),
+    updatedAt: daysAgo(30),
   },
 
   // ============================================
@@ -218,8 +224,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       title: "Platform Features",
       features: ["feature_001", "feature_002", "feature_003", "feature_004"],
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(30),
   },
 
   // ============================================
@@ -238,8 +244,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       autoScroll: true,
       scrollInterval: 6000,
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(30),
   },
 
   // ============================================
@@ -264,8 +270,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       ],
       buttonText: "Join WhatsApp Community",
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(30),
   },
 
   // ============================================
@@ -285,8 +291,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       linkToFullPage: true,
       categories: ["general", "shipping", "returns", "payment"],
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(30),
   },
 
   // ============================================
@@ -306,8 +312,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       showAuthor: true,
       showThumbnails: true,
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-12T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(26),
   },
 
   // ============================================
@@ -327,8 +333,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       privacyText: "We respect your privacy",
       privacyLink: "/privacy-policy",
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(30),
   },
 
   // ============================================
@@ -347,8 +353,8 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       autoScroll: true,
       scrollInterval: 4500,
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(30),
   },
 
   // ============================================
@@ -367,7 +373,7 @@ export const homepageSectionsSeedData: Partial<HomepageSectionDocument>[] = [
       autoScroll: true,
       scrollInterval: 5000,
     },
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-08T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(30),
   },
 ];

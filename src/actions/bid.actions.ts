@@ -28,6 +28,7 @@ import {
   NotFoundError,
 } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
+import { resolveDate } from "@/utils";
 import type { BidDocument } from "@/db/schema";
 
 // ─── Validation schema ─────────────────────────────────────────────────────
@@ -84,11 +85,8 @@ export async function placeBidAction(
   }
 
   if (product.auctionEndDate) {
-    const endDate =
-      product.auctionEndDate instanceof Date
-        ? product.auctionEndDate
-        : new Date(product.auctionEndDate as unknown as string);
-    if (endDate.getTime() < Date.now()) {
+    const endDate = resolveDate(product.auctionEndDate);
+    if (endDate && endDate.getTime() < Date.now()) {
       throw new ValidationError(ERROR_MESSAGES.BID.AUCTION_ENDED);
     }
   }

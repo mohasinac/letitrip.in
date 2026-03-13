@@ -11,6 +11,7 @@ import {
   Text,
   Button,
   StatusBadge,
+  Row,
   Spinner,
   EmptyState,
 } from "@/components";
@@ -64,9 +65,9 @@ export function OrderDetailView() {
 
   if (loading || isLoading) {
     return (
-      <div className={`${THEME_CONSTANTS.flex.center} min-h-screen`}>
+      <Row justify="center" gap="none" className="min-h-screen">
         <Spinner size="lg" label={tLoading("default")} />
-      </div>
+      </Row>
     );
   }
 
@@ -163,9 +164,9 @@ export function OrderDetailView() {
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
                         isDone
-                          ? "bg-primary-500 text-white"
+                          ? "bg-primary-700 text-white"
                           : isCurrent
-                            ? "bg-primary-500 text-white ring-4 ring-primary-500/20"
+                            ? "bg-primary-700 text-white ring-4 ring-primary-700/20"
                             : "bg-zinc-200 dark:bg-slate-700 text-zinc-400"
                       }`}
                     >
@@ -188,7 +189,7 @@ export function OrderDetailView() {
                     <div
                       className={`flex-1 h-0.5 mx-1 transition-colors ${
                         isDone
-                          ? "bg-primary-500"
+                          ? "bg-primary-700"
                           : "bg-zinc-200 dark:bg-slate-700"
                       }`}
                     />

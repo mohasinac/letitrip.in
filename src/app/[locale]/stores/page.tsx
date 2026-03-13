@@ -34,7 +34,7 @@ function mapStore(store: StoreDocument): StoreListItem {
     itemsSold: store.stats?.itemsSold ?? 0,
     totalReviews: store.stats?.totalReviews ?? 0,
     averageRating: store.stats?.averageRating,
-    createdAt: store.createdAt as unknown as string,
+    createdAt: store.createdAt.toISOString(),
   };
 }
 

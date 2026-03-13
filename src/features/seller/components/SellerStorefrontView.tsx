@@ -78,7 +78,7 @@ export function SellerStorefrontView({
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
       {/* Banner */}
-      <div className="bg-gradient-to-r from-emerald-600 to-teal-700 h-48" />
+      <div className={`${THEME_CONSTANTS.accentBanner.coverStrip} h-48`} />
 
       <div className={`${page.container.lg} -mt-24 pb-12`}>
         {/* Seller Header Card */}
@@ -151,7 +151,7 @@ export function SellerStorefrontView({
               <div className="mt-3">
                 <TextLink
                   href={ROUTES.PUBLIC.PROFILE(sellerId)}
-                  className="text-sm text-primary-600 hover:underline"
+                  className="text-sm text-primary-700 dark:text-primary-400 hover:underline"
                 >
                   {tSf("visitProfile")} →
                 </TextLink>
@@ -163,7 +163,7 @@ export function SellerStorefrontView({
               {seller.stats && (
                 <>
                   <div>
-                    <div className="text-xl font-bold text-primary-600">
+                    <div className="text-xl font-bold text-primary-700 dark:text-primary-400">
                       {productsData?.meta?.total ?? seller.stats.itemsSold ?? 0}
                     </div>
                     <Text variant="secondary" className="text-xs">
@@ -171,7 +171,7 @@ export function SellerStorefrontView({
                     </Text>
                   </div>
                   <div>
-                    <div className="text-xl font-bold text-success-600">
+                    <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
                       {seller.stats.itemsSold ?? 0}
                     </div>
                     <Text variant="secondary" className="text-xs">
@@ -194,7 +194,7 @@ export function SellerStorefrontView({
               <div className="w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
             </div>
           ) : hasProducts ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
               {productsData!.data.map((product: ProductDocument) => (
                 <TextLink
                   key={product.id}
@@ -220,7 +220,7 @@ export function SellerStorefrontView({
                     <Text className="text-sm font-medium line-clamp-2 mb-1">
                       {product.title}
                     </Text>
-                    <Text className="text-sm font-bold text-primary-600">
+                    <Text className="text-sm font-bold text-primary-700 dark:text-primary-400">
                       {product.isAuction
                         ? `From ${formatCurrency(product.startingBid ?? product.price)}`
                         : formatCurrency(product.price)}
@@ -276,7 +276,7 @@ export function SellerStorefrontView({
                 >
                   <div className="flex items-start gap-3">
                     <div
-                      className={`w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 ${flex.center} text-primary-600 font-semibold text-sm flex-shrink-0`}
+                      className={`w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 ${flex.center} text-primary-800 dark:text-primary-200 font-semibold text-sm flex-shrink-0`}
                     >
                       {review.userName.charAt(0).toUpperCase()}
                     </div>
@@ -302,7 +302,7 @@ export function SellerStorefrontView({
                           on{" "}
                           <TextLink
                             href={`/products/${review.productId}`}
-                            className="text-primary-600 hover:underline"
+                            className="text-primary-700 dark:text-primary-400 hover:underline"
                           >
                             {review.productTitle}
                           </TextLink>
@@ -325,7 +325,7 @@ export function SellerStorefrontView({
         <div className="text-center">
           <TextLink
             href={ROUTES.PUBLIC.STORES}
-            className="text-primary-600 hover:underline text-sm"
+            className="text-primary-700 dark:text-primary-400 hover:underline text-sm"
           >
             ← {tSf("back")}
           </TextLink>

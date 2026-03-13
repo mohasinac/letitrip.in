@@ -7,6 +7,7 @@ import {
   Button,
   Card,
   Checkbox,
+  Grid,
   Heading,
   Input,
   Label,
@@ -279,7 +280,7 @@ export default function BackgroundSettings({
           </div>
 
           {config.overlay?.enabled && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ml-7">
+            <Grid cols={2} gap="md" className="ml-7">
               <div>
                 <Label
                   className={`block text-sm font-medium mb-2 ${THEME_CONSTANTS.themed.textSecondary}`}
@@ -316,7 +317,7 @@ export default function BackgroundSettings({
                   className="w-full"
                 />
               </div>
-            </div>
+            </Grid>
           )}
         </div>
 

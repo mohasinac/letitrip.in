@@ -1,6 +1,6 @@
 ---
 applyTo: "src/**"
-description: "No alert/confirm, structured logging, no backward compatibility, build verification, tests as you go. Rules 22, 23, 24, 26, 27."
+description: "No alert/confirm, structured logging, no backward compatibility, build verification, tests as you go, encoding corruption prevention. Rules 22, 23, 24, 26, 27, 28-B, 28-C."
 ---
 
 # Code Quality Rules
@@ -77,6 +77,46 @@ Scripts MAY write to `src/`, `messages/`, or `scripts/seed-data/` if **all** of 
 - ❌ `python -c "open(...).write(...)"` without explicit `encoding='utf-8'`
 - ❌ `sed -i`, `awk`, `jq` piped into source files via shell without encoding verification
 - ❌ Any script that silently overwrites a source file without a pre-execution review step
+
+---
+
+## RULE 28-C: Detect and Fix Mojibake (Corrupted Text)
+
+Mojibake (e.g. `ãÆ`, `â€™`, `Ã©`, `Â`) occurs when UTF-8 bytes are read or written using the wrong encoding (Windows-1252 / Latin-1). It must **never** appear in any tracked file — source, message, seed data, or documentation.
+
+### Signs of corruption
+
+| Pattern                                            | Actual character likely intended         |
+| -------------------------------------------------- | ---------------------------------------- |
+| `Ã©` / `Ã¨`                                        | `é` / `è` (French accents)               |
+| `â€™` / `â€œ`                                      | `'` / `"` (curly quotes)                 |
+| `ï¿½`                                              | `?` (UTF-8 replacement character U+FFFD) |
+| `ã`, `Æ`, `Â` in plain-ASCII / Latin context       | encoding mismatch                        |
+| Blank boxes or `?` replacing multi-byte codepoints | truncated Unicode                        |
+
+### What to do when you detect corrupted text
+
+1. **STOP** — do not continue the task until the corruption is fixed
+2. Identify every affected file with `grep_search` for the garbled pattern
+3. Fix each occurrence with `replace_string_in_file` / `multi_replace_string_in_file` using the correct UTF-8 value
+4. If corruption is widespread, find the root cause (the script that wrote the file) and fix that first — do NOT do a mass find-and-replace that may hide future regressions
+5. Verify the file renders correctly in VS Code after the fix
+
+### Common root causes and fixes
+
+| Cause                                                               | Fix                                      |
+| ------------------------------------------------------------------- | ---------------------------------------- |
+| PowerShell `Set-Content` / `Out-File` without `-Encoding utf8NoBOM` | Add `-Encoding utf8NoBOM`                |
+| Python `open(..., 'w')` missing `encoding='utf-8'`                  | Add `encoding='utf-8'`                   |
+| Copy-paste from a Windows-1252 application                          | Retype or paste via a UTF-8-aware editor |
+| Node.js `fs.writeFileSync` with a Buffer decoded as Latin-1         | Use explicit `'utf8'` encoding argument  |
+
+### Prevention checklist (before any file write)
+
+- ✅ Use `replace_string_in_file` / `create_file` tools for all source edits — they are always UTF-8-safe
+- ✅ If PowerShell must write to a source file, confirm `-Encoding utf8NoBOM` (see Rule 28-B)
+- ✅ After any bulk script write, run a corruption scan: `grep_search` for `ã|Ã|â€|ï¿` across the modified files
+- ✅ Never accept a build or PR that contains a `\uFFFD` replacement character in any string literal or JSON value
 
 ---
 

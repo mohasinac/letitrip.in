@@ -144,9 +144,6 @@ export const DEFAULT_LOYALTY_CONFIG: LoyaltyConfig = {
   eventEntryCoins: 5,
 };
 
-/** @deprecated Use siteSettingsRepository.getLoyaltyConfig() — kept for legacy imports only */
-export const RIPCOIN_EARN_RATE = 10;
-
 /** Grace period (ms) after auction win before coins are forfeited */
 export const RIPCOIN_PAYMENT_GRACE_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
 

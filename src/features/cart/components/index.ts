@@ -14,3 +14,5 @@ export { OrderSuccessCard } from "./OrderSuccessCard";
 export { OrderSummaryPanel } from "./OrderSummaryPanel";
 export { OrderSuccessHero } from "./OrderSuccessHero";
 export { GuestCartMergerEffect } from "./GuestCartMergerEffect";
+export { ConsentOtpModal } from "./ConsentOtpModal";
+export { PartialOrderDialog } from "./PartialOrderDialog";

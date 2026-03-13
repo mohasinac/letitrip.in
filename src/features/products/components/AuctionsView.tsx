@@ -15,6 +15,7 @@ import {
   ActiveFilterChips,
   AuctionCard,
   Button,
+  Container,
   DataTable,
   FilterFacetSection,
   Heading,
@@ -179,7 +180,7 @@ function AuctionsContent({
 
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
-      <div className={`${THEME_CONSTANTS.page.container["2xl"]} py-8`}>
+      <Container className="py-8">
         <ListingLayout
           headerSlot={
             <div>
@@ -309,7 +310,7 @@ function AuctionsContent({
             )}
           />
         </ListingLayout>
-      </div>
+      </Container>
     </div>
   );
 }

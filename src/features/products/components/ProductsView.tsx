@@ -13,6 +13,7 @@ import {
   PRODUCT_SORT_VALUES,
   EmptyState,
   Button,
+  Container,
 } from "@/components";
 import { ProductFilters } from "@/components";
 import type { ActiveFilter } from "@/components";
@@ -178,7 +179,7 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
 
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
-      <div className={`${THEME_CONSTANTS.page.container.full} py-8`}>
+      <Container size="full" className="py-8">
         <ListingLayout
           headerSlot={
             <div>
@@ -304,7 +305,7 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
             )}
           />
         </ListingLayout>
-      </div>
+      </Container>
     </div>
   );
 }

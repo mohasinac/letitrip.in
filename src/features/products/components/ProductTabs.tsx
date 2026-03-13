@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Ul, Li, Text } from "@/components";
+import { Ul, Li, Text, Ol } from "@/components";
 import type { ProductDocument } from "@/db/schema";
 
 interface ProductTabsProps {
@@ -96,7 +96,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
 
         {activeTab === "howToUse" &&
           (product.howToUse?.length ? (
-            <ol className="space-y-2 list-decimal ml-4">
+            <Ol className="space-y-2 list-decimal ml-4">
               {product.howToUse.map((step, i) => (
                 <li
                   key={i}
@@ -105,7 +105,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
                   {step}
                 </li>
               ))}
-            </ol>
+            </Ol>
           ) : (
             <Text variant="secondary" size="sm">
               {t("noHowToUse")}

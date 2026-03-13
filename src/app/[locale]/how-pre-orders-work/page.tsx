@@ -3,6 +3,7 @@ import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import {
   Heading,
   Text,
+  Grid,
   Section,
   TextLink,
   Span,
@@ -60,7 +61,7 @@ export default async function HowPreOrdersWorkPage() {
       desc: t("diagramStatus1Desc"),
     },
     {
-      emoji: "�",
+      emoji: "⏳",
       circleClass:
         "bg-amber-100 dark:bg-amber-900/40 border-2 border-amber-300 dark:border-amber-600",
       badge: t("diagramStatus2"),
@@ -100,12 +101,14 @@ export default async function HowPreOrdersWorkPage() {
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}
-      <Section className="bg-gradient-to-br from-emerald-600 to-teal-800 text-white py-14 md:py-16 lg:py-20">
+      <Section
+        className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
+      >
         <div className={`${page.container.md} text-center`}>
           <Heading level={1} variant="none" className="mb-4 text-white">
             {t("title")}
           </Heading>
-          <Text className="text-emerald-100 max-w-2xl mx-auto">
+          <Text variant="none" className="text-white/80 max-w-2xl mx-auto">
             {t("subtitle")}
           </Text>
         </div>
@@ -122,7 +125,11 @@ export default async function HowPreOrdersWorkPage() {
           className="mb-12"
         >
           {/* Buyer vs Seller note */}
-          <div className="mt-4 pt-4 border-t border-dashed border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Grid
+            cols={2}
+            gap="3"
+            className="mt-4 pt-4 border-t border-dashed border-slate-200 dark:border-slate-700"
+          >
             <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800 p-3">
               <Span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 block mb-1">
                 👤 As a Buyer
@@ -141,7 +148,7 @@ export default async function HowPreOrdersWorkPage() {
                 buyers stay informed at every stage.
               </Text>
             </div>
-          </div>
+          </Grid>
         </FlowDiagram>
 
         {/* Steps */}

@@ -2,6 +2,7 @@
 
 import { LucideIcon, TrendingDown, TrendingUp } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { Text } from "./typography";
 
 export interface DashboardStatsCardProps {
   label: string;
@@ -63,8 +64,8 @@ export function DashboardStatsCard({
     <div className={containerClass}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <p className={labelClass}>{label}</p>
-          <p className={valueClass}>{value}</p>
+          <Text className={labelClass}>{label}</Text>
+          <Text className={valueClass}>{value}</Text>
           {trend !== undefined && (
             <div className="flex items-center gap-1 mt-1.5">
               {trend.value >= 0 ? (

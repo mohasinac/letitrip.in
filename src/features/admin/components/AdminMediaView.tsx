@@ -106,7 +106,7 @@ export function AdminMediaView() {
             onClick={() => setOperationType("crop")}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               operationType === "crop"
-                ? "bg-primary text-white"
+                ? "bg-primary-700 text-white"
                 : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
             }`}
           >
@@ -116,7 +116,7 @@ export function AdminMediaView() {
             onClick={() => setOperationType("trim")}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               operationType === "trim"
-                ? "bg-primary text-white"
+                ? "bg-primary-700 text-white"
                 : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
             }`}
           >

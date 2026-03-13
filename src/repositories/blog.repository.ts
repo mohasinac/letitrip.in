@@ -39,7 +39,7 @@ class BlogRepository extends BaseRepository<BlogPostDocument> {
       if (snapshot.empty) return null;
 
       const doc = snapshot.docs[0];
-      return { id: doc.id, ...doc.data() } as BlogPostDocument;
+      return this.mapDoc<BlogPostDocument>(doc);
     } catch (error) {
       throw new DatabaseError(
         `Failed to find blog post by slug: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -140,7 +140,7 @@ class BlogRepository extends BaseRepository<BlogPostDocument> {
         .get();
 
       return snapshot.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }) as BlogPostDocument)
+        .map((doc) => this.mapDoc<BlogPostDocument>(doc))
         .filter((post) => post.id !== excludeId)
         .slice(0, limit);
     } catch (error) {

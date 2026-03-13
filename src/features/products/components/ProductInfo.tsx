@@ -2,7 +2,19 @@
 
 import { useTranslations } from "next-intl";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { formatCurrency, formatDate, resolveDate } from "@/utils";
+import {
+  formatCurrency,
+  formatDate,
+  resolveDate,
+  capitalizeWords,
+} from "@/utils";
+
+function formatCategoryLabel(label: string): string {
+  if (label.startsWith("category-")) {
+    return capitalizeWords(label.slice("category-".length).replace(/-/g, " "));
+  }
+  return label;
+}
 import {
   Badge,
   Heading,
@@ -133,7 +145,9 @@ export function ProductInfo({
             className={`${flex.rowCenter} gap-1.5 ${themed.textSecondary} hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors`}
           >
             <Tag className="w-3.5 h-3.5" aria-hidden="true" />
-            {subcategory ? `${category} › ${subcategory}` : category}
+            {subcategory
+              ? `${formatCategoryLabel(category)} › ${formatCategoryLabel(subcategory)}`
+              : formatCategoryLabel(category)}
           </TextLink>
         )}
         {brand && (

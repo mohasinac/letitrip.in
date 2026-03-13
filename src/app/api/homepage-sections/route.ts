@@ -31,10 +31,10 @@ import { createApiHandler } from "@/lib/api/api-handler";
  * Query Parameters:
  * - includeDisabled: boolean (optional, admin only)
  *
- * Ã¢Å“â€¦ Fetches enabled sections via homepageSectionsRepository.findAll()
- * Ã¢Å“â€¦ Returns only enabled sections by default; all for admins (includeDisabled=true)
- * Ã¢Å“â€¦ Sorted by order field ascending
- * Ã¢Å“â€¦ Cache-Control headers set (5 min public / no-cache admin)
+ * ✅ Fetches enabled sections via homepageSectionsRepository.findAll()
+ * ✅ Returns only enabled sections by default; all for admins (includeDisabled=true)
+ * ✅ Sorted by order field ascending
+ * ✅ Cache-Control headers set (5 min public / no-cache admin)
  * TODO (Future): Support personalization based on user segments
  */
 export const GET = createApiHandler({
@@ -84,11 +84,11 @@ export const GET = createApiHandler({
  * - order: number (optional, auto-assigned if not provided)
  * - enabled: boolean (optional, defaults to true)
  *
- * Ã¢Å“â€¦ Requires admin authentication via requireRoleFromRequest
- * Ã¢Å“â€¦ Validates body with homepageSectionCreateSchema (Zod)
- * Ã¢Å“â€¦ Auto-assigns order (max existing + 1) when not provided
- * Ã¢Å“â€¦ Creates section via homepageSectionsRepository.create()
- * Ã¢Å“â€¦ Returns created section with 201 status
+ * ✅ Requires admin authentication via requireRoleFromRequest
+ * ✅ Validates body with homepageSectionCreateSchema (Zod)
+ * ✅ Auto-assigns order (max existing + 1) when not provided
+ * ✅ Creates section via homepageSectionsRepository.create()
+ * ✅ Returns created section with 201 status
  * TODO (Future): Validate section-specific config structure per type
  */
 export const POST = createApiHandler<

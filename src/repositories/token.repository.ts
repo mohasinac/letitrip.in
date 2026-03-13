@@ -20,7 +20,7 @@ import {
   TOKEN_FIELDS,
 } from "@/db/schema";
 import { DatabaseError, NotFoundError } from "@/lib/errors";
-import { Timestamp } from "firebase-admin/firestore";
+import { resolveDate } from "@/utils";
 
 export class EmailVerificationTokenRepository extends BaseRepository<EmailVerificationTokenDocument> {
   constructor() {
@@ -56,12 +56,8 @@ export class EmailVerificationTokenRepository extends BaseRepository<EmailVerifi
    * Check if token is expired
    */
   isExpired(token: EmailVerificationTokenDocument): boolean {
-    const expiresAt =
-      token.expiresAt instanceof Timestamp
-        ? token.expiresAt.toDate()
-        : token.expiresAt;
-
-    return new Date() > expiresAt;
+    const expiresAt = resolveDate(token.expiresAt);
+    return !expiresAt || new Date() > expiresAt;
   }
 
   /**
@@ -137,12 +133,8 @@ export class PasswordResetTokenRepository extends BaseRepository<PasswordResetTo
    * Check if token is expired
    */
   isExpired(token: PasswordResetTokenDocument): boolean {
-    const expiresAt =
-      token.expiresAt instanceof Timestamp
-        ? token.expiresAt.toDate()
-        : token.expiresAt;
-
-    return new Date() > expiresAt;
+    const expiresAt = resolveDate(token.expiresAt);
+    return !expiresAt || new Date() > expiresAt;
   }
 
   /**
@@ -179,12 +171,8 @@ export class PasswordResetTokenRepository extends BaseRepository<PasswordResetTo
         .where(TOKEN_FIELDS.USED, "==", false)
         .get();
 
-      return snapshot.docs.map(
-        (doc) =>
-          ({
-            id: doc.id,
-            ...doc.data(),
-          }) as unknown as PasswordResetTokenDocument,
+      return snapshot.docs.map((doc) =>
+        this.mapDoc<PasswordResetTokenDocument>(doc),
       );
     } catch (error) {
       throw new DatabaseError(

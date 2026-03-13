@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import { ProtectedRoute } from "@/components";
+import { ProtectedRoute, Main } from "@/components";
 import { AdminSidebar, AdminTopBar } from "@/features/admin";
 
 interface AdminLayoutProps {
@@ -20,9 +20,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         />
         <div className="flex flex-1 flex-col overflow-hidden">
           <AdminTopBar onMenuOpen={() => setMobileOpen(true)} />
-          <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-950/30">
+          <Main className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-950/30">
             {children}
-          </main>
+          </Main>
         </div>
       </div>
     </ProtectedRoute>

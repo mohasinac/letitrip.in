@@ -24,6 +24,7 @@ export { AdminMediaView } from "./components/AdminMediaView";
 export { AdminSiteView } from "./components/AdminSiteView";
 export { AdminStoresView } from "./components/AdminStoresView";
 export { AdminFeatureFlagsView } from "./components/AdminFeatureFlagsView";
+export { AdminNavigationView } from "./components/AdminNavigationView";
 
 export * from "./hooks";
 export * from "./components";

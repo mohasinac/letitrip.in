@@ -19,7 +19,7 @@ interface RichTextEditorProps {
 }
 
 /**
- * Inline URL input popover â€” replaces window.prompt()
+ * Inline URL input popover — replaces window.prompt()
  */
 function UrlInputPopover({
   isOpen,

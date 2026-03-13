@@ -63,7 +63,7 @@ class SiteSettingsRepository extends BaseRepository<SiteSettingsDocument> {
         return defaultSettings;
       }
 
-      return { id: doc.id, ...doc.data() } as SiteSettingsDocument;
+      return this.mapDoc<SiteSettingsDocument>(doc);
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve site settings: ${error instanceof Error ? error.message : "Unknown error"}`,

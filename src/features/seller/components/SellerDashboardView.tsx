@@ -11,7 +11,7 @@
 import { useEffect, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Package, Store, Gavel, FileText } from "lucide-react";
-import { Spinner, EmptyState } from "@/components";
+import { Grid, Spinner, EmptyState } from "@/components";
 import { Heading, Text } from "@/components";
 import { useAuth, useMessage } from "@/hooks";
 import { ROUTES, THEME_CONSTANTS, ERROR_MESSAGES } from "@/constants";
@@ -74,7 +74,10 @@ export function SellerDashboardView() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
+      <Grid
+        className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4"
+        gap="md"
+      >
         <SellerStatCard
           label={t("totalProducts")}
           value={stats.total}
@@ -107,7 +110,7 @@ export function SellerDashboardView() {
           iconClass="text-amber-600 dark:text-amber-400"
           loading={productsLoading}
         />
-      </div>
+      </Grid>
 
       <SellerQuickActions />
 

@@ -27,15 +27,17 @@ export async function PromotionsView({
   return (
     <div className={`min-h-screen ${themed.bgPrimary}`}>
       {/* Hero */}
-      <div className="bg-gradient-to-br from-rose-500 via-pink-600 to-orange-500 text-white py-16">
+      <div
+        className={`${THEME_CONSTANTS.accentBanner.promotionHero} text-white py-16`}
+      >
         <div className={`${page.container.lg} text-center`}>
-          <Text className="text-rose-100 font-medium mb-2 uppercase tracking-widest text-sm">
+          <Text className="text-white font-medium mb-2 uppercase tracking-widest text-sm">
             🎉 {t("exclusiveOffersBadge")}
           </Text>
           <Heading level={1} className="mb-4">
             {t("title")}
           </Heading>
-          <Text className="text-lg text-rose-100 max-w-2xl mx-auto">
+          <Text className="text-lg text-white/90 max-w-2xl mx-auto">
             {t("subtitle")}
           </Text>
         </div>

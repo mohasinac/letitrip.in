@@ -3,6 +3,7 @@ import { ROUTES, THEME_CONSTANTS, SITE_CONFIG } from "@/constants";
 import {
   Heading,
   Text,
+  Grid,
   Section,
   TextLink,
   Span,
@@ -105,12 +106,14 @@ export default async function RipCoinsInfoPage() {
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}
-      <Section className="bg-gradient-to-br from-violet-700 to-indigo-900 text-white py-14 md:py-16 lg:py-20">
+      <Section
+        className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
+      >
         <div className={`${page.container.md} text-center`}>
           <Heading level={1} variant="none" className="mb-4 text-white">
             🪙 {t("title")}
           </Heading>
-          <Text className="text-violet-200 max-w-2xl mx-auto">
+          <Text variant="none" className="text-white/80 max-w-2xl mx-auto">
             {t("subtitle")}
           </Text>
         </div>
@@ -156,7 +159,7 @@ export default async function RipCoinsInfoPage() {
         <Text variant="secondary" className="mb-8">
           {t("buyText")}
         </Text>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        <Grid cols={3} gap="md" className="mb-4">
           {RIPCOIN_PACKAGES.map((pkg) => (
             <Section
               key={pkg.packageId}
@@ -182,11 +185,11 @@ export default async function RipCoinsInfoPage() {
               </Text>
             </Section>
           ))}
-        </div>
+        </Grid>
         <div className="mb-14">
           <TextLink
             href={ROUTES.USER.RIPCOINS_PURCHASE}
-            className="inline-flex items-center gap-2 mt-4 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors text-sm"
+            className="inline-flex items-center gap-2 mt-4 px-6 py-3 bg-primary-600 hover:bg-primary-700 dark:bg-secondary-600 dark:hover:bg-secondary-700 text-white rounded-xl font-semibold transition-colors text-sm"
           >
             🪙 {t("buyCoins")}
           </TextLink>
@@ -206,7 +209,7 @@ export default async function RipCoinsInfoPage() {
             <div className="text-slate-400 text-lg">⬇️</div>
           </div>
           {/* Three outcome branches */}
-          <div className="grid grid-cols-3 gap-3">
+          <Grid className="grid-cols-3" gap="3">
             <div className="rounded-xl border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-900/20 p-3 text-center space-y-1">
               <div className="text-2xl">🔓</div>
               <Text
@@ -246,7 +249,7 @@ export default async function RipCoinsInfoPage() {
                 {t("diagramPath3Desc")}
               </Text>
             </div>
-          </div>
+          </Grid>
         </FlowDiagram>
 
         {/* Lifecycle */}

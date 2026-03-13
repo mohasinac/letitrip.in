@@ -4,7 +4,7 @@
  * Handles individual product operations (get, update, delete)
  */
 
-import { productRepository, categoriesRepository } from "@/repositories";
+import { productRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { PRODUCT_STATUS_TRANSITIONS } from "@/db/schema";
 import { productUpdateSchema } from "@/lib/validation/schemas";
@@ -100,22 +100,8 @@ export const DELETE = createApiHandler<never, IdParams>({
       updatedAt: new Date(),
     });
 
-    // Update category metrics fire-and-forget
-    const isAuction = product.isAuction ?? false;
-    categoriesRepository
-      .updateMetrics(
-        product.category,
-        isAuction ? 0 : -1,
-        isAuction ? -1 : 0,
-        id,
-      )
-      .catch((err) =>
-        serverLogger.error(
-          "Failed to update category metrics on product delete",
-          { err },
-        ),
-      );
-
+    // NOTE: Category metrics and store stats are maintained by the
+    // onProductWrite Cloud Function trigger when status changes to "discontinued".
     return successResponse(undefined, SUCCESS_MESSAGES.PRODUCT.DELETED);
   },
 });

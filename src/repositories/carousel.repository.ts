@@ -97,8 +97,8 @@ class CarouselRepository extends BaseRepository<CarouselSlideDocument> {
         .limit(MAX_ACTIVE_SLIDES)
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as CarouselSlideDocument,
+      return snapshot.docs.map((doc) =>
+        this.mapDoc<CarouselSlideDocument>(doc),
       );
     } catch (error) {
       throw new DatabaseError(
@@ -120,8 +120,8 @@ class CarouselRepository extends BaseRepository<CarouselSlideDocument> {
         .orderBy("createdAt", "desc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as CarouselSlideDocument,
+      return snapshot.docs.map((doc) =>
+        this.mapDoc<CarouselSlideDocument>(doc),
       );
     } catch (error) {
       throw new DatabaseError(
@@ -144,8 +144,8 @@ class CarouselRepository extends BaseRepository<CarouselSlideDocument> {
         .orderBy("createdAt", "desc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as CarouselSlideDocument,
+      return snapshot.docs.map((doc) =>
+        this.mapDoc<CarouselSlideDocument>(doc),
       );
     } catch (error) {
       throw new DatabaseError(

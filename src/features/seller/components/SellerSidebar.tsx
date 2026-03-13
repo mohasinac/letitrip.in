@@ -19,6 +19,7 @@ import {
   Tag,
 } from "lucide-react";
 import { Drawer } from "@mohasinac/ui";
+import { Nav, Text, Aside } from "@/components";
 
 interface NavItem {
   href: string;
@@ -102,15 +103,20 @@ function SidebarContent({ pathname, t, tNav }: SidebarContentProps) {
       </div>
 
       {/* Nav groups */}
-      <nav
+      <Nav
         className="flex-1 overflow-y-auto py-3 px-2"
         aria-label={t("sellerNav")}
       >
         {NAV_GROUPS.map((group) => (
           <div key={group.groupKey} className="mb-1">
-            <p className="text-zinc-400 dark:text-zinc-500 text-xs tracking-widest px-3 mb-1 mt-4 uppercase font-medium">
+            <Text
+              size="xs"
+              weight="medium"
+              variant="muted"
+              className="tracking-widest px-3 mb-1 mt-4 uppercase block"
+            >
               {t(group.groupKey)}
-            </p>
+            </Text>
             {group.items.map((item) => {
               const isActive =
                 item.href === ROUTES.SELLER.DASHBOARD
@@ -136,7 +142,7 @@ function SidebarContent({ pathname, t, tNav }: SidebarContentProps) {
             })}
           </div>
         ))}
-      </nav>
+      </Nav>
     </div>
   );
 }
@@ -164,9 +170,9 @@ export function SellerSidebar({
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-56 bg-white dark:bg-slate-950 flex-shrink-0 flex-col h-full overflow-y-auto border-r border-zinc-200 dark:border-slate-800">
+      <Aside className="hidden md:flex w-56 bg-white dark:bg-slate-950 flex-shrink-0 flex-col h-full overflow-y-auto border-r border-zinc-200 dark:border-slate-800">
         <SidebarContent pathname={pathname} t={t} tNav={tNav} />
-      </aside>
+      </Aside>
 
       {/* Mobile drawer */}
       <Drawer

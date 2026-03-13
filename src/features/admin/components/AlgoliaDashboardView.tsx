@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   Badge,
+  Row,
   Spinner,
   Heading,
   Text,
@@ -73,7 +74,7 @@ export function AlgoliaDashboardView() {
 
   if (process.env.NODE_ENV !== "development") {
     return (
-      <div className={`${THEME_CONSTANTS.flex.center} min-h-screen p-8`}>
+      <Row justify="center" gap="none" className="min-h-screen p-8">
         <Card>
           <div className="p-8 text-center">
             <Heading level={2} className="mb-2">
@@ -84,7 +85,7 @@ export function AlgoliaDashboardView() {
             </Text>
           </div>
         </Card>
-      </div>
+      </Row>
     );
   }
 

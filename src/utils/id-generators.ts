@@ -437,6 +437,394 @@ export function generatePayoutId(input: GeneratePayoutIdInput): string {
 }
 
 // ============================================
+// MEDIA FILENAME GENERATION
+// ============================================
+//
+// All filenames are SEO-friendly slugs so that a shared Storage URL is
+// immediately self-describing (entity type, subject, context, index, ext).
+//
+// Naming patterns (all lowercase, hyphen-separated):
+//   product image  → product-{name}-{category}-{store}-image-{n}.{ext}
+//   product video  → product-{name}-{category}-{store}-video-{n}.{ext}
+//   auction image  → auction-{name}-{category}-{store}-image-{n}.{ext}
+//   preorder image → preorder-{name}-{category}-{store}-image-{n}.{ext}
+//   store logo     → store-{name}-logo.{ext}
+//   store banner   → store-{name}-banner.{ext}
+//   blog image     → blog-{title}-{category}-image-{n}.{ext}
+//   event image    → event-{title}-image-{n}.{ext}
+//   category image → category-{name}-image.{ext}
+//   user avatar    → user-{firstName}-{lastName}-avatar.{ext}
+//   carousel image → carousel-{title}-image.{ext}
+//   cropped image  → {original-basename}-cropped.{ext}
+//   trimmed video  → {original-basename}-trimmed.{ext}
+//   invoice        → invoice-{orderId}-{YYYYMMDD}.pdf
+//   payout doc     → payout-doc-{sellerName}-{YYYYMMDD}.pdf
+
+/** Strip the extension from a filename/path and return only the basename slug */
+function basenameStem(filenameOrPath: string): string {
+  const filename = filenameOrPath.split("/").pop() ?? filenameOrPath;
+  const dotIndex = filename.lastIndexOf(".");
+  return dotIndex > 0 ? filename.slice(0, dotIndex) : filename;
+}
+
+// ---- Product image ----
+
+export interface GenerateProductImageFilenameInput {
+  name: string;
+  category: string;
+  store: string;
+  index?: number; // 1-based, defaults to 1
+  ext?: string; // default: 'webp'
+}
+
+/**
+ * Generate product image filename.
+ * Example: product-iphone-15-pro-smartphones-techstore-image-1.webp
+ */
+export function generateProductImageFilename(
+  input: GenerateProductImageFilenameInput,
+): string {
+  const name = slugify(input.name).substring(0, 40).replace(/-+$/, "");
+  const category = slugify(input.category).substring(0, 20).replace(/-+$/, "");
+  const store = slugify(input.store).substring(0, 20).replace(/-+$/, "");
+  const n = input.index ?? 1;
+  const ext = (input.ext ?? "webp").replace(/^\./, "");
+  return `product-${name}-${category}-${store}-image-${n}.${ext}`;
+}
+
+// ---- Product video ----
+
+export interface GenerateProductVideoFilenameInput {
+  name: string;
+  category: string;
+  store: string;
+  index?: number;
+  ext?: string; // default: 'mp4'
+}
+
+/**
+ * Generate product video filename.
+ * Example: product-iphone-15-pro-smartphones-techstore-video-1.mp4
+ */
+export function generateProductVideoFilename(
+  input: GenerateProductVideoFilenameInput,
+): string {
+  const name = slugify(input.name).substring(0, 40).replace(/-+$/, "");
+  const category = slugify(input.category).substring(0, 20).replace(/-+$/, "");
+  const store = slugify(input.store).substring(0, 20).replace(/-+$/, "");
+  const n = input.index ?? 1;
+  const ext = (input.ext ?? "mp4").replace(/^\./, "");
+  return `product-${name}-${category}-${store}-video-${n}.${ext}`;
+}
+
+// ---- Auction image ----
+
+export interface GenerateAuctionImageFilenameInput {
+  name: string;
+  category: string;
+  store: string;
+  index?: number;
+  ext?: string; // default: 'webp'
+}
+
+/**
+ * Generate auction image filename.
+ * Example: auction-vintage-watch-watches-collectibles-image-1.webp
+ */
+export function generateAuctionImageFilename(
+  input: GenerateAuctionImageFilenameInput,
+): string {
+  const name = slugify(input.name).substring(0, 40).replace(/-+$/, "");
+  const category = slugify(input.category).substring(0, 20).replace(/-+$/, "");
+  const store = slugify(input.store).substring(0, 20).replace(/-+$/, "");
+  const n = input.index ?? 1;
+  const ext = (input.ext ?? "webp").replace(/^\./, "");
+  return `auction-${name}-${category}-${store}-image-${n}.${ext}`;
+}
+
+// ---- Pre-order image ----
+
+export interface GeneratePreOrderImageFilenameInput {
+  name: string;
+  category: string;
+  store: string;
+  index?: number;
+  ext?: string; // default: 'webp'
+}
+
+/**
+ * Generate pre-order image filename.
+ * Example: preorder-macbook-pro-m4-laptops-techstore-image-1.webp
+ */
+export function generatePreOrderImageFilename(
+  input: GeneratePreOrderImageFilenameInput,
+): string {
+  const name = slugify(input.name).substring(0, 40).replace(/-+$/, "");
+  const category = slugify(input.category).substring(0, 20).replace(/-+$/, "");
+  const store = slugify(input.store).substring(0, 20).replace(/-+$/, "");
+  const n = input.index ?? 1;
+  const ext = (input.ext ?? "webp").replace(/^\./, "");
+  return `preorder-${name}-${category}-${store}-image-${n}.${ext}`;
+}
+
+// ---- Store logo / banner ----
+
+/**
+ * Generate store logo filename.
+ * Example: store-figurevault-jp-logo.webp
+ */
+export function generateStoreLogoFilename(
+  storeName: string,
+  ext: string = "webp",
+): string {
+  const store = slugify(storeName).substring(0, 40).replace(/-+$/, "");
+  const cleanExt = ext.replace(/^\./, "");
+  return `store-${store}-logo.${cleanExt}`;
+}
+
+/**
+ * Generate store banner filename.
+ * Example: store-figurevault-jp-banner.webp
+ */
+export function generateStoreBannerFilename(
+  storeName: string,
+  ext: string = "webp",
+): string {
+  const store = slugify(storeName).substring(0, 40).replace(/-+$/, "");
+  const cleanExt = ext.replace(/^\./, "");
+  return `store-${store}-banner.${cleanExt}`;
+}
+
+// ---- Blog post image ----
+
+export interface GenerateBlogImageFilenameInput {
+  title: string;
+  category: string;
+  index?: number;
+  ext?: string; // default: 'webp'
+}
+
+/**
+ * Generate blog post image filename.
+ * Example: blog-top-10-rarest-anime-figures-guides-image-1.webp
+ */
+export function generateBlogImageFilename(
+  input: GenerateBlogImageFilenameInput,
+): string {
+  const title = slugify(input.title).substring(0, 40).replace(/-+$/, "");
+  const category = slugify(input.category).substring(0, 20).replace(/-+$/, "");
+  const n = input.index ?? 1;
+  const ext = (input.ext ?? "webp").replace(/^\./, "");
+  return `blog-${title}-${category}-image-${n}.${ext}`;
+}
+
+// ---- Event image ----
+
+export interface GenerateEventImageFilenameInput {
+  title: string;
+  index?: number;
+  ext?: string; // default: 'webp'
+}
+
+/**
+ * Generate event image filename.
+ * Example: event-tokyo-toys-expo-2026-image-1.webp
+ */
+export function generateEventImageFilename(
+  input: GenerateEventImageFilenameInput,
+): string {
+  const title = slugify(input.title).substring(0, 50).replace(/-+$/, "");
+  const n = input.index ?? 1;
+  const ext = (input.ext ?? "webp").replace(/^\./, "");
+  return `event-${title}-image-${n}.${ext}`;
+}
+
+// ---- Category image ----
+
+/**
+ * Generate category image filename.
+ * Example: category-smartphones-image.webp
+ */
+export function generateCategoryImageFilename(
+  categoryName: string,
+  ext: string = "webp",
+): string {
+  const name = slugify(categoryName).substring(0, 40).replace(/-+$/, "");
+  const cleanExt = ext.replace(/^\./, "");
+  return `category-${name}-image.${cleanExt}`;
+}
+
+// ---- User avatar ----
+
+/**
+ * Generate user avatar filename.
+ * Example: user-john-doe-avatar.webp
+ */
+export function generateUserAvatarFilename(
+  firstName: string,
+  lastName: string,
+  ext: string = "webp",
+): string {
+  const first = slugify(firstName).substring(0, 20).replace(/-+$/, "");
+  const last = slugify(lastName).substring(0, 20).replace(/-+$/, "");
+  const cleanExt = ext.replace(/^\./, "");
+  return `user-${first}-${last}-avatar.${cleanExt}`;
+}
+
+// ---- Carousel image ----
+
+/**
+ * Generate carousel slide image filename.
+ * Example: carousel-winter-sale-image.webp
+ */
+export function generateCarouselImageFilename(
+  title: string,
+  ext: string = "webp",
+): string {
+  const slug = slugify(title).substring(0, 40).replace(/-+$/, "");
+  const cleanExt = ext.replace(/^\./, "");
+  return `carousel-${slug}-image.${cleanExt}`;
+}
+
+// ---- Cropped image ----
+
+/**
+ * Generate cropped image filename derived from the original file's basename.
+ * Example: product-iphone-15-pro-smartphones-techstore-image-1-cropped.webp
+ *
+ * @param originalFilenameOrPath - Filename or Storage path of the source file
+ * @param ext - Output extension (defaults to original extension or 'webp')
+ */
+export function generateCroppedImageFilename(
+  originalFilenameOrPath: string,
+  ext?: string,
+): string {
+  const stem = basenameStem(originalFilenameOrPath);
+  const originalExt = originalFilenameOrPath.includes(".")
+    ? originalFilenameOrPath.split(".").pop()!
+    : "webp";
+  const cleanExt = (ext ?? originalExt).replace(/^\./, "");
+  return `${stem}-cropped.${cleanExt}`;
+}
+
+// ---- Trimmed video ----
+
+/**
+ * Generate trimmed video filename derived from the original file's basename.
+ * Example: product-iphone-15-pro-smartphones-techstore-video-1-trimmed.mp4
+ *
+ * @param originalFilenameOrPath - Filename or Storage path of the source file
+ * @param ext - Output extension (defaults to original extension or 'mp4')
+ */
+export function generateTrimmedVideoFilename(
+  originalFilenameOrPath: string,
+  ext?: string,
+): string {
+  const stem = basenameStem(originalFilenameOrPath);
+  const originalExt = originalFilenameOrPath.includes(".")
+    ? originalFilenameOrPath.split(".").pop()!
+    : "mp4";
+  const cleanExt = (ext ?? originalExt).replace(/^\./, "");
+  return `${stem}-trimmed.${cleanExt}`;
+}
+
+// ---- Invoice PDF ----
+
+/**
+ * Generate invoice filename tied to the order ID and date.
+ * Example: invoice-order-3-20260301-a7b2c9-20260301.pdf
+ *
+ * @param orderId  - The SEO-friendly order ID (e.g. `order-3-20260301-a7b2c9`)
+ * @param date     - Invoice date (defaults to today)
+ */
+export function generateInvoiceFilename(
+  orderId: string,
+  date: Date = new Date(),
+): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const dateStr = `${year}${month}${day}`;
+  return `invoice-${orderId}-${dateStr}.pdf`;
+}
+
+// ---- Payout document PDF ----
+
+/**
+ * Generate payout document filename tied to the seller and date.
+ * Example: payout-doc-figurevault-jp-20260301.pdf
+ *
+ * @param sellerName - Seller display name
+ * @param date       - Payout date (defaults to today)
+ */
+export function generatePayoutDocFilename(
+  sellerName: string,
+  date: Date = new Date(),
+): string {
+  const seller = slugify(sellerName).substring(0, 30).replace(/-+$/, "");
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const dateStr = `${year}${month}${day}`;
+  return `payout-doc-${seller}-${dateStr}.pdf`;
+}
+
+// ---- Unified dispatcher ----
+
+export type MediaFilenameContext =
+  | ({ type: "product-image" } & GenerateProductImageFilenameInput)
+  | ({ type: "product-video" } & GenerateProductVideoFilenameInput)
+  | ({ type: "auction-image" } & GenerateAuctionImageFilenameInput)
+  | ({ type: "preorder-image" } & GeneratePreOrderImageFilenameInput)
+  | { type: "store-logo"; store: string; ext?: string }
+  | { type: "store-banner"; store: string; ext?: string }
+  | ({ type: "blog-image" } & GenerateBlogImageFilenameInput)
+  | ({ type: "event-image" } & GenerateEventImageFilenameInput)
+  | { type: "category-image"; name: string; ext?: string }
+  | { type: "user-avatar"; firstName: string; lastName: string; ext?: string }
+  | { type: "carousel-image"; title: string; ext?: string }
+  | { type: "invoice"; orderId: string; date?: Date; ext?: string }
+  | { type: "payout-doc"; sellerName: string; date?: Date; ext?: string };
+
+/**
+ * Unified dispatcher — returns a SEO-friendly filename for any media context.
+ *
+ * @example
+ * generateMediaFilename({ type: 'product-image', name: 'iPhone 15 Pro', category: 'Smartphones', store: 'TechStore', index: 2 })
+ * // → "product-iphone-15-pro-smartphones-techstore-image-2.webp"
+ */
+export function generateMediaFilename(ctx: MediaFilenameContext): string {
+  switch (ctx.type) {
+    case "product-image":
+      return generateProductImageFilename(ctx);
+    case "product-video":
+      return generateProductVideoFilename(ctx);
+    case "auction-image":
+      return generateAuctionImageFilename(ctx);
+    case "preorder-image":
+      return generatePreOrderImageFilename(ctx);
+    case "store-logo":
+      return generateStoreLogoFilename(ctx.store, ctx.ext);
+    case "store-banner":
+      return generateStoreBannerFilename(ctx.store, ctx.ext);
+    case "blog-image":
+      return generateBlogImageFilename(ctx);
+    case "event-image":
+      return generateEventImageFilename(ctx);
+    case "category-image":
+      return generateCategoryImageFilename(ctx.name, ctx.ext);
+    case "user-avatar":
+      return generateUserAvatarFilename(ctx.firstName, ctx.lastName, ctx.ext);
+    case "carousel-image":
+      return generateCarouselImageFilename(ctx.title, ctx.ext);
+    case "invoice":
+      return generateInvoiceFilename(ctx.orderId, ctx.date);
+    case "payout-doc":
+      return generatePayoutDocFilename(ctx.sellerName, ctx.date);
+  }
+}
+
+// ============================================
 // HELPER: CHECK IF ID EXISTS
 // ============================================
 
@@ -485,4 +873,32 @@ export async function generateUniqueId(
   const baseId = generateId(maxAttempts);
   const random = generateRandomString(4);
   return `${baseId}-${random}`;
+}
+
+// ─── Barcode / QR helpers ────────────────────────────────────────────────────
+
+/**
+ * Generates a numeric EAN-12-compatible barcode string from a document ID.
+ * Extracts any digit runs from the ID; pads or trims to 12 digits.
+ */
+export function generateBarcodeFromId(id: string): string {
+  const digits = id.replace(/\D/g, "");
+  if (digits.length >= 12) return digits.slice(0, 12);
+  return digits.padEnd(12, "0");
+}
+
+/**
+ * Generates the deep-link URL to embed in a QR code for a given document ID.
+ * Infers the path type from the ID prefix.
+ */
+export function generateQRCodeData(
+  id: string,
+  baseUrl: string = "https://letitrip.in",
+): string {
+  if (id.startsWith("product-")) return `${baseUrl}/products/${id}`;
+  if (id.startsWith("auction-")) return `${baseUrl}/auctions/${id}`;
+  if (id.startsWith("category-")) return `${baseUrl}/categories/${id}`;
+  if (id.startsWith("store-")) return `${baseUrl}/stores/${id}`;
+  if (id.startsWith("event-")) return `${baseUrl}/events/${id}`;
+  return `${baseUrl}/${id}`;
 }

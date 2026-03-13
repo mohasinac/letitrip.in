@@ -98,7 +98,7 @@ async function SellerProductsSection({
                 <Text className="text-sm font-medium line-clamp-2 mb-1">
                   {product.title}
                 </Text>
-                <Text className="text-sm font-bold text-primary-600">
+                <Text className="text-sm font-bold text-primary-700 dark:text-primary-400">
                   {formatCurrency(product.price)}
                 </Text>
                 {product.isAuction && (
@@ -162,7 +162,7 @@ async function SellerReviewsSection({
             >
               <div className="flex items-start gap-3">
                 <div
-                  className={`w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 ${flex.center} text-primary-600 font-semibold text-sm flex-shrink-0`}
+                  className={`w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 ${flex.center} text-primary-800 dark:text-primary-200 font-semibold text-sm flex-shrink-0`}
                 >
                   {review.userName.charAt(0).toUpperCase()}
                 </div>
@@ -188,7 +188,7 @@ async function SellerReviewsSection({
                       {tProfile("reviewedOn")}{" "}
                       <TextLink
                         href={`/products/${review.productId}`}
-                        className="text-primary-600 hover:underline"
+                        className="text-primary-700 dark:text-primary-400 hover:underline"
                       >
                         {review.productTitle}
                       </TextLink>
@@ -225,7 +225,7 @@ export async function PublicProfileView({
   return (
     <div className={`min-h-screen ${THEME_CONSTANTS.themed.bgSecondary}`}>
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-primary-600 to-primary-800 h-48" />
+      <div className={`${THEME_CONSTANTS.accentBanner.coverStrip} h-48`} />
 
       <div className={`${page.container.md} -mt-24`}>
         {/* Profile Card */}
@@ -284,7 +284,7 @@ export async function PublicProfileView({
                 <TextLink
                   href={user.publicProfile.website}
                   variant="bare"
-                  className="flex items-center gap-1 text-primary-600 hover:underline"
+                  className="flex items-center gap-1 text-primary-700 dark:text-primary-400 hover:underline"
                 >
                   <svg
                     className="w-4 h-4"
@@ -391,7 +391,7 @@ export async function PublicProfileView({
           <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-4 mb-6">
             <Card>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary-600">
+                <div className="text-2xl font-bold text-primary-700 dark:text-primary-400">
                   {user.stats.totalOrders}
                 </div>
                 <Text variant="secondary" className="text-sm mt-1">
@@ -401,7 +401,7 @@ export async function PublicProfileView({
             </Card>
             <Card>
               <div className="text-center">
-                <div className="text-2xl font-bold text-success-600">
+                <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                   {user.stats.auctionsWon}
                 </div>
                 <Text variant="secondary" className="text-sm mt-1">
@@ -411,7 +411,7 @@ export async function PublicProfileView({
             </Card>
             <Card>
               <div className="text-center">
-                <div className="text-2xl font-bold text-warning-600">
+                <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
                   {user.stats.itemsSold}
                 </div>
                 <Text variant="secondary" className="text-sm mt-1">
@@ -421,7 +421,7 @@ export async function PublicProfileView({
             </Card>
             <Card>
               <div className="text-center">
-                <div className="text-2xl font-bold text-info-600">
+                <div className="text-2xl font-bold text-sky-600 dark:text-sky-400">
                   {user.stats.reviewsCount}
                 </div>
                 <Text variant="secondary" className="text-sm mt-1">

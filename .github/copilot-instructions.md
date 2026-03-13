@@ -51,7 +51,7 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 | [rules-services.instructions.md](.github/instructions/rules-services.instructions.md) | 20, 21 — UI→Hook→Service→apiClient chain | `src/**` |
 | [rules-media.instructions.md](.github/instructions/rules-media.instructions.md) | 28 — MediaImage/Video/Avatar/Gallery | `src/**/*.tsx` |
 | [rules-constants.instructions.md](.github/instructions/rules-constants.instructions.md) | 15, 16, 17, 18, 19 — singletons, RBAC, schema constants, ROUTES, API_ENDPOINTS | `src/**` |
-| [rules-code-quality.instructions.md](.github/instructions/rules-code-quality.instructions.md) | 22, 23, 24, 26, 27 — no dialogs, logging, build verification, tests | `src/**` |
+| [rules-code-quality.instructions.md](.github/instructions/rules-code-quality.instructions.md) | 22, 23, 24, 26, 27, 28-B, 28-C — no dialogs, logging, build verification, tests, encoding corruption | `src/**` |
 | [rules-docs-seed.instructions.md](.github/instructions/rules-docs-seed.instructions.md) | 29, 30 — seed data sync, CHANGELOG sync | `scripts/**`, `src/db/**` |
 | [rules-functions.instructions.md](.github/instructions/rules-functions.instructions.md) | 35 — scheduled jobs, Firestore triggers | `functions/**` |
 
@@ -77,6 +77,7 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 - **Cron/triggers in `functions/src/`** — never inside Next.js API routes
 - **Delete old code when replacing** — no `@deprecated` stubs, no dual implementations
 - **Build must pass**: `npx tsc --noEmit` → `npm run build` before handing back
+- **No mojibake** — if garbled characters appear (`ãÆ`, `â€™`, `Ã©`, `ï¿½`), stop and fix with `replace_string_in_file` before continuing; see Rule 28-C
 
 ## Migration State (as of 2026-03-13)
 

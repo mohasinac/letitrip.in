@@ -40,6 +40,7 @@ import {
   Span,
   TextLink,
 } from "@/components";
+import LocaleSwitcher from "./LocaleSwitcher";
 
 /** Minimal user shape required by the title bar. */
 export interface TitleBarUser {
@@ -70,6 +71,10 @@ export interface TitleBarLayoutProps {
   devSlot?: React.ReactNode;
   /** When set, renders a dismissable promo micro-strip above the header. */
   promoStripText?: string;
+  /** Current dark-mode state — used to render the correct icon and toggle. */
+  isDark?: boolean;
+  /** Called when the user clicks the theme toggle in the title bar. */
+  onToggleTheme?: () => void;
   /**
    * Optional nav slot rendered between logo and right action icons (desktop only).
    * Pass `<MainNavbar inline />` for the slim double-nav pattern.
@@ -94,6 +99,8 @@ export function TitleBarLayout({
   devSlot,
   promoStripText,
   navSlot,
+  isDark = false,
+  onToggleTheme,
   id = "title-bar",
 }: TitleBarLayoutProps) {
   const { colors, layout, zIndex, flex } = THEME_CONSTANTS;
@@ -104,13 +111,12 @@ export function TitleBarLayout({
   const showPromo = !!promoStripText && promoVisible;
 
   return (
-    <BlockHeader
-      id={id}
-      className={`sticky top-0 ${zIndex.titleBar} ${layout.titleBarBg}`}
-    >
+    <BlockHeader id={id} className={layout.titleBarBg}>
       {/* Promo micro-strip (LX-7) — dismissed locally via useState */}
       {showPromo && (
-        <div className="bg-gradient-to-r from-primary to-cobalt text-white text-xs py-1 text-center relative flex items-center justify-center px-8">
+        <div
+          className={`${THEME_CONSTANTS.accentBanner.gradient} text-white text-xs py-1 text-center relative flex items-center justify-center px-8`}
+        >
           <span>{promoStripText}</span>
           <button
             type="button"
@@ -148,15 +154,15 @@ export function TitleBarLayout({
 
         {/* Right Side Icons */}
         <div className={`${flex.rowCenter} gap-2 ml-auto`}>
-          {/* Promotions quick-access link */}
+          {/* Today's Deals quick-access link */}
           <TextLink
             href={promotionsHref}
             className={`hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-colors text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/20`}
-            aria-label={tNav("promotions")}
+            aria-label={tNav("todayDeals")}
           >
             <Tag className="w-4 h-4" aria-hidden="true" />
             <Span variant="inherit" className="hidden lg:inline">
-              {tNav("promotions")}
+              {tNav("todayDeals")}
             </Span>
           </TextLink>
           {/* Cart — hidden on mobile (available in bottom nav) */}
@@ -267,6 +273,42 @@ export function TitleBarLayout({
 
           {/* Dev-only slot (e.g. seed link) */}
           {devSlot}
+
+          {/* Desktop-only: Theme toggle + Locale switcher */}
+          {onToggleTheme && (
+            <Button
+              variant="ghost"
+              onClick={onToggleTheme}
+              className={`hidden md:flex p-2 md:p-2.5 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
+              aria-label={tA("toggleTheme")}
+            >
+              <svg
+                className={`w-5 h-5 ${THEME_CONSTANTS.colors.icon.titleBar}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                {isDark ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                )}
+              </svg>
+            </Button>
+          )}
+          <div className="hidden md:block">
+            <LocaleSwitcher />
+          </div>
 
           {/* Hamburger Menu */}
           <Button

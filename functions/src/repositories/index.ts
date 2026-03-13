@@ -32,3 +32,8 @@ export type { ReviewRatingAggregate } from "./review.repository";
 
 export { userRepository } from "./user.repository";
 export type { SellerPayoutDetails } from "./user.repository";
+
+export { categoryRepository } from "./category.repository";
+export type { CategoryRow } from "./category.repository";
+
+export { storeRepository } from "./store.repository";

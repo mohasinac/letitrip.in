@@ -129,17 +129,19 @@ export default async function SellerGuidePage() {
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}
-      <Section className="bg-gradient-to-br from-violet-600 to-indigo-800 text-white py-14 md:py-16 lg:py-20">
+      <Section
+        className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-14 md:py-16 lg:py-20`}
+      >
         <div className={`${page.container.md} text-center`}>
           <Heading level={1} variant="none" className="mb-4 text-white">
             {t("title")}
           </Heading>
-          <Text className="text-violet-200 mb-8 max-w-2xl mx-auto">
+          <Text variant="none" className="text-white/80 mb-8 max-w-2xl mx-auto">
             {t("subtitle")}
           </Text>
           <TextLink
             href={ROUTES.SELLER.DASHBOARD}
-            className="inline-flex items-center gap-2 bg-white text-indigo-700 font-semibold px-6 py-3 rounded-full hover:bg-indigo-50 transition-colors"
+            className="inline-flex items-center gap-2 bg-white text-primary-700 dark:text-secondary-700 font-semibold px-6 py-3 rounded-full hover:bg-zinc-50 dark:hover:bg-zinc-100 transition-colors"
           >
             {t("startSelling")}
           </TextLink>

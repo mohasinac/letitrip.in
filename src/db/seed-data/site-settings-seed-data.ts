@@ -5,6 +5,12 @@
 
 import type { SiteSettingsDocument } from "@/db/schema";
 
+// Dynamic date helpers
+const NOW = new Date();
+const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
+const daysAhead = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
+const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000);
+
 export const siteSettingsSeedData: Partial<SiteSettingsDocument> = {
   id: "global",
   siteName: "LetItRip",
@@ -217,6 +223,22 @@ export const siteSettingsSeedData: Partial<SiteSettingsDocument> = {
       codDeposit: 0.1, // 10%
     },
   },
-  createdAt: new Date("2024-01-01T00:00:00Z"),
-  updatedAt: new Date("2026-02-09T00:00:00Z"),
+  createdAt: daysAgo(799),
+  updatedAt: daysAgo(29),
+  navbarConfig: {
+    hiddenNavItems: [], // show all nav items by default
+  },
+  footerConfig: {
+    trustBar: {
+      enabled: true,
+      items: [
+        { icon: "🚚", label: "Free Shipping", visible: true },
+        { icon: "🔄", label: "Easy Returns", visible: true },
+        { icon: "🔒", label: "Secure Payment", visible: true },
+        { icon: "🎧", label: "24/7 Support", visible: true },
+        { icon: "✅", label: "Authentic Sellers", visible: true },
+      ],
+    },
+    newsletterEnabled: true,
+  },
 };

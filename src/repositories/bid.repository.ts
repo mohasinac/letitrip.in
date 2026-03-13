@@ -89,7 +89,7 @@ class BidRepository extends BaseRepository<BidDocument> {
       }
 
       const doc = snapshot.docs[0];
-      return { id: doc.id, ...doc.data() } as unknown as BidDocument;
+      return this.mapDoc<BidDocument>(doc);
     } catch (error) {
       throw new DatabaseError(
         `Failed to find winning bid for product: ${productId}`,
@@ -137,9 +137,7 @@ class BidRepository extends BaseRepository<BidDocument> {
         .orderBy("bidAmount", "desc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as unknown as BidDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<BidDocument>(doc));
     } catch (error) {
       throw new DatabaseError(
         `Failed to find bids for product: ${productId}`,

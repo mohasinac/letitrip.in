@@ -29,12 +29,14 @@ export async function SellersListView() {
   return (
     <div className={`${themed.bgPrimary} min-h-screen`}>
       {/* Hero */}
-      <Section className="bg-gradient-to-br from-emerald-600 via-green-600 to-teal-700 text-white py-24 px-4">
+      <Section
+        className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-24 px-4`}
+      >
         <div className="max-w-4xl mx-auto text-center">
           <Heading level={1} className="text-4xl md:text-6xl font-bold mb-6">
             {t("title")}
           </Heading>
-          <Text className="text-xl text-green-100 mb-10 max-w-2xl mx-auto">
+          <Text className="text-xl text-white mb-10 max-w-2xl mx-auto">
             {t("subtitle")}
           </Text>
           <div className="flex justify-center gap-4 flex-wrap">
@@ -49,7 +51,9 @@ export async function SellersListView() {
       </Section>
 
       {/* Stats bar */}
-      <Section className="bg-emerald-700 text-white py-6 px-4">
+      <Section
+        className={`${THEME_CONSTANTS.accentBanner.statBarBg} text-white py-6 px-4`}
+      >
         <div className="max-w-4xl mx-auto flex justify-center gap-12 flex-wrap">
           {[
             { label: t("statSellersLabel"), value: t("statSellersValue") },
@@ -62,7 +66,7 @@ export async function SellersListView() {
           ].map(({ label, value }) => (
             <div key={label} className="text-center">
               <Text className="text-2xl font-bold">{value}</Text>
-              <Text className="text-emerald-200 text-sm">{label}</Text>
+              <Text className="text-white/80 text-sm">{label}</Text>
             </div>
           ))}
         </div>
@@ -74,7 +78,7 @@ export async function SellersListView() {
           <Heading level={2} className="text-center mb-12">
             {t("whyTitle")}
           </Heading>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
             {BENEFITS.map(({ title, text, icon }) => (
               <div
                 key={title}
@@ -103,7 +107,7 @@ export async function SellersListView() {
           <Heading level={2} className="text-center mb-12">
             {t("howTitle")}
           </Heading>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-8">
             {STEPS.map(({ step, title, text }) => (
               <div key={step} className="text-center">
                 <div
@@ -145,7 +149,9 @@ export async function SellersListView() {
         </Section>
 
         {/* Final CTA */}
-        <Section className="text-center bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-12 text-white">
+        <Section
+          className={`text-center ${THEME_CONSTANTS.accentBanner.cta} rounded-2xl p-12 text-white`}
+        >
           <Heading level={2} className="text-3xl font-bold mb-4">
             {t("ctaTitle")}
           </Heading>
@@ -155,7 +161,7 @@ export async function SellersListView() {
           >
             {t("ctaButton")}
           </TextLink>
-          <Text className="mt-4 text-emerald-100 text-sm">
+          <Text className="mt-4 text-white/90 text-sm">
             {t("signInPrompt")}{" "}
             <TextLink
               href={ROUTES.AUTH.LOGIN}

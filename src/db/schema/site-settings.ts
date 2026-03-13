@@ -123,6 +123,24 @@ export interface SiteSettingsDocument {
     };
   };
   /**
+   * Navbar visibility configuration.
+   * `hiddenNavItems` holds the translation-key identifiers of nav items to hide
+   * (e.g. ["blog", "events"]). Items not listed are always shown.
+   */
+  navbarConfig?: {
+    hiddenNavItems?: string[];
+  };
+  /**
+   * Footer layout configuration.
+   */
+  footerConfig?: {
+    trustBar?: {
+      enabled?: boolean;
+      items?: TrustBarItem[];
+    };
+    newsletterEnabled?: boolean;
+  };
+  /**
    * Encrypted provider credentials (AES-256-GCM via src/lib/encryption.ts).
    * Values are encrypted blobs — never return raw to the client.
    * Empty / undefined means "fall back to environment variable".
@@ -141,6 +159,22 @@ export interface SiteSettingsDocument {
   createdAt: Date;
   updatedAt: Date;
 }
+
+/** A single chip in the footer trust bar. */
+export interface TrustBarItem {
+  icon: string;
+  label: string;
+  visible: boolean;
+}
+
+/** Default trust bar chips — used as fallback when footerConfig.trustBar.items is not set. */
+export const DEFAULT_TRUST_BAR_ITEMS: TrustBarItem[] = [
+  { icon: "🚚", label: "Free Shipping", visible: true },
+  { icon: "🔄", label: "Easy Returns", visible: true },
+  { icon: "🔒", label: "Secure Payment", visible: true },
+  { icon: "🎧", label: "24/7 Support", visible: true },
+  { icon: "✅", label: "Authentic Sellers", visible: true },
+];
 
 /** A single before/after comparison card entry for the homepage results section. */
 export interface FeaturedResult {

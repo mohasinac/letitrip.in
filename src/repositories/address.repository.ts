@@ -7,7 +7,10 @@
 
 import { getAdminDb } from "@/lib/firebase/admin";
 import { DatabaseError, NotFoundError } from "@/lib/errors";
-import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import {
+  prepareForFirestore,
+  deserializeTimestamps,
+} from "@/lib/firebase/firestore-helpers";
 import type {
   AddressDocument,
   AddressCreateInput,
@@ -40,10 +43,13 @@ class AddressRepository {
         .orderBy(ADDRESS_FIELDS.CREATED_AT, "desc")
         .get();
 
-      return snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as AddressDocument[];
+      return snapshot.docs.map(
+        (doc) =>
+          deserializeTimestamps({
+            id: doc.id,
+            ...doc.data(),
+          }) as AddressDocument,
+      );
     } catch (error) {
       throw new DatabaseError(
         `Failed to list addresses for user: ${userId}`,
@@ -64,7 +70,10 @@ class AddressRepository {
 
       if (!doc.exists) return null;
 
-      return { id: doc.id, ...doc.data() } as AddressDocument;
+      return deserializeTimestamps({
+        id: doc.id,
+        ...doc.data(),
+      }) as AddressDocument;
     } catch (error) {
       throw new DatabaseError(
         `Failed to find address ${addressId} for user ${userId}`,

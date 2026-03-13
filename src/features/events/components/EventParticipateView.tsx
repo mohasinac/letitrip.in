@@ -228,7 +228,7 @@ export function EventParticipateView({ id }: EventParticipateViewProps) {
         <Heading level={1}>{event.title}</Heading>
         {event.endsAt && (
           <Text size="sm" variant="secondary" className="mt-1">
-            {t("endsIn")}: {formatDate(event.endsAt as unknown as string)}
+            {t("endsIn")}: {formatDate(event.endsAt)}
           </Text>
         )}
         <Text variant="secondary" className="mt-2">

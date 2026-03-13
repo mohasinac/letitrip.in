@@ -150,12 +150,8 @@ export const POST = createApiHandler({
       type: body.type,
       title: body.title,
       description: body.description ?? "",
-      startsAt: new Date(
-        body.startsAt,
-      ) as unknown as import("firebase-admin/firestore").Timestamp,
-      endsAt: new Date(
-        body.endsAt,
-      ) as unknown as import("firebase-admin/firestore").Timestamp,
+      startsAt: new Date(body.startsAt),
+      endsAt: new Date(body.endsAt),
       coverImageUrl: body.coverImageUrl,
       saleConfig: body.saleConfig,
       offerConfig: body.offerConfig,

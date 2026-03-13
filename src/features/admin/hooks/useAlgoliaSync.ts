@@ -1,8 +1,6 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api-client";
-import { API_ENDPOINTS } from "@/constants";
 import { adminService } from "@/services";
 
 export type AlgoliaSyncTarget = "products" | "pages";
@@ -25,7 +23,7 @@ export interface AlgoliaSyncVars {
 export function useAlgoliaSync() {
   return useMutation<AlgoliaSyncResult, Error, AlgoliaSyncVars>({
     mutationFn: (vars) =>
-      apiClient.post<AlgoliaSyncResult>(API_ENDPOINTS.DEMO.ALGOLIA, vars),
+      adminService.algoliaDevSync(vars) as Promise<AlgoliaSyncResult>,
   });
 }
 

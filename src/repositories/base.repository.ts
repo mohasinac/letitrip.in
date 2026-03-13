@@ -18,6 +18,7 @@ import {
   CollectionReference,
   DocumentData,
   DocumentReference,
+  DocumentSnapshot,
   Firestore,
   Query,
   Transaction,
@@ -25,7 +26,10 @@ import {
 } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { DatabaseError, NotFoundError } from "@/lib/errors";
-import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
+import {
+  prepareForFirestore,
+  deserializeTimestamps,
+} from "@/lib/firebase/firestore-helpers";
 import { serverLogger } from "@/lib/server-logger";
 import type {
   FirebaseSieveFields,
@@ -57,6 +61,20 @@ export abstract class BaseRepository<T extends DocumentData> {
   }
 
   /**
+   * Map a Firestore DocumentSnapshot to a typed entity.
+   *
+   * This is the single adapter boundary for document deserialization.
+   * All Timestamp→Date conversions happen here. If the backing store
+   * ever changes, only this one method needs to be updated.
+   */
+  protected mapDoc<D = T>(snap: DocumentSnapshot): D {
+    return deserializeTimestamps({
+      id: snap.id,
+      ...(snap.data() ?? {}),
+    }) as unknown as D;
+  }
+
+  /**
    * Find document by ID
    */
   async findById(id: string): Promise<T | null> {
@@ -67,7 +85,7 @@ export abstract class BaseRepository<T extends DocumentData> {
         return null;
       }
 
-      return { id: doc.id, ...doc.data() } as unknown as T;
+      return this.mapDoc(doc);
     } catch (error) {
       throw new DatabaseError(`Failed to find document by ID: ${id}`, error);
     }
@@ -95,9 +113,7 @@ export abstract class BaseRepository<T extends DocumentData> {
         .where(field, "==", value)
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as unknown as T,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc(doc));
     } catch (error) {
       throw new DatabaseError(`Failed to find documents by ${field}`, error);
     }
@@ -118,7 +134,7 @@ export abstract class BaseRepository<T extends DocumentData> {
       }
 
       const doc = snapshot.docs[0];
-      return { id: doc.id, ...doc.data() } as unknown as T;
+      return this.mapDoc(doc);
     } catch (error) {
       throw new DatabaseError(`Failed to find document by ${field}`, error);
     }
@@ -136,9 +152,7 @@ export abstract class BaseRepository<T extends DocumentData> {
       }
 
       const snapshot = await query.get();
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as unknown as T,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc(doc));
     } catch (error) {
       throw new DatabaseError("Failed to fetch all documents", error);
     }
@@ -159,7 +173,7 @@ export abstract class BaseRepository<T extends DocumentData> {
       const docRef = await this.getCollection().add(cleanData);
 
       const doc = await docRef.get();
-      return { id: doc.id, ...doc.data() } as unknown as T;
+      return this.mapDoc(doc);
     } catch (error) {
       throw new DatabaseError("Failed to create document", error);
     }
@@ -186,7 +200,7 @@ export abstract class BaseRepository<T extends DocumentData> {
       serverLogger.info(`Document created successfully: ${id}`);
 
       const doc = await this.getCollection().doc(id).get();
-      return { id: doc.id, ...doc.data() } as unknown as T;
+      return this.mapDoc(doc);
     } catch (error: any) {
       serverLogger.error(`Failed to create document with ID: ${id}`, {
         collection: this.collection,
@@ -315,7 +329,7 @@ export abstract class BaseRepository<T extends DocumentData> {
     const docRef = this.getCollection().doc(id);
     const snap = await tx.get(docRef);
     if (!snap.exists) return null;
-    return { id: snap.id, ...snap.data() } as unknown as T;
+    return this.mapDoc(snap);
   }
 
   /**

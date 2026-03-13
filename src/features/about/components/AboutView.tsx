@@ -10,7 +10,9 @@ export async function AboutView() {
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Hero — full-bleed within the content container */}
-      <Section className="bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-white py-16 md:py-20 lg:py-24">
+      <Section
+        className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white py-16 md:py-20 lg:py-24`}
+      >
         <div className={`${page.container.md} text-center`}>
           <Heading
             level={1}
@@ -19,7 +21,10 @@ export async function AboutView() {
           >
             {t("title")}
           </Heading>
-          <Text className="text-xl text-indigo-100 max-w-2xl mx-auto">
+          <Text
+            variant="none"
+            className="text-xl text-white/80 max-w-2xl mx-auto"
+          >
             {t("subtitle")}
           </Text>
         </div>
@@ -43,7 +48,7 @@ export async function AboutView() {
           <Heading level={2} className="text-center mb-12">
             {t("howItWorksTitle")}
           </Heading>
-          <div className="grid md:grid-cols-3 xl:grid-cols-3 gap-6 md:gap-8 xl:gap-10">
+          <div className="grid md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-6 md:gap-8 xl:gap-10">
             {[
               {
                 title: t("howBuyersTitle"),
@@ -86,7 +91,7 @@ export async function AboutView() {
           <Heading level={2} className="text-center mb-12">
             {t("valuesTitle")}
           </Heading>
-          <div className="grid md:grid-cols-3 xl:grid-cols-3 gap-5 md:gap-6 xl:gap-8">
+          <div className="grid md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-5 md:gap-6 xl:gap-8">
             {[
               {
                 title: t("valuesTrust"),
@@ -145,7 +150,9 @@ export async function AboutView() {
         </Section>
 
         {/* CTA */}
-        <Section className="text-center bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 md:p-12 xl:p-16 text-white">
+        <Section
+          className={`text-center ${THEME_CONSTANTS.accentBanner.cta} rounded-2xl p-8 md:p-12 xl:p-16 text-white`}
+        >
           <Heading
             level={2}
             variant="none"
@@ -156,7 +163,7 @@ export async function AboutView() {
           <div className="flex justify-center gap-3 md:gap-4 flex-wrap">
             <TextLink
               href={ROUTES.AUTH.REGISTER}
-              className="bg-white text-indigo-600 font-semibold px-8 py-3 rounded-full hover:bg-indigo-50 transition-colors"
+              className="bg-white text-primary-700 dark:text-secondary-700 font-semibold px-8 py-3 rounded-full hover:bg-zinc-50 dark:hover:bg-zinc-100 transition-colors"
             >
               {t("ctaSell")}
             </TextLink>

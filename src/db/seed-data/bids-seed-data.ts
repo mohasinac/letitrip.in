@@ -5,6 +5,11 @@
 
 import type { BidDocument } from "@/db/schema";
 
+// ─── Dynamic date helpers ───────────────────────────────────────────────────
+const NOW = new Date();
+const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
+const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000);
+
 export const bidsSeedData: Partial<BidDocument>[] = [
   // Bid 1 - Initial bid by John
   {
@@ -19,9 +24,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-01-20T14:30:00Z"),
-    createdAt: new Date("2026-01-20T14:30:00Z"),
-    updatedAt: new Date("2026-01-21T09:15:00Z"), // Updated when outbid
+    bidDate: daysAgo(48),
+    createdAt: daysAgo(48),
+    updatedAt: daysAgo(47), // Updated when outbid
   },
   // Bid 2 - Jane outbids John
   {
@@ -36,9 +41,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-01-21T09:15:00Z"),
-    createdAt: new Date("2026-01-21T09:15:00Z"),
-    updatedAt: new Date("2026-01-22T11:20:00Z"),
+    bidDate: daysAgo(47),
+    createdAt: daysAgo(47),
+    updatedAt: daysAgo(46),
   },
   // Bid 3 - Mike enters the bidding
   {
@@ -53,9 +58,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-01-22T11:20:00Z"),
-    createdAt: new Date("2026-01-22T11:20:00Z"),
-    updatedAt: new Date("2026-01-23T15:45:00Z"),
+    bidDate: daysAgo(46),
+    createdAt: daysAgo(46),
+    updatedAt: daysAgo(45),
   },
   // Bid 4 - John raises his bid
   {
@@ -71,9 +76,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "outbid",
     isWinning: false,
     previousBidAmount: 15000,
-    bidDate: new Date("2026-01-23T15:45:00Z"),
-    createdAt: new Date("2026-01-23T15:45:00Z"),
-    updatedAt: new Date("2026-01-25T10:30:00Z"),
+    bidDate: daysAgo(45),
+    createdAt: daysAgo(45),
+    updatedAt: daysAgo(43),
   },
   // Bid 5 - Jane counters
   {
@@ -89,9 +94,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "outbid",
     isWinning: false,
     previousBidAmount: 16500,
-    bidDate: new Date("2026-01-25T10:30:00Z"),
-    createdAt: new Date("2026-01-25T10:30:00Z"),
-    updatedAt: new Date("2026-01-28T14:15:00Z"),
+    bidDate: daysAgo(43),
+    createdAt: daysAgo(43),
+    updatedAt: daysAgo(40),
   },
   // Bid 6 - Mike raises the stakes
   {
@@ -107,9 +112,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "outbid",
     isWinning: false,
     previousBidAmount: 17500,
-    bidDate: new Date("2026-01-28T14:15:00Z"),
-    createdAt: new Date("2026-01-28T14:15:00Z"),
-    updatedAt: new Date("2026-02-03T16:45:00Z"),
+    bidDate: daysAgo(40),
+    createdAt: daysAgo(40),
+    updatedAt: daysAgo(34),
   },
   // Bid 7 - John makes a strong bid
   {
@@ -125,9 +130,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "outbid",
     isWinning: false,
     previousBidAmount: 18500,
-    bidDate: new Date("2026-02-03T16:45:00Z"),
-    createdAt: new Date("2026-02-03T16:45:00Z"),
-    updatedAt: new Date("2026-02-08T18:30:00Z"),
+    bidDate: daysAgo(34),
+    createdAt: daysAgo(34),
+    updatedAt: daysAgo(29),
   },
   // Bid 8 - Jane wins with final bid (current highest)
   {
@@ -144,9 +149,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     isWinning: true, // Current highest bid
     previousBidAmount: 19500,
     autoMaxBid: 25000, // Willing to go up to ₹25,000
-    bidDate: new Date("2026-02-08T18:30:00Z"),
-    createdAt: new Date("2026-02-08T18:30:00Z"),
-    updatedAt: new Date("2026-02-08T18:30:00Z"),
+    bidDate: daysAgo(29),
+    createdAt: daysAgo(29),
+    updatedAt: daysAgo(29),
   },
 
   // ─── MacBook Pro M3 Auction Bids ──────────────────────────────────────────
@@ -163,9 +168,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-11T10:00:00Z"),
-    createdAt: new Date("2026-02-11T10:00:00Z"),
-    updatedAt: new Date("2026-02-12T11:00:00Z"),
+    bidDate: daysAgo(26),
+    createdAt: daysAgo(26),
+    updatedAt: daysAgo(25),
   },
   {
     id: "bid-macbook-m3-mike-1-20260211-d4e5f6",
@@ -178,9 +183,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-11T14:00:00Z"),
-    createdAt: new Date("2026-02-11T14:00:00Z"),
-    updatedAt: new Date("2026-02-13T09:00:00Z"),
+    bidDate: daysAgo(26),
+    createdAt: daysAgo(26),
+    updatedAt: daysAgo(24),
   },
   {
     id: "bid-macbook-m3-raj-1-20260212-g7h8i9",
@@ -193,9 +198,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-12T09:30:00Z"),
-    createdAt: new Date("2026-02-12T09:30:00Z"),
-    updatedAt: new Date("2026-02-14T16:00:00Z"),
+    bidDate: daysAgo(25),
+    createdAt: daysAgo(25),
+    updatedAt: daysAgo(23),
   },
   {
     id: "bid-macbook-m3-john-2-20260213-j1k2l3",
@@ -209,9 +214,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "outbid",
     isWinning: false,
     previousBidAmount: 100000,
-    bidDate: new Date("2026-02-13T11:00:00Z"),
-    createdAt: new Date("2026-02-13T11:00:00Z"),
-    updatedAt: new Date("2026-02-14T16:00:00Z"),
+    bidDate: daysAgo(24),
+    createdAt: daysAgo(24),
+    updatedAt: daysAgo(23),
   },
   {
     id: "bid-macbook-m3-priya-1-20260214-m4n5o6",
@@ -224,9 +229,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-14T15:00:00Z"),
-    createdAt: new Date("2026-02-14T15:00:00Z"),
-    updatedAt: new Date("2026-02-16T09:00:00Z"),
+    bidDate: daysAgo(23),
+    createdAt: daysAgo(23),
+    updatedAt: daysAgo(21),
   },
   {
     id: "bid-macbook-m3-mike-2-20260115-p7q8r9",
@@ -240,9 +245,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "outbid",
     isWinning: false,
     previousBidAmount: 103000,
-    bidDate: new Date("2026-02-16T08:30:00Z"),
-    createdAt: new Date("2026-02-16T08:30:00Z"),
-    updatedAt: new Date("2026-02-19T10:00:00Z"),
+    bidDate: daysAgo(21),
+    createdAt: daysAgo(21),
+    updatedAt: daysAgo(18),
   },
   {
     id: "bid-macbook-m3-raj-2-20260219-s1t2u3",
@@ -257,9 +262,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     isWinning: true,
     previousBidAmount: 107000,
     autoMaxBid: 130000,
-    bidDate: new Date("2026-02-19T09:45:00Z"),
-    createdAt: new Date("2026-02-19T09:45:00Z"),
-    updatedAt: new Date("2026-02-19T09:45:00Z"),
+    bidDate: daysAgo(18),
+    createdAt: daysAgo(18),
+    updatedAt: daysAgo(18),
   },
 
   // ─── NGE Evangelion Signed Poster Auction Bids ────────────────────────────
@@ -277,9 +282,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-06T12:00:00Z"),
-    createdAt: new Date("2026-02-06T12:00:00Z"),
-    updatedAt: new Date("2026-02-08T14:00:00Z"),
+    bidDate: daysAgo(31),
+    createdAt: daysAgo(31),
+    updatedAt: daysAgo(29),
   },
   {
     id: "bid-leica-m6-john-1-20260208-y7z8a9",
@@ -293,9 +298,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-08T13:30:00Z"),
-    createdAt: new Date("2026-02-08T13:30:00Z"),
-    updatedAt: new Date("2026-02-11T17:00:00Z"),
+    bidDate: daysAgo(29),
+    createdAt: daysAgo(29),
+    updatedAt: daysAgo(26),
   },
   {
     id: "bid-leica-m6-meera-2-20260211-b1c2d3",
@@ -310,9 +315,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "outbid",
     isWinning: false,
     previousBidAmount: 85000,
-    bidDate: new Date("2026-02-11T16:45:00Z"),
-    createdAt: new Date("2026-02-11T16:45:00Z"),
-    updatedAt: new Date("2026-02-15T10:00:00Z"),
+    bidDate: daysAgo(26),
+    createdAt: daysAgo(26),
+    updatedAt: daysAgo(22),
   },
   {
     id: "bid-leica-m6-jane-1-20260215-e4f5g6",
@@ -326,9 +331,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-15T09:00:00Z"),
-    createdAt: new Date("2026-02-15T09:00:00Z"),
-    updatedAt: new Date("2026-02-18T15:30:00Z"),
+    bidDate: daysAgo(22),
+    createdAt: daysAgo(22),
+    updatedAt: daysAgo(19),
   },
   {
     id: "bid-leica-m6-meera-3-20260218-h7i8j9",
@@ -344,9 +349,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     isWinning: true,
     previousBidAmount: 92000,
     autoMaxBid: 110000,
-    bidDate: new Date("2026-02-18T15:00:00Z"),
-    createdAt: new Date("2026-02-18T15:00:00Z"),
-    updatedAt: new Date("2026-02-18T15:00:00Z"),
+    bidDate: daysAgo(19),
+    createdAt: daysAgo(19),
+    updatedAt: daysAgo(19),
   },
 
   // ─── Air Jordan Auction Bids ──────────────────────────────────────────────
@@ -363,9 +368,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-09T10:00:00Z"),
-    createdAt: new Date("2026-02-09T10:00:00Z"),
-    updatedAt: new Date("2026-02-10T11:00:00Z"),
+    bidDate: daysAgo(28),
+    createdAt: daysAgo(28),
+    updatedAt: daysAgo(27),
   },
   {
     id: "bid-jordan-chicago-raj-1-20260210-n4o5p6",
@@ -378,9 +383,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-10T10:30:00Z"),
-    createdAt: new Date("2026-02-10T10:30:00Z"),
-    updatedAt: new Date("2026-02-11T12:00:00Z"),
+    bidDate: daysAgo(27),
+    createdAt: daysAgo(27),
+    updatedAt: daysAgo(26),
   },
   {
     id: "bid-jordan-chicago-priya-2-20260211-q7r8s9",
@@ -394,9 +399,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "outbid",
     isWinning: false,
     previousBidAmount: 25000,
-    bidDate: new Date("2026-02-11T11:45:00Z"),
-    createdAt: new Date("2026-02-11T11:45:00Z"),
-    updatedAt: new Date("2026-02-13T09:00:00Z"),
+    bidDate: daysAgo(26),
+    createdAt: daysAgo(26),
+    updatedAt: daysAgo(24),
   },
   {
     id: "bid-jordan-chicago-mike-1-20260213-t1u2v3",
@@ -409,9 +414,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-13T08:30:00Z"),
-    createdAt: new Date("2026-02-13T08:30:00Z"),
-    updatedAt: new Date("2026-02-15T14:00:00Z"),
+    bidDate: daysAgo(24),
+    createdAt: daysAgo(24),
+    updatedAt: daysAgo(22),
   },
   {
     id: "bid-jordan-chicago-raj-2-20260215-w4x5y6",
@@ -425,9 +430,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "outbid",
     isWinning: false,
     previousBidAmount: 27500,
-    bidDate: new Date("2026-02-15T13:00:00Z"),
-    createdAt: new Date("2026-02-15T13:00:00Z"),
-    updatedAt: new Date("2026-02-17T10:00:00Z"),
+    bidDate: daysAgo(22),
+    createdAt: daysAgo(22),
+    updatedAt: daysAgo(20),
   },
   {
     id: "bid-jordan-chicago-priya-3-20260217-z7a8b9",
@@ -441,9 +446,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "outbid",
     isWinning: false,
     previousBidAmount: 29000,
-    bidDate: new Date("2026-02-17T09:30:00Z"),
-    createdAt: new Date("2026-02-17T09:30:00Z"),
-    updatedAt: new Date("2026-02-18T11:00:00Z"),
+    bidDate: daysAgo(20),
+    createdAt: daysAgo(20),
+    updatedAt: daysAgo(19),
   },
   {
     id: "bid-jordan-chicago-raj-3-20260218-a1b2c3",
@@ -457,9 +462,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "outbid",
     isWinning: false,
     previousBidAmount: 33000,
-    bidDate: new Date("2026-02-18T11:00:00Z"),
-    createdAt: new Date("2026-02-18T11:00:00Z"),
-    updatedAt: new Date("2026-02-18T14:30:00Z"),
+    bidDate: daysAgo(19),
+    createdAt: daysAgo(19),
+    updatedAt: daysAgo(19),
   },
   {
     id: "bid-jordan-chicago-priya-4-20260218-d4e5f6",
@@ -473,9 +478,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "outbid",
     isWinning: false,
     previousBidAmount: 35000,
-    bidDate: new Date("2026-02-18T14:00:00Z"),
-    createdAt: new Date("2026-02-18T14:00:00Z"),
-    updatedAt: new Date("2026-02-19T05:30:00Z"),
+    bidDate: daysAgo(19),
+    createdAt: daysAgo(19),
+    updatedAt: daysAgo(18),
   },
   {
     id: "bid-jordan-chicago-mike-2-20260219-g7h8i9",
@@ -489,9 +494,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "outbid",
     isWinning: false,
     previousBidAmount: 31000,
-    bidDate: new Date("2026-02-19T05:30:00Z"),
-    createdAt: new Date("2026-02-19T05:30:00Z"),
-    updatedAt: new Date("2026-02-19T06:45:00Z"),
+    bidDate: daysAgo(18),
+    createdAt: daysAgo(18),
+    updatedAt: daysAgo(18),
   },
   {
     id: "bid-jordan-chicago-raj-4-20260219-j1k2l3",
@@ -505,9 +510,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "outbid",
     isWinning: false,
     previousBidAmount: 36000,
-    bidDate: new Date("2026-02-19T06:45:00Z"),
-    createdAt: new Date("2026-02-19T06:45:00Z"),
-    updatedAt: new Date("2026-02-19T07:45:00Z"),
+    bidDate: daysAgo(18),
+    createdAt: daysAgo(18),
+    updatedAt: daysAgo(18),
   },
   {
     id: "bid-jordan-chicago-meera-1-20260219-c1d2e3",
@@ -521,9 +526,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "active",
     isWinning: true,
     autoMaxBid: 45000,
-    bidDate: new Date("2026-02-19T07:45:00Z"),
-    createdAt: new Date("2026-02-19T07:45:00Z"),
-    updatedAt: new Date("2026-02-19T07:45:00Z"),
+    bidDate: daysAgo(18),
+    createdAt: daysAgo(18),
+    updatedAt: daysAgo(18),
   },
 
   // ── CANCELLED bid — user withdrew before auction ended ───────────────────
@@ -539,9 +544,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "cancelled", // ← user cancelled this bid before being outbid
     isWinning: false,
-    bidDate: new Date("2026-02-12T10:00:00Z"),
-    createdAt: new Date("2026-02-12T10:00:00Z"),
-    updatedAt: new Date("2026-02-12T11:30:00Z"), // cancellation time
+    bidDate: daysAgo(25),
+    createdAt: daysAgo(25),
+    updatedAt: daysAgo(25), // cancellation time
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -560,9 +565,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-23T10:00:00Z"),
-    createdAt: new Date("2026-02-23T10:00:00Z"),
-    updatedAt: new Date("2026-02-24T12:00:00Z"),
+    bidDate: daysAgo(14),
+    createdAt: daysAgo(14),
+    updatedAt: daysAgo(13),
   },
   {
     id: "bid-ps5-slim-ananya-1-20260224",
@@ -575,9 +580,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-24T12:00:00Z"),
-    createdAt: new Date("2026-02-24T12:00:00Z"),
-    updatedAt: new Date("2026-02-26T09:00:00Z"),
+    bidDate: daysAgo(13),
+    createdAt: daysAgo(13),
+    updatedAt: daysAgo(11),
   },
   {
     id: "bid-ps5-slim-mike-1-20260226",
@@ -590,9 +595,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-26T09:00:00Z"),
-    createdAt: new Date("2026-02-26T09:00:00Z"),
-    updatedAt: new Date("2026-02-28T14:00:00Z"),
+    bidDate: daysAgo(11),
+    createdAt: daysAgo(11),
+    updatedAt: daysAgo(9),
   },
   {
     id: "bid-ps5-slim-ravi-1-20260228",
@@ -606,9 +611,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "active",
     isWinning: true,
     autoMaxBid: 60000,
-    bidDate: new Date("2026-02-28T14:00:00Z"),
-    createdAt: new Date("2026-02-28T14:00:00Z"),
-    updatedAt: new Date("2026-02-28T14:00:00Z"),
+    bidDate: daysAgo(9),
+    createdAt: daysAgo(9),
+    updatedAt: daysAgo(9),
   },
 
   // ── AirPods Pro 2 (closing March 8) — 6 bids ─────────────────────────────
@@ -623,9 +628,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-25T10:00:00Z"),
-    createdAt: new Date("2026-02-25T10:00:00Z"),
-    updatedAt: new Date("2026-02-27T09:00:00Z"),
+    bidDate: daysAgo(12),
+    createdAt: daysAgo(12),
+    updatedAt: daysAgo(10),
   },
   {
     id: "bid-airpods-pro2-jane-1-20260227",
@@ -638,9 +643,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-27T09:00:00Z"),
-    createdAt: new Date("2026-02-27T09:00:00Z"),
-    updatedAt: new Date("2026-03-02T11:00:00Z"),
+    bidDate: daysAgo(10),
+    createdAt: daysAgo(10),
+    updatedAt: daysAgo(7),
   },
   {
     id: "bid-airpods-pro2-sneha-2-20260302",
@@ -654,9 +659,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "active",
     isWinning: true,
     autoMaxBid: 27000,
-    bidDate: new Date("2026-03-02T11:00:00Z"),
-    createdAt: new Date("2026-03-02T11:00:00Z"),
-    updatedAt: new Date("2026-03-02T11:00:00Z"),
+    bidDate: daysAgo(7),
+    createdAt: daysAgo(7),
+    updatedAt: daysAgo(7),
   },
 
   // ── Swiss TAG Heuer Watch (closing March 8) — 4 bids ─────────────────────
@@ -671,9 +676,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-20T09:00:00Z"),
-    createdAt: new Date("2026-02-20T09:00:00Z"),
-    updatedAt: new Date("2026-02-23T11:00:00Z"),
+    bidDate: daysAgo(17),
+    createdAt: daysAgo(17),
+    updatedAt: daysAgo(14),
   },
   {
     id: "bid-tagheuer-mike-1-20260223",
@@ -686,9 +691,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-23T11:00:00Z"),
-    createdAt: new Date("2026-02-23T11:00:00Z"),
-    updatedAt: new Date("2026-03-01T10:00:00Z"),
+    bidDate: daysAgo(14),
+    createdAt: daysAgo(14),
+    updatedAt: daysAgo(8),
   },
   {
     id: "bid-tagheuer-ananya-1-20260301",
@@ -702,9 +707,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "active",
     isWinning: true,
     autoMaxBid: 220000,
-    bidDate: new Date("2026-03-01T10:00:00Z"),
-    createdAt: new Date("2026-03-01T10:00:00Z"),
-    updatedAt: new Date("2026-03-01T10:00:00Z"),
+    bidDate: daysAgo(8),
+    createdAt: daysAgo(8),
+    updatedAt: daysAgo(8),
   },
 
   // ── Pioneer Hi-Fi System (closing March 9) — 5 bids ──────────────────────
@@ -720,9 +725,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-26T14:00:00Z"),
-    createdAt: new Date("2026-02-26T14:00:00Z"),
-    updatedAt: new Date("2026-02-28T10:00:00Z"),
+    bidDate: daysAgo(11),
+    createdAt: daysAgo(11),
+    updatedAt: daysAgo(9),
   },
   {
     id: "bid-pioneer-hifi-john-1-20260228",
@@ -736,9 +741,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-28T10:00:00Z"),
-    createdAt: new Date("2026-02-28T10:00:00Z"),
-    updatedAt: new Date("2026-03-03T16:00:00Z"),
+    bidDate: daysAgo(9),
+    createdAt: daysAgo(9),
+    updatedAt: daysAgo(6),
   },
   {
     id: "bid-pioneer-hifi-raj-1-20260303",
@@ -752,9 +757,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "active",
     isWinning: true,
-    bidDate: new Date("2026-03-03T16:00:00Z"),
-    createdAt: new Date("2026-03-03T16:00:00Z"),
-    updatedAt: new Date("2026-03-03T16:00:00Z"),
+    bidDate: daysAgo(6),
+    createdAt: daysAgo(6),
+    updatedAt: daysAgo(6),
   },
 
   // ── Vintage Denim Jacket (closing March 9) — 7 bids ──────────────────────
@@ -769,9 +774,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-25T09:00:00Z"),
-    createdAt: new Date("2026-02-25T09:00:00Z"),
-    updatedAt: new Date("2026-02-26T10:00:00Z"),
+    bidDate: daysAgo(12),
+    createdAt: daysAgo(12),
+    updatedAt: daysAgo(11),
   },
   {
     id: "bid-denim-jacket-jane-1-20260226",
@@ -784,9 +789,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-26T10:00:00Z"),
-    createdAt: new Date("2026-02-26T10:00:00Z"),
-    updatedAt: new Date("2026-03-01T12:00:00Z"),
+    bidDate: daysAgo(11),
+    createdAt: daysAgo(11),
+    updatedAt: daysAgo(8),
   },
   {
     id: "bid-denim-jacket-pooja-1-20260301",
@@ -799,9 +804,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "active",
     isWinning: true,
-    bidDate: new Date("2026-03-01T12:00:00Z"),
-    createdAt: new Date("2026-03-01T12:00:00Z"),
-    updatedAt: new Date("2026-03-01T12:00:00Z"),
+    bidDate: daysAgo(8),
+    createdAt: daysAgo(8),
+    updatedAt: daysAgo(8),
   },
 
   // ── Bose 700 Headphones (closing March 8) — 5 bids ───────────────────────
@@ -816,9 +821,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-24T10:00:00Z"),
-    createdAt: new Date("2026-02-24T10:00:00Z"),
-    updatedAt: new Date("2026-02-26T14:00:00Z"),
+    bidDate: daysAgo(13),
+    createdAt: daysAgo(13),
+    updatedAt: daysAgo(11),
   },
   {
     id: "bid-bose700-mike-1-20260226",
@@ -831,9 +836,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-26T14:00:00Z"),
-    createdAt: new Date("2026-02-26T14:00:00Z"),
-    updatedAt: new Date("2026-03-02T09:00:00Z"),
+    bidDate: daysAgo(11),
+    createdAt: daysAgo(11),
+    updatedAt: daysAgo(7),
   },
   {
     id: "bid-bose700-vikram-1-20260302",
@@ -847,9 +852,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "active",
     isWinning: true,
     autoMaxBid: 35000,
-    bidDate: new Date("2026-03-02T09:00:00Z"),
-    createdAt: new Date("2026-03-02T09:00:00Z"),
-    updatedAt: new Date("2026-03-02T09:00:00Z"),
+    bidDate: daysAgo(7),
+    createdAt: daysAgo(7),
+    updatedAt: daysAgo(7),
   },
 
   // ── Supreme Box Logo Tee (March 11) — 5 bids ─────────────────────────────
@@ -864,9 +869,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-28T11:00:00Z"),
-    createdAt: new Date("2026-02-28T11:00:00Z"),
-    updatedAt: new Date("2026-03-02T13:00:00Z"),
+    bidDate: daysAgo(9),
+    createdAt: daysAgo(9),
+    updatedAt: daysAgo(7),
   },
   // ── Makima 1/7 Kotobukiya (AnimeCraft Apparel) — 3 bids ──────────────────
   {
@@ -881,9 +886,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-03-02T13:00:00Z"),
-    createdAt: new Date("2026-03-02T13:00:00Z"),
-    updatedAt: new Date("2026-03-04T10:00:00Z"),
+    bidDate: daysAgo(7),
+    createdAt: daysAgo(7),
+    updatedAt: daysAgo(5),
   },
   {
     id: "bid-supreme-tee-ananya-1-20260304",
@@ -897,9 +902,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-03-04T10:00:00Z"),
-    createdAt: new Date("2026-03-04T10:00:00Z"),
-    updatedAt: new Date("2026-03-05T09:00:00Z"),
+    bidDate: daysAgo(5),
+    createdAt: daysAgo(5),
+    updatedAt: daysAgo(4),
   },
   {
     id: "bid-makima-figure-ravi-1-20260305",
@@ -913,9 +918,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "active",
     isWinning: true,
-    bidDate: new Date("2026-03-05T09:00:00Z"),
-    createdAt: new Date("2026-03-05T09:00:00Z"),
-    updatedAt: new Date("2026-03-05T09:00:00Z"),
+    bidDate: daysAgo(4),
+    createdAt: daysAgo(4),
+    updatedAt: daysAgo(4),
   },
 
   // ── Sukuna 1/6 MegaHouse (OtakuShelf) — 3 bids ──────────────────────────
@@ -931,9 +936,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-21T10:00:00Z"),
-    createdAt: new Date("2026-02-21T10:00:00Z"),
-    updatedAt: new Date("2026-02-25T12:00:00Z"),
+    bidDate: daysAgo(16),
+    createdAt: daysAgo(16),
+    updatedAt: daysAgo(12),
   },
   {
     id: "bid-trek-bike-mike-1-20260225",
@@ -947,9 +952,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-25T12:00:00Z"),
-    createdAt: new Date("2026-02-25T12:00:00Z"),
-    updatedAt: new Date("2026-03-02T08:00:00Z"),
+    bidDate: daysAgo(12),
+    createdAt: daysAgo(12),
+    updatedAt: daysAgo(7),
   },
   {
     id: "bid-trek-bike-raj-1-20260302",
@@ -964,9 +969,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     status: "active",
     isWinning: true,
     autoMaxBid: 28000,
-    bidDate: new Date("2026-03-02T08:00:00Z"),
-    createdAt: new Date("2026-03-02T08:00:00Z"),
-    updatedAt: new Date("2026-03-02T08:00:00Z"),
+    bidDate: daysAgo(7),
+    createdAt: daysAgo(7),
+    updatedAt: daysAgo(7),
   },
 
   // ── Saber Alter Wedding 1/7 (FigureVault JP) — 2 bids ───────────────────
@@ -982,9 +987,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-03-02T10:00:00Z"),
-    createdAt: new Date("2026-03-02T10:00:00Z"),
-    updatedAt: new Date("2026-03-04T15:00:00Z"),
+    bidDate: daysAgo(7),
+    createdAt: daysAgo(7),
+    updatedAt: daysAgo(5),
   },
   {
     id: "bid-hermes-scarf-pooja-1-20260304",
@@ -998,9 +1003,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "active",
     isWinning: true,
-    bidDate: new Date("2026-03-04T15:00:00Z"),
-    createdAt: new Date("2026-03-04T15:00:00Z"),
-    updatedAt: new Date("2026-03-04T15:00:00Z"),
+    bidDate: daysAgo(5),
+    createdAt: daysAgo(5),
+    updatedAt: daysAgo(5),
   },
 
   // ── Spirited Away Production Cel (OtakuShelf) — 3 bids ──────────────────
@@ -1016,9 +1021,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-03-01T09:00:00Z"),
-    createdAt: new Date("2026-03-01T09:00:00Z"),
-    updatedAt: new Date("2026-03-03T11:00:00Z"),
+    bidDate: daysAgo(8),
+    createdAt: daysAgo(8),
+    updatedAt: daysAgo(6),
   },
   {
     id: "bid-babolat-mike-1-20260303",
@@ -1032,9 +1037,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-03-03T11:00:00Z"),
-    createdAt: new Date("2026-03-03T11:00:00Z"),
-    updatedAt: new Date("2026-03-04T16:00:00Z"),
+    bidDate: daysAgo(6),
+    createdAt: daysAgo(6),
+    updatedAt: daysAgo(5),
   },
   {
     id: "bid-babolat-raj-1-20260304",
@@ -1048,9 +1053,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "active",
     isWinning: true,
-    bidDate: new Date("2026-03-04T16:00:00Z"),
-    createdAt: new Date("2026-03-04T16:00:00Z"),
-    updatedAt: new Date("2026-03-04T16:00:00Z"),
+    bidDate: daysAgo(5),
+    createdAt: daysAgo(5),
+    updatedAt: daysAgo(5),
   },
 
   // ── Charizard 1st Edition PSA 9 (AnimeCraft) — 2 bids ───────────────────
@@ -1066,9 +1071,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-02-26T14:00:00Z"),
-    createdAt: new Date("2026-02-26T14:00:00Z"),
-    updatedAt: new Date("2026-03-01T13:00:00Z"),
+    bidDate: daysAgo(11),
+    createdAt: daysAgo(11),
+    updatedAt: daysAgo(8),
   },
   {
     id: "bid-sony-a7iv-vikram-1-20260301",
@@ -1082,9 +1087,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "active",
     isWinning: true,
-    bidDate: new Date("2026-03-01T13:00:00Z"),
-    createdAt: new Date("2026-03-01T13:00:00Z"),
-    updatedAt: new Date("2026-03-01T13:00:00Z"),
+    bidDate: daysAgo(8),
+    createdAt: daysAgo(8),
+    updatedAt: daysAgo(8),
   },
 
   // ── PG Wing Zero Built (FigureVault JP) — 2 bids ────────────────────────
@@ -1100,9 +1105,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-03-02T10:00:00Z"),
-    createdAt: new Date("2026-03-02T10:00:00Z"),
-    updatedAt: new Date("2026-03-04T12:00:00Z"),
+    bidDate: daysAgo(7),
+    createdAt: daysAgo(7),
+    updatedAt: daysAgo(5),
   },
   {
     id: "bid-dyson-v15-jane-1-20260304",
@@ -1116,9 +1121,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "active",
     isWinning: true,
-    bidDate: new Date("2026-03-04T12:00:00Z"),
-    createdAt: new Date("2026-03-04T12:00:00Z"),
-    updatedAt: new Date("2026-03-04T12:00:00Z"),
+    bidDate: daysAgo(5),
+    createdAt: daysAgo(5),
+    updatedAt: daysAgo(5),
   },
 
   // ── Rem Wedding 1/7 GSC (FigureVault JP) — 2 bids ───────────────────────
@@ -1134,9 +1139,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-03-03T14:00:00Z"),
-    createdAt: new Date("2026-03-03T14:00:00Z"),
-    updatedAt: new Date("2026-03-05T08:00:00Z"),
+    bidDate: daysAgo(6),
+    createdAt: daysAgo(6),
+    updatedAt: daysAgo(4),
   },
   {
     id: "bid-nikon-z30-vikram-1-20260305",
@@ -1150,9 +1155,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "active",
     isWinning: true,
-    bidDate: new Date("2026-03-05T08:00:00Z"),
-    createdAt: new Date("2026-03-05T08:00:00Z"),
-    updatedAt: new Date("2026-03-05T08:00:00Z"),
+    bidDate: daysAgo(4),
+    createdAt: daysAgo(4),
+    updatedAt: daysAgo(4),
   },
 
   // ── Oda Signed Artbook (FigureVault JP) — 2 bids ────────────────────────
@@ -1168,9 +1173,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-03-04T10:00:00Z"),
-    createdAt: new Date("2026-03-04T10:00:00Z"),
-    updatedAt: new Date("2026-03-05T09:00:00Z"),
+    bidDate: daysAgo(5),
+    createdAt: daysAgo(5),
+    updatedAt: daysAgo(4),
   },
   {
     id: "bid-iphone15-bundle-sneha-1-20260305",
@@ -1184,9 +1189,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "active",
     isWinning: true,
-    bidDate: new Date("2026-03-05T09:00:00Z"),
-    createdAt: new Date("2026-03-05T09:00:00Z"),
-    updatedAt: new Date("2026-03-05T09:00:00Z"),
+    bidDate: daysAgo(4),
+    createdAt: daysAgo(4),
+    updatedAt: daysAgo(4),
   },
 
   // ── Makima figure 2nd wave (AnimeCraft) — 2 more bids ────────────────────
@@ -1202,9 +1207,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-03-04T11:00:00Z"),
-    createdAt: new Date("2026-03-04T11:00:00Z"),
-    updatedAt: new Date("2026-03-05T10:00:00Z"),
+    bidDate: daysAgo(5),
+    createdAt: daysAgo(5),
+    updatedAt: daysAgo(4),
   },
   {
     id: "bid-kanjeevaram-jane-1-20260305",
@@ -1218,9 +1223,9 @@ export const bidsSeedData: Partial<BidDocument>[] = [
     currency: "INR",
     status: "outbid",
     isWinning: false,
-    bidDate: new Date("2026-03-05T10:00:00Z"),
-    createdAt: new Date("2026-03-05T10:00:00Z"),
-    updatedAt: new Date("2026-03-05T10:00:00Z"),
+    bidDate: daysAgo(4),
+    createdAt: daysAgo(4),
+    updatedAt: daysAgo(4),
   },
 
   // No bids on pre-orders — tests "no bids yet" state in auction detail page

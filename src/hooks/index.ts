@@ -158,6 +158,8 @@ export type {
   CartApiResponse,
   PlaceOrderResponse,
   CreateRazorpayOrderResponse,
+  UnavailableItem,
+  PreflightResponse,
 } from "./useCheckout";
 export { useCouponValidate } from "./useCouponValidate";
 export { useMediaUpload, useMediaCrop, useMediaTrim } from "./useMediaUpload";

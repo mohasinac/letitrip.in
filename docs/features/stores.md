@@ -91,7 +91,7 @@ Static store information:
 
 ### `SellersListView` (from `features/seller/`)
 
-Listed under `/sellers` route. Similar to `StoresListView` but with seller-profile focus.
+Listed under `/sellers` route. "Become a Seller" marketing landing page — **not** a seller directory. See [features/seller.md](../features/seller.md) for full detail.
 
 ### `SellerStorefrontPage` / `SellerStorefrontView`
 

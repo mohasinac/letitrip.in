@@ -80,7 +80,7 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
       if (snapshot.empty) return null;
 
       const doc = snapshot.docs[0];
-      return { id: doc.id, ...doc.data() } as CouponDocument;
+      return this.mapDoc<CouponDocument>(doc);
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve coupon by code: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -106,7 +106,7 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
         .get();
 
       return snapshot.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }) as CouponDocument)
+        .map((doc) => this.mapDoc<CouponDocument>(doc))
         .filter((coupon) => isCouponValid(coupon)); // still checks startDate + usage
     } catch (error) {
       throw new DatabaseError(
@@ -129,9 +129,7 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
         .orderBy("createdAt", "desc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as CouponDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<CouponDocument>(doc));
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve coupons by type: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -153,9 +151,7 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
         .orderBy("createdAt", "desc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as CouponDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<CouponDocument>(doc));
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve coupons by creator: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -183,9 +179,7 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
         .orderBy(COUPON_FIELDS.VALIDITY_FIELDS.END_DATE, "asc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as CouponDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<CouponDocument>(doc));
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve expiring coupons: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -365,9 +359,7 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
         .orderBy("usedAt", "desc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as CouponUsageDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<CouponUsageDocument>(doc));
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve coupon history: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -434,9 +426,7 @@ class CouponsRepository extends BaseRepository<CouponDocument> {
         .orderBy(COUPON_FIELDS.CREATED_AT, "desc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() }) as CouponDocument,
-      );
+      return snapshot.docs.map((doc) => this.mapDoc<CouponDocument>(doc));
     } catch (error) {
       throw new DatabaseError(
         `Failed to retrieve seller coupons: ${error instanceof Error ? error.message : "Unknown error"}`,

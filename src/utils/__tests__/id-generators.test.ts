@@ -18,6 +18,23 @@ import {
   generateQRCodeData,
   idExists,
   generateUniqueId,
+  // Media filename generators
+  generateProductImageFilename,
+  generateProductVideoFilename,
+  generateAuctionImageFilename,
+  generatePreOrderImageFilename,
+  generateStoreLogoFilename,
+  generateStoreBannerFilename,
+  generateBlogImageFilename,
+  generateEventImageFilename,
+  generateCategoryImageFilename,
+  generateUserAvatarFilename,
+  generateCarouselImageFilename,
+  generateCroppedImageFilename,
+  generateTrimmedVideoFilename,
+  generateInvoiceFilename,
+  generatePayoutDocFilename,
+  generateMediaFilename,
 } from "../id-generators";
 
 describe("ID Generators", () => {
@@ -443,8 +460,305 @@ describe("ID Generators", () => {
       const generateId = (count: number) => `id-${count}`;
       const checkExists = async () => true; // Always exists
 
+      const result = await generateUniqueId(generateId, checkExists, 5);
+      // Should reach max attempts and return id-5 with random suffix
+      expect(result).toMatch(/^id-5-[a-z0-9]{4}$/);
+    });
+
+    it("should add random suffix after max attempts", async () => {
+      const generateId = (count: number) => `id-${count}`;
+      const checkExists = async () => true; // Always exists
+
       const result = await generateUniqueId(generateId, checkExists, 3);
       expect(result).toMatch(/^id-3-[a-z0-9]{4}$/);
+    });
+  });
+
+  // ============================================================
+  // MEDIA FILENAME GENERATORS
+  // ============================================================
+
+  describe("generateProductImageFilename()", () => {
+    it("should produce the correct SEO pattern", () => {
+      expect(
+        generateProductImageFilename({
+          name: "iPhone 15 Pro",
+          category: "Smartphones",
+          store: "TechStore",
+        }),
+      ).toBe("product-iphone-15-pro-smartphones-techstore-image-1.webp");
+    });
+
+    it("should respect custom index and extension", () => {
+      expect(
+        generateProductImageFilename({
+          name: "Samsung Galaxy S24",
+          category: "Smartphones",
+          store: "GadgetShop",
+          index: 3,
+          ext: "png",
+        }),
+      ).toBe("product-samsung-galaxy-s24-smartphones-gadgetshop-image-3.png");
+    });
+
+    it("should strip a leading dot from ext", () => {
+      const f = generateProductImageFilename({
+        name: "Lens",
+        category: "Cameras",
+        store: "PhotoStore",
+        ext: ".jpg",
+      });
+      expect(f).toMatch(/\.jpg$/);
+    });
+
+    it("should truncate very long names", () => {
+      const f = generateProductImageFilename({
+        name: "This Is A Product Name That Is Way Too Long For A Filename",
+        category: "Electronics",
+        store: "Store",
+      });
+      expect(f.length).toBeLessThan(120);
+    });
+  });
+
+  describe("generateProductVideoFilename()", () => {
+    it("should produce the correct SEO pattern with mp4 default", () => {
+      expect(
+        generateProductVideoFilename({
+          name: "iPhone 15 Pro",
+          category: "Smartphones",
+          store: "TechStore",
+        }),
+      ).toBe("product-iphone-15-pro-smartphones-techstore-video-1.mp4");
+    });
+
+    it("should respect custom ext", () => {
+      const f = generateProductVideoFilename({
+        name: "Demo Reel",
+        category: "Electronics",
+        store: "Store",
+        ext: "webm",
+      });
+      expect(f).toMatch(/\.webm$/);
+    });
+  });
+
+  describe("generateAuctionImageFilename()", () => {
+    it("should produce the correct SEO pattern", () => {
+      expect(
+        generateAuctionImageFilename({
+          name: "Vintage Watch",
+          category: "Watches",
+          store: "Collectibles",
+        }),
+      ).toBe("auction-vintage-watch-watches-collectibles-image-1.webp");
+    });
+  });
+
+  describe("generatePreOrderImageFilename()", () => {
+    it("should produce the correct SEO pattern", () => {
+      expect(
+        generatePreOrderImageFilename({
+          name: "MacBook Pro M4",
+          category: "Laptops",
+          store: "TechStore",
+        }),
+      ).toBe("preorder-macbook-pro-m4-laptops-techstore-image-1.webp");
+    });
+  });
+
+  describe("generateStoreLogoFilename()", () => {
+    it("should produce store-{name}-logo.webp by default", () => {
+      expect(generateStoreLogoFilename("FigureVault JP")).toBe(
+        "store-figurevault-jp-logo.webp",
+      );
+    });
+
+    it("should respect custom ext", () => {
+      expect(generateStoreLogoFilename("My Store", "png")).toBe(
+        "store-my-store-logo.png",
+      );
+    });
+  });
+
+  describe("generateStoreBannerFilename()", () => {
+    it("should produce store-{name}-banner.webp by default", () => {
+      expect(generateStoreBannerFilename("AnimeCraft")).toBe(
+        "store-animecraft-banner.webp",
+      );
+    });
+  });
+
+  describe("generateBlogImageFilename()", () => {
+    it("should produce the correct SEO pattern", () => {
+      expect(
+        generateBlogImageFilename({
+          title: "Top 10 Rarest Anime Figures",
+          category: "Guides",
+        }),
+      ).toBe("blog-top-10-rarest-anime-figures-guides-image-1.webp");
+    });
+
+    it("should respect index", () => {
+      const f = generateBlogImageFilename({
+        title: "My Post",
+        category: "News",
+        index: 2,
+      });
+      expect(f).toContain("image-2");
+    });
+  });
+
+  describe("generateEventImageFilename()", () => {
+    it("should produce the correct SEO pattern", () => {
+      expect(
+        generateEventImageFilename({ title: "Tokyo Toys Expo 2026" }),
+      ).toBe("event-tokyo-toys-expo-2026-image-1.webp");
+    });
+  });
+
+  describe("generateCategoryImageFilename()", () => {
+    it("should produce category-{name}-image.webp", () => {
+      expect(generateCategoryImageFilename("Smartphones")).toBe(
+        "category-smartphones-image.webp",
+      );
+    });
+  });
+
+  describe("generateUserAvatarFilename()", () => {
+    it("should produce user-{first}-{last}-avatar.webp", () => {
+      expect(generateUserAvatarFilename("John", "Doe")).toBe(
+        "user-john-doe-avatar.webp",
+      );
+    });
+
+    it("should slugify unicode names", () => {
+      const f = generateUserAvatarFilename("José", "García");
+      expect(f).toMatch(/^user-/);
+      expect(f).toMatch(/-avatar\.webp$/);
+    });
+  });
+
+  describe("generateCarouselImageFilename()", () => {
+    it("should produce carousel-{slug}-image.webp", () => {
+      expect(generateCarouselImageFilename("Winter Sale")).toBe(
+        "carousel-winter-sale-image.webp",
+      );
+    });
+  });
+
+  describe("generateCroppedImageFilename()", () => {
+    it("should append -cropped to the stem", () => {
+      expect(
+        generateCroppedImageFilename(
+          "product-iphone-15-pro-smartphones-techstore-image-1.webp",
+        ),
+      ).toBe(
+        "product-iphone-15-pro-smartphones-techstore-image-1-cropped.webp",
+      );
+    });
+
+    it("should override extension when supplied", () => {
+      expect(
+        generateCroppedImageFilename("product-iphone-image-1.jpg", "webp"),
+      ).toBe("product-iphone-image-1-cropped.webp");
+    });
+
+    it("should work with a full storage path", () => {
+      const f = generateCroppedImageFilename(
+        "products/uid123/product-lens-cameras-store-image-2.png",
+      );
+      expect(f).toBe("product-lens-cameras-store-image-2-cropped.png");
+    });
+  });
+
+  describe("generateTrimmedVideoFilename()", () => {
+    it("should append -trimmed to the stem", () => {
+      expect(
+        generateTrimmedVideoFilename(
+          "product-iphone-15-pro-smartphones-techstore-video-1.mp4",
+        ),
+      ).toBe("product-iphone-15-pro-smartphones-techstore-video-1-trimmed.mp4");
+    });
+
+    it("should override extension when supplied", () => {
+      expect(
+        generateTrimmedVideoFilename("event-expo-video-1.mp4", "webm"),
+      ).toBe("event-expo-video-1-trimmed.webm");
+    });
+  });
+
+  describe("generateInvoiceFilename()", () => {
+    it("should produce invoice-{orderId}-{YYYYMMDD}.pdf", () => {
+      const date = new Date("2026-03-01");
+      expect(generateInvoiceFilename("order-3-20260301-a7b2c9", date)).toBe(
+        "invoice-order-3-20260301-a7b2c9-20260301.pdf",
+      );
+    });
+
+    it("should default to today's date", () => {
+      const f = generateInvoiceFilename("order-1-20260313-xyz123");
+      expect(f).toMatch(/^invoice-order-1-20260313-xyz123-\d{8}\.pdf$/);
+    });
+  });
+
+  describe("generatePayoutDocFilename()", () => {
+    it("should produce payout-doc-{seller}-{YYYYMMDD}.pdf", () => {
+      const date = new Date("2026-03-01");
+      expect(generatePayoutDocFilename("FigureVault JP", date)).toBe(
+        "payout-doc-figurevault-jp-20260301.pdf",
+      );
+    });
+  });
+
+  describe("generateMediaFilename() dispatcher", () => {
+    it("routes product-image", () => {
+      expect(
+        generateMediaFilename({
+          type: "product-image",
+          name: "iPhone 15 Pro",
+          category: "Smartphones",
+          store: "TechStore",
+        }),
+      ).toBe("product-iphone-15-pro-smartphones-techstore-image-1.webp");
+    });
+
+    it("routes product-video", () => {
+      expect(
+        generateMediaFilename({
+          type: "product-video",
+          name: "Demo",
+          category: "Electronics",
+          store: "Store",
+        }),
+      ).toBe("product-demo-electronics-store-video-1.mp4");
+    });
+
+    it("routes store-logo", () => {
+      expect(
+        generateMediaFilename({ type: "store-logo", store: "My Store" }),
+      ).toBe("store-my-store-logo.webp");
+    });
+
+    it("routes user-avatar", () => {
+      expect(
+        generateMediaFilename({
+          type: "user-avatar",
+          firstName: "Jane",
+          lastName: "Smith",
+        }),
+      ).toBe("user-jane-smith-avatar.webp");
+    });
+
+    it("routes invoice", () => {
+      const date = new Date("2026-03-13");
+      expect(
+        generateMediaFilename({
+          type: "invoice",
+          orderId: "order-2-20260313-abc123",
+          date,
+        }),
+      ).toBe("invoice-order-2-20260313-abc123-20260313.pdf");
     });
   });
 });

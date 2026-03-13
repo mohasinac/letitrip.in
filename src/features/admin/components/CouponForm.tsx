@@ -9,7 +9,7 @@
 
 import { useState, useEffect } from "react";
 import { nowISO } from "@/utils";
-import { Input, Select, Textarea, Toggle } from "@/components";
+import { Grid, Input, Select, Stack, Textarea, Toggle } from "@/components";
 import { UI_LABELS, THEME_CONSTANTS } from "@/constants";
 
 const { spacing } = THEME_CONSTANTS;
@@ -155,7 +155,7 @@ export function CouponForm({ initialData, onChange, isEdit }: CouponFormProps) {
         options={COUPON_TYPE_OPTIONS}
       />
 
-      <div className="grid grid-cols-2 gap-4">
+      <Grid className="grid-cols-2" gap="md">
         <Input
           label={
             form.type === "percentage"
@@ -176,7 +176,7 @@ export function CouponForm({ initialData, onChange, isEdit }: CouponFormProps) {
           onChange={(e) => update("maxDiscount", e.target.value)}
           placeholder="500"
         />
-      </div>
+      </Grid>
 
       <Input
         label={LABELS.MIN_PURCHASE_LABEL}
@@ -186,7 +186,7 @@ export function CouponForm({ initialData, onChange, isEdit }: CouponFormProps) {
         placeholder="999"
       />
 
-      <div className="grid grid-cols-2 gap-4">
+      <Grid className="grid-cols-2" gap="md">
         <Input
           label={LABELS.TOTAL_LIMIT_LABEL}
           type="number"
@@ -201,9 +201,9 @@ export function CouponForm({ initialData, onChange, isEdit }: CouponFormProps) {
           onChange={(e) => update("perUserLimit", e.target.value)}
           placeholder="1"
         />
-      </div>
+      </Grid>
 
-      <div className="grid grid-cols-2 gap-4">
+      <Grid className="grid-cols-2" gap="md">
         <Input
           label={LABELS.START_DATE_LABEL}
           type="date"
@@ -216,9 +216,9 @@ export function CouponForm({ initialData, onChange, isEdit }: CouponFormProps) {
           value={form.endDate}
           onChange={(e) => update("endDate", e.target.value)}
         />
-      </div>
+      </Grid>
 
-      <div className="flex flex-col gap-3 pt-2">
+      <Stack gap="3" className="pt-2">
         <Toggle
           label={LABELS.IS_ACTIVE_LABEL}
           checked={form.isActive}
@@ -229,7 +229,7 @@ export function CouponForm({ initialData, onChange, isEdit }: CouponFormProps) {
           checked={form.firstTimeUserOnly}
           onChange={(checked) => update("firstTimeUserOnly", checked)}
         />
-      </div>
+      </Stack>
     </div>
   );
 }

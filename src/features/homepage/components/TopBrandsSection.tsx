@@ -27,7 +27,7 @@ export function TopBrandsSection() {
       keyExtractor={(c) => c.id ?? c.slug}
       isLoading={isLoading}
       skeletonCount={8}
-      className="bg-gradient-to-br from-amber-50 dark:from-amber-950/20 dark:to-slate-900"
+      className="bg-gradient-to-br from-amber-50 to-amber-50/20 dark:from-amber-950/20 dark:to-slate-900"
     />
   );
 }

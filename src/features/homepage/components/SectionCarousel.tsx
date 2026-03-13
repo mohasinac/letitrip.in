@@ -278,7 +278,7 @@ export function SectionCarousel<T = unknown>({
                 className={[
                   "min-w-[200px] sm:min-w-[280px]",
                   useLightText
-                    ? "border-white/60 text-white hover:bg-white/10"
+                    ? "bg-transparent border-white/60 text-white hover:bg-white/10"
                     : "",
                 ]
                   .filter(Boolean)

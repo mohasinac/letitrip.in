@@ -305,6 +305,7 @@ export const REVIEW_FIELDS = {
   ID: "id",
   PRODUCT_ID: "productId",
   PRODUCT_TITLE: "productTitle",
+  SELLER_ID: "sellerId",
   USER_ID: "userId",
   USER_NAME: "userName",
   USER_AVATAR: "userAvatar",

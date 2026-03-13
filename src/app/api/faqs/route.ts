@@ -42,12 +42,12 @@ import type { FAQDocument } from "@/db/schema";
  * - priority: number (optional, 1-10)
  * - featured: boolean (optional)
  *
- * Ã¢Å“â€¦ Fetches FAQs via faqsRepository.findAll()
- * Ã¢Å“â€¦ Filters by category, priority, tags, showOnHomepage params
- * Ã¢Å“â€¦ Full-text search on question + answer text
- * Ã¢Å“â€¦ Sorted by priority (desc) then order (asc)
- * Ã¢Å“â€¦ Interpolates {{companyName}}, {{supportEmail}}, etc. from site settings
- * Ã¢Å“â€¦ Caching implemented with LONG preset (30 min TTL)
+ * ✅ Fetches FAQs via faqsRepository.findAll()
+ * ✅ Filters by category, priority, tags, showOnHomepage params
+ * ✅ Full-text search on question + answer text
+ * ✅ Sorted by priority (desc) then order (asc)
+ * ✅ Interpolates {{companyName}}, {{supportEmail}}, etc. from site settings
+ * ✅ Caching implemented with LONG preset (30 min TTL)
  */
 export const GET = createApiHandler({
   handler: async ({ request }) => {
@@ -250,12 +250,12 @@ export const GET = createApiHandler({
  * - tags: string[]
  * - relatedFAQs: string[]
  *
- * Ã¢Å“â€¦ Requires admin authentication via requireRoleFromRequest
- * Ã¢Å“â€¦ Validates body with faqCreateSchema (Zod)
- * Ã¢Å“â€¦ Auto-assigns order (max existing + 1)
- * Ã¢Å“â€¦ Creates FAQ via faqsRepository.create()
- * Ã¢Å“â€¦ Invalidates FAQ cache after creation
- * Ã¢Å“â€¦ Returns created FAQ with 201 status
+ * ✅ Requires admin authentication via requireRoleFromRequest
+ * ✅ Validates body with faqCreateSchema (Zod)
+ * ✅ Auto-assigns order (max existing + 1)
+ * ✅ Creates FAQ via faqsRepository.create()
+ * ✅ Invalidates FAQ cache after creation
+ * ✅ Returns created FAQ with 201 status
  * TODO (Future): Generate SEO-friendly slug for FAQ permalinks — ✅ Done
  */
 export const POST = createApiHandler<(typeof faqCreateSchema)["_output"]>({

@@ -15,8 +15,6 @@ const NAV_TRANSLATION_KEYS = [
   "events",
   "blog",
   "reviews",
-  "todayDeals",
-  "sellOnLet",
 ] as const;
 
 /**
@@ -26,16 +24,32 @@ const NAV_TRANSLATION_KEYS = [
  * array from MAIN_NAV_ITEMS and passes everything to the generic
  * NavbarLayout shell.
  */
-export default function MainNavbar({ inline = false }: { inline?: boolean }) {
+export default function MainNavbar({
+  inline = false,
+  hiddenNavItems = [],
+}: {
+  inline?: boolean;
+  hiddenNavItems?: string[];
+}) {
   const pathname = usePathname();
   const t = useTranslations("nav");
 
-  const items = MAIN_NAV_ITEMS.map((item, i) => ({
-    href: item.href,
-    label: t(NAV_TRANSLATION_KEYS[i]),
-    icon: item.icon,
-    highlighted: item.highlighted,
-  }));
+  const items = MAIN_NAV_ITEMS.filter(
+    (item) => !hiddenNavItems.includes(item.key),
+  ).map((item, i) => {
+    // Re-index after filter to map translation keys correctly
+    const keyIdx = NAV_TRANSLATION_KEYS.indexOf(
+      item.key as (typeof NAV_TRANSLATION_KEYS)[number],
+    );
+    return {
+      href: item.href,
+      label: t(
+        keyIdx !== -1 ? NAV_TRANSLATION_KEYS[keyIdx] : NAV_TRANSLATION_KEYS[i],
+      ),
+      icon: item.icon,
+      highlighted: item.highlighted,
+    };
+  });
 
   return <NavbarLayout items={items} activeHref={pathname} inline={inline} />;
 }

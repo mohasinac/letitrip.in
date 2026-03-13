@@ -89,7 +89,7 @@ Pre-order detail via `PreOrderDetailView`. Allows placing a pre-order deposit.
 ## Sellers & Stores
 
 **Route:** `/sellers`  
-`SellersListView` — directory of all approved seller stores with search.
+`SellersListView` — "Become a Seller" marketing landing page with hero, benefits grid, how-it-works steps, stats, FAQs, and register CTA.
 
 **Route:** `/sellers/[id]`  
 `SellerStorefrontPage` — seller's public storefront with products and reviews.

@@ -13,6 +13,7 @@ export interface ReviewDocument {
   id: string;
   productId: string;
   productTitle: string;
+  sellerId?: string; // Seller who owns the reviewed product (denormalized for analytics)
   userId: string;
   userName: string;
   userAvatar?: string;

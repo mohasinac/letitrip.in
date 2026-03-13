@@ -33,9 +33,9 @@ export const THEME_CONSTANTS = {
   // Themed classes (responsive to dark mode) — slate dark backgrounds (navy-tinted)
   themed: {
     // Backgrounds — white base in light, navy-tinted slate in dark
-    bgPrimary: "bg-white dark:bg-slate-950",
-    bgSecondary: "bg-zinc-50 dark:bg-slate-900",
-    bgTertiary: "bg-zinc-100 dark:bg-slate-800",
+    bgPrimary: "bg-zinc-50 dark:bg-slate-950",
+    bgSecondary: "bg-zinc-100 dark:bg-slate-900",
+    bgTertiary: "bg-zinc-200 dark:bg-slate-800",
     bgElevated: "bg-white dark:bg-slate-900/90",
     bgInput: "bg-white dark:bg-slate-800/60",
 
@@ -98,7 +98,7 @@ export const THEME_CONSTANTS = {
     ctaPrimary:
       "bg-white text-secondary-700 font-bold px-8 py-4 rounded-full text-lg hover:bg-secondary-50 transition-colors shadow-lg",
     ctaOutline:
-      "border-2 border-white text-white font-semibold px-8 py-4 rounded-full text-lg hover:bg-white/10 transition-colors",
+      "border-2 border-white text-white font-semibold px-8 py-4 rounded-full text-lg hover:bg-white/10 transition-colors bg-transparent",
   },
 
   /**
@@ -183,6 +183,23 @@ export const THEME_CONSTANTS = {
     pageY: "py-6 sm:py-8 lg:py-10",
     sectionGap: "mt-8 md:mt-12",
     cardPadding: "p-5 sm:p-6 lg:p-8",
+    /**
+     * Gap token map — use with `Grid`, `Row`, and `Stack` primitives, or
+     * directly as `className={THEME_CONSTANTS.spacing.gap.md}`.
+     * Mirrors the inlined GAP_MAP in packages/ui/src/components/Layout.tsx.
+     */
+    gap: {
+      none: "",
+      px: "gap-px",
+      xs: "gap-1",
+      sm: "gap-2",
+      "2.5": "gap-2.5",
+      "3": "gap-3",
+      md: "gap-4",
+      lg: "gap-6",
+      xl: "gap-8",
+      "2xl": "gap-12",
+    },
   },
 
   /**
@@ -343,6 +360,58 @@ export const THEME_CONSTANTS = {
   },
 
   /**
+   * Accent banner gradients
+   * Themed gradient banners: green→cobalt in light mode, pink→cobalt in dark mode.
+   * Use for promo strips, newsletter boxes, CTA panels, and spotlight sections.
+   */
+  accentBanner: {
+    // Full-width promo strip (e.g. TitleBar promo strip)
+    gradient:
+      "bg-gradient-to-r from-primary-700 to-cobalt dark:from-secondary-700 dark:to-cobalt",
+    // Semi-transparent inset boxes (e.g. footer newsletter slot)
+    gradientSubtle:
+      "bg-gradient-to-r from-primary/90 to-cobalt/80 dark:from-secondary/90 dark:to-cobalt/80",
+    // Spotlight section — light cobalt-tinted in light mode, deep navy in dark mode
+    spotlightSection:
+      "bg-gradient-to-br from-cobalt-50 via-zinc-50 to-cobalt-50 dark:from-cobalt-900 dark:via-slate-900 dark:to-cobalt-950",
+    spotlightText: "text-zinc-900 dark:text-white",
+    spotlightTextMuted: "text-zinc-500 dark:text-white/60",
+    spotlightIcon: "text-cobalt-600 dark:text-white/80",
+    spotlightIconBg: "bg-cobalt-100 dark:bg-white/10",
+    spotlightDivider: "border-cobalt-200 dark:border-white/10",
+    // Dev/admin hero banner (e.g. DemoSeedView header)
+    devHero:
+      "bg-gradient-to-br from-zinc-100 via-zinc-50 to-zinc-100 dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900",
+    devHeroText: "text-zinc-900 dark:text-white",
+    devHeroTextMuted: "text-zinc-600 dark:text-zinc-300",
+    devHeroChipBg: "bg-zinc-200 dark:bg-white/10",
+    devHeroChipText: "text-zinc-600 dark:text-zinc-300",
+    devHeroChipBoldBg: "bg-zinc-300 dark:bg-white/20",
+    devHeroChipBoldText: "text-zinc-900 dark:text-white",
+
+    // ── Page-level hero banners ────────────────────────────────────────────
+    // Used on all static/info pages (contact, help, legal, how-it-works, etc.)
+    // Light: dark-green → cobalt  |  Dark: hot-pink → cobalt
+    pageHero:
+      "bg-gradient-to-br from-primary-700 to-cobalt dark:from-secondary-700 dark:to-cobalt",
+    // CTA / marketing sections at bottom of feature pages (bg-gradient-to-r)
+    cta: "bg-gradient-to-r from-primary-700 to-cobalt dark:from-secondary-700 dark:to-cobalt",
+    // Promotions page vibrant hero (rose → pink → orange; dark: secondary pink)
+    promotionHero:
+      "bg-gradient-to-br from-rose-500 via-pink-600 to-orange-500 dark:from-secondary-700 dark:via-secondary-600 dark:to-rose-700",
+    // Cover strip for seller storefront / public profile (purely decorative h-48)
+    coverStrip:
+      "bg-gradient-to-r from-primary-700 to-cobalt dark:from-secondary-700 dark:to-cobalt",
+    // WhatsApp community card — always green (on-brand), darker in dark mode
+    whatsappCard:
+      "bg-gradient-to-br from-green-700 to-green-800 dark:from-emerald-800 dark:to-emerald-900",
+    // Solid metrics/stats bar on feature pages
+    statBarBg: "bg-primary-700 dark:bg-secondary-800",
+    // Checkbox overlay on card images (semi-transparent)
+    imageCheckbox: "bg-white/80 dark:bg-slate-800/80",
+  },
+
+  /**
    * Component-specific colors
    * Color variants for all UI components including badges, alerts, buttons, forms, navigation, etc.
    */
@@ -441,14 +510,15 @@ export const THEME_CONSTANTS = {
       text: "text-xs",
       icon: "w-6 h-6",
     },
-    // Footer colors
+    // Footer colors — adapts to light/dark mode
     footer: {
-      title: "text-zinc-900 dark:text-zinc-50",
-      text: "text-zinc-500 dark:text-zinc-400",
+      title: "text-zinc-900 dark:text-zinc-100",
+      text: "text-zinc-600 dark:text-zinc-400",
       textHover:
-        "hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors",
-      border: "border-zinc-200 dark:border-slate-800",
-      copyright: "text-zinc-400 dark:text-zinc-500",
+        "hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors",
+      heading: "text-zinc-600 dark:text-zinc-400",
+      border: "border-zinc-200 dark:border-white/10",
+      copyright: "text-zinc-600 dark:text-zinc-400",
     },
     // Badge/notification
     notification: {
@@ -528,7 +598,7 @@ export const THEME_CONSTANTS = {
       "scrollbar-thin [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-zinc-100 dark:[&::-webkit-scrollbar-track]:bg-slate-800/60 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-zinc-400 dark:[&::-webkit-scrollbar-thumb:hover]:bg-slate-500",
     /** Thin horizontal scrollbar for HorizontalScroller and tab strips */
     scrollbarThinX:
-      "[&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-zinc-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-zinc-400 dark:[&::-webkit-scrollbar-thumb:hover]:bg-slate-500",
+      "[&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100 dark:[&::-webkit-scrollbar-track]:bg-slate-800/60 [&::-webkit-scrollbar-thumb]:bg-zinc-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-zinc-400 dark:[&::-webkit-scrollbar-thumb:hover]:bg-slate-500",
     safeAreaBottom: "pb-[env(safe-area-inset-bottom)]",
     gradientText:
       "bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent",
@@ -1037,7 +1107,7 @@ export const THEME_CONSTANTS = {
    * Pill badge above H2, ornament row below.
    */
   sectionHeader: {
-    pill: "inline-flex items-center gap-2 rounded-full border border-primary-500/30 bg-primary-500/10 px-5 py-1.5 text-xs font-medium tracking-[0.2em] uppercase text-primary-600 dark:text-primary-400 backdrop-blur-sm",
+    pill: "inline-flex items-center gap-2 rounded-full border border-primary-500/30 bg-primary-500/10 px-5 py-1.5 text-xs font-medium tracking-[0.2em] uppercase text-primary-700 dark:text-primary-400 backdrop-blur-sm",
     ornament:
       "flex items-center gap-2 mt-1 text-zinc-400 dark:text-zinc-500 text-xs select-none",
   },
@@ -1048,9 +1118,11 @@ export const THEME_CONSTANTS = {
    */
   carousel: {
     arrow:
-      "w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-md border border-zinc-200 dark:border-slate-700 hover:-translate-y-0.5 hover:shadow-lg active:scale-95 transition-all duration-200 flex items-center justify-center",
-    dotActive: "w-8 h-2 rounded-full bg-white transition-all duration-500",
-    dotInactive: "w-2 h-2 rounded-full bg-white/40 transition-all duration-500",
+      "w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-md border border-zinc-300 dark:border-slate-600 text-zinc-700 dark:text-zinc-200 hover:-translate-y-0.5 hover:shadow-lg hover:border-zinc-400 dark:hover:border-slate-500 active:scale-95 transition-all duration-200 flex items-center justify-center",
+    dotActive:
+      "w-8 h-2 !min-h-0 rounded-full bg-white shadow-sm transition-all duration-500",
+    dotInactive:
+      "w-2 h-2 !min-h-0 rounded-full bg-white/55 shadow-sm transition-all duration-500",
   },
 
   /**

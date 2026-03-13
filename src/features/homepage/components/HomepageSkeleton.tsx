@@ -27,7 +27,7 @@ export function HomepageSkeleton() {
       {/* Top Categories skeleton — 6 cards */}
       <Section className={`p-8 ${THEME_CONSTANTS.themed.bgSecondary}`}>
         <div className={`${skeleton.heading} w-48 mx-auto mb-6`} />
-        <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className={`${skeleton.card} h-[8rem]`} />
           ))}
@@ -40,7 +40,7 @@ export function HomepageSkeleton() {
           <div className={`${skeleton.heading} w-52`} />
           <div className={`${skeleton.text} w-24`} />
         </div>
-        <div className="grid grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex flex-col gap-2">
               <div className={`${skeleton.image} w-full pb-[100%]`} />
@@ -57,7 +57,7 @@ export function HomepageSkeleton() {
           <div className={`${skeleton.heading} w-56`} />
           <div className={`${skeleton.text} w-24`} />
         </div>
-        <div className="grid grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex flex-col gap-2">
               <div className={`${skeleton.image} w-full pb-[100%]`} />

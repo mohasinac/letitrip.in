@@ -5,6 +5,12 @@
 
 import type { CouponDocument } from "@/db/schema";
 
+// Dynamic date helpers
+const NOW = new Date();
+const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
+const daysAhead = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
+const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000);
+
 export const couponsSeedData: Partial<CouponDocument>[] = [
   // Percentage discount coupons
   {
@@ -24,8 +30,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 245,
     },
     validity: {
-      startDate: new Date("2024-01-01T00:00:00Z"),
-      endDate: new Date("2026-12-31T23:59:59Z"),
+      startDate: daysAgo(799),
+      endDate: daysAhead(297),
       isActive: true,
     },
     restrictions: {
@@ -33,8 +39,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       combineWithSellerCoupons: false,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2024-01-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-09T00:00:00Z"),
+    createdAt: daysAgo(799),
+    updatedAt: daysAgo(29),
     stats: {
       totalUses: 245,
       totalRevenue: 1225000,
@@ -58,8 +64,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 178,
     },
     validity: {
-      startDate: new Date("2026-02-01T00:00:00Z"),
-      endDate: new Date("2026-02-28T23:59:59Z"),
+      startDate: daysAgo(37),
+      endDate: daysAgo(9),
       isActive: false,
     },
     restrictions: {
@@ -67,8 +73,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       combineWithSellerCoupons: false,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-01-25T00:00:00Z"),
-    updatedAt: new Date("2026-02-09T00:00:00Z"),
+    createdAt: daysAgo(44),
+    updatedAt: daysAgo(29),
     stats: {
       totalUses: 178,
       totalRevenue: 3560000,
@@ -92,8 +98,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 89,
     },
     validity: {
-      startDate: new Date("2026-02-05T00:00:00Z"),
-      endDate: new Date("2026-02-20T23:59:59Z"),
+      startDate: daysAgo(33),
+      endDate: daysAgo(17),
       isActive: false,
     },
     restrictions: {
@@ -102,8 +108,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       combineWithSellerCoupons: true,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-02-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-09T00:00:00Z"),
+    createdAt: daysAgo(37),
+    updatedAt: daysAgo(29),
     stats: {
       totalUses: 89,
       totalRevenue: 4450000,
@@ -128,8 +134,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 412,
     },
     validity: {
-      startDate: new Date("2026-01-15T00:00:00Z"),
-      endDate: new Date("2026-03-31T23:59:59Z"),
+      startDate: daysAgo(54),
+      endDate: daysAhead(22),
       isActive: true,
     },
     restrictions: {
@@ -137,8 +143,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       combineWithSellerCoupons: true,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-01-10T00:00:00Z"),
-    updatedAt: new Date("2026-02-09T00:00:00Z"),
+    createdAt: daysAgo(59),
+    updatedAt: daysAgo(29),
     stats: {
       totalUses: 412,
       totalRevenue: 2060000,
@@ -161,8 +167,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 56,
     },
     validity: {
-      startDate: new Date("2026-02-01T00:00:00Z"),
-      endDate: new Date("2026-02-15T23:59:59Z"),
+      startDate: daysAgo(37),
+      endDate: daysAgo(22),
       isActive: false,
     },
     restrictions: {
@@ -170,8 +176,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       combineWithSellerCoupons: false,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-01-28T00:00:00Z"),
-    updatedAt: new Date("2026-02-09T00:00:00Z"),
+    createdAt: daysAgo(41),
+    updatedAt: daysAgo(29),
     stats: {
       totalUses: 56,
       totalRevenue: 840000,
@@ -196,8 +202,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 1234,
     },
     validity: {
-      startDate: new Date("2026-01-01T00:00:00Z"),
-      endDate: new Date("2026-12-31T23:59:59Z"),
+      startDate: daysAgo(68),
+      endDate: daysAhead(297),
       isActive: true,
     },
     restrictions: {
@@ -205,8 +211,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       combineWithSellerCoupons: true,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2025-12-15T00:00:00Z"),
-    updatedAt: new Date("2026-02-09T00:00:00Z"),
+    createdAt: daysAgo(85),
+    updatedAt: daysAgo(29),
     stats: {
       totalUses: 1234,
       totalRevenue: 6170000,
@@ -240,8 +246,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 34,
     },
     validity: {
-      startDate: new Date("2026-02-01T00:00:00Z"),
-      endDate: new Date("2026-02-28T23:59:59Z"),
+      startDate: daysAgo(37),
+      endDate: daysAgo(9),
       isActive: false,
     },
     restrictions: {
@@ -254,8 +260,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       combineWithSellerCoupons: false,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-01-25T00:00:00Z"),
-    updatedAt: new Date("2026-02-09T00:00:00Z"),
+    createdAt: daysAgo(44),
+    updatedAt: daysAgo(29),
     stats: {
       totalUses: 34,
       totalRevenue: 204000,
@@ -280,8 +286,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 12,
     },
     validity: {
-      startDate: new Date("2026-02-05T00:00:00Z"),
-      endDate: new Date("2026-02-15T23:59:59Z"),
+      startDate: daysAgo(33),
+      endDate: daysAgo(22),
       isActive: false,
     },
     restrictions: {
@@ -290,8 +296,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       combineWithSellerCoupons: false,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-02-01T00:00:00Z"),
-    updatedAt: new Date("2026-02-09T00:00:00Z"),
+    createdAt: daysAgo(37),
+    updatedAt: daysAgo(29),
     stats: {
       totalUses: 12,
       totalRevenue: 144000,
@@ -317,8 +323,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 487,
     },
     validity: {
-      startDate: new Date("2026-01-01T00:00:00Z"),
-      endDate: new Date("2026-01-07T23:59:59Z"),
+      startDate: daysAgo(68),
+      endDate: daysAgo(61),
       isActive: false,
     },
     restrictions: {
@@ -326,8 +332,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       combineWithSellerCoupons: false,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2025-12-25T00:00:00Z"),
-    updatedAt: new Date("2026-01-08T00:00:00Z"),
+    createdAt: daysAgo(75),
+    updatedAt: daysAgo(61),
     stats: {
       totalUses: 487,
       totalRevenue: 9740000,
@@ -353,8 +359,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 67,
     },
     validity: {
-      startDate: new Date("2026-02-01T00:00:00Z"),
-      endDate: new Date("2026-02-28T23:59:59Z"),
+      startDate: daysAgo(37),
+      endDate: daysAgo(9),
       isActive: false,
     },
     restrictions: {
@@ -363,8 +369,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       combineWithSellerCoupons: false,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-01-28T00:00:00Z"),
-    updatedAt: new Date("2026-02-09T00:00:00Z"),
+    createdAt: daysAgo(41),
+    updatedAt: daysAgo(29),
     stats: {
       totalUses: 67,
       totalRevenue: 1340000,
@@ -391,8 +397,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 0,
     },
     validity: {
-      startDate: new Date("2026-03-01T00:00:00Z"),
-      endDate: new Date("2026-03-15T23:59:59Z"),
+      startDate: daysAgo(9),
+      endDate: daysAhead(6),
       isActive: true,
     },
     restrictions: {
@@ -400,8 +406,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       combineWithSellerCoupons: false,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-02-22T10:00:00Z"),
-    updatedAt: new Date("2026-02-22T10:00:00Z"),
+    createdAt: daysAgo(15),
+    updatedAt: daysAgo(15),
     stats: {
       totalUses: 0,
       totalRevenue: 0,
@@ -428,8 +434,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 0,
     },
     validity: {
-      startDate: new Date("2026-03-01T00:00:00Z"),
-      endDate: new Date("2026-03-31T23:59:59Z"),
+      startDate: daysAgo(9),
+      endDate: daysAhead(22),
       isActive: true,
     },
     restrictions: {
@@ -438,8 +444,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       combineWithSellerCoupons: false,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-02-25T10:00:00Z"),
-    updatedAt: new Date("2026-02-25T10:00:00Z"),
+    createdAt: daysAgo(12),
+    updatedAt: daysAgo(12),
     stats: {
       totalUses: 0,
       totalRevenue: 0,
@@ -466,8 +472,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 0,
     },
     validity: {
-      startDate: new Date("2026-04-29T00:00:00Z"),
-      endDate: new Date("2026-05-05T23:59:59Z"),
+      startDate: daysAhead(51),
+      endDate: daysAhead(57),
       isActive: true,
     },
     restrictions: {
@@ -475,8 +481,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       combineWithSellerCoupons: false,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-03-20T10:00:00Z"),
-    updatedAt: new Date("2026-03-20T10:00:00Z"),
+    createdAt: daysAhead(11),
+    updatedAt: daysAhead(11),
     stats: {
       totalUses: 0,
       totalRevenue: 0,
@@ -502,8 +508,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       currentUsage: 0,
     },
     validity: {
-      startDate: new Date("2026-03-01T00:00:00Z"),
-      endDate: new Date("2026-03-31T23:59:59Z"),
+      startDate: daysAgo(9),
+      endDate: daysAhead(22),
       isActive: true,
     },
     restrictions: {
@@ -512,8 +518,8 @@ export const couponsSeedData: Partial<CouponDocument>[] = [
       combineWithSellerCoupons: false,
     },
     createdBy: "user-admin-user-admin",
-    createdAt: new Date("2026-02-25T10:00:00Z"),
-    updatedAt: new Date("2026-02-25T10:00:00Z"),
+    createdAt: daysAgo(12),
+    updatedAt: daysAgo(12),
     stats: {
       totalUses: 0,
       totalRevenue: 0,
