@@ -237,9 +237,9 @@ const {
 | Related products             | `useRelatedProducts(productId)`                                                                                                                                      |
 | Seller storefront            | `useSellerStorefront(sellerId)`                                                                                                                                      |
 | Promotions                   | `usePromotions()`                                                                                                                                                    |
-| RipCoin balance              | `useRipCoinBalance()`                                                                                                                                                |
-| RipCoin purchase             | `usePurchaseRipCoins()` / `useVerifyRipCoinPurchase()`                                                                                                               |
-| RipCoin history              | `useRipCoinHistory(params?)`                                                                                                                                         |
+| RC balance                   | `useRCBalance()`                                                                                                                                                     |
+| RC purchase                  | `usePurchaseRC()` / `useVerifyRCPurchase()`                                                                                                                          |
+| RC history                   | `useRCHistory(params?)`                                                                                                                                              |
 | Newsletter subscribe         | `useNewsletter()`                                                                                                                                                    |
 | Contact form                 | `useContactSubmit()`                                                                                                                                                 |
 | Media upload flow            | `useMediaUpload()`                                                                                                                                                   |

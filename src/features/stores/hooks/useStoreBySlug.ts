@@ -1,7 +1,12 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { storeService } from "@/services";
+import {
+  getStoreBySlugAction,
+  getStoreReviewsAction,
+  getStoreProductsAction,
+  getStoreAuctionsAction,
+} from "@/actions";
 import type {
   StoreDetail,
   StoreReviewsData,
@@ -15,7 +20,8 @@ import type {
 export function useStoreBySlug(storeSlug: string) {
   return useQuery<StoreDetail>({
     queryKey: ["stores", "detail", storeSlug],
-    queryFn: () => storeService.getBySlug(storeSlug),
+    queryFn: () =>
+      getStoreBySlugAction(storeSlug) as unknown as Promise<StoreDetail>,
     enabled: !!storeSlug,
   });
 }
@@ -26,7 +32,8 @@ export function useStoreBySlug(storeSlug: string) {
 export function useStoreReviews(storeSlug: string) {
   return useQuery<StoreReviewsData>({
     queryKey: ["stores", "reviews", storeSlug],
-    queryFn: () => storeService.getReviews(storeSlug),
+    queryFn: () =>
+      getStoreReviewsAction(storeSlug) as unknown as Promise<StoreReviewsData>,
     enabled: !!storeSlug,
   });
 }
@@ -38,7 +45,16 @@ export function useStoreReviews(storeSlug: string) {
 export function useStoreProducts(storeSlug: string, params?: string) {
   return useQuery<StoreProductsResponse>({
     queryKey: ["stores", "products", storeSlug, params ?? ""],
-    queryFn: () => storeService.getProducts(storeSlug, params ?? ""),
+    queryFn: async () => {
+      const sp = new URLSearchParams(params ?? "");
+      const result = await getStoreProductsAction(storeSlug, {
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+      return result as unknown as StoreProductsResponse;
+    },
     enabled: !!storeSlug,
   });
 }
@@ -50,7 +66,16 @@ export function useStoreProducts(storeSlug: string, params?: string) {
 export function useStoreAuctions(storeSlug: string, params?: string) {
   return useQuery<StoreAuctionsResponse>({
     queryKey: ["stores", "auctions", storeSlug, params ?? ""],
-    queryFn: () => storeService.getAuctions(storeSlug, params ?? ""),
+    queryFn: async () => {
+      const sp = new URLSearchParams(params ?? "");
+      const result = await getStoreAuctionsAction(storeSlug, {
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+      return result as unknown as StoreAuctionsResponse;
+    },
     enabled: !!storeSlug,
   });
 }

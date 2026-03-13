@@ -127,7 +127,9 @@ export function ProductImageGallery({
                 className="absolute inset-0 cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
               />
               {/* ZoomIn hint — centered on hover */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+              <div
+                className={`absolute inset-0 ${THEME_CONSTANTS.flex.center} opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none`}
+              >
                 <ZoomIn
                   className="h-6 w-6 text-white drop-shadow-lg"
                   aria-hidden="true"

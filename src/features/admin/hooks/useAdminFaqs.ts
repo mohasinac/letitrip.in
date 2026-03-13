@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { faqService } from "@/services";
 import {
+  listFaqsAction,
   adminCreateFaqAction,
   adminUpdateFaqAction,
   adminDeleteFaqAction,
@@ -25,7 +25,16 @@ interface FAQsListResponse {
 export function useAdminFaqs(paramsString: string) {
   const query = useQuery<FAQsListResponse | FAQ[]>({
     queryKey: ["faqs", "list", paramsString],
-    queryFn: () => faqService.list(paramsString),
+    queryFn: async () => {
+      const sp = new URLSearchParams(paramsString);
+      const result = await listFaqsAction({
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+      return result as unknown as FAQsListResponse;
+    },
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({

@@ -6,8 +6,8 @@
  * (COD, Razorpay online, or manual UPI via WhatsApp confirmation).
  *
  * Added flows:
- * - Third-party consent OTP: if the shipping address belongs to someone else
- *   the buyer must verify via email before advancing to step 2.
+ * - Unified OTP verification: buyer verifies identity via SMS (own phone) or
+ *   email (third-party / no-phone fallback) when placing the order.
  * - Preflight stock check: before placing the order, a non-mutating preflight
  *   call detects out-of-stock items.  The PartialOrderDialog lets the buyer
  *   skip unavailable items and continue with the rest.
@@ -22,8 +22,7 @@ import { CheckoutAddressStep } from "./CheckoutAddressStep";
 import { CheckoutOrderReview } from "./CheckoutOrderReview";
 import type { CheckoutPaymentMethod } from "./CheckoutOrderReview";
 import { OrderSummaryPanel } from "./OrderSummaryPanel";
-import { CheckoutOtpModal } from "./CheckoutOtpModal";
-import { ConsentOtpModal } from "./ConsentOtpModal";
+import { CheckoutVerifyModal } from "./CheckoutVerifyModal";
 import { PartialOrderDialog } from "./PartialOrderDialog";
 import {
   useCheckout,
@@ -118,19 +117,9 @@ export function CheckoutView() {
   const [paymentMethod, setPaymentMethod] =
     useState<CheckoutPaymentMethod>("cod");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
-  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [sellerNotes, setSellerNotes] = useState("");
   const [platformFee, setPlatformFee] = useState(0);
-
-  // ── Third-party consent state ─────────────────────────────────────────────
-  const [consentVerifiedAddressIds, setConsentVerifiedAddressIds] = useState<
-    Set<string>
-  >(new Set());
-  const [showConsentModal, setShowConsentModal] = useState(false);
-  const [consentModalData, setConsentModalData] = useState<{
-    addressId: string;
-    recipientName: string;
-  } | null>(null);
 
   // ── Partial order state ───────────────────────────────────────────────────
   const [excludedProductIds, setExcludedProductIds] = useState<string[]>([]);
@@ -208,22 +197,6 @@ export function CheckoutView() {
   const selectedAddress =
     addresses.find((a) => a.id === selectedAddressId) ?? null;
 
-  // ── Consent helpers ───────────────────────────────────────────────────────
-
-  const handleConsentRequired = (addressId: string, recipientName: string) => {
-    setConsentModalData({ addressId, recipientName });
-    setShowConsentModal(true);
-  };
-
-  const handleConsentVerified = useCallback(() => {
-    setShowConsentModal(false);
-    if (consentModalData) {
-      setConsentVerifiedAddressIds(
-        (prev) => new Set([...prev, consentModalData.addressId]),
-      );
-    }
-  }, [consentModalData]);
-
   // ── Navigation ────────────────────────────────────────────────────────────
 
   const handleNext = () => {
@@ -231,23 +204,6 @@ export function CheckoutView() {
       showError(ERROR_MESSAGES.CHECKOUT.ADDRESS_REQUIRED);
       return;
     }
-
-    // Block step 2 if the selected address requires consent and it hasn't been verified
-    const selectedAddr = addresses.find((a) => a.id === selectedAddressId);
-    if (selectedAddr) {
-      const nameMatches =
-        (selectedAddr.fullName ?? "").toLowerCase().trim() ===
-        (user?.displayName ?? "").toLowerCase().trim();
-      const requiresConsent = !nameMatches && !!user?.displayName;
-      if (
-        requiresConsent &&
-        !consentVerifiedAddressIds.has(selectedAddressId)
-      ) {
-        handleConsentRequired(selectedAddressId, selectedAddr.fullName);
-        return;
-      }
-    }
-
     setStep(2);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -345,33 +301,31 @@ export function CheckoutView() {
         setShowPartialDialog(true);
 
         if (preflight.available.length === 0) {
-          // Nothing to order — just show the dialog; stop here
           setIsPlacingOrder(false);
           return;
         }
 
-        // Store the ids to exclude and a callback so the dialog can proceed
         setExcludedProductIds(unavailableProductIds);
         setPendingOrderExec(() => () => {
           setShowPartialDialog(false);
-          setShowOtpModal(true);
+          setShowVerifyModal(true);
         });
-        return; // wait for buyer to confirm partial dialog
+        return;
       }
     } catch {
-      // Preflight is advisory — if it fails, proceed to OTP (server transaction will re-check)
+      // Preflight is advisory — proceed to OTP if it fails
     }
 
-    setShowOtpModal(true);
+    setShowVerifyModal(true);
   };
 
-  const handleOtpVerified = useCallback(() => {
-    setShowOtpModal(false);
+  const handleVerified = useCallback(() => {
+    setShowVerifyModal(false);
     executeOrder(excludedProductIds);
   }, [executeOrder, excludedProductIds]);
 
-  const handleOtpClose = useCallback(() => {
-    setShowOtpModal(false);
+  const handleVerifyClose = useCallback(() => {
+    setShowVerifyModal(false);
     setIsPlacingOrder(false);
   }, []);
 
@@ -408,22 +362,18 @@ export function CheckoutView() {
 
   return (
     <Main className={`${page.container.lg} py-8`}>
-      {/* Phone OTP modal (identity verification before payment) */}
-      <CheckoutOtpModal
-        isOpen={showOtpModal}
-        phoneNumber={user?.phoneNumber ?? null}
-        onVerified={handleOtpVerified}
-        onClose={handleOtpClose}
-      />
-
-      {/* Email consent OTP modal (third-party shipping address) */}
-      <ConsentOtpModal
-        isOpen={showConsentModal}
-        addressId={consentModalData?.addressId ?? ""}
-        recipientName={consentModalData?.recipientName ?? ""}
-        onVerified={handleConsentVerified}
-        onClose={() => setShowConsentModal(false)}
-      />
+      {/* Unified checkout verification OTP modal (identity + consent) */}
+      {selectedAddress && (
+        <CheckoutVerifyModal
+          isOpen={showVerifyModal}
+          addressId={selectedAddress.id}
+          addressPhone={selectedAddress.phone}
+          buyerPhone={user?.phoneNumber ?? null}
+          recipientName={selectedAddress.fullName}
+          onVerified={handleVerified}
+          onClose={handleVerifyClose}
+        />
+      )}
 
       {/* Partial order dialog (preflight or post-placement) */}
       <PartialOrderDialog
@@ -457,8 +407,6 @@ export function CheckoutView() {
                 selectedAddressId={selectedAddressId}
                 onSelect={setSelectedAddressId}
                 currentUserDisplayName={user?.displayName}
-                onConsentRequired={handleConsentRequired}
-                consentVerifiedAddressIds={consentVerifiedAddressIds}
               />
               {/* Next button */}
               <div className="mt-6 flex justify-between items-center">

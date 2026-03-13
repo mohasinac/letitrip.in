@@ -34,7 +34,7 @@ interface UserDetailDrawerProps {
   onRoleChange: (user: AdminUser, newRole: string) => void;
   onToggleBan: (user: AdminUser) => void;
   onDelete: (user: AdminUser) => void;
-  onAdjustRipCoins: (user: AdminUser) => void;
+  onAdjustRC: (user: AdminUser) => void;
 }
 
 const ROLES = ["user", "seller", "moderator", "admin"] as const;
@@ -46,10 +46,10 @@ export function UserDetailDrawer({
   onRoleChange,
   onToggleBan,
   onDelete,
-  onAdjustRipCoins,
+  onAdjustRC,
 }: UserDetailDrawerProps) {
   const t = useTranslations("adminUsers");
-  const tRipCoins = useTranslations("adminRipCoins");
+  const tRC = useTranslations("adminRC");
   const tRoles = useTranslations("roles");
   if (!user) return null;
 
@@ -119,21 +119,21 @@ export function UserDetailDrawer({
           </div>
         </Grid>
 
-        {/* RipCoins */}
+        {/* RC */}
         <div className={`pt-4 border-t ${themed.border}`}>
-          <div className="flex items-center justify-between mb-2">
-            <Label>{tRipCoins("balance")}</Label>
+          <div className={`${THEME_CONSTANTS.flex.between} mb-2`}>
+            <Label>{tRC("balance")}</Label>
             <Text weight="semibold">
-              {(user.ripcoinBalance ?? 0).toLocaleString()} {tRipCoins("coins")}
+              {(user.rcBalance ?? 0).toLocaleString()} {tRC("coins")}
             </Text>
           </div>
           <Button
-            onClick={() => onAdjustRipCoins(user)}
+            onClick={() => onAdjustRC(user)}
             variant="outline"
             size="sm"
             className="w-full"
           >
-            {tRipCoins("adjustButton")}
+            {tRC("adjustButton")}
           </Button>
         </div>
 

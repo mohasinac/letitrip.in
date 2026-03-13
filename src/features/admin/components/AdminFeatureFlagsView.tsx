@@ -39,7 +39,7 @@ const DEFAULT_FEATURE_FLAGS: FeatureFlags = {
   blog: true,
   coupons: true,
   notifications: true,
-  ripcoin: true,
+  rc: true,
   sellerRegistration: true,
   preOrders: false,
 };

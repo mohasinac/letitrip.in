@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { eventService } from "@/services";
+import { listPublicEventsAction } from "@/actions";
 import type { EventDocument } from "@/db/schema";
 
 interface EventsListResult {
@@ -37,7 +37,7 @@ export function usePublicEvents({
 }: UsePublicEventsOptions = {}) {
   const { data, isLoading, error, refetch } = useQuery<EventsListResult>({
     queryKey: ["public-events", params],
-    queryFn: () => eventService.list(params),
+    queryFn: () => listPublicEventsAction(params),
     enabled,
     staleTime: cacheTTL,
     initialData,

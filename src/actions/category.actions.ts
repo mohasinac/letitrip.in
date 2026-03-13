@@ -25,7 +25,9 @@ import type {
   CategoryDocument,
   CategoryCreateInput,
   CategoryUpdateInput,
+  CategoryTreeNode,
 } from "@/db/schema/categories";
+import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 
 const categoryIdSchema = z.object({ id: z.string().min(1, "id is required") });
 
@@ -173,4 +175,62 @@ export async function deleteCategoryAction(id: string): Promise<void> {
     adminId: admin.uid,
     categoryId: id,
   });
+}
+
+// ─── Read Actions ─────────────────────────────────────────────────────────────
+
+export async function listCategoriesAction(params?: {
+  filters?: string;
+  sorts?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<FirebaseSieveResult<CategoryDocument>> {
+  const sieve: SieveModel = {
+    filters: params?.filters,
+    sorts: params?.sorts ?? "order",
+    page: params?.page ?? 1,
+    pageSize: params?.pageSize ?? 50,
+  };
+  return categoriesRepository.list(sieve);
+}
+
+export async function listTopLevelCategoriesAction(
+  limit = 12,
+): Promise<CategoryDocument[]> {
+  const all = await categoriesRepository.getCategoriesByTier(0);
+  return all
+    .filter((c) => c.isActive !== false)
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .slice(0, limit);
+}
+
+export async function listBrandCategoriesAction(
+  limit = 12,
+): Promise<CategoryDocument[]> {
+  const brands = await categoriesRepository.getBrandCategories();
+  return brands.filter((c) => c.isActive !== false).slice(0, limit);
+}
+
+export async function getCategoryByIdAction(
+  id: string,
+): Promise<CategoryDocument | null> {
+  return categoriesRepository.findById(id);
+}
+
+export async function getCategoryBySlugAction(
+  slug: string,
+): Promise<CategoryDocument | null> {
+  return categoriesRepository.getCategoryBySlug(slug);
+}
+
+export async function getCategoryChildrenAction(
+  parentId: string,
+): Promise<CategoryDocument[]> {
+  return categoriesRepository.getChildren(parentId);
+}
+
+export async function buildCategoryTreeAction(
+  rootId?: string,
+): Promise<CategoryTreeNode[]> {
+  return categoriesRepository.buildTree(rootId);
 }

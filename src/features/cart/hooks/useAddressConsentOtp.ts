@@ -17,9 +17,8 @@
  */
 
 import { useState, useCallback } from "react";
-import { checkoutService } from "@/services";
+import { sendConsentOtpAction, verifyConsentOtpAction } from "@/actions";
 import { logger } from "@/classes";
-import { ApiClientError } from "@/lib/api-client";
 
 export type ConsentOtpState =
   | "idle"
@@ -48,19 +47,13 @@ export function useAddressConsentOtp(): UseAddressConsentOtpReturn {
     setError(null);
 
     try {
-      const result = (await checkoutService.sendConsentOtp(addressId)) as {
-        maskedEmail: string;
-      };
+      const result = await sendConsentOtpAction(addressId);
       setMaskedEmail(result.maskedEmail);
       setConsentState("code_sent");
     } catch (err: unknown) {
       logger.warn("Consent OTP send failed", { err });
       const msg =
-        err instanceof ApiClientError && err.status === 429
-          ? "consentOtpRateLimit"
-          : err instanceof Error
-            ? err.message
-            : "consentOtpErrorSendFailed";
+        err instanceof Error ? err.message : "consentOtpErrorSendFailed";
       setError(msg);
       setConsentState("error");
     }
@@ -71,7 +64,7 @@ export function useAddressConsentOtp(): UseAddressConsentOtpReturn {
     setError(null);
 
     try {
-      await checkoutService.verifyConsentOtp(addressId, code);
+      await verifyConsentOtpAction(addressId, code);
       setConsentState("verified");
     } catch (err: unknown) {
       logger.warn("Consent OTP verify failed", { err });

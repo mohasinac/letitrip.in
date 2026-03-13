@@ -13,10 +13,6 @@ interface CheckoutAddressStepProps {
   onSelect: (addressId: string) => void;
   /** Display name of the signed-in user for third-party detection. */
   currentUserDisplayName?: string | null;
-  /** Called when the selected address belongs to someone else — triggers consent OTP flow. */
-  onConsentRequired?: (addressId: string, recipientName: string) => void;
-  /** Set of address IDs for which consent has already been verified this session. */
-  consentVerifiedAddressIds?: Set<string>;
 }
 
 /** Normalises a name for rough comparison (lowercase, trim, collapse spaces). */
@@ -38,23 +34,11 @@ export function CheckoutAddressStep({
   selectedAddressId,
   onSelect,
   currentUserDisplayName,
-  onConsentRequired,
-  consentVerifiedAddressIds,
 }: CheckoutAddressStepProps) {
   const t = useTranslations("checkout");
 
   const handleSelect = (addr: AddressDocument) => {
     onSelect(addr.id);
-
-    // If the address belongs to a third party and consent isn't yet verified,
-    // bubble up to the parent so it can open the ConsentOtpModal.
-    if (
-      onConsentRequired &&
-      isThirdParty(addr, currentUserDisplayName) &&
-      !consentVerifiedAddressIds?.has(addr.id)
-    ) {
-      onConsentRequired(addr.id, addr.fullName);
-    }
   };
 
   return (
@@ -82,7 +66,6 @@ export function CheckoutAddressStep({
         <div className="space-y-3">
           {addresses.map((addr) => {
             const isSelected = addr.id === selectedAddressId;
-            const consentVerified = consentVerifiedAddressIds?.has(addr.id);
 
             return (
               <div key={addr.id} className="space-y-2">
@@ -133,39 +116,12 @@ export function CheckoutAddressStep({
                   </div>
                 </Button>
 
-                {/* Third-party consent banner — visible only when this address is selected */}
+                {/* Third-party info banner — visible when this address is selected */}
                 {isSelected && isThirdParty(addr, currentUserDisplayName) && (
-                  <div
-                    className={`px-4 py-3 rounded-xl border ${
-                      consentVerified
-                        ? "border-emerald-300 bg-emerald-50 dark:bg-emerald-950/30"
-                        : "border-amber-300 bg-amber-50 dark:bg-amber-950/30"
-                    } flex items-center justify-between gap-3`}
-                  >
+                  <div className="px-4 py-3 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30">
                     <Text size="sm">
-                      {consentVerified
-                        ? t("thirdPartyVerified", {
-                            recipientName: addr.fullName,
-                          })
-                        : t("thirdPartyDesc", { recipientName: addr.fullName })}
+                      {t("thirdPartyDesc", { recipientName: addr.fullName })}
                     </Text>
-                    {!consentVerified && onConsentRequired && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          onConsentRequired(addr.id, addr.fullName)
-                        }
-                        className="shrink-0 text-amber-700 border-amber-400 hover:bg-amber-100 dark:text-amber-300 dark:border-amber-600"
-                      >
-                        {t("thirdPartyVerifyBtn")}
-                      </Button>
-                    )}
-                    {consentVerified && (
-                      <span className="shrink-0 text-emerald-600 dark:text-emerald-400">
-                        ✓
-                      </span>
-                    )}
                   </div>
                 )}
               </div>

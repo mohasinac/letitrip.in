@@ -7,10 +7,17 @@
  */
 
 import { requireAuth } from "@/lib/firebase/auth-server";
-import { wishlistRepository } from "@/repositories";
+import { wishlistRepository, productRepository } from "@/repositories";
 import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
 import { AuthorizationError, ValidationError } from "@/lib/errors";
 import type { WishlistItem } from "@/repositories";
+import type { ProductDocument } from "@/db/schema";
+
+export interface EnrichedWishlistItem {
+  productId: string;
+  addedAt: Date;
+  product: ProductDocument | null;
+}
 
 /**
  * Add a product to the authenticated user's wishlist.
@@ -55,10 +62,25 @@ export async function removeFromWishlistAction(
 }
 
 /**
- * Get all wishlist items for the authenticated user.
- * Prefer the API route + useQuery pattern for reads; use this only in RSC.
+ * Get all wishlist items for the authenticated user, enriched with product details.
  */
-export async function getWishlistAction(): Promise<WishlistItem[]> {
+export async function getWishlistAction(): Promise<{
+  items: EnrichedWishlistItem[];
+  meta: { total: number };
+}> {
   const user = await requireAuth();
-  return wishlistRepository.getWishlistItems(user.uid);
+  const items = await wishlistRepository.getWishlistItems(user.uid);
+
+  const productResults = await Promise.allSettled(
+    items.map((item) => productRepository.findById(item.productId)),
+  );
+
+  const enriched: EnrichedWishlistItem[] = items.map((item, i) => {
+    const result = productResults[i];
+    const product =
+      result.status === "fulfilled" ? (result.value ?? null) : null;
+    return { ...item, product };
+  });
+
+  return { items: enriched, meta: { total: enriched.length } };
 }

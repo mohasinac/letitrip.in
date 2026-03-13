@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { reviewService } from "@/services";
+import { getHomepageReviewsAction } from "@/actions";
 import type { ReviewDocument } from "@/db/schema";
 
 /**
@@ -13,7 +13,7 @@ export function useHomepageReviews(options?: {
 }) {
   return useQuery<ReviewDocument[]>({
     queryKey: ["reviews", "latest"],
-    queryFn: () => reviewService.getHomepageReviews(),
+    queryFn: () => getHomepageReviewsAction(),
     staleTime: 10 * 60 * 1000, // 10 minutes
     initialData: options?.initialData,
   });

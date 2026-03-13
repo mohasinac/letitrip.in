@@ -2,6 +2,10 @@
 
 import { ReactNode, useState } from "react";
 import { ProtectedRoute, Button, AutoBreadcrumbs, Main } from "@/components";
+import { THEME_CONSTANTS } from "@/constants";
+import { SellerSidebar } from "@/features/seller";
+import { useTranslations } from "next-intl";
+import { Menu } from "lucide-react";
 
 interface SellerLayoutProps {
   children: ReactNode;
@@ -32,7 +36,7 @@ export default function SellerLayout({ children }: SellerLayoutProps) {
               <button
                 type="button"
                 onClick={() => setMobileOpen(true)}
-                className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors"
+                className={`md:hidden ${THEME_CONSTANTS.flex.center} w-8 h-8 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors`}
                 aria-label={t("mobileNav")}
               >
                 <Menu className="h-5 w-5" />

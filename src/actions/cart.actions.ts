@@ -31,6 +31,10 @@ const addToCartSchema = z.object({
   sellerName: z.string().min(1),
   isAuction: z.boolean().optional(),
   isPreOrder: z.boolean().optional(),
+  /** Set when item originates from an accepted Make-an-Offer */
+  offerId: z.string().optional(),
+  /** Locked offer price — used in verify route to return engaged RC */
+  lockedPrice: z.number().positive().optional(),
 });
 
 const updateCartItemSchema = z.object({
@@ -158,7 +162,7 @@ export async function mergeGuestCartAction(
     );
   }
 
-  let cart = await cartRepository.getOrCreate(user.uid);
+  await cartRepository.getOrCreate(user.uid);
 
   for (const item of parsed.data.items) {
     const product = await productRepository.findById(item.productId);
@@ -167,7 +171,7 @@ export async function mergeGuestCartAction(
 
     const safeQty = Math.min(item.quantity, product.availableQuantity);
 
-    cart = await cartRepository.addItem(user.uid, {
+    await cartRepository.addItem(user.uid, {
       productId: product.id,
       productTitle: product.title,
       productImage: product.images?.[0] ?? "",
@@ -184,4 +188,11 @@ export async function mergeGuestCartAction(
     uid: user.uid,
     itemCount: parsed.data.items.length,
   });
+}
+
+// ─── Read Actions ─────────────────────────────────────────────────────────────
+
+export async function getCartAction(): Promise<CartDocument | null> {
+  const user = await requireAuth();
+  return cartRepository.findByUserId(user.uid);
 }

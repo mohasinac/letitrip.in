@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { navSuggestionsService } from "@/services";
-import type { AlgoliaNavRecord } from "@/lib/search/algolia";
+import { searchNavPages, type AlgoliaNavRecord } from "@/lib/search/algolia";
 
 export type { AlgoliaNavRecord };
 
@@ -32,7 +31,7 @@ export function useNavSuggestions(query: string, debounceMs = 250) {
     timerRef.current = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const results = await navSuggestionsService.search(query);
+        const results = await searchNavPages(query, 6);
         setSuggestions(results);
       } catch {
         setSuggestions([]);

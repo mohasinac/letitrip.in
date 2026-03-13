@@ -8,7 +8,7 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { adminService } from "@/services";
+import { getAdminDashboardStatsAction } from "@/actions";
 
 interface AdminStats {
   users: {
@@ -30,7 +30,7 @@ interface AdminStats {
 export function useAdminStats() {
   const { data, isLoading, error, refetch } = useQuery<AdminStats>({
     queryKey: ["admin-stats"],
-    queryFn: () => adminService.getDashboardStats(),
+    queryFn: () => getAdminDashboardStatsAction(),
   });
 
   return {

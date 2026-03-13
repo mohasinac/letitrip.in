@@ -9,7 +9,12 @@
 
 import { z } from "zod";
 import { requireAuth } from "@/lib/firebase/auth-server";
-import { userRepository } from "@/repositories";
+import {
+  userRepository,
+  sessionRepository,
+  productRepository,
+  reviewRepository,
+} from "@/repositories";
 import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
 import { AuthorizationError, ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
@@ -65,4 +70,39 @@ export async function updateProfileAction(
     user.uid,
     parsed.data,
   );
+}
+
+// ─── Read Actions ─────────────────────────────────────────────────────────────
+
+export async function getMyProfileAction(): Promise<UserDocument | null> {
+  const user = await requireAuth();
+  return userRepository.findById(user.uid);
+}
+
+export async function listMySessionsAction() {
+  const user = await requireAuth();
+  return sessionRepository.findAllByUser(user.uid);
+}
+
+export async function getPublicProfileAction(
+  userId: string,
+): Promise<UserDocument | null> {
+  return userRepository.findById(userId);
+}
+
+export async function getSellerReviewsAction(sellerId: string) {
+  const products = await productRepository.findBySeller(sellerId);
+  const published = products.filter((p) => p.status === "published");
+  if (published.length === 0) return [];
+  const batches = await Promise.all(
+    published
+      .slice(0, 20)
+      .map((p) => reviewRepository.findApprovedByProduct(p.id).catch(() => [])),
+  );
+  return batches.flat();
+}
+
+export async function getSellerProductsAction(sellerId: string) {
+  const products = await productRepository.findBySeller(sellerId);
+  return products.filter((p) => p.status === "published");
 }

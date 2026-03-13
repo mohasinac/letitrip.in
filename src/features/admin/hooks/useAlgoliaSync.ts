@@ -1,7 +1,8 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { adminService } from "@/services";
+import { apiClient } from "@/lib/api-client";
+import { API_ENDPOINTS } from "@/constants";
 
 export type AlgoliaSyncTarget = "products" | "pages";
 export type AlgoliaSyncAction = "sync" | "clear";
@@ -23,20 +24,23 @@ export interface AlgoliaSyncVars {
 export function useAlgoliaSync() {
   return useMutation<AlgoliaSyncResult, Error, AlgoliaSyncVars>({
     mutationFn: (vars) =>
-      adminService.algoliaDevSync(vars) as Promise<AlgoliaSyncResult>,
+      apiClient.post(
+        API_ENDPOINTS.DEMO.ALGOLIA,
+        vars,
+      ) as Promise<AlgoliaSyncResult>,
   });
 }
 
 /** Trigger full product index rebuild in Algolia. Used by AdminSiteView. */
 export function useAlgoliaSyncProducts() {
   return useMutation<AlgoliaSyncResult, Error, void>({
-    mutationFn: () => adminService.algoliaSync(),
+    mutationFn: () => apiClient.post(API_ENDPOINTS.ADMIN.ALGOLIA_SYNC),
   });
 }
 
 /** Trigger static pages/categories/blog/events index rebuild. Used by AdminSiteView. */
 export function useAlgoliaSyncPages() {
   return useMutation<AlgoliaSyncResult, Error, void>({
-    mutationFn: () => adminService.algoliaSyncPages(),
+    mutationFn: () => apiClient.post(API_ENDPOINTS.ADMIN.ALGOLIA_SYNC_PAGES),
   });
 }

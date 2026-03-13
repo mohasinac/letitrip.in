@@ -1,7 +1,8 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { authService } from "@/services";
+import { apiClient } from "@/lib/api-client";
+import { API_ENDPOINTS } from "@/constants";
 
 /**
  * useLogout
@@ -18,7 +19,7 @@ export function useLogout(options?: {
   onError?: (err: Error) => void;
 }) {
   return useMutation<void, Error, void>({
-    mutationFn: () => authService.logout(),
+    mutationFn: () => apiClient.post(API_ENDPOINTS.AUTH.LOGOUT, {}),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });

@@ -1,0 +1,835 @@
+﻿
+> app@0.1.0 lint
+> eslint src
+
+
+D:\proj\letitrip.in\src\__mocks__\firebase-admin-firestore.ts
+  61:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+
+D:\proj\letitrip.in\src\actions\admin.actions.ts
+  24:3   warning  'couponsRepository' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  46:36  warning  'SieveModel' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\actions\bid.actions.ts
+  32:36  warning  'SieveModel' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\actions\carousel.actions.ts
+  25:15  warning  'FirebaseSieveResult' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  25:36  warning  'SieveModel' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\actions\seller.actions.ts
+  36:36  warning  'SieveModel' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\actions\wishlist.actions.ts
+  13:15  warning  'WishlistItem' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\[locale]\error.tsx
+  40:28  warning  'typography' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\[locale]\how-pre-orders-work\page.tsx
+  2:10  warning  'SITE_CONFIG' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\[locale]\layout.tsx
+  38:3  warning  'params' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\[locale]\not-found.tsx
+  18:28  warning  'typography' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\[locale]\rc\page.tsx
+  2:10  warning  'SITE_CONFIG' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\[locale]\seller-guide\page.tsx
+  2:10  warning  'SITE_CONFIG' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\[locale]\seller\layout.tsx
+   4:26  warning  'Button' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  36:16  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components               lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\app\[locale]\shipping-policy\page.tsx
+  2:10  warning  'SITE_CONFIG' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\[locale]\track\page.tsx
+  2:10  warning  'SITE_CONFIG' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\[locale]\user\layout.tsx
+  26:14  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components  lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\app\api\__tests__\admin-blog.test.ts
+  176:7  warning  'sieveResult' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\__tests__\admin-events.test.ts
+  434:21  warning  'body' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\__tests__\admin-users.test.ts
+  115:34  warning  'key' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\__tests__\products-id.test.ts
+  208:13  warning  'AuthorizationError' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\admin\algolia\sync-pages\route.ts
+  36:3  warning  'SEO_CONFIG' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\admin\blog\[id]\route.ts
+  8:10  warning  'NextRequest' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\admin\events\[id]\entries\[entryId]\route.ts
+  6:10  warning  'NextRequest' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\admin\events\[id]\status\route.ts
+  11:10  warning  'NextRequest' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\admin\orders\[id]\route.ts
+   9:25  warning  'ValidationError' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+  19:7   warning  'ORDER_STATUSES' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  27:7   warning  'PAYMENT_STATUSES' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\admin\payouts\weekly\route.ts
+  32:10  warning  'ERROR_MESSAGES' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\admin\sessions\route.ts
+   9:10  warning  'NextRequest' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  11:10  warning  'ERROR_MESSAGES' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\auth\google\callback\route.ts
+   42:26  warning  'SUCCESS_MESSAGES' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  193:18  warning  'googleUid' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\auth\reset-password\route.ts
+  11:10  warning  'getAdminAuth' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\auth\session\route.ts
+  142:16  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\blog\route.ts
+  6:10  warning  'NextRequest' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\carousel\route.ts
+  22:10  warning  'serverLogger' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\cart\[itemId]\route.ts
+  10:10  warning  'ERROR_MESSAGES' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\cart\merge\route.ts
+  11:10  warning  'NextRequest' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  13:10  warning  'handleApiError' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  14:27  warning  'ApiErrors' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\cart\route.ts
+   9:10  warning  'NextRequest' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  11:10  warning  'handleApiError' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  16:10  warning  'serverLogger' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\categories\[id]\route.ts
+  12:10  warning  'serverLogger' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\categories\route.ts
+  17:10  warning  'errorResponse' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  26:10  warning  'serverLogger' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\chat\[chatId]\messages\route.ts
+  35:41  warning  'request' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\events\[id]\enter\route.ts
+  6:10  warning  'NextRequest' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\faqs\route.ts
+  25:1  warning  Unused eslint-disable directive (no problems were reported)
+
+D:\proj\letitrip.in\src\app\api\homepage-sections\route.ts
+  22:10  warning  'serverLogger' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\products\[id]\route.ts
+  13:10  warning  'serverLogger' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\products\route.ts
+  16:10  warning  'errorResponse' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\search\route.ts
+  14:10  warning  'NextRequest' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\seller\orders\[id]\ship\route.ts
+  21:27  warning  'ApiErrors' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\seller\payout-settings\route.ts
+  9:10  warning  'userRepository' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\seller\products\__tests__\route.test.ts
+  54:9  warning  'url' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\site-settings\route.ts
+  23:10  warning  'handleApiError' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  63:15  warning  'emailSettings' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  63:30  warning  'legalPages' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\stores\[storeSlug]\route.ts
+  1:10  warning  'handleApiError' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\user\addresses\route.ts
+  14:10  warning  'ERROR_MESSAGES' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\api\user\wishlist\route.ts
+  13:10  warning  'serverLogger' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\app\opengraph-image.tsx
+  17:16  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  18:17  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  19:18  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  20:24  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  21:21  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  22:25  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  24:11  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  25:21  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  26:19  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  27:19  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  33:21  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  37:13  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  38:27  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  45:20  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  46:23  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  47:27  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  51:23  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  64:18  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  65:26  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  67:23  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  77:18  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  79:26  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  88:21  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  91:18  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  92:26  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+
+D:\proj\letitrip.in\src\app\sitemap.ts
+   23:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+   29:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+   35:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+   41:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+   47:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+   53:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+   59:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+   65:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+   71:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+   77:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+   83:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+   89:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+   95:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+  101:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+  107:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+  113:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+  119:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+  125:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+  131:19  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+  161:53  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+  189:28  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+  216:53  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+  260:9   warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+  301:53  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+
+D:\proj\letitrip.in\src\classes\__tests__\Logger.test.ts
+  5:18  warning  'LogLevel' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\AvatarDisplay.tsx
+  113:7  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  113:8  warning  Raw <img> ÔÇö use <MediaImage src={...} alt={...}> inside an aspect-* container from @/components                                                                                                                                                                                          lir/no-raw-media-elements
+
+D:\proj\letitrip.in\src\components\AvatarUpload.tsx
+  318:14  warning  Raw <input> ÔÇö use <Input> or <FormField> from @/components  lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\components\PasswordStrengthIndicator.tsx
+  10:27  warning  'ERROR_MESSAGES' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\RowActionMenu.tsx
+  47:8   warning  Raw <button> ÔÇö use <Button variant="..."> from @/components  lir/no-raw-html-elements
+  68:16  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components  lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\components\__tests__\FormField.test.tsx
+  17:10  warning  'UI_LABELS' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\admin\DataTable.tsx
+  14:1  warning  Unused eslint-disable directive (no problems were reported)
+
+D:\proj\letitrip.in\src\components\admin\ImageUpload.tsx
+  328:33  error  Definition for rule 'react/no-unknown-property' was not found  react/no-unknown-property
+
+D:\proj\letitrip.in\src\components\admin\MediaUploadField.tsx
+  165:14  warning  Raw <video> ÔÇö use <MediaVideo> from @/components  lir/no-raw-media-elements
+
+D:\proj\letitrip.in\src\components\admin\__tests__\ImageUpload.test.tsx
+   21:9   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  105:10  warning  'makeFile' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\auctions\AuctionGrid.tsx
+  8:9  warning  'themed' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\auth\ProtectedRoute.tsx
+  21:3  warning  'hasRouteAccess' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  67:9  warning  'pathname' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\categories\CategoryCard.tsx
+  67:11  warning  'bgGradient' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\categories\CategoryForm.tsx
+  19:3  warning  'Span' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\categories\CategoryTableColumns.tsx
+  26:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  26:16  warning  Raw <img> ÔÇö use <MediaImage src={...} alt={...}> inside an aspect-* container from @/components                                                                                                                                                                                          lir/no-raw-media-elements
+
+D:\proj\letitrip.in\src\components\feedback\Modal.tsx
+  49:25  warning  'typography' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\feedback\Toast.tsx
+   86:5   warning  React Hook useCallback has a missing dependency: 'hideToast'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  125:11  warning  'colors' is assigned a value but never used. Allowed unused vars must match /^_/u                               @typescript-eslint/no-unused-vars
+  125:19  warning  'themed' is assigned a value but never used. Allowed unused vars must match /^_/u                               @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\feedback\__tests__\Toast.test.tsx
+  112:19  warning  'showToast' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  112:47  warning  'msg' is defined but never used. Allowed unused args must match /^_/u                 @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\filters\RangeFilter.tsx
+   99:10  warning  Raw <input> ÔÇö use <Input> or <FormField> from @/components                          lir/no-raw-html-elements
+  111:10  warning  Raw <input> ÔÇö use <Input> or <FormField> from @/components                          lir/no-raw-html-elements
+  264:19  warning  'spacing' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\filters\SwitchFilter.tsx
+  42:19  warning  'spacing' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\forms\Checkbox.tsx
+  44:38  warning  'inputStyles' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  44:51  warning  'colors' is assigned a value but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  53:9   warning  'isChecked' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\forms\Slider.tsx
+  45:26  warning  React Hook "React.useId" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+
+D:\proj\letitrip.in\src\components\forms\Toggle.tsx
+  79:36  warning  React Hook "React.useId" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+
+D:\proj\letitrip.in\src\components\forms\__tests__\Slider.test.tsx
+  3:8  warning  'userEvent' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\layout\BottomNavbar.tsx
+  32:11  warning  'themed' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\layout\Footer.tsx
+  137:14  warning  Raw <input> ÔÇö use <Input> or <FormField> from @/components   lir/no-raw-html-elements
+  144:14  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components  lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\components\layout\TitleBar.tsx
+  3:23  warning  'THEME_CONSTANTS' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\layout\TitleBarLayout.tsx
+  106:27  warning  'zIndex' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  121:12  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components                        lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\components\layout\__tests__\BottomNavbar.test.tsx
+   20:10  warning  'ROUTES' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+   61:13  warning  'style' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  129:13  warning  'icons' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\layout\__tests__\Footer.test.tsx
+  19:10  warning  'UI_LABELS' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\layout\__tests__\MainNavbar.test.tsx
+  16:26  warning  'fireEvent' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  19:10  warning  'UI_LABELS' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  19:21  warning  'ROUTES' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\media\MediaLightbox.tsx
+   75:5   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  311:24  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead              lir/no-inline-static-style
+  322:30  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead              lir/no-inline-static-style
+  324:28  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead              lir/no-inline-static-style
+  434:28  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead              lir/no-inline-static-style
+
+D:\proj\letitrip.in\src\components\media\__tests__\MediaAvatar.test.tsx
+  8:5  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+D:\proj\letitrip.in\src\components\media\__tests__\MediaImage.test.tsx
+  8:5  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+D:\proj\letitrip.in\src\components\modals\ImageCropModal.tsx
+  177:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  177:14  warning  Raw <img> ÔÇö use <MediaImage src={...} alt={...}> inside an aspect-* container from @/components                                                                                                                                                                                          lir/no-raw-media-elements
+  188:28  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead                                                                                                                                                                                                       lir/no-inline-static-style
+
+D:\proj\letitrip.in\src\components\modals\__tests__\ConfirmDeleteModal.test.tsx
+  22:10  warning  'UI_LABELS' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+  27:9   warning  'mockOnCancel' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\orders\OrderCard.tsx
+  82:10  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components  lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\components\pre-orders\PreOrderCard.tsx
+  4:38  warning  'ShoppingCart' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\products\__tests__\ProductGrid.test.tsx
+  36:35  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+D:\proj\letitrip.in\src\components\typography\TextLink.tsx
+  84:8  warning  Raw <a> ÔÇö use <TextLink href={...}> from @/components                                                  lir/no-raw-html-elements
+  99:5  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+D:\proj\letitrip.in\src\components\ui\ActiveFilterChips.tsx
+  55:20  warning  React Hook "useTranslations" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+
+D:\proj\letitrip.in\src\components\ui\Avatar.tsx
+  83:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  83:12  warning  Raw <img> ÔÇö use <MediaImage src={...} alt={...}> inside an aspect-* container from @/components                                                                                                                                                                                          lir/no-raw-media-elements
+
+D:\proj\letitrip.in\src\components\ui\Button.tsx
+  43:19  warning  'themed' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  61:6   warning  Raw <button> ÔÇö use <Button variant="..."> from @/components                        lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\components\ui\CameraCapture.tsx
+  109:8  error  Definition for rule 'jsx-a11y/media-has-caption' was not found  jsx-a11y/media-has-caption
+
+D:\proj\letitrip.in\src\components\ui\Dropdown.tsx
+  3:35  warning  'useEffect' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\ui\DynamicSelect.tsx
+  574:25  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  603:19  error    Definition for rule 'jsx-a11y/no-autofocus' was not found                           jsx-a11y/no-autofocus
+
+D:\proj\letitrip.in\src\components\ui\EmptyState.tsx
+  43:11  warning  'spacing' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  43:32  warning  'accent' is assigned a value but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\ui\FilterFacetSection.tsx
+   96:19  warning  'spacing' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  263:20  warning  Raw <label> ÔÇö use <Label> from @/components                                         lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\components\ui\HorizontalScroller.tsx
+   58:8  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components                                                                                                                                                                        lir/no-raw-html-elements
+  477:3  warning  React Hook useEffect contains a call to 'setResolvedIW'. Without a list of dependencies, this can lead to an infinite chain of updates. To fix this, pass [itemWidthProp, perViewProp] as a second argument to the useEffect Hook  react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\components\ui\ImageGallery.tsx
+  135:6   warning  React Hook useEffect has missing dependencies: 'goToNext' and 'goToPrevious'. Either include them or remove the dependency array                                                                                                                                                         react-hooks/exhaustive-deps
+  156:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  156:12  warning  Raw <img> ÔÇö use <MediaImage src={...} alt={...}> inside an aspect-* container from @/components                                                                                                                                                                                          lir/no-raw-media-elements
+  296:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  296:16  warning  Raw <img> ÔÇö use <MediaImage src={...} alt={...}> inside an aspect-* container from @/components                                                                                                                                                                                          lir/no-raw-media-elements
+
+D:\proj\letitrip.in\src\components\ui\ListingLayout.tsx
+  133:3   warning  'loading' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  277:12  warning  Raw <aside> ÔÇö use <Aside> from @/components                                         lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\components\ui\Progress.tsx
+   41:25  warning  'position' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  154:20  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead   lir/no-inline-static-style
+  155:24  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead   lir/no-inline-static-style
+
+D:\proj\letitrip.in\src\components\ui\Spinner.tsx
+  32:11  warning  'colors' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\ui\TablePagination.tsx
+  55:19  warning  'spacing' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\ui\__tests__\Menu.test.tsx
+  78:13  warning  'container' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\user\NotificationBell.tsx
+  97:6  warning  React Hook useCallback has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\components\user\RCBalanceChip.tsx
+  8:9  warning  'themed' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\utility\BackToTop.tsx
+  4:10  warning  'THEME_CONSTANTS' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\components\utility\Search.tsx
+  301:12  warning  Raw <input> ÔÇö use <Input> or <FormField> from @/components   lir/no-raw-html-elements
+  389:16  warning  Raw <input> ÔÇö use <Input> or <FormField> from @/components   lir/no-raw-html-elements
+  472:28  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components  lir/no-raw-html-elements
+  509:28  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components  lir/no-raw-html-elements
+  542:20  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components  lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\components\utility\__tests__\BackToTop.test.tsx
+  17:10  warning  'UI_LABELS' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  93:15  warning  'style' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\contexts\SessionContext.tsx
+  287:6  warning  React Hook useCallback has a missing dependency: 'queryClient'. Either include it or remove the dependency array               react-hooks/exhaustive-deps
+  382:6  warning  React Hook useEffect has a missing dependency: 'fetchUserProfileFromServer'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\features\about\components\FeesView.tsx
+  1:27  warning  'SITE_CONFIG' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\admin\components\AdminAnalyticsView.tsx
+  17:26  warning  'typography' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  73:11  warning  'AnalyticsResponse' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\admin\components\AdminBidsView.tsx
+   3:33  warning  'useEffect' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+  42:9   warning  'STATUS_TABS' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\admin\components\AdminBlogView.tsx
+   63:9  warning  'tStatus' is assigned a value but never used. Allowed unused vars must match /^_/u                      @typescript-eslint/no-unused-vars
+   73:9  warning  'sortParam' is assigned a value but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
+   74:9  warning  'pageParam' is assigned a value but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
+  173:6  warning  React Hook useCallback has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  194:6  warning  React Hook useCallback has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  224:9  warning  'statusOptions' is assigned a value but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\admin\components\AdminCarouselView.tsx
+   53:9  warning  The 'slides' logical expression could make the dependencies of useCallback Hook (at line 62) change on every render. To fix this, wrap the initialization of 'slides' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   53:9  warning  The 'slides' logical expression could make the dependencies of useEffect Hook (at line 138) change on every render. To fix this, wrap the initialization of 'slides' in its own useMemo() Hook   react-hooks/exhaustive-deps
+  133:9  warning  Expected an assignment or function call and instead saw an expression                                                                                                                            @typescript-eslint/no-unused-expressions
+
+D:\proj\letitrip.in\src\features\admin\components\AdminCategoriesView.tsx
+   57:9  warning  The 'categories' logical expression could make the dependencies of useCallback Hook (at line 78) change on every render. To fix this, wrap the initialization of 'categories' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   57:9  warning  The 'categories' logical expression could make the dependencies of useEffect Hook (at line 168) change on every render. To fix this, wrap the initialization of 'categories' in its own useMemo() Hook   react-hooks/exhaustive-deps
+  163:9  warning  Expected an assignment or function call and instead saw an expression                                                                                                                                    @typescript-eslint/no-unused-expressions
+
+D:\proj\letitrip.in\src\features\admin\components\AdminCouponsView.tsx
+  11:33  warning  'useEffect' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  28:3   warning  'Button' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  36:3   warning  'StatusBadge' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\admin\components\AdminFaqsView.tsx
+   26:3  warning  'FormField' is defined but never used. Allowed unused vars must match /^_/u                                                                                                            @typescript-eslint/no-unused-vars
+   85:9  warning  The 'faqs' conditional could make the dependencies of useCallback Hook (at line 102) change on every render. To fix this, wrap the initialization of 'faqs' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   85:9  warning  The 'faqs' conditional could make the dependencies of useEffect Hook (at line 180) change on every render. To fix this, wrap the initialization of 'faqs' in its own useMemo() Hook    react-hooks/exhaustive-deps
+  175:9  warning  Expected an assignment or function call and instead saw an expression                                                                                                                  @typescript-eslint/no-unused-expressions
+
+D:\proj\letitrip.in\src\features\admin\components\AdminPayoutsView.tsx
+   3:33  warning  'useEffect' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  29:11  warning  'PayoutsResponse' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\admin\components\AdminProductsView.tsx
+  104:9  warning  The 'products' logical expression could make the dependencies of useCallback Hook (at line 113) change on every render. To fix this, wrap the initialization of 'products' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  104:9  warning  The 'products' logical expression could make the dependencies of useEffect Hook (at line 199) change on every render. To fix this, wrap the initialization of 'products' in its own useMemo() Hook    react-hooks/exhaustive-deps
+  194:9  warning  Expected an assignment or function call and instead saw an expression                                                                                                                                 @typescript-eslint/no-unused-expressions
+
+D:\proj\letitrip.in\src\features\admin\components\AdminReviewsView.tsx
+  48:9  warning  'tLoading' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                @typescript-eslint/no-unused-vars
+  94:9  warning  The 'reviews' logical expression could make the dependencies of useCallback Hook (at line 99) change on every render. To fix this, wrap the initialization of 'reviews' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  94:9  warning  The 'reviews' logical expression could make the dependencies of useEffect Hook (at line 131) change on every render. To fix this, wrap the initialization of 'reviews' in its own useMemo() Hook   react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\features\admin\components\AdminSectionsView.tsx
+   62:9  warning  The 'sections' logical expression could make the dependencies of useCallback Hook (at line 72) change on every render. To fix this, wrap the initialization of 'sections' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   62:9  warning  The 'sections' logical expression could make the dependencies of useEffect Hook (at line 150) change on every render. To fix this, wrap the initialization of 'sections' in its own useMemo() Hook   react-hooks/exhaustive-deps
+  145:9  warning  Expected an assignment or function call and instead saw an expression                                                                                                                                @typescript-eslint/no-unused-expressions
+
+D:\proj\letitrip.in\src\features\admin\components\AdminSessionsManager.tsx
+  19:3   warning  'Badge' is defined but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+  30:10  warning  'formatRelativeTime' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  30:49  warning  'isFuture' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+  36:10  warning  'formatTimeAgo' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  77:18  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u      @typescript-eslint/no-unused-vars
+  98:18  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u      @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\admin\components\AdminSidebar.tsx
+  3:10  warning  'useState' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\admin\components\AdminSiteView.tsx
+  174:20  warning  Optional chain expressions can return undefined by design - using a non-null assertion is unsafe and wrong  @typescript-eslint/no-non-null-asserted-optional-chain
+  175:19  warning  Optional chain expressions can return undefined by design - using a non-null assertion is unsafe and wrong  @typescript-eslint/no-non-null-asserted-optional-chain
+
+D:\proj\letitrip.in\src\features\admin\components\AdminStatsCards.tsx
+  33:23  warning  'spacing' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\admin\components\AdminTopBar.tsx
+   8:3   warning  'Button' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  34:10  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components               lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\features\admin\components\AdminUsersView.tsx
+  111:9  warning  The 'users' logical expression could make the dependencies of useCallback Hook (at line 116) change on every render. To fix this, wrap the initialization of 'users' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  111:9  warning  The 'users' logical expression could make the dependencies of useEffect Hook (at line 147) change on every render. To fix this, wrap the initialization of 'users' in its own useMemo() Hook    react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\features\admin\components\BackgroundSettings.tsx
+    5:27  warning  'UI_LABELS' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  340:31  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  341:35  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  345:16  warning  Raw <video> ÔÇö use <MediaVideo> from @/components                                    lir/no-raw-media-elements
+
+D:\proj\letitrip.in\src\features\admin\components\BlogForm.tsx
+  30:18  warning  'typography' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\admin\components\CategoryTreeView.tsx
+  103:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  103:14  warning  Raw <img> ÔÇö use <MediaImage src={...} alt={...}> inside an aspect-* container from @/components                                                                                                                                                                                          lir/no-raw-media-elements
+
+D:\proj\letitrip.in\src\features\admin\components\CouponForm.tsx
+  115:6  warning  React Hook useEffect has a missing dependency: 'initialData'. Either include it or remove the dependency array. If 'setForm' needs the current value of 'initialData', you can also switch to useReducer instead of useState and read 'initialData' in the reducer  react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\features\admin\components\OrderStatusForm.tsx
+  17:18  warning  'themed' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\admin\components\PayoutStatusForm.tsx
+  12:10  warning  'Button' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\admin\components\RCAdjustModal.tsx
+  178:16  warning  Raw <input> ÔÇö use <Input> or <FormField> from @/components  lir/no-raw-html-elements
+  196:16  warning  Raw <textarea> ÔÇö use <Textarea> from @/components           lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\features\admin\components\RichTextEditor.tsx
+  106:19  warning  React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+  110:20  warning  React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+  114:27  warning  React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+  126:26  warning  React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render  react-hooks/rules-of-hooks
+
+D:\proj\letitrip.in\src\features\admin\components\SiteCommissionsForm.tsx
+  19:10  warning  'UI_LABELS' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\admin\components\__tests__\CarouselTableColumns.test.tsx
+  17:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+D:\proj\letitrip.in\src\features\admin\components\__tests__\CategoryTableColumns.test.tsx
+  2:13  warning  'React' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\auth\components\RegisterForm.tsx
+  77:15  warning  'err' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\auth\components\ResetPasswordView.tsx
+  19:3  warning  'ERROR_MESSAGES' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\blog\components\BlogPostView.tsx
+  18:15  warning  'BlogPostDocument' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  40:9   warning  'tActions' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\blog\components\__tests__\BlogCard.test.tsx
+  12:40  warning  'params' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  35:5   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+D:\proj\letitrip.in\src\features\cart\components\CartItemList.tsx
+  10:9  warning  'themed' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\cart\components\CartView.tsx
+  25:26  warning  'typography' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\cart\components\CheckoutOtpModal.tsx
+   16:31  warning  'Heading' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+   81:9   warning  'codeSent' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  157:16  warning  Raw <label> ÔÇö use <Label> from @/components                                          lir/no-raw-html-elements
+  163:16  warning  Raw <input> ÔÇö use <Input> or <FormField> from @/components                           lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\features\cart\components\CheckoutView.tsx
+  213:24  warning  React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+  322:26  warning  React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+  327:29  warning  React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+  340:15  warning  'total' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                               @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\cart\components\ConsentOtpModal.tsx
+  13:31  warning  'Heading' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\cart\components\PartialOrderDialog.tsx
+  15:31  warning  'Heading' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\cart\components\PromoCodeInput.tsx
+  11:17  warning  'input' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\categories\components\CategoryGrid.tsx
+  15:9  warning  'spacing' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\events\components\AdminEventsView.tsx
+  69:9  warning  'typeFilter' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  70:9  warning  'statusFilter' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\events\components\EventDetailView.tsx
+  46:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  46:12  warning  Raw <img> ÔÇö use <MediaImage src={...} alt={...}> inside an aspect-* container from @/components                                                                                                                                                                                          lir/no-raw-media-elements
+
+D:\proj\letitrip.in\src\features\events\components\EventFormDrawer.tsx
+  128:24  warning  'showError' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  146:42  warning  'e' is defined but never used. Allowed unused args must match /^_/u                   @typescript-eslint/no-unused-vars
+  152:42  warning  'e' is defined but never used. Allowed unused args must match /^_/u                   @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\events\components\EventLeaderboard.tsx
+  8:15  warning  'EventEntryDocument' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\events\components\EventParticipateView.tsx
+  29:15  warning  'EventDocument' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  35:9   warning  'themed' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\events\components\EventTypeConfig\PollConfigForm.tsx
+  3:10  warning  'useState' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\events\components\PollVotingSection.tsx
+   3:20  warning  'useCallback' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+   9:28  warning  'Label' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  25:11  warning  'user' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\events\components\__tests__\EventsTable.test.tsx
+  4:10  warning  'render' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  4:18  warning  'screen' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\faq\components\FAQAccordion.tsx
+  126:18  warning  Raw <p> ÔÇö use <Text> from @/components  lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\features\faq\components\FAQPageContent.tsx
+  96:6  warning  React Hook useMemo has a missing dependency: 'locale'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\features\homepage\components\FAQSection.tsx
+   71:14  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components  lir/no-raw-html-elements
+  134:22  warning  Raw <p> ÔÇö use <Text> from @/components                       lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\features\homepage\components\FeaturedAuctionsSection.tsx
+  5:10  warning  'THEME_CONSTANTS' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\homepage\components\FeaturedPreOrdersSection.tsx
+  5:10  warning  'THEME_CONSTANTS' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\homepage\components\FeaturedStoresSection.tsx
+  5:10  warning  'THEME_CONSTANTS' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\homepage\components\HeroCarousel.tsx
+  244:37  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  269:38  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+  270:36  warning  Inline style with a static value ÔÇö use a Tailwind class or THEME_CONSTANTS instead  lir/no-inline-static-style
+
+D:\proj\letitrip.in\src\features\homepage\components\SectionCarousel.tsx
+  4:27  warning  'ROUTES' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\homepage\components\TopBrandsSection.tsx
+  5:10  warning  'THEME_CONSTANTS' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\homepage\components\WhatsAppCommunitySection.tsx
+  10:3  warning  'HomepageSectionDocument' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\homepage\components\__tests__\HeroCarousel.test.tsx
+   93:10  warning  'props' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   98:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  103:10  warning  'props' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\products\components\AuctionsView.tsx
+  179:6  warning  React Hook useMemo has a missing dependency: 'PRICE_BUCKETS'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\features\products\components\PreOrderDetailView.tsx
+  42:15  warning  'ProductDocument' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\products\components\PreOrdersView.tsx
+  216:6  warning  React Hook useMemo has missing dependencies: 'PRICE_BUCKETS' and 'STATUS_OPTIONS'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\features\products\components\ProductFeatureBadges.tsx
+   6:16  warning  'Text' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  65:3   warning  'isAuction' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\products\components\ProductImageGallery.tsx
+  123:16  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components  lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\features\products\components\ProductInfo.tsx
+  70:3  warning  'currency' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars
+  78:3  warning  'stockQuantity' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  91:3  warning  'slug' is defined but never used. Allowed unused args must match /^_/u           @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\products\components\ProductReviews.tsx
+  33:11  warning  'ReviewsResponse' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\products\components\ProductTabs.tsx
+   52:12  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components  lir/no-raw-html-elements
+  101:18  warning  Raw <li> ÔÇö use <Li> from @/components                        lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\features\products\components\RelatedProducts.tsx
+  36:11  warning  'RelatedProductsResponse' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\promotions\components\ProductSection.tsx
+  5:9   warning  'themed' is assigned a value but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  5:17  warning  'typography' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\search\components\SearchView.tsx
+   5:39  warning  'Span' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+  22:9   warning  'themed' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\seller\components\SellerAnalyticsView.tsx
+  11:9  warning  'themed' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\seller\components\SellerAuctionsView.tsx
+  31:15  warning  'AdminProduct' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\seller\components\SellerCouponForm.tsx
+  183:14  warning  Raw <select> ÔÇö use <Select> from @/components  lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\features\seller\components\SellerCouponsView.tsx
+  23:3  warning  'SUCCESS_MESSAGES' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\seller\components\SellerPayoutHistoryTable.tsx
+  8:9   warning  'themed' is assigned a value but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  8:17  warning  'spacing' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\seller\components\SellerPayoutRequestForm.tsx
+  12:26  warning  'typography' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\seller\components\SellerPayoutStats.tsx
+  8:17  warning  'spacing' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\seller\components\SellerStatCard.tsx
+  2:10  warning  'Card' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+  6:23  warning  'spacing' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\seller\components\SellerStoreView.tsx
+  140:39  warning  'error' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\seller\hooks\useSellerOrders.ts
+  5:10  warning  'sellerService' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\stores\components\StoreAuctionsView.tsx
+  37:9  warning  'tActions' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\stores\components\StoreProductsView.tsx
+  92:9  warning  The 'items' logical expression could make the dependencies of useMemo Hook (at line 108) change on every render. To fix this, wrap the initialization of 'items' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\features\user\components\BuyRCModal.tsx
+  87:16  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components  lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\features\user\components\ChatList.tsx
+  18:3  warning  'Heading' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\user\components\ChatWindow.tsx
+  33:9  warning  'spacing' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\user\components\PublicProfileView.tsx
+  13:27  warning  'ROUTES' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\user\components\RCPurchaseView.tsx
+  92:14  warning  Raw <button> ÔÇö use <Button variant="..."> from @/components  lir/no-raw-html-elements
+
+D:\proj\letitrip.in\src\features\user\components\UserAccountHub.tsx
+  16:25  warning  'Button' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\features\user\components\UserNotificationsView.tsx
+  128:5  warning  React Hook useCallback has a missing dependency: 'showSuccess'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\features\user\components\UserOrdersView.tsx
+  184:6  warning  React Hook useMemo has a missing dependency: 'STATUS_TABS'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\features\wishlist\components\WishlistButton.tsx
+  86:5  warning  React Hook useCallback has missing dependencies: 'inWishlist' and 'showSuccess'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\features\wishlist\components\WishlistView.tsx
+   36:15  warning  'WishlistItem' is defined but never used. Allowed unused vars must match /^_/u                                                     @typescript-eslint/no-unused-vars
+  191:6   warning  React Hook useCallback has missing dependencies: 'allItems' and 'queryClient'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\helpers\data\__tests__\pagination.helper.test.ts
+  9:8  warning  'PaginationResult' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\hooks\useFeaturedAuctions.ts
+  7:11  warning  'PaginatedResult' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\hooks\useFeaturedPreOrders.ts
+  7:11  warning  'PaginatedResult' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\hooks\useUrlTable.ts
+   52:9  warning  The 'defaults' logical expression could make the dependencies of useCallback Hook (at line 56) change on every render. To fix this, wrap the initialization of 'defaults' in its own useMemo() Hook   react-hooks/exhaustive-deps
+   52:9  warning  The 'defaults' logical expression could make the dependencies of useCallback Hook (at line 141) change on every render. To fix this, wrap the initialization of 'defaults' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   52:9  warning  The 'defaults' logical expression could make the dependencies of useCallback Hook (at line 155) change on every render. To fix this, wrap the initialization of 'defaults' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   93:5  warning  React Hook useCallback has a missing dependency: 'NON_RESETTING_KEYS'. Either include it or remove the dependency array                                                                               react-hooks/exhaustive-deps
+  108:5  warning  React Hook useCallback has a missing dependency: 'NON_RESETTING_KEYS'. Either include it or remove the dependency array                                                                               react-hooks/exhaustive-deps
+
+D:\proj\letitrip.in\src\proxy.ts
+  38:20  warning  new Date() ÔÇö use nowMs(), nowISO(), or parseDate() from @/utils instead  lir/no-raw-date
+
+D:\proj\letitrip.in\src\repositories\offer.repository.ts
+  15:3  warning  'OfferStatus' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\utils\__tests__\id-generators.test.ts
+  433:34  warning  'id' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\utils\events\event-manager.ts
+  99:38  warning  'id' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\proj\letitrip.in\src\utils\validators\__tests__\password.validator.test.ts
+  13:11  warning  'defaultRequirements' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+Ô£û 395 problems (3 errors, 392 warnings)
+  0 errors and 4 warnings potentially fixable with the `--fix` option.
+

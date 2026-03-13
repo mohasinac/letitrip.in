@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { productService } from "@/services";
+import { getProductByIdAction } from "@/actions";
 import type { ProductDocument } from "@/db/schema";
 
 interface UseProductDetailOptions {
@@ -17,11 +17,11 @@ export function useProductDetail(
   slug: string,
   options?: UseProductDetailOptions,
 ) {
-  const { data, isLoading, error } = useQuery<ProductDocument>({
+  const { data, isLoading, error } = useQuery<ProductDocument | null>({
     queryKey: ["product", slug],
-    queryFn: () => productService.getById(slug),
+    queryFn: () => getProductByIdAction(slug),
     enabled: Boolean(slug),
-    initialData: options?.initialData,
+    initialData: options?.initialData ?? undefined,
   });
 
   return { product: data ?? null, isLoading, error };

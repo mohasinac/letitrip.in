@@ -4,6 +4,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import nextPlugin from "@next/eslint-plugin-next";
 import lirPlugin from "./packages/eslint-plugin-letitrip/index.js";
 import reactPlugin from "eslint-plugin-react";
+import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 
 /**
  * ESLint flat config for LetItRip (Phase 18.19 baseline).
@@ -23,6 +24,16 @@ export default tseslint.config(
     rules: {
       "react-hooks/rules-of-hooks": "warn",
       "react-hooks/exhaustive-deps": "warn",
+    },
+  },
+  // Register react + jsx-a11y plugins globally so eslint-disable comments in
+  // src/ and packages/ referencing these rules don't produce "rule not found" errors.
+  {
+    plugins: { react: reactPlugin, "jsx-a11y": jsxA11yPlugin },
+    rules: {
+      "react/no-unknown-property": "warn",
+      "jsx-a11y/media-has-caption": "warn",
+      "jsx-a11y/no-autofocus": "warn",
     },
   },
   // Register @next/next plugin — same rationale as above
@@ -73,6 +84,7 @@ export default tseslint.config(
       "lir/no-deep-barrel-import": "off",
       "lir/no-cross-feature-import": "off",
       "lir/no-tier1-feature-import": "off",
+      "lir/no-fat-page": "off",
       "lir/use-i18n-navigation": "off",
       "lir/no-firebase-client-in-ui": "off",
       "lir/no-firebase-admin-outside-backend": "off",
@@ -83,6 +95,11 @@ export default tseslint.config(
       "lir/no-hardcoded-route": "off",
       "lir/no-hardcoded-collection": "off",
       "lir/no-firebase-trigger-in-api": "off",
+      "lir/no-module-scope-translations": "off",
+      "lir/no-deprecated-annotations": "off",
+      "lir/no-raw-date": "off",
+      "lir/no-fixed-media-height": "off",
+      "lir/require-xl-breakpoints": "off",
       "no-console": "off",               // Logger IS the console transport
     },
   },
@@ -94,6 +111,7 @@ export default tseslint.config(
       "lir/no-deep-barrel-import": "off",
       "lir/no-cross-feature-import": "off",
       "lir/no-tier1-feature-import": "off",
+      "lir/no-fat-page": "off",
       "lir/use-i18n-navigation": "off",
       "lir/no-firebase-client-in-ui": "off",
       "lir/no-firebase-admin-outside-backend": "off",
@@ -104,6 +122,11 @@ export default tseslint.config(
       "lir/no-hardcoded-route": "off",
       "lir/no-hardcoded-collection": "off",
       "lir/no-firebase-trigger-in-api": "off",
+      "lir/no-module-scope-translations": "off",
+      "lir/no-deprecated-annotations": "off",
+      "lir/no-raw-date": "off",
+      "lir/no-fixed-media-height": "off",
+      "lir/require-xl-breakpoints": "off",
     },
   },
   {
@@ -114,6 +137,7 @@ export default tseslint.config(
       "lir/no-deep-barrel-import": "off",
       "lir/no-cross-feature-import": "off",
       "lir/no-tier1-feature-import": "off",
+      "lir/no-fat-page": "off",
       "lir/use-i18n-navigation": "off",
       "lir/no-firebase-client-in-ui": "off",
       "lir/no-firebase-admin-outside-backend": "off",
@@ -124,6 +148,11 @@ export default tseslint.config(
       "lir/no-hardcoded-route": "off",
       "lir/no-hardcoded-collection": "off",
       "lir/no-firebase-trigger-in-api": "off",
+      "lir/no-module-scope-translations": "off",
+      "lir/no-deprecated-annotations": "off",
+      "lir/no-raw-date": "off",
+      "lir/no-fixed-media-height": "off",
+      "lir/require-xl-breakpoints": "off",
     },
   },
   {
@@ -134,6 +163,7 @@ export default tseslint.config(
       "lir/no-deep-barrel-import": "off",
       "lir/no-cross-feature-import": "off",
       "lir/no-tier1-feature-import": "off",
+      "lir/no-fat-page": "off",
       "lir/use-i18n-navigation": "off",
       "lir/no-firebase-client-in-ui": "off",
       "lir/no-firebase-admin-outside-backend": "off",
@@ -144,6 +174,11 @@ export default tseslint.config(
       "lir/no-hardcoded-route": "off",
       "lir/no-hardcoded-collection": "off",
       "lir/no-firebase-trigger-in-api": "off",
+      "lir/no-module-scope-translations": "off",
+      "lir/no-deprecated-annotations": "off",
+      "lir/no-raw-date": "off",
+      "lir/no-fixed-media-height": "off",
+      "lir/require-xl-breakpoints": "off",
     },
   },
   {
@@ -167,6 +202,10 @@ export default tseslint.config(
       "lir/no-hardcoded-route": "off",
       "lir/no-hardcoded-collection": "off",
       "lir/no-firebase-trigger-in-api": "off",
+      "lir/no-module-scope-translations": "off",
+      "lir/no-deprecated-annotations": "off",
+      "lir/no-raw-date": "off",
+      "lir/no-fat-page": "off",
       // Semantic.tsx, Typography.tsx, Button.tsx, Select.tsx, DataTable.tsx etc.
       // are the primitive implementations — they must use raw HTML elements.
       "lir/no-raw-html-elements": "off",
@@ -175,6 +214,9 @@ export default tseslint.config(
       "lir/no-raw-media-elements": "off",
       // Inline styles in primitives are intentional token-level one-offs.
       "lir/no-inline-static-style": "off",
+      // Fixed heights and grid columns are intentional in primitives.
+      "lir/no-fixed-media-height": "off",
+      "lir/require-xl-breakpoints": "off",
       // Progress.tsx and Skeleton.tsx use dangerouslySetInnerHTML for CSS injection.
       // Register the plugin so eslint-disable-next-line react/no-danger is valid.
       "react/no-danger": "warn",
@@ -212,6 +254,38 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-function-type": "off",
       // Off — prefer-const may conflict with destructuring patterns in this codebase
       "prefer-const": "off",
+    },
+  },
+  {
+    // useChat.ts and useRealtimeEvent.ts must sign in with Firebase Auth
+    // custom tokens to subscribe to Realtime Database — this is a legitimate
+    // client-side use of firebase/auth for RTDB channel auth, not admin code.
+    files: [
+      "src/hooks/useChat.ts",
+      "src/hooks/useRealtimeEvent.ts",
+    ],
+    rules: {
+      "lir/no-firebase-client-in-ui": "off",
+    },
+  },
+  {
+    // Server Actions run on the server — Firebase Admin SDK is permitted.
+    files: ["src/actions/**/*.ts"],
+    rules: {
+      "lir/no-firebase-admin-outside-backend": "off",
+    },
+  },
+  {
+    // server-logger.ts IS the console transport for server-side logging.
+    // proxy.ts uses console.error for Edge-compatible error reporting.
+    // merge-indices.ts is a build-time CLI script (not production code).
+    files: [
+      "src/lib/server-logger.ts",
+      "src/proxy.ts",
+      "src/db/indices/merge-indices.ts",
+    ],
+    rules: {
+      "no-console": "off",
     },
   },
   {

@@ -1,25 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { eventService } from "@/services";
-import type { EventDocument, EventEntryDocument } from "@/db/schema";
-
-interface PollOptionResult {
-  optionId: string;
-  label: string;
-  votes: number;
-  percentage: number;
-}
-
-interface EventStatsResult {
-  event: EventDocument;
-  totalEntries: number;
-  approvedEntries: number;
-  flaggedEntries: number;
-  pendingEntries: number;
-  pollResults: PollOptionResult[];
-  leaderboard: EventEntryDocument[];
-}
+import { adminGetEventStatsAction } from "@/actions";
 
 interface UseEventStatsOptions {
   eventId: string;
@@ -30,9 +12,9 @@ export function useEventStats({
   eventId,
   enabled = true,
 }: UseEventStatsOptions) {
-  const { data, isLoading, error, refetch } = useQuery<EventStatsResult>({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["admin-event-stats", eventId],
-    queryFn: () => eventService.adminGetStats(eventId),
+    queryFn: () => adminGetEventStatsAction(eventId),
     enabled: enabled && !!eventId,
   });
 

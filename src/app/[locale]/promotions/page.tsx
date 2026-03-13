@@ -11,6 +11,7 @@ import { productRepository, couponsRepository } from "@/repositories";
 import { SEO_CONFIG, SITE_CONFIG } from "@/constants";
 import { PromotionsView } from "@/features/promotions";
 import type { ProductDocument, CouponDocument } from "@/db/schema";
+import { nowMs } from "@/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { title, description, keywords } = SEO_CONFIG.pages.promotions;
@@ -23,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PromotionsPage() {
-  const now = new Date();
+  const now = nowMs();
 
   const [promotedRaw, featuredRaw, couponsRaw] = await Promise.all([
     productRepository.findPromoted().catch(() => [] as ProductDocument[]),
@@ -41,8 +42,9 @@ export default async function PromotionsPage() {
 
   const activeCoupons = couponsRaw.filter((c) => {
     const startOk =
-      !c.validity.startDate || new Date(c.validity.startDate) <= now;
-    const endOk = !c.validity.endDate || new Date(c.validity.endDate) >= now;
+      !c.validity.startDate || new Date(c.validity.startDate).getTime() <= now;
+    const endOk =
+      !c.validity.endDate || new Date(c.validity.endDate).getTime() >= now;
     return startOk && endOk;
   });
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { categoryService } from "@/services";
+import { listCategoriesAction } from "@/actions";
 import type { CategoryDocument } from "@/db/schema";
 
 interface UseCategoriesListOptions {
@@ -16,7 +16,7 @@ interface UseCategoriesListOptions {
 export function useCategoriesList(options?: UseCategoriesListOptions) {
   const { data, isLoading, error } = useQuery<CategoryDocument[]>({
     queryKey: ["categories", "flat"],
-    queryFn: () => categoryService.list("flat=true"),
+    queryFn: async () => (await listCategoriesAction({ pageSize: 500 })).items,
     initialData: options?.initialData,
   });
 

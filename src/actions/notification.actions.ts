@@ -11,6 +11,7 @@ import { requireAuth } from "@/lib/firebase/auth-server";
 import { notificationRepository } from "@/repositories";
 import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
 import { AuthorizationError, ValidationError } from "@/lib/errors";
+import type { NotificationDocument } from "@/db/schema";
 
 /**
  * Mark a single notification as read.
@@ -66,4 +67,22 @@ export async function deleteNotificationAction(id: string): Promise<void> {
   }
 
   await notificationRepository.delete(id);
+}
+
+// ─── Read Actions ─────────────────────────────────────────────────────────────
+
+export async function listNotificationsAction(
+  limit = 20,
+): Promise<{ notifications: NotificationDocument[]; unreadCount: number }> {
+  const user = await requireAuth();
+  const [notifications, unreadCount] = await Promise.all([
+    notificationRepository.findByUser(user.uid, limit),
+    notificationRepository.getUnreadCount(user.uid),
+  ]);
+  return { notifications, unreadCount };
+}
+
+export async function getUnreadNotificationCountAction(): Promise<number> {
+  const user = await requireAuth();
+  return notificationRepository.getUnreadCount(user.uid);
 }

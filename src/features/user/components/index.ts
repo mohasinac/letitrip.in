@@ -1,4 +1,5 @@
 export { UserAccountHub } from "./UserAccountHub";
+export { UserOffersView } from "./UserOffersView";
 export { UserSidebar } from "./UserSidebar";
 export { OrderDetailView } from "./OrderDetailView";
 export { UserOrdersView } from "./UserOrdersView";
@@ -6,9 +7,9 @@ export { UserSettingsView } from "./UserSettingsView";
 export { UserAddressesView } from "./UserAddressesView";
 export { UserNotificationsView } from "./UserNotificationsView";
 export { UserEditAddressView } from "./UserEditAddressView";
-export { RipCoinsWallet } from "./RipCoinsWallet";
-export { BuyRipCoinsModal } from "./BuyRipCoinsModal";
-export { RipCoinsPurchaseView } from "./RipCoinsPurchaseView";
+export { RCWallet } from "./RCWallet";
+export { BuyRCModal } from "./BuyRCModal";
+export { RCPurchaseView } from "./RCPurchaseView";
 export { ChatWindow } from "./ChatWindow";
 export { ChatList } from "./ChatList";
 export { MessagesView } from "./MessagesView";

@@ -82,14 +82,14 @@ function StepCard({
 
       {/* Visible index badge */}
       <div
-        className={`relative z-10 w-10 h-10 rounded-full ${step.badgeBg} text-white font-bold text-sm flex items-center justify-center mb-5 shadow-md`}
+        className={`relative z-10 w-10 h-10 rounded-full ${step.badgeBg} text-white font-bold text-sm ${THEME_CONSTANTS.flex.center} mb-5 shadow-md`}
       >
         {step.number}
       </div>
 
       {/* Icon */}
       <div
-        className={`relative z-10 w-14 h-14 rounded-2xl ${step.iconBg} flex items-center justify-center mb-4 border border-white/80 dark:border-slate-700/50`}
+        className={`relative z-10 w-14 h-14 rounded-2xl ${step.iconBg} ${THEME_CONSTANTS.flex.center} mb-4 border border-white/80 dark:border-slate-700/50`}
       >
         <Icon className={`w-7 h-7 ${step.iconColor}`} strokeWidth={1.75} />
       </div>

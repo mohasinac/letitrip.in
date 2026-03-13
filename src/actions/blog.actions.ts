@@ -22,6 +22,7 @@ import type {
   BlogPostCreateInput,
   BlogPostUpdateInput,
 } from "@/db/schema";
+import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 
@@ -136,4 +137,50 @@ export async function deleteBlogPostAction(id: string): Promise<void> {
   await blogRepository.delete(id);
 
   serverLogger.info("deleteBlogPostAction", { adminId: admin.uid, postId: id });
+}
+
+// ─── Read Actions ─────────────────────────────────────────────────────────────
+
+export async function listBlogPostsAction(params?: {
+  filters?: string;
+  sorts?: string;
+  page?: number;
+  pageSize?: number;
+  category?: string;
+}): Promise<FirebaseSieveResult<BlogPostDocument>> {
+  const sieve: SieveModel = {
+    sorts: params?.sorts ?? "-publishedAt",
+    page: params?.page ?? 1,
+    pageSize: params?.pageSize ?? 10,
+  };
+  return blogRepository.listPublished(
+    { category: params?.category as any },
+    sieve,
+  );
+}
+
+export async function getFeaturedBlogPostsAction(
+  count = 3,
+): Promise<BlogPostDocument[]> {
+  const result = await blogRepository.listPublished(
+    { featuredOnly: true },
+    { sorts: "-publishedAt", page: 1, pageSize: count },
+  );
+  return result.items;
+}
+
+export async function getLatestBlogPostsAction(
+  count = 5,
+): Promise<BlogPostDocument[]> {
+  const result = await blogRepository.listPublished(
+    {},
+    { sorts: "-publishedAt", page: 1, pageSize: count },
+  );
+  return result.items;
+}
+
+export async function getBlogPostBySlugAction(
+  slug: string,
+): Promise<BlogPostDocument | null> {
+  return blogRepository.findBySlug(slug);
 }

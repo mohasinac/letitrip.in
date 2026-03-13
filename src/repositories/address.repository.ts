@@ -122,7 +122,6 @@ class AddressRepository {
     input: AddressCreateInput,
   ): Promise<AddressDocument> {
     try {
-      const db = getAdminDb();
       const collection = this.getCollection(userId);
 
       // If this is meant to be the default, clear others first (batch)

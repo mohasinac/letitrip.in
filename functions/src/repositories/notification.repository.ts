@@ -13,7 +13,14 @@ export interface CreateNotificationInput {
   title: string;
   message: string;
   relatedId?: string;
-  relatedType?: "order" | "product" | "bid" | "review" | "blog" | "user";
+  relatedType?:
+    | "order"
+    | "product"
+    | "bid"
+    | "review"
+    | "blog"
+    | "user"
+    | "offer";
 }
 
 export const notificationRepository = {

@@ -20,8 +20,6 @@ import type {
 import type { CategoryDocument } from "@/db/schema/categories";
 import type { ReviewDocument, ReviewStatus } from "@/db/schema/reviews";
 import type { SiteSettingsDocument } from "@/db/schema/site-settings";
-import type { CarouselSlideDocument } from "@/db/schema/carousel-slides";
-import type { HomepageSectionDocument } from "@/db/schema/homepage-sections";
 import type { FAQDocument } from "@/db/schema/faqs";
 
 // ============================================

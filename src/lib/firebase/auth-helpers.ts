@@ -42,11 +42,10 @@ import {
   onAuthStateChanged as firebaseOnAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "./config";
-import { UserRole } from "@/types/auth";
 import { AuthenticationError, ApiError } from "@/lib/errors";
-import { ERROR_MESSAGES } from "@/constants";
+import { ERROR_MESSAGES, API_ENDPOINTS } from "@/constants";
 import { logger } from "@/classes";
-import { sessionService } from "@/services";
+import { apiClient } from "@/lib/api-client";
 
 /**
  * Helper: Create session via API call
@@ -55,7 +54,9 @@ import { sessionService } from "@/services";
  */
 async function createSession(idToken: string): Promise<string | null> {
   try {
-    const data = await sessionService.create({ idToken });
+    const data = await apiClient.post(API_ENDPOINTS.AUTH.CREATE_SESSION, {
+      idToken,
+    });
     return (data as { sessionId?: string }).sessionId || null;
   } catch (error) {
     logger.error("Session creation error", { error });
@@ -70,21 +71,10 @@ async function createSession(idToken: string): Promise<string | null> {
  */
 async function destroySession(): Promise<void> {
   try {
-    await sessionService.destroy();
+    await apiClient.delete(API_ENDPOINTS.AUTH.CREATE_SESSION);
   } catch (error) {
     logger.error("Session destruction error", { error });
   }
-}
-
-/**
- * Get default role based on email
- * Special case: admin@letitrip.in gets admin role
- */
-function getDefaultRole(email: string | null): UserRole {
-  if (email === "admin@letitrip.in") {
-    return "admin";
-  }
-  return "user";
 }
 
 /**

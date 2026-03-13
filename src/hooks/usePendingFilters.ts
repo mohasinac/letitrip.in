@@ -87,7 +87,6 @@ export function usePendingFilters({
   // Applied = current URL state (derived, not stored)
   const applied = useMemo<Record<string, string[]>>(
     () => Object.fromEntries(keys.map((k) => [k, parseValues(k)])),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [keys, parseValues],
   );
 

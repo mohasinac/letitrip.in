@@ -334,7 +334,9 @@ export function MediaLightbox({
       </div>
 
       {/* ── Controls bar (below image) ── */}
-      <div className="flex items-center justify-center gap-1.5 px-4 py-3 bg-black/85 backdrop-blur-sm shrink-0 border-t border-white/10 flex-wrap">
+      <div
+        className={`${THEME_CONSTANTS.flex.center} gap-1.5 px-4 py-3 bg-black/85 backdrop-blur-sm shrink-0 border-t border-white/10 flex-wrap`}
+      >
         {/* Prev */}
         {items.length > 1 && (
           <Button

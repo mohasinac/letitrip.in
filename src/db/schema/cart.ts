@@ -27,6 +27,13 @@ export interface CartItemDocument {
   isAuction: boolean;
   /** True for pre-order products — drives separate order grouping at checkout */
   isPreOrder: boolean;
+  /**
+   * Present when item was added from an accepted Make-an-Offer.
+   * Checkout verify route uses this to return engaged RC after payment.
+   */
+  offerId?: string;
+  /** Locked offer price — overrides normal product price at checkout */
+  lockedPrice?: number;
   addedAt: Date;
   updatedAt: Date;
 }
@@ -117,6 +124,8 @@ export type AddToCartInput = {
   sellerName: string;
   isAuction?: boolean;
   isPreOrder?: boolean;
+  offerId?: string;
+  lockedPrice?: number;
 };
 
 export type UpdateCartItemInput = {

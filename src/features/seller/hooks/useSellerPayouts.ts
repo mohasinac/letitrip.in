@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { sellerService } from "@/services";
+import { listSellerPayoutsAction, requestPayoutAction } from "@/actions";
 import type { PayoutSummary } from "../components/SellerPayoutStats";
 import type { PayoutRecord } from "../components/SellerPayoutHistoryTable";
 
@@ -21,7 +21,30 @@ export function useSellerPayouts() {
 
   const { data, isLoading, error, refetch } = useQuery<SellerPayoutsResponse>({
     queryKey: ["seller-payouts", user?.uid ?? ""],
-    queryFn: () => sellerService.listPayouts(),
+    queryFn: async () => {
+      const result = await listSellerPayoutsAction();
+      const payouts = result.items as unknown as PayoutRecord[];
+      const completed = payouts.filter((p) => p.status === "completed");
+      const pending = payouts.filter((p) => p.status === "pending");
+      const grossEarnings = payouts.reduce(
+        (s, p) => s + (p.grossAmount ?? 0),
+        0,
+      );
+      const totalPaidOut = completed.reduce((s, p) => s + (p.amount ?? 0), 0);
+      const platformFee = payouts.reduce((s, p) => s + (p.platformFee ?? 0), 0);
+      const pendingAmount = pending.reduce((s, p) => s + (p.amount ?? 0), 0);
+      const summary: PayoutSummary = {
+        availableEarnings: pendingAmount,
+        grossEarnings,
+        platformFee,
+        platformFeeRate: 0.05,
+        totalPaidOut,
+        pendingAmount,
+        hasPendingPayout: pending.length > 0,
+        eligibleOrderCount: pending.length,
+      };
+      return { summary, payouts };
+    },
     enabled: !!user,
     staleTime: 0,
   });
@@ -31,7 +54,8 @@ export function useSellerPayouts() {
     Error,
     Record<string, unknown>
   >({
-    mutationFn: (payload) => sellerService.requestPayout(payload),
+    mutationFn: (payload) =>
+      requestPayoutAction(payload as Parameters<typeof requestPayoutAction>[0]),
   });
 
   return {

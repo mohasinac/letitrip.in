@@ -1,7 +1,8 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { mediaService } from "@/services";
+import { apiClient } from "@/lib/api-client";
+import { API_ENDPOINTS } from "@/constants";
 import type { MediaFilenameContext } from "@/utils";
 
 /**
@@ -14,7 +15,8 @@ import type { MediaFilenameContext } from "@/utils";
  */
 export function useMediaUpload() {
   const mutation = useMutation<{ url: string }, Error, FormData>({
-    mutationFn: (formData) => mediaService.upload<{ url: string }>(formData),
+    mutationFn: (formData) =>
+      apiClient.upload<{ url: string }>(API_ENDPOINTS.MEDIA.UPLOAD, formData),
   });
 
   const upload = async (
@@ -43,7 +45,7 @@ export function useMediaUpload() {
  */
 export function useMediaCrop<TResult = { url: string }>() {
   return useMutation<TResult, Error, unknown>({
-    mutationFn: (data) => mediaService.crop(data),
+    mutationFn: (data) => apiClient.post(API_ENDPOINTS.MEDIA.CROP, data),
   });
 }
 
@@ -53,6 +55,6 @@ export function useMediaCrop<TResult = { url: string }>() {
  */
 export function useMediaTrim<TResult = { url: string }>() {
   return useMutation<TResult, Error, unknown>({
-    mutationFn: (data) => mediaService.trim(data),
+    mutationFn: (data) => apiClient.post(API_ENDPOINTS.MEDIA.TRIM, data),
   });
 }

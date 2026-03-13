@@ -1,8 +1,11 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { reviewService } from "@/services";
-import { adminUpdateReviewAction, adminDeleteReviewAction } from "@/actions";
+import {
+  listAdminReviewsAction,
+  adminUpdateReviewAction,
+  adminDeleteReviewAction,
+} from "@/actions";
 import type { Review } from "../components";
 
 interface ReviewListMeta {
@@ -20,7 +23,24 @@ interface ReviewListMeta {
 export function useAdminReviews(sieveParams: string) {
   const query = useQuery<{ reviews: Review[]; meta: ReviewListMeta }>({
     queryKey: ["admin", "reviews", sieveParams],
-    queryFn: () => reviewService.listAdmin(sieveParams),
+    queryFn: async () => {
+      const sp = new URLSearchParams(sieveParams);
+      const result = await listAdminReviewsAction({
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+      return {
+        reviews: result.items as unknown as Review[],
+        meta: {
+          total: result.total,
+          page: result.page,
+          pageSize: result.pageSize,
+          totalPages: result.totalPages,
+        },
+      };
+    },
   });
 
   const updateMutation = useMutation<

@@ -8,6 +8,8 @@ export { SellerStatCard } from "./SellerStatCard";
 export { SellerQuickActions } from "./SellerQuickActions";
 export { SellerRecentListings } from "./SellerRecentListings";
 export { SellersListView } from "./SellersListView";
+export { SellerGuideView } from "./SellerGuideView";
+
 export { SellerStoreView } from "./SellerStoreView";
 export { SellerStoreSetupView } from "./SellerStoreSetupView";
 export { SellerAuctionsView } from "./SellerAuctionsView";
@@ -35,3 +37,6 @@ export { PAYOUT_TABLE_COLUMNS } from "./PayoutTableColumns";
 export type { PayoutStatus, PayoutMethod } from "./PayoutTableColumns";
 export { SellerAnalyticsView } from "./SellerAnalyticsView";
 export { SellerPayoutsView } from "./SellerPayoutsView";
+export { SellerOffersView } from "./SellerOffersView";
+export { PayoutBreakdownModal } from "./PayoutBreakdownModal";
+export type { PayoutBreakdown } from "./PayoutBreakdownModal";

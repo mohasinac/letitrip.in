@@ -84,13 +84,13 @@ export function WhatsAppCommunitySection() {
 
             {/* Facepile + member counter */}
             {config.memberCount ? (
-              <div className="flex items-center justify-center gap-3 mb-4">
+              <div className={`${THEME_CONSTANTS.flex.center} gap-3 mb-4`}>
                 {/* Overlapping avatar initials */}
                 <div className="flex -space-x-2">
                   {["A", "R", "S", "M", "P"].map((initial, i) => (
                     <div
                       key={i}
-                      className="w-8 h-8 rounded-full border-2 border-white bg-green-700 flex items-center justify-center text-white text-xs font-bold"
+                      className={`w-8 h-8 rounded-full border-2 border-white bg-green-700 ${THEME_CONSTANTS.flex.center} text-white text-xs font-bold`}
                     >
                       {initial}
                     </div>

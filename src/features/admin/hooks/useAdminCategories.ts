@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { categoryService } from "@/services";
 import {
+  buildCategoryTreeAction,
   createCategoryAction,
   updateCategoryAction,
   deleteCategoryAction,
@@ -18,7 +18,9 @@ import type { Category } from "../components";
 export function useAdminCategories() {
   const query = useQuery<{ categories: Category[] }>({
     queryKey: ["categories", "tree"],
-    queryFn: () => categoryService.list("view=tree"),
+    queryFn: async () => ({
+      categories: (await buildCategoryTreeAction()) as unknown as Category[],
+    }),
   });
 
   const createMutation = useMutation<unknown, Error, CreateCategoryInput>({

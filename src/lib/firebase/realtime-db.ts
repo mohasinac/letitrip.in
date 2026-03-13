@@ -17,9 +17,7 @@ import {
   query,
   orderByChild,
   limitToLast,
-  equalTo,
   serverTimestamp,
-  DatabaseReference,
   Unsubscribe,
 } from "firebase/database";
 import { realtimeDb } from "./config";

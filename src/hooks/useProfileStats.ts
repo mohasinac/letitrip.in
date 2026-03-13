@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { orderService, addressService } from "@/services";
+import { listOrdersAction, listAddressesAction } from "@/actions";
 
 export interface ProfileStats {
   orderCount: number;
@@ -12,27 +12,21 @@ export interface ProfileStats {
  * currently authenticated user.
  */
 export function useProfileStats(enabled: boolean): ProfileStats {
-  const { data: ordersData, isLoading: ordersLoading } = useQuery<{
-    data: { total: number };
-  }>({
+  const { data: ordersData, isLoading: ordersLoading } = useQuery({
     queryKey: ["user-orders-count"],
-    queryFn: () => orderService.list(),
+    queryFn: () => listOrdersAction(),
     enabled,
   });
 
-  const { data: addressesData, isLoading: addressesLoading } = useQuery<{
-    data: unknown[];
-  }>({
+  const { data: addressesData, isLoading: addressesLoading } = useQuery({
     queryKey: ["user-addresses-count"],
-    queryFn: () => addressService.list(),
+    queryFn: () => listAddressesAction(),
     enabled,
   });
 
   return {
-    orderCount: ordersData?.data?.total ?? 0,
-    addressCount: Array.isArray(addressesData?.data)
-      ? addressesData.data.length
-      : 0,
+    orderCount: Array.isArray(ordersData) ? ordersData.length : 0,
+    addressCount: Array.isArray(addressesData) ? addressesData.length : 0,
     isLoading: ordersLoading || addressesLoading,
   };
 }

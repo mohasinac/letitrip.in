@@ -4,7 +4,7 @@ import { AlertTriangle, AlertCircle, Clock, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Stack } from "@/components";
-import { ROUTES } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 
 interface AdminPriorityAlertsProps {
   pendingPayouts?: number;
@@ -35,7 +35,7 @@ function AlertCard({
 }: AlertCardProps) {
   return (
     <div
-      className={`flex items-center justify-between rounded-xl p-4 border-l-4 ${borderColor} ${bgColor}`}
+      className={`${THEME_CONSTANTS.flex.between} rounded-xl p-4 border-l-4 ${borderColor} ${bgColor}`}
     >
       <div className="flex items-center gap-3 min-w-0">
         <Icon

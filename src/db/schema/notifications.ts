@@ -24,7 +24,11 @@ export type NotificationType =
   | "product_available"
   | "promotion"
   | "system"
-  | "welcome";
+  | "welcome"
+  | "offer_received"
+  | "offer_responded"
+  | "offer_counter_accepted"
+  | "refund_initiated";
 
 export type NotificationPriority = "low" | "normal" | "high";
 
@@ -53,7 +57,14 @@ export interface NotificationDocument {
 
   // Related entities (for deep-linking)
   relatedId?: string; // orderId, productId, bidId, etc.
-  relatedType?: "order" | "product" | "bid" | "review" | "blog" | "user";
+  relatedType?:
+    | "order"
+    | "product"
+    | "bid"
+    | "review"
+    | "blog"
+    | "user"
+    | "offer";
 
   // Metadata
   createdAt: Date;

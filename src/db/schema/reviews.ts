@@ -4,7 +4,7 @@
  * Firebase Firestore collection for product reviews
  */
 
-import { generateReviewId, type GenerateReviewIdInput } from "@/utils";
+import { generateReviewId } from "@/utils";
 
 // ============================================
 // 1. COLLECTION INTERFACE & NAME

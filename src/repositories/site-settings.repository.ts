@@ -14,7 +14,7 @@ import {
   SiteSettingsUpdateInput,
   DEFAULT_SITE_SETTINGS_DATA,
 } from "@/db/schema/site-settings";
-import { DEFAULT_LOYALTY_CONFIG, LoyaltyConfig } from "@/db/schema/ripcoins";
+import { DEFAULT_LOYALTY_CONFIG, LoyaltyConfig } from "@/db/schema/rc";
 import { DatabaseError } from "@/lib/errors";
 import { encrypt, decrypt, maskSecret } from "@/lib/encryption";
 

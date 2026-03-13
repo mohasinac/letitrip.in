@@ -4,7 +4,6 @@
  * Firebase Firestore collection for product listings in multi-seller e-commerce platform
  */
 
-import type { UserRole } from "@/types/auth";
 import {
   generateProductId,
   generateAuctionId,
@@ -112,6 +111,12 @@ export interface ProductDocument {
   // Detailed product content (used by ProductTabs)
   ingredients?: string[];
   howToUse?: string[];
+
+  // Make-an-Offer negotiation
+  /** If true, buyers can submit price offers on this product (standard type only) */
+  allowOffers?: boolean;
+  /** Minimum offer accepted as percentage of listed price (e.g. 70 = 70%).  Defaults to 70. */
+  minOfferPercent?: number;
 
   createdAt: Date;
   updatedAt: Date;

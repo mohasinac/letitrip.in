@@ -38,6 +38,9 @@ export const SCHEDULES = {
   /** Payout batch sweep — early morning before business hours */
   DAILY_0600: "0 6 * * *",
 
+  /** Auto-payout eligibility sweep — 04:45 UTC, just before payoutBatch */
+  DAILY_0445: "45 4 * * *",
+
   /**
    * Auth event cleanup — every 5 minutes.
    * Removes stale RTDB auth_events nodes (older than 3 min) from abandoned popup sessions.
@@ -59,6 +62,9 @@ export const SCHEDULES = {
 
   /** Category metrics + store stats reconciliation — 03:00 UTC */
   DAILY_0300: "0 3 * * *",
+
+  /** Offer expiry sweep — 00:15 UTC (just after coupon expiry at 00:05) */
+  DAILY_0015: "15 0 * * *",
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -105,4 +111,6 @@ export const COLLECTIONS = {
   NOTIFICATIONS: "notifications",
   CATEGORIES: "categories",
   STORES: "stores",
+  OFFERS: "offers",
+  RC_TRANSACTIONS: "rc",
 } as const;

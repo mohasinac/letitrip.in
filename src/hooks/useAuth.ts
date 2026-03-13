@@ -21,8 +21,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useAuthEvent } from "./useAuthEvent";
-import { authService, authEventService } from "@/services";
-import { ERROR_MESSAGES } from "@/constants";
+import { apiClient } from "@/lib/api-client";
+import { API_ENDPOINTS, ERROR_MESSAGES } from "@/constants";
 import { NotFoundError } from "@/lib/errors";
 import { useRouter } from "@/i18n/navigation";
 import { useSession } from "@/contexts";
@@ -87,7 +87,7 @@ export function useLogin(options?: {
   return useMutation<any, Error, LoginCredentials>({
     mutationFn: async (credentials) => {
       // 1. Server-side login: validates credentials, creates session cookie, tracks metadata
-      await authService.login({
+      await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, {
         email: credentials.email.trim(),
         password: credentials.password,
       });
@@ -168,7 +168,11 @@ export function useGoogleLogin(options?: {
     try {
       setInitiating(true);
       authEvent.reset();
-      const { eventId, customToken } = await authEventService.initAuthEvent();
+      const { eventId, customToken } = await apiClient.post<{
+        eventId: string;
+        customToken: string;
+        expiresAt: number;
+      }>(API_ENDPOINTS.AUTH.EVENT_INIT, {});
       const url = `${window.location.origin}/api/auth/google/start?eventId=${encodeURIComponent(eventId)}`;
       // Write to localStorage — the storage event fires in auth.html (a different
       // same-origin window) without needing any window reference or postMessage.
@@ -204,7 +208,7 @@ export function useRegister(options?: {
   return useMutation<any, Error, RegisterData>({
     mutationFn: async (data) => {
       // Server-side registration: Admin SDK creates user, stores profile, creates session, sends verification
-      const response = await authService.register({
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.REGISTER, {
         email: data.email.trim(),
         password: data.password,
         displayName: data.displayName?.trim() || "",
@@ -257,7 +261,8 @@ export function useResendVerification(options?: {
   onError?: (error: any) => void;
 }) {
   return useMutation<any, Error, ResendVerificationData>({
-    mutationFn: (data) => authService.sendVerification(data),
+    mutationFn: (data) =>
+      apiClient.post(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, data),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });
@@ -332,7 +337,7 @@ export function useChangePassword(options?: {
       await reauthenticateWithPassword(user.email, data.currentPassword);
 
       // Then call API to update password
-      return authService.changePassword(data);
+      return apiClient.post(API_ENDPOINTS.USER.CHANGE_PASSWORD, data);
     },
     onSuccess: options?.onSuccess,
     onError: options?.onError,

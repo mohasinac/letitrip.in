@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/hooks";
 import { useQuery } from "@tanstack/react-query";
-import { sellerService } from "@/services";
+import { getSellerAnalyticsAction } from "@/actions";
 import { hasAnyRole } from "@/helpers";
 import type { SellerAnalyticsSummary } from "../components/SellerAnalyticsStats";
 import type { MonthEntry } from "../components/SellerRevenueChart";
@@ -16,7 +16,7 @@ export interface SellerAnalyticsResponse {
 
 /**
  * useSellerAnalytics
- * Wraps `sellerService.getAnalytics()` for the seller analytics page.
+ * Fetches seller analytics via Server Action (2-hop).
  * Only fetches when the user is authenticated and has the seller or admin role.
  */
 export function useSellerAnalytics() {
@@ -26,7 +26,19 @@ export function useSellerAnalytics() {
 
   const { data, isLoading, error } = useQuery<SellerAnalyticsResponse>({
     queryKey: ["seller-analytics", user?.uid ?? ""],
-    queryFn: () => sellerService.getAnalytics(),
+    queryFn: async () => {
+      const r = await getSellerAnalyticsAction();
+      return {
+        summary: {
+          totalOrders: r.totalOrders,
+          totalRevenue: r.totalRevenue,
+          totalProducts: r.totalProducts,
+          publishedProducts: r.publishedProducts,
+        },
+        revenueByMonth: r.monthlyRevenue as MonthEntry[],
+        topProducts: [] as TopProduct[],
+      };
+    },
     enabled,
     staleTime: 5 * 60 * 1000,
   });

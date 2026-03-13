@@ -1,10 +1,10 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { notificationService } from "@/services";
 import {
   markNotificationReadAction,
   markAllNotificationsReadAction,
+  listNotificationsAction,
 } from "@/actions";
 import type { NotificationDocument } from "@/db/schema";
 
@@ -23,7 +23,7 @@ interface NotificationsResponse {
 export function useNotifications(limit = 10) {
   const { data, isLoading, refetch } = useQuery<NotificationsResponse>({
     queryKey: ["notifications", "list", String(limit)],
-    queryFn: () => notificationService.list(`limit=${limit}`),
+    queryFn: () => listNotificationsAction(limit),
     staleTime: 30_000, // 30 seconds
   });
 

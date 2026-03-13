@@ -80,7 +80,7 @@ async function rotateLogFileIfNeeded(filePath: string): Promise<void> {
       // Clean old files
       await cleanOldLogFiles(dir);
     }
-  } catch (error) {
+  } catch (_e) {
     // Silently fail rotation
   }
 }
@@ -117,7 +117,7 @@ async function cleanOldLogFiles(logsDir: string): Promise<void> {
       filesWithStats.length - MAX_LOG_FILES,
     );
     await Promise.all(filesToDelete.map((f) => unlink(f.path)));
-  } catch (error) {
+  } catch (_e) {
     // Silently fail cleanup
   }
 }
@@ -148,12 +148,6 @@ async function writeLog(entry: LogEntry): Promise<void> {
  */
 export const serverLogger = {
   debug(message: string, data?: any): void {
-    const entry: LogEntry = {
-      level: "debug",
-      message,
-      timestamp: new Date().toISOString(),
-      data,
-    };
     console.debug(`[DEBUG] ${message}`, data);
     // Don't write debug logs to files (too noisy)
   },

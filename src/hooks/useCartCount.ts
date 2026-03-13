@@ -3,7 +3,7 @@
 import { useAuth } from "@/contexts";
 import { useGuestCart } from "./useGuestCart";
 import { useQuery } from "@tanstack/react-query";
-import { cartService } from "@/services";
+import { getCartAction } from "@/actions";
 
 /**
  * useCartCount
@@ -22,9 +22,17 @@ export function useCartCount(): number {
     itemCount: number;
     cart: unknown;
     subtotal: number;
-  }>({
+  } | null>({
     queryKey: ["cart"],
-    queryFn: () => cartService.get(),
+    queryFn: async () => {
+      const cart = await getCartAction();
+      if (!cart) return null;
+      return {
+        cart,
+        itemCount: cart.items.length,
+        subtotal: cart.items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+      };
+    },
     enabled: !!user,
   });
   return user ? (data?.itemCount ?? 0) : guestCount;

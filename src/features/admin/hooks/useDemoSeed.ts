@@ -2,7 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { adminService } from "@/services";
+import { apiClient } from "@/lib/api-client";
+import { API_ENDPOINTS } from "@/constants";
 
 export interface SeedCollectionStatus {
   name: string;
@@ -58,7 +59,7 @@ export function useDemoSeed() {
   const statusQuery = useQuery<{ collections: SeedCollectionStatus[] }>({
     queryKey: ["demo", "seed", "status"],
     queryFn: () =>
-      adminService.demoSeedStatus() as Promise<{
+      apiClient.get(API_ENDPOINTS.DEMO.SEED_STATUS) as Promise<{
         collections: SeedCollectionStatus[];
       }>,
     staleTime: 0, // always fresh
@@ -70,7 +71,10 @@ export function useDemoSeed() {
     { action: "load" | "delete"; collections?: SeedCollectionName[] }
   >({
     mutationFn: (vars) =>
-      adminService.demoSeed(vars) as Promise<SeedOperationResult>,
+      apiClient.post(
+        API_ENDPOINTS.DEMO.SEED,
+        vars,
+      ) as Promise<SeedOperationResult>,
     onSuccess: (data, vars) => {
       setLastAction(vars.action);
       setActionResult({ ...data, success: true });

@@ -48,7 +48,7 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 | [rules-components.instructions.md](.github/instructions/rules-components.instructions.md) | 7, 8, 31, 32, 34 — Typography/Form/Semantic primitives, DataTable, filters | `src/**/*.tsx` |
 | [rules-hooks-utils.instructions.md](.github/instructions/rules-hooks-utils.instructions.md) | 5, 6 — existing utils/helpers/hooks | `src/**` |
 | [rules-firebase.instructions.md](.github/instructions/rules-firebase.instructions.md) | 11, 12, 13, 14 — Firebase backend-only, upload flow, repositories, API routes | `src/app/api/**`, `src/lib/**` |
-| [rules-services.instructions.md](.github/instructions/rules-services.instructions.md) | 20, 21 — UI→Hook→Service→apiClient chain | `src/**` |
+| [rules-services.instructions.md](.github/instructions/rules-services.instructions.md) | 20, 21 — 2-hop: reads Hook→apiClient, mutations Hook→Action; no service layer | `src/**` |
 | [rules-media.instructions.md](.github/instructions/rules-media.instructions.md) | 28 — MediaImage/Video/Avatar/Gallery | `src/**/*.tsx` |
 | [rules-constants.instructions.md](.github/instructions/rules-constants.instructions.md) | 15, 16, 17, 18, 19 — singletons, RBAC, schema constants, ROUTES, API_ENDPOINTS | `src/**` |
 | [rules-code-quality.instructions.md](.github/instructions/rules-code-quality.instructions.md) | 22, 23, 24, 26, 27, 28-B, 28-C — no dialogs, logging, build verification, tests, encoding corruption | `src/**` |
@@ -63,8 +63,9 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 - **No raw HTML tags** — use `Heading`, `Text`, `Caption`, `Label`, `Span`, `TextLink`, `Button`, `Section`, `Nav`, `Ul`, `Li`… from `@/components`
 - **No hardcoded strings in JSX** — use `useTranslations()` from `next-intl`
 - **No Firebase client SDK** in UI code — Auth/Firestore/Storage are backend-only
-- **No `fetch()` or `apiClient` in components** — reads use `useQuery` from `@tanstack/react-query`; queryFn must call a service function from `@/services`
-- **Mutations use Server Actions** — import from `@/actions`; call via `useMutation` or directly inside event handlers; **never** call a service for a mutation
+- **No `fetch()` or `apiClient` in components** — reads use `useQuery` with `apiClient` in the `queryFn` inside a hook; components only call hooks
+- **No `src/services/` directory** — the service layer has been deleted; `apiClient` lives in hooks directly
+- **Mutations use Server Actions** — import from `@/actions`; call via `useMutation` or directly inside event handlers; **never** call `apiClient` from a mutation
 - **No direct Firestore queries** in API routes — use repositories from `@/repositories`
 - **No file upload to Storage from browser** — stage locally → submit FormData to backend
 - **Forms use `react-hook-form` + `zodResolver`** — `useForm` from `react-hook-form`, resolver from `@hookform/resolvers/zod`, schema from `@/db/schema/`; no custom form state
@@ -107,6 +108,7 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 | G4 | Schema adapters — dead `schema.adapter.ts` deleted | ✅ Complete |
 | G5 | AES-256-GCM encrypted provider credentials in `siteSettings`; `SiteCredentialsForm`; DB-first `razorpay.ts`/`email.ts` | ✅ Complete |
 | H1–H7 | Dead barrel exports removed; `animation.*` aliases deleted; dead services deleted (contact, newsletter, payment-event, demo); snippets moved to `docs/snippets/`; `TECH_DEBT.md` created; per-package `CHANGELOG.md` files added | ✅ Complete |
+| I1 | Service layer deleted — all 33 `*.service.ts` files removed; `src/services/` gone; callers migrated to direct `apiClient` in hooks or Server Actions | ✅ Complete |
 | Sec | TD-005: media/crop + media/trim migrated to `createApiHandler`; SSRF fix on `sourceUrl`; Stored XSS fix in `renderProseMirrorNode` (escapeHtml + link allowlist) | ✅ Complete |
 | H8 | Publish `@lir/*` to npm registry (build pipeline, `dist/` output, set `private: false`) | 🔲 Optional |
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import {
@@ -10,36 +11,47 @@ import {
 } from "@/constants";
 import { useAddToCart, useAuth, useMessage, useWishlistToggle } from "@/hooks";
 import { Button, Span, Text } from "@/components";
-import { Heart, ShoppingCart, Zap } from "lucide-react";
+import { Heart, ShoppingCart, Zap, Tag } from "lucide-react";
+import { MakeOfferForm } from "./MakeOfferForm";
 
-const { themed, flex } = THEME_CONSTANTS;
+const { themed, flex, position } = THEME_CONSTANTS;
 
 interface ProductActionsProps {
   productId: string;
   productTitle: string;
   price: number;
+  currency?: string;
   isAuction?: boolean;
   isOutOfStock?: boolean;
   statusLabel?: string;
   /** When provided and <= 5, shows a low-stock urgency label */
   stockCount?: number;
+  /** When true, shows the "Make an Offer" button */
+  allowOffers?: boolean;
+  /** Minimum offer as a percentage of listed price (default 70) */
+  minOfferPercent?: number;
 }
 
 export function ProductActions({
   productId,
   productTitle,
   price,
+  currency = "INR",
   isAuction = false,
   isOutOfStock = false,
   statusLabel,
   stockCount,
+  allowOffers = false,
+  minOfferPercent = 70,
 }: ProductActionsProps) {
   const t = useTranslations("products");
   const tLoading = useTranslations("loading");
   const tAuctions = useTranslations("auctions");
+  const tOffers = useTranslations("offers");
   const { showSuccess, showError } = useMessage();
   const { user } = useAuth();
   const router = useRouter();
+  const [offerOpen, setOfferOpen] = useState(false);
 
   const {
     inWishlist,
@@ -149,6 +161,27 @@ export function ProductActions({
             </Button>
           )}
 
+          {/* Make an Offer */}
+          {allowOffers && !isAuction && !isOutOfStock && (
+            <Button
+              onClick={() => {
+                if (!user) {
+                  showError(t("loginToAddToCart"));
+                  router.push(ROUTES.AUTH.LOGIN);
+                  return;
+                }
+                setOfferOpen(true);
+              }}
+              className={`w-full py-3 border-2 ${themed.border} ${themed.bgPrimary} ${themed.textSecondary} hover:border-primary-500 hover:text-primary-600 font-semibold transition-all rounded-xl text-base`}
+              aria-label={tOffers("sendOffer")}
+            >
+              <Span className={`${flex.center} gap-2`}>
+                <Tag className="w-5 h-5" />
+                {tOffers("sendOffer")}
+              </Span>
+            </Button>
+          )}
+
           {/* Wishlist */}
           <Button
             onClick={handleWishlist}
@@ -231,9 +264,52 @@ export function ProductActions({
                 </Span>
               </Button>
             )}
+
+            {/* Make an Offer (mobile) */}
+            {allowOffers && !isAuction && !isOutOfStock && (
+              <Button
+                onClick={() => {
+                  if (!user) {
+                    showError(t("loginToAddToCart"));
+                    router.push(ROUTES.AUTH.LOGIN);
+                    return;
+                  }
+                  setOfferOpen(true);
+                }}
+                className={`shrink-0 w-11 h-11 ${flex.center} rounded-xl border-2 ${themed.border} ${themed.textSecondary} hover:text-primary-600 hover:border-primary-500 transition-all`}
+                aria-label={tOffers("sendOffer")}
+              >
+                <Tag className="w-5 h-5" />
+              </Button>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Make an Offer modal */}
+      {offerOpen && (
+        <div
+          className={`${position.fixedFill} z-50 ${flex.center} p-4 bg-black/50 backdrop-blur-sm`}
+          onClick={() => setOfferOpen(false)}
+        >
+          <div onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+            <MakeOfferForm
+              product={{
+                id: productId,
+                price,
+                currency,
+                title: productTitle,
+                minOfferPercent,
+              }}
+              onSuccess={() => {
+                setOfferOpen(false);
+                showSuccess(tOffers("offerSentTitle"));
+              }}
+              onCancel={() => setOfferOpen(false)}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }

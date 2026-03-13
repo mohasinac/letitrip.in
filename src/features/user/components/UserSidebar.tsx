@@ -16,8 +16,8 @@ import { useTranslations } from "next-intl";
 import { usePathname, Link } from "@/i18n/navigation";
 import { Drawer } from "@mohasinac/ui";
 import { MediaAvatar, Span, Text, Nav, Aside } from "@/components";
-import { ROUTES } from "@/constants";
-import { useAuth, useNotifications, useRipCoinBalance } from "@/hooks";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { useAuth, useNotifications, useRCBalance } from "@/hooks";
 
 interface UserSidebarProps {
   mobileOpen: boolean;
@@ -35,9 +35,9 @@ interface NavItem {
 
 function useSidebarBadges() {
   const { unreadCount } = useNotifications();
-  const { data } = useRipCoinBalance();
-  const ripCoins = data?.ripcoinBalance ?? 0;
-  return { notifBadge: unreadCount, ripCoinBadge: ripCoins };
+  const { data } = useRCBalance();
+  const rcBadge = data?.rcBalance ?? 0;
+  return { notifBadge: unreadCount, rcBadge };
 }
 
 function SidebarContent({ onClose }: { onClose?: () => void }) {
@@ -45,7 +45,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
   const tHub = useTranslations("userHub");
   const pathname = usePathname();
   const { user } = useAuth();
-  const { notifBadge, ripCoinBadge } = useSidebarBadges();
+  const { notifBadge, rcBadge } = useSidebarBadges();
 
   const navItems: NavItem[] = [
     { href: ROUTES.USER.PROFILE, labelKey: "myProfile", icon: User },
@@ -53,10 +53,10 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
     { href: ROUTES.USER.WISHLIST, labelKey: "myWishlist", icon: Heart },
     { href: ROUTES.USER.ADDRESSES, labelKey: "myAddresses", icon: MapPin },
     {
-      href: ROUTES.USER.RIPCOINS,
-      labelKey: "myRipCoins",
+      href: ROUTES.USER.RC,
+      labelKey: "myRC",
       icon: Zap,
-      badge: ripCoinBadge > 0 ? ripCoinBadge.toLocaleString() : undefined,
+      badge: rcBadge > 0 ? rcBadge.toLocaleString() : undefined,
     },
     { href: ROUTES.USER.MESSAGES, labelKey: "myMessages", icon: MessageCircle },
     {
@@ -132,7 +132,9 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
                 {t(item.labelKey as Parameters<typeof t>[0])}
               </Span>
               {item.badge !== undefined && (
-                <Span className="min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-xs font-medium bg-secondary-500 text-white">
+                <Span
+                  className={`min-w-[20px] h-5 ${THEME_CONSTANTS.flex.center} px-1.5 rounded-full text-xs font-medium bg-secondary-500 text-white`}
+                >
                   {item.badge}
                 </Span>
               )}

@@ -22,6 +22,7 @@ import type {
   HomepageSectionCreateInput,
   HomepageSectionUpdateInput,
 } from "@/db/schema";
+import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 
@@ -133,4 +134,67 @@ export async function deleteHomepageSectionAction(id: string): Promise<void> {
     adminId: admin.uid,
     sectionId: id,
   });
+}
+
+export async function reorderHomepageSectionsAction(
+  sectionIds: string[],
+): Promise<HomepageSectionDocument[]> {
+  const admin = await requireRole(["admin"]);
+
+  const rl = await rateLimitByIdentifier(
+    `sections:reorder:${admin.uid}`,
+    RateLimitPresets.API,
+  );
+  if (!rl.success)
+    throw new AuthorizationError("Too many requests. Please slow down.");
+
+  const parsed = z
+    .object({ sectionIds: z.array(z.string().min(1)).min(1) })
+    .safeParse({ sectionIds });
+  if (!parsed.success)
+    throw new ValidationError(
+      parsed.error.issues[0]?.message ?? "Invalid order",
+    );
+
+  await homepageSectionsRepository.reorderSections(
+    parsed.data.sectionIds.map((id, index) => ({ id, order: index + 1 })),
+  );
+
+  const updatedSections = await homepageSectionsRepository.findAll();
+  updatedSections.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  serverLogger.info("reorderHomepageSectionsAction", {
+    adminId: admin.uid,
+    count: parsed.data.sectionIds.length,
+  });
+  return updatedSections;
+}
+
+// ─── Read Actions ─────────────────────────────────────────────────────────────
+
+export async function listHomepageSectionsAction(params?: {
+  filters?: string;
+  sorts?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<FirebaseSieveResult<HomepageSectionDocument>> {
+  const sieve: SieveModel = {
+    filters: params?.filters,
+    sorts: params?.sorts ?? "order",
+    page: params?.page ?? 1,
+    pageSize: params?.pageSize ?? 50,
+  };
+  return homepageSectionsRepository.list(sieve);
+}
+
+export async function listEnabledHomepageSectionsAction(): Promise<
+  HomepageSectionDocument[]
+> {
+  return homepageSectionsRepository.getEnabledSections();
+}
+
+export async function getHomepageSectionByIdAction(
+  id: string,
+): Promise<HomepageSectionDocument | null> {
+  return homepageSectionsRepository.findById(id);
 }

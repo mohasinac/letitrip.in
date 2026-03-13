@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { subscribeNewsletterAction } from "@/actions";
 import { Button, Heading, Section, Text, TextLink, Input } from "@/components";
-import { ROUTES } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useMessage } from "@/hooks";
 
 const schema = z.object({
@@ -105,7 +105,7 @@ export function NewsletterSection() {
               <Button
                 type="submit"
                 disabled={isPending}
-                className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary-700 hover:bg-primary-700/90 text-white font-semibold text-sm min-h-0 border-0 shadow-none active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed shrink-0"
+                className={`${THEME_CONSTANTS.flex.center} gap-2 px-6 py-3 rounded-xl bg-primary-700 hover:bg-primary-700/90 text-white font-semibold text-sm min-h-0 border-0 shadow-none active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed shrink-0`}
               >
                 <Send className="w-4 h-4" />
                 {t("newsletter.subscribe")}

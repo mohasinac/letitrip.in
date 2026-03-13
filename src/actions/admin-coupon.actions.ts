@@ -22,6 +22,7 @@ import type {
   CouponCreateInput,
   CouponUpdateInput,
 } from "@/db/schema";
+import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 
@@ -140,7 +141,6 @@ export async function adminUpdateCouponAction(
 
   const data = parsed.data;
   // Build updateData — convert validity date strings to Date objects
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateData: CouponUpdateInput = {
     ...data,
     ...(data.validity
@@ -192,4 +192,22 @@ export async function adminDeleteCouponAction(id: string): Promise<void> {
     adminId: admin.uid,
     couponId: id,
   });
+}
+
+// ─── Read Actions ─────────────────────────────────────────────────────────────
+
+export async function listAdminCouponsAction(params?: {
+  filters?: string;
+  sorts?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<FirebaseSieveResult<CouponDocument>> {
+  await requireRole(["admin"]);
+  const sieve: SieveModel = {
+    filters: params?.filters,
+    sorts: params?.sorts ?? "-createdAt",
+    page: params?.page ?? 1,
+    pageSize: params?.pageSize ?? 50,
+  };
+  return couponsRepository.list(sieve);
 }

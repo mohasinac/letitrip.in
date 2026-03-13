@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { wishlistService } from "@/services";
+import { getWishlistAction } from "@/actions";
 import type { ProductDocument } from "@/db/schema";
 
 export interface WishlistItem {
@@ -17,13 +17,16 @@ export interface WishlistResponse {
 
 /**
  * useWishlist
- * Wraps `wishlistService.list()` for the wishlist page.
+ * Fetches the wishlist (with product details) via Server Action (2-hop).
  * Pass `enabled: false` when the user is not authenticated.
  */
 export function useWishlist(enabled = true) {
   return useQuery<WishlistResponse>({
     queryKey: ["user", "wishlist"],
-    queryFn: () => wishlistService.list(),
+    queryFn: async () => {
+      const result = await getWishlistAction();
+      return result as unknown as WishlistResponse;
+    },
     enabled,
   });
 }

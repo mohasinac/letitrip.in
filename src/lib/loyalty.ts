@@ -1,7 +1,7 @@
 /**
- * Loyalty — RipCoin Earn Helpers
+ * Loyalty — RC Earn Helpers
  *
- * Server-only calculation utilities for crediting RipCoins as a loyalty
+ * Server-only calculation utilities for crediting RC as a loyalty
  * reward. Two earn triggers are supported:
  *
  *   1. Store purchase  — user earns coins proportional to ₹ spent.
@@ -15,7 +15,7 @@
 import type { LoyaltyConfig } from "@/db/schema";
 
 /**
- * Calculate how many RipCoins a user earns from a store purchase.
+ * Calculate how many RC a user earns from a store purchase.
  *
  * @param spendAmountRs - Total amount paid in ₹ (after discounts, before GST)
  * @param config        - LoyaltyConfig from siteSettings.loyalty
@@ -36,7 +36,7 @@ export function calculatePurchaseCoins(
 }
 
 /**
- * Calculate how many RipCoins a user earns for submitting a valid event entry.
+ * Calculate how many RC a user earns for submitting a valid event entry.
  * Respects the per-event override: if the event specifies coinReward > 0,
  * that value is used directly; otherwise falls back to config.eventEntryCoins.
  *

@@ -30,6 +30,22 @@ export interface CredentialsUpdateValues {
   whatsappApiKey?: string;
   /** WhatsApp contact number — stored in contact.whatsappNumber (plain, not encrypted) */
   whatsappNumber?: string;
+  /** Shiprocket platform account email (plain, login identity) */
+  shiprocketEmail?: string;
+  /** Shiprocket platform account password — encrypted at rest */
+  shiprocketPassword?: string;
+  /** Meta (Facebook) App ID */
+  metaAppId?: string;
+  /** Meta App Secret — encrypted at rest */
+  metaAppSecret?: string;
+  /**
+   * Meta long-lived page access token — encrypted at rest.
+   * Obtain by pasting a short-lived user token from Meta Developers;
+   * the server exchanges it for a 60-day token via POST /api/admin/meta/exchange-token.
+   */
+  metaPageAccessToken?: string;
+  /** Meta page ID whose catalog / ads are managed */
+  metaPageId?: string;
 }
 
 interface SiteCredentialsFormProps {
@@ -55,6 +71,12 @@ export function SiteCredentialsForm({
     resendApiKey: "",
     whatsappApiKey: "",
     whatsappNumber: whatsappNumber ?? "",
+    shiprocketEmail: "",
+    shiprocketPassword: "",
+    metaAppId: "",
+    metaAppSecret: "",
+    metaPageAccessToken: "",
+    metaPageId: "",
   });
 
   const update = (field: keyof CredentialsUpdateValues, value: string) => {
@@ -95,7 +117,7 @@ export function SiteCredentialsForm({
         </Heading>
         <div className={`${spacing.stack} mb-6`}>
           <div>
-            <div className="flex items-center justify-between mb-1">
+            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
               <Text size="sm" className="font-medium">
                 {t("razorpayKeyId")}
               </Text>
@@ -113,7 +135,7 @@ export function SiteCredentialsForm({
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-1">
+            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
               <Text size="sm" className="font-medium">
                 {t("razorpayKeySecret")}
               </Text>
@@ -131,7 +153,7 @@ export function SiteCredentialsForm({
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-1">
+            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
               <Text size="sm" className="font-medium">
                 {t("razorpayWebhookSecret")}
               </Text>
@@ -155,7 +177,7 @@ export function SiteCredentialsForm({
         </Heading>
         <div className={`${spacing.stack} mb-6`}>
           <div>
-            <div className="flex items-center justify-between mb-1">
+            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
               <Text size="sm" className="font-medium">
                 {t("resendApiKey")}
               </Text>
@@ -188,7 +210,7 @@ export function SiteCredentialsForm({
           />
 
           <div>
-            <div className="flex items-center justify-between mb-1">
+            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
               <Text size="sm" className="font-medium">
                 {t("whatsappApiKey")}
               </Text>
@@ -204,6 +226,121 @@ export function SiteCredentialsForm({
               autoComplete="new-password"
             />
           </div>
+        </div>
+
+        {/* ── Shiprocket ──────────────────────────────────────────── */}
+        <Heading level={4} className="text-sm font-semibold mb-3 mt-6">
+          {t("shiprocketSection")}
+        </Heading>
+        <div className={`${spacing.stack} mb-6`}>
+          <div>
+            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+              <Text size="sm" className="font-medium">
+                {t("shiprocketEmail")}
+              </Text>
+              {statusBadge(maskedCredentials.shiprocketEmail)}
+            </div>
+            <FormField
+              name="shiprocketEmail"
+              label=""
+              type="email"
+              value={values.shiprocketEmail ?? ""}
+              placeholder={hint(maskedCredentials.shiprocketEmail)}
+              onChange={(v) => update("shiprocketEmail", v)}
+              autoComplete="off"
+            />
+          </div>
+
+          <div>
+            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+              <Text size="sm" className="font-medium">
+                {t("shiprocketPassword")}
+              </Text>
+              {statusBadge(maskedCredentials.shiprocketPassword)}
+            </div>
+            <FormField
+              name="shiprocketPassword"
+              label=""
+              type="password"
+              value={values.shiprocketPassword ?? ""}
+              placeholder={hint(maskedCredentials.shiprocketPassword)}
+              onChange={(v) => update("shiprocketPassword", v)}
+              autoComplete="new-password"
+            />
+          </div>
+        </div>
+
+        {/* ── Meta (Facebook / Instagram) ──────────────────────── */}
+        <Heading level={4} className="text-sm font-semibold mb-3">
+          {t("metaSection")}
+        </Heading>
+        <div className={spacing.stack}>
+          <div>
+            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+              <Text size="sm" className="font-medium">
+                {t("metaAppId")}
+              </Text>
+              {statusBadge(maskedCredentials.metaAppId)}
+            </div>
+            <FormField
+              name="metaAppId"
+              label=""
+              type="text"
+              value={values.metaAppId ?? ""}
+              placeholder={hint(maskedCredentials.metaAppId)}
+              onChange={(v) => update("metaAppId", v)}
+              autoComplete="off"
+            />
+          </div>
+
+          <div>
+            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+              <Text size="sm" className="font-medium">
+                {t("metaAppSecret")}
+              </Text>
+              {statusBadge(maskedCredentials.metaAppSecret)}
+            </div>
+            <FormField
+              name="metaAppSecret"
+              label=""
+              type="password"
+              value={values.metaAppSecret ?? ""}
+              placeholder={hint(maskedCredentials.metaAppSecret)}
+              onChange={(v) => update("metaAppSecret", v)}
+              autoComplete="new-password"
+            />
+          </div>
+
+          <div>
+            <div className={`${THEME_CONSTANTS.flex.between} mb-1`}>
+              <Text size="sm" className="font-medium">
+                {t("metaPageAccessToken")}
+              </Text>
+              {statusBadge(maskedCredentials.metaPageAccessToken)}
+            </div>
+            <FormField
+              name="metaPageAccessToken"
+              label=""
+              type="password"
+              value={values.metaPageAccessToken ?? ""}
+              placeholder={hint(maskedCredentials.metaPageAccessToken)}
+              onChange={(v) => update("metaPageAccessToken", v)}
+              autoComplete="new-password"
+            />
+            <Text size="xs" variant="secondary" className="mt-1">
+              {t("metaPageAccessTokenHint")}
+            </Text>
+          </div>
+
+          <FormField
+            name="metaPageId"
+            label={t("metaPageId")}
+            type="text"
+            value={values.metaPageId ?? ""}
+            placeholder={hint(maskedCredentials.metaPageId)}
+            onChange={(v) => update("metaPageId", v)}
+            autoComplete="off"
+          />
         </div>
       </div>
     </Card>

@@ -10,8 +10,14 @@
  */
 
 import { z } from "zod";
-import { requireAuth, requireRole } from "@/lib/firebase/auth-server";
-import { eventRepository } from "@/repositories";
+import { requireRole, requireAuth } from "@/lib/firebase/auth-server";
+import {
+  eventRepository,
+  eventEntryRepository,
+  rcRepository,
+  userRepository,
+  siteSettingsRepository,
+} from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
 import {
@@ -24,11 +30,12 @@ import type {
   EventCreateInput,
   EventUpdateInput,
   EventStatus,
+  EventEntryDocument,
 } from "@/db/schema";
-import {
-  EVENTS_COLLECTION as EVT_COL,
-  EVENT_ENTRIES_COLLECTION as EVT_ENTRIES_COL,
-} from "@/db/schema";
+import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
+import { resolveDate } from "@/utils";
+import { calculateEventCoins } from "@/lib/loyalty";
+import { ERROR_MESSAGES } from "@/constants";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 
@@ -58,6 +65,14 @@ const updateEntrySchema = z.object({
   reviewStatus: z.enum(["approved", "flagged"]),
   reviewNote: z.string().optional(),
 });
+
+const enterEventSchema = z.object({
+  pollVotes: z.array(z.string()).optional(),
+  pollComment: z.string().optional(),
+  formResponses: z.record(z.string(), z.unknown()).optional(),
+});
+
+export type EnterEventInput = z.infer<typeof enterEventSchema>;
 
 export type CreateEventInput = z.infer<typeof createEventSchema>;
 export type UpdateEventInput = z.infer<typeof updateEventSchema>;
@@ -203,20 +218,12 @@ export async function adminUpdateEventEntryAction(
 
   const { eventId, entryId, reviewStatus, reviewNote } = parsed.data;
 
-  // Update the entry sub-document path: events/{eventId}/eventEntries/{entryId}
-  const { getFirestore } = await import("firebase-admin/firestore");
-  const db = getFirestore();
-  await db
-    .collection(EVT_COL)
-    .doc(eventId)
-    .collection(EVT_ENTRIES_COL)
-    .doc(entryId)
-    .update({
-      reviewStatus,
-      reviewNote: reviewNote ?? null,
-      reviewedAt: new Date(),
-      reviewedBy: admin.uid,
-    });
+  await eventEntryRepository.reviewEntry(
+    entryId,
+    reviewStatus as EventEntryDocument["reviewStatus"],
+    admin.uid,
+    reviewNote,
+  );
 
   serverLogger.info("adminUpdateEventEntryAction", {
     adminId: admin.uid,
@@ -224,4 +231,277 @@ export async function adminUpdateEventEntryAction(
     entryId,
     reviewStatus,
   });
+}
+
+// ─── Read Actions ─────────────────────────────────────────────────────────────
+
+export async function listPublicEventsAction(
+  params?:
+    | string
+    | {
+        filters?: string;
+        sorts?: string;
+        page?: number;
+        pageSize?: number;
+      },
+): Promise<FirebaseSieveResult<EventDocument>> {
+  // Normalise: accept either a query-string ("filters=...&sorts=...") or an object
+  let filters: string | undefined;
+  let sorts: string | undefined;
+  let page = 1;
+  let pageSize = 20;
+
+  if (typeof params === "string" && params) {
+    const sp = new URLSearchParams(params);
+    filters = sp.get("filters") ?? undefined;
+    sorts = sp.get("sorts") ?? undefined;
+    if (sp.has("page")) page = Number(sp.get("page"));
+    if (sp.has("pageSize")) pageSize = Number(sp.get("pageSize"));
+    // Handle legacy keys passed by EventBanner ("status", "types", etc.)
+    if (!filters) {
+      const parts: string[] = [];
+      if (sp.has("status")) parts.push(`status==${sp.get("status")}`);
+      if (sp.has("type")) parts.push(`type==${sp.get("type")}`);
+      if (sp.has("types")) {
+        const types = sp.get("types")!.split(",");
+        if (types.length === 1) parts.push(`type==${types[0]}`);
+      }
+      if (parts.length) filters = parts.join(",");
+    }
+  } else if (params && typeof params === "object") {
+    filters = params.filters;
+    sorts = params.sorts;
+    page = params.page ?? 1;
+    pageSize = params.pageSize ?? 20;
+  }
+
+  const base = "status==active";
+  return eventRepository.list({
+    filters: filters ? `${base},${filters}` : base,
+    sorts: sorts ?? "startsAt",
+    page,
+    pageSize,
+  });
+}
+
+export async function getPublicEventByIdAction(
+  id: string,
+): Promise<EventDocument | null> {
+  const event = await eventRepository.findById(id);
+  if (!event || event.status !== "active") return null;
+  return event;
+}
+
+export async function getEventLeaderboardAction(
+  eventId: string,
+): Promise<EventEntryDocument[]> {
+  return eventEntryRepository.getLeaderboard(eventId);
+}
+
+export async function adminListEventsAction(params?: {
+  filters?: string;
+  sorts?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<FirebaseSieveResult<EventDocument>> {
+  const sieve: SieveModel = {
+    filters: params?.filters,
+    sorts: params?.sorts ?? "-createdAt",
+    page: params?.page ?? 1,
+    pageSize: params?.pageSize ?? 50,
+  };
+  return eventRepository.list(sieve);
+}
+
+export async function adminGetEventByIdAction(
+  id: string,
+): Promise<EventDocument | null> {
+  return eventRepository.findById(id);
+}
+
+export async function adminGetEventEntriesAction(
+  eventId: string,
+  params?: { page?: number; pageSize?: number },
+): Promise<EventEntryDocument[]> {
+  const result = await eventEntryRepository.listForEvent(eventId, {
+    sorts: "-createdAt",
+    page: params?.page ?? 1,
+    pageSize: params?.pageSize ?? 50,
+  });
+  return result.items;
+}
+
+export async function adminGetEventStatsAction(
+  eventId: string,
+): Promise<{
+  totalEntries: number;
+  approvedEntries: number;
+  flaggedEntries: number;
+  pendingEntries: number;
+} | null> {
+  const event = await eventRepository.findById(eventId);
+  if (!event) return null;
+  const totalEntries = event.stats?.totalEntries ?? 0;
+  const approvedEntries = event.stats?.approvedEntries ?? 0;
+  const flaggedEntries = event.stats?.flaggedEntries ?? 0;
+  return {
+    totalEntries,
+    approvedEntries,
+    flaggedEntries,
+    pendingEntries: Math.max(
+      0,
+      totalEntries - approvedEntries - flaggedEntries,
+    ),
+  };
+}
+
+// ─── Public Entry Action ───────────────────────────────────────────────────
+
+/**
+ * Enter/submit to a public event (poll, survey, or feedback).
+ * Auth is required only for poll/survey/non-anonymous feedback events.
+ */
+export async function enterEventAction(
+  eventId: string,
+  input: EnterEventInput,
+): Promise<{ entryId: string }> {
+  // Optional auth — some events don't require login
+  let user: { uid: string; displayName?: string; email?: string } | undefined =
+    undefined;
+  try {
+    user = await requireAuth();
+  } catch {
+    // unauthenticated is allowed; validated below per event type
+  }
+
+  const parsed = enterEventSchema.safeParse(input);
+  if (!parsed.success) {
+    throw new ValidationError(
+      parsed.error.issues[0]?.message ?? "Invalid input",
+    );
+  }
+  const body = parsed.data;
+
+  const event = await eventRepository.findById(eventId);
+  if (!event || event.status !== "active") {
+    throw new NotFoundError(ERROR_MESSAGES.EVENT.ENTRIES_CLOSED);
+  }
+
+  const now = new Date();
+  const endsAt = resolveDate(event.endsAt);
+  if (endsAt && now > endsAt) {
+    throw new ValidationError(ERROR_MESSAGES.EVENT.ENTRIES_CLOSED);
+  }
+
+  const requiresLogin =
+    event.type === "poll" ||
+    event.type === "survey" ||
+    (event.type === "feedback" && !event.feedbackConfig?.anonymous);
+
+  if (requiresLogin && !user) {
+    throw new AuthorizationError(ERROR_MESSAGES.EVENT.LOGIN_REQUIRED);
+  }
+
+  if (user && event.type === "survey" && event.surveyConfig) {
+    const userEntryCount = await eventEntryRepository.countUserEntries(
+      eventId,
+      user.uid,
+    );
+    if (userEntryCount >= event.surveyConfig.maxEntriesPerUser) {
+      throw new ValidationError(ERROR_MESSAGES.EVENT.ALREADY_ENTERED);
+    }
+  }
+
+  if (event.type === "poll" && event.pollConfig) {
+    const validOptionIds = event.pollConfig.options.map((o) => o.id);
+    const votes = body.pollVotes ?? [];
+    if (votes.length === 0) {
+      throw new ValidationError(ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD);
+    }
+    if (!votes.every((v) => validOptionIds.includes(v))) {
+      throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_INPUT);
+    }
+    if (!event.pollConfig.allowMultiSelect && votes.length > 1) {
+      throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_INPUT);
+    }
+  }
+
+  if (
+    (event.type === "survey" || event.type === "feedback") &&
+    event[`${event.type}Config` as "surveyConfig" | "feedbackConfig"]
+  ) {
+    const config =
+      event[`${event.type}Config` as "surveyConfig" | "feedbackConfig"]!;
+    const formFields = "formFields" in config ? config.formFields : [];
+    for (const field of formFields) {
+      if (field.required && !body.formResponses?.[field.id]) {
+        throw new ValidationError(
+          `${ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD}: ${field.label}`,
+        );
+      }
+    }
+  }
+
+  const autoApprove =
+    event.type === "poll" ||
+    event.type === "feedback" ||
+    (event.type === "survey" && !event.surveyConfig?.entryReviewRequired);
+
+  const reviewStatus = autoApprove ? "approved" : "pending";
+
+  const entry = await eventEntryRepository.createEntry({
+    eventId,
+    userId: user?.uid,
+    userDisplayName: user?.displayName,
+    userEmail: user?.email,
+    pollVotes: body.pollVotes,
+    pollComment: body.pollComment,
+    formResponses: body.formResponses,
+    reviewStatus,
+  });
+
+  await eventRepository.incrementTotalEntries(eventId);
+  if (autoApprove) {
+    await eventRepository.incrementApprovedEntries(eventId);
+  }
+
+  serverLogger.info("enterEventAction", {
+    entryId: entry.id,
+    eventId,
+    type: event.type,
+    userId: user?.uid,
+  });
+
+  if (user && autoApprove) {
+    try {
+      const loyaltyConfig = await siteSettingsRepository.getLoyaltyConfig();
+      const coinsToCredit = calculateEventCoins(
+        event.coinReward,
+        loyaltyConfig,
+      );
+      if (coinsToCredit > 0) {
+        const userDoc = await userRepository.findById(user.uid);
+        const balanceBefore = userDoc?.rcBalance ?? 0;
+        await userRepository.incrementRCBalance(user.uid, coinsToCredit);
+        await rcRepository.create({
+          userId: user.uid,
+          type: "earn_event",
+          coins: coinsToCredit,
+          balanceBefore,
+          balanceAfter: balanceBefore + coinsToCredit,
+          eventId,
+          eventTitle: event.title,
+          notes: `Earned for entering event: ${event.title}`,
+        });
+      }
+    } catch (err) {
+      serverLogger.warn("earn_event coin credit failed (non-critical)", {
+        eventId,
+        userId: user.uid,
+        err,
+      });
+    }
+  }
+
+  return { entryId: entry.id };
 }

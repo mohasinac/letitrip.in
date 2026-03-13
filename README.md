@@ -12,7 +12,7 @@ LetItRip is an e-commerce marketplace supporting three purchase modes:
 - **Auctions** — timed bidding on products with real-time bid updates
 - **Pre-Orders** — reserve products before availability
 
-The platform hosts multiple seller stores, supports events/promotions/coupons, includes a virtual currency system (RipCoins), and provides separate portals for admins, sellers, and buyers.
+The platform hosts multiple seller stores, supports events/promotions/coupons, includes a virtual currency system (RC), and provides separate portals for admins, sellers, and buyers.
 
 ---
 
@@ -86,7 +86,7 @@ Tier 1 — Shared    src/components/ hooks/ utils/…   used by any tier
 | Role        | Access                                                                   |
 | ----------- | ------------------------------------------------------------------------ |
 | `guest`     | Browse public pages, view products/auctions/events                       |
-| `user`      | Buy, cart, wishlist, orders, notifications, RipCoins                     |
+| `user`      | Buy, cart, wishlist, orders, notifications, RC                           |
 | `seller`    | Everything user has + seller portal (products, orders, payouts, coupons) |
 | `admin`     | Full platform access + admin portal                                      |
 | `moderator` | Review/content moderation                                                |
@@ -147,7 +147,7 @@ npm run lint         # ESLint
 | [docs/features/admin.md](docs/features/admin.md)                 | Admin portal feature                            |
 | [docs/features/user.md](docs/features/user.md)                   | User portal feature                             |
 | [docs/features/promotions.md](docs/features/promotions.md)       | Promotions & Coupons feature                    |
-| [docs/features/ripcoins.md](docs/features/ripcoins.md)           | RipCoins virtual currency feature               |
+| [docs/features/rc.md](docs/features/rc.md)                       | RC virtual currency feature                     |
 | [docs/features/notifications.md](docs/features/notifications.md) | Notifications feature                           |
 | [docs/features/wishlist.md](docs/features/wishlist.md)           | Wishlist feature                                |
 | [docs/packages/core.md](docs/packages/core.md)                   | @lir/core package                               |

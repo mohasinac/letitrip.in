@@ -22,6 +22,7 @@ import type {
   CarouselSlideCreateInput,
   CarouselSlideUpdateInput,
 } from "@/db/schema";
+import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 
@@ -150,4 +151,59 @@ export async function deleteCarouselSlideAction(id: string): Promise<void> {
     adminId: admin.uid,
     slideId: id,
   });
+}
+
+export async function reorderCarouselSlidesAction(
+  slideIds: string[],
+): Promise<CarouselSlideDocument[]> {
+  const admin = await requireRole(["admin"]);
+
+  const rl = await rateLimitByIdentifier(
+    `carousel:reorder:${admin.uid}`,
+    RateLimitPresets.API,
+  );
+  if (!rl.success)
+    throw new AuthorizationError("Too many requests. Please slow down.");
+
+  const parsed = z
+    .object({ slideIds: z.array(z.string().min(1)).min(1) })
+    .safeParse({ slideIds });
+  if (!parsed.success)
+    throw new ValidationError(
+      parsed.error.issues[0]?.message ?? "Invalid order",
+    );
+
+  await carouselRepository.reorderSlides(
+    parsed.data.slideIds.map((id, index) => ({ id, order: index + 1 })),
+  );
+
+  const updatedSlides = await carouselRepository.findAll();
+  updatedSlides.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  serverLogger.info("reorderCarouselSlidesAction", {
+    adminId: admin.uid,
+    count: parsed.data.slideIds.length,
+  });
+  return updatedSlides;
+}
+
+// ─── Read Actions ─────────────────────────────────────────────────────────────
+
+export async function listActiveCarouselSlidesAction(): Promise<
+  CarouselSlideDocument[]
+> {
+  const slides = await carouselRepository.getActiveSlides();
+  return slides.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+}
+
+export async function listAllCarouselSlidesAction(): Promise<
+  CarouselSlideDocument[]
+> {
+  return carouselRepository.findAll();
+}
+
+export async function getCarouselSlideByIdAction(
+  id: string,
+): Promise<CarouselSlideDocument | null> {
+  return carouselRepository.findById(id);
 }

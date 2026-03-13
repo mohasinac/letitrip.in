@@ -754,7 +754,7 @@ function SeedStatusBanner({
     >
       {/* ── Header ── */}
       <BlockHeader
-        className={`flex items-center justify-between gap-3 px-5 py-4 border-b ${themed.border} ${themed.bgSecondary}`}
+        className={`${THEME_CONSTANTS.flex.between} gap-3 px-5 py-4 border-b ${themed.border} ${themed.bgSecondary}`}
       >
         <Row gap="sm" align="center">
           <Span className="text-xl" aria-hidden="true">

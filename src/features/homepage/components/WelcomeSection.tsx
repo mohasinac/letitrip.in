@@ -134,7 +134,9 @@ export function WelcomeSection() {
           <div className="hidden lg:block">
             <div className="relative rounded-3xl overflow-hidden aspect-[4/3] bg-gradient-to-br from-primary/10 via-cobalt/10 to-secondary/10 border border-zinc-200 dark:border-slate-700">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-cobalt/5" />
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div
+                className={`absolute inset-0 ${THEME_CONSTANTS.flex.center}`}
+              >
                 <span className="font-display text-8xl text-primary/20 select-none">
                   LIR
                 </span>

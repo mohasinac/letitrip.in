@@ -3,6 +3,7 @@
 import { LucideIcon, TrendingDown, TrendingUp } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Text } from "./typography";
+import { THEME_CONSTANTS } from "@/constants";
 
 export interface DashboardStatsCardProps {
   label: string;
@@ -94,7 +95,7 @@ export function DashboardStatsCard({
           )}
         </div>
         <div
-          className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${iconBg}`}
+          className={`w-10 h-10 rounded-xl ${THEME_CONSTANTS.flex.center} flex-shrink-0 ${iconBg}`}
         >
           <Icon className={`w-5 h-5 ${iconColor}`} strokeWidth={1.5} />
         </div>

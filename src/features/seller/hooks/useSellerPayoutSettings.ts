@@ -2,7 +2,10 @@
 
 import { useAuth, useMessage } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { sellerService } from "@/services";
+import {
+  getSellerPayoutSettingsAction,
+  updatePayoutSettingsAction,
+} from "@/actions";
 import { useTranslations } from "next-intl";
 import type { SellerPayoutDetails } from "@/db/schema";
 
@@ -42,7 +45,9 @@ export function useSellerPayoutSettings() {
   const { data, isLoading, error, refetch } =
     useQuery<SellerPayoutSettingsData>({
       queryKey: ["seller-payout-settings"],
-      queryFn: () => sellerService.getPayoutSettings(),
+      queryFn: async () => ({
+        payoutDetails: (await getSellerPayoutSettingsAction()) as any,
+      }),
       enabled: !authLoading && !!user,
     });
 
@@ -51,7 +56,8 @@ export function useSellerPayoutSettings() {
     Error,
     UpdatePayoutSettingsPayload
   >({
-    mutationFn: (payload) => sellerService.updatePayoutSettings(payload),
+    mutationFn: (payload) =>
+      updatePayoutSettingsAction(payload) as Promise<SellerPayoutSettingsData>,
     onSuccess: () => {
       showSuccess(t("updateSuccess"));
       refetch();

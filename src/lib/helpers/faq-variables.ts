@@ -185,7 +185,7 @@ export async function validateFAQAnswer(text: string): Promise<{
         ? "All variables are valid"
         : `Missing variables: ${validation.missing.join(", ")}`,
     };
-  } catch (error) {
+  } catch (_e) {
     return {
       valid: false,
       missing: [],

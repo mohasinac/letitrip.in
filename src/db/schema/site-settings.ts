@@ -59,6 +59,17 @@ export interface SiteSettingsDocument {
     platformShippingPercent: number;
     /** Minimum platform shipping fee in ₹ for Shiprocket/platform shipping (default 50) */
     platformShippingFixedMin: number;
+    /**
+     * Payment gateway fee % deducted from buyer refund on cancellation (default 2.36).
+     * This is Razorpay's standard refund fee — the platform retains this on cancellation.
+     */
+    processingFeePercent?: number;
+    /** GST on platform commission as percentage (default 18) */
+    gstPercent?: number;
+    /** Razorpay gateway fee % included in the seller payout deduction (default 2.36) */
+    gatewayFeePercent?: number;
+    /** Number of days after delivery before an order becomes auto-payout eligible (default 7) */
+    autoPayoutWindowDays?: number;
   };
   socialLinks: {
     facebook?: string;
@@ -95,7 +106,7 @@ export interface SiteSettingsDocument {
     blog: boolean;
     coupons: boolean;
     notifications: boolean;
-    ripcoin: boolean;
+    rc: boolean;
     sellerRegistration: boolean;
     preOrders: boolean;
   };
@@ -146,11 +157,11 @@ export interface SiteSettingsDocument {
    * Empty / undefined means "fall back to environment variable".
    */
   credentials?: SiteSettingsCredentials; /**
-   * Loyalty / RipCoin earn configuration.
+   * Loyalty / RC earn configuration.
    * Controls earn rates for purchases and events.
    * Falls back to DEFAULT_LOYALTY_CONFIG when not set.
    */
-  loyalty?: import("./ripcoins").LoyaltyConfig;
+  loyalty?: import("./rc").LoyaltyConfig;
   /**
    * Admin-curated before/after result cards shown in `FeaturedResultsSection`.
    * Each entry pairs two image URLs with an optional caption.
@@ -198,6 +209,18 @@ export interface SiteSettingsCredentials {
   resendApiKey?: string;
   /** WhatsApp Business Cloud API key — encrypted, NEVER sent to client */
   whatsappApiKey?: string;
+  /** Shiprocket email — for platform-level Shiprocket shipping integration */
+  shiprocketEmail?: string;
+  /** Shiprocket password — encrypted, NEVER sent to client */
+  shiprocketPassword?: string;
+  /** Meta (Facebook) App ID — for product catalog / ads OAuth */
+  metaAppId?: string;
+  /** Meta App Secret — encrypted, NEVER sent to client */
+  metaAppSecret?: string;
+  /** Meta long-lived page access token — encrypted, obtained via platform OAuth flow */
+  metaPageAccessToken?: string;
+  /** Meta page ID whose catalog/ads are managed */
+  metaPageId?: string;
 }
 
 /** Masked credential values safe to return to an authenticated admin. */
@@ -207,6 +230,12 @@ export interface SiteSettingsCredentialsMasked {
   razorpayWebhookSecret?: string;
   resendApiKey?: string;
   whatsappApiKey?: string;
+  shiprocketEmail?: string;
+  shiprocketPassword?: string;
+  metaAppId?: string;
+  metaAppSecret?: string;
+  metaPageAccessToken?: string;
+  metaPageId?: string;
 }
 
 /**
@@ -297,9 +326,9 @@ export const FEATURE_FLAG_META: FeatureFlagMeta[] = [
     category: "platform",
   },
   {
-    key: "ripcoin",
-    labelKey: "ripcoin",
-    descKey: "ripcoinDesc",
+    key: "rc",
+    labelKey: "rc",
+    descKey: "rcDesc",
     icon: "🪙",
     category: "platform",
   },
@@ -425,7 +454,7 @@ export const DEFAULT_SITE_SETTINGS_DATA: Partial<SiteSettingsDocument> = {
     blog: true,
     coupons: true,
     notifications: true,
-    ripcoin: true,
+    rc: true,
     sellerRegistration: true,
     preOrders: false,
   },

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { sellerService } from "@/services";
+import { listSellerMyProductsAction } from "@/actions";
 import type { ProductDocument } from "@/db/schema";
 
 export interface SellerDashboardProductsResponse {
@@ -24,7 +24,10 @@ export interface SellerDashboardProductsResponse {
 export function useSellerDashboard(userId: string | undefined) {
   const { data, isLoading, error } = useQuery<SellerDashboardProductsResponse>({
     queryKey: ["seller-products", userId ?? ""],
-    queryFn: () => sellerService.listProducts(userId!),
+    queryFn: async () => {
+      const result = await listSellerMyProductsAction({ pageSize: 200 });
+      return result as SellerDashboardProductsResponse;
+    },
     enabled: !!userId,
   });
 

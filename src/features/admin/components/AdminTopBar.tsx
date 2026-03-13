@@ -2,6 +2,7 @@
 
 import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { THEME_CONSTANTS } from "@/constants";
 import {
   AvatarDisplay,
   Button,
@@ -33,7 +34,7 @@ export function AdminTopBar({ onMenuOpen }: AdminTopBarProps) {
         <button
           type="button"
           onClick={onMenuOpen}
-          className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+          className={`md:hidden ${THEME_CONSTANTS.flex.center} w-8 h-8 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-colors`}
           aria-label={t("mobileNav")}
         >
           <Menu className="h-5 w-5" />

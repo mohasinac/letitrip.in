@@ -27,18 +27,22 @@ import {
   unitOfWork,
   siteSettingsRepository,
   userRepository,
-  ripcoinRepository,
+  rcRepository,
+  failedCheckoutRepository,
+  offerRepository,
 } from "@/repositories";
 import { calculatePurchaseCoins } from "@/lib/loyalty";
 import { successResponse } from "@/lib/api-response";
-import { ValidationError, NotFoundError } from "@/lib/errors";
+import { ApiError, ValidationError, NotFoundError } from "@/lib/errors";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
 import { sendOrderConfirmationEmail } from "@/lib/email";
-import { getAdminRealtimeDb } from "@/lib/firebase/admin";
+import { getAdminRealtimeDb, getAdminDb } from "@/lib/firebase/admin";
 import { RTDB_PATHS } from "@/lib/firebase/realtime-db";
 import { createApiHandler } from "@/lib/api/api-handler";
 import { splitCartIntoOrderGroups } from "@/utils";
+import { resolveDate } from "@/utils";
+import { consentOtpRef } from "@/lib/consent-otp";
 import type { AddressDocument } from "@/db/schema";
 
 const verifySchema = z.object({
@@ -99,6 +103,13 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
       serverLogger.warn(
         `Payment signature verification failed for user ${user!.uid}`,
       );
+      failedCheckoutRepository
+        .logPayment(user!.uid, "signature_mismatch", "HMAC signature invalid", {
+          razorpayOrderId: razorpay_order_id,
+          razorpayPaymentId: razorpay_payment_id,
+          addressId,
+        })
+        .catch(() => {});
       throw new ValidationError(ERROR_MESSAGES.CHECKOUT.PAYMENT_FAILED);
     }
 
@@ -115,6 +126,44 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
     }
     const shippingAddress = formatShippingAddress(address);
 
+    // 5b. Verify checkout consent OTP — required for ALL orders (same as COD route).
+    //     The buyer verified before opening the Razorpay modal; we read-and-delete
+    //     the Firestore doc atomically during the order-create transaction below.
+    const db = getAdminDb();
+    const otpRef = consentOtpRef(db, user!.uid, addressId);
+    {
+      const otpSnap = await otpRef.get();
+      const otpData = otpSnap.exists
+        ? (otpSnap.data() as {
+            verified?: boolean;
+            expiresAt?: FirebaseFirestore.Timestamp;
+          })
+        : null;
+      const isConsentValid =
+        otpData?.verified === true &&
+        otpData.expiresAt &&
+        (resolveDate(otpData.expiresAt)?.getTime() ?? 0) > Date.now();
+      if (!isConsentValid) {
+        const reason = !otpData ? "otp_not_verified" : "consent_expired";
+        failedCheckoutRepository
+          .logPayment(
+            user!.uid,
+            reason as import("@/db/schema").FailedPaymentReason,
+            "Consent OTP missing or expired at payment verify time",
+            {
+              razorpayOrderId: razorpay_order_id,
+              razorpayPaymentId: razorpay_payment_id,
+              addressId,
+            },
+          )
+          .catch(() => {});
+        throw new ApiError(
+          403,
+          "Order verification required. Please complete OTP verification and retry.",
+        );
+      }
+    }
+
     // 6. Pre-validate products
     const productChecks = await Promise.all(
       cart.items.map(async (item) => {
@@ -125,9 +174,33 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
 
     for (const { item, product } of productChecks) {
       if (!product || product.status !== "published") {
+        failedCheckoutRepository
+          .logPayment(
+            user!.uid,
+            "product_unavailable",
+            `Product ${item.productId} not published`,
+            {
+              razorpayOrderId: razorpay_order_id,
+              razorpayPaymentId: razorpay_payment_id,
+              addressId,
+            },
+          )
+          .catch(() => {});
         throw new ValidationError(ERROR_MESSAGES.CHECKOUT.PRODUCT_UNAVAILABLE);
       }
       if (product.availableQuantity < item.quantity) {
+        failedCheckoutRepository
+          .logPayment(
+            user!.uid,
+            "stock_insufficient",
+            `Product ${item.productId} has ${product.availableQuantity} left, requested ${item.quantity}`,
+            {
+              razorpayOrderId: razorpay_order_id,
+              razorpayPaymentId: razorpay_payment_id,
+              addressId,
+            },
+          )
+          .catch(() => {});
         throw new ValidationError(ERROR_MESSAGES.CHECKOUT.INSUFFICIENT_STOCK);
       }
     }
@@ -150,6 +223,19 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
         serverLogger.warn(
           `Payment amount mismatch for user ${user!.uid}: paid ₹${paidAmountRs}, expected ≥ ₹${expectedPaymentAmountRs}`,
         );
+        failedCheckoutRepository
+          .logPayment(
+            user!.uid,
+            "amount_mismatch",
+            `Paid ₹${paidAmountRs}, expected ≥ ₹${expectedPaymentAmountRs}`,
+            {
+              razorpayOrderId: razorpay_order_id,
+              razorpayPaymentId: razorpay_payment_id,
+              amountRs: paidAmountRs,
+              addressId,
+            },
+          )
+          .catch(() => {});
         throw new ValidationError(ERROR_MESSAGES.CHECKOUT.PAYMENT_FAILED);
       }
     }
@@ -258,7 +344,7 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
       }
     }
 
-    // 8+9. Atomically deduct stock for every item and clear the cart
+    // 8+9. Atomically deduct stock, clear the cart, and consume the consent OTP doc
     //       (batch ensures either ALL stock updates + cart clear succeed, or none do)
     await unitOfWork.runBatch((batch) => {
       for (const { item, product } of productChecks) {
@@ -269,17 +355,19 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
       }
       unitOfWork.carts.updateInBatch(batch, user!.uid, { items: [] } as any);
     });
+    // Delete the consent OTP doc — fire-and-forget (single-use; expired anyway)
+    otpRef.delete().catch(() => {});
 
-    // 10. Credit RipCoins earned from this purchase (loyalty earn rate from DB)
+    // 10. Credit RC earned from this purchase (loyalty earn rate from DB)
     {
       const loyaltyConfig = await siteSettingsRepository.getLoyaltyConfig();
       const earnedCoins = calculatePurchaseCoins(total, loyaltyConfig);
       if (earnedCoins > 0) {
         try {
           const userDoc = await userRepository.findById(user!.uid);
-          const balanceBefore = userDoc?.ripcoinBalance ?? 0;
-          await userRepository.incrementRipCoinBalance(user!.uid, earnedCoins);
-          await ripcoinRepository.create({
+          const balanceBefore = userDoc?.rcBalance ?? 0;
+          await userRepository.incrementRCBalance(user!.uid, earnedCoins);
+          await rcRepository.create({
             userId: user!.uid,
             type: "earn_purchase",
             coins: earnedCoins,
@@ -288,10 +376,42 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
             notes: `Earned from orders: ${orderIds.join(", ")}`,
           });
         } catch (err) {
-          serverLogger.warn("RipCoin earn credit failed (non-critical)", {
+          serverLogger.warn("RC earn credit failed (non-critical)", {
             err,
           });
         }
+      }
+    }
+
+    // 10b. Return engaged RC for offer-based cart items
+    for (const { item } of productChecks) {
+      const offerId = (item as any).offerId as string | undefined;
+      if (!offerId) continue;
+      try {
+        const offer = await offerRepository.findById(offerId);
+        if (!offer || offer.status !== "accepted") continue;
+        const engagedCoins = offer.lockedPrice ?? offer.offerAmount;
+        const buyerDocBefore = await userRepository.findById(user!.uid);
+        await userRepository.incrementRCBalance(
+          user!.uid,
+          engagedCoins,
+          -engagedCoins,
+        );
+        const buyerDocAfter = await userRepository.findById(user!.uid);
+        await rcRepository.create({
+          userId: user!.uid,
+          type: "return",
+          coins: engagedCoins,
+          balanceBefore: buyerDocBefore?.rcBalance ?? 0,
+          balanceAfter: buyerDocAfter?.rcBalance ?? 0,
+          productId: offer.productId,
+          productTitle: offer.productTitle,
+          notes: `Offer paid — RC returned for offer ${offerId}`,
+        });
+        // Mark offer as paid
+        await offerRepository.updateStatus(offerId, { status: "paid" });
+      } catch (err) {
+        serverLogger.warn("RC return for offer failed (non-critical)", { err });
       }
     }
 

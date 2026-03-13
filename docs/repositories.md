@@ -115,10 +115,10 @@ Products (buy-now, auction, pre-order). Has `type`, `sellerId`, `categoryId`, `s
 **Collection:** `reviews`  
 Product reviews. Has `productId`, `userId`, `rating`, `body`, `status`. Sieve on `status`, `rating`, `productId`.
 
-### `ripcoinRepository`
+### `rcRepository`
 
-**Collection:** `ripcoins`  
-RipCoin transaction records per user. Has `userId`, `amount`, `type` (earn/spend), `reason`, `orderId?`.
+**Collection:** `rc`  
+RC transaction records per user. Has `userId`, `amount`, `type` (earn/spend), `reason`, `orderId?`.
 
 ### `SessionRepository` / `sessionRepository`
 
@@ -154,7 +154,7 @@ Short-lived tokens for email verification and password reset flows. Auto-expire 
 ### `UserRepository` / `userRepository`
 
 **Collection:** `users`  
-User profiles and account data. Has `uid`, `email`, `role`, `displayName`, `avatarUrl`, `ripCoinBalance`, `isEmailVerified`, `isPhoneVerified`.
+User profiles and account data. Has `uid`, `email`, `role`, `displayName`, `avatarUrl`, `rcBalance`, `isEmailVerified`, `isPhoneVerified`.
 
 ### `wishlistRepository`
 

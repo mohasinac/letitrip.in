@@ -1,7 +1,9 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { addressService, cartService, checkoutService } from "@/services";
+import { apiClient } from "@/lib/api-client";
+import { API_ENDPOINTS } from "@/constants";
+import { listAddressesAction, getCartAction } from "@/actions";
 import type {
   AddressDocument,
   CartDocument,
@@ -84,16 +86,18 @@ export function useCheckout(options?: UseCheckoutOptions) {
 
   const addressQuery = useQuery<AddressListResponse>({
     queryKey: ["addresses"],
-    queryFn: () => addressService.list(),
+    queryFn: () =>
+      listAddressesAction() as unknown as Promise<AddressListResponse>,
   });
 
   const cartQuery = useQuery<CartApiResponse>({
     queryKey: ["cart"],
-    queryFn: () => cartService.get(),
+    queryFn: () => getCartAction() as unknown as Promise<CartApiResponse>,
   });
 
   const preflightMutation = useMutation<PreflightResponse, Error, string>({
-    mutationFn: (addressId) => checkoutService.checkPreflight(addressId),
+    mutationFn: (addressId) =>
+      apiClient.post(API_ENDPOINTS.CHECKOUT.PREFLIGHT, { addressId }),
   });
 
   const placeCodOrderMutation = useMutation<
@@ -101,7 +105,8 @@ export function useCheckout(options?: UseCheckoutOptions) {
     Error,
     PlaceOrderPayload
   >({
-    mutationFn: (data) => checkoutService.placeOrder(data),
+    mutationFn: (data) =>
+      apiClient.post(API_ENDPOINTS.CHECKOUT.PLACE_ORDER, data),
     onSuccess: async (result) => {
       // Clear stale cart and orders cache after a successful order
       await queryClient.invalidateQueries({ queryKey: ["cart"] });
@@ -117,7 +122,8 @@ export function useCheckout(options?: UseCheckoutOptions) {
     Error,
     CreateRazorpayOrderPayload
   >({
-    mutationFn: (data) => checkoutService.createPaymentOrder(data),
+    mutationFn: (data) =>
+      apiClient.post(API_ENDPOINTS.PAYMENT.CREATE_ORDER, data),
   });
 
   const verifyPaymentMutation = useMutation<
@@ -125,7 +131,7 @@ export function useCheckout(options?: UseCheckoutOptions) {
     Error,
     VerifyPaymentPayload
   >({
-    mutationFn: (data) => checkoutService.verifyPayment(data),
+    mutationFn: (data) => apiClient.post(API_ENDPOINTS.PAYMENT.VERIFY, data),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["cart"] });
       await queryClient.invalidateQueries({ queryKey: ["orders"] });

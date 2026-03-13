@@ -3,7 +3,12 @@
 import { useMemo } from "react";
 import { useUrlTable } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { productService, sellerService } from "@/services";
+import {
+  listSellerMyProductsAction,
+  createSellerProductAction,
+  sellerUpdateProductAction,
+  sellerDeleteProductAction,
+} from "@/actions";
 import type { AdminProduct } from "@/components";
 
 const PAGE_SIZE = 25;
@@ -63,16 +68,25 @@ export function useSellerProducts(
     hasMore: boolean;
   }>({
     queryKey: ["seller-products-list", table.params.toString(), userId ?? ""],
-    queryFn: () => productService.list(queryParams!),
+    queryFn: async () => {
+      const sp = new URLSearchParams(queryParams!);
+      return listSellerMyProductsAction({
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      }) as any;
+    },
     enabled: !!queryParams,
   });
 
   const deleteMutation = useMutation<void, Error, string>({
-    mutationFn: (id) => productService.delete(id),
+    mutationFn: (id) => sellerDeleteProductAction(id),
   });
 
   const createMutation = useMutation<void, Error, Partial<AdminProduct>>({
-    mutationFn: (product) => productService.create(product),
+    mutationFn: (product) =>
+      createSellerProductAction(product) as unknown as Promise<void>,
   });
 
   const updateMutation = useMutation<
@@ -80,7 +94,8 @@ export function useSellerProducts(
     Error,
     Partial<AdminProduct> & { id: string }
   >({
-    mutationFn: ({ id, ...rest }) => productService.update(id, rest),
+    mutationFn: ({ id, ...rest }) =>
+      sellerUpdateProductAction(id, rest) as unknown as Promise<void>,
   });
 
   return {
@@ -101,7 +116,7 @@ export function useCreateSellerProduct(
   onError?: () => void,
 ) {
   return useMutation<void, Error, Partial<AdminProduct>>({
-    mutationFn: (product) => sellerService.createProduct(product),
+    mutationFn: (product) => createSellerProductAction(product),
     onSuccess,
     onError,
   });
@@ -109,7 +124,8 @@ export function useCreateSellerProduct(
 
 export function useUpdateSellerProduct(id: string, onSuccess?: () => void) {
   return useMutation<void, Error, Partial<AdminProduct>>({
-    mutationFn: (data) => productService.update(id, data),
+    mutationFn: (data) =>
+      sellerUpdateProductAction(id, data) as unknown as Promise<void>,
     onSuccess,
   });
 }

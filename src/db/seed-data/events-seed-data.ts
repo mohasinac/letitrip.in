@@ -15,7 +15,6 @@ const NOW = new Date();
 const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
 const daysAhead = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
 const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000);
-const hoursAhead = (h: number) => new Date(NOW.getTime() + h * 3_600_000);
 
 // ── Events ────────────────────────────────────────────────────────────────────
 

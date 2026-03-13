@@ -28,6 +28,7 @@ import {
   unitOfWork,
   siteSettingsRepository,
   userRepository,
+  failedCheckoutRepository,
 } from "@/repositories";
 import { successResponse } from "@/lib/api-response";
 import { ApiError, ValidationError, NotFoundError } from "@/lib/errors";
@@ -75,49 +76,6 @@ function formatShippingAddress(a: AddressDocument): string {
   return parts.join(", ");
 }
 
-/**
- * Normalize a name or phone for comparison — lower-case, strip extra spaces,
- * keep only the last 10 digits for phone numbers.
- */
-function normalizeName(s: string): string {
-  return s.toLowerCase().trim().replace(/\s+/g, " ");
-}
-
-function normalizePhone(s: string): string {
-  return s.replace(/[^0-9]/g, "").slice(-10);
-}
-
-/**
- * Returns true when the shipping address appears to belong to a different
- * person than the account holder (third-party delivery).
- *
- * Matching criteria (either match → NOT third-party):
- *  • Normalized fullName equals user displayName
- *  • Normalized address phone equals user phoneNumber (last 10 digits)
- */
-function isThirdPartyAddress(
-  address: AddressDocument,
-  displayName: string | null,
-  phoneNumber: string | null,
-): boolean {
-  if (
-    displayName &&
-    normalizeName(address.fullName) === normalizeName(displayName)
-  ) {
-    return false;
-  }
-  if (
-    phoneNumber &&
-    normalizePhone(address.phone) === normalizePhone(phoneNumber)
-  ) {
-    return false;
-  }
-  // If we have neither displayName nor phoneNumber to compare against,
-  // we cannot determine a mismatch, so don't require consent.
-  if (!displayName && !phoneNumber) return false;
-  return true;
-}
-
 // ─── POST Handler ─────────────────────────────────────────────────────────────
 
 export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
@@ -154,24 +112,23 @@ export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
     // 4. Resolve shipping address
     const address = await unitOfWork.addresses.findById(uid, addressId);
     if (!address) {
+      failedCheckoutRepository
+        .logCheckout(uid, "address_not_found", "Address not found", {
+          addressId,
+          paymentMethod,
+        })
+        .catch(() => {});
       throw new NotFoundError(ERROR_MESSAGES.CHECKOUT.ADDRESS_REQUIRED);
     }
     const shippingAddress = formatShippingAddress(address);
 
-    // 5. Determine whether this is a third-party address (consent required).
-    const requiresConsent = isThirdPartyAddress(
-      address,
-      user!.displayName ?? null,
-      user!.phoneNumber ?? null,
-    );
-
-    // 6. Atomic Firestore transaction: re-read stock under a lock, decrement
-    //    available items and collect out-of-stock items as unavailable.
-    //    Also clears only the successfully-ordered cart items.
-    //    Consent OTP is validated and deleted inside the transaction so two
-    //    concurrent requests cannot both pass on the same single-use OTP.
+    // 5. Every order — regardless of whether it's for self or a third party —
+    //    requires a verified checkout consent OTP (either SMS or email path).
+    //    The consent doc is written by grantCheckoutConsentViaSmsAction (SMS)
+    //    or verifyConsentOtpAction / consent-otp/verify route (email) before
+    //    the buyer calls this endpoint.
     const db = getAdminDb();
-    const otpRef = requiresConsent ? consentOtpRef(db, uid, addressId) : null;
+    const otpRef = consentOtpRef(db, uid, addressId);
 
     interface StockResult {
       available: { item: (typeof cartItems)[0]; product: ProductDocument }[];
@@ -181,19 +138,23 @@ export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
         requestedQty: number;
         availableQty: number;
       }[];
+      /** Whether the consent OTP was verified via email (not SMS). Used for bypass-credit grant. */
+      emailOtpUsed: boolean;
     }
 
-    const { available, unavailable } = await db.runTransaction(
-      async (tx): Promise<StockResult> => {
-        // Validate consent OTP atomically: if two concurrent requests both see
-        // verified=true here, only one transaction will commit (Firestore
-        // optimistic locking). The second retry will find the OTP already gone.
-        if (otpRef) {
+    let stockResult: StockResult;
+    try {
+      stockResult = await db.runTransaction(
+        async (tx): Promise<StockResult> => {
+          // Validate consent OTP atomically — checked for ALL orders.
+          // Two concurrent requests both seeing verified=true: only one transaction
+          // commits (Firestore optimistic locking); the second finds the OTP gone.
           const otpSnap = await tx.get(otpRef);
           const otpData = otpSnap.exists
             ? (otpSnap.data() as {
                 verified?: boolean;
                 expiresAt?: FirebaseFirestore.Timestamp;
+                verifiedVia?: string;
               })
             : null;
           const isConsentValid =
@@ -201,76 +162,112 @@ export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
             otpData.expiresAt &&
             (resolveDate(otpData.expiresAt)?.getTime() ?? 0) > Date.now();
           if (!isConsentValid) {
-            throw new ApiError(
-              403,
-              "Third-party shipping consent required. Please verify via email OTP before placing this order.",
+            const reason = !otpData ? "otp_not_verified" : "consent_expired";
+            throw Object.assign(
+              new ApiError(
+                403,
+                "Order verification required. Please complete OTP verification before placing this order.",
+              ),
+              { _failReason: reason },
             );
           }
-        }
+          const emailOtpUsed = otpData.verifiedVia !== "sms";
 
-        const productRefs = cartItems.map((item) =>
-          db.collection(PRODUCT_COLLECTION).doc(item.productId),
-        );
-        const productDocs = await Promise.all(
-          productRefs.map((ref) => tx.get(ref)),
-        );
+          const productRefs = cartItems.map((item) =>
+            db.collection(PRODUCT_COLLECTION).doc(item.productId),
+          );
+          const productDocs = await Promise.all(
+            productRefs.map((ref) => tx.get(ref)),
+          );
 
-        const availableItems: StockResult["available"] = [];
-        const unavailableItems: StockResult["unavailable"] = [];
+          const availableItems: StockResult["available"] = [];
+          const unavailableItems: StockResult["unavailable"] = [];
 
-        for (let i = 0; i < cartItems.length; i++) {
-          const item = cartItems[i];
-          const doc = productDocs[i];
-          const productData = doc.exists
-            ? (doc.data() as ProductDocument)
-            : null;
+          for (let i = 0; i < cartItems.length; i++) {
+            const item = cartItems[i];
+            const doc = productDocs[i];
+            const productData = doc.exists
+              ? (doc.data() as ProductDocument)
+              : null;
 
-          if (
-            !productData ||
-            productData.status !== "published" ||
-            productData.availableQuantity < item.quantity
-          ) {
-            unavailableItems.push({
-              productId: item.productId,
-              productTitle: item.productTitle,
-              requestedQty: item.quantity,
-              availableQty: productData?.availableQuantity ?? 0,
-            });
-          } else {
-            // Decrement stock atomically
-            tx.update(productRefs[i], {
-              availableQuantity: productData.availableQuantity - item.quantity,
-              updatedAt: new Date(),
-            });
-            availableItems.push({ item, product: productData });
+            if (
+              !productData ||
+              productData.status !== "published" ||
+              productData.availableQuantity < item.quantity
+            ) {
+              unavailableItems.push({
+                productId: item.productId,
+                productTitle: item.productTitle,
+                requestedQty: item.quantity,
+                availableQty: productData?.availableQuantity ?? 0,
+              });
+            } else {
+              // Decrement stock atomically
+              tx.update(productRefs[i], {
+                availableQuantity:
+                  productData.availableQuantity - item.quantity,
+                updatedAt: new Date(),
+              });
+              availableItems.push({ item, product: productData });
+            }
           }
-        }
 
-        // Clear only the successfully-ordered items from cart.
-        // Items that failed (unavailableItems) remain so the buyer can see them.
-        if (availableItems.length > 0) {
-          const orderedProductIds = new Set(
-            availableItems.map((a) => a.item.productId),
-          );
-          const remainingCartItems = cart.items.filter(
-            (ci) => !orderedProductIds.has(ci.productId),
-          );
-          const cartRef = db.collection(CART_COLLECTION).doc(uid);
-          tx.set(
-            cartRef,
-            { items: remainingCartItems, updatedAt: new Date() },
-            { merge: true },
-          );
-          // Atomically consume the consent OTP so a concurrent request cannot reuse it
-          if (otpRef) tx.delete(otpRef);
-        }
+          // Clear only the successfully-ordered items from cart.
+          // Items that failed (unavailableItems) remain so the buyer can see them.
+          if (availableItems.length > 0) {
+            const orderedProductIds = new Set(
+              availableItems.map((a) => a.item.productId),
+            );
+            const remainingCartItems = cart.items.filter(
+              (ci) => !orderedProductIds.has(ci.productId),
+            );
+            const cartRef = db.collection(CART_COLLECTION).doc(uid);
+            tx.set(
+              cartRef,
+              { items: remainingCartItems, updatedAt: new Date() },
+              { merge: true },
+            );
+            // Atomically consume the consent OTP so a concurrent request cannot reuse it
+            tx.delete(otpRef);
+          }
 
-        return { available: availableItems, unavailable: unavailableItems };
-      },
-    );
+          return {
+            available: availableItems,
+            unavailable: unavailableItems,
+            emailOtpUsed,
+          };
+        },
+      );
+    } catch (err: unknown) {
+      // Log the failure before re-throwing
+      const reason =
+        (err as { _failReason?: string })?._failReason === "consent_expired"
+          ? "consent_expired"
+          : (err as { _failReason?: string })?._failReason ===
+              "otp_not_verified"
+            ? "otp_not_verified"
+            : "unknown";
+      failedCheckoutRepository
+        .logCheckout(
+          uid,
+          reason as import("@/db/schema").FailedCheckoutReason,
+          err instanceof Error ? err.message : String(err),
+          { addressId, paymentMethod },
+        )
+        .catch(() => {});
+      throw err;
+    }
+    const { available, unavailable, emailOtpUsed } = stockResult;
 
     // All items were out of stock — no order can be placed
     if (available.length === 0) {
+      failedCheckoutRepository
+        .logCheckout(uid, "stock_failed", "All items out of stock", {
+          addressId,
+          paymentMethod,
+          cartItemCount: cartItems.length,
+        })
+        .catch(() => {});
       throw new ValidationError(ERROR_MESSAGES.CHECKOUT.INSUFFICIENT_STOCK);
     }
 
@@ -382,9 +379,10 @@ export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
       }
     }
 
-    // 8. Grant a bypass credit if partial order (consent OTP was already
-    //    consumed atomically inside the transaction; no separate revoke needed).
-    if (requiresConsent && unavailable.length > 0) {
+    // 8. Grant a bypass credit for the EMAIL OTP cooldown if this was a partial
+    //    order (unavailable items) and the email OTP path was used.
+    //    SMS path has its own per-user cooldown via requestOtpGrant — no bypass needed.
+    if (emailOtpUsed && unavailable.length > 0) {
       const metaRef = consentOtpRateLimitRef(db, uid);
       metaRef
         .get()

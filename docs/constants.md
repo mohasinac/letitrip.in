@@ -49,7 +49,7 @@ API_ENDPOINTS = {
     clear: "/api/cart/clear",
   },
   // … plus: categories, search, events, blog, sellers, stores
-  //          promotions, ripcoins, reviews, wishlist, notifications
+  //          promotions, rc, reviews, wishlist, notifications
   //          admin/*, seller/*, media/*, payments/*
 };
 ```
@@ -192,7 +192,7 @@ ROUTES = {
     profile: "/account/profile",
     addresses: "/account/addresses",
     wishlist: "/account/wishlist",
-    ripcoins: "/account/ripcoins",
+    rc: "/account/rc",
     notifications: "/account/notifications",
   },
   seller: {
@@ -251,10 +251,10 @@ Metadata generation utilities.
 
 ## `site.ts`
 
-| Export          | Description                                                                                      |
-| --------------- | ------------------------------------------------------------------------------------------------ |
-| `SITE_CONFIG`   | `{ name, domain, currency, locale, supportEmail, socialLinks }`                                  |
-| `FEATURE_FLAGS` | `{ auctions, preOrders, ripCoins, events, blog, multiSeller }` — toggle features without deploys |
+| Export          | Description                                                                                |
+| --------------- | ------------------------------------------------------------------------------------------ |
+| `SITE_CONFIG`   | `{ name, domain, currency, locale, supportEmail, socialLinks }`                            |
+| `FEATURE_FLAGS` | `{ auctions, preOrders, rc, events, blog, multiSeller }` — toggle features without deploys |
 
 ---
 

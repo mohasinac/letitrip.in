@@ -71,7 +71,7 @@ import { userRepository } from "@/repositories";
 const user = await userRepository.findByEmail("user@example.com");
 ```
 
-Available: `userRepository` · `tokenRepository` · `emailVerificationTokenRepository` · `passwordResetTokenRepository` · `productRepository` · `orderRepository` · `reviewRepository` · `sessionRepository` · `siteSettingsRepository` · `carouselRepository` · `homepageSectionsRepository` · `categoriesRepository` · `couponsRepository` · `faqsRepository` · `bidRepository` · `addressRepository` · `blogRepository` · `cartRepository` · `wishlistRepository` · `chatRepository` · `eventRepository` · `eventEntryRepository` · `newsletterRepository` · `notificationRepository` · `payoutRepository` · `ripcoinRepository` · `storeRepository` · `smsCounterRepository`
+Available: `userRepository` · `tokenRepository` · `emailVerificationTokenRepository` · `passwordResetTokenRepository` · `productRepository` · `orderRepository` · `reviewRepository` · `sessionRepository` · `siteSettingsRepository` · `carouselRepository` · `homepageSectionsRepository` · `categoriesRepository` · `couponsRepository` · `faqsRepository` · `bidRepository` · `addressRepository` · `blogRepository` · `cartRepository` · `wishlistRepository` · `chatRepository` · `eventRepository` · `eventEntryRepository` · `newsletterRepository` · `notificationRepository` · `payoutRepository` · `rcRepository` · `storeRepository` · `smsCounterRepository`
 
 ### Sieve List Queries
 

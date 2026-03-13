@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { adminService } from "@/services";
 import {
+  listAdminBlogAction,
   createBlogPostAction,
   updateBlogPostAction,
   deleteBlogPostAction,
@@ -27,16 +27,36 @@ interface BlogListMeta {
  * create, update, and delete mutations.
  */
 export function useAdminBlog(sieveParams: string) {
-  // sieveParams may be a raw Sieve filter string OR a full query string (from buildSieveParams)
-  const filtersParam = sieveParams
-    ? sieveParams.startsWith("?")
-      ? sieveParams
-      : `?${sieveParams}`
-    : "?pageSize=200";
-
   const query = useQuery<{ posts: BlogPostDocument[]; meta: BlogListMeta }>({
     queryKey: ["admin", "blog", sieveParams],
-    queryFn: () => adminService.listBlog(filtersParam),
+    queryFn: async () => {
+      const sp = new URLSearchParams(sieveParams || "pageSize=200");
+      const result = await listAdminBlogAction({
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : 200,
+      });
+      const published = result.items.filter(
+        (p) => p.status === "published",
+      ).length;
+      const drafts = result.items.filter((p) => p.status === "draft").length;
+      const featured = result.items.filter((p) => p.isFeatured).length;
+      return {
+        posts: result.items,
+        meta: {
+          total: result.total,
+          published,
+          drafts,
+          featured,
+          filteredTotal: result.total,
+          page: result.page,
+          pageSize: result.pageSize,
+          totalPages: result.totalPages,
+          hasMore: result.hasMore,
+        },
+      };
+    },
   });
 
   const createMutation = useMutation<BlogPostDocument, Error, unknown>({

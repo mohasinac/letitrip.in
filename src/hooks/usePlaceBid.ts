@@ -14,7 +14,7 @@ interface PlaceBidPayload {
  *
  * Mutation hook for placing a bid on an auction product.
  * Invalidates bid list and auction detail queries on success so the UI
- * reflects the new highest bid and RipCoin balance without a manual reload.
+ * reflects the new highest bid and RC balance without a manual reload.
  *
  * @example
  * const { mutateAsync, isLoading } = usePlaceBid();
@@ -32,7 +32,7 @@ export function usePlaceBid() {
       // Refresh bid list and auction product detail so current bid + bid count update
       await queryClient.invalidateQueries({ queryKey: ["bids", productId] });
       await queryClient.invalidateQueries({ queryKey: ["auction", productId] });
-      await queryClient.invalidateQueries({ queryKey: ["ripcoins"] });
+      await queryClient.invalidateQueries({ queryKey: ["rc"] });
     },
   });
 }

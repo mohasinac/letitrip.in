@@ -26,7 +26,7 @@ export type { OrderStatusFormState } from "./OrderStatusForm";
 // Users
 export { useUserTableColumns } from "./UserTableColumns";
 export { UserDetailDrawer } from "./UserDetailDrawer";
-export { RipCoinAdjustModal } from "./RipCoinAdjustModal";
+export { RCAdjustModal } from "./RCAdjustModal";
 export type { AdminUser, UserTab } from "./User.types";
 
 // Carousel
@@ -153,8 +153,8 @@ export {
   NOTIFICATION_SORT_OPTIONS,
 } from "./NotificationFilters";
 export type { NotificationFiltersProps } from "./NotificationFilters";
-export { RipCoinFilters, RIPCOIN_SORT_OPTIONS } from "./RipCoinFilters";
-export type { RipCoinFiltersProps } from "./RipCoinFilters";
+export { RCFilters, RC_SORT_OPTIONS } from "./RCFilters";
+export type { RCFiltersProps } from "./RCFilters";
 export {
   EventEntryFilters,
   EVENT_ENTRY_SORT_OPTIONS,

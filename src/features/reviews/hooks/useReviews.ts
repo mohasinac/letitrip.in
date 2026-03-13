@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { reviewService } from "@/services";
+import { listAdminReviewsAction } from "@/actions";
 import type { ReviewDocument } from "@/db/schema";
 
 /**
@@ -23,7 +23,16 @@ export function useReviews(
 ) {
   return useQuery<ReviewsApiResult>({
     queryKey: ["reviews", "all", queryParams],
-    queryFn: () => reviewService.list(queryParams),
+    queryFn: async () => {
+      const sp = new URLSearchParams(queryParams);
+      const result = await listAdminReviewsAction({
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+      return result.items;
+    },
     initialData: options?.initialData,
   });
 }

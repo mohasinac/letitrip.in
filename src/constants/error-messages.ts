@@ -468,22 +468,22 @@ export const ERROR_MESSAGES = {
     INVALID_STATUS_TRANSITION: "This status transition is not allowed",
   },
 
-  // RipCoin errors
-  RIPCOIN: {
-    FETCH_FAILED: "Failed to fetch RipCoin balance",
+  // RC errors
+  RC: {
+    FETCH_FAILED: "Failed to fetch RC balance",
     PURCHASE_FAILED: "Failed to initiate coin purchase",
     VERIFY_FAILED: "Failed to verify coin purchase payment",
-    INSUFFICIENT_COINS: "Insufficient RipCoins — please top up your wallet",
+    INSUFFICIENT_COINS: "Insufficient RC — please top up your wallet",
     INVALID_PACK_COUNT:
       "Invalid pack count — please select between 10 and 1000 packs",
-    INVALID_PACKAGE: "Invalid RipCoin package selected",
+    INVALID_PACKAGE: "Invalid RC package selected",
     PAYMENT_ALREADY_USED: "This payment has already been applied",
-    TRANSACTION_FAILED: "RipCoin transaction failed",
-    HISTORY_FAILED: "Failed to fetch RipCoin transaction history",
-    REFUND_FAILED: "Failed to refund RipCoins",
+    TRANSACTION_FAILED: "RC transaction failed",
+    HISTORY_FAILED: "Failed to fetch RC transaction history",
+    REFUND_FAILED: "Failed to refund RC",
     REFUND_NOT_ELIGIBLE: "This transaction is not eligible for a refund",
     REFUND_INSUFFICIENT_BALANCE:
-      "Not enough available RipCoins to process this refund",
+      "Not enough available RC to process this refund",
     ALREADY_REFUNDED: "This purchase has already been refunded",
   },
 

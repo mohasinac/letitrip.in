@@ -14,7 +14,6 @@ import {
   FAQS_COLLECTION,
   FAQDocument,
   FAQCreateInput,
-  FAQUpdateInput,
   FAQCategory,
   FAQWithInterpolatedAnswer,
   extractVariablePlaceholders,
@@ -266,7 +265,7 @@ class FAQsRepository extends BaseRepository<FAQDocument> {
           interpolated: interpolatedText,
         },
       };
-    } catch (error) {
+    } catch (_e) {
       // On error, return FAQ with original text
       return {
         ...faq,
@@ -364,7 +363,7 @@ class FAQsRepository extends BaseRepository<FAQDocument> {
         valid: invalidVars.length === 0,
         invalidVars: invalidVars.length > 0 ? invalidVars : undefined,
       };
-    } catch (error) {
+    } catch (_e) {
       return { valid: false };
     }
   }

@@ -71,7 +71,7 @@ function StatItem({
     >
       {/* Icon wrapper */}
       <div
-        className={`w-14 h-14 rounded-2xl ${THEME_CONSTANTS.accentBanner.spotlightIconBg} backdrop-blur flex items-center justify-center mb-4`}
+        className={`w-14 h-14 rounded-2xl ${THEME_CONSTANTS.accentBanner.spotlightIconBg} backdrop-blur ${THEME_CONSTANTS.flex.center} mb-4`}
       >
         <Icon
           className={`w-7 h-7 ${THEME_CONSTANTS.accentBanner.spotlightIcon}`}

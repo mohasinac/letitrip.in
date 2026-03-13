@@ -398,7 +398,7 @@ class ProductRepository extends BaseRepository<ProductDocument> {
         .update({
           [PRODUCT_FIELDS.VIEW_COUNT]: FieldValue.increment(1),
         });
-    } catch (error) {
+    } catch (_e) {
       // Swallow errors — analytics failures must not break the product response
     }
   }

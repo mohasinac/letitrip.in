@@ -5,8 +5,6 @@
  * and improve performance across the application.
  */
 
-type EventCallback = (...args: any[]) => void;
-
 interface EventHandler {
   type: string;
   target: EventTarget;

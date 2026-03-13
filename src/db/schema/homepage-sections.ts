@@ -4,10 +4,7 @@
  * Firestore schema definition for configurable homepage sections
  */
 
-import {
-  generateHomepageSectionId,
-  type GenerateHomepageSectionIdInput,
-} from "@/utils";
+import { generateHomepageSectionId } from "@/utils";
 
 // ============================================
 // SECTION CONFIG TYPES

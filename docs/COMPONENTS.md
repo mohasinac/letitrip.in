@@ -276,7 +276,7 @@ General-purpose UI components.
 | `AddressForm`           | Address create/edit form            |
 | `AddressSelectorCreate` | Address picker with inline-create   |
 | `NotificationBell`      | Header bell with unread badge       |
-| `RipCoinsBalanceChip`   | Coin balance inline chip            |
+| `RCBalanceChip`         | Coin balance inline chip            |
 
 ---
 

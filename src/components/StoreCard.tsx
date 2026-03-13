@@ -111,7 +111,9 @@ export function StoreCard({
                 )}
               </div>
               {/* Verified badge on avatar corner */}
-              <div className="absolute -bottom-0.5 -right-0.5 z-10 w-5 h-5 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
+              <div
+                className={`absolute -bottom-0.5 -right-0.5 z-10 w-5 h-5 rounded-full bg-white dark:bg-slate-900 ${THEME_CONSTANTS.flex.center} shadow-sm`}
+              >
                 <BadgeCheck
                   className="w-3.5 h-3.5 text-cobalt-500"
                   aria-hidden="true"

@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/hooks";
 import { useQuery } from "@tanstack/react-query";
-import { orderService } from "@/services";
+import { listOrdersAction } from "@/actions";
 import type { OrderDocument } from "@/db/schema";
 
 interface UserOrdersResult {
@@ -14,8 +14,7 @@ interface UserOrdersResult {
 
 /**
  * useUserOrders
- * Wraps `orderService.list(params)` for the user orders list page.
- * `params` is a pre-built URLSearchParams query string produced by `useUrlTable`.
+ * Fetches user orders via Server Action (2-hop).
  * Only fetches when the user is authenticated.
  */
 export function useUserOrders(params?: string) {
@@ -23,7 +22,10 @@ export function useUserOrders(params?: string) {
 
   const { data, isLoading, error, refetch } = useQuery<UserOrdersResult>({
     queryKey: ["user-orders", params ?? ""],
-    queryFn: () => orderService.list(params),
+    queryFn: async () => {
+      const orders = await listOrdersAction();
+      return { orders, total: orders.length, page: 1, totalPages: 1 };
+    },
     enabled: !loading && !!user,
   });
 

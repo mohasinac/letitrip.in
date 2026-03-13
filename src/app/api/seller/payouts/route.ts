@@ -1,15 +1,13 @@
 /**
  * Seller Payouts API
  *
- * GET  /api/seller/payouts — List authenticated seller's payouts + earnings summary
- * POST /api/seller/payouts — Request a new payout
+ * GET /api/seller/payouts — List authenticated seller's payouts + earnings summary
+ *
+ * Mutations use Server Action: requestPayoutAction.
  */
 
-import { z } from "zod";
-import { ValidationError } from "@/lib/errors";
 import { successResponse } from "@/lib/api-response";
 import { createApiHandler } from "@/lib/api/api-handler";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
 import {
   productRepository,
   orderRepository,
@@ -17,38 +15,12 @@ import {
 } from "@/repositories";
 import { DEFAULT_PLATFORM_FEE_RATE } from "@/db/schema";
 
-// ─── Validation Schemas ────────────────────────────────────────────────────
-
-const bankAccountSchema = z.object({
-  accountHolderName: z.string().min(1),
-  accountNumberMasked: z.string().min(1),
-  ifscCode: z.string().min(1),
-  bankName: z.string().min(1),
-});
-
-const payoutRequestSchema = z
-  .object({
-    paymentMethod: z.enum(["bank_transfer", "upi"]),
-    bankAccount: bankAccountSchema.optional(),
-    upiId: z.string().optional(),
-    notes: z.string().optional(),
-  })
-  .refine(
-    (data) =>
-      data.paymentMethod === "upi" ? !!data.upiId : !!data.bankAccount,
-    {
-      message: ERROR_MESSAGES.PAYOUT.INVALID_METHOD,
-    },
-  );
-
-// ─── Helpers ───────────────────────────────────────────────────────────────
+// ─── Helper ───────────────────────────────────────────────────────────────
 
 async function computeSellerEarnings(sellerId: string) {
-  // 1. Get seller products (cap at 50 for performance)
   const products = await productRepository.findBySeller(sellerId);
   const productIds = products.slice(0, 50).map((p) => p.id);
 
-  // 2. Fetch delivered orders across all seller products
   let deliveredOrders: Awaited<
     ReturnType<typeof orderRepository.findByProduct>
   > = [];
@@ -67,7 +39,6 @@ async function computeSellerEarnings(sellerId: string) {
   const paidOutIds = await payoutRepository.getPaidOutOrderIds(sellerId);
 
   const eligibleOrders = deliveredOrders.filter((o) => !paidOutIds.has(o.id));
-
   const grossAmount = eligibleOrders.reduce(
     (sum, o) => sum + (o.totalPrice ?? 0),
     0,
@@ -124,56 +95,5 @@ export const GET = createApiHandler({
         eligibleOrderCount: earnings.eligibleOrders.length,
       },
     });
-  },
-});
-
-// ─── POST — Request a new payout ───────────────────────────────────────────
-
-export const POST = createApiHandler<(typeof payoutRequestSchema)["_output"]>({
-  auth: true,
-  schema: payoutRequestSchema,
-  handler: async ({ user, body }) => {
-    const uid = user!.uid;
-
-    // 1. Destructure validated body
-    const { paymentMethod, bankAccount, upiId, notes } = body!;
-
-    // 2. Check for existing pending/processing payout
-    const existing = await payoutRepository.findBySeller(uid);
-    const hasPending = existing.some(
-      (p) => p.status === "pending" || p.status === "processing",
-    );
-    if (hasPending) {
-      throw new ValidationError(ERROR_MESSAGES.PAYOUT.ALREADY_PENDING);
-    }
-
-    // 3. Compute earnings
-    const earnings = await computeSellerEarnings(uid);
-    if (earnings.netAmount <= 0 || earnings.eligibleOrders.length === 0) {
-      throw new ValidationError(ERROR_MESSAGES.PAYOUT.NO_EARNINGS);
-    }
-
-    // 4. Resolve seller identity from UserDocument
-    const sellerName = user!.displayName ?? user!.email ?? uid;
-    const sellerEmail = user!.email ?? "";
-
-    // 5. Create payout
-    const payout = await payoutRepository.create({
-      sellerId: uid,
-      sellerName,
-      sellerEmail,
-      amount: earnings.netAmount,
-      grossAmount: earnings.grossAmount,
-      platformFee: earnings.platformFee,
-      platformFeeRate: DEFAULT_PLATFORM_FEE_RATE,
-      currency: "INR",
-      paymentMethod,
-      ...(bankAccount && { bankAccount }),
-      ...(upiId && { upiId }),
-      ...(notes && { notes }),
-      orderIds: earnings.eligibleOrders.map((o) => o.id),
-    });
-
-    return successResponse(payout, SUCCESS_MESSAGES.PAYOUT.CREATED);
   },
 });

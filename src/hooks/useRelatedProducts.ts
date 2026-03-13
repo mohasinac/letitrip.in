@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { productService } from "@/services";
+import { listProductsAction } from "@/actions";
 import type { ProductDocument } from "@/db/schema";
 
 type RelatedProduct = Pick<
@@ -47,11 +47,14 @@ export function useRelatedProducts(
   limit = 8,
   isAuction = false,
 ) {
-  const params = `pageSize=${limit}&filters=status==published,category==${encodeURIComponent(category)},isAuction==${isAuction}&sorts=-createdAt`;
-
   return useQuery<RelatedProductsResponse>({
     queryKey: ["related-products", category, excludeId, String(isAuction)],
-    queryFn: () => productService.list(params),
+    queryFn: () =>
+      listProductsAction({
+        filters: `status==published,category==${encodeURIComponent(category)},isAuction==${isAuction}`,
+        sorts: "-createdAt",
+        pageSize: limit,
+      }) as unknown as Promise<RelatedProductsResponse>,
     enabled: Boolean(category),
     staleTime: 5 * 60 * 1000,
   });

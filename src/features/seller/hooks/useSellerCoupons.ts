@@ -1,8 +1,11 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { sellerService } from "@/services";
-import { sellerDeleteCouponAction, sellerUpdateCouponAction } from "@/actions";
+import {
+  listSellerCouponsAction,
+  sellerDeleteCouponAction,
+  sellerUpdateCouponAction,
+} from "@/actions";
 import { nowISO } from "@/utils";
 import type { CouponDocument } from "@/db/schema";
 
@@ -20,8 +23,10 @@ export function useSellerCoupons(enabled = true) {
 
   const query = useQuery<SellerCouponsResponse>({
     queryKey: ["seller-coupons"],
-    queryFn: () =>
-      sellerService.listCoupons() as Promise<SellerCouponsResponse>,
+    queryFn: async () => {
+      const items = await listSellerCouponsAction();
+      return { coupons: items, total: items.length };
+    },
     enabled,
   });
 

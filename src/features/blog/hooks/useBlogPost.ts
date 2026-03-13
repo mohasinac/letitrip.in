@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { blogService } from "@/services";
+import { getBlogPostBySlugAction, getLatestBlogPostsAction } from "@/actions";
 import type { BlogPostDocument } from "@/db/schema";
 
 export interface BlogPostQueryResult {
@@ -19,9 +19,16 @@ interface UseBlogPostOptions {
  * `options.initialData` — server-prefetched post data; prevents initial client fetch.
  */
 export function useBlogPost(slug: string, options?: UseBlogPostOptions) {
-  const { data, isLoading, error } = useQuery<BlogPostQueryResult>({
+  const { data, isLoading, error } = useQuery<BlogPostQueryResult | null>({
     queryKey: ["blog", "post", slug],
-    queryFn: () => blogService.getBySlug(slug),
+    queryFn: async () => {
+      const [post, related] = await Promise.all([
+        getBlogPostBySlugAction(slug),
+        getLatestBlogPostsAction(4),
+      ]);
+      if (!post) return null;
+      return { post, related: related.filter((r) => r.slug !== slug) };
+    },
     initialData: options?.initialData,
   });
 

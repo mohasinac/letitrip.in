@@ -16,10 +16,10 @@ import { Link } from "@/i18n/navigation";
 import { AvatarDisplay, Button, Heading, Spinner, Text } from "@/components";
 import { RoleBadge } from "@/components";
 import { StatusBadge } from "@/components";
-import { ROUTES } from "@/constants";
+import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useAuth } from "@/hooks";
 import { useUserOrders } from "../hooks";
-import { useRipCoinBalance } from "@/hooks";
+import { useRCBalance } from "@/hooks";
 import { formatCurrency, formatDate } from "@/utils";
 
 const ORDER_STATUS_MAP: Record<
@@ -76,8 +76,8 @@ const QUICK_NAV_ITEMS: QuickNavItem[] = [
     iconColor: "text-rose-600 dark:text-rose-400",
   },
   {
-    href: ROUTES.USER.RIPCOINS,
-    labelKey: "myRipCoins",
+    href: ROUTES.USER.RC,
+    labelKey: "myRC",
     icon: Zap,
     iconBg: "bg-primary-500/10",
     iconColor: "text-primary-600 dark:text-primary-400",
@@ -95,7 +95,7 @@ const QUICK_NAV_ITEMS: QuickNavItem[] = [
  * UserAccountHub
  *
  * Landing page for the /user route — spatial orientation for users with:
- * 1. Profile header (avatar, name, role badge, RipCoins balance)
+ * 1. Profile header (avatar, name, role badge, RC balance)
  * 2. Quick nav grid (2×3 cards)
  * 3. Recent orders (last 3)
  */
@@ -103,12 +103,12 @@ export function UserAccountHub() {
   const { user, loading } = useAuth();
   const t = useTranslations("userHub");
   const tNav = useTranslations("nav");
-  const { data: ripCoinData } = useRipCoinBalance();
+  const { data: rcData } = useRCBalance();
   const { orders, isLoading: ordersLoading } = useUserOrders();
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className={`${THEME_CONSTANTS.flex.center} min-h-[400px]`}>
         <Spinner size="lg" />
       </div>
     );
@@ -150,7 +150,7 @@ export function UserAccountHub() {
               <div className="flex items-center gap-1.5">
                 <Zap className="h-4 w-4 text-primary-500" strokeWidth={1.5} />
                 <span className="text-sm font-semibold text-primary-600 dark:text-primary-400">
-                  {ripCoinData?.ripcoinBalance ?? 0} RipCoins
+                  {rcData?.rcBalance ?? 0} RC
                 </span>
               </div>
               {user.role === "user" && (
@@ -183,7 +183,7 @@ export function UserAccountHub() {
               className="group rounded-2xl p-5 bg-zinc-50 dark:bg-slate-900 border border-zinc-200 dark:border-slate-700 hover:-translate-y-1 hover:shadow-md transition-all duration-200 flex flex-col gap-3"
             >
               <div
-                className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.iconBg}`}
+                className={`w-10 h-10 rounded-xl ${THEME_CONSTANTS.flex.center} ${item.iconBg}`}
               >
                 <item.icon
                   className={`h-5 w-5 ${item.iconColor}`}
@@ -200,7 +200,7 @@ export function UserAccountHub() {
 
       {/* ── Recent orders ──────────────────────────────────────────────── */}
       <div>
-        <div className="flex items-center justify-between mb-4">
+        <div className={`${THEME_CONSTANTS.flex.between} mb-4`}>
           <Heading
             level={3}
             className="text-base font-semibold text-zinc-700 dark:text-zinc-300"
@@ -217,7 +217,7 @@ export function UserAccountHub() {
         </div>
         <div className="rounded-2xl border border-zinc-200 dark:border-slate-700 overflow-hidden">
           {ordersLoading ? (
-            <div className="flex items-center justify-center py-10">
+            <div className={`${THEME_CONSTANTS.flex.center} py-10`}>
               <Spinner size="md" />
             </div>
           ) : !orders?.length ? (
@@ -236,7 +236,7 @@ export function UserAccountHub() {
                 <Link
                   key={order.id}
                   href={ROUTES.USER.ORDER_DETAIL(order.id)}
-                  className="flex items-center justify-between px-4 py-3 hover:bg-zinc-50 dark:hover:bg-slate-800/50 transition-colors group"
+                  className={`${THEME_CONSTANTS.flex.between} px-4 py-3 hover:bg-zinc-50 dark:hover:bg-slate-800/50 transition-colors group`}
                 >
                   <div className="flex flex-col gap-0.5 min-w-0">
                     <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate">

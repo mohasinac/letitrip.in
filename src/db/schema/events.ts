@@ -101,9 +101,9 @@ export interface EventDocument {
   feedbackConfig?: FeedbackConfig;
 
   /**
-   * RipCoins awarded to each authenticated user who submits a valid entry.
+   * RC awarded to each authenticated user who submits a valid entry.
    * 0 or undefined = no coin reward for this event.
-   * Requires featureFlags.ripcoin to be enabled and LoyaltyConfig.active = true.
+   * Requires featureFlags.rc to be enabled and LoyaltyConfig.active = true.
    */
   coinReward?: number;
 

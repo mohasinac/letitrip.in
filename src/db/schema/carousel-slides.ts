@@ -5,7 +5,7 @@
  * Each slide supports up to 2 content cards placed in a 2-row × 3-column grid.
  */
 
-import { generateCarouselId, type GenerateCarouselIdInput } from "@/utils";
+import { generateCarouselId } from "@/utils";
 
 // ============================================
 // 1. COLLECTION INTERFACE & NAME

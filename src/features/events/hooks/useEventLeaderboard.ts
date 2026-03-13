@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { eventService } from "@/services";
+import { getEventLeaderboardAction } from "@/actions";
 import type { EventEntryDocument } from "@/db/schema";
 
 interface LeaderboardResponse {
@@ -19,7 +19,10 @@ interface LeaderboardResponse {
 export function useEventLeaderboard(eventId: string, enabled = true) {
   const { data, isLoading, error, refetch } = useQuery<LeaderboardResponse>({
     queryKey: ["event-leaderboard", eventId],
-    queryFn: () => eventService.getLeaderboard(eventId),
+    queryFn: async () => {
+      const leaderboard = await getEventLeaderboardAction(eventId);
+      return { leaderboard, pointsLabel: "Points" };
+    },
     enabled: enabled && Boolean(eventId),
   });
 

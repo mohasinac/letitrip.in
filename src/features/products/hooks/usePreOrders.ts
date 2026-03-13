@@ -1,7 +1,9 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { productService } from "@/services";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api-client";
+import { API_ENDPOINTS } from "@/constants";
+import { listPreOrdersAction } from "@/actions";
 import type { ProductDocument } from "@/db/schema";
 
 export type PreOrderItem = Pick<
@@ -53,7 +55,19 @@ export function usePreOrders(
 ) {
   const { data, isLoading, error, refetch } = useQuery<PreOrdersListResult>({
     queryKey: ["pre-orders", params ?? ""],
-    queryFn: () => productService.listPreOrders(params),
+    queryFn: async () => {
+      const sp = new URLSearchParams(params ?? "");
+      return listPreOrdersAction({
+        filters: sp.get("filters")
+          ? decodeURIComponent(sp.get("filters")!)
+          : undefined,
+        sorts: sp.get("sorts")
+          ? decodeURIComponent(sp.get("sorts")!)
+          : undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+    },
     initialData: options?.initialData,
   });
 
@@ -66,4 +80,22 @@ export function usePreOrders(
     error,
     refetch,
   };
+}
+
+/**
+ * usePreOrderPayment
+ * Exposes mutations for creating a Razorpay order and verifying the pre-order deposit.
+ */
+export function usePreOrderPayment() {
+  const createPaymentOrderMutation = useMutation({
+    mutationFn: (data: unknown) =>
+      apiClient.post(API_ENDPOINTS.PAYMENT.CREATE_ORDER, data),
+  });
+
+  const verifyDepositMutation = useMutation({
+    mutationFn: (data: unknown) =>
+      apiClient.post(API_ENDPOINTS.PAYMENT.PREORDER, data),
+  });
+
+  return { createPaymentOrderMutation, verifyDepositMutation };
 }

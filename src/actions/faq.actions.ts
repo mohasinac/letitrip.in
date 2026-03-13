@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { requireAuth } from "@/lib/firebase/auth-server";
+import { requireAuth, requireRole } from "@/lib/firebase/auth-server";
 import { faqsRepository } from "@/repositories";
 import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
 import {
@@ -17,6 +17,10 @@ import {
   ValidationError,
 } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
+import { serverLogger } from "@/lib/server-logger";
+import { faqCreateSchema, faqUpdateSchema } from "@/lib/validation/schemas";
+import type { FAQDocument } from "@/db/schema";
+import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 
 // ─── Validation schema ────────────────────────────────────────────────────────
 
@@ -85,11 +89,6 @@ export async function voteFaqAction(
 
 // ─── Admin CRUD ────────────────────────────────────────────────────────────────
 
-import { requireRole } from "@/lib/firebase/auth-server";
-import { serverLogger } from "@/lib/server-logger";
-import { faqCreateSchema, faqUpdateSchema } from "@/lib/validation/schemas";
-import type { FAQDocument } from "@/db/schema";
-
 export type AdminCreateFaqInput = {
   question: string;
   answer: string;
@@ -132,7 +131,6 @@ export async function adminCreateFaqAction(
     useSiteSettings: false,
     variables: [],
     isActive: true,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 
   serverLogger.info("adminCreateFaqAction", {
@@ -169,7 +167,6 @@ export async function adminUpdateFaqAction(
   const existing = await faqsRepository.findById(id);
   if (!existing) throw new NotFoundError(ERROR_MESSAGES.FAQ.NOT_FOUND);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updated = await faqsRepository.update(id, parsed.data as any);
 
   serverLogger.info("adminUpdateFaqAction", { adminId: admin.uid, faqId: id });
@@ -197,4 +194,42 @@ export async function adminDeleteFaqAction(id: string): Promise<void> {
   await faqsRepository.delete(id);
 
   serverLogger.info("adminDeleteFaqAction", { adminId: admin.uid, faqId: id });
+}
+
+// ─── Read Actions ─────────────────────────────────────────────────────────────
+
+export async function listFaqsAction(params?: {
+  filters?: string;
+  sorts?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<FirebaseSieveResult<FAQDocument>> {
+  const sieve: SieveModel = {
+    filters: params?.filters,
+    sorts: params?.sorts ?? "order",
+    page: params?.page ?? 1,
+    pageSize: params?.pageSize ?? 50,
+  };
+  return faqsRepository.list(sieve);
+}
+
+export async function listPublicFaqsAction(
+  category?: string,
+  limit = 20,
+): Promise<FAQDocument[]> {
+  if (category) {
+    return faqsRepository.getFAQsByCategory(category as any);
+  }
+  const result = await faqsRepository.list({
+    sorts: "order",
+    page: 1,
+    pageSize: limit,
+  });
+  return result.items;
+}
+
+export async function getFaqByIdAction(
+  id: string,
+): Promise<FAQDocument | null> {
+  return faqsRepository.findById(id);
 }

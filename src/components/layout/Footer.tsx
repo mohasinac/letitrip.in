@@ -84,7 +84,7 @@ export default function Footer({ footerConfig }: FooterProps) {
           label: t("howPreOrdersWork"),
         },
         { href: ROUTES.PUBLIC.SHIPPING_POLICY, label: t("shippingPolicy") },
-        { href: ROUTES.PUBLIC.RIPCOINS_INFO, label: t("ripcoins") },
+        { href: ROUTES.PUBLIC.RC_INFO, label: t("rc") },
       ],
     },
     {

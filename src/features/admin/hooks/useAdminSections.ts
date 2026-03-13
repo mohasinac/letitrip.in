@@ -1,11 +1,12 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { homepageSectionsService } from "@/services";
 import {
+  listHomepageSectionsAction,
   createHomepageSectionAction,
   updateHomepageSectionAction,
   deleteHomepageSectionAction,
+  reorderHomepageSectionsAction,
 } from "@/actions";
 import type { HomepageSection } from "../components";
 
@@ -16,7 +17,10 @@ import type { HomepageSection } from "../components";
 export function useAdminSections() {
   const query = useQuery<HomepageSection[]>({
     queryKey: ["homepage-sections", "list"],
-    queryFn: () => homepageSectionsService.list(),
+    queryFn: async () => {
+      const result = await listHomepageSectionsAction();
+      return result.items as unknown as HomepageSection[];
+    },
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({
@@ -42,5 +46,15 @@ export function useAdminSections() {
     mutationFn: (id) => deleteHomepageSectionAction(id),
   });
 
-  return { ...query, createMutation, updateMutation, deleteMutation };
+  const reorderMutation = useMutation<unknown, Error, string[]>({
+    mutationFn: (sectionIds) => reorderHomepageSectionsAction(sectionIds),
+  });
+
+  return {
+    ...query,
+    createMutation,
+    updateMutation,
+    deleteMutation,
+    reorderMutation,
+  };
 }

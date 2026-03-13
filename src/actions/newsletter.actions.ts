@@ -14,10 +14,7 @@ import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
 import { ValidationError } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
 import { serverLogger } from "@/lib/server-logger";
-import {
-  NEWSLETTER_SUBSCRIBER_FIELDS,
-  type NewsletterSubscriberSource,
-} from "@/db/schema";
+import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@/db/schema";
 
 // ─── Validation schema ────────────────────────────────────────────────────────
 

@@ -10,7 +10,6 @@ import {
   CAROUSEL_SLIDES_COLLECTION,
   CarouselSlideDocument,
   CarouselSlideCreateInput,
-  CarouselSlideUpdateInput,
   MAX_ACTIVE_SLIDES,
   DEFAULT_CAROUSEL_SLIDE_DATA,
   canActivateSlide,
@@ -316,7 +315,7 @@ class CarouselRepository extends BaseRepository<CarouselSlideDocument> {
           "stats.views": FieldValue.increment(1),
           "stats.lastViewed": new Date(),
         });
-    } catch (error) {
+    } catch (_e) {
       // Swallow errors — analytics failures must not break the carousel response
     }
   }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { productService } from "@/services";
+import { listProductsAction } from "@/actions";
 import type { ProductDocument } from "@/db/schema";
 
 export type ProductItem = Pick<
@@ -45,7 +45,19 @@ interface UseProductsOptions {
 export function useProducts(params?: string, options?: UseProductsOptions) {
   const { data, isLoading, error, refetch } = useQuery<ProductsListResult>({
     queryKey: ["products", params ?? ""],
-    queryFn: () => productService.list(params),
+    queryFn: async () => {
+      const sp = new URLSearchParams(params ?? "");
+      return listProductsAction({
+        filters: sp.get("filters")
+          ? decodeURIComponent(sp.get("filters")!)
+          : undefined,
+        sorts: sp.get("sorts")
+          ? decodeURIComponent(sp.get("sorts")!)
+          : undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+    },
     initialData: options?.initialData,
   });
 

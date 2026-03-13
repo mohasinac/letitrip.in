@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { blogService } from "@/services";
+import { listBlogPostsAction } from "@/actions";
 import type { BlogPostDocument } from "@/db/schema";
 
 interface BlogPostsResult {
@@ -21,7 +21,24 @@ export function useBlogPosts(
 ) {
   const { data, isLoading, error, refetch } = useQuery<BlogPostsResult>({
     queryKey: ["blog", params ?? ""],
-    queryFn: () => blogService.list(params),
+    queryFn: async () => {
+      const sp = params ? new URLSearchParams(params) : null;
+      const result = await listBlogPostsAction({
+        page: sp?.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp?.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+        category: sp?.get("category") ?? undefined,
+        sorts: sp?.get("sorts") ?? undefined,
+      });
+      return {
+        posts: result.items,
+        meta: {
+          total: result.total,
+          page: result.page,
+          pageSize: result.pageSize,
+          totalPages: result.totalPages,
+        },
+      };
+    },
     initialData: options?.initialData,
   });
 

@@ -23,7 +23,7 @@ import {
   deleteAddressAction,
   setDefaultAddressAction,
 } from "@/actions";
-import { addressService } from "@/services";
+import { listAddressesAction, getAddressByIdAction } from "@/actions";
 
 // ============================================================================
 // Types
@@ -74,7 +74,7 @@ export function useAddresses(options?: {
 }) {
   return useQuery<Address[]>({
     queryKey: ["addresses"],
-    queryFn: () => addressService.list(),
+    queryFn: () => listAddressesAction() as Promise<Address[]>,
     enabled: options?.enabled,
   });
 }
@@ -92,7 +92,7 @@ export function useAddress(
 ) {
   return useQuery<Address>({
     queryKey: ["address", id],
-    queryFn: () => addressService.getById(id),
+    queryFn: () => getAddressByIdAction(id) as Promise<Address>,
     enabled: options?.enabled !== false && !!id,
   });
 }
@@ -129,7 +129,6 @@ export function useUpdateAddress(
     onError?: (error: Error) => void;
   },
 ) {
-  const queryClient = useQueryClient();
   return useMutation<Address, Error, AddressFormData>({
     mutationFn: (data) => updateAddressAction(id, data) as Promise<Address>,
     onSuccess: (data) => {

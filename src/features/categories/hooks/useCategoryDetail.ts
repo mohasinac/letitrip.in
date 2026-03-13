@@ -1,17 +1,8 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { categoryService } from "@/services";
+import { getCategoryBySlugAction, getCategoryChildrenAction } from "@/actions";
 import type { CategoryDocument } from "@/db/schema";
-
-interface CategoryResponse {
-  data: CategoryDocument;
-}
-
-interface ChildrenResponse {
-  success: boolean;
-  data: CategoryDocument[];
-}
 
 interface UseCategoryDetailOptions {
   initialCategory?: CategoryDocument;
@@ -34,29 +25,26 @@ export function useCategoryDetail(
     data: catData,
     isLoading: catLoading,
     error: catError,
-  } = useQuery<CategoryResponse>({
+  } = useQuery<CategoryDocument | null>({
     queryKey: ["categories", "slug", slug],
-    queryFn: () => categoryService.getBySlug(slug),
+    queryFn: () => getCategoryBySlugAction(slug),
     enabled: !!slug,
-    initialData: options?.initialCategory
-      ? { data: options.initialCategory }
-      : undefined,
+    initialData: options?.initialCategory ?? undefined,
   });
 
-  const category = catData?.data ?? null;
+  const category = catData ?? null;
 
   /* ---- Fetch direct children of this category ---- */
-  const { data: childrenData, isLoading: childrenLoading } =
-    useQuery<ChildrenResponse>({
-      queryKey: ["categories", "children", category?.id ?? ""],
-      queryFn: () => categoryService.getChildren(category!.id),
-      enabled: !!category?.id,
-      initialData: options?.initialChildren
-        ? { success: true, data: options.initialChildren }
-        : undefined,
-    });
+  const { data: childrenData, isLoading: childrenLoading } = useQuery<
+    CategoryDocument[]
+  >({
+    queryKey: ["categories", "children", category?.id ?? ""],
+    queryFn: () => getCategoryChildrenAction(category!.id),
+    enabled: !!category?.id,
+    initialData: options?.initialChildren,
+  });
 
-  const children = childrenData?.data ?? [];
+  const children = childrenData ?? [];
 
   return {
     category,

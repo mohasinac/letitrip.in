@@ -10,11 +10,9 @@ import {
   HOMEPAGE_SECTIONS_COLLECTION,
   HomepageSectionDocument,
   HomepageSectionCreateInput,
-  HomepageSectionUpdateInput,
   SectionType,
   createHomepageSectionId,
 } from "@/db/schema/homepage-sections";
-import { HOMEPAGE_SECTION_FIELDS } from "@/db/schema";
 import { DatabaseError } from "@/lib/errors";
 import type {
   SieveModel,

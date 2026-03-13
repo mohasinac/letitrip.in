@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { productService } from "@/services";
+import { listProductsAction, getLatestAuctionsAction } from "@/actions";
 import type { ProductDocument } from "@/db/schema";
 
 interface PaginatedResult {
@@ -25,25 +25,20 @@ export function useFeaturedAuctions() {
   return useQuery<ProductDocument[]>({
     queryKey: ["auctions", "featured"],
     queryFn: async () => {
-      const promotedRes = await productService.list(
-        "isAuction=true&status=published&isPromoted=true&pageSize=18",
-      );
-      const promoted =
-        (promotedRes as unknown as PaginatedResult)?.items ??
-        (promotedRes as unknown as ProductDocument[]) ??
-        [];
+      const promotedRes = await listProductsAction({
+        filters: "isAuction==true,status==published,isPromoted==true",
+        pageSize: 18,
+      });
+      const promoted = promotedRes?.items ?? [];
 
       if (promoted.length >= MIN_COUNT) return promoted;
 
       // Fill remaining slots with latest auctions
       const remaining = MIN_COUNT - promoted.length;
-      const latestRes = await productService.getLatestAuctions(
+      const latestRes = await getLatestAuctionsAction(
         remaining + promoted.length,
       );
-      const latest =
-        (latestRes as unknown as PaginatedResult)?.items ??
-        (latestRes as unknown as ProductDocument[]) ??
-        [];
+      const latest = latestRes?.items ?? [];
 
       const existingIds = new Set(promoted.map((a) => a.id));
       const filler = latest

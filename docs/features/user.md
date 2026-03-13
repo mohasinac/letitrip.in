@@ -1,8 +1,8 @@
 # User Portal Feature
 
 **Feature path:** `src/features/user/`  
-**Repository:** `userRepository`, `orderRepository`, `addressRepository`, `notificationRepository`, `ripcoinRepository`  
-**Services:** `profileService`, `orderService`, `notificationService`, `ripcoinService`
+**Repository:** `userRepository`, `orderRepository`, `addressRepository`, `notificationRepository`, `rcRepository`  
+**Actions:** Server Actions only (service layer deleted — see Stage I1)
 
 ---
 
@@ -50,7 +50,7 @@ Shows:
 
 - Total orders placed
 - Reviews written
-- RipCoins earned (lifetime)
+- RC earned (lifetime)
 - Seller rating (if seller)
 
 **Hook:** `useProfileStats(enabled)` → returns `ProfileStats`
@@ -177,27 +177,43 @@ Right panel — active conversation:
 
 ---
 
-## RipCoins Wallet
+## RC Wallet
 
-### `RipCoinsWallet`
+### `RCWallet`
 
 Wallet view:
 
 - Current balance (large display)
-- `RipCoinsBalanceChip` re-used from `src/components/user/`
+- `RCBalanceChip` re-used from `src/components/user/`
 - Transaction history table (earn/spend rows)
 - "Buy Coins" CTA
 
-### `RipCoinsPurchaseView`
+### `RCPurchaseView`
 
 Select coin package → initiates Razorpay payment.
 
-### `BuyRipCoinsModal`
+### `BuyRCModal`
 
 Modal dialog with package selector (e.g. 100 coins = ₹50, 500 coins = ₹200) and Razorpay payment button.
 
-**Hooks:** `useRipCoinBalance`, `usePurchaseRipCoins`, `useVerifyRipCoinPurchase`  
-See [docs/features/ripcoins.md](ripcoins.md) for full detail.
+**Hooks:** `getRCBalanceAction`, `getRCHistoryAction` (Server Actions)  
+See [docs/features/rc.md](rc.md) for full detail.
+
+---
+
+## Offers
+
+### `UserOffersView`
+
+Buyer's outgoing offer list. Columns: product, offer amount, status, counter amount, expiry.
+
+- **Accept counter** — `acceptCounterOfferAction` → locks new price
+- **Checkout** — `checkoutOfferAction` → transitions to `paid`
+- **Withdraw** — `withdrawOfferAction` → releases locked RC
+
+**Hook:** `useUserOffers()` → `listBuyerOffersAction(params)`
+
+See [docs/features/offers.md](offers.md) for full detail.
 
 ---
 
@@ -247,7 +263,7 @@ Shopping
   Wishlist        → /user/wishlist
   Addresses       → /user/addresses
 Wallet
-  RipCoins        → /user/ripcoins
+  RC        → /user/rc
 Communication
   Messages        → /user/messages
   Notifications   → /user/notifications

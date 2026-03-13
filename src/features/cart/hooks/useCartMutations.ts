@@ -1,8 +1,11 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateCartItemAction, removeFromCartAction } from "@/actions";
-import { cartService } from "@/services";
+import {
+  updateCartItemAction,
+  removeFromCartAction,
+  getCartAction,
+} from "@/actions";
 import type { CartDocument } from "@/db/schema";
 
 interface CartApiResponse {
@@ -12,9 +15,18 @@ interface CartApiResponse {
 }
 
 export function useCart(enabled: boolean) {
-  return useQuery<CartApiResponse>({
+  return useQuery<CartApiResponse | null>({
     queryKey: ["cart"],
-    queryFn: () => cartService.get(),
+    queryFn: async () => {
+      const cart = await getCartAction();
+      if (!cart) return null;
+      const itemCount = cart.items.length;
+      const subtotal = cart.items.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0,
+      );
+      return { cart, itemCount, subtotal };
+    },
     enabled,
   });
 }

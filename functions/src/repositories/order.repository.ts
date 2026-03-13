@@ -60,7 +60,16 @@ export const orderRepository = {
    * delivered via Shiprocket with payoutStatus still 'eligible'.
    */
   async getEligibleShiprocket(): Promise<
-    Array<{ id: string; ref: DocumentReference; data: OrderRow & { sellerId: string; totalPrice: number; payoutStatus: string; shippingMethod: string } }>
+    Array<{
+      id: string;
+      ref: DocumentReference;
+      data: OrderRow & {
+        sellerId: string;
+        totalPrice: number;
+        payoutStatus: string;
+        shippingMethod: string;
+      };
+    }>
   > {
     const snap = await db
       .collection(COLLECTIONS.ORDERS)
@@ -72,7 +81,12 @@ export const orderRepository = {
     return snap.docs.map((d) => ({
       id: d.id,
       ref: d.ref,
-      data: { id: d.id, ...d.data() } as OrderRow & { sellerId: string; totalPrice: number; payoutStatus: string; shippingMethod: string },
+      data: { id: d.id, ...d.data() } as OrderRow & {
+        sellerId: string;
+        totalPrice: number;
+        payoutStatus: string;
+        shippingMethod: string;
+      },
     }));
   },
 
@@ -87,6 +101,37 @@ export const orderRepository = {
       payoutId,
       updatedAt: FieldValue.serverTimestamp(),
     });
+  },
+
+  /**
+   * Orders eligible for automatic daily payout:
+   * delivered with payoutStatus='eligible', updated more than windowDays ago.
+   */
+  async getEligibleAutomatic(
+    windowDays: number,
+  ): Promise<
+    Array<{
+      id: string;
+      ref: DocumentReference;
+      data: OrderRow & { sellerId: string; totalPrice: number };
+    }>
+  > {
+    const cutoff = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000);
+    const snap = await db
+      .collection(COLLECTIONS.ORDERS)
+      .where("payoutStatus", "==", "eligible")
+      .where("status", "==", "delivered")
+      .where("updatedAt", "<=", cutoff)
+      .limit(QUERY_LIMIT)
+      .get();
+    return snap.docs.map((d) => ({
+      id: d.id,
+      ref: d.ref,
+      data: { id: d.id, ...d.data() } as OrderRow & {
+        sellerId: string;
+        totalPrice: number;
+      },
+    }));
   },
 
   cancelInBatch(

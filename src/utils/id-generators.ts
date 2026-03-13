@@ -33,17 +33,6 @@ function generateRandomString(length: number = 6): string {
 }
 
 /**
- * Get date string in YYYYMMDD format
- */
-function getDateString(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}${month}${day}`;
-}
-
-/**
  * Get timestamp string
  */
 function getTimestamp(): string {
@@ -841,7 +830,7 @@ export async function idExists(
   try {
     const doc = await getExistingId();
     return !!doc;
-  } catch (error) {
+  } catch (_e) {
     return false;
   }
 }
@@ -901,4 +890,36 @@ export function generateQRCodeData(
   if (id.startsWith("store-")) return `${baseUrl}/stores/${id}`;
   if (id.startsWith("event-")) return `${baseUrl}/events/${id}`;
   return `${baseUrl}/${id}`;
+}
+
+// ============================================
+// OFFER ID GENERATION
+// ============================================
+
+export interface GenerateOfferIdInput {
+  productId: string;
+  buyerUid: string;
+  date?: Date;
+}
+
+/**
+ * Generate offer ID: offer-{product-prefix}-{buyer-prefix}-{YYYYMMDD}-{random}
+ *
+ * Examples:
+ * - offer-product-vintage-camera-user-john-20260313-a7b2c9
+ */
+export function generateOfferId(input: GenerateOfferIdInput): string {
+  const productPrefix = slugify(input.productId)
+    .substring(0, 20)
+    .replace(/-+$/, "");
+  const buyerPrefix = slugify(input.buyerUid)
+    .substring(0, 12)
+    .replace(/-+$/, "");
+  const date = input.date || new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const dateStr = `${year}${month}${day}`;
+  const random = generateRandomString(6);
+  return `offer-${productPrefix}-${buyerPrefix}-${dateStr}-${random}`;
 }

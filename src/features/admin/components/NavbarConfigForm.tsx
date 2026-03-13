@@ -57,7 +57,7 @@ export function NavbarConfigForm({
             const key = item.key as NavKey;
             const isVisible = !hidden.includes(key);
             return (
-              <div key={key} className="flex items-center justify-between py-3">
+              <div key={key} className={`${THEME_CONSTANTS.flex.between} py-3`}>
                 <div className="flex items-center gap-3">
                   <span className="text-xl" aria-hidden>
                     {item.icon}

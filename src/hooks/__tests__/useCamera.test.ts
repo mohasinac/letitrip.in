@@ -31,7 +31,7 @@ Object.defineProperty(global.navigator, "mediaDevices", {
 const mockRecorderStart = jest.fn();
 const mockRecorderStop = jest.fn();
 let recorderOnStop: (() => void) | null = null;
-let recorderOnDataAvailable: ((e: { data: Blob }) => void) | null = null;
+let _recorderOnDataAvailable: ((e: { data: Blob }) => void) | null = null;
 
 class MockMediaRecorder {
   state = "inactive";
@@ -41,7 +41,7 @@ class MockMediaRecorder {
   start() {
     this.state = "recording";
     mockRecorderStart();
-    recorderOnDataAvailable = this.ondataavailable;
+    _recorderOnDataAvailable = this.ondataavailable;
     recorderOnStop = this.onstop;
   }
   stop() {
@@ -50,7 +50,8 @@ class MockMediaRecorder {
   }
 }
 
-(global as unknown as Record<string, unknown>).MediaRecorder = MockMediaRecorder;
+(global as unknown as Record<string, unknown>).MediaRecorder =
+  MockMediaRecorder;
 
 // ---------------------------------------------------------------------------
 // canvas.toBlob stub — installed inside beforeEach to avoid module-level

@@ -1,7 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { productService } from "@/services";
+import {
+  getFeaturedPreOrdersAction,
+  getLatestPreOrdersAction,
+} from "@/actions";
 import type { ProductDocument } from "@/db/schema";
 
 interface PaginatedResult {
@@ -25,23 +28,17 @@ export function useFeaturedPreOrders() {
   return useQuery<ProductDocument[]>({
     queryKey: ["pre-orders", "featured"],
     queryFn: async () => {
-      const featuredRes = await productService.getFeaturedPreOrders();
-      const featured =
-        (featuredRes as unknown as PaginatedResult)?.items ??
-        (featuredRes as unknown as ProductDocument[]) ??
-        [];
+      const featuredRes = await getFeaturedPreOrdersAction();
+      const featured = featuredRes?.items ?? [];
 
       if (featured.length >= MIN_COUNT) return featured;
 
       // Fill remaining slots with latest pre-orders
       const remaining = MIN_COUNT - featured.length;
-      const latestRes = await productService.getLatestPreOrders(
+      const latestRes = await getLatestPreOrdersAction(
         remaining + featured.length,
       );
-      const latest =
-        (latestRes as unknown as PaginatedResult)?.items ??
-        (latestRes as unknown as ProductDocument[]) ??
-        [];
+      const latest = latestRes?.items ?? [];
 
       const existingIds = new Set(featured.map((p) => p.id));
       const filler = latest

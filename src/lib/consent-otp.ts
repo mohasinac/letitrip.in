@@ -10,8 +10,9 @@
 
 import { createHmac, randomInt } from "crypto";
 import { getAdminDb } from "@/lib/firebase/admin";
-import { escapeHtml } from "@/utils";
+import { escapeHtml, resolveDate } from "@/utils";
 import { USER_COLLECTION } from "@/db/schema";
+import { AuthorizationError } from "@/lib/errors";
 
 // ─── Private ──────────────────────────────────────────────────────────────────
 
@@ -88,6 +89,87 @@ export function maskEmail(email: string): string {
       ? "*".repeat(local.length)
       : local[0] + "*".repeat(local.length - 2) + local[local.length - 1];
   return `${masked}@${domain}`;
+}
+
+// ─── Email Builder ────────────────────────────────────────────────────────────
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+/** Shape of a consent OTP document as returned from Firestore. */
+export interface ConsentOtpDoc {
+  codeHash: string;
+  expiresAt: FirebaseFirestore.Timestamp;
+  attempts: number;
+  verified: boolean;
+}
+
+// ─── DB Operations ────────────────────────────────────────────────────────────
+
+/**
+ * Enforce the per-user send rate-limit.
+ * Throws AuthorizationError("consentOtpRateLimit") when throttled and no bypass credits remain.
+ */
+export async function enforceConsentOtpRateLimit(uid: string): Promise<void> {
+  const db = getAdminDb();
+  const metaRef = consentOtpRateLimitRef(db, uid);
+
+  await db.runTransaction(async (tx) => {
+    const metaSnap = await tx.get(metaRef);
+    const meta = metaSnap.exists
+      ? (metaSnap.data() as {
+          lastSentAt?: FirebaseFirestore.Timestamp;
+          bypassCredits?: number;
+        })
+      : null;
+
+    const lastSentMs = resolveDate(meta?.lastSentAt)?.getTime() ?? 0;
+    const bypassCredits = meta?.bypassCredits ?? 0;
+    const elapsed = Date.now() - lastSentMs;
+
+    if (elapsed < CONSENT_OTP_COOLDOWN_MS) {
+      if (bypassCredits <= 0) {
+        throw new AuthorizationError("consentOtpRateLimit");
+      }
+      tx.set(
+        metaRef,
+        { lastSentAt: new Date(), bypassCredits: bypassCredits - 1 },
+        { merge: true },
+      );
+    } else {
+      tx.set(metaRef, { lastSentAt: new Date() }, { merge: true });
+    }
+  });
+}
+
+/** Write (or overwrite) a consent OTP document for a given user + address. */
+export async function saveConsentOtp(
+  uid: string,
+  addressId: string,
+  data: Record<string, unknown>,
+): Promise<void> {
+  const db = getAdminDb();
+  await consentOtpRef(db, uid, addressId).set(data);
+}
+
+/** Read a consent OTP document. Returns null when the document does not exist. */
+export async function readConsentOtp(
+  uid: string,
+  addressId: string,
+): Promise<ConsentOtpDoc | null> {
+  const db = getAdminDb();
+  const snap = await consentOtpRef(db, uid, addressId).get();
+  if (!snap.exists) return null;
+  return snap.data() as ConsentOtpDoc;
+}
+
+/** Partially update a consent OTP document. */
+export async function patchConsentOtp(
+  uid: string,
+  addressId: string,
+  data: Record<string, unknown>,
+): Promise<void> {
+  const db = getAdminDb();
+  await consentOtpRef(db, uid, addressId).update(data);
 }
 
 // ─── Email Builder ────────────────────────────────────────────────────────────

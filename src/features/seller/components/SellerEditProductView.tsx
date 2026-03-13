@@ -56,7 +56,7 @@ export function SellerEditProductView({ id }: SellerEditProductViewProps) {
 
   useEffect(() => {
     if (productData) {
-      setFormData(productData);
+      setFormData(productData as unknown as Partial<AdminProduct>);
     }
   }, [productData]);
 

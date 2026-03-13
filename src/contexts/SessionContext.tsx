@@ -28,10 +28,10 @@ import {
   getCurrentUser,
   signOut as firebaseSignOut,
 } from "@/lib/firebase/auth-helpers";
-import { ERROR_MESSAGES } from "@/constants";
 import { getCookie, hasCookie, deleteCookie } from "@/utils";
 import { logger } from "@/classes";
-import { sessionService, authService } from "@/services";
+import { apiClient } from "@/lib/api-client";
+import { API_ENDPOINTS, ERROR_MESSAGES } from "@/constants";
 import { useQueryClient } from "@tanstack/react-query";
 
 // Re-export for consumers that currently import SessionUser from here.
@@ -105,8 +105,8 @@ export function SessionProvider({
   const fetchUserProfile = useCallback(
     async (authUser: AuthUser): Promise<SessionUser> => {
       try {
-        // Use session service (apiClient with credentials) instead of raw fetch
-        const data = await sessionService.getProfile();
+        // Use apiClient with credentials instead of raw fetch
+        const data = await apiClient.get(API_ENDPOINTS.USER.PROFILE);
         const currentSessionId = getSessionIdFromCookie();
 
         // Return session user with data from API
@@ -156,7 +156,7 @@ export function SessionProvider({
   const fetchUserProfileFromServer =
     useCallback(async (): Promise<SessionUser | null> => {
       try {
-        const data = await sessionService.getProfile();
+        const data = await apiClient.get(API_ENDPOINTS.USER.PROFILE);
         const currentSessionId = getSessionIdFromCookie();
         return {
           uid: data.uid,
@@ -190,7 +190,9 @@ export function SessionProvider({
     if (!currentSessionId || !user) return;
 
     try {
-      await sessionService.recordActivity({ sessionId: currentSessionId });
+      await apiClient.post(API_ENDPOINTS.AUTH.SESSION_ACTIVITY, {
+        sessionId: currentSessionId,
+      });
     } catch (error) {
       // Silent fail - activity update is not critical
       logger.debug("Session activity update failed", { error });
@@ -227,7 +229,10 @@ export function SessionProvider({
   // Refresh session (validate with server)
   const refreshSession = useCallback(async () => {
     try {
-      const data = await sessionService.validate();
+      const data = await apiClient.post(
+        API_ENDPOINTS.AUTH.SESSION_VALIDATE,
+        {},
+      );
       if (data.valid && data.sessionId) {
         setSessionId(data.sessionId);
       }
@@ -245,7 +250,7 @@ export function SessionProvider({
       // triggers onAuthStateChanged(null). If __session_id is still present when that
       // callback fires, the "server-session fallback" logic would re-login the user.
       try {
-        await authService.logout();
+        await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT, {});
       } catch (error) {
         logger.error(ERROR_MESSAGES.SESSION.SERVER_LOGOUT_ERROR, { error });
       }
@@ -308,7 +313,10 @@ export function SessionProvider({
           try {
             const idToken = await authUser.getIdToken(true);
             if (thisVersion !== authVersion) return; // stale, discard
-            const data = await sessionService.create({ idToken });
+            const data = await apiClient.post(
+              API_ENDPOINTS.AUTH.CREATE_SESSION,
+              { idToken },
+            );
 
             if (thisVersion !== authVersion) return;
             if (data?.sessionId) {

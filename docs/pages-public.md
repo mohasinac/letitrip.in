@@ -139,6 +139,33 @@ URL params: `q`, `category`, `page`, `sort`.
 
 ---
 
+## RC Info
+
+**Route:** `/rc`  
+**Component:** `RCInfoView`
+
+Static RSC page explaining RC economics: earning, spending, purchasing, and offer engagement. Includes `FlowDiagram` of the RC lifecycle and fixed package options (`RC_PACKAGES`).
+
+---
+
+## How Offers Work
+
+**Route:** `/how-offers-work`  
+**Component:** `HowOffersWorkView`
+
+Static RSC guide for the make-an-offer flow. 6-step `FlowDiagram`: search product → budget RC → make offer → negotiate (counter/accept) → checkout → cancel/refund.
+
+---
+
+## Fees
+
+**Route:** `/fees`  
+**Component:** `FeesView`
+
+Static RSC fee schedule: platform 5%, payment gateway 2.36%, GST 18%. Referenced from the payout breakdown modal.
+
+---
+
 ## Blog
 
 **Route:** `/blog`  
@@ -188,7 +215,7 @@ FAQs filtered to a specific category.
 | `/how-auctions-work`   | Auction explainer                    |
 | `/how-pre-orders-work` | Pre-order explainer                  |
 | `/seller-guide`        | Guide for new sellers                |
-| `/ripcoins`            | RipCoins virtual currency info       |
+| `/rc`                  | RC virtual currency info             |
 | `/track`               | Guest order tracking by order number |
 | `/unauthorized`        | 403 page                             |
 

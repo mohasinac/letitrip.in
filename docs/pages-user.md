@@ -10,7 +10,7 @@ All user portal pages live under `src/app/[locale]/user/`. They require an authe
 **Component:** `UserAccountHub`  
 **Feature:** `src/features/user/`
 
-The user's home dashboard. Shows a summary of recent orders, earned RipCoins, active wishlist count, saved addresses, and quick-action cards.
+The user's home dashboard. Shows a summary of recent orders, earned RC, active wishlist count, saved addresses, and quick-action cards.
 
 ---
 
@@ -125,22 +125,31 @@ Messages are stored in Firestore via `chatRepository`.
 
 ---
 
-## RipCoins Wallet
+## RC Wallet
 
-**Route:** `/user/ripcoins`  
-**Component:** `RipCoinsWallet`
+**Route:** `/user/rc`  
+**Component:** `RCWallet`
 
-Shows current RipCoin balance, transaction history, and how coins were earned/spent.
+Shows current RC balance, transaction history, and how coins were earned/spent.
 
-**Route:** `/user/ripcoins/purchase`  
-**Component:** `RipCoinsPurchaseView` + `BuyRipCoinsModal`
+**Route:** `/user/rc/purchase`  
+**Component:** `RCPurchaseView` + `BuyRCModal`
 
-Purchase RipCoins via Razorpay. Flow:
+Purchase RC via Razorpay. Flow:
 
 1. Select coin package
-2. `POST /api/ripcoins/purchase` — creates Razorpay order
+2. `POST /api/rc/purchase` — creates Razorpay order
 3. Razorpay checkout modal
-4. `useVerifyRipCoinPurchase` — verifies payment and credits coins
+4. `POST /api/rc/purchase/verify` — HMAC verified → coins credited
+
+---
+
+## Offers
+
+**Route:** `/user/offers`  
+**Component:** `UserOffersView`
+
+Buyer's outgoing offer list. Shows offer amount, status (pending/accepted/countered/expired/paid), expiry countdown, and counter amount if applicable. Actions per row: accept counter, checkout accepted offer, withdraw pending offer. Uses `listBuyerOffersAction` via `useUserOffers()` hook.
 
 ---
 

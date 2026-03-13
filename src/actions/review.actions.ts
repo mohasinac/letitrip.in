@@ -22,6 +22,7 @@ import {
   ValidationError,
 } from "@/lib/errors";
 import type { ReviewDocument } from "@/db/schema";
+import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 
@@ -245,4 +246,60 @@ export async function voteReviewHelpfulAction(
   if (helpful) {
     await reviewRepository.incrementHelpful(reviewId);
   }
+}
+
+// ─── Read Actions ─────────────────────────────────────────────────────────────
+
+export async function listReviewsByProductAction(
+  productId: string,
+  page = 1,
+  pageSize = 10,
+): Promise<FirebaseSieveResult<ReviewDocument>> {
+  return reviewRepository.listForProduct(productId, {
+    sorts: "-createdAt",
+    page,
+    pageSize,
+  });
+}
+
+export async function listAdminReviewsAction(params?: {
+  filters?: string;
+  sorts?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<FirebaseSieveResult<ReviewDocument>> {
+  const sieve: SieveModel = {
+    filters: params?.filters,
+    sorts: params?.sorts ?? "-createdAt",
+    page: params?.page ?? 1,
+    pageSize: params?.pageSize ?? 50,
+  };
+  return reviewRepository.listAll(sieve);
+}
+
+export async function listReviewsBySellerAction(
+  sellerId: string,
+): Promise<ReviewDocument[]> {
+  // Get all published products for this seller, then fetch approved reviews
+  const products = await productRepository.findBySeller(sellerId);
+  const productIds = products
+    .filter((p) => p.status === "published")
+    .map((p) => p.id);
+  if (productIds.length === 0) return [];
+  const reviewBatches = await Promise.all(
+    productIds
+      .slice(0, 20)
+      .map((id) => reviewRepository.findApprovedByProduct(id).catch(() => [])),
+  );
+  return reviewBatches.flat();
+}
+
+export async function getHomepageReviewsAction(): Promise<ReviewDocument[]> {
+  return reviewRepository.findFeatured(18);
+}
+
+export async function getReviewByIdAction(
+  id: string,
+): Promise<ReviewDocument | null> {
+  return reviewRepository.findById(id);
 }

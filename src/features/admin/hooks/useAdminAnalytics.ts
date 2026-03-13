@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { adminService } from "@/services";
+import { getAdminAnalyticsAction } from "@/actions";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -43,7 +43,7 @@ export interface AnalyticsResponse {
 export function useAdminAnalytics() {
   return useQuery<AnalyticsResponse>({
     queryKey: ["admin-analytics"],
-    queryFn: () => adminService.getAnalytics(),
+    queryFn: async () => ({ data: await getAdminAnalyticsAction() }),
     staleTime: 5 * 60 * 1000,
   });
 }

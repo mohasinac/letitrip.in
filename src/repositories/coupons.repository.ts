@@ -12,7 +12,6 @@ import {
   CouponDocument,
   CouponUsageDocument,
   CouponCreateInput,
-  CouponUpdateInput,
   CouponType,
   isValidCouponCode,
   isCouponValid,

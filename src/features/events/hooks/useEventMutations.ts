@@ -1,13 +1,13 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { eventService } from "@/services";
 import {
   createEventAction,
   updateEventAction,
   deleteEventAction,
   changeEventStatusAction,
   adminUpdateEventEntryAction,
+  enterEventAction,
 } from "@/actions";
 import type {
   EventDocument,
@@ -97,7 +97,11 @@ export function useEventEnter(
   onError?: () => void,
 ) {
   return useMutation<void, Error, Record<string, unknown>>({
-    mutationFn: (data) => eventService.enter(eventId, data),
+    mutationFn: (data) =>
+      enterEventAction(
+        eventId,
+        data as Parameters<typeof enterEventAction>[1],
+      ) as unknown as Promise<void>,
     onSuccess,
     onError,
   });

@@ -47,6 +47,17 @@ export interface PayoutDocument {
   /** Order IDs included in this payout (for deduplication) */
   orderIds: string[];
 
+  /** Razorpay gateway fee deducted from this payout */
+  gatewayFee?: number;
+  /** Gateway fee rate used (e.g. 0.0236) */
+  gatewayFeeRate?: number;
+  /** GST amount charged on the platform commission */
+  gstAmount?: number;
+  /** GST rate used (e.g. 0.18) */
+  gstRate?: number;
+  /** true = created automatically by the auto-payout job; false = seller-requested */
+  isAutomatic?: boolean;
+
   requestedAt: Date;
   processedAt?: Date;
   createdAt: Date;

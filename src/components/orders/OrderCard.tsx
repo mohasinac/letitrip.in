@@ -84,7 +84,7 @@ export function OrderCard({
           aria-label={isSelected ? "Deselect order" : "Select order"}
           aria-pressed={isSelected}
           onClick={handleSelect}
-          className={`absolute top-3 left-3 z-10 w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
+          className={`absolute top-3 left-3 z-10 w-6 h-6 rounded border-2 ${THEME_CONSTANTS.flex.center} transition-colors ${
             isSelected
               ? "bg-primary-700 border-primary-700"
               : "bg-white/90 border-zinc-300 dark:bg-slate-800/90 dark:border-slate-600 hover:border-primary-400"
@@ -115,7 +115,9 @@ export function OrderCard({
         <div
           className={`flex items-start gap-3 ${selectable ? "pl-8" : ""} ${isListVariant ? "flex-1 min-w-0" : ""}`}
         >
-          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-zinc-100 dark:bg-slate-800 flex items-center justify-center">
+          <div
+            className={`flex-shrink-0 w-10 h-10 rounded-lg bg-zinc-100 dark:bg-slate-800 ${THEME_CONSTANTS.flex.center}`}
+          >
             <Package className="w-5 h-5 text-zinc-500 dark:text-slate-400" />
           </div>
           <div className={`${spacing.stackSmall} min-w-0`}>

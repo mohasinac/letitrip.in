@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { carouselService } from "@/services";
+import { listActiveCarouselSlidesAction } from "@/actions";
 import type { CarouselSlideDocument } from "@/db/schema";
 
 /**
@@ -14,7 +14,7 @@ export function useHeroCarousel(options?: {
 }) {
   return useQuery<CarouselSlideDocument[]>({
     queryKey: ["carousel", "active"],
-    queryFn: () => carouselService.getActive(),
+    queryFn: () => listActiveCarouselSlidesAction(),
     staleTime: 5 * 60 * 1000, // 5 minutes
     initialData: options?.initialData,
   });

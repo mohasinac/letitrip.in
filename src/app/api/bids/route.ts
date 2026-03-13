@@ -10,7 +10,7 @@ import {
   productRepository,
   unitOfWork,
   userRepository,
-  ripcoinRepository,
+  rcRepository,
 } from "@/repositories";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { successResponse, errorResponse } from "@/lib/api-response";
@@ -53,7 +53,7 @@ export const GET = createApiHandler({
  * - bidAmount must exceed current highest bid (or starting bid)
  * - Cannot bid on own auction
  * - Auction must not have ended
- * - User must have enough RipCoins (1 RipCoin = ₹1 bid value)
+ * - User must have enough RC (1 RC = ₹1 bid value)
  */
 export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
   auth: true,
@@ -95,13 +95,12 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
       return errorResponse(ERROR_MESSAGES.BID.BID_TOO_LOW, 400);
     }
 
-    // ── RipCoin balance check ──────────────────────────────────────────────
-    // 1 RipCoin = ₹1 bid value; user must hold at least bidAmount free coins.
+    // ── RC balance check ──────────────────────────────────────────────
+    // 1 RC = ₹1 bid value; user must hold at least bidAmount free coins.
     const userDoc = await userRepository.findById(user!.uid);
-    const freeCoins =
-      (userDoc?.ripcoinBalance ?? 0) - (userDoc?.engagedRipcoins ?? 0);
+    const freeCoins = (userDoc?.rcBalance ?? 0) - (userDoc?.engagedRC ?? 0);
     if (freeCoins < bidAmount) {
-      return errorResponse(ERROR_MESSAGES.RIPCOIN.INSUFFICIENT_COINS, 402);
+      return errorResponse(ERROR_MESSAGES.RC.INSUFFICIENT_COINS, 402);
     }
 
     // Find the user's existing active bid for this product (coins may need releasing)
@@ -140,22 +139,14 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
       } as any);
     });
 
-    // ── RipCoin atomic balance update ─────────────────────────────────────
+    // ── RC atomic balance update ─────────────────────────────────────
     // (a) Engage coins for the new bid: debit free balance, credit engaged pool
-    await userRepository.incrementRipCoinBalance(
-      user!.uid,
-      -bidAmount,
-      bidAmount,
-    );
+    await userRepository.incrementRCBalance(user!.uid, -bidAmount, bidAmount);
 
     // (b) Release coins for any previous active bid from this user on this product
     if (userPriorActiveBid?.engagedCoins) {
       const released = userPriorActiveBid.engagedCoins;
-      await userRepository.incrementRipCoinBalance(
-        user!.uid,
-        released,
-        -released,
-      );
+      await userRepository.incrementRCBalance(user!.uid, released, -released);
 
       // Update the outbid bid record and record ledger entry
       await bidRepository.update(userPriorActiveBid.id, {
@@ -163,12 +154,12 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
       } as any);
 
       const priorUserDoc = await userRepository.findById(user!.uid);
-      await ripcoinRepository.create({
+      await rcRepository.create({
         userId: user!.uid,
         type: "release",
         coins: released,
-        balanceBefore: (priorUserDoc?.ripcoinBalance ?? 0) - released,
-        balanceAfter: priorUserDoc?.ripcoinBalance ?? 0,
+        balanceBefore: (priorUserDoc?.rcBalance ?? 0) - released,
+        balanceAfter: priorUserDoc?.rcBalance ?? 0,
         bidId: userPriorActiveBid.id,
         productId,
         productTitle: product.title,
@@ -179,12 +170,12 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
 
     // Record "engage" transaction for the new bid
     const freshUserDoc = await userRepository.findById(user!.uid);
-    await ripcoinRepository.create({
+    await rcRepository.create({
       userId: user!.uid,
       type: "engage",
       coins: bidAmount,
-      balanceBefore: (freshUserDoc?.ripcoinBalance ?? 0) + bidAmount,
-      balanceAfter: freshUserDoc?.ripcoinBalance ?? 0,
+      balanceBefore: (freshUserDoc?.rcBalance ?? 0) + bidAmount,
+      balanceAfter: freshUserDoc?.rcBalance ?? 0,
       bidId: bid.id,
       productId,
       productTitle: product.title,
@@ -213,7 +204,7 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
       });
     }
 
-    serverLogger.info("Bid placed with RipCoins engaged", {
+    serverLogger.info("Bid placed with RC engaged", {
       bidId: bid.id,
       productId,
       userId: user!.uid,

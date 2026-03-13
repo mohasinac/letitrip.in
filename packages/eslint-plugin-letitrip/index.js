@@ -15,15 +15,21 @@
  *   lir/no-firebase-client-in-ui         FIREBASE-001, FIREBASE-002
  *   lir/no-firebase-admin-outside-backend FIREBASE-003
  *   lir/no-direct-firestore-query        FIREBASE-004
- *   lir/no-fetch-in-ui                   SVC-001
- *   lir/no-apiclient-outside-services    SVC-002
- *   lir/no-hardcoded-api-path            SVC-003
+ *   lir/no-fetch-in-ui                   SVC-001  — fetch() outside api/lib/actions
+ *   lir/no-apiclient-outside-services    SVC-002  — apiClient in component/page (not hooks/contexts)
+ *   lir/no-hardcoded-api-path            SVC-003  — hardcoded '/api/...' in hooks/contexts
  *   lir/no-raw-html-elements             COMP-001 → COMP-009
  *   lir/no-raw-media-elements            MEDIA-001 → MEDIA-003
  *   lir/no-inline-static-style           STYL-002
  *   lir/no-hardcoded-route               CNST-001
  *   lir/no-hardcoded-collection          CNST-003
  *   lir/no-firebase-trigger-in-api       QUAL-004
+ *   lir/no-fat-page                      ARCH-003
+ *   lir/no-module-scope-translations     I18N-003
+ *   lir/no-deprecated-annotations        QUAL-003
+ *   lir/no-raw-date                      CNST-002
+ *   lir/no-fixed-media-height            MEDIA-004
+ *   lir/require-xl-breakpoints           STYL-001
  */
 
 // ─── Path helpers ─────────────────────────────────────────────────────────────
@@ -55,13 +61,13 @@ function isLibDir(p) {
 }
 
 /** @param {string} p */
-function isServiceFile(p) {
-  return p.includes(".service.ts");
+function isHookFile(p) {
+  return /\/hooks\/[^/]+\.[tj]sx?$/.test(p);
 }
 
 /** @param {string} p */
-function isServicesDir(p) {
-  return p.includes("/src/services/");
+function isContextFile(p) {
+  return p.includes("/src/contexts/");
 }
 
 /** @param {string} p */
@@ -72,6 +78,16 @@ function isI18nFile(p) {
 /** @param {string} p */
 function isRepositoryFile(p) {
   return p.includes("/src/repositories/");
+}
+
+/** @param {string} p */
+function isActionsFile(p) {
+  return p.includes("/src/actions/");
+}
+
+/** @param {string} p */
+function isPageFile(p) {
+  return /\/app\/\[locale\]\//.test(p) && p.endsWith("/page.tsx");
 }
 
 /** @param {string} p */
@@ -120,7 +136,6 @@ const BARREL_ROOTS = [
   "utils",
   "helpers",
   "classes",
-  "services",
   "constants",
   "repositories",
 ];
@@ -410,6 +425,7 @@ const rules = {
       if (isLibDir(filename)) return {};
       if (isRepositoryFile(filename)) return {};
       if (isAppServerFile(filename)) return {};
+      if (isActionsFile(filename)) return {};
       return {
         ImportDeclaration(node) {
           if (/lib\/firebase\/admin/.test(node.source.value)) {
@@ -459,12 +475,12 @@ const rules = {
       type: "problem",
       docs: {
         description:
-          "fetch() must not be called in UI code — use a named service function from @/services. (SVC-001)",
+          "fetch() must not be called in UI code — use apiClient in a hook queryFn (reads) or a Server Action (mutations). (SVC-001)",
       },
       schema: [],
       messages: {
         directFetch:
-          "Direct fetch() in UI code — call a service function from @/services instead.",
+          "Direct fetch() in UI code — use apiClient in a hook queryFn instead.",
       },
     },
     create(context) {
@@ -472,8 +488,7 @@ const rules = {
       if (isTestFile(filename)) return {};
       if (isApiRoute(filename)) return {};
       if (isLibDir(filename)) return {};
-      if (isServiceFile(filename)) return {};
-      if (isServicesDir(filename)) return {};
+      if (isActionsFile(filename)) return {};
       return {
         CallExpression(node) {
           // fetch( — but not useFetch( or prefetch(
@@ -488,29 +503,33 @@ const rules = {
     },
   },
 
-  // ── SVC-002: apiClient outside *.service.ts ────────────────────────────────
+  // ── SVC-002: apiClient in component or page (not allowed outside hooks/contexts/lib) ────
   "no-apiclient-outside-services": {
     meta: {
       type: "problem",
       docs: {
         description:
-          "apiClient must only be used inside *.service.ts files. Components and hooks must call named service functions. (SVC-002)",
+          "apiClient must only be used in hooks and contexts. Components and pages must call hooks, not apiClient directly. (SVC-002)",
       },
       schema: [],
       messages: {
         wrongUsage:
-          "apiClient must only be used in *.service.ts files — call a named service function instead.",
+          "apiClient must not be called here — use apiClient inside a hook queryFn, then call the hook from the component.",
       },
     },
     create(context) {
       const filename = getFilename(context);
       if (isTestFile(filename)) return {};
-      if (isServiceFile(filename)) return {};
+      if (isApiRoute(filename)) return {};
+      if (isLibDir(filename)) return {};
+      if (isHookFile(filename)) return {};
+      if (isContextFile(filename)) return {};
+      if (isActionsFile(filename)) return {};
       return {
         ImportDeclaration(node) {
           const src = node.source.value;
           if (/api-client/.test(src)) {
-            // Allow: import type { ApiClientError } (error class only, not apiClient call)
+            // Allow: import type { ApiClientError } (error class only)
             const onlyErrorClass = node.specifiers.every((s) => {
               if (s.type !== "ImportSpecifier") return false;
               return s.imported.name === "ApiClientError";
@@ -532,13 +551,13 @@ const rules = {
     },
   },
 
-  // ── SVC-003: Hardcoded API path in service ─────────────────────────────────
+  // ── SVC-003: Hardcoded API path in hook or context ──────────────────────────
   "no-hardcoded-api-path": {
     meta: {
       type: "suggestion",
       docs: {
         description:
-          "Service functions must use API_ENDPOINTS from @/constants — never hardcode '/api/...' strings. (SVC-003)",
+          "apiClient calls in hooks and contexts must use API_ENDPOINTS from @/constants — never hardcode '/api/...' strings. (SVC-003)",
       },
       schema: [],
       messages: {
@@ -547,7 +566,8 @@ const rules = {
       },
     },
     create(context) {
-      if (!isServiceFile(getFilename(context))) return {};
+      const filename = getFilename(context);
+      if (!isHookFile(filename) && !isContextFile(filename)) return {};
       return {
         CallExpression(node) {
           if (
@@ -898,6 +918,272 @@ const rules = {
       };
     },
   },
+
+  // ── ARCH-003: Page file exceeds 150 non-empty lines ───────────────────────
+  "no-fat-page": {
+    meta: {
+      type: "suggestion",
+      docs: {
+        description:
+          "Page components must be thin shells (≤150 non-empty lines). Extract to a *View component. (ARCH-003)",
+      },
+      schema: [],
+      messages: {
+        fatPage:
+          "Page has {{count}} non-empty lines — max is 150. Extract logic to a *View component in src/features/.",
+      },
+    },
+    create(context) {
+      const filename = getFilename(context);
+      if (!isPageFile(filename)) return {};
+      return {
+        "Program:exit"() {
+          const src = context.sourceCode ?? context.getSourceCode?.();
+          const nonEmpty = (src?.lines ?? []).filter(
+            (l) => l.trim().length > 0,
+          ).length;
+          if (nonEmpty > 150) {
+            context.report({
+              loc: { line: 1, column: 0 },
+              messageId: "fatPage",
+              data: { count: nonEmpty },
+            });
+          }
+        },
+      };
+    },
+  },
+
+  // ── I18N-003: useTranslations called outside component function body ───────
+  "no-module-scope-translations": {
+    meta: {
+      type: "problem",
+      docs: {
+        description:
+          "useTranslations() must be called inside a component function body, never at module scope. (I18N-003)",
+      },
+      schema: [],
+      messages: {
+        moduleScope:
+          "useTranslations() at module scope — move it inside the component function body.",
+      },
+    },
+    create(context) {
+      const filename = getFilename(context);
+      if (isTestFile(filename)) return {};
+      if (isApiRoute(filename)) return {};
+      let depth = 0;
+      return {
+        FunctionDeclaration() {
+          depth++;
+        },
+        "FunctionDeclaration:exit"() {
+          depth--;
+        },
+        FunctionExpression() {
+          depth++;
+        },
+        "FunctionExpression:exit"() {
+          depth--;
+        },
+        ArrowFunctionExpression() {
+          depth++;
+        },
+        "ArrowFunctionExpression:exit"() {
+          depth--;
+        },
+        CallExpression(node) {
+          if (
+            depth === 0 &&
+            node.callee.type === "Identifier" &&
+            node.callee.name === "useTranslations"
+          ) {
+            context.report({ node: node.callee, messageId: "moduleScope" });
+          }
+        },
+      };
+    },
+  },
+
+  // ── QUAL-003: @deprecated annotation in source ────────────────────────────
+  "no-deprecated-annotations": {
+    meta: {
+      type: "suggestion",
+      docs: {
+        description:
+          "No @deprecated JSDoc annotations — delete old code when replacing it. (QUAL-003)",
+      },
+      schema: [],
+      messages: {
+        deprecated:
+          "@deprecated annotation — delete the old code instead of keeping stubs.",
+      },
+    },
+    create(context) {
+      if (isTestFile(getFilename(context))) return {};
+      return {
+        "Program:exit"() {
+          const src = context.sourceCode ?? context.getSourceCode?.();
+          for (const comment of src?.getAllComments() ?? []) {
+            if (/@deprecated/i.test(comment.value)) {
+              context.report({ loc: comment.loc, messageId: "deprecated" });
+            }
+          }
+        },
+      };
+    },
+  },
+
+  // ── CNST-002: new Date() / Date.now() outside utils / backend ────────────
+  "no-raw-date": {
+    meta: {
+      type: "suggestion",
+      docs: {
+        description:
+          "Use nowMs(), nowISO(), parseDate() from @/utils — never call new Date() or Date.now() in UI/feature code. (CNST-002)",
+      },
+      schema: [],
+      messages: {
+        rawDate:
+          "{{expr}} — use nowMs(), nowISO(), or parseDate() from @/utils instead.",
+      },
+    },
+    create(context) {
+      const filename = getFilename(context);
+      if (isTestFile(filename)) return {};
+      if (isApiRoute(filename)) return {};
+      if (isLibDir(filename)) return {};
+      if (isActionsFile(filename)) return {};
+      if (isRepositoryFile(filename)) return {};
+      const n = filename;
+      if (
+        n.includes("/src/utils/") ||
+        n.includes("/src/helpers/") ||
+        n.includes("/src/db/") ||
+        n.includes("/src/classes/")
+      )
+        return {};
+      return {
+        NewExpression(node) {
+          if (
+            node.callee.type === "Identifier" &&
+            node.callee.name === "Date" &&
+            node.arguments.length === 0
+          ) {
+            context.report({
+              node,
+              messageId: "rawDate",
+              data: { expr: "new Date()" },
+            });
+          }
+        },
+        CallExpression(node) {
+          if (
+            node.callee.type === "MemberExpression" &&
+            node.callee.object.type === "Identifier" &&
+            node.callee.object.name === "Date" &&
+            node.callee.property.type === "Identifier" &&
+            node.callee.property.name === "now"
+          ) {
+            context.report({
+              node: node.callee,
+              messageId: "rawDate",
+              data: { expr: "Date.now()" },
+            });
+          }
+        },
+      };
+    },
+  },
+
+  // ── MEDIA-004: Fixed-pixel height on media container ─────────────────────
+  "no-fixed-media-height": {
+    meta: {
+      type: "suggestion",
+      docs: {
+        description:
+          "Media containers must use aspect-* Tailwind classes, not fixed h-[Npx] heights. (MEDIA-004)",
+      },
+      schema: [],
+      messages: {
+        fixedHeight:
+          "Fixed h-[Npx] with overflow-hidden — use an aspect-* Tailwind class instead.",
+      },
+    },
+    create(context) {
+      if (isTestFile(getFilename(context))) return {};
+      return {
+        JSXAttribute(node) {
+          if (!node.name || node.name.name !== "className") return;
+          const val = node.value;
+          let classStr = null;
+          if (val?.type === "Literal") {
+            classStr = val.value;
+          } else if (val?.type === "JSXExpressionContainer") {
+            if (val.expression?.type === "Literal") {
+              classStr = val.expression.value;
+            } else if (val.expression?.type === "TemplateLiteral") {
+              classStr = val.expression.quasis
+                .map((q) => q.value.raw)
+                .join(" ");
+            }
+          }
+          if (typeof classStr !== "string") return;
+          if (
+            /(?<![-a-z])h-\[\d+px\]/.test(classStr) &&
+            /overflow-hidden/.test(classStr)
+          ) {
+            context.report({ node, messageId: "fixedHeight" });
+          }
+        },
+      };
+    },
+  },
+
+  // ── STYL-001: Grid missing xl: / 2xl: column breakpoints ─────────────────
+  "require-xl-breakpoints": {
+    meta: {
+      type: "suggestion",
+      docs: {
+        description:
+          "Every grid must include xl: and 2xl: column breakpoints — not just lg:. (STYL-001)",
+      },
+      schema: [],
+      messages: {
+        missingBreakpoints:
+          "Grid has lg:grid-cols-N but is missing xl:grid-cols-N — add xl: and 2xl: column counts.",
+      },
+    },
+    create(context) {
+      if (isTestFile(getFilename(context))) return {};
+      return {
+        JSXAttribute(node) {
+          if (!node.name || node.name.name !== "className") return;
+          const val = node.value;
+          let classStr = null;
+          if (val?.type === "Literal") {
+            classStr = val.value;
+          } else if (val?.type === "JSXExpressionContainer") {
+            if (val.expression?.type === "Literal") {
+              classStr = val.expression.value;
+            } else if (val.expression?.type === "TemplateLiteral") {
+              classStr = val.expression.quasis
+                .map((q) => q.value.raw)
+                .join(" ");
+            }
+          }
+          if (typeof classStr !== "string") return;
+          if (
+            /\bgrid\b/.test(classStr) &&
+            /\blg:grid-cols-\d/.test(classStr) &&
+            !/\bxl:grid-cols-\d/.test(classStr)
+          ) {
+            context.report({ node, messageId: "missingBreakpoints" });
+          }
+        },
+      };
+    },
+  },
 };
 
 // ─── Plugin object ────────────────────────────────────────────────────────────
@@ -920,6 +1206,7 @@ plugin.configs = {
         "lir/no-deep-barrel-import": "warn", // ARCH-001 — fixable with --fix
         "lir/no-cross-feature-import": "warn", // ARCH-002
         "lir/no-tier1-feature-import": "warn", // ARCH-004
+        "lir/no-fat-page": "warn", // ARCH-003
 
         // i18n (wrong router = runtime locale bug)
         "lir/use-i18n-navigation": "warn", // I18N-001, I18N-002 — fixable with --fix
@@ -930,14 +1217,18 @@ plugin.configs = {
         "lir/no-direct-firestore-query": "warn", // FIREBASE-004
         "lir/no-firebase-trigger-in-api": "warn", // QUAL-004
 
-        // Service layer
-        "lir/no-fetch-in-ui": "warn", // SVC-001
-        "lir/no-apiclient-outside-services": "warn", // SVC-002
-        "lir/no-hardcoded-api-path": "warn", // SVC-003
+        // 2-hop data layer (reads: hook→apiClient, mutations: hook→action)
+        "lir/no-fetch-in-ui": "warn", // SVC-001 — fetch() forbidden outside api/lib/actions
+        "lir/no-apiclient-outside-services": "warn", // SVC-002 — apiClient only in hooks/contexts
+        "lir/no-hardcoded-api-path": "warn", // SVC-003 — no hardcoded '/api/...' in hooks/contexts
 
         // Constants
         "lir/no-hardcoded-route": "warn", // CNST-001
         "lir/no-hardcoded-collection": "warn", // CNST-003
+        "lir/no-raw-date": "warn", // CNST-002
+
+        // Code quality
+        "lir/no-deprecated-annotations": "warn", // QUAL-003
       },
     },
     // ── TSX files only — JSX-specific rules ──────────────────────────────────
@@ -948,6 +1239,9 @@ plugin.configs = {
         "lir/no-raw-html-elements": "warn", // COMP-001 → COMP-009
         "lir/no-raw-media-elements": "warn", // MEDIA-001 → MEDIA-003
         "lir/no-inline-static-style": "warn", // STYL-002
+        "lir/no-module-scope-translations": "warn", // I18N-003
+        "lir/no-fixed-media-height": "warn", // MEDIA-004
+        "lir/require-xl-breakpoints": "warn", // STYL-001
       },
     },
   ],

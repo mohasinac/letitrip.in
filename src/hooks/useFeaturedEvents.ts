@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { eventService } from "@/services";
+import { listPublicEventsAction } from "@/actions";
 import type { EventDocument } from "@/db/schema";
 
 interface PaginatedResult {
@@ -21,8 +21,9 @@ export function useFeaturedEvents() {
   return useQuery<PaginatedResult>({
     queryKey: ["events", "featured"],
     queryFn: () =>
-      eventService.list(
-        "status=active&pageSize=12&sorts=-createdAt",
-      ) as Promise<PaginatedResult>,
+      listPublicEventsAction({
+        pageSize: 12,
+        sorts: "-createdAt",
+      }) as Promise<PaginatedResult>,
   });
 }

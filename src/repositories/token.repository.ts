@@ -19,7 +19,7 @@ import {
   PASSWORD_RESET_COLLECTION,
   TOKEN_FIELDS,
 } from "@/db/schema";
-import { DatabaseError, NotFoundError } from "@/lib/errors";
+import { DatabaseError } from "@/lib/errors";
 import { resolveDate } from "@/utils";
 
 export class EmailVerificationTokenRepository extends BaseRepository<EmailVerificationTokenDocument> {

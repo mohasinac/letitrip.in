@@ -15,7 +15,7 @@ import type {
   AddToCartInput,
   UpdateCartItemInput,
 } from "@/db/schema";
-import { CART_COLLECTION, CART_FIELDS } from "@/db/schema";
+import { CART_COLLECTION } from "@/db/schema";
 
 class CartRepository extends BaseRepository<CartDocument> {
   constructor() {
@@ -65,17 +65,30 @@ class CartRepository extends BaseRepository<CartDocument> {
 
   /**
    * Add item to cart.
-   * If productId already exists in cart, increments quantity instead.
+   * - Offer items (have offerId): idempotent — if same offerId already in cart,
+   *   returns cart unchanged. Always added as a new line item (never merged
+   *   with an existing product entry, since the locked price may differ).
+   * - Regular items: if productId already in cart, increments quantity.
    */
   async addItem(userId: string, input: AddToCartInput): Promise<CartDocument> {
     try {
       const cart = await this.getOrCreate(userId);
       const items = [...cart.items];
 
-      // Check if product already in cart
-      const existingIndex = items.findIndex(
-        (item) => item.productId === input.productId,
-      );
+      // Idempotency guard for offer-based items
+      if (input.offerId) {
+        const alreadyAdded = items.some(
+          (item) => item.offerId === input.offerId,
+        );
+        if (alreadyAdded) return cart;
+      }
+
+      // For regular (non-offer) items only: merge by productId
+      const existingIndex = input.offerId
+        ? -1
+        : items.findIndex(
+            (item) => item.productId === input.productId && !item.offerId,
+          );
 
       if (existingIndex >= 0) {
         // Increment existing item quantity
@@ -85,7 +98,7 @@ class CartRepository extends BaseRepository<CartDocument> {
           updatedAt: new Date(),
         };
       } else {
-        // Add new item
+        // Add new item — include offerId/lockedPrice when present
         const newItem: CartItemDocument = {
           itemId: randomUUID(),
           productId: input.productId,
@@ -98,6 +111,10 @@ class CartRepository extends BaseRepository<CartDocument> {
           sellerName: input.sellerName,
           isAuction: input.isAuction ?? false,
           isPreOrder: input.isPreOrder ?? false,
+          ...(input.offerId !== undefined && { offerId: input.offerId }),
+          ...(input.lockedPrice !== undefined && {
+            lockedPrice: input.lockedPrice,
+          }),
           addedAt: new Date(),
           updatedAt: new Date(),
         };

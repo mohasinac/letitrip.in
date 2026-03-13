@@ -1,8 +1,7 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { adminService } from "@/services";
-import { adminUpdateOrderAction } from "@/actions";
+import { listAdminOrdersAction, adminUpdateOrderAction } from "@/actions";
 import type { OrderDocument } from "@/db/schema";
 
 interface OrderListMeta {
@@ -26,7 +25,24 @@ export function useAdminOrders(sieveParams: string) {
     meta: OrderListMeta;
   }>({
     queryKey: ["admin", "orders", sieveParams],
-    queryFn: () => adminService.listOrders(sieveParams),
+    queryFn: async () => {
+      const sp = new URLSearchParams(sieveParams);
+      const result = await listAdminOrdersAction({
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+      return {
+        orders: result.items,
+        meta: {
+          total: result.total,
+          page: result.page,
+          pageSize: result.pageSize,
+          totalPages: result.totalPages,
+        },
+      };
+    },
   });
 
   const updateMutation = useMutation<

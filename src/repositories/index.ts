@@ -41,6 +41,7 @@ export * from "./faqs.repository";
 export * from "./wishlist.repository";
 export * from "./blog.repository";
 export * from "./payout.repository";
+export * from "./offer.repository";
 
 // Re-export singleton instances for convenience
 export { userRepository } from "./user.repository";
@@ -75,9 +76,11 @@ export { newsletterRepository } from "./newsletter.repository";
 export { eventRepository } from "./event.repository";
 export * from "./eventEntry.repository";
 export { eventEntryRepository } from "./eventEntry.repository";
-export * from "./ripcoin.repository";
-export { ripcoinRepository } from "./ripcoin.repository";
+export * from "./rc.repository";
+export { rcRepository } from "./rc.repository";
 export * from "./chat.repository";
 export { chatRepository } from "./chat.repository";
 export * from "./sms-counter.repository";
 export { smsCounterRepository } from "./sms-counter.repository";
+export * from "./failed-checkout.repository";
+export { failedCheckoutRepository } from "./failed-checkout.repository";

@@ -1,17 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { productService, bidService } from "@/services";
+import { getProductByIdAction, listBidsByProductAction } from "@/actions";
 import type { ProductDocument, BidDocument } from "@/db/schema";
+import type { FirebaseSieveResult } from "@/lib/query";
 
-interface ProductResponse {
-  data: ProductDocument;
-}
-
-interface BidsResponse {
-  data: BidDocument[];
-  meta: { total: number };
-}
+type BidsListResult = FirebaseSieveResult<BidDocument>;
 
 /**
  * useAuctionDetail
@@ -24,21 +18,21 @@ interface BidsResponse {
  * const { productQuery, product, bidsQuery, bids } = useAuctionDetail(id);
  */
 export function useAuctionDetail(id: string) {
-  const productQuery = useQuery<ProductResponse>({
+  const productQuery = useQuery<ProductDocument | null>({
     queryKey: ["product", id],
-    queryFn: () => productService.getById(id),
+    queryFn: () => getProductByIdAction(id),
   });
 
-  const product = productQuery.data?.data ?? null;
+  const product = productQuery.data ?? null;
 
-  const bidsQuery = useQuery<BidsResponse>({
+  const bidsQuery = useQuery<BidsListResult>({
     queryKey: ["bids", id],
-    queryFn: () => bidService.listByProduct(id),
+    queryFn: () => listBidsByProductAction(id),
     enabled: !!product?.isAuction,
     refetchInterval: 60000,
   });
 
-  const bids = bidsQuery.data?.data ?? [];
+  const bids = bidsQuery.data?.items ?? [];
 
   return { productQuery, product, bidsQuery, bids };
 }

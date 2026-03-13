@@ -154,15 +154,15 @@ Fields:
 
 Crop or trim an uploaded media file. Uses `useMediaCrop` / `useMediaTrim`.
 
-### `RipCoinAdjustModal`
+### `RCAdjustModal`
 
-Manual admin RipCoin adjustment:
+Manual admin RC adjustment:
 
 - User ID (read-only)
 - Amount (positive = credit, negative = debit)
 - Reason (required)
 
-Submits via `adminAdjustRipCoinsAction`.
+Submits via `adminAdjustRCAction`.
 
 ### Site Settings Forms
 
@@ -198,7 +198,7 @@ Each entity has a column definition file used with `DataTable`:
 
 Config-driven `FilterPanel` instances. Each exports a `*Filters` component + filter sort option constants:
 
-`BidFilters` · `BlogFilters` · `CarouselFilters` · `CategoryFilters` · `CouponFilters` · `EventEntryFilters` · `FaqFilters` · `HomepageSectionFilters` · `NewsletterFilters` · `NotificationFilters` · `PayoutFilters` · `RipCoinFilters` · `SessionFilters` · `StoreFilters` · `UserFilters`
+`BidFilters` · `BlogFilters` · `CarouselFilters` · `CategoryFilters` · `CouponFilters` · `EventEntryFilters` · `FaqFilters` · `HomepageSectionFilters` · `NewsletterFilters` · `NotificationFilters` · `PayoutFilters` · `RCFilters` · `SessionFilters` · `StoreFilters` · `UserFilters`
 
 ---
 

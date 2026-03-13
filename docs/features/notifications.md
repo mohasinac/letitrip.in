@@ -26,7 +26,7 @@ Notifications are per-user in-app messages created server-side by API routes and
 | `event_started`   | Event user entered has started |
 | `payout_approved` | Admin approves payout (seller) |
 | `payout_rejected` | Admin rejects payout (seller)  |
-| `coins_credited`  | RipCoins added to wallet       |
+| `coins_credited`  | RC added to wallet             |
 | `system`          | General platform announcements |
 
 ---

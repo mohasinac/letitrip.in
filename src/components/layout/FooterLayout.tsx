@@ -135,7 +135,7 @@ export function FooterLayout({
                   href={social.href}
                   aria-label={social.ariaLabel}
                   variant="bare"
-                  className="h-8 w-8 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/5 hover:border-primary/50 hover:bg-primary/10 flex items-center justify-center transition-all"
+                  className={`h-8 w-8 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-white/5 hover:border-primary/50 hover:bg-primary/10 ${THEME_CONSTANTS.flex.center} transition-all`}
                 >
                   {social.icon}
                 </TextLink>

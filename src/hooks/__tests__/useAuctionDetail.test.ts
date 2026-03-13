@@ -25,13 +25,13 @@ const mockBidsQuery = {
   refetch: jest.fn(),
 };
 
-let queryCallCount = 0;
+let _queryCallCount = 0;
 
 jest.mock("@tanstack/react-query", () => ({
   ...jest.requireActual("@tanstack/react-query"),
   useQuery: jest.fn((opts: any) => {
     opts.queryFn?.();
-    queryCallCount++;
+    _queryCallCount++;
     if (opts.queryKey[0] === "product") return mockProductQuery;
     return mockBidsQuery;
   }),

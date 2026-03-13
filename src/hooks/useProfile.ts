@@ -13,8 +13,11 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { sessionService } from "@/services";
-import { updateProfileAction, type UpdateProfileInput } from "@/actions";
+import {
+  updateProfileAction,
+  getMyProfileAction,
+  type UpdateProfileInput,
+} from "@/actions";
 import type { UserDocument } from "@/db/schema";
 
 // ============================================================================
@@ -47,7 +50,7 @@ export function useProfile(options?: {
 }) {
   return useQuery<UserProfile>({
     queryKey: ["profile"],
-    queryFn: () => sessionService.getProfile(),
+    queryFn: () => getMyProfileAction() as unknown as Promise<UserProfile>,
     enabled: options?.enabled,
   });
 }

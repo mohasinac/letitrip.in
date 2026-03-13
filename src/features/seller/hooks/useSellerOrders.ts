@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { sellerService } from "@/services";
+import { listSellerOrdersAction, shipOrderAction } from "@/actions";
 import type { OrderDocument } from "@/db/schema";
 
 interface SellerOrdersResult {
@@ -27,7 +27,25 @@ export function useSellerOrders(params?: string) {
 
   const { data, isLoading, error, refetch } = useQuery<SellerOrdersResult>({
     queryKey: ["seller-orders", params ?? ""],
-    queryFn: () => sellerService.listOrders(params),
+    queryFn: async () => {
+      const sp = new URLSearchParams(params ?? "");
+      const result = await listSellerOrdersAction({
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+      return {
+        orders: result.items,
+        meta: {
+          page: result.page,
+          limit: result.pageSize,
+          total: result.total,
+          totalPages: result.totalPages,
+          hasMore: result.hasMore,
+        },
+      };
+    },
     enabled: !loading && !!user,
   });
 
@@ -56,7 +74,8 @@ export function useShipOrder(
   onError?: (err: { message?: string }) => void,
 ) {
   return useMutation<unknown, Error, ShipOrderInput>({
-    mutationFn: (data) => sellerService.shipOrder(orderId, data),
+    mutationFn: (data) =>
+      shipOrderAction(orderId, data as Parameters<typeof shipOrderAction>[1]),
     onSuccess,
     onError,
   });
@@ -64,13 +83,14 @@ export function useShipOrder(
 
 // --- Bulk Request Payout ---
 
+import { bulkSellerOrderAction } from "@/actions";
+
 export function useBulkRequestPayout(
   onSuccess?: (res: unknown) => void,
   onError?: (err: { message?: string }) => void,
 ) {
   return useMutation<unknown, Error, string[]>({
-    mutationFn: (orderIds) =>
-      sellerService.bulkOrderAction({ action: "request_payout", orderIds }),
+    mutationFn: (orderIds) => bulkSellerOrderAction(orderIds),
     onSuccess,
     onError,
   });

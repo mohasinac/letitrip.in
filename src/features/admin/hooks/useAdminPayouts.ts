@@ -1,8 +1,7 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { adminService } from "@/services";
-import { adminUpdatePayoutAction } from "@/actions";
+import { listAdminPayoutsAction, adminUpdatePayoutAction } from "@/actions";
 import type { PayoutDocument } from "@/db/schema";
 
 interface PayoutsResponse {
@@ -20,11 +19,26 @@ interface PayoutsResponse {
  * Fetches payouts using a full Sieve query string and exposes an update mutation.
  */
 export function useAdminPayouts(sieveParams: string) {
-  const queryFnParam = sieveParams ? `?${sieveParams}` : "";
-
   const query = useQuery<PayoutsResponse>({
     queryKey: ["admin", "payouts", sieveParams],
-    queryFn: () => adminService.listPayouts(queryFnParam),
+    queryFn: async () => {
+      const sp = new URLSearchParams(sieveParams);
+      const result = await listAdminPayoutsAction({
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+      return {
+        payouts: result.items,
+        meta: {
+          total: result.total,
+          page: result.page,
+          pageSize: result.pageSize,
+          totalPages: result.totalPages,
+        },
+      };
+    },
   });
 
   const updateMutation = useMutation<

@@ -152,7 +152,9 @@ export function AdvertisementBanner({
 
           {/* Content */}
           {compact ? (
-            <div className="relative z-10 flex items-center justify-between w-full px-6 py-4 gap-4 flex-wrap">
+            <div
+              className={`relative z-10 ${THEME_CONSTANTS.flex.between} w-full px-6 py-4 gap-4 flex-wrap`}
+            >
               <div className="inline-flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-white/80" />
                 <span className="text-white font-semibold text-sm">

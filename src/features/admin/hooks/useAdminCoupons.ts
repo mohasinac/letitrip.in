@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { couponService } from "@/services";
 import {
+  listAdminCouponsAction,
   adminCreateCouponAction,
   adminUpdateCouponAction,
   adminDeleteCouponAction,
@@ -27,7 +27,24 @@ export function useAdminCoupons(sieveParams: string) {
     meta: CouponListMeta;
   }>({
     queryKey: ["admin", "coupons", sieveParams],
-    queryFn: () => couponService.list(sieveParams),
+    queryFn: async () => {
+      const sp = new URLSearchParams(sieveParams);
+      const result = await listAdminCouponsAction({
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+      return {
+        coupons: result.items,
+        meta: {
+          total: result.total,
+          page: result.page,
+          pageSize: result.pageSize,
+          totalPages: result.totalPages,
+        },
+      };
+    },
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({

@@ -9,7 +9,6 @@ import type { UserDocument } from "@/db/schema";
 const NOW = new Date();
 const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
 const daysAhead = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
-const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000);
 
 export const usersSeedData: Partial<UserDocument>[] = [
   // Admin User
@@ -643,8 +642,8 @@ export const usersSeedData: Partial<UserDocument>[] = [
       reviewsCount: 4,
       rating: 4.7,
     },
-    ripcoinBalance: 18000,
-    engagedRipcoins: 6000,
+    rcBalance: 18000,
+    engagedRC: 6000,
     metadata: {
       lastSignInTime: daysAgo(4),
       creationTime: daysAgo(272).toISOString(),
@@ -683,8 +682,8 @@ export const usersSeedData: Partial<UserDocument>[] = [
       itemsSold: 0,
       reviewsCount: 3,
     },
-    ripcoinBalance: 4000,
-    engagedRipcoins: 0,
+    rcBalance: 4000,
+    engagedRC: 0,
     metadata: {
       lastSignInTime: daysAgo(7),
       creationTime: daysAgo(207).toISOString(),
@@ -721,8 +720,8 @@ export const usersSeedData: Partial<UserDocument>[] = [
       itemsSold: 0,
       reviewsCount: 2,
     },
-    ripcoinBalance: 3000,
-    engagedRipcoins: 1500,
+    rcBalance: 3000,
+    engagedRC: 1500,
     metadata: {
       lastSignInTime: daysAgo(6),
       creationTime: daysAgo(190).toISOString(),
@@ -759,8 +758,8 @@ export const usersSeedData: Partial<UserDocument>[] = [
       itemsSold: 0,
       reviewsCount: 1,
     },
-    ripcoinBalance: 6000,
-    engagedRipcoins: 0,
+    rcBalance: 6000,
+    engagedRC: 0,
     metadata: {
       lastSignInTime: daysAgo(4),
       creationTime: daysAgo(160).toISOString(),

@@ -81,9 +81,9 @@ export interface UserDocument {
     loginCount?: number;
   };
 
-  // RipCoins wallet (for auction bidding)
-  ripcoinBalance?: number; // Available (spendable) coins
-  engagedRipcoins?: number; // Coins currently locked in active bids
+  // RC wallet (for auction bidding)
+  rcBalance?: number; // Available (spendable) coins
+  engagedRC?: number; // Coins currently locked in active bids
   /**
    * Seller shipping configuration — private, never sent to client
    * Set via /api/seller/shipping (GET/PATCH)
@@ -187,8 +187,8 @@ export const DEFAULT_USER_DATA: Partial<UserDocument> = {
     itemsSold: 0,
     reviewsCount: 0,
   },
-  ripcoinBalance: 0,
-  engagedRipcoins: 0,
+  rcBalance: 0,
+  engagedRC: 0,
 };
 
 /**
@@ -203,7 +203,7 @@ export const USER_INDEXED_FIELDS = [
   "phoneVerified",
   "storeSlug", // Indexed for /stores/[storeSlug] lookups
   "storeStatus", // Indexed for admin store approval queries
-  "ripcoinBalance", // Indexed for admin coin balance queries
+  "rcBalance", // Indexed for admin coin balance queries
 ] as const;
 
 /**

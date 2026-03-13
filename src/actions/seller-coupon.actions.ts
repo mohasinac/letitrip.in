@@ -188,7 +188,6 @@ export async function sellerUpdateCouponAction(
     );
 
   const data = parsed.data;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { validity: _validity, ...dataWithoutValidity } = data;
   const updated = await couponsRepository.update(id, {
     ...dataWithoutValidity,

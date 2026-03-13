@@ -122,7 +122,7 @@ export async function getUserFromRequest(
     const user = await userRepository.findById(decodedToken.uid);
 
     return user;
-  } catch (error) {
+  } catch (_e) {
     // Invalid or expired token
     return null;
   }

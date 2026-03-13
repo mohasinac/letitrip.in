@@ -25,7 +25,13 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { ref, onValue, off, type DatabaseReference } from "firebase/database";
 import { getAuth, signInWithCustomToken } from "firebase/auth";
 import { realtimeApp, chatRealtimeDb } from "@/lib/firebase/realtime";
-import { realtimeTokenService, chatService } from "@/services";
+import {
+  getRealtimeTokenAction,
+  getChatRoomsAction,
+  sendChatMessageAction,
+  createOrGetChatRoomAction,
+  deleteChatRoomAction,
+} from "@/actions";
 import { logger } from "@/classes";
 import { nowMs } from "@/utils";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -75,7 +81,7 @@ export function useChat(chatId: string | null): UseChatReturn {
         tokenExpiresAtRef.current - nowMs() < 60_000;
 
       if (shouldRefresh) {
-        const tokenResponse = await realtimeTokenService.getToken();
+        const tokenResponse = await getRealtimeTokenAction();
         const realtimeAuth = getAuth(realtimeApp);
         await signInWithCustomToken(realtimeAuth, tokenResponse.customToken);
         tokenExpiresAtRef.current = tokenResponse.expiresAt;
@@ -132,7 +138,7 @@ export function useChat(chatId: string | null): UseChatReturn {
   const sendMessage = useCallback(
     async (text: string) => {
       if (!chatId || !text.trim()) return;
-      await chatService.sendMessage(chatId, text.trim());
+      await sendChatMessageAction(chatId, text.trim());
     },
     [chatId],
   );
@@ -148,19 +154,19 @@ export function useChat(chatId: string | null): UseChatReturn {
 export function useChatRooms() {
   return useQuery({
     queryKey: ["chat", "rooms"],
-    queryFn: () => chatService.getRooms(),
+    queryFn: () => getChatRoomsAction().then((r) => r.rooms),
   });
 }
 
 export function useCreateChatRoom() {
   return useMutation({
     mutationFn: (data: { orderId: string; sellerId: string }) =>
-      chatService.createOrGetRoom(data),
+      createOrGetChatRoomAction(data).then((r) => r.room),
   });
 }
 
 export function useDeleteChatRoom() {
   return useMutation({
-    mutationFn: (chatId: string) => chatService.deleteRoom(chatId),
+    mutationFn: (chatId: string) => deleteChatRoomAction(chatId),
   });
 }

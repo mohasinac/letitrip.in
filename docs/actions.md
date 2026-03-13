@@ -27,7 +27,7 @@ All actions:
 
 ## Admin Actions — `admin.actions.ts`
 
-General admin write mutations covering sessions, orders, payouts, users, stores, products, and RipCoins.
+General admin write mutations covering sessions, orders, payouts, users, stores, products, and RC.
 
 | Export                                           | Description                       |
 | ------------------------------------------------ | --------------------------------- |
@@ -41,9 +41,9 @@ General admin write mutations covering sessions, orders, payouts, users, stores,
 | `adminUpdateProductAction({ id, ...fields })`    | Update product fields             |
 | `adminCreateProductAction(input)`                | Create a new product (admin-side) |
 | `adminDeleteProductAction({ id })`               | Delete a product                  |
-| `adminAdjustRipCoinsAction(input)`               | Manually credit or debit RipCoins |
+| `adminAdjustRCAction(input)`                     | Manually credit or debit RC       |
 
-**Type:** `AdminAdjustRipCoinsInput` — `{ userId, amount, reason }`
+**Type:** `AdminAdjustRCInput` — `{ userId, amount, reason }`
 
 ---
 

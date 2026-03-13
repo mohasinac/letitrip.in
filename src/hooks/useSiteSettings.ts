@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { siteSettingsService } from "@/services";
+import { getSiteSettingsAction } from "@/actions";
 
 /**
  * useSiteSettings
@@ -14,7 +14,7 @@ import { siteSettingsService } from "@/services";
 export function useSiteSettings<T = unknown>() {
   return useQuery<T>({
     queryKey: ["site-settings"],
-    queryFn: () => siteSettingsService.get() as Promise<T>,
+    queryFn: () => getSiteSettingsAction() as Promise<T>,
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 }

@@ -1,8 +1,12 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { profileService } from "@/services";
-import type { UserDocument, ProductDocument } from "@/db/schema";
+import {
+  getPublicProfileAction,
+  getSellerProductsAction,
+  getSellerReviewsAction,
+} from "@/actions";
+import type { UserDocument } from "@/db/schema";
 import type {
   SellerReviewsData,
   ProductsApiResponse,
@@ -33,7 +37,9 @@ export function useSellerStorefront(
   } = useQuery<{ user: UserDocument }>({
     queryKey: ["seller-profile", sellerId],
     queryFn: () =>
-      profileService.getById(sellerId) as Promise<{ user: UserDocument }>,
+      getPublicProfileAction(sellerId) as unknown as Promise<{
+        user: UserDocument;
+      }>,
     enabled: !!sellerId,
     initialData: initialProfileData,
   });
@@ -52,9 +58,9 @@ export function useSellerStorefront(
     useQuery<ProductsApiResponse>({
       queryKey: ["storefront-products", sellerId],
       queryFn: () =>
-        profileService.getSellerProducts(
+        getSellerProductsAction(
           sellerId,
-        ) as Promise<ProductsApiResponse>,
+        ) as unknown as Promise<ProductsApiResponse>,
       enabled: isReady,
       staleTime: 60000,
     });
@@ -63,7 +69,9 @@ export function useSellerStorefront(
     useQuery<SellerReviewsData>({
       queryKey: ["storefront-reviews", sellerId],
       queryFn: () =>
-        profileService.getSellerReviews(sellerId) as Promise<SellerReviewsData>,
+        getSellerReviewsAction(
+          sellerId,
+        ) as unknown as Promise<SellerReviewsData>,
       enabled: isReady,
       staleTime: 60000,
     });

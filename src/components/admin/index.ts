@@ -4,6 +4,7 @@ export type { ImageUploadProps } from "./ImageUpload";
 export { MediaUploadField } from "./MediaUploadField";
 export type { MediaUploadFieldProps } from "./MediaUploadField";
 export { DataTable } from "./DataTable";
+export type { DataTableColumn } from "./DataTable";
 
 // Shared Admin Infrastructure
 export { AdminPageHeader } from "./AdminPageHeader";

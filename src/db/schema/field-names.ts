@@ -85,9 +85,9 @@ export const USER_FIELDS = {
     LOGIN_COUNT: "metadata.loginCount",
   },
 
-  // RipCoins wallet
-  RIPCOIN_BALANCE: "ripcoinBalance",
-  ENGAGED_RIPCOINS: "engagedRipcoins",
+  // RC wallet
+  RC_BALANCE: "rcBalance",
+  ENGAGED_RC: "engagedRC",
 } as const;
 
 // ============================================================================
@@ -643,7 +643,7 @@ export const SITE_SETTINGS_FIELDS = {
     BLOG: "featureFlags.blog",
     COUPONS: "featureFlags.coupons",
     NOTIFICATIONS: "featureFlags.notifications",
-    RIPCOIN: "featureFlags.ripcoin",
+    RC: "featureFlags.rc",
     SELLER_REGISTRATION: "featureFlags.sellerRegistration",
     PRE_ORDERS: "featureFlags.preOrders",
   },

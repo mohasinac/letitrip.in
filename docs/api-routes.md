@@ -180,15 +180,15 @@ All API routes live under `src/app/api/`. They follow a consistent pattern: vali
 
 ---
 
-## RipCoins Routes
+## RC Routes
 
-| Method | Route                           | Auth  | Description         |
-| ------ | ------------------------------- | ----- | ------------------- |
-| `GET`  | `/api/ripcoins/balance`         | User  | Coin balance        |
-| `GET`  | `/api/ripcoins/history`         | User  | Transaction history |
-| `POST` | `/api/ripcoins/purchase`        | User  | Init purchase       |
-| `POST` | `/api/ripcoins/purchase/verify` | User  | Verify + credit     |
-| `POST` | `/api/ripcoins/refund`          | Admin | Refund coins        |
+| Method | Route                     | Auth  | Description         |
+| ------ | ------------------------- | ----- | ------------------- |
+| `GET`  | `/api/rc/balance`         | User  | Coin balance        |
+| `GET`  | `/api/rc/history`         | User  | Transaction history |
+| `POST` | `/api/rc/purchase`        | User  | Init purchase       |
+| `POST` | `/api/rc/purchase/verify` | User  | Verify + credit     |
+| `POST` | `/api/rc/refund`          | Admin | Refund coins        |
 
 ---
 

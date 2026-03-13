@@ -22,7 +22,7 @@ import {
   AccordionItem,
   Ul,
   Li,
-  RipCoinsBalanceChip,
+  RCBalanceChip,
 } from "@/components";
 import { ProductImageGallery } from "./ProductImageGallery";
 import { BidHistory } from "./BidHistory";
@@ -482,9 +482,9 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
           {/* Column 3 — Bid Panel (desktop sticky sidebar) */}
           <div className="hidden lg:block">
             <div className={`sticky top-24 ${spacing.stack}`}>
-              {/* RipCoins balance panel — shown to authenticated users */}
+              {/* RC balance panel — shown to authenticated users */}
               {!!user && !isEnded && (
-                <RipCoinsBalanceChip
+                <RCBalanceChip
                   minimumRequired={displayBid + 1}
                   variant="panel"
                 />
@@ -559,7 +559,7 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
                 href={ROUTES.PUBLIC.HOW_AUCTIONS_WORK}
                 className="block text-center text-xs text-indigo-500 dark:text-indigo-400 hover:underline"
               >
-                {t("ripcoinsInfoLink")} →
+                {t("rcInfoLink")} →
               </TextLink>
             </div>
           </div>
@@ -578,10 +578,10 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
         <div
           className={`${themed.bgPrimary} border-t ${themed.border} px-4 py-3`}
         >
-          {/* RipCoins balance row — mobile */}
+          {/* RC balance row — mobile */}
           {!!user && !isEnded && (
             <div className="mb-2">
-              <RipCoinsBalanceChip
+              <RCBalanceChip
                 minimumRequired={displayBid + 1}
                 variant="chip"
                 className="text-xs"

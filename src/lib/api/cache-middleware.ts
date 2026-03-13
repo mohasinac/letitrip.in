@@ -164,7 +164,7 @@ export function withCache(
         });
 
         return newResponse;
-      } catch (error) {
+      } catch (_e) {
         // If response is not JSON, return original
         return response;
       }

@@ -1,82 +1,92 @@
 ---
 applyTo: "src/**"
-description: "No direct fetch in UI, UI→Hook→Service→apiClient chain. Rules 20, 21."
+description: "No direct fetch in UI, 2-hop: reads use Hook→apiClient, mutations use Hook→Action. Rules 20, 21."
 ---
 
-# Service Layer Rules
+# Data-Fetching Rules
 
-## RULE 20 & 21: UI → Hook → Service → apiClient — No Shortcuts
+## RULE 20 & 21: 2-Hop Architecture — Hook → apiClient (reads) · Hook → Action (mutations)
 
-**The chain is fixed. No layer may be skipped.**
+The `src/services/` layer has been **deleted**. There is no service layer.
 
-```
-Component → TanStack Query hook (useQuery/useMutation) → Service fn (@/services) → apiClient → fetch
-```
-
-For existing callers that use the legacy adapters, the chain is identical:
+### Reads (useQuery)
 
 ```
-Component → useApiQuery/useApiMutation (TanStack adapters) → Service fn → apiClient → fetch
+Component → TanStack Query hook (useQuery) → apiClient → API Route
 ```
+
+`apiClient` is called **directly inside `queryFn`** in hooks (`src/hooks/` or `src/features/<name>/hooks/`).
 
 ```typescript
-// ❌ WRONG — raw fetch in component/hook
-const res = await fetch("/api/products");
-
-// ❌ WRONG — apiClient directly in a hook's queryFn
-useQuery({ queryFn: () => apiClient.get(API_ENDPOINTS.PRODUCTS.LIST) });
-
-// ✅ RIGHT — named service in queryFn (TanStack Query direct)
+// ✅ RIGHT — apiClient directly in hook queryFn
 import { useQuery } from "@tanstack/react-query";
-import { productService } from "@/services";
-const { data } = useQuery({
-  queryKey: ["products"],
-  queryFn: () => productService.list(),
-  staleTime: 5 * 60 * 1000,
-});
-
-// ✅ RIGHT — named service in queryFn (adapter, existing callers)
-import { useApiQuery } from "@/hooks";
-const { data } = useApiQuery({
-  queryKey: ["products"],
-  queryFn: () => productService.list(),
-});
-```
-
-`apiClient` is ONLY allowed in `src/services/*.service.ts` and `src/features/<name>/services/*.service.ts`.  
-`fetch()` is ONLY allowed inside `apiClient` itself, or in API route handlers calling external APIs.
-
-**Server Components (SSR, E1/E2 ✅ complete):** async RSC pages call repositories directly — skip the service/apiClient layer entirely and pass `initialData` to the client view.
-
-### Service File Pattern
-
-```typescript
-// src/services/product.service.ts
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS } from "@/constants";
 
-export const productService = {
-  list: (params?: string) =>
-    apiClient.get(
-      `${API_ENDPOINTS.PRODUCTS.LIST}${params ? `?${params}` : ""}`,
-    ),
-  getById: (id: string) => apiClient.get(API_ENDPOINTS.PRODUCTS.GET_BY_ID(id)),
-  create: (data: unknown) =>
-    apiClient.post(API_ENDPOINTS.PRODUCTS.CREATE, data),
-  update: (id, data) =>
-    apiClient.patch(API_ENDPOINTS.PRODUCTS.UPDATE(id), data),
-  delete: (id: string) => apiClient.delete(API_ENDPOINTS.PRODUCTS.DELETE(id)),
-};
+export function useProducts(params?: string) {
+  return useQuery({
+    queryKey: ["products", params ?? ""],
+    queryFn: () =>
+      apiClient.get(API_ENDPOINTS.PRODUCTS.LIST + (params ? `?${params}` : "")),
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+// ❌ WRONG — raw fetch in component or hook
+const res = await fetch("/api/products");
+
+// ❌ WRONG — apiClient in a component (not a hook)
+function ProductList() {
+  const data = apiClient.get(API_ENDPOINTS.PRODUCTS.LIST); // NO
+}
 ```
 
-Export via `src/services/index.ts`.
+### Mutations (useMutation)
+
+```
+Component → useMutation → Server Action (@/actions)
+```
+
+Mutations **never** call `apiClient` — only Server Actions.
+
+```typescript
+// ✅ RIGHT — mutation calls a Server Action
+import { useMutation } from "@tanstack/react-query";
+import { createProductAction } from "@/actions";
+
+export function useCreateProduct() {
+  return useMutation({ mutationFn: createProductAction });
+}
+
+// ❌ WRONG — mutation calling apiClient directly
+return useMutation({
+  mutationFn: (data) => apiClient.post(API_ENDPOINTS.PRODUCTS.CREATE, data),
+});
+```
+
+### Where apiClient is allowed
+
+| Location                                                            | Allowed? |
+| ------------------------------------------------------------------- | -------- |
+| `src/hooks/*.ts` — `queryFn` inside `useQuery` only                 | ✅       |
+| `src/features/<name>/hooks/*.ts` — `queryFn` only                   | ✅       |
+| `src/contexts/*.tsx` — internal data-fetching helpers               | ✅       |
+| `src/lib/firebase/` — session helpers                               | ✅       |
+| `src/app/api/**` — external HTTP only, never calling own API routes | ✅       |
+| Components (`.tsx`)                                                 | ❌       |
+| Server Actions (`src/actions/`)                                     | ❌       |
+| Pages (`src/app/`)                                                  | ❌       |
+
+`fetch()` is ONLY allowed inside `apiClient` itself, or in API route handlers calling external third-party APIs.
+
+**Server Components (RSC):** async RSC pages call repositories directly — skip hooks/apiClient entirely and pass `initialData` to the client view.
 
 ### Rules
 
-- Services MUST NOT import React, hooks, or component code
-- Services MUST use `API_ENDPOINTS` from `@/constants` — never hardcode paths
-- Services MUST be exported through a barrel
-- One service object per domain
+- `apiClient` calls in hooks MUST use `API_ENDPOINTS` from `@/constants` — never hardcode paths
+- Mutations MUST use Server Actions — never call `apiClient` from `useMutation`
+- Components MUST NOT import or call `apiClient` directly
+- No `src/services/` directory — it does not exist and must not be re-created
 
 ### Violation Quick-Reference
 
@@ -89,4 +99,4 @@ Export via `src/services/index.ts`.
 
 ### Available Services (`@/services`) — check before adding a new one
 
-`addressService` · `adminService` · `authEventService` · `authService` · `bidService` · `blogService` · `carouselService` · `cartService` · `categoryService` · `chatService` · `checkoutService` · `couponService` · `eventService` · `faqService` · `homepageSectionsService` · `mediaService` · `navSuggestionsService` · `notificationService` · `orderService` · `productService` · `profileService` · `promotionsService` · `realtimeTokenService` · `reviewService` · `ripcoinService` · `searchService` · `sellerService` · `sessionService` · `siteSettingsService` · `storeService` · `wishlistService`
+`addressService` · `adminService` · `authEventService` · `authService` · `bidService` · `blogService` · `carouselService` · `cartService` · `categoryService` · `chatService` · `checkoutService` · `couponService` · `eventService` · `faqService` · `homepageSectionsService` · `mediaService` · `navSuggestionsService` · `notificationService` · `orderService` · `productService` · `profileService` · `promotionsService` · `realtimeTokenService` · `reviewService` · `rcService` · `searchService` · `sellerService` · `sessionService` · `siteSettingsService` · `storeService` · `wishlistService`

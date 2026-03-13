@@ -4,7 +4,7 @@
  * Firebase Firestore collection for product orders (renamed from bookings)
  */
 
-import { generateOrderId, type GenerateOrderIdInput } from "@/utils";
+import { generateOrderId } from "@/utils";
 
 // ============================================
 // 1. COLLECTION INTERFACE & NAME
@@ -68,6 +68,12 @@ export interface OrderDocument {
   cancellationReason?: string;
   refundAmount?: number;
   refundStatus?: RefundStatus;
+  /** Processing fee retained by the platform on refund (Razorpay fee, non-refundable) */
+  refundFeeDeducted?: number;
+  /** Net refund actually returned to buyer after fee deduction */
+  refundNetAmount?: number;
+  /** Admin note explaining the refund decision */
+  refundNote?: string;
   // ─── Platform commission & payment split ──────────────────────────────────
   /** Platform fee charged on this order (e.g. 5% Razorpay fee) */
   platformFee?: number;

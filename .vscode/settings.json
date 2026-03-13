@@ -9,7 +9,7 @@
     "**/build/**": true,
     "**/.next/**": true
   },
-  
+
   // Reduce file search scope
   "search.exclude": {
     "**/node_modules": true,
@@ -17,10 +17,10 @@
     "**/build": true,
     "**/.next": true
   },
-  
+
   // Disable telemetry
   "telemetry.telemetryLevel": "off",
-  
+
   // Limit editor features for performance
   "editor.quickSuggestions": {
     "other": false,
@@ -31,32 +31,43 @@
   "editor.hover.enabled": "off",
   "editor.suggest.preview": false,
   "editor.suggest.showStatusBar": false,
-  
+
   // Disable extensions auto-updates
   "extensions.autoUpdate": false,
   "extensions.autoCheckUpdates": false,
-  
+
   // Disable breadcrumbs
   "breadcrumbs.enabled": false,
-  
+
   // Reduce git operations
   "git.autorefresh": false,
   "git.autofetch": false,
-  
+
   // Disable minimap
   "editor.minimap.enabled": false,
-  
+
   // Limit concurrent file changes
   "files.maxConcurrentWrites": 1,
-  
+
   // Disable semantic highlighting for performance
   "editor.semanticHighlighting.enabled": false,
-  
+
   // Reduce TypeScript server memory usage
   "typescript.tsserver.maxTsServerMemory": 2048,
-  
+
   // Disable unused language features
   "editor.formatOnSave": false,
   "editor.formatOnPaste": false,
-  "editor.formatOnType": false
+  "editor.formatOnType": false,
+
+  // CSpell (streetsidesoftware.code-spell-checker)
+  "cSpell.configPaths": ["./cspell.json"],
+  "cSpell.enableFiletypes": [
+    "typescript",
+    "typescriptreact",
+    "javascript",
+    "markdown",
+    "json"
+  ],
+  "cSpell.showAutocompleteSuggestions": true
 }

@@ -8,7 +8,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   Badge,
   Breadcrumbs,
@@ -36,7 +36,8 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth, useWishlistToggle, useMessage, useRazorpay } from "@/hooks";
 import { useProductDetail } from "../hooks/useProductDetail";
-import { checkoutService, addressService } from "@/services";
+import { usePreOrderPayment } from "../hooks/usePreOrders";
+import { listAddressesAction } from "@/actions";
 import { formatCurrency, formatDate } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
 import type { Address } from "@/hooks";
@@ -75,17 +76,12 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
 
   const { data: addressesData } = useQuery<Address[]>({
     queryKey: ["addresses"],
-    queryFn: () => addressService.list(),
+    queryFn: () => listAddressesAction() as unknown as Promise<Address[]>,
     enabled: !!user,
   });
 
-  const createPaymentOrderMutation = useMutation({
-    mutationFn: (data: unknown) => checkoutService.createPaymentOrder(data),
-  });
-
-  const verifyDepositMutation = useMutation({
-    mutationFn: (data: unknown) => checkoutService.verifyPreOrderDeposit(data),
-  });
+  const { createPaymentOrderMutation, verifyDepositMutation } =
+    usePreOrderPayment();
 
   const {
     inWishlist,

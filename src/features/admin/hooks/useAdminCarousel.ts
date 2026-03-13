@@ -1,11 +1,12 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { carouselService } from "@/services";
 import {
+  listAllCarouselSlidesAction,
   createCarouselSlideAction,
   updateCarouselSlideAction,
   deleteCarouselSlideAction,
+  reorderCarouselSlidesAction,
 } from "@/actions";
 import type { CarouselSlide } from "../components";
 
@@ -16,7 +17,7 @@ import type { CarouselSlide } from "../components";
 export function useAdminCarousel() {
   const query = useQuery<CarouselSlide[]>({
     queryKey: ["carousel", "list"],
-    queryFn: () => carouselService.list(),
+    queryFn: () => listAllCarouselSlidesAction(),
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({
@@ -42,5 +43,15 @@ export function useAdminCarousel() {
     mutationFn: (id) => deleteCarouselSlideAction(id),
   });
 
-  return { ...query, createMutation, updateMutation, deleteMutation };
+  const reorderMutation = useMutation<unknown, Error, string[]>({
+    mutationFn: (slideIds) => reorderCarouselSlidesAction(slideIds),
+  });
+
+  return {
+    ...query,
+    createMutation,
+    updateMutation,
+    deleteMutation,
+    reorderMutation,
+  };
 }

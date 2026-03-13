@@ -1,8 +1,7 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { categoryService } from "@/services";
-import { createCategoryAction } from "@/actions";
+import { createCategoryAction, listCategoriesAction } from "@/actions";
 import type { CategoryDocument } from "@/db/schema";
 
 interface CategoriesResponse {
@@ -30,7 +29,7 @@ export function useCategorySelector(options?: {
     refetch,
   } = useQuery<CategoriesResponse>({
     queryKey: ["categories"],
-    queryFn: () => categoryService.list(),
+    queryFn: () => listCategoriesAction() as Promise<CategoriesResponse>,
   });
 
   const categories: CategoryDocument[] = raw?.data ?? raw?.items ?? [];
@@ -64,7 +63,7 @@ export function useCategories() {
     refetch,
   } = useQuery<CategoriesResponse>({
     queryKey: ["categories"],
-    queryFn: () => categoryService.list(),
+    queryFn: () => listCategoriesAction() as Promise<CategoriesResponse>,
   });
   const categories: CategoryDocument[] = raw?.data ?? raw?.items ?? [];
   return { categories, isLoading, refetch };

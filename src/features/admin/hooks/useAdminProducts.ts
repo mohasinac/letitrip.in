@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { adminService } from "@/services";
 import {
+  listAdminProductsAction,
   adminCreateProductAction,
   adminUpdateProductAction,
   adminDeleteProductAction,
@@ -27,7 +27,24 @@ export function useAdminProducts(sieveParams: string) {
     meta: ProductListMeta;
   }>({
     queryKey: ["admin", "products", sieveParams],
-    queryFn: () => adminService.listAdminProducts(sieveParams),
+    queryFn: async () => {
+      const sp = new URLSearchParams(sieveParams);
+      const result = await listAdminProductsAction({
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+      return {
+        products: result.items as unknown as AdminProduct[],
+        meta: {
+          page: result.page,
+          limit: result.pageSize,
+          total: result.total,
+          totalPages: result.totalPages,
+        },
+      };
+    },
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({

@@ -1,8 +1,11 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { adminService } from "@/services";
-import { adminUpdateUserAction, adminDeleteUserAction } from "@/actions";
+import {
+  listAdminUsersAction,
+  adminUpdateUserAction,
+  adminDeleteUserAction,
+} from "@/actions";
 import type { AdminUser } from "../components";
 
 interface UserListMeta {
@@ -20,7 +23,24 @@ interface UserListMeta {
 export function useAdminUsers(sieveParams: string) {
   const query = useQuery<{ users: AdminUser[]; meta: UserListMeta }>({
     queryKey: ["admin", "users", sieveParams],
-    queryFn: () => adminService.listUsers(sieveParams),
+    queryFn: async () => {
+      const sp = new URLSearchParams(sieveParams);
+      const result = await listAdminUsersAction({
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+      return {
+        users: result.items as unknown as AdminUser[],
+        meta: {
+          page: result.page,
+          limit: result.pageSize,
+          total: result.total,
+          totalPages: result.totalPages,
+        },
+      };
+    },
   });
 
   const updateUserMutation = useMutation<

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { searchService, categoryService } from "@/services";
+import { searchProductsAction, listCategoriesAction } from "@/actions";
 import type { CategoryDocument, ProductDocument } from "@/db/schema";
 
 type ProductCardData = Pick<
@@ -48,13 +48,24 @@ interface UseSearchOptions {
 export function useSearch(searchParams: string, options?: UseSearchOptions) {
   const { data: catData } = useQuery<CategoryDocument[]>({
     queryKey: ["categories", "flat"],
-    queryFn: () => categoryService.list("flat=true"),
+    queryFn: async () => (await listCategoriesAction({ pageSize: 500 })).items,
     initialData: options?.initialCategories,
   });
 
   const { data: searchData, isLoading } = useQuery<SearchResponse>({
     queryKey: ["search", searchParams],
-    queryFn: () => searchService.query(searchParams),
+    queryFn: async () => {
+      const sp = new URLSearchParams(searchParams);
+      return searchProductsAction({
+        q: sp.get("q") ?? undefined,
+        category: sp.get("category") ?? undefined,
+        minPrice: sp.has("minPrice") ? Number(sp.get("minPrice")) : undefined,
+        maxPrice: sp.has("maxPrice") ? Number(sp.get("maxPrice")) : undefined,
+        sort: sp.get("sort") ?? sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+    },
   });
 
   return {

@@ -152,12 +152,12 @@ Re-exports from `@lir/react` are available via `src/hooks/` barrel as well. See 
 
 ---
 
-## RipCoins
+## RC
 
-| Hook                  | Returns                                                            |
-| --------------------- | ------------------------------------------------------------------ |
-| `useRipCoins()`       | `{ balance, history, isLoading }`                                  |
-| `useRipCoinsRedeem()` | `{ redeem, isPending, maxRedeemable }` — applies coins at checkout |
+| Hook            | Returns                                                            |
+| --------------- | ------------------------------------------------------------------ |
+| `useRC()`       | `{ balance, history, isLoading }`                                  |
+| `useRCRedeem()` | `{ redeem, isPending, maxRedeemable }` — applies coins at checkout |
 
 ---
 

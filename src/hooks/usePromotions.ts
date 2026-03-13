@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { promotionsService } from "@/services";
+import { getPromotionsAction } from "@/actions";
 import type { ProductDocument, CouponDocument } from "@/db/schema";
 
 interface PromotionsData {
@@ -17,7 +17,7 @@ interface PromotionsData {
 export function usePromotions() {
   const { data, isLoading, error, refetch } = useQuery<PromotionsData>({
     queryKey: ["promotions"],
-    queryFn: () => promotionsService.list(),
+    queryFn: () => getPromotionsAction(),
   });
 
   return {

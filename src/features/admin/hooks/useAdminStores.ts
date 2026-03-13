@@ -1,8 +1,7 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { adminService } from "@/services";
-import { adminUpdateStoreStatusAction } from "@/actions";
+import { listAdminStoresAction, adminUpdateStoreStatusAction } from "@/actions";
 
 export interface AdminStoreItem {
   uid: string;
@@ -53,7 +52,15 @@ interface StoreListResponse {
 export function useAdminStores(sieveParams: string) {
   const query = useQuery<StoreListResponse>({
     queryKey: ["admin", "stores", sieveParams],
-    queryFn: () => adminService.listStores(sieveParams),
+    queryFn: async () => {
+      const sp = new URLSearchParams(sieveParams);
+      return listAdminStoresAction({
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      }) as unknown as Promise<StoreListResponse>;
+    },
   });
 
   const updateStoreMutation = useMutation<

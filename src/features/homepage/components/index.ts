@@ -26,3 +26,6 @@ export { BeforeAfterCard } from "./BeforeAfterCard";
 export type { BeforeAfterCardProps } from "./BeforeAfterCard";
 export { FeaturedResultsSection } from "./FeaturedResultsSection";
 export { HomepageSkeleton } from "./HomepageSkeleton";
+export { HomepageView } from "./HomepageView";
+export { HowAuctionsWorkView } from "./HowAuctionsWorkView";
+export { HowPreOrdersWorkView } from "./HowPreOrdersWorkView";

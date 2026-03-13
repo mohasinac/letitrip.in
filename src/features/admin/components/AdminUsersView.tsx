@@ -33,7 +33,7 @@ import {
   useToast,
 } from "@/components";
 import { UserFilters } from "./UserFilters";
-import { UserDetailDrawer, useUserTableColumns, RipCoinAdjustModal } from ".";
+import { UserDetailDrawer, useUserTableColumns, RCAdjustModal } from ".";
 import type { AdminUser, UserTab } from ".";
 
 interface AdminUsersViewProps {
@@ -71,7 +71,7 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
 
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [ripCoinModal, setRipCoinModal] = useState<{
+  const [rcModal, setRcModal] = useState<{
     open: boolean;
     user: AdminUser | null;
   }>({ open: false, user: null });
@@ -221,19 +221,19 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
     });
   };
 
-  const handleAdjustRipCoins = (user: AdminUser) => {
-    setRipCoinModal({ open: true, user });
+  const handleAdjustRC = (user: AdminUser) => {
+    setRcModal({ open: true, user });
   };
 
-  const handleRipCoinSuccess = async (newBalance: number) => {
+  const handleRCSuccess = async (newBalance: number) => {
     await refetch();
     const msg =
-      ripCoinModal.user && (ripCoinModal.user.ripcoinBalance ?? 0) < newBalance
-        ? SUCCESS_MESSAGES.ADMIN.RIPCOIN_CREDITED
-        : SUCCESS_MESSAGES.ADMIN.RIPCOIN_DEBITED;
+      rcModal.user && (rcModal.user.rcBalance ?? 0) < newBalance
+        ? SUCCESS_MESSAGES.ADMIN.RC_CREDITED
+        : SUCCESS_MESSAGES.ADMIN.RC_DEBITED;
     showToast(msg, "success");
-    if (selectedUser && ripCoinModal.user?.uid === selectedUser.uid) {
-      setSelectedUser({ ...selectedUser, ripcoinBalance: newBalance });
+    if (selectedUser && rcModal.user?.uid === selectedUser.uid) {
+      setSelectedUser({ ...selectedUser, rcBalance: newBalance });
     }
   };
 
@@ -359,14 +359,14 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
         onRoleChange={handleRoleChange}
         onToggleBan={handleToggleBan}
         onDelete={handleDeleteUser}
-        onAdjustRipCoins={handleAdjustRipCoins}
+        onAdjustRC={handleAdjustRC}
       />
 
-      <RipCoinAdjustModal
-        user={ripCoinModal.user}
-        isOpen={ripCoinModal.open}
-        onClose={() => setRipCoinModal({ open: false, user: null })}
-        onSuccess={handleRipCoinSuccess}
+      <RCAdjustModal
+        user={rcModal.user}
+        isOpen={rcModal.open}
+        onClose={() => setRcModal({ open: false, user: null })}
+        onSuccess={handleRCSuccess}
       />
 
       <ConfirmDeleteModal

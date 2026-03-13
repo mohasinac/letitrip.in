@@ -17,7 +17,7 @@ import {
   productRepository,
   unitOfWork,
   userRepository,
-  ripcoinRepository,
+  rcRepository,
 } from "@/repositories";
 import { getAdminRealtimeDb } from "@/lib/firebase/admin";
 import { serverLogger } from "@/lib/server-logger";
@@ -28,8 +28,9 @@ import {
   NotFoundError,
 } from "@/lib/errors";
 import { ERROR_MESSAGES } from "@/constants";
-import { resolveDate } from "@/utils";
 import type { BidDocument } from "@/db/schema";
+import type { FirebaseSieveResult, SieveModel } from "@/lib/query";
+import { resolveDate } from "@/utils";
 
 // ─── Validation schema ─────────────────────────────────────────────────────
 
@@ -50,7 +51,7 @@ export interface PlaceBidResult {
 /**
  * Place a bid on an auction product.
  *
- * Validates ownership, timing, bid amount, and RipCoin balance before
+ * Validates ownership, timing, bid amount, and RC balance before
  * atomically recording the bid, updating the product, and writing to RTDB.
  */
 export async function placeBidAction(
@@ -105,13 +106,12 @@ export async function placeBidAction(
     throw new ValidationError(ERROR_MESSAGES.BID.BID_TOO_LOW);
   }
 
-  // ── RipCoin balance check ─────────────────────────────────────────────────
-  // 1 RipCoin = ₹1 bid value; user must hold at least bidAmount free coins.
+  // ── RC balance check ────────────────────────────────────────────────────────────
+  // 1 RC = ₹1 bid value; user must hold at least bidAmount free coins.
   const userDoc = await userRepository.findById(user.uid);
-  const freeCoins =
-    (userDoc?.ripcoinBalance ?? 0) - (userDoc?.engagedRipcoins ?? 0);
+  const freeCoins = (userDoc?.rcBalance ?? 0) - (userDoc?.engagedRC ?? 0);
   if (freeCoins < bidAmount) {
-    throw new ValidationError(ERROR_MESSAGES.RIPCOIN.INSUFFICIENT_COINS);
+    throw new ValidationError(ERROR_MESSAGES.RC.INSUFFICIENT_COINS);
   }
 
   // Find the user's existing active bid for this product (coins may need releasing)
@@ -149,25 +149,25 @@ export async function placeBidAction(
     } as any);
   });
 
-  // ── RipCoin: engage coins for new bid ─────────────────────────────────────
-  await userRepository.incrementRipCoinBalance(user.uid, -bidAmount, bidAmount);
+  // ── RC: engage coins for new bid ─────────────────────────────────────
+  await userRepository.incrementRCBalance(user.uid, -bidAmount, bidAmount);
 
-  // ── RipCoin: release coins from prior outbid bid ──────────────────────────
+  // ── RC: release coins from prior outbid bid ──────────────────────────
   if (userPriorActiveBid?.engagedCoins) {
     const released = userPriorActiveBid.engagedCoins;
-    await userRepository.incrementRipCoinBalance(user.uid, released, -released);
+    await userRepository.incrementRCBalance(user.uid, released, -released);
 
     await bidRepository.update(userPriorActiveBid.id, {
       coinsStatus: "released",
     } as any);
 
     const priorUserDoc = await userRepository.findById(user.uid);
-    await ripcoinRepository.create({
+    await rcRepository.create({
       userId: user.uid,
       type: "release",
       coins: released,
-      balanceBefore: (priorUserDoc?.ripcoinBalance ?? 0) - released,
-      balanceAfter: priorUserDoc?.ripcoinBalance ?? 0,
+      balanceBefore: (priorUserDoc?.rcBalance ?? 0) - released,
+      balanceAfter: priorUserDoc?.rcBalance ?? 0,
       bidId: userPriorActiveBid.id,
       productId,
       productTitle: product.title,
@@ -178,12 +178,12 @@ export async function placeBidAction(
 
   // ── Record "engage" transaction for the new bid ───────────────────────────
   const freshUserDoc = await userRepository.findById(user.uid);
-  await ripcoinRepository.create({
+  await rcRepository.create({
     userId: user.uid,
     type: "engage",
     coins: bidAmount,
-    balanceBefore: (freshUserDoc?.ripcoinBalance ?? 0) + bidAmount,
-    balanceAfter: freshUserDoc?.ripcoinBalance ?? 0,
+    balanceBefore: (freshUserDoc?.rcBalance ?? 0) + bidAmount,
+    balanceAfter: freshUserDoc?.rcBalance ?? 0,
     bidId: bid.id,
     productId,
     productTitle: product.title,
@@ -221,4 +221,24 @@ export async function placeBidAction(
   });
 
   return { bid };
+}
+
+// ─── Read Actions ─────────────────────────────────────────────────────────────
+
+export async function listBidsByProductAction(
+  productId: string,
+  params?: { page?: number; pageSize?: number },
+): Promise<FirebaseSieveResult<BidDocument>> {
+  return bidRepository.list({
+    filters: `productId==${productId}`,
+    sorts: "-bidAmount",
+    page: params?.page ?? 1,
+    pageSize: params?.pageSize ?? 20,
+  });
+}
+
+export async function getBidByIdAction(
+  id: string,
+): Promise<BidDocument | null> {
+  return bidRepository.findById(id);
 }

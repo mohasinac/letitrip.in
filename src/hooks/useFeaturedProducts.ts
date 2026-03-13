@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { productService } from "@/services";
+import { listProductsAction, getLatestProductsAction } from "@/actions";
 import type { ProductDocument } from "@/db/schema";
 
 interface PaginatedResult {
@@ -25,18 +25,19 @@ export function useFeaturedProducts() {
   return useQuery<PaginatedResult>({
     queryKey: ["products", "featured"],
     queryFn: async () => {
-      const promotedRes = (await productService.list(
-        "isPromoted=true&status=published&pageSize=18",
-      )) as PaginatedResult;
+      const promotedRes = await listProductsAction({
+        filters: "isPromoted==true,status==published",
+        pageSize: 18,
+      });
       const promoted = promotedRes?.items ?? [];
 
       if (promoted.length >= MIN_COUNT) return promotedRes;
 
       // Fill remaining slots with latest products
       const remaining = MIN_COUNT - promoted.length;
-      const latestRes = (await productService.getLatest(
+      const latestRes = await getLatestProductsAction(
         remaining + promoted.length,
-      )) as PaginatedResult;
+      );
       const latest = latestRes?.items ?? [];
 
       const existingIds = new Set(promoted.map((p) => p.id));

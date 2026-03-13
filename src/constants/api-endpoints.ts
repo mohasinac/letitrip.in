@@ -91,6 +91,7 @@ export const API_ENDPOINTS = {
     /** ✅ Admin orders endpoints */
     ORDERS: "/api/admin/orders", // GET - List all orders
     ORDER_BY_ID: (id: string) => `/api/admin/orders/${id}`, // PATCH - Update order
+    ORDER_REFUND: (id: string) => `/api/admin/orders/${id}/refund`, // POST - Partial refund
     /** ✅ Admin coupons endpoints */
     COUPONS: "/api/admin/coupons", // GET/POST - List/create coupons
     COUPON_BY_ID: (id: string) => `/api/admin/coupons/${id}`, // GET/PATCH/DELETE
@@ -173,7 +174,6 @@ export const API_ENDPOINTS = {
     GET_BY_ID: (id: string) => `/api/carousel/${id}`, // GET - Get single slide
     UPDATE: (id: string) => `/api/carousel/${id}`, // PATCH - Update slide (admin only)
     DELETE: (id: string) => `/api/carousel/${id}`, // DELETE - Delete slide (admin only)
-    REORDER: "/api/carousel/reorder", // POST - Reorder slides (admin only)
   },
 
   // Homepage sections endpoints ✅ All routes exist
@@ -183,7 +183,6 @@ export const API_ENDPOINTS = {
     GET_BY_ID: (id: string) => `/api/homepage-sections/${id}`, // GET - Get single section
     UPDATE: (id: string) => `/api/homepage-sections/${id}`, // PATCH - Update section (admin only)
     DELETE: (id: string) => `/api/homepage-sections/${id}`, // DELETE - Delete section (admin only)
-    REORDER: "/api/homepage-sections/reorder", // POST - Reorder sections (admin only)
   },
 
   // FAQ endpoints ✅ All routes exist
@@ -234,8 +233,6 @@ export const API_ENDPOINTS = {
   CHECKOUT: {
     PLACE_ORDER: "/api/checkout", // POST - Place order from cart (COD)
     PREFLIGHT: "/api/checkout/preflight", // POST - Non-mutating stock check
-    CONSENT_OTP_SEND: "/api/checkout/consent-otp/send", // POST - Send consent email OTP (third-party shipping)
-    CONSENT_OTP_VERIFY: "/api/checkout/consent-otp/verify", // POST - Verify consent email OTP
   },
 
   // Payment endpoints (Razorpay)
@@ -265,21 +262,22 @@ export const API_ENDPOINTS = {
     GET_BY_ID: (id: string) => `/api/bids/${id}`, // GET - Get single bid
   },
 
-  // Seller endpoints ✅ Routes exist
+  // Seller endpoints
   SELLER: {
     ORDERS: "/api/seller/orders", // GET - List seller's orders (auth: seller)
     ORDER_SHIP: (id: string) => `/api/seller/orders/${id}/ship`, // POST - Ship order with tracking
-    ORDERS_BULK: "/api/seller/orders/bulk", // POST - Bulk order actions (request payout, etc.)
     ANALYTICS: "/api/seller/analytics", // GET - Seller analytics stats (auth: seller)
-    PAYOUTS: "/api/seller/payouts", // GET/POST - List/request payouts (auth: seller)
-    PRODUCTS: "/api/seller/products", // GET/POST - List/create seller's products (auth: seller)
-    STORE: "/api/seller/store", // GET/PATCH - Get & update store profile (auth: seller)
+    PAYOUTS: "/api/seller/payouts", // GET - List payouts (auth: seller)
+    PRODUCTS: "/api/seller/products", // GET - List seller's products (auth: seller)
+    STORE: "/api/seller/store", // GET - Get store profile (auth: seller)
     SHIPPING: "/api/seller/shipping", // GET/PATCH - Get & update shipping config (auth: seller)
     SHIPPING_VERIFY_PICKUP: "/api/seller/shipping/verify-pickup", // POST - OTP verify pickup address
-    PAYOUT_SETTINGS: "/api/seller/payout-settings", // GET/PATCH - Get & update payout details (auth: seller)
+    PAYOUT_SETTINGS: "/api/seller/payout-settings", // GET - Get payout details (auth: seller)
     /** ✅ Seller coupons endpoints */
     COUPONS: "/api/seller/coupons", // GET - List seller's own coupons
     COUPON_BY_ID: (id: string) => `/api/seller/coupons/${id}`, // GET - Single coupon (seller-owned)
+    /** ✅ Seller offers endpoints */
+    OFFERS: "/api/seller/offers", // GET - Incoming offers for seller's products
   },
 
   // Blog endpoints — public
@@ -321,13 +319,13 @@ export const API_ENDPOINTS = {
     BIDS_SSE: (productId: string) => `/api/realtime/bids/${productId}`, // GET - SSE stream for auction bid updates
   },
 
-  // RipCoins endpoints
-  RIPCOINS: {
-    BALANCE: "/api/ripcoins/balance", // GET  - Current balance + engaged coins
-    PURCHASE: "/api/ripcoins/purchase", // POST - Create Razorpay order for coin package
-    VERIFY: "/api/ripcoins/purchase/verify", // POST - Verify payment and credit coins
-    HISTORY: "/api/ripcoins/history", // GET  - Transaction history
-    REFUND: "/api/ripcoins/refund", // POST - Refund a purchase transaction
+  // RC endpoints
+  RC: {
+    BALANCE: "/api/rc/balance", // GET  - Current balance + engaged coins
+    PURCHASE: "/api/rc/purchase", // POST - Create Razorpay order for coin package
+    VERIFY: "/api/rc/purchase/verify", // POST - Verify payment and credit coins
+    HISTORY: "/api/rc/history", // GET  - Transaction history
+    REFUND: "/api/rc/refund", // POST - Refund a purchase transaction
   },
 
   // Shiprocket webhook
@@ -350,6 +348,12 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/api/notifications/${id}`, // DELETE - Delete one
     READ_ALL: "/api/notifications/read-all", // PATCH - Mark all as read
     UNREAD_COUNT: "/api/notifications/unread-count", // GET - Unread count
+  },
+
+  // Offers endpoints (buyer + seller)
+  OFFERS: {
+    BUYER_LIST: "/api/user/offers", // GET - Buyer's own offers
+    SELLER_LIST: "/api/seller/offers", // GET - Offers received by seller
   },
 
   // Internal / tooling endpoints

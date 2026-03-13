@@ -10,7 +10,6 @@ import type {
   ReviewDocument,
   ReviewCreateInput,
   ReviewStatus,
-  ReviewModerationInput,
 } from "@/db/schema";
 import { createReviewId, REVIEW_COLLECTION, REVIEW_FIELDS } from "@/db/schema";
 import type { SieveModel, FirebaseSieveResult } from "@/lib/query";

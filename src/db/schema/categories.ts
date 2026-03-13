@@ -5,7 +5,7 @@
  * Supports multiple independent category trees with fast queries
  */
 
-import { generateCategoryId, type GenerateCategoryIdInput } from "@/utils";
+import { generateCategoryId } from "@/utils";
 
 // ============================================
 // CATEGORY TYPE INTERFACES

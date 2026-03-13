@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { categoryService, productService } from "@/services";
+import { getCategoryBySlugAction, listProductsAction } from "@/actions";
 import type { CategoryDocument, ProductDocument } from "@/db/schema";
 
 export type CategoryProductItem = Pick<
@@ -22,10 +22,6 @@ export type CategoryProductItem = Pick<
   | "isPromoted"
   | "slug"
 >;
-
-interface CategoryResponse {
-  data: CategoryDocument;
-}
 
 interface ProductsResponse {
   data: CategoryProductItem[];
@@ -59,13 +55,14 @@ export function useCategoryProducts(
     options;
 
   /* ---- Fetch category by slug ---- */
-  const { data: catData, isLoading: catLoading } = useQuery<CategoryResponse>({
-    queryKey: ["categories", "slug", slug],
-    queryFn: () => categoryService.getBySlug(slug),
-    enabled: !!slug,
-  });
+  const { data: catData, isLoading: catLoading } =
+    useQuery<CategoryDocument | null>({
+      queryKey: ["categories", "slug", slug],
+      queryFn: () => getCategoryBySlugAction(slug),
+      enabled: !!slug,
+    });
 
-  const category = catData?.data ?? null;
+  const category = catData ?? null;
 
   /* ---- Build products query params from category + options ---- */
   const productsParams = useMemo(() => {
@@ -84,7 +81,28 @@ export function useCategoryProducts(
     error,
   } = useQuery<ProductsResponse>({
     queryKey: ["products", "by-category", category?.id ?? "", cacheKey],
-    queryFn: () => productService.list(productsParams!),
+    queryFn: async () => {
+      const sp = new URLSearchParams(productsParams!);
+      const result = await listProductsAction({
+        filters: sp.get("filters")
+          ? decodeURIComponent(sp.get("filters")!)
+          : undefined,
+        sorts: sp.get("sorts")
+          ? decodeURIComponent(sp.get("sorts")!)
+          : undefined,
+        page: sp.has("page") ? Number(sp.get("page")) : undefined,
+        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
+      });
+      return {
+        data: result.items,
+        meta: {
+          page: result.page,
+          limit: result.pageSize,
+          total: result.total,
+          totalPages: result.totalPages,
+        },
+      };
+    },
     enabled: !!productsParams,
   });
 

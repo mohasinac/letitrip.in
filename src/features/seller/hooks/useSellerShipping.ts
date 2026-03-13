@@ -2,7 +2,11 @@
 
 import { useAuth, useMessage } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { sellerService } from "@/services";
+import {
+  getSellerShippingAction,
+  updateSellerShippingAction,
+  verifyShiprocketPickupOtpAction,
+} from "@/actions";
 import { useTranslations } from "next-intl";
 import type { SellerShippingConfig, SellerPickupAddress } from "@/db/schema";
 
@@ -46,7 +50,9 @@ export function useSellerShipping() {
 
   const { data, isLoading, error, refetch } = useQuery<SellerShippingData>({
     queryKey: ["seller-shipping"],
-    queryFn: () => sellerService.getShipping(),
+    queryFn: async () => ({
+      shippingConfig: (await getSellerShippingAction()) as any,
+    }),
     enabled: !authLoading && !!user,
   });
 
@@ -55,7 +61,7 @@ export function useSellerShipping() {
     Error,
     UpdateShippingPayload
   >({
-    mutationFn: (payload) => sellerService.updateShipping(payload),
+    mutationFn: (payload) => updateSellerShippingAction(payload),
     onSuccess: () => {
       showSuccess(t("updateSuccess"));
       refetch();
@@ -70,7 +76,7 @@ export function useSellerShipping() {
     Error,
     VerifyPickupOtpPayload
   >({
-    mutationFn: (payload) => sellerService.verifyPickupOtp(payload),
+    mutationFn: (payload) => verifyShiprocketPickupOtpAction(payload),
     onSuccess: () => {
       showSuccess(t("pickupVerified"));
       refetch();

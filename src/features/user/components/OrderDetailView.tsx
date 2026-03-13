@@ -143,7 +143,9 @@ export function OrderDetailView() {
       <Card className="p-4 md:p-6">
         {isCancelled ? (
           <div className="flex items-center gap-3 text-red-600 dark:text-red-400">
-            <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center">
+            <div
+              className={`w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/40 ${THEME_CONSTANTS.flex.center}`}
+            >
               <X className="w-4 h-4" strokeWidth={2} />
             </div>
             <Text weight="semibold" className="capitalize">
@@ -162,7 +164,7 @@ export function OrderDetailView() {
                 >
                   <div className="flex flex-col items-center gap-1.5">
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                      className={`w-8 h-8 rounded-full ${THEME_CONSTANTS.flex.center} transition-colors ${
                         isDone
                           ? "bg-primary-700 text-white"
                           : isCurrent

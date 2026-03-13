@@ -22,8 +22,8 @@ import {
   reauthenticateWithPhone,
 } from "@/lib/firebase/auth-helpers";
 import { logger } from "@/classes";
-import { checkoutService } from "@/services";
-import { ApiClientError } from "@/lib/api-client";
+import { apiClient, ApiClientError } from "@/lib/api-client";
+import { API_ENDPOINTS } from "@/constants";
 
 export type OtpState =
   | "idle"
@@ -62,7 +62,7 @@ export function usePaymentOtp(phoneNumber: string | null): UsePaymentOtpReturn {
 
       // 1. Server-side gate: checks per-user 15-min cooldown AND the daily SMS quota.
       try {
-        await checkoutService.requestOtpGrant();
+        await apiClient.post(API_ENDPOINTS.PAYMENT.OTP_REQUEST, {});
       } catch (err: unknown) {
         logger.warn("Payment OTP grant denied", { err });
         if (err instanceof ApiClientError && err.status === 429) {

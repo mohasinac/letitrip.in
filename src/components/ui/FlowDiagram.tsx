@@ -74,7 +74,7 @@ export function FlowDiagram({
                 className={`shrink-0 flex flex-col items-center text-center gap-1 ${stepWidth}`}
               >
                 <div
-                  className={`w-12 h-12 rounded-full ${step.circleClass} flex items-center justify-center text-xl`}
+                  className={`w-12 h-12 rounded-full ${step.circleClass} ${THEME_CONSTANTS.flex.center} text-xl`}
                 >
                   {step.emoji}
                 </div>

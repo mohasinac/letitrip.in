@@ -115,7 +115,7 @@ export function TitleBarLayout({
       {/* Promo micro-strip (LX-7) — dismissed locally via useState */}
       {showPromo && (
         <div
-          className={`${THEME_CONSTANTS.accentBanner.gradient} text-white text-xs py-1 text-center relative flex items-center justify-center px-8`}
+          className={`${THEME_CONSTANTS.accentBanner.gradient} text-white text-xs py-1 text-center relative ${THEME_CONSTANTS.flex.center} px-8`}
         >
           <span>{promoStripText}</span>
           <button

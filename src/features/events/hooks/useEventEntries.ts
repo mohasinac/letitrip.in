@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { eventService } from "@/services";
+import { adminGetEventEntriesAction } from "@/actions";
 import type { EventEntryDocument } from "@/db/schema";
 
 interface EventEntriesResult {
@@ -26,7 +26,17 @@ export function useEventEntries({
 }: UseEventEntriesOptions) {
   const { data, isLoading, error, refetch } = useQuery<EventEntriesResult>({
     queryKey: ["admin-event-entries", eventId, params],
-    queryFn: () => eventService.adminGetEntries(eventId, params),
+    queryFn: async () => {
+      const items = await adminGetEventEntriesAction(eventId);
+      return {
+        items,
+        total: items.length,
+        page: 1,
+        pageSize: items.length,
+        totalPages: 1,
+        hasMore: false,
+      };
+    },
     enabled: enabled && !!eventId,
   });
 

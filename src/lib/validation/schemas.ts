@@ -576,7 +576,7 @@ export const siteSettingsUpdateSchema = z
         blog: z.boolean(),
         coupons: z.boolean(),
         notifications: z.boolean(),
-        ripcoin: z.boolean(),
+        rc: z.boolean(),
         sellerRegistration: z.boolean(),
         preOrders: z.boolean(),
       })
@@ -930,7 +930,7 @@ export const bidSchema = z
     auctionId: objectIdSchema,
   })
   .refine(
-    (bid) => {
+    (_bid) => {
       // Bid amount should be reasonable (max 10x starting bid)
       return true; // Validate against current bid in API route
     },

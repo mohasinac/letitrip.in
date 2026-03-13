@@ -12,7 +12,7 @@ import {
   eventRepository,
   eventEntryRepository,
   userRepository,
-  ripcoinRepository,
+  rcRepository,
 } from "@/repositories";
 import { siteSettingsRepository } from "@/repositories";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@/constants";
@@ -140,7 +140,7 @@ export const POST = createApiHandler({
       userId: user?.uid,
     });
 
-    // Credit earn_event RipCoins for eligible authenticated entries (non-critical)
+    // Credit earn_event RC for eligible authenticated entries (non-critical)
     if (user && autoApprove) {
       try {
         const loyaltyConfig = await siteSettingsRepository.getLoyaltyConfig();
@@ -150,9 +150,9 @@ export const POST = createApiHandler({
         );
         if (coinsToCredit > 0) {
           const userDoc = await userRepository.findById(user.uid);
-          const balanceBefore = userDoc?.ripcoinBalance ?? 0;
-          await userRepository.incrementRipCoinBalance(user.uid, coinsToCredit);
-          await ripcoinRepository.create({
+          const balanceBefore = userDoc?.rcBalance ?? 0;
+          await userRepository.incrementRCBalance(user.uid, coinsToCredit);
+          await rcRepository.create({
             userId: user.uid,
             type: "earn_event",
             coins: coinsToCredit,

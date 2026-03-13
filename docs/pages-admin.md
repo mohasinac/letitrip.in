@@ -88,10 +88,10 @@ User account management:
 - DataTable with `useAdminUsers(sieveParams)` + `UserFilters`
 - `UserDetailDrawer` — view full user profile, role, order history, sessions
 - Role change, account suspend/unsuspend
-- `RipCoinAdjustModal` — manually credit or debit RipCoins
+- `RCAdjustModal` — manually credit or debit RC
 - Session revocation via `revokeSessionAction` / `revokeUserSessionsAction`
 
-**Actions:** `adminUpdateUserAction`, `adminDeleteUserAction`, `adminAdjustRipCoinsAction`  
+**Actions:** `adminUpdateUserAction`, `adminDeleteUserAction`, `adminAdjustRCAction`  
 **Columns:** `useUserTableColumns`
 
 ---

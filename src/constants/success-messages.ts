@@ -81,8 +81,8 @@ export const SUCCESS_MESSAGES = {
     ALGOLIA_PAGES_CLEARED: "Navigation pages index cleared successfully",
     STORE_APPROVED: "Store approved successfully",
     STORE_REJECTED: "Store application rejected",
-    RIPCOIN_CREDITED: "RipCoins credited successfully",
-    RIPCOIN_DEBITED: "RipCoins debited successfully",
+    RC_CREDITED: "RC credited successfully",
+    RC_DEBITED: "RC debited successfully",
   },
 
   // Review Success
@@ -140,6 +140,7 @@ export const SUCCESS_MESSAGES = {
     CREATED: "Order placed successfully",
     UPDATED: "Order updated successfully",
     CANCELLED: "Order cancelled successfully",
+    REFUNDED: "Refund initiated successfully",
   },
 
   // Payout Success
@@ -277,14 +278,14 @@ export const SUCCESS_MESSAGES = {
     STATUS_CHANGED: "Event status updated",
   },
 
-  // RipCoin success messages
-  RIPCOIN: {
-    PURCHASE_INITIATED: "RipCoin purchase initiated",
-    PURCHASE_COMPLETE: "RipCoins added to your wallet!",
-    COINS_ENGAGED: "RipCoins locked for your bid",
-    COINS_RELEASED: "RipCoins returned to your wallet",
-    COINS_RETURNED: "RipCoins refunded after payment",
-    REFUND_COMPLETE: "RipCoins successfully refunded!",
+  // RC success messages
+  RC: {
+    PURCHASE_INITIATED: "RC purchase initiated",
+    PURCHASE_COMPLETE: "RC added to your wallet!",
+    COINS_ENGAGED: "RC locked for your bid",
+    COINS_RELEASED: "RC returned to your wallet",
+    COINS_RETURNED: "RC refunded after payment",
+    REFUND_COMPLETE: "RC successfully refunded!",
   },
 
   // Chat success messages

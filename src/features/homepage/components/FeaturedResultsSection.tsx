@@ -44,7 +44,7 @@ export async function FeaturedResultsSection() {
 
         {/* ── ✦ ── ornament (LX-3) */}
         <div
-          className="mt-3 flex items-center justify-center gap-2 text-zinc-400 dark:text-zinc-500"
+          className={`mt-3 ${THEME_CONSTANTS.flex.center} gap-2 text-zinc-400 dark:text-zinc-500`}
           aria-hidden="true"
         >
           <span className="h-px w-6 bg-current" />

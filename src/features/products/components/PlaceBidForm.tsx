@@ -13,7 +13,7 @@ import {
   Span,
   Text,
   TextLink,
-  RipCoinsBalanceChip,
+  RCBalanceChip,
 } from "@/components";
 import type { BidDocument } from "@/db/schema";
 
@@ -115,11 +115,8 @@ export function PlaceBidForm({
       onSubmit={handleSubmit}
       className={`rounded-xl border ${themed.border} p-4 space-y-3`}
     >
-      {/* RipCoins balance + top-up */}
-      <RipCoinsBalanceChip
-        minimumRequired={minimumRequired + 1}
-        variant="panel"
-      />
+      {/* RC balance + top-up */}
+      <RCBalanceChip minimumRequired={minimumRequired + 1} variant="panel" />
       <div>
         <Label
           htmlFor="bid-amount"
@@ -178,10 +175,10 @@ export function PlaceBidForm({
 
       {/* How it works link */}
       <TextLink
-        href={ROUTES.PUBLIC.RIPCOINS_INFO}
+        href={ROUTES.PUBLIC.RC_INFO}
         className="text-xs text-indigo-500 dark:text-indigo-400 hover:underline"
       >
-        🪙 {t("ripcoinsInfoLink")}
+        🪙 {t("rcInfoLink")}
       </TextLink>
     </form>
   );

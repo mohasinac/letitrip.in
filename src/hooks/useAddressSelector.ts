@@ -2,8 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
-import { addressService } from "@/services";
-import { createAddressAction } from "@/actions";
+import { createAddressAction, listAddressesAction } from "@/actions";
 import type { AddressFormData } from "./useAddresses";
 
 interface SavedAddress {
@@ -38,7 +37,7 @@ export function useAddressSelector(options?: {
 }) {
   const { data, isLoading, refetch } = useQuery<SavedAddress[]>({
     queryKey: ["user-addresses"],
-    queryFn: () => addressService.list(),
+    queryFn: () => listAddressesAction() as Promise<SavedAddress[]>,
   });
 
   const addresses: SavedAddress[] = data ?? [];

@@ -175,14 +175,14 @@ export { useLogout } from "./useLogout";
 export { useCategories, useCreateCategory } from "./useCategorySelector";
 export { useAddressSelector } from "./useAddressSelector";
 
-// RipCoins hooks
+// RC hooks
 export {
-  useRipCoinBalance,
-  usePurchaseRipCoins,
-  useVerifyRipCoinPurchase,
-  useRefundRipCoinPurchase,
-  useRipCoinHistory,
-} from "./useRipCoins";
+  useRCBalance,
+  usePurchaseRC,
+  useVerifyRCPurchase,
+  useRefundRCPurchase,
+  useRCHistory,
+} from "./useRC";
 
 // Chat hooks
 export {

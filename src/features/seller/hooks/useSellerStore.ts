@@ -2,7 +2,11 @@
 
 import { useAuth } from "@/hooks";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { sellerService } from "@/services";
+import {
+  getSellerStoreAction,
+  createStoreAction,
+  updateStoreAction,
+} from "@/actions";
 import type { StoreDocument } from "@/db/schema";
 
 /**
@@ -21,25 +25,25 @@ export function useSellerStore() {
     store: StoreDocument | null;
   }>({
     queryKey: ["seller-store"],
-    queryFn: () => sellerService.getStore(),
+    queryFn: async () => ({ store: await getSellerStoreAction() }),
     enabled: !authLoading && !!user,
   });
 
   const { mutate: createStore, isPending: isCreating } = useMutation<
     { store: StoreDocument },
     Error,
-    unknown
+    Parameters<typeof createStoreAction>[0]
   >({
-    mutationFn: (payload) => sellerService.createStore(payload),
+    mutationFn: (payload) => createStoreAction(payload),
     onSuccess: () => refetch(),
   });
 
   const { mutate: updateStore, isPending: isSaving } = useMutation<
     { store: StoreDocument },
     Error,
-    unknown
+    Parameters<typeof updateStoreAction>[0]
   >({
-    mutationFn: (payload) => sellerService.updateStore(payload),
+    mutationFn: (payload) => updateStoreAction(payload),
     onSuccess: () => refetch(),
   });
 

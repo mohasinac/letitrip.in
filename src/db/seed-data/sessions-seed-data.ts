@@ -19,7 +19,6 @@ import { SESSION_COLLECTION } from "@/db/schema";
 const NOW = new Date();
 const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
 const daysAhead = (n: number) => new Date(NOW.getTime() + n * 86_400_000);
-const hoursAgo = (h: number) => new Date(NOW.getTime() - h * 3_600_000);
 
 // Re-exported so seed-all-data.ts can reference the collection name directly.
 export { SESSION_COLLECTION };

@@ -42,7 +42,7 @@ export function ChatList() {
 
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const rooms = (data?.rooms ?? []) as unknown as Array<{
+  const rooms = (data ?? []) as unknown as Array<{
     id: string;
     buyerId: string;
     sellerId: string;

@@ -9,9 +9,14 @@
 import { requireAuth } from "@/lib/firebase/auth-server";
 import { orderRepository } from "@/repositories";
 import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
-import { AuthorizationError, ValidationError } from "@/lib/errors";
+import {
+  AuthorizationError,
+  NotFoundError,
+  ValidationError,
+} from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { z } from "zod";
+import type { OrderDocument } from "@/db/schema";
 
 const cancelSchema = z.object({
   id: z.string().min(1),
@@ -70,4 +75,21 @@ export async function cancelOrderAction(
     orderId: parsed.data.id,
     reason: parsed.data.reason,
   });
+}
+
+// ─── Read Actions ─────────────────────────────────────────────────────────────
+
+export async function listOrdersAction(): Promise<OrderDocument[]> {
+  const user = await requireAuth();
+  return orderRepository.findByUser(user.uid);
+}
+
+export async function getOrderByIdAction(
+  id: string,
+): Promise<OrderDocument | null> {
+  const user = await requireAuth();
+  const order = await orderRepository.findById(id);
+  if (!order) throw new NotFoundError("Order not found");
+  if (order.userId !== user.uid) throw new NotFoundError("Order not found");
+  return order;
 }

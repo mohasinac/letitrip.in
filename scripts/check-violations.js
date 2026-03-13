@@ -102,12 +102,13 @@ function stripLineComment(line) {
 // ─── Context Classifiers ────────────────────────────────────────────────────
 
 const isTestFile = (p) =>
-  /\/__tests__\/|\.test\.[tj]sx?$|\.spec\.[tj]sx?$/.test(norm(p));
+  /\/__tests__\/|\/__mocks__\/|\.test\.[tj]sx?$|\.spec\.[tj]sx?$/.test(norm(p));
 const isApiRoute = (p) => norm(p).includes("/app/api/");
 const isLibDir = (p) => norm(p).includes("/src/lib/");
 const isUtilsDir = (p) =>
   norm(p).includes("/src/utils/") || norm(p).includes("/src/helpers/");
-const isServiceFile = (p) => norm(p).includes(".service.ts");
+const isHookFile = (p) => /\/hooks\/[^/]+\.[tj]sx?$/.test(norm(p));
+const isContextFile = (p) => norm(p).includes("/src/contexts/");
 const isFeatureFile = (p) => norm(p).includes("/src/features/");
 const isI18nFile = (p) => norm(p).includes("/src/i18n/");
 const isScriptFile = (p) =>
@@ -587,7 +588,7 @@ const RULES = [
     name: "Direct fetch() in UI code",
     description:
       "fetch() must not be called in components, hooks, contexts, or pages. " +
-      "Use a service function from @/services or @/features/<name>/services.",
+      "Reads use apiClient in a hook queryFn. Mutations use Server Actions.",
     ruleRef: "rules-services.instructions.md — RULE 20 & 21",
     fileFilter: (p) => {
       const n = norm(p);
@@ -596,8 +597,6 @@ const RULES = [
         !isTestFile(p) &&
         !isApiRoute(p) &&
         !isLibDir(p) &&
-        !isServiceFile(p) &&
-        !n.includes("/src/services/") &&
         !isSnippetFile(p) &&
         !isCoreClassFile(p)
       );
@@ -613,7 +612,7 @@ const RULES = [
             line: i + 1,
             col: m.index + 1,
             message:
-              "Direct fetch() in UI code — use a service function instead",
+              "Direct fetch() in UI code — use apiClient in a hook queryFn instead",
             snippet: rawLines[i].trim(),
           });
         }
@@ -625,41 +624,37 @@ const RULES = [
 
   {
     code: "SVC-002",
-    name: "apiClient used outside service files",
+    name: "apiClient used in component or page",
     description:
-      "apiClient must only be used inside *.service.ts files. " +
-      "Components, hooks, and pages must call named service functions.",
+      "apiClient must not be called in components (.tsx) or page files. " +
+      "Use apiClient inside a hook queryFn (src/hooks/ or src/features/<name>/hooks/). " +
+      "Mutations must use Server Actions, not apiClient.",
     ruleRef: "rules-services.instructions.md — RULE 20 & 21",
-    fileFilter: (p) =>
-      (p.endsWith(".ts") || p.endsWith(".tsx")) &&
-      !isTestFile(p) &&
-      !isApiRoute(p) &&
-      !isServiceFile(p),
+    fileFilter: (p) => {
+      const n = norm(p);
+      // Only flag .tsx component files that are NOT hooks or contexts or lib
+      return (
+        (p.endsWith(".tsx") || p.endsWith(".ts")) &&
+        !isTestFile(p) &&
+        !isApiRoute(p) &&
+        !isLibDir(p) &&
+        !isHookFile(p) &&
+        !isContextFile(p)
+      );
+    },
     check(filePath, lines, rawLines) {
       const violations = [];
-      // Only flag when apiClient methods are actually called; importing error types (ApiClientError) is allowed.
-      const importPat = /from\s+['"][^'"]*api-client['"]/g;
       const usagePat = /\bapiClient\./g;
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        const hasImport = importPat.test(line);
-        importPat.lastIndex = 0;
         const hasUsage = usagePat.test(line);
         usagePat.lastIndex = 0;
-        // Skip lines that only import error/type classes from api-client (not apiClient calls)
-        if (hasImport && !hasUsage) {
-          // Allow: import type { ApiClientError } or import { ApiClientError } — error class only
-          const importOnly =
-            /^import\s+(type\s+)?\{[^}]*ApiClientError[^}]*\}/.test(
-              line.trim(),
-            );
-          if (importOnly) continue;
-        }
-        if (hasImport || hasUsage) {
+        if (hasUsage) {
           violations.push({
             line: i + 1,
             col: 1,
-            message: "apiClient must only be used in *.service.ts files",
+            message:
+              "apiClient must not be called in components or pages — use a hook instead",
             snippet: rawLines[i].trim(),
           });
         }
@@ -670,12 +665,12 @@ const RULES = [
 
   {
     code: "SVC-003",
-    name: "Hardcoded API path in service",
+    name: "Hardcoded API path in hook",
     description:
-      'Service functions must use API_ENDPOINTS from @/constants — never hardcode strings like "/api/products".',
+      'apiClient calls must use API_ENDPOINTS from @/constants — never hardcode strings like "/api/products".',
     ruleRef:
       "rules-services.instructions.md — RULE 20 & 21 / rules-constants.instructions.md — RULE 19",
-    fileFilter: (p) => isServiceFile(p) && !isTestFile(p),
+    fileFilter: (p) => (isHookFile(p) || isContextFile(p)) && !isTestFile(p),
     check(filePath, lines, rawLines) {
       const violations = [];
       // apiClient.get('/api/...')  or  apiClient.post("/api/...")
@@ -1483,11 +1478,11 @@ const RULES = [
           note: "use THEME_CONSTANTS.themed.bgSecondary",
         },
         {
-          pattern: /\bflex\s+items-center\s+justify-center\b/,
+          pattern: /(?<![a-zA-Z0-9_-])flex\s+items-center\s+justify-center\b/,
           note: "use THEME_CONSTANTS.flex.center",
         },
         {
-          pattern: /\bflex\s+items-center\s+justify-between\b/,
+          pattern: /(?<![a-zA-Z0-9_-])flex\s+items-center\s+justify-between\b/,
           note: "use THEME_CONSTANTS.flex.between",
         },
         {

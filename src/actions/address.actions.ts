@@ -135,3 +135,17 @@ export async function setDefaultAddressAction(
   serverLogger.debug("setDefaultAddressAction", { uid: user.uid, addressId });
   return addressRepository.setDefault(user.uid, addressId);
 }
+
+// ─── Read Actions ─────────────────────────────────────────────────────────────
+
+export async function listAddressesAction(): Promise<AddressDocument[]> {
+  const user = await requireAuth();
+  return addressRepository.findByUser(user.uid);
+}
+
+export async function getAddressByIdAction(
+  id: string,
+): Promise<AddressDocument | null> {
+  const user = await requireAuth();
+  return addressRepository.findById(user.uid, id);
+}

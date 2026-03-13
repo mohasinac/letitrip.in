@@ -14,7 +14,7 @@ import {
   STORE_FIELDS,
   DEFAULT_STORE_DATA,
 } from "@/db/schema";
-import { DatabaseError, NotFoundError } from "@/lib/errors";
+import { DatabaseError } from "@/lib/errors";
 import { applySieveToFirestore } from "@/lib/query/firebase-sieve";
 
 export class StoreRepository extends BaseRepository<StoreDocument> {
