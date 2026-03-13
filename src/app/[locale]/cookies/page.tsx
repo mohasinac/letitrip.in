@@ -34,7 +34,7 @@ export default async function CookiePolicyPage() {
       {/* Header */}
       <Section className="bg-gradient-to-br from-slate-700 to-slate-900 text-white py-14 md:py-16 lg:py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Heading level={1} className="mb-3 text-white">
+          <Heading level={1} variant="none" className="mb-3 text-white">
             {t("title")}
           </Heading>
           <Text className="text-slate-300">{t("lastUpdated")}</Text>

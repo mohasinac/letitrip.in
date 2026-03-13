@@ -14,6 +14,7 @@ export async function AboutView() {
         <div className={`${page.container.md} text-center`}>
           <Heading
             level={1}
+            variant="none"
             className="text-4xl md:text-5xl font-bold mb-6 text-white"
           >
             {t("title")}
@@ -145,7 +146,11 @@ export async function AboutView() {
 
         {/* CTA */}
         <Section className="text-center bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 md:p-12 xl:p-16 text-white">
-          <Heading level={2} className="text-3xl font-bold mb-8 text-white">
+          <Heading
+            level={2}
+            variant="none"
+            className="text-3xl font-bold mb-8 text-white"
+          >
             {t("ctaTitle")}
           </Heading>
           <div className="flex justify-center gap-3 md:gap-4 flex-wrap">

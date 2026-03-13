@@ -359,7 +359,10 @@ export default function BackgroundSettings({
               />
             )}
             <div className={`${position.fill} ${flex.center}`}>
-              <Text className="text-white text-lg font-semibold drop-shadow-lg">
+              <Text
+                variant="none"
+                className="text-white text-lg font-semibold drop-shadow-lg"
+              >
                 Sample Content
               </Text>
             </div>

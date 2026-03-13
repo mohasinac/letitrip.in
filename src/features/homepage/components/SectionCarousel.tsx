@@ -195,6 +195,7 @@ export function SectionCarousel<T = unknown>({
 
           <Heading
             level={2}
+            variant="none"
             className={[
               THEME_CONSTANTS.typography.h2,
               headingClass,

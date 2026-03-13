@@ -270,6 +270,17 @@ export function OrderDetailView() {
                 {tOrders("writeReview")}
               </Button>
             )}
+            {order.paymentStatus === "paid" && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() =>
+                  window.open(`/api/orders/${orderId}/invoice`, "_blank")
+                }
+              >
+                {tOrders("downloadInvoice")}
+              </Button>
+            )}
           </div>
         </div>
       </Card>

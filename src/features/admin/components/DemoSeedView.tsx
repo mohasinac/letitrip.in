@@ -226,12 +226,16 @@ export function DemoSeedView() {
                 <Span className="text-4xl">🌱</Span>
                 <Heading
                   level={1}
-                  className="text-3xl sm:text-4xl font-bold tracking-tight"
+                  variant="none"
+                  className="text-3xl sm:text-4xl font-bold tracking-tight text-white"
                 >
                   Seed Data Manager
                 </Heading>
               </div>
-              <Text className="text-zinc-400 text-sm sm:text-base max-w-lg">
+              <Text
+                variant="none"
+                className="text-zinc-300 text-sm sm:text-base max-w-lg"
+              >
                 Load or remove deterministic seed documents from Firestore. All
                 operations are ID-scoped — safe alongside real data.
               </Text>

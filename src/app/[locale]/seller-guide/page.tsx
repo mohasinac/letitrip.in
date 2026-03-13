@@ -131,7 +131,7 @@ export default async function SellerGuidePage() {
       {/* Header */}
       <Section className="bg-gradient-to-br from-violet-600 to-indigo-800 text-white py-14 md:py-16 lg:py-20">
         <div className={`${page.container.md} text-center`}>
-          <Heading level={1} className="mb-4 text-white">
+          <Heading level={1} variant="none" className="mb-4 text-white">
             {t("title")}
           </Heading>
           <Text className="text-violet-200 mb-8 max-w-2xl mx-auto">

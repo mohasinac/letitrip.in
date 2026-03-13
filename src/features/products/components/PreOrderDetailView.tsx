@@ -7,7 +7,8 @@
 
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Badge,
   Breadcrumbs,
@@ -33,10 +34,12 @@ import {
 } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useAuth, useWishlistToggle, useMessage } from "@/hooks";
+import { useAuth, useWishlistToggle, useMessage, useRazorpay } from "@/hooks";
 import { useProductDetail } from "../hooks/useProductDetail";
+import { checkoutService, addressService } from "@/services";
 import { formatCurrency, formatDate } from "@/utils";
 import type { ProductDocument } from "@/db/schema";
+import type { Address } from "@/hooks";
 
 const { themed, flex, page, spacing } = THEME_CONSTANTS;
 
@@ -64,10 +67,25 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
   const router = useRouter();
   const t = useTranslations("preOrderDetail");
   const { showSuccess, showError } = useMessage();
+  const { openRazorpay } = useRazorpay();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const productQuery = useProductDetail(id);
-
   const product = productQuery.product;
+
+  const { data: addressesData } = useQuery<Address[]>({
+    queryKey: ["addresses"],
+    queryFn: () => addressService.list(),
+    enabled: !!user,
+  });
+
+  const createPaymentOrderMutation = useMutation({
+    mutationFn: (data: unknown) => checkoutService.createPaymentOrder(data),
+  });
+
+  const verifyDepositMutation = useMutation({
+    mutationFn: (data: unknown) => checkoutService.verifyPreOrderDeposit(data),
+  });
 
   const {
     inWishlist,
@@ -104,6 +122,71 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
     (product?.preOrderDepositPercent && product?.price
       ? Math.round((product.price * product.preOrderDepositPercent) / 100)
       : null);
+
+  const handleReserve = useCallback(async () => {
+    if (!product || !depositAmount) return;
+    const addresses = addressesData ?? [];
+    const address = addresses.find((a) => a.isDefault) ?? addresses[0];
+    if (!address) {
+      showError(t("noAddressError"));
+      router.push(ROUTES.USER.ADDRESSES);
+      return;
+    }
+    setIsProcessing(true);
+    try {
+      const rzpOrder = (await createPaymentOrderMutation.mutateAsync({
+        amount: depositAmount,
+        currency: "INR",
+        receipt: `preorder_${product.id}`,
+      })) as {
+        razorpayOrderId: string;
+        amount: number;
+        currency: string;
+        keyId: string;
+      };
+
+      const paymentResult = await openRazorpay({
+        key: rzpOrder.keyId,
+        amount: rzpOrder.amount,
+        currency: rzpOrder.currency,
+        order_id: rzpOrder.razorpayOrderId,
+        name: "LetItRip",
+        description: `Pre-order deposit for ${product.title}`,
+        prefill: { email: user?.email ?? undefined },
+        theme: { color: "#7c3aed" },
+        handler: () => {},
+      });
+
+      const result = (await verifyDepositMutation.mutateAsync({
+        razorpay_order_id: paymentResult.razorpay_order_id,
+        razorpay_payment_id: paymentResult.razorpay_payment_id,
+        razorpay_signature: paymentResult.razorpay_signature,
+        productId: product.id,
+        addressId: address.id,
+      })) as { orderId: string };
+
+      showSuccess(t("reservationSuccess"));
+      router.push(ROUTES.USER.ORDER_DETAIL(result.orderId));
+    } catch (err: unknown) {
+      const isCancelled =
+        err instanceof Error && err.message === "Payment cancelled by user";
+      if (!isCancelled) showError(t("reservationFailed"));
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [
+    product,
+    depositAmount,
+    addressesData,
+    user,
+    openRazorpay,
+    createPaymentOrderMutation,
+    verifyDepositMutation,
+    showSuccess,
+    showError,
+    router,
+    t,
+  ]);
 
   // Loading skeleton
   if (productQuery.isLoading) {
@@ -422,9 +505,9 @@ export function PreOrderDetailView({ id }: PreOrderDetailViewProps) {
                 <Button
                   variant="primary"
                   className="w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600"
-                  onClick={() =>
-                    showSuccess(t("reservationSuccessPlaceholder"))
-                  }
+                  onClick={handleReserve}
+                  isLoading={isProcessing}
+                  disabled={isProcessing}
                 >
                   {t("reserveNow")}
                 </Button>

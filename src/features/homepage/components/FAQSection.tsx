@@ -44,6 +44,7 @@ export function FAQSection() {
         <div className="text-center mb-8">
           <Heading
             level={2}
+            variant="none"
             className="bg-gradient-to-r from-primary to-cobalt bg-clip-text text-transparent text-3xl md:text-4xl font-bold mb-3"
           >
             {t("title")}
@@ -55,11 +56,11 @@ export function FAQSection() {
           </Text>
         </div>
 
-        {/* Category Tabs — pill group */}
+        {/* Category Tabs — horizontal scroll, underline indicator */}
         <div
           role="tablist"
           aria-label={t("title")}
-          className="flex flex-wrap gap-1 rounded-full bg-zinc-100 dark:bg-slate-800 p-1 mb-8 max-w-max mx-auto"
+          className="flex overflow-x-auto scrollbar-hide gap-0 border-b border-zinc-200 dark:border-slate-700 mb-8 -mx-8 px-8"
         >
           {(
             Object.entries(FAQ_CATEGORIES) as [
@@ -72,13 +73,13 @@ export function FAQSection() {
               role="tab"
               aria-selected={activeCategory === key}
               onClick={() => handleCategoryChange(key)}
-              className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200 ${
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition-all duration-200 ${
                 activeCategory === key
-                  ? "bg-white dark:bg-slate-700 shadow-sm text-zinc-900 dark:text-white"
-                  : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-slate-600"
               }`}
             >
-              <Span>{category.icon}</Span>
+              <Span className="mr-1">{category.icon}</Span>
               {category.label}
             </button>
           ))}

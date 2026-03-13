@@ -239,6 +239,7 @@ export const API_ENDPOINTS = {
   PAYMENT: {
     CREATE_ORDER: "/api/payment/create-order", // POST - Create Razorpay order
     VERIFY: "/api/payment/verify", // POST - Verify payment & place orders
+    PREORDER: "/api/payment/preorder", // POST - Verify deposit & create pre-order
     WEBHOOK: "/api/payment/webhook", // POST - Razorpay webhook events
     EVENT_INIT: "/api/payment/event/init", // POST - Init RTDB payment event node
     OTP_REQUEST: "/api/payment/otp/request", // POST - Check daily limit & allow OTP send

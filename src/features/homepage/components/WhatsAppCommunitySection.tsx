@@ -96,7 +96,10 @@ export function WhatsAppCommunitySection() {
                     </div>
                   ))}
                 </div>
-                <Text className="text-white font-bold text-emerald-100">
+                <Text
+                  variant="none"
+                  className="text-white font-bold text-emerald-100"
+                >
                   <span className="text-xl font-extrabold">
                     {formatNumber(config.memberCount)}
                   </span>{" "}

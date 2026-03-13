@@ -1229,7 +1229,10 @@
     "features": "Features",
     "specifications": "Specifications",
     "deliveryReturns": "Delivery & Returns",
-    "reservationSuccessPlaceholder": "Reservation recorded! Full checkout coming soon."
+    "reservationSuccessPlaceholder": "Reservation recorded! Full checkout coming soon.",
+    "reservationSuccess": "Pre-order placed successfully! Thank you for your deposit.",
+    "reservationFailed": "Payment failed. Please try again.",
+    "noAddressError": "Please add a delivery address before reserving."
   },
   "auctionDetail": {
     "breadcrumbAuctions": "Auctions",

@@ -20,6 +20,10 @@ export const checkoutService = {
   verifyPayment: (data: unknown) =>
     apiClient.post(API_ENDPOINTS.PAYMENT.VERIFY, data),
 
+  /** Verify a Razorpay deposit payment and create a pre-order */
+  verifyPreOrderDeposit: (data: unknown) =>
+    apiClient.post(API_ENDPOINTS.PAYMENT.PREORDER, data),
+
   /**
    * Request server permission to send an OTP.
    * Atomically checks + increments the Firestore daily SMS counter.

@@ -88,6 +88,7 @@ export function WelcomeSection() {
             {/* H1 */}
             <Heading
               level={1}
+              variant="none"
               className="stagger-2 mt-4 font-display text-5xl md:text-7xl lg:text-8xl bg-gradient-to-r from-primary via-cobalt to-secondary bg-clip-text text-transparent leading-tight"
             >
               {h1}

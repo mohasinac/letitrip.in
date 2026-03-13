@@ -60,18 +60,97 @@ description: "Existing utils, helpers, and hooks — check before writing. Rules
 
 **Data fetching — TanStack Query (Stage C ✅ complete)**
 
-For **new** feature hooks, use `useQuery` / `useMutation` directly from `@tanstack/react-query`.
-`useApiQuery` / `useApiMutation` remain as thin adapters for existing callers — do NOT remove them.
+For all feature hooks, use `useQuery` / `useMutation` directly from `@tanstack/react-query`. The old `useApiQuery`/`useApiMutation` adapters have been **deleted** — do not reference them.
+
+### staleTime / gcTime tiers — MANDATORY for every useQuery call
+
+Global defaults in `QueryProvider`: `staleTime: 5 min`, `gcTime: 30 min`, `retry: 1`, `refetchOnWindowFocus: false`, `refetchOnReconnect: false`.
+
+**Always set `staleTime` explicitly** — do NOT rely on the global default because the wrong tier causes unnecessary Firestore reads.
+
+| Data category              | `staleTime`      | `gcTime`         | Examples                                                |
+| -------------------------- | ---------------- | ---------------- | ------------------------------------------------------- |
+| Static config              | `Infinity`       | `Infinity`       | site settings, categories, FAQs, Indian states          |
+| Public listings            | `10 * 60 * 1000` | `30 * 60 * 1000` | products, stores, events, blog posts, homepage sections |
+| User-specific              | `5 * 60 * 1000`  | `15 * 60 * 1000` | orders, cart, wishlist, profile, addresses              |
+| Fast-changing              | `30_000`         | `2 * 60 * 1000`  | notifications, active bids                              |
+| Always fresh (write-check) | `0`              | —                | coupon validation, stock check                          |
 
 ```tsx
-// ✅ Preferred for new hooks
+// ✅ Public listing — 10 min
+const { data } = useQuery({
+  queryKey: ["products", filters],
+  queryFn: () => productService.list(filters),
+  staleTime: 10 * 60 * 1000,
+  gcTime: 30 * 60 * 1000,
+});
+
+// ✅ Static config — Infinity
+const { data } = useQuery({
+  queryKey: ["site-settings"],
+  queryFn: () => siteSettingsService.get(),
+  staleTime: Infinity,
+  gcTime: Infinity,
+});
+
+// ✅ User-specific — guard with enabled
+const { user } = useAuth();
+const { data } = useQuery({
+  queryKey: ["orders", user?.uid],
+  queryFn: () => orderService.listMine(),
+  enabled: !!user, // ← REQUIRED: prevents a read before auth resolves
+  staleTime: 5 * 60 * 1000,
+  gcTime: 15 * 60 * 1000,
+});
+```
+
+### enabled guard — MANDATORY for auth-dependent or param-dependent queries
+
+NEVER omit `enabled` when the query needs a userId, productId, or other runtime param. Firing a query with `undefined` wastes a read and may return wrong data.
+
+```tsx
+// ❌ WRONG — fires with undefined userId
+useQuery({
+  queryKey: ["profile", userId],
+  queryFn: () => profileService.get(userId!),
+});
+
+// ✅ RIGHT
+useQuery({
+  queryKey: ["profile", userId],
+  queryFn: () => profileService.get(userId!),
+  enabled: !!userId,
+});
+```
+
+### SSR initialData — no client fetch on first load
+
+When a page passes `initialData` from an RSC, set `staleTime` to the same tier so the client does NOT immediately re-fetch the data the server just loaded.
+
+```tsx
+// In the RSC page:
+const products = await productRepository.list(sieve);
+return <ProductsView initialData={products} />;
+
+// In the client view:
+const { data } = useQuery({
+  queryKey: ["products", filters],
+  queryFn: () => productService.list(filters),
+  initialData: props.initialData,
+  staleTime: 10 * 60 * 1000, // ← client won't refetch until 10 min pass
+});
+```
+
+```tsx
+// ✅ Full hook example
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { productService } from "@/services";
 
 const { data, isLoading } = useQuery({
   queryKey: ["products", filters],
   queryFn: () => productService.list(filters),
-  staleTime: 5 * 60 * 1000,
+  staleTime: 10 * 60 * 1000,
+  gcTime: 30 * 60 * 1000,
 });
 
 // Invalidate after mutation
@@ -101,14 +180,12 @@ const {
 
 | Need                         | Hook                                                                                                                                                                 |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GET data (new hooks)         | `useQuery(options)` from `@tanstack/react-query`; queryFn must call a service                                                                                        |
-| GET data (existing callers)  | `useApiQuery({ queryKey, queryFn, ... })` — TanStack adapter, backward compatible                                                                                    |
-| POST/PUT/DELETE (new hooks)  | `useMutation(options)` from `@tanstack/react-query`; mutationFn must call a service                                                                                  |
-| POST/PUT/DELETE (existing)   | `useApiMutation({ mutationFn, ... })` — TanStack adapter, backward compatible                                                                                        |
-| Invalidate cache             | `useQueryClient()` → `queryClient.invalidateQueries({ queryKey })` OR `invalidateQueries(key)` from `@/hooks`                                                        |
+| GET data                     | `useQuery(options)` from `@tanstack/react-query`; queryFn must call a service                                                                                        |
+| POST/PUT/DELETE mutations    | `useMutation(options)` from `@tanstack/react-query`; mutationFn must be a Server Action from `@/actions`                                                             |
+| Invalidate cache             | `useQueryClient()` → `queryClient.invalidateQueries({ queryKey })`                                                                                                   |
 | Auth state                   | `useAuth()` / `useSession()`                                                                                                                                         |
 | Login / Register             | `useLogin()` / `useRegister()`                                                                                                                                       |
-| Google / Apple OAuth         | `useGoogleLogin()` / `useAppleLogin()`                                                                                                                               |
+| Google OAuth                 | `useGoogleLogin()`                                                                                                                                                   |
 | Logout                       | `useLogout()`                                                                                                                                                        |
 | Email verification           | `useVerifyEmail()` / `useResendVerification()`                                                                                                                       |
 | Forgot / Reset password      | `useForgotPassword()` / `useResetPassword()`                                                                                                                         |
@@ -116,7 +193,7 @@ const {
 | Profile stats                | `useProfileStats()`                                                                                                                                                  |
 | Public profile               | `usePublicProfile(uid)`                                                                                                                                              |
 | Become seller                | `useBecomeSeller()`                                                                                                                                                  |
-| Form state                   | `useForm({ resolver: zodResolver(schema), defaultValues })` — react-hook-form via `@/hooks`                                                                          |
+| Form state                   | `useForm({ resolver: zodResolver(schema), defaultValues })` — import directly from `react-hook-form`                                                                 |
 | Address form state           | `useAddressForm(initialData?)`                                                                                                                                       |
 | Address list                 | `useAddresses()`                                                                                                                                                     |
 | Single address               | `useAddress(id)`                                                                                                                                                     |

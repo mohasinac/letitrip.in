@@ -17,7 +17,7 @@
 
 ## Stack
 
-Next.js 16.1.1 (App Router) · TypeScript · Tailwind CSS · Firebase (Auth, Firestore, Storage, Realtime DB) · Resend · TanStack Query v5 · react-hook-form v7 · Server Actions · React Context + hooks
+Next.js 16.1.6 (App Router) · React 19.2 · TypeScript · Tailwind CSS · Firebase (Auth, Firestore, Storage, Realtime DB) · Resend · TanStack Query v5 · react-hook-form v7 · Server Actions · React Context + hooks
 
 **Workspace packages** (`packages/`): `@lir/core` (Logger, Queue, StorageManager, EventBus, CacheManager) · `@lir/http` (ApiClient, apiClient singleton) · `@lir/next` (IAuthVerifier, createApiErrorHandler) · `@lir/react` (10 UI hooks) · `@lir/ui` (Semantic + Typography primitives with inlined tokens)  
 Linked via `tsconfig` path aliases + `transpilePackages` — **not** npm install.
@@ -78,7 +78,7 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 - **Delete old code when replacing** — no `@deprecated` stubs, no dual implementations
 - **Build must pass**: `npx tsc --noEmit` → `npm run build` before handing back
 
-## Migration State (as of 2026-03-11)
+## Migration State (as of 2026-03-13)
 
 | Stage | Description | Status |
 |-------|-------------|--------|

@@ -74,13 +74,17 @@ function StatItem({
       {/* Stat value */}
       <Heading
         level={2}
-        className="font-display text-4xl md:text-5xl bg-gradient-to-b from-primary to-cobalt/80 bg-clip-text text-transparent mb-1"
+        variant="none"
+        className="font-display text-4xl md:text-5xl text-white mb-1"
       >
         {value}
       </Heading>
 
       {/* Label */}
-      <Text className="text-zinc-400 text-sm uppercase tracking-widest">
+      <Text
+        variant="none"
+        className="text-white/60 text-sm uppercase tracking-widest"
+      >
         {label}
       </Text>
     </div>

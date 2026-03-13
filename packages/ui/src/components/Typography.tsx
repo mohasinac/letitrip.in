@@ -35,7 +35,7 @@ const UI_THEME = {
 
 interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
   level?: 1 | 2 | 3 | 4 | 5 | 6;
-  variant?: "primary" | "secondary" | "muted";
+  variant?: "primary" | "secondary" | "muted" | "none";
   children: React.ReactNode;
 }
 
@@ -62,6 +62,7 @@ export function Heading({
     primary: themed.textPrimary,
     secondary: themed.textSecondary,
     muted: themed.textMuted,
+    none: "",
   };
 
   return (
@@ -77,7 +78,7 @@ export function Heading({
 // ─── Text ─────────────────────────────────────────────────────────────────────
 
 interface TextProps extends React.HTMLAttributes<HTMLParagraphElement> {
-  variant?: "primary" | "secondary" | "muted" | "error" | "success";
+  variant?: "primary" | "secondary" | "muted" | "error" | "success" | "none";
   size?: "xs" | "sm" | "base" | "lg" | "xl";
   weight?: "normal" | "medium" | "semibold" | "bold";
   children: React.ReactNode;
@@ -114,6 +115,7 @@ export function Text({
     muted: themed.textMuted,
     error: themed.textError,
     success: themed.textSuccess,
+    none: "",
   };
 
   return (

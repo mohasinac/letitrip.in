@@ -55,7 +55,7 @@ export default async function TrackOrderPage() {
       {/* Header */}
       <Section className="bg-gradient-to-br from-indigo-600 to-violet-700 text-white py-14 md:py-16 lg:py-20">
         <div className={`${page.container.sm} text-center`}>
-          <Heading level={1} className="mb-4 text-white">
+          <Heading level={1} variant="none" className="mb-4 text-white">
             {t("title")}
           </Heading>
           <Text className="text-indigo-200">{t("subtitle")}</Text>

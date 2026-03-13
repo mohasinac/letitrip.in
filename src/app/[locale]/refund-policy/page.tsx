@@ -82,7 +82,7 @@ export default async function RefundPolicyPage() {
       {/* Header */}
       <Section className="bg-gradient-to-br from-emerald-700 to-teal-900 text-white py-14 md:py-16 lg:py-20">
         <div className={`${page.container.sm}`}>
-          <Heading level={1} className="mb-3 text-white">
+          <Heading level={1} variant="none" className="mb-3 text-white">
             {t("title")}
           </Heading>
           <Text className="text-emerald-200">{t("lastUpdated")}</Text>
