@@ -67,7 +67,7 @@ export const usersSeedData: Partial<UserDocument>[] = [
       showWishlist: true,
       bio: "Tech enthusiast",
       location: "Mumbai, India",
-      website: "https://johndoe.com",
+      website: "https://johndoe.example.com",
       socialLinks: {
         twitter: "https://twitter.com/johndoe",
         instagram: "https://instagram.com/johndoe",

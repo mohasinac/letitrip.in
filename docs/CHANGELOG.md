@@ -6,6 +6,28 @@ All notable changes to this project are documented here.
 
 ## [Unreleased] — 2026-03-14
 
+### Seed Data — PII Fix, Link Cleanup & Product Videos
+
+Updated seed data to fix PII inconsistencies, sanitize external links, and add video media to products.
+
+**PII fixes (`src/db/seed-data/orders-seed-data.ts`):**
+
+- Fixed 9 `userName` mismatches where order names diverged from user `displayName`:
+  - "Haruto Yamada" → "John Doe" (3 orders for `user-john-doe-johndoe`)
+  - "Sakura Tanaka" → "Jane Smith" (3 orders for `user-jane-smith-janes`)
+  - "Ryuu Chen" → "Mike Johnson" (3 orders for `user-mike-johnson-mikejohn`)
+- Fixed stale `productTitle`: "Embroidered Anarkali Kurta Set" → "Sailor Moon Neo Queen Serenity Cosplay Dress Set"
+
+**Link cleanup (`src/db/seed-data/users-seed-data.ts`):**
+
+- Changed `johndoe.com` → `johndoe.example.com` (RFC 2606 reserved domain for test data)
+
+**Product videos (`src/db/seed-data/products-seed-data.ts`):**
+
+- Added `video` field to 8 products across all 3 sellers (FigureVault JP, AnimeCraft Apparel, OtakuShelf Co)
+- Videos use Google public sample URLs (`commondatastorage.googleapis.com/gtv-videos-bucket/sample/`)
+- 2 products exercise `trimStart`/`trimEnd` for trim-path test coverage
+
 ### Admin Hooks & Views Refactoring
 
 Systematic refactoring to eliminate duplicated boilerplate across admin list hooks and views.
