@@ -7,7 +7,7 @@
  * with rating filter, sort, and search — all URL-driven via useUrlTable.
  */
 
-import { Suspense, useCallback, useMemo } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
@@ -50,6 +50,7 @@ function ReviewsListContent({
   const sortParam = table.get("sorts") || "-rating";
   const ratingFilter = table.get("rating");
   const brandFilter = table.get("brand");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const viewMode = (table.get("view") || "grid") as "grid" | "list";
 
   // Server-side: rating filter + sort. Client-side: search + pagination over fetched set.
@@ -219,6 +220,9 @@ function ReviewsListContent({
                 { key: "rating", header: t("filterRating") },
                 { key: "createdAt", header: t("colDate") },
               ]}
+              selectable
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
               showViewToggle
               showTableView={false}
               viewMode={viewMode}

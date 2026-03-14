@@ -7,15 +7,19 @@
  * the store slug to avoid clashes between stores.
  *
  * Rules enforced here:
- *  - Requires role "seller" (not admin)
- *  - A seller can only update/delete their OWN coupons
+ *  - Requires role "seller" or "admin"
+ *  - A seller can only update/delete their OWN coupons (admin can manage any)
  *  - Pre-order products are never eligible (enforced at validation time)
  *  - Auction-only coupons are marked with applicableToAuctions = true
  */
 
 import { z } from "zod";
 import { requireRole, requireAuth } from "@/lib/firebase/auth-server";
-import { couponsRepository, storeRepository } from "@/repositories";
+import {
+  couponsRepository,
+  storeRepository,
+  userRepository,
+} from "@/repositories";
 import { serverLogger } from "@/lib/server-logger";
 import { rateLimitByIdentifier, RateLimitPresets } from "@/lib/security";
 import {
@@ -90,7 +94,7 @@ export type SellerUpdateCouponInput = z.infer<typeof sellerUpdateCouponSchema>;
 export async function sellerCreateCouponAction(
   input: SellerCreateCouponInput,
 ): Promise<CouponDocument> {
-  const user = await requireRole(["seller"]);
+  const user = await requireRole(["seller", "admin"]);
 
   const rl = await rateLimitByIdentifier(
     `seller-coupon:create:${user.uid}`,
@@ -176,7 +180,8 @@ export async function sellerUpdateCouponAction(
   if (!existing) throw new NotFoundError("Coupon not found");
 
   // Sellers can only update their own coupons
-  if (existing.sellerId !== user.uid)
+  const profile = await userRepository.findById(user.uid);
+  if (profile?.role !== "admin" && existing.sellerId !== user.uid)
     throw new AuthorizationError(
       "You do not have permission to update this coupon.",
     );
@@ -228,7 +233,8 @@ export async function sellerDeleteCouponAction(id: string): Promise<void> {
   const existing = await couponsRepository.findById(id);
   if (!existing) throw new NotFoundError("Coupon not found");
 
-  if (existing.sellerId !== user.uid)
+  const profile = await userRepository.findById(user.uid);
+  if (profile?.role !== "admin" && existing.sellerId !== user.uid)
     throw new AuthorizationError(
       "You do not have permission to delete this coupon.",
     );

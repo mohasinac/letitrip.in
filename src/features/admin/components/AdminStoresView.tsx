@@ -63,6 +63,7 @@ export function AdminStoresView() {
 
   const searchTerm = table.get("q");
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [confirmState, setConfirmState] = useState<ConfirmState>({
     open: false,
     title: "",
@@ -244,6 +245,9 @@ export function AdminStoresView() {
           keyExtractor={(s) => s.uid}
           loading={isLoading}
           emptyMessage={t("noStores")}
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           externalPagination
           showViewToggle
           viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}

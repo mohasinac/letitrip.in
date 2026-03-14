@@ -130,9 +130,9 @@ export const THEME_CONSTANTS = {
     sidebarWidth: "w-80",
     bottomNavHeight: "h-14",
     // Content width - consistent across all sections
-    maxContentWidth: "max-w-7xl",
+    maxContentWidth: "max-w-[1920px]",
     // Container for header/nav elements - matches content width
-    containerWidth: "max-w-7xl",
+    containerWidth: "max-w-[1920px]",
     contentPadding: "px-4 md:px-6 lg:px-8",
     navPadding: "px-4 sm:px-6 lg:px-8",
     titleBarBg:
@@ -229,7 +229,7 @@ export const THEME_CONSTANTS = {
     caption: "text-xs text-zinc-500 dark:text-zinc-400",
     overline:
       "text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400",
-    // Standard headings (moderated scale) — font-display uses Bangers for anime aesthetic
+    // Standard headings (moderated scale) — font-display uses Poppins
     h1: "text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight font-display",
     h2: "text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight font-display",
     h3: "text-xl md:text-2xl lg:text-3xl font-bold tracking-tight font-display",

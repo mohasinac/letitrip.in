@@ -29,7 +29,7 @@
 
 import React, { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Tag, X } from "lucide-react";
+import { Tag, X, PanelLeft } from "lucide-react";
 import { THEME_CONSTANTS } from "@/constants";
 import type { UserRole } from "@/types/auth";
 import type { AvatarMetadata } from "@/db/schema";
@@ -80,6 +80,10 @@ export interface TitleBarLayoutProps {
    * Pass `<MainNavbar inline />` for the slim double-nav pattern.
    */
   navSlot?: React.ReactNode;
+  /** Whether a dashboard section has registered a navigation drawer. */
+  hasDashboardNav?: boolean;
+  /** Opens the registered dashboard navigation drawer. */
+  onOpenDashboardNav?: () => void;
   id?: string;
 }
 
@@ -101,6 +105,8 @@ export function TitleBarLayout({
   navSlot,
   isDark = false,
   onToggleTheme,
+  hasDashboardNav = false,
+  onOpenDashboardNav,
   id = "title-bar",
 }: TitleBarLayoutProps) {
   const { colors, layout, zIndex, flex } = THEME_CONSTANTS;
@@ -309,6 +315,21 @@ export function TitleBarLayout({
           <div className="hidden md:block">
             <LocaleSwitcher />
           </div>
+
+          {/* Dashboard Nav — visible only when a dashboard section is active */}
+          {hasDashboardNav && onOpenDashboardNav && (
+            <Button
+              variant="ghost"
+              onClick={onOpenDashboardNav}
+              className={`p-2 md:p-2.5 rounded-xl transition-colors ${THEME_CONSTANTS.colors.iconButton.onPrimary}`}
+              aria-label={tNav("dashboard")}
+            >
+              <PanelLeft
+                className={`w-5 h-5 md:w-6 md:h-6 ${THEME_CONSTANTS.colors.icon.titleBar}`}
+                strokeWidth={1.5}
+              />
+            </Button>
+          )}
 
           {/* Hamburger Menu */}
           <Button

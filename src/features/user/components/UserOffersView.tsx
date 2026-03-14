@@ -73,6 +73,7 @@ export function UserOffersView() {
     onError: (err: Error) => showError(err.message ?? t("actionFailed")),
   });
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [pendingId, setPendingId] = useState<string | null>(null);
 
   const columns: DataTableColumn<OfferDocument>[] = [
@@ -220,6 +221,9 @@ export function UserOffersView() {
           columns={columns as DataTableColumn<Record<string, any>>[]}
           data={offers}
           keyExtractor={(o) => o.id}
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
         />
       )}
     </div>

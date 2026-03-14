@@ -111,8 +111,7 @@ module.exports = {
       fontFamily: {
         display: [
           "var(--font-display)",
-          "Bangers",
-          "Impact",
+          "Poppins",
           "ui-sans-serif",
           "system-ui",
           "sans-serif",

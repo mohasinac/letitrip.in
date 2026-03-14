@@ -48,17 +48,17 @@ export function DashboardStatsCard({
 }: DashboardStatsCardProps) {
   const containerClass =
     variant === "dark"
-      ? "rounded-2xl p-5 bg-slate-900 border border-white/5 hover:border-white/10 transition-all duration-200"
+      ? "rounded-2xl p-5 bg-zinc-100 dark:bg-slate-900 border border-zinc-200 dark:border-white/5 hover:border-zinc-300 dark:hover:border-white/10 transition-all duration-200"
       : "rounded-2xl p-5 bg-white dark:bg-slate-900 border border-zinc-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200";
 
   const labelClass =
     variant === "dark"
-      ? "text-xs font-medium uppercase tracking-wide text-zinc-400 mb-1"
+      ? "text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-1"
       : "text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-1";
 
   const valueClass =
     variant === "dark"
-      ? "font-display text-3xl font-bold text-white truncate"
+      ? "font-display text-3xl font-bold text-zinc-900 dark:text-white truncate"
       : "font-display text-3xl font-bold text-zinc-900 dark:text-white truncate";
 
   const content = (

@@ -48,6 +48,7 @@ export function AdminBidsView({ action }: Props) {
     { key: "cancelled", label: t("filterCancelled") },
   ];
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedBid, setSelectedBid] = useState<BidDocument | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -158,6 +159,9 @@ export function AdminBidsView({ action }: Props) {
             error ? ERROR_MESSAGES.BID.FETCH_FAILED : t("emptySubtitle")
           }
           keyExtractor={(bid: BidDocument) => bid.id}
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           externalPagination
           showViewToggle
           viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}

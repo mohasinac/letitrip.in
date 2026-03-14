@@ -107,7 +107,14 @@ export async function requireRole(
   const user = await requireAuth();
 
   const roles = Array.isArray(role) ? role : [role];
-  const userRole = user.role || "user";
+
+  // Custom claims may not contain role — fetch from Firestore as source of truth
+  let userRole = (user.role as string | undefined) || undefined;
+  if (!userRole) {
+    const { userRepository } = await import("@/repositories");
+    const profile = await userRepository.findById(user.uid);
+    userRole = profile?.role || "user";
+  }
 
   if (!roles.includes(userRole)) {
     throw new AuthorizationError(ERROR_MESSAGES.AUTH.INSUFFICIENT_PERMISSIONS);

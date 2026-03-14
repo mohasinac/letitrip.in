@@ -19,7 +19,7 @@ import { AuthorizationError, ValidationError } from "@/lib/errors";
 import { serverLogger } from "@/lib/server-logger";
 import { z } from "zod";
 import { timingSafeEqual } from "crypto";
-import { addressRepository } from "@/repositories";
+import { addressRepository, userRepository } from "@/repositories";
 import { sendEmail } from "@/lib/email";
 import { resolveDate } from "@/utils";
 import {
@@ -190,7 +190,9 @@ export async function grantCheckoutConsentViaSmsAction(
   const parsed = sendSchema.safeParse({ addressId });
   if (!parsed.success) throw new ValidationError("Invalid input");
 
-  if (!user.phoneNumber) {
+  const profile = await userRepository.findById(user.uid);
+  const userPhone = profile?.phoneNumber ?? user.phone_number;
+  if (!userPhone) {
     throw new ValidationError("No phone number registered on your account.");
   }
 
@@ -199,7 +201,7 @@ export async function grantCheckoutConsentViaSmsAction(
 
   // Security: prevent calling this action for third-party phone numbers.
   const normalizePhone = (s: string) => s.replace(/[^0-9]/g, "").slice(-10);
-  if (normalizePhone(address.phone) !== normalizePhone(user.phoneNumber)) {
+  if (normalizePhone(address.phone) !== normalizePhone(userPhone)) {
     throw new ValidationError(
       "Phone number does not match the shipping address. Please use email verification for this address.",
     );

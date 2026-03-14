@@ -3,6 +3,7 @@
 import { SITE_CONFIG, THEME_CONSTANTS } from "@/constants";
 import { useAuth, useCartCount } from "@/hooks";
 import { NotificationBell } from "@/components";
+import { useDashboardNav } from "@/contexts";
 import { TitleBarLayout } from "./TitleBarLayout";
 
 /**
@@ -35,6 +36,8 @@ interface TitleBarProps {
 export default function TitleBar(props: TitleBarProps) {
   const { user } = useAuth();
   const cartCount = useCartCount();
+  const { hasNav: hasDashboardNav, openNav: openDashboardNav } =
+    useDashboardNav();
   const { isDark, onToggleTheme, ...rest } = props;
 
   return (
@@ -51,6 +54,8 @@ export default function TitleBar(props: TitleBarProps) {
       notificationSlot={<>{user && <NotificationBell />}</>}
       isDark={isDark}
       onToggleTheme={onToggleTheme}
+      hasDashboardNav={hasDashboardNav}
+      onOpenDashboardNav={openDashboardNav}
     />
   );
 }

@@ -48,6 +48,7 @@ export function AdminPayoutsView() {
   const paymentMethodFilter = table.get("paymentMethod");
   const searchTerm = table.get("q");
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedPayout, setSelectedPayout] = useState<PayoutDocument | null>(
     null,
   );
@@ -221,6 +222,9 @@ export function AdminPayoutsView() {
           loading={isLoading}
           emptyMessage={error ? ERROR_MESSAGES.PAYOUT.FETCH_FAILED : t("empty")}
           keyExtractor={(p: PayoutDocument) => p.id}
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           showViewToggle
           viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}

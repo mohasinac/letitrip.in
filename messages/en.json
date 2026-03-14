@@ -278,8 +278,11 @@
     "blog": "Blog",
     "cart": "Cart",
     "featureFlags": "Feature Flags",
+    "notifications": "Notifications",
     "todayDeals": "Today's Deals",
-    "sellOnLet": "Sell on LetItRip"
+    "sellOnLet": "Sell on LetItRip",
+    "analytics": "Analytics",
+    "coupons": "Coupons"
   },
   "auth": {
     "login": {

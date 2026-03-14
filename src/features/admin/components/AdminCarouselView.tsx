@@ -44,6 +44,7 @@ export function AdminCarouselView({ action }: Props) {
     deleteMutation,
   } = useAdminCarousel();
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingSlide, setEditingSlide] = useState<CarouselSlide | null>(null);
   const [drawerMode, setDrawerMode] = useState<DrawerMode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -238,6 +239,9 @@ export function AdminCarouselView({ action }: Props) {
             keyExtractor={(slide) => slide.id}
             onRowClick={(slide) => handleEdit(slide)}
             actions={actions}
+            selectable
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
             showViewToggle
             viewMode={viewMode}
             onViewModeChange={setViewMode}

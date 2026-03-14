@@ -51,6 +51,7 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
     deleteMutation,
   } = useAdminSections();
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingSection, setEditingSection] = useState<HomepageSection | null>(
     null,
   );
@@ -245,6 +246,9 @@ export function AdminSectionsView({ action }: AdminSectionsViewProps) {
             keyExtractor={(section) => section.id}
             onRowClick={(section) => handleEdit(section)}
             actions={actions}
+            selectable
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
             showViewToggle
             viewMode={viewMode}
             onViewModeChange={setViewMode}

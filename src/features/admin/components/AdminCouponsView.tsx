@@ -85,6 +85,7 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
     ],
   );
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [drawerMode, setDrawerMode] = useState<DrawerMode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedCoupon, setSelectedCoupon] =
@@ -247,6 +248,9 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
             error ? ERROR_MESSAGES.COUPON.FETCH_FAILED : t("noCoupons")
           }
           keyExtractor={(c: CouponDocument) => c.id}
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           externalPagination
           showViewToggle
           viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}

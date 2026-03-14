@@ -28,3 +28,6 @@ export type {
   BottomBulkConfig,
   BottomActionsState,
 } from "./BottomActionsContext";
+
+// Dashboard Nav Context
+export { DashboardNavProvider, useDashboardNav } from "./DashboardNavContext";

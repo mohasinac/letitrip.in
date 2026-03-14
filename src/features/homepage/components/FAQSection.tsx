@@ -39,7 +39,7 @@ export function FAQSection() {
 
   return (
     <Section className={`p-8 ${THEME_CONSTANTS.themed.bgSecondary}`}>
-      <div className="w-full">
+      <div className="w-full max-w-7xl mx-auto">
         {/* Section Header — gradient heading */}
         <div className="text-center mb-8">
           <Heading

@@ -80,11 +80,13 @@ export async function becomeSellerAction(): Promise<BecomeSellerActionResult> {
   if (!rl.success)
     throw new AuthorizationError("Too many requests. Please slow down.");
 
-  if (user.role === "seller" || user.role === "admin") {
+  const profile = await userRepository.findById(user.uid);
+  if (profile?.role === "seller" || profile?.role === "admin") {
     return {
       alreadySeller: true,
       storeStatus:
-        (user.storeStatus as "pending" | "approved" | "rejected") ?? "pending",
+        (profile.storeStatus as "pending" | "approved" | "rejected") ??
+        "pending",
     };
   }
 
@@ -853,7 +855,8 @@ export async function sellerUpdateProductAction(
 
   const existing = await productRepository.findById(id);
   if (!existing) throw new NotFoundError("Product not found");
-  if (existing.sellerId !== user.uid)
+  const profile = await userRepository.findById(user.uid);
+  if (profile?.role !== "admin" && existing.sellerId !== user.uid)
     throw new AuthorizationError("You do not own this product");
 
   const parsed = productUpdateSchema.partial().safeParse(input);
@@ -876,7 +879,8 @@ export async function sellerDeleteProductAction(id: string): Promise<void> {
 
   const existing = await productRepository.findById(id);
   if (!existing) throw new NotFoundError("Product not found");
-  if (existing.sellerId !== user.uid)
+  const profile = await userRepository.findById(user.uid);
+  if (profile?.role !== "admin" && existing.sellerId !== user.uid)
     throw new AuthorizationError("You do not own this product");
 
   await productRepository.delete(id);

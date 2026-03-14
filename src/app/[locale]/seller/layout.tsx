@@ -1,9 +1,10 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { ProtectedRoute, Button, AutoBreadcrumbs, Main } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { SellerSidebar } from "@/features/seller";
+import { useDashboardNav } from "@/contexts";
 import { useTranslations } from "next-intl";
 import { Menu } from "lucide-react";
 
@@ -11,19 +12,20 @@ interface SellerLayoutProps {
   children: ReactNode;
 }
 
-/**
- * Seller Layout
- *
- * Sidebar-based layout for all seller section pages.
- * Desktop: fixed w-56 sidebar.
- * Mobile: Drawer triggered by hamburger in the top bar.
- */
 export default function SellerLayout({ children }: SellerLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { registerNav, unregisterNav } = useDashboardNav();
   const t = useTranslations("nav");
 
+  const openMobile = useCallback(() => setMobileOpen(true), []);
+
+  useEffect(() => {
+    registerNav(openMobile);
+    return () => unregisterNav();
+  }, [registerNav, unregisterNav, openMobile]);
+
   return (
-    <ProtectedRoute requireAuth requireRole="seller">
+    <ProtectedRoute requireAuth requireRole={["seller", "admin"]}>
       <div className="flex h-screen overflow-hidden bg-white dark:bg-slate-950">
         <SellerSidebar
           mobileOpen={mobileOpen}

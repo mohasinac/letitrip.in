@@ -6,6 +6,74 @@ All notable changes to this project are documented here.
 
 ## [Unreleased] — 2026-03-14
 
+### Dashboard Nav Context & TitleBar Integration
+
+Added a `DashboardNavContext` so the global TitleBar can open dashboard sidebar drawers (admin, seller, user) via a unified button instead of each section having its own hamburger.
+
+**New files:**
+
+- `src/contexts/DashboardNavContext.tsx` — `DashboardNavProvider` + `useDashboardNav` hook; dashboard layouts register/unregister an opener callback, TitleBar reads it
+- `scripts/pull-env-from-vercel.ps1`, `scripts/sync-env-to-vercel.ps1` — Vercel env sync helper scripts
+
+**Layout integration:**
+
+- `src/app/[locale]/layout.tsx` — Wrapped children with `DashboardNavProvider`
+- `src/app/[locale]/admin/layout.tsx` — Registers admin sidebar opener via `useDashboardNav`; light-mode-aware bg classes
+- `src/app/[locale]/seller/layout.tsx` — Registers seller sidebar opener; changed `requireRole` to allow `["seller", "admin"]`
+- `src/app/[locale]/user/layout.tsx` — Registers user sidebar opener via `useDashboardNav`
+- `src/components/layout/TitleBar.tsx` — Reads `hasDashboardNav` / `openDashboardNav` from context
+- `src/components/layout/TitleBarLayout.tsx` — New `PanelLeft` icon button shown when a dashboard nav is registered
+- `src/contexts/index.ts` — Barrel exports for `DashboardNavProvider` / `useDashboardNav`
+
+### Display Font: Bangers → Poppins
+
+Replaced the Bangers display font with Poppins for a cleaner, more professional look.
+
+- `src/app/layout.tsx` — Swapped `Bangers` import for `Poppins` (weights 400–800)
+- `tailwind.config.js` — Font-display fallback stack updated to `Poppins`
+- `src/constants/theme.ts` — Updated heading comment to reference Poppins
+
+### Widescreen Layout (max-w-7xl → max-w-[1920px])
+
+Expanded content max-width from `max-w-7xl` (80rem) to `max-w-[1920px]` for widescreen displays.
+
+- `src/constants/theme.ts` — `maxContentWidth` and `containerWidth` changed to `max-w-[1920px]`
+- Homepage sections (`AdvertisementBanner`, `CustomerReviewsSection`, `FAQSection`, `WhatsAppCommunitySection`, `ReviewsListView`) — Added `max-w-7xl mx-auto` inner containers so content doesn't stretch on ultra-wide
+
+### Admin Theme — Light Mode Support
+
+Admin sidebar, top bar, stats card, and layout backgrounds now support light mode via `dark:` prefixed classes.
+
+- `src/features/admin/components/AdminSidebar.tsx` — Sidebar bg `bg-white dark:bg-slate-950`, border/text classes
+- `src/features/admin/components/AdminTopBar.tsx` — Header bg/border light-mode classes
+- `src/components/DashboardStatsCard.tsx` — Dark variant uses light bg in light mode
+- `src/app/[locale]/admin/layout.tsx` — Outer div and main bg light-mode aware
+
+### Auth: Firestore Profile as Source of Truth
+
+Server actions now fetch user profiles from Firestore instead of relying solely on Firebase Auth custom claims for role, displayName, email, and phone.
+
+- `src/lib/firebase/auth-server.ts` — `requireRole()` falls back to Firestore `userRepository.findById()` when custom claim `role` is absent
+- `src/actions/bid.actions.ts` — `placeBidAction` reads `displayName`/`email` from Firestore profile
+- `src/actions/checkout.actions.ts` — `grantCheckoutConsentViaSmsAction` reads phone from Firestore profile
+- `src/actions/offer.actions.ts` — `makeOfferAction` reads buyer name/email from Firestore profile
+- `src/actions/seller.actions.ts` — `becomeSellerAction` checks role from profile; `sellerUpdateProductAction`/`sellerDeleteProductAction` allow admin override
+- `src/actions/seller-coupon.actions.ts` — Coupon actions allow `admin` role; update/delete allow admin to manage any seller's coupons
+
+### DataTable Selection Support
+
+Added `selectable` / `selectedIds` / `onSelectionChange` props wiring to 16 admin/seller/user views and `ReviewsListView`.
+
+- `AdminBidsView`, `AdminBlogView`, `AdminCarouselView`, `AdminCategoriesView`, `AdminCouponsView`, `AdminFaqsView`, `AdminOrdersView`, `AdminPayoutsView`, `AdminProductsView`, `AdminReviewsView`, `AdminSectionsView`, `AdminSessionsManager`, `AdminStoresView`, `AdminUsersView`, `AdminEventEntriesView`, `SellerAuctionsView`, `SellerOffersView`, `SellerPayoutHistoryTable`, `UserOffersView`, `ReviewsListView`
+
+### CheckoutView — Hooks-Before-Early-Return Fix
+
+- `src/features/cart/components/CheckoutView.tsx` — Moved `useCallback` hooks (`handleVerified`, `handleVerifyClose`) and derived values above early returns to comply with React's rules of hooks; non-hook logic (`codDepositPercent`, `depositAmount`, `selectedAddress`, `handleNext`) relocated below the loading/empty guards
+
+### i18n — New Nav Keys
+
+- `messages/en.json` — Added `nav.notifications`, `nav.analytics`, `nav.coupons`
+
 ### Seed Data — PII Fix, Link Cleanup & Product Videos
 
 Updated seed data to fix PII inconsistencies, sanitize external links, and add video media to products.

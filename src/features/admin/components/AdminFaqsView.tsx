@@ -95,6 +95,7 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
     : ((data as FAQsListResponse)?.items ?? []);
   const faqMeta = Array.isArray(data) ? null : (data as FAQsListResponse);
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingFAQ, setEditingFAQ] = useState<Partial<FAQ> | null>(null);
   const [drawerMode, setDrawerMode] = useState<FaqDrawerMode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -309,6 +310,9 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
               keyExtractor={(faq) => faq.id}
               onRowClick={handleEdit}
               actions={actions}
+              selectable
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
               externalPagination
               showViewToggle
               viewMode={

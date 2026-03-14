@@ -73,6 +73,7 @@ export function AdminBlogView() {
   const sortParam = table.get("sort") || "-createdAt";
   const pageParam = table.getNumber("page", 1);
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogPostDocument | null>(null);
   const [formData, setFormData] = useState<BlogFormData>(DEFAULT_FORM);
@@ -322,6 +323,9 @@ export function AdminBlogView() {
           loading={isLoading}
           emptyMessage={t("empty")}
           emptyTitle={t("emptySubtitle")}
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           showViewToggle
           viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}
           onViewModeChange={(mode) => table.set("view", mode)}

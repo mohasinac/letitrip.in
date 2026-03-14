@@ -36,7 +36,7 @@ export function CustomerReviewsSection({
   if (isLoading) {
     return (
       <Section className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}>
-        <div className="w-full">
+        <div className="w-full max-w-7xl mx-auto">
           <div
             className={`h-8 ${THEME_CONSTANTS.skeleton.base} mb-8 max-w-xs mx-auto`}
           />
@@ -64,7 +64,7 @@ export function CustomerReviewsSection({
       ref={sectionRef}
       className={`p-8 ${THEME_CONSTANTS.themed.bgPrimary}`}
     >
-      <div className="w-full">
+      <div className="w-full max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-10">
           <Heading

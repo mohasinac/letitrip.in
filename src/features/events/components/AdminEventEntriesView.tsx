@@ -31,6 +31,7 @@ export function AdminEventEntriesView({ eventId }: AdminEventEntriesViewProps) {
   const table = useUrlTable({
     defaults: { pageSize: "25", sort: "-submittedAt" },
   });
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [reviewEntry, setReviewEntry] = useState<EventEntryDocument | null>(
     null,
   );
@@ -101,6 +102,9 @@ export function AdminEventEntriesView({ eventId }: AdminEventEntriesViewProps) {
           keyExtractor={(e) => e.id}
           loading={isLoading}
           emptyMessage={tEmpty("noData")}
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           externalPagination
         />
 

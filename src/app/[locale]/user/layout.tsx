@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ReactNode } from "react";
 import { Menu } from "lucide-react";
 import { UserSidebar } from "@/features/user";
 import { ProtectedRoute, Main } from "@/components";
+import { useDashboardNav } from "@/contexts";
 
 interface UserLayoutProps {
   children: ReactNode;
@@ -12,6 +13,14 @@ interface UserLayoutProps {
 
 export default function UserLayout({ children }: UserLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { registerNav, unregisterNav } = useDashboardNav();
+
+  const openMobile = useCallback(() => setMobileOpen(true), []);
+
+  useEffect(() => {
+    registerNav(openMobile);
+    return () => unregisterNav();
+  }, [registerNav, unregisterNav, openMobile]);
 
   return (
     <ProtectedRoute requireAuth>

@@ -75,6 +75,7 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
       "dateFrom",
       "dateTo",
     ]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<OrderDocument | null>(
     null,
   );
@@ -231,6 +232,9 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
           loading={isLoading}
           emptyMessage={t("noOrders")}
           keyExtractor={(order: OrderDocument) => order.id}
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           externalPagination
           showViewToggle
           viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}

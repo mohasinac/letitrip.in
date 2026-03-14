@@ -113,11 +113,11 @@ function SidebarContent({ pathname, t, tNav }: SidebarContentProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Logo row */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-white/5">
-        <span className="font-display text-xl font-bold text-white tracking-tight">
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-zinc-200 dark:border-white/5">
+        <span className="font-display text-xl font-bold text-zinc-900 dark:text-white tracking-tight">
           LetItRip
         </span>
-        <span className="bg-primary-500/20 text-primary-400 text-xs rounded-full px-2 py-0.5 font-medium">
+        <span className="bg-primary-500/20 text-primary-600 dark:text-primary-400 text-xs rounded-full px-2 py-0.5 font-medium">
           Admin
         </span>
       </div>
@@ -148,8 +148,8 @@ function SidebarContent({ pathname, t, tNav }: SidebarContentProps) {
                   href={item.href}
                   className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors mb-0.5 ${
                     isActive
-                      ? "bg-primary-500/15 text-primary-400 hover:bg-primary-500/20"
-                      : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                      ? "bg-primary-500/15 text-primary-600 dark:text-primary-400 hover:bg-primary-500/20"
+                      : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white"
                   }`}
                 >
                   <item.icon
@@ -176,7 +176,7 @@ interface AdminSidebarProps {
  * AdminSidebar
  *
  * Fixed left-sidebar for the admin portal.
- * Desktop: always visible w-64, bg-slate-950.
+ * Desktop: always visible w-64, theme-aware bg.
  * Mobile: slide-in Drawer triggered from AdminTopBar.
  */
 export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
@@ -187,7 +187,7 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
   return (
     <>
       {/* Desktop sidebar */}
-      <Aside className="hidden md:flex w-64 bg-slate-950 flex-shrink-0 flex-col h-full overflow-y-auto border-r border-white/5">
+      <Aside className="hidden md:flex w-64 bg-white dark:bg-slate-950 flex-shrink-0 flex-col h-full overflow-y-auto border-r border-zinc-200 dark:border-white/5">
         <SidebarContent pathname={pathname} t={t} tNav={tNav} />
       </Aside>
 

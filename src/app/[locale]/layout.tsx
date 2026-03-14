@@ -10,6 +10,7 @@ import {
   ThemeProvider,
   SessionProvider,
   BottomActionsProvider,
+  DashboardNavProvider,
 } from "@/contexts";
 import { GuestCartMergerEffect } from "@/features/cart";
 import { generateMetadata as genMetadata, SEO_CONFIG } from "@/constants";
@@ -70,7 +71,9 @@ export default async function LocaleLayout({
               <MonitoringProvider>
                 <ToastProvider position="top-right">
                   <BottomActionsProvider>
-                    <LayoutClient>{children}</LayoutClient>
+                    <DashboardNavProvider>
+                      <LayoutClient>{children}</LayoutClient>
+                    </DashboardNavProvider>
                   </BottomActionsProvider>
                 </ToastProvider>
               </MonitoringProvider>

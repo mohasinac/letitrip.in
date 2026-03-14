@@ -70,6 +70,7 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
       "createdTo",
     ]);
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -293,6 +294,9 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
               keyExtractor={(user) => user.uid}
               onRowClick={handleViewUser}
               actions={actions}
+              selectable
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
               externalPagination
               showViewToggle
               viewMode={

@@ -111,12 +111,13 @@ export async function placeBidAction(
   ).find((b) => b.userId === user.uid && b.status === "active");
 
   // ── Create the bid ────────────────────────────────────────────────────────
+  const profile = await userRepository.findById(user.uid);
   const bid = await bidRepository.create({
     productId,
     productTitle: product.title,
     userId: user.uid,
-    userName: user.displayName ?? user.email ?? "Anonymous",
-    userEmail: user.email ?? "",
+    userName: profile?.displayName ?? user.email ?? "Anonymous",
+    userEmail: profile?.email ?? user.email ?? "",
     bidAmount,
     currency: product.currency || "INR",
     bidDate: new Date(),

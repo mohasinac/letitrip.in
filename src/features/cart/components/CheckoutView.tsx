@@ -175,38 +175,11 @@ export function CheckoutView() {
     },
   });
 
-  if (addrLoading || cartLoading) return <CheckoutSkeleton />;
-
+  // Derive values needed by hooks (must be above useCallback)
   const addresses = addrData?.data ?? [];
   const items = cartData?.cart?.items ?? [];
   const subtotal = cartData?.subtotal ?? 0;
   const itemCount = cartData?.itemCount ?? 0;
-
-  const codDepositPercent =
-    siteSettingsData?.commissions?.codDepositPercent ?? 10;
-  const depositAmount =
-    paymentMethod === "cod" || paymentMethod === "upi_manual"
-      ? Math.round(subtotal * (codDepositPercent / 100) * 100) / 100
-      : undefined;
-
-  if (items.length === 0) {
-    router.replace(ROUTES.USER.CART);
-    return null;
-  }
-
-  const selectedAddress =
-    addresses.find((a) => a.id === selectedAddressId) ?? null;
-
-  // ── Navigation ────────────────────────────────────────────────────────────
-
-  const handleNext = () => {
-    if (!selectedAddressId) {
-      showError(ERROR_MESSAGES.CHECKOUT.ADDRESS_REQUIRED);
-      return;
-    }
-    setStep(2);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
 
   // ── Order execution ───────────────────────────────────────────────────────
 
@@ -279,6 +252,46 @@ export function CheckoutView() {
     ],
   );
 
+  const handleVerified = useCallback(() => {
+    setShowVerifyModal(false);
+    executeOrder(excludedProductIds);
+  }, [executeOrder, excludedProductIds]);
+
+  const handleVerifyClose = useCallback(() => {
+    setShowVerifyModal(false);
+    setIsPlacingOrder(false);
+  }, []);
+
+  // ── Early returns (after all hooks) ───────────────────────────────────────
+
+  if (addrLoading || cartLoading) return <CheckoutSkeleton />;
+
+  const codDepositPercent =
+    siteSettingsData?.commissions?.codDepositPercent ?? 10;
+  const depositAmount =
+    paymentMethod === "cod" || paymentMethod === "upi_manual"
+      ? Math.round(subtotal * (codDepositPercent / 100) * 100) / 100
+      : undefined;
+
+  if (items.length === 0) {
+    router.replace(ROUTES.USER.CART);
+    return null;
+  }
+
+  const selectedAddress =
+    addresses.find((a) => a.id === selectedAddressId) ?? null;
+
+  // ── Navigation ────────────────────────────────────────────────────────────
+
+  const handleNext = () => {
+    if (!selectedAddressId) {
+      showError(ERROR_MESSAGES.CHECKOUT.ADDRESS_REQUIRED);
+      return;
+    }
+    setStep(2);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handlePlaceOrder = async () => {
     if (!selectedAddressId) {
       showError(ERROR_MESSAGES.CHECKOUT.ADDRESS_REQUIRED);
@@ -318,16 +331,6 @@ export function CheckoutView() {
 
     setShowVerifyModal(true);
   };
-
-  const handleVerified = useCallback(() => {
-    setShowVerifyModal(false);
-    executeOrder(excludedProductIds);
-  }, [executeOrder, excludedProductIds]);
-
-  const handleVerifyClose = useCallback(() => {
-    setShowVerifyModal(false);
-    setIsPlacingOrder(false);
-  }, []);
 
   // ── Partial dialog actions ────────────────────────────────────────────────
 

@@ -1,13 +1,13 @@
 import "./globals.css";
-import { Bangers, Inter, Cormorant_Garamond } from "next/font/google";
+import { Poppins, Inter, Cormorant_Garamond } from "next/font/google";
 import { cookies, headers } from "next/headers";
 import { getLocale } from "next-intl/server";
 import type { Metadata, Viewport } from "next";
 import { SEO_CONFIG } from "@/constants";
 import { organizationJsonLd, searchBoxJsonLd } from "@/lib/seo";
 
-const bangers = Bangers({
-  weight: "400",
+const poppins = Poppins({
+  weight: ["400", "500", "600", "700", "800"],
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
@@ -126,7 +126,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`h-full ${bangers.variable} ${inter.variable} ${cormorant.variable}${themeClass ? ` ${themeClass}` : ""}`}
+      className={`h-full ${poppins.variable} ${inter.variable} ${cormorant.variable}${themeClass ? ` ${themeClass}` : ""}`}
     >
       <head>
         <script

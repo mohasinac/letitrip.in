@@ -27,7 +27,7 @@ export function AdvertisementBanner({
   if (isLoading) {
     return (
       <Section className={`p-8 ${THEME_CONSTANTS.sectionBg.warm}`}>
-        <div className="w-full">
+        <div className="w-full max-w-7xl mx-auto">
           <div
             className={`h-72 ${THEME_CONSTANTS.themed.bgTertiary} rounded-2xl animate-pulse`}
           />
@@ -56,7 +56,7 @@ export function AdvertisementBanner({
   if (hasImage) {
     return (
       <Section className={`p-8 ${THEME_CONSTANTS.sectionBg.warm}`}>
-        <div className="w-full">
+        <div className="w-full max-w-7xl mx-auto">
           <div
             className={`relative overflow-hidden rounded-2xl bg-zinc-900 shadow-xl`}
           >
@@ -123,7 +123,7 @@ export function AdvertisementBanner({
   // ─── Full-width gradient layout (fallback / no image) ────────────────────────
   return (
     <Section className={`p-8 ${THEME_CONSTANTS.sectionBg.warm}`}>
-      <div className="w-full">
+      <div className="w-full max-w-7xl mx-auto">
         <div
           className={`relative overflow-hidden rounded-2xl ${compact ? "h-32 flex items-center" : "min-h-[240px] md:min-h-[300px]"} flex items-center`}
           style={

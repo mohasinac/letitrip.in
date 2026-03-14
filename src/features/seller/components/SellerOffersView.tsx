@@ -53,6 +53,7 @@ export function SellerOffersView() {
   const { offers, isLoading, refetch } = useSellerOffers();
   const { showSuccess, showError } = useMessage();
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [respondingTo, setRespondingTo] = useState<OfferDocument | null>(null);
   const [counterModalOpen, setCounterModalOpen] = useState(false);
 
@@ -195,6 +196,9 @@ export function SellerOffersView() {
             columns={columns as DataTableColumn<Record<string, any>>[]}
             data={offers}
             keyExtractor={(o) => o.id}
+            selectable
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
           />
         )}
       </div>

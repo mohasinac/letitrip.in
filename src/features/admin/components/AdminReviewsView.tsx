@@ -54,6 +54,7 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
   const statusFilter = (table.get("status") || "pending") as ReviewStatus;
   const ratingFilter = table.get("rating");
   const searchTerm = table.get("q");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
 
   const [rejectModal, setRejectModal] = useState<{
@@ -318,6 +319,9 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
               onDelete={handleDelete}
             />
           )}
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           externalPagination
           showViewToggle
           viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}

@@ -57,6 +57,7 @@ export function AdminSessionsManager() {
   const t = useTranslations("adminSessions");
   const tLoading = useTranslations("loading");
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [confirmModal, setConfirmModal] = useState<{
     open: boolean;
     title: string;
@@ -180,6 +181,9 @@ export function AdminSessionsManager() {
           data={sessions}
           loading={isLoading}
           keyExtractor={(session) => session.id}
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           actions={(session) =>
             session.isActive ? (
               <div className="flex gap-2 justify-end">

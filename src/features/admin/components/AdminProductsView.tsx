@@ -99,6 +99,7 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
     ),
   );
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingProduct, setEditingProduct] =
     useState<Partial<AdminProduct> | null>(null);
   const [drawerMode, setDrawerMode] = useState<ProductDrawerMode>(null);
@@ -331,6 +332,9 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
           keyExtractor={(product) => product.id}
           onRowClick={handleEdit}
           actions={actions}
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           externalPagination
           showViewToggle
           viewMode={(table.get("view") || "table") as "table" | "grid" | "list"}

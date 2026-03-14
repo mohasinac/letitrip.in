@@ -47,6 +47,7 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
     deleteMutation,
   } = useAdminCategories();
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingCategory, setEditingCategory] =
     useState<Partial<Category> | null>(null);
   const [drawerMode, setDrawerMode] = useState<CategoryDrawerMode>(null);
@@ -306,6 +307,9 @@ export function AdminCategoriesView({ action }: AdminCategoriesViewProps) {
             keyExtractor={(cat) => cat.id}
             onRowClick={(cat) => handleEdit(cat)}
             actions={actions}
+            selectable
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
           />
         )}
       </ListingLayout>

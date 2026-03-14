@@ -116,14 +116,17 @@ export async function makeOfferAction(
   if (alreadyActive)
     throw new ValidationError(ERROR_MESSAGES.OFFER.ACTIVE_OFFER_EXISTS);
 
+  const profile = await userRepository.findById(user.uid);
+  const buyerDisplayName = profile?.displayName ?? "Buyer";
+
   const offer = await offerRepository.create({
     productId,
     productTitle: product.title,
     productSlug: product.slug,
     productImageUrl: product.mainImage,
     buyerUid: user.uid,
-    buyerName: user.displayName ?? "Buyer",
-    buyerEmail: user.email ?? "",
+    buyerName: buyerDisplayName,
+    buyerEmail: profile?.email ?? user.email ?? "",
     sellerId: product.sellerId,
     sellerName: product.sellerName,
     offerAmount,
@@ -138,7 +141,7 @@ export async function makeOfferAction(
     type: "offer_received",
     priority: "normal",
     title: "New offer received",
-    message: `${user.displayName ?? "A buyer"} offered ₹${offerAmount} on "${product.title}"`,
+    message: `${buyerDisplayName === "Buyer" ? "A buyer" : buyerDisplayName} offered ₹${offerAmount} on "${product.title}"`,
     relatedId: offer.id,
     relatedType: "offer",
   });

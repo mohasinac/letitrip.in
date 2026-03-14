@@ -79,6 +79,7 @@ function SellerAuctionsContent() {
     return [{ key: "status", label: t("filterStatusLabel"), value: label }];
   }, [statusFilter, t]);
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [stagedStatus, setStagedStatus] = useState<string[]>(
     statusFilter ? [statusFilter] : [],
   );
@@ -176,6 +177,9 @@ function SellerAuctionsContent() {
           loading={isLoading || authLoading}
           emptyIcon={<Gavel className="w-16 h-16" />}
           emptyTitle={t("noAuctions")}
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           showViewToggle
           viewMode={(table.get("view") || "grid") as "table" | "grid" | "list"}
           onViewModeChange={(m) => table.set("view", m)}
