@@ -80,7 +80,7 @@ export function AdminPageHeader({
             <Heading level={2} className={typography.pageTitle}>
               {title}
             </Heading>
-            {badge && <span className="flex-shrink-0">{badge}</span>}
+            {badge && <Span className="flex-shrink-0">{badge}</Span>}
           </div>
           {subtitle && (
             <Text className={typography.pageSubtitle}>{subtitle}</Text>

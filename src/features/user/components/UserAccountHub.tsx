@@ -12,7 +12,14 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { AvatarDisplay, Button, Heading, Spinner, Text } from "@/components";
+import {
+  AvatarDisplay,
+  Button,
+  Heading,
+  Span,
+  Spinner,
+  Text,
+} from "@/components";
 import { RoleBadge } from "@/components";
 import { StatusBadge } from "@/components";
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
@@ -174,9 +181,9 @@ export function UserAccountHub() {
                   strokeWidth={1.5}
                 />
               </div>
-              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+              <Span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
                 {tNav(item.labelKey)}
-              </span>
+              </Span>
             </Link>
           ))}
         </div>
@@ -223,13 +230,13 @@ export function UserAccountHub() {
                   className={`${THEME_CONSTANTS.flex.between} px-4 py-3 hover:bg-zinc-50 dark:hover:bg-slate-800/50 transition-colors group`}
                 >
                   <div className="flex flex-col gap-0.5 min-w-0">
-                    <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate">
+                    <Span className="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate">
                       #{order.id.slice(0, 8).toUpperCase()}
-                    </span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    </Span>
+                    <Span className="text-xs text-zinc-500 dark:text-zinc-400">
                       {formatDate(order.orderDate)} ·{" "}
                       {formatCurrency(order.totalPrice)}
-                    </span>
+                    </Span>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0 ml-3">
                     <StatusBadge

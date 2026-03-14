@@ -6,6 +6,21 @@ All notable changes to this project are documented here.
 
 ## [Unreleased] — 2026-03-15
 
+### Refactor — Primitive Components & i18n Compliance
+
+Replaced raw HTML `<button>`, `<span>` and hardcoded strings in shared components and user-facing layout with their canonical primitives and `useTranslations` keys.
+
+**Files updated (4):**
+
+- `src/features/user/components/UserAccountHub.tsx` — nav menu items use `<Span>` instead of `<span>`
+- `src/components/admin/AdminPageHeader.tsx` — badge wrapper uses `<Span>` instead of `<span>`
+- `src/components/utility/Search.tsx` — all `<button>` → `<Button variant="ghost">`, all `<span>` → `<Span>`; hardcoded placeholder `"Search products, categories, sellers..."` and button label `"Search"` replaced with `t("placeholder")` / `t("title")`; duplicate `Button` import resolved (removed direct path import, uses barrel `@/components`)
+- `src/app/[locale]/user/layout.tsx` — mobile header `<button>` → `<Button variant="ghost">`, `<span>` → `<Span>`; `aria-label` and title text use `tA11y("openMenu")` / `t("title")` from `useTranslations`
+
+---
+
+## [Unreleased] — 2026-03-15
+
 ### UX — Remove Bottom Pagination from All Listing Views
 
 Removed the redundant bottom `paginationSlot` from every `ListingLayout`-based view across the codebase. The compact toolbar pagination (top) remains as the sole pagination control, decluttering all listing pages.

@@ -3,9 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { Li, Text, Ul } from "@/components";
+import { Button, Li, Span, Text, Ul } from "@/components";
 import { useTranslations } from "next-intl";
-import Button from "../ui/Button";
 import { useNavSuggestions } from "@/hooks";
 import type { AlgoliaNavRecord } from "@/hooks";
 import {
@@ -389,7 +388,7 @@ export default function Search({
               <input
                 ref={inputRef}
                 type="search"
-                placeholder="Search products, categories, sellers..."
+                placeholder={t("placeholder")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyPress={handleKeyPress}
@@ -417,7 +416,7 @@ export default function Search({
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
-              Search
+              {t("title")}
             </Button>
 
             {/* Close Button */}
@@ -469,8 +468,9 @@ export default function Search({
                       const Icon = link.icon;
                       return (
                         <Li key={link.href}>
-                          <button
+                          <Button
                             type="button"
+                            variant="ghost"
                             onClick={() => {
                               onClose?.();
                               router.push(link.href);
@@ -483,7 +483,7 @@ export default function Search({
                             <Text size="sm" className="font-medium">
                               {link.label}
                             </Text>
-                          </button>
+                          </Button>
                         </Li>
                       );
                     })}
@@ -506,14 +506,15 @@ export default function Search({
                     <Ul>
                       {suggestions.map((s) => (
                         <Li key={s.objectID}>
-                          <button
+                          <Button
                             type="button"
+                            variant="ghost"
                             onClick={() => handleSuggestionClick(s)}
                             className={`w-full flex items-center gap-3 px-4 py-3 text-left ${THEME_CONSTANTS.themed.hover} transition-colors border-b ${THEME_CONSTANTS.themed.border} last:border-b-0`}
                           >
-                            <span className="text-sm">
+                            <Span className="text-sm">
                               {NAV_TYPE_ICON[s.type]}
-                            </span>
+                            </Span>
                             <div className="flex-1 min-w-0">
                               <Text size="sm" className="font-medium truncate">
                                 {s.title}
@@ -528,19 +529,20 @@ export default function Search({
                                 </Text>
                               )}
                             </div>
-                            <span
+                            <Span
                               className={`text-xs px-2 py-0.5 rounded-full ${NAV_TYPE_BADGE[s.type]}`}
                             >
                               {s.type}
-                            </span>
-                          </button>
+                            </Span>
+                          </Button>
                         </Li>
                       ))}
                     </Ul>
                   ) : null}
                   {/* Always show "search products" footer */}
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={handleOverlaySearch}
                     className={
                       `w-full flex items-center gap-2 px-4 py-3 text-left ${THEME_CONSTANTS.themed.hover} transition-colors` +
@@ -565,7 +567,7 @@ export default function Search({
                     <Text size="sm" className="font-medium">
                       {t("browseProducts", { q: query })}
                     </Text>
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
