@@ -138,7 +138,11 @@
     "bulkFailed": "Failed to update items",
     "gridView": "Grid view",
     "listView": "List view",
-    "selectionHint": "Tap or click a card to select it, then use bulk actions to add to wishlist or cart"
+    "selectionHint": "Tap or click a card to select it, then use bulk actions to add to wishlist or cart",
+    "required": "Required",
+    "accept": "Accept",
+    "decline": "Decline",
+    "submitting": "Submitting…"
   },
   "bottomActions": {
     "pageActionsLabel": "Page actions",
@@ -722,6 +726,11 @@
     "notificationTypePromotion": "Promotion",
     "notificationTypeSystem": "System",
     "notificationTypeWelcome": "Welcome",
+    "notificationTypeReviewPosted": "Review Posted",
+    "notificationTypeSellerApproved": "Seller Approved",
+    "notificationTypeSellerRejected": "Seller Rejected",
+    "notificationTypePaymentReceived": "Payment Received",
+    "notificationTypePayoutProcessed": "Payout Processed",
     "notificationPriorityLow": "Low",
     "notificationPriorityNormal": "Normal",
     "notificationPriorityHigh": "High",
@@ -1352,7 +1361,8 @@
     "placeBidCta": "Place Bid",
     "loginToBid": "Login to Bid",
     "addToWishlist": "Add to Wishlist",
-    "removeFromWishlist": "Remove from Wishlist"
+    "removeFromWishlist": "Remove from Wishlist",
+    "placeBid": "Place Bid"
   },
   "search": {
     "metaTitle": "Search",
@@ -1425,7 +1435,8 @@
     "addToWishlist": "Add to wishlist",
     "removeFromWishlist": "Remove from wishlist",
     "brandBadge": "Brand",
-    "categoryBadge": "Category"
+    "categoryBadge": "Category",
+    "categoryMetaDescription": "Shop {name} products on LetItRip. Browse our curated selection of {name} items."
   },
   "seller": {
     "dashboard": "Seller Dashboard",
@@ -1724,7 +1735,8 @@
     "reviewImageAlt": "Review image {index}",
     "colUser": "Customer",
     "colProduct": "Product",
-    "colDate": "Date"
+    "colDate": "Date",
+    "stars": "{count, plural, one {# Star} other {# Stars}}"
   },
   "contact": {
     "title": "Contact Us",
@@ -1748,7 +1760,9 @@
     "infoHoursLabel": "Support Hours",
     "infoHoursValue": "Monday – Friday, 9 AM – 6 PM IST",
     "faqLink": "Check our FAQ page for quick answers",
-    "faqsLinkText": "FAQs"
+    "faqsLinkText": "FAQs",
+    "metaTitle": "Contact Us — LetItRip",
+    "metaDescription": "Get in touch with LetItRip. We're here to help with any questions or feedback."
   },
   "events": {
     "currentEvents": "Current Events",
@@ -2314,7 +2328,10 @@
     "filterPaymentStatusFailed": "Failed",
     "filterPaymentMethodLabel": "Payment Method",
     "filterPaymentMethodRazorpay": "Online (Razorpay)",
-    "filterPaymentMethodCod": "Cash on Delivery"
+    "filterPaymentMethodCod": "Cash on Delivery",
+    "colOrderId": "Order ID",
+    "colStatus": "Status",
+    "colAmount": "Amount"
   },
   "sellerAddresses": {
     "metaTitle": "Business Addresses",
@@ -2362,7 +2379,8 @@
     "filterStatusTitle": "Status",
     "titleRequired": "Title is required",
     "descriptionRequired": "Description is required",
-    "categoryRequired": "Category is required"
+    "categoryRequired": "Category is required",
+    "products": "Products"
   },
   "promotions": {
     "title": "Promotions & Deals",
@@ -2443,7 +2461,12 @@
     "cropImage": "Crop Image",
     "trimVideo": "Trim Video",
     "recentOperations": "Recent Operations",
-    "noOperations": "No media operations yet"
+    "noOperations": "No media operations yet",
+    "cropSuccess": "Image cropped successfully",
+    "cropError": "Failed to crop image",
+    "trimSuccess": "Video trimmed successfully",
+    "trimError": "Failed to trim video",
+    "lastNOperations": "Last {count, plural, one {# operation} other {# operations}}"
   },
   "adminNewsletter": {
     "title": "Newsletter Subscribers",
@@ -3014,7 +3037,8 @@
     "filterStatusLabel": "Status",
     "filterStatusActive": "Active",
     "filterStatusInactive": "Inactive",
-    "usageCount": "{count, plural, one {# used} other {# used}}"
+    "usageCount": "{count, plural, one {# used} other {# used}}",
+    "expiresLabel": "Expires"
   },
   "adminStores": {
     "metaTitle": "Store Management",
@@ -3038,7 +3062,8 @@
     "rejectTitle": "Reject Store",
     "rejectMessage": "Reject the store for {name}? Their store and products will be hidden from public.",
     "noStores": "No stores found",
-    "searchPlaceholder": "Search stores..."
+    "searchPlaceholder": "Search stores...",
+    "soldCount": "{count, plural, one {# item sold} other {# items sold}}"
   },
   "adminEvents": {
     "title": "Events",
@@ -3563,7 +3588,10 @@
     "otpModalDesc": "An OTP has been sent to your registered mobile number. Enter it below to verify your pickup address.",
     "otpLabel": "6-digit OTP",
     "verifyOtp": "Verify",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "updateSuccess": "Shipping settings updated successfully",
+    "updateError": "Failed to update shipping settings",
+    "otpVerifyError": "Failed to verify OTP"
   },
   "sellerPayoutSettings": {
     "metaTitle": "Payout Settings",
@@ -3597,7 +3625,9 @@
     "current": "Current",
     "maskedNote": "Account number on file",
     "currentAccount": "Saved account",
-    "saveButton": "Save Payout Details"
+    "saveButton": "Save Payout Details",
+    "updateSuccess": "Payout settings updated successfully",
+    "updateError": "Failed to update payout settings"
   },
   "howAuctionsWork": {
     "metaTitle": "How Auctions Work",
