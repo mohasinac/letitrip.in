@@ -95,6 +95,23 @@ Sieve DSL: `status==published`, `price>=100,price<=500`, `tags@=electronics`, `t
 
 Unsupported (use `applySieveToArray` fallback only): case-insensitive variants, multi-field OR, full-text search.
 
+### Filter Construction (View Layer)
+
+Admin views build Sieve filter strings using `buildSieveFilters()` from `@/helpers`. NEVER use manual `filtersArr.push()` + `.join(",")`:
+
+```tsx
+import { buildSieveFilters } from "@/helpers";
+const sieveParams = table.buildSieveParams(
+  buildSieveFilters(
+    ["status==", statusFilter],
+    ["totalPrice>=", minAmount],
+    ["createdAt>=", dateFrom],
+  ),
+);
+```
+
+For admin list hooks, use the `createAdminListQuery` factory from `@/features/admin/hooks` instead of writing raw `useQuery` + URLSearchParams parsing.
+
 ### Atomic Writes — `unitOfWork`
 
 ```typescript

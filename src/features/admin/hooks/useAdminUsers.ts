@@ -1,46 +1,27 @@
 "use client";
 
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   listAdminUsersAction,
   adminUpdateUserAction,
   adminDeleteUserAction,
 } from "@/actions";
+import { createAdminListQuery, extractBasicMeta } from "./createAdminListQuery";
+import type { AdminListMeta } from "./createAdminListQuery";
 import type { AdminUser } from "../components";
 
-interface UserListMeta {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
-
-/**
- * useAdminUsers
- * Accepts a pre-built sieve params string and fetches the users list.
- * Exposes update-user and delete-user mutations.
- */
 export function useAdminUsers(sieveParams: string) {
-  const query = useQuery<{ users: AdminUser[]; meta: UserListMeta }>({
-    queryKey: ["admin", "users", sieveParams],
-    queryFn: async () => {
-      const sp = new URLSearchParams(sieveParams);
-      const result = await listAdminUsersAction({
-        filters: sp.get("filters") ?? undefined,
-        sorts: sp.get("sorts") ?? undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      });
-      return {
-        users: result.items as unknown as AdminUser[],
-        meta: {
-          page: result.page,
-          limit: result.pageSize,
-          total: result.total,
-          totalPages: result.totalPages,
-        },
-      };
-    },
+  const query = createAdminListQuery<
+    unknown,
+    { users: AdminUser[]; meta: AdminListMeta }
+  >({
+    queryKey: ["admin", "users"],
+    sieveParams,
+    action: listAdminUsersAction,
+    transform: (result) => ({
+      users: result.items as unknown as AdminUser[],
+      meta: extractBasicMeta(result),
+    }),
   });
 
   const updateUserMutation = useMutation<

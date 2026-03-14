@@ -1,50 +1,28 @@
 "use client";
 
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   listAdminProductsAction,
   adminCreateProductAction,
   adminUpdateProductAction,
   adminDeleteProductAction,
 } from "@/actions";
+import { createAdminListQuery, extractBasicMeta } from "./createAdminListQuery";
+import type { AdminListMeta } from "./createAdminListQuery";
 import type { AdminProduct } from "../components";
 
-interface ProductListMeta {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
-
-/**
- * useAdminProducts
- * Accepts a pre-built sieve params string and fetches the admin products list.
- * Exposes create, update, and delete mutations.
- */
 export function useAdminProducts(sieveParams: string) {
-  const query = useQuery<{
-    products: AdminProduct[];
-    meta: ProductListMeta;
-  }>({
-    queryKey: ["admin", "products", sieveParams],
-    queryFn: async () => {
-      const sp = new URLSearchParams(sieveParams);
-      const result = await listAdminProductsAction({
-        filters: sp.get("filters") ?? undefined,
-        sorts: sp.get("sorts") ?? undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      });
-      return {
-        products: result.items as unknown as AdminProduct[],
-        meta: {
-          page: result.page,
-          limit: result.pageSize,
-          total: result.total,
-          totalPages: result.totalPages,
-        },
-      };
-    },
+  const query = createAdminListQuery<
+    unknown,
+    { products: AdminProduct[]; meta: AdminListMeta }
+  >({
+    queryKey: ["admin", "products"],
+    sieveParams,
+    action: listAdminProductsAction,
+    transform: (result) => ({
+      products: result.items as unknown as AdminProduct[],
+      meta: extractBasicMeta(result),
+    }),
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({

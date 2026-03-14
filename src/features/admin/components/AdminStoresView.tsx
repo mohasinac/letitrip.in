@@ -26,6 +26,7 @@ import {
 import { THEME_CONSTANTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
 import { useUrlTable, useMessage, usePendingTable } from "@/hooks";
+import { buildSieveFilters } from "@/helpers";
 import { StoreFilters } from "./StoreFilters";
 import { useAdminStores } from "@/features/admin/hooks";
 import type { AdminStoreItem } from "@/features/admin/hooks";
@@ -74,13 +75,12 @@ export function AdminStoresView() {
 
   // Build Sieve filter string
   const activeTab = table.get("storeStatus");
-  const filtersArr: string[] = [];
-  if (activeTab) filtersArr.push(`storeStatus==${activeTab}`);
-  if (searchTerm)
-    filtersArr.push(`(displayName|email|storeSlug)@=*${searchTerm}`);
-  const filtersParam = filtersArr.join(",");
-
-  const sieveParams = table.buildSieveParams(filtersParam);
+  const sieveParams = table.buildSieveParams(
+    buildSieveFilters(
+      ["storeStatus==", activeTab],
+      ["(displayName|email|storeSlug)@=*", searchTerm],
+    ),
+  );
 
   const { data, isLoading, refetch, updateStoreMutation } =
     useAdminStores(sieveParams);

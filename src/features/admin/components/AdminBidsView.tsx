@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useUrlTable, usePendingTable } from "@/hooks";
+import { buildSieveFilters } from "@/helpers";
 import { useAdminBids } from "@/features/admin/hooks";
 import { ROUTES, ERROR_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -60,15 +61,16 @@ export function AdminBidsView({ action }: Props) {
 
   const isWinningFilter = table.get("isWinning");
 
-  const filtersArr: string[] = [];
-  if (statusFilter) filtersArr.push(`status==${statusFilter}`);
-  if (minAmount) filtersArr.push(`bidAmount>=${minAmount}`);
-  if (maxAmount) filtersArr.push(`bidAmount<=${maxAmount}`);
-  if (searchTerm) filtersArr.push(`productTitle@=*${searchTerm}`);
-  if (isWinningFilter === "true") filtersArr.push("isWinning==true");
-
   const { data, isLoading, error } = useAdminBids(
-    table.buildSieveParams(filtersArr.join(",")),
+    table.buildSieveParams(
+      buildSieveFilters(
+        ["status==", statusFilter],
+        ["bidAmount>=", minAmount],
+        ["bidAmount<=", maxAmount],
+        ["productTitle@=*", searchTerm],
+        ["isWinning==", isWinningFilter === "true" ? "true" : undefined],
+      ),
+    ),
   );
 
   const bids = data?.bids || [];

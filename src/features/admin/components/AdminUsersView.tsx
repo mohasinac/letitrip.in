@@ -11,6 +11,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useUrlTable, usePendingTable } from "@/hooks";
+import { buildSieveFilters } from "@/helpers";
 import { useAdminUsers } from "@/features/admin/hooks";
 import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -81,19 +82,22 @@ export function AdminUsersView({ action }: AdminUsersViewProps) {
   }>({ open: false, title: "", message: "", onConfirm: () => {} });
 
   // Build Sieve filter string
-  const filtersArr: string[] = [];
-  if (activeTab === "active") filtersArr.push("disabled==false");
-  else if (activeTab === "banned") filtersArr.push("disabled==true");
-  else if (disabledFilter) filtersArr.push(`disabled==${disabledFilter}`);
-  if (activeTab === "admins") filtersArr.push("role==admin");
-  else if (roleFilter) filtersArr.push(`role==${roleFilter}`);
-  if (searchTerm) filtersArr.push(`(displayName|email)@=*${searchTerm}`);
-  if (emailVerifiedFilter)
-    filtersArr.push(`emailVerified==${emailVerifiedFilter}`);
-  if (storeStatusFilter) filtersArr.push(`storeStatus==${storeStatusFilter}`);
-  if (createdFrom) filtersArr.push(`createdAt>=${createdFrom}`);
-  if (createdTo) filtersArr.push(`createdAt<=${createdTo}`);
-  const filtersParam = filtersArr.join(",");
+  const disabledValue =
+    activeTab === "active"
+      ? "false"
+      : activeTab === "banned"
+        ? "true"
+        : disabledFilter || undefined;
+  const roleValue = activeTab === "admins" ? "admin" : roleFilter || undefined;
+  const filtersParam = buildSieveFilters(
+    ["disabled==", disabledValue],
+    ["role==", roleValue],
+    ["(displayName|email)@=*", searchTerm],
+    ["emailVerified==", emailVerifiedFilter || undefined],
+    ["storeStatus==", storeStatusFilter],
+    ["createdAt>=", createdFrom],
+    ["createdAt<=", createdTo],
+  );
 
   const {
     data,

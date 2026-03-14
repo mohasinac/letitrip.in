@@ -1,14 +1,14 @@
 # User Portal Feature
 
 **Feature path:** `src/features/user/`  
-**Repository:** `userRepository`, `orderRepository`, `addressRepository`, `notificationRepository`, `rcRepository`  
+**Repository:** `userRepository`, `orderRepository`, `addressRepository`, `notificationRepository`  
 **Actions:** Server Actions only (service layer deleted — see Stage I1)
 
 ---
 
 ## Overview
 
-The user feature module owns the entire authenticated buyer experience: account, orders, addresses, notifications, messages, wallet, and settings.
+The user feature module owns the entire authenticated buyer experience: account, orders, addresses, notifications, messages, and settings.
 
 ---
 
@@ -18,7 +18,7 @@ The user feature module owns the entire authenticated buyer experience: account,
 
 Dashboard grid linking to all account sub-sections:
 
-- Summary counts: pending orders, coins balance, wishlist count, unread messages
+- Summary counts: pending orders, wishlist count, unread messages
 - Quick-action cards for each section
 
 ---
@@ -174,30 +174,6 @@ Right panel — active conversation:
 - Real-time updates via `useChat(chatId)` (Firebase RTDB)
 
 **Hook:** `useChat` returns `{ messages, sendMessage }` — type: `ChatMessage`, `UseChatReturn`
-
----
-
-## RC Wallet
-
-### `RCWallet`
-
-Wallet view:
-
-- Current balance (large display)
-- `RCBalanceChip` re-used from `src/components/user/`
-- Transaction history table (earn/spend rows)
-- "Buy Coins" CTA
-
-### `RCPurchaseView`
-
-Select coin package → initiates Razorpay payment.
-
-### `BuyRCModal`
-
-Modal dialog with package selector (e.g. 100 coins = ₹50, 500 coins = ₹200) and Razorpay payment button.
-
-**Hooks:** `getRCBalanceAction`, `getRCHistoryAction` (Server Actions)  
-See [docs/features/rc.md](rc.md) for full detail.
 
 ---
 

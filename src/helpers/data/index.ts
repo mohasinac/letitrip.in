@@ -5,6 +5,7 @@
  */
 
 export * from "./array.helper";
+export * from "./filter.helper";
 export * from "./object.helper";
 export * from "./pagination.helper";
 export * from "./sorting.helper";

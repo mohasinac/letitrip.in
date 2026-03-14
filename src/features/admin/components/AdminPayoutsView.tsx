@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
+import { buildSieveFilters } from "@/helpers";
 import { useAdminPayouts } from "@/features/admin/hooks";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
@@ -67,16 +68,16 @@ export function AdminPayoutsView() {
       "maxAmount",
     ]);
 
-  const filtersArr: string[] = [];
-  if (statusFilter) filtersArr.push(`status==${statusFilter}`);
-  if (paymentMethodFilter)
-    filtersArr.push(`paymentMethod==${paymentMethodFilter}`);
-  if (minAmount) filtersArr.push(`amount>=${minAmount}`);
-  if (maxAmount) filtersArr.push(`amount<=${maxAmount}`);
-  if (searchTerm) filtersArr.push(`sellerName@=*${searchTerm}`);
-
   const { data, isLoading, error, refetch, updateMutation } = useAdminPayouts(
-    table.buildSieveParams(filtersArr.join(",")),
+    table.buildSieveParams(
+      buildSieveFilters(
+        ["status==", statusFilter],
+        ["paymentMethod==", paymentMethodFilter],
+        ["amount>=", minAmount],
+        ["amount<=", maxAmount],
+        ["sellerName@=*", searchTerm],
+      ),
+    ),
   );
 
   const payouts = data?.payouts ?? [];

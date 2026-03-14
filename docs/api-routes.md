@@ -180,18 +180,6 @@ All API routes live under `src/app/api/`. They follow a consistent pattern: vali
 
 ---
 
-## RC Routes
-
-| Method | Route                     | Auth  | Description         |
-| ------ | ------------------------- | ----- | ------------------- |
-| `GET`  | `/api/rc/balance`         | User  | Coin balance        |
-| `GET`  | `/api/rc/history`         | User  | Transaction history |
-| `POST` | `/api/rc/purchase`        | User  | Init purchase       |
-| `POST` | `/api/rc/purchase/verify` | User  | Verify + credit     |
-| `POST` | `/api/rc/refund`          | Admin | Refund coins        |
-
----
-
 ## Media Routes
 
 | Method | Route               | Auth | Description |

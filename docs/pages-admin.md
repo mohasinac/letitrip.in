@@ -88,10 +88,9 @@ User account management:
 - DataTable with `useAdminUsers(sieveParams)` + `UserFilters`
 - `UserDetailDrawer` — view full user profile, role, order history, sessions
 - Role change, account suspend/unsuspend
-- `RCAdjustModal` — manually credit or debit RC
 - Session revocation via `revokeSessionAction` / `revokeUserSessionsAction`
 
-**Actions:** `adminUpdateUserAction`, `adminDeleteUserAction`, `adminAdjustRCAction`  
+**Actions:** `adminUpdateUserAction`, `adminDeleteUserAction`  
 **Columns:** `useUserTableColumns`
 
 ---
@@ -301,7 +300,6 @@ Platform-wide configuration with tabbed sub-forms:
 - `SiteContactForm` — support email, phone, address
 - `SiteSocialLinksForm` — social media profile URLs
 - `SiteCommissionsForm` — seller commission rates + processing fee %
-- `SiteRCSettingsForm` — RC earn rate (coins per ₹ spent), conversion rate (coins → ₹), purchase packages
 - `SiteCredentialsForm` — AES-256-GCM encrypted provider credentials (Razorpay, Resend, etc.)
 - `BackgroundSettings` — page background visual settings
 

@@ -10,7 +10,7 @@ All user portal pages live under `src/app/[locale]/user/`. They require an authe
 **Component:** `UserAccountHub`  
 **Feature:** `src/features/user/`
 
-The user's home dashboard. Shows a summary of recent orders, earned RC, active wishlist count, saved addresses, and quick-action cards.
+The user's home dashboard. Shows a summary of recent orders, active wishlist count, saved addresses, and quick-action cards.
 
 ---
 
@@ -25,7 +25,7 @@ Displays and edits the user's personal information:
 - Email and phone (with verification status)
 - `EmailVerificationCard` — trigger email verification
 - `PhoneVerificationCard` — add/verify phone number
-- `ProfileStatsGrid` — shows total orders, reviews written, coins earned
+- `ProfileStatsGrid` — shows total orders, reviews written
 
 **Data flow:**
 
@@ -134,25 +134,6 @@ In-app chat interface:
 - `getChatRoomsAction()` — list rooms for authenticated user
 
 **Note:** Chat is feature-flag gated via `FEATURE_FLAGS.CHAT_ENABLED`. If disabled, the route shows an unavailable message.
-
----
-
-## RC Wallet
-
-**Route:** `/user/rc`  
-**Component:** `RCWallet`
-
-Shows current RC balance, transaction history, and how coins were earned/spent.
-
-**Route:** `/user/rc/purchase`  
-**Component:** `RCPurchaseView` + `BuyRCModal`
-
-Purchase RC via Razorpay. Flow:
-
-1. Select coin package
-2. `POST /api/rc/purchase` — creates Razorpay order
-3. Razorpay checkout modal
-4. `POST /api/rc/purchase/verify` — HMAC verified → coins credited
 
 ---
 

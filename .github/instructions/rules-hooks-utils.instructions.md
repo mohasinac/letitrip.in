@@ -41,7 +41,19 @@ description: "Existing utils, helpers, and hooks — check before writing. Rules
 
 ### Data Helpers
 
-`groupBy(arr, key)` · `unique(arr)` · `uniqueBy(arr, key)` · `sortBy(arr, key, order?)` · `chunk(arr, size)` · `shuffle(arr)` · `sample(arr, n)` · `partition(arr, fn)` · `flatten(arr)` · `difference(a, b)` · `intersection(a, b)` · `union(...arrs)` · `pluck(arr, key)` · `pick(obj, keys)` · `omit(obj, keys)` · `deepMerge(a, b)` · `deepCloneObject(obj)` · `calculatePagination(opts)` · `applySieveToArray(input)` _(in-memory Sieve fallback — only for legacy collections)_
+`groupBy(arr, key)` · `unique(arr)` · `uniqueBy(arr, key)` · `sortBy(arr, key, order?)` · `chunk(arr, size)` · `shuffle(arr)` · `sample(arr, n)` · `partition(arr, fn)` · `flatten(arr)` · `difference(a, b)` · `intersection(a, b)` · `union(...arrs)` · `pluck(arr, key)` · `pick(obj, keys)` · `omit(obj, keys)` · `deepMerge(a, b)` · `deepCloneObject(obj)` · `calculatePagination(opts)` · `buildSieveFilters(...entries)` · `applySieveToArray(input)` _(in-memory Sieve fallback — only for legacy collections)_
+
+**`buildSieveFilters`** — builds a Sieve filter string from tuples. Use in admin views instead of manual `filtersArr.push()` + `.join(",")`:
+
+```ts
+import { buildSieveFilters } from "@/helpers";
+const filters = buildSieveFilters(
+  ["status==", statusFilter],
+  ["totalPrice>=", minAmount],
+  ["createdAt>=", dateFrom],
+);
+// → "status==pending,totalPrice>=100,createdAt>=2026-01-01" (falsy values auto-skipped)
+```
 
 ### UI Helpers
 
@@ -237,9 +249,6 @@ const {
 | Related products             | `useRelatedProducts(productId)`                                                                                                                                      |
 | Seller storefront            | `useSellerStorefront(sellerId)`                                                                                                                                      |
 | Promotions                   | `usePromotions()`                                                                                                                                                    |
-| RC balance                   | `useRCBalance()`                                                                                                                                                     |
-| RC purchase                  | `usePurchaseRC()` / `useVerifyRCPurchase()`                                                                                                                          |
-| RC history                   | `useRCHistory(params?)`                                                                                                                                              |
 | Newsletter subscribe         | `useNewsletter()`                                                                                                                                                    |
 | Contact form                 | `useContactSubmit()`                                                                                                                                                 |
 | Media upload flow            | `useMediaUpload()`                                                                                                                                                   |
@@ -248,5 +257,6 @@ const {
 | RTDB one-shot payment event  | `usePaymentEvent(sessionId)`                                                                                                                                         |
 | Generic RTDB one-shot        | `useRealtimeEvent<TData>(config)`                                                                                                                                    |
 | Swipe / Gestures             | `useSwipe(ref, cbs, opts)` / `useGesture(ref, handlers)` / `useLongPress(cb, opts)` / `usePullToRefresh(onRefresh, opts)`                                            |
+| Admin list factory           | `createAdminListQuery<TItem, TResult>(config)` — generates paginated admin hooks; use for new admin entities                                                         |
 
-**Service rule**: every `queryFn`/`mutationFn` MUST call a named service function from `@/services` — never inline `apiClient.*`.
+**Service rule**: every `queryFn`/`mutationFn` MUST call a Server Action from `@/actions` or a direct `apiClient` call in a hook — never inline `fetch()`.

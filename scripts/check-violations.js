@@ -1375,7 +1375,6 @@ const RULES = [
         "newsletterSubscribers",
         "notifications",
         "payouts",
-        "ripcoins",
         "sms_counters",
       ];
       const quoted = KNOWN_COLLECTIONS.map((c) => `'${c}'|"${c}"`).join("|");

@@ -11,6 +11,7 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
+import { buildSieveFilters } from "@/helpers";
 import { useAdminCoupons } from "@/features/admin/hooks";
 import {
   ROUTES,
@@ -71,12 +72,18 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, ["type", "validityIsActive"]);
 
-  const filtersArr: string[] = [];
-  if (searchTerm) filtersArr.push(`code@=*${searchTerm}`);
-  if (typeFilter) filtersArr.push(`type==${typeFilter}`);
-  if (statusFilter === "true") filtersArr.push("validity.isActive==true");
-  else if (statusFilter === "false")
-    filtersArr.push("validity.isActive==false");
+  const filters = buildSieveFilters(
+    ["code@=*", searchTerm],
+    ["type==", typeFilter],
+    [
+      "validity.isActive==",
+      statusFilter === "true"
+        ? "true"
+        : statusFilter === "false"
+          ? "false"
+          : undefined,
+    ],
+  );
 
   const [drawerMode, setDrawerMode] = useState<DrawerMode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -97,7 +104,7 @@ export function AdminCouponsView({ action }: AdminCouponsViewProps) {
     createMutation,
     updateMutation,
     deleteMutation,
-  } = useAdminCoupons(table.buildSieveParams(filtersArr.join(",")));
+  } = useAdminCoupons(table.buildSieveParams(filters));
 
   const coupons = data?.coupons || [];
 

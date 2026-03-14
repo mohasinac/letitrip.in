@@ -1,12 +1,13 @@
 "use client";
 
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   listFaqsAction,
   adminCreateFaqAction,
   adminUpdateFaqAction,
   adminDeleteFaqAction,
 } from "@/actions";
+import { createAdminListQuery } from "./createAdminListQuery";
 import type { FAQ } from "../components";
 
 interface FAQsListResponse {
@@ -17,24 +18,18 @@ interface FAQsListResponse {
   pageSize: number;
 }
 
-/**
- * useAdminFaqs
- * Accepts a pre-built URLSearchParams string and fetches the FAQs list.
- * Exposes create, update, and delete mutations.
- */
 export function useAdminFaqs(paramsString: string) {
-  const query = useQuery<FAQsListResponse | FAQ[]>({
-    queryKey: ["faqs", "list", paramsString],
-    queryFn: async () => {
-      const sp = new URLSearchParams(paramsString);
-      const result = await listFaqsAction({
-        filters: sp.get("filters") ?? undefined,
-        sorts: sp.get("sorts") ?? undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      });
-      return result as unknown as FAQsListResponse;
-    },
+  const query = createAdminListQuery<FAQ, FAQsListResponse>({
+    queryKey: ["faqs", "list"],
+    sieveParams: paramsString,
+    action: listFaqsAction as any,
+    transform: (result) => ({
+      items: result.items as unknown as FAQ[],
+      total: result.total,
+      page: result.page,
+      totalPages: result.totalPages,
+      pageSize: result.pageSize,
+    }),
   });
 
   const createMutation = useMutation<unknown, Error, unknown>({

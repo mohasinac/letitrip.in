@@ -375,7 +375,7 @@ export {
   listAdminProductsAction,
   listAdminStoresAction,
   listAdminSessionsAction,
-} from "./admin.actions";
+} from "./admin-read.actions";
 
 // Event entry (public � auth optional per event type)
 export { enterEventAction } from "./event.actions";

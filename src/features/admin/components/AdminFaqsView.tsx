@@ -10,6 +10,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
+import { buildSieveFilters } from "@/helpers";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 
 const { flex } = THEME_CONSTANTS;
@@ -64,13 +65,20 @@ export function AdminFaqsView({ action }: AdminFaqsViewProps) {
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
     usePendingTable(table, ["category", "isActive"]);
 
-  const filtersArr: string[] = [];
-  if (searchTerm) filtersArr.push(`question@=*${searchTerm}`);
-  if (categoryFilter) filtersArr.push(`category==${categoryFilter}`);
-  if (isActiveFilter === "true") filtersArr.push("isActive==true");
-  else if (isActiveFilter === "false") filtersArr.push("isActive==false");
-
-  const faqsParams = table.buildSieveParams(filtersArr.join(","));
+  const faqsParams = table.buildSieveParams(
+    buildSieveFilters(
+      ["question@=*", searchTerm],
+      ["category==", categoryFilter],
+      [
+        "isActive==",
+        isActiveFilter === "true"
+          ? "true"
+          : isActiveFilter === "false"
+            ? "false"
+            : undefined,
+      ],
+    ),
+  );
 
   const {
     data,

@@ -74,13 +74,15 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 - **No `alert()`/`confirm()`** — use `useMessage()` / `ConfirmDeleteModal`
 - **No `console.log()`** — use `logger` (client) / `serverLogger` (API routes)
 - **Filter/sort/page state in URL** — `useUrlTable`, never `useState`
+- **Admin list hooks use factory** — `createAdminListQuery` from `@/features/admin/hooks`; never write raw `useQuery` + URLSearchParams parsing for admin lists
+- **Admin filter strings use `buildSieveFilters`** — from `@/helpers`; never manual `filtersArr.push()` + `.join(",")`
 - **Media in `aspect-*` containers** — never fixed `h-[px]` wrappers
 - **Cron/triggers in `functions/src/`** — never inside Next.js API routes
 - **Delete old code when replacing** — no `@deprecated` stubs, no dual implementations
 - **Build must pass**: `npx tsc --noEmit` → `npm run build` before handing back
 - **No mojibake** — if garbled characters appear (`ãÆ`, `â€™`, `Ã©`, `ï¿½`), stop and fix with `replace_string_in_file` before continuing; see Rule 28-C
 
-## Migration State (as of 2026-03-13)
+## Migration State (as of 2026-03-14)
 
 | Stage | Description | Status |
 |-------|-------------|--------|
@@ -110,6 +112,7 @@ Detailed rules are in `.github/instructions/` — auto-loaded by VS Code Copilot
 | H1–H7 | Dead barrel exports removed; `animation.*` aliases deleted; dead services deleted (contact, newsletter, payment-event, demo); snippets moved to `docs/snippets/`; `TECH_DEBT.md` created; per-package `CHANGELOG.md` files added | ✅ Complete |
 | I1 | Service layer deleted — all 33 `*.service.ts` files removed; `src/services/` gone; callers migrated to direct `apiClient` in hooks or Server Actions | ✅ Complete |
 | Sec | TD-005: media/crop + media/trim migrated to `createApiHandler`; SSRF fix on `sourceUrl`; Stored XSS fix in `renderProseMirrorNode` (escapeHtml + link allowlist) | ✅ Complete |
+| J1 | Admin hooks factory — `createAdminListQuery` extracts repeated URLSearchParams+useQuery; 9 hooks refactored; `buildSieveFilters` helper; `admin.actions.ts` split into mutations + `admin-read.actions.ts` reads | ✅ Complete |
 | H8 | Publish `@lir/*` to npm registry (build pipeline, `dist/` output, set `private: false`) | 🔲 Optional |
 
 ---

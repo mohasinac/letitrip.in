@@ -1,46 +1,27 @@
 "use client";
 
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   listAdminReviewsAction,
   adminUpdateReviewAction,
   adminDeleteReviewAction,
 } from "@/actions";
+import { createAdminListQuery, extractBasicMeta } from "./createAdminListQuery";
+import type { AdminListMeta } from "./createAdminListQuery";
 import type { Review } from "../components";
 
-interface ReviewListMeta {
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
-
-/**
- * useAdminReviews
- * Accepts a pre-built sieve params string and fetches the admin reviews list.
- * Exposes update-status and delete mutations (via Server Actions).
- */
 export function useAdminReviews(sieveParams: string) {
-  const query = useQuery<{ reviews: Review[]; meta: ReviewListMeta }>({
-    queryKey: ["admin", "reviews", sieveParams],
-    queryFn: async () => {
-      const sp = new URLSearchParams(sieveParams);
-      const result = await listAdminReviewsAction({
-        filters: sp.get("filters") ?? undefined,
-        sorts: sp.get("sorts") ?? undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      });
-      return {
-        reviews: result.items as unknown as Review[],
-        meta: {
-          total: result.total,
-          page: result.page,
-          pageSize: result.pageSize,
-          totalPages: result.totalPages,
-        },
-      };
-    },
+  const query = createAdminListQuery<
+    unknown,
+    { reviews: Review[]; meta: AdminListMeta }
+  >({
+    queryKey: ["admin", "reviews"],
+    sieveParams,
+    action: listAdminReviewsAction,
+    transform: (result) => ({
+      reviews: result.items as unknown as Review[],
+      meta: extractBasicMeta(result),
+    }),
   });
 
   const updateMutation = useMutation<

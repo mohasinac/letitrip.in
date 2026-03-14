@@ -1,7 +1,7 @@
 # Business Logic Reference
 
 > Complete documentation of LetItRip's business domain, actors, rules, and scenario flows.  
-> Architecture & technical reference: [`docs/architecture.md`](architecture.md) · [`docs/GUIDE.md`](../README.md)  
+> Architecture & technical reference: [`docs/architecture.md`](architecture.md) Â· [`docs/GUIDE.md`](../README.md)  
 > Last updated: 2026-03-14
 
 ---
@@ -22,18 +22,17 @@
 12. [Payouts](#12-payouts)
 13. [Reviews & Ratings](#13-reviews--ratings)
 14. [Coupons & Promotions](#14-coupons--promotions)
-15. [RC (Virtual Currency)](#15-rc-virtual-currency)
-16. [Events & Campaigns](#16-events--campaigns)
-17. [Blog & Content](#17-blog--content)
-18. [Chat & Messaging](#18-chat--messaging)
-19. [Notifications](#19-notifications)
-20. [Search](#20-search)
-21. [Categories & Stores](#21-categories--stores)
-22. [Wishlist](#22-wishlist)
-23. [Newsletter & Contact](#23-newsletter--contact)
-24. [Admin Platform Management](#24-admin-platform-management)
-25. [Informational & Static Pages](#25-informational--static-pages)
-26. [Cross-Cutting Rules](#26-cross-cutting-rules)
+15. [Events & Campaigns](#15-events--campaigns)
+16. [Blog & Content](#16-blog--content)
+17. [Chat & Messaging](#17-chat--messaging)
+18. [Notifications](#18-notifications)
+19. [Search](#19-search)
+20. [Categories & Stores](#20-categories--stores)
+21. [Wishlist](#21-wishlist)
+22. [Newsletter & Contact](#22-newsletter--contact)
+23. [Admin Platform Management](#23-admin-platform-management)
+24. [Informational & Static Pages](#24-informational--static-pages)
+25. [Cross-Cutting Rules](#25-cross-cutting-rules)
 
 ---
 
@@ -43,39 +42,37 @@
 
 ```
 guest          Unauthenticated browser visitor
-  └─ user      Signed-in buyer (default role after registration)
-       └─ seller  Buyer who applied and was approved as a store owner
-            └─ admin   Platform operator with full cross-cutting access
+  â””â”€ user      Signed-in buyer (default role after registration)
+       â””â”€ seller  Buyer who applied and was approved as a store owner
+            â””â”€ admin   Platform operator with full cross-cutting access
 ```
 
 ### Actor Capabilities Summary
 
 | Capability                          | Guest | User | Seller | Admin |
 | ----------------------------------- | :---: | :--: | :----: | :---: |
-| Browse catalogue & search           |   ✓   |  ✓   |   ✓    |   ✓   |
-| Add to guest cart (localStorage)    |   ✓   |  —   |   —    |   —   |
-| Subscribe to newsletter             |   ✓   |  ✓   |   ✓    |   ✓   |
-| Send a contact message              |   ✓   |  ✓   |   ✓    |   ✓   |
-| Add to server cart                  |   —   |  ✓   |   ✓    |   ✓   |
-| Place orders / checkout             |   —   |  ✓   |   ✓    |   ✓   |
-| Write reviews (verified purchase)   |   —   |  ✓   |   ✓    |   ✓   |
-| Participate in events               |   —   |  ✓   |   ✓    |   ✓   |
-| Make an offer on a product          |   —   |  ✓   |   ✓    |   ✓   |
-| Manage own wishlist                 |   —   |  ✓   |   ✓    |   ✓   |
-| Earn & spend RC                     |   —   |  ✓   |   ✓    |   ✓   |
-| Send/receive chat messages          |   —   |  ✓   |   ✓    |   ✓   |
-| Manage own store & products         |   —   |  —   |   ✓    |   ✓   |
-| Respond to / counter offers         |   —   |  —   |   ✓    |   ✓   |
-| Ship orders & request payouts       |   —   |  —   |   ✓    |   ✓   |
-| Manage store-scoped coupons         |   —   |  —   |   ✓    |   —   |
-| Manage platform-wide content        |   —   |  —   |   —    |   ✓   |
-| Approve/reject sellers, reviews     |   —   |  —   |   —    |   ✓   |
-| Override order statuses             |   —   |  —   |   —    |   ✓   |
-| Adjust RC balances manually         |   —   |  —   |   —    |   ✓   |
-| Issue partial refunds               |   —   |  —   |   —    |   ✓   |
-| Manage platform-wide coupons        |   —   |  —   |   —    |   ✓   |
-| Manage homepage carousel & sections |   —   |  —   |   —    |   ✓   |
-| Revoke sessions                     |   —   |  —   |   —    |   ✓   |
+| Browse catalogue & search           |  âœ“  | âœ“  |  âœ“   |  âœ“  |
+| Add to guest cart (localStorage)    |  âœ“  | â€”  |  â€”   |  â€”  |
+| Subscribe to newsletter             |  âœ“  | âœ“  |  âœ“   |  âœ“  |
+| Send a contact message              |  âœ“  | âœ“  |  âœ“   |  âœ“  |
+| Add to server cart                  |  â€”  | âœ“  |  âœ“   |  âœ“  |
+| Place orders / checkout             |  â€”  | âœ“  |  âœ“   |  âœ“  |
+| Write reviews (verified purchase)   |  â€”  | âœ“  |  âœ“   |  âœ“  |
+| Participate in events               |  â€”  | âœ“  |  âœ“   |  âœ“  |
+| Make an offer on a product          |  â€”  | âœ“  |  âœ“   |  âœ“  |
+| Manage own wishlist                 |  â€”  | âœ“  |  âœ“   |  âœ“  |
+| Send/receive chat messages          |  â€”  | âœ“  |  âœ“   |  âœ“  |
+| Manage own store & products         |  â€”  | â€”  |  âœ“   |  âœ“  |
+| Respond to / counter offers         |  â€”  | â€”  |  âœ“   |  âœ“  |
+| Ship orders & request payouts       |  â€”  | â€”  |  âœ“   |  âœ“  |
+| Manage store-scoped coupons         |  â€”  | â€”  |  âœ“   |  â€”  |
+| Manage platform-wide content        |  â€”  | â€”  |  â€”   |  âœ“  |
+| Approve/reject sellers, reviews     |  â€”  | â€”  |  â€”   |  âœ“  |
+| Override order statuses             |  â€”  | â€”  |  â€”   |  âœ“  |
+| Issue partial refunds               |  â€”  | â€”  |  â€”   |  âœ“  |
+| Manage platform-wide coupons        |  â€”  | â€”  |  â€”   |  âœ“  |
+| Manage homepage carousel & sections |  â€”  | â€”  |  â€”   |  âœ“  |
+| Revoke sessions                     |  â€”  | â€”  |  â€”   |  âœ“  |
 
 ---
 
@@ -83,9 +80,9 @@ guest          Unauthenticated browser visitor
 
 ### 2.1 Actors
 
-- **Guest** — attempts to sign in or register
-- **User / Seller / Admin** — manages active session
-- **System** — Firebase Admin SDK validates tokens; middleware enforces route guards
+- **Guest** â€” attempts to sign in or register
+- **User / Seller / Admin** â€” manages active session
+- **System** â€” Firebase Admin SDK validates tokens; middleware enforces route guards
 
 ### 2.2 Registration Scenario
 
@@ -111,7 +108,7 @@ guest          Unauthenticated browser visitor
 
 ```
 1. User submits LoginForm { email, password }
-2. Client SDK signs in → receives Firebase idToken
+2. Client SDK signs in â†’ receives Firebase idToken
 3. POST /api/auth/login { idToken }
    a. Firebase Admin verifyIdToken(idToken)
    b. sessionRepository.create({ userId, device, ip })
@@ -124,11 +121,11 @@ guest          Unauthenticated browser visitor
 
 ```
 1. User clicks "Continue with Google"
-2. GET /api/auth/google/start → build OAuth URL → redirect to Google
+2. GET /api/auth/google/start â†’ build OAuth URL â†’ redirect to Google
 3. Google redirects to /api/auth/google/callback?code=...
-4. Exchange code for idToken → Firebase Admin verifyIdToken
+4. Exchange code for idToken â†’ Firebase Admin verifyIdToken
 5. Upsert user in Firestore (create if new, update lastLogin if existing)
-6. Create session → Set __session cookie → redirect to dashboard
+6. Create session â†’ Set __session cookie â†’ redirect to dashboard
 ```
 
 ### 2.5 Logout Scenario
@@ -138,7 +135,7 @@ guest          Unauthenticated browser visitor
 2. POST /api/auth/logout
    a. sessionRepository.delete(sessionId)
    b. Clear-Cookie: __session
-3. AuthContext.clear() → user is guest again
+3. AuthContext.clear() â†’ user is guest again
 ```
 
 ### 2.6 Password Reset Scenario
@@ -148,9 +145,9 @@ guest          Unauthenticated browser visitor
 2. POST /api/auth/forgot-password
    a. passwordResetTokenRepository.create({ email, token (UUID), expiresAt: +1hr })
    b. Send email via Resend with reset link: /auth/reset-password?token=...
-3. User clicks link → ResetPasswordView loads
+3. User clicks link â†’ ResetPasswordView loads
 4. POST /api/auth/reset-password { token, newPassword }
-   a. passwordResetTokenRepository.findValid(token) — must exist, not expired, not used
+   a. passwordResetTokenRepository.findValid(token) â€” must exist, not expired, not used
    b. Firebase Admin updateUser(uid, { password })
    c. Token marked as used
 5. User is redirected to /auth/login
@@ -164,15 +161,15 @@ guest          Unauthenticated browser visitor
    a. Validate OTP document (not expired, correct code)
    b. userRepository.update(uid, { emailVerified: true })
    c. Firebase Admin updateUser(uid, { emailVerified: true })
-3. Resend OTP: POST /api/auth/send-verification → new OTP + email
+3. Resend OTP: POST /api/auth/send-verification â†’ new OTP + email
 ```
 
 ### 2.8 Route Guard Rules
 
 - `middleware.ts` intercepts every request and validates `__session`
-- Routes protected by `RBAC_CONFIG` — each protected route has a minimum required role
-- Unauthenticated requests to protected routes → redirect `/auth/login`
-- Authenticated requests with insufficient role → redirect `/unauthorized`
+- Routes protected by `RBAC_CONFIG` â€” each protected route has a minimum required role
+- Unauthenticated requests to protected routes â†’ redirect `/auth/login`
+- Authenticated requests with insufficient role â†’ redirect `/unauthorized`
 
 ### 2.9 Session Management
 
@@ -186,17 +183,17 @@ guest          Unauthenticated browser visitor
 
 ### 3.1 Actors
 
-- **Guest / User** — browse and view products
-- **Seller** — create and manage own products
-- **Admin** — create, edit, or delete any product
+- **Guest / User** â€” browse and view products
+- **Seller** â€” create and manage own products
+- **Admin** â€” create, edit, or delete any product
 
 ### 3.2 Product Types
 
-| Type      | Field value   | Purchase mechanism            |
-| --------- | ------------- | ----------------------------- |
-| Standard  | `'product'`   | Add to cart → checkout        |
-| Auction   | `'auction'`   | Bid → win → checkout          |
-| Pre-Order | `'pre-order'` | Reserve → pay deposit or full |
+| Type      | Field value   | Purchase mechanism              |
+| --------- | ------------- | ------------------------------- |
+| Standard  | `'product'`   | Add to cart â†’ checkout        |
+| Auction   | `'auction'`   | Bid â†’ win â†’ checkout        |
+| Pre-Order | `'pre-order'` | Reserve â†’ pay deposit or full |
 
 All three share the same Firestore `products` collection, differentiated by the `type` field.
 
@@ -207,12 +204,12 @@ All three share the same Firestore `products` collection, differentiated by the 
 2. Fills ProductForm:
    - Basic info (name, description, brand)
    - Category (select or inline-create)
-   - Media (up to 10 images + 1 video — staged locally, submitted as FormData)
+   - Media (up to 10 images + 1 video â€” staged locally, submitted as FormData)
    - Pricing (price, compare-at-price, bulk discount tiers)
    - Inventory (SKU, stock, weight, dimensions)
    - Type-specific settings (auction dates/min-bid, pre-order deposit)
    - SEO (title override, meta description)
-3. Submit → POST /api/seller/products
+3. Submit â†’ POST /api/seller/products
    a. Files uploaded to Firebase Storage on the backend
    b. productRepository.create({ ...data, sellerId, storeId, status: 'active' })
 4. Seller redirected to product list
@@ -220,7 +217,7 @@ All three share the same Firestore `products` collection, differentiated by the 
 
 **Rules:**
 
-- Images are staged locally in the browser → submitted as FormData to backend → backend uploads to Firebase Storage (never client-side upload)
+- Images are staged locally in the browser â†’ submitted as FormData to backend â†’ backend uploads to Firebase Storage (never client-side upload)
 - Media upload validates magic bytes for MIME type (not just extension)
 - Only the owning seller (or admin) can edit or delete a product
 
@@ -229,7 +226,7 @@ All three share the same Firestore `products` collection, differentiated by the 
 ```
 1. User/Guest visits /products (or /auctions, /pre-orders, a category page, or a store page)
 2. URL params drive filtering: page, pageSize, sort, category, minPrice, maxPrice, brand, rating
-3. RSC page calls productRepository.findMany(params) → passes initialData to ProductsView
+3. RSC page calls productRepository.findMany(params) â†’ passes initialData to ProductsView
 4. Client uses TanStack Query for stale-while-revalidate updates
 5. Filter changes update URL via useUrlTable (no useState)
 ```
@@ -253,24 +250,24 @@ All three share the same Firestore `products` collection, differentiated by the 
 
 ### 4.1 Actors
 
-- **User** — places bids on active auctions
-- **Seller** — creates an auction-type product with start/end dates and a minimum bid
-- **Admin** — oversees all bids; can update auction product fields
-- **System** — Firebase RTDB holds live bid state; scheduled job ends auctions at `endTime`
+- **User** â€” places bids on active auctions
+- **Seller** â€” creates an auction-type product with start/end dates and a minimum bid
+- **Admin** â€” oversees all bids; can update auction product fields
+- **System** â€” Firebase RTDB holds live bid state; scheduled job ends auctions at `endTime`
 
 ### 4.2 Auction Lifecycle
 
 ```
-upcoming  ← endTime has not been reached, auction not yet started
-  │
-  ▼
-active    ← startTime reached; bidding is open
-  │
-  ▼
-ended     ← endTime reached (scheduler transitions status)
-  │
-  ▼
-winner notified → checkout flow for winning bidder
+upcoming  â† endTime has not been reached, auction not yet started
+  â”‚
+  â–¼
+active    â† startTime reached; bidding is open
+  â”‚
+  â–¼
+ended     â† endTime reached (scheduler transitions status)
+  â”‚
+  â–¼
+winner notified â†’ checkout flow for winning bidder
 ```
 
 ### 4.3 Placing a Bid Scenario
@@ -280,10 +277,10 @@ winner notified → checkout flow for winning bidder
 2. Live current bid shown via useRealtimeBids (Firebase RTDB)
 3. User fills PlaceBidForm { amount }
 4. Client-side validation:
-   - amount ≥ currentBid + minimumIncrement
+   - amount â‰¥ currentBid + minimumIncrement
    - user is NOT already the highest bidder
    - auction status is 'active'
-5. Submit → placeBidAction({ auctionId, amount })
+5. Submit â†’ placeBidAction({ auctionId, amount })
    a. Server re-validates all conditions against Firestore + RTDB
    b. Atomically: update RTDB highest bid + write bid record to Firestore
 6. Previous highest bidder receives 'bid_outbid' notification
@@ -304,7 +301,7 @@ winner notified → checkout flow for winning bidder
 3. Creates winning bid record in Firestore
 4. Sends 'bid_won' notification to winner
 5. Sends 'bid_outbid' notification to all other bidders
-6. Winner directed to checkout → order placed at winning bid price
+6. Winner directed to checkout â†’ order placed at winning bid price
 ```
 
 ---
@@ -313,17 +310,17 @@ winner notified → checkout flow for winning bidder
 
 ### 5.1 Actors
 
-- **User** — reserves a pre-order product
-- **Seller** — creates a pre-order product with an availability date and optional deposit amount
+- **User** â€” reserves a pre-order product
+- **Seller** â€” creates a pre-order product with an availability date and optional deposit amount
 
 ### 5.2 Pre-Order Scenario
 
 ```
-1. User views pre-order product → sees "Available on [date]" info
-2. User clicks "Pre-Order" → adds to cart with pre-order flag
+1. User views pre-order product â†’ sees "Available on [date]" info
+2. User clicks "Pre-Order" â†’ adds to cart with pre-order flag
 3. Checkout proceeds normally; payment is captured at full price or deposit only (seller config)
 4. Order created with status: 'pre_order'
-5. When product becomes available, seller marks it ready → order transitions to 'confirmed'
+5. When product becomes available, seller marks it ready â†’ order transitions to 'confirmed'
 ```
 
 ---
@@ -332,57 +329,52 @@ winner notified → checkout flow for winning bidder
 
 ### 6.1 Actors
 
-- **User (Buyer)** — initiates an offer with RC engagement
-- **Seller** — reviews, accepts, declines, or counters the offer
-- **System** — enforces rate limits; manages RC locking/release; expires offers after 48 hours
+- **User (Buyer)** â€” initiates an offer
+- **Seller** â€” reviews, accepts, declines, or counters the offer
+- **System** â€” enforces rate limits; expires offers after 48 hours
 
 ### 6.2 Offer Status Lifecycle
 
 ```
-pending    ← buyer has submitted an offer; RC engaged
-   │
-   ├─→ accepted   ← seller accepts buyer's price → buyer can checkout
-   │
-   ├─→ declined   ← seller declines          → RC immediately released
-   │
-   ├─→ countered  ← seller counters with new price
-   │       │
-   │       ├─→ accepted (buyer accepts counter) → checkout
-   │       └─→ withdrawn  ← buyer withdraws counter → RC released
-   │
-   └─→ withdrawn  ← buyer withdraws original offer → RC released
-   └─→ expired    ← 48 hours pass without response → RC released
+pending    â† buyer has submitted an offer
+   â”‚
+   â”œâ”€â†’ accepted   â† seller accepts buyer's price â†’ buyer can checkout
+   â”‚
+   â”œâ”€â†’ declined   â† seller declines
+   â”‚
+   â”œâ”€â†’ countered  â† seller counters with new price
+   â”‚       â”‚
+   â”‚       â”œâ”€â†’ accepted (buyer accepts counter) â†’ checkout
+   â”‚       â””â”€â†’ withdrawn  â† buyer withdraws counter
+   â”‚
+   â””â”€â†’ withdrawn  â† buyer withdraws original offer
+   â””â”€â†’ expired    â† 48 hours pass without response
 ```
 
 ### 6.3 Offer Data Model
 
 ```
 offers collection:
-  buyerUid       — authenticated buyer
-  sellerId       — owning seller
-  productId      — target product
-  offerAmount    — buyer's proposed price (₹, integer RC coins)
-  counterAmount  — seller's counter price (set when status = 'countered')
-  status         — pending | accepted | declined | countered | withdrawn | expired
-  expiresAt      — 48 h from creation
-  buyerNote      — optional free-text (max 300 chars)
-  sellerNote     — optional response note (max 300 chars)
-
-user document fields:
-  rcBalance      — total RC balance (freeCoins + engagedRC)
-  engagedRC      — coins locked in active bids / offers; not available for new spending
+  buyerUid       â€” authenticated buyer
+  sellerId       â€” owning seller
+  productId      â€” target product
+  offerAmount    â€” buyer's proposed price (â‚¹)
+  counterAmount  â€” seller's counter price (set when status = 'countered')
+  status         â€” pending | accepted | declined | countered | withdrawn | expired
+  expiresAt      â€” 48 h from creation
+  buyerNote      â€” optional free-text (max 300 chars)
+  sellerNote     â€” optional response note (max 300 chars)
 ```
 
 ### 6.4 Make an Offer Scenario
 
 ```
-1. Buyer visits a product detail page → clicks "Make an Offer"
+1. Buyer visits a product detail page â†’ clicks "Make an Offer"
 2. Fills OfferForm { offerAmount, buyerNote? }
 3. makeOfferAction({ productId, offerAmount, buyerNote })
-   a. Rate-limited (STRICT — Upstash Redis)
-   b. Validates freeCoins ≥ offerAmount
+   a. Rate-limited (STRICT â€” Upstash Redis)
+   b. Validates offer constraints (one active offer per product, 3 offer limit)
    c. Creates offer document (status: 'pending', expiresAt: +48h)
-   d. Engages RC: userRepository.update(uid, { engagedRC += offerAmount, rcBalance unchanged })
 4. Seller receives 'new_offer' notification
 5. Buyer sees offer in /user/offers with status 'pending'
 ```
@@ -390,24 +382,22 @@ user document fields:
 ### 6.5 Seller Responds to Offer Scenario
 
 ```
-Accessed via /seller/offers — SellerOffersView
+Accessed via /seller/offers â€” SellerOffersView
 
 Accept:
   respondToOfferAction({ offerId, action: 'accept' })
-  → offer status → 'accepted'
-  → buyer notified; buyer can now call checkoutOfferAction
+  â†’ offer status â†’ 'accepted'
+  â†’ buyer notified; buyer can now call checkoutOfferAction
 
 Decline:
   respondToOfferAction({ offerId, action: 'decline', sellerNote? })
-  → offer status → 'declined'
-  → RC immediately released: userRepository.update(uid, { engagedRC -= offerAmount })
-  → buyer notified
+  â†’ offer status â†’ 'declined'
+  â†’ buyer notified
 
 Counter:
   respondToOfferAction({ offerId, action: 'counter', counterAmount, sellerNote? })
-  → offer status → 'countered'
-  → RC delta adjusted: if counterAmount > offerAmount → engage delta; else release delta
-  → buyer notified with counter price
+  â†’ offer status â†’ 'countered'
+  â†’ buyer notified with counter price
 ```
 
 ### 6.6 Buyer Accepts Counter Scenario
@@ -416,8 +406,7 @@ Counter:
 1. Buyer sees counter in /user/offers
 2. acceptCounterAction({ offerId })
    a. Validates offer status is 'countered'
-   b. Adjusts engagedRC to counterAmount (credit/debit delta)
-   c. status → 'accepted'
+   b. status â†’ 'accepted'
 3. Buyer can now checkout
 ```
 
@@ -428,10 +417,9 @@ Counter:
    a. Validates offer status is 'accepted'
    b. Reads lockedPrice from offer document
    c. Adds product to cart with offerId + lockedPrice override
-2. Buyer proceeds through normal checkout flow (§8)
+2. Buyer proceeds through normal checkout flow (Â§8)
 3. On POST /api/payment/verify:
-   → RC that was engaged is returned to freeCoins (full reversal)
-   → Actual payment charged at lockedPrice via Razorpay / COD
+   â†’ Actual payment charged at lockedPrice via Razorpay / COD
 ```
 
 ### 6.8 Withdraw Offer Scenario
@@ -439,16 +427,14 @@ Counter:
 ```
 1. Buyer calls withdrawOfferAction({ offerId })
    a. Validates offer is in 'pending' or 'countered' state
-   b. status → 'withdrawn'
-   c. RC immediately released: engagedRC -= amount
+   b. status â†’ 'withdrawn'
 ```
 
 **Rules:**
 
 - Rate-limited per user (STRICT preset)
-- Offer expiry: 48 hours; cron job or lazy-check clears expired offers and releases RC
+- Offer expiry: 48 hours; cron job or lazy-check clears expired offers
 - One active offer per buyer per product (existing active offer must be withdrawn first)
-- Engaged RC is not available for new bids or offers until released
 
 ---
 
@@ -456,8 +442,8 @@ Counter:
 
 ### 7.1 Actors
 
-- **Guest** — uses a localStorage cart; can browse and build a cart without signing in
-- **User** — uses a server-side Firestore cart
+- **Guest** â€” uses a localStorage cart; can browse and build a cart without signing in
+- **User** â€” uses a server-side Firestore cart
 
 ### 7.2 Guest Cart Scenario
 
@@ -465,30 +451,30 @@ Counter:
 1. Guest adds a product to cart
 2. Item saved to localStorage via useGuestCart
 3. Cart count badge reads from localStorage
-4. Guest navigates to /cart → GuestCartItemRow components rendered from localStorage
+4. Guest navigates to /cart â†’ GuestCartItemRow components rendered from localStorage
 ```
 
 ### 7.3 Guest Cart Merge on Login Scenario
 
 ```
 1. Guest has items in localStorage cart
-2. Guest signs in → AuthContext detects login event
+2. Guest signs in â†’ AuthContext detects login event
 3. GuestCartMergerEffect calls mergeGuestCartAction(localItems)
 4. Server merges: for each local item
-   - If product exists in server cart → add quantities
-   - If not → create new cart item
+   - If product exists in server cart â†’ add quantities
+   - If not â†’ create new cart item
 5. localStorage cart is cleared
 6. User sees merged server cart
 ```
 
 ### 7.4 Server Cart Operations
 
-| Action          | Rule                                                                       |
-| --------------- | -------------------------------------------------------------------------- |
-| Add item        | If item+variant already in cart → increment quantity; else create new row  |
-| Update quantity | Minimum quantity: 1; maximum: available stock                              |
-| Remove item     | Deletes the cart item document                                             |
-| Clear cart      | Deletes all cart item documents for the user; called after order placement |
+| Action          | Rule                                                                        |
+| --------------- | --------------------------------------------------------------------------- |
+| Add item        | If item+variant already in cart â†’ increment quantity; else create new row |
+| Update quantity | Minimum quantity: 1; maximum: available stock                               |
+| Remove item     | Deletes the cart item document                                              |
+| Clear cart      | Deletes all cart item documents for the user; called after order placement  |
 
 ### 7.5 Cart Coupon Application
 
@@ -500,7 +486,7 @@ Counter:
    c. Usage limit not exceeded (globally and per user)
    d. Minimum order amount met by current cart total
    e. If scoped to products: at least one applicable product is in cart
-3. Success → discount amount shown in CartSummary
+3. Success â†’ discount amount shown in CartSummary
 4. Discount applied at order creation time (server-side re-validation)
 ```
 
@@ -510,26 +496,26 @@ Counter:
 
 ### 8.1 Actors
 
-- **User** — completes the checkout flow
-- **System (Razorpay)** — processes payment and fires webhooks
-- **System (ShipRocket)** — handles shipping fulfillment
+- **User** â€” completes the checkout flow
+- **System (Razorpay)** â€” processes payment and fires webhooks
+- **System (ShipRocket)** â€” handles shipping fulfillment
 
 ### 8.2 Multi-Step Checkout Scenario
 
 ```
-Step 1 — Address
-  → User selects saved address or creates a new one inline
-  → If recipient name ≠ account holder name → third-party address detected
-       → Consent OTP flow required (see §8.3) before advancing
+Step 1 â€” Address
+  â†’ User selects saved address or creates a new one inline
+  â†’ If recipient name â‰  account holder name â†’ third-party address detected
+       â†’ Consent OTP flow required (see Â§8.3) before advancing
 
-Step 2 — Order Review
-  → Cart items displayed with seller breakdown (order-splitter.ts)
-  → Applied coupon savings shown
-  → Estimated delivery date shown
+Step 2 â€” Order Review
+  â†’ Cart items displayed with seller breakdown (order-splitter.ts)
+  â†’ Applied coupon savings shown
+  â†’ Estimated delivery date shown
 
-Step 3 — Payment
-  → User selects payment method: Razorpay | COD | RC
-  → Click "Place Order"
+Step 3 â€” Payment
+  â†’ User selects payment method: Razorpay | COD
+  â†’ Click "Place Order"
 ```
 
 ### 8.3 Third-Party Address Consent OTP Scenario
@@ -539,14 +525,14 @@ Step 3 — Payment
 2. Consent OTP required before Step 1 can advance
 3. ConsentOtpModal appears:
    a. sendConsentOtpAction(addressId)
-      → Generates 6-digit code, stores in Firestore with 15-min expiry
-      → Sends email to account's registered email (not the recipient's)
-      → Rate limited: 15-min cooldown per user stored in users/{uid}/consentOtpRateLimit/meta
+      â†’ Generates 6-digit code, stores in Firestore with 15-min expiry
+      â†’ Sends email to account's registered email (not the recipient's)
+      â†’ Rate limited: 15-min cooldown per user stored in users/{uid}/consentOtpRateLimit/meta
    b. User enters the OTP code
    c. verifyConsentOtpAction(addressId, code)
-      → Rate limited: 10 attempts per 5 minutes (Upstash)
-      → On success: marks OTP verified; checkout flow advances
-      → On failure: shows attempt count; locks after limit
+      â†’ Rate limited: 10 attempts per 5 minutes (Upstash)
+      â†’ On success: marks OTP verified; checkout flow advances
+      â†’ On failure: shows attempt count; locks after limit
 4. Bypass credits: a user may bypass the 15-min cooldown up to 3 times;
    one credit is granted each time a partial order was placed
 ```
@@ -554,54 +540,40 @@ Step 3 — Payment
 ### 8.4 Razorpay Payment Scenario
 
 ```
-1. POST /api/payment/create-order { cartId, couponCode?, rcAmount? }
+1. POST /api/payment/create-order { cartId, couponCode? }
    a. Server re-validates cart and coupon
    b. Splits cart by seller (order-splitter.ts)
-   c. Creates Razorpay order → returns { orderId, amount }
+   c. Creates Razorpay order â†’ returns { orderId, amount }
 2. Razorpay checkout widget opens in browser
 3. User completes payment (card / UPI / netbanking)
 4. On success: Razorpay calls POST /api/payment/verify { razorpayOrderId, paymentId, signature }
    a. HMAC SHA256 signature verified (timingSafeEqual)
-   b. orderRepository.create({ items, sellerId, buyerId, address, coupon, rcUsed, total, status: 'confirmed' })
+   b. orderRepository.create({ items, sellerId, buyerId, address, coupon, total, status: 'confirmed' })
    c. cartRepository.clear(userId)
-   d. rcRepository.debit(userId, rcUsed) if coins were used
-   e. couponRepository.incrementUsage(couponCode) if coupon used
-   f. RC earned: rcRepository.credit(userId, earnedCoins) based on order total
-   g. Notifications sent: 'order_confirmed' to buyer
+   d. couponRepository.incrementUsage(couponCode) if coupon used
+   e. Notifications sent: 'order_confirmed' to buyer
 ```
 
 ### 8.5 Cash on Delivery Scenario
 
 ```
 1. User selects COD payment
-2. CheckoutOtpModal appears — OTP sent to registered phone/email
+2. CheckoutOtpModal appears â€” OTP sent to registered phone/email
 3. User enters OTP to confirm delivery consent
 4. On verification: POST /api/checkout (COD flow)
    a. orderRepository.create({ ...data, paymentMethod: 'cod', status: 'confirmed' })
    b. cartRepository.clear(userId)
 ```
 
-### 8.6 RC (Coins) at Checkout
-
-```
-1. User sees RC balance in CheckoutPaymentMethod
-2. User toggles "Use RC" — slider to pick coin amount
-3. Coin value converted to discount: coinAmount ÷ conversionRate (from site settings)
-4. RC can cover partial or full order total
-5. If full: no other payment required; order placed directly
-6. If partial: remaining balance charged via Razorpay / COD
-7. On order confirmation: coins are debited from user's RC balance
-```
-
-### 8.7 Partial Order Scenario (Out-of-Stock)
+### 8.6 Partial Order Scenario (Out-of-Stock)
 
 ```
 1. POST /api/checkout succeeds but some items had become unavailable
 2. Response: { unavailableItems: [...] }
 3. PartialOrderDialog appears:
-   - "Proceed" → place order with only available items
-     → user receives one consent-OTP bypass credit
-   - "Cancel" → user returns to cart to adjust quantities
+   - "Proceed" â†’ place order with only available items
+     â†’ user receives one consent-OTP bypass credit
+   - "Cancel" â†’ user returns to cart to adjust quantities
 ```
 
 ---
@@ -610,34 +582,34 @@ Step 3 — Payment
 
 ### 9.1 Actors
 
-- **User** — views history, tracks shipment, cancels pending orders
-- **Seller** — processes, ships, and manages orders for their store
-- **Admin** — full override on any order status
-- **System (ShipRocket)** — delivery status webhooks
+- **User** â€” views history, tracks shipment, cancels pending orders
+- **Seller** â€” processes, ships, and manages orders for their store
+- **Admin** â€” full override on any order status
+- **System (ShipRocket)** â€” delivery status webhooks
 
 ### 9.2 Order Status Lifecycle
 
 ```
-pending_payment   ← order created, payment not yet captured
-      │
-      ▼
-  confirmed       ← payment verified (Razorpay webhook or COD OTP)
-      │
-      ▼
-  processing      ← seller is preparing the shipment
-      │
-      ▼
-   shipped        ← seller ships; ShipRocket AWB assigned
-      │
-      ▼
-  delivered       ← ShipRocket delivery webhook fires
-      │
-      ▼
-  completed       ← auto-transition after delivery + return window closes
+pending_payment   â† order created, payment not yet captured
+      â”‚
+      â–¼
+  confirmed       â† payment verified (Razorpay webhook or COD OTP)
+      â”‚
+      â–¼
+  processing      â† seller is preparing the shipment
+      â”‚
+      â–¼
+   shipped        â† seller ships; ShipRocket AWB assigned
+      â”‚
+      â–¼
+  delivered       â† ShipRocket delivery webhook fires
+      â”‚
+      â–¼
+  completed       â† auto-transition after delivery + return window closes
 
- (from any state) → cancelled  ← user (only from pending_payment / confirmed)
-                              ← admin (any state)
- (from any state) → refunded   ← admin only
+ (from any state) â†’ cancelled  â† user (only from pending_payment / confirmed)
+                              â† admin (any state)
+ (from any state) â†’ refunded   â† admin only
 ```
 
 ### 9.3 User Cancels Order Scenario
@@ -648,16 +620,15 @@ pending_payment   ← order created, payment not yet captured
 3. cancelOrderAction({ orderId })
    a. Validates status is cancellable
    b. orderRepository.update(orderId, { status: 'cancelled' })
-   c. If payment was made → refund initiated via Razorpay Refunds API
-   d. RC earned on this order → reversed (debit)
-   e. Notification: 'order_cancelled' sent to buyer
+   c. If payment was made â†’ refund initiated via Razorpay Refunds API
+   d. Notification: 'order_cancelled' sent to buyer
 ```
 
 ### 9.4 Seller Ships Order Scenario
 
 ```
 1. Seller opens SellerOrdersView; clicks "Ship" on a confirmed order
-2. useShipOrder → POST /api/seller/orders/[id]/ship
+2. useShipOrder â†’ POST /api/seller/orders/[id]/ship
    a. ShipRocket API: create shipment, assign AWB
    b. orderRepository.update(orderId, { status: 'shipped', awb, courier, trackingUrl })
 3. Buyer receives 'order_shipped' notification
@@ -667,7 +638,7 @@ pending_payment   ← order created, payment not yet captured
 ### 9.5 Admin Order Override Scenario
 
 ```
-1. Admin opens AdminOrdersView → selects order
+1. Admin opens AdminOrdersView â†’ selects order
 2. Fills OrderStatusForm { status, note }
 3. adminUpdateOrderAction({ id, status, note })
    a. Status updated regardless of current state (admin override)
@@ -679,9 +650,9 @@ pending_payment   ← order created, payment not yet captured
 
 ```
 GET /api/orders/[id]/invoice
-  → Validates requesting user is the buyer, seller, or admin
-  → Generates PDF invoice with order items, tax breakdown, addresses
-  → Returns streamed PDF response
+  â†’ Validates requesting user is the buyer, seller, or admin
+  â†’ Generates PDF invoice with order items, tax breakdown, addresses
+  â†’ Returns streamed PDF response
 ```
 
 ---
@@ -690,32 +661,32 @@ GET /api/orders/[id]/invoice
 
 ### 10.1 Actors
 
-- **Admin** — initiates partial or full refunds via `adminPartialRefundAction`
-- **System** — automatic refund triggered when a user cancels a paid order
-- **Razorpay** — processes the actual fund transfer back to buyer
+- **Admin** â€” initiates partial or full refunds via `adminPartialRefundAction`
+- **System** â€” automatic refund triggered when a user cancels a paid order
+- **Razorpay** â€” processes the actual fund transfer back to buyer
 
 ### 10.2 Refund Status on Order
 
 ```
 order.refundStatus:
-  none        ← default; no refund issued
-  processing  ← refund initiated; awaiting Razorpay confirmation
-  completed   ← funds successfully returned to buyer
+  none        â† default; no refund issued
+  processing  â† refund initiated; awaiting Razorpay confirmation
+  completed   â† funds successfully returned to buyer
 ```
 
 ### 10.3 Admin Partial Refund Scenario
 
 ```
-1. Admin opens AdminOrdersView → selects a paid order
+1. Admin opens AdminOrdersView â†’ selects a paid order
 2. adminPartialRefundAction({ orderId, deductFees, refundNote? })
-   a. Rate-limited (STRICT — Upstash Redis per admin uid)
+   a. Rate-limited (STRICT â€” Upstash Redis per admin uid)
    b. Validates order.paymentStatus === 'paid' and refundStatus !== 'completed'
    c. Fetches processing fee from siteSettings.commissions.processingFeePercent
-      → fallback: 2.36% (Razorpay standard)
+      â†’ fallback: 2.36% (Razorpay standard)
    d. Calculates:
         grossRefund  = order.total
-        feeDeducted  = deductFees ? grossRefund × feePercent / 100 : 0
-        netRefund    = grossRefund − feeDeducted
+        feeDeducted  = deductFees ? grossRefund Ã— feePercent / 100 : 0
+        netRefund    = grossRefund âˆ’ feeDeducted
    e. orderRepository.update(orderId, { refundStatus: 'processing', refundNote })
    f. Notification: 'refund_initiated' sent to buyer
 3. Admin manually processes refund via Razorpay dashboard (or automated via API)
@@ -725,12 +696,11 @@ order.refundStatus:
 ### 10.4 Automatic Refund on Order Cancellation
 
 ```
-1. User calls cancelOrderAction (see §9.3)
+1. User calls cancelOrderAction (see Â§9.3)
 2. If order.paymentStatus === 'paid':
-   → Razorpay Refunds API called automatically
-   → order.refundStatus → 'processing'
-3. Any RC earned from this order is reversed (debited)
-4. Buyer notified via 'order_cancelled' notification
+   â†’ Razorpay Refunds API called automatically
+   â†’ order.refundStatus â†’ 'processing'
+3. Buyer notified via 'order_cancelled' notification
 ```
 
 **Rules:**
@@ -746,20 +716,20 @@ order.refundStatus:
 
 ### 11.1 Actors
 
-- **User (applying)** — submits a seller application via `becomeSellerAction`
-- **Seller** — manages products, orders, payouts, and coupons
-- **Admin** — approves or suspends seller stores
+- **User (applying)** â€” submits a seller application via `becomeSellerAction`
+- **Seller** â€” manages products, orders, payouts, and coupons
+- **Admin** â€” approves or suspends seller stores
 
 ### 11.2 Become a Seller Scenario
 
 ```
-1. User visits /sellers → clicks "Become a Seller"
+1. User visits /sellers â†’ clicks "Become a Seller"
 2. Fills BecomeSellerForm (store name, description, category, logo)
 3. becomeSellerAction(input)
    a. storeRepository.create({ ...data, ownerId: uid, status: 'pending' })
    b. Notification sent to admin: new seller application
 4. User sees "Application under review" message
-5. Admin reviews in AdminStoresView → approves or rejects
+5. Admin reviews in AdminStoresView â†’ approves or rejects
 6. adminUpdateStoreStatusAction({ uid, status: 'approved' })
    a. storeRepository.update(storeId, { status: 'approved' })
    b. userRepository.update(uid, { role: 'seller' })
@@ -768,13 +738,13 @@ order.refundStatus:
 
 ### 11.3 Seller Product Management
 
-**Create product:** see §3.3  
+**Create product:** see Â§3.3  
 **Edit product:**
 
 ```
 1. Seller opens product in SellerEditProductView
 2. Updates form fields; new media can be added/removed
-3. useUpdateSellerProduct → PUT /api/seller/products/[id]
+3. useUpdateSellerProduct â†’ PUT /api/seller/products/[id]
    a. Only owning seller's products are returned/editable (enforced via sellerId filter)
    b. Media diff: removed images deleted from Storage; new images uploaded
 4. Product updated in Firestore
@@ -797,7 +767,7 @@ Data aggregated from `GET /api/seller/analytics` via `useSellerAnalytics`:
 - Revenue (last 30 days, 7 days, all-time)
 - Order count (last 30 days)
 - Active product count
-- Conversion rate (views → orders)
+- Conversion rate (views â†’ orders)
 - Top 5 products by revenue
 - Pending offers count
 - Last 5 recently added products
@@ -807,19 +777,19 @@ Data aggregated from `GET /api/seller/analytics` via `useSellerAnalytics`:
 Sellers receive and respond to buyer offers from `/seller/offers` (SellerOffersView).
 
 ```
-1. useSellerOffers() loads incoming offers via useQuery → apiClient → GET /api/seller/offers
+1. useSellerOffers() loads incoming offers via useQuery â†’ apiClient â†’ GET /api/seller/offers
 2. Seller sees: product image, buyer, offer amount, status, buyer note, expiry countdown
 3. Actions:
    - respondToOfferAction({ offerId, action: 'accept' })
    - respondToOfferAction({ offerId, action: 'decline', sellerNote? })
    - respondToOfferAction({ offerId, action: 'counter', counterAmount, sellerNote? })
-4. Full offer lifecycle documented in §6
+4. Full offer lifecycle documented in Â§6
 ```
 
 ### 11.6 Seller Shipping Configuration
 
 ```
-1. Seller opens /seller/shipping → SellerShippingView
+1. Seller opens /seller/shipping â†’ SellerShippingView
 2. useSellerShipping() loads ShipRocket config
 3. updateSellerShippingConfigAction({ warehouseAddress, defaultCourier, handlingDays })
 4. Config stored in Firestore; used when creating ShipRocket shipments
@@ -828,8 +798,8 @@ Sellers receive and respond to buyer offers from `/seller/offers` (SellerOffersV
 ### 11.7 Seller Analytics
 
 ```
-Route: /seller/analytics — SellerAnalyticsView
-Data: useSellerAnalytics() → GET /api/seller/analytics
+Route: /seller/analytics â€” SellerAnalyticsView
+Data: useSellerAnalytics() â†’ GET /api/seller/analytics
 Metrics: revenue trend, order volume, product views, top-performing products
 ```
 
@@ -841,28 +811,28 @@ Metrics: revenue trend, order volume, product views, top-performing products
 
 A **platform day** starts at **10:00 AM IST** every day. Any delivery confirmed before 10 AM IST counts from that same day's 10 AM start. Day 1 = the next upcoming 10 AM IST after the event.
 
-- `getBusinessDayCutoff(n)` in `functions/src/utils/businessDay.ts` — used by Firestore queries
-- `getBusinessDaysRemaining(since, n)` in `src/utils/business-day.ts` — used by UI countdowns
+- `getBusinessDayCutoff(n)` in `functions/src/utils/businessDay.ts` â€” used by Firestore queries
+- `getBusinessDaysRemaining(since, n)` in `src/utils/business-day.ts` â€” used by UI countdowns
 
 ### 12.1 Actors
 
-- **Seller** — requests a payout for delivered orders with settled payments
-- **Admin** — approves or rejects payout requests
-- **System** — auto-payout job at 10:00 AM IST daily; transfers funds to the seller's registered bank account
+- **Seller** â€” requests a payout for delivered orders with settled payments
+- **Admin** â€” approves or rejects payout requests
+- **System** â€” auto-payout job at 10:00 AM IST daily; transfers funds to the seller's registered bank account
 
 ### 12.2 Payout Status Lifecycle
 
 ```
-pending  ← seller submits request
-   │
-   ▼
-approved ← admin approves
-   │
-   ▼
-paid     ← funds transferred by admin
+pending  â† seller submits request
+   â”‚
+   â–¼
+approved â† admin approves
+   â”‚
+   â–¼
+paid     â† funds transferred by admin
 
 (alternative)
-rejected ← admin rejects with note
+rejected â† admin rejects with note
 ```
 
 ### 12.3 Request Payout Scenario
@@ -870,8 +840,8 @@ rejected ← admin rejects with note
 ```
 1. Seller opens SellerPayoutsView
 2. Selects delivered orders to include
-3. Checks total ≥ ₹500 minimum
-4. useBulkRequestPayout → POST /api/seller/orders/bulk
+3. Checks total â‰¥ â‚¹500 minimum
+4. useBulkRequestPayout â†’ POST /api/seller/orders/bulk
    a. Validates payout settings exist (bank account configured)
    b. Validates all selected orders are 'delivered' and not already included in a payout
    c. payoutRepository.create({ sellerId, orderIds, amount, status: 'pending' })
@@ -880,7 +850,7 @@ rejected ← admin rejects with note
 
 **Rules:**
 
-- Minimum payout amount: ₹500
+- Minimum payout amount: â‚¹500
 - Seller must have bank account details saved in `SellerPayoutSettingsView` before requesting
 - Each delivered order can only be included in one payout request
 - An order's `payoutStatus` becomes `eligible` after **7 platform days** (10:00 AM IST boundaries) have elapsed since delivery
@@ -903,26 +873,26 @@ rejected ← admin rejects with note
 
 ### 13.1 Actors
 
-- **User** — writes a review after a verified purchase
-- **Admin** — moderates all reviews (approve / reject)
-- **Seller** — sees reviews for their products (read-only)
+- **User** â€” writes a review after a verified purchase
+- **Admin** â€” moderates all reviews (approve / reject)
+- **Seller** â€” sees reviews for their products (read-only)
 
 ### 13.2 Review Status Lifecycle
 
 ```
-pending  ← submitted but not yet moderated
-   │
-approved ← admin approves → publicly visible
-   │
-rejected ← admin rejects → hidden from public
+pending  â† submitted but not yet moderated
+   â”‚
+approved â† admin approves â†’ publicly visible
+   â”‚
+rejected â† admin rejects â†’ hidden from public
 ```
 
 ### 13.3 Write a Review Scenario
 
 ```
-1. User opens product detail page → clicks "Write a Review"
+1. User opens product detail page â†’ clicks "Write a Review"
 2. System validates: user has at least one delivered order containing this product
-3. ReviewModal appears: { rating (1–5 stars), title, body }
+3. ReviewModal appears: { rating (1â€“5 stars), title, body }
 4. createReviewAction({ productId, rating, title, body })
    a. Reviews are saved with status: 'pending'
    b. Review visible only to author and admin
@@ -930,8 +900,7 @@ rejected ← admin rejects → hidden from public
 6. adminUpdateReviewAction({ id, status: 'approved' })
    a. Review becomes publicly visible
    b. 'review_approved' notification sent to reviewer
-   c. RC credited to reviewer (reward for verified review)
-   d. Product rating aggregate recalculated
+   c. Product rating aggregate recalculated
 ```
 
 **Rules:**
@@ -957,9 +926,9 @@ rejected ← admin rejects → hidden from public
 
 ### 14.1 Actors
 
-- **Admin** — manages platform-wide coupons applicable to any order
-- **Seller** — manages store-scoped coupons applicable to their products only
-- **User** — applies coupon codes at cart / checkout
+- **Admin** â€” manages platform-wide coupons applicable to any order
+- **Seller** â€” manages store-scoped coupons applicable to their products only
+- **User** â€” applies coupon codes at cart / checkout
 
 ### 14.2 Coupon Scopes
 
@@ -977,19 +946,19 @@ All checks run inside `validateCouponForCartAction`:
 3. `expiresAt > now`
 4. Global usage count < `maxUses` (if set)
 5. Per-user usage count < `maxUsesPerUser` (if set)
-6. `cartTotal ≥ minOrderAmount` (if set)
-7. At least one cart item matches `applicableProducts` (if scoped — else applies to all)
+6. `cartTotal â‰¥ minOrderAmount` (if set)
+7. At least one cart item matches `applicableProducts` (if scoped â€” else applies to all)
 
 ### 14.4 Applying a Coupon Scenario
 
 ```
-1. User enters code in PromoCodeInput → clicks "Apply"
-2. validateCouponForCartAction (see §14.3)
+1. User enters code in PromoCodeInput â†’ clicks "Apply"
+2. validateCouponForCartAction (see Â§14.3)
 3. On success:
    - CartSummary shows discount line
    - couponCode stored in checkout state
 4. On order placement: server re-validates coupon + increments usageCount
-5. Discount amount deducted from order total (not from seller payout — admin absorbs)
+5. Discount amount deducted from order total (not from seller payout â€” admin absorbs)
 ```
 
 ### 14.5 Promotions Page
@@ -1000,82 +969,16 @@ All checks run inside `validateCouponForCartAction`:
 
 ---
 
-## 15. RC (Virtual Currency)
+---
+
+## 15. Events & Campaigns
 
 ### 15.1 Actors
 
-- **User** — earns RC passively; buys RC; spends RC at checkout and for offer engagement
-- **Admin** — manually credits or debits RC for any user
+- **Admin** â€” creates and manages all events; moderates entries
+- **User** â€” discovers and participates in events
 
-### 15.2 RC Balance Model
-
-Each user document holds two RC fields:
-
-| Field       | Description                                                       |
-| ----------- | ----------------------------------------------------------------- |
-| `rcBalance` | Total balance: `freeCoins + engagedRC` (shown on RCBalanceChip)   |
-| `engagedRC` | Coins locked in active auction bids or Make-an-Offer negotiations |
-
-`freeCoins` (available to spend) = `rcBalance − engagedRC`
-
-### 15.3 Earning RC
-
-| Trigger                       | Amount                                              |
-| ----------------------------- | --------------------------------------------------- |
-| Place an order                | Calculated from order total (rate in site settings) |
-| Write an approved review      | Fixed amount (configured in site settings)          |
-| Participate in events/surveys | Fixed amount per event type (configured)            |
-| Refer a new user (if enabled) | Fixed amount                                        |
-| Admin manual credit           | Any amount                                          |
-
-### 15.4 Purchasing RC Scenario
-
-```
-1. User opens /user/rc/purchase → sees package options (e.g. 100 coins = ₹50)
-2. User selects package → BuyRCModal opens
-3. POST /api/rc/purchase { packageId }
-   a. Razorpay order created → returns { razorpayOrderId, amount }
-4. Razorpay checkout opens; user pays
-5. On success: POST /api/rc/purchase/verify { razorpayOrderId, paymentId, signature }
-   a. HMAC SHA256 signature verified (timingSafeEqual)
-   b. rcRepository.credit(userId, coins)
-   c. Transaction record created
-   d. Notification: 'coins_credited' sent to user
-6. RCBalanceChip refreshes
-```
-
-### 15.5 Spending RC at Checkout
-
-```
-1. User enables RC payment in CheckoutPaymentMethod
-2. Slider: choose how many coins to use (≤ available balance)
-3. Conversion: coinsUsed ÷ conversionRate = discount amount (₹)
-4. Remaining balance (if any) charged via Razorpay/COD
-5. On order confirmation: rcRepository.debit(userId, coinsUsed)
-6. On order cancellation: rcRepository.credit(userId, coinsUsed) — reversal
-```
-
-### 15.6 Admin RC Adjustment Scenario
-
-```
-1. Admin opens RCAdjustModal from AdminUsersView
-2. Enters amount (positive = credit, negative = debit) + reason (mandatory)
-3. adminAdjustRCAction({ userId, amount, reason })
-   a. rcRepository.adjust(userId, amount)
-   b. Transaction record created with reason + adminId
-   c. Notification: 'coins_credited' (or debit notice) sent to user
-```
-
----
-
-## 16. Events & Campaigns
-
-### 16.1 Actors
-
-- **Admin** — creates and manages all events; moderates entries
-- **User** — discovers and participates in events
-
-### 16.2 Event Types
+### 15.2 Event Types
 
 | Type       | Participation mechanism              |
 | ---------- | ------------------------------------ |
@@ -1085,23 +988,23 @@ Each user document holds two RC fields:
 | `sale`     | Informational time-limited sale page |
 | `offer`    | Special offer tied to a purchase     |
 
-### 16.3 Event Status Lifecycle
+### 15.3 Event Status Lifecycle
 
 ```
-draft → published → active → ended → archived
+draft â†’ published â†’ active â†’ ended â†’ archived
 ```
 
 All transitions are admin-controlled via `changeEventStatusAction`.
 
-### 16.4 Event Participation Scenario
+### 15.4 Event Participation Scenario
 
 ```
-1. User opens EventDetailView → clicks participation CTA
+1. User opens EventDetailView â†’ clicks participation CTA
 2. Route: /events/[id]/participate
 3. Participation UI dispatched by event type:
-   - poll    → PollVotingSection (radio select → usePollVote)
-   - survey  → SurveyEventSection (SurveyFieldBuilder dynamic form)
-   - feedback → FeedbackEventSection (star + text → useFeedbackSubmit)
+   - poll    â†’ PollVotingSection (radio select â†’ usePollVote)
+   - survey  â†’ SurveyEventSection (SurveyFieldBuilder dynamic form)
+   - feedback â†’ FeedbackEventSection (star + text â†’ useFeedbackSubmit)
 4. On submit: entry saved with status: 'pending'
 5. Admin reviews in AdminEventEntriesView:
    - adminUpdateEventEntryAction({ entryId, status: 'approved' | 'rejected', note? })
@@ -1113,12 +1016,12 @@ All transitions are admin-controlled via `changeEventStatusAction`.
 - One entry per user per event
 - Some events can be coin-gated (spending RC to enter)
 
-### 16.5 Admin Manages Events Scenario
+### 15.5 Admin Manages Events Scenario
 
 ```
-1. Admin opens AdminEventsView → "Create Event"
+1. Admin opens AdminEventsView â†’ "Create Event"
 2. EventFormDrawer: fill common fields + type-specific config
-3. createEventAction(input) → event saved as 'draft'
+3. createEventAction(input) â†’ event saved as 'draft'
 4. Admin publishes: changeEventStatusAction({ id, status: 'published' })
 5. Event appears on /events page
 6. Admin activates: changeEventStatusAction({ id, status: 'active' })
@@ -1127,28 +1030,28 @@ All transitions are admin-controlled via `changeEventStatusAction`.
 
 ---
 
-## 17. Blog & Content
+## 16. Blog & Content
 
-### 17.1 Actors
+### 16.1 Actors
 
-- **Admin** — creates, edits, and publishes blog posts
-- **Guest / User** — reads published articles
+- **Admin** â€” creates, edits, and publishes blog posts
+- **Guest / User** â€” reads published articles
 
-### 17.2 Blog Post Lifecycle
-
-```
-draft → published (publicly visible)
-  └→ deleted (permanent)
-```
-
-### 17.3 Publish a Blog Post Scenario
+### 16.2 Blog Post Lifecycle
 
 ```
-1. Admin opens AdminBlogView → "New Post"
+draft â†’ published (publicly visible)
+  â””â†’ deleted (permanent)
+```
+
+### 16.3 Publish a Blog Post Scenario
+
+```
+1. Admin opens AdminBlogView â†’ "New Post"
 2. BlogForm: title, slug (auto-generated), excerpt, content (ProseMirror rich text),
              cover image, categories, publishedAt, status
-3. createBlogPostAction(input) → post saved with status: 'draft'
-4. Admin sets status: 'published' → post appears at /blog/[slug]
+3. createBlogPostAction(input) â†’ post saved with status: 'draft'
+4. Admin sets status: 'published' â†’ post appears at /blog/[slug]
 5. SSR: BlogPostView calls blogRepository.getBySlug(slug) for initial render
 ```
 
@@ -1157,36 +1060,36 @@ draft → published (publicly visible)
 - Rich text rendered via `proseMirrorToHtml` with `escapeHtml`
 - Anchor tags validated against a link allowlist to prevent stored XSS
 
-### 17.4 Static Content
+### 16.4 Static Content
 
-- **Carousel slides** — hero banner slides managed by admin via `createCarouselSlideAction`, `updateCarouselSlideAction`, `deleteCarouselSlideAction`; each slide has desktop + mobile media, link URL, and active/inactive toggle
-- **Homepage sections** — admin-configurable product-grid sections via `createHomepageSectionAction`; each section has a title, filter rules (category, tags, min rating), and display order
-- **FAQ** — users vote on helpfulness (`voteFaqAction`); admin manages CRUD (`adminCreateFaqAction`, `adminUpdateFaqAction`, `adminDeleteFaqAction`); questions are categorised and filterable
+- **Carousel slides** â€” hero banner slides managed by admin via `createCarouselSlideAction`, `updateCarouselSlideAction`, `deleteCarouselSlideAction`; each slide has desktop + mobile media, link URL, and active/inactive toggle
+- **Homepage sections** â€” admin-configurable product-grid sections via `createHomepageSectionAction`; each section has a title, filter rules (category, tags, min rating), and display order
+- **FAQ** â€” users vote on helpfulness (`voteFaqAction`); admin manages CRUD (`adminCreateFaqAction`, `adminUpdateFaqAction`, `adminDeleteFaqAction`); questions are categorised and filterable
 
 ---
 
-## 18. Chat & Messaging
+## 17. Chat & Messaging
 
-### 18.1 Actors
+### 17.1 Actors
 
-- **User (Buyer)** — initiates chat with seller after placing an order
-- **Seller** — responds to buyer messages from `/seller/messages` or the order view
-- **System** — chat is feature-flag gated (`FEATURE_FLAGS.CHAT_ENABLED`)
+- **User (Buyer)** â€” initiates chat with seller after placing an order
+- **Seller** â€” responds to buyer messages from `/seller/messages` or the order view
+- **System** â€” chat is feature-flag gated (`FEATURE_FLAGS.CHAT_ENABLED`)
 
-### 18.2 Architecture
+### 17.2 Architecture
 
 ```
-Room metadata  → Firestore: chatRooms/{roomId}
+Room metadata  â†’ Firestore: chatRooms/{roomId}
                    { buyerId, sellerId, orderId, lastMessage, updatedAt, deletedBy: [] }
 
-Messages       → Firebase RTDB: /chat_rooms/{roomId}/messages/{messageId}
+Messages       â†’ Firebase RTDB: /chat_rooms/{roomId}/messages/{messageId}
                    { senderId, content, timestamp }
 
-Custom tokens  → getRealtimeTokenAction() → Firebase Admin mints a custom token
-                 → client uses token to authenticate with RTDB for live streaming
+Custom tokens  â†’ getRealtimeTokenAction() â†’ Firebase Admin mints a custom token
+                 â†’ client uses token to authenticate with RTDB for live streaming
 ```
 
-### 18.3 Start a Chat Scenario
+### 17.3 Start a Chat Scenario
 
 ```
 1. Buyer on OrderDetailView clicks "Message Seller"
@@ -1194,15 +1097,15 @@ Custom tokens  → getRealtimeTokenAction() → Firebase Admin mints a custom to
    a. Rate-limited (STRICT)
    b. Feature-flag checked: CHAT_ENABLED must be true
    c. Validates order exists and buyer is authenticated
-   d. idempotent: if room already exists for (orderId, sellerId, buyerId) → return it
-   e. If new: chatRepository.create({ buyerId, sellerId, orderId }) → new room document
+   d. idempotent: if room already exists for (orderId, sellerId, buyerId) â†’ return it
+   e. If new: chatRepository.create({ buyerId, sellerId, orderId }) â†’ new room document
 3. User navigated to /user/messages with roomId selected
 ```
 
-### 18.4 Send a Message Scenario
+### 17.4 Send a Message Scenario
 
 ```
-1. User types in MessageInput → sendChatMessageAction({ roomId, content })
+1. User types in MessageInput â†’ sendChatMessageAction({ roomId, content })
    a. Rate-limited per user
    b. Validates user is a participant of the room
    c. Writes message to RTDB: /chat_rooms/{roomId}/messages/{newId}
@@ -1210,21 +1113,21 @@ Custom tokens  → getRealtimeTokenAction() → Firebase Admin mints a custom to
 2. Recipient sees real-time message via RTDB listener (useRealtimeChat)
 ```
 
-### 18.5 Room Deletion (Soft)
+### 17.5 Room Deletion (Soft)
 
 ```
-1. User deletes a chat room → adds their uid to chatRoom.deletedBy
+1. User deletes a chat room â†’ adds their uid to chatRoom.deletedBy
 2. Room hidden from their view immediately
 3. Permanent deletion only when BOTH participants delete (chatRoom.deletedBy.length === 2)
 4. Seller sees rooms in /seller/messages; buyer in /user/messages
 ```
 
-### 18.6 RTDB Token Flow
+### 17.6 RTDB Token Flow
 
 ```
 1. Client calls getRealtimeTokenAction()
 2. Server calls firebase.auth().createCustomToken(uid)
-3. Client receives customToken → authenticates with RTDB using signInWithCustomToken
+3. Client receives customToken â†’ authenticates with RTDB using signInWithCustomToken
 4. Client can now subscribe to /chat_rooms/{roomId}/messages in real-time
 ```
 
@@ -1237,14 +1140,14 @@ Custom tokens  → getRealtimeTokenAction() → Firebase Admin mints a custom to
 
 ---
 
-## 19. Notifications
+## 18. Notifications
 
-### 19.1 Actors
+### 18.1 Actors
 
-- **System** — creates notifications server-side; no client-side notification writes
-- **User** — reads, marks read, and deletes own notifications
+- **System** â€” creates notifications server-side; no client-side notification writes
+- **User** â€” reads, marks read, and deletes own notifications
 
-### 19.2 Notification Types & Triggers
+### 18.2 Notification Types & Triggers
 
 | Type               | Created by                                |
 | ------------------ | ----------------------------------------- |
@@ -1260,68 +1163,68 @@ Custom tokens  → getRealtimeTokenAction() → Firebase Admin mints a custom to
 | `offer_declined`   | `respondToOfferAction` decline (to buyer) |
 | `offer_countered`  | `respondToOfferAction` counter (to buyer) |
 | `store_approved`   | `adminUpdateStoreStatusAction` approve    |
-| `event_started`    | `changeEventStatusAction → active`        |
+| `event_started`    | `changeEventStatusAction â†’ active`      |
 | `payout_approved`  | `adminUpdatePayoutAction` approve         |
 | `payout_rejected`  | `adminUpdatePayoutAction` reject          |
 | `refund_initiated` | `adminPartialRefundAction`                |
 | `coins_credited`   | RC purchase verify or admin adjustment    |
 | `system`           | Admin broadcast                           |
 
-### 19.3 Read / Delete Scenario
+### 18.3 Read / Delete Scenario
 
 ```
-1. User opens NotificationBell (header) → dropdown shows last 5
-2. Click notification → markNotificationReadAction({ id }) + navigate to related route
+1. User opens NotificationBell (header) â†’ dropdown shows last 5
+2. Click notification â†’ markNotificationReadAction({ id }) + navigate to related route
 3. User goes to /user/notifications for full list
 4. NotificationsBulkActions:
-   - "Mark All as Read" → markAllNotificationsReadAction()
-   - "Delete Read"      → deleteNotificationAction for each read notification
+   - "Mark All as Read" â†’ markAllNotificationsReadAction()
+   - "Delete Read"      â†’ deleteNotificationAction for each read notification
 ```
 
 ---
 
-## 20. Search
+## 19. Search
 
-### 20.1 Actors
+### 19.1 Actors
 
-- **Guest / User** — searches the product catalogue and pages
-- **Admin** — manages the Algolia index
+- **Guest / User** â€” searches the product catalogue and pages
+- **Admin** â€” manages the Algolia index
 
-### 20.2 Search Scenario
+### 19.2 Search Scenario
 
 ```
 1. User types in the Navbar Search bar
-2. Input debounced 300ms → useNavSuggestions(query)
-   → GET /api/search?nav=1 (server proxies to Algolia; API key not exposed)
-   → Dropdown shows product/page suggestions
+2. Input debounced 300ms â†’ useNavSuggestions(query)
+   â†’ GET /api/search?nav=1 (server proxies to Algolia; API key not exposed)
+   â†’ Dropdown shows product/page suggestions
 3. User presses Enter or clicks suggestion
-   → Navigates to /search?q=... (URL-driven)
-4. SearchView: useSearch(searchParams) → GET /api/search
-   → Returns: hits[], nbHits, page, nbPages, facets
-5. Filter chips (category, etc.) update URL params → re-query
+   â†’ Navigates to /search?q=... (URL-driven)
+4. SearchView: useSearch(searchParams) â†’ GET /api/search
+   â†’ Returns: hits[], nbHits, page, nbPages, facets
+5. Filter chips (category, etc.) update URL params â†’ re-query
 ```
 
-### 20.3 Algolia Index Management Scenario
+### 19.3 Algolia Index Management Scenario
 
 ```
 1. Admin opens /demo/algolia
-2. "Sync Products" → POST /api/admin/algolia/sync
-   → All active products indexed to Algolia (batch upsert)
-3. "Sync Pages" → POST /api/admin/algolia/sync-pages
-   → Static and blog pages indexed
+2. "Sync Products" â†’ POST /api/admin/algolia/sync
+   â†’ All active products indexed to Algolia (batch upsert)
+3. "Sync Pages" â†’ POST /api/admin/algolia/sync-pages
+   â†’ Static and blog pages indexed
 4. "Clear" actions wipe the respective index (destructive; confirmation required)
 ```
 
 **Rules:**
 
 - Product deletions and deactivations must also update the Algolia index
-- Index sync is manual (triggered by admin) — no real-time sync
+- Index sync is manual (triggered by admin) â€” no real-time sync
 
 ---
 
-## 21. Categories & Stores
+## 20. Categories & Stores
 
-### 21.1 Categories
+### 20.1 Categories
 
 **Hierarchy:** Top-level categories may have child sub-categories (max 2 levels).
 
@@ -1337,62 +1240,62 @@ Custom tokens  → getRealtimeTokenAction() → Firebase Admin mints a custom to
 **Public browsing:**
 
 ```
-User visits /categories → grid of top-level categories
-Clicks category → CategoryProductsView
-  - Breadcrumb: parent → current
+User visits /categories â†’ grid of top-level categories
+Clicks category â†’ CategoryProductsView
+  - Breadcrumb: parent â†’ current
   - Sub-category chips if children exist
   - ProductGrid + URL-driven filters
 ```
 
-### 21.2 Stores
+### 20.2 Stores
 
-**Store approval** is part of the seller onboarding (see §11.2).
+**Store approval** is part of the seller onboarding (see Â§11.2).
 
 **Public store browsing:**
 
 ```
-User visits /stores → StoresListView (search by name, filter by category)
-Clicks store → /stores/[storeSlug]
-  → StoreHeader (banner, logo, name, rating, description)
-  → StoreNavTabs:
-      Products    → /stores/[storeSlug]/products    (product grid with filters)
-      Auctions    → /stores/[storeSlug]/auctions    (active auction grid)
-      Reviews     → /stores/[storeSlug]/reviews     (seller reviews)
-      About       → /stores/[storeSlug]/about       (store description + contact)
-  → "Message Seller" → createOrGetChatRoomAction + opens chat (if feature enabled)
+User visits /stores â†’ StoresListView (search by name, filter by category)
+Clicks store â†’ /stores/[storeSlug]
+  â†’ StoreHeader (banner, logo, name, rating, description)
+  â†’ StoreNavTabs:
+      Products    â†’ /stores/[storeSlug]/products    (product grid with filters)
+      Auctions    â†’ /stores/[storeSlug]/auctions    (active auction grid)
+      Reviews     â†’ /stores/[storeSlug]/reviews     (seller reviews)
+      About       â†’ /stores/[storeSlug]/about       (store description + contact)
+  â†’ "Message Seller" â†’ createOrGetChatRoomAction + opens chat (if feature enabled)
 ```
 
 **Public Seller Profile:**
 
 ```
 Route: /profile/[userId]
-→ Shows seller's public profile: display name, avatar, joined date
-→ Lists seller's active products and reviews
-→ getPublicProfileAction({ userId }) → userRepository.findPublic(uid)
+â†’ Shows seller's public profile: display name, avatar, joined date
+â†’ Lists seller's active products and reviews
+â†’ getPublicProfileAction({ userId }) â†’ userRepository.findPublic(uid)
 ```
 
 ---
 
-## 22. Wishlist
+## 21. Wishlist
 
-### 22.1 Actors
+### 21.1 Actors
 
-- **User** — adds and removes products from their personal wishlist
+- **User** â€” adds and removes products from their personal wishlist
 
-### 22.2 Wishlist Operations
+### 21.2 Wishlist Operations
 
 ```
-Route: /user/wishlist — WishlistView
+Route: /user/wishlist â€” WishlistView
 
 addToWishlistAction({ productId })
-  → Creates wishlist item in Firestore: wishlists/{uid}/items/{productId}
-  → Idempotent: no error if already present
+  â†’ Creates wishlist item in Firestore: wishlists/{uid}/items/{productId}
+  â†’ Idempotent: no error if already present
 
 removeFromWishlistAction({ productId })
-  → Deletes wishlist item document
+  â†’ Deletes wishlist item document
 
 getWishlistAction()
-  → Returns all wishlist items for the authenticated user with product snapshots
+  â†’ Returns all wishlist items for the authenticated user with product snapshots
 ```
 
 - Wishlist is user-scoped; sellers and admins also have a personal wishlist
@@ -1400,9 +1303,9 @@ getWishlistAction()
 
 ---
 
-## 23. Newsletter & Contact
+## 22. Newsletter & Contact
 
-### 23.1 Newsletter Subscription
+### 22.1 Newsletter Subscription
 
 ```
 Route: Newsletter subscription form appears in:
@@ -1412,7 +1315,7 @@ Route: Newsletter subscription form appears in:
   - Popup (source: 'popup')
 
 subscribeNewsletterAction({ email, source? })
-  a. Rate-limited by IP (STRICT: 5 req / 60 s) — does NOT require authentication
+  a. Rate-limited by IP (STRICT: 5 req / 60 s) â€” does NOT require authentication
   b. Validates email format
   c. newsletterRepository.upsert({ email, source, subscribedAt })
   d. Returns { subscribed: true }
@@ -1420,14 +1323,14 @@ subscribeNewsletterAction({ email, source? })
 
 **Rules:**
 
-- Anonymous subscription — no login required
+- Anonymous subscription â€” no login required
 - Source tracking lets admin segment subscribers by acquisition channel
 - Duplicate emails are handled via upsert (no error on re-subscription)
 
-### 23.2 Contact Form
+### 22.2 Contact Form
 
 ```
-Route: /contact — ContactFormView
+Route: /contact â€” ContactFormView
 
 sendContactAction({ name, email, subject, message })
   a. Rate-limited by IP
@@ -1445,40 +1348,40 @@ sendContactAction({ name, email, subject, message })
 
 ---
 
-## 24. Admin Platform Management
+## 23. Admin Platform Management
 
-### 24.1 User Management Scenario
+### 23.1 User Management Scenario
 
 ```
 Actors: Admin
-1. Admin opens AdminUsersView → DataTable of all users
+1. Admin opens AdminUsersView â†’ DataTable of all users
 2. Filter by role, status, date
 3. Actions per user:
    - adminUpdateUserAction({ uid, role?, status? })
-     → Change role (user/seller/admin) or suspend/reinstate account
+     â†’ Change role (user/seller/admin) or suspend/reinstate account
    - adminDeleteUserAction({ uid })
-     → Permanently deletes user from Firebase Auth + Firestore
-     → WARNING: irreversible; all orders/reviews retain userId reference
-   - RCAdjustModal → adminAdjustRCAction (see §15.6)
-   - revokeUserSessionsAction({ userId }) → all active sessions invalidated
+     â†’ Permanently deletes user from Firebase Auth + Firestore
+     â†’ WARNING: irreversible; all orders/reviews retain userId reference
+   - RCAdjustModal â†’ adminAdjustRCAction (see Â§15.6)
+   - revokeUserSessionsAction({ userId }) â†’ all active sessions invalidated
 ```
 
-### 24.2 Site Settings Scenario
+### 23.2 Site Settings Scenario
 
 ```
 1. Admin opens /admin/site (SiteSettingsView)
 2. Configures:
    - Platform name, logo, contact email
-   - RC earn rate (coins per ₹ spent) and conversion rate (coins → ₹ discount)
+   - RC earn rate (coins per â‚¹ spent) and conversion rate (coins â†’ â‚¹ discount)
    - RC purchase packages (coins, price)
    - Razorpay / Resend credentials (AES-256-GCM encrypted in Firestore siteSettings doc)
    - Maintenance mode toggle
 3. Changes take effect immediately (no deployment needed)
 ```
 
-**Security:** Provider credentials (API keys) are stored AES-256-GCM encrypted in Firestore. The server decrypts at runtime — keys are never exposed to the client.
+**Security:** Provider credentials (API keys) are stored AES-256-GCM encrypted in Firestore. The server decrypts at runtime â€” keys are never exposed to the client.
 
-### 24.3 Feature Flags Scenario
+### 23.3 Feature Flags Scenario
 
 ```
 1. Admin opens /admin/feature-flags
@@ -1486,40 +1389,40 @@ Actors: Admin
 3. Changes stored in Firestore and read by middleware / hooks at request time
 ```
 
-### 24.4 Admin Navigation Management
+### 23.4 Admin Navigation Management
 
 ```
 Route: /admin/navigation
-→ Admin manages site navigation links (header/footer menus)
-→ CRUD for nav items: label, url, icon, visible, order
+â†’ Admin manages site navigation links (header/footer menus)
+â†’ CRUD for nav items: label, url, icon, visible, order
 ```
 
-### 24.5 Admin Media Library
+### 23.5 Admin Media Library
 
 ```
 Route: /admin/media
-→ Central media management: view, search, delete uploaded assets
-→ Assets stored in Firebase Storage; metadata in Firestore
+â†’ Central media management: view, search, delete uploaded assets
+â†’ Assets stored in Firebase Storage; metadata in Firestore
 ```
 
-### 24.6 Admin Analytics Dashboard
+### 23.6 Admin Analytics Dashboard
 
 ```
 Route: /admin/analytics
-→ Platform-level metrics: total orders, revenue, active users, top products
-→ useAdminAnalytics() → GET /api/admin/analytics
+â†’ Platform-level metrics: total orders, revenue, active users, top products
+â†’ useAdminAnalytics() â†’ GET /api/admin/analytics
 ```
 
-### 24.7 Admin Bids Management
+### 23.7 Admin Bids Management
 
 ```
 Route: /admin/bids
-→ DataTable of all bids across all auctions
-→ Filter by auction, status, amount, date
-→ Read-only view for audit purposes
+â†’ DataTable of all bids across all auctions
+â†’ Filter by auction, status, amount, date
+â†’ Read-only view for audit purposes
 ```
 
-### 24.8 Admin Priority Alerts
+### 23.8 Admin Priority Alerts
 
 Admin dashboard surfaces items needing action:
 
@@ -1530,7 +1433,7 @@ Admin dashboard surfaces items needing action:
 
 ---
 
-## 25. Informational & Static Pages
+## 24. Informational & Static Pages
 
 These pages contain no dynamic mutations. They are server-rendered (RSC) or statically generated (ISR).
 
@@ -1563,16 +1466,16 @@ These pages contain no dynamic mutations. They are server-rendered (RSC) or stat
 ```
 1. User enters order ID or AWB number in TrackOrderView
 2. GET /api/orders/track?id=...
-   → Fetches order from orderRepository (public subset of fields only)
-   → Returns: status, estimated delivery, shipment events
+   â†’ Fetches order from orderRepository (public subset of fields only)
+   â†’ Returns: status, estimated delivery, shipment events
 3. No authentication required for public tracking by order ID
 ```
 
 ---
 
-## 26. Cross-Cutting Rules
+## 25. Cross-Cutting Rules
 
-### 26.1 Security Invariants
+### 25.1 Security Invariants
 
 | Rule                         | Detail                                                                       |
 | ---------------------------- | ---------------------------------------------------------------------------- |
@@ -1585,17 +1488,17 @@ These pages contain no dynamic mutations. They are server-rendered (RSC) or stat
 | AES-256-GCM at rest          | Provider API credentials encrypted before storing in Firestore               |
 | CSP nonces                   | Content Security Policy uses per-request nonces (not `unsafe-inline`)        |
 
-### 26.2 Data Flow Invariants
+### 25.2 Data Flow Invariants
 
-| Rule                                                                  | Detail                                                                                           |
-| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Reads: Hook → apiClient → API route → Repository → Firestore          | Never call Firestore directly from an API route                                                  |
-| Mutations: component → Server Action → Repository → Firestore         | Never POST from a component; never call apiClient for mutations                                  |
-| File uploads: stage locally → FormData to server → backend to Storage | Never upload from browser to Storage directly                                                    |
-| Filter / sort / page state in URL                                     | `useUrlTable` always; never `useState` for table params                                          |
-| Cart coupon re-validated at order creation                            | Client-side coupon state is not trusted; server re-validates on `POST /api/payment/create-order` |
+| Rule                                                                      | Detail                                                                                           |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Reads: Hook â†’ apiClient â†’ API route â†’ Repository â†’ Firestore      | Never call Firestore directly from an API route                                                  |
+| Mutations: component â†’ Server Action â†’ Repository â†’ Firestore       | Never POST from a component; never call apiClient for mutations                                  |
+| File uploads: stage locally â†’ FormData to server â†’ backend to Storage | Never upload from browser to Storage directly                                                    |
+| Filter / sort / page state in URL                                         | `useUrlTable` always; never `useState` for table params                                          |
+| Cart coupon re-validated at order creation                                | Client-side coupon state is not trusted; server re-validates on `POST /api/payment/create-order` |
 
-### 26.3 State Consistency Rules
+### 25.3 State Consistency Rules
 
 | Scenario                      | Consistency mechanism                                                                                                           |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -1607,19 +1510,19 @@ These pages contain no dynamic mutations. They are server-rendered (RSC) or stat
 | Order cancellation            | Refund + RC reversal + status update in a single Server Action                                                                  |
 | Chat room creation            | Idempotent: `createOrGetChatRoomAction` checks for existing room before creating; deduplication by (orderId, buyerId, sellerId) |
 
-### 26.4 Notification Invariants
+### 25.4 Notification Invariants
 
 - Notifications are always created by the **server** (API routes / Server Actions / scheduled jobs)
 - Clients only **read, mark-read, and delete** their own notifications
 - No notification is written directly from a client component
 
-### 26.5 Role Escalation Prevention
+### 25.5 Role Escalation Prevention
 
 - `role` field in user Firestore document is only writable by `adminUpdateUserAction` (admin-only action)
 - Seller role is granted only through the store approval flow by an admin
 - Middleware RBAC check happens server-side on every request using the decoded `__session` cookie
 
-### 26.6 Deletion Rules
+### 25.6 Deletion Rules
 
 | Entity         | Deletion type | Notes                                                                 |
 | -------------- | ------------- | --------------------------------------------------------------------- |

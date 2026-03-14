@@ -1,48 +1,23 @@
 "use client";
 
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { listAdminOrdersAction, adminUpdateOrderAction } from "@/actions";
+import { createAdminListQuery, extractBasicMeta } from "./createAdminListQuery";
+import type { AdminListMeta } from "./createAdminListQuery";
 import type { OrderDocument } from "@/db/schema";
 
-interface OrderListMeta {
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
-
-/**
- * useAdminOrders
- * Fetches orders for the admin orders list using a Sieve query string.
- * Exposes the order list, pagination meta, loading/error state, refetch,
- * and an updateOrder mutation.
- *
- * @param sieveParams - Full Sieve query string (filters + sorts + page + pageSize)
- */
 export function useAdminOrders(sieveParams: string) {
-  const query = useQuery<{
-    orders: OrderDocument[];
-    meta: OrderListMeta;
-  }>({
-    queryKey: ["admin", "orders", sieveParams],
-    queryFn: async () => {
-      const sp = new URLSearchParams(sieveParams);
-      const result = await listAdminOrdersAction({
-        filters: sp.get("filters") ?? undefined,
-        sorts: sp.get("sorts") ?? undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      });
-      return {
-        orders: result.items,
-        meta: {
-          total: result.total,
-          page: result.page,
-          pageSize: result.pageSize,
-          totalPages: result.totalPages,
-        },
-      };
-    },
+  const query = createAdminListQuery<
+    OrderDocument,
+    { orders: OrderDocument[]; meta: AdminListMeta }
+  >({
+    queryKey: ["admin", "orders"],
+    sieveParams,
+    action: listAdminOrdersAction,
+    transform: (result) => ({
+      orders: result.items,
+      meta: extractBasicMeta(result),
+    }),
   });
 
   const updateMutation = useMutation<

@@ -12,6 +12,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useMessage, useUrlTable, usePendingTable } from "@/hooks";
+import { buildSieveFilters } from "@/helpers";
 import { useAdminProducts, useAdminCategories } from "@/features/admin/hooks";
 import { ROUTES, SUCCESS_MESSAGES, THEME_CONSTANTS } from "@/constants";
 
@@ -76,15 +77,6 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
   }));
 
   // ── Data fetching ───────────────────────────────────────────────────
-  const filtersArr: string[] = [];
-  if (searchTerm) filtersArr.push(`title@=*${searchTerm}`);
-  if (statusFilter) filtersArr.push(`status==${statusFilter}`);
-  if (categoryFilter) filtersArr.push(`category==${categoryFilter}`);
-  if (conditionFilter) filtersArr.push(`condition==${conditionFilter}`);
-  if (brandFilter) filtersArr.push(`brand@=*${brandFilter}`);
-  if (minPrice) filtersArr.push(`price>=${minPrice}`);
-  if (maxPrice) filtersArr.push(`price<=${maxPrice}`);
-
   const {
     data,
     isLoading,
@@ -93,7 +85,19 @@ export function AdminProductsView({ action }: AdminProductsViewProps) {
     createMutation,
     updateMutation,
     deleteMutation,
-  } = useAdminProducts(table.buildSieveParams(filtersArr.join(",")));
+  } = useAdminProducts(
+    table.buildSieveParams(
+      buildSieveFilters(
+        ["title@=*", searchTerm],
+        ["status==", statusFilter],
+        ["category==", categoryFilter],
+        ["condition==", conditionFilter],
+        ["brand@=*", brandFilter],
+        ["price>=", minPrice],
+        ["price<=", maxPrice],
+      ),
+    ),
+  );
 
   const [editingProduct, setEditingProduct] =
     useState<Partial<AdminProduct> | null>(null);

@@ -1,7 +1,8 @@
 "use client";
 
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { listAdminStoresAction, adminUpdateStoreStatusAction } from "@/actions";
+import { createAdminListQuery } from "./createAdminListQuery";
 
 export interface AdminStoreItem {
   uid: string;
@@ -44,23 +45,19 @@ interface StoreListResponse {
   hasMore: boolean;
 }
 
-/**
- * useAdminStores
- * Fetches the paginated seller store list for admin review.
- * Exposes a mutation to approve, reject, or toggle listing rights.
- */
 export function useAdminStores(sieveParams: string) {
-  const query = useQuery<StoreListResponse>({
-    queryKey: ["admin", "stores", sieveParams],
-    queryFn: async () => {
-      const sp = new URLSearchParams(sieveParams);
-      return listAdminStoresAction({
-        filters: sp.get("filters") ?? undefined,
-        sorts: sp.get("sorts") ?? undefined,
-        page: sp.has("page") ? Number(sp.get("page")) : undefined,
-        pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,
-      }) as unknown as Promise<StoreListResponse>;
-    },
+  const query = createAdminListQuery<unknown, StoreListResponse>({
+    queryKey: ["admin", "stores"],
+    sieveParams,
+    action: listAdminStoresAction,
+    transform: (result) => ({
+      items: result.items as unknown as AdminStoreItem[],
+      total: result.total,
+      page: result.page,
+      pageSize: result.pageSize,
+      totalPages: result.totalPages,
+      hasMore: result.hasMore ?? false,
+    }),
   });
 
   const updateStoreMutation = useMutation<

@@ -6,6 +6,50 @@ All notable changes to this project are documented here.
 
 ## [Unreleased] — 2026-03-14
 
+### Admin Hooks & Views Refactoring
+
+Systematic refactoring to eliminate duplicated boilerplate across admin list hooks and views.
+
+**New files:**
+
+- `src/features/admin/hooks/createAdminListQuery.ts` — Factory function that eliminates repeated URLSearchParams parsing + `useQuery` boilerplate. Exports `createAdminListQuery<TItem, TResult>()`, `extractBasicMeta()`, and `AdminListMeta` type.
+- `src/helpers/data/filter.helper.ts` — `buildSieveFilters()` pure string utility for building Sieve filter expressions from tuple entries, replacing manual `filtersArr.push()` + `.join(",")` patterns.
+- `src/actions/admin-read.actions.ts` — All admin read/list server actions extracted from `admin.actions.ts` (11 functions: `getAdminDashboardStatsAction`, `getAdminAnalyticsAction`, 8 `listAdmin*Action` functions, `listAdminSessionsAction`).
+
+**Refactored hooks (9 hooks → use `createAdminListQuery` factory):**
+
+- `useAdminOrders` · `useAdminUsers` · `useAdminProducts` · `useAdminBlog` · `useAdminBids` · `useAdminCoupons` · `useAdminPayouts` · `useAdminReviews` · `useAdminFaqs` · `useAdminStores`
+
+**Refactored views (9 views → use `buildSieveFilters`):**
+
+- `AdminOrdersView` · `AdminProductsView` · `AdminBidsView` · `AdminPayoutsView` · `AdminStoresView` · `AdminUsersView` · `AdminReviewsView` · `AdminCouponsView` · `AdminFaqsView`
+
+**Other cleanup:**
+
+- `src/hooks/useCheckout.ts` — Removed duplicate type definitions (~50 lines)
+- `src/actions/admin.actions.ts` — Trimmed from ~800 to ~450 lines (mutations only)
+- `src/actions/index.ts` — Updated barrel exports: admin reads now source from `admin-read.actions.ts`
+
+### RC Removal — Documentation & i18n Cleanup
+
+Follow-up pass removing remaining RC references from docs and i18n strings.
+
+- `docs/BUSINESS_LOGIC.md` — Removed RC chapter (§15), renumbered §16–§26 → §15–§25
+- `docs/COMPONENTS.md` — Removed `RCBalanceChip` row
+- `docs/api-routes.md` — Removed RC routes section
+- `docs/features/offers.md` — Removed RC engagement/release language from offer flow, diagram, and action table
+- `docs/features/user.md` — Removed RC wallet/purchase page references
+- `docs/hooks.md` — Marked RC hooks as removed
+- `docs/pages-admin.md` — Removed RC admin references
+- `docs/pages-public.md` — Removed RC info page entry
+- `docs/pages-user.md` — Removed RC wallet/purchase page entries
+- `docs/repositories.md` — Removed RC repository entry
+- `docs/constants.md` — Removed RC route/endpoint constants
+- `messages/en.json` — Removed RC i18n keys (myRC nav item, auction RC wording, seller help RC references)
+- `cspell.json` — Removed RC-related dictionary entries
+- `packages/eslint-plugin-letitrip/index.js` — Removed RC lint rule
+- `scripts/check-violations.js` — Removed RC violation check
+
 ### RC (RipCoins) Virtual Currency System — Complete Removal
 
 Removed the entire RC virtual currency system to eliminate RBI PPI licensing requirements. All RC code has been deleted from both the main app and Firebase Functions with zero breaking changes to remaining functionality.

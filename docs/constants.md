@@ -68,7 +68,6 @@ API_ENDPOINTS = {
   STORES: { LIST, GET_BY_SLUG, PRODUCTS, AUCTIONS, REVIEWS },
   EVENTS: { LIST, DETAIL, ENTER, LEADERBOARD },
   REALTIME: { TOKEN, BIDS_SSE },
-  RC: { BALANCE, PURCHASE, VERIFY, HISTORY, REFUND },
   WEBHOOKS: { SHIPROCKET },
   CHAT: { ROOMS, ROOM, MESSAGES },
   NOTIFICATIONS: { LIST, CREATE, MARK_READ, DELETE, READ_ALL, UNREAD_COUNT },
@@ -265,8 +264,6 @@ ROUTES = {
     ORDER_DETAIL,
     ORDER_TRACK,
     NOTIFICATIONS,
-    RC,
-    RC_PURCHASE,
     MESSAGES,
     BECOME_SELLER,
     CART,
@@ -352,10 +349,10 @@ Metadata generation utilities.
 
 ## `site.ts`
 
-| Export          | Description                                                                                |
-| --------------- | ------------------------------------------------------------------------------------------ |
-| `SITE_CONFIG`   | `{ name, domain, currency, locale, supportEmail, socialLinks }`                            |
-| `FEATURE_FLAGS` | `{ auctions, preOrders, rc, events, blog, multiSeller }` — toggle features without deploys |
+| Export          | Description                                                                            |
+| --------------- | -------------------------------------------------------------------------------------- |
+| `SITE_CONFIG`   | `{ name, domain, currency, locale, supportEmail, socialLinks }`                        |
+| `FEATURE_FLAGS` | `{ auctions, preOrders, events, blog, multiSeller }` — toggle features without deploys |
 
 ---
 

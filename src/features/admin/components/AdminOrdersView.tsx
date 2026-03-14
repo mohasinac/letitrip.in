@@ -13,6 +13,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useUrlTable, useMessage, usePendingTable } from "@/hooks";
+import { buildSieveFilters } from "@/helpers";
 import { useAdminOrders } from "@/features/admin/hooks";
 import {
   ROUTES,
@@ -81,17 +82,17 @@ export function AdminOrdersView({ action }: AdminOrdersViewProps) {
   const [formState, setFormState] = useState<OrderStatusFormState | null>(null);
 
   // ── Data fetching ───────────────────────────────────────────────────
-  const filtersArr: string[] = [];
-  if (statusFilter) filtersArr.push(`status==${statusFilter}`);
-  if (paymentStatusFilter)
-    filtersArr.push(`paymentStatus==${paymentStatusFilter}`);
-  if (payoutStatusFilter)
-    filtersArr.push(`payoutStatus==${payoutStatusFilter}`);
-  if (minAmount) filtersArr.push(`totalPrice>=${minAmount}`);
-  if (maxAmount) filtersArr.push(`totalPrice<=${maxAmount}`);
-  if (dateFrom) filtersArr.push(`createdAt>=${dateFrom}`);
-  if (dateTo) filtersArr.push(`createdAt<=${dateTo}`);
-  const sieveParams = table.buildSieveParams(filtersArr.join(","));
+  const sieveParams = table.buildSieveParams(
+    buildSieveFilters(
+      ["status==", statusFilter],
+      ["paymentStatus==", paymentStatusFilter],
+      ["payoutStatus==", payoutStatusFilter],
+      ["totalPrice>=", minAmount],
+      ["totalPrice<=", maxAmount],
+      ["createdAt>=", dateFrom],
+      ["createdAt<=", dateTo],
+    ),
+  );
 
   const { data, isLoading, error, refetch, updateMutation } =
     useAdminOrders(sieveParams);

@@ -169,7 +169,6 @@ const KNOWN_COLLECTIONS = new Set([
   "newsletters",
   "notifications",
   "payouts",
-  "rip_coins",
 ]);
 
 const FIREBASE_TRIGGER_FNS = new Set([

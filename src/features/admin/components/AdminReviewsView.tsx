@@ -10,6 +10,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { usePendingTable } from "@/hooks";
+import { buildSieveFilters } from "@/helpers";
 import { useRouter } from "@/i18n/navigation";
 import { useUrlTable } from "@/hooks";
 import { THEME_CONSTANTS, ROUTES, SUCCESS_MESSAGES } from "@/constants";
@@ -72,15 +73,23 @@ export function AdminReviewsView({ action }: AdminReviewsViewProps) {
   const featuredFilter = table.get("featured");
 
   // Build Sieve filter string
-  const filtersArr: string[] = [];
-  if (statusFilter && statusFilter !== "all")
-    filtersArr.push(`status==${statusFilter}`);
-  if (ratingFilter) filtersArr.push(`rating==${ratingFilter}`);
-  if (searchTerm) filtersArr.push(`(userName|userEmail)@=*${searchTerm}`);
-  if (verifiedFilter === "true") filtersArr.push("verified==true");
-  else if (verifiedFilter === "false") filtersArr.push("verified==false");
-  if (featuredFilter === "true") filtersArr.push("featured==true");
-  const filtersParam = filtersArr.join(",");
+  const filtersParam = buildSieveFilters(
+    [
+      "status==",
+      statusFilter && statusFilter !== "all" ? statusFilter : undefined,
+    ],
+    ["rating==", ratingFilter],
+    ["(userName|userEmail)@=*", searchTerm],
+    [
+      "verified==",
+      verifiedFilter === "true"
+        ? "true"
+        : verifiedFilter === "false"
+          ? "false"
+          : undefined,
+    ],
+    ["featured==", featuredFilter === "true" ? "true" : undefined],
+  );
 
   const {
     data,

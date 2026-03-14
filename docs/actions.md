@@ -25,9 +25,9 @@ All actions:
 
 ---
 
-## Admin Actions — `admin.actions.ts`
+## Admin Write Actions — `admin.actions.ts`
 
-General admin write mutations covering sessions, orders, payouts, users, stores, products, and RC.
+Admin mutation-only actions covering sessions, orders, payouts, users, stores, and products.
 
 | Export                                           | Description                       |
 | ------------------------------------------------ | --------------------------------- |
@@ -41,9 +41,25 @@ General admin write mutations covering sessions, orders, payouts, users, stores,
 | `adminUpdateProductAction({ id, ...fields })`    | Update product fields             |
 | `adminCreateProductAction(input)`                | Create a new product (admin-side) |
 | `adminDeleteProductAction({ id })`               | Delete a product                  |
-| `adminAdjustRCAction(input)`                     | Manually credit or debit RC       |
 
-**Type:** `AdminAdjustRCInput` — `{ userId, amount, reason }`
+---
+
+## Admin Read Actions — `admin-read.actions.ts`
+
+All admin list/read actions (extracted from `admin.actions.ts`). Called by admin hooks via `createAdminListQuery` factory.
+
+| Export                            | Description                      |
+| --------------------------------- | -------------------------------- |
+| `getAdminDashboardStatsAction`    | Dashboard KPI aggregates         |
+| `getAdminAnalyticsAction`         | Platform analytics data          |
+| `listAdminOrdersAction(params)`   | Paginated order list (Sieve)     |
+| `listAdminUsersAction(params)`    | Paginated user list (Sieve)      |
+| `listAdminBidsAction(params)`     | Paginated bid list (Sieve)       |
+| `listAdminBlogAction(params)`     | Paginated blog post list (Sieve) |
+| `listAdminPayoutsAction(params)`  | Paginated payout list (Sieve)    |
+| `listAdminProductsAction(params)` | Paginated product list (Sieve)   |
+| `listAdminStoresAction(params)`   | Paginated store list (Sieve)     |
+| `listAdminSessionsAction(params)` | Recent sessions list             |
 
 ---
 
