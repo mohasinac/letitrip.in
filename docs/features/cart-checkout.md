@@ -91,7 +91,6 @@ Payment options:
 
 - **Razorpay** — credit/debit card, UPI, netbanking (via `useRazorpay`)
 - **Cash on Delivery (COD)** — triggers OTP verification via `CheckoutOtpModal`
-- **RC** — partial or full payment with earned coins
 
 On "Place Order":
 

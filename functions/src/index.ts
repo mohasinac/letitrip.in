@@ -18,7 +18,7 @@
  * │  auctionSettlement      — every 15 min    settle ended auctions          │
  * │  pendingOrderTimeout    — every 2 hrs     cancel stale orders            │
  * │  couponExpiry           — 00:05 UTC       deactivate old coupons         │
- * │  offerExpiry            — 00:15 UTC       expire stale offers + free RC  │
+ * │  offerExpiry            — 00:15 UTC       expire stale offers            │
  * │  productStatsSync       — 01:00 UTC       recompute product avg ratings  │
  * │  dailyDataCleanup       — 02:00 UTC       purge sessions + tokens        │
  * │  countersReconcile      — 03:00 UTC       rebuild category & store stats │

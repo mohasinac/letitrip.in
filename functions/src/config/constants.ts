@@ -129,5 +129,4 @@ export const COLLECTIONS = {
   CATEGORIES: "categories",
   STORES: "stores",
   OFFERS: "offers",
-  RC_TRANSACTIONS: "rc",
 } as const;

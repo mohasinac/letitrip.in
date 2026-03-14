@@ -1014,7 +1014,6 @@ All transitions are admin-controlled via `changeEventStatusAction`.
 **Rules:**
 
 - One entry per user per event
-- Some events can be coin-gated (spending RC to enter)
 
 ### 15.5 Admin Manages Events Scenario
 
@@ -1167,7 +1166,6 @@ Custom tokens  â†’ getRealtimeTokenAction() â†’ Firebase Admin mints a
 | `payout_approved`  | `adminUpdatePayoutAction` approve         |
 | `payout_rejected`  | `adminUpdatePayoutAction` reject          |
 | `refund_initiated` | `adminPartialRefundAction`                |
-| `coins_credited`   | RC purchase verify or admin adjustment    |
 | `system`           | Admin broadcast                           |
 
 ### 18.3 Read / Delete Scenario
@@ -1372,8 +1370,6 @@ Actors: Admin
 1. Admin opens /admin/site (SiteSettingsView)
 2. Configures:
    - Platform name, logo, contact email
-   - RC earn rate (coins per â‚¹ spent) and conversion rate (coins â†’ â‚¹ discount)
-   - RC purchase packages (coins, price)
    - Razorpay / Resend credentials (AES-256-GCM encrypted in Firestore siteSettings doc)
    - Maintenance mode toggle
 3. Changes take effect immediately (no deployment needed)
@@ -1385,7 +1381,7 @@ Actors: Admin
 
 ```
 1. Admin opens /admin/feature-flags
-2. Toggles feature on/off (e.g. referral program, coin-gated events, COD)
+2. Toggles feature on/off (e.g. referral program, COD)
 3. Changes stored in Firestore and read by middleware / hooks at request time
 ```
 
@@ -1500,15 +1496,13 @@ These pages contain no dynamic mutations. They are server-rendered (RSC) or stat
 
 ### 25.3 State Consistency Rules
 
-| Scenario                      | Consistency mechanism                                                                                                           |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Auction bids                  | Firestore + RTDB updated atomically inside `placeBidAction`                                                                     |
-| Offer RC engagement           | `engagedRC` adjusted atomically (increment on offer, decrement on decline/withdrawal/expiry)                                    |
-| Order + RC + cart on checkout | All mutations in single Server Action; `revalidatePath` busts React cache                                                       |
-| Coupon usage count            | Incremented atomically via Firestore transaction on order creation                                                              |
-| RC balance                    | All credits and debits go through `rcRepository` (single writer); no direct field updates                                       |
-| Order cancellation            | Refund + RC reversal + status update in a single Server Action                                                                  |
-| Chat room creation            | Idempotent: `createOrGetChatRoomAction` checks for existing room before creating; deduplication by (orderId, buyerId, sellerId) |
+| Scenario                 | Consistency mechanism                                                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Auction bids             | Firestore + RTDB updated atomically inside `placeBidAction`                                                                     |
+| Order + cart on checkout | All mutations in single Server Action; `revalidatePath` busts React cache                                                       |
+| Coupon usage count       | Incremented atomically via Firestore transaction on order creation                                                              |
+| Order cancellation       | Refund + status update in a single Server Action                                                                                |
+| Chat room creation       | Idempotent: `createOrGetChatRoomAction` checks for existing room before creating; deduplication by (orderId, buyerId, sellerId) |
 
 ### 25.4 Notification Invariants
 
@@ -1533,7 +1527,7 @@ These pages contain no dynamic mutations. They are server-rendered (RSC) or stat
 | Payout         | Not deletable | Permanent record                                                      |
 | Blog post      | Hard delete   | Admin only                                                            |
 | Notification   | Hard delete   | User-initiated for own notifications                                  |
-| Offer          | Soft archive  | Status set to 'withdrawn'/'expired'; RC released; record retained     |
+| Offer          | Soft archive  | Status set to 'withdrawn'/'expired'; record retained                  |
 | Chat room      | Soft delete   | Added to `deletedBy`; purged only when both participants delete       |
 | Chat messages  | Permanent     | RTDB TTL or manual purge; not exposed as user-facing delete           |
 | Newsletter sub | Not deletable | Retention per privacy policy; unsubscribe flag added                  |

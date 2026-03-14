@@ -50,6 +50,16 @@ Follow-up pass removing remaining RC references from docs and i18n strings.
 - `packages/eslint-plugin-letitrip/index.js` — Removed RC lint rule
 - `scripts/check-violations.js` — Removed RC violation check
 
+### RC Removal — Final Sweep
+
+Cleaned last remaining RC/coin artefacts across i18n, Firebase Functions, and documentation.
+
+- `messages/en.json` — Removed 8 dead `rcType*` translation keys (Purchase, Engage, Release, Forfeit, Return, AdminGrant, AdminDeduct, EarnPurchase)
+- `functions/src/config/constants.ts` — Removed dead `RC_TRANSACTIONS: "rc"` collection constant
+- `functions/src/index.ts` — Removed stale "+ free RC" from offerExpiry job comment
+- `docs/features/cart-checkout.md` — Removed RC payment method from `CheckoutPaymentMethod`
+- `docs/BUSINESS_LOGIC.md` — Removed RC earn rate/purchase packages from site settings, coin-gated events from feature flags, `coins_credited` notification type, offer RC engagement/RC balance consistency rows, RC reversal from order cancellation, "RC released" from offer soft archive
+
 ### RC (RipCoins) Virtual Currency System — Complete Removal
 
 Removed the entire RC virtual currency system to eliminate RBI PPI licensing requirements. All RC code has been deleted from both the main app and Firebase Functions with zero breaking changes to remaining functionality.
