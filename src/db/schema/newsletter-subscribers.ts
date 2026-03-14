@@ -73,6 +73,8 @@ export const NEWSLETTER_SUBSCRIBER_INDEXED_FIELDS = [
 export const NEWSLETTER_SUBSCRIBER_FIELDS = {
   ID: "id",
   EMAIL: "email",
+  // PII blind index (HMAC-SHA256 for equality queries on encrypted email)
+  EMAIL_INDEX: "emailIndex",
   STATUS: "status",
   SOURCE: "source",
   IP_ADDRESS: "ipAddress",

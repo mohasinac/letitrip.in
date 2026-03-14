@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
-import { Star, Heart } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { Star, Heart, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   ActiveFilterChips,
@@ -26,11 +26,13 @@ import {
   TabsContent,
   Text,
   TextLink,
+  Tooltip,
 } from "@/components";
 import type { ActiveFilter, ProductSortValue } from "@/components";
 import { RangeFilter } from "@/components";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
-import { useUrlTable, usePendingTable } from "@/hooks";
+import { useUrlTable, usePendingTable, useAuth, useMessage } from "@/hooks";
+import { addToWishlistAction, addToCartAction } from "@/actions";
 import { useCategoryDetail } from "../hooks/useCategoryDetail";
 import { useCategoryProducts } from "../hooks/useCategoryProducts";
 import type { CategoryDocument } from "@/db/schema";
@@ -53,6 +55,9 @@ export function CategoryProductsView({
   const t = useTranslations("categories");
   const tProducts = useTranslations("products");
   const tActions = useTranslations("actions");
+  const { user } = useAuth();
+  const { showSuccess, showError } = useMessage();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const table = useUrlTable({
     defaults: {
@@ -140,6 +145,58 @@ export function CategoryProductsView({
     },
     [table],
   );
+
+  const handleBulkAddToCart = useCallback(async () => {
+    const selected = products.filter((p) => selectedIds.includes(p.id));
+    const results = await Promise.allSettled(
+      selected.map((p) =>
+        addToCartAction({
+          productId: p.id,
+          productTitle: p.title,
+          productImage: p.images?.[0] ?? "",
+          price: p.price,
+          currency: p.currency || "INR",
+          quantity: 1,
+          sellerId: p.sellerId,
+          sellerName: p.sellerName,
+        }),
+      ),
+    );
+    const succeeded = results.filter((r) => r.status === "fulfilled").length;
+    if (succeeded === selectedIds.length) {
+      showSuccess(tActions("bulkSuccess", { count: succeeded }));
+    } else if (succeeded > 0) {
+      showError(
+        tActions("bulkPartialSuccess", {
+          success: succeeded,
+          total: selectedIds.length,
+        }),
+      );
+    } else {
+      showError(tActions("bulkFailed"));
+    }
+    setSelectedIds([]);
+  }, [selectedIds, products, showSuccess, showError, tActions]);
+
+  const handleBulkAddToWishlist = useCallback(async () => {
+    const results = await Promise.allSettled(
+      selectedIds.map((id) => addToWishlistAction(id)),
+    );
+    const succeeded = results.filter((r) => r.status === "fulfilled").length;
+    if (succeeded === selectedIds.length) {
+      showSuccess(tActions("bulkSuccess", { count: succeeded }));
+    } else if (succeeded > 0) {
+      showError(
+        tActions("bulkPartialSuccess", {
+          success: succeeded,
+          total: selectedIds.length,
+        }),
+      );
+    } else {
+      showError(tActions("bulkFailed"));
+    }
+    setSelectedIds([]);
+  }, [selectedIds, showSuccess, showError, tActions]);
 
   /* ---- Loading state ---- */
   if (catLoading) {
@@ -353,6 +410,41 @@ export function CategoryProductsView({
                   />
                 ) : undefined
               }
+              selectedCount={selectedIds.length}
+              onClearSelection={() => setSelectedIds([])}
+              actionsSlot={
+                <Tooltip content={tActions("selectionHint")} placement="bottom">
+                  <button
+                    type="button"
+                    className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-indigo-500 transition-colors"
+                    aria-label={tActions("selectionHint")}
+                  >
+                    <Info className="w-4 h-4" />
+                  </button>
+                </Tooltip>
+              }
+              bulkActionItems={
+                user
+                  ? [
+                      {
+                        id: "bulk-cart",
+                        label: tActions("bulkAddToCart", {
+                          count: selectedIds.length,
+                        }),
+                        variant: "secondary",
+                        onClick: handleBulkAddToCart,
+                      },
+                      {
+                        id: "bulk-wishlist",
+                        label: tActions("bulkAddToWishlist", {
+                          count: selectedIds.length,
+                        }),
+                        variant: "primary",
+                        onClick: handleBulkAddToWishlist,
+                      },
+                    ]
+                  : undefined
+              }
             >
               <DataTable
                 data={products}
@@ -370,6 +462,10 @@ export function CategoryProductsView({
                   (table.get("view") || "grid") as "table" | "grid" | "list"
                 }
                 onViewModeChange={(m) => table.set("view", m)}
+                labels={{
+                  gridView: tActions("gridView"),
+                  listView: tActions("listView"),
+                }}
                 emptyState={
                   <div className={`${flex.centerCol} py-16 text-center`}>
                     <Text size="lg" weight="medium">
@@ -388,6 +484,13 @@ export function CategoryProductsView({
                     product={item as any}
                     variant={
                       (table.get("view") || "grid") === "list" ? "list" : "grid"
+                    }
+                    selectable={!!user}
+                    isSelected={selectedIds.includes(item.id)}
+                    onSelect={(id, sel) =>
+                      setSelectedIds((prev) =>
+                        sel ? [...prev, id] : prev.filter((x) => x !== id),
+                      )
                     }
                   />
                 )}

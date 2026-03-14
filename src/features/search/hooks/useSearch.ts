@@ -59,8 +59,21 @@ export function useSearch(searchParams: string, options?: UseSearchOptions) {
       return searchProductsAction({
         q: sp.get("q") ?? undefined,
         category: sp.get("category") ?? undefined,
+        subcategory: sp.get("subcategory") ?? undefined,
         minPrice: sp.has("minPrice") ? Number(sp.get("minPrice")) : undefined,
         maxPrice: sp.has("maxPrice") ? Number(sp.get("maxPrice")) : undefined,
+        condition: sp.get("condition") ?? undefined,
+        isAuction:
+          sp.get("isAuction") === "true"
+            ? true
+            : sp.get("isAuction") === "false"
+              ? false
+              : undefined,
+        isPreOrder: sp.get("isPreOrder") === "true" ? true : undefined,
+        inStock: sp.get("inStock") === "true" ? true : undefined,
+        minRating: sp.has("minRating")
+          ? Number(sp.get("minRating"))
+          : undefined,
         sort: sp.get("sort") ?? sp.get("sorts") ?? undefined,
         page: sp.has("page") ? Number(sp.get("page")) : undefined,
         pageSize: sp.has("pageSize") ? Number(sp.get("pageSize")) : undefined,

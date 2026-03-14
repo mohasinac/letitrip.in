@@ -8,15 +8,30 @@
 
 **Actions:** `src/actions/offer.actions.ts`  
 **Schema:** `src/db/schema/offers.ts`  
+**Repository:** `src/repositories/offer.repository.ts`  
 **Functions:** `functions/src/jobs/offerExpiry.ts`, `functions/src/repositories/offer.repository.ts`
 
 ---
 
 ## Overview
 
-The make-an-offer system lets buyers propose a price on any listed product. RC coins are locked during the offer lifetime, ensuring buyers have skin in the game. Sellers can accept, decline, or counter. Accepted offers move to checkout; declined/expired offers release the locked RC.
+The make-an-offer system lets buyers propose a price on any listed product. RC coins are locked during the offer lifetime, ensuring buyers have skin in the game. Sellers can accept, decline, or counter. Buyers can counter back against the seller's counter. Accepted offers move to checkout; declined/expired/withdrawn offers release the locked RC.
 
 **Economics:** 10 RC = ₹1. RC required to make an offer = `offerAmount / 10` (i.e. matching coin value).
+
+---
+
+## Business Rules
+
+| Rule                   | Detail                                                                                                                                                                                             |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Offer limit            | Max **3 offer documents** per buyer per product. Resets automatically when the product's `updatedAt` advances (seller edits the listing). Tracked purely by doc count — no separate counter field. |
+| One active offer       | A buyer may only hold **one active** (`pending` or `countered`) offer per product at a time. Making a new offer requires withdrawing the existing one first.                                       |
+| Buyer counter range    | Buyer's `counterAmount` must be **within ±20 %** of the seller's `counterAmount`.                                                                                                                  |
+| RC on buyer counter    | Only the net **delta** (`counterAmount − offerAmount`) requires additional free RC. The original engagement is reused.                                                                             |
+| Counter replaces offer | A buyer counter closes the existing `countered` offer (status → `withdrawn`) and writes a fresh `pending` offer at the new price.                                                                  |
+| Expiry guard           | Any mutation action on an expired offer is rejected immediately — the cron has already released RC.                                                                                                |
+| Product availability   | Checkout is blocked if the product has gone out of stock (`stock ≤ 0`) or been archived since the offer was accepted.                                                                              |
 
 ---
 
@@ -25,18 +40,24 @@ The make-an-offer system lets buyers propose a price on any listed product. RC c
 ```
 Buyer makes offer (RC engaged)
         │
-        ├── Seller ACCEPTS  ──► buyer calls checkoutOfferAction ──► paid (RC released, order created)
+        ├── Seller ACCEPTS  ──► checkoutOfferAction ──► paid (RC released, order created)
         │
-        ├── Seller DECLINES ──► RC released ──► expired status
+        ├── Seller DECLINES ──► RC released ──► declined status
         │
         ├── Seller COUNTERS ──► buyer receives counter
         │       │
-        │       ├── Buyer ACCEPTS counter ──► acceptCounterOfferAction (RC adjusted to counter price)
-        │       │       └── then buyer checkouts ──► paid
+        │       ├── Buyer ACCEPTS counter ──► acceptCounterOfferAction
+        │       │       │   RC delta adjusted; status → accepted
+        │       │       └── checkoutOfferAction ──► paid
         │       │
-        │       └── Buyer WITHDRAWS       ──► withdrawOfferAction (RC released)
+        │       ├── Buyer COUNTERS BACK (±20 %) ──► counterOfferByBuyerAction
+        │       │       │   Old offer withdrawn; fresh pending offer created
+        │       │       │   RC delta adjusted; subject to 3-offer limit
+        │       │       └── back to "Seller COUNTERS" branch above
+        │       │
+        │       └── Buyer WITHDRAWS ──► withdrawOfferAction (RC released)
         │
-        └── 48h EXPIRY (CRON)  ──► offerExpiry job releases RC, notifies buyer
+        └── 48h EXPIRY (CRON) ──► offerExpiry job releases RC, notifies buyer
 ```
 
 ---
@@ -44,36 +65,60 @@ Buyer makes offer (RC engaged)
 ## Schema (`src/db/schema/offers.ts`)
 
 ```ts
+type OfferStatus =
+  | "pending" // Buyer submitted, awaiting seller response
+  | "accepted" // Seller accepted — ready for checkout at lockedPrice
+  | "declined" // Seller declined
+  | "countered" // Seller sent a counter — awaiting buyer response
+  | "expired" // Passed expiresAt without a response
+  | "withdrawn" // Buyer withdrew, or closed by a buyer counter
+  | "paid"; // Buyer completed checkout — RC returned
+
 interface OfferDocument {
+  id: string;
   productId: string;
+  productTitle: string;
+  productSlug?: string;
+  productImageUrl?: string;
   buyerUid: string;
+  buyerName: string;
+  buyerEmail: string;
   sellerId: string;
-  offerAmount: number; // buyer's proposed price in ₹
-  counterAmount?: number; // seller's counter in ₹
-  lockedPrice: number; // price locked at checkout time
-  lockedRC: number; // engaged RC coins
-  status: OfferStatus; // pending | accepted | declined | countered | expired | withdrawn | paid
-  expiresAt: Date; // 48h from creation
+  sellerName: string;
+  offerAmount: number; // buyer's proposed price
+  listedPrice: number; // original listed price at offer time
+  counterAmount?: number; // seller's counter
+  lockedPrice?: number; // final agreed price (set on accept)
+  currency: string;
+  status: OfferStatus;
+  buyerNote?: string;
+  sellerNote?: string;
+  expiresAt: Date; // createdAt + 48h
+  acceptedAt?: Date;
+  respondedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
 ```
 
-**Constants:** `OFFERS_COLLECTION = "offers"`, `OfferStatus` enum
+**Constants:** `OFFER_COLLECTION = "offers"`, `OFFER_FIELDS`, `OfferStatus`
 
 ---
 
 ## Server Actions (`src/actions/offer.actions.ts`)
 
-| Action                              | Auth   | Description                                                   |
-| ----------------------------------- | ------ | ------------------------------------------------------------- |
-| `makeOfferAction(input)`            | buyer  | Validates product status, engages RC, creates `OfferDocument` |
-| `respondToOfferAction(input)`       | seller | Accept / decline / counter. Releases RC on decline            |
-| `acceptCounterOfferAction(offerId)` | buyer  | Adjusts `lockedRC` to counter price                           |
-| `withdrawOfferAction(offerId)`      | buyer  | Releases locked RC, marks withdrawn                           |
-| `checkoutOfferAction(offerId)`      | buyer  | Marks paid, deducts RC, creates order                         |
-| `listBuyerOffersAction(params)`     | buyer  | Sieve-enabled paginated read                                  |
-| `listSellerOffersAction(params)`    | seller | Sieve-enabled paginated read                                  |
+| Action                             | Auth   | Description                                                                                                                                                                                                                       |
+| ---------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `makeOfferAction(input)`           | buyer  | Validates product status; enforces 3-offer limit (by doc count since `product.updatedAt`); **blocks if an active offer already exists** on this product (`hasActiveOffer`); RC balance check; engages RC; creates `OfferDocument` |
+| `respondToOfferAction(input)`      | seller | Accept / decline / counter. **Rejects if offer has expired.** Releases RC on decline                                                                                                                                              |
+| `acceptCounterOfferAction(input)`  | buyer  | Adjusts engaged RC to counter price; status → accepted. **Rejects if counter has expired.**                                                                                                                                       |
+| `counterOfferByBuyerAction(input)` | buyer  | Counter back within ±20 % of seller's counter; enforces 3-offer limit; adjusts RC delta; closes old offer, creates fresh one. **Rejects if counter has expired.**                                                                 |
+| `withdrawOfferAction(input)`       | buyer  | Releases locked RC, marks withdrawn. **Rejects if already expired** (RC already released by cron).                                                                                                                                |
+| `checkoutOfferAction(offerId)`     | buyer  | Adds to cart at `lockedPrice`. **Blocked if product out of stock or archived.** RC returned in payment verify route                                                                                                               |
+| `listBuyerOffersAction()`          | buyer  | Sieve-enabled paginated read                                                                                                                                                                                                      |
+| `listSellerOffersAction()`         | seller | Sieve-enabled paginated read                                                                                                                                                                                                      |
+
+**Exported types:** `MakeOfferInput`, `RespondToOfferInput`, `BuyerCounterInput`
 
 ---
 
@@ -99,8 +144,10 @@ const { respond, isPending } = useRespondToOffer();
 
 ```ts
 const { offers, isLoading } = useUserOffers(params);
-const { acceptCounter } = useAcceptCounter();
-const { withdraw } = useWithdrawOffer();
+const { mutate: makeOffer } = useMakeOffer();
+const { mutate: acceptCounter } = useAcceptCounter();
+const { mutate: counterBack } = useCounterOfferByBuyer();
+const { mutate: withdraw } = useWithdrawOffer();
 ```
 
 ---
@@ -113,11 +160,32 @@ DataTable showing incoming offers. Columns: product, buyer, offer amount, status
 
 ### `UserOffersView`
 
-DataTable showing buyer's sent offers. Status badge per row. Actions: accept counter, checkout, withdraw.
+DataTable showing buyer's sent offers. Status badge per row. Actions: accept counter, counter back (shows when status is `countered`), checkout, withdraw.
 
 ### `MakeOfferForm`
 
-Embedded on `ProductDetailView`. Requires auth. Input: offer amount (₹). Displays required RC engagement upfront. Calls `makeOfferAction`.
+Embedded on `ProductDetailView`. Requires auth. Input: offer amount (₹). Displays required RC engagement and remaining offer count (out of 3) upfront. Calls `makeOfferAction`.
+
+---
+
+## Repository (`src/repositories/offer.repository.ts`)
+
+| Method                                          | Description                                                                                                                            |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `create(input)`                                 | Inserts new offer doc with 48h `expiresAt`                                                                                             |
+| `findById(id)`                                  | Single doc lookup                                                                                                                      |
+| `findByBuyer(uid, model?)`                      | Buyer offer list with optional Sieve filtering                                                                                         |
+| `findBySeller(id, model?)`                      | Seller offer list with optional Sieve filtering                                                                                        |
+| `findPendingBySeller(id)`                       | All pending offers for a seller                                                                                                        |
+| `findExpired()`                                 | Pending **and countered** offers past `expiresAt` (used by server-side sweep; mirrors `findExpiredActive` in functions repo)           |
+| `hasActiveOffer(uid, productId)`                | Returns `true` if buyer has any `pending` or `countered` offer on this product; uses `.select().limit(1)` (stub read) for minimal cost |
+| `countByBuyerAndProduct(uid, productId, since)` | Count offer docs for a buyer on a product created on or after `since`; uses `.select()` (stub reads) for minimal cost                  |
+| `accept(id, price, note?)`                      | Sets status `accepted`, `lockedPrice`, `acceptedAt`                                                                                    |
+| `decline(id, note?)`                            | Sets status `declined`                                                                                                                 |
+| `counter(id, amount, note?)`                    | Sets status `countered`, `counterAmount`                                                                                               |
+| `acceptCounter(id)`                             | Promotes `counterAmount` to `lockedPrice`, status `accepted`                                                                           |
+| `withdraw(id)`                                  | Sets status `withdrawn`                                                                                                                |
+| `expireMany(ids[])`                             | Batch-updates status to `expired` (499-doc Firestore batches)                                                                          |
 
 ---
 

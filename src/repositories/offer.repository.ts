@@ -16,10 +16,27 @@ import type {
 } from "@/db/schema";
 import { OFFER_COLLECTION, OFFER_FIELDS } from "@/db/schema";
 import { generateOfferId } from "@/utils";
+import {
+  encryptPii,
+  decryptPii,
+  encryptPiiFields,
+  decryptPiiFields,
+  OFFER_PII_FIELDS,
+} from "@/lib/pii";
 
 class OfferRepository extends BaseRepository<OfferDocument> {
   constructor() {
     super(OFFER_COLLECTION);
+  }
+
+  /** Override mapDoc to auto-decrypt PII on every offer read */
+  protected override mapDoc<D = OfferDocument>(
+    snap: import("firebase-admin/firestore").DocumentSnapshot,
+  ): D {
+    const raw = super.mapDoc<OfferDocument>(snap);
+    return decryptPiiFields(raw as unknown as Record<string, unknown>, [
+      ...OFFER_PII_FIELDS,
+    ]) as unknown as D;
   }
 
   static readonly SIEVE_FIELDS = {
@@ -49,11 +66,17 @@ class OfferRepository extends BaseRepository<OfferDocument> {
       updatedAt: now,
     };
 
+    // Encrypt PII fields before persisting
+    const encrypted = encryptPiiFields(
+      { ...data } as unknown as Record<string, unknown>,
+      [...OFFER_PII_FIELDS],
+    ) as typeof data;
+
     await this.db
       .collection(this.collection)
       .doc(id)
-      .set(prepareForFirestore(data));
-    return { id, ...data };
+      .set(prepareForFirestore(encrypted));
+    return { id, ...data }; // return plaintext to caller
   }
 
   // ─── Reads ───────────────────────────────────────────────────────────────
@@ -123,13 +146,47 @@ class OfferRepository extends BaseRepository<OfferDocument> {
     return snap.docs.map((d) => this.mapDoc(d));
   }
 
-  /** Returns all still-pending offers past their expiresAt — used by expiry sweep job */
+  /** Returns all pending or countered offers past their expiresAt — used by expiry sweep job */
   async findExpired(): Promise<OfferDocument[]> {
     const snap = await this.getCollection()
-      .where(OFFER_FIELDS.STATUS, "==", "pending")
+      .where(OFFER_FIELDS.STATUS, "in", ["pending", "countered"])
       .where(OFFER_FIELDS.EXPIRES_AT, "<=", new Date())
       .get();
     return snap.docs.map((d) => this.mapDoc(d));
+  }
+
+  /**
+   * Returns true when the buyer already has an active (pending or countered) offer
+   * on this product.  Used to prevent duplicate parallel negotiations.
+   */
+  async hasActiveOffer(buyerUid: string, productId: string): Promise<boolean> {
+    const snap = await this.getCollection()
+      .where(OFFER_FIELDS.BUYER_UID, "==", buyerUid)
+      .where(OFFER_FIELDS.PRODUCT_ID, "==", productId)
+      .where(OFFER_FIELDS.STATUS, "in", ["pending", "countered"])
+      .select() // stub read — minimal cost
+      .limit(1)
+      .get();
+    return !snap.empty;
+  }
+
+  /**
+   * Count how many offer documents a buyer has created for a product since `since`.
+   * Used to enforce the 3-offer-per-product limit; resets automatically when
+   * `product.updatedAt` advances past the previously-created offer dates.
+   */
+  async countByBuyerAndProduct(
+    buyerUid: string,
+    productId: string,
+    since: Date,
+  ): Promise<number> {
+    const snap = await this.getCollection()
+      .where(OFFER_FIELDS.BUYER_UID, "==", buyerUid)
+      .where(OFFER_FIELDS.PRODUCT_ID, "==", productId)
+      .where(OFFER_FIELDS.CREATED_AT, ">=", since)
+      .select() // fetch no fields — only doc stubs for minimal read cost
+      .get();
+    return snap.size;
   }
 
   // ─── Mutations ───────────────────────────────────────────────────────────

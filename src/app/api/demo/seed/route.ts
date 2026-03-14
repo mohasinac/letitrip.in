@@ -2,6 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb, getAdminAuth } from "@/lib/firebase/admin";
 import { serverLogger } from "@/lib/server-logger";
 import {
+  encryptPiiFields,
+  addPiiIndices,
+  encryptShippingAddress,
+  encryptPayoutDetails,
+  encryptPayoutBankAccount,
+  encryptShippingConfig,
+  USER_PII_FIELDS,
+  USER_PII_INDEX_MAP,
+  ADDRESS_PII_FIELDS,
+  ORDER_PII_FIELDS,
+  BID_PII_FIELDS,
+  PAYOUT_PII_FIELDS,
+  REVIEW_PII_FIELDS,
+  OFFER_PII_FIELDS,
+  EVENT_ENTRY_PII_FIELDS,
+  CHAT_PII_FIELDS,
+} from "@/lib/pii";
+import {
   isAlgoliaConfigured,
   clearAlgoliaIndex,
   ALGOLIA_PAGES_INDEX_NAME,
@@ -136,6 +154,30 @@ function stripUndefined(obj: any): any {
     );
   }
   return obj;
+}
+
+/** Apply PII encryption to seed data based on collection type */
+function encryptSeedPii(collection: string, data: any, original?: any): any {
+  const PII_MAP: Record<string, readonly string[]> = {
+    orders: ORDER_PII_FIELDS,
+    bids: BID_PII_FIELDS,
+    payouts: PAYOUT_PII_FIELDS,
+    reviews: REVIEW_PII_FIELDS,
+    products: ["sellerName", "sellerEmail"],
+    offers: OFFER_PII_FIELDS,
+    eventEntries: EVENT_ENTRY_PII_FIELDS,
+    chatRooms: CHAT_PII_FIELDS,
+  };
+  const fields = PII_MAP[collection];
+  if (!fields) return data;
+  let result = encryptPiiFields(data, [...fields]);
+  if (collection === "orders" && result.shippingAddress) {
+    result.shippingAddress = encryptShippingAddress(result.shippingAddress);
+  }
+  if (collection === "payouts" && result.bankAccount) {
+    result.bankAccount = encryptPayoutBankAccount(result.bankAccount);
+  }
+  return result;
 }
 
 export async function GET(_request: NextRequest) {
@@ -342,8 +384,21 @@ export async function POST(request: NextRequest) {
                   });
                 }
 
-                // Write new Firestore document
-                const docData = stripUndefined({ ...userData });
+                // Write new Firestore document — encrypt PII fields
+                let docData = stripUndefined({ ...userData });
+                // Add blind indices from plaintext BEFORE encrypting
+                docData = addPiiIndices(docData, USER_PII_INDEX_MAP);
+                docData = encryptPiiFields(docData, [...USER_PII_FIELDS]);
+                if (docData.payoutDetails) {
+                  docData.payoutDetails = encryptPayoutDetails(
+                    docData.payoutDetails,
+                  );
+                }
+                if (docData.shippingConfig) {
+                  docData.shippingConfig = encryptShippingConfig(
+                    docData.shippingConfig,
+                  );
+                }
                 await docRef.set(docData);
                 totalCreated++;
               } catch (err) {
@@ -375,7 +430,11 @@ export async function POST(request: NextRequest) {
                   continue;
                 }
 
-                await docRef.set(stripUndefined(data));
+                await docRef.set(
+                  encryptPiiFields(stripUndefined(data), [
+                    ...ADDRESS_PII_FIELDS,
+                  ]),
+                );
                 totalCreated++;
               } catch (err) {
                 serverLogger.error(`Error seeding address:`, err);
@@ -428,7 +487,11 @@ export async function POST(request: NextRequest) {
 
               items.push({
                 docRef: db.collection(firestoreCollection).doc(id),
-                data: stripUndefined(data),
+                data: encryptSeedPii(
+                  collectionName,
+                  stripUndefined(data),
+                  docData,
+                ),
               });
             }
 

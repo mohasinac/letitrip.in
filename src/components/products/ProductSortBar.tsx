@@ -12,6 +12,8 @@ export const PRODUCT_SORT_VALUES = {
   OLDEST: "createdAt",
   PRICE_LOW: "price",
   PRICE_HIGH: "-price",
+  RATING_HIGH: "-avgRating",
+  POPULAR: "-viewCount",
   NAME_AZ: "title",
   NAME_ZA: "-title",
 } as const;
@@ -39,6 +41,8 @@ export function ProductSortBar({
     { value: PRODUCT_SORT_VALUES.OLDEST, label: t("sortOldest") },
     { value: PRODUCT_SORT_VALUES.PRICE_LOW, label: t("sortPriceLow") },
     { value: PRODUCT_SORT_VALUES.PRICE_HIGH, label: t("sortPriceHigh") },
+    { value: PRODUCT_SORT_VALUES.RATING_HIGH, label: t("sortRating") },
+    { value: PRODUCT_SORT_VALUES.POPULAR, label: t("sortPopular") },
     { value: PRODUCT_SORT_VALUES.NAME_AZ, label: t("sortNameAZ") },
     { value: PRODUCT_SORT_VALUES.NAME_ZA, label: t("sortNameZA") },
   ];

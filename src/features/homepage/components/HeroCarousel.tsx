@@ -137,6 +137,8 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
       aria-roledescription="carousel"
       aria-label={tA11y("heroCarouselAriaLabel")}
       onKeyDown={handleKeyDown}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
       onFocus={() => setIsPaused(true)}
       onBlur={() => setIsPaused(false)}
       tabIndex={0}
@@ -399,17 +401,17 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
         aria-hidden="true"
       />
 
-      {/* Navigation Arrows (desktop only) */}
-      {slides.length > 1 && !isMobile && (
-        <>
+      {/* Navigation Arrows — bottom-right, both together */}
+      {slides.length > 1 && (
+        <div className="absolute bottom-4 right-4 z-20 flex gap-2">
           <Button
             variant="ghost"
-            className={`absolute left-4 top-1/2 -translate-y-1/2 z-10 p-0 ${THEME_CONSTANTS.carousel.arrow}`}
+            className={`p-0 ${THEME_CONSTANTS.carousel.arrow}`}
             onClick={goPrev}
             aria-label={tA11y("heroCarouselPrevSlide")}
           >
             <svg
-              className="w-5 h-5"
+              className="w-7 h-7"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -424,12 +426,12 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
           </Button>
           <Button
             variant="ghost"
-            className={`absolute right-4 top-1/2 -translate-y-1/2 z-10 p-0 ${THEME_CONSTANTS.carousel.arrow}`}
+            className={`p-0 ${THEME_CONSTANTS.carousel.arrow}`}
             onClick={goNext}
             aria-label={tA11y("heroCarouselNextSlide")}
           >
             <svg
-              className="w-5 h-5"
+              className="w-7 h-7"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -442,7 +444,7 @@ export function HeroCarousel({ initialSlides }: HeroCarouselProps = {}) {
               />
             </svg>
           </Button>
-        </>
+        </div>
       )}
     </Section>
   );

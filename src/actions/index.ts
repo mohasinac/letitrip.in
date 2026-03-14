@@ -397,12 +397,17 @@ export {
   makeOfferAction,
   respondToOfferAction,
   acceptCounterOfferAction,
+  counterOfferByBuyerAction,
   withdrawOfferAction,
   listBuyerOffersAction,
   listSellerOffersAction,
   checkoutOfferAction,
 } from "./offer.actions";
-export type { MakeOfferInput, RespondToOfferInput } from "./offer.actions";
+export type {
+  MakeOfferInput,
+  RespondToOfferInput,
+  BuyerCounterInput,
+} from "./offer.actions";
 
 // Refund (admin only)
 export {

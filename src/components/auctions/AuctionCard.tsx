@@ -157,7 +157,7 @@ export function AuctionCard({
 
   return (
     <div
-      className={`${themed.bgPrimary} rounded-lg overflow-hidden border border-zinc-100 dark:border-slate-800 hover:shadow-xl hover:border-indigo-200 dark:hover:border-indigo-800 transition-all duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isEnded ? "opacity-60" : ""} ${isSelected ? "ring-2 ring-indigo-500 dark:ring-indigo-400" : ""} ${className}`}
+      className={`h-full ${themed.bgPrimary} rounded-lg overflow-hidden border border-zinc-100 dark:border-slate-800 hover:shadow-xl hover:border-indigo-200 dark:hover:border-indigo-800 transition-all duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isEnded ? "opacity-60" : ""} ${isSelected ? "ring-2 ring-indigo-500 dark:ring-indigo-400" : ""} ${className}`}
     >
       {/* ── IMAGE SECTION ── */}
       <div
@@ -285,7 +285,7 @@ export function AuctionCard({
 
       {/* ── INFO SECTION ── */}
       <div
-        className={`flex flex-col gap-2 ${variant === "list" ? "flex-1 min-w-0 p-3 justify-between" : "p-3"}`}
+        className={`flex-1 flex flex-col gap-2 ${variant === "list" ? "flex-1 min-w-0 p-3" : "p-3"}`}
       >
         {/* Title + wishlist heart */}
         <div className={`${flex.rowCenter} gap-2 items-start`}>
@@ -331,7 +331,7 @@ export function AuctionCard({
         </div>
 
         {/* Countdown + bid count row */}
-        <div className={`${flex.between} gap-2`}>
+        <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
           {/* Countdown badge */}
           <div
             className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-mono font-semibold ${
@@ -353,15 +353,15 @@ export function AuctionCard({
         </div>
 
         {/* Action buttons */}
-        <div className={`flex gap-1.5 ${variant === "list" ? "mt-auto" : ""}`}>
+        <div className="flex flex-wrap gap-1.5 mt-auto">
           {isEnded ? (
             <Button
               variant="ghost"
               size="sm"
-              className="flex-1 text-xs px-2 gap-1 cursor-not-allowed opacity-60"
+              className="flex-1 min-w-0 text-xs px-2 sm:text-xs sm:px-2 gap-1 cursor-not-allowed opacity-60"
               disabled
             >
-              <Span variant="inherit" className="truncate">
+              <Span variant="inherit" className="min-w-0 truncate">
                 {t("ended")}
               </Span>
             </Button>
@@ -370,11 +370,14 @@ export function AuctionCard({
               <Button
                 variant="warning"
                 size="sm"
-                className="flex-1 text-xs px-2 gap-1"
+                className="flex-1 min-w-0 text-xs px-2 sm:text-xs sm:px-2 gap-1"
                 onClick={handleBid}
               >
                 <Gavel className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
-                <Span variant="inherit" className="truncate">
+                <Span
+                  variant="inherit"
+                  className="hidden sm:inline xl:hidden min-w-0 truncate"
+                >
                   {t("placeBid")}
                 </Span>
               </Button>
@@ -382,14 +385,17 @@ export function AuctionCard({
                 <Button
                   variant="danger"
                   size="sm"
-                  className="flex-1 text-xs px-2 gap-1"
+                  className="flex-1 min-w-0 text-xs px-2 sm:text-xs sm:px-2 gap-1"
                   onClick={handleBuyout}
                 >
                   <ShoppingBag
                     className="w-3 h-3 flex-shrink-0"
                     aria-hidden="true"
                   />
-                  <Span variant="inherit" className="truncate">
+                  <Span
+                    variant="inherit"
+                    className="hidden sm:inline xl:hidden min-w-0 truncate"
+                  >
                     {t("buyout")}
                   </Span>
                 </Button>

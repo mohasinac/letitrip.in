@@ -183,6 +183,55 @@ export const RBAC_CONFIG: Record<string, RouteAccessConfig> = {
     requireActiveAccount: true,
     redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
   },
+  [ROUTES.ADMIN.COUPONS]: {
+    path: ROUTES.ADMIN.COUPONS,
+    allowedRoles: ["admin"],
+    requireEmailVerified: true,
+    requireActiveAccount: true,
+    redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
+  },
+  [ROUTES.ADMIN.MEDIA]: {
+    path: ROUTES.ADMIN.MEDIA,
+    allowedRoles: ["admin"],
+    requireEmailVerified: true,
+    requireActiveAccount: true,
+    redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
+  },
+  [ROUTES.ADMIN.PRODUCTS]: {
+    path: ROUTES.ADMIN.PRODUCTS,
+    allowedRoles: ["admin"],
+    requireEmailVerified: true,
+    requireActiveAccount: true,
+    redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
+  },
+  [ROUTES.ADMIN.ORDERS]: {
+    path: ROUTES.ADMIN.ORDERS,
+    allowedRoles: ["admin"],
+    requireEmailVerified: true,
+    requireActiveAccount: true,
+    redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
+  },
+  [ROUTES.ADMIN.STORES]: {
+    path: ROUTES.ADMIN.STORES,
+    allowedRoles: ["admin"],
+    requireEmailVerified: true,
+    requireActiveAccount: true,
+    redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
+  },
+  [ROUTES.ADMIN.NAVIGATION]: {
+    path: ROUTES.ADMIN.NAVIGATION,
+    allowedRoles: ["admin"],
+    requireEmailVerified: true,
+    requireActiveAccount: true,
+    redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
+  },
+  [ROUTES.ADMIN.FEATURE_FLAGS]: {
+    path: ROUTES.ADMIN.FEATURE_FLAGS,
+    allowedRoles: ["admin"],
+    requireEmailVerified: true,
+    requireActiveAccount: true,
+    redirectTo: ROUTES.ERRORS.UNAUTHORIZED,
+  },
   // NOTE: /events and /events/[id] are public (no RBAC entry).
   // /events/[id]/participate requires auth — enforced at the page level via ProtectedRoute
   // since the middleware prefix-match cannot distinguish /events/:id from /events/:id/participate.

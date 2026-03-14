@@ -130,10 +130,12 @@ export function ProductImageGallery({
               <div
                 className={`absolute inset-0 ${THEME_CONSTANTS.flex.center} opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none`}
               >
-                <ZoomIn
-                  className="h-6 w-6 text-white drop-shadow-lg"
-                  aria-hidden="true"
-                />
+                <div className="w-16 h-16 rounded-full bg-black/55 backdrop-blur-sm flex items-center justify-center ring-2 ring-white/30 shadow-xl">
+                  <ZoomIn
+                    className="h-8 w-8 text-white drop-shadow-lg"
+                    aria-hidden="true"
+                  />
+                </div>
               </div>
             </>
           )}
@@ -142,11 +144,12 @@ export function ProductImageGallery({
         {/* Expand button (visible on hover, image only) */}
         {selected?.type === "image" && (
           <Button
+            variant="ghost"
             onClick={() => setLightboxOpen(true)}
             aria-label={t("gallery.openLightbox")}
-            className={`absolute top-2 right-2 w-8 h-8 p-0 min-h-0 ${flex.center} rounded-full bg-black/50 hover:bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm shadow border-0`}
+            className={`absolute top-2 right-2 w-10 h-10 p-0 !min-h-0 ${flex.center} rounded-full bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700 !text-zinc-800 dark:!text-zinc-100 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm shadow-md border-0`}
           >
-            <Expand className="w-4 h-4" />
+            <Expand className="w-5 h-5" />
           </Button>
         )}
 
@@ -156,16 +159,16 @@ export function ProductImageGallery({
             <Button
               onClick={goPrev}
               aria-label={t("gallery.prevImage")}
-              className={`absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 ${flex.center} rounded-full bg-white/80 dark:bg-slate-900/80 shadow-md opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm`}
+              className={`absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 ${THEME_CONSTANTS.carousel.arrow}`}
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-7 h-7" />
             </Button>
             <Button
               onClick={goNext}
               aria-label={t("gallery.nextImage")}
-              className={`absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 ${flex.center} rounded-full bg-white/80 dark:bg-slate-900/80 shadow-md opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm`}
+              className={`absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 ${THEME_CONSTANTS.carousel.arrow}`}
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-7 h-7" />
             </Button>
           </>
         )}

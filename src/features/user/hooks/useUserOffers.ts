@@ -7,10 +7,11 @@ import { API_ENDPOINTS } from "@/constants";
 import {
   makeOfferAction,
   acceptCounterOfferAction,
+  counterOfferByBuyerAction,
   withdrawOfferAction,
 } from "@/actions";
 import type { OfferDocument } from "@/db/schema";
-import type { MakeOfferInput } from "@/actions";
+import type { MakeOfferInput, BuyerCounterInput } from "@/actions";
 
 // ─── Buyer: list own offers ────────────────────────────────────────────────
 
@@ -56,6 +57,19 @@ export function useAcceptCounter(
 ) {
   return useMutation<OfferDocument, Error, { offerId: string }>({
     mutationFn: acceptCounterOfferAction,
+    onSuccess,
+    onError,
+  });
+}
+
+// ─── Buyer: counter back against seller's counter ────────────────────────
+
+export function useCounterOfferByBuyer(
+  onSuccess?: (offer: OfferDocument) => void,
+  onError?: (err: { message?: string }) => void,
+) {
+  return useMutation<OfferDocument, Error, BuyerCounterInput>({
+    mutationFn: counterOfferByBuyerAction,
     onSuccess,
     onError,
   });

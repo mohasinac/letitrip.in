@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { PackageSearch, Gavel } from "lucide-react";
+import { PackageSearch, Gavel, Info } from "lucide-react";
 import {
   DataTable,
   ProductCard,
@@ -14,6 +14,7 @@ import {
   EmptyState,
   Button,
   Container,
+  Tooltip,
 } from "@/components";
 import { ProductFilters } from "@/components";
 import type { ActiveFilter } from "@/components";
@@ -29,7 +30,7 @@ import {
   useBrands,
 } from "@/hooks";
 import { useProducts } from "../hooks";
-import { addToWishlistAction } from "@/actions";
+import { addToWishlistAction, addToCartAction } from "@/actions";
 
 import type { ProductsListResult } from "../hooks";
 
@@ -56,6 +57,7 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
   const searchQuery = table.get("q");
   const sortParam = table.get("sort") || PRODUCT_SORT_VALUES.NEWEST;
   const pageParam = table.getNumber("page", 1);
+  const viewMode = (table.get("view") || "grid") as "grid" | "list";
 
   // ── Staged filter state via usePendingTable ───────────────────────────
   const {
@@ -156,6 +158,39 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
     [categoryParam, minPriceParam, maxPriceParam, categoryNameMap, t],
   );
 
+  // ── Bulk cart handler ─────────────────────────────────────────────
+  const handleBulkAddToCart = useCallback(async () => {
+    const selected = products.filter((p) => selectedIds.includes(p.id));
+    const results = await Promise.allSettled(
+      selected.map((p) =>
+        addToCartAction({
+          productId: p.id,
+          productTitle: p.title,
+          productImage: p.images?.[0] ?? "",
+          price: p.price,
+          currency: p.currency || "INR",
+          quantity: 1,
+          sellerId: p.sellerId,
+          sellerName: p.sellerName,
+        }),
+      ),
+    );
+    const succeeded = results.filter((r) => r.status === "fulfilled").length;
+    if (succeeded === selectedIds.length) {
+      showSuccess(tActions("bulkSuccess", { count: succeeded }));
+    } else if (succeeded > 0) {
+      showError(
+        tActions("bulkPartialSuccess", {
+          success: succeeded,
+          total: selectedIds.length,
+        }),
+      );
+    } else {
+      showError(tActions("bulkFailed"));
+    }
+    setSelectedIds([]);
+  }, [selectedIds, products, showSuccess, showError, tActions]);
+
   // ── Bulk wishlist handler ─────────────────────────────────────────
   const handleBulkAddToWishlist = useCallback(async () => {
     const results = await Promise.allSettled(
@@ -239,16 +274,38 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
           }
           selectedCount={selectedIds.length}
           onClearSelection={() => setSelectedIds([])}
-          bulkActions={
-            user ? (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleBulkAddToWishlist}
+          actionsSlot={
+            <Tooltip content={tActions("selectionHint")} placement="bottom">
+              <button
+                type="button"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-indigo-500 transition-colors"
+                aria-label={tActions("selectionHint")}
               >
-                {tActions("bulkAddToWishlist", { count: selectedIds.length })}
-              </Button>
-            ) : undefined
+                <Info className="w-4 h-4" />
+              </button>
+            </Tooltip>
+          }
+          bulkActionItems={
+            user
+              ? [
+                  {
+                    id: "bulk-cart",
+                    label: tActions("bulkAddToCart", {
+                      count: selectedIds.length,
+                    }),
+                    variant: "secondary",
+                    onClick: handleBulkAddToCart,
+                  },
+                  {
+                    id: "bulk-wishlist",
+                    label: tActions("bulkAddToWishlist", {
+                      count: selectedIds.length,
+                    }),
+                    variant: "primary",
+                    onClick: handleBulkAddToWishlist,
+                  },
+                ]
+              : undefined
           }
           paginationSlot={
             totalPages > 1 ? (
@@ -275,10 +332,14 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
               { key: "category", header: t("filterCategory") },
               { key: "status", header: t("colStatus") },
             ]}
-            defaultViewMode="grid"
-            selectable={!!user}
-            selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
+            showViewToggle
+            showTableView={false}
+            viewMode={viewMode}
+            onViewModeChange={(m) => table.set("view", m)}
+            labels={{
+              gridView: tActions("gridView"),
+              listView: tActions("listView"),
+            }}
             emptyState={
               <EmptyState
                 icon={<PackageSearch className="w-16 h-16" />}
@@ -293,7 +354,7 @@ export function ProductsView({ initialData }: ProductsViewProps = {}) {
             mobileCardRender={(item) => (
               <ProductCard
                 product={item as any}
-                variant="grid"
+                variant={viewMode}
                 selectable={!!user}
                 isSelected={selectedIds.includes(item.id)}
                 onSelect={(id, sel) =>

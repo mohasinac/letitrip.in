@@ -80,10 +80,10 @@ export function CouponCard({ coupon }: { coupon: CouponDocument }) {
 
   return (
     <Card className="p-5 border-2 border-dashed border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-600 transition-colors">
-      <div className={`${flex.betweenStart} mb-3`}>
-        <div>
-          <Heading level={3}>{coupon.name}</Heading>
-          <Text className="text-indigo-600 dark:text-indigo-400 font-bold text-lg mt-0.5">
+      <div className={`${flex.betweenStart} mb-3 gap-2`}>
+        <div className="min-w-0 flex-1">
+          <Heading level={4}>{coupon.name}</Heading>
+          <Text className="text-indigo-600 dark:text-indigo-400 font-bold text-base mt-0.5">
             {getDiscountLabel(coupon)}
           </Text>
         </div>
@@ -112,18 +112,21 @@ export function CouponCard({ coupon }: { coupon: CouponDocument }) {
         </Text>
       )}
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 min-w-0">
         <code
-          className={`flex-1 px-3 py-2 rounded-lg text-sm font-mono font-bold tracking-widest ${themed.bgSecondary} ${themed.textPrimary} text-center`}
+          className={`flex-1 min-w-0 truncate px-3 py-2 rounded-lg text-sm font-mono font-bold tracking-wide ${themed.bgSecondary} ${themed.textPrimary} text-center`}
         >
           {coupon.code}
         </code>
         <Button
           variant="primary"
           onClick={handleCopy}
-          className="shrink-0 text-sm px-3 py-2"
+          className="shrink-0 text-xs px-2 py-2 sm:text-xs sm:px-3"
         >
-          {copied ? t("copied") : t("copyCode")}
+          <span className="hidden sm:inline">
+            {copied ? t("copied") : t("copyCode")}
+          </span>
+          <span className="sm:hidden">{copied ? "✓" : "Copy"}</span>
         </Button>
       </div>
 

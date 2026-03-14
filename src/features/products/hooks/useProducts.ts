@@ -21,6 +21,8 @@ export type ProductItem = Pick<
   | "isPromoted"
   | "slug"
   | "category"
+  | "sellerId"
+  | "sellerName"
 >;
 
 export interface ProductsListResult {

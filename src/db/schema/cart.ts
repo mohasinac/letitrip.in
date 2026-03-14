@@ -28,6 +28,11 @@ export interface CartItemDocument {
   /** True for pre-order products — drives separate order grouping at checkout */
   isPreOrder: boolean;
   /**
+   * True when item was added from an accepted Make-an-Offer.
+   * Guarantees the item forms its own isolated order (never merged with other cart items).
+   */
+  isOffer?: boolean;
+  /**
    * Present when item was added from an accepted Make-an-Offer.
    * Checkout verify route uses this to return engaged RC after payment.
    */
@@ -124,6 +129,8 @@ export type AddToCartInput = {
   sellerName: string;
   isAuction?: boolean;
   isPreOrder?: boolean;
+  /** Set to true for accepted offer items — guarantees isolated single-item order */
+  isOffer?: boolean;
   offerId?: string;
   lockedPrice?: number;
 };

@@ -239,6 +239,12 @@ export interface RangeFilterProps {
   /** Slider drag step. Defaults to 1. */
   step?: number;
   className?: string;
+  /** Controlled open state */
+  isOpen?: boolean;
+  /** Called when the header is toggled */
+  onToggle?: () => void;
+  /** Called when the clear (×) button is clicked */
+  onClear?: () => void;
 }
 
 export function RangeFilter({
@@ -259,8 +265,17 @@ export function RangeFilter({
   maxBound,
   step = 1,
   className = "",
+  isOpen: controlledOpen,
+  onToggle,
+  onClear,
 }: RangeFilterProps) {
-  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
+  const isControlled = controlledOpen !== undefined;
+  const [internalCollapsed, setInternalCollapsed] = useState(defaultCollapsed);
+  const isCollapsed = isControlled ? !controlledOpen : internalCollapsed;
+  const handleToggle = () => {
+    if (onToggle) onToggle();
+    else setInternalCollapsed((c) => !c);
+  };
   const { themed, spacing, flex } = THEME_CONSTANTS;
   const t = useTranslations("filters");
 
@@ -282,7 +297,7 @@ export function RangeFilter({
         type="button"
         variant="ghost"
         id={`range-${title}`}
-        onClick={() => setIsCollapsed((c) => !c)}
+        onClick={handleToggle}
         className={`flex w-full items-center justify-between text-sm font-semibold ${themed.textPrimary} py-1 hover:opacity-80 transition-opacity`}
         aria-expanded={!isCollapsed}
       >
@@ -295,6 +310,33 @@ export function RangeFilter({
             >
               1
             </Span>
+          )}
+          {onClear && hasValue && (
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClear();
+              }}
+              className="inline-flex items-center justify-center w-5 h-5 p-0 min-w-0 text-zinc-500 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-slate-700 transition-colors rounded-full"
+              aria-label={t("clearSection")}
+            >
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </Button>
           )}
         </Span>
         <svg

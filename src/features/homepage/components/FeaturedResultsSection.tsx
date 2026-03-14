@@ -59,7 +59,7 @@ export async function FeaturedResultsSection() {
       </div>
 
       {/* ── Card grid ── */}
-      <div className="mx-auto max-w-7xl grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+      <div className="mx-auto max-w-7xl grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {results.map((item, i) => (
           <BeforeAfterCard
             key={`result-${i}`}

@@ -44,14 +44,14 @@ export const POST = createApiHandler<(typeof subscribeSchema)["_output"]>({
         );
       }
       await newsletterRepository.resubscribe(existing.id);
-      serverLogger.info("Newsletter re-subscription", { email });
+      serverLogger.info("Newsletter re-subscription");
       return successResponse(
         { subscribed: true },
         SUCCESS_MESSAGES.NEWSLETTER.RESUBSCRIBED,
       );
     }
     await newsletterRepository.subscribe({ email, source, ipAddress });
-    serverLogger.info("New newsletter subscription", { email, source });
+    serverLogger.info("New newsletter subscription", { source });
     return successResponse(
       { subscribed: true },
       SUCCESS_MESSAGES.NEWSLETTER.SUBSCRIBED,

@@ -47,7 +47,8 @@ The main application layout. Wraps every localised page.
   - `AuthContext`
   - `ToastProvider`
   - `MonitoringProvider` (Sentry)
-- Renders `<MainNavbar>`, `<BottomNavbar>` (mobile), and `<Footer>` around the page slot
+  - `BottomActionsProvider` (mobile action bar state)
+- Renders `<MainNavbar>`, `<BottomActions>` (mobile), `<BottomNavbar>` (mobile), and `<Footer>` around the page slot
 - Contains `<ZodSetup>` to initialise Zod with the current locale
 
 **Key component:** `src/components/LayoutClient.tsx`
@@ -112,6 +113,129 @@ UserLayout
 
 ## Section Layouts
 
+Lightweight layouts for specific public sections.
+
+| Layout                          | Purpose                                     |
+| ------------------------------- | ------------------------------------------- |
+| `auctions/layout.tsx`           | Sets `<title>` prefix for auction pages     |
+| `blog/layout.tsx`               | Blog-specific OG metadata                   |
+| `cart/layout.tsx`               | Protects cart (redirects guest to products) |
+| `categories/layout.tsx`         | Category breadcrumb layout                  |
+| `checkout/layout.tsx`           | Hides navbar/footer during checkout         |
+| `contact/layout.tsx`            | Contact page wrapper                        |
+| `pre-orders/layout.tsx`         | Pre-orders section layout                   |
+| `products/[slug]/layout.tsx`    | Product detail with `generateMetadata`      |
+| `promotions/layout.tsx`         | Promotions section layout                   |
+| `search/layout.tsx`             | Search page layout                          |
+| `sellers/layout.tsx`            | Sellers directory layout                    |
+| `stores/[storeSlug]/layout.tsx` | Individual store layout with tabs           |
+
+---
+
+## `LayoutClient` Component
+
+`src/components/LayoutClient.tsx` is the central client-side shell mounted inside the locale layout. It:
+
+1. Wraps children in all React context providers
+2. Renders `MainNavbar` + `BottomActions` + `BottomNavbar` + `Footer`
+3. Handles scroll restoration
+4. Mounts `BackToTop` button
+5. Renders `BackgroundRenderer` for configurable page backgrounds
+6. Dynamically sets `<Main>` bottom margin: `mb-28` when the `BottomActions` bar is visible, `mb-16` otherwise (mobile only)
+
+This component is a Client Component (`'use client'`) so all providers can use React hooks.
+
+---
+
+## `BottomActions` — Mobile Page Action Bar
+
+`src/components/layout/BottomActions.tsx` renders a fixed bar above `BottomNavbar` (`bottom-14`, `md:hidden`). Features register their actions via `useBottomActions()` — the component is purely a renderer.
+
+### Two modes
+
+| Mode          | Activation                              | Content                                                                   |
+| ------------- | --------------------------------------- | ------------------------------------------------------------------------- |
+| **Page mode** | `actions.length > 0` or `infoLabel` set | Optional info label row + action button row                               |
+| **Bulk mode** | `bulk.selectedCount > 0`                | Accent top stripe + count pill (tap = deselect all) + bulk action buttons |
+
+### `useBottomActions(options)` — feature hook
+
+```ts
+import { useBottomActions } from "@/hooks";
+
+// Product detail — icon-only + two text actions
+useBottomActions({
+  infoLabel: isAuction ? `Current bid: ₹${currentBid}` : undefined,
+  actions: [
+    { id: "wishlist", icon: <Heart className="w-4 h-4" />, label: t("wishlist"), variant: "ghost", grow: false, onClick: handleWishlist },
+    { id: "cart",     label: t("addToCart"), variant: "outline", onClick: handleAddToCart },
+    { id: "buy",      label: t("buyNow"),    variant: "primary", onClick: handleBuyNow },
+  ],
+});
+
+// Admin/seller listing — bulk mode auto-activates when rows are selected
+useBottomActions({
+  bulk: {
+    selectedCount: selectedIds.length,
+    onClearSelection: () => setSelectedIds([]),
+    actions: [
+      { id: "publish", label: t("bulkPublish", { count: selectedIds.length }), variant: "secondary", onClick: handleBulkPublish },
+      { id: "delete",  label: t("bulkDelete",  { count: selectedIds.length }), variant: "danger", grow: false, onClick: handleBulkDelete },
+    ],
+  },
+});
+
+// Cart / checkout — single full-width primary action
+useBottomActions({
+  actions: [
+    { id: "checkout", label: t("proceedToCheckout"), variant: "primary", badge: cartCount, onClick: handleCheckout },
+  ],
+});
+```
+
+### `BottomAction` type
+
+| Prop       | Type                     | Default                        | Notes                                                           |
+| ---------- | ------------------------ | ------------------------------ | --------------------------------------------------------------- |
+| `id`       | `string`                 | required                       | Stable React key; used for callback dispatch                    |
+| `label`    | `string`                 | —                              | Translated string from `useTranslations`                        |
+| `icon`     | `ReactNode`              | —                              | Leading icon element                                            |
+| `variant`  | `ButtonProps["variant"]` | `"primary"`                    | `primary \| secondary \| outline \| ghost \| danger \| warning` |
+| `badge`    | `string \| number`       | —                              | Count badge rendered in top-right corner                        |
+| `onClick`  | `() => void`             | required                       | Always dispatches latest closure via ref                        |
+| `disabled` | `boolean`                | —                              | Disables the button                                             |
+| `loading`  | `boolean`                | —                              | Shows spinner                                                   |
+| `grow`     | `boolean`                | `true` (page) / `false` (bulk) | `false` = compact/icon-only size                                |
+
+### Typical page mappings
+
+| Page                         | Bar content                                                       |
+| ---------------------------- | ----------------------------------------------------------------- |
+| Product detail (non-auction) | Wishlist icon \| Add to Cart \| Buy Now                           |
+| Product detail (auction)     | Info: "Current bid: ₹X" \| Place Bid                              |
+| Cart                         | Proceed to Checkout (badge = item count)                          |
+| Wishlist                     | Add to Cart ({count}) bulk \| Remove ({count}) bulk               |
+| Admin products               | Publish ({count}) \| Archive ({count}) \| Delete ({count}) — bulk |
+| Seller products              | Publish ({count}) \| Delete ({count}) — bulk                      |
+| Admin orders                 | Mark Shipped ({count}) \| Mark Delivered ({count}) — bulk         |
+| Store page                   | Follow Store \| Contact Seller                                    |
+| Event detail                 | Register for Event                                                |
+| Pre-order detail             | Reserve Now                                                       |
+
+**Structure:**
+
+```
+UserLayout
+  ├─ UserSidebar          ← Navigation for user account pages
+  └─ <children>
+```
+
+**Component:** `src/features/user/components/UserSidebar.tsx`
+
+---
+
+## Section Layouts
+
 Lightweight layouts for specific public sections. Most just add a `<NavbarLayout>` wrapper or inject section-specific metadata.
 
 | Layout                          | Purpose                                     |
@@ -136,9 +260,10 @@ Lightweight layouts for specific public sections. Most just add a `<NavbarLayout
 `src/components/LayoutClient.tsx` is the central client-side shell mounted inside the locale layout. It:
 
 1. Wraps children in all React context providers
-2. Renders `MainNavbar` + `BottomNavbar` + `Footer`
+2. Renders `MainNavbar` + `BottomActions` + `BottomNavbar` + `Footer`
 3. Handles scroll restoration
 4. Mounts `BackToTop` button
 5. Renders `BackgroundRenderer` for configurable page backgrounds
+6. Dynamically sets `<Main>` bottom margin: `mb-28` when `BottomActions` bar is visible, `mb-16` otherwise (mobile only)
 
 This component is a Client Component (`'use client'`) so all providers can use React hooks.

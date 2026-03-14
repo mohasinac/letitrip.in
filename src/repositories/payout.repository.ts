@@ -16,10 +16,51 @@ import type {
   PayoutUpdateInput,
 } from "@/db/schema";
 import { PAYOUT_COLLECTION, PAYOUT_FIELDS } from "@/db/schema";
+import {
+  encryptPiiFields,
+  decryptPiiFields,
+  PAYOUT_PII_FIELDS,
+  encryptPayoutBankAccount,
+  decryptPayoutBankAccount,
+} from "@/lib/pii";
 
 class PayoutRepository extends BaseRepository<PayoutDocument> {
   constructor() {
     super(PAYOUT_COLLECTION);
+  }
+
+  /** Decrypt PII fields on a payout document after Firestore read */
+  private decryptPayout(doc: PayoutDocument): PayoutDocument {
+    const decrypted = decryptPiiFields(
+      doc as unknown as Record<string, unknown>,
+      [...PAYOUT_PII_FIELDS],
+    ) as unknown as PayoutDocument;
+    if (decrypted.bankAccount) {
+      decrypted.bankAccount = decryptPayoutBankAccount(
+        decrypted.bankAccount as unknown as Record<string, unknown>,
+      ) as unknown as typeof decrypted.bankAccount;
+    }
+    return decrypted;
+  }
+
+  /** Encrypt PII fields on payout data before Firestore write */
+  private encryptPayoutData<T extends Record<string, unknown>>(data: T): T {
+    const encrypted = encryptPiiFields(data, [...PAYOUT_PII_FIELDS]);
+    if (encrypted.bankAccount) {
+      (encrypted as Record<string, unknown>).bankAccount =
+        encryptPayoutBankAccount(
+          encrypted.bankAccount as Record<string, unknown>,
+        );
+    }
+    return encrypted;
+  }
+
+  /** Override mapDoc to auto-decrypt PII on every Firestore read */
+  protected override mapDoc<D = PayoutDocument>(
+    snap: import("firebase-admin/firestore").DocumentSnapshot,
+  ): D {
+    const raw = super.mapDoc<PayoutDocument>(snap);
+    return this.decryptPayout(raw) as unknown as D;
   }
 
   /**
@@ -37,12 +78,17 @@ class PayoutRepository extends BaseRepository<PayoutDocument> {
       updatedAt: now,
     };
 
+    // Encrypt PII before persisting
+    const encrypted = this.encryptPayoutData(
+      data as unknown as Record<string, unknown>,
+    );
+
     await this.db
       .collection(this.collection)
       .doc(id)
-      .set(prepareForFirestore(data));
+      .set(prepareForFirestore(encrypted));
 
-    return { id, ...data };
+    return { id, ...data }; // return plaintext to caller
   }
 
   /**
@@ -55,10 +101,12 @@ class PayoutRepository extends BaseRepository<PayoutDocument> {
       .orderBy(PAYOUT_FIELDS.CREATED_AT, "desc")
       .get();
 
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as PayoutDocument[];
+    return snapshot.docs.map((doc) =>
+      this.decryptPayout({
+        id: doc.id,
+        ...doc.data(),
+      } as PayoutDocument),
+    );
   }
 
   /**

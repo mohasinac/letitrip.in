@@ -27,7 +27,7 @@ export function FeaturedAuctionsSection() {
       viewMoreLabel={tActions("viewAllArrow")}
       items={auctions}
       renderItem={(auction) => <AuctionCard product={auction} />}
-      perView={{ base: 2, sm: 3, md: 4, xl: 5 }}
+      perView={{ base: 2, sm: 3, md: 4 }}
       gap={12}
       autoScroll
       autoScrollInterval={4000}

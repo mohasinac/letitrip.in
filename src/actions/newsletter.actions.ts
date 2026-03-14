@@ -73,11 +73,11 @@ export async function subscribeNewsletterAction(
       return { subscribed: true };
     }
     await newsletterRepository.resubscribe(existing.id);
-    serverLogger.info("Newsletter re-subscription", { email });
+    serverLogger.info("Newsletter re-subscription");
     return { subscribed: true };
   }
 
   await newsletterRepository.subscribe({ email, source, ipAddress });
-  serverLogger.info("New newsletter subscription", { email, source });
+  serverLogger.info("New newsletter subscription", { source });
   return { subscribed: true };
 }

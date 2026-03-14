@@ -238,7 +238,7 @@ export const FAQ_SEED_DATA: SeedFAQ[] = [
   {
     question: "What is your refund policy?",
     answer:
-      "Refunds are processed within 5-7 business days after we receive and inspect the returned product. The amount will be credited to your original payment method.",
+      "Refunds are processed within 5-7 platform days after we receive and inspect the returned product. A platform day starts at 10:00 AM IST. The amount will be credited to your original payment method.",
     category: "general",
     showOnHomepage: false,
     showInFooter: false,
@@ -254,7 +254,7 @@ export const FAQ_SEED_DATA: SeedFAQ[] = [
       slug: "refund-policy",
       metaTitle: "Refund Policy | LetItRip Money-Back Guarantee",
       metaDescription:
-        "Get refunds within 5-7 business days after product inspection. Amount credited to original payment method.",
+        "Get refunds within 5-7 platform days (from 10 AM IST) after product inspection. Amount credited to original payment method.",
     },
     isActive: true,
     createdBy: "system",
@@ -966,7 +966,7 @@ export const FAQ_SEED_DATA: SeedFAQ[] = [
   {
     question: "When will I receive my refund?",
     answer:
-      "Refunds are processed within 5-7 business days after the returned item is received and inspected. The amount is credited to your original payment method.",
+      "Refunds are processed within 5-7 platform days after the returned item is received and inspected. The amount is credited to your original payment method.",
     category: "returns",
     showOnHomepage: false,
     showInFooter: false,
@@ -1258,7 +1258,7 @@ export const FAQ_SEED_DATA: SeedFAQ[] = [
   {
     question: "What is your cancellation and refund policy?",
     answer:
-      "Orders can be cancelled before shipping. Refunds are processed within 5-7 business days to your original payment method after cancellation or return approval.",
+      "Orders can be cancelled before shipping. Refunds are processed within 5-7 platform days to your original payment method after cancellation or return approval.",
     category: "payment",
     showOnHomepage: false,
     showInFooter: false,
@@ -1402,7 +1402,7 @@ export const FAQ_SEED_DATA: SeedFAQ[] = [
   {
     question: "What if I'm charged twice for one order?",
     answer:
-      "Double charges are rare but can occur due to payment gateway delays. Contact us at {{supportEmail}} immediately. The duplicate charge is automatically refunded within 7-10 business days.",
+      "Double charges are rare but can occur due to payment gateway delays. Contact us at {{supportEmail}} immediately. The duplicate charge is automatically refunded within 7-10 platform days.",
     category: "payment",
     showOnHomepage: false,
     showInFooter: false,
@@ -1522,7 +1522,7 @@ export const FAQ_SEED_DATA: SeedFAQ[] = [
   {
     question: "How long does it take for refunds to process?",
     answer:
-      "Refunds are processed within 5-7 business days after return approval. It may take additional 3-5 days for your bank to credit the amount.",
+      "Refunds are processed within 5-7 platform days after return approval. It may take additional 3-5 days for your bank to credit the amount.",
     category: "payment",
     showOnHomepage: false,
     showInFooter: false,
@@ -1570,7 +1570,7 @@ export const FAQ_SEED_DATA: SeedFAQ[] = [
   {
     question: "What happens if payment fails but money is deducted?",
     answer:
-      "If payment fails but amount is debited, the transaction is automatically reversed within 5-7 business days. Contact your bank if not credited within this time.",
+      "If payment fails but amount is debited, the transaction is automatically reversed within 5-7 platform days. Contact your bank if not credited within this time.",
     category: "payment",
     showOnHomepage: false,
     showInFooter: false,
@@ -2230,7 +2230,7 @@ export const FAQ_SEED_DATA: SeedFAQ[] = [
   {
     question: "How do I become a seller on LetItRip?",
     answer:
-      'Click "Become a Seller" in the footer, complete the registration form with business details, submit required documents (PAN, GST, bank details), and wait for verification (2-3 business days).',
+      'Click "Become a Seller" in the footer, complete the registration form with business details, submit required documents (PAN, GST, bank details), and wait for verification (2-3 platform days).',
     category: "sellers",
     showOnHomepage: false,
     showInFooter: true,
@@ -2302,7 +2302,7 @@ export const FAQ_SEED_DATA: SeedFAQ[] = [
   {
     question: "When do I receive payments?",
     answer:
-      "Payments are released 7 days after delivery confirmation or 14 days after shipping, whichever is earlier. Funds are transferred to your registered bank account.",
+      "Payments are released 7 platform days after delivery confirmation. A platform day starts at 10:00 AM IST \u2014 any delivery confirmed before 10 AM counts from that same day's 10 AM start. Funds are transferred to your registered bank account once the 7-day window is complete.",
     category: "sellers",
     showOnHomepage: false,
     showInFooter: false,
@@ -2318,7 +2318,7 @@ export const FAQ_SEED_DATA: SeedFAQ[] = [
       slug: "seller-payments",
       metaTitle: "Seller Payments | LetItRip Payout Schedule",
       metaDescription:
-        "Payments released 7 days after delivery or 14 days after shipping. Transferred to bank.",
+        "Payments released 7 platform days after delivery (day starts 10 AM IST). Transferred to bank.",
     },
     isActive: true,
     createdBy: "system",

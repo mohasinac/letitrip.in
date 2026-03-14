@@ -50,6 +50,7 @@ function ReviewsListContent({
   const sortParam = table.get("sorts") || "-rating";
   const ratingFilter = table.get("rating");
   const brandFilter = table.get("brand");
+  const viewMode = (table.get("view") || "grid") as "grid" | "list";
 
   // Server-side: rating filter + sort. Client-side: search + pagination over fetched set.
   const queryParams = useMemo(() => {
@@ -218,7 +219,14 @@ function ReviewsListContent({
                 { key: "rating", header: t("filterRating") },
                 { key: "createdAt", header: t("colDate") },
               ]}
-              defaultViewMode="grid"
+              showViewToggle
+              showTableView={false}
+              viewMode={viewMode}
+              onViewModeChange={(m) => table.set("view", m)}
+              labels={{
+                gridView: tActions("gridView"),
+                listView: tActions("listView"),
+              }}
               emptyState={
                 <EmptyState
                   icon={<Star className="w-16 h-16" />}

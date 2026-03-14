@@ -26,7 +26,7 @@ export const POST = createApiHandler<(typeof contactSchema)["_output"]>({
   schema: contactSchema,
   handler: async ({ body }) => {
     const { name, email, subject, message } = body!;
-    serverLogger.info("Contact form submission received", { email, subject });
+    serverLogger.info("Contact form submission received", { subject });
     const result = await sendContactEmail({ name, email, subject, message });
     if (!result.success)
       return errorResponse(ERROR_MESSAGES.CONTACT.SEND_FAILED, 500);

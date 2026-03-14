@@ -5,7 +5,8 @@ import { getProductByIdAction, listBidsByProductAction } from "@/actions";
 import type { ProductDocument, BidDocument } from "@/db/schema";
 import type { FirebaseSieveResult } from "@/lib/query";
 
-type BidsListResult = FirebaseSieveResult<BidDocument>;
+type PublicBid = Omit<BidDocument, "userEmail">;
+type BidsListResult = FirebaseSieveResult<PublicBid>;
 
 /**
  * useAuctionDetail

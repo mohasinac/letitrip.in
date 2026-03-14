@@ -45,7 +45,7 @@ const SYNC_ACTIONS = [
   {
     key: "pages" as const,
     label: "Sync Nav Pages → Algolia",
-    emoji: "🗺️",
+    emoji: "\uD83D\uDDFA\uFE0F",
     description:
       "Index static pages, categories, blog posts, and events into the pages_nav index for navigation suggestions.",
     color: "text-violet-700 dark:text-violet-300",
@@ -53,6 +53,30 @@ const SYNC_ACTIONS = [
       "bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800",
     badgeClass:
       "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+  },
+  {
+    key: "categories" as const,
+    label: "Sync Categories → Algolia",
+    emoji: "\uD83D\uDCC2",
+    description:
+      "Bulk re-index all active categories (including brands) into the Algolia categories index.",
+    color: "text-emerald-700 dark:text-emerald-300",
+    headerBg:
+      "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800",
+    badgeClass:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+  },
+  {
+    key: "stores" as const,
+    label: "Sync Stores → Algolia",
+    emoji: "\uD83C\uDFEA",
+    description:
+      "Bulk re-index all active + public stores into the Algolia stores index.",
+    color: "text-amber-700 dark:text-amber-300",
+    headerBg:
+      "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800",
+    badgeClass:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
   },
 ];
 
@@ -64,10 +88,14 @@ export function AlgoliaDashboardView() {
   const [syncStates, setSyncStates] = useState<Record<SyncKey, ActionState>>({
     products: idleState,
     pages: idleState,
+    categories: idleState,
+    stores: idleState,
   });
   const [clearStates, setClearStates] = useState<Record<SyncKey, ActionState>>({
     products: idleState,
     pages: idleState,
+    categories: idleState,
+    stores: idleState,
   });
   const [confirmClear, setConfirmClear] = useState<SyncKey | null>(null);
   const algoliaSync = useAlgoliaSync();
@@ -284,6 +312,24 @@ export function AlgoliaDashboardView() {
                     onProductWrite
                   </code>{" "}
                   Firebase trigger on every Firestore write.
+                </Caption>
+              </Li>
+              <Li>
+                <Caption>
+                  <strong>Categories index</strong> — auto-synced via the{" "}
+                  <code className="text-xs bg-zinc-100 dark:bg-slate-800 px-1 rounded">
+                    onCategoryWrite
+                  </code>{" "}
+                  Firebase trigger. Includes brand categories.
+                </Caption>
+              </Li>
+              <Li>
+                <Caption>
+                  <strong>Stores index</strong> — auto-synced via the{" "}
+                  <code className="text-xs bg-zinc-100 dark:bg-slate-800 px-1 rounded">
+                    onStoreWrite
+                  </code>{" "}
+                  Firebase trigger. Only active + public stores are indexed.
                 </Caption>
               </Li>
               <Li>

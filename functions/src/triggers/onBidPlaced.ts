@@ -22,6 +22,7 @@ import {
   notificationRepository,
 } from "../repositories";
 import { BID_MESSAGES } from "../constants/messages";
+import { decryptPii } from "../lib/pii";
 
 const TRIGGER = "onBidPlaced";
 
@@ -46,6 +47,9 @@ export const onBidPlaced = onDocumentCreated(
       bidAmount: number;
       currency: string;
     };
+
+    // Decrypt PII that was encrypted at rest
+    newBid.userName = decryptPii(newBid.userName) as string;
 
     try {
       // ── Find the previous winning bid for this product ───────────────────

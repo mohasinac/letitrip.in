@@ -1,6 +1,9 @@
 import { FieldValue, type DocumentReference } from "firebase-admin/firestore";
 import { db } from "../config/firebase-admin";
 import { COLLECTIONS } from "../config/constants";
+import { decryptPiiFields } from "../lib/pii";
+
+const BID_PII_FIELDS = ["userName", "userEmail"] as const;
 
 export interface BidRow {
   id: string;
@@ -30,7 +33,10 @@ export const bidRepository = {
     return snap.docs.map((d) => ({
       id: d.id,
       ref: d.ref,
-      data: { id: d.id, ...d.data() } as BidRow,
+      data: decryptPiiFields(
+        { id: d.id, ...d.data() },
+        BID_PII_FIELDS,
+      ) as BidRow,
     }));
   },
 
@@ -47,7 +53,13 @@ export const bidRepository = {
       .get();
     if (snap.empty) return null;
     const d = snap.docs[0];
-    return { ref: d.ref, data: { id: d.id, ...d.data() } as BidRow };
+    return {
+      ref: d.ref,
+      data: decryptPiiFields(
+        { id: d.id, ...d.data() },
+        BID_PII_FIELDS,
+      ) as BidRow,
+    };
   },
 
   markWon(batch: FirebaseFirestore.WriteBatch, ref: DocumentReference): void {

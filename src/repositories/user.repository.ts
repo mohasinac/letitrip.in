@@ -23,10 +23,80 @@ import {
 } from "@/db/schema";
 import { UserRole } from "@/types/auth";
 import { DatabaseError } from "@/lib/errors";
+import {
+  encryptPiiFields,
+  decryptPiiFields,
+  addPiiIndices,
+  piiBlindIndex,
+  USER_PII_FIELDS,
+  USER_PII_INDEX_MAP,
+  encryptPayoutDetails,
+  decryptPayoutDetails,
+  encryptShippingConfig,
+  decryptShippingConfig,
+} from "@/lib/pii";
 
 export class UserRepository extends BaseRepository<UserDocument> {
   constructor() {
     super(USER_COLLECTION);
+  }
+
+  // ─── PII lifecycle: encrypt before write, decrypt after read ──────────────
+
+  /**
+   * Decrypt PII fields on a UserDocument after reading from Firestore.
+   */
+  private decryptUser(doc: UserDocument): UserDocument {
+    const decrypted = decryptPiiFields(
+      doc as unknown as Record<string, unknown>,
+      [...USER_PII_FIELDS],
+    ) as unknown as UserDocument;
+    if (decrypted.payoutDetails) {
+      decrypted.payoutDetails = decryptPayoutDetails(
+        decrypted.payoutDetails as unknown as Record<string, unknown>,
+      ) as unknown as typeof decrypted.payoutDetails;
+    }
+    if (decrypted.shippingConfig) {
+      decrypted.shippingConfig = decryptShippingConfig(
+        decrypted.shippingConfig as unknown as Record<string, unknown>,
+      ) as unknown as typeof decrypted.shippingConfig;
+    }
+    return decrypted;
+  }
+
+  /**
+   * Encrypt PII fields on user data before writing to Firestore.
+   * Also adds blind indices for queryable fields.
+   */
+  private encryptUserData<T extends Record<string, unknown>>(data: T): T {
+    let encrypted = encryptPiiFields(data, [...USER_PII_FIELDS]);
+    encrypted = addPiiIndices(data, USER_PII_INDEX_MAP) as unknown as T;
+    // Re-apply encryption (addPiiIndices reads original plaintext from `data`)
+    encrypted = {
+      ...encryptPiiFields(data, [...USER_PII_FIELDS]),
+      ...encrypted,
+    };
+    if (encrypted.payoutDetails) {
+      (encrypted as Record<string, unknown>).payoutDetails =
+        encryptPayoutDetails(
+          encrypted.payoutDetails as Record<string, unknown>,
+        );
+    }
+    if (encrypted.shippingConfig) {
+      (encrypted as Record<string, unknown>).shippingConfig =
+        encryptShippingConfig(
+          encrypted.shippingConfig as Record<string, unknown>,
+        );
+    }
+    return encrypted;
+  }
+
+  /** Override mapDoc to auto-decrypt PII on every Firestore read */
+  protected override mapDoc<D = UserDocument>(
+    snap: import("firebase-admin/firestore").DocumentSnapshot,
+  ): D {
+    const raw = super.mapDoc<UserDocument>(snap);
+    return this.decryptUser(raw) as unknown as D;
   }
 
   /**
@@ -55,26 +125,31 @@ export class UserRepository extends BaseRepository<UserDocument> {
       updatedAt: new Date(),
     };
 
+    // Encrypt PII and add blind indices before persisting
+    const encrypted = this.encryptUserData(
+      userData as unknown as Record<string, unknown>,
+    );
+
     await this.db
       .collection(this.collection)
       .doc(id)
-      .set(prepareForFirestore(userData));
+      .set(prepareForFirestore(encrypted));
 
-    return { id, ...userData };
+    return { id, ...userData }; // return plaintext to caller
   }
 
   /**
-   * Find user by email
+   * Find user by email (uses blind index for query, decrypts on read)
    */
   async findByEmail(email: string): Promise<UserDocument | null> {
-    return this.findOneBy(USER_FIELDS.EMAIL, email);
+    return this.findOneBy(USER_FIELDS.EMAIL_INDEX, piiBlindIndex(email));
   }
 
   /**
-   * Find user by phone number
+   * Find user by phone number (uses blind index for query, decrypts on read)
    */
   async findByPhone(phoneNumber: string): Promise<UserDocument | null> {
-    return this.findOneBy(USER_FIELDS.PHONE_NUMBER, phoneNumber);
+    return this.findOneBy(USER_FIELDS.PHONE_INDEX, piiBlindIndex(phoneNumber));
   }
 
   /**
@@ -122,6 +197,19 @@ export class UserRepository extends BaseRepository<UserDocument> {
     } catch (error) {
       throw new DatabaseError("Failed to fetch active users", error);
     }
+  }
+
+  /**
+   * Override base update to encrypt PII fields before any user write.
+   */
+  override async update(
+    uid: string,
+    data: Partial<UserDocument>,
+  ): Promise<UserDocument> {
+    const encrypted = this.encryptUserData(
+      data as unknown as Record<string, unknown>,
+    );
+    return super.update(uid, encrypted as Partial<UserDocument>);
   }
 
   /**
@@ -195,6 +283,7 @@ export class UserRepository extends BaseRepository<UserDocument> {
       updateData.phoneVerified = false;
     }
 
+    // Encrypt + blind-index is handled by this.update() override
     return this.update(uid, updateData as Partial<UserDocument>);
   }
 
@@ -330,8 +419,8 @@ export class UserRepository extends BaseRepository<UserDocument> {
 
   static readonly SIEVE_FIELDS = {
     uid: { canFilter: true, canSort: false },
-    email: { canFilter: true, canSort: false },
-    displayName: { canFilter: true, canSort: true },
+    emailIndex: { canFilter: true, canSort: false },
+    displayName: { canFilter: false, canSort: false }, // encrypted — cannot Sieve filter
     role: { canFilter: true, canSort: true },
     emailVerified: { canFilter: true, canSort: false },
     disabled: { canFilter: true, canSort: true },

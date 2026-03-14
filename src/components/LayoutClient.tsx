@@ -4,7 +4,14 @@ import { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { THEME_CONSTANTS, ROUTES } from "@/constants";
 import { useTheme } from "@/contexts/ThemeContext";
-import { TitleBar, Sidebar, Footer, BottomNavbar } from "./layout";
+import { useBottomActionsContext } from "@/contexts/BottomActionsContext";
+import {
+  TitleBar,
+  Sidebar,
+  Footer,
+  BottomNavbar,
+  BottomActions,
+} from "./layout";
 import MainNavbar from "./layout/MainNavbar";
 import Search from "./utility/Search";
 import BackToTop from "./utility/BackToTop";
@@ -42,6 +49,14 @@ export default function LayoutClient({
   const [searchOpen, setSearchOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
+
+  // Expand bottom margin when BottomActions bar is visible so content
+  // is never hidden behind the stacked fixed bars on mobile.
+  const { state: baState } = useBottomActionsContext();
+  const hasBottomActions =
+    baState.actions.length > 0 ||
+    !!(baState.bulk && baState.bulk.selectedCount > 0) ||
+    !!baState.infoLabel;
 
   const DEFAULT_LIGHT_BG = {
     type: "color" as const,
@@ -145,7 +160,10 @@ export default function LayoutClient({
         />
 
         {/* Main Content - modern spacing and transitions */}
-        <Main id="main-content" className="flex-1 mb-16 md:mb-0 w-full">
+        <Main
+          id="main-content"
+          className={`flex-1 ${hasBottomActions ? "mb-28" : "mb-16"} md:mb-0 w-full`}
+        >
           <div
             className={`container mx-auto ${THEME_CONSTANTS.layout.contentPadding} ${THEME_CONSTANTS.layout.maxContentWidth} ${THEME_CONSTANTS.spacing.pageY} w-full`}
           >
@@ -154,10 +172,14 @@ export default function LayoutClient({
         </Main>
       </div>
 
-      <BackToTop sidebarOpen={sidebarOpen} />
+      <BackToTop
+        sidebarOpen={sidebarOpen}
+        hasBottomActions={hasBottomActions}
+      />
 
       <Footer footerConfig={siteSettings?.footerConfig} />
 
+      <BottomActions />
       <BottomNavbar onSearchToggle={() => setSearchOpen(!searchOpen)} />
 
       {/* Global unsaved-changes confirmation modal */}

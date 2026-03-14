@@ -31,3 +31,7 @@ export function getAlgoliaClient(): ReturnType<typeof algoliasearch> {
 }
 
 export const ALGOLIA_INDEX = process.env.ALGOLIA_INDEX_NAME ?? "products";
+export const ALGOLIA_CATEGORIES_INDEX =
+  process.env.ALGOLIA_CATEGORIES_INDEX_NAME ?? "categories";
+export const ALGOLIA_STORES_INDEX =
+  process.env.ALGOLIA_STORES_INDEX_NAME ?? "stores";

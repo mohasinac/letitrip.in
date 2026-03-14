@@ -8,11 +8,17 @@ import { Heading, Li, Span, Text, Ul } from "@/components";
 const { themed, spacing, flex } = THEME_CONSTANTS;
 
 interface BidHistoryProps {
-  bids: BidDocument[];
+  bids: Omit<BidDocument, "userEmail">[];
   loading?: boolean;
+  /** When provided, bids matching this userId show the full name instead of anonymised. */
+  currentUserId?: string | null;
 }
 
-export function BidHistory({ bids, loading = false }: BidHistoryProps) {
+export function BidHistory({
+  bids,
+  loading = false,
+  currentUserId,
+}: BidHistoryProps) {
   if (loading) {
     return (
       <div
@@ -64,7 +70,9 @@ export function BidHistory({ bids, loading = false }: BidHistoryProps) {
                   <Span
                     className={`text-sm font-medium ${themed.textPrimary} truncate`}
                   >
-                    {anonymizeName(bid.userName)}
+                    {currentUserId && bid.userId === currentUserId
+                      ? bid.userName
+                      : anonymizeName(bid.userName)}
                   </Span>
                   <Span className={`text-xs ${themed.textSecondary}`}>
                     {formatRelativeTime(bid.bidDate || bid.createdAt)}

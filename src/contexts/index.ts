@@ -17,3 +17,14 @@ export { ThemeProvider, useTheme } from "./ThemeContext";
 // Session Context
 export { SessionProvider, useSession, useAuth } from "./SessionContext";
 export type { SessionUser, SessionContextValue } from "./SessionContext";
+
+// Bottom Actions Context
+export {
+  BottomActionsProvider,
+  useBottomActionsContext,
+} from "./BottomActionsContext";
+export type {
+  BottomAction,
+  BottomBulkConfig,
+  BottomActionsState,
+} from "./BottomActionsContext";

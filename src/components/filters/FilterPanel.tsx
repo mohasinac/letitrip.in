@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { FilterFacetSection } from "@/components";
 import { RangeFilter } from "./RangeFilter";
 import { SwitchFilter } from "./SwitchFilter";
@@ -103,9 +104,21 @@ export interface FilterPanelProps {
  * ```
  */
 export function FilterPanel({ config, table }: FilterPanelProps) {
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(() => {
+    const idx = config.findIndex((s) => !(s.defaultCollapsed ?? true));
+    return idx >= 0 ? idx : null;
+  });
+
+  const handleToggle = (index: number) => {
+    setExpandedIndex((prev) => (prev === index ? null : index));
+  };
+
   return (
     <div>
       {config.map((section, i) => {
+        const isOpen = expandedIndex === i;
+        const toggle = () => handleToggle(i);
+
         if (section.type === "facet-single") {
           const val = table.get(section.key);
           return (
@@ -115,9 +128,12 @@ export function FilterPanel({ config, table }: FilterPanelProps) {
               options={section.options}
               selected={val ? [val] : []}
               onChange={(vals) => table.set(section.key, vals[0] ?? "")}
-              searchable={section.searchable ?? false}
+              searchable={section.searchable ?? section.options.length > 10}
               defaultCollapsed={section.defaultCollapsed ?? true}
               selectionMode="single"
+              isOpen={isOpen}
+              onToggle={toggle}
+              onClear={() => table.set(section.key, "")}
             />
           );
         }
@@ -131,8 +147,11 @@ export function FilterPanel({ config, table }: FilterPanelProps) {
               options={section.options}
               selected={val ? val.split("|").filter(Boolean) : []}
               onChange={(vals) => table.set(section.key, vals.join("|"))}
-              searchable={section.searchable ?? false}
+              searchable={section.searchable ?? section.options.length > 10}
               defaultCollapsed={section.defaultCollapsed ?? true}
+              isOpen={isOpen}
+              onToggle={toggle}
+              onClear={() => table.set(section.key, "")}
             />
           );
         }
@@ -146,6 +165,9 @@ export function FilterPanel({ config, table }: FilterPanelProps) {
               checked={table.get(section.key) === "true"}
               onChange={(v) => table.set(section.key, v ? "true" : "")}
               defaultCollapsed={section.defaultCollapsed ?? true}
+              isOpen={isOpen}
+              onToggle={toggle}
+              onClear={() => table.set(section.key, "")}
             />
           );
         }
@@ -168,6 +190,11 @@ export function FilterPanel({ config, table }: FilterPanelProps) {
               minPlaceholder={section.minPlaceholder}
               maxPlaceholder={section.maxPlaceholder}
               defaultCollapsed={section.defaultCollapsed ?? true}
+              isOpen={isOpen}
+              onToggle={toggle}
+              onClear={() =>
+                table.setMany({ [section.minKey]: "", [section.maxKey]: "" })
+              }
             />
           );
         }
@@ -185,6 +212,11 @@ export function FilterPanel({ config, table }: FilterPanelProps) {
               minPlaceholder={section.minPlaceholder}
               maxPlaceholder={section.maxPlaceholder}
               defaultCollapsed={section.defaultCollapsed ?? true}
+              isOpen={isOpen}
+              onToggle={toggle}
+              onClear={() =>
+                table.setMany({ [section.fromKey]: "", [section.toKey]: "" })
+              }
             />
           );
         }

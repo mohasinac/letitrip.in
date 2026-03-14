@@ -159,6 +159,7 @@ export function OrderCard({
               <Button
                 variant="ghost"
                 size="sm"
+                className="flex-1 min-w-0 text-xs px-2 sm:text-xs sm:px-2"
                 onClick={() => router.push(ROUTES.USER.ORDER_TRACK(orderId))}
               >
                 {t("trackOrder")}
@@ -168,6 +169,7 @@ export function OrderCard({
               <Button
                 variant="outline"
                 size="sm"
+                className="flex-1 min-w-0 text-xs px-2 sm:text-xs sm:px-2"
                 onClick={() =>
                   router.push(
                     `${ROUTES.PUBLIC.PRODUCT_DETAIL(order.productId ?? "")}#write-review`,
@@ -180,6 +182,7 @@ export function OrderCard({
             <Button
               variant="secondary"
               size="sm"
+              className="flex-1 min-w-0 text-xs px-2 sm:text-xs sm:px-2"
               onClick={() => router.push(detailHref)}
             >
               {t("viewOrder")}

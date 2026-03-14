@@ -98,6 +98,10 @@ export { RealtimeEventType, RealtimeEventStatus } from "./useRealtimeEvent";
 export { useAuthEvent } from "./useAuthEvent";
 export type { UseAuthEventReturn, AuthEventStatus } from "./useAuthEvent";
 
+// Bottom Actions — register mobile page-level / bulk actions
+export { useBottomActions } from "./useBottomActions";
+export type { UseBottomActionsOptions } from "./useBottomActions";
+
 export { useGuestCart } from "./useGuestCart";
 export { useGuestCartMerge } from "./useGuestCartMerge";
 export { useCartCount } from "./useCartCount";

@@ -90,20 +90,21 @@ export function ToastProvider({
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
-  const positionClasses = {
-    "top-right": "top-4 right-4",
-    "top-left": "top-4 left-4",
-    "bottom-right": "bottom-4 right-4",
-    "bottom-left": "bottom-4 left-4",
-    "top-center": "top-4 left-1/2 -translate-x-1/2",
-    "bottom-center": "bottom-4 left-1/2 -translate-x-1/2",
+  // Mobile: full-width at top; Desktop: use position prop
+  const desktopPositionClasses = {
+    "top-right": "md:top-4 md:right-4",
+    "top-left": "md:top-4 md:left-4",
+    "bottom-right": "md:top-auto md:bottom-4 md:right-4",
+    "bottom-left": "md:top-auto md:bottom-4 md:left-4",
+    "top-center": "md:top-4 md:left-1/2 md:-translate-x-1/2",
+    "bottom-center": "md:top-auto md:bottom-4 md:left-1/2 md:-translate-x-1/2",
   };
 
   return (
     <ToastContext.Provider value={{ showToast, hideToast }}>
       {children}
       <div
-        className={`fixed z-[100] flex flex-col gap-2 ${positionClasses[position]}`}
+        className={`fixed z-[100] flex flex-col gap-2 safe-top inset-x-0 top-0 px-3 pt-3 md:inset-x-auto md:px-0 md:pt-0 ${desktopPositionClasses[position]}`}
         aria-live="polite"
         aria-atomic="true"
       >
@@ -176,21 +177,22 @@ function ToastItem({ toast, onClose }: ToastItemProps) {
   return (
     <div
       className={`
-        flex items-center gap-3 min-w-[320px] max-w-md p-4 rounded-xl border shadow-lg
-        animate-in slide-in-from-right-full duration-300
+        flex items-center gap-3 p-3 rounded-xl border shadow-lg
+        w-full md:w-auto md:min-w-[320px] md:max-w-md
+        animate-slide-down md:animate-slide-in-right
         ${variantStyles[toast.variant]}
       `}
       role="alert"
     >
       <div className="flex-shrink-0">{icons[toast.variant]}</div>
-      <Text size="sm" className="flex-1 font-medium">
+      <Text size="sm" className="flex-1 font-medium line-clamp-3">
         {toast.message}
       </Text>
       <Button
         variant="ghost"
         size="sm"
         onClick={() => onClose(toast.id)}
-        className="flex-shrink-0 p-1"
+        className="flex-shrink-0 p-2 -mr-1 md:p-1 md:mr-0"
         aria-label="Close notification"
       >
         <svg

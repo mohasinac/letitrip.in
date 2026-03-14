@@ -119,22 +119,23 @@ Form primitive components. Used inside larger forms but also useful standalone.
 
 Page layout building blocks.
 
-| Component                        | Description                                 |
-| -------------------------------- | ------------------------------------------- |
-| `AutoBreadcrumbs`                | Route-driven auto breadcrumb trail          |
-| `BottomNavbar`                   | Mobile bottom navigation bar (5 icons)      |
-| `BottomNavLayout`                | Layout wrapper that adds bottom nav padding |
-| `Breadcrumbs` / `BreadcrumbItem` | Manual breadcrumb trail                     |
-| `Footer`                         | Site footer                                 |
-| `FooterLayout`                   | Configurable footer sections layout         |
-| `LocaleSwitcher`                 | Language picker dropdown                    |
-| `MainNavbar`                     | Desktop/mobile main navigation              |
-| `NavbarLayout`                   | Configurable navbar layout                  |
-| `NavItem`                        | Single navigation link item                 |
-| `Sidebar`                        | Collapsible sidebar panel                   |
-| `SidebarLayout`                  | Page layout with sticky left sidebar        |
-| `TitleBar`                       | Section title bar with action slots         |
-| `TitleBarLayout`                 | Admin/seller portal title bar               |
+| Component                        | Description                                                     |
+| -------------------------------- | --------------------------------------------------------------- |
+| `AutoBreadcrumbs`                | Route-driven auto breadcrumb trail                              |
+| `BottomActions`                  | Mobile action bar above BottomNavbar — page actions + bulk mode |
+| `BottomNavbar`                   | Mobile bottom navigation bar (5 icons)                          |
+| `BottomNavLayout`                | Layout wrapper that adds bottom nav padding                     |
+| `Breadcrumbs` / `BreadcrumbItem` | Manual breadcrumb trail                                         |
+| `Footer`                         | Site footer                                                     |
+| `FooterLayout`                   | Configurable footer sections layout                             |
+| `LocaleSwitcher`                 | Language picker dropdown                                        |
+| `MainNavbar`                     | Desktop/mobile main navigation                                  |
+| `NavbarLayout`                   | Configurable navbar layout                                      |
+| `NavItem`                        | Single navigation link item                                     |
+| `Sidebar`                        | Collapsible sidebar panel                                       |
+| `SidebarLayout`                  | Page layout with sticky left sidebar                            |
+| `TitleBar`                       | Section title bar with action slots                             |
+| `TitleBarLayout`                 | Admin/seller portal title bar                                   |
 
 ---
 

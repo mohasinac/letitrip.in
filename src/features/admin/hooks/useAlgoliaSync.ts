@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import { API_ENDPOINTS } from "@/constants";
 
-export type AlgoliaSyncTarget = "products" | "pages";
+export type AlgoliaSyncTarget = "products" | "pages" | "categories" | "stores";
 export type AlgoliaSyncAction = "sync" | "clear";
 
 export interface AlgoliaSyncResult {
@@ -42,5 +42,20 @@ export function useAlgoliaSyncProducts() {
 export function useAlgoliaSyncPages() {
   return useMutation<AlgoliaSyncResult, Error, void>({
     mutationFn: () => apiClient.post(API_ENDPOINTS.ADMIN.ALGOLIA_SYNC_PAGES),
+  });
+}
+
+/** Trigger full category index rebuild in Algolia. */
+export function useAlgoliaSyncCategories() {
+  return useMutation<AlgoliaSyncResult, Error, void>({
+    mutationFn: () =>
+      apiClient.post(API_ENDPOINTS.ADMIN.ALGOLIA_SYNC_CATEGORIES),
+  });
+}
+
+/** Trigger full store index rebuild in Algolia. */
+export function useAlgoliaSyncStores() {
+  return useMutation<AlgoliaSyncResult, Error, void>({
+    mutationFn: () => apiClient.post(API_ENDPOINTS.ADMIN.ALGOLIA_SYNC_STORES),
   });
 }

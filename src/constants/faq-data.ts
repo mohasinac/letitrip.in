@@ -127,7 +127,7 @@ export const STATIC_FAQS: StaticFAQItem[] = [
     id: "refund-policy",
     question: "What is your refund policy?",
     answer:
-      "Refunds are processed within 5-7 business days after we receive and inspect the returned product. The amount will be credited to your original payment method.",
+      "Refunds are processed within 5-7 platform days after we receive and inspect the returned product. A platform day starts at 10:00 AM IST. The amount will be credited to your original payment method.",
     category: "general",
     isPinned: false,
     order: 9,
@@ -495,7 +495,7 @@ export const STATIC_FAQS: StaticFAQItem[] = [
     id: "refund-processing-time",
     question: "When will I receive my refund?",
     answer:
-      "Refunds are processed within 5-7 business days after the returned item is received and inspected. The amount is credited to your original payment method.",
+      "Refunds are processed within 5-7 platform days after the returned item is received and inspected. The amount is credited to your original payment method.",
     category: "returns",
     isPinned: false,
     order: 4,
@@ -643,7 +643,7 @@ export const STATIC_FAQS: StaticFAQItem[] = [
     id: "cancellation-refund-policy",
     question: "What is your cancellation and refund policy?",
     answer:
-      "Orders can be cancelled before shipping. Refunds are processed within 5-7 business days to your original payment method after cancellation or return approval.",
+      "Orders can be cancelled before shipping. Refunds are processed within 5-7 platform days to your original payment method after cancellation or return approval.",
     category: "payment",
     isPinned: false,
     order: 4,
@@ -715,7 +715,7 @@ export const STATIC_FAQS: StaticFAQItem[] = [
     id: "double-charged",
     question: "What if I'm charged twice for one order?",
     answer:
-      "Double charges are rare but can occur due to payment gateway delays. Contact us immediately. The duplicate charge is automatically refunded within 7-10 business days.",
+      "Double charges are rare but can occur due to payment gateway delays. Contact us immediately. The duplicate charge is automatically refunded within 7-10 platform days.",
     category: "payment",
     isPinned: false,
     order: 10,
@@ -775,7 +775,7 @@ export const STATIC_FAQS: StaticFAQItem[] = [
     id: "payment-refund-timeline",
     question: "How long does it take for refunds to process?",
     answer:
-      "Refunds are processed within 5-7 business days after return approval. It may take additional 3-5 days for your bank to credit the amount.",
+      "Refunds are processed within 5-7 platform days after return approval. It may take additional 3-5 days for your bank to credit the amount.",
     category: "payment",
     isPinned: false,
     order: 15,
@@ -799,7 +799,7 @@ export const STATIC_FAQS: StaticFAQItem[] = [
     id: "failed-payment-deduction",
     question: "What happens if payment fails but money is deducted?",
     answer:
-      "If payment fails but amount is debited, the transaction is automatically reversed within 5-7 business days. Contact your bank if not credited within this time.",
+      "If payment fails but amount is debited, the transaction is automatically reversed within 5-7 platform days. Contact your bank if not credited within this time.",
     category: "payment",
     isPinned: false,
     order: 17,
@@ -1135,7 +1135,7 @@ export const STATIC_FAQS: StaticFAQItem[] = [
     id: "become-seller",
     question: "How do I become a seller on LetItRip?",
     answer:
-      'Click "Become a Seller" in the footer, complete the registration form with business details, submit required documents (PAN, GST, bank details), and wait for verification (2-3 business days).',
+      'Click "Become a Seller" in the footer, complete the registration form with business details, submit required documents (PAN, GST, bank details), and wait for verification (2-3 platform days).',
     category: "sellers",
     isPinned: false,
     order: 1,
@@ -1171,7 +1171,7 @@ export const STATIC_FAQS: StaticFAQItem[] = [
     id: "seller-payments",
     question: "When do I receive payments?",
     answer:
-      "Payments are released 7 days after delivery confirmation or 14 days after shipping, whichever is earlier. Funds are transferred to your registered bank account.",
+      "Payments are released 7 platform days after delivery confirmation. A platform day starts at 10:00 AM IST — any delivery confirmed before 10 AM counts from that same day's 10 AM start. Funds are transferred to your registered bank account once the 7-day window is complete.",
     category: "sellers",
     isPinned: false,
     order: 4,
@@ -1443,7 +1443,7 @@ export const STATIC_FAQS: StaticFAQItem[] = [
     id: "preorder-cancel",
     question: "Can I cancel a pre-order?",
     answer:
-      "Cancellation rights depend on the seller's policy, shown on the product page. If the seller allows cancellations, your deposit will be refunded within 5–7 business days. Once production has started, cancellations may not be possible.",
+      "Cancellation rights depend on the seller's policy, shown on the product page. If the seller allows cancellations, your deposit will be refunded within 5–7 platform days. Once production has started, cancellations may not be possible.",
     category: "preorders",
     isPinned: false,
     order: 4,

@@ -309,27 +309,26 @@ function SellerProductsContent() {
         activeFiltersSlot={activeFiltersSlot}
         selectedCount={selectedIds.length}
         onClearSelection={() => setSelectedIds([])}
-        bulkActions={
-          <>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => handleBulkStatusChange("published")}
-            >
-              {tActions("bulkPublish", { count: selectedIds.length })}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleBulkStatusChange("archived")}
-            >
-              {tActions("bulkArchive", { count: selectedIds.length })}
-            </Button>
-            <Button variant="danger" size="sm" onClick={handleBulkDelete}>
-              {tActions("bulkDelete", { count: selectedIds.length })}
-            </Button>
-          </>
-        }
+        bulkActionItems={[
+          {
+            id: "bulk-publish",
+            label: tActions("bulkPublish", { count: selectedIds.length }),
+            variant: "primary",
+            onClick: () => handleBulkStatusChange("published"),
+          },
+          {
+            id: "bulk-archive",
+            label: tActions("bulkArchive", { count: selectedIds.length }),
+            variant: "outline",
+            onClick: () => handleBulkStatusChange("archived"),
+          },
+          {
+            id: "bulk-delete",
+            label: tActions("bulkDelete", { count: selectedIds.length }),
+            variant: "danger",
+            onClick: handleBulkDelete,
+          },
+        ]}
         paginationSlot={
           totalPages > 1 ? (
             <TablePagination

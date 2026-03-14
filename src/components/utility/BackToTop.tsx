@@ -21,9 +21,13 @@ import { Button } from "@/components";
 
 interface BackToTopProps {
   sidebarOpen?: boolean;
+  hasBottomActions?: boolean;
 }
 
-export default function BackToTop({ sidebarOpen = false }: BackToTopProps) {
+export default function BackToTop({
+  sidebarOpen = false,
+  hasBottomActions = false,
+}: BackToTopProps) {
   const [isVisible, setIsVisible] = useState(false);
   const t = useTranslations("accessibility");
 
@@ -61,7 +65,7 @@ export default function BackToTop({ sidebarOpen = false }: BackToTopProps) {
       className={`
         fixed
         ${sidebarOpen ? "right-[22rem] md:right-[22rem]" : "right-6 md:right-8"}
-        bottom-24 md:bottom-8
+        ${hasBottomActions ? "bottom-36" : "bottom-24"} md:bottom-8
         p-3 md:p-4
         rounded-full
         bg-zinc-900 dark:bg-zinc-100

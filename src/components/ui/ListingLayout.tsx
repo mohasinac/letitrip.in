@@ -36,7 +36,7 @@
  *   paginationSlot={<TablePagination ... />}
  *   selectedCount={selectedIds.length}
  *   onClearSelection={() => setSelectedIds([])}
- *   bulkActions={<Button variant="danger" size="sm">Delete</Button>}
+ *   bulkActionItems={[{ id: "delete", label: "Delete", variant: "danger", onClick: handleBulkDelete }]}
  * >
  *   <DataTable ... />
  * </ListingLayout>
@@ -46,6 +46,7 @@
 import { ReactNode, useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Button, BulkActionBar, Span, Text } from "@/components";
+import type { BulkActionItem } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 
 export interface ListingLayoutProps {
@@ -88,8 +89,8 @@ export interface ListingLayoutProps {
   selectedCount?: number;
   /** Called when user clicks the ✕ in the BulkActionBar */
   onClearSelection?: () => void;
-  /** Action buttons rendered inside the BulkActionBar */
-  bulkActions?: ReactNode;
+  /** Structured bulk action items — rendered in picker + Apply pattern */
+  bulkActionItems?: BulkActionItem[];
 
   // ── Pagination ───────────────────────────────────────────────────────────
   /** TablePagination rendered below the content area */
@@ -125,7 +126,7 @@ export function ListingLayout({
   actionsSlot,
   selectedCount = 0,
   onClearSelection,
-  bulkActions,
+  bulkActionItems,
   paginationSlot,
   children,
   defaultSidebarOpen = false,
@@ -257,14 +258,6 @@ export function ListingLayout({
         {/* Right-side controls */}
         <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
           {viewToggleSlot}
-
-          {/* Bulk actions — visible only when items selected (desktop) */}
-          {selectedCount > 0 && bulkActions && (
-            <div className="hidden sm:flex items-center gap-2">
-              {bulkActions}
-            </div>
-          )}
-
           {sortSlot}
           {actionsSlot}
         </div>
@@ -336,17 +329,13 @@ export function ListingLayout({
 
         {/* Main content */}
         <div className="flex-1 min-w-0 space-y-3">
-          {/* Bulk action bar — full width on mobile */}
+          {/* Bulk action bar — picker + apply (matches BottomActions) */}
           {selectedCount > 0 && (
             <BulkActionBar
               selectedCount={selectedCount}
               onClearSelection={onClearSelection}
-            >
-              {/* Mobile-only bulk actions */}
-              <div className="sm:hidden flex items-center gap-2">
-                {bulkActions}
-              </div>
-            </BulkActionBar>
+              actions={bulkActionItems}
+            />
           )}
 
           {/* Active filter chips */}

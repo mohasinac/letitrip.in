@@ -56,8 +56,15 @@ const withdrawOfferSchema = z.object({
   offerId: z.string().min(1),
 });
 
+const buyerCounterSchema = z.object({
+  offerId: z.string().min(1),
+  counterAmount: z.number().positive().int(),
+  buyerNote: z.string().max(300).optional(),
+});
+
 export type MakeOfferInput = z.infer<typeof makeOfferSchema>;
 export type RespondToOfferInput = z.infer<typeof respondToOfferSchema>;
+export type BuyerCounterInput = z.infer<typeof buyerCounterSchema>;
 
 // ─── Buyer: Make an Offer ──────────────────────────────────────────────────
 
@@ -98,6 +105,23 @@ export async function makeOfferAction(
     throw new ValidationError(
       "Your offer must be below the listed price. Use Add to Cart instead.",
     );
+
+  // ── Enforce 3-offer limit per product (resets when product.updatedAt advances) ─
+  const offerCount = await offerRepository.countByBuyerAndProduct(
+    user.uid,
+    productId,
+    product.updatedAt,
+  );
+  if (offerCount >= 3)
+    throw new ValidationError(ERROR_MESSAGES.OFFER.LIMIT_REACHED);
+
+  // ── Prevent duplicate active offers on the same product ──────────────────
+  const alreadyActive = await offerRepository.hasActiveOffer(
+    user.uid,
+    productId,
+  );
+  if (alreadyActive)
+    throw new ValidationError(ERROR_MESSAGES.OFFER.ACTIVE_OFFER_EXISTS);
 
   // ── RC balance check (same as auction bidding) ────────────────────────────
   const userDoc = await userRepository.findById(user.uid);
@@ -187,6 +211,8 @@ export async function respondToOfferAction(
     throw new ValidationError(
       `Offer is already ${offer.status}. No further action is possible.`,
     );
+  if (new Date() > offer.expiresAt)
+    throw new ValidationError(ERROR_MESSAGES.OFFER.EXPIRED);
 
   let updated: OfferDocument;
 
@@ -277,6 +303,8 @@ export async function acceptCounterOfferAction(
     throw new AuthorizationError("Not authorised.");
   if (offer.status !== "countered")
     throw new ValidationError("No counter to accept.");
+  if (new Date() > offer.expiresAt)
+    throw new ValidationError(ERROR_MESSAGES.OFFER.EXPIRED);
 
   const counterAmount = offer.counterAmount ?? offer.offerAmount;
   const delta = counterAmount - offer.offerAmount;
@@ -321,6 +349,149 @@ export async function acceptCounterOfferAction(
   return updated;
 }
 
+// ─── Buyer: Counter the seller's counter ──────────────────────────────────
+
+/**
+ * Called when a buyer wants to counter back after a seller issued a counter offer.
+ *
+ * Rules enforced:
+ *  1. `counterAmount` must be within ±20 % of the seller's counterAmount.
+ *  2. Buyer may submit at most 3 offer documents per product since
+ *     the product was last updated — tracked purely by document count.
+ *  3. Buyer must have sufficient free RC for the net delta
+ *     (counterAmount − original offerAmount).
+ *
+ * The previous `countered` offer is closed (withdrawn) and a fresh
+ * offer document is created at the buyer's new price.  The engaged RC
+ * is adjusted by the net delta so the buyer is never over- or under-charged.
+ */
+export async function counterOfferByBuyerAction(
+  input: BuyerCounterInput,
+): Promise<OfferDocument> {
+  const user = await requireAuth();
+
+  const rl = await rateLimitByIdentifier(
+    `offer:buyer-counter:${user.uid}`,
+    RateLimitPresets.STRICT,
+  );
+  if (!rl.success)
+    throw new AuthorizationError("Too many requests. Please slow down.");
+
+  const parsed = buyerCounterSchema.safeParse(input);
+  if (!parsed.success)
+    throw new ValidationError(
+      parsed.error.issues[0]?.message ?? "Invalid counter offer data",
+    );
+
+  const { offerId, counterAmount, buyerNote } = parsed.data;
+
+  // Load the offer that is currently in `countered` state
+  const offer = await offerRepository.findById(offerId);
+  if (!offer) throw new NotFoundError("Offer not found.");
+  if (offer.buyerUid !== user.uid)
+    throw new AuthorizationError("Not authorised.");
+  if (offer.status !== "countered")
+    throw new ValidationError(ERROR_MESSAGES.OFFER.NOT_COUNTERED);
+  if (new Date() > offer.expiresAt)
+    throw new ValidationError(ERROR_MESSAGES.OFFER.EXPIRED);
+
+  const sellerCounter = offer.counterAmount!;
+
+  // ── ±20 % range check against seller's counter ───────────────────────────
+  const minAllowed = Math.floor(sellerCounter * 0.8);
+  const maxAllowed = Math.ceil(sellerCounter * 1.2);
+  if (counterAmount < minAllowed || counterAmount > maxAllowed)
+    throw new ValidationError(
+      `${ERROR_MESSAGES.OFFER.COUNTER_RANGE} Allowed: ₹${minAllowed}–₹${maxAllowed}.`,
+    );
+
+  // Must stay below listed price even if buyer counters above seller's counter
+  if (counterAmount >= offer.listedPrice)
+    throw new ValidationError(
+      "Counter offer cannot reach or exceed the listed price. Accept the seller's counter instead.",
+    );
+
+  // ── Load product to get updatedAt for document-count limit ───────────────
+  const product = await productRepository.findById(offer.productId);
+  if (!product) throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
+
+  const offerCount = await offerRepository.countByBuyerAndProduct(
+    user.uid,
+    offer.productId,
+    product.updatedAt,
+  );
+  if (offerCount >= 3)
+    throw new ValidationError(ERROR_MESSAGES.OFFER.LIMIT_REACHED);
+
+  // ── RC check: buyer needs enough free coins to cover the net delta ────────
+  // The original offerAmount is already engaged.  Only the incremental delta
+  // (counterAmount − offerAmount) requires additional free coins.
+  const delta = counterAmount - offer.offerAmount;
+  if (delta > 0) {
+    const userDoc = await userRepository.findById(user.uid);
+    const freeCoins = (userDoc?.rcBalance ?? 0) - (userDoc?.engagedRC ?? 0);
+    if (freeCoins < delta)
+      throw new ValidationError(ERROR_MESSAGES.RC.INSUFFICIENT_COINS);
+  }
+
+  // ── Close old offer ───────────────────────────────────────────────────────
+  await offerRepository.withdraw(offerId);
+
+  // ── Create fresh offer doc at buyer's counter price ───────────────────────
+  const newOffer = await offerRepository.create({
+    productId: offer.productId,
+    productTitle: offer.productTitle,
+    productSlug: offer.productSlug,
+    productImageUrl: offer.productImageUrl,
+    buyerUid: user.uid,
+    buyerName: offer.buyerName,
+    buyerEmail: offer.buyerEmail,
+    sellerId: offer.sellerId,
+    sellerName: offer.sellerName,
+    offerAmount: counterAmount,
+    listedPrice: offer.listedPrice,
+    currency: offer.currency,
+    buyerNote,
+  });
+
+  // ── Adjust engaged RC by net delta ───────────────────────────────────────
+  if (delta !== 0) {
+    await userRepository.incrementRCBalance(user.uid, -delta, delta);
+    const finalDoc = await userRepository.findById(user.uid);
+    await rcRepository.create({
+      userId: user.uid,
+      type: delta > 0 ? "engage" : "release",
+      coins: Math.abs(delta),
+      balanceBefore: (finalDoc?.rcBalance ?? 0) + delta,
+      balanceAfter: finalDoc?.rcBalance ?? 0,
+      productId: offer.productId,
+      productTitle: offer.productTitle,
+      notes: `Buyer counter offer — RC ${delta > 0 ? "engaged" : "released"} for offer ${newOffer.id}`,
+    });
+  }
+
+  // ── Notify seller ─────────────────────────────────────────────────────────
+  await notificationRepository.create({
+    userId: offer.sellerId,
+    type: "offer_received",
+    priority: "normal",
+    title: "Buyer counter offer",
+    message: `${offer.buyerName} countered with ₹${counterAmount} on "${offer.productTitle}".`,
+    relatedId: newOffer.id,
+    relatedType: "offer",
+  });
+
+  serverLogger.info("Buyer counter offer created", {
+    previousOfferId: offerId,
+    newOfferId: newOffer.id,
+    buyerUid: user.uid,
+    productId: offer.productId,
+    counterAmount,
+  });
+
+  return newOffer;
+}
+
 // ─── Buyer: Withdraw offer ─────────────────────────────────────────────────
 
 export async function withdrawOfferAction(
@@ -335,6 +506,10 @@ export async function withdrawOfferAction(
   if (!offer) throw new NotFoundError("Offer not found.");
   if (offer.buyerUid !== user.uid)
     throw new AuthorizationError("Not authorised.");
+  if (offer.status === "expired")
+    throw new ValidationError(
+      "This offer has already expired. RC has been automatically released.",
+    );
   if (!["pending", "countered"].includes(offer.status))
     throw new ValidationError("Offer cannot be withdrawn at this stage.");
 
@@ -414,6 +589,12 @@ export async function checkoutOfferAction(
 
   const product = await productRepository.findById(offer.productId);
   if (!product) throw new NotFoundError(ERROR_MESSAGES.PRODUCT.NOT_FOUND);
+  if (
+    (product.availableQuantity ?? 0) <= 0 ||
+    product.status === "discontinued" ||
+    product.status === "sold"
+  )
+    throw new ValidationError(ERROR_MESSAGES.OFFER.PRODUCT_UNAVAILABLE);
 
   serverLogger.info("checkoutOfferAction — adding to cart", {
     offerId,
@@ -432,6 +613,7 @@ export async function checkoutOfferAction(
     sellerName: offer.sellerName,
     isAuction: false,
     isPreOrder: false,
+    isOffer: true,
     offerId: offer.id,
     lockedPrice: offer.lockedPrice,
   });

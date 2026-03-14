@@ -6,6 +6,8 @@ import { Spinner } from "./components/Spinner";
 import { Pagination } from "./components/Pagination";
 import { Text } from "./components/Typography";
 import { Label } from "./components/Typography";
+import { GRID_MAP } from "./components/Layout";
+import type { GridCols } from "./components/Layout";
 
 /**
  * DataTable — generic sortable + paginated table promoted to @mohasinac/ui.
@@ -57,6 +59,12 @@ export interface DataTableProps<T> {
   selectable?: boolean;
   selectedIds?: string[];
   onSelectionChange?: (ids: string[]) => void;
+  /**
+   * Number of grid columns for card grid view.
+   * Matches Layout GRID_MAP keys: 1–6, "autoSm", "autoMd", "autoLg".
+   * Default: 6 (2→3→4→5→6 across breakpoints).
+   */
+  gridCols?: GridCols;
   // Labels (override defaults for i18n)
   labels?: {
     loading?: string;
@@ -93,6 +101,7 @@ export function DataTable<T extends Record<string, any>>({
   selectable = false,
   selectedIds = [],
   onSelectionChange,
+  gridCols = "cards",
   labels = {},
 }: DataTableProps<T>) {
   const [sortKey, setSortKey] = useState<string | null>(null);
@@ -301,7 +310,7 @@ export function DataTable<T extends Record<string, any>>({
       <div
         className={
           mode === "grid"
-            ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+            ? `${GRID_MAP[gridCols]} gap-4`
             : "flex flex-col gap-2"
         }
       >
@@ -536,9 +545,9 @@ function SelectableCard({
   children,
   listMode = false,
 }: SelectableCardProps) {
-  if (!selectable) return <div>{children}</div>;
+  if (!selectable) return <div className="h-full">{children}</div>;
   return (
-    <div className="relative group">
+    <div className="relative group h-full">
       <div
         className={[
           "absolute z-10",

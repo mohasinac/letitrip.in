@@ -41,7 +41,11 @@ export const GET = createApiHandler({
       return errorResponse(ERROR_MESSAGES.VALIDATION.FAILED, 400);
     }
     const bids = await bidRepository.findByProductSorted(productId);
-    return successResponse(bids, undefined, 200, { total: bids.length });
+    // Strip userEmail from public response to avoid PII exposure
+    const sanitized = bids.map(({ userEmail: _strip, ...rest }) => rest);
+    return successResponse(sanitized, undefined, 200, {
+      total: sanitized.length,
+    });
   },
 });
 
@@ -191,7 +195,7 @@ export const POST = createApiHandler<(typeof placeBidSchema)["_output"]>({
         bidCount: (product.bidCount ?? 0) + 1,
         lastBid: {
           amount: bidAmount,
-          bidderName: bid.userName?.split(" ")[0] ?? "Bidder",
+          bidderName: "Bidder",
           timestamp: Date.now(),
         },
         updatedAt: Date.now(),

@@ -194,19 +194,39 @@ Re-exports from `@lir/react` are available via `src/hooks/` barrel as well. See 
 
 ## General Purpose
 
-| Hook                                    | Description                                                                            |
-| --------------------------------------- | -------------------------------------------------------------------------------------- |
-| `useMessage()`                          | Toast/snackbar helper: `showSuccess(msg)`, `showError(msg)` — use instead of `alert()` |
-| `useUnsavedChanges(isDirty)`            | Prompts user before navigating away from dirty form                                    |
-| `useDebounce(value, delay)`             | Returns debounced value                                                                |
-| `usePrevious(value)`                    | Returns previous render's value                                                        |
-| `useToggle(initial)`                    | `[state, toggle, setTrue, setFalse]`                                                   |
-| `useLocalStorage(key, initial)`         | Persist state in `localStorage`                                                        |
-| `useSessionStorage(key, initial)`       | Persist state in `sessionStorage`                                                      |
-| `useImagePreview(file)`                 | Object URL preview for a `File`                                                        |
-| `useScrollLock(locked)`                 | Toggle `body` scroll lock                                                              |
-| `useIntersectionObserver(ref, options)` | Visibility detection for lazy-load                                                     |
-| `useWindowSize()`                       | `{ width, height }` responsive window dimensions                                       |
+| Hook                        | Description                                                                                                                                                       |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `useBottomActions(options)` | Register mobile page-level actions or bulk selection bar above BottomNavbar. Accepts `actions[]`, `bulk: BottomBulkConfig`, `infoLabel?`. Auto-clears on unmount. |
+| `useMessage()`              | Toast/snackbar helper: `showSuccess(msg)`, `showError(msg)` — use instead of `alert()`                                                                            |
+
+**`UseBottomActionsOptions`** (from `@/hooks`):
+
+| Field       | Type               | Required | Description                                                               |
+| ----------- | ------------------ | -------- | ------------------------------------------------------------------------- |
+| `actions`   | `BottomAction[]`   | —        | Page-level primary actions rendered in button row                         |
+| `bulk`      | `BottomBulkConfig` | —        | Bulk selection config; bar switches to bulk mode when `selectedCount > 0` |
+| `infoLabel` | `string`           | —        | One-line contextual info above action row, e.g. `"Current bid: ₹1,200"`   |
+
+**`BottomAction`** fields: `id` (key + dispatch key), `label?`, `icon?`, `variant?`, `badge?`, `disabled?`, `loading?`, `grow?` (default `true` in page mode), `onClick` (dispatched via ref — always latest closure).
+
+**`BottomBulkConfig`** fields: `selectedCount`, `noun?`, `onClearSelection`, `actions: BottomAction[]`.
+
+Types exported from `@/contexts` barrel.
+
+---
+
+| Hook                                    | Description                                         |
+| --------------------------------------- | --------------------------------------------------- |
+| `useUnsavedChanges(isDirty)`            | Prompts user before navigating away from dirty form |
+| `useDebounce(value, delay)`             | Returns debounced value                             |
+| `usePrevious(value)`                    | Returns previous render's value                     |
+| `useToggle(initial)`                    | `[state, toggle, setTrue, setFalse]`                |
+| `useLocalStorage(key, initial)`         | Persist state in `localStorage`                     |
+| `useSessionStorage(key, initial)`       | Persist state in `sessionStorage`                   |
+| `useImagePreview(file)`                 | Object URL preview for a `File`                     |
+| `useScrollLock(locked)`                 | Toggle `body` scroll lock                           |
+| `useIntersectionObserver(ref, options)` | Visibility detection for lazy-load                  |
+| `useWindowSize()`                       | `{ width, height }` responsive window dimensions    |
 
 ---
 
@@ -226,3 +246,24 @@ These are accessible via the `src/hooks/` barrel:
 | `useCamera(options)`             | Camera access + photo capture                                 |
 | `usePullToRefresh(ref, options)` | Pull-to-refresh for mobile                                    |
 | `useCountdown(target)`           | Countdown timer: `{ days, hours, minutes, seconds, expired }` |
+
+---
+
+## Utilities (src/utils/)
+
+Pure functions exported from the @/utils barrel.
+
+### Business Day (src/utils/business-day.ts)
+
+> **Platform day rule:** every new day starts at **10:00 AM IST**. Any event before 10 AM IST belongs to the previous day.
+
+| Function                      | Signature                                               | Description                                                              |
+| ----------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------ |
+| getBusinessDayStart           | (now?: Date) -> Date                                    | UTC Date of the most recent 10:00 AM IST at or before                    |
+| ow                            |
+| getBusinessDaysElapsed        | (since: Date, now?: Date) -> number                     | Full 10 AM IST boundaries crossed since since                            |
+| getBusinessDaysRemaining      | (since: Date, windowDays: number, now?: Date) -> number | Days left before windowDays are up (use for "X days remaining" counters) |
+| getBusinessDayEligibilityDate | (since: Date, windowDays: number) -> Date               | UTC Date when windowDays platform days will have elapsed                 |
+
+**Constant:** BUSINESS_DAY_HOUR_IST = 10 exported from the same module.
+**Server-side (Cloud Functions):** equivalent functions in unctions/src/utils/businessDay.ts.

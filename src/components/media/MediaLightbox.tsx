@@ -340,45 +340,49 @@ export function MediaLightbox({
         {/* Prev */}
         {items.length > 1 && (
           <Button
+            variant="ghost"
             onClick={(e) => {
               e.stopPropagation();
               goPrev();
             }}
             aria-label={t("gallery.prevImage")}
-            className={`w-11 h-11 p-0 min-h-0 ${flex.center} rounded-full bg-white/10 hover:bg-primary/60 text-white border-0 shadow-none active:scale-95 transition-colors`}
+            className={`w-12 h-12 p-0 !min-h-0 ${flex.center} rounded-full bg-white/15 hover:bg-white/30 !text-white border-0 shadow-none active:scale-95 transition-colors`}
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-7 h-7" />
           </Button>
         )}
         {/* Zoom out */}
         <Button
+          variant="ghost"
           onClick={zoomOut}
           disabled={zoom <= MIN_ZOOM}
           aria-label={t("gallery.zoomOut")}
-          className={`w-11 h-11 p-0 min-h-0 ${flex.center} rounded-full bg-white/10 hover:bg-white/20 text-white border-0 shadow-none active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition-colors`}
+          className={`w-12 h-12 p-0 !min-h-0 ${flex.center} rounded-full bg-white/15 hover:bg-white/30 !text-white border-0 shadow-none active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition-colors`}
         >
-          <ZoomOut className="w-5 h-5" />
+          <ZoomOut className="w-7 h-7" />
         </Button>
         <Caption className="text-white/70 w-14 text-center tabular-nums">
           {Math.round(zoom * 100)}%
         </Caption>
         {/* Zoom in */}
         <Button
+          variant="ghost"
           onClick={zoomIn}
           disabled={zoom >= MAX_ZOOM}
           aria-label={t("gallery.zoomIn")}
-          className={`w-11 h-11 p-0 min-h-0 ${flex.center} rounded-full bg-white/10 hover:bg-white/20 text-white border-0 shadow-none active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition-colors`}
+          className={`w-12 h-12 p-0 !min-h-0 ${flex.center} rounded-full bg-white/15 hover:bg-white/30 !text-white border-0 shadow-none active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition-colors`}
         >
-          <ZoomIn className="w-5 h-5" />
+          <ZoomIn className="w-7 h-7" />
         </Button>
         {/* Reset zoom (visible only when zoomed) */}
         {zoom > 1 && (
           <Button
+            variant="ghost"
             onClick={resetZoom}
             aria-label={t("gallery.resetZoom")}
-            className={`w-11 h-11 p-0 min-h-0 ${flex.center} rounded-full bg-white/10 hover:bg-white/20 text-white border-0 shadow-none active:scale-95 transition-colors`}
+            className={`w-12 h-12 p-0 !min-h-0 ${flex.center} rounded-full bg-white/15 hover:bg-white/30 !text-white border-0 shadow-none active:scale-95 transition-colors`}
           >
-            <RotateCcw className="w-5 h-5" />
+            <RotateCcw className="w-7 h-7" />
           </Button>
         )}
         {/* Divider */}
@@ -391,39 +395,42 @@ export function MediaLightbox({
         <span className="w-px h-6 bg-white/15 mx-1 shrink-0" aria-hidden />
         {/* Fullscreen */}
         <Button
+          variant="ghost"
           onClick={toggleFullscreen}
           aria-label={
             isFullscreen
               ? t("gallery.exitFullscreen")
               : t("gallery.enterFullscreen")
           }
-          className={`w-11 h-11 p-0 min-h-0 ${flex.center} rounded-full bg-white/10 hover:bg-white/20 text-white border-0 shadow-none active:scale-95 transition-colors`}
+          className={`w-12 h-12 p-0 !min-h-0 ${flex.center} rounded-full bg-white/15 hover:bg-white/30 !text-white border-0 shadow-none active:scale-95 transition-colors`}
         >
           {isFullscreen ? (
-            <Minimize className="w-5 h-5" />
+            <Minimize className="w-6 h-6" />
           ) : (
-            <Maximize className="w-5 h-5" />
+            <Maximize className="w-6 h-6" />
           )}
         </Button>
         {/* Close */}
         <Button
+          variant="ghost"
           onClick={onClose}
           aria-label={t("gallery.close")}
-          className={`w-11 h-11 p-0 min-h-0 ${flex.center} rounded-full bg-white/10 hover:bg-red-500/40 text-white border-0 shadow-none active:scale-95 transition-colors`}
+          className={`w-12 h-12 p-0 !min-h-0 ${flex.center} rounded-full bg-white/15 hover:bg-red-500/50 !text-white border-0 shadow-none active:scale-95 transition-colors`}
         >
-          <X className="w-5 h-5" />
+          <X className="w-7 h-7" />
         </Button>
         {/* Next */}
         {items.length > 1 && (
           <Button
+            variant="ghost"
             onClick={(e) => {
               e.stopPropagation();
               goNext();
             }}
             aria-label={t("gallery.nextImage")}
-            className={`w-11 h-11 p-0 min-h-0 ${flex.center} rounded-full bg-white/10 hover:bg-primary/60 text-white border-0 shadow-none active:scale-95 transition-colors`}
+            className={`w-12 h-12 p-0 !min-h-0 ${flex.center} rounded-full bg-white/15 hover:bg-white/30 !text-white border-0 shadow-none active:scale-95 transition-colors`}
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-7 h-7" />
           </Button>
         )}
       </div>

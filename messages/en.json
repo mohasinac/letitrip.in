@@ -135,7 +135,16 @@
     "bulkRemove": "Remove ({count})",
     "bulkSuccess": "{count} items updated successfully",
     "bulkPartialSuccess": "{success} of {total} items updated",
-    "bulkFailed": "Failed to update items"
+    "bulkFailed": "Failed to update items",
+    "gridView": "Grid view",
+    "listView": "List view",
+    "selectionHint": "Tap or click a card to select it, then use bulk actions to add to wishlist or cart"
+  },
+  "bottomActions": {
+    "pageActionsLabel": "Page actions",
+    "bulkActionsLabel": "Bulk actions",
+    "selectedCount": "{count} selected",
+    "apply": "Apply"
   },
   "sort": {
     "label": "Sort by",
@@ -391,6 +400,8 @@
     }
   },
   "profile": {
+    "metaTitle": "My Profile",
+    "metaDescription": "View and manage your profile information on LetItRip.",
     "editProfile": "Edit Profile",
     "viewProfile": "View Profile",
     "myProfile": "My Profile",
@@ -436,6 +447,8 @@
     "never": "Never"
   },
   "wishlist": {
+    "metaTitle": "My Wishlist",
+    "metaDescription": "View and manage your saved items on LetItRip.",
     "title": "My Wishlist",
     "subtitle": "Items you've saved for later",
     "description": "Save items you love to your wishlist",
@@ -467,6 +480,12 @@
     "saving": "Saving..."
   },
   "addresses": {
+    "metaTitle": "My Addresses",
+    "metaDescription": "Manage your shipping and billing addresses on LetItRip.",
+    "metaTitleAdd": "Add Address",
+    "metaDescriptionAdd": "Add a new shipping or billing address to your LetItRip account.",
+    "metaTitleEdit": "Edit Address",
+    "metaDescriptionEdit": "Edit your shipping or billing address on LetItRip.",
     "title": "My Addresses",
     "subtitle": "Manage your delivery addresses",
     "subtitleWithCount": "{count, plural, one {# address} other {# addresses}} saved",
@@ -485,6 +504,8 @@
     "billingAddress": "Billing Address"
   },
   "notifications": {
+    "metaTitle": "Notifications",
+    "metaDescription": "View your notifications about orders, bids, and promotions on LetItRip.",
     "title": "Notifications",
     "all": "All Notifications",
     "viewAll": "View all notifications",
@@ -731,7 +752,8 @@
   },
   "listingLayout": {
     "selectedCount": "{count} selected",
-    "bulkActionsRegion": "Bulk actions"
+    "bulkActionsRegion": "Bulk actions",
+    "apply": "Apply"
   },
   "eventBanner": {
     "saleBanner": "Up to {pct}% Off — Limited Time!",
@@ -806,6 +828,8 @@
     "sortPriceHigh": "Price: High to Low",
     "sortNameAZ": "Name: A to Z",
     "sortNameZA": "Name: Z to A",
+    "sortRating": "Highest Rated",
+    "sortPopular": "Most Popular",
     "currentBid": "Current Bid",
     "startingBid": "Starting Bid",
     "totalBids": "{count, plural, one {# bid} other {# bids}}",
@@ -904,6 +928,8 @@
     "noHowToUse": "No usage instructions available."
   },
   "cart": {
+    "metaTitle": "Shopping Cart",
+    "metaDescription": "Review items in your cart and proceed to checkout on LetItRip.",
     "title": "Shopping Cart",
     "empty": "Your cart is empty",
     "emptyDesc": "Add some products to get started",
@@ -939,6 +965,8 @@
     "promoScopeSellerItems": "Applies to eligible items from this store"
   },
   "orders": {
+    "metaTitle": "My Orders",
+    "metaDescription": "View your order history and track current orders on LetItRip.",
     "title": "My Orders",
     "orderNumber": "Order #",
     "orderDate": "Order Date",
@@ -1015,6 +1043,10 @@
     "colProduct": "Product"
   },
   "checkout": {
+    "metaTitle": "Checkout",
+    "metaDescription": "Complete your purchase securely on LetItRip.",
+    "metaTitleSuccess": "Order Confirmed",
+    "metaDescriptionSuccess": "Your order has been placed successfully on LetItRip.",
     "title": "Checkout",
     "shippingAddress": "Shipping Address",
     "paymentMethod": "Payment Method",
@@ -1335,6 +1367,8 @@
     "rcInfoLink": "What is RC?"
   },
   "search": {
+    "metaTitle": "Search",
+    "metaDescription": "Search for products, auctions, pre-orders and more on LetItRip.",
     "ariaLabel": "Search",
     "clearAriaLabel": "Clear search",
     "closeAriaLabel": "Close search",
@@ -1358,6 +1392,16 @@
     "maxPrice": "Max price",
     "categoryFilter": "Category",
     "allCategories": "All Categories",
+    "conditionFilter": "Condition",
+    "conditionNew": "New",
+    "conditionUsed": "Used",
+    "conditionRefurbished": "Refurbished",
+    "auctionFilter": "Auction",
+    "auctionOnly": "Auctions only",
+    "preOrderFilter": "Pre-Order",
+    "preOrderOnly": "Pre-orders only",
+    "inStockFilter": "Availability",
+    "inStockOnly": "In stock only",
     "searching": "Searching...",
     "browseProducts": "Search \u201c{q}\u201d in products \u2192",
     "quickLinks": "Quick Links"
@@ -1413,6 +1457,8 @@
     "verifiedSeller": "Verified Seller"
   },
   "sellerAnalytics": {
+    "metaTitle": "Seller Analytics",
+    "metaDescription": "View your sales performance, revenue trends, and top products on LetItRip.",
     "pageTitle": "Your Analytics",
     "pageSubtitle": "Sales performance and revenue overview",
     "totalRevenue": "Total Revenue",
@@ -1430,6 +1476,8 @@
     "viewProducts": "View Products"
   },
   "sellerPayouts": {
+    "metaTitle": "My Payouts",
+    "metaDescription": "Manage your earnings and payout requests on LetItRip.",
     "pageTitle": "Payouts",
     "pageSubtitle": "Manage your earnings and payout requests",
     "availableEarnings": "Available Earnings",
@@ -1555,7 +1603,19 @@
     "realResultsSubtitle": "See how real customers transformed their experience with LetItRip",
     "beforeLabel": "BEFORE",
     "afterLabel": "AFTER",
-    "beforeAfterSlider": "Before/After comparison slider"
+    "beforeAfterSlider": "Before/After comparison slider",
+    "securityPill": "YOUR DATA IS SAFE",
+    "securityTitle": "Security You Can Trust",
+    "securitySubtitle": "We protect your data with industry-leading security measures at every step",
+    "securityEncryptionTitle": "Bank-Grade Encryption",
+    "securityEncryptionDesc": "All sensitive data is encrypted with AES-256-GCM — the same standard used by banks and financial institutions.",
+    "securityTransportTitle": "Secure Connections",
+    "securityTransportDesc": "Every request is transmitted over TLS 1.3 with certificate pinning, keeping your data safe in transit.",
+    "securityAccessTitle": "Strict Access Controls",
+    "securityAccessDesc": "Role-based security rules ensure only authorized users can access their own data. No client-side database access.",
+    "securityDataTitle": "Data Minimization",
+    "securityDataDesc": "We collect only what's necessary and never store raw sensitive data — encrypted or hashed at rest.",
+    "securityLearnMore": "Learn More About Our Security"
   },
   "footer": {
     "aboutUs": "About Us",
@@ -1832,6 +1892,50 @@
     "termsOfService": "Terms of Service",
     "contactUs": "Contact Us"
   },
+  "securityPage": {
+    "metaTitle": "Security & Data Protection",
+    "metaDescription": "Learn how LetItRip protects your personal data with encryption at rest, secure transport, and strict access controls.",
+    "title": "Security & Data Protection",
+    "subtitle": "Your data is encrypted, access-controlled, and handled with care at every layer of our platform.",
+    "overviewTitle": "Our Security Approach",
+    "overviewText": "LetItRip employs a defence-in-depth strategy: every layer — from transport to storage to application logic — is hardened to protect your personal information.",
+    "encryptionTitle": "Encryption at Rest",
+    "encryptionText": "All personally identifiable information (PII) — names, emails, phone numbers, addresses — is encrypted with AES-256-GCM before it is written to our database. The encryption key is stored securely in our server environment and is never exposed to client-side code.",
+    "blindIndexTitle": "Privacy-Preserving Search",
+    "blindIndexText": "To look up records by email or phone without decrypting every row, we use HMAC-SHA256 blind indices. These one-way hashes let the server find your account instantly while keeping the underlying value unreadable at rest.",
+    "transportTitle": "Transport Security",
+    "transportText": "All connections between your browser and our servers are encrypted with TLS 1.2+ (HTTPS). API calls, form submissions, and file uploads are never transmitted in plain text.",
+    "dataMinTitle": "Data Minimisation",
+    "dataMinText": "We collect only the data necessary to process your orders and provide our services. Public-facing pages such as product listings and auction feeds never expose seller or buyer PII.",
+    "accessTitle": "Access Controls",
+    "accessText": "Firestore security rules enforce role-based access: only authenticated users can read their own data, and administrative endpoints require verified admin tokens. Server-side repositories are the sole gateway to the database — no direct client queries are permitted.",
+    "loggingTitle": "Secure Logging",
+    "loggingText": "Our structured logging system automatically redacts PII fields before writing to logs. Email addresses, phone numbers, and personal names are never stored in plain text in log output.",
+    "rtdbTitle": "Real-Time Data Anonymisation",
+    "rtdbText": "Live auction feeds and bidding activity shown on the site use anonymised identifiers. Your real name or email is never broadcast in real-time channels.",
+    "uploadsTitle": "Secure File Uploads",
+    "uploadsText": "All file uploads are staged locally and submitted to the backend via FormData. The server validates MIME types using magic-byte inspection — not just file extensions — to prevent malicious uploads.",
+    "csrfTitle": "CSRF & Injection Protection",
+    "csrfText": "Server Actions validate origin headers, and all user-generated HTML content is sanitised to prevent cross-site scripting (XSS). API routes use rate limiting backed by Redis to mitigate abuse.",
+    "complianceTitle": "Compliance & Your Rights",
+    "complianceText": "You can access, update, or delete your personal data from your account settings at any time. For data-related queries, contact us at privacy@letitrip.in.",
+    "diagramTitle": "Data Protection Flow",
+    "diagramStep1Badge": "Your Browser",
+    "diagramStep1Desc": "Data entered in forms",
+    "diagramStep2Badge": "TLS 1.2+",
+    "diagramStep2Desc": "Encrypted in transit",
+    "diagramStep3Badge": "Server Action",
+    "diagramStep3Desc": "Validated & sanitised",
+    "diagramStep4Badge": "AES-256-GCM",
+    "diagramStep4Desc": "Encrypted at rest",
+    "diagramStep5Badge": "Firestore",
+    "diagramStep5Desc": "Stored securely",
+    "ctaTitle": "Questions About Security?",
+    "ctaText": "Read our full privacy policy or contact us directly with any data protection concerns.",
+    "ctaPrivacy": "Privacy Policy",
+    "ctaContact": "Contact Us",
+    "lastUpdated": "Last updated: June 2025"
+  },
   "sellersPage": {
     "title": "Sell on LetItRip",
     "subtitle": "Reach thousands of buyers. Your own storefront. Zero hassle.",
@@ -1890,6 +1994,7 @@
     "noStoresSubtitle": "Try adjusting your search or check back soon",
     "showingCount": "{count} stores",
     "viewStore": "Visit Store",
+    "visitStore": "Visit Store",
     "productCount": "{count} products",
     "productsCount": "{count} products",
     "itemsSold": "{count} sold",
@@ -2153,6 +2258,8 @@
     "fieldIsActive": "Activate coupon immediately"
   },
   "sellerDashboard": {
+    "metaTitle": "Seller Dashboard",
+    "metaDescription": "Manage your listings, orders, and earnings on LetItRip.",
     "welcome": "Welcome back, {name}",
     "subtitle": "Manage your listings, orders, and earnings",
     "totalProducts": "Total Products",
@@ -2171,6 +2278,8 @@
     "viewAll": "View All"
   },
   "sellerOrders": {
+    "metaTitle": "My Sales",
+    "metaDescription": "View and manage orders placed by your customers on LetItRip.",
     "title": "My Sales",
     "subtitle": "Orders placed for your products",
     "emptyTitle": "No orders yet",
@@ -2221,6 +2330,8 @@
     "filterPaymentMethodCod": "Cash on Delivery"
   },
   "sellerAddresses": {
+    "metaTitle": "Business Addresses",
+    "metaDescription": "Manage your pickup and business addresses on LetItRip.",
     "title": "Business Addresses",
     "subtitle": "Manage your pickup and business addresses",
     "subtitleWithCount": "{count, plural, one {# address} other {# addresses}} saved",
@@ -2232,6 +2343,8 @@
     "deleteConfirmMessage": "Are you sure you want to delete this address? This action cannot be undone."
   },
   "sellerProducts": {
+    "metaTitle": "My Products",
+    "metaDescription": "Manage and update your store product listings on LetItRip.",
     "title": "My Products",
     "subtitle": "Manage and update your store listings",
     "addProduct": "Add New Listing",
@@ -2308,6 +2421,8 @@
     "revokeAll": "Revoke All"
   },
   "adminDashboard": {
+    "metaTitle": "Admin Dashboard",
+    "metaDescription": "System statistics and quick actions for the LetItRip platform.",
     "title": "Dashboard Overview",
     "subtitle": "System statistics and quick actions",
     "quickActions": "Quick Actions",
@@ -2357,6 +2472,8 @@
     "emptySubtitle": "Newsletter subscribers will appear here."
   },
   "adminPayouts": {
+    "metaTitle": "Admin Payouts",
+    "metaDescription": "Review and process seller payout requests on LetItRip.",
     "title": "Payouts",
     "subtitle": "Review and process seller payout requests",
     "filterAll": "All Payouts",
@@ -2377,6 +2494,8 @@
     "thisMonth": "this month"
   },
   "adminSite": {
+    "metaTitle": "Site Settings",
+    "metaDescription": "Configure global site settings, branding, and appearance on LetItRip.",
     "title": "Site Settings",
     "subtitle": "Configure global site settings, branding, and appearance",
     "settingsSaved": "Settings saved successfully",
@@ -2430,6 +2549,8 @@
     "credentialNotSet": "Not configured"
   },
   "adminNavigation": {
+    "metaTitle": "Navigation Settings",
+    "metaDescription": "Configure navbar and footer navigation for the LetItRip platform.",
     "title": "Navigation Settings",
     "subtitle": "Configure which items appear in the navbar and how the footer looks",
     "navbarTab": "Navbar",
@@ -2448,6 +2569,8 @@
     "saveFailed": "Failed to save navigation settings"
   },
   "adminFeatureFlags": {
+    "metaTitle": "Feature Flags",
+    "metaDescription": "Enable or disable platform features globally on LetItRip.",
     "title": "Feature Flags",
     "subtitle": "Enable or disable platform features globally",
     "settingsSaved": "Feature flags saved successfully",
@@ -2490,6 +2613,8 @@
     "codDesc": "Allow customers to pay with cash upon delivery"
   },
   "adminUsers": {
+    "metaTitle": "User Management",
+    "metaDescription": "Manage user accounts, roles, and permissions on LetItRip.",
     "title": "Users",
     "subtitle": "Manage user accounts and permissions",
     "detail": "User Details",
@@ -2560,6 +2685,8 @@
     "adjustFailed": "Failed to adjust RC. Please try again."
   },
   "adminProducts": {
+    "metaTitle": "Product Management",
+    "metaDescription": "Manage all product listings on the LetItRip platform.",
     "title": "Products",
     "subtitle": "Manage all product listings",
     "createProduct": "Create Product",
@@ -2654,6 +2781,8 @@
     "searchPlaceholder": "Search orders..."
   },
   "adminReviews": {
+    "metaTitle": "Review Moderation",
+    "metaDescription": "Moderate and manage product reviews on LetItRip.",
     "title": "Reviews",
     "subtitle": "Moderate product reviews",
     "approve": "Approve",
@@ -2873,6 +3002,8 @@
     "openInNewTab": "Open in new tab"
   },
   "adminSections": {
+    "metaTitle": "Homepage Sections",
+    "metaDescription": "Manage homepage sections and layout on the LetItRip platform.",
     "title": "Homepage Sections",
     "subtitle": "Manage homepage sections",
     "addSection": "Add Section",
@@ -2919,6 +3050,8 @@
     "usageCount": "{count, plural, one {# used} other {# used}}"
   },
   "adminStores": {
+    "metaTitle": "Store Management",
+    "metaDescription": "Review and approve seller stores on the LetItRip platform.",
     "title": "Stores",
     "subtitle": "Review and approve seller stores",
     "total": "total",
@@ -3121,6 +3254,10 @@
     "totalOrders": "Total Orders"
   },
   "offers": {
+    "metaTitle": "My Offers",
+    "metaDescription": "View and manage your product offers on LetItRip.",
+    "sellerMetaTitle": "Incoming Offers",
+    "sellerMetaDescription": "Review and respond to buyer offers on your products.",
     "pageTitle": "My Offers",
     "sellerPageTitle": "Incoming Offers",
     "emptyTitle": "No offers yet",
@@ -3175,6 +3312,8 @@
     "status_paid": "Paid"
   },
   "userSettings": {
+    "metaTitle": "Account Settings",
+    "metaDescription": "Manage your account settings, email verification, and preferences on LetItRip.",
     "emailVerificationTitle": "Email Verification",
     "phoneVerificationTitle": "Phone Verification",
     "verified": "Verified",
@@ -3322,6 +3461,10 @@
     "helpCenter": "Help Center"
   },
   "rcWallet": {
+    "metaTitle": "RC Wallet",
+    "metaDescription": "Manage your RC balance and transaction history on LetItRip.",
+    "metaTitlePurchase": "Buy RC",
+    "metaDescriptionPurchase": "Top up your RC balance to bid in auctions on LetItRip.",
     "available": "Available RC",
     "engaged": "Engaged RC",
     "engagedNote": "Locked in active bids",
@@ -3374,6 +3517,8 @@
     }
   },
   "chat": {
+    "metaTitle": "Messages",
+    "metaDescription": "Chat with buyers and sellers on LetItRip.",
     "title": "Messages",
     "chat": "Chat",
     "connected": "Connected",
@@ -3759,6 +3904,8 @@
     "coupons": "Coupons"
   },
   "userHub": {
+    "metaTitle": "My Account",
+    "metaDescription": "Manage your LetItRip account, orders, and settings.",
     "title": "My Account",
     "quickNav": "Quick Access",
     "recentOrders": "Recent Orders",
@@ -3780,8 +3927,8 @@
     "step2Text": "To place an offer you need RC equal to your offer amount. RC is LetItRip's offer currency — 1 RC equals ₹1 of offer value. Purchase a pack before making an offer.",
     "step3Title": "Make Your Offer",
     "step3Text": "Enter your desired price. The equivalent RC are immediately locked (engaged) in your wallet. You can withdraw your offer at any time before the seller responds.",
-    "step4Title": "Seller Responds",
-    "step4Text": "The seller can accept, decline, or send a counter offer within 48 hours. If they counter, you can accept the new price or withdraw. Adjusted RC is locked automatically on counter-offer.",
+    "step4Title": "Seller Responds — Negotiate",
+    "step4Text": "The seller can accept, decline, or send a counter offer within 48 hours. If they counter, you can accept, withdraw, or send your own counter back — your counter must be within 20% (above or below) of the seller's price. Adjusted RC is locked or released automatically.",
     "step5Title": "Accepted — Checkout",
     "step5Text": "Once an offer is accepted you'll see a 'Checkout Now' button in your Offers page. Add the item to cart at the agreed price and complete payment. Your RC are returned to your wallet on payment.",
     "step6Title": "Receive Your Item",
@@ -3795,6 +3942,11 @@
     "rcReleaseDesc": "If your offer is declined or you withdraw it, the locked RC are instantly released back to your available balance.",
     "rcReturnTitle": "RC Returned",
     "rcReturnDesc": "Once you pay for an accepted offer, the engaged RC are fully returned to your wallet. No RC are consumed in a successful offer transaction.",
+    "rulesTitle": "Negotiation Rules",
+    "rulesItem1": "Your counter offer must be within 20% above or below the seller's counter price.",
+    "rulesItem2": "You can place up to 3 offers per product. The limit resets automatically if the seller updates the listing.",
+    "rulesItem3": "Only the difference in RC between your current offer and counter is locked or released — your original engagement carries forward.",
+    "rulesItem4": "Only one active offer per product at a time. Withdraw your existing offer before making a new one.",
     "ctaTitle": "Ready to negotiate?",
     "ctaText": "Top up your RC wallet and start making offers on thousands of products today.",
     "learnRC": "Learn about RC",
@@ -3845,5 +3997,161 @@
     "rcReleaseDesc": "If a seller declines an offer or the buyer withdraws it, the locked RC are immediately released back to the buyer's available balance.",
     "disclaimerTitle": "Disclaimer",
     "disclaimerText": "Fees are subject to change. Current rates will always be displayed here and at checkout before you confirm payment. LetItRip reserves the right to offer promotional fee reductions to eligible sellers at any time."
+  },
+  "howCheckoutWorks": {
+    "metaTitle": "How Checkout Works",
+    "metaDescription": "Learn how to complete your purchase on LetItRip — from cart to confirmation. Razorpay, COD, and RC coins explained.",
+    "title": "How Checkout Works",
+    "subtitle": "Placing an order on LetItRip is fast, secure, and flexible. Here is a step-by-step guide to completing your purchase.",
+    "stepsTitle": "The Checkout Process",
+    "step1Title": "Build Your Cart",
+    "step1Text": "Add products to your cart by clicking 'Add to Cart' on any listing. Adjust quantities, apply a coupon code, and review your cart total before proceeding.",
+    "step2Title": "Choose Delivery Address",
+    "step2Text": "Select a saved address or add a new delivery address. If you're shipping to someone else, you'll need to verify consent via a one-time email OTP before proceeding.",
+    "step3Title": "Select Payment Method",
+    "step3Text": "Choose from Razorpay (cards, UPI, netbanking), Cash on Delivery, or pay with your RC balance. RC coins can cover part or all of your order total.",
+    "step4Title": "Confirm Your Order",
+    "step4Text": "Review your full order summary — items, quantities, coupon savings, shipping cost, and total. Click 'Place Order' to confirm.",
+    "step5Title": "Order Confirmed",
+    "step5Text": "You'll receive an email and in-app notification confirming your order. Track your shipment from the My Orders page.",
+    "diagramTitle": "The checkout journey — at a glance",
+    "diagramStep1Desc": "Add items, apply coupon",
+    "diagramStep2Desc": "Pick saved or new address",
+    "diagramStep3Desc": "Razorpay, COD, or RC",
+    "diagramStep4Desc": "Review summary, place order",
+    "diagramStep5Desc": "Email + in-app notification",
+    "paymentMethodsTitle": "Payment Methods",
+    "paymentMethodsSubtitle": "Choose the payment option that works best for you.",
+    "pm1Title": "Razorpay",
+    "pm1Text": "Pay securely with credit/debit card, UPI, or netbanking. Processed by Razorpay — PCI-DSS compliant. Your payment information is never stored on our servers.",
+    "pm2Title": "Cash on Delivery",
+    "pm2Text": "Pay in cash when your order arrives. A one-time OTP confirmation is required when placing a COD order to protect against fraudulent orders.",
+    "pm3Title": "RC Coins",
+    "pm3Text": "Use your earned or purchased RC to pay for part or all of your order. 1 RC = ₹1 of discount. Toggle 'Use RC' on the payment screen to choose how many coins to apply.",
+    "rcCoinsTitle": "Using RC Coins at Checkout",
+    "rcCoinsText": "RC are LetItRip's virtual currency. You earn them with every purchase and approved review, or buy packs directly. At checkout, slide to choose how many coins to apply — any remaining balance is charged via your selected payment method.",
+    "learnRC": "Learn about RC →",
+    "ctaTitle": "Ready to shop?",
+    "ctaText": "Browse thousands of products and complete your first checkout in minutes.",
+    "ctaBrowse": "Browse Products",
+    "ctaOrders": "How Orders Work"
+  },
+  "howOrdersWork": {
+    "metaTitle": "How Orders Work",
+    "metaDescription": "Understand order statuses, shipment tracking, cancellations, and invoices on LetItRip.",
+    "title": "How Orders Work",
+    "subtitle": "Every order on LetItRip moves through a clear, transparent lifecycle. Here's what each status means and what you can do at each stage.",
+    "lifecycleTitle": "Order Status Lifecycle",
+    "lifecycleSubtitle": "Your order progresses through these stages from placement to completion.",
+    "s1Label": "Pending Payment",
+    "s1Desc": "Your order has been created but payment has not yet been captured. This status applies immediately after placing an order. It resolves automatically once payment is confirmed.",
+    "s2Label": "Confirmed",
+    "s2Desc": "Payment was successful. The seller has been notified and will begin processing your order. You'll receive an email and in-app notification.",
+    "s3Label": "Processing",
+    "s3Desc": "The seller is preparing your items for dispatch — picking, packing, and getting the package ready to hand over to the courier.",
+    "s4Label": "Shipped",
+    "s4Desc": "Your order is on its way! An AWB tracking number has been assigned by the courier. Visit 'Track Order' to follow live shipment updates.",
+    "s5Label": "Delivered",
+    "s5Desc": "The courier has delivered your order. Please inspect your items upon arrival and contact support if anything is damaged or missing.",
+    "s6Label": "Completed",
+    "s6Desc": "The return window has closed and the order is fully complete. RC earned from this purchase are permanently credited to your wallet.",
+    "sCancelLabel": "Cancelled",
+    "sCancelDesc": "The order was cancelled by you or an admin. If payment was made, a refund will be initiated. Any RC used will be credited back to your wallet.",
+    "diagramTitle": "Order status flow — from placement to completion",
+    "infoTitle": "Good to Know",
+    "trackingTitle": "Shipment Tracking",
+    "trackingText": "Once your order is shipped, a tracking link appears on the Order Detail page under 'Track Shipment'. Tracking updates are provided by the courier in real-time.",
+    "cancelTitle": "Cancelling an Order",
+    "cancelText": "You can cancel an order while it is in 'Pending Payment' or 'Confirmed' status. Once the seller starts processing (status moves to 'Processing'), cancellations are no longer available through the platform — contact support.",
+    "invoiceTitle": "Downloading Your Invoice",
+    "invoiceText": "A PDF invoice is available for every completed or delivered order. Open the Order Detail page and click 'Download Invoice'. The invoice includes a breakdown of items, taxes, and payment details.",
+    "addressTitle": "Delivery Address",
+    "addressText": "The delivery address is locked once an order reaches 'Confirmed' status. If you need to change it earlier, cancel the order and re-place it with the correct address.",
+    "ctaTitle": "Start Shopping",
+    "ctaText": "Browse thousands of products across all categories and place your first order today.",
+    "ctaBrowse": "Browse Products",
+    "ctaCheckout": "How Checkout Works"
+  },
+  "howReviewsWork": {
+    "metaTitle": "How Reviews Work",
+    "metaDescription": "Learn how to write a verified product review on LetItRip, earn RC rewards, and help other shoppers make informed decisions.",
+    "title": "How Reviews Work",
+    "subtitle": "Your opinion matters. LetItRip reviews are from verified buyers — keeping ratings honest and trustworthy for everyone.",
+    "stepsTitle": "How to Write a Review",
+    "step1Title": "Buy & Receive the Product",
+    "step1Text": "Only users with at least one delivered order containing the product can write a review. This ensures every review is from a genuine buyer — no fake or incentivised reviews.",
+    "step2Title": "Open the Product Page",
+    "step2Text": "Go to the product detail page and click 'Write a Review' in the Reviews tab. A modal will open with a star rating selector, title field, and a text area for your experience.",
+    "step3Title": "Submit — Pending Moderation",
+    "step3Text": "After submitting, your review enters 'Pending' status. It is visible to you and the admin team while under review. Moderation typically takes up to 24 hours.",
+    "step4Title": "Published & Visible",
+    "step4Text": "Once approved by our moderation team, your review appears publicly on the product page. Other shoppers can read it and mark it as helpful.",
+    "diagramTitle": "The review journey",
+    "diagramS1": "Buy Product",
+    "diagramS1Desc": "Order must be delivered",
+    "diagramS2": "Write Review",
+    "diagramS2Desc": "Star rating + text",
+    "diagramS3": "Pending",
+    "diagramS3Desc": "Admin moderation",
+    "diagramS4": "Approved",
+    "diagramS4Desc": "Publicly visible",
+    "diagramS5": "RC Rewarded",
+    "diagramS5Desc": "Coins credited to wallet",
+    "infoTitle": "More About Reviews",
+    "verifiedTitle": "Verified Purchase Badge",
+    "verifiedText": "Reviews that link to a confirmed delivered order display a 'Verified Purchase' badge. This badge signals to other buyers that the reviewer actually owns the product.",
+    "votesTitle": "Helpful Votes",
+    "votesText": "Any signed-in user can vote a review as 'Helpful' or 'Unhelpful'. Reviews with more helpful votes are ranked higher on the product page so the most useful feedback is easy to find.",
+    "editTitle": "Editing a Review",
+    "editText": "You can edit your review within 30 days of posting it. Editing resets the review back to 'Pending' status — it goes through moderation again before being re-published.",
+    "rcRewardTitle": "Earn RC for Reviews",
+    "rcRewardText": "Publishing an approved review earns you a fixed RC reward credited to your wallet. It's our way of thanking you for helping the community. Check your RC Wallet for the credit after approval.",
+    "ctaTitle": "Share Your Experience",
+    "ctaText": "Already bought something? Head to your orders and leave a review to help fellow shoppers.",
+    "ctaBrowse": "My Orders",
+    "ctaOrders": "How Orders Work"
+  },
+  "howPayoutsWork": {
+    "metaTitle": "How Payouts Work",
+    "metaDescription": "Everything sellers need to know about requesting, tracking, and receiving payouts on LetItRip.",
+    "title": "How Payouts Work",
+    "subtitle": "Once your orders are delivered and settled, requesting your earnings is straightforward. Here's the complete payout process.",
+    "ctaHero": "Go to Payout Dashboard",
+    "stepsTitle": "The Payout Process",
+    "step1Title": "Set Up Your Bank Account",
+    "step1Text": "Before you can request a payout, add your bank account details in Seller Dashboard → Payout Settings. Enter your account holder name, bank name, branch, IFSC code, and account number.",
+    "step2Title": "Deliver Orders",
+    "step2Text": "Payouts are only available for orders that have been delivered and confirmed. Ship orders promptly and ensure the courier updates delivery status so your earnings settle quickly.",
+    "step3Title": "Select Delivered Orders",
+    "step3Text": "In the Payouts section of your Seller Dashboard, select the delivered orders you want to include in a payout request. The total must meet the minimum threshold of ₹500.",
+    "step4Title": "Admin Reviews Your Request",
+    "step4Text": "Our team reviews each payout request to verify order statuses and confirm that the earnings are ready for release. This usually takes 1–3 business days.",
+    "step5Title": "Funds Transferred to Your Account",
+    "step5Text": "Once approved, the net payout amount (after platform commission) is transferred to your registered bank account via NEFT / UPI. You'll receive an in-app and email notification.",
+    "diagramTitle": "The payout journey",
+    "diagramNote": "Platform commission is automatically deducted before funds are released.",
+    "diagramS1": "Order Delivered",
+    "diagramS1Desc": "Buyer confirms receipt",
+    "diagramS2": "Request Payout",
+    "diagramS2Desc": "Min ₹500 required",
+    "diagramS3": "Admin Review",
+    "diagramS3Desc": "1–3 business days",
+    "diagramS4": "Approved",
+    "diagramS4Desc": "Payout authorised",
+    "diagramS5": "Funds Transferred",
+    "diagramS5Desc": "NEFT / UPI to your account",
+    "infoTitle": "Important Details",
+    "bankSetupTitle": "Bank Account Required",
+    "bankSetupText": "You cannot request a payout until your bank account details are saved in Payout Settings. Go to Seller Dashboard → Payout Settings to add your account before making your first request.",
+    "minimumTitle": "Minimum Payout Amount",
+    "minimumText": "Each payout request must total at least ₹500. If your pending earnings are below this threshold, accumulate more delivered orders before requesting. There is no maximum limit.",
+    "commissionTitle": "Platform Commission Deduction",
+    "commissionText": "LetItRip's commission is automatically deducted from your gross earnings before the payout is processed. The exact deduction is shown in the payout preview on the request screen.",
+    "rejectionTitle": "Rejection & Resubmission",
+    "rejectionText": "If a payout request is rejected, you will receive a notification with the reason. Common reasons include unverified bank details or disputed orders. Resolve the issue and resubmit from the Payouts section.",
+    "sellerGuideLink": "Seller Guide",
+    "feesLink": "Fees & Commission",
+    "helpLink": "Help Center",
+    "contactLink": "Contact Support"
   }
 }

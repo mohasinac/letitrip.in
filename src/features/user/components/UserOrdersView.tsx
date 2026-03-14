@@ -90,6 +90,7 @@ function UserOrdersContent() {
   const pageSize = table.getNumber("pageSize", 10);
   const search = table.get("q");
   const sortParam = table.get("sorts") || "-orderDate";
+  const viewMode = (table.get("view") || "list") as "grid" | "list";
 
   // ── Staged filter state via usePendingTable ──────────────────────────
   const { pendingTable, filterActiveCount, onFilterApply, onFilterClear } =
@@ -313,12 +314,19 @@ function UserOrdersContent() {
       }
       selectedCount={selectedIds.length}
       onClearSelection={() => setSelectedIds([])}
-      bulkActions={
-        cancellableSelected.length > 0 ? (
-          <Button variant="danger" size="sm" onClick={handleBulkCancel}>
-            {tActions("bulkCancel", { count: cancellableSelected.length })}
-          </Button>
-        ) : undefined
+      bulkActionItems={
+        cancellableSelected.length > 0
+          ? [
+              {
+                id: "bulk-cancel",
+                label: tActions("bulkCancel", {
+                  count: cancellableSelected.length,
+                }),
+                variant: "danger",
+                onClick: handleBulkCancel,
+              },
+            ]
+          : undefined
       }
       loading={isLoading}
     >
@@ -357,10 +365,14 @@ function UserOrdersContent() {
             ),
           },
         ]}
-        defaultViewMode="list"
-        selectable
-        selectedIds={selectedIds}
-        onSelectionChange={setSelectedIds}
+        showViewToggle
+        showTableView={false}
+        viewMode={viewMode}
+        onViewModeChange={(m) => table.set("view", m)}
+        labels={{
+          gridView: tActions("gridView"),
+          listView: tActions("listView"),
+        }}
         emptyState={
           <EmptyState
             icon={<ShoppingBag className="w-16 h-16" />}
@@ -373,6 +385,7 @@ function UserOrdersContent() {
         mobileCardRender={(order) => (
           <OrderCard
             order={order}
+            variant={viewMode}
             selectable
             isSelected={selectedIds.includes(order.id ?? "")}
             onSelect={(id, checked) =>

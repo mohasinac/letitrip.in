@@ -107,4 +107,4 @@ export type {
   RowProps,
   GridProps,
 } from "./components/Layout";
-export { Container, Stack, Row, Grid } from "./components/Layout";
+export { Container, Stack, Row, Grid, GRID_MAP } from "./components/Layout";

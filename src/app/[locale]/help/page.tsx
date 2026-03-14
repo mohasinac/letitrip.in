@@ -63,7 +63,7 @@ export default async function HelpPage() {
           >
             {t("browseTitle")}
           </Heading>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-5 gap-3 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
             {TOPICS.map(({ key, label, q }) => (
               <TextLink
                 key={key}

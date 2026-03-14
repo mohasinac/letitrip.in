@@ -78,7 +78,7 @@ export function ReviewCard({ review, className = "" }: ReviewCardProps) {
             className={`text-xs ${themed.textSecondary} hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1`}
           >
             <Span
-              className={`inline-block px-2 py-0.5 rounded bg-zinc-100 dark:bg-slate-700 text-[11px] font-medium truncate max-w-[160px] hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors`}
+              className={`inline-block px-2 py-0.5 rounded bg-zinc-100 dark:bg-slate-700 text-[11px] font-medium truncate max-w-[50%] hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors`}
             >
               {review.productTitle || t("viewItem")}
             </Span>

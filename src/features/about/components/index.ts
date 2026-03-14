@@ -1,6 +1,10 @@
 export { AboutView } from "./AboutView";
 export { FeesView } from "./FeesView";
+export { HowCheckoutWorksView } from "./HowCheckoutWorksView";
 export { HowOffersWorkView } from "./HowOffersWorkView";
+export { HowOrdersWorkView } from "./HowOrdersWorkView";
+export { HowReviewsWorkView } from "./HowReviewsWorkView";
 export { RCInfoView } from "./RCInfoView";
+export { SecurityPrivacyView } from "./SecurityPrivacyView";
 export { ShippingPolicyView } from "./ShippingPolicyView";
 export { TrackOrderView } from "./TrackOrderView";

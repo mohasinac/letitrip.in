@@ -223,9 +223,6 @@ export function ProductDetailView({
           isAuction={product.isAuction}
         />
       </div>
-
-      {/* Bottom padding for mobile sticky bar */}
-      <div className="h-20 lg:hidden" />
     </div>
   );
 }

@@ -25,6 +25,7 @@ import { prepareForFirestore } from "@/lib/firebase/firestore-helpers";
 import { DatabaseError } from "@/lib/errors";
 import type { ChatRoomCreateInput, ChatRoomDocument } from "@/db/schema";
 import { CHAT_ROOM_COLLECTION } from "@/db/schema";
+import { encryptPiiFields, decryptPiiFields, CHAT_PII_FIELDS } from "@/lib/pii";
 
 // Re-export so existing callers that import from this repository continue to work
 export type { ChatRoomDocument, ChatRoomCreateInput } from "@/db/schema";
@@ -33,6 +34,16 @@ export { CHAT_ROOM_COLLECTION } from "@/db/schema";
 class ChatRepository extends BaseRepository<ChatRoomDocument> {
   constructor() {
     super(CHAT_ROOM_COLLECTION);
+  }
+
+  /** Override mapDoc to auto-decrypt PII on every chat room read */
+  protected override mapDoc<D = ChatRoomDocument>(
+    snap: import("firebase-admin/firestore").DocumentSnapshot,
+  ): D {
+    const raw = super.mapDoc<ChatRoomDocument>(snap);
+    return decryptPiiFields(raw as unknown as Record<string, unknown>, [
+      ...CHAT_PII_FIELDS,
+    ]) as unknown as D;
   }
 
   /**
@@ -51,12 +62,17 @@ class ChatRepository extends BaseRepository<ChatRoomDocument> {
       updatedAt: new Date(),
     };
 
+    const encrypted = encryptPiiFields(
+      { ...doc } as unknown as Record<string, unknown>,
+      [...CHAT_PII_FIELDS],
+    ) as typeof doc;
+
     await this.db
       .collection(this.collection)
       .doc(id)
-      .set(prepareForFirestore(doc));
+      .set(prepareForFirestore(encrypted));
 
-    return { id, ...doc };
+    return { id, ...doc }; // return plaintext to caller
   }
 
   /**
@@ -132,7 +148,12 @@ class ChatRepository extends BaseRepository<ChatRoomDocument> {
           const deletedBy: string[] = data.deletedBy ?? [];
           // Only include rooms the user hasn't personally deleted
           if (!deletedBy.includes(userId)) {
-            rooms.push({ id: d.id, ...data });
+            rooms.push(
+              decryptPiiFields(
+                { id: d.id, ...data } as unknown as Record<string, unknown>,
+                [...CHAT_PII_FIELDS],
+              ) as unknown as ChatRoomDocument,
+            );
           }
         }
       });

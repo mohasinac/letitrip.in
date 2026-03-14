@@ -83,6 +83,7 @@ function PreOrdersContent({
   const productionStatus = table.get("productionStatus");
   const brandParam = table.get("brand");
   const searchQuery = table.get("q");
+  const viewMode = (table.get("view") || "grid") as "grid" | "list";
 
   // ── Staged filter state ────────────────────────────────────────────────────
   const [stagedPriceRange, setStagedPriceRange] = useState<string[]>(
@@ -295,16 +296,19 @@ function PreOrdersContent({
           }
           selectedCount={selectedIds.length}
           onClearSelection={() => setSelectedIds([])}
-          bulkActions={
-            user ? (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleBulkAddToWishlist}
-              >
-                {tActions("bulkAddToWishlist", { count: selectedIds.length })}
-              </Button>
-            ) : undefined
+          bulkActionItems={
+            user
+              ? [
+                  {
+                    id: "bulk-wishlist",
+                    label: tActions("bulkAddToWishlist", {
+                      count: selectedIds.length,
+                    }),
+                    variant: "primary",
+                    onClick: handleBulkAddToWishlist,
+                  },
+                ]
+              : undefined
           }
           paginationSlot={
             total > 0 ? (
@@ -330,14 +334,18 @@ function PreOrdersContent({
               { key: "preOrderDeliveryDate", header: t("colDelivery") },
               { key: "preOrderProductionStatus", header: t("colStatus") },
             ]}
-            defaultViewMode="grid"
-            selectable={!!user}
-            selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
+            showViewToggle
+            showTableView={false}
+            viewMode={viewMode}
+            onViewModeChange={(m) => table.set("view", m)}
+            labels={{
+              gridView: tActions("gridView"),
+              listView: tActions("listView"),
+            }}
             mobileCardRender={(item) => (
               <PreOrderCard
                 product={item as any}
-                variant="grid"
+                variant={viewMode}
                 selectable={!!user}
                 isSelected={selectedIds.includes(item.id)}
                 onSelect={(id, sel) =>

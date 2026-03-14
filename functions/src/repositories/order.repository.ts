@@ -5,6 +5,15 @@ import {
   QUERY_LIMIT,
   ORDER_TIMEOUT_HOURS,
 } from "../config/constants";
+import { getBusinessDayCutoff } from "../utils/businessDay";
+import { decryptPiiFields, encryptPii } from "../lib/pii";
+
+const ORDER_PII_FIELDS = [
+  "userName",
+  "userEmail",
+  "sellerName",
+  "sellerEmail",
+] as const;
 
 export interface OrderRow {
   id: string;
@@ -51,7 +60,10 @@ export const orderRepository = {
     return snap.docs.map((d) => ({
       id: d.id,
       ref: d.ref,
-      data: { id: d.id, ...d.data() } as OrderRow,
+      data: decryptPiiFields(
+        { id: d.id, ...d.data() },
+        ORDER_PII_FIELDS,
+      ) as OrderRow,
     }));
   },
 
@@ -81,7 +93,10 @@ export const orderRepository = {
     return snap.docs.map((d) => ({
       id: d.id,
       ref: d.ref,
-      data: { id: d.id, ...d.data() } as OrderRow & {
+      data: decryptPiiFields(
+        { id: d.id, ...d.data() },
+        ORDER_PII_FIELDS,
+      ) as OrderRow & {
         sellerId: string;
         totalPrice: number;
         payoutStatus: string;
@@ -105,18 +120,17 @@ export const orderRepository = {
 
   /**
    * Orders eligible for automatic daily payout:
-   * delivered with payoutStatus='eligible', updated more than windowDays ago.
+   * delivered with payoutStatus='eligible', updated more than windowDays
+   * business days ago (business day = 10:00 AM IST boundary).
    */
-  async getEligibleAutomatic(
-    windowDays: number,
-  ): Promise<
+  async getEligibleAutomatic(windowDays: number): Promise<
     Array<{
       id: string;
       ref: DocumentReference;
       data: OrderRow & { sellerId: string; totalPrice: number };
     }>
   > {
-    const cutoff = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000);
+    const cutoff = getBusinessDayCutoff(windowDays);
     const snap = await db
       .collection(COLLECTIONS.ORDERS)
       .where("payoutStatus", "==", "eligible")
@@ -127,7 +141,10 @@ export const orderRepository = {
     return snap.docs.map((d) => ({
       id: d.id,
       ref: d.ref,
-      data: { id: d.id, ...d.data() } as OrderRow & {
+      data: decryptPiiFields(
+        { id: d.id, ...d.data() },
+        ORDER_PII_FIELDS,
+      ) as OrderRow & {
         sellerId: string;
         totalPrice: number;
       },
@@ -156,8 +173,8 @@ export const orderRepository = {
       productId: input.productId,
       productTitle: input.productTitle,
       userId: input.userId,
-      userName: input.userName,
-      userEmail: input.userEmail,
+      userName: encryptPii(input.userName),
+      userEmail: encryptPii(input.userEmail),
       quantity: 1,
       unitPrice: input.amount,
       totalPrice: input.amount,

@@ -199,7 +199,7 @@ export async function placeBidAction(
       bidCount: (product.bidCount ?? 0) + 1,
       lastBid: {
         amount: bidAmount,
-        bidderName: bid.userName?.split(" ")[0] ?? "Bidder",
+        bidderName: "Bidder",
         timestamp: Date.now(),
       },
       updatedAt: Date.now(),
@@ -228,13 +228,17 @@ export async function placeBidAction(
 export async function listBidsByProductAction(
   productId: string,
   params?: { page?: number; pageSize?: number },
-): Promise<FirebaseSieveResult<BidDocument>> {
-  return bidRepository.list({
+): Promise<FirebaseSieveResult<Omit<BidDocument, "userEmail">>> {
+  const result = await bidRepository.list({
     filters: `productId==${productId}`,
     sorts: "-bidAmount",
     page: params?.page ?? 1,
     pageSize: params?.pageSize ?? 20,
   });
+  return {
+    ...result,
+    items: result.items.map(({ userEmail: _strip, ...rest }) => rest),
+  };
 }
 
 export async function getBidByIdAction(

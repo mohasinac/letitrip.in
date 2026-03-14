@@ -32,11 +32,12 @@ export interface OrderGroup<T> {
  *   `OrderDocument` in Firestore.
  *
  * Grouping key matrix:
- * | isAuction | isPreOrder | key                        | orderType  |
- * |-----------|------------|----------------------------|------------|
- * | true      | any        | `auction:{itemId}`         | "auction"  |
- * | false     | true       | `preorder:{sellerId}`      | "preorder" |
- * | false     | false      | `standard:{sellerId}`      | "standard" |
+ * | isAuction | isPreOrder | isOffer | key                        | orderType  |
+ * |-----------|------------|---------|----------------------------|------------|
+ * | true      | any        | any     | `auction:{itemId}`         | "auction"  |
+ * | false     | any        | true    | `offer:{itemId}`           | "offer"    |
+ * | false     | true       | false   | `preorder:{sellerId}`      | "preorder" |
+ * | false     | false      | false   | `standard:{sellerId}`      | "standard" |
  */
 export function splitCartIntoOrderGroups<
   T extends {
@@ -45,6 +46,7 @@ export function splitCartIntoOrderGroups<
       sellerId?: string;
       isAuction?: boolean;
       isPreOrder?: boolean;
+      isOffer?: boolean;
     };
   },
 >(checks: T[]): OrderGroup<T>[] {
@@ -59,6 +61,11 @@ export function splitCartIntoOrderGroups<
       // Each auction win is an independent transaction — never merge with other items.
       key = `auction:${item.itemId}`;
       orderType = "auction";
+    } else if (item.isOffer) {
+      // Accepted offer — always a single, isolated order for this one item.
+      // Never merged with regular cart items, even if from the same seller.
+      key = `offer:${item.itemId}`;
+      orderType = "offer";
     } else if (item.isPreOrder) {
       // Pre-orders from the same seller share one order for consolidated deposit billing.
       key = `preorder:${item.sellerId ?? "unknown"}`;

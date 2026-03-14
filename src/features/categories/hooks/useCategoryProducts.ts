@@ -21,6 +21,8 @@ export type CategoryProductItem = Pick<
   | "currentBid"
   | "isPromoted"
   | "slug"
+  | "sellerId"
+  | "sellerName"
 >;
 
 interface ProductsResponse {

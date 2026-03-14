@@ -68,3 +68,6 @@ export { default as AutoBreadcrumbs } from "./AutoBreadcrumbs";
 
 // Locale Switcher
 export { default as LocaleSwitcher } from "./LocaleSwitcher";
+
+// Bottom Actions Bar (above BottomNavbar on mobile)
+export { default as BottomActions } from "./BottomActions";

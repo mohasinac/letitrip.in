@@ -41,8 +41,12 @@ const GST_RATE = 0.18; // 18% GST on platform fee
 
 export const autoPayoutEligibility = onSchedule(
   {
-    schedule: SCHEDULES.DAILY_0445,
-    timeZone: "UTC",
+    // Runs at 10:00 AM IST (04:30 UTC) — the platform's business-day start.
+    // Using DAILY_0430_UTC ensures the business-day cutoff in
+    // getEligibleAutomatic() snaps cleanly to today's 10 AM IST boundary,
+    // so "7 business days" counts are always consistent.
+    schedule: SCHEDULES.DAILY_0430_UTC,
+    timeZone: "Asia/Kolkata",
     region: REGION,
     timeoutSeconds: 540,
     memory: "256MiB",

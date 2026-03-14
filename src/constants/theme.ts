@@ -162,6 +162,8 @@ export const THEME_CONSTANTS = {
     sidebar: "z-50",
     overlay: "z-[45]",
     bottomNav: "z-40",
+    /** BottomActions sits directly above BottomNavbar (bottom-14) at the same level. */
+    bottomActions: "z-40",
     search: "z-40",
     searchBackdrop: "z-[35]",
   },
@@ -210,14 +212,17 @@ export const THEME_CONSTANTS = {
   // Typography - refined professional scale
   typography: {
     // Page-level headings
-    pageTitle: "text-2xl md:text-3xl font-bold tracking-tight leading-tight",
+    pageTitle:
+      "text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight",
     pageSubtitle:
-      "text-base text-zinc-500 dark:text-zinc-400 leading-relaxed mt-1",
+      "text-base md:text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed mt-1",
     // Section headings
-    sectionTitle: "text-xl md:text-2xl font-semibold tracking-tight",
-    sectionSubtitle: "text-sm md:text-base text-zinc-500 dark:text-zinc-400",
+    sectionTitle:
+      "text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight",
+    sectionSubtitle:
+      "text-sm md:text-base lg:text-lg text-zinc-500 dark:text-zinc-400",
     // Card typography
-    cardTitle: "text-lg font-semibold leading-snug",
+    cardTitle: "text-base md:text-lg font-semibold leading-snug",
     cardBody: "text-sm md:text-base leading-relaxed",
     // Utility typography
     label: "text-sm font-medium text-zinc-700 dark:text-zinc-300",
@@ -228,9 +233,9 @@ export const THEME_CONSTANTS = {
     h1: "text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight font-display",
     h2: "text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight font-display",
     h3: "text-xl md:text-2xl lg:text-3xl font-bold tracking-tight font-display",
-    h4: "text-lg md:text-xl font-bold font-display",
-    h5: "text-lg md:text-xl font-medium",
-    h6: "text-base md:text-lg font-medium",
+    h4: "text-lg md:text-xl lg:text-2xl font-bold font-display",
+    h5: "text-base md:text-lg lg:text-xl font-medium",
+    h6: "text-sm md:text-base lg:text-lg font-medium",
     body: "text-base lg:text-lg",
     small: "text-sm lg:text-base",
     xs: "text-xs lg:text-sm",
@@ -924,15 +929,20 @@ export const THEME_CONSTANTS = {
     /** 1 → 2 */
     cols2: "grid grid-cols-1 sm:grid-cols-2",
     /** 1 → 2 → 3 */
-    cols3: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+    cols3:
+      "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3",
     /** 1 → 2 → 3 → 4 */
-    cols4: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+    cols4:
+      "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4",
     /** 1 → 2 → 3 → 4 → 5 */
     cols5:
       "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
     /** 2 → 3 → 4 → 5 → 6 */
     cols6:
       "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
+    /** Card grid — starts at 2 on mobile, max 5 on 2xl */
+    cards:
+      "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5",
     /** Auto-fill with ~200 px min columns */
     autoFillSm: "grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))]",
     /** Auto-fill with ~280 px min columns */
@@ -946,7 +956,7 @@ export const THEME_CONSTANTS = {
     /** Wide left sidebar (admin layout) */
     sidebarWide: "grid grid-cols-1 lg:grid-cols-[320px_1fr]",
     /** Two equal halves */
-    halves: "grid grid-cols-1 md:grid-cols-2",
+    halves: "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2",
     /** Two-thirds / one-third split */
     twoThird: "grid grid-cols-1 md:grid-cols-[2fr_1fr]",
     /** One-third / two-thirds split */
@@ -1118,7 +1128,7 @@ export const THEME_CONSTANTS = {
    */
   carousel: {
     arrow:
-      "w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 shadow-md border border-zinc-300 dark:border-slate-600 text-zinc-700 dark:text-zinc-200 hover:-translate-y-0.5 hover:shadow-lg hover:border-zinc-400 dark:hover:border-slate-500 active:scale-95 transition-all duration-200 flex items-center justify-center",
+      "w-10 h-10 rounded-2xl bg-white/85 dark:bg-slate-800/90 backdrop-blur-sm shadow-lg border border-zinc-300/70 dark:border-slate-600 text-zinc-800 dark:text-zinc-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-xl hover:border-zinc-400 dark:hover:border-slate-500 active:scale-95 transition-all duration-200 flex items-center justify-center",
     dotActive:
       "w-8 h-2 !min-h-0 rounded-full bg-white shadow-sm transition-all duration-500",
     dotInactive:

@@ -32,7 +32,7 @@ export const POST = createApiHandler<
       handleCodeInApp: false,
     });
 
-    serverLogger.info("Verification link generated", { email });
+    serverLogger.info("Verification link generated");
     await sendVerificationEmailWithLink(email, verificationLink);
 
     return successResponse(undefined, SUCCESS_MESSAGES.EMAIL.VERIFICATION_SENT);

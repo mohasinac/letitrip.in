@@ -9,6 +9,7 @@ import {
 import { useTranslations } from "next-intl";
 import type { ProductSortValue } from "@/components";
 import type { ProductDocument } from "@/db/schema";
+import type { ViewMode } from "@/components";
 
 const PAGE_SIZE = 24;
 
@@ -39,6 +40,10 @@ interface SearchResultsSectionProps {
   urlSort: ProductSortValue;
   urlPage: number;
   isLoading: boolean;
+  variant?: ViewMode;
+  selectable?: boolean;
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
   onSortChange: (sort: string) => void;
   onPageChange: (page: number) => void;
 }
@@ -51,6 +56,10 @@ export function SearchResultsSection({
   urlSort,
   urlPage,
   isLoading,
+  variant = "grid",
+  selectable = false,
+  selectedIds = [],
+  onSelectionChange,
   onSortChange,
   onPageChange,
 }: SearchResultsSectionProps) {
@@ -72,7 +81,13 @@ export function SearchResultsSection({
           description={urlQ ? t("noResultsSubtitle", { q: urlQ }) : undefined}
         />
       ) : (
-        <ProductGrid products={products} />
+        <ProductGrid
+          products={products}
+          variant={variant}
+          selectable={selectable}
+          selectedIds={selectedIds}
+          onSelectionChange={onSelectionChange}
+        />
       )}
 
       {total > PAGE_SIZE && (

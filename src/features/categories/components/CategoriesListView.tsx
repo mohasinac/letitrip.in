@@ -105,16 +105,19 @@ function CategoriesListContent({ initialData }: CategoriesListContentProps) {
           }
           selectedCount={selectedIds.length}
           onClearSelection={() => setSelectedIds([])}
-          bulkActions={
-            user ? (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleBulkAddToWishlist}
-              >
-                {tActions("bulkAddToWishlist", { count: selectedIds.length })}
-              </Button>
-            ) : undefined
+          bulkActionItems={
+            user
+              ? [
+                  {
+                    id: "bulk-wishlist",
+                    label: tActions("bulkAddToWishlist", {
+                      count: selectedIds.length,
+                    }),
+                    variant: "primary",
+                    onClick: handleBulkAddToWishlist,
+                  },
+                ]
+              : undefined
           }
         >
           {isLoading ? (

@@ -22,7 +22,8 @@
  * ```
  */
 
-import React from "react";
+import React, { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { THEME_CONSTANTS } from "@/constants";
 import { DEFAULT_TRUST_BAR_ITEMS } from "@/db/schema";
 import type { TrustBarItem } from "@/db/schema";
@@ -72,6 +73,9 @@ export function FooterLayout({
   id = "footer",
 }: FooterLayoutProps) {
   const { colors, layout } = THEME_CONSTANTS;
+  const [openGroups, setOpenGroups] = useState<Record<number, boolean>>({});
+  const toggleGroup = (idx: number) =>
+    setOpenGroups((prev) => ({ ...prev, [idx]: !prev[idx] }));
 
   const visibleTrustItems = trustBarItems.filter((item) => item.visible);
 
@@ -111,9 +115,10 @@ export function FooterLayout({
       <div
         className={`container mx-auto ${layout.navPadding} ${layout.containerWidth} py-12 md:py-16`}
       >
-        {/* Row 1: Brand + tagline + social (left) | Newsletter (right, capped) */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-8 mb-10">
-          <div className="shrink-0">
+        {/* Main grid: brand column + 5 link-group columns (Row 1 on desktop) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-x-6 gap-y-0">
+          {/* Brand + Social + Newsletter column */}
+          <div className="sm:col-span-2 md:col-span-3 lg:col-span-2 pb-8 border-b border-zinc-200 dark:border-white/5 lg:border-none lg:pb-0 lg:pr-8 mb-2 lg:mb-0">
             <Text
               weight="bold"
               variant="none"
@@ -141,44 +146,60 @@ export function FooterLayout({
                 </TextLink>
               ))}
             </div>
+            {newsletterEnabled && newsletterSlot && (
+              <div className="mt-5">{newsletterSlot}</div>
+            )}
           </div>
-          {newsletterEnabled && newsletterSlot && (
-            <div className="w-full sm:w-80 shrink-0">{newsletterSlot}</div>
-          )}
-        </div>
 
-        {/* Row 2: Link groups — all in one row */}
-        <div className="border-t border-zinc-200 dark:border-white/5 pt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 gap-x-6 gap-y-8">
-          {linkGroups.map((group) => (
-            <div key={group.heading}>
-              <Text
-                size="xs"
-                weight="semibold"
-                variant="none"
-                className={`uppercase tracking-widest ${colors.footer.heading} mb-4`}
+          {/* Link groups */}
+          {linkGroups.map((group, idx) => (
+            <div
+              key={group.heading}
+              className="border-b border-zinc-200 dark:border-white/5 sm:border-none py-1 sm:py-0 sm:mb-8"
+            >
+              <button
+                type="button"
+                onClick={() => toggleGroup(idx)}
+                className="flex w-full items-center justify-between py-3 sm:py-0 sm:mb-4 sm:cursor-default sm:pointer-events-none"
+                aria-expanded={openGroups[idx] ?? false}
               >
-                {group.heading}
-              </Text>
-              <Ul className="space-y-2.5 text-sm">
-                {group.links.map((link) => (
-                  <Li key={link.href}>
-                    <TextLink
-                      href={link.href}
-                      variant="bare"
-                      className={`${colors.footer.text} ${colors.footer.textHover}`}
-                    >
-                      {link.label}
-                    </TextLink>
-                  </Li>
-                ))}
-              </Ul>
+                <Text
+                  size="xs"
+                  weight="semibold"
+                  variant="none"
+                  className={`uppercase tracking-widest ${colors.footer.heading}`}
+                >
+                  {group.heading}
+                </Text>
+                <ChevronDown
+                  className={`w-4 h-4 sm:hidden shrink-0 transition-transform duration-200 ${openGroups[idx] ? "rotate-180" : ""} text-zinc-400 dark:text-zinc-500`}
+                  aria-hidden
+                />
+              </button>
+              <div
+                className={`${openGroups[idx] ? "pb-3" : "hidden"} sm:block`}
+              >
+                <Ul className="space-y-2.5 text-sm">
+                  {group.links.map((link) => (
+                    <Li key={link.href}>
+                      <TextLink
+                        href={link.href}
+                        variant="bare"
+                        className={`${colors.footer.text} ${colors.footer.textHover}`}
+                      >
+                        {link.label}
+                      </TextLink>
+                    </Li>
+                  ))}
+                </Ul>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Bottom row: copyright + made-in */}
+        {/* Row 2: copyright bar */}
         <div
-          className={`border-t border-zinc-200 dark:border-white/5 mt-10 pt-6 flex flex-row flex-wrap items-center justify-between gap-x-4 gap-y-1 text-sm ${colors.footer.copyright}`}
+          className={`border-t border-zinc-200 dark:border-white/5 mt-8 pt-6 flex flex-row flex-wrap items-center justify-between gap-x-4 gap-y-1 text-sm ${colors.footer.copyright}`}
         >
           <Caption>{copyrightText}</Caption>
           <Caption>Built with ❤️ in India · {madeInText}</Caption>

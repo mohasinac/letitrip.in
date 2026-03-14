@@ -144,7 +144,7 @@ export function ProductCard({
 
   return (
     <div
-      className={`${themed.bgPrimary} rounded-2xl overflow-hidden border transition-all duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isOutOfStock ? "opacity-75" : ""} ${isSelected ? "ring-2 ring-primary-500 dark:ring-primary-400 border-primary-300 dark:border-primary-700" : `border-zinc-100 dark:border-slate-800 hover:border-primary-300 dark:hover:border-primary-700`} shadow-sm hover:shadow-2xl hover:-translate-y-1.5 group ${className}`}
+      className={`h-full ${themed.bgPrimary} rounded-2xl overflow-hidden border transition-all duration-300 flex ${variant === "list" ? "flex-row" : "flex-col"} ${isOutOfStock ? "opacity-75" : ""} ${isSelected ? "ring-2 ring-primary-500 dark:ring-primary-400 border-primary-300 dark:border-primary-700" : `border-zinc-100 dark:border-slate-800 hover:border-primary-300 dark:hover:border-primary-700`} shadow-sm hover:shadow-2xl hover:-translate-y-1.5 group ${className}`}
     >
       {/* ── IMAGE SECTION ── */}
       <div
@@ -278,7 +278,7 @@ export function ProductCard({
 
       {/* ── INFO SECTION ── */}
       <div
-        className={`flex flex-col gap-2 ${variant === "list" ? "flex-1 min-w-0 p-3 justify-between" : "p-3"}`}
+        className={`flex-1 flex flex-col gap-2 ${variant === "list" ? "flex-1 min-w-0 p-3" : "p-3"}`}
       >
         {/* Title + wishlist heart */}
         <div className={`${flex.rowCenter} gap-2 items-start`}>
@@ -326,15 +326,15 @@ export function ProductCard({
         </div>
 
         {/* Action buttons */}
-        <div className={`flex gap-1.5 ${variant === "list" ? "mt-auto" : ""}`}>
+        <div className={`flex flex-wrap gap-1.5 mt-auto`}>
           {isOutOfStock ? (
             <Button
               variant="ghost"
               size="sm"
-              className="flex-1 text-xs px-2 gap-1 cursor-not-allowed opacity-60"
+              className="flex-1 min-w-0 text-xs px-2 sm:text-xs sm:px-2 gap-1 cursor-not-allowed opacity-60"
               disabled
             >
-              <Span variant="inherit" className="truncate">
+              <Span variant="inherit" className="min-w-0 truncate">
                 {product.status === "sold" ? t("sold") : t("outOfStock")}
               </Span>
             </Button>
@@ -343,7 +343,7 @@ export function ProductCard({
               <Button
                 variant="primary"
                 size="sm"
-                className="flex-1 text-xs px-2 gap-1 bg-primary-700 hover:bg-primary-800 text-white rounded-xl transition-all hover:shadow-glow active:scale-95"
+                className="flex-1 min-w-0 text-xs px-2 sm:text-xs sm:px-2 gap-1 bg-primary-700 hover:bg-primary-800 text-white rounded-xl transition-all hover:shadow-glow active:scale-95"
                 isLoading={cartLoading}
                 onClick={handleAddToCart}
               >
@@ -351,21 +351,27 @@ export function ProductCard({
                   className="w-3 h-3 flex-shrink-0"
                   aria-hidden="true"
                 />
-                <Span variant="inherit" className="truncate">
+                <Span
+                  variant="inherit"
+                  className="hidden sm:inline xl:hidden min-w-0 truncate"
+                >
                   {t("addToCart")}
                 </Span>
               </Button>
               <Button
                 variant="secondary"
                 size="sm"
-                className="flex-1 text-xs px-2 gap-1 rounded-xl active:scale-95"
+                className="flex-1 min-w-0 text-xs px-2 sm:text-xs sm:px-2 gap-1 rounded-xl active:scale-95"
                 onClick={handleBuyNow}
               >
                 <Zap
                   className="w-3 h-3 flex-shrink-0 text-emerald-400"
                   aria-hidden="true"
                 />
-                <Span variant="inherit" className="truncate">
+                <Span
+                  variant="inherit"
+                  className="hidden sm:inline xl:hidden min-w-0 truncate"
+                >
                   {t("buyNow")}
                 </Span>
               </Button>

@@ -1,8 +1,32 @@
 /**
  * Application Configuration Constants
- * 
+ *
  * Centralized configuration values
  */
+
+/**
+ * Platform business-day anchor.
+ *
+ * A new platform day starts at 10:00 AM IST every day.
+ *
+ * Rule:
+ *   - An order/event before 10:00 AM IST belongs to the previous business day.
+ *   - Day 1 = the next upcoming 10:00 AM IST at or after the event.
+ *   - "N days" (payouts, pending windows, etc.) counts N 10:00 AM IST
+ *     boundaries after the reference event.
+ *
+ * Use `getBusinessDaysRemaining` / `getBusinessDayEligibilityDate` from
+ * `@/utils` to compute countdowns in UI components and Server Actions.
+ */
+export const BUSINESS_DAY_CONFIG = {
+  /** Hour (IST) at which the new platform day starts. */
+  START_HOUR_IST: 10,
+  /** IANA timezone for all business-day calculations. */
+  TIMEZONE: "Asia/Kolkata",
+  /** UTC equivalent: 10:00 AM IST = 04:30 UTC. */
+  START_HOUR_UTC: 4,
+  START_MINUTE_UTC: 30,
+} as const;
 
 export const TOKEN_CONFIG = {
   // Token expiry times (in milliseconds)
@@ -58,6 +82,6 @@ export const PAGINATION_CONFIG = {
 
 export const FILE_UPLOAD_CONFIG = {
   MAX_SIZE: 5 * 1024 * 1024, // 5MB
-  ALLOWED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/webp'],
-  ALLOWED_DOCUMENT_TYPES: ['application/pdf', 'application/msword'],
+  ALLOWED_IMAGE_TYPES: ["image/jpeg", "image/png", "image/webp"],
+  ALLOWED_DOCUMENT_TYPES: ["application/pdf", "application/msword"],
 } as const;

@@ -7,13 +7,23 @@
  * Thin shell — auth-gated by UserLayout, logic lives in MessagesView.
  */
 
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { EmptyState, Spinner } from "@/components";
-import { FEATURE_FLAGS, THEME_CONSTANTS } from "@/constants";
+import { FEATURE_FLAGS, SITE_CONFIG, THEME_CONSTANTS } from "@/constants";
 import { MessagesView } from "@/features/user";
 import { getTranslations } from "next-intl/server";
 
 const { flex, page } = THEME_CONSTANTS;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("chat");
+  return {
+    title: `${t("metaTitle")} — ${SITE_CONFIG.brand.name}`,
+    description: t("metaDescription"),
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function UserMessagesPage() {
   if (!FEATURE_FLAGS.CHAT_ENABLED) {

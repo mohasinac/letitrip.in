@@ -17,8 +17,9 @@ export type OrderPayoutStatus = "eligible" | "requested" | "paid";
  * - "standard"  — regular in-stock product, ships upon payment
  * - "preorder"  — item not yet available; deposit may be collected upfront
  * - "auction"   — won via bidding; one order per auction item
+ * - "offer"     — accepted Make-an-Offer; always a single item from a single seller
  */
-export type OrderType = "standard" | "preorder" | "auction";
+export type OrderType = "standard" | "preorder" | "auction" | "offer";
 
 /**
  * A single line-item within a per-store order.
@@ -105,6 +106,9 @@ export interface OrderDocument {
   payoutStatus?: OrderPayoutStatus;
   /** ID of the payout document that includes this order */
   payoutId?: string;
+  // ─── Offer traceability ───────────────────────────────────────────────
+  /** ID of the OfferDocument when orderType === 'offer' */
+  offerId?: string;
   createdAt: Date;
   updatedAt: Date;
 }

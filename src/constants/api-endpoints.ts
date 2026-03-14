@@ -73,6 +73,7 @@ export const API_ENDPOINTS = {
     GET_BY_ID: (id: string) => `/api/user/orders/${id}`, // GET - Get single order details
     TRACK: (id: string) => `/api/user/orders/${id}/track`, // GET - Track order
     CANCEL: (id: string) => `/api/user/orders/${id}/cancel`, // POST - Cancel order
+    INVOICE: (id: string) => `/api/orders/${id}/invoice`, // GET - Printable HTML invoice
   },
 
   // Admin endpoints ✅ All routes exist
@@ -81,9 +82,9 @@ export const API_ENDPOINTS = {
     USERS: "/api/admin/users",
     USER_BY_ID: (uid: string) => `/api/admin/users/${uid}`,
     SESSIONS: "/api/admin/sessions",
-    /** ❌ No route — needs /api/admin/sessions/[id]/route.ts */
+    /** ✅ Admin session management — revoke single session by ID */
     REVOKE_SESSION: (id: string) => `/api/admin/sessions/${id}`,
-    /** ❌ No route — needs /api/admin/sessions/revoke-user/route.ts */
+    /** ✅ Admin session management — revoke all sessions for a user */
     REVOKE_USER_SESSIONS: "/api/admin/sessions/revoke-user",
     /** ✅ Admin products endpoints */
     PRODUCTS: "/api/admin/products",
@@ -106,6 +107,10 @@ export const API_ENDPOINTS = {
     ALGOLIA_SYNC_PAGES: "/api/admin/algolia/sync-pages", // POST - Bulk sync nav pages to Algolia
     ALGOLIA_CLEAR_PRODUCTS: "/api/admin/algolia/clear-products", // POST - Clear products index
     ALGOLIA_CLEAR_PAGES: "/api/admin/algolia/clear-pages", // POST - Clear pages_nav index
+    ALGOLIA_SYNC_CATEGORIES: "/api/admin/algolia/sync-categories", // POST - Bulk sync categories to Algolia
+    ALGOLIA_CLEAR_CATEGORIES: "/api/admin/algolia/clear-categories", // POST - Clear categories index
+    ALGOLIA_SYNC_STORES: "/api/admin/algolia/sync-stores", // POST - Bulk sync stores to Algolia
+    ALGOLIA_CLEAR_STORES: "/api/admin/algolia/clear-stores", // POST - Clear stores index
     /** ✅ Admin analytics */
     ANALYTICS: "/api/admin/analytics", // GET - Revenue + orders charts for admin
     /** ✅ Admin payouts */

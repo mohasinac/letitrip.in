@@ -90,7 +90,7 @@ export type { ListingLayoutProps } from "./ListingLayout";
 
 // Bulk action bar (appears when items are selected)
 export { BulkActionBar } from "./BulkActionBar";
-export type { BulkActionBarProps } from "./BulkActionBar";
+export type { BulkActionBarProps, BulkActionItem } from "./BulkActionBar";
 
 // Phase 11: Camera capture
 export { default as CameraCapture } from "./CameraCapture";
@@ -98,6 +98,10 @@ export type { CameraCaptureProps } from "./CameraCapture";
 
 // Accessibility
 export { SkipToMain } from "./SkipToMain";
+
+// Grid / list view mode toggle
+export { ViewToggle } from "./ViewToggle";
+export type { ViewToggleProps, ViewMode } from "./ViewToggle";
 
 // Generic dynamic select (react-select-like, portal-based)
 export { DynamicSelect } from "./DynamicSelect";

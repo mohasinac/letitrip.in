@@ -1,6 +1,7 @@
 import { FieldValue, type DocumentReference } from "firebase-admin/firestore";
 import { db } from "../config/firebase-admin";
 import { COLLECTIONS, QUERY_LIMIT } from "../config/constants";
+import { decryptPii, encryptPii } from "../lib/pii";
 
 export interface PayoutRow {
   id: string;
@@ -45,11 +46,28 @@ export interface CreatePayoutInput {
 
 export const payoutRepository = {
   /** Create a new payout record and return its document reference + id. */
-  async create(input: CreatePayoutInput): Promise<{ id: string; ref: DocumentReference }> {
+  async create(
+    input: CreatePayoutInput,
+  ): Promise<{ id: string; ref: DocumentReference }> {
     const ref = db.collection(COLLECTIONS.PAYOUTS).doc();
+    const encrypted = {
+      ...input,
+      sellerName: encryptPii(input.sellerName),
+      sellerEmail: encryptPii(input.sellerEmail),
+      upiId: input.upiId ? encryptPii(input.upiId) : undefined,
+      bankAccount: input.bankAccount
+        ? {
+            ...input.bankAccount,
+            accountHolderName: encryptPii(input.bankAccount.accountHolderName),
+            accountNumberMasked: encryptPii(
+              input.bankAccount.accountNumberMasked,
+            ),
+          }
+        : undefined,
+    };
     await ref.set({
       id: ref.id,
-      ...input,
+      ...encrypted,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     });
@@ -65,11 +83,29 @@ export const payoutRepository = {
       .where("status", "==", "pending")
       .limit(QUERY_LIMIT)
       .get();
-    return snap.docs.map((d) => ({
-      id: d.id,
-      ref: d.ref,
-      data: { id: d.id, ...d.data() } as PayoutRow,
-    }));
+    return snap.docs.map((d) => {
+      const raw = { id: d.id, ...d.data() } as PayoutRow;
+      return {
+        id: d.id,
+        ref: d.ref,
+        data: {
+          ...raw,
+          sellerEmail: decryptPii(raw.sellerEmail) as string,
+          upiId: raw.upiId ? (decryptPii(raw.upiId) as string) : undefined,
+          bankAccount: raw.bankAccount
+            ? {
+                ...raw.bankAccount,
+                accountHolderName: decryptPii(
+                  raw.bankAccount.accountHolderName,
+                ) as string,
+                accountNumberMasked: decryptPii(
+                  raw.bankAccount.accountNumberMasked,
+                ) as string,
+              }
+            : undefined,
+        },
+      };
+    });
   },
 
   markProcessing(

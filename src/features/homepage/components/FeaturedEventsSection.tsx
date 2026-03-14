@@ -25,7 +25,7 @@ export function FeaturedEventsSection() {
       viewMoreLabel={tActions("viewAllArrow")}
       items={events}
       renderItem={(event) => <EventCard event={event} />}
-      perView={{ base: 2, sm: 3, md: 4, xl: 5 }}
+      perView={{ base: 2, sm: 3, md: 4 }}
       gap={12}
       autoScroll
       autoScrollInterval={5000}

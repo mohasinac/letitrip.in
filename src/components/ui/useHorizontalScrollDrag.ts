@@ -95,6 +95,12 @@ export function useHorizontalScrollDrag(
   const dragDistRef = useRef(0);
   const velSamplesRef = useRef<{ t: number; x: number }[]>([]);
   const rafRef = useRef<number | null>(null);
+  // Tracks whether setPointerCapture has been called for the current gesture.
+  // Capture is set lazily in onPointerMove once the drag threshold is crossed,
+  // so that a plain click never redirects the browser's `click` event away from
+  // the child element (e.g. a TextLink) that was actually pressed.
+  const hasCaptureRef = useRef(false);
+  const capturePointerIdRef = useRef<number>(0);
 
   // Keep callbacks in refs so the handlers below never need to be recreated
   // when the parent component re-renders.
@@ -144,12 +150,18 @@ export function useHorizontalScrollDrag(
       cancelMomentum();
 
       isActiveRef.current = true;
+      hasCaptureRef.current = false;
+      capturePointerIdRef.current = e.pointerId;
       startXRef.current = e.clientX;
       startScrollRef.current = el.scrollLeft;
       dragDistRef.current = 0;
       velSamplesRef.current = [{ t: e.timeStamp, x: e.clientX }];
 
-      el.setPointerCapture(e.pointerId);
+      // NOTE: setPointerCapture is intentionally NOT called here.
+      // Eager capture in pointerdown causes Chromium to dispatch the subsequent
+      // `click` event on the capture element rather than the child that was
+      // pressed, breaking link/button navigation. Capture is set lazily in
+      // onPointerMove once an actual drag gesture is confirmed.
       setIsDragging(true);
       optionsRef.current?.onDragStart?.();
     },
@@ -163,7 +175,17 @@ export function useHorizontalScrollDrag(
       if (!el) return;
 
       const delta = startXRef.current - e.clientX;
-      dragDistRef.current = Math.abs(delta);
+      const newDist = Math.abs(delta);
+      dragDistRef.current = newDist;
+
+      // Set pointer capture lazily once the gesture is clearly a drag.
+      // This ensures that for a plain click (no movement) capture is never set,
+      // so the browser fires `click` on the actual child element.
+      if (!hasCaptureRef.current && newDist >= CLICK_SUPPRESS_PX) {
+        el.setPointerCapture(e.pointerId);
+        hasCaptureRef.current = true;
+      }
+
       el.scrollLeft = startScrollRef.current + delta;
 
       // Maintain rolling velocity sample window.
@@ -179,7 +201,11 @@ export function useHorizontalScrollDrag(
       if (!isActiveRef.current) return;
       isActiveRef.current = false;
       setIsDragging(false);
-      scrollRef.current?.releasePointerCapture(e.pointerId);
+      // Only release capture if we actually set it (lazy capture pattern).
+      if (hasCaptureRef.current) {
+        scrollRef.current?.releasePointerCapture(capturePointerIdRef.current);
+        hasCaptureRef.current = false;
+      }
       optionsRef.current?.onDragEnd?.();
 
       // Compute velocity from oldest→newest sample pair.
@@ -208,6 +234,8 @@ export function useHorizontalScrollDrag(
       e.preventDefault();
       e.stopPropagation();
     }
+    // Reset after checking so the next independent click always goes through.
+    dragDistRef.current = 0;
   }, []);
 
   // ─── Derived values ───────────────────────────────────────────────────────

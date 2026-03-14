@@ -7,7 +7,7 @@ import { CartItemList } from "./CartItemList";
 import { CartSummary } from "./CartSummary";
 import { PromoCodeInput } from "./PromoCodeInput";
 import { GuestCartItemRow } from "./GuestCartItemRow";
-import { useMessage, useAuth, useGuestCart } from "@/hooks";
+import { useMessage, useAuth, useGuestCart, useBottomActions } from "@/hooks";
 import {
   useCart,
   useUpdateCartItem,
@@ -102,6 +102,23 @@ export function CartView() {
     setIsCheckingOut(true);
     router.push(ROUTES.USER.CHECKOUT);
   };
+
+  // ── Mobile checkout action bar ──
+  useBottomActions({
+    actions:
+      user && (data?.itemCount ?? 0) > 0
+        ? [
+            {
+              id: "checkout",
+              label: t("guestProceedToCheckout"),
+              variant: "primary" as const,
+              badge: data?.itemCount,
+              loading: isCheckingOut,
+              onClick: handleCheckout,
+            },
+          ]
+        : [],
+  });
 
   if (authLoading || (!!user && isLoading)) return <CartPageSkeleton />;
 

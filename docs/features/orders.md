@@ -107,6 +107,8 @@ Each confirmed order has a "Ship Order" action:
 `useBulkRequestPayout` → `POST /api/seller/orders/bulk`  
 Seller selects delivered orders and requests payout for all in one action.
 
+An order becomes **payout-eligible** after **7 platform days** past delivery. A platform day starts at 10:00 AM IST — delivery before 10 AM counts from that same day's 10 AM boundary. Auto-payout runs daily at 10 AM IST via the `autoPayoutEligibility` Cloud Function.
+
 ---
 
 ## Admin Order Pages

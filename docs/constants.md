@@ -21,36 +21,59 @@ All external API paths. Never hardcode API paths in services, hooks, or componen
 
 ```ts
 API_ENDPOINTS = {
-  auth: {
-    session: "/api/auth/session",
-    signOut: "/api/auth/signout",
-    profile: "/api/auth/profile",
+  AUTH: {
+    REGISTER, LOGIN, LOGOUT, VERIFY_EMAIL, FORGOT_PASSWORD,
+    RESET_PASSWORD, RESEND_VERIFICATION, SESSION, SESSION_ACTIVITY,
+    SESSION_VALIDATE, EVENT_INIT, GOOGLE_START, GOOGLE_CALLBACK,
   },
-  products: {
-    list: "/api/products",
-    detail: (id) => `/api/products/${id}`,
-    recommendations: (id) => `/api/products/${id}/recommendations`,
+  USER: { PROFILE, CHANGE_PASSWORD, SESSIONS, BECOME_SELLER, WISHLIST: { LIST, ADD, REMOVE, CHECK } },
+  PROFILE: { GET_BY_ID, GET_SELLER_REVIEWS, GET_SELLER_PRODUCTS, ADD_PHONE, VERIFY_PHONE, DELETE_ACCOUNT },
+  ADDRESSES: { LIST, CREATE, GET_BY_ID, UPDATE, DELETE, SET_DEFAULT },
+  ORDERS: { LIST, GET_BY_ID, TRACK, CANCEL, INVOICE },
+  ADMIN: {
+    DASHBOARD, USERS, USER_BY_ID, SESSIONS, REVOKE_SESSION, REVOKE_USER_SESSIONS,
+    PRODUCTS, PRODUCT_BY_ID, ORDERS, ORDER_BY_ID, ORDER_REFUND,
+    COUPONS, COUPON_BY_ID, BIDS, BID_BY_ID, BLOG, BLOG_BY_ID,
+    ALGOLIA_SYNC(_PAGES/_CATEGORIES/_STORES), ALGOLIA_CLEAR(_PRODUCTS/_PAGES/_CATEGORIES/_STORES),
+    ANALYTICS, PAYOUTS, PAYOUT_BY_ID, PAYOUTS_WEEKLY,
+    REVIEWS, REVIEW_BY_ID, NEWSLETTER, NEWSLETTER_BY_ID,
+    EVENTS: { LIST, DETAIL, STATUS, ENTRIES, ENTRY, STATS },
+    STORES, STORE_BY_UID,
   },
-  auctions: {
-    list: "/api/auctions",
-    detail: (id) => `/api/auctions/${id}`,
-    bids: (id) => `/api/auctions/${id}/bids`,
+  PRODUCTS: { LIST, CREATE, GET_BY_ID, UPDATE, DELETE },
+  CATEGORIES: { LIST, CREATE, GET_BY_ID, UPDATE, DELETE },
+  REVIEWS: { LIST, CREATE, GET_BY_ID, UPDATE, DELETE, VOTE },
+  SITE_SETTINGS: { GET, UPDATE },
+  CAROUSEL: { LIST, CREATE, GET_BY_ID, UPDATE, DELETE },
+  HOMEPAGE_SECTIONS: { LIST, CREATE, GET_BY_ID, UPDATE, DELETE },
+  FAQS: { LIST, CREATE, GET_BY_ID, UPDATE, DELETE, VOTE },
+  MEDIA: { UPLOAD, CROP, TRIM },
+  LOGS: { WRITE },
+  NEWSLETTER: { SUBSCRIBE },
+  DEMO: { SEED, SEED_STATUS, ALGOLIA },
+  CART: { GET, ADD_ITEM, UPDATE_ITEM, REMOVE_ITEM, CLEAR, MERGE },
+  CHECKOUT: { PLACE_ORDER, PREFLIGHT },
+  PAYMENT: { CREATE_ORDER, VERIFY, PREORDER, WEBHOOK, EVENT_INIT, OTP_REQUEST },
+  COUPONS: { VALIDATE },
+  SEARCH: { QUERY },
+  BIDS: { LIST, CREATE, GET_BY_ID },
+  SELLER: {
+    ORDERS, ORDER_SHIP, ANALYTICS, PAYOUTS, PRODUCTS, STORE,
+    SHIPPING, SHIPPING_VERIFY_PICKUP, PAYOUT_SETTINGS,
+    COUPONS, COUPON_BY_ID, OFFERS,
   },
-  orders: {
-    list: "/api/orders",
-    detail: (id) => `/api/orders/${id}`,
-    return: (id) => `/api/orders/${id}/return`,
-    cancel: (id) => `/api/orders/${id}/cancel`,
-  },
-  cart: {
-    get: "/api/cart",
-    add: "/api/cart/add",
-    remove: "/api/cart/remove",
-    clear: "/api/cart/clear",
-  },
-  // … plus: categories, search, events, blog, sellers, stores
-  //          promotions, rc, reviews, wishlist, notifications
-  //          admin/*, seller/*, media/*, payments/*
+  BLOG: { LIST, GET_BY_SLUG },
+  PROMOTIONS: { LIST },
+  CONTACT: { SEND },
+  STORES: { LIST, GET_BY_SLUG, PRODUCTS, AUCTIONS, REVIEWS },
+  EVENTS: { LIST, DETAIL, ENTER, LEADERBOARD },
+  REALTIME: { TOKEN, BIDS_SSE },
+  RC: { BALANCE, PURCHASE, VERIFY, HISTORY, REFUND },
+  WEBHOOKS: { SHIPROCKET },
+  CHAT: { ROOMS, ROOM, MESSAGES },
+  NOTIFICATIONS: { LIST, CREATE, MARK_READ, DELETE, READ_ALL, UNREAD_COUNT },
+  OFFERS: { BUYER_LIST, SELLER_LIST },
+  CACHE: { REVALIDATE },
 };
 ```
 
@@ -60,15 +83,16 @@ API_ENDPOINTS = {
 
 Runtime configuration constants.
 
-| Export              | Description                                       |
-| ------------------- | ------------------------------------------------- |
-| `TOKEN_CONFIG`      | JWT expiry, refresh threshold, cookie name        |
-| `PASSWORD_CONFIG`   | Min length, complexity rules                      |
-| `PAGINATION_CONFIG` | Default page size, max page size                  |
-| `UPLOAD_CONFIG`     | File size limits, allowed MIME types              |
-| `SEARCH_CONFIG`     | Algolia index name, hits per page, default facets |
-| `CACHE_CONFIG`      | TanStack Query `staleTime` / `gcTime` defaults    |
-| `RATE_LIMIT_CONFIG` | Window + max requests for each API route group    |
+| Export                | Description                                                                                                                                                                                                                                                                      |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TOKEN_CONFIG`        | JWT expiry, refresh threshold, cookie name                                                                                                                                                                                                                                       |
+| `PASSWORD_CONFIG`     | Min length, complexity rules                                                                                                                                                                                                                                                     |
+| `PAGINATION_CONFIG`   | Default page size, max page size                                                                                                                                                                                                                                                 |
+| `UPLOAD_CONFIG`       | File size limits, allowed MIME types                                                                                                                                                                                                                                             |
+| `SEARCH_CONFIG`       | Algolia index name, hits per page, default facets                                                                                                                                                                                                                                |
+| `CACHE_CONFIG`        | TanStack Query `staleTime` / `gcTime` defaults                                                                                                                                                                                                                                   |
+| `RATE_LIMIT_CONFIG`   | Window + max requests for each API route group                                                                                                                                                                                                                                   |
+| `BUSINESS_DAY_CONFIG` | Platform day boundary: `START_HOUR_IST = 10`, `TIMEZONE = "Asia/Kolkata"`, `START_HOUR_UTC = 4`, `START_MINUTE_UTC = 30`. A new platform day starts at **10:00 AM IST**. Use `getBusinessDaysRemaining` / `getBusinessDayEligibilityDate` from `@/utils` for UI countdown logic. |
 
 ---
 
@@ -151,18 +175,18 @@ Static promotional data rendered server-side.
 
 Role-Based Access Control.
 
-| Export                               | Description                                                |
-| ------------------------------------ | ---------------------------------------------------------- |
-| `ROLE_HIERARCHY`                     | `{ guest: 0, user: 1, seller: 2, moderator: 3, admin: 4 }` |
-| `ROLES`                              | Typed role constants                                       |
-| `getRouteAccessConfig(pathname)`     | Returns `{ minRole, exact }` for a route                   |
-| `hasRouteAccess(role, pathname)`     | Boolean route access check                                 |
-| `isAdmin(role)`                      | `role === "admin"`                                         |
-| `isModerator(role)`                  | `role >= "moderator"`                                      |
-| `isSeller(role)`                     | `role >= "seller"`                                         |
-| `getRedirectForRole(role, pathname)` | Returns redirect path when access denied                   |
+| Export                           | Description                                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `ROLE_HIERARCHY`                 | `{ user: 0, seller: 1, moderator: 2, admin: 3 }`                                                             |
+| `RBAC_CONFIG`                    | Route → `{ allowedRoles, requireEmailVerified, redirectTo }` map covering all admin, seller, and user routes |
+| `getRouteAccessConfig(pathname)` | Returns `RouteAccessConfig` for a route (exact + prefix)                                                     |
+| `hasRouteAccess(user, pathname)` | `{ allowed, reason?, redirectTo? }` access check                                                             |
+| `isAdmin(user)`                  | `role === "admin"`                                                                                           |
+| `isModerator(user)`              | `role >= "moderator"` (hierarchy-based)                                                                      |
+| `isSeller(user)`                 | `role >= "seller"` (hierarchy-based)                                                                         |
+| `getProtectedRoutes()`           | Returns all paths registered in RBAC_CONFIG                                                                  |
 
-Middleware calls `hasRouteAccess` on every request; all route → minRole mappings live here — never hardcode role checks in components.
+Middleware calls `hasRouteAccess` via `ProtectedRoute` components; all route → role mappings live in `RBAC_CONFIG` — never hardcode role checks in components.
 
 ---
 
@@ -172,52 +196,129 @@ All application routes as typed constants. Never hardcode paths in `<Link>` or `
 
 ```ts
 ROUTES = {
-  home: "/",
-  products: {
-    list: "/products",
-    detail: (slug) => `/products/${slug}`,
-    category: (slug) => `/products/category/${slug}`,
+  HOME: "/",
+  PUBLIC: {
+    FAQS,
+    FAQ_CATEGORY,
+    PROFILE,
+    PRODUCTS,
+    PRODUCT_DETAIL,
+    AUCTIONS,
+    AUCTION_DETAIL,
+    PRE_ORDERS,
+    PRE_ORDER_DETAIL,
+    SELLERS,
+    SELLER_DETAIL,
+    STORES,
+    STORE_DETAIL,
+    STORE_PRODUCTS,
+    STORE_AUCTIONS,
+    STORE_REVIEWS,
+    STORE_ABOUT,
+    CATEGORIES,
+    SEARCH,
+    PROMOTIONS,
+    ABOUT,
+    CONTACT,
+    BLOG,
+    HELP,
+    TERMS,
+    PRIVACY,
+    SECURITY,
+    TRACK_ORDER,
+    SELLER_GUIDE,
+    COOKIE_POLICY,
+    REFUND_POLICY,
+    SHIPPING_POLICY,
+    HOW_AUCTIONS_WORK,
+    HOW_PRE_ORDERS_WORK,
+    HOW_OFFERS_WORK,
+    HOW_CHECKOUT_WORKS,
+    HOW_ORDERS_WORK,
+    HOW_REVIEWS_WORK,
+    HOW_PAYOUTS_WORK,
+    FEES,
+    RC_INFO,
+    EVENTS,
+    EVENT_DETAIL,
+    EVENT_PARTICIPATE,
+    REVIEWS,
   },
-  auctions: {
-    list: "/auctions",
-    detail: (id) => `/auctions/${id}`,
+  ERRORS: { UNAUTHORIZED },
+  AUTH: {
+    LOGIN,
+    REGISTER,
+    FORGOT_PASSWORD,
+    RESET_PASSWORD,
+    VERIFY_EMAIL,
+    OAUTH_LOADING,
+    CLOSE,
   },
-  cart: "/cart",
-  checkout: "/checkout",
-  orders: {
-    list: "/account/orders",
-    detail: (id) => `/account/orders/${id}`,
+  USER: {
+    PROFILE,
+    SETTINGS,
+    ORDERS,
+    WISHLIST,
+    ADDRESSES,
+    ADDRESSES_ADD,
+    ADDRESSES_EDIT,
+    ORDER_DETAIL,
+    ORDER_TRACK,
+    NOTIFICATIONS,
+    RC,
+    RC_PURCHASE,
+    MESSAGES,
+    BECOME_SELLER,
+    CART,
+    CHECKOUT,
+    CHECKOUT_SUCCESS,
+    OFFERS,
   },
-  account: {
-    profile: "/account/profile",
-    addresses: "/account/addresses",
-    wishlist: "/account/wishlist",
-    rc: "/account/rc",
-    notifications: "/account/notifications",
+  SELLER: {
+    DASHBOARD,
+    PRODUCTS,
+    PRODUCTS_NEW,
+    PRODUCTS_EDIT,
+    ORDERS,
+    AUCTIONS,
+    PRE_ORDERS,
+    ANALYTICS,
+    PAYOUTS,
+    STORE,
+    SHIPPING,
+    PAYOUT_SETTINGS,
+    ADDRESSES,
+    ADDRESSES_ADD,
+    ADDRESSES_EDIT,
+    COUPONS,
+    COUPONS_NEW,
+    OFFERS,
   },
-  seller: {
-    dashboard: "/seller/dashboard",
-    products: "/seller/products",
-    orders: "/seller/orders",
-    store: "/seller/store",
-    analytics: "/seller/analytics",
+  ADMIN: {
+    DASHBOARD,
+    USERS,
+    SITE,
+    CAROUSEL,
+    SECTIONS,
+    NAVIGATION,
+    CATEGORIES,
+    FAQS,
+    REVIEWS,
+    COUPONS,
+    MEDIA,
+    PRODUCTS,
+    ORDERS,
+    BIDS,
+    BLOG,
+    ANALYTICS,
+    PAYOUTS,
+    EVENTS,
+    EVENT_ENTRIES,
+    STORES,
+    FEATURE_FLAGS,
   },
-  admin: {
-    dashboard: "/admin/dashboard",
-    users: "/admin/users",
-    products: "/admin/products",
-    orders: "/admin/orders",
-    // … all admin routes
-  },
-  auth: {
-    signIn: "/auth/sign-in",
-    signUp: "/auth/sign-up",
-    forgotPassword: "/auth/forgot-password",
-  },
-  events: "/events",
-  blog: "/blog",
-  stores: "/stores",
-  search: "/search",
+  DEMO: { SEED, ALGOLIA },
+  BLOG: { LIST, ARTICLE },
 };
 ```
 

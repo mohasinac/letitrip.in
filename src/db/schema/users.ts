@@ -6,6 +6,7 @@
 
 import { UserRole } from "@/types/auth";
 import { generateUserId, type GenerateUserIdInput } from "@/utils";
+import { piiBlindIndex } from "@/lib/pii";
 
 export interface AvatarMetadata {
   url: string;
@@ -196,7 +197,9 @@ export const DEFAULT_USER_DATA: Partial<UserDocument> = {
  */
 export const USER_INDEXED_FIELDS = [
   "email",
+  "emailIndex", // PII blind index for email lookups
   "phoneNumber",
+  "phoneIndex", // PII blind index for phone lookups
   "role",
   "disabled",
   "emailVerified",
@@ -313,8 +316,10 @@ export interface UserQueryFilter {
  * ```
  */
 export const userQueryHelpers = {
-  byEmail: (email: string) => ["email", "==", email] as const,
-  byPhone: (phone: string) => ["phoneNumber", "==", phone] as const,
+  byEmail: (email: string) =>
+    ["emailIndex", "==", piiBlindIndex(email)] as const,
+  byPhone: (phone: string) =>
+    ["phoneIndex", "==", piiBlindIndex(phone)] as const,
   byRole: (role: UserRole) => ["role", "==", role] as const,
   verified: () => ["emailVerified", "==", true] as const,
   active: () => ["disabled", "==", false] as const,

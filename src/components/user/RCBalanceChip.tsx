@@ -22,7 +22,7 @@ export function RCBalanceChip({
 }: RCBalanceChipProps) {
   const { user } = useAuth();
   const t = useTranslations("auctions");
-  const { data, isLoading } = useRCBalance();
+  const { data, isLoading } = useRCBalance(!!user);
 
   if (!user || isLoading) return null;
 

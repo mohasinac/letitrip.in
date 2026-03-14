@@ -15,10 +15,51 @@ import type {
 import { createOrderId, ORDER_COLLECTION, ORDER_FIELDS } from "@/db/schema";
 import { DatabaseError } from "@/lib/errors";
 import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
+import {
+  encryptPiiFields,
+  decryptPiiFields,
+  ORDER_PII_FIELDS,
+  encryptShippingAddress,
+  decryptShippingAddress,
+} from "@/lib/pii";
 
 class OrderRepository extends BaseRepository<OrderDocument> {
   constructor() {
     super(ORDER_COLLECTION);
+  }
+
+  /** Decrypt PII fields on an order document after Firestore read */
+  private decryptOrder(doc: OrderDocument): OrderDocument {
+    const decrypted = decryptPiiFields(
+      doc as unknown as Record<string, unknown>,
+      [...ORDER_PII_FIELDS],
+    ) as unknown as OrderDocument;
+    if (decrypted.shippingAddress) {
+      decrypted.shippingAddress = decryptShippingAddress(
+        decrypted.shippingAddress as unknown as Record<string, unknown>,
+      ) as unknown as typeof decrypted.shippingAddress;
+    }
+    return decrypted;
+  }
+
+  /** Encrypt PII fields on order data before Firestore write */
+  private encryptOrderData<T extends Record<string, unknown>>(data: T): T {
+    const encrypted = encryptPiiFields(data, [...ORDER_PII_FIELDS]);
+    if (encrypted.shippingAddress) {
+      (encrypted as Record<string, unknown>).shippingAddress =
+        encryptShippingAddress(
+          encrypted.shippingAddress as Record<string, unknown>,
+        );
+    }
+    return encrypted;
+  }
+
+  /** Override mapDoc to auto-decrypt PII on every Firestore read */
+  protected override mapDoc<D = OrderDocument>(
+    snap: import("firebase-admin/firestore").DocumentSnapshot,
+  ): D {
+    const raw = super.mapDoc<OrderDocument>(snap);
+    return this.decryptOrder(raw) as unknown as D;
   }
 
   /**
@@ -36,12 +77,17 @@ class OrderRepository extends BaseRepository<OrderDocument> {
       updatedAt: new Date(),
     };
 
+    // Encrypt PII before persisting
+    const encrypted = this.encryptOrderData(
+      orderData as unknown as Record<string, unknown>,
+    );
+
     await this.db
       .collection(this.collection)
       .doc(id)
-      .set(prepareForFirestore(orderData));
+      .set(prepareForFirestore(encrypted));
 
-    return { id, ...orderData };
+    return { id, ...orderData }; // return plaintext to caller
   }
 
   /**
@@ -142,10 +188,12 @@ class OrderRepository extends BaseRepository<OrderDocument> {
       .orderBy("orderDate", "desc")
       .get();
 
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as OrderDocument[];
+    return snapshot.docs.map((doc) =>
+      this.decryptOrder({
+        id: doc.id,
+        ...doc.data(),
+      } as OrderDocument),
+    );
   }
 
   /**

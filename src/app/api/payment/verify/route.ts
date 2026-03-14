@@ -313,6 +313,7 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
         sellerName: firstItem.sellerName || undefined,
         items: orderItems,
         orderType,
+        offerId: firstItem.offerId ?? undefined,
         status: "confirmed",
         paymentStatus: "paid",
         paymentMethod: "online",
@@ -385,7 +386,7 @@ export const POST = createApiHandler<(typeof verifySchema)["_output"]>({
 
     // 10b. Return engaged RC for offer-based cart items
     for (const { item } of productChecks) {
-      const offerId = (item as any).offerId as string | undefined;
+      const offerId = item.offerId;
       if (!offerId) continue;
       try {
         const offer = await offerRepository.findById(offerId);

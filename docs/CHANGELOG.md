@@ -6,6 +6,709 @@ All notable changes to this project are documented here.
 
 ## [Unreleased] — 2026-03-14
 
+### Homepage — Security Highlights Section
+
+Added a new `SecurityHighlightsSection` to the homepage, placed after Customer Reviews, showcasing the platform's data-protection measures with a CTA to the full `/security` page.
+
+- **`messages/en.json`** — Added 9 i18n keys under `homepage` namespace (`securityPill`, `securityTitle`, `securitySubtitle`, 4 card title/desc pairs, `securityLearnMore`)
+- **`src/features/homepage/components/SecurityHighlightsSection.tsx`** — Client component with pill badge header, 4 color-coded cards (Encryption, Secure Connections, Access Controls, Data Minimization), IntersectionObserver fade-in animation, and "Learn More" link to `/security`
+- **`src/features/homepage/components/index.ts`** — Barrel export for `SecurityHighlightsSection`
+- **`src/features/homepage/components/HomepageView.tsx`** — Dynamic import + render after `CustomerReviewsSection`
+
+### Security & Data Protection Page
+
+Added a new public static page at `/security` explaining the site's data protection measures.
+
+- **`messages/en.json`** — Added `securityPage` i18n namespace (40+ keys covering encryption, blind indices, transport security, data minimisation, access controls, logging, CSRF, compliance, CTA, and flow diagram steps)
+- **`src/features/about/components/SecurityPrivacyView.tsx`** — Async RSC view with hero, 10 security topic cards (2-col grid), data-protection FlowDiagram, and CTA linking to privacy/contact
+- **`src/features/about/components/index.ts`** — Barrel export for `SecurityPrivacyView`
+- **`src/app/[locale]/security/page.tsx`** — Thin page shell with `revalidate = 3600` and `generateMetadata`
+- **`src/constants/routes.ts`** — Added `SECURITY: "/security"` to `ROUTES.PUBLIC`
+- **`src/app/sitemap.ts`** — Added `/security` entry (yearly, priority 0.4)
+
+### Constants Sync
+
+Synced all constants files with the current codebase state.
+
+**`src/constants/routes.ts`:**
+
+- Fixed `SELLER.PRODUCTS_EDIT` — path now includes `/edit` segment to match actual page at `/seller/products/[id]/edit`
+- Added `AUTH.CLOSE` — OAuth popup close handler page at `/auth/close`
+- Added `ADMIN.NAVIGATION` — admin navigation management page at `/admin/navigation`
+- Removed `ADMIN.NEWSLETTER` — no page exists (API endpoints still present)
+- Removed `ADMIN.PRE_ORDERS` — no page exists
+
+**`src/constants/api-endpoints.ts`:**
+
+- Added `ORDERS.INVOICE` — GET `/api/orders/[id]/invoice` for printable HTML invoice
+- Fixed stale `❌ No route` comments on `ADMIN.REVOKE_SESSION` and `ADMIN.REVOKE_USER_SESSIONS` — both routes now exist
+
+**`src/constants/rbac.ts`:**
+
+- Added missing RBAC entries for 7 admin pages: `COUPONS`, `MEDIA`, `PRODUCTS`, `ORDERS`, `STORES`, `NAVIGATION`, `FEATURE_FLAGS`
+
+**`docs/constants.md`:**
+
+- Updated `api-endpoints.ts` code sample to match actual 23-group structure
+- Updated `rbac.ts` exports table to match actual hierarchy and function signatures
+- Updated `routes.ts` code sample to match actual ROUTES structure
+
+### Security — PII Encryption at Rest (AES-256-GCM)
+
+All user PII (personally identifiable information) is now encrypted before being stored in Firestore and decrypted transparently on read. The UI remains unchanged.
+
+**New env variable:** `PII_SECRET` — 64-character hex string (32 bytes). Must be set in `.env.local`, Vercel environment, and Firebase Functions Secret Manager.
+
+**New files:**
+
+- `src/lib/pii.ts` — Core PII encryption/decryption utility (AES-256-GCM with random 96-bit IV, HMAC-SHA256 blind indices)
+- `functions/src/lib/pii.ts` — Mirror of pii.ts for Firebase Functions runtime
+
+**Encrypted PII fields by collection:**
+
+- **users**: `email`, `phoneNumber`, `displayName`, `payoutDetails.upiId`, `payoutDetails.bankAccount.accountHolderName`, `payoutDetails.bankAccount.accountNumberMasked`, `shippingConfig` nested fields. Blind indices: `emailIndex`, `phoneIndex`
+- **addresses**: `fullName`, `phone`, `addressLine1`, `addressLine2`
+- **orders**: `userName`, `userEmail`, `sellerName`, `sellerEmail`, `shippingAddress` nested fields
+- **payouts**: `sellerName`, `sellerEmail`, `upiId`, `bankAccount.accountHolderName`, `bankAccount.accountNumberMasked`
+- **bids**: `userName`, `userEmail`
+- **offers**: `buyerName`, `buyerEmail`, `sellerName`
+- **reviews**: `userName`
+- **chatRooms**: `buyerName`, `sellerName`
+- **newsletterSubscribers**: `email`, `ipAddress`. Blind index: `emailIndex`
+- **tokens** (email verification + password reset): `email`. Blind index: `emailIndex`
+- **eventEntries**: `userDisplayName`, `userEmail`, `ipAddress`
+- **products**: `sellerName`, `sellerEmail`
+
+**Schema updates:**
+
+- `src/db/schema/field-names.ts` — Added `EMAIL_INDEX`, `PHONE_INDEX` to `USER_FIELDS`; `EMAIL_INDEX` to `TOKEN_FIELDS`, `NEWSLETTER_SUBSCRIBER_FIELDS`
+- `src/db/schema/users.ts` — Updated `userQueryHelpers.byEmail` / `byPhone` to use blind index fields
+- `src/db/schema/newsletter-subscribers.ts` — Added `EMAIL_INDEX` field
+
+**Repository updates (all encrypt on write, decrypt on read):**
+
+- `src/repositories/user.repository.ts` — override `mapDoc()`, `update()`, `create()`, `findByEmail()`, `findByPhone()`
+- `src/repositories/address.repository.ts` — `create()`, `update()`, `findByUser()`, `findById()`
+- `src/repositories/order.repository.ts` — override `mapDoc()`, `create()`
+- `src/repositories/payout.repository.ts` — override `mapDoc()`, `create()`
+- `src/repositories/token.repository.ts` — both token repos: override `mapDoc()`, `create()`, `findByEmail()`
+- `src/repositories/newsletter.repository.ts` — override `mapDoc()`, `subscribe()`, `findByEmail()`
+- `src/repositories/bid.repository.ts` — override `mapDoc()`, `create()`
+- `src/repositories/review.repository.ts` — override `mapDoc()`, `create()`
+- `src/repositories/offer.repository.ts` — override `mapDoc()`, `create()`; added `buyerName`/`buyerEmail` encryption
+- `src/repositories/product.repository.ts` — override `mapDoc()`, `update()`, `create()`
+- `src/repositories/eventEntry.repository.ts` — `createEntry()`, `getLeaderboard()`; imports from `pii.ts`
+- `src/repositories/chat.repository.ts` — override `mapDoc()`, `create()`, `listForUser()`
+
+**Functions updates:**
+
+- `functions/src/repositories/user.repository.ts` — decrypt `findById()` (displayName, email, payoutDetails)
+- `functions/src/repositories/bid.repository.ts` — decrypt reads
+- `functions/src/repositories/order.repository.ts` — decrypt reads, encrypt `createFromAuction()`
+- `functions/src/repositories/payout.repository.ts` — decrypt `getPending()`, encrypt `create()`
+- `functions/src/triggers/onOrderStatusChange.ts` — decrypt `userEmail` for Resend emails
+- `functions/src/triggers/onBidPlaced.ts` — decrypt `userName`
+- `functions/src/triggers/onProductWrite.ts` — decrypt `sellerName` for Algolia
+
+**PII leak fixes:**
+
+- `src/actions/bid.actions.ts` — `listBidsByProductAction` now strips `userEmail` from response; RTDB bid write uses "Bidder" instead of real name
+- `src/actions/profile.actions.ts` — `getPublicProfileAction` returns only `id`, `displayName`, `photoURL`, `role`, `createdAt`
+- `src/app/api/bids/route.ts` — GET strips `userEmail` from public response; RTDB write uses "Bidder"
+- PII removed from all `serverLogger` calls in: newsletter actions, contact actions, newsletter API route, contact API route, auth register route, auth send-verification route
+
+**Seed data:**
+
+- `src/app/api/demo/seed/route.ts` — encrypts PII fields + adds blind indices when seeding
+
+**Types updated:**
+
+- `src/hooks/useAuctionDetail.ts` — `BidsListResult` uses `Omit<BidDocument, "userEmail">`
+- `src/features/products/components/BidHistory.tsx` — accepts `Omit<BidDocument, "userEmail">[]`
+
+---
+
+### Pages — New info pages: checkout, orders, payouts, reviews
+
+Added four new static "How It Works" explainer pages with ISR (`revalidate: 3600`) and `generateMetadata`.
+
+**New pages:**
+
+- `src/app/[locale]/how-checkout-works/page.tsx` → `HowCheckoutWorksView` (from `@/features/about`)
+- `src/app/[locale]/how-orders-work/page.tsx` → `HowOrdersWorkView` (from `@/features/about`)
+- `src/app/[locale]/how-payouts-work/page.tsx` → `HowPayoutsWorkView` (from `@/features/seller`)
+- `src/app/[locale]/how-reviews-work/page.tsx` → `HowReviewsWorkView` (from `@/features/about`)
+
+**Feature components:**
+
+- `src/features/about/components/HowCheckoutWorksView.tsx` — new
+- `src/features/about/components/HowOrdersWorkView.tsx` — new
+- `src/features/about/components/HowReviewsWorkView.tsx` — new
+- `src/features/seller/components/HowPayoutsWorkView.tsx` — new; exported from `src/features/seller/components/index.ts`
+- `src/features/about/components/index.ts` — barrel exports updated
+
+**i18n (`messages/en.json`):**
+
+- New namespaces: `howCheckoutWorks`, `howOrdersWork`, `howPayoutsWork`, `howReviewsWork` with `metaTitle`, `metaDescription`, and step/section strings.
+
+---
+
+### Feature — Offer-type orders (checkout + order-splitter)
+
+Offer-accepted items now flow through checkout as an isolated `"offer"` order type, preventing them from being merged with regular cart items from the same seller.
+
+**Schema:**
+
+- `src/db/schema/orders.ts` — `OrderType` union extended: `"standard" | "preorder" | "auction"` → `+ "offer"`; new optional `offerId` field on `OrderDocument`.
+- `src/db/schema/cart.ts` — `CartItem` gains optional `isOffer?: boolean` flag.
+
+**Order splitting:**
+
+- `src/utils/order-splitter.ts` — New bucket key `offer:{itemId}` when `item.isOffer`; inserted before the preorder/standard branch; updated truth table comment.
+
+**API:**
+
+- `src/app/api/checkout/route.ts` — Passes `offerId` through to order creation.
+- `src/app/api/payment/verify/route.ts` — Minor adjustment for offer traceability.
+- `src/repositories/cart.repository.ts` — Passes `isOffer` through cart add.
+
+---
+
+### UI — ProductActions mobile BottomActions integration
+
+Product detail page now registers context-specific actions into the `BottomActions` mobile bar via `useBottomActions`.
+
+**`src/features/products/components/ProductActions.tsx`:**
+
+- Calls `useBottomActions(…)` with: Wishlist (ghost), Add to Cart / Place Bid (outline/primary), Buy Now (primary), Make an Offer (ghost icon-only).
+- `infoLabel` shows starting bid price or low-stock warning ("Only X left").
+- All actions share the same auth guards and handlers as the desktop buttons.
+
+---
+
+### UI — Miscellaneous polish & bug fixes
+
+**DynamicSelect flip-up (`src/components/ui/DynamicSelect.tsx`):**
+
+- Dropdown panel now opens upward when the viewport space below the trigger is less than 160 px.
+
+**Select panel capping (`packages/ui/src/components/Select.tsx`):**
+
+- Added `PANEL_MAX_HEIGHT = 320` — the dropdown's `maxHeight` is now clamped to `min(availableSpace, 320px)` preventing oversized panels in tall viewports.
+- `placement="bottom"` branch fixed: always opens downward without measuring space.
+
+**Typography scale (`packages/ui/src/components/Typography.tsx`):**
+
+- `h4` gains `lg:text-2xl`; `h5` gains `lg:text-xl`; `h6` gains `lg:text-lg`, improving readability on larger screens.
+
+**useHorizontalScrollDrag lazy pointer capture (`src/components/ui/useHorizontalScrollDrag.ts`):**
+
+- `setPointerCapture` is no longer called eagerly in `pointerdown`. The capture is set lazily in `onPointerMove` once the drag distance exceeds the click threshold. Fixes a Chromium bug where eager capture caused `click` events to fire on the scroll container instead of the pressed child element (e.g. a `TextLink`).
+
+**CouponCard truncation (`src/features/promotions/components/CouponCard.tsx`):**
+
+- Coupon code badge `max-w-[160px]` → `max-w-[50%]` + `truncate` on the span, preventing overflow on narrow screens.
+
+**Card action button overflow (multiple card components):**
+
+- `ProductCard`, `AuctionCard`, `PreOrderCard`, `OrderCard`, `SellerProductCard` — action button row gains `flex-wrap` + `min-w-0` on individual buttons to prevent horizontal overflow on small viewports.
+- `ReviewCard` — minor size tweak.
+
+---
+
+## [Unreleased] — 2026-03-14
+
+### UI — BulkActionBar picker pattern (matches BottomActions)
+
+Redesigned the desktop `BulkActionBar` to use the same **count-pill → action-picker → Apply** pattern as the mobile `BottomActions` bulk mode, so the bulk-selection UX is consistent across all breakpoints.
+
+**What changed:**
+
+- `BulkActionBar` now accepts structured `actions?: BulkActionItem[]` instead of `children` ReactNode. Renders a selection-count pill (✕ to clear), a dropdown action picker, and a variant-coloured Apply button — identical to the `BottomActions` bulk mode.
+- `ListingLayout` prop renamed: `bulkActions` → `bulkActionItems` (typed `BulkActionItem[]`). Inline toolbar buttons removed; the `BulkActionBar` is now the single bulk-action surface on both mobile and desktop.
+- All 16 callers migrated to pass structured data instead of Button JSX.
+
+**Files changed:**
+
+- `src/components/ui/BulkActionBar.tsx` — Full rewrite: picker + apply pattern, accent stripe, lucide icons, `useClickOutside`.
+- `src/components/ui/ListingLayout.tsx` — Prop type + import change; removed inline toolbar `hidden sm:flex` bulk buttons; `BulkActionBar` renders for all viewports.
+- `src/components/ui/index.ts` — Export new `BulkActionItem` type.
+- `messages/en.json` — Added `listingLayout.apply` key.
+- `src/features/products/components/ProductsView.tsx` — `bulkActionItems` migration.
+- `src/features/wishlist/components/WishlistView.tsx` — `bulkActionItems` migration.
+- `src/features/user/components/UserOrdersView.tsx` — `bulkActionItems` migration.
+- `src/features/stores/components/StoresListView.tsx` — `bulkActionItems` migration.
+- `src/features/stores/components/StoreAuctionsView.tsx` — `bulkActionItems` migration.
+- `src/features/stores/components/StoreProductsView.tsx` — `bulkActionItems` migration.
+- `src/features/blog/components/BlogListView.tsx` — `bulkActionItems` migration.
+- `src/features/products/components/AuctionsView.tsx` — `bulkActionItems` migration.
+- `src/features/categories/components/CategoryProductsView.tsx` — `bulkActionItems` migration.
+- `src/features/products/components/PreOrdersView.tsx` — `bulkActionItems` migration.
+- `src/features/categories/components/CategoriesListView.tsx` — `bulkActionItems` migration.
+- `src/features/seller/components/SellerProductsView.tsx` — `bulkActionItems` migration.
+- `src/features/events/components/AdminEventsView.tsx` — `bulkActionItems` migration.
+- `src/features/events/components/EventsListView.tsx` — `bulkActionItems` migration.
+- `src/features/search/components/SearchView.tsx` — Standalone `BulkActionBar` migrated to `actions` prop.
+
+---
+
+### Filter Panel — Accordion, per-section clear, auto-search
+
+Upgraded `FilterPanel` and its child filter sections (`FilterFacetSection`, `RangeFilter`, `SwitchFilter`) with three improvements:
+
+1. **Accordion behavior** — Only one filter section can be expanded at a time. Managed via `expandedIndex` state in `FilterPanel`, passed as controlled `isOpen`/`onToggle` props to each section.
+2. **Per-section clear (×) button** — Each section header shows a small × icon when it has active values. Clicking it clears only that section's pending state without affecting table data (staged filtering via `usePendingTable`).
+3. **Auto-searchable facets** — Facet filters with more than 10 options now automatically enable inline search and "Load more" pagination. Previously required explicit `searchable: true` in config.
+
+**Files changed:**
+
+- `src/components/filters/FilterPanel.tsx` — Added `useState` + accordion state; passes `isOpen`, `onToggle`, `onClear` to each section; changed searchable default from `false` to `options.length > 10`.
+- `src/components/ui/FilterFacetSection.tsx` — Added optional `isOpen`, `onToggle`, `onClear` props; controlled/uncontrolled open state; × clear button in header.
+- `src/components/filters/RangeFilter.tsx` — Same controlled open + × clear button pattern.
+- `src/components/filters/SwitchFilter.tsx` — Same pattern; added `useTranslations` import for clear button aria-label.
+
+All changes are backward-compatible: standalone usage of `FilterFacetSection` (e.g. `UserNotificationsView`) continues to work in uncontrolled mode.
+
+---
+
+### UI — Bulk "Add to Cart" + selection hint tooltip on public listing views
+
+Added a second bulk action ("Add to Cart") alongside "Add to Wishlist" on all product listing views, and an ⓘ hint tooltip educating users about card selection and bulk actions.
+
+**Bulk add-to-cart (`addToCartAction` via Server Action):**
+
+- `src/features/products/components/ProductsView.tsx` — `handleBulkAddToCart` using `products.filter` by `selectedIds`; `bulkActions` now renders two buttons: Add to Cart (secondary) + Add to Wishlist (primary).
+- `src/features/categories/components/CategoryProductsView.tsx` — same pattern.
+- `src/features/stores/components/StoreProductsView.tsx` — same pattern.
+- `src/features/wishlist/components/WishlistView.tsx` — already had both bulk actions from a previous session; no change needed.
+
+**Type fixes (Pick types extended for cart payload):**
+
+- `src/features/products/hooks/useProducts.ts` — added `sellerId` and `sellerName` to `ProductItem`.
+- `src/features/categories/hooks/useCategoryProducts.ts` — same for `CategoryProductItem`.
+
+**Selection hint tooltip (ⓘ `Info` icon + `Tooltip`):**
+
+- DataTable-based views (`ProductsView`, `CategoryProductsView`) — info icon placed in `actionsSlot` of `ListingLayout`; tooltip text is `tActions("selectionHint")`.
+- Non-DataTable views (`StoreProductsView`, `WishlistView`) — info icon added inline inside `viewToggleSlot` alongside `ViewToggle`.
+
+**i18n (`messages/en.json`):**
+
+- Added `"selectionHint": "Tap or click a card to select it, then use bulk actions to add to wishlist or cart"` to the `actions` namespace.
+
+---
+
+## [Unreleased] — 2026-03-14
+
+### Fix — Firestore index: `reviews` `productId + createdAt`
+
+The `ReviewRepository.listForProduct` Sieve query was throwing `FAILED_PRECONDITION` (code 9) on all product detail pages because no composite index existed for the `productId ↑ + createdAt ↓` field combination (used when listing reviews without a `status` filter).
+
+**`firestore.indexes.json`:**
+
+- Added composite index: `reviews: productId ↑ + createdAt ↓` (collection scope).
+- Index deployed via `firebase deploy --only firestore:indexes`.
+
+---
+
+## [Unreleased] — 2026-03-14
+
+### UI — Navigation arrow icons enlarged across all carousels and galleries
+
+Increased chevron/arrow icon sizes so they are clearly visible inside their button containers:
+
+- `src/features/homepage/components/HeroCarousel.tsx` — prev/next SVG icons `w-5 h-5` → `w-7 h-7`.
+- `src/features/products/components/ProductImageGallery.tsx` — `ChevronLeft`/`ChevronRight` `w-6 h-6` → `w-7 h-7`.
+- `src/components/ui/HorizontalScroller.tsx` — `lg` variant SVG `24×24` → `28×28`; `sm` variant SVG `20×20` → `24×24` (applies to all `SectionCarousel` instances: Featured Products, Top Categories, Featured Stores, Top Brands, Featured Events, Pre-Orders).
+
+`MediaLightbox` and `packages/ui/ImageLightbox` were already at `w-7 h-7` and required no change.
+
+---
+
+## [Unreleased] — 2026-03-14
+
+### UI — BottomActions-aware layout adjustments
+
+Ensured page content and the `BackToTop` floating button are never obscured by the stacked `BottomActions` + `BottomNavbar` bars on mobile.
+
+**`src/components/LayoutClient.tsx`:**
+
+- `<Main>` bottom margin now switches between `mb-28` (BottomActions visible) and `mb-16` (hidden) on mobile; `md:mb-0` unchanged.
+- `hasBottomActions` boolean derived from `baState` (actions, bulk selected count, or infoLabel present) and forwarded to `<BackToTop>`.
+
+**`src/components/utility/BackToTop.tsx`:**
+
+- Added `hasBottomActions?: boolean` prop.
+- Mobile `bottom` position now resolves to `bottom-36` when `hasBottomActions` is true (clears both bars), falling back to `bottom-24`; desktop `md:bottom-8` unchanged.
+
+---
+
+## [Unreleased] — 2026-03-14
+
+### UI — Grid/list view toggle + selection checkboxes on all public listing views
+
+Added URL-driven grid/list view mode toggles and per-item selection checkboxes with bulk "Add to Wishlist" across every public-facing listing view. Also fixed a stacking-context bug that was hiding card checkboxes.
+
+**New shared component (`src/components/ui/ViewToggle.tsx`):**
+
+- `ViewToggle` — grid / list mode switcher pair; uses `useTranslations("actions")` for `gridView` / `listView` aria-labels.
+- `ViewMode` type (`"grid" | "list"`) exported alongside the component.
+- Exported from `src/components/ui/index.ts`.
+
+**i18n (`messages/en.json`):**
+
+- Added `"gridView": "Grid view"` and `"listView": "List view"` to the `actions` namespace.
+
+**Views updated — DataTable-based (use `showViewToggle` + `showTableView={false}` + URL-driven `viewMode`):**
+
+- `src/features/products/components/ProductsView.tsx` — view toggle + `ProductCard variant={viewMode}` + `selectable`/`selectedIds`/`onSelectionChange` in `mobileCardRender`.
+- `src/features/products/components/AuctionsView.tsx` — same pattern with `AuctionCard`.
+- `src/features/products/components/PreOrdersView.tsx` — same pattern with `PreOrderCard`.
+- `src/features/categories/components/CategoryProductsView.tsx` — same pattern; `useAuth`, `useMessage`, `addToWishlistAction`, `handleBulkAddToWishlist`, `selectedCount`/`bulkActions` wired to `ListingLayout`.
+- `src/features/blog/components/BlogListView.tsx` — converted `defaultViewMode="grid"` to URL-driven toggle; `BlogCard selectable`/`selected`/`onSelect` wired.
+- `src/features/user/components/UserOrdersView.tsx` — converted `defaultViewMode="list"` to URL-driven toggle; `OrderCard variant={viewMode}` wired.
+- `src/features/reviews/components/ReviewsListView.tsx` — converted `defaultViewMode="grid"` to URL-driven toggle with `showTableView={false}`.
+
+**Views updated — non-DataTable (use `ViewToggle` in `viewToggleSlot` on `ListingLayout`):**
+
+- `src/features/stores/components/StoresListView.tsx` — `ViewToggle` in `viewToggleSlot`; conditional grid/list container for `StoreCard`; `selectable`/`selectedIds`/`addToWishlistAction` + `BulkActionBar`.
+- `src/features/wishlist/components/WishlistView.tsx` — `ViewToggle` (products tab only); `variant={viewMode}` on `ProductGrid`.
+- `src/features/stores/components/StoreProductsView.tsx` — `ViewToggle` + `ProductGrid variant`/`selectable`/`selectedIds`.
+- `src/features/stores/components/StoreAuctionsView.tsx` — `ViewToggle` + `AuctionGrid variant`/`selectable`/`selectedIds`.
+- `src/features/search/components/SearchView.tsx` + `SearchResultsSection.tsx` — `ViewToggle` inline in filter row; `BulkActionBar` standalone; `variant`/`selectable`/`selectedIds` props threaded through.
+
+**Bug fix — double-checkbox stacking issue:**
+
+- `DataTable`'s internal `SelectableCard` wrapper was adding an `appearance-none` invisible checkbox at `z-10` around every `mobileCardRender` result. Because `selectable` was also set on both `DataTable` and the individual cards (`ProductCard`, `AuctionCard`, `PreOrderCard`, `OrderCard`), the `SelectableCard`'s stacking context buried each card's visible checkbox button.
+- **Fix:** removed `selectable`/`selectedIds`/`onSelectionChange` from the `DataTable` prop in all `showTableView={false}` views. Selection state is now owned entirely by the card's own `onSelect` callback wired in `mobileCardRender`.
+
+**Bug fix — stale `@lir/ui` import:**
+
+- `src/contexts/BottomActionsContext.tsx` — `import type { ButtonProps } from "@lir/ui"` → `"@mohasinac/ui"` (tsconfig paths use `@mohasinac/*`; `@lir/*` alias was never mapped).
+
+---
+
+## [Unreleased] — 2026-03-14
+
+### UI — Media lightbox & carousel button visibility fixes
+
+Resolved multiple black-on-black icon contrast issues and undersized button targets across image lightboxes, the hero carousel, and scroll carousels.
+
+**`src/components/media/MediaLightbox.tsx`:**
+
+- All toolbar buttons switched from default `variant="primary"` to `variant="ghost"` — prevents the primary blue background from covering icons.
+- Added `!text-white` override on every button to guarantee white icons regardless of inherited theme styles.
+- Button size increased from `w-11 h-11` → `w-12 h-12`; icon size from `w-6 h-6` → `w-7 h-7`.
+- Background bump from `bg-white/10` → `bg-white/15`; hover from `hover:bg-white/20` → `hover:bg-white/30`.
+- Close button hover changed to `hover:bg-red-500/50` for visual affordance.
+
+**`src/features/products/components/ProductImageGallery.tsx`:**
+
+- ZoomIn hover hint now wrapped in a `bg-black/55 backdrop-blur-sm` frosted circle with `ring-2 ring-white/30` — visible against both light and dark images (was bare `w-6 h-6` icon with no background).
+- Expand button changed from `bg-black/50 text-white` to `bg-white/90 dark:bg-slate-800/90 !text-zinc-800 dark:!text-zinc-100` — readable on any image background.
+
+**`src/components/ui/HorizontalScroller.tsx`:**
+
+- `sm`-size arrow buttons widened from `w-8` → `w-10` (40 px tap target).
+- SVG icon size increased from `16×16` → `20×20`.
+
+**`packages/ui/src/components/ImageLightbox.tsx`:**
+
+- Prev / Next buttons changed from `p-2` variable padding to `w-12 h-12 p-0` fixed size.
+- Background bumped from `bg-white/10` → `bg-white/15`; hover `bg-white/30`.
+- Icon size `w-6 h-6` → `w-7 h-7`.
+- Close button hover changed to `hover:bg-red-500/50`.
+
+**`src/features/homepage/components/HeroCarousel.tsx`:**
+
+- Navigation arrows moved from left/right sides (vertical centre) to **bottom-right corner**, grouped together.
+- Removed `!isMobile` gate — arrows now visible on all screen sizes.
+- Icon size reduced to `w-5 h-5` to fit the grouped layout.
+
+---
+
+### UI — Responsive card grid: equal height + configurable columns
+
+All card grids now fill the container width correctly, stretch cards to equal row height, and support configurable column counts per callsite.
+
+**`src/components/ui/HorizontalScroller.tsx`:**
+
+- Inner scroll container explicitly uses `items-stretch` in single-row mode (previously relied on flex's implicit default, which could be overridden by Tailwind resets). This ensures all items in a row are stretched to the tallest sibling's height.
+- Item wrapper `<div>` in single-row mode gains `h-full` — completes the `h-full` chain from the scroll container through the wrapper into the card.
+
+**`packages/ui/src/components/Layout.tsx`:**
+
+- `GRID_MAP` changed from `const` to `export const` — available for direct import by DataTable and consumers.
+- Re-exported from `packages/ui/src/index.ts` as `GRID_MAP`.
+
+**`packages/ui/src/DataTable.tsx`:**
+
+- New `gridCols?: GridCols` prop (keys `1`–`6`, `"autoSm"`, `"autoMd"`, `"autoLg"`). Default: `6` → `cols-2 → 3 → 4 → 5 → 6` across breakpoints.
+- Grid container class now computed as `GRID_MAP[gridCols] + " gap-4"` instead of a hardcoded string.
+- `SelectableCard` non-selectable wrapper changed from bare `<div>` to `<div className="h-full">`.
+- `SelectableCard` selectable root changed to `<div className="relative group h-full">` so the overlay stretches to the full cell.
+
+**`src/components/products/ProductCard.tsx`:**
+
+- Root div gains `h-full` — fills entire grid cell.
+- Info section (`flex-col gap-2`) gains `flex-1` — expands to consume remaining height after the image.
+- Action button row always uses `mt-auto` (previously conditional on `variant === "list"`) — pins buttons to the card bottom regardless of content length.
+
+**`src/components/auctions/AuctionCard.tsx`:**
+
+- Same `h-full` root, `flex-1` info section, unconditional `mt-auto` on action buttons as ProductCard.
+
+**`src/components/auctions/AuctionGrid.tsx`:**
+
+- New `gridClassName?: string` prop — accepts any Tailwind grid class or `THEME_CONSTANTS.grid.*` preset.
+- Default: `THEME_CONSTANTS.grid.cards` (`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4`) + `gap-4`.
+- Replaces the old hardcoded `"grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4"`.
+
+---
+
+### UI — Card grids capped at 4 columns max
+
+Enforced a site-wide maximum of **4 cards per row** for all product, auction, category, and content grids. Added a shared `cards` preset (`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4`) to both the package `GRID_MAP` and app `THEME_CONSTANTS.grid` to avoid repetition.
+
+**New `cards` preset:**
+
+- `packages/ui/src/components/Layout.tsx` — `GRID_MAP.cards = "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4"`.
+- `src/constants/theme.ts` — `THEME_CONSTANTS.grid.cards` same value.
+
+**`packages/ui/src/DataTable.tsx`:**
+
+- `gridCols` default changed from `6` → `"cards"` — grid view now uses the 2→3→4 preset out of the box.
+
+**Standalone grids updated (max 4):**
+
+- `src/components/auctions/AuctionGrid.tsx` — default gridClassName now `THEME_CONSTANTS.grid.cards`.
+- `src/components/products/ProductGrid.tsx` — `cols-2 sm:3 md:4 lg:4 xl:5 2xl:6` → `THEME_CONSTANTS.grid.cards`.
+- `src/features/wishlist/components/WishlistView.tsx` — remove overlay grid to `grid-cols-2 md:3 lg:4`.
+- `src/features/seller/components/SellerStorefrontView.tsx` — `cols-2 sm:3 md:4 xl:5 2xl:6` → `cols-2 md:3 lg:4`.
+- `src/features/categories/components/CategoryGrid.tsx` — removed duplicate `xl:4` + `2xl:5`; now `cols-1 sm:2 md:3 lg:4`.
+
+**Homepage section carousels updated (`perView` capped at 4):**
+
+- `FeaturedProductsSection`, `FeaturedAuctionsSection`, `FeaturedEventsSection`, `FeaturedPreOrdersSection`, `FeaturedStoresSection`, `TopCategoriesSection`, `TopBrandsSection` — removed `xl: 5`; now `{ base: 2, sm: 3, md: 4 }`.
+- `RelatedProducts` (both skeleton + live scrollers) — same cap.
+
+**Remaining grids updated (max 4):**
+
+- `src/features/homepage/components/HomepageSkeleton.tsx` — categories skeleton: `xl:5 2xl:5` → `sm:4`; products/auctions skeletons: `lg:5 xl:6 2xl:6` → `md:4`.
+- `src/app/[locale]/help/page.tsx` — FAQ topic tiles: `lg:5 xl:5 2xl:5` → `lg:4`.
+- `src/features/homepage/components/FeaturedResultsSection.tsx` — BeforeAfterCards: `2xl:5` removed; max `xl:4`.
+- `src/features/user/components/UserAccountHub.tsx` — quick nav tiles: `xl:6 2xl:6` → `md:4`.
+- `src/features/homepage/components/SiteFeaturesSection.tsx` — feature cards: `2xl:6` → max `xl:4`.
+- `src/features/admin/components/AdminDashboardSkeleton.tsx` — quick actions: `xl:4 2xl:5` → `lg:4`.
+- `src/components/admin/DataTable.tsx` — legacy grid view: `xl:5` removed; max `lg:4`.
+
+---
+
+### UI — BottomActions mobile action bar
+
+Added a new `BottomActions` mobile bar that sits **above** `BottomNavbar` (`bottom-14`) and gives every page a consistent slot for primary page actions and bulk selection.
+
+**Context + provider (`src/contexts/BottomActionsContext.tsx`):**
+
+- `BottomActionsProvider` — wraps `LayoutClient`; holds `actions`, `bulk`, and `infoLabel` state.
+- `useBottomActionsContext()` — internal hook consumed by `<BottomActions>`.
+- Callback dispatch via `MutableRefObject<Map>` — `onClick` handlers always dispatch the latest closure, no stale-closure issues.
+- `BottomAction`, `BottomBulkConfig`, `BottomActionsState` types exported.
+
+**Consumer hook (`src/hooks/useBottomActions.ts`):**
+
+- `useBottomActions(options)` — feature hook; registers page actions + bulk config + info label.
+- Auto-clears all state on unmount (route change) — no manual cleanup required.
+- Accepts `actions[]`, `bulk: BottomBulkConfig`, and `infoLabel?: string`.
+
+**Component (`src/components/layout/BottomActions.tsx`):**
+
+- Fixed at `bottom-14`, `md:hidden`, `z-40`.
+- **Page mode** — renders registered action buttons; optional `infoLabel` row above.
+- **Bulk mode** — activates when `bulk.selectedCount > 0`; accent top stripe + selection count pill (tap to deselect all) + bulk action buttons.
+- Slide-in/out 300 ms CSS transition; `pointer-events-none` while off-screen.
+- Each `BottomAction` supports `id`, `label`, `icon`, `variant`, `badge`, `disabled`, `loading`, `grow`.
+
+**LayoutClient (`src/components/LayoutClient.tsx`):**
+
+- Reads `baState` from `useBottomActionsContext`; expands `<Main>` bottom margin to `mb-28` (from `mb-16`) on mobile when the bar is visible.
+- Renders `<BottomActions />` immediately before `<BottomNavbar />`.
+
+**Locale layout (`src/app/[locale]/layout.tsx`):**
+
+- Wraps `<LayoutClient>` in `<BottomActionsProvider>`.
+
+**Theme constant (`src/constants/theme.ts`):**
+
+- `THEME_CONSTANTS.zIndex.bottomActions: "z-40"` — same layer as BottomNavbar.
+
+**i18n (`messages/en.json`):**
+
+- New `"bottomActions"` namespace: `pageActionsLabel`, `bulkActionsLabel`, `selectedCount`.
+
+**Barrel exports:**
+
+- `src/contexts/index.ts` — `BottomActionsProvider`, `useBottomActionsContext`, `BottomAction`, `BottomBulkConfig`, `BottomActionsState`.
+- `src/hooks/index.ts` — `useBottomActions`, `UseBottomActionsOptions`.
+- `src/components/layout/index.ts` — `BottomActions`.
+
+### Feature — Offer system edge case hardening
+
+Closed all remaining edge-case gaps in the offer lifecycle to prevent double-engagement, double-release, and stale-data actions.
+
+**Error constants (`src/constants/error-messages.ts`):**
+
+- `ERROR_MESSAGES.OFFER.ACTIVE_OFFER_EXISTS` — fired when buyer already has a pending/countered offer on a product.
+- `ERROR_MESSAGES.OFFER.EXPIRED` — fired when an expired offer is acted upon.
+- `ERROR_MESSAGES.OFFER.PRODUCT_UNAVAILABLE` — fired during checkout when product is out of stock or archived.
+
+**Action guards (`src/actions/offer.actions.ts`):**
+
+- `makeOfferAction` — adds `hasActiveOffer` pre-check: buyer blocked from creating a second concurrent offer on the same product.
+- `respondToOfferAction` — expiry guard: seller cannot accept/decline/counter an expired offer.
+- `acceptCounterOfferAction` — expiry guard: buyer cannot accept an expired counter.
+- `counterOfferByBuyerAction` — expiry guard: buyer cannot counter back on an expired counter.
+- `withdrawOfferAction` — rejects withdrawal of an already-expired offer (RC already released by cron).
+- `checkoutOfferAction` — product availability check: blocks checkout if product stock ≤ 0 or is archived at time of checkout.
+
+**Repository (`src/repositories/offer.repository.ts`):**
+
+- `hasActiveOffer(uid, productId)` — stub `.select().limit(1)` query; `pending | countered` filter.
+- `findExpired()` — fixed to include both `pending` and `countered` statuses (was `pending`-only; now matches `findExpiredActive` in functions repo).
+
+**Static page & i18n:**
+
+- `messages/en.json` (`howOffersWork`) — added `rulesItem4`: "Only one active offer per product at a time."
+- `src/features/about/components/HowOffersWorkView.tsx` — added 4th rule to the Negotiation Rules section.
+- `docs/features/offers.md` — updated Business Rules table, Server Actions table, and Repository table to document all new guards.
+
+### UI — Footer 2-row layout
+
+Reorganised `FooterLayout` to display as two clear visual rows on desktop (`lg+`):
+
+- **Row 1** — single `lg:grid-cols-7` grid: brand + description + social icons + newsletter (col-span-2) followed by the five link-group columns (1 col each).
+- **Row 2** — copyright/made-in bar.
+
+On mobile the brand section stacks above the accordion link groups (unchanged behaviour). On sm/md the brand spans the full row with link groups in a 2–3-column grid beneath.
+
+### Feature — Buyer counter offer + per-product offer limit
+
+Added the ability for buyers to counter back against a seller's counter offer, enforced a 3-offer-per-product document limit, and updated the static info page and i18n strings.
+
+**Business rules:**
+
+- Buyer can submit a counter only when the offer is in `countered` status.
+- Buyer's `counterAmount` must be **within ±20 %** of the seller's last counter price.
+- At most **3 offer documents** per buyer per product are allowed. The limit resets automatically when `product.updatedAt` advances (seller edits the listing). No new field required — enforced by document count alone.
+- RC check: only the net delta (`counterAmount − current offerAmount`) needs additional free coins; the original engaged RC is reused.
+
+**Server Action (`src/actions/offer.actions.ts`):**
+
+- `counterOfferByBuyerAction(input: BuyerCounterInput)` — validates range + limit + RC; closes existing `countered` offer (`withdrawn`); creates fresh `pending` offer; adjusts `engagedRC` by net delta; notifies seller.
+- `makeOfferAction` — now checks doc count since `product.updatedAt` before creating an offer.
+- Exported type: `BuyerCounterInput`
+
+**Repository (`src/repositories/offer.repository.ts`):**
+
+- `countByBuyerAndProduct(uid, productId, since)` — `.select()` count query on `(buyerUid, productId, createdAt >= since)`.
+
+**Constants (`src/constants/error-messages.ts`):**
+
+- `ERROR_MESSAGES.OFFER.LIMIT_REACHED`, `COUNTER_RANGE`, `NOT_COUNTERED`
+
+**Hook (`src/features/user/hooks/useUserOffers.ts`):**
+
+- `useCounterOfferByBuyer()` — `useMutation` wrapper for `counterOfferByBuyerAction`.
+
+**Firestore index (`firestore.indexes.json`):**
+
+- Added composite index: `offers: buyerUid ↑ + productId ↑ + createdAt ↑`.
+
+**Static page & i18n:**
+
+- `messages/en.json` (`howOffersWork`) — updated `step4Text` to mention buyer counter; added `rulesTitle`, `rulesItem1`, `rulesItem2`, `rulesItem3`.
+- `src/features/about/components/HowOffersWorkView.tsx` — new "Negotiation Rules" section.
+
+---
+
+Added the ability for buyers to counter back against a seller's counter offer, enforced a 3-offer-per-product document limit, and updated the static info page and i18n strings.
+
+**Business rules:**
+
+- Buyer can submit a counter only when the offer is in `countered` status.
+- Buyer's `counterAmount` must be **within ±20 %** of the seller's last counter price.
+- At most **3 offer documents** per buyer per product are allowed. The limit resets automatically when `product.updatedAt` advances (seller edits the listing). No new field required — enforced by document count alone.
+- RC check: only the net delta (`counterAmount − current offerAmount`) needs additional free coins; the original engaged RC is reused.
+
+**Server Action (`src/actions/offer.actions.ts`):**
+
+- `counterOfferByBuyerAction(input: BuyerCounterInput)` — validates range + limit + RC; closes existing `countered` offer (`withdrawn`); creates fresh `pending` offer; adjusts `engagedRC` by net delta; notifies seller.
+- `makeOfferAction` — now checks doc count since `product.updatedAt` before creating an offer.
+- Exported type: `BuyerCounterInput`
+
+**Repository (`src/repositories/offer.repository.ts`):**
+
+- `countByBuyerAndProduct(uid, productId, since)` — `.select()` count query on `(buyerUid, productId, createdAt >= since)`.
+
+**Constants (`src/constants/error-messages.ts`):**
+
+- `ERROR_MESSAGES.OFFER.LIMIT_REACHED`, `COUNTER_RANGE`, `NOT_COUNTERED`
+
+**Hook (`src/features/user/hooks/useUserOffers.ts`):**
+
+- `useCounterOfferByBuyer()` — `useMutation` wrapper for `counterOfferByBuyerAction`.
+
+**Firestore index (`firestore.indexes.json`):**
+
+- Added composite index: `offers: buyerUid ↑ + productId ↑ + createdAt ↑`.
+
+**Static page & i18n:**
+
+- `messages/en.json` (`howOffersWork`) — updated `step4Text` to mention buyer counter; added `rulesTitle`, `rulesItem1`, `rulesItem2`, `rulesItem3`.
+- `src/features/about/components/HowOffersWorkView.tsx` — new "Negotiation Rules" section.
+
+---
+
+## [Unreleased] — 2026-03-14
+
+### Platform Business-Day Rule — 10:00 AM IST Day Boundary
+
+Introduced a global platform-day concept: **every new day starts at 10:00 AM IST**.  
+All day-counting for payouts, pending windows, refund timelines, and cron cutoffs now use 10:00 AM IST as the day boundary instead of calendar midnight.
+
+**Rule summary:**
+
+- An event (order delivery, refund initiation, seller registration) before 10:00 AM IST belongs to the **previous** business day.
+- Day 1 = the **next** upcoming 10:00 AM IST at or after the event.
+- "7 platform days after delivery" = 7 consecutive 10:00 AM IST boundaries must pass.
+
+**New utilities:**
+
+- `functions/src/utils/businessDay.ts` — `getBusinessDayStart()`, `getBusinessDayCutoff()`, `getBusinessDaysElapsed()` for Cloud Functions / Firestore queries
+- `src/utils/business-day.ts` — `getBusinessDayStart()`, `getBusinessDaysElapsed()`, `getBusinessDaysRemaining()`, `getBusinessDayEligibilityDate()` for UI and Server Actions; exported from `@/utils`
+
+**Constants updated:**
+
+- `functions/src/config/constants.ts` — added `BUSINESS_DAY_START_HOUR_IST = 10`, `BUSINESS_DAY_TIMEZONE = "Asia/Kolkata"`, `SCHEDULES.DAILY_0430_UTC = "30 4 * * *"` (10:00 AM IST)
+- `src/constants/config.ts` — added `BUSINESS_DAY_CONFIG` (`START_HOUR_IST`, `TIMEZONE`, `START_HOUR_UTC`, `START_MINUTE_UTC`)
+
+**Cron jobs updated:**
+
+- `autoPayoutEligibility` — rescheduled from `DAILY_0445` (UTC) to `DAILY_0430_UTC` (10:00 AM IST); `timeZone` changed from `"UTC"` to `"Asia/Kolkata"`
+
+**Repository updated:**
+
+- `functions/src/repositories/order.repository.ts` — `getEligibleAutomatic()` now calls `getBusinessDayCutoff(windowDays)` instead of raw `Date.now() - windowDays * 24h`, ensuring payout eligibility snaps to the 10 AM IST boundary
+
+**FAQ & seed data updated** (EN + HI + seed):
+
+- "When do I receive payments?" — 7 platform days after delivery (10 AM IST start)
+- "What is your refund policy?" — 5-7 platform days
+- All financial refund/reversal timelines updated from "business days" → "platform days"
+- Seller registration verification updated from "2-3 business days" → "2-3 platform days"
+
+---
+
 ### Feature — Make-an-Offer system
 
 Added a full buyer–seller offer negotiation flow with RC engagement (coins locked during offer lifetime).

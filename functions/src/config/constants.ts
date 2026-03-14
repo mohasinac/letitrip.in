@@ -6,6 +6,15 @@
  */
 
 // ---------------------------------------------------------------------------
+// Business day anchor
+// ---------------------------------------------------------------------------
+/** The platform's business day starts at this hour in IST (10 = 10:00 AM IST). */
+export const BUSINESS_DAY_START_HOUR_IST = 10;
+
+/** Timezone for business-day calculations. 10:00 AM IST = 04:30 UTC. */
+export const BUSINESS_DAY_TIMEZONE = "Asia/Kolkata";
+
+// ---------------------------------------------------------------------------
 // Cloud Scheduler cron expressions (UTC)
 // ---------------------------------------------------------------------------
 export const SCHEDULES = {
@@ -40,6 +49,14 @@ export const SCHEDULES = {
 
   /** Auto-payout eligibility sweep — 04:45 UTC, just before payoutBatch */
   DAILY_0445: "45 4 * * *",
+
+  /**
+   * Business-day-aligned daily sweep — 04:30 UTC = 10:00 AM IST.
+   * This is the platform's day-start boundary. Jobs that count "days" for
+   * business rules (payouts, pending windows) should use this schedule so
+   * their cutoff snaps cleanly to the current business day start.
+   */
+  DAILY_0430_UTC: "30 4 * * *",
 
   /**
    * Auth event cleanup — every 5 minutes.

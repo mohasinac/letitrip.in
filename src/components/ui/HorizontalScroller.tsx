@@ -68,8 +68,8 @@ function ArrowButton({
         ].join(" ")}
       >
         <svg
-          width="20"
-          height="20"
+          width="28"
+          height="28"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -98,7 +98,7 @@ function ArrowButton({
       className={[
         `${flex.noShrink} self-stretch`,
         `${flex.center}`,
-        "w-8",
+        "w-10",
         "border rounded-lg",
         themed.border,
         themed.bgPrimary,
@@ -111,8 +111,8 @@ function ArrowButton({
     >
       {direction === "left" ? (
         <svg
-          width="14"
-          height="14"
+          width="24"
+          height="24"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -126,8 +126,8 @@ function ArrowButton({
         </svg>
       ) : (
         <svg
-          width="14"
-          height="14"
+          width="24"
+          height="24"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -589,7 +589,7 @@ export function HorizontalScroller<T = unknown>({
 
   const innerClassName = [
     overflow.xAuto,
-    isGrid ? "" : "flex",
+    isGrid ? "" : "flex items-stretch",
     snapToItems ? "snap-x snap-mandatory" : "",
     showScrollbar ? utilities.scrollbarThinX : utilities.scrollbarHide,
     showScrollbar ? "pb-2" : "",
@@ -669,7 +669,9 @@ export function HorizontalScroller<T = unknown>({
               <div
                 key={key}
                 style={itemStyle}
-                className={snapToItems ? "snap-start" : undefined}
+                className={["h-full", snapToItems ? "snap-start" : ""]
+                  .filter(Boolean)
+                  .join(" ")}
               >
                 {renderItem(item, baseIndex)}
               </div>

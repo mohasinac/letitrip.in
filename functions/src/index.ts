@@ -40,6 +40,10 @@
  * │  onReviewWrite      — reviews/{id} onWrite                              │
  * │                       → product avgRating / reviewCount                 │
  * │                       → store totalReviews / averageRating              │
+ * │  onCategoryWrite    — categories/{id} onWrite                           │
+ * │                       → Algolia categories index sync                   │
+ * │  onStoreWrite       — stores/{id} onWrite                               │
+ * │                       → Algolia stores index sync                       │
  * └─────────────────────────────────────────────────────────────────────────┘
  */
 
@@ -63,3 +67,5 @@ export { onBidPlaced } from "./triggers/onBidPlaced";
 export { onOrderStatusChange } from "./triggers/onOrderStatusChange";
 export { onProductWrite } from "./triggers/onProductWrite";
 export { onReviewWrite } from "./triggers/onReviewWrite";
+export { onCategoryWrite } from "./triggers/onCategoryWrite";
+export { onStoreWrite } from "./triggers/onStoreWrite";

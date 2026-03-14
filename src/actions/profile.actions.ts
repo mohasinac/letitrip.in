@@ -86,8 +86,19 @@ export async function listMySessionsAction() {
 
 export async function getPublicProfileAction(
   userId: string,
-): Promise<UserDocument | null> {
-  return userRepository.findById(userId);
+): Promise<Pick<
+  UserDocument,
+  "id" | "displayName" | "photoURL" | "role" | "createdAt"
+> | null> {
+  const user = await userRepository.findById(userId);
+  if (!user) return null;
+  return {
+    id: user.id,
+    displayName: user.displayName,
+    photoURL: user.photoURL,
+    role: user.role,
+    createdAt: user.createdAt,
+  };
 }
 
 export async function getSellerReviewsAction(sellerId: string) {

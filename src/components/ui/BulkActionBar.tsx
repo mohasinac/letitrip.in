@@ -4,115 +4,249 @@
  * BulkActionBar
  *
  * A compact action bar that appears at the top of the content area whenever
- * one or more list items are selected.  Shows the selection count, a ✕ button
- * to deselect everything, and action button slots provided by the caller.
+ * one or more list items are selected. Matches the BottomActions bulk-mode
+ * design: selection count pill (✕ to clear), type-picker dropdown, and an
+ * Apply button.
  *
- * Public pages pass cart / wishlist buttons.
- * Admin / seller pages pass edit, delete, export, approve, etc.
- *
- * The bar is rendered by ListingLayout automatically when selectedCount > 0,
- * but can also be used standalone above a DataTable.
+ * Rendered by ListingLayout automatically when selectedCount > 0.
  *
  * @example
  * ```tsx
- * // Public product listing
  * <BulkActionBar
  *   selectedCount={selectedIds.length}
  *   onClearSelection={() => setSelectedIds([])}
- * >
- *   <Button size="sm" variant="primary" onClick={addAllToCart}>
- *     {t('addAllToCart')}
- *   </Button>
- *   <Button size="sm" variant="outline" onClick={addAllToWishlist}>
- *     {t('addAllToWishlist')}
- *   </Button>
- * </BulkActionBar>
- *
- * // Admin product listing
- * <BulkActionBar
- *   selectedCount={selectedIds.length}
- *   onClearSelection={() => setSelectedIds([])}
- * >
- *   <Button size="sm" variant="secondary" onClick={bulkExport}>Export</Button>
- *   <Button size="sm" variant="warning"  onClick={bulkUnpublish}>Unpublish</Button>
- *   <Button size="sm" variant="danger"   onClick={bulkDelete}>Delete</Button>
- * </BulkActionBar>
+ *   actions={[
+ *     { id: "cart",     label: t("bulkAddToCart"),     variant: "secondary", onClick: handleBulkAddToCart },
+ *     { id: "wishlist", label: t("bulkAddToWishlist"), variant: "primary",   onClick: handleBulkAddToWishlist },
+ *   ]}
+ * />
  * ```
  */
 
-import { ReactNode } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { Button, Text } from "@/components";
+import { X, ChevronUp, ChevronDown, Check } from "lucide-react";
+import { Button, Span } from "@/components";
+import { useClickOutside } from "@/hooks";
+
+export interface BulkActionItem {
+  /** Stable unique key. */
+  id: string;
+  /** Visible label in the picker and on the trigger. */
+  label: string;
+  /** Button / text variant — influences Apply button colour. */
+  variant?:
+    | "primary"
+    | "secondary"
+    | "outline"
+    | "danger"
+    | "ghost"
+    | "warning";
+  /** Optional leading icon rendered in the picker row. */
+  icon?: ReactNode;
+  /** Called when the user clicks Apply with this action selected. */
+  onClick: () => void;
+  /** Disable this action. */
+  disabled?: boolean;
+  /** Show spinner on Apply when this action is selected. */
+  loading?: boolean;
+}
 
 export interface BulkActionBarProps {
   /** Number of currently selected items */
   selectedCount: number;
-  /** Called when the user clicks the ✕ deselect button */
+  /** Called when the user clicks the ✕ deselect pill */
   onClearSelection?: () => void;
-  /** Action buttons — layout is flex-row, wraps on narrow viewports */
-  children?: ReactNode;
+  /** Structured bulk action items — rendered as picker + Apply */
+  actions?: BulkActionItem[];
 }
 
 export function BulkActionBar({
   selectedCount,
   onClearSelection,
-  children,
+  actions = [],
 }: BulkActionBarProps) {
   const t = useTranslations("listingLayout");
   const tActions = useTranslations("actions");
 
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(containerRef, () => setPickerOpen(false));
+
+  // Keep selectedActionId in sync with available actions
+  useEffect(() => {
+    setSelectedActionId((prev) => {
+      const ids = actions.map((a) => a.id);
+      if (prev && ids.includes(prev)) return prev;
+      return ids[0] ?? null;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actions.map((a) => a.id).join(",")]);
+
   if (selectedCount === 0) return null;
+
+  const selectedAction = actions.find((a) => a.id === selectedActionId);
+
+  const handleApply = () => {
+    if (!selectedActionId) return;
+    selectedAction?.onClick();
+    setPickerOpen(false);
+  };
 
   return (
     <div
-      className="flex flex-wrap items-center gap-2 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 animate-in fade-in slide-in-from-top-1 duration-150"
+      ref={containerRef}
+      className="relative rounded-lg overflow-hidden border border-indigo-200 dark:border-indigo-800 animate-in fade-in slide-in-from-top-1 duration-150"
       role="region"
       aria-live="polite"
       aria-label={t("bulkActionsRegion")}
     >
-      {/* ── Count + deselect ── */}
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <Button
+      {/* ── Accent stripe ── */}
+      <div className="h-[3px] w-full bg-gradient-to-r from-primary-600 via-primary-400 to-primary-600 dark:from-secondary-600 dark:via-secondary-400 dark:to-secondary-600" />
+
+      {/* ── Main row ── */}
+      <div className="flex items-center gap-2 px-3 py-2">
+        {/* Selection count pill — tap to clear */}
+        <button
           type="button"
-          variant="ghost"
-          size="sm"
           onClick={onClearSelection}
+          className="inline-flex items-center gap-1.5 flex-shrink-0 bg-primary-50 hover:bg-primary-100 active:bg-primary-200 dark:bg-primary-950/30 dark:hover:bg-primary-900/50 text-primary-700 dark:text-primary-300 rounded-full pl-2 pr-3 h-8 border border-primary-200/70 dark:border-primary-800/50 transition-colors"
           aria-label={tActions("clearSelection")}
-          className="p-1 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-md"
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
+          <X className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+          <span className="text-xs font-semibold tabular-nums whitespace-nowrap leading-none">
+            {t("selectedCount", { count: selectedCount })}
+          </span>
+        </button>
+
+        {/* Picker trigger — flex-1 */}
+        {actions.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setPickerOpen((o) => !o)}
+            aria-haspopup="listbox"
+            aria-expanded={pickerOpen}
+            className={[
+              "flex-1 min-w-0 h-10 flex items-center gap-2 px-3 rounded-lg border text-sm font-medium transition-colors",
+              "bg-zinc-50 hover:bg-zinc-100 active:bg-zinc-200 dark:bg-slate-800/60 dark:hover:bg-slate-700/60",
+              "border-zinc-200 dark:border-slate-700",
+              selectedAction?.variant === "danger"
+                ? "text-red-600 dark:text-red-400"
+                : "text-zinc-800 dark:text-zinc-100",
+            ]
+              .filter(Boolean)
+              .join(" ")}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </Button>
-        <Text
-          size="sm"
-          weight="semibold"
-          className="text-indigo-700 dark:text-indigo-300"
-        >
-          {t("selectedCount", { count: selectedCount })}
-        </Text>
+            {selectedAction?.icon && (
+              <span
+                className="flex-shrink-0 w-4 h-4 flex items-center justify-center"
+                aria-hidden="true"
+              >
+                {selectedAction.icon}
+              </span>
+            )}
+            <span className="flex-1 truncate text-left leading-none">
+              {selectedAction?.label ?? t("bulkActionsRegion")}
+            </span>
+            {pickerOpen ? (
+              <ChevronUp
+                className="w-4 h-4 flex-shrink-0 text-zinc-400"
+                aria-hidden="true"
+              />
+            ) : (
+              <ChevronDown
+                className="w-4 h-4 flex-shrink-0 text-zinc-400"
+                aria-hidden="true"
+              />
+            )}
+          </button>
+        )}
+
+        {/* Apply button */}
+        {actions.length > 0 && (
+          <Button
+            type="button"
+            variant={selectedAction?.variant ?? "primary"}
+            size="sm"
+            isLoading={selectedAction?.loading}
+            disabled={
+              !selectedActionId ||
+              selectedAction?.disabled ||
+              selectedAction?.loading
+            }
+            onClick={handleApply}
+            className="h-10 flex-shrink-0"
+          >
+            <Span className="leading-none">{t("apply")}</Span>
+          </Button>
+        )}
       </div>
 
-      {/* ── Divider ── */}
-      <div
-        className="h-5 w-px bg-indigo-200 dark:bg-indigo-700 flex-shrink-0"
-        aria-hidden="true"
-      />
-
-      {/* ── Action buttons ── */}
-      {children && (
-        <div className="flex items-center flex-wrap gap-2">{children}</div>
+      {/* ── Picker dropdown (opens downward) ── */}
+      {actions.length > 0 && (
+        <div
+          role="listbox"
+          aria-label={t("bulkActionsRegion")}
+          className={[
+            "overflow-hidden border-t border-zinc-200/80 dark:border-slate-700/80",
+            "transition-[max-height,opacity] duration-200 ease-out",
+            pickerOpen
+              ? "max-h-64 opacity-100"
+              : "max-h-0 opacity-0 pointer-events-none",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          {actions.map((action, i) => {
+            const isSelected = action.id === selectedActionId;
+            return (
+              <button
+                key={action.id}
+                role="option"
+                aria-selected={isSelected}
+                type="button"
+                disabled={action.disabled || action.loading}
+                onClick={() => {
+                  setSelectedActionId(action.id);
+                  setPickerOpen(false);
+                }}
+                className={[
+                  "w-full flex items-center gap-3 px-5 py-3.5 text-left text-sm font-medium transition-colors",
+                  i > 0
+                    ? "border-t border-zinc-100/80 dark:border-slate-800/80"
+                    : "",
+                  isSelected ? "bg-zinc-50 dark:bg-slate-800/60" : "",
+                  action.variant === "danger"
+                    ? "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
+                    : "text-zinc-800 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-slate-800/60",
+                  action.disabled || action.loading
+                    ? "opacity-50 cursor-not-allowed"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                {action.icon && (
+                  <span
+                    className="flex-shrink-0 w-5 h-5 flex items-center justify-center"
+                    aria-hidden="true"
+                  >
+                    {action.icon}
+                  </span>
+                )}
+                <span className="flex-1 truncate">{action.label}</span>
+                {isSelected && (
+                  <Check
+                    className="w-4 h-4 flex-shrink-0 text-primary-600 dark:text-primary-400"
+                    aria-hidden="true"
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
       )}
     </div>
   );

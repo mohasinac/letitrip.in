@@ -29,7 +29,7 @@ Displays and edits the user's personal information:
 
 **Data flow:**
 
-- Read: `useProfile()` → `profileService.getProfile()` → `GET /api/user/profile`
+- Read: `useProfile()` → `getMyProfileAction()` (Server Action)
 - Write: `useUpdateProfile()` wraps `updateProfileAction` (Server Action)
 
 ---
@@ -118,10 +118,22 @@ The `NotificationBell` header component shows unread count in real-time.
 
 In-app chat interface:
 
-- `ChatList` — list of active chat rooms (seller-buyer conversations)
-- `ChatWindow` — real-time message thread using `useChat` (Firebase Realtime DB)
+- `ChatList` — list of active chat rooms (seller↔buyer conversations ordered by `updatedAt`)
+- `ChatWindow` — real-time message thread powered by `useRealtimeChat` (Firebase RTDB subscription)
 
-Messages are stored in Firestore via `chatRepository`.
+**Architecture:**
+
+- Room metadata (participants, lastMessage, deletedBy) stored in Firestore via `chatRepository`
+- Individual messages stored in Firebase **RTDB**: `/chat_rooms/{roomId}/messages/{messageId}`
+- Client authenticates with RTDB via a custom token from `getRealtimeTokenAction()`
+
+**Actions:**
+
+- `createOrGetChatRoomAction({ orderId, sellerId })` — idempotent room creation
+- `sendChatMessageAction({ roomId, content })` — writes to RTDB
+- `getChatRoomsAction()` — list rooms for authenticated user
+
+**Note:** Chat is feature-flag gated via `FEATURE_FLAGS.CHAT_ENABLED`. If disabled, the route shows an unavailable message.
 
 ---
 

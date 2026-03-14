@@ -9,10 +9,10 @@
  */
 
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
-import { Heart, ShoppingBag, Gavel, Grid3X3, Store } from "lucide-react";
+import { Heart, ShoppingBag, Gavel, Grid3X3, Store, Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useAuth, useUrlTable, useMessage } from "@/hooks";
+import { useAuth, useUrlTable, useMessage, useBottomActions } from "@/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Button,
@@ -28,7 +28,10 @@ import {
   TabsList,
   TabsTrigger,
   Text,
+  Tooltip,
+  ViewToggle,
 } from "@/components";
+import type { ViewMode } from "@/components";
 import { WishlistButton } from "./WishlistButton";
 import { ROUTES, ERROR_MESSAGES } from "@/constants";
 import { removeFromWishlistAction, addToCartAction } from "@/actions";
@@ -66,6 +69,7 @@ function WishlistContent() {
   const activeTab = (table.get("tab") || "products") as TabKey;
   const search = table.get("q");
   const sortParam = table.get("sorts") || "-addedAt";
+  const viewMode = (table.get("view") || "grid") as ViewMode;
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -190,6 +194,41 @@ function WishlistContent() {
     setSelectedIds([]);
   }, [selectedIds, showSuccess, showError, tActions]);
 
+  // Move isProductTab before the early return so hooks are unconditional
+  const isProductTab = activeTab === "products";
+
+  // ── Mobile bottom bulk action bar ──
+  useBottomActions({
+    bulk: isProductTab
+      ? {
+          selectedCount: selectedIds.length,
+          onClearSelection: () => setSelectedIds([]),
+          actions:
+            selectedIds.length > 0
+              ? [
+                  {
+                    id: "bulk-cart",
+                    label: tActions("bulkAddToCart", {
+                      count: selectedIds.length,
+                    }),
+                    variant: "primary" as const,
+                    onClick: handleBulkAddToCart,
+                  },
+                  {
+                    id: "bulk-remove",
+                    label: tActions("bulkRemove", {
+                      count: selectedIds.length,
+                    }),
+                    variant: "danger" as const,
+                    grow: false,
+                    onClick: handleBulkRemoveFromWishlist,
+                  },
+                ]
+              : [],
+        }
+      : undefined,
+  });
+
   if (authLoading || !user) {
     return (
       <Row justify="center" gap="none" className="min-h-screen">
@@ -197,8 +236,6 @@ function WishlistContent() {
       </Row>
     );
   }
-
-  const isProductTab = activeTab === "products";
 
   return (
     <ListingLayout
@@ -249,24 +286,45 @@ function WishlistContent() {
           />
         ) : undefined
       }
+      viewToggleSlot={
+        isProductTab ? (
+          <div className="flex items-center gap-1.5">
+            <ViewToggle
+              value={viewMode}
+              onChange={(m) => table.set("view", m)}
+            />
+            <Tooltip content={tActions("selectionHint")} placement="bottom">
+              <button
+                type="button"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-indigo-500 transition-colors"
+                aria-label={tActions("selectionHint")}
+              >
+                <Info className="w-4 h-4" />
+              </button>
+            </Tooltip>
+          </div>
+        ) : undefined
+      }
       loading={isLoading && isProductTab}
       selectedCount={selectedIds.length}
       onClearSelection={() => setSelectedIds([])}
-      bulkActions={
-        isProductTab ? (
-          <>
-            <Button variant="primary" size="sm" onClick={handleBulkAddToCart}>
-              {tActions("bulkAddToCart", { count: selectedIds.length })}
-            </Button>
-            <Button
-              variant="danger"
-              size="sm"
-              onClick={handleBulkRemoveFromWishlist}
-            >
-              {tActions("bulkRemove", { count: selectedIds.length })}
-            </Button>
-          </>
-        ) : undefined
+      bulkActionItems={
+        isProductTab
+          ? [
+              {
+                id: "bulk-cart",
+                label: tActions("bulkAddToCart", { count: selectedIds.length }),
+                variant: "primary",
+                onClick: handleBulkAddToCart,
+              },
+              {
+                id: "bulk-remove",
+                label: tActions("bulkRemove", { count: selectedIds.length }),
+                variant: "danger",
+                onClick: handleBulkRemoveFromWishlist,
+              },
+            ]
+          : undefined
       }
     >
       {isProductTab ? (
@@ -289,13 +347,14 @@ function WishlistContent() {
             <ProductGrid
               products={products}
               loading={isLoading}
+              variant={viewMode}
               selectable
               selectedIds={selectedIds}
               onSelectionChange={setSelectedIds}
             />
             {/* Wishlist remove button overlay */}
             {!isLoading && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4 absolute inset-0 pointer-events-none">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 absolute inset-0 pointer-events-none">
                 {displayedProducts.map((item) =>
                   item.product ? (
                     <div key={item.productId} className="relative">

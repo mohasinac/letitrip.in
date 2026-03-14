@@ -104,6 +104,7 @@ function calcPanelRect(
 ): PanelRect {
   const MARGIN = 6;
   const MIN_PANEL_HEIGHT = 160;
+  const PANEL_MAX_HEIGHT = 320;
   const viewportH = window.innerHeight;
   const spaceBelow = viewportH - anchor.bottom - MARGIN;
   const spaceAbove = anchor.top - MARGIN;
@@ -111,13 +112,16 @@ function calcPanelRect(
   let openUp = false;
   if (placement === "top") {
     openUp = true;
-  } else if (placement === "auto") {
+  } else if (placement === "bottom") {
+    openUp = false;
+  } else {
+    // auto: prefer the direction with more space; fall back to below
     openUp = spaceBelow < MIN_PANEL_HEIGHT && spaceAbove > spaceBelow;
   }
 
-  const maxHeight = openUp
-    ? Math.max(spaceAbove, MIN_PANEL_HEIGHT)
-    : Math.max(spaceBelow, MIN_PANEL_HEIGHT);
+  // Clamp to actually available space so the panel never overflows the viewport
+  const rawSpace = openUp ? spaceAbove : spaceBelow;
+  const maxHeight = Math.min(Math.max(rawSpace, 0), PANEL_MAX_HEIGHT);
 
   return {
     top: openUp

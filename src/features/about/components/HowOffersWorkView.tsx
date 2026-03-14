@@ -94,6 +94,13 @@ export async function HowOffersWorkView() {
     },
   ];
 
+  const RULES = [
+    t("rulesItem1"),
+    t("rulesItem2"),
+    t("rulesItem3"),
+    t("rulesItem4"),
+  ];
+
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Hero */}
@@ -169,6 +176,29 @@ export async function HowOffersWorkView() {
                 <Text className="font-semibold mb-1">{title}</Text>
                 <Text variant="secondary" className="text-sm leading-relaxed">
                   {desc}
+                </Text>
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        {/* Negotiation rules */}
+        <Section>
+          <Heading level={2} className="mb-6 text-center">
+            {t("rulesTitle")}
+          </Heading>
+          <div
+            className={`rounded-xl border p-6 ${themed.bgSecondary} ${themed.border} space-y-3`}
+          >
+            {RULES.map((rule, i) => (
+              <div key={i} className={`${flex.center} gap-3`}>
+                <div
+                  className={`flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/40 ${flex.center} text-sm font-semibold text-indigo-700 dark:text-indigo-300`}
+                >
+                  {i + 1}
+                </div>
+                <Text variant="secondary" className="text-sm leading-relaxed">
+                  {rule}
                 </Text>
               </div>
             ))}

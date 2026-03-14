@@ -21,10 +21,50 @@ import {
 } from "@/db/schema";
 import { DatabaseError } from "@/lib/errors";
 import { resolveDate } from "@/utils";
+import {
+  encryptPiiFields,
+  decryptPiiFields,
+  addPiiIndices,
+  piiBlindIndex,
+  TOKEN_PII_FIELDS,
+  TOKEN_PII_INDEX_MAP,
+} from "@/lib/pii";
 
 export class EmailVerificationTokenRepository extends BaseRepository<EmailVerificationTokenDocument> {
   constructor() {
     super(EMAIL_VERIFICATION_COLLECTION);
+  }
+
+  /** Override mapDoc to auto-decrypt PII on every token read */
+  protected override mapDoc<D = EmailVerificationTokenDocument>(
+    snap: import("firebase-admin/firestore").DocumentSnapshot,
+  ): D {
+    const raw = super.mapDoc<EmailVerificationTokenDocument>(snap);
+    return decryptPiiFields(raw as unknown as Record<string, unknown>, [
+      ...TOKEN_PII_FIELDS,
+    ]) as unknown as D;
+  }
+
+  /** Encrypt token PII and add blind index before writing */
+  override async create(
+    data: Partial<EmailVerificationTokenDocument>,
+  ): Promise<EmailVerificationTokenDocument> {
+    let encrypted = encryptPiiFields(
+      data as unknown as Record<string, unknown>,
+      [...TOKEN_PII_FIELDS],
+    );
+    encrypted = addPiiIndices(
+      data as unknown as Record<string, unknown>,
+      TOKEN_PII_INDEX_MAP,
+    );
+    const merged = {
+      ...encrypted,
+      ...addPiiIndices(
+        data as unknown as Record<string, unknown>,
+        TOKEN_PII_INDEX_MAP,
+      ),
+    };
+    return super.create(merged);
   }
 
   /**
@@ -46,10 +86,10 @@ export class EmailVerificationTokenRepository extends BaseRepository<EmailVerifi
   }
 
   /**
-   * Find tokens by email
+   * Find tokens by email (uses blind index for query)
    */
   async findByEmail(email: string): Promise<EmailVerificationTokenDocument[]> {
-    return this.findBy(TOKEN_FIELDS.EMAIL, email);
+    return this.findBy(TOKEN_FIELDS.EMAIL_INDEX, piiBlindIndex(email));
   }
 
   /**
@@ -108,6 +148,34 @@ export class PasswordResetTokenRepository extends BaseRepository<PasswordResetTo
     super(PASSWORD_RESET_COLLECTION);
   }
 
+  /** Override mapDoc to auto-decrypt PII on every token read */
+  protected override mapDoc<D = PasswordResetTokenDocument>(
+    snap: import("firebase-admin/firestore").DocumentSnapshot,
+  ): D {
+    const raw = super.mapDoc<PasswordResetTokenDocument>(snap);
+    return decryptPiiFields(raw as unknown as Record<string, unknown>, [
+      ...TOKEN_PII_FIELDS,
+    ]) as unknown as D;
+  }
+
+  /** Encrypt token PII and add blind index before writing */
+  override async create(
+    data: Partial<PasswordResetTokenDocument>,
+  ): Promise<PasswordResetTokenDocument> {
+    let encrypted = encryptPiiFields(
+      data as unknown as Record<string, unknown>,
+      [...TOKEN_PII_FIELDS],
+    );
+    encrypted = {
+      ...encrypted,
+      ...addPiiIndices(
+        data as unknown as Record<string, unknown>,
+        TOKEN_PII_INDEX_MAP,
+      ),
+    };
+    return super.create(encrypted);
+  }
+
   /**
    * Find token by token string
    */
@@ -123,10 +191,10 @@ export class PasswordResetTokenRepository extends BaseRepository<PasswordResetTo
   }
 
   /**
-   * Find tokens by email
+   * Find tokens by email (uses blind index for query)
    */
   async findByEmail(email: string): Promise<PasswordResetTokenDocument[]> {
-    return this.findBy(TOKEN_FIELDS.EMAIL, email);
+    return this.findBy(TOKEN_FIELDS.EMAIL_INDEX, piiBlindIndex(email));
   }
 
   /**

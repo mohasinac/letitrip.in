@@ -13,10 +13,11 @@ import { apiClient } from "@/lib/api-client";
 import { getRCBalanceAction, getRCHistoryAction } from "@/actions";
 import { API_ENDPOINTS, SUCCESS_MESSAGES, ERROR_MESSAGES } from "@/constants";
 
-export function useRCBalance() {
+export function useRCBalance(enabled = true) {
   return useQuery({
     queryKey: ["rc", "balance"],
     queryFn: () => getRCBalanceAction(),
+    enabled,
   });
 }
 

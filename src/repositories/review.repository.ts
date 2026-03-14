@@ -13,10 +13,25 @@ import type {
 } from "@/db/schema";
 import { createReviewId, REVIEW_COLLECTION, REVIEW_FIELDS } from "@/db/schema";
 import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
+import {
+  encryptPiiFields,
+  decryptPiiFields,
+  REVIEW_PII_FIELDS,
+} from "@/lib/pii";
 
 class ReviewRepository extends BaseRepository<ReviewDocument> {
   constructor() {
     super(REVIEW_COLLECTION);
+  }
+
+  /** Override mapDoc to auto-decrypt PII on every review read */
+  protected override mapDoc<D = ReviewDocument>(
+    snap: import("firebase-admin/firestore").DocumentSnapshot,
+  ): D {
+    const raw = super.mapDoc<ReviewDocument>(snap);
+    return decryptPiiFields(raw as unknown as Record<string, unknown>, [
+      ...REVIEW_PII_FIELDS,
+    ]) as unknown as D;
   }
 
   /**
@@ -43,12 +58,18 @@ class ReviewRepository extends BaseRepository<ReviewDocument> {
       updatedAt: new Date(),
     };
 
+    // Encrypt PII before persisting
+    const encrypted = encryptPiiFields(
+      reviewData as unknown as Record<string, unknown>,
+      [...REVIEW_PII_FIELDS],
+    );
+
     await this.db
       .collection(this.collection)
       .doc(id)
-      .set(prepareForFirestore(reviewData));
+      .set(prepareForFirestore(encrypted));
 
-    return { id, ...reviewData };
+    return { id, ...reviewData }; // return plaintext to caller
   }
 
   /**

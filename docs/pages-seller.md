@@ -67,6 +67,29 @@ Seller's incoming order queue. Supports filter by status, date range, and search
 
 ---
 
+## Offers
+
+**Route:** `/seller/offers`  
+**Component:** `SellerOffersView`  
+**Feature:** `src/features/seller/`
+
+Incoming buyer offer queue. Shows all offers received on the seller's products.
+
+- Each row: product thumbnail, buyer display name, offer amount, status badge (`pending` / `countered` / `accepted` / `declined` / `withdrawn` / `expired`), buyer note, expiry countdown
+- Filter by status
+
+**Actions per offer row:**
+
+| Action  | Condition | Server Action                                                                      |
+| ------- | --------- | ---------------------------------------------------------------------------------- |
+| Accept  | `pending` | `respondToOfferAction({ offerId, action: 'accept' })`                              |
+| Decline | `pending` | `respondToOfferAction({ offerId, action: 'decline', sellerNote? })`                |
+| Counter | `pending` | `respondToOfferAction({ offerId, action: 'counter', counterAmount, sellerNote? })` |
+
+**Data:** `useSellerOffers()` → `GET /api/seller/offers`
+
+---
+
 ## Auctions
 
 **Route:** `/seller/auctions`  
@@ -141,8 +164,8 @@ Configure bank account details for receiving payouts:
 **Data:** `useSellerPayoutSettings()` → `GET /api/seller/payout-settings`  
 **Actions:**
 
-- `PUT /api/seller/payout-settings` (via service mutation)
-- `POST /api/seller/payouts` — request payout
+- `updateSellerPayoutSettingsAction` (Server Action) — save bank account details
+- `requestSellerPayoutAction` (Server Action) — submit payout request
 
 ---
 

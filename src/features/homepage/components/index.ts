@@ -25,6 +25,7 @@ export { BlogArticlesSection } from "./BlogArticlesSection";
 export { BeforeAfterCard } from "./BeforeAfterCard";
 export type { BeforeAfterCardProps } from "./BeforeAfterCard";
 export { FeaturedResultsSection } from "./FeaturedResultsSection";
+export { SecurityHighlightsSection } from "./SecurityHighlightsSection";
 export { HomepageSkeleton } from "./HomepageSkeleton";
 export { HomepageView } from "./HomepageView";
 export { HowAuctionsWorkView } from "./HowAuctionsWorkView";

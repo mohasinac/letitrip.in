@@ -103,6 +103,13 @@ const HowItWorksSection = dynamic(
     })),
   { ssr: true },
 );
+const SecurityHighlightsSection = dynamic(
+  () =>
+    import("./SecurityHighlightsSection").then((m) => ({
+      default: m.SecurityHighlightsSection,
+    })),
+  { ssr: true },
+);
 const NewsletterSection = dynamic(
   () =>
     import("./NewsletterSection").then((m) => ({
@@ -164,6 +171,7 @@ export async function HomepageView() {
       <FeaturedEventsSection />
       <AdvertisementBanner />
       <CustomerReviewsSection initialReviews={reviews} />
+      <SecurityHighlightsSection />
       <WhatsAppCommunitySection />
       <FAQSection />
       <NewsletterSection />

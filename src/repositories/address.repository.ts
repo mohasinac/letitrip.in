@@ -22,6 +22,11 @@ import {
   USER_COLLECTION,
 } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";
+import {
+  encryptPiiFields,
+  decryptPiiFields,
+  ADDRESS_PII_FIELDS,
+} from "@/lib/pii";
 
 class AddressRepository {
   /**
@@ -34,6 +39,18 @@ class AddressRepository {
       .collection(ADDRESS_SUBCOLLECTION);
   }
 
+  /** Decrypt PII fields after reading an address doc from Firestore */
+  private decryptAddress(doc: AddressDocument): AddressDocument {
+    return decryptPiiFields(doc as unknown as Record<string, unknown>, [
+      ...ADDRESS_PII_FIELDS,
+    ]) as unknown as AddressDocument;
+  }
+
+  /** Encrypt PII fields before writing an address doc to Firestore */
+  private encryptAddressData<T extends Record<string, unknown>>(data: T): T {
+    return encryptPiiFields(data, [...ADDRESS_PII_FIELDS]);
+  }
+
   /**
    * List all addresses for a user, ordered by createdAt desc
    */
@@ -43,12 +60,13 @@ class AddressRepository {
         .orderBy(ADDRESS_FIELDS.CREATED_AT, "desc")
         .get();
 
-      return snapshot.docs.map(
-        (doc) =>
+      return snapshot.docs.map((doc) =>
+        this.decryptAddress(
           deserializeTimestamps({
             id: doc.id,
             ...doc.data(),
           }) as AddressDocument,
+        ),
       );
     } catch (error) {
       throw new DatabaseError(
@@ -70,10 +88,12 @@ class AddressRepository {
 
       if (!doc.exists) return null;
 
-      return deserializeTimestamps({
-        id: doc.id,
-        ...doc.data(),
-      }) as AddressDocument;
+      return this.decryptAddress(
+        deserializeTimestamps({
+          id: doc.id,
+          ...doc.data(),
+        }) as AddressDocument,
+      );
     } catch (error) {
       throw new DatabaseError(
         `Failed to find address ${addressId} for user ${userId}`,
@@ -137,7 +157,11 @@ class AddressRepository {
         updatedAt: now,
       };
 
-      await docRef.set(prepareForFirestore(addressData));
+      // Encrypt PII before persisting
+      const encrypted = this.encryptAddressData(
+        addressData as unknown as Record<string, unknown>,
+      );
+      await docRef.set(prepareForFirestore(encrypted));
 
       serverLogger.info("Address created", {
         userId,
@@ -173,8 +197,12 @@ class AddressRepository {
         await this.clearDefaultFlag(userId);
       }
 
+      // Encrypt PII before persisting
+      const encryptedInput = this.encryptAddressData(
+        input as unknown as Record<string, unknown>,
+      );
       const updateData = {
-        ...prepareForFirestore(input),
+        ...prepareForFirestore(encryptedInput),
         [ADDRESS_FIELDS.UPDATED_AT]: new Date(),
       };
 

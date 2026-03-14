@@ -315,9 +315,9 @@ export function PreOrderCard({
 
         {/* Delivery date */}
         {product.preOrderDeliveryDate && (
-          <div className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 w-fit">
+          <div className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 max-w-full overflow-hidden">
             <Clock className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
-            <Span variant="inherit">
+            <Span variant="inherit" className="truncate">
               {t("deliveryBy", {
                 date: formatDate(product.preOrderDeliveryDate),
               })}
@@ -333,15 +333,17 @@ export function PreOrderCard({
         )}
 
         {/* CTA */}
-        <div className={`flex gap-1.5 ${variant === "list" ? "mt-auto" : ""}`}>
+        <div
+          className={`flex flex-wrap gap-1.5 ${variant === "list" ? "mt-auto" : ""}`}
+        >
           {isSoldOut ? (
             <Button
               variant="ghost"
               size="sm"
-              className="flex-1 text-xs px-2 gap-1 cursor-not-allowed opacity-60"
+              className="flex-1 min-w-0 text-xs px-2 sm:text-xs sm:px-2 gap-1 cursor-not-allowed opacity-60"
               disabled
             >
-              <Span variant="inherit" className="truncate">
+              <Span variant="inherit" className="min-w-0 truncate">
                 {t("soldOut")}
               </Span>
             </Button>
@@ -349,14 +351,17 @@ export function PreOrderCard({
             <Button
               variant="primary"
               size="sm"
-              className="flex-1 text-xs px-2 gap-1 bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600"
+              className="flex-1 min-w-0 text-xs px-2 sm:text-xs sm:px-2 gap-1 bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600"
               onClick={handleReserve}
             >
               <CalendarCheck
                 className="w-3 h-3 flex-shrink-0"
                 aria-hidden="true"
               />
-              <Span variant="inherit" className="truncate">
+              <Span
+                variant="inherit"
+                className="hidden sm:inline xl:hidden min-w-0 truncate"
+              >
                 {t("reserveNow")}
               </Span>
             </Button>

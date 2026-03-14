@@ -75,15 +75,18 @@ export type ContainerSize = keyof typeof CONTAINER_MAP;
  * Responsive grid column presets.
  * Mirrors THEME_CONSTANTS.grid in the host app.
  */
-const GRID_MAP = {
+export const GRID_MAP = {
   1: "grid grid-cols-1",
   2: "grid grid-cols-1 sm:grid-cols-2",
-  3: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
-  4: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+  3: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3",
+  4: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4",
   5: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
   6: "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
+  /** Card grid — starts at 2 on mobile, max 5 on 2xl */
+  cards:
+    "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5",
   /** Equal halves on md+ */
-  halves: "grid grid-cols-1 md:grid-cols-2",
+  halves: "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2",
   /** 2fr / 1fr split on md+ */
   twoThird: "grid grid-cols-1 md:grid-cols-[2fr_1fr]",
   /** 1fr / 2fr split on md+ */

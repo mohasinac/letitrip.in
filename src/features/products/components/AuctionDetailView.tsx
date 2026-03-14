@@ -32,12 +32,14 @@ import { ROUTES, THEME_CONSTANTS } from "@/constants";
 import { useTranslations } from "next-intl";
 import {
   useAuth,
+  useBottomActions,
   useRealtimeBids,
   useCountdown,
   useAuctionDetail,
   useWishlistToggle,
 } from "@/hooks";
 import { formatCurrency, formatDate, resolveDate } from "@/utils";
+import { Heart } from "lucide-react";
 
 const { themed, flex, page, spacing } = THEME_CONSTANTS;
 
@@ -77,6 +79,46 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
   // Reserve price status
   const reserveMet =
     product?.reservePrice && currentBid >= product.reservePrice;
+
+  // ── Mobile bottom action bar ──
+  useBottomActions({
+    infoLabel: product
+      ? `${hasCurrentBid ? t("currentBid") : t("startingBid")}: ${formatCurrency(displayBid)}`
+      : undefined,
+    actions: product
+      ? [
+          // Wishlist toggle
+          {
+            id: "wishlist",
+            icon: (
+              <Heart
+                className={`w-4 h-4 ${
+                  inWishlist ? "fill-current text-pink-500" : ""
+                }`}
+              />
+            ),
+            label: inWishlist ? t("removeFromWishlist") : t("addToWishlist"),
+            variant: "ghost" as const,
+            grow: false,
+            disabled: wishlistLoading,
+            onClick: toggleWishlist,
+          },
+          // Place Bid / Auction Ended
+          {
+            id: isEnded ? "ended" : "bid",
+            label: isEnded ? t("auctionEnded") : t("placeBidCta"),
+            variant: isEnded ? ("ghost" as const) : ("primary" as const),
+            grow: true,
+            disabled: isEnded,
+            onClick: () => {
+              document
+                .getElementById("place-bid-mobile")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            },
+          },
+        ]
+      : [],
+  });
 
   // Loading skeleton
   if (productQuery.isLoading) {
@@ -565,74 +607,52 @@ export function AuctionDetailView({ id }: AuctionDetailViewProps) {
           </div>
         </div>
 
+        {/* ——— Mobile Bid Form (lg:hidden — scroll target for BottomActions) ——— */}
+        <div
+          id="place-bid-mobile"
+          className={`lg:hidden mt-6 scroll-mt-4 ${themed.bgPrimary} rounded-xl p-4 sm:p-5 border ${themed.border} ${spacing.stack}`}
+        >
+          <Text
+            weight="semibold"
+            size="sm"
+            className="uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
+          >
+            {t("placeBid")}
+          </Text>
+          {!!user && !isEnded && (
+            <RCBalanceChip minimumRequired={displayBid + 1} variant="panel" />
+          )}
+          <PlaceBidForm
+            productId={product.id}
+            minimumBid={displayBid}
+            currency={product.currency}
+            isEnded={isEnded}
+            isAuthenticated={!!user}
+            onBidPlaced={() => bidsQuery.refetch()}
+          />
+          {product.buyNowPrice && product.buyNowPrice > 0 && !isEnded && (
+            <>
+              <Divider />
+              <Button variant="secondary" className="w-full" disabled={isEnded}>
+                {t("buyNowAction", {
+                  price: formatCurrency(product.buyNowPrice),
+                })}
+              </Button>
+            </>
+          )}
+        </div>
+
         {/* ——— Bid History Section ——— */}
         <div
           className={`${themed.bgPrimary} rounded-xl p-4 sm:p-6 lg:p-8 mt-8 lg:mt-12`}
         >
-          <BidHistory bids={bids} loading={bidsQuery.isLoading} />
+          <BidHistory
+            bids={bids}
+            loading={bidsQuery.isLoading}
+            currentUserId={user?.uid}
+          />
         </div>
       </div>
-
-      {/* ——— Mobile sticky bottom bar ——— */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden">
-        <div
-          className={`${themed.bgPrimary} border-t ${themed.border} px-4 py-3`}
-        >
-          {/* RC balance row — mobile */}
-          {!!user && !isEnded && (
-            <div className="mb-2">
-              <RCBalanceChip
-                minimumRequired={displayBid + 1}
-                variant="chip"
-                className="text-xs"
-              />
-            </div>
-          )}
-          <div className={flex.between}>
-            <div>
-              <Text size="xs" variant="secondary">
-                {hasCurrentBid ? t("currentBid") : t("startingBid")}
-              </Text>
-              <Text className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
-                {formatCurrency(displayBid)}
-              </Text>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleWishlist}
-                disabled={wishlistLoading}
-                aria-label={
-                  inWishlist ? t("removeFromWishlist") : t("addToWishlist")
-                }
-              >
-                {inWishlist ? "❤️" : "🤍"}
-              </Button>
-              {!isEnded ? (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() =>
-                    document
-                      .getElementById("place-bid-mobile")
-                      ?.scrollIntoView({ behavior: "smooth" })
-                  }
-                >
-                  {t("placeBidCta")}
-                </Button>
-              ) : (
-                <Button variant="secondary" size="sm" disabled>
-                  {t("auctionEnded")}
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom padding for mobile sticky bar */}
-      <div className="h-20 lg:hidden" />
     </div>
   );
 }

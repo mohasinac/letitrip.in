@@ -348,6 +348,7 @@ export const POST = createApiHandler<(typeof checkoutSchema)["_output"]>({
         sellerName: firstItem.sellerName || undefined,
         items: orderItems,
         orderType,
+        offerId: firstItem.offerId ?? undefined,
         status: "pending",
         paymentStatus: "pending",
         paymentMethod,

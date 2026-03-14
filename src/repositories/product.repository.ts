@@ -23,12 +23,35 @@ import {
 import { generateUniqueId, slugify } from "@/utils";
 import { DatabaseError } from "@/lib/errors";
 import type { SieveModel, FirebaseSieveResult } from "@/lib/query";
+import { encryptPiiFields, decryptPiiFields } from "@/lib/pii";
+
+const PRODUCT_PII_FIELDS = ["sellerName", "sellerEmail"] as const;
 
 class ProductRepository extends BaseRepository<ProductDocument> {
   constructor() {
     super(PRODUCT_COLLECTION);
   }
 
+  /** Override mapDoc to auto-decrypt PII on every product read */
+  protected override mapDoc<D = ProductDocument>(
+    snap: import("firebase-admin/firestore").DocumentSnapshot,
+  ): D {
+    const raw = super.mapDoc<ProductDocument>(snap);
+    return decryptPiiFields(raw as unknown as Record<string, unknown>, [
+      ...PRODUCT_PII_FIELDS,
+    ]) as unknown as D;
+  }
+  /** Override update to encrypt PII fields before any product write */
+  override async update(
+    id: string,
+    data: Partial<ProductDocument>,
+  ): Promise<ProductDocument> {
+    const encrypted = encryptPiiFields(
+      data as unknown as Record<string, unknown>,
+      [...PRODUCT_PII_FIELDS],
+    );
+    return super.update(id, encrypted as Partial<ProductDocument>);
+  }
   /**
    * Create new product with SEO-friendly ID
    * Auto-increments count if duplicate name exists
@@ -82,12 +105,18 @@ class ProductRepository extends BaseRepository<ProductDocument> {
       updatedAt: new Date(),
     };
 
+    // Encrypt PII before persisting
+    const encrypted = encryptPiiFields(
+      productData as unknown as Record<string, unknown>,
+      [...PRODUCT_PII_FIELDS],
+    );
+
     await this.db
       .collection(this.collection)
       .doc(id)
-      .set(prepareForFirestore(productData));
+      .set(prepareForFirestore(encrypted));
 
-    return { id, ...productData };
+    return { id, ...productData }; // return plaintext to caller
   }
 
   /**

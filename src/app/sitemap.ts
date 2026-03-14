@@ -11,6 +11,7 @@ import {
   BLOG_POST_FIELDS,
 } from "@/db/schema";
 import { CATEGORIES_COLLECTION } from "@/db/schema";
+import { STORE_COLLECTION, STORE_FIELDS } from "@/db/schema";
 import { serverLogger } from "@/lib/server-logger";
 import { ROUTES } from "@/constants";
 
@@ -91,6 +92,12 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
     priority: 0.3,
   },
   {
+    url: `${BASE_URL}${ROUTES.PUBLIC.SECURITY}`,
+    lastModified: new Date(),
+    changeFrequency: "yearly",
+    priority: 0.4,
+  },
+  {
     url: `${BASE_URL}${ROUTES.PUBLIC.HELP}`,
     lastModified: new Date(),
     changeFrequency: "monthly",
@@ -131,6 +138,72 @@ const STATIC_PAGES: MetadataRoute.Sitemap = [
     lastModified: new Date(),
     changeFrequency: "yearly",
     priority: 0.3,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.SHIPPING_POLICY}`,
+    lastModified: new Date(),
+    changeFrequency: "yearly",
+    priority: 0.3,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.PRE_ORDERS}`,
+    lastModified: new Date(),
+    changeFrequency: "daily",
+    priority: 0.7,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.RC_INFO}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.4,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.FEES}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.4,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.HOW_AUCTIONS_WORK}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.4,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.HOW_PRE_ORDERS_WORK}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.4,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.HOW_OFFERS_WORK}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.4,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.HOW_CHECKOUT_WORKS}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.4,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.HOW_ORDERS_WORK}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.4,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.HOW_REVIEWS_WORK}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.4,
+  },
+  {
+    url: `${BASE_URL}${ROUTES.PUBLIC.HOW_PAYOUTS_WORK}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.4,
   },
 ];
 
@@ -309,13 +382,52 @@ async function fetchAuctionUrls(): Promise<MetadataRoute.Sitemap> {
   }
 }
 
+async function fetchStoreUrls(): Promise<MetadataRoute.Sitemap> {
+  try {
+    const db = getAdminDb();
+    const snapshot = await db
+      .collection(STORE_COLLECTION)
+      .where(STORE_FIELDS.STATUS, "==", STORE_FIELDS.STATUS_VALUES.ACTIVE)
+      .where(STORE_FIELDS.IS_PUBLIC, "==", true)
+      .select(STORE_FIELDS.STORE_SLUG, STORE_FIELDS.UPDATED_AT)
+      .limit(1000)
+      .get();
+
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      const slug: string =
+        (data[STORE_FIELDS.STORE_SLUG] as string | undefined) ?? doc.id;
+      return {
+        url: `${BASE_URL}${ROUTES.PUBLIC.STORE_DETAIL(slug)}`,
+        lastModified:
+          (
+            data[STORE_FIELDS.UPDATED_AT] as { toDate?: () => Date } | undefined
+          )?.toDate?.() ?? new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+      };
+    });
+  } catch (err) {
+    serverLogger.warn("sitemap: failed to fetch store URLs", { error: err });
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [productUrls, categoryUrls, eventUrls, blogUrls, auctionUrls] = await Promise.all([
+  const [
+    productUrls,
+    categoryUrls,
+    eventUrls,
+    blogUrls,
+    auctionUrls,
+    storeUrls,
+  ] = await Promise.all([
     fetchProductUrls(),
     fetchCategoryUrls(),
     fetchEventUrls(),
     fetchBlogPostUrls(),
     fetchAuctionUrls(),
+    fetchStoreUrls(),
   ]);
 
   return [
@@ -325,6 +437,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...productUrls,
     ...auctionUrls,
     ...eventUrls,
+    ...storeUrls,
   ];
 }
 

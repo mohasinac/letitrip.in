@@ -25,7 +25,7 @@ export function FeaturedProductsSection() {
       viewMoreLabel={tActions("viewAllArrow")}
       items={products}
       renderItem={(product) => <ProductCard product={product} />}
-      perView={{ base: 2, sm: 3, md: 4, xl: 5 }}
+      perView={{ base: 2, sm: 3, md: 4 }}
       gap={12}
       autoScroll
       autoScrollInterval={3500}

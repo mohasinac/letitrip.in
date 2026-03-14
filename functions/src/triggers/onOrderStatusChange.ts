@@ -14,6 +14,7 @@ import { logInfo, logError } from "../utils/logger";
 import { REGION, COLLECTIONS } from "../config/constants";
 import { notificationRepository } from "../repositories";
 import { IntegrationError } from "../lib/errors";
+import { decryptPii } from "../lib/pii";
 import {
   ORDER_MESSAGES,
   EMAIL_SUBJECTS,
@@ -150,6 +151,9 @@ export const onOrderStatusChange = onDocumentUpdated(
 
     if (!before || !after) return;
     if (before.status === after.status) return; // nothing changed
+
+    // Decrypt PII that was encrypted at rest
+    after.userEmail = decryptPii(after.userEmail) as string;
 
     const newStatus = after.status;
     const orderId = event.params.orderId;

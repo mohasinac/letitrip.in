@@ -255,8 +255,9 @@ Control which content sections appear on the homepage and in what order:
 
 Platform payout management:
 
-- `PayoutStatusForm` + `adminUpdatePayoutAction` — approve or reject payout requests
-- Weekly payout batch trigger
+- Filter by status (pending/approved/paid/rejected) via `PayoutFilters`
+- `PayoutStatusForm` + `adminUpdatePayoutAction` — approve or reject payout requests with optional note
+- Mark as paid after manual bank transfer
 
 **Columns:** `getPayoutTableColumns`
 
@@ -269,11 +270,23 @@ Platform payout management:
 
 Upload and manage media files in Firebase Storage:
 
-- Grid of uploaded assets with preview
-- `MediaOperationForm` — crop or trim media
+- Grid of uploaded assets with search and preview
+- `MediaOperationForm` — crop (image) or trim (video)
 - Bulk delete
 
 **Columns:** `getMediaTableColumns`
+
+---
+
+## Navigation
+
+**Route:** `/admin/navigation`  
+**Component:** `AdminNavigationView`
+
+Manage site navigation menus (header and footer):
+
+- CRUD for nav links: label, URL, icon, visibility toggle, display order
+- Supports nested menu items (parent/child structure)
 
 ---
 
@@ -287,9 +300,12 @@ Platform-wide configuration with tabbed sub-forms:
 - `SiteBasicInfoForm` — site name, logo, favicon, description
 - `SiteContactForm` — support email, phone, address
 - `SiteSocialLinksForm` — social media profile URLs
-- `SiteCommissionsForm` — seller commission rates
+- `SiteCommissionsForm` — seller commission rates + processing fee %
+- `SiteRCSettingsForm` — RC earn rate (coins per ₹ spent), conversion rate (coins → ₹), purchase packages
 - `SiteCredentialsForm` — AES-256-GCM encrypted provider credentials (Razorpay, Resend, etc.)
 - `BackgroundSettings` — page background visual settings
+
+**Actions:** `getSiteSettingsAction`, `updateSiteSettingsAction`
 
 ---
 
@@ -298,7 +314,7 @@ Platform-wide configuration with tabbed sub-forms:
 **Route:** `/admin/feature-flags`  
 **Component:** `AdminFeatureFlagsView`
 
-Toggle platform feature flags (e.g. enable auctions, enable pre-orders, maintenance mode). Uses `useAdminFeatureFlags`.
+Toggle platform feature flags (e.g. enable auctions, enable pre-orders, enable chat, maintenance mode). Changes are stored in Firestore and read by middleware/hooks on each request. Uses `useAdminFeatureFlags`.
 
 ---
 

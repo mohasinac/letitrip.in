@@ -32,7 +32,7 @@ export function TopCategoriesSection({
       viewMoreLabel={tActions("viewAllArrow")}
       items={categories.slice(0, 12)}
       renderItem={(category) => <CategoryCard category={category} />}
-      perView={{ base: 2, sm: 3, md: 4, xl: 5 }}
+      perView={{ base: 2, sm: 3, md: 4 }}
       gap={12}
       autoScroll={false}
       keyExtractor={(c) => c.id ?? c.slug}

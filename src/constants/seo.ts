@@ -216,6 +216,81 @@ export const SEO_CONFIG = {
         "delivery",
       ],
     },
+    cart: {
+      title: "Shopping Cart - LetItRip",
+      description:
+        "Review items in your cart and proceed to checkout on LetItRip.",
+      keywords: ["cart", "shopping cart", "checkout"],
+    },
+    checkout: {
+      title: "Checkout - LetItRip",
+      description: "Complete your purchase securely on LetItRip.",
+      keywords: ["checkout", "payment", "order"],
+    },
+    checkoutSuccess: {
+      title: "Order Confirmed - LetItRip",
+      description: "Your order has been placed successfully on LetItRip.",
+      keywords: ["order confirmed", "order success", "purchase complete"],
+    },
+    unauthorized: {
+      title: "Unauthorized - LetItRip",
+      description: "You need to sign in to access this page.",
+      keywords: ["unauthorized", "login required"],
+    },
+    eventParticipate: {
+      title: "Participate in Event - LetItRip",
+      description:
+        "Join this event on LetItRip. Submit your entry and participate.",
+      keywords: ["event", "participate", "contest"],
+    },
+    seller: {
+      dashboard: {
+        title: "Seller Dashboard - LetItRip",
+        description: "Manage your listings, orders, and earnings on LetItRip.",
+        keywords: ["seller dashboard", "manage listings", "earnings"],
+      },
+      products: {
+        title: "My Products - LetItRip Seller",
+        description: "Manage and update your store product listings.",
+        keywords: ["seller products", "manage listings"],
+      },
+      orders: {
+        title: "My Sales - LetItRip Seller",
+        description: "View and manage orders placed by your customers.",
+        keywords: ["seller orders", "manage sales"],
+      },
+      offers: {
+        title: "Incoming Offers - LetItRip Seller",
+        description: "Review and respond to buyer offers on your products.",
+        keywords: ["seller offers", "buyer offers"],
+      },
+      payouts: {
+        title: "My Payouts - LetItRip Seller",
+        description: "Manage your earnings and payout requests.",
+        keywords: ["seller payouts", "earnings", "withdrawals"],
+      },
+      addresses: {
+        title: "Business Addresses - LetItRip Seller",
+        description: "Manage your pickup and business addresses.",
+        keywords: ["seller addresses", "pickup addresses"],
+      },
+      analytics: {
+        title: "Seller Analytics - LetItRip",
+        description:
+          "View your sales performance, revenue trends, and top products.",
+        keywords: ["seller analytics", "sales performance", "revenue"],
+      },
+      createProduct: {
+        title: "Add New Listing - LetItRip Seller",
+        description: "Create a new product listing for your store on LetItRip.",
+        keywords: ["create product", "new listing", "sell"],
+      },
+      editProduct: {
+        title: "Edit Product - LetItRip Seller",
+        description: "Update your product listing details on LetItRip.",
+        keywords: ["edit product", "update listing"],
+      },
+    },
   },
 } as const;
 

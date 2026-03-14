@@ -99,12 +99,12 @@ export function SellerProductCard({
           available={product.availableQuantity}
           total={product.stockQuantity}
         />
-        <div className="flex gap-2 pt-1 mt-auto">
+        <div className="flex flex-wrap gap-2 pt-1 mt-auto">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onEdit(product)}
-            className="flex-1 text-xs py-1.5"
+            className="flex-1 min-w-0 text-xs py-1.5 px-2 sm:text-xs sm:px-2"
           >
             {tActions("edit")}
           </Button>
@@ -112,7 +112,7 @@ export function SellerProductCard({
             variant="danger"
             size="sm"
             onClick={() => onDelete(product)}
-            className="flex-1 text-xs py-1.5"
+            className="flex-1 min-w-0 text-xs py-1.5 px-2 sm:text-xs sm:px-2"
           >
             {tActions("delete")}
           </Button>

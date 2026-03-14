@@ -17,10 +17,21 @@ import type {
 } from "@/db/schema";
 import { BID_COLLECTION, BID_FIELDS } from "@/db/schema";
 import { generateBidId, type GenerateBidIdInput } from "@/utils";
+import { encryptPiiFields, decryptPiiFields, BID_PII_FIELDS } from "@/lib/pii";
 
 class BidRepository extends BaseRepository<BidDocument> {
   constructor() {
     super(BID_COLLECTION);
+  }
+
+  /** Override mapDoc to auto-decrypt PII on every bid read */
+  protected override mapDoc<D = BidDocument>(
+    snap: import("firebase-admin/firestore").DocumentSnapshot,
+  ): D {
+    const raw = super.mapDoc<BidDocument>(snap);
+    return decryptPiiFields(raw as unknown as Record<string, unknown>, [
+      ...BID_PII_FIELDS,
+    ]) as unknown as D;
   }
 
   /**
@@ -43,12 +54,18 @@ class BidRepository extends BaseRepository<BidDocument> {
       updatedAt: new Date(),
     };
 
+    // Encrypt PII before persisting
+    const encrypted = encryptPiiFields(
+      bidData as unknown as Record<string, unknown>,
+      [...BID_PII_FIELDS],
+    );
+
     await this.db
       .collection(this.collection)
       .doc(id)
-      .set(prepareForFirestore(bidData));
+      .set(prepareForFirestore(encrypted));
 
-    return { id, ...bidData };
+    return { id, ...bidData }; // return plaintext to caller
   }
 
   /**

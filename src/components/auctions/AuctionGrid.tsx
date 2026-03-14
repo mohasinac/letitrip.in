@@ -35,6 +35,12 @@ interface AuctionGridProps {
   selectable?: boolean;
   selectedIds?: string[];
   onSelectionChange?: (ids: string[]) => void;
+  /**
+   * Tailwind grid class for the card grid (variant="grid" only).
+   * Defaults to THEME_CONSTANTS.grid.cards (2→3→max 4 across breakpoints).
+   * Use THEME_CONSTANTS.grid.* presets or any custom Tailwind grid class.
+   */
+  gridClassName?: string;
 }
 
 function AuctionCardSkeleton({
@@ -86,6 +92,7 @@ export function AuctionGrid({
   selectable = false,
   selectedIds = [],
   onSelectionChange,
+  gridClassName,
 }: AuctionGridProps) {
   const handleSelect = (id: string, selected: boolean) => {
     if (!onSelectionChange) return;
@@ -99,7 +106,7 @@ export function AuctionGrid({
   const containerClass =
     variant === "list"
       ? "flex flex-col gap-3"
-      : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4";
+      : (gridClassName ?? THEME_CONSTANTS.grid.cards) + " gap-4";
 
   if (loading) {
     return (

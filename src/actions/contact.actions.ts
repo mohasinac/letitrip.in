@@ -62,7 +62,7 @@ export async function sendContactAction(
   }
 
   const { name, email, subject, message } = parsed.data;
-  serverLogger.info("Contact form submission received", { email, subject });
+  serverLogger.info("Contact form submission received", { subject });
 
   const result = await sendContactEmail({ name, email, subject, message });
   if (!result.success)

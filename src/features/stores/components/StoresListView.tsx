@@ -14,7 +14,9 @@ import {
   SortDropdown,
   TablePagination,
   Text,
+  ViewToggle,
 } from "@/components";
+import type { ViewMode } from "@/components";
 import { THEME_CONSTANTS } from "@/constants";
 import { StoreCard } from "@/components";
 import { useStores } from "../hooks";
@@ -60,6 +62,7 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
   const pageSize = table.getNumber("pageSize", PAGE_SIZE);
   const totalPages = Math.ceil(total / pageSize) || 1;
   const sortParam = table.get("sorts") || "-createdAt";
+  const viewMode = (table.get("view") || "grid") as ViewMode;
 
   const sortOptions = useMemo(
     () =>
@@ -113,6 +116,12 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
               onClear={() => table.set("q", "")}
             />
           }
+          viewToggleSlot={
+            <ViewToggle
+              value={viewMode}
+              onChange={(m) => table.set("view", m)}
+            />
+          }
           sortSlot={
             <SortDropdown
               value={sortParam}
@@ -135,16 +144,19 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
           }
           selectedCount={selectedIds.length}
           onClearSelection={() => setSelectedIds([])}
-          bulkActions={
-            user ? (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleBulkAddToWishlist}
-              >
-                {tActions("bulkAddToWishlist", { count: selectedIds.length })}
-              </Button>
-            ) : undefined
+          bulkActionItems={
+            user
+              ? [
+                  {
+                    id: "bulk-wishlist",
+                    label: tActions("bulkAddToWishlist", {
+                      count: selectedIds.length,
+                    }),
+                    variant: "primary",
+                    onClick: handleBulkAddToWishlist,
+                  },
+                ]
+              : undefined
           }
         >
           {!isLoading && error ? (
@@ -164,6 +176,29 @@ export function StoresListView({ initialData }: StoresListViewProps = {}) {
               actionLabel={table.get("q") ? tActions("clearAll") : undefined}
               onAction={table.get("q") ? handleClearFilters : undefined}
             />
+          ) : viewMode === "list" ? (
+            <div className="flex flex-col gap-2">
+              {isLoading
+                ? Array.from({ length: pageSize }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="animate-pulse rounded-xl bg-zinc-200 dark:bg-slate-700 h-24"
+                    />
+                  ))
+                : stores.map((store) => (
+                    <StoreCard
+                      key={store.uid}
+                      store={store}
+                      selectable={!!user}
+                      selected={selectedIds.includes(store.ownerId)}
+                      onSelect={(id, sel) =>
+                        setSelectedIds((prev) =>
+                          sel ? [...prev, id] : prev.filter((x) => x !== id),
+                        )
+                      }
+                    />
+                  ))}
+            </div>
           ) : (
             <Grid cols={4} gap="none">
               {isLoading

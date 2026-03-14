@@ -115,10 +115,10 @@ export function ImageLightbox({
         size="sm"
         type="button"
         onClick={onClose}
-        className="absolute top-4 right-4 z-10 p-2 !min-h-0 rounded-full bg-white/10 hover:bg-white/20 text-white"
+        className="absolute top-4 right-4 z-10 w-12 h-12 p-0 !min-h-0 rounded-full bg-white/15 hover:bg-red-500/50 text-white flex items-center justify-center"
         aria-label="Close lightbox"
       >
-        <X className="w-6 h-6" />
+        <X className="w-7 h-7" />
       </Button>
 
       {/* Counter */}
@@ -135,10 +135,10 @@ export function ImageLightbox({
           size="sm"
           type="button"
           onClick={() => navigate(-1)}
-          className="absolute left-4 top-1/2 -translate-y-1/2 p-2 !min-h-0 rounded-full bg-white/10 hover:bg-white/20 text-white z-10"
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 p-0 !min-h-0 rounded-full bg-white/15 hover:bg-white/30 text-white z-10 flex items-center justify-center"
           aria-label="Previous image"
         >
-          <ChevronLeft className="w-6 h-6" />
+          <ChevronLeft className="w-7 h-7" />
         </Button>
       )}
 
@@ -176,10 +176,10 @@ export function ImageLightbox({
           size="sm"
           type="button"
           onClick={() => navigate(1)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 p-2 !min-h-0 rounded-full bg-white/10 hover:bg-white/20 text-white z-10"
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 p-0 !min-h-0 rounded-full bg-white/15 hover:bg-white/30 text-white z-10 flex items-center justify-center"
           aria-label="Next image"
         >
-          <ChevronRight className="w-6 h-6" />
+          <ChevronRight className="w-7 h-7" />
         </Button>
       )}
     </div>,

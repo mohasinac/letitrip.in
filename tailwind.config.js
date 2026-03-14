@@ -7,6 +7,7 @@ module.exports = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/constants/**/*.{js,ts,jsx,tsx}",
     "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
+    "./packages/*/src/**/*.{js,ts,jsx,tsx}",
   ],
   safelist: [
     // Zinc neutrals (light mode)

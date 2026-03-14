@@ -28,6 +28,8 @@ import {
   BLOG_POST_FIELDS,
   EVENTS_COLLECTION,
   EVENT_FIELDS,
+  STORE_COLLECTION,
+  STORE_FIELDS,
 } from "@/db/schema";
 import {
   ROUTES,
@@ -269,6 +271,47 @@ async function fetchEventRecords(): Promise<AlgoliaNavRecord[]> {
   }
 }
 
+async function fetchStoreRecords(): Promise<AlgoliaNavRecord[]> {
+  try {
+    const db = getAdminDb();
+    const snap = await db
+      .collection(STORE_COLLECTION)
+      .where(STORE_FIELDS.STATUS, "==", STORE_FIELDS.STATUS_VALUES.ACTIVE)
+      .where(STORE_FIELDS.IS_PUBLIC, "==", true)
+      .select(
+        STORE_FIELDS.STORE_NAME,
+        STORE_FIELDS.STORE_SLUG,
+        STORE_FIELDS.STORE_DESCRIPTION,
+        STORE_FIELDS.STORE_LOGO_URL,
+      )
+      .limit(500)
+      .get();
+
+    return snap.docs.map((doc) => {
+      const data = doc.data();
+      const slug =
+        (data[STORE_FIELDS.STORE_SLUG] as string | undefined) ?? doc.id;
+      const url = ROUTES.PUBLIC.STORE_DETAIL(slug);
+      return {
+        objectID: url,
+        title: (data[STORE_FIELDS.STORE_NAME] as string | undefined) ?? slug,
+        subtitle:
+          (data[STORE_FIELDS.STORE_DESCRIPTION] as string | undefined) ??
+          undefined,
+        image:
+          (data[STORE_FIELDS.STORE_LOGO_URL] as string | undefined) ??
+          undefined,
+        type: "page" as const,
+        url,
+        priority: 5,
+      };
+    });
+  } catch (err) {
+    serverLogger.warn("sync-pages: failed to fetch stores", { error: err });
+    return [];
+  }
+}
+
 // ── Route handler ─────────────────────────────────────────────────────────────
 
 export const POST = createApiHandler({
@@ -279,10 +322,11 @@ export const POST = createApiHandler({
       throw new ValidationError(ERROR_MESSAGES.ADMIN.ALGOLIA_NOT_CONFIGURED);
     }
 
-    const [categories, blogPosts, events] = await Promise.all([
+    const [categories, blogPosts, events, stores] = await Promise.all([
       fetchCategoryRecords(),
       fetchBlogRecords(),
       fetchEventRecords(),
+      fetchStoreRecords(),
     ]);
 
     const records: AlgoliaNavRecord[] = [
@@ -290,6 +334,7 @@ export const POST = createApiHandler({
       ...categories,
       ...blogPosts,
       ...events,
+      ...stores,
     ];
 
     serverLogger.info("Starting Algolia pages sync", {
@@ -297,6 +342,7 @@ export const POST = createApiHandler({
       categories: categories.length,
       blogPosts: blogPosts.length,
       events: events.length,
+      stores: stores.length,
       total: records.length,
       index: ALGOLIA_PAGES_INDEX_NAME,
     });

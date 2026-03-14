@@ -46,13 +46,22 @@ export function Select<V extends string = string>({
   const generatedId = useId();
   const id = externalId ?? generatedId;
   const [open, setOpen] = useState(false);
+  const [openUp, setOpenUp] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const selected = options.find((o) => o.value === value);
 
   const toggle = useCallback(() => {
-    if (!disabled) setOpen((v) => !v);
-  }, [disabled]);
+    if (!disabled) {
+      if (!open && ref.current) {
+        const rect = ref.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        setOpenUp(spaceBelow < 160 && spaceAbove > spaceBelow);
+      }
+      setOpen((v) => !v);
+    }
+  }, [disabled, open]);
 
   const handleSelect = useCallback(
     (val: V) => {
@@ -163,7 +172,10 @@ export function Select<V extends string = string>({
       {open && (
         <Ul
           role="listbox"
-          className="absolute z-50 mt-1 w-full overflow-auto rounded-lg border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg max-h-60 py-1"
+          className={[
+            "absolute z-50 w-full overflow-auto rounded-lg border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg max-h-60 py-1",
+            openUp ? "bottom-full mb-1" : "top-full mt-1",
+          ].join(" ")}
         >
           {options.map((option) => {
             const isSelected = option.value === value;

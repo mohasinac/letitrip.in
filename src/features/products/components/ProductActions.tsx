@@ -9,9 +9,16 @@ import {
   SUCCESS_MESSAGES,
   THEME_CONSTANTS,
 } from "@/constants";
-import { useAddToCart, useAuth, useMessage, useWishlistToggle } from "@/hooks";
+import {
+  useAddToCart,
+  useAuth,
+  useBottomActions,
+  useMessage,
+  useWishlistToggle,
+} from "@/hooks";
 import { Button, Span, Text } from "@/components";
-import { Heart, ShoppingCart, Zap, Tag } from "lucide-react";
+import { Gavel, Heart, ShoppingCart, Tag, Zap } from "lucide-react";
+import { formatCurrency } from "@/utils";
 import { MakeOfferForm } from "./MakeOfferForm";
 
 const { themed, flex, position } = THEME_CONSTANTS;
@@ -113,8 +120,92 @@ export function ProductActions({
       ? tLoading("default")
       : t("addToCart");
 
+  // ── Mobile bottom action bar (registered into BottomActions via context) ──
+  useBottomActions({
+    infoLabel:
+      isAuction && price > 0
+        ? `${tAuctions("startingBid")}: ${formatCurrency(price)}`
+        : stockCount && stockCount > 0 && stockCount <= 5
+          ? t("onlyLeft", { count: stockCount })
+          : undefined,
+    actions: [
+      // Wishlist — always shown
+      {
+        id: "wishlist",
+        icon: (
+          <Heart
+            className={`w-4 h-4 ${inWishlist ? "fill-current text-pink-500" : ""}`}
+          />
+        ),
+        label: inWishlist ? t("removeFromWishlist") : t("addToWishlist"),
+        variant: "ghost" as const,
+        grow: false,
+        disabled: wishlistLoading,
+        onClick: handleWishlist,
+      },
+      // Non-auction: Add to Cart
+      ...(!isAuction
+        ? [
+            {
+              id: "cart",
+              icon: <ShoppingCart className="w-4 h-4" />,
+              label: isOutOfStock
+                ? (statusLabel ?? t("outOfStock"))
+                : t("addToCart"),
+              variant: "outline" as const,
+              grow: true,
+              disabled: isOutOfStock || cartLoading,
+              loading: cartLoading,
+              onClick: handleAddToCart,
+            },
+          ]
+        : [
+            // Auction: Place Bid (primary CTA)
+            {
+              id: "bid",
+              icon: <Gavel className="w-4 h-4" />,
+              label: tAuctions("placeBid"),
+              variant: "primary" as const,
+              grow: true,
+              onClick: handleAddToCart,
+            },
+          ]),
+      // Non-auction, in-stock: Buy Now
+      ...(!isAuction && !isOutOfStock
+        ? [
+            {
+              id: "buy",
+              icon: <Zap className="w-4 h-4" />,
+              label: t("buyNow"),
+              variant: "primary" as const,
+              grow: true,
+              onClick: handleBuyNow,
+            },
+          ]
+        : []),
+      // Make an Offer — icon-only, only when applicable
+      ...(allowOffers && !isAuction && !isOutOfStock
+        ? [
+            {
+              id: "offer",
+              icon: <Tag className="w-4 h-4" />,
+              variant: "ghost" as const,
+              grow: false,
+              onClick: () => {
+                if (!user) {
+                  showError(t("loginToAddToCart"));
+                  router.push(ROUTES.AUTH.LOGIN);
+                  return;
+                }
+                setOfferOpen(true);
+              },
+            },
+          ]
+        : []),
+    ],
+  });
+
   // --- Desktop: right-side sticky column ---
-  // --- Mobile: bottom sticky bar (above bottom nav) ---
   return (
     <>
       {/* Desktop actions — visible on lg+ */}
@@ -212,77 +303,6 @@ export function ProductActions({
               {statusLabel}
             </Text>
           )}
-        </div>
-      </div>
-
-      {/* Mobile bottom sticky bar — visible below lg */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden">
-        <div
-          className={`${themed.bgPrimary} border-t ${themed.border} px-3 py-2.5 safe-area-bottom`}
-        >
-          <div className={`${flex.rowCenter} gap-2`}>
-            {/* Wishlist icon button */}
-            <Button
-              onClick={handleWishlist}
-              disabled={wishlistLoading}
-              className={`shrink-0 w-11 h-11 ${flex.center} rounded-xl border-2 transition-all ${
-                inWishlist
-                  ? "border-pink-500 bg-pink-50 dark:bg-pink-900/20 text-pink-500"
-                  : `${themed.border} ${themed.textSecondary} hover:text-pink-500`
-              }`}
-              aria-label={
-                inWishlist ? t("removeFromWishlist") : t("addToWishlist")
-              }
-            >
-              <Heart
-                className={`w-5 h-5 ${inWishlist ? "fill-current" : ""}`}
-              />
-            </Button>
-
-            {/* Add to Cart */}
-            <Button
-              onClick={handleAddToCart}
-              disabled={isOutOfStock || cartLoading}
-              isLoading={cartLoading}
-              className="flex-1 py-2.5 bg-primary-700 hover:bg-primary-700/90 disabled:opacity-60 text-white font-semibold transition-all duration-200 rounded-xl text-sm active:scale-95"
-            >
-              <Span className={`${flex.center} gap-1.5`}>
-                <ShoppingCart className="w-4 h-4" aria-hidden="true" />
-                {isOutOfStock ? (statusLabel ?? t("outOfStock")) : cartLabel}
-              </Span>
-            </Button>
-
-            {/* Buy Now */}
-            {!isAuction && !isOutOfStock && (
-              <Button
-                onClick={handleBuyNow}
-                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-colors rounded-xl text-sm"
-              >
-                <Span className={`${flex.center} gap-1.5`}>
-                  <Zap className="w-4 h-4" aria-hidden="true" />
-                  {t("buyNow")}
-                </Span>
-              </Button>
-            )}
-
-            {/* Make an Offer (mobile) */}
-            {allowOffers && !isAuction && !isOutOfStock && (
-              <Button
-                onClick={() => {
-                  if (!user) {
-                    showError(t("loginToAddToCart"));
-                    router.push(ROUTES.AUTH.LOGIN);
-                    return;
-                  }
-                  setOfferOpen(true);
-                }}
-                className={`shrink-0 w-11 h-11 ${flex.center} rounded-xl border-2 ${themed.border} ${themed.textSecondary} hover:text-primary-600 hover:border-primary-500 transition-all`}
-                aria-label={tOffers("sendOffer")}
-              >
-                <Tag className="w-5 h-5" />
-              </Button>
-            )}
-          </div>
         </div>
       </div>
 

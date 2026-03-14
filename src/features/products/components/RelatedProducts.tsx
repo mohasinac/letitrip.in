@@ -69,7 +69,7 @@ export function RelatedProducts({
 
       {isLoading ? (
         <HorizontalScroller
-          perView={{ base: 2, sm: 3, md: 4, lg: 4, xl: 5 }}
+          perView={{ base: 2, sm: 3, md: 4 }}
           gap={12}
           showArrows={false}
           showScrollbar
@@ -92,7 +92,7 @@ export function RelatedProducts({
           items={products}
           renderItem={(product) => <ProductCard product={product} />}
           keyExtractor={(p) => p.id}
-          perView={{ base: 2, sm: 3, md: 4, lg: 4, xl: 5 }}
+          perView={{ base: 2, sm: 3, md: 4 }}
           gap={12}
           showArrows
           arrowSize="sm"

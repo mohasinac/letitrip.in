@@ -487,6 +487,20 @@ export const ERROR_MESSAGES = {
     ALREADY_REFUNDED: "This purchase has already been refunded",
   },
 
+  // Offer errors
+  OFFER: {
+    LIMIT_REACHED:
+      "You have reached the maximum of 3 offers for this product. Wait for the seller to update the listing.",
+    COUNTER_RANGE:
+      "Your counter must be within 20% of the seller's counter price.",
+    NOT_COUNTERED: "There is no seller counter to respond to.",
+    ACTIVE_OFFER_EXISTS:
+      "You already have an active offer on this product. Withdraw it before making a new one.",
+    EXPIRED: "This offer has expired and can no longer be acted on.",
+    PRODUCT_UNAVAILABLE:
+      "This product is no longer available at the agreed price. Contact support.",
+  },
+
   // Chat errors
   CHAT: {
     FETCH_FAILED: "Failed to load chat",

@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
       .then((link) => {
         // Send verification email via Resend
         sendVerificationEmailWithLink(email, link)
-          .then(() => serverLogger.info("Verification email sent", { email }))
+          .then(() => serverLogger.info("Verification email sent"))
           .catch((emailErr) =>
             serverLogger.error("Failed to send verification email", {
               error: emailErr,

@@ -15,12 +15,19 @@ import type {
   FirebaseSieveFields,
   FirebaseSieveResult,
 } from "@/lib/query/firebase-sieve";
+import { encryptPiiFields, decryptPiiFields } from "@/lib/pii";
+
+const EVENT_ENTRY_PII_FIELDS = [
+  "userDisplayName",
+  "userEmail",
+  "ipAddress",
+] as const;
 
 class EventEntryRepository extends BaseRepository<EventEntryDocument> {
   static readonly SIEVE_FIELDS: FirebaseSieveFields = {
     eventId: { canFilter: true, canSort: false },
     userId: { canFilter: true, canSort: false },
-    userDisplayName: { canFilter: true, canSort: true },
+    userDisplayName: { canFilter: false, canSort: false }, // encrypted — cannot Sieve filter
     reviewStatus: { canFilter: true, canSort: false },
     submittedAt: { canFilter: true, canSort: true },
     points: { canFilter: true, canSort: true },
@@ -28,6 +35,16 @@ class EventEntryRepository extends BaseRepository<EventEntryDocument> {
 
   constructor() {
     super(EVENT_ENTRIES_COLLECTION);
+  }
+
+  /** Override mapDoc to auto-decrypt PII on every event entry read */
+  protected override mapDoc<D = EventEntryDocument>(
+    snap: import("firebase-admin/firestore").DocumentSnapshot,
+  ): D {
+    const raw = super.mapDoc<EventEntryDocument>(snap);
+    return decryptPiiFields(raw as unknown as Record<string, unknown>, [
+      ...EVENT_ENTRY_PII_FIELDS,
+    ]) as unknown as D;
   }
 
   /**
@@ -108,10 +125,15 @@ class EventEntryRepository extends BaseRepository<EventEntryDocument> {
         .limit(limit)
         .get();
 
-      return snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as EventEntryDocument[];
+      return snapshot.docs.map((doc) =>
+        decryptPiiFields(
+          {
+            id: doc.id,
+            ...doc.data(),
+          } as Record<string, unknown>,
+          [...EVENT_ENTRY_PII_FIELDS],
+        ),
+      ) as unknown as EventEntryDocument[];
     } catch (error) {
       throw new DatabaseError(
         `Failed to get leaderboard for event ${eventId}`,
@@ -126,8 +148,12 @@ class EventEntryRepository extends BaseRepository<EventEntryDocument> {
   async createEntry(input: EventEntryCreateInput): Promise<EventEntryDocument> {
     try {
       const now = new Date();
+      // Encrypt PII before persisting
+      const encrypted = encryptPiiFields(input as Record<string, unknown>, [
+        ...EVENT_ENTRY_PII_FIELDS,
+      ]);
       const data = prepareForFirestore({
-        ...input,
+        ...encrypted,
         submittedAt: now,
       });
 

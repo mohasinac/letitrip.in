@@ -142,9 +142,17 @@ URL params: `q`, `category`, `page`, `sort`.
 ## RC Info
 
 **Route:** `/rc`  
-**Component:** `RCInfoView`
+**Component:** `RCInfoView`  
+**Revalidate:** 3600 s
 
-Static RSC page explaining RC economics: earning, spending, purchasing, and offer engagement. Includes `FlowDiagram` of the RC lifecycle and fixed package options (`RC_PACKAGES`).
+Static RSC page explaining RC economics: earning, spending, purchasing, and offer engagement.
+
+- `FlowDiagram` of the RC lifecycle: earn → spend → engage in offers/bids
+- Fixed package options from `RC_PACKAGES` constant
+- Balance model: `rcBalance = freeCoins + engagedRC`
+- Links to `/user/rc/purchase` for authenticated users
+
+**Data flow:** Read-only static page, no server data fetched at render time.
 
 ---
 
@@ -200,24 +208,107 @@ FAQs filtered to a specific category.
 
 ---
 
+## Reviews (Public)
+
+**Route:** `/reviews`  
+**File:** `src/app/[locale]/reviews/page.tsx`  
+**Feature:** `src/features/reviews/`  
+**Revalidate:** 60 s
+
+Showcases featured customer reviews from across the platform. SSR fetches the latest approved reviews (sorted by rating, up to 200) via `reviewRepository.listAll` and passes `initialData` to `ReviewsListView`.
+
+- Filter by product, rating, recent date
+- Each `ReviewCard` shows: reviewer avatar, product image, star rating, title, body, helpful vote count
+
+---
+
+## Contact
+
+**Route:** `/contact`  
+**File:** `src/app/[locale]/contact/page.tsx`  
+**Feature:** `src/features/contact/`  
+**Revalidate:** 3600 s (ISR)
+
+Contact page with a hero banner and a two-column layout:
+
+- **Left:** `ContactInfoSidebar` — platform address, email, phone, and social links (from `SITE_CONFIG`)
+- **Right:** `ContactForm` — react-hook-form + Zod; submits via `sendContactAction`
+
+**Action:** `sendContactAction({ name, email, subject, message })`  
+→ IP rate-limited (Upstash)  
+→ Sends email via Resend to platform contact address  
+→ Stores submission in `contact_submissions` Firestore collection
+
+---
+
+## How Orders Work
+
+**Route:** `/how-orders-work`  
+**File:** `src/app/[locale]/how-orders-work/page.tsx`  
+**Component:** `HowOrdersWorkView`  
+**Revalidate:** 3600 s
+
+Static explainer page for the full order lifecycle: `confirmed → processing → shipped → delivered → completed`. Includes order cancellation rules and invoice download info.
+
+---
+
+## How Checkout Works
+
+**Route:** `/how-checkout-works`  
+**File:** `src/app/[locale]/how-checkout-works/page.tsx`  
+**Component:** `HowCheckoutWorksView`  
+**Revalidate:** 3600 s
+
+Static explainer for the three-step checkout: address selection + Consent OTP, order review, payment (Razorpay / COD / RC coins).
+
+---
+
+## How Reviews Work
+
+**Route:** `/how-reviews-work`  
+**File:** `src/app/[locale]/how-reviews-work/page.tsx`  
+**Component:** `HowReviewsWorkView`  
+**Revalidate:** 3600 s
+
+Static explainer: verified-purchase gate, moderation flow, helpful voting, and RC reward for approved reviews.
+
+---
+
+## How Payouts Work
+
+**Route:** `/how-payouts-work`  
+**File:** `src/app/[locale]/how-payouts-work/page.tsx`  
+**Component:** `HowPayoutsWorkView`  
+**Revalidate:** 3600 s
+
+Static explainer for sellers: delivered-order eligibility, ₹500 minimum, bank account setup, admin approval timeline.
+
+---
+
 ## Static / Policy Pages
 
-| Route                  | Description                          |
-| ---------------------- | ------------------------------------ |
-| `/about`               | About LetItRip                       |
-| `/contact`             | Contact form                         |
-| `/help`                | Help centre                          |
-| `/privacy`             | Privacy policy                       |
-| `/terms`               | Terms of service                     |
-| `/cookies`             | Cookie policy                        |
-| `/refund-policy`       | Refund and returns policy            |
-| `/shipping-policy`     | Shipping information                 |
-| `/how-auctions-work`   | Auction explainer                    |
-| `/how-pre-orders-work` | Pre-order explainer                  |
-| `/seller-guide`        | Guide for new sellers                |
-| `/rc`                  | RC virtual currency info             |
-| `/track`               | Guest order tracking by order number |
-| `/unauthorized`        | 403 page                             |
+| Route                  | Component              | Description                          |
+| ---------------------- | ---------------------- | ------------------------------------ |
+| `/about`               | `AboutView`            | About LetItRip                       |
+| `/contact`             | `ContactForm`          | Contact form (see detailed section)  |
+| `/help`                | `HelpCentreView`       | Help centre                          |
+| `/privacy`             | `PrivacyView`          | Privacy policy                       |
+| `/terms`               | `TermsView`            | Terms of service                     |
+| `/cookies`             | `CookiesView`          | Cookie policy                        |
+| `/refund-policy`       | `RefundPolicyView`     | Refund and returns policy            |
+| `/shipping-policy`     | `ShippingPolicyView`   | Shipping information                 |
+| `/fees`                | `FeesView`             | Platform fee schedule (see below)    |
+| `/how-auctions-work`   | `HowAuctionsWorkView`  | Auction bidding explainer            |
+| `/how-offers-work`     | `HowOffersWorkView`    | Make-an-Offer explainer (see below)  |
+| `/how-orders-work`     | `HowOrdersWorkView`    | Order lifecycle explainer            |
+| `/how-pre-orders-work` | `HowPreOrdersWorkView` | Pre-order deposit/fulfilment guide   |
+| `/how-checkout-works`  | `HowCheckoutWorksView` | OTP consent, COD, Razorpay explainer |
+| `/how-reviews-work`    | `HowReviewsWorkView`   | Verified-purchase review rules       |
+| `/how-payouts-work`    | `HowPayoutsWorkView`   | Seller payout eligibility & timeline |
+| `/seller-guide`        | `SellerGuideView`      | Guide for new sellers                |
+| `/rc`                  | `RCInfoView`           | RC virtual currency info             |
+| `/track`               | `TrackOrderView`       | Guest order tracking by order number |
+| `/unauthorized`        | —                      | 403 page                             |
 
 ---
 

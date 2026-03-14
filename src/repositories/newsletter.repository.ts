@@ -17,10 +17,28 @@ import {
   NEWSLETTER_SUBSCRIBERS_COLLECTION,
   NEWSLETTER_SUBSCRIBER_FIELDS,
 } from "@/db/schema";
+import {
+  encryptPiiFields,
+  decryptPiiFields,
+  addPiiIndices,
+  piiBlindIndex,
+  NEWSLETTER_PII_FIELDS,
+  NEWSLETTER_PII_INDEX_MAP,
+} from "@/lib/pii";
 
 class NewsletterRepository extends BaseRepository<NewsletterSubscriberDocument> {
   constructor() {
     super(NEWSLETTER_SUBSCRIBERS_COLLECTION);
+  }
+
+  /** Override mapDoc to auto-decrypt PII on every read */
+  protected override mapDoc<D = NewsletterSubscriberDocument>(
+    snap: import("firebase-admin/firestore").DocumentSnapshot,
+  ): D {
+    const raw = super.mapDoc<NewsletterSubscriberDocument>(snap);
+    return decryptPiiFields(raw as unknown as Record<string, unknown>, [
+      ...NEWSLETTER_PII_FIELDS,
+    ]) as unknown as D;
   }
 
   // ---------------------------------------------------------------------------
@@ -28,7 +46,7 @@ class NewsletterRepository extends BaseRepository<NewsletterSubscriberDocument> 
   // ---------------------------------------------------------------------------
 
   static readonly SIEVE_FIELDS = {
-    email: { canFilter: true, canSort: true },
+    emailIndex: { canFilter: true, canSort: false },
     status: { canFilter: true, canSort: false },
     source: { canFilter: true, canSort: false },
     subscribedAt: { canFilter: true, canSort: true },
@@ -53,14 +71,18 @@ class NewsletterRepository extends BaseRepository<NewsletterSubscriberDocument> 
   // ---------------------------------------------------------------------------
 
   /**
-   * Find a subscriber by email address (case-insensitive via lowercase email).
+   * Find a subscriber by email address (uses blind index for query).
    */
   async findByEmail(
     email: string,
   ): Promise<NewsletterSubscriberDocument | null> {
     const snapshot = await this.db
       .collection(this.collection)
-      .where(NEWSLETTER_SUBSCRIBER_FIELDS.EMAIL, "==", email.toLowerCase())
+      .where(
+        NEWSLETTER_SUBSCRIBER_FIELDS.EMAIL_INDEX,
+        "==",
+        piiBlindIndex(email),
+      )
       .limit(1)
       .get();
 
@@ -91,11 +113,24 @@ class NewsletterRepository extends BaseRepository<NewsletterSubscriberDocument> 
       updatedAt: now,
     };
 
+    // Encrypt PII and add blind index before persisting
+    let encrypted = encryptPiiFields(
+      data as unknown as Record<string, unknown>,
+      [...NEWSLETTER_PII_FIELDS],
+    );
+    encrypted = {
+      ...encrypted,
+      ...addPiiIndices(
+        data as unknown as Record<string, unknown>,
+        NEWSLETTER_PII_INDEX_MAP,
+      ),
+    };
+
     const ref = await this.db
       .collection(this.collection)
-      .add(prepareForFirestore(data));
+      .add(prepareForFirestore(encrypted));
 
-    return { id: ref.id, ...data };
+    return { id: ref.id, ...data }; // return plaintext to caller
   }
 
   /**

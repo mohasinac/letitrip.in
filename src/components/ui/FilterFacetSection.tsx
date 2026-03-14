@@ -50,6 +50,12 @@ interface FilterFacetSectionProps {
    */
   selectionMode?: "multi" | "single";
   className?: string;
+  /** Controlled open state — overrides defaultCollapsed/defaultOpen when provided */
+  isOpen?: boolean;
+  /** Called when the header toggle is clicked (for controlled accordion mode) */
+  onToggle?: () => void;
+  /** Called when the section clear (×) button is clicked */
+  onClear?: () => void;
 }
 
 /**
@@ -85,12 +91,21 @@ export function FilterFacetSection({
   showSelectAll = false,
   selectionMode = "multi",
   className = "",
+  isOpen: controlledOpen,
+  onToggle,
+  onClear,
 }: FilterFacetSectionProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(pageSize);
-  const [isCollapsed, setIsCollapsed] = useState(
+  const isControlled = controlledOpen !== undefined;
+  const [internalCollapsed, setInternalCollapsed] = useState(
     defaultCollapsed ?? !defaultOpen,
   );
+  const isCollapsed = isControlled ? !controlledOpen : internalCollapsed;
+  const handleToggle = () => {
+    if (onToggle) onToggle();
+    else setInternalCollapsed((c) => !c);
+  };
 
   const groupId = useId();
   const { themed, spacing, flex } = THEME_CONSTANTS;
@@ -173,7 +188,7 @@ export function FilterFacetSection({
         type="button"
         variant="ghost"
         id={`facet-${groupId}`}
-        onClick={() => setIsCollapsed((c) => !c)}
+        onClick={handleToggle}
         className={`flex w-full items-center justify-between text-sm font-semibold ${themed.textPrimary} py-1 hover:opacity-80 transition-opacity`}
         aria-expanded={!isCollapsed}
       >
@@ -185,6 +200,33 @@ export function FilterFacetSection({
             >
               {selected.length}
             </Span>
+          )}
+          {onClear && selected.length > 0 && (
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClear();
+              }}
+              className="inline-flex items-center justify-center w-5 h-5 p-0 min-w-0 text-zinc-500 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-slate-700 transition-colors rounded-full"
+              aria-label={t("clearSection")}
+            >
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </Button>
           )}
         </Span>
         {/* Chevron icon */}

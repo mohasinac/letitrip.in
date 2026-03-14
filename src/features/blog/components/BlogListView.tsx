@@ -62,6 +62,7 @@ function BlogListContent({ initialData }: { initialData?: BlogPostsResult }) {
   const sortParam = table.get("sort") || "-publishedAt";
   const page = table.getNumber("page", 1);
   const categoryFilter = table.get("category");
+  const viewMode = (table.get("view") || "grid") as "grid" | "list";
 
   const sortOptions = useMemo(
     () => [
@@ -184,16 +185,19 @@ function BlogListContent({ initialData }: { initialData?: BlogPostsResult }) {
           }
           selectedCount={selectedIds.length}
           onClearSelection={() => setSelectedIds([])}
-          bulkActions={
-            user ? (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleBulkAddToWishlist}
-              >
-                {tActions("bulkAddToWishlist", { count: selectedIds.length })}
-              </Button>
-            ) : undefined
+          bulkActionItems={
+            user
+              ? [
+                  {
+                    id: "bulk-wishlist",
+                    label: tActions("bulkAddToWishlist", {
+                      count: selectedIds.length,
+                    }),
+                    variant: "primary",
+                    onClick: handleBulkAddToWishlist,
+                  },
+                ]
+              : undefined
           }
           paginationSlot={
             totalPages > 1 ? (
@@ -238,10 +242,14 @@ function BlogListContent({ initialData }: { initialData?: BlogPostsResult }) {
                   { key: "authorName", header: t("colAuthor") },
                   { key: "publishedAt", header: t("colPublishedAt") },
                 ]}
-                defaultViewMode="grid"
-                selectable={!!user}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
+                showViewToggle
+                showTableView={false}
+                viewMode={viewMode}
+                onViewModeChange={(m) => table.set("view", m)}
+                labels={{
+                  gridView: tActions("gridView"),
+                  listView: tActions("listView"),
+                }}
                 emptyState={
                   <EmptyState
                     icon={<BookOpen className="w-16 h-16" />}

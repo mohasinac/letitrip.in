@@ -214,34 +214,29 @@ export function AdminEventsView() {
         onFilterClear={onFilterClear}
         selectedCount={selectedIds.length}
         onClearSelection={() => setSelectedIds([])}
-        bulkActions={
-          <>
-            <Button
-              size="sm"
-              variant="primary"
-              onClick={() => handleBulkStatusChange("active")}
-              isLoading={isBulkProcessing}
-            >
-              {tActions("bulkPublish")}
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleBulkStatusChange("ended")}
-              isLoading={isBulkProcessing}
-            >
-              {tActions("bulkArchive")}
-            </Button>
-            <Button
-              size="sm"
-              variant="danger"
-              onClick={handleBulkDelete}
-              isLoading={isBulkProcessing}
-            >
-              {tActions("bulkDelete")}
-            </Button>
-          </>
-        }
+        bulkActionItems={[
+          {
+            id: "bulk-publish",
+            label: tActions("bulkPublish"),
+            variant: "primary",
+            onClick: () => handleBulkStatusChange("active"),
+            loading: isBulkProcessing,
+          },
+          {
+            id: "bulk-archive",
+            label: tActions("bulkArchive"),
+            variant: "outline",
+            onClick: () => handleBulkStatusChange("ended"),
+            loading: isBulkProcessing,
+          },
+          {
+            id: "bulk-delete",
+            label: tActions("bulkDelete"),
+            variant: "danger",
+            onClick: handleBulkDelete,
+            loading: isBulkProcessing,
+          },
+        ]}
         loading={isLoading}
         paginationSlot={
           <TablePagination
